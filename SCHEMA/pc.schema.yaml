@@ -22,10 +22,12 @@ fields:
     proficiencies: object
     defenses: object
     hp: object
+    movement: object
     conditions: array[object]
     resources: object
     spells: object|null
     features: array[object]
+    derived: object
   location_id: string|null
   inventory:
     currency: object
@@ -43,3 +45,6 @@ invariants:
   - provisional records are not active campaign canon until explicitly accepted
   - significant items use ITEM IDs; disposable mundane inventory may be embedded
   - exact mechanical values come from adopted rules/house rules, not inference
+  - canonical base mechanics plus persistent modifiers must be sufficient to deterministically derive any gameplay modifier needed for adjudication
+  - derived values may be cached for convenience but must be recomputable from canonical dependencies and refreshed when those dependencies change
+  - player mechanics-presentation preference never changes stored/derived character mechanics

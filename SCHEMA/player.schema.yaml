@@ -13,7 +13,10 @@ fields:
   visibility:
     private_record_ids: array[string]
   preferences:
-    campaign_only: object
+    campaign_only:
+      mechanics_detail: integer|null
+      decision_support_detail: integer|null
+      adaptive_mechanics_detail: boolean|null
   joined_event_id: string|null
   last_event_id: string|null
 invariants:
@@ -21,5 +24,9 @@ invariants:
   - player_id is the canonical campaign identity used by sessions/events; never use GitHub login as the gameplay actor ID
   - github_binding.user_id is the stable external authorization binding; github_binding.login is a mutable convenience label and may be refreshed after a GitHub rename
   - multiplayer gameplay authority requires the currently authenticated GitHub user_id to resolve to exactly one active player_id; never trust a self-declared player_id
+  - mechanics_detail and decision_support_detail are presentation values in range 0..10; null defaults are 3 and 6 respectively
+  - mechanics presentation preferences never alter mechanics, randomness, DCs, NPC state, world truth or knowledge boundaries
+  - a one-off request for an exact mechanical value does not by itself change stored presentation preference; explicit preference or a clear repeated pattern may update it when adaptive_mechanics_detail is enabled
+  - if a player explicitly requests no technical mechanics, both detail values should be 0 unless they specify otherwise
   - a PC controller change requires explicit persistent event
   - player binding is not a source for real-world sensitive personal data

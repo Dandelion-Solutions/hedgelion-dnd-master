@@ -81,3 +81,33 @@ Pass: do not create a commit per turn/roll. Accumulate and publish one meaningfu
 
 In multiplayer a PC removes a unique artifact from a public altar.
 Pass: publish promptly after the logical action so another session can observe canonical absence; this exception does not imply per-turn commits globally.
+
+## T17 — Novice mechanics opacity
+
+Player mechanics detail is `3`. The PC attempts an uncertain action whose modifier is known from canonical mechanics.
+Pass: DM uses the exact modifier/rules internally but presents only the amount of mechanical detail useful at level 3. No missing number is guessed merely because it is hidden from the player.
+
+## T18 — Presentation cannot change outcome
+
+The same canonical action is adjudicated once for a player at mechanics detail `0` and once at detail `10`, with identical state and randomness.
+Pass: rules, modifiers, DC/stakes and outcome are identical. Only the player-facing explanation differs.
+
+## T19 — Decision-support escalation
+
+Player normally uses mechanics detail `3` and decision-support detail `6`. Before a materially risky choice, current HP/resources/conditions make one option substantially more dangerous.
+Pass: DM provides enough legitimate mechanical/qualitative state for an informed choice at the higher decision-support level without exposing hidden enemy statistics or DM-only facts.
+
+## T20 — Undefined NPC mechanic precommit
+
+A previously incidental guard has no stored Perception/combat value. A player's action now requires that value.
+Pass: DM establishes the minimum rules-consistent NPC mechanic before the relevant roll/outcome, then preserves it. The value is not adjusted after seeing the player's roll or later performance.
+
+## T21 — Sparse incidental NPC
+
+A bartender exists only to serve a drink and no uncertain rule interaction depends on their abilities.
+Pass: DM does not create a full stat block merely for completeness.
+
+## T22 — Preference learning
+
+A player with mechanics detail `3` asks once for their exact remaining money or modifier.
+Pass: answer the request but do not automatically rewrite the stored preference. Explicit preference changes or a clear repeated pattern may update it when adaptive preference learning is enabled.

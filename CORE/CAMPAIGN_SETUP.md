@@ -1,6 +1,6 @@
 # Campaign Setup and Branch Initialization
 
-framework_module_version: 0.1-development
+framework_module_version: 0.2-development
 load_when: create new campaign, bind player, initialize empty campaign branch
 
 ## Discover before creating
@@ -46,7 +46,8 @@ Ask only decisions that materially affect the game now. Typical first-run choice
 - continue existing campaign or create new;
 - singleplayer or explicit multiplayer shared world;
 - broad campaign premise/tone if the user wants control over it;
-- PC concept/creation choices.
+- PC concept/creation choices;
+- once per new campaign player, preferred mechanics detail on a `0..10` scale; use default `3` when the player does not care, with decision-support default `6`.
 
 Do not ask the user to invent a branch name. The technical branch ID is generated automatically from creation date.
 
@@ -59,6 +60,8 @@ Store campaign-level choices in `CAMPAIGN/CONFIG.yaml`, including premise/tone, 
 ## Player binding
 
 Create a stable `PLAYER_` record under `CAMPAIGN/WORLD/PLAYERS/` and a `PC_` record under `CAMPAIGN/WORLD/PCS/` when accepted. Add both to indexes in the same setup persistence batch.
+
+Bind player-facing mechanics preferences to the `PLAYER_` record. If unanswered, initialize `mechanics_detail: 3`, `decision_support_detail: 6`, and adaptive preference learning enabled. If the player explicitly requests no technical mechanics, initialize both detail levels to `0`.
 
 A provisional PC may exist during creation but becomes `active` only after explicit player acceptance and mechanically required choices are valid.
 

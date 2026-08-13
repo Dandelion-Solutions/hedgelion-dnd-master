@@ -1,6 +1,6 @@
 # Action Adjudication
 
-framework_module_version: 0.1-development
+framework_module_version: 0.2-development
 load_when: uncertain action, skill use, social check, environmental challenge, improvised ruling
 
 ## Resolve intent before mechanics
@@ -25,6 +25,20 @@ If success is automatic, grant it.
 If the stated outcome is impossible under current state/rules, explain the constraint; do not offer a meaningless roll.
 
 Do not roll merely to create suspense.
+
+## Mechanical grounding
+
+Resolve outcomes from the actual canonical mechanics of every participant relevant to the ruling.
+
+For PCs, derive the applicable modifiers from stored ability scores, proficiency/expertise, equipment, features, conditions, active effects and resources under the adopted rules.
+
+For NPCs/creatures, use established mechanics or a referenced canonical stat block. If a required NPC mechanical value has never been established, determine the minimum sufficient value from the adopted rules and established fiction before observing the relevant roll/outcome. Once used materially, preserve it for future consistency.
+
+Do not compare vague narrative labels such as "strong" or "skilled" when an exact rule mechanic is required. Conversely, do not invent unnecessary statistics when fictional positioning makes the result automatic or impossible.
+
+Apply buffs, debuffs, advantage/disadvantage, conditions, resource state and other modifiers before generating randomness. Never adjust a participant's stats, target/DC or applicable modifiers after seeing the roll or because a previous result was easier/harder than expected.
+
+How much of this arithmetic is shown to the player follows the player mechanics-presentation preference. The hidden calculation remains the same at every presentation level.
 
 ## Stakes before dice
 
@@ -87,7 +101,7 @@ If nothing changes and unlimited retries are safe, do not request endless identi
 
 Persuasion, deception and intimidation are not mind control.
 
-NPC reaction depends on goals, attitude, leverage, knowledge, risk and the proposal itself. A high roll cannot make an NPC accept an impossible or self-destructive proposition without a reason.
+NPC reaction depends on goals, attitude, leverage, knowledge, risk, the proposal itself and any mechanics legitimately involved. A high roll cannot make an NPC accept an impossible or self-destructive proposition without a reason.
 
 When the player's roleplay/argument changes leverage or attitude, reflect that in feasibility, DC, advantage/disadvantage or outcome as appropriate.
 

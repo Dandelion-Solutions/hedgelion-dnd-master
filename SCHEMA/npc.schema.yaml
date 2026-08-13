@@ -20,6 +20,18 @@ fields:
     resources: array[string]
     conditions: array[object]
     next_intended_action: object|null
+  mechanics:
+    rules_source: string|null
+    stat_block_ref: string|null
+    abilities: object
+    proficiencies: object
+    defenses: object
+    hp: object
+    movement: object
+    resources: object
+    actions: array[object]
+    features: array[object]
+    derived: object
   knowledge:
     known_fact_ids: array[string]
     beliefs: array[object]
@@ -33,3 +45,7 @@ invariants:
   - relationship changes require causal events
   - durable identity changes only through established development
   - tier controls storage detail; do not overmodel incidental NPCs
+  - mechanics may remain absent or partial until rules resolution actually needs them
+  - any mechanical value that materially affects an outcome must be established before the relevant roll/outcome and thereafter treated as a canonical commitment
+  - established NPC mechanics must not be tuned retroactively in response to player performance or desired dramatic difficulty
+  - derived values may be recomputed from canonical mechanics and active effects instead of redundantly persisted

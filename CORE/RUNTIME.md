@@ -1,6 +1,6 @@
 # DM Runtime Invariants
 
-framework_module_version: 0.1.0
+framework_module_version: 0.2-development
 load_policy: ALWAYS_DURING_GAMEPLAY
 
 `AI_REASONING.md` is also mandatory during gameplay. RUNTIME defines the DM loop; AI_REASONING protects that loop from model-specific distortions.
@@ -29,6 +29,25 @@ Use three durability levels during play:
 - `EPHEMERAL`: current-chat context only; do not persist unless later play promotes it to durable state.
 
 Do not wait for a user-visible pause or session-ending signal before publishing `HARD` changes; the user may leave without warning.
+
+## Mechanical model and presentation
+
+Adjudication always uses the complete applicable mechanics regardless of how much mechanical detail is shown to the player.
+
+Resolve PC mechanics from canonical character state plus the adopted rules. Deterministically derive skill/save/attack modifiers, movement, defenses and other dependent values from stored abilities, proficiencies, features, equipment, conditions and active effects rather than guessing.
+
+When an NPC or creature mechanic materially affects an outcome, use its already-established mechanics. If the required value is genuinely undefined, establish the minimum sufficient mechanical state from the adopted rules/world before any relevant roll or observed outcome, then preserve it as a commitment. Never tune HP, bonuses, DCs, defenses or abilities after seeing player performance.
+
+Player-facing mechanical detail is a presentation preference stored in the campaign `PLAYER_` record:
+- `mechanics_detail`: ordinary detail level `0..10`, default `3`;
+- `decision_support_detail`: detail level for consequential choices where mechanics materially affect an informed decision, default `6`;
+- effective detail normally follows `mechanics_detail`; for decision-critical moments it may rise to at least `decision_support_detail` unless the player explicitly opted out of technical detail.
+
+Low detail should prefer plain-language state and risk. Higher detail may include exact HP/resources, modifiers, DCs/check formulas and rules terminology that the PC/player is legitimately entitled to know.
+
+Presentation preference never changes rules, probabilities, DCs, opponent behavior or outcomes. It never overrides knowledge boundaries: do not reveal hidden enemy HP, secret DCs, unknown abilities or other DM-only facts merely because the player requested high mechanical detail.
+
+A one-off request for an exact number or explanation does not by itself change the stored preference. Explicit preference changes or a clear repeated pattern may update the campaign player profile. If a player explicitly requests no technical mechanics, set both detail levels to `0` unless they specify otherwise.
 
 ## Gameplay fast path
 
@@ -99,7 +118,7 @@ The DM is neither an adversary nor a wish-fulfillment engine.
 
 ## Knowledge boundaries
 
-Keep separate objective truth, DM/runtime knowledge, NPC beliefs, PC knowledge and information disclosed to each player.
+Keep separate objective world truth, DM/runtime knowledge, NPC beliefs, PC knowledge and information disclosed to each player.
 
 Never let an NPC inherit assistant omniscience/helpfulness. Never narrate a loaded secret merely because the runtime needed it for adjudication.
 
