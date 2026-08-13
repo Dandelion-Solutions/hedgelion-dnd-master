@@ -1,6 +1,6 @@
 # Shared-World Multiplayer
 
-framework_module_version: 0.1.2
+framework_module_version: 0.1.3
 load_when: CAMPAIGN/MANIFEST mode == multiplayer OR explicit multiplayer management
 
 ## Mode and ownership
@@ -39,36 +39,47 @@ Keep independently changing environments in separate records. Each active scene 
 
 Do not update a global `CURRENT` record for every local movement/action if the scene/entity record is sufficient.
 
-## Lightweight synchronization reads
+## Shared-scene live frontier
 
-Each multiplayer session keeps a cached working-set base HEAD SHA for the active campaign branch.
+When differently controlled PCs share one actionable scene, use `LIVE_SCENE.md`.
 
-A synchronization probe must be cheap:
-1. read only the active branch ref;
+Do not let separate Masters independently improvise mutable versions of the same shared environment. The durable campaign scene opens one temporary live epoch/branch. While that pointer is active, the live state is the authoritative operational frontier for that scene's mutable state and per-PC observed information.
+
+The framework does not depend on detecting online presence: differently controlled PCs sharing the same actionable scene are enough to require live mode.
+
+The live branch uses one runtime-mutated file and a special fast path. Ordinary live synchronization is a live-branch ref probe; if changed, fetch only `CAMPAIGN/LIVE/LIVE_STATE.yaml`. Do not perform campaign compare/history reads for every shared-scene turn.
+
+Campaign branch writes for live-owned scene/entity state are deferred to close-time compaction. Shared live mutations are instead published immediately to the live frontier before narration when another player could observe/use the changed fact.
+
+## Lightweight campaign synchronization reads
+
+Outside an active live-scene hot path, each multiplayer session keeps a cached working-set base HEAD SHA for the campaign branch.
+
+A campaign synchronization probe must be cheap:
+1. read only the active campaign branch ref;
 2. if HEAD is unchanged, stop — no content or history fetch is needed;
 3. if HEAD changed, use server-side `base..HEAD` compare to obtain changed paths;
 4. if none of those paths can affect the session's loaded scene/entities, local dirty set, access/mode metadata, or the action being resolved, move the cached base HEAD forward without reloading files;
 5. if relevant paths changed, fetch only the exact affected/required records at the new HEAD and refresh the local working set.
 
-All files in one refresh must be pinned to one exact HEAD SHA. Never assemble a shared-world view from multiple branch-relative reads that could observe different commits.
+All files in one campaign refresh must be pinned to one exact HEAD SHA. Never assemble a shared-world view from multiple branch-relative reads that could observe different commits.
 
 Do not clone/pull the repository or request broad commit history to synchronize ordinary multiplayer play. History is read only for a bounded provenance/conflict/audit reason.
 
-This section defines how synchronization reads are performed. It does not by itself increase how often world-state changes are published; publication policy is defined separately below.
-
 ## Synchronization policy
 
-Do not poll HEAD before every harmless sentence or roll.
+Do not poll the campaign HEAD before every harmless sentence or roll.
 
-HEAD must be checked:
-- before publishing a persistence batch;
-- before adjudicating an action that targets a known race-sensitive shared object/process when the local HEAD may be stale;
-- after an explicit resync request;
-- after any Git write conflict.
+Campaign HEAD must be checked:
+- before publishing a normal campaign persistence batch;
+- before adjudicating an action that targets a known race-sensitive shared object/process not owned by the current live epoch when the local campaign HEAD may be stale;
+- after an explicit campaign resync request;
+- after any campaign write conflict;
+- while opening/closing/compacting a live epoch as required by `LIVE_SCENE.md`.
 
-A future shared-scene policy may require additional HEAD probes; those probes must still use the lightweight path above rather than full-state reloads.
+An active shared scene has its own more frequent but cheaper live ref probe defined in `LIVE_SCENE.md`; do not replace that probe with a full campaign refresh.
 
-## When HEAD changed
+## When campaign HEAD changed
 
 Compare external changes since the working-set base HEAD with the local dirty set.
 
@@ -84,7 +95,7 @@ Never resolve a semantic conflict by blind text merge.
 
 If two actions cannot both be true, already-published canon constrains the later resolution when chronology supports that ordering.
 
-Example: a unique item is removed from a chest by one player's published action. Another player later tries to take it based on stale scene state. After resync, resolve the second action from the fact that the chest no longer contains the item; do not overwrite ownership.
+Example: a unique item is removed from a chest by one player's published action. Another player later tries to take it based on stale local state. After resync, resolve the second action from the fact that the chest no longer contains the item; do not overwrite ownership.
 
 If the PC can observe the consequence, narrate it naturally. Identify another character only if the PC has an in-world basis to know who acted; Git author/session metadata is DM evidence, not automatic character knowledge.
 
@@ -94,18 +105,26 @@ If two actions are fictionally simultaneous and commit order alone would arbitra
 
 Private/local changes may be batched until a natural persistence boundary.
 
-Publish race-sensitive shared changes promptly after logical completion: unique object ownership/destruction, persistent shared-location changes, shared NPC relocation/death, global process advancement, access/lock/door state, scarce shared resource consumption, etc.
+Outside a live epoch, publish race-sensitive shared changes promptly after logical completion: unique object ownership/destruction, persistent shared-location changes, shared NPC relocation/death, global process advancement, access/lock/door state, scarce shared resource consumption, etc.
 
-This is a visibility requirement for the shared world, not a requirement to commit every turn.
+Inside an active live epoch, use the live-state publication rules instead: the shared operational change is written to the live branch before narration and later compacted into one durable campaign batch.
+
+This is a visibility requirement for the shared world, not a requirement to commit every non-shared turn.
 
 ## World time
 
 Maintain chronology sufficient to determine whether actions can conflict. Separate scenes may progress independently when the campaign supports asynchronous local time, but shared/global events must reconcile against a common world-time frontier.
 
+A cross-scene event that materially touches more than one active live epoch is an exceptional synchronization boundary; follow `LIVE_SCENE.md` rather than adding distributed transaction overhead to normal play.
+
 ## Privacy
 
 DM may load private facts required to resolve objective world state, but player-facing narration must respect PC/player knowledge boundaries.
 
+A live scene stores objective shared truth separately from which PCs actually perceived/learned each relevant fact. Repository visibility is not character knowledge.
+
 ## Joining players
 
 Adding a player requires explicit player binding and PC assignment. Do not infer control of an existing PC.
+
+If a newly joined/resumed PC enters a scene with an active live epoch, load/adopt that live frontier before presenting current actionable state.

@@ -1,0 +1,73 @@
+schema_name: live_scene_state
+schema_version: 1
+required:
+  - schema_version
+  - epoch_id
+  - campaign_branch
+  - live_branch
+  - scene_id
+  - status
+  - base_campaign_sha
+  - revision
+  - participant_ids
+  - player_character_ids
+fields:
+  schema_version: integer
+  epoch_id: string
+  campaign_branch: string
+  live_branch: string
+  scene_id: string
+  status: enum[active, closing]
+  base_campaign_sha: string
+  base_scene_blob_sha: string|null
+  revision: integer
+  local_time: object|null
+  participant_ids: array[string]
+  player_character_ids: array[string]
+  scene_overlay:
+    set: array[object]
+    unset: array[string]
+  entity_overlays:
+    type: array[object]
+    item_fields:
+      entity_id: string
+      entity_type: string
+      set: array[object]
+      unset: array[string]
+  created_entities:
+    type: array[object]
+    item_fields:
+      provisional_id: string
+      entity_type: string
+      data: object
+  live_facts:
+    type: array[object]
+    item_fields:
+      fact_id: string
+      fact: object
+      known_by_pc_ids: array[string]
+      established_by_live_event_id: string|null
+  observable_events:
+    type: array[object]
+    item_fields:
+      live_event_id: string
+      world_time: object|null
+      actor_player_id: string|null
+      actor_pc_id: string|null
+      summary: string
+      perceived_by_pc_ids: array[string]
+      touched_entity_ids: array[string]
+  pending_durable_events: array[object]
+  touched_campaign_paths: array[string]
+  touched_entity_ids: array[string]
+invariants:
+  - only CAMPAIGN/LIVE/LIVE_STATE.yaml is runtime-mutated on a live branch
+  - revision increments once for each successful logical live-state write
+  - absent overlay fields inherit from base_campaign_sha
+  - overlay set/unset paths are explicit and deterministic; prose is not a merge instruction
+  - touched_campaign_paths and touched_entity_ids are cumulative for the whole epoch
+  - observable_events are compact semantic perception facts, not a transcript
+  - objective truth and per-PC knowledge/disclosure remain distinct
+  - epoch-scoped provisional entity IDs cannot escape the epoch before durable compaction
+  - one mutable entity cannot be actively owned by two live epochs
+  - status closing accepts no new ordinary gameplay writes

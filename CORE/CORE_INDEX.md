@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.1.2
+framework_module_version: 0.1.3
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 During gameplay ALWAYS load:
@@ -35,6 +35,7 @@ Load every other module only when the current situation requires it.
 - `STORAGE.md` — canonical storage, batching, lazy retrieval and resync.
 - `INTEGRITY.md` — incremental canon-integrity detection and bounded repair; load only on suspect/corrupt state or explicit integrity diagnosis.
 - `MULTIPLAYER.md` — shared-world concurrency and environment-level conflict handling.
+- `LIVE_SCENE.md` — temporary one-file live-branch synchronization for multiple players sharing one actionable scene; load only when such a live epoch exists/is required.
 - `ANTIPATTERNS.md` — extended LLM-specific failure catalogue for audits/debugging.
 - `SOURCES.md` — research provenance; never load during normal gameplay.
 
@@ -43,6 +44,8 @@ Recommended bundles:
 `new campaign` -> RUNTIME + AI_REASONING + GM_CRAFT + CAMPAIGN_OPERATIONS + CAMPAIGN_SETUP + CHARACTER + SAFETY + WORLDGEN.
 
 `session prep/start` -> RUNTIME + AI_REASONING + SESSION + CAMPAIGN_OPERATIONS + GM_CRAFT/PREP only if preparation is needed.
+
+`multiplayer shared scene` -> RUNTIME + AI_REASONING + MULTIPLAYER + LIVE_SCENE, plus only current scene/entity/rule dependencies.
 
 `lore/history` -> RUNTIME + AI_REASONING + LORE + INFORMATION, plus exact relevant world records.
 

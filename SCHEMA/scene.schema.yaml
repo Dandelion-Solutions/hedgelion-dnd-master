@@ -1,5 +1,5 @@
 schema_name: scene_state
-schema_version: 1
+schema_version: 2
 required: [schema_version, scene_id, status, participant_ids, player_character_ids]
 fields:
   schema_version: integer
@@ -17,7 +17,19 @@ fields:
   tactical_state_path: string|null
   summary: string
   last_event_id: string|null
+  live_epoch:
+    type: object|null
+    fields:
+      epoch_id: string
+      branch: string
+      state_path: string
+      base_campaign_sha: string
+      opening_live_head_sha: string
+  last_absorbed_live_head_sha: string|null
 invariants:
   - scene is an environment-level concurrency boundary when practical
   - summary contains current actionable state, not session transcript
-  - persistent entity changes still belong in canonical entity records
+  - persistent entity changes still belong in canonical entity records after live compaction
+  - at most one live_epoch may be authoritative for a scene at a time
+  - when live_epoch is non-null, current mutable scene truth is base campaign state plus the referenced live state
+  - clearing live_epoch after compaction records the exact absorbed live HEAD in last_absorbed_live_head_sha
