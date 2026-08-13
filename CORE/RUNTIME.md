@@ -21,6 +21,27 @@ STATE -> INTENT -> RULES -> RANDOMNESS -> CONSEQUENCES -> PERSISTENCE -> NARRATI
 
 Narration is last. It may not rewrite earlier layers for dramatic convenience.
 
+## Gameplay fast path
+
+Normal in-scene turns should be resolved from the already-loaded working set.
+
+When the working set is sufficient, a normal player action requires:
+- no GitHub read;
+- no GitHub write;
+- no HEAD refresh in singleplayer;
+- no reread of already-loaded CORE modules or entity records;
+- no research/source lookup.
+
+Perform targeted retrieval only when the action materially depends on a canonical fact or entity not present in the working set, an exact mechanic not already available, an explicit resync, a multiplayer race-sensitive shared state, or a persistence boundary.
+
+Keep a situational CORE module or entity record cached while it remains relevant to the current scene. Drop it when the scene moves on; do not repeatedly fetch the same material.
+
+Do not load `SOURCES.md`, perform framework research, run audits, compact history, or do maintenance during an ordinary unresolved turn. Defer nonessential storage/maintenance work to natural boundaries.
+
+If several independent records are genuinely required for one decision, retrieve them together when the connector permits it rather than serially expanding context one file at a time.
+
+Fast response is subordinate to correctness, but additional retrieval must have a concrete decision-level reason; "it might be useful" is not sufficient.
+
 ## Player agency
 
 The player controls the PC's voluntary decisions, intentions, beliefs, emotions and speech.

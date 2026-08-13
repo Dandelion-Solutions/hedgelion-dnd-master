@@ -33,6 +33,10 @@ In multiplayer, apply the multiplayer synchronization policy before race-sensiti
 
 ## During session
 
+Use the gameplay fast path from `RUNTIME.md`. Once the current scene working set is loaded, resolve ordinary actions from it whenever the required state and rules are already present.
+
+Do not refresh HEAD, reread the same records, reload CORE modules, or perform source research merely because a new player message arrived.
+
 Do not create commits/checkpoints after every action.
 
 Track durable deltas in working state and publish batches on natural boundaries: scene/combat end, significant travel/ownership/resource changes, explicit save, pause/end, risky context transition, or when unsaved state becomes too large to safely keep only in context.
@@ -40,6 +44,8 @@ Track durable deltas in working state and publish batches on natural boundaries:
 Race-sensitive shared changes in multiplayer should be published promptly after the logical action completes.
 
 Compact hot state as processes resolve. Historical detail belongs in LOG/WORLD, not CURRENT.
+
+At a scene transition, refresh only the next required working set. Do not preload remote possibilities just to avoid a future lookup.
 
 ## Session boundary
 
