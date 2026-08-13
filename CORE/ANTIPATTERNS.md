@@ -1,6 +1,6 @@
 # AI Dungeon Master Anti-Patterns
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_when: quality audit, suspicious inconsistency, after user flags DM behavior, framework regression review
 
 `AI_REASONING.md` contains the always-on prevention procedure. This file is the larger diagnostic catalogue.

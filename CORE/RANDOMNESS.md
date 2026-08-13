@@ -1,6 +1,6 @@
 # Randomness Integrity
 
-framework_module_version: 0.2-development
+framework_module_version: 0.1.1
 load_when: dice roll, random table, uncertain hidden process
 
 ## Actual RNG required

@@ -1,6 +1,6 @@
 # Magic Runtime
 
-framework_module_version: 0.1-development
+framework_module_version: 0.1.1
 load_when: spellcasting, magical effects, unidentified magic, counterfactual spell use
 
 ## Rules-first spell resolution

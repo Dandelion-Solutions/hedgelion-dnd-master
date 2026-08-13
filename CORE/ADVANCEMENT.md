@@ -1,6 +1,6 @@
 # Advancement, Rest and Downtime
 
-framework_module_version: 0.1-development
+framework_module_version: 0.1.1
 load_when: XP/level, rest, training, crafting, downtime, long-term character progression
 
 ## Advancement method

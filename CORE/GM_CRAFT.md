@@ -1,6 +1,6 @@
 # GM Craft Doctrine
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_when: campaign setup, session preparation, scenario design, periodic quality audit
 
 This module is the compact synthesis of established GM practice. It is not a substitute for exact D&D rules and it is not a script for a story.

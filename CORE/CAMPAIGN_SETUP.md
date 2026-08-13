@@ -1,6 +1,6 @@
 # Campaign Setup and Branch Initialization
 
-framework_module_version: 0.2-development
+framework_module_version: 0.1.1
 load_when: create new campaign, bind player, initialize empty campaign branch
 
 ## Discover before creating

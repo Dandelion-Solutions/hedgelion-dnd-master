@@ -1,6 +1,6 @@
 # Session and Adventure Preparation
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_when: before session, generating new local content, preparing adventure/faction movement
 
 Use `GM_CRAFT.md` for the high-level doctrine and `CAMPAIGN_OPERATIONS.md` for session organization.

@@ -1,6 +1,6 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.1.0
+runtime_bootstrap_version: 0.1.2
 repository: dkolyada/hedgelion-dnd-master
 engine_branch: main
 
@@ -62,7 +62,7 @@ Multiplayer: partition state by scene/entity, batch local changes, and check HEA
 
 ## Framework updates
 
-Stable engine versions use tags like `engine-v0.1.0`. Integrate newer `main` into live campaigns by merge by default. Rebase is explicit maintenance only for a paused non-concurrent branch and invalidates cached SHAs. Schema-incompatible changes require migration.
+Stable engine versions use tags in the `vMAJOR.MINOR` form with an optional prerelease suffix, for example `v0.1-beta` or `v0.2-RC`. Integrate newer `main` into live campaigns by merge by default. Rebase is explicit maintenance only for a paused non-concurrent branch and invalidates cached SHAs. Schema-incompatible changes require migration.
 
 ## Canon priority
 

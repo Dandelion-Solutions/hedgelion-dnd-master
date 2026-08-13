@@ -1,6 +1,6 @@
 # Table Boundaries and Campaign Tone
 
-framework_module_version: 0.1-development
+framework_module_version: 0.1.1
 load_when: campaign setup, explicit boundary/tone change, potentially sensitive content
 
 ## Campaign agreement

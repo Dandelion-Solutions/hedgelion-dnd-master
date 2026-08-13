@@ -1,6 +1,6 @@
 # DM Runtime Invariants
 
-framework_module_version: 0.2-development
+framework_module_version: 0.1.1
 load_policy: ALWAYS_DURING_GAMEPLAY
 
 `AI_REASONING.md` is also mandatory during gameplay. RUNTIME defines the DM loop; AI_REASONING protects that loop from model-specific distortions.

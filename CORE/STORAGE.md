@@ -1,6 +1,6 @@
 # Canonical Storage and Persistence
 
-framework_module_version: 0.2-development
+framework_module_version: 0.1.1
 load_when: session startup, state retrieval, persistence boundary, resync, canon conflict
 
 `main` stores shared engine/framework data plus an empty `CAMPAIGN/` skeleton. Actual campaign branches fill that skeleton with game-specific data. Chat context is temporary working memory; ChatGPT Memory is never campaign storage.

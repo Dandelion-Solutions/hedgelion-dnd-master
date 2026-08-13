@@ -1,6 +1,6 @@
 # World Processes, Threats and Clocks
 
-framework_module_version: 0.1-development
+framework_module_version: 0.1.1
 load_when: active threats, factions, deadlines, off-screen change, long-running projects, shared-world chronology
 
 ## Purpose

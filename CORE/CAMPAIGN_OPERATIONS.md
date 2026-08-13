@@ -1,6 +1,6 @@
 # Campaign Operations
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_when: campaign start, session start/end, prep, recap, campaign maintenance
 
 ## Campaign-level organization

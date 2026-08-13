@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_version: 0.1.0
+framework_module_version: 0.1.1
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 During gameplay ALWAYS load:

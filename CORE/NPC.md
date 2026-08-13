@@ -1,6 +1,6 @@
 # NPC Runtime
 
-framework_module_version: 0.2-development
+framework_module_version: 0.1.1
 load_when: named/relevant NPC participates or acts off-screen
 
 ## NPCs are agents, not dialogue dispensers

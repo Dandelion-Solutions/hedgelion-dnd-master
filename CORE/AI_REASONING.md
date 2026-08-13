@@ -1,6 +1,6 @@
 # AI Reasoning Discipline
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_policy: ALWAYS_DURING_GAMEPLAY
 purpose: prevent LLM-specific distortions before they become narration or canon
 

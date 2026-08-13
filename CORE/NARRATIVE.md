@@ -1,6 +1,6 @@
 # Narration and Pacing
 
-framework_module_version: 0.1-development
+framework_module_version: 0.1.1
 load_when: scene framing, descriptions, transitions, pacing problems, novice onboarding
 
 ## Narration is a projection of resolved state

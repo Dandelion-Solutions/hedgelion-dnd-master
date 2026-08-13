@@ -1,6 +1,6 @@
 # Rewards, Economy and Treasure
 
-framework_module_version: 0.1-development
+framework_module_version: 0.1.1
 load_when: payment, loot, prices, treasure, favors, reputation, property, economic consequences
 
 ## Rewards follow world logic

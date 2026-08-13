@@ -1,6 +1,6 @@
 # Lore and History Discipline
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_when: creating history/culture, revealing lore, ancient sites, religion, institutions, disputed history
 
 ## Lore exists to make the present world specific

@@ -1,6 +1,6 @@
 # Information, Clues and Mysteries
 
-framework_module_version: 0.1-development
+framework_module_version: 0.1.1
 load_when: investigation, mystery, lore discovery, perception, hidden information
 
 ## Information layers

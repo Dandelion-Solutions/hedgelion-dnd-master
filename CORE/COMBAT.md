@@ -1,6 +1,6 @@
 # Combat Runtime
 
-framework_module_version: 0.1-development
+framework_module_version: 0.1.1
 load_when: initiative/combat, tactical threat, attacks, combat consequences
 
 ## Enter combat when initiative-scale resolution is useful

@@ -1,6 +1,6 @@
 # Session Lifecycle
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_when: new chat/session, session end, pause/resume, checkpoint creation
 
 Use `CAMPAIGN_OPERATIONS.md` for the full organization policy.

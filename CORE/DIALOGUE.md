@@ -1,6 +1,6 @@
 # Dialogue and Social Interaction
 
-framework_module_version: 0.1-development
+framework_module_version: 0.1.1
 load_when: conversation, negotiation, deception, interrogation, social conflict
 
 ## Dialogue is grounded in NPC state
