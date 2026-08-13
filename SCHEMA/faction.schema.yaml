@@ -1,0 +1,27 @@
+schema_name: faction
+schema_version: 1
+required: [schema_version, id, status, identity, state]
+fields:
+  schema_version: integer
+  id: string
+  status: enum[active, dissolved, hidden, inactive]
+  identity:
+    name: string
+    aliases: array[string]
+    description: string|null
+    values: array[string]
+  state:
+    goals: array[object]
+    resources: array[string]
+    controlled_location_ids: array[string]
+    known_member_ids: array[string]
+    active_thread_ids: array[string]
+  relations: array[object]
+  knowledge:
+    known_fact_ids: array[string]
+    beliefs: array[object]
+  last_event_id: string|null
+invariants:
+  - faction action requires goals, resources, opportunity and elapsed time
+  - relations describe current state, not full diplomatic history
+  - hidden membership/knowledge must not leak into player-facing narration
