@@ -17,6 +17,14 @@ If creator identity or current GitHub identity cannot be established reliably, d
 
 Repository permission is necessary but not sufficient: collaborator write access does not grant authority over another user's singleplayer campaign.
 
+## Authenticated player binding
+
+For multiplayer gameplay, resolve the currently authenticated GitHub account before accepting a session/player identity. Map its stable GitHub user ID to exactly one active `PLAYER_` record, then use that record's `player_id` as the canonical player identity for the session and semantic events.
+
+The GitHub login is only a mutable authorization/audit label. Do not use it as the actor ID in world state, logs, lore, item provenance or semantic events.
+
+If the authenticated GitHub identity cannot be mapped to an active player binding, repository write permission alone does not authorize gameplay changes.
+
 ## Canonical read order
 
 Project Instructions -> Project launcher -> repository runtime bootstrap -> campaign MANIFEST -> current CORE -> latest checkpoint/hot STATE -> exact WORLD records -> bounded LOG -> current chat -> older chats as recovery evidence only.
@@ -36,6 +44,18 @@ Keep only relevant canonical records plus an internal dirty set of intended chan
 Publish a batch at natural boundaries: scene/combat/travel completion, pause/end, substantial durable bundle, explicit save, risky context/maintenance transition; in multiplayer also after completed race-sensitive shared changes that other sessions may encounter.
 
 One persistence batch should normally be one Git commit containing all files changed by that batch.
+
+## Causal provenance
+
+Preserve player authorship when it is useful to explain a durable world transition, not as blanket telemetry.
+
+A direct player-initiated semantic event records `player_intent.player_id` and the acting `pc_id` when applicable. Use the stable campaign `PLAYER_` ID, never the GitHub login or display name.
+
+Entity records should normally point to the relevant semantic event (`last_event_id`, `established_by_event_id`, or equivalent) instead of duplicating actor labels in every changed file. Resolve a human-readable player name through the `PLAYER_` record only when presenting the history to a person.
+
+For consequences that arise from an earlier player action, preserve the chain with `caused_by_event_ids` when the causal link matters. Do not stamp the player onto unrelated automatic consequences, NPC actions, world processes, maintenance changes, or incidental derived values merely because they were persisted in the same Git commit.
+
+Git commit author is independent transport/audit evidence. It may corroborate who published a batch, but the canonical gameplay attribution is the bound `player_id` recorded in the semantic event.
 
 ## Concurrent HEAD change
 

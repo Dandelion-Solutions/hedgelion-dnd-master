@@ -15,6 +15,24 @@ The creator is determined from Git history: `author.login` of the first campaign
 
 Repository collaborator access alone is not player binding.
 
+## Authenticated player binding
+
+Before multiplayer gameplay writes, resolve the currently authenticated GitHub account and map its stable GitHub user ID to exactly one active `PLAYER_` record. The session `player_id` and controlled `pc_id` must come from that binding, not from self-identification in chat.
+
+Use the stable campaign `PLAYER_` ID inside campaign state and semantic events. GitHub login is a mutable authorization/audit label only and must not be used as the gameplay actor ID.
+
+If repository permission exists but no valid active player binding matches the authenticated GitHub user, gameplay writes are not authorized.
+
+## Action provenance
+
+For a durable transition directly initiated by a player, the semantic event records `player_intent.player_id` and the acting `pc_id` when applicable. This is selective causal provenance, not per-turn telemetry.
+
+Example: if a PC takes a unique amulet from a chest, the transfer event records the stable `PLAYER_` ID and PC ID; the item record points to that event through its normal event reference. Do not copy GitHub usernames or player display names into every changed entity file.
+
+If later consequences materially derive from that action, link them through `caused_by_event_ids`. Do not mark unrelated NPC/world/maintenance changes as player-authored merely because the same player's Git commit persisted them.
+
+Git commit authorship is independent audit evidence for who published the batch; semantic event `player_id` is the canonical gameplay attribution.
+
 ## Reduce conflicts by structure
 
 Keep independently changing environments in separate records. Each active scene has its own scene file and normally references one location plus the PCs/NPCs/items/processes currently relevant there. Separate players in separate scenes should usually touch different files.

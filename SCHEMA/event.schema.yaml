@@ -36,3 +36,7 @@ invariants:
   - record durable causal transition, not full narration/transcript
   - hidden objective facts may exist in delta without being player-visible
   - random/check data is stored when it materially caused durable state
+  - when a durable transition is directly initiated by a player's decision, player_intent.player_id records the stable campaign PLAYER id and player_intent.pc_id records the acting PC when applicable
+  - never use GitHub login as player_intent.player_id; Git identity is authorization/audit evidence, not the canonical gameplay actor
+  - a downstream consequence may omit player_intent when caused_by_event_ids preserves the causal chain to the initiating event
+  - do not attribute NPC, world-process, maintenance, or incidental derived changes to a player merely because that player's Git commit persisted the same batch

@@ -6,6 +6,9 @@ fields:
   player_id: string
   status: enum[active, inactive]
   display_name: string|null
+  github_binding:
+    user_id: integer|null
+    login: string|null
   controlled_pc_ids: array[string]
   visibility:
     private_record_ids: array[string]
@@ -15,5 +18,8 @@ fields:
   last_event_id: string|null
 invariants:
   - store only campaign-relevant identity/binding; do not mirror personal ChatGPT Memory/profile
+  - player_id is the canonical campaign identity used by sessions/events; never use GitHub login as the gameplay actor ID
+  - github_binding.user_id is the stable external authorization binding; github_binding.login is a mutable convenience label and may be refreshed after a GitHub rename
+  - multiplayer gameplay authority requires the currently authenticated GitHub user_id to resolve to exactly one active player_id; never trust a self-declared player_id
   - a PC controller change requires explicit persistent event
   - player binding is not a source for real-world sensitive personal data

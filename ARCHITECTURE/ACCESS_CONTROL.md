@@ -13,6 +13,8 @@ Owner-only operations include switching `singleplayer <-> multiplayer` and any f
 
 In `singleplayer`, the same creator check applies to every gameplay-state write. Other collaborators may read/observe but must not publish gameplay changes, even if repository permissions technically allow push.
 
-In `multiplayer`, repository permission alone is still insufficient: gameplay authority requires explicit player binding. Participants may publish only according to shared-world rules and their bound player/PC context.
+In `multiplayer`, repository permission alone is still insufficient: gameplay authority requires explicit player binding. Resolve the authenticated GitHub account's stable user ID to exactly one active `PLAYER_` record before accepting its `player_id` or controlled PC context.
 
-If creator identity or current GitHub identity cannot be determined reliably, deny owner-only and singleplayer write operations until resolved.
+GitHub login is a mutable authorization/audit label. Campaign state and semantic events use stable `PLAYER_` IDs; a login or display-name change must not change gameplay authorship history.
+
+If creator identity, current GitHub identity, or required multiplayer player binding cannot be determined reliably, deny the corresponding write until resolved.

@@ -15,5 +15,7 @@ fields:
   notes: string|null
 invariants:
   - session metadata is coordination/recovery data, not full chat history
+  - in multiplayer, player_id is resolved from the authenticated GitHub binding and must not be accepted only from user self-identification
+  - pc_id must belong to the resolved player binding when the session acts through a PC
   - base_head_sha is refreshed on resync/new chat
   - session records may be updated only at persistence boundaries, not after every turn

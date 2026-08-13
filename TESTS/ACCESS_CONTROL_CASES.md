@@ -1,6 +1,6 @@
 # Access-control regression cases
 
-These cases validate campaign ownership and branch identity rules.
+These cases validate campaign ownership, authenticated player binding, provenance, and branch identity rules.
 
 ## A01 — Singleplayer foreign writer
 
@@ -49,3 +49,21 @@ Pass: next new campaign uses `campaign/20260813-03`.
 A new campaign has no world name, premise or player count yet.
 
 Pass: branch creation still succeeds using the date-based technical ID; undefined lore is not invented merely to name the branch.
+
+## A09 — Authenticated GitHub user resolves to PLAYER ID
+
+Authenticated GitHub user ID is bound to `PLAYER_02`, whose current display name and GitHub login may later change.
+
+Pass: multiplayer session and semantic events use `PLAYER_02`; mutable login/display names are not used as the canonical gameplay actor.
+
+## A10 — Durable player action preserves provenance
+
+`PLAYER_02` acting through `PC_02` takes a unique amulet from a chest and the transfer is persisted.
+
+Pass: the semantic event records `player_intent.player_id: PLAYER_02` and `pc_id: PC_02`; the item points to the event through its ordinary event reference. Do not duplicate the GitHub username into the item record.
+
+## A11 — Same commit does not imply same actor
+
+A persistence batch by `PLAYER_02` contains the amulet transfer plus an unrelated NPC process update.
+
+Pass: the transfer event is attributed to `PLAYER_02`; the unrelated NPC update is not player-attributed merely because both changes share a Git commit. A consequence is linked to the player action only when an actual causal chain exists.
