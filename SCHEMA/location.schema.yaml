@@ -1,0 +1,29 @@
+schema_name: location
+schema_version: 1
+required: [schema_version, id, status, identity, spatial]
+fields:
+  schema_version: integer
+  id: string
+  status: enum[active, destroyed, inaccessible, unknown]
+  identity:
+    name: string
+    aliases: array[string]
+    type: string|null
+    description: string|null
+  parent_location_id: string|null
+  spatial:
+    connections: array[object]
+    persistent_features: array[object]
+    geometry_ref: string|null
+  state:
+    controlling_faction_id: string|null
+    present_entity_ids: array[string]
+    active_thread_ids: array[string]
+    environmental_state: object
+  known_fact_ids: array[string]
+  secret_ids: array[string]
+  last_event_id: string|null
+invariants:
+  - persistent geometry/connections do not move for narrative convenience
+  - present_entity_ids are only maintained when useful; indexes/state may be authoritative for mobile entities
+  - description is compact; historical events belong in LOG
