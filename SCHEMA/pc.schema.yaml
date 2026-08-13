@@ -1,0 +1,45 @@
+schema_name: player_character
+schema_version: 1
+required: [schema_version, id, status, identity, mechanics, inventory, knowledge]
+fields:
+  schema_version: integer
+  id: string
+  status: enum[provisional, active, inactive, dead, retired]
+  controlled_by_player_id: string|null
+  identity:
+    name: string|null
+    pronouns: string|null
+    description: string|null
+    player_defined_traits: array[string]
+    background_notes: array[string]
+  mechanics:
+    rules_source: string
+    level: integer|null
+    classes: array[object]
+    background: object|null
+    species: object|null
+    abilities: object
+    proficiencies: object
+    defenses: object
+    hp: object
+    conditions: array[object]
+    resources: object
+    spells: object|null
+    features: array[object]
+  location_id: string|null
+  inventory:
+    currency: object
+    item_refs: array[string]
+    mundane_items: array[object]
+  knowledge:
+    known_fact_ids: array[string]
+    belief_records: array[object]
+    discovered_location_ids: array[string]
+  relationships: array[object]
+  active_thread_ids: array[string]
+  last_event_id: string|null
+invariants:
+  - voluntary personality/thoughts/emotions remain player-owned
+  - provisional records are not active campaign canon until explicitly accepted
+  - significant items use ITEM IDs; disposable mundane inventory may be embedded
+  - exact mechanical values come from adopted rules/house rules, not inference
