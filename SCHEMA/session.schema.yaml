@@ -1,0 +1,19 @@
+schema_name: session_record
+schema_version: 1
+required: [schema_version, session_id, status]
+fields:
+  schema_version: integer
+  session_id: string
+  status: enum[active, paused, ended, template]
+  player_id: string|null
+  pc_id: string|null
+  scene_id: string|null
+  base_head_sha: string|null
+  last_published_head_sha: string|null
+  started_at: string|null
+  ended_at: string|null
+  notes: string|null
+invariants:
+  - session metadata is coordination/recovery data, not full chat history
+  - base_head_sha is refreshed on resync/new chat
+  - session records may be updated only at persistence boundaries, not after every turn

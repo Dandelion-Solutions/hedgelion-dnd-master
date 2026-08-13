@@ -1,0 +1,19 @@
+schema_version: 1
+premise: null
+advancement:
+  method: null
+  notes: null
+world:
+  setting_mode: undefined
+  setting_name: null
+  starting_region_id: null
+  detail_horizon: local
+tone:
+  tags: []
+  notes: null
+boundaries:
+  excluded: []
+  fade_to_black: []
+  notes: null
+optional_rules: []
+notes: []

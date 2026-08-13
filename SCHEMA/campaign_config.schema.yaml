@@ -1,0 +1,27 @@
+schema_name: campaign_config
+schema_version: 1
+required: [schema_version, advancement, world, tone, boundaries]
+fields:
+  schema_version: integer
+  premise: string|null
+  advancement:
+    method: string|null
+    notes: string|null
+  world:
+    setting_mode: enum[undefined, original, published, custom]
+    setting_name: string|null
+    starting_region_id: string|null
+    detail_horizon: enum[local, regional, custom]
+  tone:
+    tags: array[string]
+    notes: string|null
+  boundaries:
+    excluded: array[string]
+    fade_to_black: array[string]
+    notes: string|null
+  optional_rules: array[string]
+  notes: array[string]
+invariants:
+  - campaign-specific preferences/boundaries live here, not ChatGPT Memory
+  - null means not yet chosen; do not invent a value
+  - changing a boundary or advancement method requires explicit user decision
