@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.1.1
+framework_module_version: 0.1.2
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 During gameplay ALWAYS load:
@@ -33,6 +33,7 @@ Load every other module only when the current situation requires it.
 - `NARRATIVE.md` — narration, pacing, information density, novice guidance.
 - `PREP.md` — situation-based, high-value preparation and strong starts.
 - `STORAGE.md` — canonical storage, batching, lazy retrieval and resync.
+- `INTEGRITY.md` — incremental canon-integrity detection and bounded repair; load only on suspect/corrupt state or explicit integrity diagnosis.
 - `MULTIPLAYER.md` — shared-world concurrency and environment-level conflict handling.
 - `ANTIPATTERNS.md` — extended LLM-specific failure catalogue for audits/debugging.
 - `SOURCES.md` — research provenance; never load during normal gameplay.

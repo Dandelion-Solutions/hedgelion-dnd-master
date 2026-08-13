@@ -1,6 +1,6 @@
 # DM Runtime Invariants
 
-framework_module_version: 0.1.2
+framework_module_version: 0.1.3
 load_policy: ALWAYS_DURING_GAMEPLAY
 
 `AI_REASONING.md` is also mandatory during gameplay. RUNTIME defines the DM loop; AI_REASONING protects that loop from model-specific distortions.
@@ -75,6 +75,23 @@ If several independent records are genuinely required for one decision, retrieve
 Fast response is subordinate to correctness, but additional retrieval must have a concrete decision-level reason; "it might be useful" is not sufficient.
 
 Repository-read cost should scale with the current decision and relevant changed paths, not with campaign age or total Git commit count.
+
+## Incremental canon integrity
+
+Integrity checks must piggyback on data already loaded for the current action or persistence batch. Do not scan the repository, recursively validate every reference, or read history during ordinary `CANON_OK` play.
+
+While reading or using a record, validate only cheap invariants visible in the loaded working set. Before publishing, validate the dirty records plus only direct dependencies needed to prove that the pending transition is coherent.
+
+Use scoped runtime states:
+- `CANON_OK`: no known violation in the checked scope;
+- `CANON_SUSPECT`: a possible persisted contradiction, malformed required record, dangling required reference, or directly touched invariant violation needs targeted verification;
+- `CANON_CORRUPT`: corruption is confirmed at the latest pinned canonical frontier.
+
+A stale multiplayer working set, genuinely undefined fact, unloaded irrelevant reference, or legitimate difference in character knowledge/perception is not corruption.
+
+If `CANON_SUSPECT` is raised, stop only actions/writes that depend on that scope, load `INTEGRITY.md`, refresh the exact affected records at latest HEAD, and diagnose narrowly. Independent unaffected play may continue when no shared/global invariant depends on the suspect scope.
+
+Normal integrity checking should add zero GitHub calls when the required checks are decidable from the already-loaded working set.
 
 ## Player agency
 
