@@ -1,91 +1,89 @@
 # Hedgelion D&D Master
 
-Persistent AI Dungeon Master runtime for long-running D&D campaigns in ChatGPT Projects.
+Постоянная среда AI Dungeon Master для длительных D&D-кампаний в ChatGPT Projects.
 
-The repository is used as persistent read/write storage for the DM framework, campaign state, world entities, indexes, event logs and checkpoints. ChatGPT Project Sources contain only the small bootstrap needed to locate and load this repository. Campaign facts must not be stored in ChatGPT Memory.
+Репозиторий используется как долговременное read/write-хранилище фреймворка мастера, состояния кампании, сущностей мира, индексов, журнала событий и контрольных точек. В источниках ChatGPT Project хранится только небольшой bootstrap, необходимый для запуска и поиска данных. Игровые факты никогда не должны сохраняться в ChatGPT Memory.
 
-## Installation / setup
+## Установка и настройка
 
-### 1. Create a ChatGPT Project
+### 1. Создайте ChatGPT Project
 
-Create a dedicated Project for the campaign. The Project is the container for game chats and the small startup configuration.
+Создайте отдельный Project для кампании. В нём будут находиться игровые чаты и минимальная стартовая конфигурация.
 
-### 2. Add the Project Instructions
+### 2. Добавьте инструкцию проекта
 
-Copy the complete contents of `INSTALL/PROJECT_INSTRUCTIONS.txt` into the Project Instructions field.
+Скопируйте всё содержимое файла `INSTALL/PROJECT_INSTRUCTIONS.txt` в поле Project Instructions.
 
-These instructions enforce the core runtime rules: no campaign data in ChatGPT Memory, lazy context loading, canonical source priority, and `00_DND_BOOTSTRAP.md` as the only initial entry point.
+Эта инструкция задаёт обязательные правила среды: запрет хранения игровых данных в ChatGPT Memory, динамическую загрузку контекста, приоритет канонических источников и использование `00_DND_BOOTSTRAP.md` как единственной стартовой точки.
 
-### 3. Add the bootstrap to Project Sources
+### 3. Добавьте bootstrap в источники Project
 
-Download `00_DND_BOOTSTRAP.md` from this repository and add it to the ChatGPT Project Sources.
+Скачайте `00_DND_BOOTSTRAP.md` из этого репозитория и добавьте его в Project Sources вашего ChatGPT Project.
 
-Do not add the entire repository to Project Sources. The point of the bootstrap is to keep Project context small and let the agent retrieve only the files needed for the current scene.
+Не добавляйте в Project Sources весь репозиторий. Bootstrap нужен как небольшая карта системы; остальные данные агент должен получать из GitHub только по мере необходимости.
 
-### 4. Connect GitHub to ChatGPT
+### 4. Подключите GitHub к ChatGPT
 
-Connect the GitHub app in ChatGPT. Then grant the ChatGPT GitHub App access to this repository.
+Подключите GitHub в ChatGPT и предоставьте GitHub App, используемому ChatGPT, доступ к репозиторию кампании.
 
-GitHub installation settings:
+Страница настройки установленных GitHub Apps:
 https://github.com/settings/installations/
 
-Open the ChatGPT/OpenAI installation, choose **Configure**, and under **Repository access** either select all repositories or explicitly add the campaign repository.
+Откройте установку ChatGPT/OpenAI, выберите **Configure** и в разделе **Repository access** либо разрешите доступ ко всем репозиториям, либо явно добавьте репозиторий кампании.
 
-The repository must be available with read/write content access. The agent needs to be able to read, create and update files; otherwise campaign state cannot be maintained automatically.
+Для полноценной работы репозиторий должен быть доступен на чтение и запись содержимого. Агенту необходимо уметь читать, создавать и обновлять файлы, иначе автоматическое ведение состояния кампании невозможно.
 
-Never send GitHub passwords, personal access tokens or SSH private keys in the chat.
+Никогда не передавайте в чат пароль GitHub, Personal Access Token или приватный SSH-ключ.
 
-### 5. Start or move campaign chats into the Project
+### 5. Начните кампанию или перенесите игровые чаты в Project
 
-All campaign sessions should live inside the same ChatGPT Project. At the beginning of a new game chat, the agent must read `00_DND_BOOTSTRAP.md` first, then load only the minimal runtime and current state referenced by it.
+Все сессии одной кампании следует вести внутри одного ChatGPT Project. В начале нового игрового чата агент сначала читает `00_DND_BOOTSTRAP.md`, а затем загружает только минимальный runtime и актуальное состояние, на которые тот ссылается.
 
-## Runtime model
+## Как это устроено
 
-Conceptually:
-
-```
+```text
 Project Instructions
         |
         v
 00_DND_BOOTSTRAP.md       (Project Source)
         |
         v
-GitHub repository         (persistent storage)
+GitHub repository         (постоянное хранилище)
    |       |       |
  CORE    STATE    INDEX -> WORLD
    |       |             LOG / CHECKPOINTS
    +-------+--------------+
            |
            v
-     current working set
+     текущий working set
 ```
 
-Project Sources are treated as small, stable startup configuration. GitHub is the persistent database/versioned filesystem. The model context is temporary working memory.
+Project Sources используются как маленькая стабильная стартовая конфигурация. GitHub играет роль постоянного версионируемого хранилища. Контекст модели является временной рабочей памятью.
 
-The working context should grow with the complexity of the current scene, not with the age of the campaign.
+Размер рабочего контекста должен зависеть от сложности текущей сцены, а не от возраста кампании.
 
-## Repository layout
+## Структура репозитория
 
-The bootstrap defines the authoritative layout. Expected top-level areas are:
+Bootstrap задаёт актуальную структуру. Основные области:
 
-- `CORE/` — modular AI Dungeon Master framework.
-- `STATE/` — compact current campaign/player/active state.
-- `INDEX/` — small lookup indexes for entity IDs and storage paths.
-- `WORLD/` — persistent NPC, location, faction, item, lore and secret records.
-- `LOG/` — append-only significant event history, segmented into bounded files.
-- `CHECKPOINTS/` — canonical campaign checkpoints.
-- `INSTALL/` — human-facing setup files.
+- `CORE/` — модульный фреймворк AI Dungeon Master.
+- `STATE/` — компактное текущее состояние кампании, персонажа и активных процессов.
+- `INDEX/` — небольшие индексы для поиска сущностей по ID и пути хранения.
+- `WORLD/` — постоянные записи NPC, локаций, фракций, предметов, лора и секретов.
+- `LOG/` — append-only журнал существенных событий, разделённый на ограниченные сегменты.
+- `CHECKPOINTS/` — канонические контрольные состояния кампании.
+- `INSTALL/` — материалы установки, предназначенные для человека.
 
-Do not load all of these directories at startup. Follow the lazy-loading rules in the Project Instructions and bootstrap.
+При запуске нельзя загружать все эти каталоги. Следует соблюдать правила lazy loading из Project Instructions и Bootstrap.
 
-## Canon and persistence
+## Канон и сохранение состояния
 
-GitHub is the persistent source of campaign data. Significant state changes should be written back to the repository by the agent using the storage protocol defined by the framework.
+GitHub является постоянным хранилищем игровых данных. Существенные изменения состояния агент записывает обратно в репозиторий согласно протоколу хранения, определённому фреймворком.
 
-Git history also provides an audit trail if a later session needs to determine when a fact changed.
+История Git дополнительно даёт аудит изменений: при необходимости можно установить, когда изменился конкретный факт. При этом Git history не заменяет игровой журнал событий.
 
-Previous ChatGPT conversations are supporting evidence, not the campaign database. If a fact cannot be recovered from canonical storage, the agent must not invent it.
+Предыдущие разговоры ChatGPT являются вспомогательным источником, а не базой данных кампании. Если факт невозможно восстановить из канонического хранилища, агент не должен его придумывать.
 
-## Current status
+## Текущее состояние проекта
 
-The storage architecture is being bootstrapped and the Dungeon Master framework is still under development. Until the initial campaign checkpoint is explicitly marked canonical, exploratory scenes from setup/testing chats should not automatically become campaign canon.
+Архитектура хранилища находится на этапе начального развёртывания, а Dungeon Master Framework ещё разрабатывается. Пока начальный checkpoint явно не отмечен как канонический, экспериментальные сцены из установочных и тестовых разговоров не должны автоматически становиться частью канона кампании.
