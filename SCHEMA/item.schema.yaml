@@ -1,0 +1,29 @@
+schema_name: item
+schema_version: 1
+required: [schema_version, id, status, identity, ownership, properties]
+fields:
+  schema_version: integer
+  id: string
+  status: enum[intact, damaged, destroyed, lost, unknown]
+  identity:
+    name: string
+    aliases: array[string]
+    type: string|null
+    description: string|null
+  ownership:
+    owner_entity_id: string|null
+    location_id: string|null
+    container_item_id: string|null
+  properties:
+    mundane: object
+    magical_objective: object|null
+    identified_by_pc_ids: array[string]
+  provenance:
+    origin_fact_ids: array[string]
+    prior_owner_ids: array[string]
+  secret_ids: array[string]
+  last_event_id: string|null
+invariants:
+  - exactly one current placement path should apply when known: owner, location, or container
+  - objective magical properties remain separate from what a PC has identified
+  - ownership/location changes require persistent events when consequential
