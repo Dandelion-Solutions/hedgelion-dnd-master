@@ -1,0 +1,17 @@
+schema_name: lore_fact
+schema_version: 1
+required: [schema_version, id, status, statement]
+fields:
+  schema_version: integer
+  id: string
+  status: enum[canonical, superseded, disputed_in_world]
+  statement: string
+  scope: array[string]
+  established_by_event_id: string|null
+  source_record_ids: array[string]
+  supersedes_id: string|null
+  notes: string|null
+invariants:
+  - this record stores objective canonical fact, not merely a rumor
+  - in-world disputed beliefs belong in NPC/faction knowledge, not as contradictory objective truths
+  - superseding a canon fact requires explicit supported change/retcon decision, never silent rewrite
