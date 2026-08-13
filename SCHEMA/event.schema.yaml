@@ -1,0 +1,38 @@
+schema_name: semantic_event
+schema_version: 1
+required: [schema_version, id, kind, world_order, participants, delta]
+fields:
+  schema_version: integer
+  id: string
+  kind: enum[action, consequence, discovery, transfer, relationship, process, combat, travel, social, maintenance, custom]
+  world_order:
+    time: object|null
+    sequence: integer|null
+    scene_id: string|null
+  location_id: string|null
+  participants: array[string]
+  caused_by_event_ids: array[string]
+  player_intent:
+    player_id: string|null
+    pc_id: string|null
+    summary: string|null
+  resolution:
+    rule: string|null
+    check: object|null
+    random: object|null
+    outcome: string|null
+  delta:
+    created_ids: array[string]
+    changed_ids: array[string]
+    removed_or_destroyed_ids: array[string]
+    factual_changes: array[object]
+    knowledge_changes: array[object]
+  visibility:
+    public_to_player_ids: array[string]
+    private_to_player_ids: array[string]
+  notes: string|null
+invariants:
+  - append-only: existing event meaning is never silently rewritten
+  - record durable causal transition, not full narration/transcript
+  - hidden objective facts may exist in delta without being player-visible
+  - random/check data is stored when it materially caused durable state
