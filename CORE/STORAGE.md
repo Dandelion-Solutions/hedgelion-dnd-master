@@ -37,6 +37,15 @@ Resolve names through compact INDEX files, fetch the exact record and only depen
 
 Prefer separate files for independently changing state: scene, PC, NPC, location, item, faction, thread and bounded session/log records. `CAMPAIGN/STATE/CURRENT.yaml` is a compact directory of active scene refs/frontier, not a transcript. Avoid global-file writes when a local record is sufficient.
 
+## Consistency tiers
+
+Classify gameplay information by durability:
+- `HARD`: a canonical commitment whose loss would make resumed world state materially wrong or incomplete; publishing it is itself a persistence boundary and must happen after the current logical action completes;
+- `SOFT`: durable state that may safely remain in the dirty working set briefly and be published at the next boundary or safety limit;
+- `EPHEMERAL`: current-chat context only; it does not enter campaign storage unless later play promotes it to durable state.
+
+Published `HARD` or `SOFT` state belongs to the GitHub canon frontier. Later chat edits, branching or omission do not erase it.
+
 ## Working set and persistence
 
 Keep only relevant canonical records plus an internal dirty set of intended changed paths/entity IDs/scenes/processes and durable facts not yet published. Do not commit after every roll or action.

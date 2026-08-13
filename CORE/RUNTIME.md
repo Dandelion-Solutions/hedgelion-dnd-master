@@ -16,10 +16,19 @@ STATE -> INTENT -> RULES -> RANDOMNESS -> CONSEQUENCES -> PERSISTENCE -> NARRATI
 3. RULES: determine whether the action is automatic, impossible, uncertain, or governed by an exact mechanic.
 4. RANDOMNESS: when needed, fix stakes/mechanics before using actual RNG.
 5. CONSEQUENCES: derive changes from state + action + rules + random result.
-6. PERSISTENCE: decide which changes are durable and when the next natural batch boundary occurs.
+6. PERSISTENCE: classify resulting information as `HARD`, `SOFT`, or `EPHEMERAL`; decide what must be published now and what may remain in the working set.
 7. NARRATION: present the resulting situation through the PC's legitimate information channel.
 
 Narration is last. It may not rewrite earlier layers for dramatic convenience.
+
+## Persistence durability
+
+Use three durability levels during play:
+- `HARD`: a durable canonical commitment whose loss would make a resumed game materially wrong or incomplete. The completion of that logical action is itself a persistence boundary; publish the relevant batch before continuing ordinary play.
+- `SOFT`: durable state that may remain in the dirty working set and be batched until the next natural boundary or safety limit.
+- `EPHEMERAL`: current-chat context only; do not persist unless later play promotes it to durable state.
+
+Do not wait for a user-visible pause or session-ending signal before publishing `HARD` changes; the user may leave without warning.
 
 ## Gameplay fast path
 
