@@ -1,0 +1,27 @@
+schema_name: thread
+schema_version: 1
+required: [schema_version, id, status, kind, state]
+fields:
+  schema_version: integer
+  id: string
+  status: enum[active, paused, resolved, failed, obsolete]
+  kind: enum[threat, goal, project, countdown, investigation, pursuit, custom]
+  owner_entity_id: string|null
+  objective: string
+  state:
+    stage: string|null
+    progress: object|null
+    next_development: string|null
+    advancement_conditions: array[object]
+    deadline: object|null
+    resources: array[string]
+  affected_entity_ids: array[string]
+  visibility:
+    known_by_pc_ids: array[string]
+    public: boolean
+  created_event_id: string|null
+  last_event_id: string|null
+invariants:
+  - advancement requires an established cause/condition
+  - clocks/progress are abstractions with predefined meaning, not arbitrary drama meters
+  - dormant processes are not simulated continuously without a trigger
