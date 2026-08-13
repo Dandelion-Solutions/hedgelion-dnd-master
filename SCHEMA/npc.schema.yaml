@@ -1,0 +1,35 @@
+schema_name: npc
+schema_version: 1
+required: [schema_version, id, tier, status, identity, state, knowledge]
+fields:
+  schema_version: integer
+  id: string
+  tier: enum[incidental, supporting, significant]
+  status: enum[alive, dead, missing, unknown, inactive]
+  identity:
+    name: string
+    aliases: array[string]
+    description: string|null
+    role: string|null
+    durable_traits: array[string]
+    voice_profile: object|null
+  state:
+    location_id: string|null
+    current_goal: string|null
+    current_activity: string|null
+    resources: array[string]
+    conditions: array[object]
+    next_intended_action: object|null
+  knowledge:
+    known_fact_ids: array[string]
+    beliefs: array[object]
+    suspicions: array[object]
+  relationships: array[object]
+  faction_ids: array[string]
+  active_thread_ids: array[string]
+  last_event_id: string|null
+invariants:
+  - knowledge and objective truth are distinct
+  - relationship changes require causal events
+  - durable identity changes only through established development
+  - tier controls storage detail; do not overmodel incidental NPCs
