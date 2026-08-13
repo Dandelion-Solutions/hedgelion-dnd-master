@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_version: 0.3-development
+framework_version: 0.1.0
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 Load `RUNTIME.md` for every gameplay turn. Load other modules only when required.
@@ -11,7 +11,7 @@ Load `RUNTIME.md` for every gameplay turn. Load other modules only when required
 - `SESSION.md` — session start/resume/end/checkpoints.
 - `CHARACTER.md` — PC creation and novice onboarding.
 - `ADJUDICATION.md` — checks, uncertainty, consequences, temporary rulings.
-- `RANDOMNESS.md` — dice/randomness integrity.
+- `RANDOMNESS.md` — actual RNG and dice integrity.
 - `INFORMATION.md` — clues, mysteries, perception, knowledge boundaries.
 - `NPC.md` — NPC agency, knowledge, relationships, personality continuity.
 - `DIALOGUE.md` — dialogue and social interaction.
