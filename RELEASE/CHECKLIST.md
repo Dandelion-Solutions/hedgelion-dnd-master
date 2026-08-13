@@ -25,16 +25,6 @@
 - [x] Lore/history имеет truth-vs-belief и exposition-drip discipline.
 - [x] Prep является provisional и disposable, а не скрытым canon.
 
-## Framework
-- [x] Player agency и canon boundaries.
-- [x] Adjudication/randomness/failure rules.
-- [x] NPC/dialogue/information/mystery rules.
-- [x] Exploration/encounters/combat/magic rules.
-- [x] Prep/narrative/world generation/lore.
-- [x] Processes/rewards/advancement/safety.
-- [x] Storage/multiplayer conflict rules.
-- [x] AI anti-patterns + always-on AI reasoning.
-
 ## Persistent data
 - [x] Полный пустой `CAMPAIGN/` skeleton находится в `main`.
 - [x] Manifest/config/current/scene/session/player/PC/NPC/location/faction/item/lore/secret/thread/event/checkpoint/index schemas существуют.
@@ -47,6 +37,14 @@
 - [x] Реальный RNG обязателен для DM dice.
 - [x] SRD attribution присутствует.
 
+## Installation package
+- [x] Всё, что нужно для установки, находится в `INSTALL/`.
+- [x] `INSTALL/README.md` содержит полную пользовательскую инструкцию.
+- [x] `INSTALL/PROJECT_INSTRUCTIONS.txt` короче лимита ChatGPT Project 5000 символов (текущая версия: 3288 символов).
+- [x] `INSTALL/00_DND_BOOTSTRAP.md` является стабильным Project Source launcher.
+- [x] Корневой `README.md` является описанием/презентацией проекта, а не установочной инструкцией.
+- [x] В корне больше нет установочного bootstrap-файла.
+
 ## Regression/integration
 - [x] T01–T30 проверены инспекцией Framework; см. `TESTS/PRE_RELEASE_AUDIT_0.1.0.md`.
 - [x] GitHub RW из обычного Project chat проверен.
@@ -55,8 +53,8 @@
 - [ ] Создание первой production campaign branch — выполнить после engine tag.
 
 ## Release
-- [x] README/INSTALL актуальны и написаны для пользователя по-русски.
+- [x] Пользовательская документация написана по-русски.
 - [x] В `main` нет данных конкретной кампании.
 - [x] Experimental tavern/wizard content не является engine canon.
 - [x] `ENGINE_VERSION.yaml` = 0.1.0.
-- [ ] Создать tag `engine-v0.1.0` на НОВОМ финальном release SHA (старый SHA 9cb19a7 больше не использовать).
+- [ ] Создать tag `engine-v0.1.0` на текущем финальном release HEAD.
