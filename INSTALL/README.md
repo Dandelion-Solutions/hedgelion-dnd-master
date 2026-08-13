@@ -1,65 +1,74 @@
 # Установка D&D Master by Hedgelion
 
 Для подключения к ChatGPT Project нужны два файла:
+
 - `PROJECT_INSTRUCTIONS.txt` — вставить в Project Instructions;
 - `00_DND_BOOTSTRAP.md` — добавить в Project Sources.
 
-Остальная система и игровой канон остаются в GitHub.
+Остальная система и игровые кампании остаются в GitHub.
 
 ## 1. Создайте ChatGPT Project
 
-Рекомендуется выбрать **«Память только в проекте» / Project-only memory**. Это изолирует проект от памяти и чатов за его пределами, но разговоры внутри одного Project всё ещё могут использовать друг друга как контекст.
+Создайте отдельный Project для D&D Master.
 
-Поэтому Project memory не считается игровым хранилищем. Канон всегда берётся из GitHub campaign branch. Один ChatGPT Project может обслуживать несколько независимых кампаний; отдельный Project на кампанию — только дополнительная опция пользователя.
+Рекомендуется выбрать **«Память только в проекте» / Project-only memory**. Это изолирует Project от памяти и чатов за его пределами. При этом разговоры внутри одного Project всё ещё могут использовать друг друга как контекст, поэтому игровым каноном они не считаются.
 
-В Project-only режиме File Library может быть отключена. Это не мешает D&D Master: bootstrap загружается прямо в Project Sources, а постоянное чтение и запись выполняются через GitHub app.
+Один ChatGPT Project может обслуживать несколько независимых кампаний. Если позже захочется дополнительной изоляции, отдельный Project для отдельной игры тоже допустим.
+
+В Project-only режиме File Library может быть недоступна. Для D&D Master она не требуется.
 
 ## 2. Добавьте Project Instructions
 
-Скопируйте содержимое `INSTALL/PROJECT_INSTRUCTIONS.txt` в поле Project Instructions. Файл специально короче лимита 5000 символов.
+Откройте `INSTALL/PROJECT_INSTRUCTIONS.txt`, скопируйте содержимое целиком и вставьте его в Project Instructions.
 
-Не удаляйте запрет использовать ChatGPT Memory и старые чаты как канон даже при Project-only memory.
+Не удаляйте запрет использовать ChatGPT Memory и старые чаты как игровой канон.
 
 ## 3. Добавьте bootstrap
 
-Скачайте `INSTALL/00_DND_BOOTSTRAP.md` и добавьте его в Project Sources как `00_DND_BOOTSTRAP.md`.
+Добавьте `INSTALL/00_DND_BOOTSTRAP.md` в Project Sources как `00_DND_BOOTSTRAP.md`.
 
-Не добавляйте в Project Sources весь репозиторий: launcher существует именно для lazy loading.
+Другие файлы репозитория в Project Sources добавлять не нужно: Мастер сам получает необходимые данные из GitHub по мере игры.
 
 ## 4. Подключите GitHub
 
-Подключите GitHub app в ChatGPT и выдайте ему read/write доступ к repository.
+Подключите GitHub app к ChatGPT и разрешите ему доступ к репозиторию D&D Master.
 
 Настройки установленных GitHub Apps:
 https://github.com/settings/installations/
 
 Откройте ChatGPT/OpenAI → **Configure** → **Repository access** и разрешите нужный repository.
 
-Никогда не передавайте в чат GitHub password, Personal Access Token или SSH private key.
+Для полноценной игры Мастеру нужен доступ на чтение и запись.
+
+Никогда не передавайте в чат пароль GitHub, Personal Access Token или приватный SSH-ключ.
 
 ## 5. Проверьте подключение
 
-Попросите мастера прочитать `CORE/BOOTSTRAP_RUNTIME.md` и проверить текущий `main` HEAD.
+Создайте чат внутри Project и попросите Мастера проверить подключение к D&D Master в GitHub.
+
+Если репозиторий недоступен, проверьте `Repository access` в настройках GitHub Apps.
 
 ## 6. Начните игру
 
-Если активная кампания не выбрана, мастер найдёт `campaign/*`, прочитает только их `CAMPAIGN/MANIFEST.yaml` и предложит продолжить существующую игру или создать новую.
+Создайте **новый чат в этом Project**.
 
-Новая ветка получает технический ID по дате: `campaign/YYYYMMDD`; если в этот день ветка уже существует — `campaign/YYYYMMDD-02`, затем `-03` и т. д. Лор, имя мира, режим и игроки в имени ветки не кодируются.
+Можно просто написать, например:
+
+- **«Начинаем новую игру»** — чтобы создать новую кампанию;
+- **«Покажи мои игровые сессии»** — чтобы увидеть существующие игры и выбрать, какую продолжить.
+
+Дальше Мастер сам найдёт нужную кампанию или проведёт через создание новой.
 
 ## Игра с друзьями
 
-Владелец repository добавляет друзей как GitHub collaborators. Каждый подключает собственный GitHub account к своему ChatGPT. Текущая архитектура исходит из того, что commits разных игроков атрибутируются их разным GitHub users.
+Для общей игры добавьте друга как collaborator к репозиторию. Друг подключает свой GitHub account к своему ChatGPT Project с теми же Project Instructions и bootstrap.
 
-Создатель кампании определяется по Git history как `author.login` первого campaign-specific initialization commit. Отдельное owner-поле в `MANIFEST` не хранится.
-
-В `singleplayer` только создатель может публиковать gameplay changes; остальные collaborators могут наблюдать, но не вмешиваться. Только создатель может переключать `singleplayer ↔ multiplayer`. В `multiplayer` явно связанные игроки могут менять общий мир по shared-world правилам.
+В `singleplayer` другие пользователи могут наблюдать за кампанией, но не вмешиваться. Создатель кампании может открыть её для совместной игры, после чего подключённые игроки смогут действовать в одном общем мире со своих ChatGPT.
 
 ## Где что хранится
 
-- `main` — общий engine и пустой campaign skeleton;
-- `campaign/YYYYMMDD[-NN]` — конкретная игра;
-- Project Sources — только bootstrap;
-- ChatGPT Memory / File Library / старые чаты — не канон.
-
-Launcher задуман как стабильный файл и обычно не требует обновления при изменениях CORE.
+- `Project Instructions` — основные правила подключения и работы с каноном;
+- `00_DND_BOOTSTRAP.md` в Project Sources — маленькая точка входа к D&D Master;
+- `main` в GitHub — сам Мастер: правила, логика и пустая основа новой кампании;
+- `campaign/*` — отдельные игровые миры и их состояние;
+- ChatGPT Memory, File Library и старые чаты — не источник игрового канона.
