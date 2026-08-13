@@ -5,4 +5,7 @@ schema_version: 2
 ai_reasoning_revision: 1
 gm_craft_revision: 1
 install_layout_revision: 1
+branch_id_revision: 1
+access_control_revision: 1
+presentation_revision: 1
 recommended_tag: engine-v0.1.0

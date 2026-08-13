@@ -3,9 +3,17 @@
 framework_module_version: 0.2-development
 load_when: CAMPAIGN/MANIFEST mode == multiplayer OR explicit multiplayer management
 
-## Mode
+## Mode and ownership
 
-Multiplayer is enabled/disabled only explicitly. Multiple chats/players share one campaign branch and objective world, while each PC/player has separate knowledge.
+Multiplayer is enabled or disabled only explicitly by the campaign creator.
+
+The creator is determined from Git history: `author.login` of the first campaign-specific initialization commit after branch creation from the engine release. Before changing mode, compare that login with the currently authenticated GitHub user. If they differ, deny the mode change.
+
+`singleplayer` means only that creator may publish gameplay commits to the campaign branch. Other collaborators may observe/read the campaign but must not alter game state.
+
+`multiplayer` permits explicitly bound players to publish gameplay commits according to the rules below. Multiple chats/players share one campaign branch and objective world, while each PC/player has separate knowledge.
+
+Repository collaborator access alone is not player binding.
 
 ## Reduce conflicts by structure
 
@@ -29,7 +37,7 @@ Compare external changes since the working-set base HEAD with the local dirty se
 
 If they are independent, incorporate the new HEAD and keep the local outcome.
 
-If they touch the same shared file but independent data (for example, separate index entries), merge structurally.
+If they touch the same shared file but independent data, merge structurally.
 
 If they touch the same world entity or mutually dependent environment, fetch the latest state and evaluate logical compatibility.
 
@@ -39,17 +47,17 @@ Never resolve a semantic conflict by blind text merge.
 
 If two actions cannot both be true, already-published canon constrains the later resolution when chronology supports that ordering.
 
-Example: ITEM_004 is unique and was in CHEST_009. Player A's published batch moves ITEM_004 to PC_A. Player B later tries to take ITEM_004 based on stale scene state. After resync, the chest no longer contains it; resolve Player B's action from that fact rather than overwriting ownership.
+Example: a unique item is removed from a chest by one player's published action. Another player later tries to take it based on stale scene state. After resync, resolve the second action from the fact that the chest no longer contains the item; do not overwrite ownership.
 
-If the PC can observe the consequence, narrate it naturally (for example, the chest is empty). Identify the other character only if the PC has an in-world basis to know who acted; Git author/session metadata is DM evidence, not automatic character knowledge.
+If the PC can observe the consequence, narrate it naturally. Identify another character only if the PC has an in-world basis to know who acted; Git author/session metadata is DM evidence, not automatic character knowledge.
 
-If two actions are fictionally simultaneous and commit order alone would arbitrarily decide a contested outcome, adjudicate the interaction under game rules/world timing rather than declaring the first Git commit the winner solely for technical reasons.
+If two actions are fictionally simultaneous and commit order alone would arbitrarily decide a contested outcome, adjudicate under game rules/world timing rather than letting Git order decide the fiction.
 
 ## Publish boundaries
 
 Private/local changes may be batched until a natural persistence boundary.
 
-Publish race-sensitive shared changes promptly after logical completion: unique object ownership/destruction, persistent shared location changes, shared NPC relocation/death, global process advancement, access/lock/door state, scarce shared resource consumption, etc.
+Publish race-sensitive shared changes promptly after logical completion: unique object ownership/destruction, persistent shared-location changes, shared NPC relocation/death, global process advancement, access/lock/door state, scarce shared resource consumption, etc.
 
 This is a visibility requirement for the shared world, not a requirement to commit every turn.
 

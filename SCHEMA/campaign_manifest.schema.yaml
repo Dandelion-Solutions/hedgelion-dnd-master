@@ -1,9 +1,8 @@
 schema_name: campaign_manifest
-schema_version: 1
+schema_version: 2
 required:
   - schema_version
   - campaign_id
-  - campaign_name
   - branch
   - status
   - mode
@@ -12,7 +11,7 @@ required:
 fields:
   schema_version: integer
   campaign_id: string
-  campaign_name: string
+  campaign_name: string|null
   branch: string
   status: enum[initializing, active, paused, archived]
   mode: enum[singleplayer, multiplayer]
@@ -30,8 +29,8 @@ fields:
     event_log_root: string
     checkpoints_root: string
   sync:
-    atomic_turn_commits: boolean
     force_push_allowed: boolean
+    persistence_policy: enum[batched]
   world_time:
     calendar_id: string|null
     frontier: object|null
@@ -41,7 +40,10 @@ fields:
   last_event_id: string|null
   created_at: string
 invariants:
-  - branch MUST start with 'campaign/'
+  - branch MUST match campaign/YYYYMMDD or campaign/YYYYMMDD-NN where NN >= 02
+  - branch name MUST NOT encode lore, mode, player count or owner
   - force_push_allowed MUST be false for live campaigns
-  - mode changes only by explicit user/admin instruction
+  - campaign owner is derived from Git history and MUST NOT be duplicated in MANIFEST
+  - mode changes are owner-only
+  - in singleplayer all gameplay writes are creator-only
   - base_tag/base_sha identify the engine release from which campaign was created
