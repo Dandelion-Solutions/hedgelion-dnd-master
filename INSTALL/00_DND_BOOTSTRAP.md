@@ -1,6 +1,6 @@
 # D&D Master Project Launcher
 
-launcher_version: 3
+launcher_version: 4
 repository: dkolyada/hedgelion-dnd-master
 engine_branch: main
 runtime_bootstrap: CORE/BOOTSTRAP_RUNTIME.md
@@ -15,17 +15,26 @@ CRITICAL MEMORY RULE: never save campaign/world/character facts to ChatGPT Memor
 
 The first normal attempt to access the repository is also the installation check. Do not run a separate setup audit when repository access already works.
 
-Attempt a non-mutating repository metadata/read request for `dkolyada/hedgelion-dnd-master`.
+If GitHub is connected, obtain the authenticated GitHub login first. Then attempt a non-mutating repository metadata/read request for `dkolyada/hedgelion-dnd-master` and inspect repository/collaborator permission when available.
 
-- If the repository is readable and the connector reports write/push permission, skip the connection wizard completely and continue to Startup.
-- If the repository is readable but write/push permission is absent, explain briefly that the current campaign architecture requires writable persistent storage and stop before gameplay writes. Do not invent a fork/clone fallback unless current repository runtime explicitly defines one.
-- If GitHub is unavailable, not connected, or the repository cannot be read, enter the Connection Wizard below.
+- readable + write/push: skip the connection wizard completely and continue to Startup;
+- readable but not writable: continue only with the collaborator-access step below;
+- GitHub unavailable/not connected: enter the Connection Wizard at step 1;
+- GitHub connected but repository unreadable: enter the Connection Wizard at step 2.
 
 Never test write access by creating, editing, or deleting a file.
 
+## Responsibility boundary
+
+This wizard configures the **guest user's** ChatGPT and GitHub access only.
+
+The guest-side Master must never attempt to add itself/the guest as a collaborator, modify repository-owner settings, or instruct the guest how to administer the owner's repository. Repository access is granted separately by the repository owner.
+
+When the authenticated GitHub login is known and repository access is missing or insufficient, show that login to the guest and ask them to pass it to the repository owner through whatever communication channel they normally use. The owner handles the invitation/permission change independently.
+
 ## Connection Wizard
 
-Use this only when the repository access gate fails. Guide the user through **one unresolved step at a time**. Keep instructions short and operational; do not explain connector architecture unless asked. After each completed step, retry repository access before showing another step.
+Use this only when the repository access gate fails. Guide the user through **one unresolved step at a time**. Keep instructions short and operational; do not explain connector architecture unless asked. After each completed step, retry only the relevant check before showing another step.
 
 ### 1. Connect GitHub to ChatGPT
 
@@ -39,23 +48,29 @@ https://help.openai.com/en/articles/11145903-connecting-github-to-chatgpt
 
 If GitHub is unavailable or Connect is disabled, say that app availability may depend on the ChatGPT plan/workspace and stop until it is enabled.
 
-After the user completes authorization, retry repository access.
+After authorization succeeds, obtain the authenticated GitHub login and tell the user briefly: `Connected GitHub account: <login>`.
 
-### 2. Verify GitHub account access to the repository
+Then retry repository access. If it is still unavailable, continue to step 2.
 
-Ask the user to open:
-https://github.com/dkolyada/hedgelion-dnd-master
+### 2. Request access from the repository owner
 
-If the repository opens for that GitHub account, continue to step 3.
+If the repository is unreadable or the current permission is insufficient, use the authenticated login obtained from the connector.
 
-If it does not open, ask the user to send their GitHub username to the repository owner and have the owner invite them as a collaborator. The owner can manage access here:
-https://github.com/dkolyada/hedgelion-dnd-master/settings/access
+Tell the guest, in this form and without owner-side technical instructions:
 
-After the invitation is accepted, retry repository access.
+`Your GitHub username is <login>. Send this username to the repository owner and ask them to add you to the D&D Master repository. Accept the GitHub invitation when it arrives, then return here.`
+
+If the login cannot be obtained automatically, ask the user for their GitHub username only as a fallback.
+
+Do not tell the guest how the owner should configure collaborators. Do not attempt to grant access yourself.
+
+After the guest confirms that the invitation was accepted or permission was changed, retry repository access and permission.
 
 ### 3. Allow the ChatGPT GitHub App to access this repository
 
-If the user can open the repository in GitHub but ChatGPT still cannot read it, ask them to open ChatGPT **Settings → Apps → GitHub → Choose repositories / Configure Repositories**, or open GitHub App installations directly:
+Use this step only if the user's GitHub account can access the repository but ChatGPT still cannot read it.
+
+Ask them to open ChatGPT **Settings → Apps → GitHub → Choose repositories / Configure Repositories**, or open GitHub App installations directly:
 https://github.com/settings/installations
 
 Select the ChatGPT/OpenAI GitHub App, choose **Configure**, allow access to `dkolyada/hedgelion-dnd-master`, and save.
@@ -64,11 +79,11 @@ Repository visibility in ChatGPT can take a few minutes to update. Retry access 
 
 ### 4. Confirm usable access
 
-Once repository metadata/read succeeds, inspect connector permissions when available.
+Once repository metadata/read succeeds, inspect connector/repository permission when available.
 
 - read + write/push: setup is complete; continue immediately to Startup;
-- read only: current shared-repository gameplay cannot persist changes; stop and state this briefly;
-- still unreadable: report exactly which of the verified stages succeeded and which stage still fails. Do not restart the wizard from step 1.
+- read only/insufficient: show the authenticated GitHub login and return to step 2 so the guest can ask the owner for the required access;
+- still unreadable: report exactly which guest-side stages succeeded and which stage still fails. Do not restart the wizard from step 1.
 
 ## Startup
 
