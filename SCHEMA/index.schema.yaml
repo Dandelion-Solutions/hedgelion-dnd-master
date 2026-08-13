@@ -1,0 +1,22 @@
+schema_name: entity_index
+schema_version: 1
+required: [schema_version, entity_type, entries]
+fields:
+  schema_version: integer
+  entity_type: string
+  entries:
+    type: array
+    item:
+      id: string
+      name: string|null
+      aliases: array[string]
+      status: string|null
+      path: string
+      parent_id: string|null
+      tags: array[string]
+      last_event_id: string|null
+invariants:
+  - index is a routing structure, not a duplicate entity database
+  - keep entries compact enough to search without loading entity bodies
+  - update affected index entry in the same atomic commit as canonical entity changes
+  - aliases are lookup aids and do not redefine canonical identity
