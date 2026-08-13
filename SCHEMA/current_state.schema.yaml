@@ -1,30 +1,24 @@
 schema_name: current_state
-schema_version: 1
-required: [schema_version, campaign_id, world_time, scenes, active_threads]
+schema_version: 2
+required: [schema_version, campaign_id, world_time, active_scenes, active_threads]
 fields:
   schema_version: integer
-  campaign_id: string
+  campaign_id: string|null
   world_time:
     frontier: object|null
     display: string|null
-  scenes:
+  active_scenes:
     type: array
     item:
       scene_id: string
-      status: enum[active, suspended]
-      location_id: string|null
-      local_time: object|null
-      participant_ids: array[string]
+      path: string
       player_character_ids: array[string]
-      transient_state_path: string|null
-      summary: string
   active_threads: array[string]
-  pending_consequences: array[object]
-  session_runtime:
-    last_persisted_event_id: string|null
-    last_checkpoint_id: string|null
+  pending_global_consequences: array[object]
+  last_checkpoint_id: string|null
+  last_event_id: string|null
 invariants:
-  - keep this record compact; biographies/history belong elsewhere
-  - multiplayer may have multiple active scenes
-  - scene summary contains actionable current state, not literary recap
-  - pending consequences must reference a canonical cause when persistent
+  - keep this record compact and infrequently changing
+  - local scene details belong in separate SCENES files
+  - multiplayer may have multiple independent active scenes
+  - biographies/history belong elsewhere

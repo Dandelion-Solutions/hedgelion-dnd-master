@@ -1,29 +1,33 @@
 # CORE Index
 
-framework_version: 0.1-development
+framework_version: 0.2-development
 rules_baseline: D&D 2024 / SRD 5.2.1
 
-Load `RUNTIME.md` for every gameplay turn. Load other modules only when the current task requires them.
+Load `RUNTIME.md` for every gameplay turn. Load other modules only when required.
 
-- `RUNTIME.md` — invariant turn pipeline, player agency, canon boundaries. ALWAYS during gameplay.
-- `ADJUDICATION.md` — action resolution, checks, DC policy, consequences, failure handling.
-- `RANDOMNESS.md` — dice/randomness integrity, hidden/public rolls, no post-roll fudging.
-- `INFORMATION.md` — clues, mysteries, perception, knowledge boundaries, secrets.
-- `NPC.md` — NPC agency, goals, knowledge, relationships, long-term personality coherence.
-- `DIALOGUE.md` — execution of conversations and social interaction.
-- `EXPLORATION.md` — locations, investigation, travel, time, resources and discovery.
-- `COMBAT.md` — combat runtime, initiative, tactical state and consequences.
-- `MAGIC.md` — spell/magic adjudication and unknown magical phenomena.
-- `NARRATIVE.md` — narration, pacing, descriptions, information density and novice onboarding.
-- `PREP.md` — situation-based preparation, strong starts, potential scenes, secrets/clues.
-- `STORAGE.md` — canonical state model, lazy retrieval, event log and atomic persistence.
-- `MULTIPLAYER.md` — shared-world concurrency, synchronization and simultaneous actors.
-- `ANTIPATTERNS.md` — LLM-specific failure modes and self-checks.
-- `SOURCES.md` — provenance/research notes; never load during normal gameplay.
+- `BOOTSTRAP_RUNTIME.md` — campaign discovery/startup and runtime routing.
+- `RUNTIME.md` — invariant DM turn pipeline and agency/canon boundaries. ALWAYS during gameplay.
+- `SESSION.md` — session start/resume/end/checkpoints.
+- `CHARACTER.md` — PC creation and novice onboarding.
+- `ADJUDICATION.md` — checks, uncertainty, consequences, temporary rulings.
+- `RANDOMNESS.md` — dice/randomness integrity.
+- `INFORMATION.md` — clues, mysteries, perception, knowledge boundaries.
+- `NPC.md` — NPC agency, knowledge, relationships, personality continuity.
+- `DIALOGUE.md` — dialogue and social interaction.
+- `EXPLORATION.md` — locations, investigation, travel, time, resources.
+- `COMBAT.md` — combat runtime.
+- `MAGIC.md` — spell/magic adjudication.
+- `PROCESSES.md` — long-running threats, projects, clocks and off-screen change.
+- `NARRATIVE.md` — narration, pacing, information density, novice guidance.
+- `PREP.md` — situation-based preparation and strong starts.
+- `STORAGE.md` — canonical storage, batching, lazy retrieval and resync.
+- `MULTIPLAYER.md` — shared-world concurrency and environment-level conflict handling.
+- `ANTIPATTERNS.md` — LLM-specific failure modes.
+- `SOURCES.md` — research provenance; never load during normal gameplay.
 
 Rules lookup policy:
-1. Use established campaign house rules first.
-2. Use stored character/entity mechanics when present.
-3. Use SRD 5.2.1 / official D&D 2024 rules as baseline.
-4. When a material rule is uncertain and no local canonical rule exists, verify from an official source rather than inventing a rule.
-5. A temporary ruling must be recorded as temporary if it materially affects future consistency.
+1. established campaign house rules;
+2. stored character/entity mechanics;
+3. local/official D&D 2024 / SRD 5.2.1 baseline;
+4. verify material uncertainty from an official source rather than inventing a rule;
+5. persist consequential temporary/permanent rulings when future consistency requires it.

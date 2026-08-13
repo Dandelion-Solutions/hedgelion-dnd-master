@@ -1,0 +1,30 @@
+schema_version: 1
+campaign_id: null
+campaign_name: null
+branch: null
+status: uninitialized
+mode: singleplayer
+engine:
+  base_tag: null
+  base_sha: null
+  integrated_main_sha: null
+rules:
+  baseline: D&D 2024 / SRD 5.2.1
+  house_rules_path: CAMPAIGN/RULES/HOUSE_RULES.md
+storage:
+  state_root: CAMPAIGN/STATE
+  index_root: CAMPAIGN/INDEX
+  world_root: CAMPAIGN/WORLD
+  event_log_root: CAMPAIGN/LOG
+  checkpoints_root: CAMPAIGN/CHECKPOINTS
+sync:
+  force_push_allowed: false
+  persistence_policy: batched
+world_time:
+  calendar_id: null
+  frontier: null
+players:
+  player_ids: []
+last_checkpoint_id: null
+last_event_id: null
+created_at: null

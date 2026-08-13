@@ -1,140 +1,97 @@
 # Canonical Storage and Persistence
 
-framework_module_version: 0.1-development
-load_when: session startup, state retrieval, any durable state change, canon conflict
+framework_module_version: 0.2-development
+load_when: session startup, state retrieval, persistence boundary, resync, canon conflict
 
-## Storage roles
+## Roles
 
-`main` stores shared engine/framework data only.
+`main` stores shared engine/framework data plus an empty `CAMPAIGN/` skeleton. Actual campaign branches fill that skeleton with game-specific data.
 
-Each campaign branch stores game-specific data only under `CAMPAIGN/`.
-
-Chat context is temporary working memory, not canonical storage. ChatGPT Memory is never campaign storage.
+Chat context is temporary working memory. ChatGPT Memory is never campaign storage.
 
 ## Canonical read order
 
-For gameplay:
-1. Project Instructions / launcher constraints;
-2. repository bootstrap;
-3. active `CAMPAIGN/MANIFEST.yaml`;
-4. current framework modules;
-5. latest checkpoint pointer + hot STATE;
-6. exact WORLD entity records;
-7. bounded semantic LOG segments;
-8. current chat;
-9. older chats only as recovery evidence.
+Project Instructions -> Project launcher -> repository runtime bootstrap -> campaign MANIFEST -> current CORE -> latest checkpoint/hot STATE -> exact WORLD records -> bounded LOG -> current chat -> older chats as recovery evidence only.
 
-Never use a lower-priority source to silently overwrite a higher-priority canonical fact.
+## Stable IDs and lazy retrieval
 
-## Stable IDs
+Use stable entity IDs. Resolve name/reference through the relevant compact INDEX, then fetch the exact record and only dependencies required for the current decision. Never recursively load the entity graph.
 
-Every significant persistent entity/event receives a stable ID independent of display name.
+## Environment-level partitioning
 
-Recommended prefixes:
-- `PC_` player character;
-- `NPC_` nonplayer character;
-- `LOC_` location;
-- `FAC_` faction;
-- `ITEM_` significant item;
-- `LORE_` stable world fact;
-- `SECRET_` hidden objective fact/process;
-- `EVENT_` semantic event;
-- `THREAD_` active thread/process;
-- `CP_` checkpoint.
+Prefer separate files for independently changing state:
+- each active scene has its own `CAMPAIGN/STATE/SCENES/<SCENE_ID>.yaml`;
+- each PC/NPC/location/item/faction/thread has its own canonical record;
+- each chat/session has its own bounded session/log file when needed.
 
-IDs are never recycled after deletion/death/retirement.
+`CAMPAIGN/STATE/CURRENT.yaml` is a compact global directory of active scene refs and world frontier, not a transcript of every local action. Avoid modifying shared global files when a local entity/scene record is sufficient.
 
-## Lazy retrieval
+Indexes may remain shared compact routing files. Concurrent additions to an index are structurally mergeable when their entity entries are independent.
 
-Never scan WORLD to discover an entity if an index exists.
+## Working set and dirty set
 
-Lookup flow:
-name/reference -> relevant INDEX -> stable ID/path -> exact record -> only dependencies required for the current decision.
+During play, keep in context only the relevant canonical records plus an internal dirty set:
+- intended changed paths;
+- affected entity IDs;
+- affected scene/location/process IDs;
+- durable facts/events not yet published.
 
-Do not recursively dereference the graph. A linked entity is loaded only when it is needed.
+Do not commit after every roll or action.
 
-## Hot versus cold state
+## Persistence boundaries
 
-`CAMPAIGN/STATE` contains only facts needed frequently now:
-- current time/location/scene;
-- active PCs/resources/conditions;
-- active participants;
-- active threads/threats/processes;
-- current mode/runtime metadata.
+Publish a batch when one of these is true:
+- a scene/combat/meaningful travel segment ends;
+- the session pauses/ends;
+- a substantial durable state bundle has accumulated;
+- user explicitly asks to save/resync;
+- before maintenance/context transition where unsaved state would be risky;
+- in multiplayer, a completed change affects a race-sensitive shared entity/location/process that another session may interact with.
 
-Long-lived entity detail belongs in WORLD. Historical detail belongs in LOG. Do not duplicate full biographies/history into hot state.
+Pure narration, failed actions with no durable consequence and disposable details require no repository write.
 
-## Semantic event log
+## Commit shape
 
-LOG is append-only. A durable event record contains only what is necessary to reconstruct causality, for example:
-- event ID;
-- in-world time/order;
-- participants/entity IDs;
-- location ID;
-- player/action intent when relevant;
-- resolved rule/random outcome when relevant;
-- factual deltas;
-- causal/predecessor event links when useful;
-- visibility/knowledge changes when important.
+One persistence batch should normally be one Git commit containing all files changed by that batch. A batch may represent several turns/actions.
 
-Do not store full chat transcripts as event records.
+Commit messages should identify campaign/session/player when useful, for example:
+`game: session S_001 player P_001 — tavern scene resolved`
 
-## Atomic turn persistence
+This helps conflict analysis without exposing information to characters automatically.
 
-A logically complete persistent game transition should be one Git commit.
+## Concurrent HEAD change
 
-Preferred transaction:
-1. obtain/cached expected campaign HEAD;
-2. construct all changed file contents plus new EVENT record;
-3. build a Git tree based on the expected parent tree;
-4. create one commit with expected HEAD as parent;
-5. fast-forward campaign branch ref to the new commit;
-6. only after ref update succeeds, treat the transition as durably saved and update cached HEAD.
+Before publishing, compare current branch HEAD with the base HEAD of the working set.
 
-Never force branch ref during live play.
+If unchanged, commit normally.
 
-If fast-forward fails, no stale transaction may be declared canonical. Resync and re-evaluate affected consequences.
+If changed:
+1. compare base..HEAD and identify external changed paths/entities;
+2. if external and local dirty sets are disjoint in both storage and game semantics, rebuild/apply the local batch on the new HEAD;
+3. if a shared index changed only by independent entries, merge entries;
+4. if the same entity/path changed, fetch the latest record and perform semantic merge only when changes are logically compatible;
+5. if logically incompatible, do not overwrite: latest canonical state becomes input to re-adjudication.
 
-## Materialized views
+Never force-update a live campaign branch.
 
-STATE, INDEX and WORLD records are materialized canonical views maintained in the same atomic commit as the semantic EVENT when they change.
+## Race-sensitive examples
 
-The event log records why/how the world changed; materialized records represent what is true now.
+Compatible: two players in different cities talk to different NPCs; two unrelated items move; two independent index entries are added.
+
+Potentially mergeable: both learn different facts about the same NPC; changes affect separate relationship dimensions and do not imply contradictory chronology.
+
+Incompatible: both take the same unique item; one destroys a door while another assumes it remains locked/intact; both move the same NPC to different places at the same time; mutually exclusive process outcomes.
+
+In an incompatible case, the first canonical world change is respected when chronology supports it. The second action is resolved against the new state. Tell the player only what their character can perceive or infer.
+
+## Event log
+
+LOG is semantic and compact, not a transaction journal. One event/log entry may summarize several related actions that form one meaningful world transition. Do not store full chat transcripts or every die roll.
 
 ## Checkpoints
 
-A checkpoint is a compact recovery boundary, not a copy of the entire repository.
-
-It should identify:
-- checkpoint ID;
-- campaign HEAD/event through which it is valid;
-- current scene/time/location;
-- pointers/hashes/IDs for active state;
-- any migration/schema metadata required for recovery.
-
-Create checkpoints at session boundaries, major transitions or before risky migrations, not after every trivial turn.
+Create compact checkpoints at session boundaries, major transitions and before risky migrations/maintenance. They are recovery markers, not copies of the whole world.
 
 ## Canon conflicts
 
-If two records disagree:
-1. determine authority/version/event chronology;
-2. inspect the smallest relevant LOG/commit history range;
-3. repair the materialized record only when evidence supports the repair;
-4. persist the repair as an explicit maintenance commit/event if it changes game canon.
-
-Never invent a reconciliation story merely to hide data inconsistency.
-
-## Persistence threshold
-
-Persist facts that can matter later. Avoid permanent writes for disposable prose texture.
-
-Examples worth persisting:
-- resource/HP/inventory changes;
-- location/time changes that affect continuity;
-- NPC relationship/knowledge/goal changes;
-- discovered secrets;
-- ownership/death/destruction;
-- active clocks/processes;
-- promises/debts/contracts;
-- new significant entities;
-- consequential rulings/house rules.
+Inspect the smallest relevant records/log/commit range. Repair only with evidence. Never invent a reconciliation story to hide inconsistent storage.

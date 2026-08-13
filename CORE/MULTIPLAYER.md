@@ -1,78 +1,66 @@
 # Shared-World Multiplayer
 
-framework_module_version: 0.1-development
+framework_module_version: 0.2-development
 load_when: CAMPAIGN/MANIFEST mode == multiplayer OR explicit multiplayer management
 
-## Mode switch
+## Mode
 
-Campaign mode is persistent and may change only on explicit user/administrator instruction.
+Multiplayer is enabled/disabled only explicitly. Multiple chats/players share one campaign branch and objective world, while each PC/player has separate knowledge.
 
-Never infer multiplayer merely because another PC/NPC exists.
+## Reduce conflicts by structure
 
-## Shared-world model
+Keep independently changing environments in separate records. Each active scene has its own scene file and normally references one location plus the PCs/NPCs/items/processes currently relevant there. Separate players in separate scenes should usually touch different files.
 
-Multiple players/chats may act in the same canonical world and campaign branch. Their characters may be geographically separated and may not know about each other's actions.
+Do not update a global `CURRENT` record for every local movement/action if the scene/entity record is sufficient.
 
-World truth is shared. Player/PC knowledge is not.
+## Synchronization policy
 
-## Synchronization before a mutating turn
+Do not poll HEAD before every harmless sentence or roll.
 
-Before adjudicating a player action capable of changing persistent state:
-1. retrieve current campaign branch HEAD;
-2. compare with this chat's cached working-set HEAD;
-3. if identical, continue;
-4. if different, compare the commits/range and identify changed records;
-5. refresh CURRENT/active state plus any affected records relevant to this action;
-6. update the local working-set HEAD;
-7. only then adjudicate the action.
+HEAD must be checked:
+- before publishing a persistence batch;
+- before adjudicating an action that targets a known race-sensitive shared object/process when the local HEAD may be stale;
+- after an explicit resync request;
+- after any Git write conflict.
 
-Do not announce hidden changes the player's character has no way to know.
+## When HEAD changed
 
-## Optimistic concurrency on commit
+Compare external changes since the working-set base HEAD with the local dirty set.
 
-Build the state-changing turn on the synchronized HEAD and save it as one atomic commit.
+If they are independent, incorporate the new HEAD and keep the local outcome.
 
-Move the campaign ref only as a fast-forward from that parent. If another session commits first, the ref update must fail rather than overwrite.
+If they touch the same shared file but independent data (for example, separate index entries), merge structurally.
 
-On conflict:
-1. retrieve new HEAD;
-2. refresh affected state;
-3. determine whether the player's declared intent is still possible and unchanged in meaning;
-4. if it can be resolved without new player input, re-adjudicate against the new state;
-5. if the world change materially invalidates/changes the player's decision, return control to the player with only the information their PC can perceive.
+If they touch the same world entity or mutually dependent environment, fetch the latest state and evaluate logical compatibility.
 
-Never force-push to win a race.
+Never resolve a semantic conflict by blind text merge.
+
+## Logical conflicts
+
+If two actions cannot both be true, already-published canon constrains the later resolution when chronology supports that ordering.
+
+Example: ITEM_004 is unique and was in CHEST_009. Player A's published batch moves ITEM_004 to PC_A. Player B later tries to take ITEM_004 based on stale scene state. After resync, the chest no longer contains it; resolve Player B's action from that fact rather than overwriting ownership.
+
+If the PC can observe the consequence, narrate it naturally (for example, the chest is empty). Identify the other character only if the PC has an in-world basis to know who acted; Git author/session metadata is DM evidence, not automatic character knowledge.
+
+If two actions are fictionally simultaneous and commit order alone would arbitrarily decide a contested outcome, adjudicate the interaction under game rules/world timing rather than declaring the first Git commit the winner solely for technical reasons.
+
+## Publish boundaries
+
+Private/local changes may be batched until a natural persistence boundary.
+
+Publish race-sensitive shared changes promptly after logical completion: unique object ownership/destruction, persistent shared location changes, shared NPC relocation/death, global process advancement, access/lock/door state, scarce shared resource consumption, etc.
+
+This is a visibility requirement for the shared world, not a requirement to commit every turn.
 
 ## World time
 
-Separate players can be at different in-world times only if the campaign explicitly supports asynchronous chronology.
+Maintain chronology sufficient to determine whether actions can conflict. Separate scenes may progress independently when the campaign supports asynchronous local time, but shared/global events must reconcile against a common world-time frontier.
 
-Default shared-world policy: maintain a campaign world-time frontier and prevent unresolved actions from casually rewriting earlier shared events.
+## Privacy
 
-If one PC enters a long downtime/travel interval while another remains active, store each character's local availability/time and reconcile shared processes carefully rather than assuming all players advance identically.
-
-## Interaction across distant players
-
-A player's action may create consequences for another player without immediate notification.
-
-Persist the world event and affected objective state. Update another PC's knowledge only when information reaches them through an established channel/event.
-
-## Simultaneous conflicts
-
-When two actions target the same scarce object, NPC, location or process, commit order matters only when actual chronology/causality permits either order.
-
-If actions are fictionally simultaneous and commit order alone would create an arbitrary winner, resolve them under game rules using a combined contested/simultaneous adjudication before committing the resulting shared transition.
-
-## Secrets and privacy
-
-Do not load or disclose another player's private/PC-only information unless needed for objective world resolution.
-
-Even when loaded for DM purposes, narration to one player must respect knowledge boundaries.
+DM may load private facts required to resolve objective world state, but player-facing narration must respect PC/player knowledge boundaries.
 
 ## Joining players
 
-Adding a player requires explicit creation/binding of a PC and player visibility identity in campaign state. Do not assume that a user appearing in another chat controls an existing PC.
-
-## Singleplayer optimization disabled
-
-In multiplayer, never rely on the assumption that only this chat writes the branch. HEAD verification is mandatory before every persistent transition regardless of how recently this chat last wrote.
+Adding a player requires explicit player binding and PC assignment. Do not infer control of an existing PC.

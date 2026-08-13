@@ -1,0 +1,23 @@
+schema_name: scene_state
+schema_version: 1
+required: [schema_version, scene_id, status, participant_ids, player_character_ids]
+fields:
+  schema_version: integer
+  scene_id: string
+  status: enum[active, suspended, resolved]
+  location_id: string|null
+  local_time: object|null
+  participant_ids: array[string]
+  player_character_ids: array[string]
+  active_thread_ids: array[string]
+  environment:
+    relevant_item_ids: array[string]
+    persistent_feature_refs: array[string]
+    transient_facts: array[object]
+  tactical_state_path: string|null
+  summary: string
+  last_event_id: string|null
+invariants:
+  - scene is an environment-level concurrency boundary when practical
+  - summary contains current actionable state, not session transcript
+  - persistent entity changes still belong in canonical entity records

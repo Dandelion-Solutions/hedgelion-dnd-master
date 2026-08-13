@@ -1,85 +1,61 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.1-development
+runtime_bootstrap_version: 0.2-development
 repository: dkolyada/hedgelion-dnd-master
 engine_branch: main
 
 ## Repository model
 
-`main` contains only shared engine/framework data: CORE, SCHEMA, TEMPLATE, MIGRATIONS, ARCHITECTURE and INSTALL.
+`main` contains the complete engine plus a fully empty `CAMPAIGN/` skeleton. Each actual game lives in a long-lived `campaign/<name>` branch. Campaign branches never merge back into `main` or into each other.
 
-Each actual game lives in its own long-lived branch `campaign/<name>` created from a stable engine release. Campaign branches never merge back into `main` and never merge into each other.
-
-Actual game state exists only under `CAMPAIGN/` in a campaign branch.
-
-## Campaign resolution
+## Campaign selection at game start
 
 For framework/setup work, use `main`.
 
-For gameplay, resolve the active campaign branch before loading game state. If the active branch is not unambiguously known in the current Project/chat context, do not guess it.
+If the user wants to play and no active campaign branch is unambiguously selected, enumerate all `campaign/*` branches. For each branch, read only `CAMPAIGN/MANIFEST.yaml` and present a compact list of existing games (name, status, mode; optionally a short manifest-level note). Ask whether to continue one of them or start a new campaign.
 
-Then obtain campaign HEAD and read `CAMPAIGN/MANIFEST.yaml` first.
+If there are no campaign branches, offer to create a new campaign.
 
-## Gameplay startup sequence
+If the user explicitly named a campaign branch, use it without listing all games.
 
-1. Resolve campaign branch and current HEAD SHA.
+A new campaign branch is created from the selected stable engine release/tag and already contains the full empty `CAMPAIGN/` structure inherited from `main`. Initialize manifest/state; then create world/PC content through play/setup.
+
+## Gameplay startup
+
+1. Resolve active campaign branch and HEAD SHA.
 2. Read `CAMPAIGN/MANIFEST.yaml`.
 3. Read `CAMPAIGN/CHECKPOINTS/LATEST.yaml`.
 4. Read `CAMPAIGN/STATE/CURRENT.yaml`.
-5. Read only the player-character records relevant to the current turn.
-6. Read `CORE/CORE_INDEX.md` and always load `CORE/RUNTIME.md`.
-7. Load only additional CORE modules required by the current situation.
-8. Use `CAMPAIGN/INDEX/` to locate additional world records; never broadly scan `CAMPAIGN/WORLD/`.
+5. Read only relevant scene file(s) from `CAMPAIGN/STATE/SCENES/`.
+6. Read only PC records relevant to the current player/turn.
+7. Read `CORE/CORE_INDEX.md` and always load `CORE/RUNTIME.md`.
+8. Load only additional CORE modules required by the current situation.
+9. Use `CAMPAIGN/INDEX/` to locate additional WORLD records; never broadly scan WORLD.
 
 If a required record is absent or inconsistent, do not invent it.
 
-## Engine routing
-
-`CORE/` — modular Dungeon Master framework.
-`SCHEMA/` — canonical persistent-data schemas.
-`TEMPLATE/` — clean campaign templates.
-`MIGRATIONS/` — schema/framework migration protocols.
-`ARCHITECTURE/` — system design documentation.
-`INSTALL/` — user setup documentation; not gameplay runtime.
-
-## Campaign routing
-
-`CAMPAIGN/MANIFEST.yaml` — identity, mode, versions and storage configuration.
-`CAMPAIGN/STATE/` — compact hot state.
-`CAMPAIGN/INDEX/` — compact entity/event indexes.
-`CAMPAIGN/WORLD/` — canonical persistent world entities.
-`CAMPAIGN/LOG/` — append-only bounded semantic event log.
-`CAMPAIGN/CHECKPOINTS/` — recovery checkpoints.
-
 ## Lazy loading
 
-NPC -> NPC index -> exact record -> only required dependencies.
-Location -> location index -> exact record -> only required active entities.
+NPC -> NPC index -> exact NPC record -> only required dependencies.
+Location -> location index -> exact record -> required active entities only.
 Past event -> event index -> relevant bounded log segment.
-Combat -> runtime + combat + adjudication/randomness as needed.
-Magic -> runtime + magic + adjudication as needed.
-Exploration -> runtime + exploration + relevant location records.
-Dialogue -> runtime + relevant NPC records + NPC/dialogue modules.
-
+Combat/magic/exploration/dialogue -> corresponding CORE modules only as needed.
 A reference A -> B is not permission to load B automatically.
 
-## Synchronization
+## Persistence and synchronization
 
-Read `CORE/STORAGE.md` for persistent writes.
-Read `CORE/MULTIPLAYER.md` when campaign mode is multiplayer.
+Read `CORE/STORAGE.md` at persistence/resync boundaries. Read `CORE/MULTIPLAYER.md` when campaign mode is multiplayer.
 
-Singleplayer: obtain HEAD at new-chat startup; cached state is allowed under the sole-writer assumption until explicit resync or a write conflict.
+Singleplayer: synchronize HEAD at new-chat startup; within the session use a cached working set and publish batched changes at natural persistence boundaries or explicit save/resync.
 
-Multiplayer: verify HEAD before every state-changing turn.
+Multiplayer: partition state by scene/entity, batch local changes, and check HEAD before publishing or before a stale action against a race-sensitive shared object/process. Git conflicts trigger semantic resync, never blind overwrite.
 
 ## Framework updates
 
-Stable engine releases are identified by tags like `engine-v1.0.0`.
-
-Integrate newer `main` into campaigns by merge by default. Rebase is explicit maintenance only and invalidates cached SHAs. Schema-incompatible changes require a migration.
+Stable engine versions use tags like `engine-v1.0.0`. Integrate newer `main` into live campaigns by merge by default. Rebase is explicit maintenance only for a paused non-concurrent branch and invalidates cached SHAs. Schema-incompatible changes require migration.
 
 ## Canon priority
 
-Project Instructions -> Project Source launcher -> this Runtime Bootstrap -> campaign MANIFEST -> current CORE -> latest checkpoint + STATE -> WORLD -> LOG -> current chat -> older chats.
+Project Instructions -> Project Source launcher -> this Runtime Bootstrap -> campaign MANIFEST -> current CORE -> latest checkpoint/STATE -> WORLD -> LOG -> current chat -> older chats.
 
 Never repair missing canon through plausible invention.
