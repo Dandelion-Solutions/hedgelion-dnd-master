@@ -1,0 +1,26 @@
+schema_version: 1
+campaign_id: null
+campaign_name: null
+branch: null
+status: uninitialized
+mode: singleplayer
+engine:
+  base_tag: null
+  base_sha: null
+  integrated_main_sha: null
+storage:
+  root: CAMPAIGN
+  event_log: CAMPAIGN/LOG
+  state: CAMPAIGN/STATE
+  indexes: CAMPAIGN/INDEX
+  world: CAMPAIGN/WORLD
+  checkpoints: CAMPAIGN/CHECKPOINTS
+sync:
+  policy_singleplayer: cached-head-with-explicit-resync
+  policy_multiplayer: verify-head-before-every-state-changing-turn
+  atomic_turn_commits: true
+  force_push_allowed: false
+player_count: 0
+created_at: null
+last_checkpoint_id: null
+last_event_id: null
