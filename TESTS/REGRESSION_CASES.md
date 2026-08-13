@@ -111,3 +111,28 @@ Pass: DM does not create a full stat block merely for completeness.
 
 A player with mechanics detail `3` asks once for their exact remaining money or modifier.
 Pass: answer the request but do not automatically rewrite the stored preference. Explicit preference changes or a clear repeated pattern may update it when adaptive preference learning is enabled.
+
+## T23 — Unchanged HEAD is a zero-content sync
+
+A multiplayer session has working-set base HEAD `A`. A synchronization point occurs and the active campaign branch ref still resolves to `A`.
+Pass: DM performs only the branch-ref HEAD probe and does not refetch scene/entity/index files or Git history.
+
+## T24 — Irrelevant external commit
+
+A session has loaded scene X from HEAD `A`. Another player commits changes only to unrelated scene Y, producing HEAD `B`.
+Pass: DM probes HEAD, server-compares `A..B`, sees no relevant changed path, advances the cached base HEAD to `B`, and does not reload scene X or its unchanged entities.
+
+## T25 — Targeted relevant refresh
+
+A session has loaded scene X, NPC_A and ITEM_1 from HEAD `A`. HEAD becomes `B` and server-side compare shows only `ITEM_1` changed among the session's dependencies.
+Pass: DM fetches only the exact required changed record(s) at ref `B`; it does not reread the whole scene, WORLD directory, repository, or commit history.
+
+## T26 — Pinned snapshot
+
+During startup/refesh, the branch HEAD advances while several campaign files are being read.
+Pass: all files in the active read cycle are fetched at the single SHA captured at the beginning of that cycle. DM never combines branch-relative reads from two different commits into one canonical working set.
+
+## T27 — Long Git history does not expand gameplay reads
+
+A campaign branch contains a very large commit history, but the current working set is small.
+Pass: ordinary synchronization uses branch ref, changed-path compare when needed, and exact current files only. Full clone/pull/archive/history retrieval is not used merely because the campaign is old; history access remains bounded to an explicit provenance/conflict/audit reason.

@@ -1,6 +1,6 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.1.2
+runtime_bootstrap_version: 0.1.3
 repository: dkolyada/hedgelion-dnd-master
 engine_branch: main
 
@@ -26,23 +26,43 @@ A new campaign branch is created from the selected stable engine release/tag usi
 
 ## Gameplay startup
 
-1. Resolve active campaign branch and HEAD SHA.
-2. Read `CAMPAIGN/MANIFEST.yaml` and `CAMPAIGN/CONFIG.yaml` only as needed.
-3. Resolve campaign creator from Git history when write authorization may matter: `author.login` of the first campaign-specific initialization commit.
-4. Resolve the currently authenticated GitHub user.
-5. If mode is `singleplayer`, treat the session as read-only unless current GitHub user == campaign creator.
-6. Read `CAMPAIGN/CHECKPOINTS/LATEST.yaml`.
-7. Read `CAMPAIGN/STATE/CURRENT.yaml`.
-8. Read only relevant scene file(s) from `CAMPAIGN/STATE/SCENES/`.
-9. Read only PC records relevant to the current player/turn.
-10. Read `CORE/CORE_INDEX.md`.
-11. ALWAYS load `CORE/RUNTIME.md` and `CORE/AI_REASONING.md` during gameplay.
-12. Load only additional CORE modules required by the situation.
-13. Use `CAMPAIGN/INDEX/` to locate additional WORLD records; never broadly scan WORLD.
+1. Resolve active campaign branch and its current HEAD SHA once.
+2. Pin the startup read cycle to that exact SHA. Do not mix branch-relative file reads from a moving HEAD.
+3. Read `CAMPAIGN/MANIFEST.yaml` and `CAMPAIGN/CONFIG.yaml` only as needed at the pinned SHA.
+4. Resolve campaign creator from Git history only when write authorization may matter: `author.login` of the first campaign-specific initialization commit. Cache the resolved identity for the session unless a maintenance/access change requires revalidation.
+5. Resolve the currently authenticated GitHub user.
+6. If mode is `singleplayer`, treat the session as read-only unless current GitHub user == campaign creator.
+7. Read `CAMPAIGN/CHECKPOINTS/LATEST.yaml` at the pinned SHA.
+8. Read `CAMPAIGN/STATE/CURRENT.yaml` at the pinned SHA.
+9. Read only relevant scene file(s) from `CAMPAIGN/STATE/SCENES/` at the pinned SHA.
+10. Read only PC records relevant to the current player/turn.
+11. Read `CORE/CORE_INDEX.md`.
+12. ALWAYS load `CORE/RUNTIME.md` and `CORE/AI_REASONING.md` during gameplay.
+13. Load only additional CORE modules required by the situation.
+14. Use `CAMPAIGN/INDEX/` to locate additional WORLD records; never broadly scan WORLD.
+15. Store the pinned SHA as the working-set base HEAD.
 
 If a required record is absent or inconsistent, do not invent it.
 
 At campaign creation/session-preparation boundaries, use the recommended bundles from `CORE_INDEX.md`; do not keep those larger modules loaded after they stop being relevant.
+
+## Lightweight repository read path
+
+Gameplay synchronization is API-first and current-state-first. Do not clone the repository, run a full `git pull`, download repository archives, or retrieve commit history merely to learn the current world state.
+
+Keep the active campaign branch name and working-set base HEAD SHA cached.
+
+When a synchronization check is required:
+1. query only the active branch ref to obtain the current HEAD SHA;
+2. if it equals the working-set base HEAD, stop — perform no campaign-content reads;
+3. if it differs, ask GitHub to compare `base_HEAD..current_HEAD` server-side and inspect the changed path set;
+4. if those paths cannot affect the loaded working set, local dirty paths, access/mode metadata, or the decision being resolved, advance the working-set base HEAD to the current HEAD without re-reading unchanged files;
+5. if relevant paths changed, fetch only the exact affected/required records and indexes, all pinned to the same current HEAD SHA, then update the working set and base HEAD;
+6. if compare is unavailable or too broad to use safely, fall back to re-reading only the exact records/indexes required for the current decision at the current HEAD — never to full-history/full-repository retrieval.
+
+Commit/history reads are exceptional. Use a bounded range only when required for creator provenance, causal/audit questions, semantic conflict diagnosis, or canon repair.
+
+The cost of ordinary gameplay reads should depend on the current scene and changed relevant paths, not on total campaign age or commit count.
 
 ## Lazy loading
 
@@ -58,7 +78,7 @@ Read `CORE/STORAGE.md` at persistence/resync boundaries. Read `CORE/MULTIPLAYER.
 
 Singleplayer: only campaign creator may publish gameplay changes. Other repository collaborators may inspect/read but must not write game state. Synchronize HEAD at new-chat startup; within an authorized session use cached working state and publish batched changes at natural persistence boundaries or explicit save/resync.
 
-Multiplayer: partition state by scene/entity, batch local changes, and check HEAD before publishing or before a stale action against a race-sensitive shared object/process. Git conflicts trigger semantic resync, never blind overwrite. Switching mode remains creator-only.
+Multiplayer: partition state by scene/entity, batch local changes, and check HEAD before publishing or before a stale action against a race-sensitive shared object/process. A HEAD check uses the lightweight read path above; a changed HEAD does not imply a full reload. Git conflicts trigger semantic resync, never blind overwrite. Switching mode remains creator-only.
 
 ## Framework updates
 

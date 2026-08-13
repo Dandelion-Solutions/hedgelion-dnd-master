@@ -1,6 +1,6 @@
 # Shared-World Multiplayer
 
-framework_module_version: 0.1.1
+framework_module_version: 0.1.2
 load_when: CAMPAIGN/MANIFEST mode == multiplayer OR explicit multiplayer management
 
 ## Mode and ownership
@@ -39,6 +39,23 @@ Keep independently changing environments in separate records. Each active scene 
 
 Do not update a global `CURRENT` record for every local movement/action if the scene/entity record is sufficient.
 
+## Lightweight synchronization reads
+
+Each multiplayer session keeps a cached working-set base HEAD SHA for the active campaign branch.
+
+A synchronization probe must be cheap:
+1. read only the active branch ref;
+2. if HEAD is unchanged, stop — no content or history fetch is needed;
+3. if HEAD changed, use server-side `base..HEAD` compare to obtain changed paths;
+4. if none of those paths can affect the session's loaded scene/entities, local dirty set, access/mode metadata, or the action being resolved, move the cached base HEAD forward without reloading files;
+5. if relevant paths changed, fetch only the exact affected/required records at the new HEAD and refresh the local working set.
+
+All files in one refresh must be pinned to one exact HEAD SHA. Never assemble a shared-world view from multiple branch-relative reads that could observe different commits.
+
+Do not clone/pull the repository or request broad commit history to synchronize ordinary multiplayer play. History is read only for a bounded provenance/conflict/audit reason.
+
+This section defines how synchronization reads are performed. It does not by itself increase how often world-state changes are published; publication policy is defined separately below.
+
 ## Synchronization policy
 
 Do not poll HEAD before every harmless sentence or roll.
@@ -48,6 +65,8 @@ HEAD must be checked:
 - before adjudicating an action that targets a known race-sensitive shared object/process when the local HEAD may be stale;
 - after an explicit resync request;
 - after any Git write conflict.
+
+A future shared-scene policy may require additional HEAD probes; those probes must still use the lightweight path above rather than full-state reloads.
 
 ## When HEAD changed
 

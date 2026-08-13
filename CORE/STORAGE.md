@@ -1,6 +1,6 @@
 # Canonical Storage and Persistence
 
-framework_module_version: 0.1.1
+framework_module_version: 0.1.2
 load_when: session startup, state retrieval, persistence boundary, resync, canon conflict
 
 `main` stores shared engine/framework data plus an empty `CAMPAIGN/` skeleton. Actual campaign branches fill that skeleton with game-specific data. Chat context is temporary working memory; ChatGPT Memory is never campaign storage.
@@ -32,6 +32,27 @@ Project Instructions -> Project launcher -> repository runtime bootstrap -> camp
 ## Stable IDs and lazy retrieval
 
 Resolve names through compact INDEX files, fetch the exact record and only dependencies required for the current decision. Never recursively load the entity graph.
+
+## Lightweight repository reads
+
+Treat GitHub as a versioned current-state store during gameplay, not as a repository that must be cloned or pulled locally.
+
+Every loaded gameplay working set has a `base_head_sha`: the exact campaign-branch HEAD from which its canonical records were read. All files fetched during one startup/refresh cycle must be pinned to the same SHA so a moving branch cannot produce a mixed-version snapshot.
+
+For a routine synchronization check:
+1. fetch only the active campaign branch ref;
+2. if current HEAD == `base_head_sha`, stop immediately and perform no content/history reads;
+3. if HEAD changed, use GitHub's server-side compare from `base_head_sha` to current HEAD to obtain the changed path set;
+4. intersect that set with loaded working-set paths/dependencies, local dirty paths, current decision dependencies, and access/mode metadata;
+5. if the intersection is empty, accept current HEAD as the new base without re-reading unchanged content;
+6. if relevant paths changed, fetch only those exact files/indexes that are required, pinned to current HEAD, update the working set, then advance `base_head_sha`;
+7. if compare cannot be used safely, re-read only the exact records/indexes required for the current decision at current HEAD.
+
+Never use repository clone, full `git pull`, repository archive download, recursive directory traversal, or broad commit-history retrieval as the normal gameplay synchronization path.
+
+Git history is exceptional input. Read only the smallest bounded range needed for campaign-creator provenance, semantic conflict diagnosis, causal/audit reconstruction, or canon repair.
+
+A branch with a long history must not become slower merely because the campaign is old; ordinary read cost should scale with relevant current-state files and relevant changes since the cached HEAD.
 
 ## Environment-level partitioning
 
