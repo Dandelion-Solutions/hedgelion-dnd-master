@@ -1,0 +1,19 @@
+schema_name: player_binding
+schema_version: 1
+required: [schema_version, player_id, status, controlled_pc_ids]
+fields:
+  schema_version: integer
+  player_id: string
+  status: enum[active, inactive]
+  display_name: string|null
+  controlled_pc_ids: array[string]
+  visibility:
+    private_record_ids: array[string]
+  preferences:
+    campaign_only: object
+  joined_event_id: string|null
+  last_event_id: string|null
+invariants:
+  - store only campaign-relevant identity/binding; do not mirror personal ChatGPT Memory/profile
+  - a PC controller change requires explicit persistent event
+  - player binding is not a source for real-world sensitive personal data
