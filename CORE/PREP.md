@@ -1,88 +1,97 @@
 # Session and Adventure Preparation
 
-framework_module_version: 0.1-development
+framework_module_version: 0.1.0
 load_when: before session, generating new local content, preparing adventure/faction movement
+
+Use `GM_CRAFT.md` for the high-level doctrine and `CAMPAIGN_OPERATIONS.md` for session organization.
 
 ## Prepare situations, not required plot sequences
 
-Prepare actors, pressures, places, clues, resources and likely reactions. Do not prepare a mandatory chain of scenes that the players must discover in order.
+Prepare actors, pressures, places, clues, resources, timelines and likely reactions. Do not prepare a mandatory chain of scenes or player choices.
 
-A scenario should remain playable when players:
-- ignore the apparent hook;
-- approach from an unexpected direction;
-- negotiate with an expected enemy;
-- destroy or lose a presumed important object;
-- become interested in a minor established element.
+A scenario should remain playable when players ignore the apparent hook, approach from an unexpected direction, negotiate with an expected enemy, destroy/lose a presumed object, or focus on a minor established element.
 
-## Minimal next-horizon preparation
+## Preparation priority
 
-Focus preparation on what is reachable/relevant soon.
+Spend detail according to likelihood and cost of improvisation:
+- `DEFINITE`: current/almost certain encounter or procedure — exact rules, actors, state and hard constraints;
+- `LIKELY`: compact scene/location/NPC/clue preparation;
+- `POSSIBLE`: names, motives, connections and reference pointers only;
+- `REMOTE`: leave undefined or indexed.
 
-For the next session/scene, consider only as needed:
-- current PCs and their active goals;
+The purpose is not minimal prep for its own sake; it is high-value prep.
+
+Prior thought is especially valuable for facts that must remain consistent: mystery structure, timelines, relationships, maps/routes, adversary capabilities, significant lore, special rules and causal consequences.
+
+## Nearest useful horizon
+
+Review only what may matter soon:
+- current PCs and active goals;
 - one strong start/current pressure;
-- a small set of potential scenes/situations;
+- potential scenes/situations;
 - relevant secrets/clues;
-- notable locations;
+- fantastic/distinctive locations;
 - important NPCs/factions;
 - likely threats/monsters;
-- meaningful rewards/resources.
+- meaningful rewards/resources;
+- one further horizon so the world has somewhere coherent to expand.
 
-These are tools for improvisation, not a checklist that must appear in play.
+These are tools, not a checklist that must appear in play.
 
 ## Strong start
 
-The opening should contain a concrete change, problem, opportunity, arrival, discovery or pressure that makes the world immediately actionable.
+Open with a concrete situation, change, problem, opportunity, discovery or pressure that makes the world actionable.
 
-Do not start a novice campaign by presenting a quest board whose entries are differentiated mainly by reward values.
+Do not equate "strong" with "explosion" or forced combat. Do not use a quest board whose entries are differentiated mainly by reward values.
+
+After the start, follow player action and world consequence rather than the prepared next scene.
 
 ## Potential scenes
 
-Potential scenes are short forecasts of situations that might occur. They have no right to happen.
+Potential scenes are forecasts, not commitments. Mark them as provisional unless they represent already-existing objective state.
 
-If the PCs do something else, follow the world state. Reuse only elements whose continued existence remains causal and plausible.
+If the PCs do something else, discard/rework unused scene prep freely. Prep effort is never a reason to railroad.
 
-## Secrets and clues
+## Secrets, clues and revelations
 
-Prepare short facts the characters might discover soon. Keep a clue independent of a discovery method until play establishes one, when that flexibility is plausible.
+Prepare short established facts the characters might discover. Keep discovery method flexible only where multiple methods are fictionally plausible.
 
-Important conclusions should have redundant evidence/routes. Avoid a single clue chokepoint.
+For important conclusions, use redundant independent clues/routes. Three clues is a robust heuristic, not an instruction to dump three copies of the answer.
 
-Do not stockpile hundreds of session-prep clues in the hot state. Persist established world truth in canonical records; keep only currently relevant unrevealed possibilities in active prep.
+Do not create a clue after a successful roll merely because the roll was high if the clue/item did not exist and the mechanic does not generate it.
 
-## Node / situation structure
+## Node/situation structure
 
-For investigation or complex scenarios, model significant locations, factions, people or situations as nodes connected by evidence, routes, relationships or consequences.
+For complex scenarios, model meaningful locations, factions, people or situations as nodes connected by evidence, routes, relationships and consequences.
 
-Prefer multiple navigable connections over a single A -> B -> C path.
-
-The node model is an aid to robustness, not a requirement to turn every scene into a graph database.
+Prefer multiple navigable connections over a brittle A -> B -> C sequence. Do not turn every scene into a graph database when a simple local situation suffices.
 
 ## Opposition preparation
 
-For active opponents/factions, prepare:
+For active opposition, record only what matters:
 - goal;
 - resources;
 - current plan;
 - next action if unopposed;
+- knowledge/beliefs;
 - triggers that change the plan.
 
-This produces emergent story from interaction rather than scripted twists.
+This supports emergent conflict without scripting twists.
+
+## Lore preparation
+
+Use `LORE.md`. Prepare distinctive historical/cultural facts that affect present play and reveal them gradually through relevant channels.
+
+Do not write a continent encyclopedia because the next session occurs in one village.
 
 ## Leave blanks deliberately
 
-Do not define remote history, geography or institutions before they are useful merely to make the world look deep.
+Undefined is valid. Leave remote geography/history/institutions open until needed.
 
-Undefined is different from secretly decided. Mark material unknown to the DM/system as undefined rather than inventing retroactive certainty.
-
-## Reward discipline
-
-Rewards should follow world logic, risk, scarcity and patron resources. Do not use exaggerated payment or magical loot as UI highlighting for the quest the DM wants selected.
-
-A small job can have large indirect consequences; a large reward should have an in-world reason.
+When an undefined detail becomes necessary, derive it from established constraints rather than player convenience.
 
 ## Prep disposal
 
-Unrevealed preparation is provisional unless it represents already-existing objective state that has been persisted as canon.
+Unrevealed provisional prep can be thrown away. Only persisted objective world state is canon.
 
-Unused potential scenes can be discarded freely. Do not convert prep effort into a claim that players must encounter it.
+At session end, retain only preparation still plausible for the next horizon; archive neither dead scene scripts nor giant unused clue lists into hot state.

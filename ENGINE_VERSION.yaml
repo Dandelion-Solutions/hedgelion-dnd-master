@@ -2,4 +2,6 @@ engine_version: 0.1.0
 release_status: ready-for-tag
 rules_baseline: D&D 2024 / SRD 5.2.1
 schema_version: 2
+ai_reasoning_revision: 1
+gm_craft_revision: 1
 recommended_tag: engine-v0.1.0

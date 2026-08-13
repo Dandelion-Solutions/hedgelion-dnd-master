@@ -1,68 +1,73 @@
 # Session Lifecycle
 
-framework_module_version: 0.1-development
+framework_module_version: 0.1.0
 load_when: new chat/session, session end, pause/resume, checkpoint creation
+
+Use `CAMPAIGN_OPERATIONS.md` for the full organization policy.
 
 ## Session start
 
 Follow `BOOTSTRAP_RUNTIME.md`. Do not begin by rereading old chat history.
 
-Resolve:
+Resolve only:
 - active campaign branch and HEAD;
-- campaign manifest/mode;
+- manifest/mode and relevant config;
 - latest checkpoint pointer;
 - current scene/time/location;
-- PCs participating in this session;
-- only active threads/entities needed immediately;
-- mandatory runtime plus situational CORE modules.
+- PCs participating now;
+- active threads/entities needed immediately;
+- mandatory `RUNTIME.md` + `AI_REASONING.md`;
+- situational CORE modules.
 
-If the previous session ended in initiative or another detailed transient state, load the exact persisted tactical/transient record before continuing.
+Generate a compact recap from canonical state when useful. A recap is orientation, not a new source of canon.
+
+If the previous session ended in initiative or another detailed transient procedure, load the exact persisted tactical/transient state.
 
 ## Resume after interruption
 
-An interrupted chat does not itself advance world time. Resume from canonical persistent state unless another session/player has changed the world.
+An interrupted chat does not itself advance world time. Resume from persistent state unless another session/player changed the world.
 
-In singleplayer, explicit resync or a new chat invalidates assumptions that existed only in old conversation context.
+In singleplayer, a new chat or explicit resync refreshes HEAD and relevant working state.
 
-In multiplayer, synchronize HEAD before any persistent transition.
+In multiplayer, apply the multiplayer synchronization policy before race-sensitive actions or publication.
 
 ## During session
 
-Do not create a checkpoint after every action. Persist durable transitions as event commits and keep hot state current.
+Do not create commits/checkpoints after every action.
 
-Periodically compact hot state by removing resolved/stale data that is already represented in WORLD/LOG.
+Track durable deltas in working state and publish batches on natural boundaries: scene/combat end, significant travel/ownership/resource changes, explicit save, pause/end, risky context transition, or when unsaved state becomes too large to safely keep only in context.
 
-## Session boundaries
+Race-sensitive shared changes in multiplayer should be published promptly after the logical action completes.
 
-When a natural session boundary occurs, persist a checkpoint if state changed materially. A checkpoint should make a fresh chat able to resume without reading the whole session transcript.
+Compact hot state as processes resolve. Historical detail belongs in LOG/WORLD, not CURRENT.
 
-Checkpoint creation must not duplicate full WORLD/history. It identifies the recovery frontier and compact active state.
+## Session boundary
+
+When a natural boundary occurs and state changed materially:
+- persist the current batch;
+- ensure CURRENT and affected entity records match canon;
+- update semantic event history at useful granularity;
+- create/update checkpoint when exact recovery value justifies it;
+- retain only active threads and next-horizon preparation.
+
+A checkpoint is a recovery frontier, not a copy of the world.
 
 ## Ending in combat or complex state
 
-Prefer ending outside complex round-by-round resolution when convenient, but do not manipulate player decisions merely to reach a neat stopping point.
+Prefer a clean stopping point when it arises naturally, but never manipulate player choices just to reach one.
 
-If play stops mid-combat or mid-procedure, persist enough transient state to resume exactly:
-- order/turn;
-- positions/important geometry;
-- HP/conditions/resources;
-- ongoing effects/durations;
-- unresolved declarations if any.
+If play stops mid-procedure, persist enough exact transient state to resume: turn/order, important geometry, HP/conditions/resources, ongoing effects/durations and unresolved declarations.
 
-## Session summary
+## Session journal
 
-A user-facing recap may be generated on request or when useful, but the recap is not canonical storage. Canon comes from structured state + event log.
+The persistent session record should be compact enough to recover operational continuity: session identity, relevant incoming events, unexpected durable changes and unresolved matters.
 
-Do not store literary summaries merely because a session ended if they add no retrieval value.
+Do not store full literary transcripts merely because a session ended.
 
-## Feedback and preferences
+## Feedback/preferences
 
-Gameplay preferences that are specific to the campaign may be stored explicitly in campaign configuration if the user wants them applied across sessions.
-
-Do not put campaign-specific preferences into ChatGPT Memory.
-
-General user preferences outside campaign canon are outside this framework's storage responsibility.
+Campaign-specific tone, boundaries and house-rule preferences belong in campaign configuration when they need cross-session persistence. Never store campaign canon/preferences in ChatGPT Memory.
 
 ## Maintenance boundary
 
-Framework upgrades, schema migrations, branch rebases, canon repairs and large compactions should happen outside an active unresolved turn when possible. Create a checkpoint before risky maintenance.
+Framework upgrades, schema migrations, branch rebases, canon repairs and large compactions should happen outside an unresolved turn when possible. Create a checkpoint before risky campaign maintenance.

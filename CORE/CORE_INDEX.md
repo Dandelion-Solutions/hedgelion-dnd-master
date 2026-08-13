@@ -3,11 +3,16 @@
 framework_version: 0.1.0
 rules_baseline: D&D 2024 / SRD 5.2.1
 
-Load `RUNTIME.md` for every gameplay turn. Load other modules only when required.
+During gameplay ALWAYS load:
+- `RUNTIME.md` — turn pipeline, agency, causality and canon boundaries.
+- `AI_REASONING.md` — LLM-specific correctness discipline, anti-sycophancy and commitment preservation.
+
+Load every other module only when the current situation requires it.
 
 - `BOOTSTRAP_RUNTIME.md` — campaign discovery/startup and runtime routing.
 - `CAMPAIGN_SETUP.md` — create/initialize a new campaign branch.
-- `RUNTIME.md` — invariant DM turn pipeline and agency/canon boundaries. ALWAYS during gameplay.
+- `GM_CRAFT.md` — high-level synthesis of established GM best practices; use for setup/prep/design/audit.
+- `CAMPAIGN_OPERATIONS.md` — campaign/session organization and maintenance.
 - `SESSION.md` — session start/resume/end/checkpoints.
 - `CHARACTER.md` — PC creation and novice onboarding.
 - `ADJUDICATION.md` — checks, uncertainty, consequences, temporary rulings.
@@ -21,15 +26,24 @@ Load `RUNTIME.md` for every gameplay turn. Load other modules only when required
 - `MAGIC.md` — spell/magic adjudication.
 - `PROCESSES.md` — long-running threats, projects, clocks and off-screen change.
 - `WORLDGEN.md` — create/expand world only to the required horizon.
+- `LORE.md` — history, culture, disputed accounts and lore-reveal discipline.
 - `REWARDS.md` — economy, payment, treasure and ownership.
 - `ADVANCEMENT.md` — level-up, rest, downtime and long-term progression.
 - `SAFETY.md` — campaign boundaries and tone.
 - `NARRATIVE.md` — narration, pacing, information density, novice guidance.
-- `PREP.md` — situation-based preparation and strong starts.
+- `PREP.md` — situation-based, high-value preparation and strong starts.
 - `STORAGE.md` — canonical storage, batching, lazy retrieval and resync.
 - `MULTIPLAYER.md` — shared-world concurrency and environment-level conflict handling.
-- `ANTIPATTERNS.md` — LLM-specific failure modes.
+- `ANTIPATTERNS.md` — extended LLM-specific failure catalogue for audits/debugging.
 - `SOURCES.md` — research provenance; never load during normal gameplay.
+
+Recommended bundles:
+
+`new campaign` -> RUNTIME + AI_REASONING + GM_CRAFT + CAMPAIGN_OPERATIONS + CAMPAIGN_SETUP + CHARACTER + SAFETY + WORLDGEN.
+
+`session prep/start` -> RUNTIME + AI_REASONING + SESSION + CAMPAIGN_OPERATIONS + GM_CRAFT/PREP only if preparation is needed.
+
+`lore/history` -> RUNTIME + AI_REASONING + LORE + INFORMATION, plus exact relevant world records.
 
 Rules lookup policy:
 1. established campaign house rules;

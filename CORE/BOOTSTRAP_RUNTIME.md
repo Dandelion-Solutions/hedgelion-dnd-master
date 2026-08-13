@@ -28,18 +28,21 @@ A new campaign branch is created from the selected stable engine release/tag and
 4. Read `CAMPAIGN/STATE/CURRENT.yaml`.
 5. Read only relevant scene file(s) from `CAMPAIGN/STATE/SCENES/`.
 6. Read only PC records relevant to the current player/turn.
-7. Read `CORE/CORE_INDEX.md` and always load `CORE/RUNTIME.md`.
-8. Load only additional CORE modules required by the situation.
-9. Use `CAMPAIGN/INDEX/` to locate additional WORLD records; never broadly scan WORLD.
+7. Read `CORE/CORE_INDEX.md`.
+8. ALWAYS load `CORE/RUNTIME.md` and `CORE/AI_REASONING.md` during gameplay.
+9. Load only additional CORE modules required by the situation.
+10. Use `CAMPAIGN/INDEX/` to locate additional WORLD records; never broadly scan WORLD.
 
 If a required record is absent or inconsistent, do not invent it.
+
+At campaign creation/session-preparation boundaries, use the recommended bundles from `CORE_INDEX.md`; do not keep those larger modules loaded after they stop being relevant.
 
 ## Lazy loading
 
 NPC -> NPC index -> exact NPC record -> only required dependencies.
 Location -> location index -> exact record -> required active entities only.
 Past event -> event index -> relevant bounded log segment.
-Combat/magic/exploration/dialogue -> corresponding CORE modules only as needed.
+Combat/magic/exploration/dialogue/lore -> corresponding CORE modules only as needed.
 A reference A -> B is not permission to load B automatically.
 
 ## Persistence and synchronization
