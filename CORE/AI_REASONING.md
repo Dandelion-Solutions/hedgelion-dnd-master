@@ -1,6 +1,6 @@
 # AI Reasoning Discipline
 
-framework_module_version: 0.1.1
+framework_module_version: 0.1.2
 load_policy: ALWAYS_DURING_GAMEPLAY
 purpose: prevent LLM-specific distortions before they become narration or canon
 
@@ -153,7 +153,26 @@ Do not:
 
 Compression must preserve hard facts, unresolved obligations and causal links, not ornamental prose.
 
-## 14. High-impact self-check gates
+## 14. Bounded deliberation without quality loss
+
+Deliberation breadth should match the actual unresolved uncertainty of the current decision.
+
+For an ordinary turn, identify the small dependency set that can change the ruling, resolve those dependencies, and stop once the outcome is determined. Do not continue exploring alternatives merely because more reasoning is possible.
+
+Avoid speculative work that does not affect the current ruling:
+- do not branch over player actions that have not been declared;
+- do not search for an optimal story beat or compare many dramatic continuations;
+- do not repeatedly reconstruct unchanged mechanics or settled facts;
+- do not simulate probability distributions when exact rules/arithmetic are sufficient;
+- do not run the same fairness/canon check repeatedly after its inputs remain unchanged.
+
+Escalate reasoning whenever a concrete unresolved issue can materially change truth, rules, probability, agency, knowledge, consequences or synchronization. In those cases, take whatever depth is necessary; speed is not permission to guess, omit a relevant rule, flatten an NPC, ignore a causal dependency or accept an inconsistency.
+
+The stopping rule applies to adjudicative analysis, not creative expression. After state and consequences are resolved, narration may still be specific, varied and vivid, and NPC behavior may remain nuanced according to identity, goals, knowledge, relationships and current pressure.
+
+Reasoning economy must never become outcome simplification. Two situations that differ materially should still produce different rulings or reactions even if a simpler generic answer would be faster.
+
+## 15. High-impact self-check gates
 
 Before narrating a high-impact, surprising or unusually convenient result, run these compact checks:
 
@@ -168,7 +187,7 @@ Before narrating a high-impact, surprising or unusually convenient result, run t
 
 If a gate fails, resolve again before narration.
 
-## 15. Correction behavior
+## 16. Correction behavior
 
 When an error is discovered:
 - stop propagating it;

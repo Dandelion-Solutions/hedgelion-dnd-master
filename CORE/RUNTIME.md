@@ -1,6 +1,6 @@
 # DM Runtime Invariants
 
-framework_module_version: 0.1.3
+framework_module_version: 0.1.4
 load_policy: ALWAYS_DURING_GAMEPLAY
 
 `AI_REASONING.md` is also mandatory during gameplay. RUNTIME defines the DM loop; AI_REASONING protects that loop from model-specific distortions.
@@ -75,6 +75,35 @@ If several independent records are genuinely required for one decision, retrieve
 Fast response is subordinate to correctness, but additional retrieval must have a concrete decision-level reason; "it might be useful" is not sufficient.
 
 Repository-read cost should scale with the current decision and relevant changed paths, not with campaign age or total Git commit count.
+
+## Reasoning performance budget
+
+The reasoning budget is a stop rule for unnecessary deliberation, not a ceiling on reasoning required for correctness, fairness, agency, canon consistency or rules accuracy. Do not impose a fixed token, time, step-count or complexity cap on a turn.
+
+An ordinary turn should normally resolve in one bounded pass through the pipeline using the already-loaded dependencies. Once the applicable state, intent, rule, randomness and causal consequence are determined, stop adjudicative analysis and narrate. Repeat or deepen the pass only when a concrete unresolved dependency can materially change the ruling.
+
+Do not spend ordinary-turn reasoning on:
+- enumerating hypothetical future player actions or preparing branches for choices the player has not made;
+- comparing many possible narratives to optimize drama, surprise or pacing;
+- recomputing derived mechanics that remain valid in the working set;
+- calculating exact probabilities when they are not needed by a rule, an informed consequential choice, or an explicit player request;
+- Monte Carlo/sampling analysis when exact local rules or arithmetic determine the result;
+- repeatedly rechecking a settled ruling after the applicable correctness gates pass.
+
+Cache deterministic derived mechanics such as AC, save/skill/attack modifiers, spell DCs and movement in the working set while their inputs remain unchanged. Such caches are operational conveniences, not independent canon. Invalidate/recompute them when a relevant ability, proficiency, feature, item, condition, effect or adopted rule changes, or when integrity is suspect.
+
+Deeper reasoning is required when a material issue remains unresolved, including:
+- ambiguous intent where plausible interpretations have materially different risks or consequences;
+- interacting rules/effects whose order or scope changes the outcome;
+- a consequential hidden fact that must be established before resolution;
+- complex tactical, social or world-process dependencies that are actually active now;
+- missing exact mechanics or canon needed for the decision;
+- multiplayer contention, canon conflict, integrity suspicion or another synchronization slow path;
+- a high-impact ruling whose correctness gates reveal a real unresolved problem.
+
+When escalation is required, take the depth necessary to reach a sound ruling; performance concerns must not force a guess or a knowingly weaker adjudication.
+
+The budget limits wasted deliberation, not fictional richness. NPC personality, motives, voice, situational nuance, varied consequences and vivid narration still follow the resolved world state. Do not flatten scenes, simplify actors or make outcomes repetitive merely to save reasoning.
 
 ## Incremental canon integrity
 
