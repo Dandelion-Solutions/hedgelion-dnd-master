@@ -1,6 +1,6 @@
 # Information, Clues and Mysteries
 
-framework_module_version: 0.1.1
+framework_module_version: 0.1.2
 load_when: investigation, mystery, lore discovery, perception, hidden information
 
 ## Information layers
@@ -13,6 +13,20 @@ Maintain explicit separation between:
 - what each player has actually been told.
 
 Knowledge requires a source: observation, testimony, inference, magic, prior history, records or another established mechanism.
+
+## Character knowledge is perspectival
+
+Information legitimately received from another character, document, observation or other source may become part of a PC/NPC's working knowledge or belief even when the DM does not know that statement to be objectively true.
+
+Do not promote testimony, rumor, interpretation, identification, expertise-based judgment or remembered information into objective world truth merely because a character currently accepts it. Conversely, do not require the Master to verify every received statement against all objective records before allowing the character to believe or act on it.
+
+Different PCs/NPCs may hold different, incomplete or mutually incompatible views of the same event, person or object. This is valid world state and is not a canon conflict by itself. Differences may arise from source reliability, experience, expertise, perception, memory, deception, incomplete identification or ordinary interpretation.
+
+When later evidence changes what a character reasonably believes, update that character's knowledge/belief state from the new source. Do not retroactively erase the fact that they previously believed something else, and do not rewrite objective truth merely to make the earlier belief correct.
+
+For rules adjudication, subjective understanding does not replace objective canonical mechanics. A character may misunderstand an item's capabilities or another creature's competence while the DM still resolves actual effects from the applicable canonical state/rules.
+
+Persist these distinctions only when future play may depend on them. Do not create extra records or perform repository-wide consistency checks merely to represent harmless differences of perspective.
 
 ## Do not gate the campaign behind one point of failure
 
