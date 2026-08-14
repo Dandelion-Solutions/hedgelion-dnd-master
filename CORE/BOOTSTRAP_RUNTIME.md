@@ -1,6 +1,6 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.2.6
+runtime_bootstrap_version: 0.2.7
 engine_repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_development_branch: main
 engine_owner_login: dkolyada
@@ -14,16 +14,47 @@ Each player/host uses a separate campaign-storage repository. Storage `refs/head
 
 Campaign branches never merge back into storage `main`, the public engine repository, or each other. Storage `main` moves only through owner-authorized engine baseline installation/upgrade.
 
+## GitHub Connector policy
+
+Use the connected GitHub Connector as the normal/default transport for repository reads and writes. Do not first try shell `git`, `gh`, local clone/pull, direct HTTP/web scraping, container networking, or another transport.
+
+On Connector failure, diagnose connection/runtime binding, authenticated identity, Codex Connector App repository access, GitHub permission/status responses, and only then an actual missing Connector capability. Do not perform speculative transport/API experiments during player setup. Another transport may be considered only after a confirmed Connector capability gap and only when that method is explicitly available in the current product.
+
+For storage initialization/engine-copy boundaries, treat copied engine file bodies as opaque transport data. Copying the full release tree does not authorize semantic reading, summarization, or loading that tree into gameplay context.
+
+The current known Connector has no one-call server-side cross-repository tree copy. Use the launcher-defined Git Data transfer path; do not attempt cross-repository object-SHA reuse or archive/shell tricks. If a future Connector exposes real bulk copy/import, prefer it while preserving exact-tree verification and atomic publication.
+
 ## Bootstrap repository resolution
 
 At a new gameplay/setup chat:
-1. connect/resolve the authenticated GitHub identity;
-2. read the public engine repository and resolve the latest valid published release tag; never treat untagged public `main` commits as an installable engine;
+1. connect/resolve the authenticated GitHub identity through the GitHub Connector;
+2. read the public engine repository and resolve the latest valid published release tag; never treat untagged public `main` commits as installable engine;
 3. discover accessible campaign-storage repositories by the exact root marker `DND_STORAGE.yaml` on their default/main branch, using the cheapest supported exact-file/repository query rather than broad content scans;
-4. if exactly one valid storage repository is found, select it; if several are found, show a concise list and let the user choose; if none are found, the installation wizard asks whether to create a personal storage repository or join somebody else's;
-5. cache the selected storage repository in the current chat working context. Do not repeat repository discovery during ordinary gameplay without a concrete reason.
+4. if exactly one valid storage repository is found, select it; if several are found, show a concise player-friendly list; if none are found, ask whether to create the user's own campaign or join a friend's campaign;
+5. cache the selected storage repository in current-chat working context.
 
 The public latest tag is installation/update information, not automatically the engine of an existing campaign. Existing gameplay always uses the engine already integrated into the selected campaign branch.
+
+## Storage initialization invariant
+
+When setup creates a new storage repository, prefer a fresh personal repository initialized by GitHub with a README so an existing parent commit is available. Do not manufacture a D&D technical anchor when this can be avoided.
+
+Storage initialization follows this strict order:
+1. pin source release commit/root tree and target `main` parent;
+2. copy the complete release as opaque Git data without moving target `main`;
+3. build a release-only target tree from scratch;
+4. verify once that target release root tree SHA exactly equals source release root tree SHA;
+5. only then create `DND_STORAGE.yaml` and build the final tree as exact release tree + marker;
+6. recheck target parent, create one D&D initialization commit, and move `main` once with `force=false`;
+7. consider initialization successful only after the ref update succeeds.
+
+Never verify copied files individually, never create per-file commits, never publish the marker before the release tree is complete, and never use a marker-only `create_file`/`update_file` as an initialization step.
+
+## Player-facing setup discipline
+
+Normal setup messages should describe player goals rather than Git infrastructure. Do not normally mention marker filenames, refs, SHAs, tree checksums, commit topology, blob transfer, or force-push unless the user explicitly requests technical/debug detail or an actionable error requires it.
+
+Prefer wording such as “создать свою кампанию” and “присоединиться к кампании друга”. After successful setup, a simple player-facing confirmation such as “Готово. Всё настроено — можно создавать первую игру.” is sufficient.
 
 ## Write authority summary
 

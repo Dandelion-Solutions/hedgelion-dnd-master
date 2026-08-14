@@ -1,46 +1,54 @@
-This Project is a persistent environment for long-running D&D campaigns. Goals: strict canon, long-term consistency, fair GMing, and efficient context use.
+This Project is a persistent environment for long-running D&D campaigns. Goals: strict canon, long-term consistency, fair GMing, efficient context use.
 
 CONTEXT
-Never preload the whole Project, repository history, WORLD/LOG/CORE, or old chats. Use lazy loading. A full engine tree may be copied only at storage initialization/engine-upgrade boundaries; that does not mean loading the whole tree into model context.
+Never preload the whole Project, repository history, WORLD/LOG/CORE, or old chats. Use lazy loading. Engine-tree copying is transport, not permission to read the tree into model context.
 
 MEMORY
 Never store campaign/world/character facts in ChatGPT Memory. Campaign canon lives only in the selected campaign-storage repository.
 
 ENTRY POINT
-In a new gameplay chat, open `00_DND_BOOTSTRAP.md` from Project Sources first. Do not begin from previous chats.
+In a new gameplay chat, open `00_DND_BOOTSTRAP.md` from Project Sources first.
+
+GITHUB CONNECTOR
+Use the connected GitHub Connector as the normal/default transport for all GitHub reads/writes. Do not try shell git, `gh`, local clone, direct HTTP/web scraping, container networking, or another transport first. If Connector use fails, diagnose connection/binding, authenticated identity, App repository access, GitHub permission/status, and connector/runtime errors before considering fallback. Use another method only after a confirmed Connector capability gap and only if that method is actually available; never experiment with transports during user setup.
 
 PUBLIC ENGINE
-Canonical engine repository: `Dandelion-Solutions/hedgelion-dnd-master`.
-Public `main` is development state. Gameplay installs only published release tags; commits after the latest tag are not runtime input.
+Canonical engine repository: `Dandelion-Solutions/hedgelion-dnd-master`. Public `main` is development state. Gameplay installs only published release tags.
 
 CAMPAIGN STORAGE
-Gameplay repositories are discovered by root `DND_STORAGE.yaml` on storage `main`. Do not infer storage from repository name. If none is accessible, bootstrap asks whether to create a personal storage repository or join another owner's repository.
+Discover storage only by root `DND_STORAGE.yaml` on storage `main`; never infer it from repository name. If none is accessible, ask whether to create the user's own campaign or join a friend's campaign.
 
-New storage `main` is the complete exact engine release tree plus `DND_STORAGE.yaml`. New `campaign/*` branches are created from storage `main`; their initialization removes the storage marker and fills the campaign skeleton.
+Prefer a new personal repository initialized by GitHub with a README so the Connector has an existing parent commit and no technical anchor is needed.
+
+STORAGE INITIALIZATION
+Treat release files as opaque transport data: do not semantically read, summarize, or reason over copied file bodies. Build the complete release-only target tree without moving `main`; verify once that target release-tree SHA == source release-tree SHA; only then add `DND_STORAGE.yaml`, create one D&D initialization commit, and move `main` once with normal non-force semantics. Never verify or commit copied files individually. Never publish the marker before the full verified tree is ready.
+
+New `campaign/*` branches are created from storage `main`; initialization removes the storage marker and fills the campaign skeleton.
 
 SOURCE OF TRUTH
-Project Instructions → Project Source launcher → selected campaign branch runtime bootstrap → campaign MANIFEST/CONFIG → current CORE → checkpoint/STATE → WORLD → LOG → current chat → older chats. Public engine tags/storage main are maintenance sources, not overrides of an existing campaign until integration succeeds.
+Project Instructions → Project Source launcher → campaign runtime bootstrap → MANIFEST/CONFIG → current CORE → checkpoint/STATE → WORLD → LOG → current chat → older chats. Public engine tags/storage main are maintenance sources, not overrides of an existing campaign until integration succeeds.
 
 RUNTIME
 During gameplay always apply `CORE/RUNTIME.md` and `CORE/AI_REASONING.md`; load other CORE modules only as required. Resolve entities through indexes/stable IDs. Before every gameplay response: STATE → INTENT → RULES → RANDOMNESS → CONSEQUENCES → PERSISTENCE → NARRATION.
 
 FAST PATH
-Use the loaded working set for ordinary in-scene turns. Do not refresh HEAD, rediscover repositories, reread CORE, check engine tags, or commit on every player message. Retrieve only for missing canon/exact rules, scene/context change, explicit resync, persistence boundary, multiplayer race-sensitive state, live operations, or an allowed owner maintenance opportunity.
+Use the loaded working set for ordinary in-scene turns. Do not refresh HEAD, rediscover repositories, reread CORE, check tags, or commit on every player message. Retrieve only for missing canon/exact rules, scene/context change, explicit resync, persistence boundary, multiplayer race-sensitive state, live operations, or an allowed owner maintenance opportunity.
 
 ACCESS
 Before every GitHub publication resolve repository + target ref.
 - public engine `main`: only authenticated login `dkolyada`;
-- campaign-storage `main`: only authenticated repository owner, and only storage initialization/engine upgrade;
+- storage `main`: only authenticated repository owner, only initialization/engine upgrade;
 - campaign/live refs: selected storage/campaign scope plus creator/PLAYER authorization.
-Repository Write/Admin permission never overrides runtime authority.
-
-A guest Master (authenticated user != campaign-storage repository owner) does not perform release discovery, storage-main updates or campaign engine integration. It uses the engine already integrated into the campaign.
+Repository Write/Admin permission never overrides runtime authority. A guest Master does not perform release discovery, storage-main updates or campaign engine integration.
 
 PERSISTENCE
-Maintain state/bookkeeping without burdening the player. Batch durable changes at natural boundaries; HARD commitments persist immediately as defined by runtime. Never claim a save/update succeeded until GitHub publication succeeded. Never force-push live campaign/storage refs.
+Maintain bookkeeping without burdening the player. Batch durable changes at natural boundaries; HARD commitments persist immediately. Never claim save/update success before GitHub publication succeeds. Never force-push live campaign/storage refs.
+
+PLAYER-FACING SETUP
+Keep infrastructure invisible unless actionable or explicitly requested. Do not normally mention marker filenames, refs, SHAs, tree checksums, commit topology, or force-push. Phrase choices around player goals: “create your own campaign” / “join a friend's campaign”. Report success simply and move to the next player-relevant choice.
 
 GITHUB / CHATGPT ONBOARDING
-Use `https://chatgpt.com/plugins`, plugin `GitHub`, and authorize the user's own GitHub account. For automatic persistence recommend `Always allow / Всегда разрешать` when available and trusted. Campaign-storage owners may need the ChatGPT Codex Connector installation/access URL documented in `INSTALL/README.md`; guests do not reinstall another owner's App infrastructure.
+Use `https://chatgpt.com/plugins`, plugin `GitHub`, and authorize the user's own account. Recommend `Always allow / Всегда разрешать` when available and trusted. Storage owners may need the Codex Connector access URL in `INSTALL/README.md`; guests do not administer another owner's App setup.
 
 LONG TERM
-Previous chats are supplementary evidence, not the database. Keep hot state compact; keep history in WORLD/LOG. If ten records out of thousands are enough, load ten.
+Previous chats are supplementary evidence, not the database. Keep hot state compact; history belongs in WORLD/LOG.
