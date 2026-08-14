@@ -9,13 +9,13 @@ D&D Master разделяет:
 2. **Local release package** — ZIP конкретной версии, распакованный во временное рабочее окружение текущего ChatGPT-чата.
 3. **Campaign storage repository** — GitHub repository пользователя/хоста, где живут только persistent игровые данные и storage metadata.
 
-Public `main` — development state. Нормальная игра использует опубликованный release package/tag.
+Public `main` — development state. Нормальная игра использует опубликованный release package/tag; explicit engine-owner development tests используют локальный development ZIP, а не public main как runtime.
 
 ## Local release package
 
 Release ZIP содержит полный engine: CORE/RULES/SCHEMA/CAMPAIGN templates/INSTALL/TOOLS.
 
-Каждый новый чат при необходимости заново материализует/распаковывает пакет. Нельзя считать временную файловую систему другого чата persistent storage.
+Каждый новый чат при необходимости заново материализует/распаковывает package. Нельзя считать временную файловую систему другого чата persistent storage.
 
 Engine-файлы не копируются в campaign storage.
 
@@ -35,7 +35,7 @@ engine:
 Default branch — инфраструктурная точка:
 - marker + возможные обычные owner-файлы вроде README;
 - НЕТ требования содержать engine tree;
-- НЕТ требования содержать пустой CAMPAIGN skeleton.
+- НЕТ требования содержать пустой campaign skeleton.
 
 `baseline_version` — версия по умолчанию для новых кампаний/maintenance, а не физически установленный engine.
 
@@ -45,13 +45,23 @@ Default branch — инфраструктурная точка:
 
 Каждая игра живёт в `campaign/YYYYMMDD[-NN]`.
 
-Branch создаётся от текущего storage default-branch HEAD для нормальной ancestry/parent semantics.
+Branch создаётся от текущего storage default-branch HEAD для normal ancestry/parent semantics.
 
-Первый campaign-specific commit затем заменяет унаследованное storage-содержимое на campaign tree, локально сгенерированный из release package через `TOOLS/init_campaign.py`.
+Первый campaign-specific commit затем заменяет унаследованное storage-содержимое на campaign tree, локально сгенерированный через `TOOLS/init_campaign.py`.
 
 Поэтому `DND_STORAGE.yaml`, storage README и другие storage-root paths не являются campaign canon.
 
-Campaign branch содержит `CAMPAIGN/**` данные, но не CORE/RULES/SCHEMA/INSTALL engine copy.
+### Current root layout
+
+LOCAL engine directory `CAMPAIGN/` — template source. Generator copies its CONTENTS to the output directory; output is the ROOT of campaign branch.
+
+Новая campaign branch содержит прямо в корне `README.md`, `MANIFEST.yaml`, `CONFIG.yaml`, `STATE/`, `INDEX/`, `WORLD/`, `LOG/`, `CHECKPOINTS/`, `RULES/` и другие campaign-data paths. Она не содержит дополнительный wrapper `CAMPAIGN/`.
+
+### Legacy layout
+
+Старые campaign branches могут хранить logical campaign tree под `CAMPAIGN/`. Bootstrap сначала ищет root `MANIFEST.yaml`, затем legacy `CAMPAIGN/MANIFEST.yaml`, после чего работает через resolved prefix/storage roots.
+
+Открытие старой кампании не является автоматической миграцией её layout.
 
 ## Campaign creator и gameplay authority
 
@@ -67,39 +77,29 @@ Read access может давать observer/read-only режим.
 
 Storage хранит только baseline VERSION.
 
-Конкретная campaign хранит точную engine provenance в MANIFEST:
-- base tag/SHA;
-- integrated tag/SHA;
-- update policy.
+Конкретная published campaign хранит точную engine provenance в MANIFEST: base/integrated tag + exact source SHA + update policy.
 
-Runtime должен использовать соответствующий local release ZIP. Нельзя молча запускать старую campaign на другом engine.
+Explicit engine-owner development test may use `dev-v<version>` with nullable SHA. Локальный development ZIP является runtime source; current public `main` не запрашивается только ради заполнения SHA.
 
 ## Engine update
 
-Обновление больше не является переносом дерева между repositories.
+Обновление не переносит engine tree между repositories.
 
-1. Master/owner обнаруживает новый published tag.
-2. Пользователь добавляет соответствующий Source code ZIP в Project Sources/current chat.
+1. Owner обнаруживает новый published tag.
+2. Пользователь добавляет соответствующий Source code ZIP.
 3. Local package валидируется.
-4. Storage baseline_version при необходимости обновляется одним metadata commit.
-5. Для конкретной campaign выполняются только определённые data/schema migrations + обновление manifest provenance.
+4. Storage baseline_version при необходимости обновляется metadata-only.
+5. Для конкретной campaign выполняются только defined data/schema migrations + manifest provenance update.
 6. Engine-файлы в campaign repository не появляются.
 
 Storage baseline может быть новее конкретной campaign.
 
 ## Guest Master
 
-Guest не меняет storage baseline и не управляет engine migration владельца.
-
-Если exact campaign engine package отсутствует, guest должен получить/приложить matching release ZIP; он не заменяет его произвольной более новой версией.
+Guest не меняет storage baseline и не управляет engine migration владельца. Если exact campaign package отсутствует, guest должен получить/приложить matching ZIP.
 
 ## Concurrency и persistence
 
-Обычный gameplay сохраняет optimistic concurrency:
-- `force=false`;
-- targeted HEAD/compare refresh;
-- semantic reconciliation вместо blind overwrite;
-- batched durable commits;
-- специализированные live-scene rules для race-sensitive multiplayer state.
+Обычный gameplay сохраняет optimistic concurrency: force=false, targeted HEAD/compare refresh, semantic reconciliation вместо blind overwrite, batched durable commits и специализированные live-scene rules.
 
-Git history — audit/provenance. Семантическая история мира — компактный `CAMPAIGN/LOG/`.
+Git history — audit/provenance. Семантическая история мира — compact campaign LOG.

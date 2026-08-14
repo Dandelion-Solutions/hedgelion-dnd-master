@@ -17,9 +17,10 @@ fields:
   recovery_notes: array[string]
   engine:
     tag: string
-    integrated_main_sha: string
+    integrated_main_sha: string|null
   schema_data_version: integer
 invariants:
   - checkpoint is compact recovery metadata, not a snapshot copy of all WORLD records
+  - current_state_path is resolved inside the campaign layout; new campaigns normally use STATE/CURRENT.yaml and legacy campaigns may use CAMPAIGN/STATE/CURRENT.yaml
   - expected_commit_sha may be filled after commit identity is known; recovery must also be possible via event frontier
   - latest pointer references a canonical checkpoint ID/path
