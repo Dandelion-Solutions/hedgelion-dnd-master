@@ -1,6 +1,6 @@
 # Campaign Operations
 
-framework_module_version: 0.1.3
+framework_module_version: 0.2.0
 load_when: campaign start, session start/end, prep, recap, campaign maintenance
 
 ## Campaign-level organization
@@ -15,114 +15,110 @@ The DM maintains:
 - current unresolved clues/questions;
 - relevant next-horizon prep;
 - durable resources, ownership and conditions;
-- session/checkpoint pointers.
+- session/checkpoint pointers only when those pointers truly change.
 
 Do not ask the player to manually maintain these records.
 
 ## Campaign start
 
-Before first play, establish only the minimum needed:
-1. campaign premise and mode;
-2. tone/boundaries and house-rule choices;
-3. characters and their connection to the premise;
-4. starting location and immediate context;
-5. first actionable situation;
-6. initial active conflicts/factions only if useful now.
+Before first play establish only the minimum needed: premise/mode, tone/boundaries, characters, starting location/context, first actionable situation, and immediately useful conflicts/factions.
 
 Do not require a complete world bible before the first scene.
-
-## Session journal model
-
-A compact session record should be able to answer:
-- which session/date/branch is this?;
-- what previous events materially affect today?;
-- what is the current situation?;
-- what prep is likely to matter?;
-- what unexpected durable events happened?;
-- what remains unresolved at the end?
-
-This corresponds to operational notes, not a transcript.
 
 ## Session start
 
 From canonical storage:
-- identify HEAD and campaign;
-- perform the creator-side tagged engine update opportunity from `ENGINE_UPDATES.md` when applicable;
-- recap only prior facts needed now;
-- restore current scene/resources/participants;
-- retrieve active threads and directly relevant entities;
-- load RUNTIME + AI_REASONING and only situational modules.
+- identify campaign and pin its current HEAD;
+- perform an allowed owner engine-update opportunity only when `ENGINE_UPDATES.md` says so;
+- restore only current scene/resources/participants and directly relevant threads/entities;
+- use the already-preloaded CORE cache.
 
-A recap is for orientation. It must not silently add or reinterpret canon.
+A recap is orientation, not a new source of canon.
+
+Do not resolve the campaign tree SHA merely because the chat started; `PERSISTENCE.md` may resolve/cache it lazily at the first actual save boundary.
 
 ## Preparation budget
 
-Prioritize likely/high-impact material. A useful hierarchy is:
-- `DEFINITE`: almost certain/current material; prepare exact mechanics and consequences;
+Prioritize likely/high-impact material:
+- `DEFINITE`: current/almost-certain material; exact mechanics/consequences;
 - `LIKELY`: plausible next scenes/actors; compact preparation;
-- `POSSIBLE`: names, motives, locations, clues or rule references only;
-- `REMOTE`: leave undefined or indexed until needed.
+- `POSSIBLE`: names, motives, locations, clues or references only;
+- `REMOTE`: undefined/indexed until needed.
 
-Preparation detail should track probability and cost of improvisation, not the DM's affection for an idea.
+Preparation detail tracks probability and cost of improvisation, not attachment to an idea.
 
-## During play
+## During play — hot working set first
 
-Take lightweight internal notes only for facts likely to persist. Keep transient tactical detail only while it matters.
+Take lightweight internal notes for facts likely to persist. Apply resolved consequences to the in-memory working set first and mark durable records dirty.
 
-Do not commit every exchange. Batch durable changes at natural persistence boundaries. In multiplayer, publish race-sensitive shared changes promptly.
+Do not publish as each individual file becomes dirty. Do not create temporary/staging files in the campaign branch.
 
-Engine update discovery is not part of the ordinary turn path. Do not check `main` or release tags every message; use only the opportunities in `ENGINE_UPDATES.md`.
+Most ordinary singleplayer turns should use zero GitHub calls. SOFT dirty state may span multiple turns until a natural persistence boundary under `RUNTIME.md` / `PERSISTENCE.md`.
 
-## Session end
+HARD changes publish at the logical completion boundary, still as one coherent campaign transaction.
 
-Before ending or context transition, if state changed materially:
-- persist the batch;
-- update CURRENT/active scene state;
-- update affected PC/NPC/item/location/faction/thread records;
-- append semantic event information at the appropriate granularity;
+Engine update discovery is not part of the ordinary turn path.
+
+## Campaign publication discipline
+
+Any durable `campaign/*` save activates `PERSISTENCE.md`.
+
+For ordinary campaign state:
+- use the `CAMPAIGN_TREE_TXN` profile;
+- combine all causally related dirty files into one tree/commit;
+- never mix Contents API writes into that transaction;
+- never force-push;
+- after success adopt the created commit/tree as the new known frontier without refetching the files just written.
+
+Active multiplayer live epochs continue to use the separate one-file `LIVE_STATE_CAS` protocol from `LIVE_SCENE.md`.
+
+Within one assistant response, if several save reasons concern the same campaign transition, merge them into one transaction rather than opening several sequential mini-transactions.
+
+## Session end / pause
+
+When the session pauses/ends and durable state changed materially:
+- publish remaining relevant dirty state as one coherent campaign transaction;
+- ensure CURRENT/active scene and affected entity/index/log records are mutually consistent;
 - compact resolved hot state;
-- create/update checkpoint when useful for exact resume;
-- keep only next-horizon prep that is still plausible.
+- create/update a checkpoint only if the boundary has real recovery value;
+- retain only plausible next-horizon prep.
 
 Unused provisional scenes do not become canon.
+
+## Checkpoint economy
+
+Checkpoint creation is not a synonym for save.
+
+Create one when exact recovery warrants it: session boundary, major scene/campaign transition, complex mid-procedure stop, risky maintenance/migration, or another explicit recovery frontier.
+
+Do not create a checkpoint after every gameplay event or ordinary persistence batch.
 
 ## Campaign conflicts
 
 Maintain a small number of meaningful active conflicts rather than an ever-growing quest list. Conflicts can escalate, resolve, split or become irrelevant through play.
 
-A conflict record should capture actors, goals, current pressure, known stakes and next change if unopposed. It should not prescribe the PCs' response.
+A conflict record captures actors, goals, pressure, known stakes and the next causal change if unopposed; it does not prescribe PC response.
 
 ## Player investment
 
-Use observed player/character interests to decide what deserves preparation time: people, communities, mysteries, homes, rivals, goals, institutions or themes they repeatedly engage with.
-
-Investment guides attention; it does not retroactively rewrite world truth or guarantee protection/reward.
+Use observed player/character interests to decide what deserves preparation attention. Investment guides preparation; it does not retroactively rewrite truth or guarantee protection/reward.
 
 ## Maintenance opportunities
 
-Ordinary gameplay uses the lightweight runtime/integrity path. Do not add broad audits or housekeeping to every turn merely because maintenance could be useful.
+Ordinary gameplay uses the lightweight runtime path. Do not add audits/housekeeping to every turn merely because maintenance could be useful.
 
-Existing natural downtime may be used as a convenient maintenance opportunity when useful: a rest/night, long uneventful travel, session pause/end, scene boundary, or another period in which no unresolved player decision depends on immediate adjudication. This is an operational opportunity, not a fictional requirement.
+Natural downtime may be a bounded maintenance opportunity when no unresolved action depends on immediate adjudication. Never introduce/extend fictional rest, night, travel or inactivity merely to create repository-maintenance time.
 
-Never introduce, accelerate, prolong or narratively force rest, night, travel, inactivity or another in-world pause merely to create time for repository maintenance. Player choices and world chronology must remain independent of maintenance convenience.
+Do not defer an actual canon/write correctness problem merely because the scene is active; isolate and repair the affected scope according to `INTEGRITY.md` / `PERSISTENCE.md`.
 
-Do not defer an actual `CANON_SUSPECT`, unsafe pending write, or other correctness problem until the next rest/night. Handle the affected scope when discovered according to `INTEGRITY.md`; unrelated play may continue when safe.
+## Technical silence
 
-Maintenance work does not need to be announced in player-facing narration unless it materially delays, blocks, corrects or changes the presented game state. If the fiction advances during real downtime, any off-screen world developments still require their normal causal triggers; do not invent "meanwhile" events merely to mask technical work.
+Successful repository work is infrastructure and normally invisible to the player. Do not interleave live narration with commit/HEAD/staging commentary.
 
-A natural downtime boundary is permission to perform useful bounded housekeeping, not a requirement to run an audit every time a character sleeps.
-
-Engine release checks are narrower still: a natural maintenance boundary is only an update opportunity when `ENGINE_UPDATES.md` says to use it. Do not turn every rest/scene boundary into a release-tag query.
+Surface a technical message only when persistence failure/conflict blocks continuation or durable confirmation, may change the adjudication/canon, requires owner/player action, or the user explicitly asks about it.
 
 ## Periodic campaign audit
 
-At natural intervals, review only compact active data and ask:
-- Are any threads actually resolved but still marked active?
-- Did important NPC goals/knowledge change?
-- Is hot state duplicating history?
-- Are old provisional hooks being mistaken for canon?
-- Is lore becoming contradictory?
-- Is the campaign accumulating too many simultaneous conflicts?
-- Is context retrieval still index-driven and local?
+At natural intervals review only compact active data: resolved-vs-active threads, important NPC goals/knowledge, hot-state duplication, provisional prep leakage, contradictions, conflict count, and whether retrieval remains index-driven/local.
 
-Repair storage organization without altering fictional truth unless evidence requires a canon repair.
+Repair storage organization without altering fictional truth unless evidence requires canon repair.

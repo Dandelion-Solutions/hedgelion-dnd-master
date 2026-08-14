@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.2.1
+framework_module_version: 0.2.2
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 ## Context model
@@ -41,10 +41,11 @@ All other modules remain present but dormant until their domain is relevant. In 
 - `SAFETY.md` — campaign boundaries and tone.
 - `NARRATIVE.md` — narration, pacing and information density.
 - `PREP.md` — situation-based preparation, strong starts and bounded enrichment research.
-- `STORAGE.md` — canonical storage, batching, lazy CAMPAIGN retrieval and resync.
+- `STORAGE.md` — canonical storage model, targeted reads and durable data organization.
+- `PERSISTENCE.md` — authoritative GitHub write transaction/transport protocol; activate for any save/publication.
 - `INTEGRITY.md` — bounded repair when canon is suspect/corrupt.
 - `MULTIPLAYER.md` — shared-world concurrency and access behavior.
-- `LIVE_SCENE.md` — temporary live synchronization for shared actionable scenes.
+- `LIVE_SCENE.md` — temporary one-file CAS synchronization for shared actionable scenes.
 - `ANTIPATTERNS.md` — extended failure catalogue for audit/debug.
 - `SOURCES.md` — provenance/reference appendix; preloaded but DORMANT during ordinary live turns. May activate for explicit source research or bounded setup/prep enrichment.
 
@@ -60,9 +61,11 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 `session/world prep` -> activate PREP + WORLDGEN/LORE as needed; SOURCES may activate for one bounded enrichment pass.
 
-`engine update opportunity` -> activate ENGINE_UPDATES + BOOTSTRAP_RUNTIME + STORAGE.
+`campaign persistence boundary` -> activate PERSISTENCE + STORAGE; use PERSISTENCE as authoritative write sequencing.
 
-`multiplayer shared scene` -> activate MULTIPLAYER + LIVE_SCENE plus current domain modules.
+`engine update opportunity` -> activate ENGINE_UPDATES + BOOTSTRAP_RUNTIME + STORAGE + PERSISTENCE when publication is required.
+
+`multiplayer shared scene` -> activate MULTIPLAYER + LIVE_SCENE plus current domain modules; ordinary live-epoch writes follow LIVE_SCENE's one-file CAS profile, not campaign-tree transport.
 
 `explicit rules research` -> activate SOURCES/rules-source routing only for that bounded research request.
 

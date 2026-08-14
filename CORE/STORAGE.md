@@ -1,20 +1,22 @@
 # Canonical Storage and Persistence
 
-framework_module_version: 0.5.7
+framework_module_version: 0.6.0
 load_when: session startup, state retrieval, persistence boundary, resync, canon conflict
 
 The engine package and campaign storage are separate.
 
 - Engine/runtime/schema/rules are read from the locally extracted D&D Master release archive.
 - Persistent campaign canon lives only in the selected GitHub campaign-storage repository.
-- Chat context is temporary working memory.
+- Chat context is temporary working state.
 - ChatGPT Memory is never campaign storage.
+
+`PERSISTENCE.md` is authoritative for GitHub write transaction/transport semantics. This module defines what is stored, how it is retrieved, and how canonical working state is organized.
 
 ## Storage repository metadata
 
 A campaign-storage repository is discovered by exact root `DND_STORAGE.yaml` on its default branch.
 
-Storage v2 marker records repository role and the owner-approved baseline engine VERSION for new campaigns:
+Storage v2 marker:
 
 ```yaml
 storage_format_version: 2
@@ -25,113 +27,112 @@ engine:
 
 Marker existence is sufficient for discovery; do not infer storage from repository name.
 
-Storage default branch does NOT contain or need a copy of CORE/RULES/SCHEMA/INSTALL.
+Storage default branch does not contain or need CORE/RULES/SCHEMA/INSTALL. `baseline_version` is a default/maintenance pointer and does not itself install an engine or mutate existing campaigns.
 
-`baseline_version`:
-- is a default/maintenance pointer;
-- does not itself install an engine;
-- does not automatically change existing campaigns.
-
-Campaign branches contain campaign data only. They do not depend on `DND_STORAGE.yaml` for gameplay canon.
-
-Legacy v1 storage may still contain copied engine files. Treat those paths as inert legacy storage data, never as runtime source.
+Legacy v1 copied engine files are inert storage data, never runtime source.
 
 ## Campaign data layout
 
-Current campaign branches store their data directly at branch root. Root `MANIFEST.yaml` is the current-layout discriminator and its `storage.*` fields route STATE/INDEX/WORLD/LOG/CHECKPOINTS.
+Current campaign branches store data directly at branch root. Root `MANIFEST.yaml` is the current-layout discriminator and its `storage.*` fields route STATE/INDEX/WORLD/LOG/CHECKPOINTS.
 
-Legacy campaigns may store the logical campaign tree under `CAMPAIGN/` and have `CAMPAIGN/MANIFEST.yaml`.
+Legacy campaigns may store the same logical tree under `CAMPAIGN/`.
 
-Bootstrap resolves one layout before gameplay. Once resolved, use manifest storage roots for all records. New current-layout writes MUST NOT create a `CAMPAIGN/` wrapper. Opening a legacy branch is not permission to relocate it.
-
-The local engine `CAMPAIGN/` directory is a template source only and is not a remote campaign path.
+Resolve layout once before gameplay and use resolved manifest roots for every read/write. New current-layout writes MUST NOT create a `CAMPAIGN/` wrapper. Local engine `CAMPAIGN/` is template source only.
 
 ## Campaign write authorization
 
-Before game-state writes determine campaign creator from Git history: `author.login` of the first campaign-specific initialization commit.
+Before game-state writes determine campaign creator from the first campaign-specific initialization commit.
 
-- singleplayer: creator-only writes;
-- multiplayer: active player bindings according to multiplayer rules;
-- mode/join-policy changes: creator-only;
-- storage metadata maintenance: authenticated storage repository owner only.
+- singleplayer: creator-only gameplay writes;
+- multiplayer: active PLAYER binding according to multiplayer rules;
+- creator-only operations remain creator-only;
+- storage-default metadata maintenance is authenticated repository-owner-only.
 
-Repository permission is necessary but not sufficient.
-
-## Authenticated player binding
-
-For multiplayer, resolve authenticated GitHub identity and map stable GitHub user ID to exactly one active `PLAYER_` record. Canonical semantic actor identity is campaign `player_id`, not mutable GitHub login.
+Repository permission is necessary infrastructure but not sufficient gameplay authority.
 
 ## Canonical read order
 
-Project Instructions -> local release launcher/runtime bootstrap -> campaign MANIFEST -> local current CORE -> latest checkpoint/hot STATE -> exact WORLD records -> bounded LOG -> current chat -> older chats as recovery evidence only.
+Project Instructions -> local release launcher/runtime bootstrap -> campaign MANIFEST -> preloaded current CORE -> latest checkpoint/hot STATE -> exact WORLD records -> bounded LOG -> current chat -> older chats as recovery evidence only.
 
-When a scene has an active live epoch, `LIVE_SCENE.md` inserts that operational frontier between durable campaign state and narration/adjudication.
+During an active live epoch, `LIVE_SCENE.md` inserts its operational frontier for the live-owned scope.
 
 ## Stable IDs and lazy retrieval
 
-Resolve through INDEX files, fetch exact records, and load only dependencies required for the current decision. Never recursively load the whole entity graph.
+Resolve names/relations through compact INDEX entries and fetch exact records only when current setup/scene/decision needs them. Do not recursively traverse the world graph.
 
-Stable-ID reservation remains a HARD persistence boundary: publish record + required index before relying on the ID as durable canon.
+Stable-ID reservation remains HARD: publish the new record + required index coherently before relying on that ID as durable canon.
+
+## Hot campaign frontier cache
+
+Each active campaign working set maintains:
+- `known_head_sha`;
+- `known_tree_sha` when resolved;
+- the exact loaded canonical records at that known frontier;
+- dirty in-memory records not yet durably published.
+
+Startup/resync pins HEAD. Tree SHA may be resolved lazily at first save.
+
+A successful own campaign publication updates known HEAD/tree directly from the created commit/tree. Do not immediately refetch records the runtime just wrote. A later sync is required only for an explicit/external/concurrency/missing-canon reason under `RUNTIME.md` and `PERSISTENCE.md`.
 
 ## Lightweight repository reads
 
-Treat GitHub campaign storage as a versioned current-state store, not a repository to clone/pull.
+Treat campaign GitHub as a versioned current-state store, not something to clone/pull.
 
-Each working set has a campaign `base_head_sha`.
+When synchronization is actually required:
+1. probe active campaign ref once;
+2. unchanged from `known_head_sha` -> stop;
+3. changed -> compare changed paths only when needed;
+4. intersect with loaded/dirty/current-decision/access dependencies;
+5. fetch only affected exact records pinned to the same new HEAD;
+6. advance the working-set frontier.
 
-Routine sync:
-1. fetch active campaign branch ref;
-2. if unchanged, stop;
-3. if changed, compare base..HEAD server-side;
-4. intersect changed paths with loaded/dirty/decision/access dependencies;
-5. fetch only relevant exact files pinned to one HEAD;
-6. advance base HEAD.
+If changed paths cannot affect current loaded/dirty/decision scope, accept the newer HEAD as frontier without rereading unrelated files; resolve its tree SHA lazily if/when persistence later requires it.
 
-Do not download whole campaign archives or broad history merely to learn current state.
-
-The fact that the engine is fully extracted locally does not change this campaign-data lazy-read policy.
+No broad archive/history/directory scan for ordinary play.
 
 ## Environment-level partitioning
 
-Prefer separate files for independently changing scene/PC/NPC/location/item/faction/thread/session/log records. The resolved `STATE/CURRENT.yaml` is compact routing state, not transcript.
+Prefer separate files for independently changing scene/PC/NPC/location/item/faction/thread/session/log records. `STATE/CURRENT.yaml` is compact routing/hot state, not transcript.
 
 ## Operational live canon
 
-Active live-scene rules remain as defined by `LIVE_SCENE.md`: one temporary operational frontier, later compacted into durable campaign state, never blindly duplicated turn-by-turn.
+Active live scenes follow `LIVE_SCENE.md`. Its single-file live CAS write path is intentionally distinct from durable campaign-tree transactions.
 
-Any legacy `CAMPAIGN/LIVE/...` notation in older runtime text is resolved through the selected campaign root; current layout uses `LIVE/...`.
+Do not use a temporary live file as staging for ordinary campaign commits.
 
 ## Consistency tiers
 
-- HARD: canonical commitment whose loss would materially break resumed state; publish at the logical action boundary.
-- SOFT: durable state that may remain briefly dirty until the next persistence boundary.
-- EPHEMERAL: current-chat context only unless later promoted.
+- HARD: durable commitment whose loss would make resumed canon materially wrong/incomplete; publish at its logical completion boundary.
+- SOFT: durable state that may remain dirty and batch until a natural boundary/safety threshold.
+- EPHEMERAL: current-chat-only unless promoted.
 
-## Working set and persistence
+HARD does not mean per-file publication. All causally related records still publish as one coherent campaign transaction.
 
-Keep only relevant canonical records plus internal dirty paths/facts.
+## Working set and persistence boundaries
 
-Publish normal campaign batches at natural boundaries: scene/combat/travel completion, pause/end, substantial durable bundle, accepted setup phase, explicit save, risky transition.
+Keep relevant canonical records + dirty paths/final contents in memory. Do not write GitHub files as soon as each individual thought/consequence is discovered.
 
-One durable batch should normally be one Git commit.
+Normal singleplayer play should batch SOFT changes across ordinary turns and publish at boundaries such as meaningful action-sequence completion, scene/encounter transition, significant durable state/ownership/thread change, explicit save, pause/end, risky context transition, or accumulated dirty state becoming recovery-sensitive.
 
-## Concurrent campaign HEAD change
+Use `PERSISTENCE.md` for the exact publication algorithm and performance budget.
 
-Before publishing:
-- if HEAD unchanged, publish normally;
-- if changed, compare paths;
-- disjoint changes may be rebased/rebuilt on latest HEAD;
-- structurally independent shared-index entries may merge;
-- same-entity conflicts require targeted semantic reconciliation;
-- incompatible changes cause re-adjudication from latest canon.
+## Concurrency
 
-Never force-update live campaign or live-scene refs.
+Campaign-tree transactions use optimistic non-force publication.
+
+If the branch changed before commit creation, abort/rebase from the new frontier before creating a stale commit. If it changes in the final narrow race window, invalidate the transaction and rebuild. Never force-update campaign/live refs.
+
+A branch movement caused by the same runtime mixing write APIs/transactions is a self-induced persistence race and must be treated as a runtime bug, not as normal multiplayer behavior.
 
 ## Event log and checkpoints
 
-LOG is compact semantic history, not transaction journal/transcript. Create checkpoints at session boundaries, major transitions and before risky migrations/maintenance.
+LOG is compact semantic history, not a transaction journal/transcript.
 
-Checkpoint paths are layout-relative; new campaigns use root-layout paths such as `STATE/CURRENT.yaml`, while legacy campaigns retain their existing resolved prefix.
+A normal gameplay persistence batch does NOT automatically create a checkpoint. Checkpoints are recovery frontiers for session boundaries, major transitions, complex mid-procedure stops, risky maintenance/migration, or another concrete recovery need.
+
+Do not touch MANIFEST checkpoint pointers when no new checkpoint is needed.
+
+Checkpoint/entity paths are layout-relative; new campaigns use root-layout paths.
 
 ## Canon conflicts
 
