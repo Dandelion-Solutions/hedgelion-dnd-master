@@ -5,12 +5,12 @@ engine_owner_login: dkolyada
 rules_baseline: D&D 2024 / SRD 5.2.1
 schema_version: 2
 ai_reasoning_revision: 2
-gm_craft_revision: 1
+gm_craft_revision: 2
 install_layout_revision: 7
 branch_id_revision: 1
 access_control_revision: 4
 storage_format_revision: 2
-presentation_revision: 2
+presentation_revision: 3
 campaign_update:
   compatibility: maintenance_required
 recommended_tag: v0.5

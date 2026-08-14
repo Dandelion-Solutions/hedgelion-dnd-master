@@ -12,6 +12,8 @@ fields:
     setting_name: string|null
     starting_region_id: string|null
     detail_horizon: enum[local, regional, custom]
+  play_style:
+    dnd_lore_fidelity: integer|null
   tone:
     tags: array[string]
     notes: string|null
@@ -23,5 +25,9 @@ fields:
   notes: array[string]
 invariants:
   - campaign-specific preferences/boundaries live here, not ChatGPT Memory
-  - null means not yet chosen; do not invent a value
+  - null means not yet chosen; do not invent a value except explicit documented setup defaults
   - changing a boundary or advancement method requires explicit user decision
+  - dnd_lore_fidelity is a campaign-wide value in range 0..10; null defaults to 3 only when the player delegates/does not care during setup
+  - dnd_lore_fidelity controls fidelity to official D&D lore, terminology and published-setting/source conventions; it MUST NOT change mathematical mechanics, dice honesty, DC fairness, action economy, resources, PC capabilities or established campaign rules
+  - low dnd_lore_fidelity permits free original reinterpretation while retaining adopted D&D mechanics; high fidelity treats adopted official setting/source facts as strong constraints
+  - once a world fact is canonical in campaign storage, later external source research does not silently overwrite it

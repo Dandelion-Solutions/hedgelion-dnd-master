@@ -8,6 +8,8 @@ world:
   setting_name: null
   starting_region_id: null
   detail_horizon: local
+play_style:
+  dnd_lore_fidelity: null
 tone:
   tags: []
   notes: null

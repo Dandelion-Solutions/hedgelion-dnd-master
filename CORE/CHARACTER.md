@@ -1,6 +1,6 @@
 # Character Creation and Onboarding
 
-framework_module_version: 0.5.2
+framework_module_version: 0.5.3
 load_when: new campaign, new PC, replacement PC, level-up choices requiring onboarding
 
 ## Goal
@@ -21,7 +21,9 @@ Only after explicit player acceptance should the PC become canonical active stat
 
 Use the campaign's adopted D&D rules baseline. For D&D 2024/SRD 5.2.1, character creation normally establishes class/level, origin/background/species/languages, ability scores, class details, equipment and derived statistics.
 
-Do not invent mechanical options from memory when exact current rules matter; retrieve/verify the official or campaign-authorized source.
+Character creation/level-up is a preparation boundary, not a live-turn rules lookup loop. When exact durable mechanics are materially important and not already available locally, a bounded official-source research pass is allowed under `PLAY_POLICY.md`.
+
+Prefer batching such lookups, establish the chosen mechanics once, and store the resulting abilities/features/spells/resources in campaign records so ordinary play does not need to reopen the source.
 
 ## Start from concept when useful
 
@@ -35,13 +37,24 @@ Do not force the player to select every cosmetic/backstory detail before play. U
 
 ## Mechanical transparency preference
 
-When creating a new campaign player and no preference is already stored, ask one compact onboarding question: how much game mechanics should normally be shown on a `0..10` scale, where `0` means no technical detail unless explicitly requested and `10` means show all legitimate character-sheet numbers, modifiers and rule calculations.
+When creating a new campaign player and no preference is stored, ask this as a HUMAN presentation preference rather than an unexplained numeric setting.
 
-Default to `mechanics_detail: 3` if the player does not care or delegates the choice.
+Use anchors equivalent to:
 
-For consequential decisions where mechanical state materially affects an informed choice, default to `decision_support_detail: 6`. The player may set a different value. If they explicitly choose `0` because they want no technical detail, default both values to `0`.
+**«Сколько игровой механики тебе показывать, от 0 до 10?**
+- **0** — числа, формулы и служебная механика меня не интересуют; хочу в основном жить внутри истории.
+- **5** — показывай важные броски, ресурсы и последствия, но без постоянной бухгалтерии.
+- **10** — хочу видеть и сам отслеживать все доступные мне показатели, модификаторы, ресурсы и расчёты.
 
-Store these values in the stable campaign `PLAYER_` record, not in the PC record. They are presentation preferences and must never alter the underlying character mechanics or game outcome.
+Если всё равно — поставлю обычные **3/10**.»
+
+Localize the wording to the player's language. Do not ask `how much mechanics 0..10?` without explaining what the scale means.
+
+Store the answer as `mechanics_detail` in the stable campaign PLAYER record.
+
+`decision_support_detail` remains an internal presentation safeguard for consequential informed choices and defaults to 6. If the player explicitly chooses mechanics detail 0 because they want no technical mechanics, default both detail values to 0 unless they specify otherwise.
+
+These preferences alter only how mechanics are PRESENTED. They never alter underlying mechanics, randomness, DCs, enemy state, world truth or player capability.
 
 Do not turn onboarding into a questionnaire. The player may change the preference later, and a one-off request for a number does not by itself redefine the profile.
 
@@ -86,7 +99,7 @@ For a novice, explain mechanical tradeoffs in plain language before requesting a
 
 For spellcasters, store the exact known/prepared spells/features/resources necessary to play the current level. Do not preload the full spell catalog into runtime context.
 
-When the player needs to choose a spell/feature, retrieve the relevant candidate set and summarize meaningful differences without requiring them to memorize rule text.
+When the player needs to choose a spell/feature, retrieve the relevant candidate set and summarize meaningful differences without requiring them to memorize rule text. A bounded setup lookup may be used to establish these durable mechanics, but gameplay should then use the stored result rather than repeatedly researching it.
 
 ## Character motif vs mechanic
 

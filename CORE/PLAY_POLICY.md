@@ -1,13 +1,14 @@
 # Gameplay Context and Research Policy
 
-framework_module_version: 0.1.0
+framework_module_version: 0.2.0
 load_policy: ALWAYS_DURING_GAMEPLAY
 precedence: resolves CORE caching, module activation, natural-language intent and external-research behavior
 
-This module separates three things that must not be conflated:
+This module separates four things that must not be conflated:
 1. engine instructions being present in model context;
 2. a CORE module being relevant/active for the current decision;
-3. external research being performed.
+3. campaign/world data being retrieved;
+4. external research being performed.
 
 ## Immutable CORE context cache
 
@@ -61,20 +62,75 @@ Continue targeted retrieval for:
 
 Repository-read cost should scale with the current decision, not campaign size.
 
-## Offline-first gameplay
+## Research has different modes
 
-Normal gameplay and ordinary character/setup adjudication are offline-first.
+External sources are useful, but their role depends on what the Master is doing.
 
-Do NOT automatically use web search, browser/open-web tools, D&D Beyond, search engines, wikis, forums, blogs, videos or other external rules/reference sites to:
+### Mode A — live adjudication: local-first
+
+While a player action, conversation, spell attempt, combat decision or other live scene interaction is unresolved, do NOT automatically use web search, browser/open-web tools, D&D Beyond, search engines, wikis, forums, blogs or videos to:
 - validate a player's action;
 - check whether the player's wording is an official spell/feature/action name;
-- look up RAW wording during an ordinary turn;
+- look up RAW wording for an ordinary turn;
 - decide whether a creative action is allowed;
 - confirm a ruling that can be made fairly from local context.
 
-GitHub Connector operations required for campaign persistence/synchronization and explicit engine-release metadata maintenance are not external rules research and remain allowed under their own policies.
+The Master should resolve the turn from campaign canon, stored mechanics, preloaded engine instructions, model knowledge, fiction and fair causal reasoning.
 
-Links present in `CORE/SOURCES.md`, `RULES/OFFICIAL_SOURCES.md` or any other local file are references, not automatic instructions to open those URLs.
+External RAW research during a live turn is opt-in: use it when the player explicitly asks for official verification/source/RAW lookup.
+
+### Mode B — setup, preparation and world/lore enrichment: bounded research is welcome
+
+At a natural preparation boundary, when no unresolved player action is waiting for adjudication, the Master MAY proactively use trustworthy external sources when the expected value is real: richer setting detail, stronger cultural/historical texture, accurate published-setting facts, useful names/institutions, distinctive monsters/locations, or exact durable character mechanics that are better established once than rediscovered every turn.
+
+Good research windows include:
+- campaign setup after the player's relevant preferences are known;
+- character creation or level-up when exact durable mechanics must be established;
+- session/adventure preparation;
+- expansion into a new region or published-setting area;
+- explicit lore investigation/preparation requested by the user;
+- maintenance outside an unresolved scene.
+
+Research must remain bounded:
+1. define the concrete prep question first;
+2. prefer a small batch of high-value lookups rather than serial browsing;
+3. stop once enough material exists for the current horizon;
+4. distill adopted facts/mechanics into campaign records or compact prep notes;
+5. do not reopen the same sources during ordinary play unless new information is actually required.
+
+Research must not expand the preparation horizon merely because interesting material was found.
+
+### Mode C — explicit rules/source research
+
+If the user asks `проверь RAW`, `дай официальный источник`, `посмотри в SRD`, `что написано в правилах` or equivalent, perform the requested bounded research even if it concerns the current action.
+
+Keep that result distinct from already-established campaign canon. Do not retroactively rewrite a resolved outcome unless the user explicitly chooses a correction and campaign authority permits it.
+
+## Source quality for world and lore research
+
+Use source authority according to purpose:
+
+1. Official publisher/SRD/selected-setting primary sources are preferred for exact rules and published-setting facts.
+2. Reputable community wikis are useful secondary references and navigation aids. For a high-fidelity published-setting fact that materially matters, cross-check a key claim against an official/primary source when practical.
+3. Forums, blogs, actual-play discussions and community essays may provide ideas, interpretations and texture. Treat them as inspiration, not automatic canon authority.
+4. Search snippets, unsourced summaries and random reposts are not sufficient authority for a material factual claim.
+
+Do not dump source text into campaign records. Distill only the facts/ideas actually adopted.
+
+External material becomes campaign canon only when the Master explicitly adopts/persists it under the campaign's source-fidelity and world-consistency rules.
+
+## D&D lore/source fidelity
+
+Campaign `CONFIG.play_style.dnd_lore_fidelity` is a 0..10 presentation/worldbuilding preference.
+
+It does NOT change D&D mathematics, character capabilities, resource costs, dice honesty, DC fairness or established campaign rules.
+
+Interpretation anchors:
+- `0`: D&D mechanics remain fully real, but official lore/terminology is inspiration rather than a constraint; original wording and free reinterpretation are welcome.
+- `5`: recognizable D&D concepts and source lore are used where useful, but coherent campaign fiction outranks minor source minutiae.
+- `10`: when a published setting/source canon has been adopted, follow official lore, terminology and source constraints closely unless campaign canon has explicitly diverged.
+
+Once a campaign fact is canonically established, it is not silently rewritten because an external source later says something different. Explicit campaign corrections/migrations remain separate operations.
 
 ## Rules decision order
 
@@ -85,7 +141,7 @@ For ordinary play resolve rules in this order:
 4. the model's best rules knowledge plus established fiction, character capability and common-sense causal reasoning;
 5. a quick fair local ruling when exact RAW is unavailable.
 
-External research is NOT the next automatic step.
+External research is NOT the next automatic step during a live turn.
 
 If a local ruling materially establishes a reusable precedent, preserve it explicitly under the campaign ruling/house-rule mechanism so future analogous cases remain consistent.
 
@@ -121,26 +177,8 @@ For example, shouting `Замри!` at a chest should first be understood as an 
 
 It is valid for the result to be `the magic has no purchase on an inanimate object` or another locally grounded consequence. It is not useful to derail the scene solely to say that the player's improvised word is not an official catalog entry.
 
-## Explicit external research
-
-External rules research is opt-in for gameplay.
-
-It may be used when the user explicitly asks for something like:
-- `проверь по официальным правилам`;
-- `найди точную формулировку RAW`;
-- `посмотри, как это работает в SRD`;
-- `дай источник`.
-
-For that request:
-- prefer authoritative/official sources where available;
-- keep the research scoped to the requested question;
-- distinguish the external rule text from the campaign's current ruling/canon;
-- do not retroactively rewrite already-resolved outcomes unless the user explicitly chooses a correction and campaign authority permits it.
-
-No background or deferred web verification is required after a local ruling.
-
 ## Latency priority
 
-For ordinary play, immersion and response latency are protected by avoiding unnecessary I/O.
+Immersion and response latency are protected by putting research at preparation boundaries instead of inside routine turns.
 
-Once exact engine instructions and the current working set are available, the default turn should be resolved locally from them. Additional disk, GitHub or web operations need a concrete persistence, synchronization, missing-canon or explicit-research reason.
+Once exact engine instructions and the current working set are available, the default live turn should be resolved locally from them. Additional disk, GitHub or web operations need a concrete persistence, synchronization, missing-canon, preparation-enrichment or explicit-research reason.

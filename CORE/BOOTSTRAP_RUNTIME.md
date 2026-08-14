@@ -1,6 +1,6 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.6.0
+runtime_bootstrap_version: 0.6.1
 engine_repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_development_branch: main
 engine_owner_login: dkolyada
@@ -53,13 +53,23 @@ Normal published campaigns use exact release tag + resolved tag commit SHA.
 
 ## External research boundary
 
-Normal gameplay is offline-first. Apply preloaded `PLAY_POLICY.md`.
+Apply preloaded `PLAY_POLICY.md` and distinguish live adjudication from preparation.
+
+### Live turn
 
 Do not automatically use external web/search/D&D Beyond/wiki/forum sources to validate player wording/actions or resolve ordinary rules questions. If exact RAW is absent locally, make the minimum fair local ruling from campaign mechanics, preloaded engine instructions, model rules knowledge, established fiction and causal/common-sense constraints.
 
-External rules research is opt-in: use it only when user explicitly asks for official verification/RAW/source lookup or during a separate explicit framework-research task.
+External RAW research during a live turn is opt-in and may be used when the user explicitly asks for official verification/RAW/source lookup.
 
-Links inside local engine files do not trigger browsing.
+### Setup/prep/worldbuilding
+
+At a natural preparation boundary with no unresolved player action, bounded trustworthy-source research MAY be used proactively when it materially improves durable character mechanics, setting accuracy, world texture or lore for the current horizon.
+
+Batch the research, distill adopted facts/mechanics into campaign/prep state, and do not make ordinary play depend on repeated browsing.
+
+Official sources are preferred for exact rules/published facts; reputable wikis are secondary references; forums/community material may inspire but are not automatic canon authority.
+
+Links inside local engine files do not trigger browsing by themselves.
 
 GitHub campaign persistence/synchronization and owner-authorized release metadata checks remain allowed and are not rules research.
 
