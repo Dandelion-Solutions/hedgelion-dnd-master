@@ -1,13 +1,25 @@
 # Magic Runtime
 
-framework_module_version: 0.1.1
+framework_module_version: 0.2.0
 load_when: spellcasting, magical effects, unidentified magic, counterfactual spell use
 
-## Rules-first spell resolution
+## Intent before vocabulary
 
-For a known spell/feature, use its actual stored or verified mechanics. Do not infer a spell's capabilities from its name or fantasy convention when the rule text matters.
+The player may describe magical intent in ordinary language, approximate terminology, translation, an invented incantation or a command word. Exact official vocabulary is not an input gate.
 
-Track relevant:
+First determine the intended fictional effect. Then map it internally to an already available spell/feature/action when there is one clear materially equivalent match.
+
+Do not say that `a spell called X does not exist` unless the player explicitly asks about the official rules entry or exact identity materially matters.
+
+Do not browse external rules sites merely to validate the player's wording.
+
+Intent translation may normalize vocabulary; it may NOT silently grant a new spell/feature or change cost/risk/effect.
+
+If several plausible available capabilities would have materially different costs or consequences, ask the smallest clarification needed. If no plausible capability can cause the intended effect, resolve that constraint briefly in play.
+
+## Known spell/feature resolution
+
+For an established spell/feature, use its stored mechanics when available. Track only the mechanics relevant now, such as:
 - prepared/known status if applicable;
 - spell slots/charges/resources;
 - casting time;
@@ -17,44 +29,32 @@ Track relevant:
 - saves/attacks;
 - conditions and persistent effects.
 
-## Natural-language intent
+When an exact detail is not locally available, follow `PLAY_POLICY.md`: do not automatically research the web. Make the minimum fair local ruling supported by character capability, established fiction and current engine knowledge.
 
-The player may describe the magical intent without rules vocabulary. Map it to available spells/features when reasonable, but do not silently substitute a different spell that changes cost or consequence.
+## Creative and improvised magic
 
-If the player appears to assume a capability the character does not have, explain the mechanical constraint briefly and let the player choose a new action.
+Creative application is encouraged when it follows established capability and world causality.
 
-## Creative spell use
+A player's improvised incantation is not automatically a new spell. Determine whether an existing capability can express the intent or whether the campaign/world permits an improvised magical attempt.
 
-A spell does what its rules and established world interactions support. Creative application is encouraged when it follows those constraints and the physical/magical situation.
+When an interaction goes beyond explicit local rules, apply `ADJUDICATION.md`. If the ruling becomes a reusable precedent, preserve it explicitly.
 
-Do not add broad unstated powers merely because they would be cinematic. Do not artificially forbid plausible secondary consequences of an actual effect.
-
-When a creative interaction goes beyond explicit rules, apply `ADJUDICATION.md` and make the ruling consistent for analogous future cases unless explicitly revised.
+Example: shouting `Замри!` at a moving chest is treated as an attempt to stop/immobilize the chest, not as a spelling test. A valid outcome may be that the character's available magic cannot affect that object, that the effect works through a suitable known capability, or that an improvised attempt is resolved under campaign magic rules. Do not derail the scene solely to discuss whether `Замри` is an official spell name.
 
 ## Unknown magic
 
-Separate:
-- objective magical properties;
-- observable effects;
-- what the PC has identified;
-- hypotheses/beliefs.
+Separate objective magical properties, observable effects, PC knowledge and hypotheses. Do not disclose hidden mechanics merely because the player asks whether something is magical.
 
-Do not disclose an item's/phenomenon's full hidden mechanics because the player asks whether it is magical.
+## Wild/unstable magic
 
-Identification follows the active rules and fictional evidence.
-
-## Wild/unstable magic and special motifs
-
-Chaotic or unreliable magic must have an explicit campaign mechanic/procedure if it is expected to recur systematically.
-
-Do not improvise beneficial mishaps after every failed spell merely to satisfy a character theme. If a misfire table or special feature exists, define its trigger and randomness before use.
+Chaotic or unreliable magic needs an explicit campaign mechanic if it recurs systematically. Do not manipulate results to create cinematic mishaps.
 
 ## Magical causality
 
-Magic can violate ordinary physics where the rules/world say it can, but it does not remove causal consistency.
+Magic may violate ordinary physics where rules/world permit, but persistent magical changes still require causal and canonical consistency.
 
-Persistent magical changes, curses, summoned entities, portals, destroyed objects and knowledge gained through magic must be represented in canonical state when relevant.
+## External RAW verification
 
-## Rule verification
+Do not perform external rule verification automatically during ordinary play.
 
-If exact wording materially changes an outcome and the local record is incomplete, verify against the campaign's canonical rules source (D&D 2024/SRD 5.2.1 or adopted supplement) rather than inventing details.
+If the user explicitly asks for exact RAW/official-source verification, perform that bounded research under `PLAY_POLICY.md`. The research result does not retroactively rewrite already-resolved campaign outcomes unless an authorized correction is explicitly chosen.
