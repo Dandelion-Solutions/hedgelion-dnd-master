@@ -1,6 +1,6 @@
 # Shared-World Multiplayer
 
-framework_module_version: 0.1.6
+framework_module_version: 0.1.7
 load_when: CAMPAIGN/MANIFEST mode == multiplayer OR explicit multiplayer management
 
 ## Mode and ownership
@@ -14,6 +14,8 @@ The creator is determined from Git history: `author.login` of the first campaign
 `multiplayer` permits bound players to publish gameplay commits according to the rules below. Multiple chats/players share one campaign branch and objective world, while each PC/player has separate knowledge.
 
 Repository collaborator access alone is not an existing player binding. The campaign's `players.join_policy` controls whether an eligible collaborator may create a new binding for themselves.
+
+An active `PLAYER_` binding is campaign-scoped: it never authorizes `refs/heads/main` or another campaign's campaign/live refs. Apply the `RUNTIME.md` write-routing guard and `ARCHITECTURE/ACCESS_CONTROL.md` before publication.
 
 Changing `players.join_policy` is creator-only. If the field is absent in an older campaign, treat it as `invite_only`.
 

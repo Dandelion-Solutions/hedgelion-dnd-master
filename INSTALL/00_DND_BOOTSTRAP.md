@@ -1,6 +1,6 @@
 # D&D Master Project Launcher
 
-launcher_version: 5
+launcher_version: 6
 repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_branch: main
 runtime_bootstrap: CORE/BOOTSTRAP_RUNTIME.md
@@ -13,87 +13,86 @@ CRITICAL MEMORY RULE: never save campaign/world/character facts to ChatGPT Memor
 
 ## Repository access gate
 
-The first normal attempt to access the repository is also the installation check. Do not run a separate setup audit when repository access already works.
+Before campaign discovery, campaign creation, or persistence, verify real access to `Dandelion-Solutions/hedgelion-dnd-master`.
 
-If GitHub is connected, obtain the authenticated GitHub login first. Then attempt a non-mutating repository metadata/read request for `Dandelion-Solutions/hedgelion-dnd-master` and inspect repository permission when available.
+1. Resolve the authenticated GitHub identity when GitHub is connected.
+2. Attempt a non-mutating metadata/read request for the canonical repository.
+3. Inspect repository permission when available.
 
-- readable + write/push: skip the connection wizard and continue to Startup;
-- readable but not writable: continue only with the collaborator-access step below;
-- GitHub unavailable/not connected: enter the Connection Wizard at step 1;
-- GitHub connected but repository unreadable: enter the Connection Wizard at step 2.
+- readable + required write/push transport permission: continue to Startup;
+- readable but insufficient transport permission: use the guest access step below;
+- GitHub unavailable/not connected: start the normal player connection flow;
+- GitHub connected but repository unreadable: stop setup and troubleshoot access.
 
 Never test write access by creating, editing, or deleting a file.
 
-Repository write permission does not imply authority to modify `main` or another user's campaign. Runtime authorization is defined by `CORE/BOOTSTRAP_RUNTIME.md` and `ARCHITECTURE/ACCESS_CONTROL.md`.
+Repository permission is infrastructure capability only. It does not grant authority to modify `main`, another campaign, or another player's scope. Runtime authorization is defined by `CORE/RUNTIME.md` and `ARCHITECTURE/ACCESS_CONTROL.md`.
 
-## Responsibility boundary
+## Normal player / guest connection flow
 
-This wizard configures the guest user's ChatGPT and GitHub access only.
+Use one unresolved step at a time.
 
-The guest-side Master must never attempt to add itself/the guest as a collaborator, modify repository-owner settings, or instruct the guest how to administer the owner's repository. Repository access is granted separately by the repository owner.
+### 1. Obtain repository access
 
-When the authenticated GitHub login is known and repository access is missing or insufficient, show that login to the guest and ask them to pass it to the repository owner through whatever communication channel they normally use. The owner handles the invitation/permission change independently.
+The user's own GitHub account must have access to:
+`Dandelion-Solutions/hedgelion-dnd-master`.
 
-## Connection Wizard
+If it does not, obtain the authenticated GitHub login when possible and tell the user to send that username to the repository/campaign owner through their normal communication channel. The owner handles GitHub invitation/access independently.
 
-Use this only when the repository access gate fails. Guide the user through one unresolved step at a time. Keep instructions short and operational. After each completed step, retry only the relevant check before showing another step.
+The guest-side Master must not add collaborators, change organization settings, or administer the owner's repository.
 
-### 1. Connect GitHub to ChatGPT
+### 2. Enable the GitHub plugin in ChatGPT
 
-Ask the user to open ChatGPT **Settings → Apps → GitHub** and connect the GitHub account they intend to use.
+Direct plugin directory:
+https://chatgpt.com/plugins
 
-Direct settings route:
-https://chatgpt.com/#settings/Apps
+Enable/connect the plugin named **GitHub** and authorize the user's own GitHub account — the same account that has repository access.
 
-Official setup guide:
-https://help.openai.com/en/articles/11145903-connecting-github-to-chatgpt
+The underlying organization GitHub App is **ChatGPT Codex Connector**. A normal player/guest must not reinstall it on `Dandelion-Solutions`; organization installation is shared infrastructure managed by owner/admin.
 
-If GitHub is unavailable or Connect is disabled, say that app availability may depend on the ChatGPT plan/workspace and stop until it is enabled.
+### 3. Use persistent GitHub permission for D&D Master
 
-After authorization succeeds, obtain the authenticated GitHub login and tell the user briefly: `Connected GitHub account: <login>`.
+At the first actual GitHub action, ChatGPT may ask for permission to use GitHub.
 
-Then retry repository access. If it is still unavailable, continue to step 2.
+When a persistent choice is available, tell the user to choose **Always allow / Всегда разрешать** for normal D&D Master operation, but only if they trust this Project setup.
 
-### 2. Request access from the repository owner
+D&D Master automatically reads and persists campaign state through GitHub. One-time permission may stop later automated reads/writes for repeated confirmation, so persistence cannot operate smoothly without persistent permission.
 
-If the repository is unreadable or the current permission is insufficient, use the authenticated login obtained from the connector.
+Do not hide the scope: this setting applies to actions of the GitHub plugin. It does not expand the underlying GitHub account's repository access and does not override D&D Master runtime authorization.
 
-Tell the guest:
+### 4. Confirm usable access before gameplay setup
 
-`Your GitHub username is <login>. Send this username to the repository owner and ask them to add you to the D&D Master repository. Accept the GitHub invitation when it arrives, then return here.`
+Retry the non-mutating repository read/permission check.
 
-If the login cannot be obtained automatically, ask the user for their GitHub username only as a fallback.
+Only after it succeeds may the Master perform campaign discovery or create a campaign. If it still fails, do not guess repository/canon and do not continue as if connection works.
 
-Do not tell the guest how the owner should configure collaborators. Do not attempt to grant access yourself.
+## Owner / organization admin fallback
 
-After the guest confirms that the invitation was accepted or permission was changed, retry repository access and permission.
+Use this only when the **ChatGPT Codex Connector** is not already installed on the `Dandelion-Solutions` organization.
 
-### 3. Allow the ChatGPT GitHub App to access this repository
+Owner/admin fallback installation URL:
+https://github.com/apps/chatgpt-codex-connector/installations/select_target
 
-Use this step only if the user's GitHub account can access the repository but ChatGPT still cannot read it.
+The owner/admin installs the App for `Dandelion-Solutions` and grants it access to `Dandelion-Solutions/hedgelion-dnd-master`.
 
-Ask them to open ChatGPT **Settings → Apps → GitHub → Choose repositories / Configure Repositories**, or open GitHub App installations directly:
-https://github.com/settings/installations
+If the App is already installed on the organization, a guest must not use this installation URL or reinstall the App.
 
-Select the ChatGPT/OpenAI GitHub App, choose **Configure**, allow access to `Dandelion-Solutions/hedgelion-dnd-master`, and save.
+## Troubleshooting
 
-Repository visibility in ChatGPT can take a few minutes to update. Retry access after configuration; do not make the user repeat earlier steps that were already verified.
-
-### 4. Confirm usable access
-
-Once repository metadata/read succeeds, inspect connector/repository permission when available.
-
-- read + write/push: setup is complete; continue immediately to Startup;
-- read only/insufficient: show the authenticated GitHub login and return to step 2 so the guest can ask the owner for the required access;
-- still unreadable: report exactly which guest-side stages succeeded and which stage still fails. Do not restart the wizard from step 1.
+- If GitHub was connected before a repository transfer or organization-access change, use the GitHub reconnect/authorization flow first.
+- Do not tell a guest to reinstall the organization GitHub App unless owner/admin has established that the installation is missing.
+- After an organization GitHub App installation/access change, repository visibility may not update immediately. Recheck installation/repository access, then retry the repository read.
+- If an already-open chat retained an old tool binding after connector changes, page reload or a new chat is an acceptable recovery step, not a normal onboarding requirement.
+- If the user's GitHub account itself lacks repository access, stop and return to the repository-access step.
 
 ## Startup
 
-1. Use the connected GitHub app to access `Dandelion-Solutions/hedgelion-dnd-master`.
-2. For setup/framework work, read `CORE/BOOTSTRAP_RUNTIME.md` from `main` and obey its engine/main authorization rules before any write.
+1. Use the connected GitHub plugin to access `Dandelion-Solutions/hedgelion-dnd-master`.
+2. For setup/framework work, read `CORE/BOOTSTRAP_RUNTIME.md` from `main` and obey the main write gate before any publication.
 3. For gameplay, resolve the active `campaign/*` branch first. Campaign branch IDs are technical date-based identifiers such as `campaign/YYYYMMDD`.
 4. Read `CORE/BOOTSTRAP_RUNTIME.md` from that branch and follow it.
 5. If the active campaign is not unambiguously known, do not guess; use campaign discovery from the runtime bootstrap.
-6. Never claim a persistent state change was saved unless the GitHub write actually succeeded.
+6. Before any GitHub publication, resolve the exact target ref. `refs/heads/main` requires authenticated GitHub login `dkolyada`; campaign/live refs must belong to the selected campaign and pass campaign access control.
+7. Never claim a persistent state change was saved until the GitHub write actually succeeded.
 
 Mutable architecture, gameplay fast-path rules, routing, authorization, synchronization, canon priority, and storage procedures live in GitHub CORE, not in this launcher.

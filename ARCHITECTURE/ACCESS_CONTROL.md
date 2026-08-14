@@ -2,20 +2,24 @@
 
 Repository engine ownership and campaign ownership are separate concepts.
 
-## Engine/main ownership
+## Repository write authority
 
-The canonical repository is `Dandelion-Solutions/hedgelion-dnd-master`.
+Canonical engine repository: `Dandelion-Solutions/hedgelion-dnd-master`
 
-The shared engine branch is `main`. Its protocol-level owner is `engine_owner_login` from `ENGINE_VERSION.yaml` (currently `dkolyada`). Framework/runtime/schema/install/release/repository-policy writes to `main` are owner-only.
+Framework maintainer GitHub login: `dkolyada`
 
-Before any `main` write:
-1. read/resolve `engine_owner_login` from current `main` metadata;
-2. resolve the currently authenticated GitHub login;
-3. allow the write only when they match.
+- `refs/heads/main` is engine-maintainer-only.
+- Only the authenticated GitHub identity `dkolyada` may publish changes to `refs/heads/main`.
+- Repository Admin/Write permission, organization membership, collaborator status, campaign ownership, multiplayer `PLAYER_` binding, or ChatGPT/GitHub authorization do not by themselves grant authority to modify `main`.
+- Any gameplay Master, guest, contributor, or campaign creator other than `dkolyada` MUST refuse an attempted publication/update of `main` before the write is performed.
+- A campaign creator may publish only to their own `campaign/*` ref and live refs associated with that campaign, subject to normal campaign access-control rules.
+- A multiplayer participant may publish only within the campaign/live scope authorized by their active `PLAYER_` binding.
+- GitHub repository permission is necessary infrastructure permission but is insufficient gameplay/engine authorization.
+- Creating a campaign session does not grant engine-maintainer authority.
+- Campaign engine updates discover/read published engine release tags and integrate the selected release into the campaign branch. A campaign Master never publishes engine fixes or merged campaign state back to `main`.
+- This is D&D Master application/runtime policy, not a claim of server-side GitHub branch protection. GitHub may technically permit a human with sufficient repository permission to violate this policy manually outside D&D Master.
 
-Repository collaborator/admin permission is transport capability, not engine-authoring authority. A non-owner collaborator may read `main` and may write to a campaign branch only when that campaign's own authorization permits it.
-
-If either identity cannot be determined reliably, deny the `main` write. Never test authority with a probe commit. Connector inability to inspect GitHub branch-protection/ruleset settings does not weaken this runtime policy and must not be presented as proof that server-side protection is absent.
+Before any `main` publication, resolve the exact target ref and the currently authenticated GitHub login. If the target is `refs/heads/main`, allow publication only when the login is exactly `dkolyada`. If identity cannot be determined reliably, deny the write. Never test authority with a probe commit.
 
 ## Campaign ownership
 

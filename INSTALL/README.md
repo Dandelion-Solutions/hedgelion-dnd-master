@@ -1,97 +1,106 @@
 # Установка D&D Master by Hedgelion
 
-Канонический репозиторий: `Dandelion-Solutions/hedgelion-dnd-master`.
+Канонический репозиторий:
+https://github.com/Dandelion-Solutions/hedgelion-dnd-master
 
-Для подключения к ChatGPT Project нужны два файла:
-
-- `PROJECT_INSTRUCTIONS.txt` — вставить в Project Instructions;
-- `00_DND_BOOTSTRAP.md` — добавить в Project Sources.
+Для ChatGPT Project нужны два файла:
+- `INSTALL/PROJECT_INSTRUCTIONS.txt` — вставить в Project Instructions;
+- `INSTALL/00_DND_BOOTSTRAP.md` — добавить в Project Sources как `00_DND_BOOTSTRAP.md`.
 
 Остальная система и игровые кампании остаются в GitHub.
 
 ## 1. Создайте ChatGPT Project
 
-Создайте отдельный Project для D&D Master.
+Создайте отдельный Project для D&D Master. Project-only memory можно использовать как дополнительную изоляцию, если режим доступен; игровым каноном всё равно остаётся только GitHub.
 
-Рекомендуется выбрать **Project-only memory / «Память только в проекте»**, если этот режим доступен. Это дополнительная изоляция; игровым каноном всё равно остаётся только GitHub.
+Один ChatGPT Project может обслуживать несколько независимых кампаний.
 
-Один ChatGPT Project может обслуживать несколько независимых кампаний. Отдельный Project для отдельной игры допустим, но не обязателен.
+## 2. Добавьте Project Instructions и bootstrap
 
-## 2. Добавьте Project Instructions
+Скопируйте [`PROJECT_INSTRUCTIONS.txt`](PROJECT_INSTRUCTIONS.txt) целиком в Project Instructions.
 
-Откройте [`INSTALL/PROJECT_INSTRUCTIONS.txt`](PROJECT_INSTRUCTIONS.txt), скопируйте содержимое целиком и вставьте его в Project Instructions.
+Добавьте [`00_DND_BOOTSTRAP.md`](00_DND_BOOTSTRAP.md) в Project Sources как `00_DND_BOOTSTRAP.md`.
 
-Не удаляйте запрет использовать ChatGPT Memory и старые чаты как игровой канон.
+Другие файлы репозитория в Project Sources добавлять не нужно.
 
-## 3. Добавьте bootstrap
+## Normal player / guest: GitHub и ChatGPT
 
-Добавьте [`INSTALL/00_DND_BOOTSTRAP.md`](00_DND_BOOTSTRAP.md) в Project Sources как `00_DND_BOOTSTRAP.md`.
+### 3. Получите GitHub access
 
-Другие файлы репозитория в Project Sources добавлять не нужно: Мастер получает необходимые данные из GitHub по мере игры.
+Получите у владельца кампании/repository доступ к:
+`Dandelion-Solutions/hedgelion-dnd-master`.
 
-## 4. Подключите GitHub к ChatGPT
+Используйте обычный процесс GitHub invitation/access. Гостевой ChatGPT не должен сам менять owner-side repository settings.
 
-В ChatGPT откройте **Settings → Apps → GitHub** и подключите GitHub account, которым будете пользоваться для D&D Master.
+### 4. Подключите GitHub plugin
 
-Прямая страница настроек ChatGPT:
-https://chatgpt.com/#settings/Apps
+Откройте каталог plugins:
+https://chatgpt.com/plugins
 
-Официальная инструкция OpenAI по GitHub:
-https://help.openai.com/en/articles/11145903-connecting-github-to-chatgpt
+Включите/подключите plugin **GitHub** и авторизуйте свой GitHub account — именно тот account, которому предоставлен доступ к `Dandelion-Solutions/hedgelion-dnd-master`.
 
-Никогда не передавайте в чат пароль GitHub, Personal Access Token или приватный SSH-ключ.
+Underlying organization GitHub App для этого подключения — **ChatGPT Codex Connector**. Обычный игрок/guest не должен повторно устанавливать его на `Dandelion-Solutions`: organization installation управляется owner/admin и является общей инфраструктурой.
 
-## 5. Получите доступ к репозиторию
+Никогда не передавайте в чат GitHub password, Personal Access Token или приватный SSH key.
 
-Ваш GitHub account должен иметь доступ к `Dandelion-Solutions/hedgelion-dnd-master`.
+### 5. Разрешите автоматические GitHub actions
 
-Если репозиторий приватный и доступа нет, сообщите владельцу репозитория свой GitHub username. Владелец отдельно выдаёт нужный доступ; гостевой ChatGPT не должен менять owner-side repository settings.
+При первом фактическом GitHub action ChatGPT может показать permission prompt вида **«Разрешить ChatGPT использовать GitHub?»**.
 
-После приглашения примите GitHub invitation.
+Для нормальной работы D&D Master выберите **«Всегда разрешать» / “Always allow”**, если этот persistent вариант доступен и вы доверяете этому Project setup.
 
-## 6. Разрешите GitHub App видеть репозиторий
+Причина практическая: D&D Master автоматически читает и сохраняет campaign state через GitHub. One-time permission будет снова останавливать последующие чтения/записи подтверждениями, из-за чего automated persistence не сможет работать нормально без повторного участия пользователя.
 
-Если ваш GitHub account уже видит репозиторий, но ChatGPT его не находит, проверьте доступ установленного GitHub App:
+Это постоянное разрешение относится к действиям GitHub plugin. Оно не расширяет GitHub access само по себе и не отменяет D&D Master runtime access-control policy. Выдавайте его только если доверяете Project setup.
 
-https://github.com/settings/installations
+### 6. Проверьте реальный repository access
 
-Откройте ChatGPT/OpenAI GitHub App → **Configure** и разрешите доступ к `Dandelion-Solutions/hedgelion-dnd-master`.
+После подключения bootstrapper обязан проверить фактический доступ к:
+`Dandelion-Solutions/hedgelion-dnd-master`
 
-Не проверяйте write-доступ созданием тестового файла или commit. Мастер должен сначала использовать read-only metadata/permission checks.
+до campaign discovery, создания кампании или любой попытки persistence.
 
-## 7. Проверьте подключение
+Если repository недоступен, setup останавливается и показывает troubleshooting. Мастер не должен угадывать repository/canon или продолжать как будто connection работает.
 
-Создайте чат внутри Project и попросите Мастера проверить GitHub access к `Dandelion-Solutions/hedgelion-dnd-master`.
+Repository Write/Admin capability — только infrastructure permission. Допустимый target ref определяет runtime:
+- `refs/heads/main` — только authenticated GitHub login `dkolyada`;
+- `campaign/*` — по campaign creator / multiplayer access rules;
+- связанные live refs — только в scope выбранной кампании и active `PLAYER_` binding.
 
-Подключение считается пригодным для полноценной игры, когда Мастер может читать репозиторий и имеет требуемую транспортную write/push permission. Но repository permission сама по себе не даёт право менять всё подряд:
+## Owner / organization admin fallback
 
-- `main` — owner-only для engine/framework изменений;
-- `singleplayer campaign/*` — писать может только создатель кампании;
-- `multiplayer campaign/*` — запись разрешается только по player-binding и multiplayer policy.
+Этот раздел нужен только owner/admin, если organization-level GitHub App ещё не установлен на `Dandelion-Solutions`.
 
-Эти ограничения проверяются runtime, даже если GitHub технически разрешает push.
+Underlying GitHub App: **ChatGPT Codex Connector**
 
-## 8. Начните игру
+Fallback installation URL:
+https://github.com/apps/chatgpt-codex-connector/installations/select_target
 
-Создайте новый чат в этом Project.
+Owner/admin устанавливает App на `Dandelion-Solutions` и предоставляет ей доступ к:
+`Dandelion-Solutions/hedgelion-dnd-master`.
 
-Можно написать, например:
+Если App уже установлена на организации, guest этот URL не использует и ничего повторно не устанавливает.
 
-- **«Начинаем новую игру»** — чтобы создать новую кампанию;
-- **«Покажи мои игровые сессии»** — чтобы увидеть существующие игры и выбрать, какую продолжить.
+## Troubleshooting
 
-Дальше Мастер сам найдёт нужную campaign branch или проведёт через создание новой.
+- Если GitHub plugin был подключён до переноса repository или изменения organization/repository access, сначала используйте reconnect/authorization flow для GitHub plugin.
+- Не переустанавливайте organization GitHub App от имени guest без необходимости.
+- После изменения GitHub App installation repository может появиться в ChatGPT не мгновенно. Сначала перепроверьте installation/repository access, затем повторите read-check.
+- Если уже открытый chat сохранил старый tool binding после изменения connector-а, reload страницы или новый chat допустимы как recovery step. Это не обязательная часть обычного onboarding.
+- Если GitHub account сам не имеет доступа к repository, connector/plugin это не исправит: сначала нужен repository access для этого account.
 
-## Игра с друзьями
+## Начало игры
 
-Владелец репозитория отдельно предоставляет другу GitHub access. Друг подключает свой GitHub account к своему ChatGPT Project с теми же Project Instructions и bootstrap.
+После успешной проверки GitHub access создайте новый chat в этом Project и напишите, например:
+- **«Начинаем новую игру»**;
+- **«Покажи мои игровые сессии»**.
 
-Repository collaborator access сам по себе не делает пользователя участником кампании. В `singleplayer` другие пользователи остаются наблюдателями. Для совместной игры создатель кампании включает multiplayer, после чего доступ игрока определяется persistent player binding и join policy.
+Bootstrapper сам выполнит campaign discovery по правилам runtime.
 
 ## Где что хранится
 
-- `Project Instructions` — основные правила подключения и работы с каноном;
-- `00_DND_BOOTSTRAP.md` в Project Sources — маленькая точка входа;
-- `main` — engine/runtime, схемы, install/release документация и пустая основа новой кампании;
-- `campaign/*` — отдельные игровые миры и их состояние;
-- ChatGPT Memory, File Library и старые чаты — не источник игрового канона.
+- Project Instructions — правила Project и runtime routing;
+- `00_DND_BOOTSTRAP.md` — минимальная точка входа;
+- `main` — engine/runtime, schemas, install/release documentation и пустой campaign skeleton;
+- `campaign/*` — отдельные игровые миры и состояние;
+- ChatGPT Memory, File Library и старые chats — не источник игрового канона.

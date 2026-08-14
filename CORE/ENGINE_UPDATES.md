@@ -1,11 +1,13 @@
 # Engine Release Updates
 
-framework_module_version: 0.1.1
+framework_module_version: 0.1.2
 load_when: gameplay startup/resume, explicit engine-update request, safe engine maintenance opportunity, tagged release integration
 
 ## Release authority
 
 A campaign updates only from published engine release tags. `main` HEAD is development state and MUST NOT be treated as an available campaign update merely because it contains newer commits.
+
+From the campaign runtime side, release discovery against engine tags and `main` is read-only. A campaign Master may read tags, release metadata, ancestry and comparisons needed to select a release, but it never publishes changes to the engine repository or `refs/heads/main`.
 
 Valid engine release tags follow `RELEASE/VERSIONING.md` (`vMAJOR.MINOR` with an optional prerelease suffix). Ignore legacy/non-engine tags for automatic discovery.
 
@@ -109,7 +111,7 @@ Do not scan campaign history broadly. Use tag-to-tag changed paths plus the smal
 
 ## Publishing the update
 
-A successful engine update is one coherent campaign maintenance commit.
+A successful engine update is one coherent campaign maintenance commit. Its publication target is the selected campaign branch only.
 
 Build the resolved tree from:
 - current campaign-owned state at `C`;
@@ -123,6 +125,8 @@ Use a human-readable message such as:
 `engine: update <old-tag> -> <new-tag>`
 
 Publish with optimistic fast-forward semantics only. If campaign HEAD moved after preparation, do not force-push and do not publish the stale prepared tree; refresh the affected state and retry/re-evaluate at a safe boundary.
+
+A campaign Master never publishes engine fixes, campaign merges, or campaign state back to `main`. Engine maintenance on `main` is a separate engine-maintainer operation governed by `ARCHITECTURE/ACCESS_CONTROL.md` and the runtime write-routing guard.
 
 Blobs/trees/unattached commits created before a failed ref update are non-authoritative and may be ignored/cleaned later.
 

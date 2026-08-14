@@ -1,9 +1,19 @@
 # DM Runtime Invariants
 
-framework_module_version: 0.1.4
+framework_module_version: 0.1.5
 load_policy: ALWAYS_DURING_GAMEPLAY
 
 `AI_REASONING.md` is also mandatory during gameplay. RUNTIME defines the DM loop; AI_REASONING protects that loop from model-specific distortions.
+
+## GitHub write-routing guard
+
+Before any GitHub publication:
+1. resolve the exact target ref;
+2. if the target is `refs/heads/main`, require authenticated GitHub login == `dkolyada`; otherwise refuse before creating or publishing the change;
+3. during gameplay, require the target campaign/live ref to belong to the selected campaign and be authorized for the current campaign creator / active `PLAYER_` binding;
+4. GitHub repository permission alone never overrides this runtime authorization.
+
+This guard is mandatory and routes writes into the existing access-control rules; it does not create a separate ACL subsystem.
 
 ## Turn pipeline
 

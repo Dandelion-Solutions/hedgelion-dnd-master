@@ -1,6 +1,6 @@
 # Access-control regression cases
 
-These cases validate campaign ownership, authenticated player binding, provenance, branch identity and multiplayer joining policy rules.
+These cases validate campaign ownership, authenticated player binding, provenance, branch identity, multiplayer joining policy, and repository write-routing rules.
 
 ## A01 — Singleplayer foreign writer
 
@@ -121,3 +121,33 @@ Pass: existing active PLAYER bindings remain authorized. The policy change affec
 Campaign uses `open_contributors`, but the Master cannot reliably establish the current GitHub user's repository collaborator/write eligibility.
 
 Pass: deny self-enrollment until eligibility is resolved; do not infer authority from chat identity or repository visibility alone.
+
+## A21 — MAIN-OWNER-ONLY
+
+Authenticated GitHub user is not `dkolyada` but has Write/Admin-like repository capability and attempts to update `refs/heads/main`.
+
+Pass: runtime denies before publication. Repository capability does not satisfy the engine-maintainer identity gate.
+
+## A22 — CAMPAIGN-CREATOR-NOT-ENGINE-MAINTAINER
+
+A user created their own campaign and is its creator, but their authenticated GitHub login is not `dkolyada`.
+
+Pass: campaign writes are allowed within that creator's authorized campaign/live scope; a write to `refs/heads/main` is denied.
+
+## A23 — ENGINE-MAINTAINER
+
+Authenticated GitHub login is `dkolyada` and framework maintenance targets `refs/heads/main`.
+
+Pass: the main-write identity gate passes. Ordinary safety, current-HEAD/concurrency, atomicity, and fast-forward rules still apply.
+
+## A24 — CROSS-CAMPAIGN
+
+A bound multiplayer player has repository Write permission and an active binding in campaign A but attempts to publish into campaign B.
+
+Pass: deny unless the same authenticated user is independently authorized for campaign B. A binding never transfers authority across campaigns.
+
+## A25 — INFRASTRUCTURE-PERMISSION-NOT-AUTHORITY
+
+GitHub App, collaborator, organization, or equivalent repository permission technically permits a write.
+
+Pass: D&D Master runtime access-control policy still determines the allowed target ref and scope. Infrastructure permission never expands gameplay or engine authority.
