@@ -1,93 +1,126 @@
 # Campaign Setup and Branch Initialization
 
-framework_module_version: 0.2.4
-load_when: create new campaign, bind player, initialize empty campaign branch
+framework_module_version: 0.5.5
+load_when: create new campaign, bind player, initialize campaign branch
 
 ## Discover before creating
 
-Resolve the campaign-storage repository through `BOOTSTRAP_RUNTIME.md` before campaign discovery. If gameplay is requested and no campaign branch is selected, list `campaign/*` only in that storage repository, read manifests only, then let the user continue an existing game or start a new one.
+Resolve campaign storage through `BOOTSTRAP_RUNTIME.md`.
+
+If gameplay is requested and no campaign branch is selected:
+- enumerate `campaign/*` only;
+- read manifests only;
+- let the user continue an existing game or create a new one.
+
+## Engine source for a new campaign
+
+A new campaign is initialized from the LOCAL extracted engine release, never from engine files copied into storage.
+
+Read local `ENGINE_VERSION.yaml`.
+For a published release resolve its `recommended_tag` to exact public commit SHA.
+For explicit engine-owner development testing use the launcher-defined development exception and an exact development commit SHA.
+
+Do not use public untagged `main` as normal player runtime.
 
 ## New campaign branch
 
-Create the new campaign from current campaign-storage `refs/heads/main`, never directly from public engine `main` and never from an untagged public-engine commit.
+Create a neutral date-based branch from current storage default-branch HEAD:
+- first campaign that date: `campaign/YYYYMMDD`;
+- collisions: `campaign/YYYYMMDD-02`, then `-03`, etc.
 
-Before branching, validate `DND_STORAGE.yaml` on storage `main`; its `engine.installed_tag` and `engine.installed_sha` identify the published engine release represented by that baseline.
+Do not encode world names, PC names, multiplayer state, owner names or player counts in the branch name.
 
-Use a neutral date-based technical branch ID:
-- first campaign created on a date: `campaign/YYYYMMDD`;
-- if that branch already exists, use `campaign/YYYYMMDD-02`, then `-03`, etc.
+The branch is created from storage default branch only to establish repository ancestry/parentage. Its FIRST campaign-specific commit replaces inherited storage-root contents with a generated campaign tree. Therefore storage marker/README/other storage-root files are not campaign canon.
 
-Do not put world names, PC names, multiplayer state, author names or player counts into the branch name. Those are mutable campaign metadata, not branch identity.
+## Local scaffold generation
 
-The branch initially inherits the complete engine snapshot and empty `CAMPAIGN/` skeleton from storage `main`. Its first campaign-specific initialization commit MUST remove `DND_STORAGE.yaml`; that file is storage-main metadata, not campaign canon.
+Use local `TOOLS/init_campaign.py`.
 
-Initialize only the values needed to make the campaign identifiable and playable:
-- campaign ID/display name if established, branch/status/mode;
-- engine `base_tag` from storage `DND_STORAGE.engine.installed_tag` and `base_sha` from `installed_sha`;
-- engine `integrated_tag` equal to that base tag and `integrated_main_sha` equal to that public release SHA;
-- engine `update_policy: ask` unless later changed through the normal policy flow;
-- `players.join_policy: invite_only` unless the creator explicitly chooses `open_contributors` for multiplayer;
-- rules baseline and advancement method;
-- player binding(s);
-- campaign premise/tone/boundaries if already chosen;
-- PC creation state;
-- starting scene/location only when play is ready to begin.
+The generator:
+- copies the release's complete `CAMPAIGN/` skeleton locally;
+- fills campaign technical ID, branch, engine tag/SHA, created timestamp and initial mode;
+- does not contact GitHub;
+- does not use base64;
+- does not create gameplay lore/world content.
 
-Do not populate a full world during initialization.
+The release skeleton may include template/index/.gitkeep placeholder files. Generating them locally is cheap; GitHub publication must still be one coherent campaign initialization commit rather than one commit per file.
 
-## Campaign creator provenance
+If the generator is unavailable or fails, stop setup. Do not reconstruct the scaffold blob-by-blob from the public engine repository.
 
-The first persistence commit that initializes the inherited empty `CAMPAIGN/` skeleton is the campaign-specific initialization commit.
+## Atomic campaign publication
 
-Its GitHub `author.login` is the technical campaign owner/creator for access-control purposes. Do not duplicate that identity into `MANIFEST`.
+Before publication resolve:
+- selected storage repository;
+- campaign branch;
+- current branch HEAD/parent;
+- authenticated GitHub user.
 
-This first commit should contain the coherent campaign initialization state after required setup choices are settled. Later code derives ownership from Git history.
+Publish generated files using UTF-8 Git tree `content` entries (or an equivalent Connector bulk tree operation) in one prepared campaign tree.
 
-Owner-only operations include switching `singleplayer <-> multiplayer`, changing multiplayer `join_policy`, changing the campaign-wide engine update policy, integrating a newer engine release, and other explicit access/maintenance changes marked owner-only.
+Then:
+1. create one campaign initialization commit;
+2. update the campaign branch once with `force=false`;
+3. only after ref publication succeeds consider the campaign created.
 
-In `singleplayer`, only this creator is permitted by the gameplay protocol to publish campaign-state commits. Other repository collaborators may read/observe but not play into or modify the branch.
+Do not explicitly base64 encode scaffold files.
+Do not create one commit per scaffold file.
+Do not copy local CORE/RULES/SCHEMA/INSTALL files into the campaign branch.
+
+The first campaign initialization commit's `author.login` is the technical campaign creator for access-control purposes.
+
+## Initial manifest
+
+Initialize:
+- campaign ID and branch;
+- `status: initializing`;
+- mode (default `singleplayer` unless multiplayer already chosen);
+- engine `base_tag` / `base_sha` from the local release identity;
+- engine `integrated_tag` / `integrated_main_sha` equal to base values;
+- `engine.update_policy: ask`;
+- `players.join_policy: invite_only` unless creator explicitly chooses `open_contributors`;
+- rules baseline;
+- created timestamp.
+
+Do not duplicate creator GitHub identity in MANIFEST.
 
 ## Minimum user questions
 
-Ask only decisions that materially affect the game now. Typical first-run choices may be:
-- continue existing campaign or create new;
+Ask only decisions that materially affect play now. Typical choices:
+- continue/create game;
 - singleplayer or explicit multiplayer shared world;
-- broad campaign premise/tone if the user wants control over it;
-- PC concept/creation choices;
-- once per new campaign player, preferred mechanics detail on a `0..10` scale; use default `3` when the player does not care, with decision-support default `6`.
+- premise/tone if player wants control;
+- PC concept/creation;
+- mechanics detail 0..10 (default 3) and decision-support detail (default 6).
 
-Do not force an engine-update preference question during new-campaign setup; default to `ask`. The creator can choose `Always update automatically` when the first tagged update is offered or explicitly change the policy later.
+Do not force a long session-zero form.
 
-When multiplayer is enabled and the creator has not specified who may join, default to `invite_only`. The creator may explicitly choose `open_contributors`, meaning verified current repository collaborators with sufficient write access may self-create their own player binding. Do not silently infer open joining from repository collaborator access.
-
-Do not ask the user to invent a branch name. The technical branch ID is generated automatically from creation date.
-
-Do not force the player through a long session-zero form if preferences can emerge naturally and safely during play.
-
-## Campaign config
-
-Store campaign-level choices in `CAMPAIGN/CONFIG.yaml`, including premise/tone, advancement method, world/setting mode and explicit campaign boundaries. These are campaign data and never ChatGPT Memory.
+Do not force an engine-update preference during campaign creation; default `ask`.
 
 ## Player binding
 
-Create a stable `PLAYER_` record under `CAMPAIGN/WORLD/PLAYERS/` and a `PC_` record under `CAMPAIGN/WORLD/PCS/` when accepted. Add both to indexes in the same setup persistence batch.
+Create a stable `PLAYER_` record and `PC_` record when accepted, updating corresponding indexes in the same persistence batch.
 
-In `invite_only`, the creator explicitly establishes/authorizes the player's `PLAYER_` binding; that binding is the invitation and no separate invitation record is required.
+`invite_only`: creator explicitly establishes the player's binding.
 
-In `open_contributors`, follow `MULTIPLAYER.md`: an unbound user may self-create only their own initial binding when current GitHub identity and sufficient repository collaborator/write access are verified. That narrow onboarding write does not authorize unrelated campaign changes or control of an existing PC.
+`open_contributors`: follow `MULTIPLAYER.md`; a verified repository collaborator with sufficient access may self-create only their own initial binding.
 
-Bind player-facing mechanics preferences to the `PLAYER_` record. If unanswered, initialize `mechanics_detail: 3`, `decision_support_detail: 6`, and adaptive preference learning enabled. If the player explicitly requests no technical mechanics, initialize both detail levels to `0`.
+Mechanics preference defaults:
+- `mechanics_detail: 3`
+- `decision_support_detail: 6`
+- adaptive learning enabled
 
-A provisional PC may exist during creation but becomes `active` only after explicit player acceptance and mechanically required choices are valid.
+If player explicitly requests no technical mechanics, initialize both detail levels to 0.
 
-Repository collaborator access is not equivalent to an existing player binding; it only permits self-enrollment when multiplayer `join_policy` explicitly allows `open_contributors`.
+A provisional PC becomes active only after player acceptance and mechanically required choices are valid.
 
 ## First world content
 
-Use `WORLDGEN.md`: create only the starting horizon required for the first scene. Establish location/NPC/faction records only when they actually exist in the starting situation or are required by the premise/PC.
+Use `WORLDGEN.md`. Create only the starting horizon required for the first scene. Do not populate a full world during initialization.
 
-## Initial save
+## Initial durable save
 
-Campaign initialization should normally be one coherent persistence batch/commit after the required choices are settled. Create initial `CP_0000`/latest checkpoint so a fresh chat can resume without setup transcript.
+The scaffold commit establishes campaign identity/creator but not completed session-zero state.
 
-Do not import experimental scenes or character drafts from earlier chats unless the user explicitly asks to make them canonical.
+When required player/PC/start-state choices are settled, publish one coherent setup persistence batch and create initial `CP_0000`/latest checkpoint so a fresh chat can resume without the setup transcript.
+
+Do not import experimental content from older chats unless the user explicitly makes it canonical.

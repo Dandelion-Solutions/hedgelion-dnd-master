@@ -1,63 +1,91 @@
-# Bootstrap / Storage Initialization Regression Cases
+# Bootstrap / Storage v2 Regression Cases
 
-These cases prevent setup from drifting into slow or speculative repository manipulation.
+These cases protect the release-ZIP + lightweight-storage architecture.
 
-## B01 — GitHub Connector first
-A new setup requires GitHub reads/writes.
-Pass: use the connected GitHub Connector immediately. Do not first try `gh`, shell git, local clone, direct HTTP/web scraping, container networking, or another transport.
+## B01 — Archive first
+New Project chat has no extracted engine.
+Pass: locate D&D Master ZIP from Project Sources/current-chat attachment and extract locally before gameplay/bootstrap.
 
-## B02 — Diagnose Connector failure before fallback
-A Connector operation fails.
-Pass: distinguish runtime/binding, authenticated identity, App repository access, GitHub permission/status, rate/service error, and true missing capability before considering another transport.
+## B02 — Do not trust another chat's temp filesystem
+A previous Project chat extracted the engine.
+Pass: current chat independently checks local availability and re-extracts if necessary.
 
-## B03 — No speculative transport experiments
-The normal Connector path is available but the Master imagines a potentially clever shortcut.
-Pass: do not experiment with cross-repository SHA reuse, archive tricks, shell tools or undocumented APIs during user setup.
+## B03 — No GitHub engine installation
+Local engine files are missing.
+Pass: do not clone/pull/download/reconstruct engine source from GitHub; ask for/materialize the release ZIP.
 
-## B04 — Repository has a parent before D&D initialization
-The current Connector requires a parent SHA for `create_commit`.
-Pass: ask the user to create the fresh personal repository with GitHub's “Add a README” option. Do not create a D&D technical anchor commit when a normal initial GitHub commit can provide the parent.
+## B04 — No base64 fallback
+Archive/scaffold handling encounters a tool limitation.
+Pass: never explicitly encode/reconstruct files with base64. Use normal ZIP/filesystem/UTF-8 tree operations or stop with a capability error.
 
-## B05 — Copy is opaque transport
-A complete published engine release must be installed into storage.
-Pass: treat file bodies as opaque payload bytes. Do not semantically read, summarize, audit or use copied engine content as gameplay/model working context merely to copy it.
+## B05 — Lazy context despite full local package
+Whole release is extracted locally.
+Pass: do not preload whole CORE/RULES/SCHEMA into model context; load only routed files plus mandatory runtime modules.
 
-## B06 — Preserve the complete release tree
-The release contains nested directories, empty `.gitkeep` files and ordinary files.
-Pass: transfer the complete recursive tree preserving paths, file modes, bytes and empty files. Do not selectively copy only files that look important.
+## B06 — Connector first for campaign GitHub
+Storage discovery/read/write is needed.
+Pass: use connected GitHub Connector before shell git/gh/private HTTP alternatives.
 
-## B07 — One whole-tree checksum
-The release-only target tree has been constructed.
-Pass: verify exactly once that target release root tree SHA equals source release root tree SHA. Do not run per-file checksum rituals.
+## B07 — Discovery threshold <= 5
+At most five accessible repositories exist.
+Pass: exact-probe root `DND_STORAGE.yaml` only in those repositories.
 
-## B08 — Marker is last
-The release-only target tree has not yet passed root-tree verification.
-Pass: `DND_STORAGE.yaml` is not published or added to any visible target ref. Create/add the marker only after the exact release tree is verified.
+## B08 — Discovery threshold > 5
+Six or more accessible repositories are detected.
+Pass: stop broad probing and ask user for repository name.
 
-## B09 — One D&D initialization commit
-A verified release-only tree and valid storage marker are ready; target `main` still equals the pinned parent.
-Pass: create one final tree, one D&D initialization commit, and one non-force ref update. No per-file commits and no marker-only commit.
+## B09 — Marker existence is discovery signal
+A repository has root `DND_STORAGE.yaml` with legacy/unknown content.
+Pass: recognize it as storage candidate; defer semantic validation until metadata is needed.
 
-## B10 — Failed preparation is non-authoritative
-A blob/tree transfer or whole-tree checksum fails before final publication.
-Pass: do not move target `main`. Unattached Git objects are non-authoritative; diagnose/rebuild without exposing a half-installed storage baseline.
+## B10 — No marker: preserve own/friend choice
+No storage candidate exists.
+Pass: ask “Создать своё хранилище игр или подключиться к игре друга?”
 
-## B11 — No redundant marker rewrite
-The final marker blob already has the intended content inside the prepared final tree.
-Pass: do not call `create_file`/`update_file` for the marker separately and do not create a no-op commit.
+## B11 — Own repo ownership gate
+User selects own storage but supplied repository owner != authenticated GitHub login.
+Pass: do not initialize as own storage; route to friend/join flow.
 
-## B12 — Player-facing setup hides Git plumbing
-Normal setup succeeds.
-Pass: tell the player simply that setup is complete and move to the next game-relevant choice. Do not volunteer marker filenames, SHAs, refs, tree checksums, force-push details or commit topology.
+## B12 — Fresh own storage is marker-only
+Owned README-initialized repository has no marker.
+Pass: publish one v2 `DND_STORAGE.yaml` metadata commit. Do not copy engine or create campaign directories.
 
-## B13 — Friendly join wording
-No storage is available and the user must choose a path.
-Pass: ask whether to create their own campaign or join a friend's campaign. Do not describe the normal social path as joining a “foreign/somebody else's” repository in player-facing wording.
+## B13 — Friend repository missing marker
+Guest can access named friend's repository but root marker is absent.
+Pass: do not modify it; report incorrect D&D storage initialization and require owner action.
 
-## B14 — Future Connector bulk-copy capability
-A later GitHub Connector exposes a documented one-call bulk copy/import operation.
-Pass: prefer it automatically, while preserving exact published-tag source selection, whole-tree equality verification before marker addition, and one final initialization commit/ref update.
+## B14 — Friend marker exists
+Guest can access named repository and marker exists.
+Pass: select it and continue campaign discovery without owner-infrastructure administration.
 
-## B15 — INSTALL README is for the human installer
-A person opens `INSTALL/README.md` to install their own copy of D&D Master.
-Pass: the document describes only actions the person must take: create/configure the ChatGPT Project, add the two install files from one release, connect GitHub, create or join a campaign repository, grant App access when needed, start play, and update the Project. It does not explain internal tree-copy algorithms, storage metadata, refs/SHAs, checksum procedure, engine-update phases, regression machinery, or other bootstrap implementation details.
+## B15 — Campaign discovery is bounded
+Selected storage has many files.
+Pass: enumerate only `campaign/*`, read manifests only, and do not scan WORLD/LOG to list games.
+
+## B16 — Observer mode
+User can read campaign but lacks gameplay authorization.
+Pass: campaign may be inspected/read; no gameplay-state publication.
+
+## B17 — New campaign scaffold is local
+New game is requested.
+Pass: use local `TOOLS/init_campaign.py` / local `CAMPAIGN/` skeleton; do not obtain scaffold blobs from public GitHub.
+
+## B18 — One campaign initialization commit
+Generated scaffold contains many files/placeholders.
+Pass: publish as one coherent UTF-8 tree + one campaign initialization commit + one non-force ref update.
+
+## B19 — Campaign excludes storage root
+Campaign branch was created from storage default branch containing marker/README.
+Pass: first campaign commit replaces inherited tree with generated campaign tree; marker/README do not become campaign canon.
+
+## B20 — v1 storage is inert engine source
+Legacy v1 storage contains full copied CORE tree.
+Pass: marker identifies storage, but runtime never reads those copied CORE files as engine.
+
+## B21 — Human install is simple
+A user follows `INSTALL/README.md`.
+Pass: Project Instructions + Source code ZIP + GitHub Connector are sufficient; user is not instructed to copy engine files into campaign repository.
+
+## B22 — Missing Project Source materialization
+ZIP is listed as Project Source but current chat cannot access it as a local archive.
+Pass: ask user to attach the same ZIP directly to current chat; do not switch to GitHub engine download.

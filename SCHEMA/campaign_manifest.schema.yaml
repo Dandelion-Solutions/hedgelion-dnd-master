@@ -49,10 +49,12 @@ invariants:
   - campaign owner is derived from Git history and MUST NOT be duplicated in MANIFEST
   - mode changes are owner-only
   - players.join_policy changes are owner-only and default to invite_only when absent in an older manifest
-  - open_contributors permits only verified current repository collaborators with sufficient write access to self-create their own player binding; it does not grant control of existing PCs or other bindings
+  - open_contributors permits only verified current repository collaborators with sufficient write access to self-create their own player binding
   - engine update_policy changes and engine-release integration are owner-only
   - in singleplayer all gameplay writes are creator-only
-  - base_tag/base_sha identify the engine release from which campaign was created
-  - integrated_tag identifies the most recent published engine release actually integrated into the campaign; new campaigns initialize it to base_tag
-  - integrated_main_sha is the exact source commit of integrated_tag and is retained for precise provenance/backward compatibility
+  - base_tag/base_sha identify the exact local engine source provenance used when campaign was created
+  - integrated_tag/integrated_main_sha identify the exact engine release currently required by the campaign
+  - normal production tags MUST resolve to published canonical-engine commits
+  - explicit engine-owner development testing MAY use a clearly prefixed dev tag plus exact development commit SHA
+  - engine files themselves MUST NOT be copied into the campaign repository
   - update_policy defaults to ask when absent in an older manifest

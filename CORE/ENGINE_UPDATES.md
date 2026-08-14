@@ -1,131 +1,153 @@
 # Engine Release Updates
 
-framework_module_version: 0.2.3
-load_when: storage-owner gameplay startup/resume, explicit engine-update request, safe engine maintenance opportunity, tagged release integration
+framework_module_version: 0.5.4
+load_when: storage-owner startup/resume, explicit engine-update request, safe maintenance opportunity
 
-## Repository roles
+## Distribution model
 
-Canonical public engine repository: `Dandelion-Solutions/hedgelion-dnd-master`.
+Canonical public engine repository:
+`Dandelion-Solutions/hedgelion-dnd-master`
 
-Public engine `main` is development state. A release exists only when a valid engine tag exists. Campaign-storage `main` is the locally installed engine baseline and is identified by root `DND_STORAGE.yaml`.
+Public `main` is development state.
 
-From campaign runtime, public engine tags/main are read-only. D&D Master never publishes campaign/storage changes back to the public engine repository.
+Gameplay engine FILES come from a local D&D Master release ZIP. Campaign storage does not contain an engine copy.
 
-## Who may perform engine maintenance
+GitHub release/tag metadata may be queried to discover a newer published release, but discovering a tag does not install its files. The user supplies the corresponding release ZIP to Project Sources/current chat.
 
-Before any release discovery or engine maintenance, resolve the authenticated GitHub user and selected campaign-storage repository owner.
+## Authority
 
-Only when authenticated login == storage repository owner may D&D Master:
-- query for engine releases as part of normal update opportunities;
-- change campaign-storage `refs/heads/main`;
-- integrate a storage engine baseline into a campaign branch.
+Only authenticated storage repository owner may:
+- change storage baseline metadata;
+- perform normal release-discovery prompts for that storage;
+- approve/perform campaign engine migrations as storage maintenance.
 
-A guest Master skips this entire maintenance flow, even if the guest has Write/Admin repository permission, is campaign creator, or has an active PLAYER binding. Guest gameplay continues on the engine already integrated into the selected campaign.
+A guest Master:
+- does not modify storage metadata;
+- does not govern engine updates;
+- continues only with an exact engine package matching the campaign, or observes read-only if other access rules permit.
 
-Campaign creator identity remains authoritative for ordinary gameplay/owner operations. Engine maintenance is a separate storage-owner authority. A migration requiring a campaign creator/player decision must stop until the authorized person provides that decision; storage ownership does not grant fictional agency.
+Campaign creator/player decisions required by a migration remain creator/player authority; storage ownership does not grant fictional agency.
 
-## Installed version metadata
+## Version metadata
 
-Storage `refs/heads/main` has root `DND_STORAGE.yaml`:
-- `engine.source_repository` — canonical public engine repository;
-- `engine.installed_tag` — published release installed on storage main;
-- `engine.installed_sha` — exact public tag commit SHA.
+Storage v2:
 
-Each campaign manifest tracks its own engine state:
-- `base_tag` / `base_sha` — immutable release from which campaign was created;
-- `integrated_tag` — most recent release integrated into the campaign;
-- `integrated_main_sha` — exact public release commit for that tag;
-- `update_policy` — `ask` or `auto`.
+`DND_STORAGE.yaml -> engine.baseline_version`
 
-A storage baseline may be newer than a campaign. That is valid and does not change gameplay until campaign integration succeeds.
+This is the approved default version for new campaigns.
+
+Campaign manifest retains exact provenance:
+- `base_tag` / `base_sha`
+- `integrated_tag` / `integrated_main_sha`
+- `update_policy`
+
+A storage baseline may be newer than a campaign. That is valid.
 
 ## Update opportunities
 
-Engine maintenance is event-driven, never per-turn polling. For a storage-owner Master, consider an update only at safe opportunities:
-- new gameplay chat/session startup or resume after a meaningful pause;
-- explicit engine-update request;
+No per-turn polling.
+
+For storage owner consider updates only at:
+- new chat/session startup/resume after meaningful pause;
+- explicit update request;
 - owner maintenance boundary;
-- live-epoch rollover after durable compaction and before successor opening, when no other active live epoch blocks global maintenance.
+- safe live-epoch rollover after compaction.
 
-Guest Masters perform no release check.
+Guests perform no public release discovery as routine maintenance.
 
-At an owner opportunity, first compare the active campaign's integrated release with the already-installed storage baseline. Query public release tags only when checking for a release newer than storage `main`.
+## Release discovery
 
-## Public release discovery
+At an owner opportunity, public GitHub tags may be queried.
 
-Valid tags follow `RELEASE/VERSIONING.md`. Resolve a candidate tag to exact public commit `T` and validate `ENGINE_VERSION.yaml` at `T`, including tag/version coherence and compatibility metadata.
+Valid releases follow `RELEASE/VERSIONING.md`.
 
-Never install untagged public `main` commits. If public `main` has work after the latest tag, that work is invisible to storage/gameplay runtime.
+If a newer valid tag exists but its release ZIP is not available locally:
+1. tell the owner a new release is available;
+2. ask them to download GitHub Release **Source code (zip)** and add/attach it;
+3. do not attempt to clone/pull/copy the engine from GitHub;
+4. do not change storage/campaign engine metadata yet.
 
-## Ask and auto policy
+Never use untagged public `main` as a normal player release.
 
-`update_policy: ask` is the default for a campaign.
+## Local package validation
 
-When storage owner is operating that campaign and a newer installable baseline/release is available, offer:
-- `Update`;
-- `Not now`;
-- `Always update automatically`.
+Before adopting local target engine T:
+1. read local `ENGINE_VERSION.yaml`;
+2. validate version/recommended tag coherence;
+3. for normal releases resolve the public tag to exact source commit SHA;
+4. respect `campaign_update.compatibility`;
+5. ensure the package selected for migration is the target package, not a mix of files from multiple archives.
 
-`Not now` is session-local deferral, not a permanent ignored-version list.
+Explicit development builds are engine-owner test-only.
 
-`update_policy: auto` allows automatic two-phase maintenance only at safe boundaries and only when all authorization, compatibility, cleanliness and concurrency gates pass. If migration/conflict requires a human decision, defer and ask rather than guessing.
+## Ask / auto policy
 
-## Safety gates
+Campaign default `update_policy: ask`.
 
-Before Phase A or B as applicable:
-- no unresolved player action/adjudication;
-- persist required dirty gameplay state first;
-- no authoritative active live epoch in the campaign when global integration would invalidate it;
-- validate repository role/owner identity;
-- pin relevant storage/campaign HEADs;
-- use optimistic concurrency and never force-push;
-- `maintenance_required` or missing/unknown compatibility blocks blind auto;
-- campaign-local modifications to engine-owned paths touched by the target baseline require bounded maintenance, not silent overwrite.
+When a newer locally available valid release can be adopted, offer:
+- Update
+- Not now
+- Always update automatically
 
-## Phase A — install release on storage main
+`Not now` is session-local deferral.
 
-If target public tag `T` is newer than `DND_STORAGE.engine.installed_tag` and the owner accepts/auto-allows it:
-1. pin current storage `main` HEAD `S` and validate `DND_STORAGE.yaml`;
-2. resolve exact public release tree at `T`;
-3. construct new storage-main tree as the exact public release tree plus the existing storage-owned `DND_STORAGE.yaml` updated to `installed_tag=T` and `installed_sha=<public tag SHA>`;
-4. remove every extra path from old storage `main` that is absent from the release tree, except `DND_STORAGE.yaml`;
-5. publish one coherent storage-main maintenance commit with first parent `S`, `force=false`;
-6. if storage main moved before publication, rebuild/re-evaluate; never overwrite a concurrent change.
+`auto` may proceed only at safe boundaries and only with a locally available validated target ZIP. Auto never downloads/reconstructs engine files itself.
 
-Storage main must not contain gameplay state. Users should not store unrelated custom files there; such files are not preserved by engine baseline replacement.
+## Phase A — storage baseline metadata
 
-Only after the storage-main ref update succeeds is the new baseline installed.
+If storage owner approves local engine version T for new campaigns:
+1. pin storage default-branch HEAD;
+2. update only `DND_STORAGE.yaml -> engine.baseline_version` to T;
+3. publish one coherent non-force metadata commit.
 
-## Phase B — integrate storage baseline into a campaign
+No engine files are copied to storage.
+No unrelated storage files are deleted/replaced.
 
-Let `C` be current campaign HEAD and `S2` the storage-main commit containing the target installed release.
+Phase A is optional for updating an existing campaign but normally keeps the default aligned with the owner's current release.
 
-Prepare one campaign maintenance commit:
-- preserve populated campaign-owned `CAMPAIGN/**` from `C` except explicit defined migration changes;
-- take engine-owned paths from `S2` exactly, including deletion of obsolete engine-owned files;
-- exclude `DND_STORAGE.yaml` from the campaign tree; it is storage-main metadata only;
-- update campaign manifest `integrated_tag` / `integrated_main_sha` to the public tag/SHA represented by `S2`;
-- apply only explicit compatible migration/metadata changes.
+## Phase B — campaign engine adoption
 
-Prefer merge-style provenance with first parent `C` and second parent `S2`. The public release commit is in another repository and MUST NOT be used as a cross-repository parent.
+Existing campaign engine adoption changes campaign DATA/metadata, not engine-owned file paths.
 
-Publish the campaign ref with optimistic fast-forward semantics only. If campaign HEAD moved, refresh affected state and re-evaluate. Never force-push.
+Let C be current campaign HEAD and target local release T.
+
+Before migration:
+- persist required dirty gameplay state;
+- ensure no blocking active live epoch;
+- pin C;
+- validate target compatibility/migrations;
+- load only migration/schema files required from the local target package.
+
+Prepare one campaign maintenance batch:
+- apply explicit required campaign data/schema migrations;
+- preserve all unrelated campaign canon;
+- update manifest `integrated_tag` and `integrated_main_sha` to T;
+- keep immutable `base_tag/base_sha`;
+- never copy CORE/RULES/SCHEMA/INSTALL files into the campaign branch.
+
+Publish with optimistic non-force semantics. If HEAD moved, refresh affected state and re-evaluate.
+
+## Engine mismatch at startup
+
+If campaign integrated engine != current local package:
+- do not silently use the wrong engine;
+- prefer loading the exact matching release ZIP;
+- owner may choose an authorized upgrade if target is newer and compatible;
+- guest must supply/use matching release ZIP rather than upgrading storage/campaign.
 
 ## Partial success
 
-Phase A and Phase B are separate durable boundaries.
+Storage baseline metadata update and campaign migration are separate durable boundaries.
 
-If storage main successfully advances to a newer release but campaign integration is deferred or fails, keep storage main on the newer release and keep the campaign on its old integrated release. Do not rollback the storage baseline merely to make versions equal.
+If baseline moves to T but campaign migration is deferred/fails, keep baseline at T and campaign on old release. Do not rollback merely to equalize versions.
 
-A later owner maintenance opportunity may integrate the already-installed storage baseline without querying public releases again.
+## After successful campaign update
 
-## After successful campaign integration
-
-Only after the campaign ref update succeeds:
-- consider the release installed for that campaign;
+Only after campaign publication succeeds:
 - repin campaign HEAD;
-- invalidate cached engine/CORE/rule/bootstrap content that may have changed;
-- reload `BOOTSTRAP_RUNTIME.md`, `CORE_INDEX.md`, `RUNTIME.md`, `AI_REASONING.md` and only required situational modules;
+- switch runtime to the exact local target package;
+- invalidate old loaded CORE/rule/bootstrap caches;
+- reload target `BOOTSTRAP_RUNTIME.md`, `CORE_INDEX.md`, `RUNTIME.md`, `AI_REASONING.md`;
 - reread only campaign records touched by migration.
 
-Never claim storage or campaign update success before the corresponding GitHub ref update succeeds. Technical maintenance must not fabricate fictional elapsed time/events.
+Never claim update success before GitHub publication succeeds. Technical maintenance must not fabricate fictional elapsed time/events.
