@@ -5,6 +5,7 @@ fields:
   schema_version: integer
   player_id: string
   status: enum[active, inactive]
+  deactivated_by: enum[self, creator]|null
   display_name: string|null
   github_binding:
     user_id: integer|null
@@ -24,6 +25,12 @@ invariants:
   - player_id is the canonical campaign identity used by sessions/events; never use GitHub login as the gameplay actor ID
   - github_binding.user_id is the stable external authorization binding; github_binding.login is a mutable convenience label and may be refreshed after a GitHub rename
   - multiplayer gameplay authority requires the currently authenticated GitHub user_id to resolve to exactly one active player_id; never trust a self-declared player_id
+  - status inactive removes normal gameplay authority but does not delete the PLAYER record, controlled_pc_ids, preferences, knowledge links or provenance
+  - active bindings should have deactivated_by null
+  - inactive with deactivated_by self may be self-reactivated by the same authenticated GitHub user; inactive with deactivated_by creator requires creator reactivation
+  - legacy inactive bindings with missing/null deactivated_by are treated conservatively as requiring creator reactivation
+  - reactivation reuses the same player_id and existing controlled_pc_ids; it MUST NOT automatically create a replacement PLAYER or PC
+  - campaign creator self-removal is not represented by deactivating their own PLAYER binding; use creator-controlled campaign/mode management
   - mechanics_detail and decision_support_detail are presentation values in range 0..10; null defaults are 3 and 6 respectively
   - mechanics presentation preferences never alter mechanics, randomness, DCs, NPC state, world truth or knowledge boundaries
   - a one-off request for an exact mechanical value does not by itself change stored presentation preference; explicit preference or a clear repeated pattern may update it when adaptive_mechanics_detail is enabled

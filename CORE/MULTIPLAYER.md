@@ -1,6 +1,6 @@
 # Shared-World Multiplayer
 
-framework_module_version: 0.1.5
+framework_module_version: 0.1.6
 load_when: CAMPAIGN/MANIFEST mode == multiplayer OR explicit multiplayer management
 
 ## Mode and ownership
@@ -23,7 +23,7 @@ Before normal multiplayer gameplay writes, resolve the currently authenticated G
 
 Use the stable campaign `PLAYER_` ID inside campaign state and semantic events. GitHub login is a mutable authorization/audit label only and must not be used as the gameplay actor ID.
 
-If repository permission exists but no valid active player binding matches the authenticated GitHub user, normal gameplay writes are not authorized. Apply the joining policy below before concluding whether the user may create a new binding.
+If repository permission exists but no valid active player binding matches the authenticated GitHub user, normal gameplay writes are not authorized. Apply the joining/rejoining policy below before concluding whether the user may create or reactivate a binding.
 
 ## Joining policy
 
@@ -43,15 +43,60 @@ Self-enrollment must never:
 
 A newly joined player creates or accepts their own PC through normal character setup after identity binding. Existing PC control may change only through an explicit authorized persistent event; joining policy never implies inheritance of an unowned or inactive PC.
 
-The creator may change `invite_only <-> open_contributors` explicitly at any safe persistence boundary. Changing the policy does not revoke existing active player bindings. To remove a participant's gameplay authority, change that player's binding status through the normal explicit player-management flow.
+The creator may change `invite_only <-> open_contributors` explicitly at any safe persistence boundary. Changing the policy does not revoke existing active player bindings. To remove a participant's gameplay authority, deactivate that player's binding through the membership rules below.
 
 When switching a campaign into multiplayer and no join policy is explicitly chosen, initialize `invite_only`. Do not silently open the campaign merely because repository collaborators exist.
+
+## Leaving, removal and rejoining
+
+Do not physically delete a canonical `PLAYER_` record merely because a participant leaves or is removed. Historical events, PC control history, preferences and provenance may still reference that stable `player_id`.
+
+Membership uses the existing binding `status`:
+- `active` — normal multiplayer authority may be granted after authenticated binding validation;
+- `inactive` — no normal gameplay authority. Keep the same `PLAYER_` record, GitHub binding and `controlled_pc_ids` unless a separate explicit controller-change event changes them.
+
+Use optional `deactivated_by` to distinguish how an inactive binding was produced:
+- `self` — the non-owner participant voluntarily left;
+- `creator` — the campaign creator explicitly removed the participant.
+
+If an older inactive binding has no `deactivated_by`, treat it conservatively as creator-deactivated for rejoining purposes.
+
+A bound non-owner player may voluntarily leave by setting only their own binding to `inactive` with `deactivated_by: self`. They may not deactivate another player.
+
+The campaign creator may deactivate any non-owner participant with `deactivated_by: creator`. The creator must not deactivate their own campaign-player binding through this flow. If the creator wants to stop multiplayer participation, use the normal owner-controlled campaign/mode management instead of self-removal.
+
+A membership deactivation is a `HARD` access-control persistence boundary. It becomes effective only after the campaign write succeeds. Do not delete the player from indexes or erase PC/provenance records.
+
+### Rejoining
+
+Always look for an existing `PLAYER_` record bound to the authenticated stable GitHub user ID before considering creation of a new player identity.
+
+If an inactive binding has `deactivated_by: self`, that same authenticated user may reactivate the same binding in either `invite_only` or `open_contributors`. This is a narrow membership write, not new-player enrollment.
+
+If an inactive binding has `deactivated_by: creator` (or legacy/unknown deactivation), only the campaign creator may reactivate it. `open_contributors` does not let a previously creator-removed player bypass that removal by self-enrolling again.
+
+Reactivation sets the existing binding back to `active` and clears `deactivated_by`. Reuse the same `player_id`, `controlled_pc_ids`, preferences, knowledge/provenance links and existing character records. Do not create a replacement PLAYER or a new PC merely because the human returned.
+
+If PC control was explicitly reassigned while the player was inactive, rejoining respects the current canonical controller assignment; it does not silently reclaim a transferred PC. Otherwise the returning player resumes their existing controlled PC(s).
+
+### Deactivation while a live epoch is active
+
+If the target player's controlled PC participates in an authoritative active live epoch, do not leave that epoch writable while revoking membership.
+
+1. Freeze the affected live epoch through the normal `active -> closed` protocol.
+2. Compact its durable state.
+3. Persist the binding deactivation at the campaign frontier.
+4. If the remaining active players still require shared-scene live mode, open/adopt the successor epoch from the new campaign HEAD without the deactivated player as an authorized participant.
+
+Do not delete or teleport the removed player's PC as a technical side effect. The PC remains a canonical world entity in whatever fictional state/location was established; later fictional handling must follow normal agency/world rules.
+
+A stale chat cannot receive an autonomous push notification. Outside live mode, revocation is therefore discovered on the next required campaign synchronization/write boundary. Once the deactivation commit is canonical, a stale session must not successfully publish further gameplay state under the inactive binding. Do not add per-message background polling solely for membership revocation.
 
 ## Action provenance
 
 For a durable transition directly initiated by a player, the semantic event records `player_intent.player_id` and the acting `pc_id` when applicable. This is selective causal provenance, not per-turn telemetry.
 
-Example: if a PC takes a unique amulet from a chest, the transfer event records the stable `PLAYER_` ID and PC ID; the item record points to that event through its normal event reference. Do not copy GitHub usernames or player display names into every changed entity file.
+Example: if a PC takes a unique amulet from a chest, the transfer event records the stable `PLAYER_` ID and PC ID; the item record points to the event through its normal event reference. Do not copy GitHub usernames or player display names into every changed entity file.
 
 If later consequences materially derive from that action, link them through `caused_by_event_ids`. Do not mark unrelated NPC/world/maintenance changes as player-authored merely because the same player's Git commit persisted them.
 
@@ -99,7 +144,10 @@ Campaign HEAD must be checked:
 - before adjudicating an action that targets a known race-sensitive shared object/process not owned by the current live epoch when the local campaign HEAD may be stale;
 - after an explicit campaign resync request;
 - after any campaign write conflict;
-- while opening/closing/compacting a live epoch as required by `LIVE_SCENE.md`.
+- while opening/closing/compacting a live epoch as required by `LIVE_SCENE.md`;
+- before accepting a membership-management write, and again before publishing if the prepared campaign HEAD moved.
+
+When a changed-path refresh touches the current user's `PLAYER_` binding, join policy, mode or other access metadata, revalidate authorization before publishing further gameplay state.
 
 An active shared scene has its own more frequent but cheaper live ref probe defined in `LIVE_SCENE.md`; do not replace that probe with a full campaign refresh.
 
@@ -164,10 +212,12 @@ A live scene stores objective shared truth separately from which PCs actually pe
 
 ## Joining players
 
-Joining is governed by `players.join_policy` plus authenticated GitHub identity and `PLAYER_` binding state.
+Joining is governed by `players.join_policy` plus authenticated GitHub identity and persistent `PLAYER_` binding state.
 
-In `invite_only`, an unbound collaborator remains an observer until the creator has explicitly established their binding. In `open_contributors`, an eligible collaborator may establish only their own binding through the narrow onboarding exception above.
+Before treating somebody as a new player, search the player index for an existing binding to the same stable GitHub user ID. An inactive existing binding follows the rejoining rules above and must not produce a duplicate PLAYER/PC.
 
-Adding a player never implies control of an existing PC. After binding, create/assign a PC explicitly through normal character setup.
+In `invite_only`, a never-bound collaborator remains an observer until the creator has explicitly established their binding. In `open_contributors`, an eligible never-bound collaborator may establish only their own binding through the narrow onboarding exception above.
+
+Adding a genuinely new player never implies control of an existing PC. After binding, create/assign a PC explicitly through normal character setup.
 
 If a newly joined/resumed PC enters a scene with an active live epoch, load/adopt that live frontier before presenting current actionable state.
