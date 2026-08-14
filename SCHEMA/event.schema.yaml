@@ -12,6 +12,7 @@ fields:
   location_id: string|null
   participants: array[string]
   caused_by_event_ids: array[string]
+  after_event_ids: array[string]
   player_intent:
     player_id: string|null
     pc_id: string|null
@@ -36,6 +37,10 @@ invariants:
   - record durable causal transition, not full narration/transcript
   - hidden objective facts may exist in delta without being player-visible
   - random/check data is stored when it materially caused durable state
+  - caused_by_event_ids represents actual causal ancestry; after_event_ids represents required relative order without asserting causation
+  - world_order.sequence is optional/local and MUST NOT be treated as a mandatory campaign-global event counter
+  - world_order.time is optional and should be populated only when temporal precision materially matters
+  - independent events may remain unordered when no causal/gameplay dependency requires a relation
   - when a durable transition is directly initiated by a player's decision, player_intent.player_id records the stable campaign PLAYER id and player_intent.pc_id records the acting PC when applicable
   - never use GitHub login as player_intent.player_id; Git identity is authorization/audit evidence, not the canonical gameplay actor
   - a downstream consequence may omit player_intent when caused_by_event_ids preserves the causal chain to the initiating event

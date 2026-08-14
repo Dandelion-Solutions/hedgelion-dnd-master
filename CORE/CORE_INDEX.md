@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.1.3
+framework_module_version: 0.1.4
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 During gameplay ALWAYS load:
@@ -25,6 +25,7 @@ Load every other module only when the current situation requires it.
 - `COMBAT.md` — combat runtime.
 - `MAGIC.md` — spell/magic adjudication.
 - `PROCESSES.md` — long-running threats, projects, clocks and off-screen change.
+- `CHRONOLOGY.md` — causal/relative event ordering with adaptive temporal precision; load only when chronology materially constrains play.
 - `WORLDGEN.md` — create/expand world only to the required horizon.
 - `LORE.md` — history, culture, disputed accounts and lore-reveal discipline.
 - `REWARDS.md` — economy, payment, treasure and ownership.
@@ -47,7 +48,9 @@ Recommended bundles:
 
 `multiplayer shared scene` -> RUNTIME + AI_REASONING + MULTIPLAYER + LIVE_SCENE, plus only current scene/entity/rule dependencies.
 
-`lore/history` -> RUNTIME + AI_REASONING + LORE + INFORMATION, plus exact relevant world records.
+`cross-scene chronology / shared process` -> RUNTIME + AI_REASONING + CHRONOLOGY + MULTIPLAYER/PROCESSES only as applicable, plus the smallest relevant event/frontier records.
+
+`lore/history` -> RUNTIME + AI_REASONING + LORE + INFORMATION, plus CHRONOLOGY only if relative historical order materially matters and exact relevant world records.
 
 Rules lookup policy:
 1. established campaign house rules;

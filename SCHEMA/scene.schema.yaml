@@ -7,6 +7,7 @@ fields:
   status: enum[active, suspended, resolved]
   location_id: string|null
   local_time: object|null
+  chronology_frontier_event_id: string|null
   participant_ids: array[string]
   player_character_ids: array[string]
   active_thread_ids: array[string]
@@ -29,6 +30,8 @@ fields:
 invariants:
   - scene is an environment-level concurrency boundary when practical
   - summary contains current actionable state, not session transcript
+  - local_time may be exact, approximate, narrative, or null according to what materially matters; do not force timestamps for bookkeeping
+  - chronology_frontier_event_id identifies the local event frontier when future ordering/reconciliation needs it; it is not a global clock
   - persistent entity changes still belong in canonical entity records after live compaction
   - at most one live_epoch may be authoritative for a scene at a time
   - when live_epoch is non-null, current mutable scene truth is base campaign state plus the referenced live state

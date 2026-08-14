@@ -1,6 +1,6 @@
 # Shared-World Multiplayer
 
-framework_module_version: 0.1.3
+framework_module_version: 0.1.4
 load_when: CAMPAIGN/MANIFEST mode == multiplayer OR explicit multiplayer management
 
 ## Mode and ownership
@@ -111,11 +111,26 @@ Inside an active live epoch, use the live-state publication rules instead: the s
 
 This is a visibility requirement for the shared world, not a requirement to commit every non-shared turn.
 
-## World time
+## World chronology
 
-Maintain chronology sufficient to determine whether actions can conflict. Separate scenes may progress independently when the campaign supports asynchronous local time, but shared/global events must reconcile against a common world-time frontier.
+Use `CHRONOLOGY.md` when relative order between scenes/events/processes materially affects a ruling or reconciliation.
 
-A cross-scene event that materially touches more than one active live epoch is an exceptional synchronization boundary; follow `LIVE_SCENE.md` rather than adding distributed transaction overhead to normal play.
+Do not force all players/scenes onto one minute-by-minute clock. Separate scenes may advance along independent local chronology frontiers while they are causally independent. Their relative order may remain undefined.
+
+Synchronize/reconcile chronology only when it becomes material, for example when:
+- an event/process in one scene causes or enables something in another;
+- information, an NPC, item, message, spell effect, pursuit, deadline or other state crosses scene boundaries;
+- two scenes converge or participants try to meet/intercept each other;
+- a global/shared process constrains both scenes;
+- persisted event order would otherwise violate causality or established lore.
+
+When reconciling, establish the minimum relative ordering necessary. Cause must precede effect; a required entity/fact must exist before use; knowledge must follow a valid source. Independent events need not receive artificial timestamps or a total order.
+
+Git commit order is not automatically fictional chronology. If actions are genuinely simultaneous/contested, adjudicate under rules/world logic. If exact elapsed time is not a material stake, ordinary travel/scene duration may remain approximate and should not trigger minute-level accounting.
+
+`CURRENT.world_time.frontier` represents only compact globally reconciled chronology, not a requirement that every active scene share one exact timestamp. Local scene frontiers remain local until a cross-scene dependency makes them relevant.
+
+A cross-scene event that materially touches more than one active live epoch is an exceptional synchronization boundary; follow `LIVE_SCENE.md` and `CHRONOLOGY.md` rather than adding distributed multi-branch transaction overhead to normal play.
 
 ## Privacy
 

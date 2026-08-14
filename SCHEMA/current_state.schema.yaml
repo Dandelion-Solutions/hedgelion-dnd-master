@@ -21,4 +21,7 @@ invariants:
   - keep this record compact and infrequently changing
   - local scene details belong in separate SCENES files
   - multiplayer may have multiple independent active scenes
+  - world_time.frontier is a compact globally reconciled chronology frontier, not necessarily a timestamp or a total ordering of all scenes
+  - independent scene chronologies may remain unordered until a cross-scene/shared dependency makes relative order material
+  - do not advance/update world_time merely to account for harmless minute-by-minute passage that cannot affect play
   - biographies/history belong elsewhere
