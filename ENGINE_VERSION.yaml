@@ -1,4 +1,4 @@
-engine_version: 0.2-beta
+engine_version: 0.3
 release_status: ready-for-tag
 repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_owner_login: dkolyada
@@ -13,4 +13,4 @@ storage_format_revision: 1
 presentation_revision: 2
 campaign_update:
   compatibility: maintenance_required
-recommended_tag: v0.2-beta
+recommended_tag: v0.3
