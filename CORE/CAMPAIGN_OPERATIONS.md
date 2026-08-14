@@ -1,6 +1,6 @@
 # Campaign Operations
 
-framework_module_version: 0.1.1
+framework_module_version: 0.1.2
 load_when: campaign start, session start/end, prep, recap, campaign maintenance
 
 ## Campaign-level organization
@@ -94,6 +94,20 @@ A conflict record should capture actors, goals, current pressure, known stakes a
 Use observed player/character interests to decide what deserves preparation time: people, communities, mysteries, homes, rivals, goals, institutions or themes they repeatedly engage with.
 
 Investment guides attention; it does not retroactively rewrite world truth or guarantee protection/reward.
+
+## Maintenance opportunities
+
+Ordinary gameplay uses the lightweight runtime/integrity path. Do not add broad audits or housekeeping to every turn merely because maintenance could be useful.
+
+Existing natural downtime may be used as a convenient maintenance opportunity when useful: a rest/night, long uneventful travel, session pause/end, scene boundary, or another period in which no unresolved player decision depends on immediate adjudication. This is an operational opportunity, not a fictional requirement.
+
+Never introduce, accelerate, prolong or narratively force rest, night, travel, inactivity or another in-world pause merely to create time for repository maintenance. Player choices and world chronology must remain independent of maintenance convenience.
+
+Do not defer an actual `CANON_SUSPECT`, unsafe pending write, or other correctness problem until the next rest/night. Handle the affected scope when discovered according to `INTEGRITY.md`; unrelated play may continue when safe.
+
+Maintenance work does not need to be announced in player-facing narration unless it materially delays, blocks, corrects or changes the presented game state. If the fiction advances during real downtime, any off-screen world developments still require their normal causal triggers; do not invent "meanwhile" events merely to mask technical work.
+
+A natural downtime boundary is permission to perform useful bounded housekeeping, not a requirement to run an audit every time a character sleeps.
 
 ## Periodic campaign audit
 
