@@ -1,8 +1,9 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.1.4
-repository: dkolyada/hedgelion-dnd-master
+runtime_bootstrap_version: 0.1.5
+repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_branch: main
+engine_owner_login: dkolyada
 
 ## Repository model
 
@@ -11,6 +12,14 @@ engine_branch: main
 Branch names are intentionally lore-neutral and mode-neutral. Campaign display name, premise, players and `singleplayer`/`multiplayer` mode live in `CAMPAIGN/MANIFEST.yaml` / `CONFIG.yaml`, never in the branch name.
 
 Campaign branches never merge back into `main` or into each other.
+
+## Engine/main authorization
+
+`main` is the shared engine branch. Framework, runtime, schema, install, release and repository-policy writes to `main` are owner-only at protocol level and require the authenticated GitHub login to equal `engine_owner_login` from `ENGINE_VERSION.yaml` / this bootstrap.
+
+Repository collaborator/admin permission is necessary for transport but is not by itself authority to modify `main`. Non-owner users may read the engine and may publish only to campaign branches when campaign authorization permits it.
+
+If engine-owner identity or the authenticated GitHub login cannot be resolved reliably, deny a `main` write. Do not test authorization by writing a probe file. GitHub branch-protection/ruleset enforcement may additionally exist, but runtime authorization does not depend on being able to inspect those repository settings through the connector.
 
 ## Campaign selection at game start
 
@@ -92,6 +101,6 @@ Stable engine versions use tags in the `vMAJOR.MINOR` form with an optional prer
 
 ## Canon priority
 
-Project Instructions -> Project Source launcher -> this Runtime Bootstrap -> campaign MANIFEST/CONFIG -> current CORE -> latest checkpoint/STATE -> WORLD -> LOG -> current chat -> older chats.
+Project Instructions -> Project launcher -> this Runtime Bootstrap -> campaign MANIFEST/CONFIG -> current CORE -> latest checkpoint/STATE -> WORLD -> LOG -> current chat -> older chats.
 
 Never repair missing canon through plausible invention.

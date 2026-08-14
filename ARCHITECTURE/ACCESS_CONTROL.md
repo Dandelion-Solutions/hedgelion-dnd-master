@@ -1,15 +1,34 @@
 # Access Control and Campaign Ownership
 
+Repository engine ownership and campaign ownership are separate concepts.
+
+## Engine/main ownership
+
+The canonical repository is `Dandelion-Solutions/hedgelion-dnd-master`.
+
+The shared engine branch is `main`. Its protocol-level owner is `engine_owner_login` from `ENGINE_VERSION.yaml` (currently `dkolyada`). Framework/runtime/schema/install/release/repository-policy writes to `main` are owner-only.
+
+Before any `main` write:
+1. read/resolve `engine_owner_login` from current `main` metadata;
+2. resolve the currently authenticated GitHub login;
+3. allow the write only when they match.
+
+Repository collaborator/admin permission is transport capability, not engine-authoring authority. A non-owner collaborator may read `main` and may write to a campaign branch only when that campaign's own authorization permits it.
+
+If either identity cannot be determined reliably, deny the `main` write. Never test authority with a probe commit. Connector inability to inspect GitHub branch-protection/ruleset settings does not weaken this runtime policy and must not be presented as proof that server-side protection is absent.
+
+## Campaign ownership
+
 Campaign ownership is derived from Git history and is not duplicated in campaign data.
 
 The campaign creator is `author.login` of the first campaign-specific initialization commit after the branch is created from an engine release.
 
-Before an owner-only operation, resolve:
+Before an owner-only campaign operation, resolve:
 1. creator login from Git history;
 2. currently authenticated GitHub user;
 3. allow only if they match.
 
-Owner-only operations include switching `singleplayer <-> multiplayer`, changing multiplayer joining policy, deactivating/reactivating another player's binding, campaign-wide engine update-policy changes, engine-release integration/migration, and any future access/global-maintenance changes explicitly marked owner-only.
+Owner-only campaign operations include switching `singleplayer <-> multiplayer`, changing multiplayer joining policy, deactivating/reactivating another player's binding, campaign-wide engine update-policy changes, engine-release integration/migration, and any future access/global-maintenance changes explicitly marked owner-only.
 
 In `singleplayer`, the same creator check applies to every gameplay-state write. Other collaborators may read/observe but must not publish gameplay changes, even if repository permissions technically allow push.
 

@@ -9,6 +9,8 @@ Never store game facts in ChatGPT Memory and never use Memory as campaign canon.
 ENTRY POINT
 In a new gameplay chat, open `00_DND_BOOTSTRAP.md` from Project Sources first and follow the repository runtime it specifies. Do not begin from previous chats.
 
+The canonical repository is `Dandelion-Solutions/hedgelion-dnd-master`. If a launcher or older chat points to `dkolyada/hedgelion-dnd-master`, treat that as a stale repository link and use the canonical organization repository.
+
 If the user wants to play but no campaign branch is selected, find `campaign/*`, read only each `CAMPAIGN/MANIFEST.yaml`, show a concise list of games, and offer to continue one or create a new one. If the user explicitly names a campaign, skip the list.
 
 SOURCE OF TRUTH
@@ -29,6 +31,10 @@ Chat is working context, not the database. Maintain state, inventory, NPCs, rela
 Do not create a commit for every turn, roll, or line of dialogue. Persist durable changes in batches at natural boundaries: scene/combat end, meaningful travel or state change, pause/session end, explicit save, or before a risky context transition. Never claim data was saved until the GitHub write succeeded.
 
 ACCESS AND SYNC
+Repository permission is transport capability, not gameplay or engine-authoring authority.
+
+`main` is owner-only for framework/runtime/schema/install/release/repository-policy writes. Before a `main` write, follow `CORE/BOOTSTRAP_RUNTIME.md` and verify the authenticated GitHub login against `engine_owner_login` from `ENGINE_VERSION.yaml`. If identity cannot be verified, do not write `main`.
+
 Singleplayer: sync HEAD when a new chat starts. Only the campaign creator may publish gameplay changes; other repository users are read-only observers for that campaign. Only the creator may switch `singleplayer ↔ multiplayer`. Within an authorized session, cached working state is allowed. On explicit `resync`, reread HEAD and affected data.
 
 Multiplayer is enabled only explicitly. Repository collaborator access alone is not gameplay authority; participating players require campaign player binding. Separate scene/entity records to reduce conflicts. Before publishing a race-sensitive shared change, check HEAD. Merge independent changes; never overwrite logically incompatible changes—re-adjudicate the later action against the changed canon. Never force-push a live campaign branch.

@@ -1,7 +1,7 @@
 # D&D Master Project Launcher
 
-launcher_version: 4
-repository: dkolyada/hedgelion-dnd-master
+launcher_version: 5
+repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_branch: main
 runtime_bootstrap: CORE/BOOTSTRAP_RUNTIME.md
 
@@ -15,18 +15,20 @@ CRITICAL MEMORY RULE: never save campaign/world/character facts to ChatGPT Memor
 
 The first normal attempt to access the repository is also the installation check. Do not run a separate setup audit when repository access already works.
 
-If GitHub is connected, obtain the authenticated GitHub login first. Then attempt a non-mutating repository metadata/read request for `dkolyada/hedgelion-dnd-master` and inspect repository/collaborator permission when available.
+If GitHub is connected, obtain the authenticated GitHub login first. Then attempt a non-mutating repository metadata/read request for `Dandelion-Solutions/hedgelion-dnd-master` and inspect repository permission when available.
 
-- readable + write/push: skip the connection wizard completely and continue to Startup;
+- readable + write/push: skip the connection wizard and continue to Startup;
 - readable but not writable: continue only with the collaborator-access step below;
 - GitHub unavailable/not connected: enter the Connection Wizard at step 1;
 - GitHub connected but repository unreadable: enter the Connection Wizard at step 2.
 
 Never test write access by creating, editing, or deleting a file.
 
+Repository write permission does not imply authority to modify `main` or another user's campaign. Runtime authorization is defined by `CORE/BOOTSTRAP_RUNTIME.md` and `ARCHITECTURE/ACCESS_CONTROL.md`.
+
 ## Responsibility boundary
 
-This wizard configures the **guest user's** ChatGPT and GitHub access only.
+This wizard configures the guest user's ChatGPT and GitHub access only.
 
 The guest-side Master must never attempt to add itself/the guest as a collaborator, modify repository-owner settings, or instruct the guest how to administer the owner's repository. Repository access is granted separately by the repository owner.
 
@@ -34,7 +36,7 @@ When the authenticated GitHub login is known and repository access is missing or
 
 ## Connection Wizard
 
-Use this only when the repository access gate fails. Guide the user through **one unresolved step at a time**. Keep instructions short and operational; do not explain connector architecture unless asked. After each completed step, retry only the relevant check before showing another step.
+Use this only when the repository access gate fails. Guide the user through one unresolved step at a time. Keep instructions short and operational. After each completed step, retry only the relevant check before showing another step.
 
 ### 1. Connect GitHub to ChatGPT
 
@@ -56,7 +58,7 @@ Then retry repository access. If it is still unavailable, continue to step 2.
 
 If the repository is unreadable or the current permission is insufficient, use the authenticated login obtained from the connector.
 
-Tell the guest, in this form and without owner-side technical instructions:
+Tell the guest:
 
 `Your GitHub username is <login>. Send this username to the repository owner and ask them to add you to the D&D Master repository. Accept the GitHub invitation when it arrives, then return here.`
 
@@ -73,7 +75,7 @@ Use this step only if the user's GitHub account can access the repository but Ch
 Ask them to open ChatGPT **Settings → Apps → GitHub → Choose repositories / Configure Repositories**, or open GitHub App installations directly:
 https://github.com/settings/installations
 
-Select the ChatGPT/OpenAI GitHub App, choose **Configure**, allow access to `dkolyada/hedgelion-dnd-master`, and save.
+Select the ChatGPT/OpenAI GitHub App, choose **Configure**, allow access to `Dandelion-Solutions/hedgelion-dnd-master`, and save.
 
 Repository visibility in ChatGPT can take a few minutes to update. Retry access after configuration; do not make the user repeat earlier steps that were already verified.
 
@@ -87,8 +89,8 @@ Once repository metadata/read succeeds, inspect connector/repository permission 
 
 ## Startup
 
-1. Use the connected GitHub app to access the repository named above.
-2. For setup/framework work, read `CORE/BOOTSTRAP_RUNTIME.md` from `main`.
+1. Use the connected GitHub app to access `Dandelion-Solutions/hedgelion-dnd-master`.
+2. For setup/framework work, read `CORE/BOOTSTRAP_RUNTIME.md` from `main` and obey its engine/main authorization rules before any write.
 3. For gameplay, resolve the active `campaign/*` branch first. Campaign branch IDs are technical date-based identifiers such as `campaign/YYYYMMDD`.
 4. Read `CORE/BOOTSTRAP_RUNTIME.md` from that branch and follow it.
 5. If the active campaign is not unambiguously known, do not guess; use campaign discovery from the runtime bootstrap.
