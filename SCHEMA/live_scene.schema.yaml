@@ -17,7 +17,7 @@ fields:
   campaign_branch: string
   live_branch: string
   scene_id: string
-  status: enum[active, closing]
+  status: enum[active, closed]
   base_campaign_sha: string
   base_scene_blob_sha: string|null
   revision: integer
@@ -70,4 +70,5 @@ invariants:
   - objective truth and per-PC knowledge/disclosure remain distinct
   - epoch-scoped provisional entity IDs cannot escape the epoch before durable compaction
   - one mutable entity cannot be actively owned by two live epochs
-  - status closing accepts no new ordinary gameplay writes
+  - status closed accepts no new ordinary gameplay writes
+  - status closed freezes the epoch but does not itself prove durable absorption; the campaign scene last_absorbed_live_head_sha/routing state proves handoff completion
