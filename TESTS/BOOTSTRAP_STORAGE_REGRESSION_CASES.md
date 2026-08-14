@@ -1,91 +1,105 @@
 # Bootstrap / Storage v2 Regression Cases
 
-These cases protect the release-ZIP + lightweight-storage architecture.
-
 ## B01 — Archive first
-New Project chat has no extracted engine.
-Pass: locate D&D Master ZIP from Project Sources/current-chat attachment and extract locally before gameplay/bootstrap.
+Fresh Project chat has no extracted engine.
+Pass: materialize/extract local D&D ZIP before bootstrap; no GitHub engine install.
 
-## B02 — Do not trust another chat's temp filesystem
-A previous Project chat extracted the engine.
-Pass: current chat independently checks local availability and re-extracts if necessary.
+## B02 — Temp filesystem is chat-local
+Previous chat extracted engine.
+Pass: current chat checks local availability independently and re-extracts if needed.
 
 ## B03 — No GitHub engine installation
-Local engine files are missing.
-Pass: do not clone/pull/download/reconstruct engine source from GitHub; ask for/materialize the release ZIP.
+Missing local engine.
+Pass: request/materialize ZIP; no clone/pull/blob-copy.
 
 ## B04 — No base64 fallback
-Archive/scaffold handling encounters a tool limitation.
-Pass: never explicitly encode/reconstruct files with base64. Use normal ZIP/filesystem/UTF-8 tree operations or stop with a capability error.
+Any archive/scaffold limitation occurs.
+Pass: use ordinary ZIP/filesystem/UTF-8 operations or stop; never explicit base64 reconstruction.
 
-## B05 — Lazy context despite full local package
-Whole release is extracted locally.
-Pass: do not preload whole CORE/RULES/SCHEMA into model context; load only routed files plus mandatory runtime modules.
+## B05 — Lazy context
+Full package is local.
+Pass: do not preload whole package into model context.
 
 ## B06 — Connector first for campaign GitHub
-Storage discovery/read/write is needed.
-Pass: use connected GitHub Connector before shell git/gh/private HTTP alternatives.
+Storage action needed.
+Pass: use connected GitHub Connector first.
 
-## B07 — Discovery threshold <= 5
-At most five accessible repositories exist.
-Pass: exact-probe root `DND_STORAGE.yaml` only in those repositories.
+## B07 — Discovery <=5
+At most five accessible repos.
+Pass: exact-probe root DND_STORAGE.yaml.
 
-## B08 — Discovery threshold > 5
-Six or more accessible repositories are detected.
-Pass: stop broad probing and ask user for repository name.
+## B08 — Discovery >5
+More than five repos.
+Pass: ask for repository name; do not mass-probe.
 
 ## B09 — Marker existence is discovery signal
-A repository has root `DND_STORAGE.yaml` with legacy/unknown content.
-Pass: recognize it as storage candidate; defer semantic validation until metadata is needed.
+Unknown/legacy marker exists.
+Pass: recognize candidate; validate after selection.
 
-## B10 — No marker: preserve own/friend choice
-No storage candidate exists.
+## B10 — No marker own/friend choice
+No candidate.
 Pass: ask “Создать своё хранилище игр или подключиться к игре друга?”
 
-## B11 — Own repo ownership gate
-User selects own storage but supplied repository owner != authenticated GitHub login.
-Pass: do not initialize as own storage; route to friend/join flow.
+## B11 — Own ownership gate
+Supplied own repo owner != authenticated login.
+Pass: route to friend flow; no own initialization.
 
-## B12 — Fresh own storage is marker-only
-Owned README-initialized repository has no marker.
-Pass: publish one v2 `DND_STORAGE.yaml` metadata commit. Do not copy engine or create campaign directories.
+## B12 — Marker-only storage init
+Owned README repo has no marker.
+Pass: publish one v2 marker metadata commit; no engine/campaign directories.
 
-## B13 — Friend repository missing marker
-Guest can access named friend's repository but root marker is absent.
-Pass: do not modify it; report incorrect D&D storage initialization and require owner action.
+## B13 — Friend missing marker
+Guest names accessible repo without marker.
+Pass: guest does not modify it; owner must initialize.
 
-## B14 — Friend marker exists
-Guest can access named repository and marker exists.
-Pass: select it and continue campaign discovery without owner-infrastructure administration.
+## B14 — Campaign discovery bounded
+Storage has many files.
+Pass: enumerate campaign/* and read manifests only.
 
-## B15 — Campaign discovery is bounded
-Selected storage has many files.
-Pass: enumerate only `campaign/*`, read manifests only, and do not scan WORLD/LOG to list games.
+## B15 — Current root manifest
+Campaign branch contains root MANIFEST.yaml.
+Pass: select current layout with campaign_root_prefix empty.
 
-## B16 — Observer mode
-User can read campaign but lacks gameplay authorization.
-Pass: campaign may be inspected/read; no gameplay-state publication.
+## B16 — Legacy manifest fallback
+Root MANIFEST absent but CAMPAIGN/MANIFEST.yaml exists.
+Pass: select legacy prefix CAMPAIGN/ and continue without automatic relocation.
 
-## B17 — New campaign scaffold is local
-New game is requested.
-Pass: use local `TOOLS/init_campaign.py` / local `CAMPAIGN/` skeleton; do not obtain scaffold blobs from public GitHub.
+## B17 — Generator root layout
+Local TOOLS/init_campaign.py outputs MANIFEST.yaml + STATE/... directly in output root.
+Pass: publish exactly that output as branch root. MUST NOT “fix” it by wrapping output inside CAMPAIGN/.
 
-## B18 — One campaign initialization commit
-Generated scaffold contains many files/placeholders.
-Pass: publish as one coherent UTF-8 tree + one campaign initialization commit + one non-force ref update.
+## B18 — Human campaign README
+Generator output contains README.md.
+Pass: README gives player-facing play tips/orientation, not a directory inventory or “empty skeleton” explanation.
 
-## B19 — Campaign excludes storage root
-Campaign branch was created from storage default branch containing marker/README.
-Pass: first campaign commit replaces inherited tree with generated campaign tree; marker/README do not become campaign canon.
+## B19 — One scaffold publication
+Generated scaffold has many files.
+Pass: one UTF-8 tree + one initialization commit + non-force ref update; no per-file commits/base64.
 
-## B20 — v1 storage is inert engine source
-Legacy v1 storage contains full copied CORE tree.
-Pass: marker identifies storage, but runtime never reads those copied CORE files as engine.
+## B20 — Campaign excludes storage root
+Campaign branch created from storage default branch.
+Pass: first campaign tree excludes DND_STORAGE.yaml and storage README.
 
-## B21 — Human install is simple
-A user follows `INSTALL/README.md`.
-Pass: Project Instructions + Source code ZIP + GitHub Connector are sufficient; user is not instructed to copy engine files into campaign repository.
+## B21 — Development ZIP needs no public-main SHA
+Authorized engine owner uses local release_status development package.
+Pass: identity dev-v<version>, SHA may be null; do not query/pin public main merely for provenance.
 
-## B22 — Missing Project Source materialization
-ZIP is listed as Project Source but current chat cannot access it as a local archive.
-Pass: ask user to attach the same ZIP directly to current chat; do not switch to GitHub engine download.
+## B22 — Published package keeps exact provenance
+Normal release package is used.
+Pass: resolve its published tag to exact commit SHA before new campaign/migration.
+
+## B23 — Setup progress is staged
+New campaign scaffold exists.
+Pass: tell player setup has character -> minimal world -> first scene stages, with no duration estimate; surface/persist coherent results between stages rather than one long silent block.
+
+## B24 — Character before broad worldbuild
+New PC is unresolved.
+Pass: resolve/accept character first except genuinely required world constraints; no unrelated encyclopedia generation.
+
+## B25 — Early play
+PC accepted and minimal starting situation is ready.
+Pass: create first scene/checkpoint and begin play; defer optional worldbuilding.
+
+## B26 — Observer mode
+Read access exists but gameplay authorization absent.
+Pass: allow read/observe, deny game-state publication.

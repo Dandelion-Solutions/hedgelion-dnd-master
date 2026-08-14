@@ -1,99 +1,74 @@
 # Engine Update Regression Cases — Archive Runtime
 
-These cases verify release discovery/migration without copying engine trees into campaign storage.
-
-## U01 — Untagged main is not a player release
-Public main is ahead of latest tag.
-Pass: normal players are not offered main HEAD as a release.
+## U01 — Untagged main is not player release
+Pass: normal players are never offered public main HEAD as release.
 
 ## U02 — New tag discovery is metadata only
-Owner finds a newer published tag.
-Pass: report availability; do not claim engine is installed until matching release ZIP is available locally.
+Pass: report tag availability; matching local ZIP is still required.
 
 ## U03 — Missing target ZIP
-Owner chooses to update but target archive is absent.
-Pass: ask user to download/add GitHub Release Source code ZIP; do not clone/pull/blob-copy source.
+Pass: request Release Source code ZIP; no clone/pull/source copy.
 
-## U04 — Ask policy choices
-Valid newer local target exists and policy is ask.
-Pass: offer Update / Not now / Always update automatically.
+## U04 — Ask choices
+Pass: Update / Not now / Always update automatically.
 
-## U05 — Not now is temporary
-Owner declines target T.
-Pass: continue exact current campaign engine and do not nag during ordinary turns.
+## U05 — No polling
+Pass: no per-turn/background release checks.
 
-## U06 — Auto needs local package
-Policy is auto but target ZIP is not local.
-Pass: do not download/reconstruct automatically; request package at next appropriate boundary.
+## U06 — Guest skips maintenance
+Pass: guest does not update storage baseline/campaign engine.
 
-## U07 — No polling
-No startup/resume/explicit update/maintenance event occurs.
-Pass: no background/per-turn release checks.
+## U07 — Guest exact package
+Guest campaign needs A, only B local.
+Pass: require A; no silent B runtime/migration.
 
-## U08 — Guest skips maintenance
-Authenticated user is not storage owner.
-Pass: no storage baseline write or routine release-discovery prompt.
+## U08 — Baseline metadata only
+Owner adopts B.
+Pass: only DND_STORAGE.engine.baseline_version changes; zero engine files.
 
-## U09 — Guest exact-engine requirement
-Guest opens campaign pinned to engine A while only archive B is local.
-Pass: require matching A archive; do not silently run B and do not migrate owner's campaign.
+## U09 — Baseline does not mutate campaigns
+Pass: campaign A stays A until separate migration.
 
-## U10 — Storage baseline is metadata only
-Owner adopts local release B.
-Pass: update only `DND_STORAGE.engine.baseline_version`; copy zero engine files.
+## U10 — Published new campaign provenance
+Baseline/local published B.
+Pass: manifest pins tag B + exact public tag commit SHA.
 
-## U11 — Baseline does not mutate campaigns
-Storage baseline becomes B while campaign remains A.
-Pass: campaign stays on A until separate migration succeeds.
+## U11 — Development package provenance
+Local package release_status development and authenticated user is engine owner.
+Pass: explicit test may use dev-v<version> and null SHA. Do not query/pin current public main merely to manufacture SHA.
 
-## U12 — New campaign uses local/baseline-compatible release
-Storage baseline is B and local validated release B is loaded.
-Pass: new campaign manifest pins B's tag + exact public commit SHA.
+## U12 — Development package forbidden to normal user
+Pass: development package cannot be treated as a normal release.
 
-## U13 — Baseline/local mismatch
-Storage baseline says B but local package is A.
-Pass: do not silently create a campaign with contradictory metadata; resolve intended engine first.
+## U13 — Active live epoch blocks migration
+Pass: defer campaign engine migration.
 
-## U14 — Active live epoch blocks migration
-Target B exists while authoritative live epoch is active.
-Pass: defer global campaign engine migration.
+## U14 — Dirty state persists first
+Pass: establish clean durable frontier before maintenance.
 
-## U15 — Dirty state persists first
-Update is accepted with required dirty campaign state.
-Pass: publish gameplay boundary first; do not mix unresolved adjudication into maintenance.
+## U15 — Compatibility blocks blind auto
+Pass: maintenance_required/unknown requires bounded maintenance.
 
-## U16 — Compatibility blocks blind auto
-Target declares maintenance_required/unknown compatibility.
-Pass: auto does not blindly migrate; bounded maintenance is required.
+## U16 — Migration changes campaign data only
+Pass: apply schema/data migration + manifest provenance, never engine files.
 
-## U17 — Campaign migration changes data, not engine paths
-Campaign A -> B.
-Pass: apply defined schema/data migrations + manifest provenance update; do not add CORE/RULES/SCHEMA/INSTALL to campaign branch.
+## U17 — Layout preservation
+Legacy CAMPAIGN/ campaign migrates engine.
+Pass: migration uses resolved legacy roots and does not relocate layout unless an explicit layout migration says so.
 
 ## U18 — Canon survives migration
-Campaign contains real WORLD/STATE/LOG.
-Pass: preserve unrelated canon; only explicit migration paths change.
+Pass: unrelated WORLD/STATE/LOG preserved.
 
 ## U19 — Optimistic race
-Prepared migration was based on campaign HEAD C but HEAD moved.
-Pass: abandon/rebuild on latest state; never force-push.
+Campaign HEAD moved after preparation.
+Pass: rebuild/re-evaluate; never force push.
 
-## U20 — Exact provenance
-Successful migration targets tag B at commit R.
-Pass: manifest integrated_tag=B and integrated_main_sha=R; immutable base provenance remains unchanged.
+## U20 — Post-update cache invalidation
+Pass: switch exact local target package and reload mandatory runtime modules.
 
-## U21 — Post-update cache invalidation
-Migration succeeds while old CORE is loaded.
-Pass: switch to exact local B package and reload mandatory runtime modules before adjudication.
+## U21 — Partial success
+Baseline B succeeds, campaign migration deferred/fails.
+Pass: baseline stays B, campaign stays A.
 
-## U22 — Partial success
-Storage baseline B update succeeds but campaign migration fails/deferred.
-Pass: keep baseline B and campaign A; no rollback merely for equality.
-
-## U23 — Development build restriction
-Local package is release_status development.
-Pass: normal user cannot treat it as release; explicit framework testing requires authenticated engine owner and development provenance.
-
-## U24 — Technical update is not fictional time
-Maintenance occurs safely.
-Pass: do not invent rest/travel/NPC delays to justify it.
+## U22 — Technical update is not fictional time
+Pass: do not invent rest/travel/NPC delay for maintenance.

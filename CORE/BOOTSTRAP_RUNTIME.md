@@ -1,6 +1,6 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.5.8
+runtime_bootstrap_version: 0.5.9
 engine_repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_development_branch: main
 engine_owner_login: dkolyada
@@ -31,6 +31,18 @@ Local availability is not context preloading:
 - load other local CORE/RULES/SCHEMA files only when required.
 
 If an existing campaign expects a different integrated release from the currently extracted archive, do not silently substitute the local version. Resolve a matching local ZIP or follow an authorized engine-update path.
+
+### Development-package identity
+
+When local `ENGINE_VERSION.release_status: development`, explicit framework testing is allowed only when authenticated GitHub login equals `ENGINE_VERSION.engine_owner_login`.
+
+For that test package:
+- runtime identity is `dev-v<engine_version>`;
+- manifest engine SHA fields may be null;
+- the local extracted package is the runtime source;
+- do NOT query or pin current public `main` merely to manufacture a SHA.
+
+Normal published campaigns still use their exact release tag and resolved tag commit SHA.
 
 ## GitHub Connector policy
 
@@ -72,18 +84,38 @@ Legacy v1 markers remain discovery markers. Their copied engine files are inert 
 
 Only the authenticated storage repository owner may change storage metadata.
 
+## Campaign layout resolver
+
+Campaign data has two supported layouts.
+
+Current layout: data is directly at branch root, including `MANIFEST.yaml`, `CONFIG.yaml`, `STATE/`, `INDEX/`, `WORLD/`, `LOG/`, `CHECKPOINTS/`, `RULES/`.
+
+Legacy layout: the same logical tree is under `CAMPAIGN/`.
+
+Resolve layout once per campaign startup:
+1. read root `MANIFEST.yaml`;
+2. only if absent, try `CAMPAIGN/MANIFEST.yaml`;
+3. set `campaign_root_prefix` to empty string for current layout or `CAMPAIGN/` for legacy;
+4. after manifest load, prefer its `storage.*` roots for state/index/world/log/checkpoint routing.
+
+New writes to current-layout campaigns MUST NOT create a `CAMPAIGN/` wrapper.
+
+For compatibility, an older CORE/schema reference written as logical `CAMPAIGN/<relative>` resolves through the selected campaign root. The local engine template directory named `CAMPAIGN/` is the exception: it is a scaffold source, not a remote campaign path.
+
+Opening a legacy campaign does not automatically relocate it.
+
 ## Campaign selection
 
-Enumerate only `campaign/*` and read manifests only to show the game list.
+Enumerate only `campaign/*` and read resolved manifests only to show the game list.
 
 A user who can read a campaign but lacks gameplay authorization may observe it read-only.
 
 For an existing campaign:
 1. pin campaign HEAD;
-2. read `CAMPAIGN/MANIFEST.yaml` and CONFIG as needed;
+2. resolve root/legacy manifest layout as above and read CONFIG as needed at the same HEAD;
 3. resolve creator/PLAYER authorization when a write may matter;
-4. ensure the local engine matches `engine.integrated_tag`/`integrated_main_sha` exactly or enter authorized engine maintenance;
-5. continue checkpoint/state/scene lazy loading.
+4. ensure the local engine matches campaign engine identity or enter authorized engine maintenance;
+5. continue checkpoint/state/scene lazy loading through resolved storage roots.
 
 For a new campaign follow `CAMPAIGN_SETUP.md`.
 
@@ -119,8 +151,8 @@ The local engine may be fully materialized on disk; the remote campaign reposito
 
 After campaign + matching engine are resolved:
 1. pin campaign HEAD;
-2. read MANIFEST/CONFIG as needed;
-3. read latest checkpoint/hot STATE;
+2. read resolved MANIFEST/CONFIG as needed;
+3. read latest checkpoint/hot STATE through manifest storage roots;
 4. read only active scene files;
 5. read only relevant PC/PLAYER records;
 6. read local `CORE/CORE_INDEX.md`;

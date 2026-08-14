@@ -1,6 +1,6 @@
 # Character Creation and Onboarding
 
-framework_module_version: 0.1.1
+framework_module_version: 0.5.2
 load_when: new campaign, new PC, replacement PC, level-up choices requiring onboarding
 
 ## Goal
@@ -8,6 +8,14 @@ load_when: new campaign, new PC, replacement PC, level-up choices requiring onbo
 A player should be able to begin without studying the rulebooks. The DM handles procedural bookkeeping, explains consequential choices, and never chooses the character's identity/personality for the player.
 
 The character remains fully rules-grounded even when the player prefers not to see character-sheet arithmetic.
+
+## Staged new-campaign handoff
+
+When character creation is the first stage of a new campaign, work toward a useful player-visible PC result before doing substantial unrelated world generation.
+
+After meaningful choices are resolved, surface a concise current character summary instead of disappearing into a long hidden build. When all mechanically required choices for initial play are valid, present one compact acceptance summary covering the identity/concept and the mechanics/resources that materially define play.
+
+Only after explicit player acceptance should the PC become canonical active state. Persist the accepted PLAYER/PC bundle + required indexes as the character-stage boundary, then continue to minimal starting-world setup.
 
 ## Creation order
 

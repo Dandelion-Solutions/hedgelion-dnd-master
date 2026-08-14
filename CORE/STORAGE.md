@@ -1,6 +1,6 @@
 # Canonical Storage and Persistence
 
-framework_module_version: 0.5.6
+framework_module_version: 0.5.7
 load_when: session startup, state retrieval, persistence boundary, resync, canon conflict
 
 The engine package and campaign storage are separate.
@@ -35,6 +35,16 @@ Storage default branch does NOT contain or need a copy of CORE/RULES/SCHEMA/INST
 Campaign branches contain campaign data only. They do not depend on `DND_STORAGE.yaml` for gameplay canon.
 
 Legacy v1 storage may still contain copied engine files. Treat those paths as inert legacy storage data, never as runtime source.
+
+## Campaign data layout
+
+Current campaign branches store their data directly at branch root. Root `MANIFEST.yaml` is the current-layout discriminator and its `storage.*` fields route STATE/INDEX/WORLD/LOG/CHECKPOINTS.
+
+Legacy campaigns may store the logical campaign tree under `CAMPAIGN/` and have `CAMPAIGN/MANIFEST.yaml`.
+
+Bootstrap resolves one layout before gameplay. Once resolved, use manifest storage roots for all records. New current-layout writes MUST NOT create a `CAMPAIGN/` wrapper. Opening a legacy branch is not permission to relocate it.
+
+The local engine `CAMPAIGN/` directory is a template source only and is not a remote campaign path.
 
 ## Campaign write authorization
 
@@ -83,11 +93,13 @@ The fact that the engine is fully extracted locally does not change this campaig
 
 ## Environment-level partitioning
 
-Prefer separate files for independently changing scene/PC/NPC/location/item/faction/thread/session/log records. `STATE/CURRENT.yaml` is compact routing state, not transcript.
+Prefer separate files for independently changing scene/PC/NPC/location/item/faction/thread/session/log records. The resolved `STATE/CURRENT.yaml` is compact routing state, not transcript.
 
 ## Operational live canon
 
 Active live-scene rules remain as defined by `LIVE_SCENE.md`: one temporary operational frontier, later compacted into durable campaign state, never blindly duplicated turn-by-turn.
+
+Any legacy `CAMPAIGN/LIVE/...` notation in older runtime text is resolved through the selected campaign root; current layout uses `LIVE/...`.
 
 ## Consistency tiers
 
@@ -99,7 +111,7 @@ Active live-scene rules remain as defined by `LIVE_SCENE.md`: one temporary oper
 
 Keep only relevant canonical records plus internal dirty paths/facts.
 
-Publish normal campaign batches at natural boundaries: scene/combat/travel completion, pause/end, substantial durable bundle, explicit save, risky transition.
+Publish normal campaign batches at natural boundaries: scene/combat/travel completion, pause/end, substantial durable bundle, accepted setup phase, explicit save, risky transition.
 
 One durable batch should normally be one Git commit.
 
@@ -118,6 +130,8 @@ Never force-update live campaign or live-scene refs.
 ## Event log and checkpoints
 
 LOG is compact semantic history, not transaction journal/transcript. Create checkpoints at session boundaries, major transitions and before risky migrations/maintenance.
+
+Checkpoint paths are layout-relative; new campaigns use root-layout paths such as `STATE/CURRENT.yaml`, while legacy campaigns retain their existing resolved prefix.
 
 ## Canon conflicts
 
