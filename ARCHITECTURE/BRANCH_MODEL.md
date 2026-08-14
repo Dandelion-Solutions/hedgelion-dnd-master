@@ -1,67 +1,105 @@
-# Модель репозиториев, веток и кампаний
+# Модель репозиториев, release-пакетов, веток и кампаний
 
-## Два уровня хранения
+## Три уровня
 
-D&D Master разделяет публичный engine и игровые данные.
+D&D Master разделяет:
 
-Canonical public engine repository:
-`Dandelion-Solutions/hedgelion-dnd-master`
+1. **Canonical public engine repository** — исходники и releases:
+   `Dandelion-Solutions/hedgelion-dnd-master`
+2. **Local release package** — ZIP конкретной версии, распакованный во временное рабочее окружение текущего ChatGPT-чата.
+3. **Campaign storage repository** — GitHub repository пользователя/хоста, где живут только persistent игровые данные и storage metadata.
 
-Его `main` — development branch. Кампания никогда не использует untagged `main` как runtime source. Опубликованный движок определяется immutable release tag вида `vMAJOR.MINOR[-suffix]`.
+Public `main` — development state. Нормальная игра использует опубликованный release package/tag.
 
-Игровые данные живут в отдельном campaign-storage repository пользователя/хоста. Его имя произвольно. В первой версии автоматическое обслуживание storage `main` поддерживается для personal-account-owned repositories, чтобы owner authority однозначно определялась GitHub login владельца repository.
+## Local release package
 
-## Campaign-storage main
+Release ZIP содержит полный engine: CORE/RULES/SCHEMA/CAMPAIGN templates/INSTALL/TOOLS.
 
-Storage `refs/heads/main` — локальный installed engine baseline:
+Каждый новый чат при необходимости заново материализует/распаковывает пакет. Нельзя считать временную файловую систему другого чата persistent storage.
 
-- полный tree exact published engine tag;
-- пустой/template `CAMPAIGN/` skeleton этого release;
-- дополнительный storage-owned root file `DND_STORAGE.yaml`.
+Engine-файлы не копируются в campaign storage.
 
-`DND_STORAGE.yaml` хранит роль repository и exact public release tag/SHA, установленный на storage `main`. Public engine repository этого файла не содержит.
+## Campaign-storage default branch
 
-Storage `main` не является игровой веткой. Только authenticated repository owner может изменять его через D&D Master, и только при storage initialization или engine upgrade.
+Storage определяется root-файлом `DND_STORAGE.yaml`.
+
+Storage v2:
+
+```yaml
+storage_format_version: 2
+repository_role: campaign_storage
+engine:
+  baseline_version: "<version>"
+```
+
+Default branch — инфраструктурная точка:
+- marker + возможные обычные owner-файлы вроде README;
+- НЕТ требования содержать engine tree;
+- НЕТ требования содержать пустой CAMPAIGN skeleton.
+
+`baseline_version` — версия по умолчанию для новых кампаний/maintenance, а не физически установленный engine.
+
+Только authenticated repository owner обслуживает storage metadata.
 
 ## Campaign branches
 
-Каждая реальная игра живёт в `campaign/YYYYMMDD[-NN]` внутри выбранного storage repository.
+Каждая игра живёт в `campaign/YYYYMMDD[-NN]`.
 
-Новая campaign branch создаётся от текущего storage `main`, затем первый campaign-specific initialization commit:
-- удаляет `DND_STORAGE.yaml` из campaign branch;
-- заполняет `CAMPAIGN/MANIFEST.yaml` / `CONFIG.yaml` / стартовое состояние;
-- фиксирует engine base/integrated tag и public source SHA из storage baseline.
+Branch создаётся от текущего storage default-branch HEAD для нормальной ancestry/parent semantics.
 
-Имена веток lore-neutral. Игровые ветки никогда не мержатся обратно в storage `main`, public engine `main` или друг в друга.
+Первый campaign-specific commit затем заменяет унаследованное storage-содержимое на campaign tree, локально сгенерированный из release package через `TOOLS/init_campaign.py`.
+
+Поэтому `DND_STORAGE.yaml`, storage README и другие storage-root paths не являются campaign canon.
+
+Campaign branch содержит `CAMPAIGN/**` данные, но не CORE/RULES/SCHEMA/INSTALL engine copy.
 
 ## Campaign creator и gameplay authority
 
-Campaign creator по-прежнему определяется `author.login` первого campaign-specific initialization commit. Creator identity не дублируется в manifest.
+Campaign creator = `author.login` первого campaign-specific initialization commit.
 
-Singleplayer gameplay writes — creator-only. Multiplayer gameplay requires active PLAYER binding according to `CORE/MULTIPLAYER.md`. Repository collaborator/Admin permission сама по себе не является gameplay authority.
+Singleplayer writes — creator-only.
+Multiplayer writes — по active PLAYER rules.
+Repository collaborator/Admin permission сама по себе не является gameplay authority.
 
-Storage owner имеет отдельную узкую engine-maintenance authority: он может обновить storage baseline и интегрировать его в campaign branch по `CORE/ENGINE_UPDATES.md`, не изменяя произвольно игровой канон. Если migration требует решения creator/player, maintenance останавливается до этого решения.
+Read access может давать observer/read-only режим.
+
+## Engine identity
+
+Storage хранит только baseline VERSION.
+
+Конкретная campaign хранит точную engine provenance в MANIFEST:
+- base tag/SHA;
+- integrated tag/SHA;
+- update policy.
+
+Runtime должен использовать соответствующий local release ZIP. Нельзя молча запускать старую campaign на другом engine.
 
 ## Engine update
 
-Обновление двухфазное.
+Обновление больше не является переносом дерева между repositories.
 
-Phase A: storage owner устанавливает новый published tag на storage `main`. Все engine-owned paths приводятся в точное соответствие release tree: новые добавляются, изменённые заменяются, obsolete удаляются. `DND_STORAGE.yaml` сохраняется и обновляет installed tag/SHA.
+1. Master/owner обнаруживает новый published tag.
+2. Пользователь добавляет соответствующий Source code ZIP в Project Sources/current chat.
+3. Local package валидируется.
+4. Storage baseline_version при необходимости обновляется одним metadata commit.
+5. Для конкретной campaign выполняются только определённые data/schema migrations + обновление manifest provenance.
+6. Engine-файлы в campaign repository не появляются.
 
-Phase B: конкретная campaign branch безопасно интегрирует storage baseline. Populated `CAMPAIGN/**` не заменяется пустым skeleton release. Engine-owned obsolete paths удаляются; campaign data меняется только через defined migration/compatible metadata update.
-
-Campaign update commit предпочитает merge-style provenance: first parent = текущий campaign HEAD, second parent = storage-main commit с новым baseline. Public release commit находится в другом repository и фиксируется tag/SHA metadata, а не cross-repository parent.
-
-Storage `main` может быть новее конкретной campaign. Если Phase A успешна, а Phase B отложена/неудачна, rollback storage main не выполняется.
+Storage baseline может быть новее конкретной campaign.
 
 ## Guest Master
 
-Если authenticated GitHub user не является storage repository owner, Master не выполняет release discovery, не предлагает engine update, не изменяет storage `main` и не интегрирует engine baseline. Guest использует версию, уже установленную в выбранной campaign branch.
+Guest не меняет storage baseline и не управляет engine migration владельца.
+
+Если exact campaign engine package отсутствует, guest должен получить/приложить matching release ZIP; он не заменяет его произвольной более новой версией.
 
 ## Concurrency и persistence
 
-Обычный gameplay сохраняет существующие правила optimistic concurrency: `force=false`, HEAD check перед publication boundary, targeted changed-path refresh и semantic reconciliation вместо blind overwrite.
+Обычный gameplay сохраняет optimistic concurrency:
+- `force=false`;
+- targeted HEAD/compare refresh;
+- semantic reconciliation вместо blind overwrite;
+- batched durable commits;
+- специализированные live-scene rules для race-sensitive multiplayer state.
 
-Не создавать commit на каждый ход/бросок. Durable changes публикуются пакетами на естественных границах; race-sensitive multiplayer/live changes следуют специализированным runtime rules.
-
-Git history — технический audit/provenance layer. Семантическая история мира хранится компактно в `CAMPAIGN/LOG/`.
+Git history — audit/provenance. Семантическая история мира — компактный `CAMPAIGN/LOG/`.

@@ -1,16 +1,16 @@
-engine_version: 0.4
-release_status: ready-for-tag
+engine_version: 0.5
+release_status: development
 repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_owner_login: dkolyada
 rules_baseline: D&D 2024 / SRD 5.2.1
 schema_version: 2
 ai_reasoning_revision: 1
 gm_craft_revision: 1
-install_layout_revision: 5
+install_layout_revision: 6
 branch_id_revision: 1
 access_control_revision: 4
-storage_format_revision: 1
+storage_format_revision: 2
 presentation_revision: 2
 campaign_update:
   compatibility: maintenance_required
-recommended_tag: v0.4
+recommended_tag: v0.5

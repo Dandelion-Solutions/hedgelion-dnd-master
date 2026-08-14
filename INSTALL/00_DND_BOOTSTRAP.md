@@ -1,191 +1,230 @@
 # D&D Master Project Launcher
 
-launcher_version: 8
+launcher_version: 9
 engine_repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_development_branch: main
 runtime_bootstrap: CORE/BOOTSTRAP_RUNTIME.md
 storage_marker: DND_STORAGE.yaml
+release_archive_pattern: hedgelion-dnd-master-*.zip
 
-This file is intentionally small and stable. Add it to ChatGPT Project Sources as `00_DND_BOOTSTRAP.md`.
+This launcher runs from an already extracted D&D Master source archive. Project Instructions are responsible for making the archive available and extracting it in the current chat working environment.
 
-CRITICAL CONTEXT RULE: never preload all Project files, campaign history, WORLD/LOG/CORE, or old chats. Installation/engine-copy boundaries may transport a complete tagged engine tree between repositories, but transport is not permission to read that tree into model context.
+## Non-negotiable startup assumptions
 
-CRITICAL MEMORY RULE: never save campaign/world/character facts to ChatGPT Memory and never use ChatGPT Memory as campaign canon.
+1. Find the local engine root by `ENGINE_VERSION.yaml`.
+2. Confirm `CORE/BOOTSTRAP_RUNTIME.md`, `CORE/RUNTIME.md`, `CORE/AI_REASONING.md`, `SCHEMA/`, `CAMPAIGN/`, and `TOOLS/` are available under that same root.
+3. Read only files required for the current step. Local presence is not permission to preload the engine into model context.
+4. Never use base64 for installation/scaffolding/file reconstruction.
+5. Never download/clone/pull engine source from GitHub as part of normal startup.
+6. Never use ChatGPT Memory as campaign canon.
+
+For a normal published release, `ENGINE_VERSION.yaml` is the authoritative local version record and `recommended_tag` is the expected public release tag. Public GitHub may be queried for tag/SHA metadata, but source files come from the local archive.
+
+Development builds on public `main` are allowed only for explicit framework testing by authenticated `engine_owner_login`; they are not normal player releases.
 
 ## GitHub Connector policy
 
-The connected **GitHub Connector** is the normal and default transport for all GitHub reads and writes.
+Use the connected GitHub Connector for campaign-storage reads/writes and GitHub identity/permission checks.
 
-Do not try shell `git`, `gh`, local clone/pull, direct HTTP/web scraping, container networking, or another transport first. Do not turn setup into tool/API experimentation.
+Do not first try shell git, `gh`, local clone, direct private HTTP, web scraping, or undocumented APIs.
 
-If a Connector operation fails, diagnose the failure before considering alternatives:
+On failure diagnose:
 1. Connector connection/runtime binding;
 2. authenticated GitHub identity;
-3. Codex Connector App access to the repository;
-4. GitHub permission/status response such as 403/404/rate/service errors;
-5. an actual missing Connector capability.
+3. GitHub App access to the repository;
+4. GitHub 401/403/404/rate/service status;
+5. actual missing Connector capability.
 
-Only after a confirmed Connector capability gap may another method be considered, and only if that method is actually available in the current ChatGPT product. Never speculate that another transport exists.
-
-The current known Connector does not expose a one-call server-side cross-repository tree copy. Do not attempt cross-repository tree/blob SHA reuse, archive tricks, shell fallbacks, or other improvised shortcuts. Use the defined opaque Git Data transfer procedure below. If a future GitHub Connector adds a real bulk copy/import operation, prefer that operation automatically while preserving the same verification and atomic-publication invariants.
+Do not test access by creating probe commits.
 
 ## Connection Wizard
 
-Use one unresolved step at a time. Do not perform campaign discovery until GitHub connectivity and campaign-storage resolution are complete.
+Resolve one unresolved setup step at a time.
 
-### 1. Connect GitHub to ChatGPT
+### 1. Connect GitHub
 
-Open:
-https://chatgpt.com/plugins
+Use the GitHub Connector and resolve the authenticated GitHub login.
 
-Enable/connect plugin **GitHub** and authorize the user's own GitHub account.
+If GitHub is not connected, guide the user to connect the GitHub plugin/Connector and authorize their own account. Recommend **Always allow / Всегда разрешать** only when the user trusts this Project.
 
-At the first actual GitHub action ChatGPT may ask **“Allow ChatGPT to use GitHub?”**. For normal D&D Master automated persistence, recommend **Always allow / Всегда разрешать** when available, but only if the user trusts this Project setup.
+### 2. Discover campaign storage cheaply
 
-Resolve the authenticated GitHub login after connection.
+Campaign storage is identified only by exact root `DND_STORAGE.yaml` on the repository default branch.
 
-### 2. Resolve the published engine
+Marker CONTENT is not needed for discovery. Marker existence is the discovery signal.
 
-Read public repository:
-`Dandelion-Solutions/hedgelion-dnd-master`
+Use a bounded repository-list probe:
+- request at most 6 accessible repositories;
+- if 6 are returned (there are more than 5 candidates to inspect), STOP broad discovery and ask the user for the repository name;
+- if 0..5 are returned, probe only exact root `DND_STORAGE.yaml` in those repositories.
 
-Resolve the latest valid published engine tag, exact tag commit SHA, and exact root tree SHA. Never install/use untagged `main` HEAD or commits after the latest release tag.
+Do not use global code search as the primary storage discovery mechanism.
+Do not recursively inspect repository contents.
+Do not infer storage from name, README, `CAMPAIGN/`, fork status, or similarity to the engine repository.
 
-Read bootstrap/runtime files needed for installation from that exact tag. The selected tag is immutable until a later engine update.
+Outcomes:
+- no marked storage: ask exactly **«Создать своё хранилище игр или подключиться к игре друга?»**
+- exactly one: select it automatically;
+- several: show a concise list and ask which storage to use.
 
-### 3. Discover campaign storage
+Cache the selected storage for this chat.
 
-Search repositories accessible to the authenticated GitHub account for the exact root marker `DND_STORAGE.yaml` on repository `main`/default branch. Use exact-file/repository discovery; do not scan repository contents broadly and do not infer storage from its name or from `CAMPAIGN/`.
+### 3A. Create/use the user's own storage
 
-Validate each marker against `SCHEMA/dnd_storage.schema.yaml` and canonical engine repository.
+Ask the user to create a new GitHub repository under their personal account. Recommend:
+- `Private`;
+- arbitrary name;
+- **Add a README** enabled, because the current Connector commit primitive needs an existing parent commit.
 
-- exactly one valid storage repository: select it automatically;
-- several: show a concise player-friendly list and ask which campaign collection to use;
-- none: ask one question — **создать свою кампанию или присоединиться к кампании друга?**
+Ask for the repository name.
 
-Cache the selected storage repository in current-chat working context; do not repeat discovery during ordinary gameplay.
+Resolve it through the Connector and verify:
+`repository.owner.login == authenticated GitHub login`.
 
-### 4A. Join a friend's campaign
+If ownership does not match, do not initialize it as the user's own storage; route to the friend/join path.
 
-Show the authenticated GitHub username and tell the user to send it to their friend/campaign host through their normal communication channel.
+If the App cannot see the new repository, tell the owner to grant the ChatGPT/Codex GitHub App access to it, then retry non-mutating access.
 
-The host grants repository access. The guest-side Master must not administer the host's collaborators/settings.
+#### First storage initialization
 
-After the user accepts the invitation/access change, repeat only storage discovery/access checks. Once access is available, continue to Startup.
+If exact root `DND_STORAGE.yaml` is absent, create it quickly and silently from the LOCAL engine version.
 
-A guest Master does not install/reinstall the host's App infrastructure, modify storage `main`, or perform engine release discovery/update during gameplay.
-
-### 4B. Create your own campaign repository
-
-Ask the user to create a **new GitHub repository under their personal GitHub account and enable “Add a README”**. Repository name and visibility are the user's choice. Prefer no unrelated starter files beyond that initial GitHub-created README commit.
-
-The initial commit is intentional: the current Connector's commit action requires a parent commit, so this avoids creating a technical D&D anchor commit and allows the complete D&D initialization to be one commit.
-
-If the user already created a truly empty repository with no commit, ask them to add a README through GitHub before initialization instead of creating a Connector-generated anchor.
-
-Campaign-storage v1 requires personal-account ownership for automated storage-main maintenance. Verify `repository.owner.login == authenticated GitHub login` before initialization.
-
-If the ChatGPT Codex Connector does not yet have access to this new repository, the repository owner uses:
-https://github.com/apps/chatgpt-codex-connector/installations/select_target
-
-Select the user's account/repository and grant the App access. This URL is an owner/admin setup fallback, not a guest onboarding step.
-
-After configuration, retry non-mutating repository access.
-
-### 5. Initialize storage main
-
-The goal is one exact release copy and one D&D initialization commit.
-
-#### 5.1 Pin source and target
-
-- Pin the exact published release commit and its source root tree SHA.
-- Pin the target repository `main` HEAD as the parent commit.
-- Do not move the target ref during preparation.
-
-#### 5.2 Copy release files as opaque data
-
-Use only GitHub Connector Git Data operations.
-
-1. Read the source release recursive tree metadata once to obtain paths, modes, object types and blob identities.
-2. Transfer each unique source blob into the target repository as **opaque payload data**. Do not semantically read, summarize, interpret, audit, or use copied file bodies for reasoning. Preserve bytes, paths, modes, empty files and directory structure exactly. Reuse identical/empty blobs where appropriate. Batch or parallelize independent transfers when the Connector permits.
-3. Build a complete **release-only target tree from scratch** using the transferred target objects. Do not base this tree on unrelated starter files and do not update `main` yet.
-
-With the current Connector tool surface, blob payloads may be surfaced to the orchestration layer because no server-side cross-repository copy primitive exists. Treat such payloads strictly as transport bytes: never inspect them for installation logic or retain their contents as gameplay working context.
-
-#### 5.3 Verify once, at tree level
-
-Perform exactly one copy-integrity check:
-
-`target_release_tree_sha == source_release_tree_sha`
-
-Git tree identity recursively covers file names, modes, subtree identities and blob content identities. Equality is the checksum for the whole copied release tree.
-
-Do **not** perform per-file checksum rituals, per-file semantic inspection, or per-file verification commits.
-
-If the root tree SHA does not match, do not publish anything. Diagnose/retry only the transfer/build stage.
-
-#### 5.4 Add storage metadata last
-
-Only after the release-only tree is verified, create the root storage metadata blob:
+Storage v2 marker:
 
 ```yaml
-storage_format_version: 1
+storage_format_version: 2
 repository_role: campaign_storage
 engine:
-  source_repository: Dandelion-Solutions/hedgelion-dnd-master
-  installed_tag: <tag>
-  installed_sha: <exact public tag commit SHA>
+  baseline_version: "<ENGINE_VERSION.engine_version>"
 ```
 
-Build the final storage root tree as:
+Publish this as one normal non-force storage-default-branch commit.
 
-`verified exact release tree + DND_STORAGE.yaml`
+Preferred GitHub publication path:
+1. pin storage default-branch HEAD and base tree;
+2. create a tree based on that tree with UTF-8 `content` for `DND_STORAGE.yaml`;
+3. create one commit with the pinned parent;
+4. move the default branch once with `force=false`.
 
-Do not publish `DND_STORAGE.yaml` separately. Do not use `create_file`/`update_file` on the marker before initialization. A visible marker means the storage baseline is already complete.
+Do not explicitly base64-encode anything.
+Do not copy engine files into storage.
+Do not create `CAMPAIGN/`, WORLD, LOG, indexes, `.gitkeep`, templates, or engine directories on storage default branch.
+Do not create one commit per placeholder.
 
-#### 5.5 Publish once
+If the marker already exists, do not rewrite it merely because startup occurred.
 
-1. Recheck that target `main` still points to the pinned parent.
-2. Create **one** D&D initialization commit containing the complete final storage tree.
-3. Move `main` to that commit once with ordinary non-force semantics.
-4. Only after the ref update succeeds is storage initialization complete.
+### 3B. Connect to a friend's storage
 
-Never create one commit per copied file. Never create a marker-only commit. Never create a Connector technical anchor when the repository can instead be initialized by GitHub with a README before setup.
+Show the authenticated GitHub username.
 
-The resulting storage `main` must equal the exact engine release tree plus `DND_STORAGE.yaml`. Do not begin campaign creation until this final invariant is confirmed.
+Tell the user to ask the storage owner to add that GitHub account as a collaborator with the intended access and to give the repository name.
+
+After the user provides the repository name:
+1. resolve only that repository;
+2. check exact root `DND_STORAGE.yaml` on its default branch.
+
+If the marker is missing:
+- do not create it;
+- do not modify the friend's repository;
+- tell the user the friend's D&D storage is installed incorrectly and the owner must initialize/fix it.
+
+If the marker exists, select the storage and continue.
+
+A guest Master never administers the owner's GitHub App or storage-default-branch metadata.
+
+## Campaign discovery
+
+After storage selection:
+1. enumerate only branches matching `campaign/*`;
+2. read only `CAMPAIGN/MANIFEST.yaml` from each candidate branch;
+3. do not load WORLD/LOG/history merely to show the game list.
+
+If none exist, offer a new game.
+If one or more exist, let the user continue one or create a new one.
+
+Repository read access permits observation. Gameplay writes are separately controlled by creator/PLAYER authorization; a user may be read-only observer for a campaign they can see.
+
+## Resolve the engine for a campaign
+
+### New campaign
+
+Use the currently extracted local engine package.
+
+For a published release:
+- read local `ENGINE_VERSION.yaml`;
+- take `recommended_tag`;
+- resolve that public tag to its exact commit SHA using GitHub metadata;
+- verify the tag's `ENGINE_VERSION.yaml` metadata is coherent when needed.
+
+For explicit engine-owner development testing:
+- require authenticated login == local `engine_owner_login`;
+- use a clearly development-only engine tag marker such as `dev-v<engine_version>`;
+- pin the exact current public development commit SHA.
+Development campaigns are test data and are not normal release campaigns.
+
+### Existing campaign
+
+Read its `CAMPAIGN/MANIFEST.yaml`.
+
+The campaign's `engine.integrated_tag` and `engine.integrated_main_sha` define the engine it expects.
+
+If the currently extracted local engine is the exact required release, continue.
+
+If it is not:
+- first look for a matching D&D Master ZIP already available in Project Sources/current-chat attachments;
+- if available, extract that version separately and use it for this campaign;
+- otherwise ask the user to attach/add the matching release ZIP.
+
+Do not silently run a campaign on a different engine version.
+
+A storage owner may instead choose an allowed engine upgrade through `CORE/ENGINE_UPDATES.md`; a guest cannot bypass an engine mismatch by upgrading someone else's campaign.
+
+## New campaign creation
+
+Follow local `CORE/CAMPAIGN_SETUP.md`.
+
+High-level flow:
+1. choose the first free neutral branch ID `campaign/YYYYMMDD[-NN]`;
+2. create that branch from current storage default-branch HEAD;
+3. generate the initial campaign tree locally from the release package with `TOOLS/init_campaign.py`;
+4. publish the generated campaign tree in ONE campaign-initialization commit;
+5. move the campaign branch once with `force=false`;
+6. only after publication succeeds, continue player/PC/world setup.
+
+The first campaign commit replaces inherited storage-default-branch contents with the generated campaign tree. Therefore `DND_STORAGE.yaml`, storage README, and other storage-root files do not become campaign canon.
+
+Use UTF-8 text/tree publication. Never use explicit base64. Never publish one commit per scaffold file.
+
+## Storage v1 compatibility
+
+A root marker with `storage_format_version: 1` still identifies a storage candidate.
+
+Do not use copied engine files found on legacy storage `main` as runtime source.
+
+For a storage owner, v1 metadata may be migrated lazily to v2 at a safe maintenance/setup boundary. Derive `baseline_version` from unambiguous legacy installed-tag metadata or from an explicitly accepted local engine release. Do not delete arbitrary legacy files merely to migrate the marker.
+
+For guests, do not rewrite legacy storage metadata. Existing campaign branches remain selectable; new campaign creation may require the owner to migrate the storage marker first.
 
 ## Player-facing setup language
 
-Setup output should describe the player's goal, not Git plumbing.
+Hide infrastructure unless actionable.
 
-Normally do **not** mention `DND_STORAGE.yaml`, refs, SHAs, tree checksums, commit topology, force-push, blob transfer, or similar infrastructure. Surface those details only when the user explicitly asks for technical/debug information or when a technical problem requires an actionable explanation.
+Prefer:
+- **«Создать своё хранилище игр или подключиться к игре друга?»**
+- **«ChatGPT пока не видит репозиторий. Дай GitHub Connector доступ к нему и сообщи имя ещё раз.»**
+- **«Готово. Хранилище настроено.»**
+- **«Выбери существующую игру или создай новую.»**
 
-Prefer friendly wording such as:
-- **«Создать свою кампанию или присоединиться к кампании друга?»**
-- **«ChatGPT пока не видит новый репозиторий. Дай GitHub Connector доступ к нему, и я продолжу.»**
-- **«Готово. Всё настроено — можно создавать первую игру.»**
+Do not normally mention marker names, SHAs, tree objects, commit topology, or engine archive internals unless the user asks or an error requires them.
 
-Do not call a friend's campaign/repository “somebody else's” or “foreign” in player-facing Russian unless ownership itself is technically relevant.
+## Startup handoff
 
-## Troubleshooting
+After storage/campaign/engine resolution:
+1. open local `CORE/BOOTSTRAP_RUNTIME.md`;
+2. pin selected campaign HEAD;
+3. load campaign MANIFEST/CONFIG/state lazily;
+4. ALWAYS load local `CORE/RUNTIME.md` and `CORE/AI_REASONING.md`;
+5. load additional CORE modules only as needed;
+6. apply access/persistence rules before publication.
 
-Distinguish Connector/runtime errors from GitHub permission errors before changing anything.
-
-- tool invocation fails before a GitHub request (`tool disabled`, binding/resource error) → Connector/runtime problem; retry/reload/new chat if appropriate;
-- GitHub 401/403 → authentication/permission/App-access problem;
-- GitHub 404 on a repository the user just created → first verify Codex Connector App access and authenticated account before assuming the repository does not exist;
-- rate/service errors → retry the Connector path; do not switch transports merely because of a transient service error;
-- confirmed missing Connector capability → use only an explicitly available documented fallback; otherwise report the capability limitation instead of improvising.
-
-Never test access by creating a probe file/commit.
-
-## Startup
-
-1. Resolve selected campaign storage.
-2. If no campaign is selected, enumerate only `campaign/*` branches in that repository and read manifests only.
-3. New campaigns branch from storage `main`; follow `CORE/CAMPAIGN_SETUP.md`.
-4. Existing campaigns load `CORE/BOOTSTRAP_RUNTIME.md` from the campaign branch and use their integrated engine until a successful owner update.
-5. Guest Masters skip release discovery/engine maintenance.
-6. Storage-owner Masters follow `CORE/ENGINE_UPDATES.md` only at allowed maintenance opportunities.
-7. Before any publication resolve repository + ref and apply `CORE/RUNTIME.md` / `ARCHITECTURE/ACCESS_CONTROL.md`.
-8. Never claim persistent state or engine update was saved until the relevant GitHub ref update succeeded.
+Never claim setup/save/update success before the corresponding GitHub publication succeeds.

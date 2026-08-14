@@ -1,93 +1,122 @@
 # Установка D&D Master by Hedgelion
 
-D&D Master работает внутри ChatGPT Project и хранит кампании в GitHub. Для установки не нужны терминал, команды `git`, локальный clone или ручное редактирование игровых файлов.
+D&D Master работает внутри ChatGPT Project. Engine поставляется готовым GitHub Release ZIP, а кампании хранятся отдельно в GitHub repository пользователя/хоста.
+
+Терминал, `git clone`, ручное копирование engine в campaign repository и base64 для установки не нужны.
 
 ## Что понадобится
 
-- аккаунт ChatGPT с возможностью создавать Projects;
-- аккаунт GitHub;
-- подключённый к ChatGPT GitHub plugin / Connector;
-- если вы хотите вести свои кампании — возможность создать repository в своём личном GitHub account.
+- ChatGPT с Projects;
+- GitHub account;
+- GitHub plugin / Connector в ChatGPT;
+- опубликованный D&D Master release **Source code (zip)**.
 
-## 1. Создайте ChatGPT Project
+## 1. Скачайте release ZIP
 
-Создайте новый Project в ChatGPT. Название можно выбрать любое.
-
-## 2. Добавьте два установочных файла
-
-Откройте нужный опубликованный release D&D Master в repository:
+Откройте нужный Release в:
 https://github.com/Dandelion-Solutions/hedgelion-dnd-master
 
-Берите оба файла **из одного и того же release tag**, не из development-ветки `main`.
+Скачайте **Source code (zip)**.
 
-1. Скопируйте содержимое `INSTALL/PROJECT_INSTRUCTIONS.txt` в **Project Instructions**.
-2. Добавьте `INSTALL/00_DND_BOOTSTRAP.md` в **Project Sources** под именем `00_DND_BOOTSTRAP.md`.
+Не распаковывайте и не перекладывайте отдельные engine-файлы в GitHub campaign repository.
 
-На этом установка самого ChatGPT Project закончена.
+## 2. Создайте ChatGPT Project
 
-## 3. Подключите GitHub
+Создайте новый Project.
+
+Скопируйте содержимое `INSTALL/PROJECT_INSTRUCTIONS.txt` выбранного release в **Project Instructions**.
+
+Проще всего получить этот текст, открыв файл на GitHub в том же release tag либо локально посмотрев его внутри скачанного ZIP.
+
+## 3. Добавьте ZIP в Project Sources
+
+Добавьте скачанный Source code ZIP целиком в **Project Sources**.
+
+Рекомендуется хранить там текущий release ZIP. Если старая campaign остаётся pinned на предыдущей версии, можно также сохранить соответствующий старый ZIP; Bootstrap выберет нужный release.
+
+Если Project Source ZIP по ограничениям текущего ChatGPT не удаётся материализовать в конкретном чате, Master попросит приложить тот же ZIP непосредственно к этому чату.
+
+Не рассчитывайте, что распакованная временная рабочая папка другого чата сохранится: новый чат при необходимости распакует release снова.
+
+## 4. Подключите GitHub
 
 Откройте:
 https://chatgpt.com/plugins
 
 Подключите plugin **GitHub** и авторизуйте свой GitHub account.
 
-При первом запросе ChatGPT на доступ к GitHub для обычной автоматической работы удобно выбрать **Always allow / Всегда разрешать**, если этот Project ваш и вы ему доверяете.
+Если доверяете этому Project, при запросе доступа можно выбрать **Always allow / Всегда разрешать**.
 
-## 4. Начните игру
+## 5. Начните игру
 
-Откройте новый чат внутри созданного Project и напишите, например:
+Откройте новый чат в Project и напишите, например:
 
 > Давай сыграем в D&D.
 
-Мастер проверит доступные вам кампании и проведёт дальше по настройке. Если кампаний ещё нет, он предложит создать свою или присоединиться к кампании друга.
+Master:
+- распакует локальный engine release;
+- запустит Bootstrap из архива;
+- найдёт доступное campaign storage;
+- предложит продолжить игру или создать новую.
 
-## Если вы создаёте свою кампанию
+## Если campaign storage ещё нет
 
-Когда Мастер попросит создать repository:
+Master спросит:
 
-1. Создайте новый GitHub repository **в своём личном account**.
-2. Название можно выбрать любое.
-3. Visibility может быть `Private` или `Public` — как вам удобнее.
-4. При создании включите **Add a README**. Это нужно текущей версии автоматической установки.
-5. Вернитесь в чат и сообщите Мастеру имя repository.
+**«Создать своё хранилище игр или подключиться к игре друга?»**
 
-Дальше Мастер настроит repository сам. Не нужно вручную копировать туда engine, создавать папки или редактировать служебные файлы.
+### Своё хранилище
 
-### Если ChatGPT не видит новый repository
+Создайте новый repository в своём личном GitHub account.
 
-Откройте:
+Рекомендуется:
+- `Private`;
+- произвольное имя;
+- включить **Add a README**.
+
+Вернитесь и сообщите имя repository.
+
+Master создаст маленький storage marker. Engine в repository копироваться не будет.
+
+Если ChatGPT не видит новый repository, владелец выдаёт Codex Connector App доступ:
 https://github.com/apps/chatgpt-codex-connector/installations/select_target
 
-Выберите свой GitHub account и разрешите App доступ к нужному repository. Затем вернитесь в чат и скажите, что доступ настроен.
+### Подключиться к другу
 
-## Если вы присоединяетесь к кампании друга
+Master покажет ваш GitHub username.
 
-1. Мастер покажет ваш GitHub username.
-2. Передайте его владельцу кампании.
-3. Владелец выдаст вам доступ к своему campaign repository.
-4. Примите GitHub invitation, если она появится.
-5. Вернитесь в чат и сообщите, что доступ получен.
+Передайте его владельцу storage. Владелец добавляет вас collaborator и сообщает имя repository.
 
-Вам не нужно устанавливать или перенастраивать GitHub App владельца кампании.
+После получения доступа Master проверит storage marker и покажет доступные игры.
+
+Если marker отсутствует, guest ничего не исправляет: владелец должен корректно инициализировать своё D&D storage.
+
+## Создание новой игры
+
+Новая campaign создаётся автоматически.
+
+Master локально генерирует полный начальный `CAMPAIGN/` scaffold из release ZIP и публикует его одним GitHub commit. Игроку не нужно вручную создавать папки/файлы.
 
 ## Обновление D&D Master
 
-Когда выходит новый release и вы хотите обновить сам ChatGPT Project:
+Когда выходит новый release:
 
-1. Откройте новый release tag.
-2. Замените Project Instructions содержимым нового `INSTALL/PROJECT_INSTRUCTIONS.txt`.
-3. Замените Project Source `00_DND_BOOTSTRAP.md` новой версией `INSTALL/00_DND_BOOTSTRAP.md` из того же release.
+1. скачайте новый **Source code (zip)**;
+2. замените/добавьте ZIP в Project Sources;
+3. обновите Project Instructions содержимым `INSTALL/PROJECT_INSTRUCTIONS.txt` нового release;
+4. откройте новый чат.
 
-Существующие кампании при этом остаются в GitHub. Обновление engine внутри конкретной кампании Мастер выполняет отдельно по правилам кампании.
+Storage owner при безопасной возможности сможет обновить baseline и отдельно мигрировать конкретные campaigns.
+
+Если campaign остаётся на старой версии, сохраните/приложите matching старый release ZIP.
 
 ## Если что-то не работает
 
-Сначала проверьте простые вещи:
+Проверьте:
+- ZIP release доступен в Project Sources или приложен к текущему чату;
+- Project Instructions взяты из нужной версии;
+- GitHub plugin подключён к правильному account;
+- App имеет доступ к нужному repository;
+- invitation друга принята.
 
-- GitHub plugin подключён к нужному GitHub account;
-- invitation к кампании принята;
-- для нового собственного repository ChatGPT Codex Connector получил к нему доступ;
-- вы используете оба установочных файла из одного опубликованного release.
-
-Если проблема остаётся, опишите её Мастеру в чате. Не нужно самостоятельно менять GitHub permissions или игровые файлы наугад.
+Master не должен пытаться лечить отсутствие ZIP через clone/pull или пофайловое копирование engine из GitHub.
