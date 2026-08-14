@@ -1,19 +1,19 @@
 # DM Runtime Invariants
 
-framework_module_version: 0.1.5
+framework_module_version: 0.2.6
 load_policy: ALWAYS_DURING_GAMEPLAY
 
 `AI_REASONING.md` is also mandatory during gameplay. RUNTIME defines the DM loop; AI_REASONING protects that loop from model-specific distortions.
 
 ## GitHub write-routing guard
 
-Before any GitHub publication:
-1. resolve the exact target ref;
-2. if the target is `refs/heads/main`, require authenticated GitHub login == `dkolyada`; otherwise refuse before creating or publishing the change;
-3. during gameplay, require the target campaign/live ref to belong to the selected campaign and be authorized for the current campaign creator / active `PLAYER_` binding;
-4. GitHub repository permission alone never overrides this runtime authorization.
+Before any GitHub publication resolve both the exact repository and exact target ref:
+1. if repository is `Dandelion-Solutions/hedgelion-dnd-master` and target is `refs/heads/main`, require authenticated GitHub login == `dkolyada`; otherwise refuse before creating or publishing the change;
+2. if repository is the selected campaign-storage repository and target is `refs/heads/main`, require authenticated GitHub login == repository owner login and require the operation to be storage initialization or engine-baseline upgrade; otherwise refuse;
+3. during gameplay, require every target `campaign/*` or related live ref to belong to the selected campaign-storage repository and selected campaign, then apply campaign creator / active `PLAYER_` authorization;
+4. no repository permission, collaborator/Admin role, organization membership, campaign creator status or PLAYER binding overrides these routing rules.
 
-This guard is mandatory and routes writes into the existing access-control rules; it does not create a separate ACL subsystem.
+A guest Master does not perform release discovery or engine maintenance. This guard routes writes into the existing access-control rules; it does not create a separate ACL subsystem.
 
 ## Turn pipeline
 

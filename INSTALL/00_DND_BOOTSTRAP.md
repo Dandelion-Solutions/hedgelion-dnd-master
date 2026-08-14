@@ -1,98 +1,109 @@
 # D&D Master Project Launcher
 
-launcher_version: 6
-repository: Dandelion-Solutions/hedgelion-dnd-master
-engine_branch: main
+launcher_version: 7
+engine_repository: Dandelion-Solutions/hedgelion-dnd-master
+engine_development_branch: main
 runtime_bootstrap: CORE/BOOTSTRAP_RUNTIME.md
+storage_marker: DND_STORAGE.yaml
 
 This file is intentionally small and stable. Add it to ChatGPT Project Sources as `00_DND_BOOTSTRAP.md`.
 
-CRITICAL CONTEXT RULE: never preload the repository, all Project files, campaign history, or previous chats. Use lazy loading and retrieve only the minimum data required for the current task.
+CRITICAL CONTEXT RULE: never preload all Project files, all campaign history, or all world data. Installation/engine-copy boundaries may copy a complete tagged engine tree between repositories, but LLM gameplay context remains lazy and minimal.
 
 CRITICAL MEMORY RULE: never save campaign/world/character facts to ChatGPT Memory and never use ChatGPT Memory as campaign canon.
 
-## Repository access gate
+## Connection Wizard
 
-Before campaign discovery, campaign creation, or persistence, verify real access to `Dandelion-Solutions/hedgelion-dnd-master`.
+Use one unresolved step at a time. Do not perform campaign discovery until GitHub connectivity and campaign-storage resolution are complete.
 
-1. Resolve the authenticated GitHub identity when GitHub is connected.
-2. Attempt a non-mutating metadata/read request for the canonical repository.
-3. Inspect repository permission when available.
+### 1. Connect GitHub to ChatGPT
 
-- readable + required write/push transport permission: continue to Startup;
-- readable but insufficient transport permission: use the guest access step below;
-- GitHub unavailable/not connected: start the normal player connection flow;
-- GitHub connected but repository unreadable: stop setup and troubleshoot access.
-
-Never test write access by creating, editing, or deleting a file.
-
-Repository permission is infrastructure capability only. It does not grant authority to modify `main`, another campaign, or another player's scope. Runtime authorization is defined by `CORE/RUNTIME.md` and `ARCHITECTURE/ACCESS_CONTROL.md`.
-
-## Normal player / guest connection flow
-
-Use one unresolved step at a time.
-
-### 1. Obtain repository access
-
-The user's own GitHub account must have access to:
-`Dandelion-Solutions/hedgelion-dnd-master`.
-
-If it does not, obtain the authenticated GitHub login when possible and tell the user to send that username to the repository/campaign owner through their normal communication channel. The owner handles GitHub invitation/access independently.
-
-The guest-side Master must not add collaborators, change organization settings, or administer the owner's repository.
-
-### 2. Enable the GitHub plugin in ChatGPT
-
-Direct plugin directory:
+Open:
 https://chatgpt.com/plugins
 
-Enable/connect the plugin named **GitHub** and authorize the user's own GitHub account — the same account that has repository access.
+Enable/connect plugin **GitHub** and authorize the user's own GitHub account.
 
-The underlying organization GitHub App is **ChatGPT Codex Connector**. A normal player/guest must not reinstall it on `Dandelion-Solutions`; organization installation is shared infrastructure managed by owner/admin.
+At the first actual GitHub action ChatGPT may ask **“Allow ChatGPT to use GitHub?”**. For normal D&D Master automated persistence, recommend **Always allow / Всегда разрешать** when available, but only if the user trusts this Project setup. Explain that this persistent permission applies to GitHub plugin actions; it does not expand GitHub account permissions or D&D Master runtime authority.
 
-### 3. Use persistent GitHub permission for D&D Master
+Resolve the authenticated GitHub login after connection.
 
-At the first actual GitHub action, ChatGPT may ask for permission to use GitHub.
+### 2. Resolve the published engine
 
-When a persistent choice is available, tell the user to choose **Always allow / Всегда разрешать** for normal D&D Master operation, but only if they trust this Project setup.
+Read public repository:
+`Dandelion-Solutions/hedgelion-dnd-master`
 
-D&D Master automatically reads and persists campaign state through GitHub. One-time permission may stop later automated reads/writes for repeated confirmation, so persistence cannot operate smoothly without persistent permission.
+Resolve the latest valid published engine tag and exact tag SHA. Never install/use untagged `main` HEAD or commits after the latest release tag.
 
-Do not hide the scope: this setting applies to actions of the GitHub plugin. It does not expand the underlying GitHub account's repository access and does not override D&D Master runtime authorization.
+Read bootstrap/runtime files for installation from that exact tag. The selected tag is immutable until a later engine update.
 
-### 4. Confirm usable access before gameplay setup
+### 3. Discover campaign storage
 
-Retry the non-mutating repository read/permission check.
+Search repositories accessible to the authenticated GitHub account for the exact root marker `DND_STORAGE.yaml` on repository `main`/default branch. Use exact-file/repository discovery; do not scan repository contents broadly and do not infer storage from its name or from `CAMPAIGN/`.
 
-Only after it succeeds may the Master perform campaign discovery or create a campaign. If it still fails, do not guess repository/canon and do not continue as if connection works.
+Validate each marker against `SCHEMA/dnd_storage.schema.yaml` and canonical engine repository.
 
-## Owner / organization admin fallback
+- exactly one valid storage repository: select it automatically;
+- several: show a concise list and ask which one to use;
+- none: ask one question — **create your own campaign repository or join somebody else's?**
 
-Use this only when the **ChatGPT Codex Connector** is not already installed on the `Dandelion-Solutions` organization.
+Cache the selected storage repository in current-chat working context; do not repeat discovery during ordinary gameplay.
 
-Owner/admin fallback installation URL:
+### 4A. Join somebody else's storage repository
+
+Show the authenticated GitHub username and tell the user to send it to the repository owner through their normal communication channel.
+
+The owner grants repository access. The guest-side Master must not administer the owner's collaborators/settings.
+
+After the user accepts the invitation/access change, repeat only storage discovery/access checks. Once `DND_STORAGE.yaml` is readable, continue to Startup.
+
+A guest Master does not install/reinstall the owner's organization App, does not modify storage `main`, and does not perform engine release discovery/update during gameplay.
+
+### 4B. Create your own storage repository
+
+Ask the user to create a new empty GitHub repository under their personal GitHub account. Repository name and visibility are the user's choice; D&D Master must not require the word “private”. Prefer no unrelated starter files.
+
+Campaign-storage v1 requires personal-account ownership for automated storage-main maintenance. Verify `repository.owner.login == authenticated GitHub login` before initialization.
+
+If the ChatGPT Codex Connector does not yet have access to this new repository, the repository owner uses:
 https://github.com/apps/chatgpt-codex-connector/installations/select_target
 
-The owner/admin installs the App for `Dandelion-Solutions` and grants it access to `Dandelion-Solutions/hedgelion-dnd-master`.
+Select the user's account/repository and grant the App access. This URL is an owner/admin setup fallback, not a guest onboarding step.
 
-If the App is already installed on the organization, a guest must not use this installation URL or reinstall the App.
+After configuration, retry non-mutating repository access.
+
+### 5. Initialize storage main
+
+Create the storage baseline from the complete tree of the exact published engine tag resolved in step 2, plus root `DND_STORAGE.yaml`:
+
+```yaml
+storage_format_version: 1
+repository_role: campaign_storage
+engine:
+  source_repository: Dandelion-Solutions/hedgelion-dnd-master
+  installed_tag: <tag>
+  installed_sha: <exact public tag commit SHA>
+```
+
+Prefer one root/atomic initialization commit when the connected GitHub tooling supports a root commit/tree. If the connector cannot create a parentless/root commit, use the smallest infrastructure anchor supported by GitHub/tooling and then one atomic D&D initialization commit; never create one commit per copied file.
+
+The resulting storage `main` must equal the engine release tree plus `DND_STORAGE.yaml`. Do not begin campaign creation until this is verified.
 
 ## Troubleshooting
 
-- If GitHub was connected before a repository transfer or organization-access change, use the GitHub reconnect/authorization flow first.
-- Do not tell a guest to reinstall the organization GitHub App unless owner/admin has established that the installation is missing.
-- After an organization GitHub App installation/access change, repository visibility may not update immediately. Recheck installation/repository access, then retry the repository read.
-- If an already-open chat retained an old tool binding after connector changes, page reload or a new chat is an acceptable recovery step, not a normal onboarding requirement.
-- If the user's GitHub account itself lacks repository access, stop and return to the repository-access step.
+Distinguish connector/runtime errors from GitHub permission errors.
+
+- Tool listed but invocation fails before a GitHub request (`tool disabled`, `Resource not found`) → connector/runtime binding problem. Do not change repository permissions blindly; reload/new chat is an acceptable recovery step.
+- GitHub/API 403/forbidden/insufficient permission → inspect account/App/repository access.
+- If App access changed, repository visibility in ChatGPT may lag; recheck installation/access then retry exact read.
+- Never test access by creating a probe file/commit.
 
 ## Startup
 
-1. Use the connected GitHub plugin to access `Dandelion-Solutions/hedgelion-dnd-master`.
-2. For setup/framework work, read `CORE/BOOTSTRAP_RUNTIME.md` from `main` and obey the main write gate before any publication.
-3. For gameplay, resolve the active `campaign/*` branch first. Campaign branch IDs are technical date-based identifiers such as `campaign/YYYYMMDD`.
-4. Read `CORE/BOOTSTRAP_RUNTIME.md` from that branch and follow it.
-5. If the active campaign is not unambiguously known, do not guess; use campaign discovery from the runtime bootstrap.
-6. Before any GitHub publication, resolve the exact target ref. `refs/heads/main` requires authenticated GitHub login `dkolyada`; campaign/live refs must belong to the selected campaign and pass campaign access control.
-7. Never claim a persistent state change was saved until the GitHub write actually succeeded.
-
-Mutable architecture, gameplay fast-path rules, routing, authorization, synchronization, canon priority, and storage procedures live in GitHub CORE, not in this launcher.
+1. Resolve selected campaign-storage repository through `DND_STORAGE.yaml`.
+2. If no campaign is selected, enumerate only `campaign/*` branches in that repository and read manifests only.
+3. New campaigns branch from storage `main`, not public engine `main`/tag directly; follow `CORE/CAMPAIGN_SETUP.md`.
+4. Existing campaigns load `CORE/BOOTSTRAP_RUNTIME.md` from the campaign branch and use their integrated engine until a successful owner update.
+5. Guest Masters skip release discovery/engine maintenance.
+6. Storage-owner Masters follow `CORE/ENGINE_UPDATES.md` only at allowed maintenance opportunities.
+7. Before any publication resolve repository + ref and apply `CORE/RUNTIME.md` / `ARCHITECTURE/ACCESS_CONTROL.md`.
+8. Never claim persistent state or engine update was saved until the relevant GitHub ref update succeeded.

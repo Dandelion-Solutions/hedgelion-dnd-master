@@ -1,50 +1,56 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.1.5
-repository: Dandelion-Solutions/hedgelion-dnd-master
-engine_branch: main
+runtime_bootstrap_version: 0.2.6
+engine_repository: Dandelion-Solutions/hedgelion-dnd-master
+engine_development_branch: main
 engine_owner_login: dkolyada
+storage_marker: DND_STORAGE.yaml
 
 ## Repository model
 
-`main` contains the complete engine plus a fully empty `CAMPAIGN/` skeleton. Each actual game lives in a long-lived technical branch named `campaign/YYYYMMDD` by creation date. If more than one campaign is created on the same date, use deterministic suffixes: `campaign/YYYYMMDD-02`, `-03`, etc.
+The canonical public engine repository is `Dandelion-Solutions/hedgelion-dnd-master`. Its `main` branch is development state; gameplay installs only published release tags.
 
-Branch names are intentionally lore-neutral and mode-neutral. Campaign display name, premise, players and `singleplayer`/`multiplayer` mode live in `CAMPAIGN/MANIFEST.yaml` / `CONFIG.yaml`, never in the branch name.
+Each player/host uses a separate campaign-storage repository. Storage `refs/heads/main` contains the exact tree of one published engine release plus root `DND_STORAGE.yaml`. Actual games are long-lived `campaign/YYYYMMDD[-NN]` branches inside that storage repository. Related live refs are temporary multiplayer operational frontiers.
 
-Campaign branches never merge back into `main` or into each other.
+Campaign branches never merge back into storage `main`, the public engine repository, or each other. Storage `main` moves only through owner-authorized engine baseline installation/upgrade.
 
-## Engine/main authorization
+## Bootstrap repository resolution
 
-`main` is the shared engine branch. Framework, runtime, schema, install, release and repository-policy writes to `main` are owner-only at protocol level and require the authenticated GitHub login to equal `engine_owner_login` from `ENGINE_VERSION.yaml` / this bootstrap.
+At a new gameplay/setup chat:
+1. connect/resolve the authenticated GitHub identity;
+2. read the public engine repository and resolve the latest valid published release tag; never treat untagged public `main` commits as an installable engine;
+3. discover accessible campaign-storage repositories by the exact root marker `DND_STORAGE.yaml` on their default/main branch, using the cheapest supported exact-file/repository query rather than broad content scans;
+4. if exactly one valid storage repository is found, select it; if several are found, show a concise list and let the user choose; if none are found, the installation wizard asks whether to create a personal storage repository or join somebody else's;
+5. cache the selected storage repository in the current chat working context. Do not repeat repository discovery during ordinary gameplay without a concrete reason.
 
-Repository collaborator/admin permission is necessary for transport but is not by itself authority to modify `main`. Non-owner users may read the engine and may publish only to campaign branches when campaign authorization permits it.
+The public latest tag is installation/update information, not automatically the engine of an existing campaign. Existing gameplay always uses the engine already integrated into the selected campaign branch.
 
-If engine-owner identity or the authenticated GitHub login cannot be resolved reliably, deny a `main` write. Do not test authorization by writing a probe file. GitHub branch-protection/ruleset enforcement may additionally exist, but runtime authorization does not depend on being able to inspect those repository settings through the connector.
+## Write authority summary
+
+Public engine `refs/heads/main` requires authenticated login `dkolyada`.
+
+Campaign-storage `refs/heads/main` requires authenticated login == repository owner and is used only for storage initialization/engine baseline upgrade. Campaign-storage v1 expects a personal-account-owned repository; organization-owned storage main is read-only to D&D Master until an explicit maintainer identity model exists.
+
+Campaign/live writes follow campaign creator and active `PLAYER_` rules. Repository Write/Admin permission alone does not extend authority.
 
 ## Campaign selection at game start
 
-For framework/setup work, use `main`.
+After storage repository selection, enumerate only its `campaign/*` branches. Read each `CAMPAIGN/MANIFEST.yaml` and present a compact list of existing games. If there are none, offer a new campaign. If the user explicitly selected a campaign, skip the list.
 
-If the user wants to play and no active campaign branch is unambiguously selected, enumerate all `campaign/*` branches. For each branch, read only `CAMPAIGN/MANIFEST.yaml` and present a compact list of existing games (display name if established, technical branch/date, status, mode; optionally a short manifest-level note). Ask whether to continue one of them or start a new campaign.
-
-If there are no campaign branches, offer to create a new campaign.
-
-If the user explicitly named a campaign branch or unambiguously selected a listed campaign, use it without listing all games again.
-
-A new campaign branch is created from the selected stable engine release/tag using the technical date-based branch ID and already contains the full empty `CAMPAIGN/` structure inherited from that tagged release. Initialize manifest/config/state; then create world/PC content through setup/play.
+A new campaign branch is created from current storage `main` and initialized through `CAMPAIGN_SETUP.md`.
 
 ## Gameplay startup
 
-1. Resolve active campaign branch and its current HEAD SHA once.
-2. Pin the startup read cycle to that exact SHA. Do not mix branch-relative file reads from a moving HEAD.
-3. Read `CAMPAIGN/MANIFEST.yaml` and `CAMPAIGN/CONFIG.yaml` only as needed at the pinned SHA.
-4. Resolve campaign creator from Git history only when write authorization may matter: `author.login` of the first campaign-specific initialization commit. Cache the resolved identity for the session unless a maintenance/access change requires revalidation.
-5. Resolve the currently authenticated GitHub user.
-6. If mode is `singleplayer`, treat the session as read-only unless current GitHub user == campaign creator.
-7. If the current user is the campaign creator, load `CORE/ENGINE_UPDATES.md` from the campaign branch and perform the startup release-tag opportunity described there. This checks published engine tags, never untagged `main` HEAD. Non-owner multiplayer sessions skip campaign-wide update prompting.
-8. If a tagged engine update is successfully integrated, discard the old startup engine cache, repin the campaign branch to the new HEAD, reread this bootstrap and the manifest from that new HEAD, then continue startup. Do not keep adjudicating from pre-update CORE content.
-9. Read `CAMPAIGN/CHECKPOINTS/LATEST.yaml` at the pinned SHA.
-10. Read `CAMPAIGN/STATE/CURRENT.yaml` at the pinned SHA.
+1. Resolve selected campaign-storage repository and active campaign branch.
+2. Resolve active campaign HEAD SHA once and pin the startup read cycle to it.
+3. Read `CAMPAIGN/MANIFEST.yaml` / `CONFIG.yaml` only as needed at that SHA.
+4. Resolve campaign creator from bounded Git history only when campaign write authorization may matter.
+5. Resolve the authenticated GitHub user.
+6. If singleplayer, normal gameplay is read-only unless current user == campaign creator.
+7. Determine whether current user is the campaign-storage repository owner. If not, this is a guest Master for engine-maintenance purposes: skip public release discovery/update prompting entirely and continue with the campaign-integrated engine.
+8. If current user is storage owner, load `CORE/ENGINE_UPDATES.md` at an allowed update opportunity. First consider a storage-main baseline newer than the campaign; query public release tags only when looking for a release newer than storage `main`.
+9. If engine integration succeeds, discard stale engine caches, repin campaign HEAD and reread required runtime/bootstrap modules before adjudication.
+10. Continue ordinary startup from checkpoint/state/scene using lazy loading.
 11. Read only relevant scene file(s) from `CAMPAIGN/STATE/SCENES/` at the pinned SHA.
 12. Read only PC records relevant to the current player/turn.
 13. Read `CORE/CORE_INDEX.md`.

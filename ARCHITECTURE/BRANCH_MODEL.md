@@ -1,105 +1,67 @@
-# Модель веток и кампаний
+# Модель репозиториев, веток и кампаний
 
-## Базовая идея
+## Два уровня хранения
 
-`main` содержит готовый универсальный AI Dungeon Master engine: Framework, схемы, правила хранения, документацию и полностью пустой каркас `CAMPAIGN/`.
+D&D Master разделяет публичный engine и игровые данные.
 
-Стабильный commit движка помечается тегом `engine-vX.Y.Z`. Каждая реальная игра создаётся отдельной долгоживущей веткой с техническим ID по дате создания:
+Canonical public engine repository:
+`Dandelion-Solutions/hedgelion-dnd-master`
 
-- первая новая кампания дня: `campaign/YYYYMMDD`;
-- вторая в тот же день: `campaign/YYYYMMDD-02`;
-- затем `-03` и т. д.
+Его `main` — development branch. Кампания никогда не использует untagged `main` как runtime source. Опубликованный движок определяется immutable release tag вида `vMAJOR.MINOR[-suffix]`.
 
-Имена веток намеренно не кодируют лор, красивое имя кампании, режим, автора или количество игроков. Эти свойства живут в `CAMPAIGN/MANIFEST.yaml` и `CONFIG.yaml` и могут меняться независимо от branch ID.
+Игровые данные живут в отдельном campaign-storage repository пользователя/хоста. Его имя произвольно. В первой версии автоматическое обслуживание storage `main` поддерживается для personal-account-owned repositories, чтобы owner authority однозначно определялась GitHub login владельца repository.
 
-Игровые ветки никогда не мержатся обратно в `main` и не мержатся друг в друга.
+## Campaign-storage main
 
-В `main` каталог `CAMPAIGN/` существует полностью, но содержит только пустые заглушки. После создания campaign-ветки они заполняются конкретным миром, персонажами и событиями.
+Storage `refs/heads/main` — локальный installed engine baseline:
 
-## Поиск игры при старте
+- полный tree exact published engine tag;
+- пустой/template `CAMPAIGN/` skeleton этого release;
+- дополнительный storage-owned root file `DND_STORAGE.yaml`.
 
-Если пользователь хочет играть, но активная campaign-ветка не выбрана, агент сначала перечисляет все ветки `campaign/*`, читает только их `CAMPAIGN/MANIFEST.yaml` и показывает краткий список существующих игр: display name, если он уже существует, техническую дату/ветку, статус и режим.
+`DND_STORAGE.yaml` хранит роль repository и exact public release tag/SHA, установленный на storage `main`. Public engine repository этого файла не содержит.
 
-Затем пользователь выбирает: продолжить одну из существующих игр или создать новую. Если campaign-веток нет, предлагается создать новую.
+Storage `main` не является игровой веткой. Только authenticated repository owner может изменять его через D&D Master, и только при storage initialization или engine upgrade.
 
-Если пользователь явно указал ветку/кампанию, повторный список не нужен.
+## Campaign branches
 
-Один ChatGPT Project может обслуживать несколько campaign-веток. Отдельный Project на отдельную кампанию допустим как дополнительная пользовательская изоляция, но не является требованием engine.
+Каждая реальная игра живёт в `campaign/YYYYMMDD[-NN]` внутри выбранного storage repository.
 
-## Владелец кампании
+Новая campaign branch создаётся от текущего storage `main`, затем первый campaign-specific initialization commit:
+- удаляет `DND_STORAGE.yaml` из campaign branch;
+- заполняет `CAMPAIGN/MANIFEST.yaml` / `CONFIG.yaml` / стартовое состояние;
+- фиксирует engine base/integrated tag и public source SHA из storage baseline.
 
-Владелец не дублируется отдельным полем в `MANIFEST`.
+Имена веток lore-neutral. Игровые ветки никогда не мержатся обратно в storage `main`, public engine `main` или друг в друга.
 
-Технически владельцем считается GitHub `author.login` **первого campaign-specific initialization commit** после создания date-based campaign branch от engine release. Это первый commit, который превращает унаследованный пустой `CAMPAIGN/` skeleton в идентифицируемую кампанию: инициализирует manifest/config/state и другие стартовые данные.
+## Campaign creator и gameplay authority
 
-Для owner-only операции мастер должен:
-1. определить этот первый initialization commit из Git history;
-2. получить его `author.login`;
-3. получить текущего аутентифицированного GitHub user;
-4. разрешить операцию только если login совпадает.
+Campaign creator по-прежнему определяется `author.login` первого campaign-specific initialization commit. Creator identity не дублируется в manifest.
 
-Если identity невозможно надёжно определить, owner-only операция запрещена до разрешения неопределённости.
+Singleplayer gameplay writes — creator-only. Multiplayer gameplay requires active PLAYER binding according to `CORE/MULTIPLAYER.md`. Repository collaborator/Admin permission сама по себе не является gameplay authority.
 
-Owner-only операции:
-- переключение `singleplayer ↔ multiplayer`;
-- открытие кампании для shared-world участия;
-- закрытие shared world обратно в singleplayer;
-- иные будущие изменения режима доступа, явно помеченные Framework как owner-only.
+Storage owner имеет отдельную узкую engine-maintenance authority: он может обновить storage baseline и интегрировать его в campaign branch по `CORE/ENGINE_UPDATES.md`, не изменяя произвольно игровой канон. Если migration требует решения creator/player, maintenance останавливается до этого решения.
 
-## Singleplayer
+## Engine update
 
-В `singleplayer` только creator login кампании имеет право публиковать gameplay-state commits.
+Обновление двухфазное.
 
-Другие GitHub collaborators могут читать ветку, смотреть историю, следить за игрой и обсуждать её у себя, но gameplay protocol запрещает им вмешиваться в мир или публиковать игровые изменения, даже если repository permission технически позволяет push.
+Phase A: storage owner устанавливает новый published tag на storage `main`. Все engine-owned paths приводятся в точное соответствие release tree: новые добавляются, изменённые заменяются, obsolete удаляются. `DND_STORAGE.yaml` сохраняется и обновляет installed tag/SHA.
 
-При старте нового чата читается HEAD campaign-ветки. Внутри авторизованной сессии разрешено держать working set и накапливать изменения без commit после каждого хода.
+Phase B: конкретная campaign branch безопасно интегрирует storage baseline. Populated `CAMPAIGN/**` не заменяется пустым skeleton release. Engine-owned obsolete paths удаляются; campaign data меняется только через defined migration/compatible metadata update.
 
-Сохранять изменения следует пакетами на естественных границах: конец сцены или боя, прибытие после значимого путешествия, существенный пакет изменений мира/инвентаря/отношений, пауза/конец сессии, явная команда сохранения, перед maintenance или когда объём несохранённого состояния становится рискованно велик.
+Campaign update commit предпочитает merge-style provenance: first parent = текущий campaign HEAD, second parent = storage-main commit с новым baseline. Public release commit находится в другом repository и фиксируется tag/SHA metadata, а не cross-repository parent.
 
-По явной команде `resync`, `перечитай ветку`, `обновись с GitHub` и т.п. агент заново читает HEAD и затронутые данные.
+Storage `main` может быть новее конкретной campaign. Если Phase A успешна, а Phase B отложена/неудачна, rollback storage main не выполняется.
 
-## Multiplayer shared world
+## Guest Master
 
-Режим переключается только явно владельцем кампании после owner-check из Git history.
+Если authenticated GitHub user не является storage repository owner, Master не выполняет release discovery, не предлагает engine update, не изменяет storage `main` и не интегрирует engine baseline. Guest использует версию, уже установленную в выбранной campaign branch.
 
-Несколько игроков/чатов работают с одной campaign-веткой. Каждый может иметь собственного персонажа и отдельную сцену. Чтобы уменьшить конфликты, состояние разделяется по окружению: отдельные scene-файлы, отдельные PC/NPC/item/location records и локальные session/log-файлы. Игроки в разных местах обычно не изменяют одни и те же файлы.
+## Concurrency и persistence
 
-Repository collaborator access сам по себе не делает пользователя участником игры: для gameplay-write нужен multiplayer mode и явный player binding.
+Обычный gameplay сохраняет существующие правила optimistic concurrency: `force=false`, HEAD check перед publication boundary, targeted changed-path refresh и semantic reconciliation вместо blind overwrite.
 
-Перед публикацией накопленного пакета изменений агент сравнивает текущий HEAD с HEAD, на котором строился working set.
+Не создавать commit на каждый ход/бросок. Durable changes публикуются пакетами на естественных границах; race-sensitive multiplayer/live changes следуют специализированным runtime rules.
 
-Если HEAD не изменился — обычный commit.
-
-Если HEAD изменился:
-1. определить изменённые с другой стороны пути/сущности;
-2. сравнить их с локальным набором затронутых путей/сущностей;
-3. если изменения независимы — учесть новый HEAD и применить локальные изменения поверх него;
-4. если затронут один файл, но изменения структурно независимы — объединить их;
-5. если изменения касаются одной игровой сущности, перечитать её и проверить логическую совместимость;
-6. если изменения несовместимы, уже опубликованный канон учитывается как факт мира, а более позднее действие переоценивается мастером.
-
-Пример: два персонажа почти одновременно забирают один предмет из сундука. Первый успешно опубликованный совместимый результат делает предмет недоступным. Второму мастер сообщает наблюдаемое последствие — например, сундук уже пуст. Имя другого игрока сообщается только если персонаж может это знать из мира; Git author metadata является знанием мастера, а не персонажа.
-
-Git-конфликт — сигнал перечитать мир, а не техническая ошибка, которую нужно перетирать force push.
-
-Если два действия действительно одновременны в fiction и commit order случайно определил бы победителя, мастер разрешает взаимодействие по игровым правилам/хронологии, а не объявляет первый Git commit победителем только по технической причине.
-
-## Частота коммитов
-
-Не создавать commit на каждый игровой ход или бросок.
-
-В singleplayer коммиты — пакетные сохранения изменений мира на естественных границах.
-
-В multiplayer локальные изменения также можно накапливать, но изменения общих race-sensitive объектов следует публиковать сразу после их логического завершения: получение/уничтожение уникального предмета, изменение общего NPC/локации, глобального процесса, доступа, двери, ресурса и т.п. Это делает изменение видимым соседним сессиям без журналирования каждого шага.
-
-## Обновление Framework
-
-`main` может развиваться после старта кампаний. По умолчанию новые общие правила интегрируются в campaign-ветку через merge, чтобы не переписывать историю SHA.
-
-Rebase допускается только явно для остановленной singleplayer-ветки без конкурирующих сессий. После rebase все cached SHA недействительны и требуется полный resync.
-
-Несовместимое изменение persistent schema требует миграции.
-
-## История
-
-Git history — технический аудит версий хранилища и источник provenance/ownership, но не повод создавать искусственно мелкие commits. Семантически значимая история мира хранится компактно в `CAMPAIGN/LOG/` и может объединять несколько игровых действий в одну запись/пакет.
+Git history — технический audit/provenance layer. Семантическая история мира хранится компактно в `CAMPAIGN/LOG/`.

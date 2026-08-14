@@ -1,27 +1,31 @@
 # Campaign Setup and Branch Initialization
 
-framework_module_version: 0.1.3
+framework_module_version: 0.2.4
 load_when: create new campaign, bind player, initialize empty campaign branch
 
 ## Discover before creating
 
-If gameplay is requested and no campaign branch is selected, follow `BOOTSTRAP_RUNTIME.md`: list `campaign/*`, read manifests only, then let the user continue an existing game or start a new one.
+Resolve the campaign-storage repository through `BOOTSTRAP_RUNTIME.md` before campaign discovery. If gameplay is requested and no campaign branch is selected, list `campaign/*` only in that storage repository, read manifests only, then let the user continue an existing game or start a new one.
 
 ## New campaign branch
 
-Create the new campaign from the selected stable engine release/tag using a neutral date-based technical branch ID:
+Create the new campaign from current campaign-storage `refs/heads/main`, never directly from public engine `main` and never from an untagged public-engine commit.
+
+Before branching, validate `DND_STORAGE.yaml` on storage `main`; its `engine.installed_tag` and `engine.installed_sha` identify the published engine release represented by that baseline.
+
+Use a neutral date-based technical branch ID:
 - first campaign created on a date: `campaign/YYYYMMDD`;
 - if that branch already exists, use `campaign/YYYYMMDD-02`, then `-03`, etc.
 
 Do not put world names, PC names, multiplayer state, author names or player counts into the branch name. Those are mutable campaign metadata, not branch identity.
 
-The branch inherits the complete empty `CAMPAIGN/` skeleton from the exact selected engine release tag; do not create a campaign from untagged `main` HEAD and do not recreate directory structure file-by-file.
+The branch initially inherits the complete engine snapshot and empty `CAMPAIGN/` skeleton from storage `main`. Its first campaign-specific initialization commit MUST remove `DND_STORAGE.yaml`; that file is storage-main metadata, not campaign canon.
 
 Initialize only the values needed to make the campaign identifiable and playable:
 - campaign ID/display name if established, branch/status/mode;
-- engine `base_tag`/`base_sha`;
-- engine `integrated_tag` equal to the selected base tag and `integrated_main_sha` equal to that tag's commit SHA;
-- engine `update_policy: ask` unless the creator explicitly chooses automatic tagged updates;
+- engine `base_tag` from storage `DND_STORAGE.engine.installed_tag` and `base_sha` from `installed_sha`;
+- engine `integrated_tag` equal to that base tag and `integrated_main_sha` equal to that public release SHA;
+- engine `update_policy: ask` unless later changed through the normal policy flow;
 - `players.join_policy: invite_only` unless the creator explicitly chooses `open_contributors` for multiplayer;
 - rules baseline and advancement method;
 - player binding(s);

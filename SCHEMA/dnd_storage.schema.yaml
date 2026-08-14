@@ -1,0 +1,22 @@
+schema_name: dnd_storage
+schema_version: 1
+required:
+  - storage_format_version
+  - repository_role
+  - engine
+fields:
+  storage_format_version: integer
+  repository_role: enum[campaign_storage]
+  engine:
+    source_repository: string
+    installed_tag: string
+    installed_sha: string
+invariants:
+  - file MUST exist at repository root on refs/heads/main of a D&D Master campaign-storage repository
+  - file MUST NOT exist in the canonical public engine repository
+  - file is storage-owned infrastructure metadata and MUST survive engine baseline replacement
+  - source_repository MUST equal Dandelion-Solutions/hedgelion-dnd-master
+  - installed_tag MUST identify a valid published engine release tag
+  - installed_sha MUST be the exact commit resolved by installed_tag
+  - the authoritative storage metadata is the copy on storage refs/heads/main
+  - normal campaign/live branches MUST NOT depend on DND_STORAGE.yaml for gameplay canon

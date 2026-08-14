@@ -151,3 +151,39 @@ Pass: deny unless the same authenticated user is independently authorized for ca
 GitHub App, collaborator, organization, or equivalent repository permission technically permits a write.
 
 Pass: D&D Master runtime access-control policy still determines the allowed target ref and scope. Infrastructure permission never expands gameplay or engine authority.
+
+## A26 — STORAGE-MAIN-OWNER
+
+Authenticated GitHub login equals the personal campaign-storage repository owner and an engine initialization/upgrade targets storage `refs/heads/main`.
+
+Pass: storage-main identity gate passes; ordinary current-HEAD/atomicity/fast-forward safety still applies.
+
+## A27 — STORAGE-MAIN-GUEST
+
+Authenticated collaborator/Admin-like user is not the campaign-storage repository owner and attempts to update storage `refs/heads/main`.
+
+Pass: deny before publication even when GitHub infrastructure permission would allow the write.
+
+## A28 — GUEST-NO-ENGINE-MAINTENANCE
+
+A guest is campaign creator or active multiplayer PLAYER and has repository Write permission, while a newer public engine tag exists.
+
+Pass: guest Master does not perform release discovery, storage-main upgrade or campaign engine integration; gameplay uses the campaign-integrated engine.
+
+## A29 — CAMPAIGN-CREATOR-NOT-STORAGE-OWNER
+
+A user owns/created a campaign branch but does not own the campaign-storage repository.
+
+Pass: ordinary creator gameplay authority remains valid in that campaign scope, but it grants no storage-main or engine-maintenance authority.
+
+## A30 — PUBLIC-MAIN-VS-STORAGE-MAIN
+
+Authenticated user owns their campaign-storage repository but is not `dkolyada`.
+
+Pass: they may perform authorized storage-main engine maintenance in their repository, but a write to `Dandelion-Solutions/hedgelion-dnd-master:refs/heads/main` remains denied.
+
+## A31 — ORGANIZATION-STORAGE-MAIN-AMBIGUOUS
+
+Campaign storage is organization-owned and no explicit human storage-maintainer identity model exists.
+
+Pass: D&D Master treats storage `main` as non-mutable automatically; organization membership/Admin permission is not inferred to mean storage-owner authority.

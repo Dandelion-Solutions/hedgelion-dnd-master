@@ -1,21 +1,34 @@
 # Canonical Storage and Persistence
 
-framework_module_version: 0.1.4
+framework_module_version: 0.2.5
 load_when: session startup, state retrieval, persistence boundary, resync, canon conflict
 
-`main` stores shared engine/framework data plus an empty `CAMPAIGN/` skeleton. Actual campaign branches fill that skeleton with game-specific data. Chat context is temporary working memory; ChatGPT Memory is never campaign storage.
+The public engine repository and campaign storage are separate repositories. The canonical public engine is `Dandelion-Solutions/hedgelion-dnd-master`; gameplay state lives only in a selected campaign-storage repository.
+
+Campaign-storage `refs/heads/main` contains an exact snapshot of one published engine release plus the storage-owned root record `DND_STORAGE.yaml`. It contains only the empty/template `CAMPAIGN/` skeleton from that release and is not gameplay canon. Actual games live in `campaign/*`; temporary shared-scene frontiers live in related live refs. Chat context is temporary working memory; ChatGPT Memory is never campaign storage.
+
+## Storage repository metadata
+
+`DND_STORAGE.yaml` exists at repository root on campaign-storage `main` and identifies the repository role plus the exact public engine release installed on storage `main`.
+
+- It does not exist in the public engine repository.
+- It is storage-owned and is the only normal path preserved outside an exact engine-tree replacement on storage `main`.
+- Discovery checks the marker on the repository default/main branch; do not infer storage from repository name or from the presence of `CAMPAIGN/`.
+- A campaign branch is created from storage `main`, but its first campaign-specific initialization commit removes `DND_STORAGE.yaml`. Campaign and live branches do not use the marker as gameplay canon.
+- The installed engine baseline for storage `main` is `DND_STORAGE.engine.installed_tag` / `installed_sha`; the installed engine for an individual campaign is the campaign manifest engine metadata.
 
 ## Campaign write authorization
 
-Before any game-state write to `campaign/*`, determine campaign creator from Git history: `author.login` of the first campaign-specific initialization commit after branch creation from an engine release. Compare it with the currently authenticated GitHub user.
+Before any game-state write to `campaign/*`, determine campaign creator from Git history: `author.login` of the first campaign-specific initialization commit after branch creation from storage `main`. Compare it with the currently authenticated GitHub user.
 
 - `singleplayer`: only creator may publish gameplay-state commits; other repository collaborators are read-only observers at gameplay-protocol level.
 - `multiplayer`: explicitly bound participating players may publish according to multiplayer rules.
 - switching `singleplayer <-> multiplayer` is creator-only.
+- engine maintenance is not ordinary gameplay authority: only the authenticated campaign-storage repository owner performs storage-main upgrades or engine integration into campaign branches.
 
-If creator identity or current GitHub identity cannot be established reliably, do not perform an owner-only or singleplayer write.
+If required identity cannot be established reliably, do not perform the corresponding write.
 
-Repository permission is necessary but not sufficient: collaborator write access does not grant authority over another user's singleplayer campaign.
+Repository permission is necessary but not sufficient: collaborator write access does not grant authority over another user's singleplayer campaign, storage `main`, or another campaign.
 
 ## Authenticated player binding
 

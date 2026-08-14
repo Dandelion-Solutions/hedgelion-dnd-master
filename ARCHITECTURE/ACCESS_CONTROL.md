@@ -4,22 +4,24 @@ Repository engine ownership and campaign ownership are separate concepts.
 
 ## Repository write authority
 
-Canonical engine repository: `Dandelion-Solutions/hedgelion-dnd-master`
+Canonical public engine repository: `Dandelion-Solutions/hedgelion-dnd-master`
 
 Framework maintainer GitHub login: `dkolyada`
 
-- `refs/heads/main` is engine-maintainer-only.
-- Only the authenticated GitHub identity `dkolyada` may publish changes to `refs/heads/main`.
-- Repository Admin/Write permission, organization membership, collaborator status, campaign ownership, multiplayer `PLAYER_` binding, or ChatGPT/GitHub authorization do not by themselves grant authority to modify `main`.
-- Any gameplay Master, guest, contributor, or campaign creator other than `dkolyada` MUST refuse an attempted publication/update of `main` before the write is performed.
-- A campaign creator may publish only to their own `campaign/*` ref and live refs associated with that campaign, subject to normal campaign access-control rules.
+D&D Master distinguishes repository role before interpreting `refs/heads/main`:
+
+- In the canonical public engine repository, `refs/heads/main` is engine-maintainer-only. Only authenticated GitHub identity `dkolyada` may publish framework/runtime/schema/install/release/repository-policy changes there.
+- In a campaign-storage repository, `refs/heads/main` is storage-owner-only and may be changed by D&D Master only for storage initialization or installation of a published engine release baseline.
+- Campaign-storage v1 uses a personal-account-owned repository. Storage-owner authorization requires the authenticated GitHub login to equal the repository owner login. Organization membership, Admin/Write permission or collaborator status is not a substitute. If the repository owner is not a resolvable human login, automated storage-main mutation is denied until a future explicit maintainer model exists.
+- Repository Admin/Write permission, organization membership, collaborator status, campaign ownership, multiplayer `PLAYER_` binding, or ChatGPT/GitHub authorization do not by themselves grant authority to either kind of `main`.
+- A guest Master MUST NOT perform engine release discovery, storage-main upgrade, or campaign engine integration. Guest gameplay uses the engine already integrated into the selected campaign branch.
+- A campaign creator may publish gameplay state only to their own `campaign/*` scope according to campaign rules. Creating a campaign does not grant engine-maintainer or storage-main authority.
 - A multiplayer participant may publish only within the campaign/live scope authorized by their active `PLAYER_` binding.
 - GitHub repository permission is necessary infrastructure permission but is insufficient gameplay/engine authorization.
-- Creating a campaign session does not grant engine-maintainer authority.
-- Campaign engine updates discover/read published engine release tags and integrate the selected release into the campaign branch. A campaign Master never publishes engine fixes or merged campaign state back to `main`.
+- Campaign engine maintenance is performed by the authenticated owner of the campaign-storage repository. It may replace engine-owned paths and apply defined migrations, but it must preserve campaign agency/canon and must not invent campaign decisions. A migration requiring a campaign-owner/player decision is deferred until that decision is available.
 - This is D&D Master application/runtime policy, not a claim of server-side GitHub branch protection. GitHub may technically permit a human with sufficient repository permission to violate this policy manually outside D&D Master.
 
-Before any `main` publication, resolve the exact target ref and the currently authenticated GitHub login. If the target is `refs/heads/main`, allow publication only when the login is exactly `dkolyada`. If identity cannot be determined reliably, deny the write. Never test authority with a probe commit.
+Before any publication, resolve the exact repository and target ref, then apply `CORE/RUNTIME.md` write routing. If required identity or repository role cannot be established reliably, deny the write. Never test authority with a probe commit.
 
 ## Campaign ownership
 
