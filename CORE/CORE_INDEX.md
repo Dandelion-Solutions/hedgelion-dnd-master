@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.1.4
+framework_module_version: 0.1.5
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 During gameplay ALWAYS load:
@@ -10,6 +10,7 @@ During gameplay ALWAYS load:
 Load every other module only when the current situation requires it.
 
 - `BOOTSTRAP_RUNTIME.md` — campaign discovery/startup and runtime routing.
+- `ENGINE_UPDATES.md` — tagged engine-release discovery, ask/auto policy and safe campaign integration; load at update opportunities only.
 - `CAMPAIGN_SETUP.md` — create/initialize a new campaign branch.
 - `GM_CRAFT.md` — high-level synthesis of established GM best practices; use for setup/prep/design/audit.
 - `CAMPAIGN_OPERATIONS.md` — campaign/session organization and maintenance.
@@ -44,7 +45,9 @@ Recommended bundles:
 
 `new campaign` -> RUNTIME + AI_REASONING + GM_CRAFT + CAMPAIGN_OPERATIONS + CAMPAIGN_SETUP + CHARACTER + SAFETY + WORLDGEN.
 
-`session prep/start` -> RUNTIME + AI_REASONING + SESSION + CAMPAIGN_OPERATIONS + GM_CRAFT/PREP only if preparation is needed.
+`session prep/start` -> RUNTIME + AI_REASONING + SESSION + CAMPAIGN_OPERATIONS + ENGINE_UPDATES only for the startup release check, plus GM_CRAFT/PREP only if preparation is needed.
+
+`engine update opportunity` -> ENGINE_UPDATES + BOOTSTRAP_RUNTIME + STORAGE, plus MULTIPLAYER/LIVE_SCENE only when current campaign state requires them.
 
 `multiplayer shared scene` -> RUNTIME + AI_REASONING + MULTIPLAYER + LIVE_SCENE, plus only current scene/entity/rule dependencies.
 

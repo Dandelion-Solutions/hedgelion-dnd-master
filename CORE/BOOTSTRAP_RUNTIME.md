@@ -1,6 +1,6 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.1.3
+runtime_bootstrap_version: 0.1.4
 repository: dkolyada/hedgelion-dnd-master
 engine_branch: main
 
@@ -22,7 +22,7 @@ If there are no campaign branches, offer to create a new campaign.
 
 If the user explicitly named a campaign branch or unambiguously selected a listed campaign, use it without listing all games again.
 
-A new campaign branch is created from the selected stable engine release/tag using the technical date-based branch ID and already contains the full empty `CAMPAIGN/` structure inherited from `main`. Initialize manifest/config/state; then create world/PC content through setup/play.
+A new campaign branch is created from the selected stable engine release/tag using the technical date-based branch ID and already contains the full empty `CAMPAIGN/` structure inherited from that tagged release. Initialize manifest/config/state; then create world/PC content through setup/play.
 
 ## Gameplay startup
 
@@ -32,15 +32,17 @@ A new campaign branch is created from the selected stable engine release/tag usi
 4. Resolve campaign creator from Git history only when write authorization may matter: `author.login` of the first campaign-specific initialization commit. Cache the resolved identity for the session unless a maintenance/access change requires revalidation.
 5. Resolve the currently authenticated GitHub user.
 6. If mode is `singleplayer`, treat the session as read-only unless current GitHub user == campaign creator.
-7. Read `CAMPAIGN/CHECKPOINTS/LATEST.yaml` at the pinned SHA.
-8. Read `CAMPAIGN/STATE/CURRENT.yaml` at the pinned SHA.
-9. Read only relevant scene file(s) from `CAMPAIGN/STATE/SCENES/` at the pinned SHA.
-10. Read only PC records relevant to the current player/turn.
-11. Read `CORE/CORE_INDEX.md`.
-12. ALWAYS load `CORE/RUNTIME.md` and `CORE/AI_REASONING.md` during gameplay.
-13. Load only additional CORE modules required by the situation.
-14. Use `CAMPAIGN/INDEX/` to locate additional WORLD records; never broadly scan WORLD.
-15. Store the pinned SHA as the working-set base HEAD.
+7. If the current user is the campaign creator, load `CORE/ENGINE_UPDATES.md` from the campaign branch and perform the startup release-tag opportunity described there. This checks published engine tags, never untagged `main` HEAD. Non-owner multiplayer sessions skip campaign-wide update prompting.
+8. If a tagged engine update is successfully integrated, discard the old startup engine cache, repin the campaign branch to the new HEAD, reread this bootstrap and the manifest from that new HEAD, then continue startup. Do not keep adjudicating from pre-update CORE content.
+9. Read `CAMPAIGN/CHECKPOINTS/LATEST.yaml` at the pinned SHA.
+10. Read `CAMPAIGN/STATE/CURRENT.yaml` at the pinned SHA.
+11. Read only relevant scene file(s) from `CAMPAIGN/STATE/SCENES/` at the pinned SHA.
+12. Read only PC records relevant to the current player/turn.
+13. Read `CORE/CORE_INDEX.md`.
+14. ALWAYS load `CORE/RUNTIME.md` and `CORE/AI_REASONING.md` during gameplay.
+15. Load only additional CORE modules required by the situation.
+16. Use `CAMPAIGN/INDEX/` to locate additional WORLD records; never broadly scan WORLD.
+17. Store the pinned SHA as the working-set base HEAD.
 
 If a required record is absent or inconsistent, do not invent it.
 
@@ -64,6 +66,8 @@ Commit/history reads are exceptional. Use a bounded range only when required for
 
 The cost of ordinary gameplay reads should depend on the current scene and changed relevant paths, not on total campaign age or commit count.
 
+Engine-release discovery is separate from campaign-state synchronization. Do not inspect `main` HEAD or release tags merely because the campaign branch moved. Use only the update opportunities in `ENGINE_UPDATES.md`.
+
 ## Lazy loading
 
 NPC -> NPC index -> exact NPC record -> only required dependencies.
@@ -82,7 +86,9 @@ Multiplayer: partition state by scene/entity, batch local changes, and check HEA
 
 ## Framework updates
 
-Stable engine versions use tags in the `vMAJOR.MINOR` form with an optional prerelease suffix, for example `v0.1-beta` or `v0.2-RC`. Integrate newer `main` into live campaigns by merge by default. Rebase is explicit maintenance only for a paused non-concurrent branch and invalidates cached SHAs. Schema-incompatible changes require migration.
+Published campaign updates come only from stable/prerelease engine release tags, not from current `main` HEAD. Follow `CORE/ENGINE_UPDATES.md` for discovery, user choices, automatic-update policy, safe integration, live-epoch restrictions and post-update cache invalidation.
+
+Stable engine versions use tags in the `vMAJOR.MINOR` form with an optional prerelease suffix, for example `v0.1-beta` or `v0.2-RC`. Integrate the exact selected release tag into live campaigns by merge-style maintenance by default. Rebase is explicit maintenance only for a paused non-concurrent branch and invalidates cached SHAs. Schema-incompatible changes require migration.
 
 ## Canon priority
 

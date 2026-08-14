@@ -8,4 +8,6 @@ install_layout_revision: 1
 branch_id_revision: 1
 access_control_revision: 1
 presentation_revision: 1
+campaign_update:
+  compatibility: compatible
 recommended_tag: v0.1-beta

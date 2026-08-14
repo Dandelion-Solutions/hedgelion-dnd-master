@@ -18,7 +18,9 @@ fields:
   engine:
     base_tag: string
     base_sha: string
+    integrated_tag: string|null
     integrated_main_sha: string
+    update_policy: enum[ask, auto]
   rules:
     baseline: string
     house_rules_path: string|null
@@ -45,5 +47,9 @@ invariants:
   - force_push_allowed MUST be false for live campaigns
   - campaign owner is derived from Git history and MUST NOT be duplicated in MANIFEST
   - mode changes are owner-only
+  - engine update_policy changes and engine-release integration are owner-only
   - in singleplayer all gameplay writes are creator-only
   - base_tag/base_sha identify the engine release from which campaign was created
+  - integrated_tag identifies the most recent published engine release actually integrated into the campaign; new campaigns initialize it to base_tag
+  - integrated_main_sha is the exact source commit of integrated_tag and is retained for precise provenance/backward compatibility
+  - update_policy defaults to ask when absent in an older manifest

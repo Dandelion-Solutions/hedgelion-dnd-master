@@ -1,6 +1,6 @@
 # Campaign Setup and Branch Initialization
 
-framework_module_version: 0.1.1
+framework_module_version: 0.1.2
 load_when: create new campaign, bind player, initialize empty campaign branch
 
 ## Discover before creating
@@ -15,11 +15,13 @@ Create the new campaign from the selected stable engine release/tag using a neut
 
 Do not put world names, PC names, multiplayer state, author names or player counts into the branch name. Those are mutable campaign metadata, not branch identity.
 
-The branch already inherits the complete empty `CAMPAIGN/` skeleton from `main`; do not recreate directory structure file-by-file.
+The branch inherits the complete empty `CAMPAIGN/` skeleton from the exact selected engine release tag; do not create a campaign from untagged `main` HEAD and do not recreate directory structure file-by-file.
 
 Initialize only the values needed to make the campaign identifiable and playable:
 - campaign ID/display name if established, branch/status/mode;
-- engine base tag/SHA and integrated-main SHA;
+- engine `base_tag`/`base_sha`;
+- engine `integrated_tag` equal to the selected base tag and `integrated_main_sha` equal to that tag's commit SHA;
+- engine `update_policy: ask` unless the creator explicitly chooses automatic tagged updates;
 - rules baseline and advancement method;
 - player binding(s);
 - campaign premise/tone/boundaries if already chosen;
@@ -36,7 +38,7 @@ Its GitHub `author.login` is the technical campaign owner/creator for access-con
 
 This first commit should contain the coherent campaign initialization state after required setup choices are settled. Later code derives ownership from Git history.
 
-Owner-only operations include switching `singleplayer <-> multiplayer` and other explicit access-mode changes.
+Owner-only operations include switching `singleplayer <-> multiplayer`, changing the campaign-wide engine update policy, integrating a newer engine release, and other explicit access/maintenance changes marked owner-only.
 
 In `singleplayer`, only this creator is permitted by the gameplay protocol to publish campaign-state commits. Other repository collaborators may read/observe but not play into or modify the branch.
 
@@ -48,6 +50,8 @@ Ask only decisions that materially affect the game now. Typical first-run choice
 - broad campaign premise/tone if the user wants control over it;
 - PC concept/creation choices;
 - once per new campaign player, preferred mechanics detail on a `0..10` scale; use default `3` when the player does not care, with decision-support default `6`.
+
+Do not force an engine-update preference question during new-campaign setup; default to `ask`. The creator can choose `Always update automatically` when the first tagged update is offered or explicitly change the policy later.
 
 Do not ask the user to invent a branch name. The technical branch ID is generated automatically from creation date.
 

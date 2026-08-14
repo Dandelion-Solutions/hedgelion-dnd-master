@@ -7,16 +7,18 @@ mode: singleplayer
 engine:
   base_tag: null
   base_sha: null
+  integrated_tag: null
   integrated_main_sha: null
+  update_policy: ask
 rules:
-  baseline: D&D 2024 / SRD 5.2.1
-  house_rules_path: CAMPAIGN/RULES/HOUSE_RULES.md
+  baseline: "D&D 2024 / SRD 5.2.1"
+  house_rules_path: "CAMPAIGN/RULES/HOUSE_RULES.md"
 storage:
-  state_root: CAMPAIGN/STATE
-  index_root: CAMPAIGN/INDEX
-  world_root: CAMPAIGN/WORLD
-  event_log_root: CAMPAIGN/LOG
-  checkpoints_root: CAMPAIGN/CHECKPOINTS
+  state_root: "CAMPAIGN/STATE"
+  index_root: "CAMPAIGN/INDEX"
+  world_root: "CAMPAIGN/WORLD"
+  event_log_root: "CAMPAIGN/LOG"
+  checkpoints_root: "CAMPAIGN/CHECKPOINTS"
 sync:
   force_push_allowed: false
   persistence_policy: batched

@@ -9,11 +9,13 @@ Before an owner-only operation, resolve:
 2. currently authenticated GitHub user;
 3. allow only if they match.
 
-Owner-only operations include switching `singleplayer <-> multiplayer` and any future access-mode changes explicitly marked owner-only.
+Owner-only operations include switching `singleplayer <-> multiplayer`, campaign-wide engine update-policy changes, engine-release integration/migration, and any future access/global-maintenance changes explicitly marked owner-only.
 
 In `singleplayer`, the same creator check applies to every gameplay-state write. Other collaborators may read/observe but must not publish gameplay changes, even if repository permissions technically allow push.
 
 In `multiplayer`, repository permission alone is still insufficient: gameplay authority requires explicit player binding. Resolve the authenticated GitHub account's stable user ID to exactly one active `PLAYER_` record before accepting its `player_id` or controlled PC context.
+
+Non-owner multiplayer sessions use the engine version already integrated into the campaign. They do not change the campaign-wide engine update policy or integrate a newer release merely because a release tag exists.
 
 GitHub login is a mutable authorization/audit label. Campaign state and semantic events use stable `PLAYER_` IDs; a login or display-name change must not change gameplay authorship history.
 

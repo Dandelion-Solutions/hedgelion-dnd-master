@@ -8,6 +8,14 @@ The engine release version uses two numeric components with an optional prerelea
 
 `ENGINE_VERSION.yaml` is the canonical in-repository release-version record. Git tags are immutable release/reference points and use the exact tag spelling chosen for that release.
 
+A campaign release is considered published only when the corresponding Git tag exists. Untagged commits on `main` are intermediate development state and MUST NOT be offered to campaigns as updates.
+
+A tagged release intended for automatic campaign integration should declare `campaign_update.compatibility` in its tagged `ENGINE_VERSION.yaml`:
+- `compatible` — normal automatic integration may proceed when runtime safety checks pass;
+- `maintenance_required` — campaign update requires bounded maintenance/migration and must not be blindly auto-applied.
+
+Missing/unknown compatibility metadata is treated conservatively as maintenance-required by automatic campaign update logic.
+
 Do not update unrelated files merely because the engine release/tag changed.
 
 ## CORE module versions

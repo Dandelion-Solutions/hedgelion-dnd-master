@@ -1,6 +1,6 @@
 # Campaign Operations
 
-framework_module_version: 0.1.2
+framework_module_version: 0.1.3
 load_when: campaign start, session start/end, prep, recap, campaign maintenance
 
 ## Campaign-level organization
@@ -47,6 +47,7 @@ This corresponds to operational notes, not a transcript.
 
 From canonical storage:
 - identify HEAD and campaign;
+- perform the creator-side tagged engine update opportunity from `ENGINE_UPDATES.md` when applicable;
 - recap only prior facts needed now;
 - restore current scene/resources/participants;
 - retrieve active threads and directly relevant entities;
@@ -69,6 +70,8 @@ Preparation detail should track probability and cost of improvisation, not the D
 Take lightweight internal notes only for facts likely to persist. Keep transient tactical detail only while it matters.
 
 Do not commit every exchange. Batch durable changes at natural persistence boundaries. In multiplayer, publish race-sensitive shared changes promptly.
+
+Engine update discovery is not part of the ordinary turn path. Do not check `main` or release tags every message; use only the opportunities in `ENGINE_UPDATES.md`.
 
 ## Session end
 
@@ -108,6 +111,8 @@ Do not defer an actual `CANON_SUSPECT`, unsafe pending write, or other correctne
 Maintenance work does not need to be announced in player-facing narration unless it materially delays, blocks, corrects or changes the presented game state. If the fiction advances during real downtime, any off-screen world developments still require their normal causal triggers; do not invent "meanwhile" events merely to mask technical work.
 
 A natural downtime boundary is permission to perform useful bounded housekeeping, not a requirement to run an audit every time a character sleeps.
+
+Engine release checks are narrower still: a natural maintenance boundary is only an update opportunity when `ENGINE_UPDATES.md` says to use it. Do not turn every rest/scene boundary into a release-tag query.
 
 ## Periodic campaign audit
 
