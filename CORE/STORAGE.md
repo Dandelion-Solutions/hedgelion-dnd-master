@@ -1,6 +1,6 @@
 # Canonical Storage and Persistence
 
-framework_module_version: 0.1.3
+framework_module_version: 0.1.4
 load_when: session startup, state retrieval, persistence boundary, resync, canon conflict
 
 `main` stores shared engine/framework data plus an empty `CAMPAIGN/` skeleton. Actual campaign branches fill that skeleton with game-specific data. Chat context is temporary working memory; ChatGPT Memory is never campaign storage.
@@ -34,6 +34,14 @@ When an active scene has a valid `live_epoch` pointer, `LIVE_SCENE.md` inserts t
 ## Stable IDs and lazy retrieval
 
 Resolve names through compact INDEX files, fetch the exact record and only dependencies required for the current decision. Never recursively load the entity graph.
+
+A stable campaign ID is allocated only when the DM determines that an entity/fact now needs persistent identity for future consistency. The engine must not automatically promote every incidental NPC, object, place or detail merely because it appeared in narration. The canonization/promotion decision remains a DM judgment constrained by the relevant entity module and established fiction.
+
+Once a new global stable ID is chosen, reserving it is a `HARD` persistence boundary: publish the new canonical record and its required index entry to the applicable durable campaign frontier immediately. The ID is considered reserved only after the GitHub write succeeds. Never overwrite an already-canonical record merely to reclaim a preferred number.
+
+If concurrent publication reveals that the chosen ID was already reserved, refresh the relevant index/state, preserve the existing canonical record, choose the next available ID in that namespace, and retry. GitHub optimistic concurrency is the uniqueness guard; no separate global allocator is required for the expected campaign scale.
+
+Inside an active live epoch, an entity that has not yet been promoted to durable campaign identity may use an epoch-local provisional identity in live state. Do not consume a global stable ID merely for transient shared-scene bookkeeping. If the DM decides that the entity must survive beyond the live epoch or otherwise requires durable campaign identity, allocate and reserve its global stable ID through the campaign frontier before relying on that ID as durable canon; compaction then maps the provisional live identity to the reserved stable ID.
 
 ## Lightweight repository reads
 
