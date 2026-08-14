@@ -26,6 +26,7 @@ world_time:
   calendar_id: null
   frontier: null
 players:
+  join_policy: invite_only
   player_ids: []
 last_checkpoint_id: null
 last_event_id: null

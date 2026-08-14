@@ -1,6 +1,6 @@
 # Shared-World Multiplayer
 
-framework_module_version: 0.1.4
+framework_module_version: 0.1.5
 load_when: CAMPAIGN/MANIFEST mode == multiplayer OR explicit multiplayer management
 
 ## Mode and ownership
@@ -11,17 +11,41 @@ The creator is determined from Git history: `author.login` of the first campaign
 
 `singleplayer` means only that creator may publish gameplay commits to the campaign branch. Other collaborators may observe/read the campaign but must not alter game state.
 
-`multiplayer` permits explicitly bound players to publish gameplay commits according to the rules below. Multiple chats/players share one campaign branch and objective world, while each PC/player has separate knowledge.
+`multiplayer` permits bound players to publish gameplay commits according to the rules below. Multiple chats/players share one campaign branch and objective world, while each PC/player has separate knowledge.
 
-Repository collaborator access alone is not player binding.
+Repository collaborator access alone is not an existing player binding. The campaign's `players.join_policy` controls whether an eligible collaborator may create a new binding for themselves.
+
+Changing `players.join_policy` is creator-only. If the field is absent in an older campaign, treat it as `invite_only`.
 
 ## Authenticated player binding
 
-Before multiplayer gameplay writes, resolve the currently authenticated GitHub account and map its stable GitHub user ID to exactly one active `PLAYER_` record. The session `player_id` and controlled `pc_id` must come from that binding, not from self-identification in chat.
+Before normal multiplayer gameplay writes, resolve the currently authenticated GitHub account and map its stable GitHub user ID to exactly one active `PLAYER_` record. The session `player_id` and controlled `pc_id` must come from that binding, not from self-identification in chat.
 
 Use the stable campaign `PLAYER_` ID inside campaign state and semantic events. GitHub login is a mutable authorization/audit label only and must not be used as the gameplay actor ID.
 
-If repository permission exists but no valid active player binding matches the authenticated GitHub user, gameplay writes are not authorized.
+If repository permission exists but no valid active player binding matches the authenticated GitHub user, normal gameplay writes are not authorized. Apply the joining policy below before concluding whether the user may create a new binding.
+
+## Joining policy
+
+`CAMPAIGN/MANIFEST.yaml -> players.join_policy` is one of:
+- `invite_only` — safe default. A new participant may join only when an active `PLAYER_` binding for that GitHub user has already been explicitly created/authorized by the campaign creator. The binding itself is the invitation; no separate invitation table is required.
+- `open_contributors` — a currently authenticated repository collaborator with verified write/push access may self-enroll by creating one new `PLAYER_` binding for their own stable GitHub user ID.
+
+`open_contributors` does not mean public anonymous access. A GitHub account that cannot be verified as an eligible current repository collaborator with sufficient write access may not self-enroll. If that eligibility cannot be established reliably, deny self-enrollment rather than guessing.
+
+The open-world self-enrollment exception is intentionally narrow. Before the binding exists, the unbound collaborator may publish only the minimal coherent onboarding batch needed to establish their own `PLAYER_` identity and required index entry. After that write succeeds, ordinary multiplayer authority derives from the new active binding.
+
+Self-enrollment must never:
+- claim or modify another player's binding;
+- take control of an existing PC;
+- change campaign mode, join policy, engine policy or other creator-only state;
+- modify unrelated world/gameplay state as part of the authorization exception.
+
+A newly joined player creates or accepts their own PC through normal character setup after identity binding. Existing PC control may change only through an explicit authorized persistent event; joining policy never implies inheritance of an unowned or inactive PC.
+
+The creator may change `invite_only <-> open_contributors` explicitly at any safe persistence boundary. Changing the policy does not revoke existing active player bindings. To remove a participant's gameplay authority, change that player's binding status through the normal explicit player-management flow.
+
+When switching a campaign into multiplayer and no join policy is explicitly chosen, initialize `invite_only`. Do not silently open the campaign merely because repository collaborators exist.
 
 ## Action provenance
 
@@ -140,6 +164,10 @@ A live scene stores objective shared truth separately from which PCs actually pe
 
 ## Joining players
 
-Adding a player requires explicit player binding and PC assignment. Do not infer control of an existing PC.
+Joining is governed by `players.join_policy` plus authenticated GitHub identity and `PLAYER_` binding state.
+
+In `invite_only`, an unbound collaborator remains an observer until the creator has explicitly established their binding. In `open_contributors`, an eligible collaborator may establish only their own binding through the narrow onboarding exception above.
+
+Adding a player never implies control of an existing PC. After binding, create/assign a PC explicitly through normal character setup.
 
 If a newly joined/resumed PC enters a scene with an active live epoch, load/adopt that live frontier before presenting current actionable state.

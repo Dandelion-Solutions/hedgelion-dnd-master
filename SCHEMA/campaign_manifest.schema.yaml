@@ -37,6 +37,7 @@ fields:
     calendar_id: string|null
     frontier: object|null
   players:
+    join_policy: enum[invite_only, open_contributors]
     player_ids: array[string]
   last_checkpoint_id: string|null
   last_event_id: string|null
@@ -47,6 +48,8 @@ invariants:
   - force_push_allowed MUST be false for live campaigns
   - campaign owner is derived from Git history and MUST NOT be duplicated in MANIFEST
   - mode changes are owner-only
+  - players.join_policy changes are owner-only and default to invite_only when absent in an older manifest
+  - open_contributors permits only verified current repository collaborators with sufficient write access to self-create their own player binding; it does not grant control of existing PCs or other bindings
   - engine update_policy changes and engine-release integration are owner-only
   - in singleplayer all gameplay writes are creator-only
   - base_tag/base_sha identify the engine release from which campaign was created

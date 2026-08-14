@@ -1,6 +1,6 @@
 # Access-control regression cases
 
-These cases validate campaign ownership, authenticated player binding, provenance, and branch identity rules.
+These cases validate campaign ownership, authenticated player binding, provenance, branch identity and multiplayer joining policy rules.
 
 ## A01 — Singleplayer foreign writer
 
@@ -28,9 +28,9 @@ Pass: explicit mode switch may proceed and is persisted; never switch mode impli
 
 ## A05 — Collaborator is not automatically a player
 
-Repository collaborator `user_b` can write GitHub repository content, campaign mode is multiplayer, but no explicit player binding exists.
+Repository collaborator `user_b` can write GitHub repository content, campaign mode is multiplayer, but no explicit player binding exists and `players.join_policy` is `invite_only`.
 
-Pass: repository permission alone does not grant control of a PC or gameplay authority. Require explicit binding.
+Pass: repository permission alone does not grant control of a PC or normal gameplay authority. Require an existing creator-authorized binding.
 
 ## A06 — Neutral branch ID
 
@@ -67,3 +67,57 @@ Pass: the semantic event records `player_intent.player_id: PLAYER_02` and `pc_id
 A persistence batch by `PLAYER_02` contains the amulet transfer plus an unrelated NPC process update.
 
 Pass: the transfer event is attributed to `PLAYER_02`; the unrelated NPC update is not player-attributed merely because both changes share a Git commit. A consequence is linked to the player action only when an actual causal chain exists.
+
+## A12 — Missing join policy is closed by default
+
+An older multiplayer campaign manifest has no `players.join_policy`.
+
+Pass: treat it as `invite_only`; do not allow an unbound collaborator to self-enroll merely because the field is absent.
+
+## A13 — Invite-only invited participant
+
+Campaign uses `invite_only`. Authenticated GitHub user ID matches an active creator-authorized `PLAYER_03` binding.
+
+Pass: the participant may resume/join through `PLAYER_03` and normal multiplayer rules. No separate invitation record is required.
+
+## A14 — Invite-only unbound collaborator
+
+Campaign uses `invite_only`. `user_b` is a repository collaborator with write access but has no matching active PLAYER binding.
+
+Pass: user_b may observe according to repository access but may not self-create a binding or publish gameplay state. Joining requires creator authorization.
+
+## A15 — Open contributor self-enrollment
+
+Campaign uses `open_contributors`. Authenticated `user_b` is verified as a current repository collaborator with sufficient write/push access and has no existing PLAYER binding.
+
+Pass: user_b may publish one minimal onboarding batch creating a new stable PLAYER binding for their own GitHub user ID plus required index state. After that succeeds, ordinary multiplayer authority uses the new binding.
+
+## A16 — Open join cannot seize an existing PC
+
+An eligible open-contributor joins while an existing PC has no currently active controller.
+
+Pass: joining does not grant that PC automatically. Create/accept a new PC or perform an explicit authorized controller-change event separately.
+
+## A17 — Open join exception is narrow
+
+An unbound eligible collaborator attempts to self-enroll and in the same authorization exception modifies an NPC, changes join policy, or edits another PLAYER binding.
+
+Pass: reject the unrelated changes. The pre-binding exception permits only the participant's own minimal binding/index onboarding state.
+
+## A18 — Join policy change is creator-only
+
+A bound non-owner player requests `invite_only -> open_contributors`, or the reverse.
+
+Pass: deny the change. Only the campaign creator may alter campaign-wide joining policy.
+
+## A19 — Existing players survive policy tightening
+
+Creator changes `open_contributors -> invite_only` while several players are already active.
+
+Pass: existing active PLAYER bindings remain authorized. The policy change affects creation of new bindings, not retroactive revocation.
+
+## A20 — Unverifiable collaborator cannot self-enroll
+
+Campaign uses `open_contributors`, but the Master cannot reliably establish the current GitHub user's repository collaborator/write eligibility.
+
+Pass: deny self-enrollment until eligibility is resolved; do not infer authority from chat identity or repository visibility alone.

@@ -1,6 +1,6 @@
 # Campaign Setup and Branch Initialization
 
-framework_module_version: 0.1.2
+framework_module_version: 0.1.3
 load_when: create new campaign, bind player, initialize empty campaign branch
 
 ## Discover before creating
@@ -22,6 +22,7 @@ Initialize only the values needed to make the campaign identifiable and playable
 - engine `base_tag`/`base_sha`;
 - engine `integrated_tag` equal to the selected base tag and `integrated_main_sha` equal to that tag's commit SHA;
 - engine `update_policy: ask` unless the creator explicitly chooses automatic tagged updates;
+- `players.join_policy: invite_only` unless the creator explicitly chooses `open_contributors` for multiplayer;
 - rules baseline and advancement method;
 - player binding(s);
 - campaign premise/tone/boundaries if already chosen;
@@ -38,7 +39,7 @@ Its GitHub `author.login` is the technical campaign owner/creator for access-con
 
 This first commit should contain the coherent campaign initialization state after required setup choices are settled. Later code derives ownership from Git history.
 
-Owner-only operations include switching `singleplayer <-> multiplayer`, changing the campaign-wide engine update policy, integrating a newer engine release, and other explicit access/maintenance changes marked owner-only.
+Owner-only operations include switching `singleplayer <-> multiplayer`, changing multiplayer `join_policy`, changing the campaign-wide engine update policy, integrating a newer engine release, and other explicit access/maintenance changes marked owner-only.
 
 In `singleplayer`, only this creator is permitted by the gameplay protocol to publish campaign-state commits. Other repository collaborators may read/observe but not play into or modify the branch.
 
@@ -53,6 +54,8 @@ Ask only decisions that materially affect the game now. Typical first-run choice
 
 Do not force an engine-update preference question during new-campaign setup; default to `ask`. The creator can choose `Always update automatically` when the first tagged update is offered or explicitly change the policy later.
 
+When multiplayer is enabled and the creator has not specified who may join, default to `invite_only`. The creator may explicitly choose `open_contributors`, meaning verified current repository collaborators with sufficient write access may self-create their own player binding. Do not silently infer open joining from repository collaborator access.
+
 Do not ask the user to invent a branch name. The technical branch ID is generated automatically from creation date.
 
 Do not force the player through a long session-zero form if preferences can emerge naturally and safely during play.
@@ -65,11 +68,15 @@ Store campaign-level choices in `CAMPAIGN/CONFIG.yaml`, including premise/tone, 
 
 Create a stable `PLAYER_` record under `CAMPAIGN/WORLD/PLAYERS/` and a `PC_` record under `CAMPAIGN/WORLD/PCS/` when accepted. Add both to indexes in the same setup persistence batch.
 
+In `invite_only`, the creator explicitly establishes/authorizes the player's `PLAYER_` binding; that binding is the invitation and no separate invitation record is required.
+
+In `open_contributors`, follow `MULTIPLAYER.md`: an unbound user may self-create only their own initial binding when current GitHub identity and sufficient repository collaborator/write access are verified. That narrow onboarding write does not authorize unrelated campaign changes or control of an existing PC.
+
 Bind player-facing mechanics preferences to the `PLAYER_` record. If unanswered, initialize `mechanics_detail: 3`, `decision_support_detail: 6`, and adaptive preference learning enabled. If the player explicitly requests no technical mechanics, initialize both detail levels to `0`.
 
 A provisional PC may exist during creation but becomes `active` only after explicit player acceptance and mechanically required choices are valid.
 
-Repository collaborator access is not equivalent to player binding.
+Repository collaborator access is not equivalent to an existing player binding; it only permits self-enrollment when multiplayer `join_policy` explicitly allows `open_contributors`.
 
 ## First world content
 
