@@ -1,6 +1,6 @@
 # Engine Release Updates
 
-framework_module_version: 0.5.5
+framework_module_version: 0.5.6
 load_when: storage-owner startup/resume, explicit engine-update request, safe maintenance opportunity
 
 ## Distribution model
@@ -161,9 +161,12 @@ If baseline moves to T but campaign migration is deferred/fails, keep baseline a
 
 Only after campaign publication succeeds:
 - repin campaign HEAD;
-- switch runtime to exact local target package;
-- invalidate old loaded CORE/rule/bootstrap caches;
-- reload target `BOOTSTRAP_RUNTIME.md`, `CORE_INDEX.md`, `RUNTIME.md`, `AI_REASONING.md`;
-- reread only campaign records touched by migration.
+- switch runtime to the exact local target package;
+- invalidate the entire old engine instruction cache;
+- rebuild the COMPLETE target-package CORE context cache once: all local `CORE/*.md` plus `RULES/INDEX.md` and `RULES/README.md`;
+- treat `RUNTIME.md`, `AI_REASONING.md`, and `PLAY_POLICY.md` as always-active and all other preloaded CORE modules as activation-gated under the new package;
+- reread only campaign records touched by migration, keeping unrelated campaign WORLD/STATE/INDEX/LOG data lazy.
+
+Do not continue adjudication on a mixed old/new engine context. Do not reload only a hand-picked subset of CORE after an engine switch.
 
 Never claim update success before GitHub publication succeeds. Technical maintenance must not fabricate fictional elapsed time/events.

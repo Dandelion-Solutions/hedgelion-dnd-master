@@ -63,8 +63,9 @@ Pass: unrelated WORLD/STATE/LOG preserved.
 Campaign HEAD moved after preparation.
 Pass: rebuild/re-evaluate; never force push.
 
-## U20 — Post-update cache invalidation
-Pass: switch exact local target package and reload mandatory runtime modules.
+## U20 — Post-update full CORE cache rebuild
+Campaign successfully migrates engine A -> B.
+Pass: switch to exact local package B, invalidate the whole old engine instruction cache, then preload the complete B `CORE/*.md` plus `RULES/INDEX.md` and `RULES/README.md` once before further adjudication. Do not reload only a small mandatory-module subset. Campaign data not touched by migration remains lazy.
 
 ## U21 — Partial success
 Baseline B succeeds, campaign migration deferred/fails.
@@ -72,3 +73,7 @@ Pass: baseline stays B, campaign stays A.
 
 ## U22 — Technical update is not fictional time
 Pass: do not invent rest/travel/NPC delay for maintenance.
+
+## U23 — No mixed engine context
+After successful migration to B, some old-A CORE text remains cached while new-B files are available.
+Pass: invalidate old engine instruction cache and rebuild the complete B CORE cache before gameplay; never adjudicate with mixed package instructions.
