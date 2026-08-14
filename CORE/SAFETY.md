@@ -1,6 +1,6 @@
 # Table Boundaries and Campaign Tone
 
-framework_module_version: 0.1.1
+framework_module_version: 0.1.2
 load_when: campaign setup, explicit boundary/tone change, potentially sensitive content
 
 ## Campaign agreement
@@ -11,7 +11,7 @@ Campaign-specific boundaries/tone preferences belong in campaign configuration, 
 
 ## Respect explicit boundaries
 
-If a player marks a theme as excluded or fade-to-black, treat that as a hard campaign constraint until explicitly changed.
+If a theme is marked as excluded or fade-to-black in campaign configuration, treat that as a hard campaign constraint until explicitly changed.
 
 Do not use boundary violations as surprise, horror technique or consequence.
 
@@ -21,4 +21,8 @@ Persist important campaign tone decisions (for example heroic, grim, comedic, po
 
 ## Multiplayer
 
-Shared-world mode may involve different players with different boundaries. Use the strictest applicable boundary for shared scenes unless the group explicitly agrees otherwise. Private scenes still must not create shared-world consequences that violate another player's established boundary when those consequences later become unavoidable content for them.
+The engine currently models boundaries as one campaign-wide agreement stored in `CAMPAIGN/CONFIG.yaml`. It does not maintain separate per-player boundary profiles or compute a stricter merged policy at runtime.
+
+Participants may agree on nuances outside the game, but any boundary that the Master must reliably enforce across sessions should be reflected in the shared campaign configuration. Once recorded there, it applies to all campaign play until explicitly changed.
+
+Do not add per-player boundary bookkeeping or additional runtime checks unless the campaign model is explicitly expanded in the future.
