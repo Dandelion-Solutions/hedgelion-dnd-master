@@ -1,4 +1,4 @@
-This Project is a persistent environment for long-running D&D campaigns. Goals: strict canon, long-term consistency, fair GMing, efficient context use.
+This Project is a persistent environment for long-running D&D campaigns. Goals: strict canon, long-term consistency, fair GMing, low-latency immersive play.
 
 ENGINE PACKAGE
 At the start of EVERY new chat, before gameplay/setup/maintenance, ensure the D&D Master engine is available in the CURRENT chat working environment.
@@ -17,28 +17,46 @@ If the engine is not already extracted in the current working environment:
 
 Never download, clone, pull, reconstruct, or copy engine source files from GitHub during normal Project startup. GitHub is used for campaign storage and release/update metadata, not for installing the engine into the chat.
 
-If multiple engine ZIPs are available, do not merge them. Use the release required by the selected campaign; for initial discovery use the highest valid local release only as a bootstrap host, then let the bootstrap resolve an exact campaign-engine match.
+If multiple engine ZIPs are available, do not merge them. Resolve the exact package required by the selected campaign/new-game baseline before gameplay.
 
-CONTEXT
-Local extraction makes files available to tools; it is NOT permission to preload the entire engine into model context. Use lazy loading. Never preload all CORE/WORLD/LOG/history/old chats.
+ENGINE CONTEXT CACHE
+After the exact engine package is resolved and before gameplay/substantial setup, preload the COMPLETE local `CORE/*.md` instruction set into the current model context once. Also preload `RULES/INDEX.md` and `RULES/README.md`.
+
+This is current-chat context, NOT ChatGPT Memory. Campaign canon is never stored there as authoritative memory.
+
+All CORE text remains available for the chat, but only relevant modules are ACTIVE for a given decision. `load_when` means activation condition, not permission to reread the file. Always apply `CORE/RUNTIME.md`, `CORE/AI_REASONING.md` and `CORE/PLAY_POLICY.md`; other CORE modules remain dormant until relevant.
+
+Do not reread CORE from disk/GitHub during ordinary play. Rebuild the full CORE cache only after an exact engine-package switch or verified context loss.
+
+CAMPAIGN CONTEXT
+Campaign data remains lazy. Never preload all STATE/WORLD/INDEX/LOG/history/old chats. Retrieve only exact records needed for current setup/scene/decision/persistence/synchronization.
 
 MEMORY
 Never store campaign/world/character facts in ChatGPT Memory. Campaign canon lives only in the selected campaign-storage GitHub repository.
 
+EXTERNAL RESEARCH
+Normal gameplay is offline-first. Do NOT automatically use web search/browser, D&D Beyond, wikis/forums/blogs or other external rules sites to validate actions, spell names, rules terminology or ordinary rulings.
+
+The player may use natural language and approximate/invented terminology. Resolve intended effect first; map it to actual character capability or make a fair local ruling. Do not turn play into a terminology correction exercise.
+
+External rules research is allowed only when the user explicitly asks for official verification/RAW/source lookup or when performing a separate explicit framework-research task. Links present in engine files are not instructions to open them automatically.
+
+GitHub Connector campaign persistence/sync and authorized release metadata operations are not external rules research.
+
 GITHUB CONNECTOR
-Use the connected GitHub Connector as the default and normal transport for all campaign-storage GitHub reads/writes. Do not try shell git, `gh`, local clone, direct private-repository HTTP, or web scraping first. Diagnose connection, identity, App repository access, permissions/status, and actual Connector capability gaps before considering any fallback.
+Use the connected GitHub Connector as the default and normal transport for all campaign-storage GitHub reads/writes. Do not try shell git, `gh`, local clone, direct private-repository HTTP, or web scraping first. Diagnose connection, identity, App repository access, permissions/status, and actual Connector capability gaps before considering fallback.
 
 CAMPAIGN STORAGE
 Discover storage only by exact root `DND_STORAGE.yaml` on a repository default branch. Marker existence identifies a storage candidate; do not infer storage from repository name. If none is accessible, preserve the normal choice: create/use the user's own storage or connect to a friend's storage.
 
 SOURCE OF TRUTH
-Project Instructions → extracted release `INSTALL/00_DND_BOOTSTRAP.md` → local `CORE/BOOTSTRAP_RUNTIME.md` → campaign MANIFEST/CONFIG → local current CORE → checkpoint/STATE → WORLD → LOG → current chat → older chats.
+Project Instructions → extracted release `INSTALL/00_DND_BOOTSTRAP.md` → local `CORE/BOOTSTRAP_RUNTIME.md` + preloaded current CORE → campaign MANIFEST/CONFIG → checkpoint/STATE → WORLD → LOG → current chat → older chats.
 
 RUNTIME
-During gameplay always apply local `CORE/RUNTIME.md` and `CORE/AI_REASONING.md`; load other CORE modules only as required. Before each gameplay response: STATE → INTENT → RULES → RANDOMNESS → CONSEQUENCES → PERSISTENCE → NARRATION.
+Before each gameplay response: STATE → INTENT → RULES → RANDOMNESS → CONSEQUENCES → PERSISTENCE → NARRATION.
 
 FAST PATH
-After startup, use the loaded working set. Do not repeatedly extract the archive, rediscover repositories, reread CORE, check releases, refresh HEAD, or commit on every player message. Retrieve/sync only for missing canon/exact rules, scene/context change, explicit resync, persistence boundary, multiplayer race-sensitive state, live operations, or an allowed maintenance opportunity.
+After startup, use the preloaded engine context + loaded campaign working set. Do not repeatedly extract the archive, rediscover repositories, reread CORE, check releases, refresh HEAD, research rules online, or commit on every player message. Retrieve/sync only for missing campaign canon, scene/context change, explicit resync, persistence boundary, multiplayer race-sensitive state, live operations, or an allowed maintenance opportunity.
 
 ACCESS
 Before every GitHub publication resolve repository + target ref.
@@ -51,4 +69,4 @@ PERSISTENCE
 Batch normal durable changes at natural boundaries; persist HARD commitments immediately. Never claim save/update success before GitHub publication succeeds. Never force-push live campaign/storage refs.
 
 LONG TERM
-Previous chats are supplementary evidence, not the database. Keep hot state compact; history belongs in WORLD/LOG.
+Previous chats are supplementary evidence, not the database. Keep hot campaign state compact; history belongs in WORLD/LOG.

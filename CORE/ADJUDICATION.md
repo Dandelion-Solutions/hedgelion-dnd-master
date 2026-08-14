@@ -1,114 +1,78 @@
 # Action Adjudication
 
-framework_module_version: 0.1.1
+framework_module_version: 0.2.0
 load_when: uncertain action, skill use, social check, environmental challenge, improvised ruling
 
 ## Resolve intent before mechanics
 
-Determine:
-- intended outcome;
-- approach used;
-- relevant fictional positioning;
-- resources/tools/abilities involved;
-- what can meaningfully go wrong.
+Determine intended outcome, approach, fictional positioning, relevant resources/capabilities and what can meaningfully go wrong.
 
-If intent or approach is materially ambiguous, ask only for the missing information that changes adjudication. Do not interrogate the player about details that do not matter.
+The player's terminology is not a rules exam. If intent is clear, normalize approximate/noncanonical vocabulary internally rather than stopping to correct names.
+
+Ask only for missing information that materially changes cost, risk, feasibility or consequence.
 
 ## Decide whether to roll
 
-Use a roll only when all are true:
-1. the outcome is genuinely uncertain;
-2. success is possible;
-3. failure or cost is meaningful enough to matter.
+Roll only when the outcome is genuinely uncertain, success is possible, and failure/cost is meaningful.
 
-If success is automatic, grant it.
-If the stated outcome is impossible under current state/rules, explain the constraint; do not offer a meaningless roll.
-
-Do not roll merely to create suspense.
+If success is automatic, grant it. If the intended result is impossible under established character/world constraints, explain the constraint briefly and continue from the resulting fiction. Do not offer a meaningless roll.
 
 ## Mechanical grounding
 
-Resolve outcomes from the actual canonical mechanics of every participant relevant to the ruling.
+Use established exact mechanics when they are already available. For PCs derive relevant modifiers/resources from canonical character state. For NPCs/creatures use established mechanics; if a needed value is undefined, establish the minimum sufficient value before observing the outcome and preserve it once materially used.
 
-For PCs, derive the applicable modifiers from stored ability scores, proficiency/expertise, equipment, features, conditions, active effects and resources under the adopted rules.
+Do not tune mechanics after seeing a result.
 
-For NPCs/creatures, use established mechanics or a referenced canonical stat block. If a required NPC mechanical value has never been established, determine the minimum sufficient value from the adopted rules and established fiction before observing the relevant roll/outcome. Once used materially, preserve it for future consistency.
+Exact mechanics presentation follows player preference; hidden adjudication remains consistent.
 
-Do not compare vague narrative labels such as "strong" or "skilled" when an exact rule mechanic is required. Conversely, do not invent unnecessary statistics when fictional positioning makes the result automatic or impossible.
+## Local-first ruling
 
-Apply buffs, debuffs, advantage/disadvantage, conditions, resource state and other modifiers before generating randomness. Never adjust a participant's stats, target/DC or applicable modifiers after seeing the roll or because a previous result was easier/harder than expected.
+Normal gameplay does not require external rules lookup.
 
-How much of this arithmetic is shown to the player follows the player mechanics-presentation preference. The hidden calculation remains the same at every presentation level.
+When the exact RAW detail is not locally available:
+1. use campaign rulings/house rules first;
+2. use established character/entity mechanics and local CORE/RULES guidance;
+3. apply the model's best D&D knowledge plus established fiction and causal/common-sense constraints;
+4. make the smallest fair ruling needed to continue play.
+
+Do not automatically open D&D Beyond, search engines, wikis or other external resources to validate the action or the player's terminology.
+
+If a ruling creates a consequential reusable precedent, persist it explicitly for consistency.
+
+External RAW/source verification occurs only on explicit user request under `PLAY_POLICY.md`.
 
 ## Stakes before dice
 
-Before randomness is generated, establish internally:
-- applicable test/rule;
-- target/DC or opposing value when required;
-- advantage/disadvantage and relevant modifiers;
-- broad success consequence;
-- broad failure consequence;
-- any partial/costly-success possibility justified by the situation.
-
-Do not alter these after seeing the die result.
+Before randomness establish internally the applicable test/rule, target/DC/opposition when required, modifiers/advantage state, broad success consequence and broad failure consequence. Do not alter these after seeing the die result.
 
 ## D&D baseline
 
-For D&D 2024/SRD 5.2.1, uncertain actions use the applicable D20 Test/rule. Use the character's actual stored mechanics rather than guessing modifiers.
+For D&D 2024/SRD 5.2.1 uncertain actions use an applicable D20 Test/rule when one is actually needed. Prefer ability-first adjudication and stored character mechanics.
 
-Prefer ability-first adjudication: identify the ability relevant to the approach, then proficiency/skill/tool if applicable.
-
-Do not let the label of a skill substitute for fictional feasibility.
+Do not let a skill/action/spell label substitute for fictional feasibility, and do not require the player to know the label when intent is clear.
 
 ## Consequences
 
-A failed test should change or clarify the situation when a meaningful failure was established. Possible forms include:
-- no progress where delay itself matters;
-- time loss;
-- resource loss;
-- exposure/noise;
-- worsening position;
-- incomplete information;
-- a new but causally connected complication;
-- loss of opportunity;
-- harm or condition where justified.
+Failure should follow the established risk and fiction: no progress, time/resource loss, exposure/noise, worsening position, incomplete information, loss of opportunity, harm/condition or another causally connected consequence.
 
-Do not manufacture an unrelated complication merely because a die was low.
+Do not manufacture unrelated complications because a die was low.
 
 ## Fail forward
 
-Fail-forward is a tool, not a guarantee of benefit.
+Fail-forward is a tool, not a guaranteed benefit. Avoid making campaign continuation depend on one fragile roll, but a failure may simply create a worse position or close an opportunity.
 
-Use it especially when a hard stop would make the game collapse around one missed roll. Critical information or campaign continuation should normally have redundant paths or a cost-based fallback.
+## Degrees and repeated attempts
 
-A failure may move play forward into a worse situation. It does not mean every failed action secretly helps the player.
+Use degrees only when rules/fiction support meaningful gradients. Do not invent a universal critical-failure system for ability checks.
 
-## Degrees and margins
-
-Use binary success/failure when the rule and fiction call for it.
-
-Use degree, quality, speed, collateral cost or extra information only when:
-- the rule supports it; or
-- the situation logically has meaningful gradients.
-
-Do not invent a universal critical-failure system for ability checks unless the campaign explicitly adopts one.
-
-## Repeated attempts
-
-If nothing changes and unlimited retries are safe, do not request endless identical rolls. Either resolve the eventual result, consume the meaningful time/resource cost, or explain why another attempt requires a changed approach/condition.
+If nothing changes and unlimited retries are safe, do not request endless identical rolls; resolve eventual success or apply meaningful time/resource cost.
 
 ## Social actions
 
-Persuasion, deception and intimidation are not mind control.
-
-NPC reaction depends on goals, attitude, leverage, knowledge, risk, the proposal itself and any mechanics legitimately involved. A high roll cannot make an NPC accept an impossible or self-destructive proposition without a reason.
-
-When the player's roleplay/argument changes leverage or attitude, reflect that in feasibility, DC, advantage/disadvantage or outcome as appropriate.
+Persuasion/deception/intimidation are not mind control. NPC responses remain constrained by goals, attitude, leverage, knowledge, risk and the proposal itself.
 
 ## Temporary rulings
 
-When official/local rules are genuinely unclear during play:
-1. prefer a quick fair ruling over derailing the scene;
-2. label it internally as temporary if future consistency matters;
-3. verify after/when practical from the canonical rules source;
-4. if a permanent house rule is adopted, persist it explicitly.
+A quick local ruling may be internally marked temporary when exact mechanics are uncertain. It does NOT trigger an automatic later internet lookup.
+
+Verify externally only if the user explicitly asks. If the table adopts a permanent rule, persist it explicitly.
