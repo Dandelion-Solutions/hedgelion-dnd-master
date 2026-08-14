@@ -1,6 +1,6 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.2.7
+runtime_bootstrap_version: 0.4.7
 engine_repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_development_branch: main
 engine_owner_login: dkolyada

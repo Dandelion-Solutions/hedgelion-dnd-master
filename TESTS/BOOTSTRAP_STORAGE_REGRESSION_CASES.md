@@ -57,3 +57,7 @@ Pass: ask whether to create their own campaign or join a friend's campaign. Do n
 ## B14 — Future Connector bulk-copy capability
 A later GitHub Connector exposes a documented one-call bulk copy/import operation.
 Pass: prefer it automatically, while preserving exact published-tag source selection, whole-tree equality verification before marker addition, and one final initialization commit/ref update.
+
+## B15 — INSTALL README is for the human installer
+A person opens `INSTALL/README.md` to install their own copy of D&D Master.
+Pass: the document describes only actions the person must take: create/configure the ChatGPT Project, add the two install files from one release, connect GitHub, create or join a campaign repository, grant App access when needed, start play, and update the Project. It does not explain internal tree-copy algorithms, storage metadata, refs/SHAs, checksum procedure, engine-update phases, regression machinery, or other bootstrap implementation details.
