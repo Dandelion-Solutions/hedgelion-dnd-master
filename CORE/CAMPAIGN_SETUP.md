@@ -1,6 +1,6 @@
 # Campaign Setup and Branch Initialization
 
-framework_module_version: 0.5.6
+framework_module_version: 0.5.7
 load_when: create new campaign, bind player, initialize campaign branch
 
 ## Discover before creating
@@ -79,9 +79,9 @@ Do not copy local CORE/RULES/SCHEMA/INSTALL files into the campaign branch.
 
 The first campaign initialization commit's `author.login` is the technical campaign creator for access-control purposes.
 
-## Initial manifest
+## Initial manifest/config
 
-Initialize:
+Initialize manifest:
 - campaign ID and branch;
 - `status: initializing`;
 - mode (default `singleplayer` unless multiplayer already chosen);
@@ -94,6 +94,8 @@ Initialize:
 
 Current-layout manifest storage roots are `STATE`, `INDEX`, `WORLD`, `LOG`, `CHECKPOINTS`; house rules path is `RULES/HOUSE_RULES.md`.
 
+Campaign config includes `play_style.dnd_lore_fidelity`, a 0..10 campaign-wide preference for how closely the fiction follows official D&D lore/terminology/source canon. It NEVER weakens or strengthens D&D mathematics/mechanics.
+
 Do not duplicate creator GitHub identity in MANIFEST.
 
 ## Player-facing staged setup
@@ -104,38 +106,73 @@ After scaffold publication and before substantial character/world preparation, t
 
 Do not give a duration/time estimate and do not ask the player to wait. Surface player-relevant progress between phases instead of doing one long silent preparation block.
 
-### Stage 1 — Character
+## Compact initial questions
 
-Load `CHARACTER.md` plus only exact rules needed for current character decisions.
+Do not expose unexplained engine settings. Ask human questions with anchors.
+
+For a Russian-speaking player, a good compact form is:
+
+1. **Кем хочешь играть?** Достаточно общей идеи персонажа; Master сам переведёт её в механику и уточнит только важные решения.
+2. **Сколько игровой механики показывать, 0–10?** `0` — хочу в основном историю, числа/формулы не интересуют; `5` — показывай важные броски и ресурсы; `10` — хочу видеть и сам отслеживать все доступные показатели и расчёты. Если всё равно — `3`.
+3. **Мир и стиль.** Можно задать самому или сказать «придумай сам». И насколько «книжным» делать D&D, `0–10`? `0` — механика D&D остаётся честной, но лор, термины и трактовки максимально свободные; `5` — узнаваемый D&D без придирки к каждой мелочи источника; `10` — максимально держимся официального лора, терминологии и опубликованных трактовок. Если всё равно — `3`.
+
+Localize this pattern to the player's language. The exact phrase `книжным` is optional; the anchors are mandatory because they explain the scales.
+
+The player may answer in one natural sentence. Do not require a form.
+
+### Mechanics presentation storage
+
+Store question 2 in PLAYER `preferences.campaign_only.mechanics_detail`.
+
+Default `mechanics_detail: 3` if delegated. `decision_support_detail` defaults to 6, except explicit mechanics-detail 0 defaults both to 0 unless the player says otherwise.
+
+### D&D lore/source fidelity storage
+
+Store question 3's source-fidelity answer in campaign `CONFIG.play_style.dnd_lore_fidelity`.
+
+Default to 3 if the player delegates/does not care.
+
+This setting controls lore/terminology/source fidelity only. It must never alter dice math, DC fairness, action economy, resources, spell/feature capability, encounter mechanics or already-established campaign rules.
+
+## Stage 1 — Character
+
+Activate `CHARACTER.md` plus only exact rules needed for current character decisions.
 
 Resolve the PC first. Do not generate unrelated broad world lore while character identity/mechanics remain unresolved unless a world constraint is genuinely required for an informed PC choice.
+
+A bounded official-source research pass is allowed during character setup when needed to establish exact durable mechanics. Batch it and store the result; do not create a future per-turn research dependency.
 
 When the draft is mechanically valid, present a compact human-readable character summary and obtain explicit player acceptance.
 
 After acceptance create/persist stable PLAYER + PC records and required indexes as one coherent character-stage batch. Tell the player the character stage is complete.
 
-### Stage 2 — Minimal starting world
+## Stage 2 — Minimal starting world
 
-Use `WORLDGEN.md` and `SAFETY.md`. Create only the starting horizon required for the first meaningful scene: immediate location, relevant actors/pressures/clues, and boundaries/tone actually needed now.
+Activate `WORLDGEN.md`, `PREP.md` as needed, and `SAFETY.md`.
 
-Do not build a continent encyclopedia, full faction network, distant history or unused NPC roster before play. Undefined distant details may remain undefined.
+Create only the starting horizon required for the first meaningful scene: immediate location, relevant actors/pressures/clues, and boundaries/tone actually needed now.
+
+If trustworthy external material would materially improve this horizon, one bounded research/enrichment pass is allowed under `PLAY_POLICY.md`. Source use should respect `CONFIG.play_style.dnd_lore_fidelity`.
+
+Do not research merely because sources exist. Do not build a continent encyclopedia, full faction network, distant history or unused NPC roster before play. Undefined distant details may remain undefined.
 
 Persist a coherent starting-world batch when ready and give the player only the orientation their PC legitimately knows.
 
-### Stage 3 — First scene
+## Stage 3 — First scene
 
 Create starting scene/current-state routing plus initial semantic records and `CP_0000`/latest checkpoint required for reliable resume, then begin play immediately.
 
-Optional deeper worldbuilding happens later through normal prep/lazy world generation.
+Optional deeper worldbuilding/research happens later at normal prep boundaries, not inside routine live turns.
 
 ## Minimum user questions
 
-Ask only decisions that materially affect play now. Typical choices:
-- continue/create game;
-- singleplayer or explicit multiplayer shared world;
-- premise/tone if player wants control;
-- PC concept/creation;
-- mechanics detail 0..10 (default 3) and decision-support detail (default 6).
+Ask only decisions that materially affect play now. The compact initial questions above normally cover:
+- PC concept;
+- mechanics presentation preference;
+- world/tone delegation;
+- D&D lore/source fidelity.
+
+Ask singleplayer/multiplayer only when it is not already implied/known and materially needed.
 
 Do not force a long session-zero form.
 
@@ -148,13 +185,6 @@ Create a stable `PLAYER_` record and `PC_` record when accepted, updating corres
 `invite_only`: creator explicitly establishes the player's binding.
 
 `open_contributors`: follow `MULTIPLAYER.md`; a verified repository collaborator with sufficient access may self-create only their own initial binding.
-
-Mechanics preference defaults:
-- `mechanics_detail: 3`
-- `decision_support_detail: 6`
-- adaptive learning enabled
-
-If player explicitly requests no technical mechanics, initialize both detail levels to 0.
 
 A provisional PC becomes active only after player acceptance and mechanically required choices are valid.
 

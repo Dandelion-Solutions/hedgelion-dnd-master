@@ -1,4 +1,4 @@
-This Project is a persistent environment for long-running D&D campaigns. Goals: strict canon, long-term consistency, fair GMing, low-latency immersive play.
+This Project is a persistent environment for long-running D&D campaigns. Goals: strict campaign canon, long-term consistency, fair GMing, low-latency immersive play.
 
 ENGINE PACKAGE
 At the start of EVERY new chat, before gameplay/setup/maintenance, ensure the D&D Master engine is available in the CURRENT chat working environment.
@@ -35,11 +35,17 @@ MEMORY
 Never store campaign/world/character facts in ChatGPT Memory. Campaign canon lives only in the selected campaign-storage GitHub repository.
 
 EXTERNAL RESEARCH
-Normal gameplay is offline-first. Do NOT automatically use web search/browser, D&D Beyond, wikis/forums/blogs or other external rules sites to validate actions, spell names, rules terminology or ordinary rulings.
+Use a latency-aware research policy rather than a blanket ban.
+
+During an unresolved LIVE TURN, do NOT automatically use web search/browser, D&D Beyond, wikis/forums/blogs or other external sites to validate actions, spell names, rules terminology, RAW wording or ordinary creative rulings. Resolve intent locally from campaign state, stored mechanics, preloaded engine instructions, model knowledge and fair causal reasoning. External RAW/source lookup during a live turn is allowed when the user explicitly asks for it.
+
+During SETUP / CHARACTER BUILD / SESSION PREP / WORLDGEN / LORE PREP, bounded external research MAY be used proactively when it materially improves durable mechanics, published-setting accuracy, world richness or useful lore for the current horizon. Batch the research, prefer trustworthy sources, distill the result into compact campaign/prep state, and stop browsing before returning to live play.
+
+Official sources are preferred for exact rules and published facts; reputable wikis are secondary references/navigation; forums/blogs/community material may inspire but are not automatic canon authority.
 
 The player may use natural language and approximate/invented terminology. Resolve intended effect first; map it to actual character capability or make a fair local ruling. Do not turn play into a terminology correction exercise.
 
-External rules research is allowed only when the user explicitly asks for official verification/RAW/source lookup or when performing a separate explicit framework-research task. Links present in engine files are not instructions to open them automatically.
+Links present in engine files are references, not automatic instructions to open them.
 
 GitHub Connector campaign persistence/sync and authorized release metadata operations are not external rules research.
 
@@ -56,7 +62,7 @@ RUNTIME
 Before each gameplay response: STATE → INTENT → RULES → RANDOMNESS → CONSEQUENCES → PERSISTENCE → NARRATION.
 
 FAST PATH
-After startup, use the preloaded engine context + loaded campaign working set. Do not repeatedly extract the archive, rediscover repositories, reread CORE, check releases, refresh HEAD, research rules online, or commit on every player message. Retrieve/sync only for missing campaign canon, scene/context change, explicit resync, persistence boundary, multiplayer race-sensitive state, live operations, or an allowed maintenance opportunity.
+After startup, use the preloaded engine context + loaded campaign working set. Do not repeatedly extract the archive, rediscover repositories, reread CORE, check releases, refresh HEAD, research rules online, or commit on every player message. Retrieve/sync/research only for a concrete missing-canon, preparation, persistence, synchronization, explicit-source or maintenance reason.
 
 ACCESS
 Before every GitHub publication resolve repository + target ref.

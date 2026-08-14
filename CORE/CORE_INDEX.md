@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.2.0
+framework_module_version: 0.2.1
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 ## Context model
@@ -12,7 +12,7 @@ Preloaded != active.
 Always active during gameplay:
 - `RUNTIME.md` — turn pipeline, agency, causality and canon boundaries.
 - `AI_REASONING.md` — LLM-specific correctness discipline.
-- `PLAY_POLICY.md` — CORE cache, activation semantics, natural-language intent and offline-first research policy.
+- `PLAY_POLICY.md` — CORE cache, activation semantics, natural-language intent and research policy.
 
 All other modules remain present but dormant until their domain is relevant. In older module headers, `load_when` means activate-when after the CORE cache has been built; it is not an instruction to reread the file from disk.
 
@@ -34,19 +34,19 @@ All other modules remain present but dormant until their domain is relevant. In 
 - `MAGIC.md` — spell/magic adjudication.
 - `PROCESSES.md` — long-running threats/projects/clocks/off-screen change.
 - `CHRONOLOGY.md` — relative ordering when chronology materially constrains play.
-- `WORLDGEN.md` — create/expand only the required world horizon.
+- `WORLDGEN.md` — create/expand only the required world horizon; may use bounded source research at prep boundaries.
 - `LORE.md` — history/culture/disputed accounts/lore reveal.
 - `REWARDS.md` — economy/payment/treasure/ownership.
 - `ADVANCEMENT.md` — level-up/rest/downtime/long-term progression.
 - `SAFETY.md` — campaign boundaries and tone.
 - `NARRATIVE.md` — narration, pacing and information density.
-- `PREP.md` — situation-based preparation and strong starts.
+- `PREP.md` — situation-based preparation, strong starts and bounded enrichment research.
 - `STORAGE.md` — canonical storage, batching, lazy CAMPAIGN retrieval and resync.
 - `INTEGRITY.md` — bounded repair when canon is suspect/corrupt.
 - `MULTIPLAYER.md` — shared-world concurrency and access behavior.
 - `LIVE_SCENE.md` — temporary live synchronization for shared actionable scenes.
 - `ANTIPATTERNS.md` — extended failure catalogue for audit/debug.
-- `SOURCES.md` — provenance appendix; preloaded but DORMANT. Never follow/open its links during normal play.
+- `SOURCES.md` — provenance/reference appendix; preloaded but DORMANT during ordinary live turns. May activate for explicit source research or bounded setup/prep enrichment.
 
 ## Activation examples
 
@@ -58,6 +58,8 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 `combat` -> activate COMBAT + RANDOMNESS/ADJUDICATION as needed.
 
+`session/world prep` -> activate PREP + WORLDGEN/LORE as needed; SOURCES may activate for one bounded enrichment pass.
+
 `engine update opportunity` -> activate ENGINE_UPDATES + BOOTSTRAP_RUNTIME + STORAGE.
 
 `multiplayer shared scene` -> activate MULTIPLAYER + LIVE_SCENE plus current domain modules.
@@ -66,11 +68,13 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 ## Rules decision policy
 
-During normal gameplay:
+During a normal live turn:
 1. established campaign house rules/rulings;
 2. stored exact character/entity mechanics;
 3. local CORE/RULES guidance and exact local records;
 4. best local adjudication from character capability + fiction + model rules knowledge;
 5. quick fair ruling if exact RAW is unavailable.
 
-Do NOT automatically browse the web or D&D Beyond as step 5. External rules research requires an explicit user request. See `PLAY_POLICY.md`.
+Do NOT automatically browse the web or D&D Beyond as step 5. External RAW research during a live turn requires an explicit user request.
+
+Setup/prep/worldbuilding may use bounded trustworthy source research under `PLAY_POLICY.md`; that is a different mode from live-turn rules checking.
