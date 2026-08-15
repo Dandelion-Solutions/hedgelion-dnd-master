@@ -59,8 +59,10 @@ After bootstrap starts, the exact extracted engine's bootstrap and CORE define a
 
 Если подходящего campaign storage ещё нет, Master предложит:
 
-- **создать своё** — создайте новый **пустой** GitHub repository, выберите `Private` или `Public` по своему желанию и не включайте `Add a README`, `.gitignore`, license или другие стартовые файлы; затем сообщите Master имя repository;
+- **создать своё** — откройте [создание нового репозитория](https://github.com/new), создайте новый **пустой** GitHub repository, выберите `Private` или `Public` по своему желанию и не включайте `Add a README`, `.gitignore`, license или другие стартовые файлы; затем сообщите Master имя repository;
 - **подключиться к игре друга** — владелец repository даёт вашему GitHub account доступ collaborator, после чего вы сообщаете Master имя repository.
+
+Если новый или уже доступный repository не виден Connector, откройте [GitHub App installations](https://github.com/settings/installations) → **ChatGPT Codex Connector** → **Configure** → **Repository access** и добавьте нужный repository.
 
 Дальнейшую инициализацию выполняет bootstrap. Для нового собственного storage он сам создаст полезный `README.md` и служебный marker; вручную добавлять стартовые файлы не нужно.
 
@@ -72,6 +74,6 @@ After bootstrap starts, the exact extracted engine's bootstrap and CORE define a
 
 ## Если что-то не работает
 
-**ChatGPT не видит private repository:** проверьте, что GitHub App/Connector получил доступ именно к этому repository.
+**ChatGPT не видит private repository:** откройте [GitHub App installations](https://github.com/settings/installations) → **ChatGPT Codex Connector** → **Configure** → **Repository access** и убедитесь, что нужный repository разрешён Connector.
 
 **Project Source ZIP недоступен в новом чате:** прикрепите тот же ZIP непосредственно к этому чату. Bootstrap продолжит работу с ним; не нужно использовать `git clone`, `pull` или base64.
