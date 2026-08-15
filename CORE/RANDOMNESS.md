@@ -1,6 +1,6 @@
 # Randomness Integrity
 
-framework_module_version: 0.1.1
+framework_module_version: 0.1.2
 load_when: dice roll, random table, uncertain hidden process
 
 ## Actual RNG required
@@ -13,11 +13,21 @@ If no trustworthy RNG mechanism is available, do not fabricate one: ask the play
 
 For an ordinary fair dN, generate an integer uniformly from 1 through N. Multiple dice are independent draws unless the rules specify otherwise.
 
+`MECHANICS_INTEGRITY.md` is the pre-narration gate: an uncertain result is not resolved until the real RNG output has been consumed by the applicable mechanic and produced a state/consequence delta.
+
 ## Stakes before randomness
 
 Resolve state, applicable mechanics, DC/target/opposition and broad success/failure consequences before generating the random result.
 
 Never choose a desired narrative outcome first and reverse-engineer a roll to justify it.
+
+## Efficient local generation
+
+Prefer local/system RNG over network research.
+
+Independent dice already known to be required may be generated in one tool operation for latency. Do not pre-roll conditionally dependent dice before the rules establish that those dice are actually needed.
+
+Record raw generated values in the current in-memory resolution trace even when the player's mechanics display level hides them.
 
 ## No hidden fudging
 
@@ -29,9 +39,13 @@ If the result exposes a bad earlier ruling, correct the ruling transparently rat
 
 ## Visibility
 
-Use open/player-visible roll reporting by default when revealing the result does not leak secret information. State the die and relevant arithmetic when it helps trust/learning without flooding narration.
+Use open/player-visible roll reporting by default when revealing the result does not leak secret information AND the player's presentation preference allows that detail.
 
-Hidden rolls/processes are allowed only when revealing whether/what was rolled would expose secret state. The underlying result must still use actual RNG and must affect canonical state honestly.
+At low/zero mechanics detail, rolls may remain hidden in narration, but they must still be generated honestly and retained in the current resolution trace.
+
+An explicit player request to inspect recent rolls/calculations should reveal the existing non-secret trace for that scope. Never invent retrospective rolls.
+
+Hidden rolls/processes are allowed when revealing whether/what was rolled would expose secret state. The underlying result must still use actual RNG and must affect canonical state honestly.
 
 ## Random tables
 
@@ -47,7 +61,9 @@ A motif may influence narration/consequence shape only where fiction supports it
 
 ## Persistence and audit
 
-Do not log every trivial die roll.
+Do not log every trivial die roll to GitHub.
+
+Maintain the compact operational trace required by `MECHANICS_INTEGRITY.md` during the current action sequence/encounter.
 
 When randomness materially causes durable state, the semantic record may include:
 - dice/expression;

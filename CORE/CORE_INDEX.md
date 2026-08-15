@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.2.5
+framework_module_version: 0.2.6
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 ## Context model
@@ -14,6 +14,7 @@ Always active during gameplay:
 - `AI_REASONING.md` — LLM-specific correctness discipline.
 - `PLAY_POLICY.md` — CORE cache, activation semantics, natural-language intent and research policy.
 - `DURABILITY_GUARD.md` — zero-I/O durability-boundary classification; prevents accepted gameplay canon from remaining only in volatile chat state.
+- `MECHANICS_INTEGRITY.md` — pre-narration mechanical proof gate; hidden mechanics still require real rules resolution, RNG and a compact audit trace.
 
 All other modules remain present but dormant until their domain is relevant. In older module headers, `load_when` means activate-when after the CORE cache has been built; it is not an instruction to reread the file from disk.
 
@@ -54,15 +55,15 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 ## Activation examples
 
-`new campaign` -> DURABILITY_GUARD is already active; activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; before the first live scene DURABILITY_GUARD requires a post-scaffold PLAY_READY durable frontier.
+`new campaign` -> DURABILITY_GUARD and MECHANICS_INTEGRITY are already active; activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; before the first live scene DURABILITY_GUARD requires a post-scaffold PLAY_READY durable frontier.
 
 `campaign menu/discovery` -> activate BOOTSTRAP_RUNTIME + CAMPAIGN_CARD; prefer card-only presentation reads and defer authoritative/deep campaign loading until selection.
 
-`ordinary in-scene action` -> normally only always-active modules plus the smallest domain modules actually implicated by the action. DURABILITY_GUARD performs only an in-memory boundary check and causes no GitHub I/O unless a real save boundary exists.
+`ordinary in-scene action` -> normally only always-active modules plus the smallest domain modules actually implicated by the action. DURABILITY_GUARD performs only an in-memory boundary check; MECHANICS_INTEGRITY requires a real resolution class before any material outcome is narrated.
 
-`spell/magic` -> activate MAGIC and ADJUDICATION only as needed.
+`spell/magic` -> activate MAGIC and ADJUDICATION/RANDOMNESS as needed; MECHANICS_INTEGRITY remains the final mechanical proof gate.
 
-`combat` -> activate COMBAT + RANDOMNESS/ADJUDICATION as needed.
+`combat` -> activate COMBAT + RANDOMNESS/ADJUDICATION as needed. Establish/maintain combat mechanical state and current resolution trace before narrating uncertain combat outcomes.
 
 `session/world prep` -> activate PREP + WORLDGEN/LORE as needed; SOURCES may activate for one bounded enrichment pass.
 
@@ -86,5 +87,7 @@ During a normal live turn:
 5. quick fair ruling if exact RAW is unavailable.
 
 Do NOT automatically browse the web or D&D Beyond as step 5. External RAW research during a live turn requires an explicit user request.
+
+Whatever ruling is chosen, `MECHANICS_INTEGRITY.md` still requires the ruling to be actually executed. A quick local ruling is not permission to skip its roll/math.
 
 Setup/prep/worldbuilding may use bounded trustworthy source research under `PLAY_POLICY.md`; that is a different mode from live-turn rules checking.

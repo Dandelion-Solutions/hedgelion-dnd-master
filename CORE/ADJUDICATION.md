@@ -1,6 +1,6 @@
 # Action Adjudication
 
-framework_module_version: 0.2.0
+framework_module_version: 0.2.1
 load_when: uncertain action, skill use, social check, environmental challenge, improvised ruling
 
 ## Resolve intent before mechanics
@@ -11,11 +11,25 @@ The player's terminology is not a rules exam. If intent is clear, normalize appr
 
 Ask only for missing information that materially changes cost, risk, feasibility or consequence.
 
+## Mandatory resolution classification
+
+Before a material outcome reaches CONSEQUENCES/NARRATION, apply `MECHANICS_INTEGRITY.md` and classify it as:
+- `AUTOMATIC`;
+- `IMPOSSIBLE`;
+- `DETERMINISTIC_RULE`;
+- `RANDOM_RESOLVED`.
+
+Do not narrate a plausible result first and decide afterward what mechanic might have produced it.
+
+For `RANDOM_RESOLVED`, the actual test inputs, real RNG values and resulting state delta must exist before narration even when mechanics are hidden from the player.
+
 ## Decide whether to roll
 
 Roll only when the outcome is genuinely uncertain, success is possible, and failure/cost is meaningful.
 
 If success is automatic, grant it. If the intended result is impossible under established character/world constraints, explain the constraint briefly and continue from the resulting fiction. Do not offer a meaningless roll.
+
+If uncertainty DOES require a roll, not rolling is not a valid way to preserve pacing. Resolve it locally and then narrate.
 
 ## Mechanical grounding
 
@@ -23,7 +37,7 @@ Use established exact mechanics when they are already available. For PCs derive 
 
 Do not tune mechanics after seeing a result.
 
-Exact mechanics presentation follows player preference; hidden adjudication remains consistent.
+Exact mechanics presentation follows player preference; hidden adjudication remains complete and consistent.
 
 ## Local-first ruling
 
@@ -44,6 +58,8 @@ External RAW/source verification occurs only on explicit user request under `PLA
 ## Stakes before dice
 
 Before randomness establish internally the applicable test/rule, target/DC/opposition when required, modifiers/advantage state, broad success consequence and broad failure consequence. Do not alter these after seeing the die result.
+
+Generate the required randomness only after those inputs are fixed, then record the resulting comparison/arithmetic in the current resolution trace.
 
 ## D&D baseline
 
