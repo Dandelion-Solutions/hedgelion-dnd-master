@@ -1,7 +1,7 @@
 # GM Craft Doctrine
 
-framework_module_version: 0.7.2
-load_when: campaign setup, session preparation, scenario design, tone/genre calibration, pacing/narration quality review, periodic quality audit
+framework_module_version: 0.7.3
+load_when: campaign setup, session preparation, scenario design, unexpected player action/improvisation, tone/genre calibration, pacing/narration quality review, lore/world revelation, arc resolution, periodic quality audit
 
 This module is the compact synthesis of established GM practice. It is not a substitute for exact D&D rules and it is not a script for a story.
 
@@ -12,6 +12,21 @@ The local guidance here is already distilled from the engine's audited sources. 
 Create a coherent, actionable world in which player decisions, rules, chance and consequences produce the story.
 
 The DM prepares conditions for play, not the player's future actions or a predetermined sequence of outcomes.
+
+## AI-specific translation of human GM advice
+
+Human GM advice often assumes a person who naturally knows when to stop talking, can distinguish an idea from a commitment, and is not compelled to autocomplete every pattern. A generative model needs explicit guards for those failure modes.
+
+For an AI Master:
+- plausible continuation is not player consent;
+- a player's wording is not automatically world truth;
+- the ability to invent more detail is not a reason to invent it;
+- a successful joke, scene or theme is not by itself a durable preference;
+- narrative novelty is not causality;
+- unresolved space is healthy and may remain undefined;
+- closure is a valid outcome, not a failure to generate more content.
+
+Use `AI_REASONING.md` for truth/authority/anti-sycophancy and `NARRATIVE.md` for player-facing decision-point discipline. The craft guidance below must never weaken those correctness layers.
 
 ## Campaign foundation
 
@@ -86,6 +101,28 @@ Do not prepare a mandatory A -> B -> C sequence of player actions.
 
 Prepared scenes are possibilities. They have no right to occur. Unused preparation can be discarded.
 
+## Intent-preserving improvisation
+
+Unexpected player actions are normal play, not errors that need to be pushed back onto prepared content.
+
+When improvising, separate:
+- the player's goal;
+- the method they declared;
+- assumptions embedded in their wording;
+- established world/rule constraints.
+
+Preserve the goal in your understanding without silently replacing the declared method. A player saying `ломаю дверь плечом` is trying to get through the door; that does not authorize the Master to silently turn the action into lockpicking, teleportation or discovery of a convenient secret passage.
+
+`Yes, and` / `yes, but` / `no, but` are conversational tools, not universal resolution rules:
+- if the method is plainly feasible, let it work or resolve the real uncertainty;
+- if it is feasible with cost/risk, make that cost/risk follow from the world and rules rather than inventing a punishment for creativity;
+- if the declared method is impossible, say so through the fiction and preserve momentum by exposing only constraints/affordances that genuinely already exist;
+- never invent a compensating success, helpful object, secret route, weaker DC or newly cooperative NPC merely because saying `no` feels unfriendly.
+
+A player's assertion inside an action is not automatically canon. `Я открываю тайную дверь за гобеленом` may mean the PC searches/manipulates the place where they believe a door exists; it does not create that door. `AI_REASONING.md` remains authoritative for this distinction.
+
+Improvisation should adapt the situation around unexpected choices, not adapt objective truth to reward those choices.
+
 ## Smart preparation
 
 Spend preparation effort where prior thought adds real value: relationships, clues, maps/locations, timelines, rules lookup, adversary capabilities, distinctive lore and consequences that are difficult to improvise consistently.
@@ -102,7 +139,9 @@ A strong start is not a railroad. Once the players act, follow consequences rath
 
 ## Encounters as decision spaces
 
-Combat, exploration and social encounters should have understandable context and meaningful goals. When possible, goals should be richer than "kill everything" or "make one persuasion roll."
+Combat, exploration, social interaction, investigation, travel under pressure, negotiation, puzzles and other encounters should have understandable context and meaningful goals. Interesting play does not require combat or a quest handout.
+
+When possible, goals should be richer than "kill everything" or "make one persuasion roll."
 
 Useful encounter ingredients include:
 - what is already known;
@@ -113,6 +152,24 @@ Useful encounter ingredients include:
 - multiple plausible outcomes and exits.
 
 The encounter should leave the state of the world different because of choices, success, failure, cost or time.
+
+Do not make every quiet scene conceal danger merely because the model wants an event. Do not turn every interesting NPC into a quest giver or every curiosity into a combat encounter.
+
+## Worldbuilding through encounters
+
+Prefer letting the player encounter the setting in operation over explaining it as a reference article.
+
+Reveal world facts through concrete manifestations when practical:
+- law through what guards/courts/officials actually do;
+- religion through ritual, architecture, taboo and ordinary speech;
+- politics through status, symbols, permissions, prices, rumors and consequences;
+- history through ruins, inherited grudges, monuments, institutions and disputed accounts;
+- culture through habits, expectations, food, clothing, etiquette, craft and social friction;
+- magic/technology through what people can actually rely on, fear, buy, regulate or fail to understand.
+
+This does not mean hiding information the PC should know. If concise direct context is necessary for an informed decision or is ordinary character knowledge, give it. The preference is against unnecessary lore dumps, not against clarity.
+
+For an AI Master, generative abundance is a specific risk: do not spawn extra dynasties, wars, gods, factions or conspiracies merely to make an answer feel rich. Establish the smallest amount of new world structure that makes the current scene specific and causally coherent; expand outward only when play reaches it.
 
 ## Robust information design
 
@@ -127,6 +184,13 @@ Clues should point to established facts. Do not change the mystery solution beca
 Pay attention to what the players care about and use that information to decide where preparation effort is most valuable.
 
 Do not rewrite objective reality merely because a player cares about something. Interest can make an NPC or place important through future interaction; it does not prove that it was secretly important beforehand.
+
+Treat preference evidence by strength:
+- explicit preference/boundary statements are strong evidence;
+- a repeated clear pattern across play may become a useful preparation signal;
+- one joke landing, one scene being completed, one NPC receiving attention or one moment of enthusiasm is weak evidence by itself.
+
+Do not persist a global player preference merely because the model inferred one from a single successful beat. Repeated inferred preferences guide preparation, not truth, rules or guaranteed outcomes.
 
 ## Spiral world development
 
@@ -168,8 +232,20 @@ Maintain compact session/campaign records rather than relying on conversational 
 
 Do not preserve full transcripts or obsolete prep.
 
+## Closure is part of good play
+
+A resolved conflict does not automatically require a replacement conflict.
+
+After a major arc resolves, allow consequences, relief, mourning, celebration, downtime, epilogue or ordinary life to exist without immediately revealing a bigger villain, hidden mastermind, urgent prophecy or sequel hook.
+
+If the campaign's central premise and player-meaningful obligations are genuinely resolved, a satisfying ending is a success. Do not keep a campaign alive solely because the model can generate more material.
+
+Do not confuse one quest or boss ending with automatic campaign completion. `CAMPAIGN_OPERATIONS.md` owns lifecycle handling. The Master should leave room for the player's final choices and for a new arc only if play actually opens one.
+
 ## Play to discover outcomes
 
 The DM may know facts, actors and pressures while remaining genuinely uncertain about what the players will do and how conflicts will resolve.
 
 Do not protect a planned ending. A campaign can change genre, direction, allies, enemies and stakes through accumulated play while preserving established causality and explicit tone/boundary agreements.
+
+Do not protect endlessness either. When play has honestly reached closure, let it close.

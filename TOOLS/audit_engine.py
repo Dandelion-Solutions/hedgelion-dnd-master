@@ -102,6 +102,9 @@ def audit_gm_guidance() -> None:
     craft = text("CORE/GM_CRAFT.md")
     safety = text("CORE/SAFETY.md")
     runtime = text("CORE/RUNTIME.md")
+    narrative = text("CORE/NARRATIVE.md")
+    lore = text("CORE/LORE.md")
+    ops = text("CORE/CAMPAIGN_OPERATIONS.md")
     policy = text("CORE/PLAY_POLICY.md")
     sources = text("CORE/SOURCES.md")
 
@@ -110,10 +113,17 @@ def audit_gm_guidance() -> None:
     require("Do NOT require every player to rate mechanics" in setup and "Do NOT require the player to rate lore fidelity" in setup, "campaign setup must not regress into mandatory preference scales")
     require("Session Zero is a conversation, not a form" in craft, "GM_CRAFT must keep low-friction Session Zero doctrine")
     require("Do not hard-code a single humor style" in craft and "humor is a tool, not a quota" in craft.lower(), "GM_CRAFT must keep flexible humor doctrine")
+    require("## Intent-preserving improvisation" in craft and "player's assertion inside an action is not automatically canon" in craft, "GM_CRAFT must preserve intent without accepting player assertions as truth")
+    require("## Worldbuilding through encounters" in craft and "generative abundance" in craft, "GM_CRAFT must adapt encounter/worldbuilding guidance for generative overproduction")
+    require("## Closure is part of good play" in craft and "Do not protect endlessness" in craft, "GM_CRAFT must allow genuine story closure")
+    require("## Stop at meaningful player decision points" in narrative and "New material information beats autocomplete" in narrative, "NARRATIVE must prevent AI autocomplete across new PC decisions")
+    require("## Show the world doing something" in lore and "do not compensate for sparse context" in lore, "LORE must prefer concrete world manifestation without generative lore inflation")
+    require("## Arc resolution and campaign closure" in ops and "zero urgent conflicts" in ops and "does not need a teaser for a sequel" in ops, "CAMPAIGN_OPERATIONS must preserve quiet aftermath and real closure")
     require("Broad expectation disclosure without spoilers" in safety, "SAFETY must keep targeted heavy-theme expectation disclosure")
     require("Out-of-character Master channel" in runtime and "Мастер" in runtime and "Master" in runtime, "RUNTIME must preserve explicit Master OOC channel")
     require("GM craft guidance is local runtime knowledge" in policy and "do NOT browse D&D Beyond" in policy, "PLAY_POLICY must keep GM-advice web lookup out of campaign runtime")
-    require("D&D Beyond — Session Zero" in sources and "929-how-to-run-a-session-0" in sources and "881-creating-terror" in sources, "SOURCES must retain audited D&D Beyond provenance")
+    require("D&D Beyond — Session Zero" in sources and "929-how-to-run-a-session-0" in sources and "881-creating-terror" in sources, "SOURCES must retain audited D&D Beyond tone/onboarding provenance")
+    require("160-improvisation-in-d-d-for-new-dungeon-masters" in sources and "769-worldbuilding-through-encounters" in sources, "SOURCES must retain audited D&D Beyond improvisation/worldbuilding provenance")
 
 
 def audit_no_stale_policy() -> None:
@@ -205,12 +215,14 @@ def audit_tests() -> None:
     bs = text("TESTS/BOOTSTRAP_STORAGE_REGRESSION_CASES.md")
     ec = text("TESTS/ENGINE_CONSISTENCY_CASES.md")
     gt = text("TESTS/GM_TONE_ONBOARDING_CASES.md")
+    ad = text("TESTS/AI_DM_CRAFT_CASES.md")
     require("PT30" in pt and "Narrow race after commit" in pt and "README guide" in pt, "persistence regressions must cover concurrency + path preservation")
     require("DO14" in do and "Explicit save during onboarding" in do, "diegetic onboarding regression coverage incomplete")
     require("CI13" in ci and "Card never invents" in ci, "campaign identity regression coverage incomplete")
     require("adopted identity" in bs.lower() or "PROVISIONAL_IDENTITY" in bs, "bootstrap regression must not demand zero writes through adopted identity")
     require("EC15" in ec and "maintenance-only" in ec.lower(), "engine consistency cases must protect gameplay/maintenance separation")
     require("GT01" in gt and "GT13" in gt and "GM advice is local" in gt, "GM tone/onboarding regressions must cover human opening and local guidance")
+    require("ADC01" in ad and "ADC16" in ad and "automatic sequel hook" in ad, "AI DM craft regressions must cover intent, decision points, worldbuilding and closure")
 
     # Duplicate case IDs make regression references ambiguous and usually indicate
     # a copy/paste oversight. Check each regression document independently.

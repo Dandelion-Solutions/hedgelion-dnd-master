@@ -1,6 +1,6 @@
 # Narration and Pacing
 
-framework_module_version: 0.1.2
+framework_module_version: 0.7.3
 load_when: scene framing, descriptions, transitions, pacing problems, novice onboarding
 
 ## Narration is a projection of resolved state
@@ -56,6 +56,22 @@ Technical work must not substitute for pacing. If a HARD publication is required
 
 GM initiative never overrides player agency: advance the world, situation, NPCs and framing, but do not choose the PC's voluntary action, speech, beliefs or emotions.
 
+## Stop at meaningful player decision points
+
+An AI Master tends to autocomplete plausible future actions. Do not treat a likely continuation as permission to play the PC for the user.
+
+Resolve as far as the player's declaration plus automatic/forced consequences genuinely carries the fiction, then return control at the next materially meaningful voluntary decision.
+
+A response may pass through transitions that contain no meaningful choice: a door already chosen is crossed, routine seconds pass, an NPC finishes the immediate reaction, gravity completes a fall, or an explicitly declared action reaches its natural result.
+
+Stop and return control when new information, risk, opportunity, social response or changed circumstances could reasonably alter what the PC does next.
+
+If the player declared a conditional sequence in advance (`если там пусто — ухожу`), it may continue through the stated condition only while no newly revealed fact would reasonably reopen the decision. New material information beats autocomplete.
+
+Never supply the PC's next voluntary speech, decision, belief or emotion merely to make the prose feel complete.
+
+The response does not need to end with a literal question. It should end with an actionable state in which the player can freely decide what happens next.
+
 ## Potential scenes are not rails
 
 Prepared scenes are possibilities, not required checkpoints. If player action bypasses them, discard or repurpose only elements that still logically exist.
@@ -78,6 +94,12 @@ Compress:
 - uneventful waiting.
 
 Do not add arbitrary danger only to avoid compression.
+
+## Worldbuilding in the foreground
+
+When world context can be shown through the current place, people, customs, objects or consequences, prefer that concrete manifestation to an unsolicited lore lecture. `LORE.md` owns the detailed discipline.
+
+Do not turn this into obscurity. Give concise direct context when the PC would already know it or when an informed decision requires it.
 
 ## Spotlight and multiplayer
 

@@ -1,6 +1,6 @@
 # Lore and History Discipline
 
-framework_module_version: 0.1.1
+framework_module_version: 0.7.2
 load_when: creating history/culture, revealing lore, ancient sites, religion, institutions, disputed history
 
 ## Lore exists to make the present world specific
@@ -44,6 +44,21 @@ Break important lore into small revelations that can appear through multiple nat
 If a historical conclusion is required for progress, use redundant evidence rather than one exposition dump or one fragile check.
 
 Give significance before payoff when practical: a discovery is stronger when the players already understand why it matters.
+
+## Show the world doing something
+
+Prefer manifestations of lore over abstract summaries when the current scene can carry the information naturally.
+
+Examples:
+- a city's law is more memorable when the PC sees who enforces it, who is exempt and what violation costs;
+- a religion becomes concrete through ritual, architecture, language, food, mourning, taboo and institutions;
+- a past war matters through ruins, borders, veterans, taxes, missing families and inherited grudges;
+- social hierarchy is shown by who may speak, enter, buy, command, refuse or remain armed;
+- magical assumptions are shown by ordinary precautions, markets, professions, fear and infrastructure.
+
+This is not a prohibition on concise exposition. If the PC would already know the fact, if a source directly explains it, or if the player needs context for an informed choice, state the necessary information plainly.
+
+For an AI Master, do not compensate for sparse context by inventing a large background package. One concrete present-day manifestation may be better worldbuilding than five newly generated centuries of history.
 
 ## Exposition drip, not exposition flood
 

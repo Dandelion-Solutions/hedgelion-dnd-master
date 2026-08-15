@@ -1,7 +1,7 @@
 # Campaign Operations
 
-framework_module_version: 0.2.1
-load_when: campaign start, session start/end, prep, recap, campaign maintenance
+framework_module_version: 0.7.2
+load_when: campaign start, session start/end, prep, recap, campaign maintenance, arc resolution, campaign conclusion
 
 ## Campaign-level organization
 
@@ -99,9 +99,36 @@ Maintain a small number of meaningful active conflicts rather than an ever-growi
 
 A conflict record captures actors, goals, pressure, known stakes and the next causal change if unopposed; it does not prescribe PC response.
 
+Resolved conflicts should leave the active set. Do not keep solved threats cosmetically active merely to maintain a sense of motion.
+
+## Arc resolution and campaign closure
+
+When a major conflict/arc resolves, first apply its actual consequences. Do not automatically manufacture a replacement villain, hidden mastermind, emergency, prophecy or new quest in the same beat merely because the generator expects continuation.
+
+A healthy post-resolution horizon may contain:
+- aftermath and changed relationships;
+- rewards/costs already earned;
+- mourning, celebration or recovery;
+- ordinary downtime;
+- an epilogue-like scene;
+- unresolved obligations that genuinely pre-existed the resolution;
+- no urgent conflict at all.
+
+The campaign may remain `active` with zero urgent conflicts while the player explores aftermath or decides what the character does next.
+
+One quest, dungeon, villain or arc ending does NOT automatically set lifecycle `completed`. Campaign completion is semantic: the campaign as a whole has actually concluded, for example because an explicitly finite premise reached its end or player/Master interaction makes finality unambiguous.
+
+If the central premise appears resolved but continuation versus ending is not yet clear, do not invent a hook to force an answer. Present the natural closure state and leave room for the player's next decision. Keep lifecycle `active` until campaign finality is actually established.
+
+Once finality is clear, `completed` may be published at the next authoritative lifecycle durability boundary together with the final coherent state. A completed campaign does not need a teaser for a sequel.
+
 ## Player investment
 
 Use observed player/character interests to decide what deserves preparation attention. Investment guides preparation; it does not retroactively rewrite truth or guarantee protection/reward.
+
+Explicit player preferences are durable evidence when appropriate. Repeated clear behavior may become a softer preparation signal. A single successful joke, completed scene, investigated object or liked NPC is not enough by itself to create a global preference record.
+
+Do not turn engagement notes into a reward algorithm. They may influence what receives preparation attention; they do not make the world bend toward that subject.
 
 ## Maintenance opportunities
 
