@@ -42,9 +42,12 @@ fields:
   last_event_id: string|null
 invariants:
   - voluntary personality/thoughts/emotions remain player-owned
-  - provisional records are not active campaign canon until explicitly accepted
+  - provisional records may contain null/empty mechanical placeholders while the build is genuinely unresolved
+  - status active requires READY_PC under CORE/CHARACTER_READINESS.md; mechanically required current-level values may not remain null/empty placeholders
+  - an active PC must contain sufficient class/level/species-or-origin/ability/proficiency/defense/HP/movement/resource/feature/equipment state to resolve ordinary play without inventing character mechanics later
+  - spellcasting active PCs must contain the exact current spellcasting inputs and known/prepared spell state required by their current rules
   - significant items use ITEM IDs; disposable mundane inventory may be embedded
-  - exact mechanical values come from adopted rules/house rules, not inference
+  - exact mechanical values come from adopted rules/house rules, not narrative inference
   - canonical base mechanics plus persistent modifiers must be sufficient to deterministically derive any gameplay modifier needed for adjudication
   - derived values may be cached for convenience but must be recomputable from canonical dependencies and refreshed when those dependencies change
-  - player mechanics-presentation preference never changes stored/derived character mechanics
+  - player mechanics-presentation preference never changes stored/derived character mechanics or permits an incomplete active sheet

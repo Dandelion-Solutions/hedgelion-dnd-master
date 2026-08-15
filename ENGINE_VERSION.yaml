@@ -14,6 +14,7 @@ presentation_revision: 7
 persistence_revision: 4
 campaign_card_revision: 2
 mechanics_integrity_revision: 1
+character_readiness_revision: 1
 campaign_update:
   compatibility: maintenance_required
 recommended_tag: v0.6
