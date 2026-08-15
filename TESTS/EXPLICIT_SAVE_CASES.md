@@ -1,6 +1,6 @@
 # Explicit Save Regression Cases
 
-These cases protect the semantic meaning of `save game` from degrading into summary-note persistence.
+These cases protect the semantic meaning of `save game` from degrading into summary-note persistence or accidentally changing campaign readiness/lifecycle.
 
 ## S01 — Explicit save flushes accumulated singleplayer SOFT state
 Hot state contains a played PC, recurring companion, employer NPC, accepted job, payment state, current location and active scene. Much of it has been buffered SOFT.
@@ -23,12 +23,12 @@ Player saves.
 Pass: create the NPC record + index entry in the same save transaction; do not merely mention the NPC in LOG/notes.
 
 ## S05 — Card is refreshed as part of save
-Protagonist/current focal location are known, but CAMPAIGN_CARD still contains null/initializing scaffold values.
+Protagonist/current focal location are known, but CAMPAIGN_CARD still contains stale scaffold values.
 Player saves.
-Pass: materialize authoritative source state and refresh card in the same transaction. A stale card after a successful save is failure when the projection inputs are known.
+Pass: materialize authoritative source state and refresh card in the same transaction. Campaign name on card must exactly match MANIFEST including null.
 
 ## S06 — CURRENT must be resumable
-There is an active scene/thread in hot state, while remote STATE/CURRENT has empty arrays.
+There is an active/resumable scene/thread in hot state, while remote STATE/CURRENT has empty arrays.
 Player saves.
 Pass: update CURRENT plus the direct scene/thread records needed for resume. A prose recap is not a substitute.
 
@@ -38,7 +38,7 @@ Pass: flush state but do not change campaign lifecycle to paused merely because 
 
 ## S08 — Save and stop combines boundaries
 Player says `сохрани и остановимся`.
-Pass: materialize all dirty state and apply the intended pause/session boundary coherently, preferably in one transaction.
+Pass: materialize all dirty state and apply the intended pause/session boundary coherently, preferably in one transaction, without inventing READY_PC.
 
 ## S09 — No fake mechanics during repair
 A legacy/broken campaign has a named/classed PC but no valid character mechanics, and some narrated combat was never mechanically resolved.
@@ -62,7 +62,7 @@ Explicit save occurs during an ordinary safe scene and normal records are enough
 Pass: no checkpoint solely because the word `save` was used.
 
 ## S14 — Completeness check is local
-Before publication the runtime verifies hot established facts against planned resulting records.
+Before publication runtime verifies hot established facts against planned resulting records.
 Pass: this check does not fetch GitHub; it works from known frontier + hot dirty state + planned tree.
 
 ## S15 — Do not say saved on partial failure
@@ -72,3 +72,15 @@ Pass: do not tell the player the game is fully saved. State only the minimal act
 ## S16 — Successful save clears dirty canonical state
 SAVE_ALL_DIRTY publishes successfully.
 Pass: all included durable dirty records are cleared in the hot working set and created commit/tree become the known frontier; no confirmation refetch is performed.
+
+## S17 — Explicit save during onboarding stays initializing
+Campaign has a provisional PC `Грым`, incomplete abilities/HP/class mechanics, a resumable onboarding road/pony scene and structured current state. Player says `сохрани игру`.
+Pass: save all honest structured setup state but keep MANIFEST/CAMPAIGN_CARD `status: initializing`. Do NOT set active merely because a scene/current location exists.
+
+## S18 — Active requires READY_PC + PLAY_READY
+Planned explicit-save tree sets status active while PC remains provisional with empty required mechanics.
+Pass: pre-publication completeness assertion fails. Rebuild the transaction with initializing setup status (or first genuinely complete READY_PC/PLAY_READY); do not publish contradictory active/provisional state.
+
+## S19 — Save cannot rewrite unrelated template files
+Dirty set contains PC/PLAYER/location/NPC/scene/CURRENT/card only. README guide and RULES/HOUSE_RULES have no semantic changes.
+Pass: planned tree inherits those blobs byte-for-byte from base tree; they are absent from the dirty path delta.

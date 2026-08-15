@@ -1,6 +1,6 @@
 # Evolving Campaign Identity and README Projection
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_policy: ALWAYS_DURING_GAMEPLAY
 precedence: authoritative for automatic campaign naming, campaign-name provenance, CAMPAIGN_CARD name projection, and the dynamic overview block in campaign README
 
@@ -8,7 +8,7 @@ precedence: authoritative for automatic campaign naming, campaign-name provenanc
 
 A campaign title should behave like the title of a book, not like a caption for the current paragraph.
 
-At campaign creation there may be too little information to name the game well. `MANIFEST.campaign_name: null` is therefore a healthy state. As durable characters, setting, conflicts, themes and history accumulate, the Master may let a useful title and short README annotation crystallize from the campaign as a whole.
+At campaign creation there may be too little information to name the game well. `MANIFEST.campaign_name: null` is therefore a healthy state. As the protagonist/party and broad surrounding world become clear, a concise literary title may crystallize naturally; later, accumulated history may justify changing an automatically generated title.
 
 This feature is presentation metadata. It must never delay play, force a naming questionnaire, or become a substitute for normal canon records.
 
@@ -35,44 +35,57 @@ The card MUST NOT invent a campaign name independently. If a transaction changes
 
 A card title that differs from MANIFEST is a projection defect. Repair the card from MANIFEST; never repair MANIFEST from the card.
 
-## When an automatic title may crystallize
+## First useful automatic title
 
-Do not name a campaign just because one vivid scene exists.
+The initial title does NOT need a completed plot, major villain or long history. It needs enough broad identity to say what kind of book/game this is.
 
-A useful automatic title normally reflects durable identity across more than one dimension, such as:
-- protagonist or party identity;
-- central premise or enduring contrast;
-- recurring setting/region/culture;
-- major long-running conflict, faction or objective;
-- accumulated theme/tone that has actually emerged in play;
-- a completed arc that has become defining for the campaign.
+A particularly useful early pattern is a concise literary **hero/party + world/premise** formulation after BOTH sides are durably known, for example:
+
+`Эмо-вампир в мире розовых пони и радужных единорогов`
+
+This is a good campaign-level title because it describes the durable protagonist/world contrast rather than the current signpost, room, NPC conversation or quest step.
+
+The first automatic title may therefore crystallize at an already-required `PROVISIONAL_IDENTITY`, character-stage or PLAY_READY transaction when:
+- protagonist/party identity or concept is stable enough to represent the game; AND
+- the broad surrounding world/premise is stable enough to represent more than one local scene.
+
+If only one side is known, keep the title null. Do not invent a world merely to fill the title.
+
+Prefer short titles/phrases. The title does not need to be a three-paragraph synopsis, and it should not mechanically concatenate database fields. Write it as a natural book/game title in the campaign language.
+
+## Later title evolution
+
+An automatically generated title is allowed to evolve because the meaning of a long campaign may become clearer with history.
+
+Reconsider an `auto` title only when accumulated durable canon changes the campaign-level identity materially, such as:
+- a previously provisional premise becomes something substantially different;
+- a recurring central conflict/theme eclipses the broad opening premise;
+- the protagonist/party composition changes fundamentally;
+- a major arc reveals what the campaign is really about;
+- completion gives the whole story a better retrospective title.
 
 The title should remain reasonable if the current scene is removed from consideration.
 
-Early states are allowed to remain unnamed. A name like `Грым и розовая пони у указателя` is too page-local if the campaign is only beginning and that encounter is not known to define the whole game.
-
-`PLAY_READY` is the earliest normal opportunity for automatic naming, not a requirement to name. If the available evidence is still thin, keep null.
+An existing automatic title is sticky. Do not churn it for synonyms, every quest, every location or every session.
 
 ## Automatic title cadence
 
 Automatic title synthesis is opportunistic and low-frequency.
 
-Evaluate whether the title has become materially clearer only at an ALREADY-EXISTING durable boundary where campaign identity has changed enough to justify the thought, for example:
-- PLAY_READY / first real launch;
+Evaluate title creation/revision only at an ALREADY-EXISTING durable boundary that is already writing campaign state, for example:
+- PROVISIONAL_IDENTITY when hero + broad world are both now established;
+- character/PLAY_READY launch;
 - explicit save after substantial development;
 - session pause/end;
-- major arc or campaign-level transition;
-- campaign completion;
-- another transaction already touching broad campaign identity.
+- major arc/campaign-level transition;
+- campaign completion.
 
 Do not create a standalone GitHub transaction merely to invent or polish a title.
-
-An existing automatic title is sticky. Rename it only when accumulated durable history makes another title materially more representative of the campaign as a whole. Do not churn titles for synonyms, every quest, every location, or every session.
 
 ## README as a living book jacket
 
 Campaign `README.md` has two conceptual parts:
-1. a small **dynamic campaign overview** — title + short annotation that may evolve with the game;
+1. a small **dynamic campaign overview** — title + compact annotation that may evolve with the game;
 2. a **static player guide** copied from the engine template and protected from ordinary gameplay persistence.
 
 For current-layout campaigns the template marks them with:
@@ -93,7 +106,7 @@ The overview is a human-facing projection, not canon authority.
 
 When the campaign name is null, the H1 may remain a generic `# D&D Campaign`. Once an authoritative name exists, the overview H1 should normally show it.
 
-The annotation should be concise (normally 1–3 short paragraphs) and describe the campaign as a whole so far: protagonist/party, durable premise, central developed tension, and broad tone when useful.
+The annotation should be compact: normally one short sentence or a small paragraph. It may simply restate/expand the broad campaign premise when that is already expressive enough. Do not force several paragraphs of prose just because README supports Markdown.
 
 Use only established player-visible durable facts. Do not leak unrevealed secrets, hidden NPC motives, future plans, GM notes or speculative outcomes into README.
 

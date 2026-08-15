@@ -1,11 +1,13 @@
 # Character Creation and Onboarding
 
-framework_module_version: 0.5.3
+framework_module_version: 0.5.4
 load_when: new campaign, new PC, replacement PC, level-up choices requiring onboarding
 
 ## Goal
 
-A player should be able to begin without studying the rulebooks. The DM handles procedural bookkeeping, explains consequential choices, and never chooses the character's identity/personality for the player.
+A player should be able to begin without studying the rulebooks. The DM handles procedural bookkeeping, explains consequential choices, and may seed harmless undefined external details so play can start without a character-design questionnaire.
+
+The player retains final authority over the character's self-identification and inner life, and explicit player corrections/choices take precedence over DM-seeded defaults when compatible with established world/rules/causality.
 
 The character remains fully rules-grounded even when the player prefers not to see character-sheet arithmetic.
 
@@ -15,7 +17,7 @@ When character creation is the first stage of a new campaign, work toward a usef
 
 After meaningful choices are resolved, surface a concise current character summary instead of disappearing into a long hidden build. When all mechanically required choices for initial play are valid, present one compact acceptance summary covering the identity/concept and the mechanics/resources that materially define play.
 
-Only after explicit player acceptance should the PC become canonical active state. Persist the accepted PLAYER/PC bundle + required indexes as the character-stage boundary, then continue to minimal starting-world setup.
+After semantic player acceptance under `DURABILITY_GUARD.md`, the PC may become canonical active state. Persist the accepted PLAYER/PC bundle + required indexes as the character-stage boundary, then continue to minimal starting-world setup.
 
 ## Creation order
 
@@ -31,9 +33,9 @@ For a novice, first ask for the smallest useful fictional concept: what sort of 
 
 Translate the concept into mechanical options and explain only choices that materially differ.
 
-If the player delegates bookkeeping, the DM may assemble a rules-valid mechanical draft from the concept and ask for approval of choices that materially change identity, capabilities or play style. Do not require a novice to select unexplained numbers merely because the character sheet contains them.
+If the player delegates bookkeeping, the DM may assemble a rules-valid mechanical draft from the concept and ask for approval of choices that materially change capabilities or desired play style. Do not require a novice to select unexplained numbers merely because the character sheet contains them.
 
-Do not force the player to select every cosmetic/backstory detail before play. Undefined personal history may remain undefined until the player chooses to establish it.
+Do not force the player to select every cosmetic/backstory detail before play. Undefined history may remain undefined, and harmless surface details may be seeded by the DM under the authority rules below and revised naturally later.
 
 ## Mechanical transparency preference
 
@@ -58,26 +60,48 @@ These preferences alter only how mechanics are PRESENTED. They never alter under
 
 Do not turn onboarding into a questionnaire. The player may change the preference later, and a one-off request for a number does not by itself redefine the profile.
 
-## Player-owned identity
+## Character authority and DM-seeded defaults
 
-The player controls:
-- name and self-identification;
-- voluntary personality, beliefs, desires and fears;
-- personal history not already constrained by chosen mechanics/world agreement;
-- appearance and manner within campaign boundaries;
-- how the character interprets their own experiences.
+Character identity develops through player statements, legal mechanics and established fiction.
 
-The DM may ask targeted questions to connect the PC to the world but cannot declare personal emotions/self-concept for them.
+The player's strongest authority covers:
+- name and self-identification when the player chooses to define/correct them;
+- voluntary personality, beliefs, desires, fears and interpretation of their own experiences;
+- intended personal history/appearance/manner when explicitly established by the player, subject to campaign boundaries and already-established causal facts;
+- deliberate current actions and choices.
 
-## Mechanics before canonization
+The DM MUST NOT declare an unchosen inner emotion, belief, desire, fear or self-concept as an authoritative fact about the PC merely for dramatic effect.
 
-Treat a draft PC as `provisional` until required choices and derived mechanics are valid.
+However, the DM MAY seed ordinary external/surface details that the player has not defined when doing so helps the game start naturally. Examples include clothing style, hair, a visible mannerism, an ordinary keepsake, or other innocuous descriptive framing that does not grant hidden mechanical advantage or contradict the concept/rules.
+
+When the DM presents such a default as current factual description and the player does not contradict it, it may be stored as current campaign canon even while the PC record is `provisional`. It is DM-seeded canon, not proof that the player authored the detail.
+
+Do not demand explicit approval for every cloak, hairstyle or notebook before the story can move.
+
+### Player correction precedence
+
+If the player explicitly corrects a DM-seeded personal detail, adopt the correction unless it conflicts with established rules, world facts or causality.
+
+Examples:
+- `Нет, у меня не плащ, а длинное чёрное пальто` during setup -> replace the DM-seeded clothing description; no ceremonial confirmation required.
+- `Я сменил плащ на кольчугу` during established play -> treat as an in-world equipment change and require the armor to be available/owned and mechanically legal; do not materialize chain mail from nowhere.
+- `У меня сила такая, что булыжники грызу` -> treat as strong player intent about capability and express it through the highest compatible rules-valid build/feature choices; the sentence does not bypass ability-score limits or grant a free mechanic.
+
+When a correction is a harmless clarification of an earlier DM-authored default and no established consequence depends on the old detail, prefer correction over forcing a retcon dispute.
+
+When prior durable consequences materially depend on the old fact, preserve causal consistency and resolve the correction explicitly rather than silently rewriting history.
+
+## Mechanics before activation
+
+Treat a mechanically incomplete PC as `provisional` until required choices and derived mechanics are valid.
 
 Before activation, ensure the canonical PC record contains the base mechanics and persistent state needed to derive actual gameplay values: abilities, proficiencies, defenses, HP, movement, resources, features/spells, equipment and applicable persistent modifiers/conditions.
 
 Derived values may be calculated from canonical dependencies instead of redundantly stored, but they must be deterministic under the adopted rules. Never guess a missing modifier during play merely because the player does not want to see the number.
 
-Only after explicit player acceptance should the PC be written as canonical active state. Do not let exploratory character-generation conversation silently become world canon.
+A provisional PC may already contain durable identity/concept/appearance facts under `DIEGETIC_ONBOARDING.md`; that does not make it READY_PC.
+
+Do not let exploratory alternatives silently become mechanics/world canon. DM-seeded harmless descriptive defaults are different: they may become current canon as described above and remain easy for the player to correct.
 
 ## Starting equipment
 
@@ -86,6 +110,8 @@ Use the actual class/background starting-equipment rules or an explicitly adopte
 Do not invent a mysterious magical item as a free story hook unless:
 - the rules/background explicitly provide it; or
 - the player/DM consciously adopts it as a campaign premise and its balance/hidden properties are canonically defined.
+
+Ordinary descriptive possessions seeded by the DM must not silently create mechanical gear/wealth. If an object would affect AC, attacks, resources, spellcasting or economy, resolve it through the actual equipment/build rules before relying on it mechanically.
 
 ## Ability-score method
 
@@ -111,7 +137,7 @@ Never implement such a motif through secret dice manipulation.
 
 ## First-session onboarding
 
-Before entering the first scene, verify only what is needed now:
+Before entering the first true live scene, verify only what is needed now:
 - PC record is canonical and mechanically valid;
 - starting resources/equipment are recorded;
 - player mechanics-presentation preference is stored or defaults are applied;

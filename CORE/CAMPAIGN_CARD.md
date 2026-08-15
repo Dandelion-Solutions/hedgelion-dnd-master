@@ -1,6 +1,6 @@
 # Campaign Card and Fast Campaign Menu
 
-framework_module_version: 0.1.2
+framework_module_version: 0.1.3
 load_when: campaign discovery/menu, campaign setup, campaign status/location/PC/membership/engine changes, persistence affecting card projection fields
 
 ## Purpose
@@ -29,7 +29,7 @@ Do not store participant login lists in singleplayer cards.
 ## Projection, not authority
 
 Authoritative sources remain:
-- MANIFEST for mode/status/engine provenance/join policy;
+- MANIFEST for mode/status/engine provenance/join policy and campaign name;
 - PC/PLAYER records for characters and multiplayer bindings;
 - STATE/SCENE/WORLD for current location;
 - Git provenance + PLAYER binding rules for actual write authority.
@@ -37,6 +37,16 @@ Authoritative sources remain:
 A stale or tampered card must never grant gameplay authority, migrate an engine, alter canon or override those records.
 
 After the user selects a campaign, perform the normal authoritative verification. If loaded source records disagree with the card, trust the source records and refresh the card at the next allowed coherent campaign transaction.
+
+### Campaign-name projection invariant
+
+`CAMPAIGN_CARD.campaign_name` MUST equal `MANIFEST.campaign_name`, including null.
+
+The card may not invent a catchy title merely for menu presentation. Automatic naming/renaming belongs to `CAMPAIGN_IDENTITY.md` and changes MANIFEST + card in one transaction.
+
+If MANIFEST and card disagree, MANIFEST wins. Refresh the card from MANIFEST; never mutate MANIFEST merely to preserve a stale card string.
+
+When the title changes and current README has identity markers, the same transaction may update the README overview under `CAMPAIGN_IDENTITY.md`.
 
 ## Fast menu read path
 
@@ -94,11 +104,13 @@ Do not list all participant logins in the normal player-facing menu unless usefu
 ## Status semantics
 
 Supported card/manifest lifecycle:
-- `initializing` — setup not finished;
-- `active` — ongoing play;
+- `initializing` — setup not finished; a resumable pre-live onboarding vignette may already exist;
+- `active` — ongoing normal play with a valid PLAY_READY frontier;
 - `paused` — intentionally paused;
 - `completed` — story/campaign ended; `status_note` may summarize why;
 - `archived` — retained but hidden from normal menu.
+
+The presence of a provisional PC, current setup scene, known focal location or explicit save does not by itself authorize `active`.
 
 A PC death does not automatically complete a campaign. Mark `completed` only when the campaign is actually concluded under normal campaign authority.
 

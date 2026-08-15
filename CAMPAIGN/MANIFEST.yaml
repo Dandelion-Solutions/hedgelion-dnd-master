@@ -1,6 +1,7 @@
 schema_version: 2
 campaign_id: null
 campaign_name: null
+campaign_name_origin: null
 branch: null
 status: uninitialized
 mode: singleplayer

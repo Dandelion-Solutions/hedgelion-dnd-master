@@ -1,6 +1,6 @@
 # Durability Boundary Guard
 
-framework_module_version: 0.2.0
+framework_module_version: 0.2.1
 load_policy: ALWAYS_DURING_GAMEPLAY
 precedence: authoritative for deciding WHEN campaign state must become durable; PERSISTENCE.md remains authoritative for HOW publication is performed
 
@@ -18,13 +18,13 @@ If older setup/runtime/persistence examples imply that every quest, payment, ite
 
 The initial generated scaffold commit proves only that an empty campaign container exists.
 
-A campaign MUST NOT enter live play while the authoritative branch still contains only the blank scaffold.
+A campaign MUST NOT enter true live play while the authoritative branch still contains only the blank scaffold.
 
-Before the FIRST live scene is presented, publish at least one post-scaffold coherent **PLAY_READY** campaign transaction containing the minimum durable state required to resume that scene correctly.
+Before the FIRST true live scene is presented, publish at least one post-scaffold coherent **PLAY_READY** campaign transaction containing the minimum durable state required to resume that scene correctly.
 
 For singleplayer this normally includes:
 - stable PLAYER binding/preferences needed for play;
-- stable PC record and PC index entry;
+- READY_PC record and PC index entry;
 - `CAMPAIGN_CARD.protagonist` summary;
 - initial focal location and minimal current-state/scene routing;
 - campaign/card lifecycle changed to `active` when normal play is beginning;
@@ -34,7 +34,7 @@ A recurring companion already established before the first scene may be included
 
 A separate character commit is OPTIONAL when character + initial focal location + opening situation are resolved without returning control to the player: they may be combined into one PLAY_READY transaction for lower latency.
 
-However, once the PC is stable enough that the Master intends to treat it as the player's character, that accepted PC MUST NOT cross another player-turn boundary only in RAM. If the Master is about to ask another setup question and return control, persist the stable character first unless the same response is about to publish full PLAY_READY state.
+`DIEGETIC_ONBOARDING.md` defines a deliberate pre-live exception: a resumable fictional onboarding vignette and provisional PC/world records may be durable while lifecycle remains `initializing`. That state is setup, not true live play.
 
 ## Acceptance is semantic, not a magic phrase
 
@@ -44,31 +44,40 @@ A character is considered accepted when identity and mechanically necessary choi
 - the player explicitly approves it;
 - after seeing the character summary, the player continues into later setup decisions without rejecting/correcting it;
 - the player supplies later concrete facts for that character/party and the Master proceeds on that basis;
-- the Master is about to frame the first live scene using that character.
+- the Master is about to frame the first true live scene using that character.
 
 If a materially important class/species/ability/resource choice is genuinely unresolved, the character remains provisional. Do not invent acceptance to avoid a needed question.
 
-Beginning live play itself may not be the first durable acceptance signal after narration; publish durability first.
+Beginning true live play itself may not be the first durable acceptance signal after narration; publish durability first.
 
 ## Singleplayer sparse-save profile
 
 Singleplayer is optimized for long stretches of zero-GitHub play from the hot working set.
 
 The normal key save boundaries are:
-1. **Character establishment** — accepted/stable PC becomes durable, either as a character-stage transaction or inside PLAY_READY.
-2. **PLAY_READY / first live scene** — the first playable frontier must exist before narration begins.
-3. **Focal location establishment/change** — when the human-readable `CAMPAIGN_CARD.current_location` should change, publish the authoritative location/current-state change + card update and flush all accumulated SOFT dirty canon in the same transaction.
-4. **Campaign lifecycle boundary** — pause, completion, archive/reactivation or another explicit status transition that must be visible in the campaign menu.
-5. **Explicit save/session boundary** — user asks to save, the session is intentionally paused/ended, or the runtime is entering a known context-loss/maintenance boundary where volatile state would be unsafe.
-6. **Rare catastrophic continuity boundary** — a truly exceptional irreversible transition whose loss would make resumption fundamentally wrong (for example PC death/permanent replacement or equivalent campaign-defining break). Use sparingly; this is not a license to classify ordinary rewards or quests as HARD.
+1. **Provisional identity during diegetic onboarding** — only as defined narrowly by `DIEGETIC_ONBOARDING.md`.
+2. **Character establishment** — accepted/stable READY_PC becomes durable, either as a character-stage transaction or inside PLAY_READY.
+3. **PLAY_READY / first true live scene** — the first playable frontier must exist before normal mechanics-dependent narration begins.
+4. **Focal location establishment/change** — when the human-readable `CAMPAIGN_CARD.current_location` should change during live play, publish the authoritative location/current-state change + card update and flush all accumulated SOFT dirty canon in the same transaction.
+5. **Campaign lifecycle boundary** — pause, completion, archive/reactivation or another explicit status transition that must be visible in the campaign menu.
+6. **Explicit save/session boundary** — user asks to save, the session is intentionally paused/ended, or the runtime is entering a known context-loss/maintenance boundary where volatile state would be unsafe.
+7. **Rare catastrophic continuity boundary** — a truly exceptional irreversible transition whose loss would make resumption fundamentally wrong (for example PC death/permanent replacement or equivalent campaign-defining break). Use sparingly.
 
 A focal-location change means the campaign's menu-level location changes, not every movement within a room, combat grid or local conversation. Examples: tavern -> market square -> old quarry. Moving from one table to another in the same tavern does not create a card/save boundary.
 
 When any key boundary fires, include all causally valid accumulated SOFT changes in the same coherent transaction. Do not make a card-only commit and do not split the accumulated delta into multiple commits.
 
+## Explicit save is not activation
+
+An explicit save flushes dirty durable state but does not manufacture readiness.
+
+If PC is still provisional/not READY_PC and the fiction is a pre-live onboarding vignette, save the resumable setup truth and keep lifecycle `initializing`.
+
+Only READY_PC + PLAY_READY may justify `initializing -> active`.
+
 ## What normally remains SOFT in singleplayer
 
-The following are normally durable-but-bufferable SOFT state and do NOT create a commit by themselves:
+The following are normally durable-but-bufferable SOFT state and do NOT create a commit by themselves after normal live play begins:
 - accepting or progressing a quest/contract/job;
 - receiving/paying ordinary or even meaningful currency/reward/deposit;
 - acquiring/using/losing ordinary items or resources;
@@ -99,16 +108,19 @@ A safety flush outside the key boundaries is exceptional. Use it only when there
 
 Do not apply the sparse singleplayer profile blindly to multiplayer.
 
-Shared facts that another player may observe or act upon can require earlier publication under `MULTIPLAYER.md`, `LIVE_SCENE.md` and normal shared-world synchronization rules. The singleplayer rule that contracts/rewards/companions may wait does not grant permission to hide material shared-world changes from other active players.
+Shared facts that another player may observe or act upon can require earlier publication under `MULTIPLAYER.md`, `LIVE_SCENE.md` and normal shared-world synchronization rules.
 
 ## Runtime invariants
 
 The following states are bugs and require a coherent save/repair before further ordinary play:
-- a live first scene exists while the campaign branch is still scaffold-only;
-- a singleplayer PC is already being played while `PC_INDEX`/stable PC record is still empty remotely;
-- campaign/card remain `initializing` after normal live play has begun;
-- the Master has completed a focal-location transition in fiction but continues ordinary play with the old durable `CAMPAIGN_CARD.current_location` and no corresponding save transaction;
-- an explicit pause/end/save was acknowledged while the dirty working set was not durably published.
+- a true live first scene exists while the campaign branch is still scaffold-only;
+- a singleplayer PC is already being used for normal mechanics-dependent play while `PC_INDEX`/stable PC record is empty remotely;
+- lifecycle is `active` while the PC is still provisional/not READY_PC or no PLAY_READY frontier exists;
+- campaign/card remain `initializing` after legitimate normal live play has begun with READY_PC/PLAY_READY;
+- the Master has completed a focal-location transition in live fiction but continues ordinary play with the old durable `CAMPAIGN_CARD.current_location` and no corresponding save transaction;
+- an explicit pause/end/save was acknowledged while the promised dirty working set was not durably published.
+
+A durable pre-live onboarding scene with provisional PC and lifecycle `initializing` is NOT an invariant violation.
 
 Do not expose repair plumbing unless it fails or requires user action.
 
@@ -116,7 +128,7 @@ Do not expose repair plumbing unless it fails or requires user action.
 
 Expected singleplayer rhythm:
 
-`scaffold -> character/PLAY_READY -> many zero-I/O turns -> focal-location/status/session boundary -> one large flush -> many zero-I/O turns`
+`scaffold -> optional PROVISIONAL_IDENTITY -> character/PLAY_READY -> many zero-I/O turns -> focal-location/status/session boundary -> one large flush -> many zero-I/O turns`
 
 Most ordinary live turns use zero GitHub calls. Boundary classification itself uses zero GitHub calls. After successful own publication, continue from the known hot state without confirmation rereads.
 

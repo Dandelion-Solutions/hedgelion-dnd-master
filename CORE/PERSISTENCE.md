@@ -1,6 +1,6 @@
 # Persistence Transport and Transaction Discipline
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_when: any campaign/live/storage GitHub mutation, persistence boundary, save, checkpoint publication, campaign migration
 precedence: authoritative for GitHub write sequencing and campaign persistence transport
 
@@ -10,7 +10,7 @@ GitHub remains the authoritative durable campaign store, but ordinary play must 
 
 This module defines one unambiguous write protocol so the runtime cannot create self-induced races by mixing GitHub APIs that move the same branch differently.
 
-If older CORE text conflicts with this module about GitHub write sequencing, transaction lifetime, staging files, HEAD reuse, or campaign publication transport, this module wins.
+If older CORE text conflicts with this module about GitHub write sequencing, transaction lifetime, staging files, HEAD reuse, path preservation or campaign publication transport, this module wins.
 
 ## Three transport profiles
 
@@ -84,12 +84,39 @@ Never use remote `*.tmp`, `*_NEXT.tmp`, `staging/*`, scratch records, or create/
 
 Preparation happens in model/tool working memory and directly in the `create_tree` payload.
 
+## Base-tree path preservation barrier
+
+For an EXISTING campaign branch, ordinary `CAMPAIGN_TREE_TXN` MUST build on the pinned HEAD tree. Creating a from-scratch tree is forbidden for routine save/gameplay persistence.
+
+The only normal from-scratch campaign tree is the blank scaffold initialization explicitly required by `NEW_CAMPAIGN_FAST_PATH.md`.
+
+For an existing campaign:
+- set `base_tree_sha` to the tree of `pinned_head_sha`;
+- include ONLY semantically dirty paths (plus explicit deletions) in `create_tree`;
+- every path not in the transaction dirty set is inherited exactly from the base tree;
+- do not reconstruct the whole campaign tree from parsed local YAML/JSON/Markdown copies;
+- do not parse-and-reserialize an unchanged YAML file merely because serialization is convenient;
+- do not normalize quotes, inline/block array style, whitespace, Markdown prose, comments or key ordering in a path whose semantics did not change;
+- formatting drift by itself does NOT make a path dirty.
+
+This is a correctness invariant, not merely a clean-diff preference. Rewriting unrelated files can erase template documentation, user edits, comments or future-compatible data the runtime did not load.
+
+Examples of paths that MUST remain untouched unless independently dirty:
+- `README.md` outside the explicitly mutable overview block governed by `CAMPAIGN_IDENTITY.md`;
+- `RULES/HOUSE_RULES.md` when no house rule changed;
+- schema/template/helper files copied into a campaign scaffold;
+- indexes/entities outside the current logical delta.
+
+When `CAMPAIGN_IDENTITY.md` permits a README overview refresh, the README path is dirty only for that narrow mutation. Preserve the protected player-guide/outside-marker bytes exactly from known base content; do not regenerate the full README from memory/template prose.
+
+Before commit creation, assert that every changed path has a semantic reason in the transaction dirty set. Unexpected unrelated path changes invalidate the planned tree and require rebuilding it.
+
 ## Normal campaign publication algorithm
 
 Given known/pinned campaign HEAD `H`:
 
 1. If `known_tree_sha` for `H` is absent, fetch commit metadata for `H` once to obtain its tree SHA. Cache it.
-2. Create ONE tree from that base tree containing the complete dirty path delta. Use direct text content entries where supported; represent deletions in the tree operation rather than by branch-mutating file deletion calls.
+2. Create ONE tree FROM THAT BASE TREE containing the complete dirty path delta only.
 3. Probe the target branch ref ONCE after the tree is prepared and immediately before creating the commit.
 4. If current branch HEAD != `H`, ABORT this transaction before `create_commit`. The prepared tree object is harmless/unpublished. Enter the targeted stale-base slow path below.
 5. Assert locally that the intended commit parent is exactly `H`.

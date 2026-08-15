@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.2.8
+framework_module_version: 0.2.9
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 ## Context model
@@ -17,6 +17,8 @@ Always active during gameplay:
 - `SAVE_CONTRACT.md` — explicit-save completeness semantics; `save game` means materialize all dirty cross-session state, never summary-note persistence.
 - `MECHANICS_INTEGRITY.md` — pre-narration mechanical proof gate; hidden mechanics still require real rules resolution, RNG and a compact audit trace.
 - `CHARACTER_READINESS.md` — active-PC readiness gate; a concept cannot enter live play until its complete current-level D&D mechanics exist and are durable.
+- `DIEGETIC_ONBOARDING.md` — story-first pre-live onboarding and provisional identity durability.
+- `CAMPAIGN_IDENTITY.md` — evolving book-like campaign title and protected README overview projection without extra save traffic.
 
 All other modules remain present but dormant until their domain is relevant. In older module headers, `load_when` means activate-when after the CORE cache has been built; it is not an instruction to reread the file from disk.
 
@@ -57,21 +59,21 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 ## Activation examples
 
-`new campaign` -> DURABILITY_GUARD, SAVE_CONTRACT, MECHANICS_INTEGRITY and CHARACTER_READINESS are already active; activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; before the first live scene CHARACTER_READINESS requires READY_PC and DURABILITY_GUARD requires a post-scaffold PLAY_READY durable frontier.
+`new campaign` -> DURABILITY_GUARD, SAVE_CONTRACT, MECHANICS_INTEGRITY, CHARACTER_READINESS, DIEGETIC_ONBOARDING and CAMPAIGN_IDENTITY are already active; activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; before the first true live scene CHARACTER_READINESS requires READY_PC and DURABILITY_GUARD requires a post-scaffold PLAY_READY durable frontier. Campaign name may remain null until hero + broad world identity justify one.
 
 `campaign menu/discovery` -> activate BOOTSTRAP_RUNTIME + CAMPAIGN_CARD; prefer card-only presentation reads and defer authoritative/deep campaign loading until selection.
 
-`ordinary in-scene action` -> normally only always-active modules plus the smallest domain modules actually implicated by the action. DURABILITY_GUARD performs only an in-memory boundary check; CHARACTER_READINESS guarantees the active PC has usable mechanics; MECHANICS_INTEGRITY requires a real resolution class before any material outcome is narrated.
+`ordinary in-scene action` -> normally only always-active modules plus the smallest domain modules actually implicated by the action. DURABILITY_GUARD performs only an in-memory boundary check; CHARACTER_READINESS guarantees the active PC has usable mechanics; MECHANICS_INTEGRITY requires a real resolution class before any material outcome is narrated. CAMPAIGN_IDENTITY never creates standalone title/README traffic.
 
-`spell/magic` -> activate MAGIC and ADJUDICATION/RANDOMNESS as needed; MECHANICS_INTEGRITY remains the final mechanical proof gate.
+`spell/magic` -> activate MAGIC and ADJUDICATION/RANDOMNESS as needed. MECHANICS_INTEGRITY remains the final mechanical proof gate.
 
 `combat` -> activate COMBAT + RANDOMNESS/ADJUDICATION as needed. Assert READY_PC, establish/maintain combat mechanical state and current resolution trace before narrating uncertain combat outcomes.
 
 `session/world prep` -> activate PREP + WORLDGEN/LORE as needed; SOURCES may activate for one bounded enrichment pass.
 
-`campaign persistence boundary` -> DURABILITY_GUARD decides that a boundary exists; activate PERSISTENCE + STORAGE; also activate CAMPAIGN_CARD when the durable delta changes any projected card field.
+`campaign persistence boundary` -> DURABILITY_GUARD decides that a boundary exists; activate PERSISTENCE + STORAGE; also activate CAMPAIGN_CARD when the durable delta changes any projected card field. CAMPAIGN_IDENTITY may opportunistically establish/refresh an auto title or README overview only inside that already-required transaction.
 
-`explicit save / save game` -> SAVE_CONTRACT creates SAVE_ALL_DIRTY; activate PERSISTENCE + STORAGE and every domain needed to materialize missing dirty records. A summary-only save is invalid.
+`explicit save / save game` -> SAVE_CONTRACT creates SAVE_ALL_DIRTY; activate PERSISTENCE + STORAGE and every domain needed to materialize missing dirty records. A summary-only save is invalid. Save alone never promotes unfinished onboarding to active.
 
 `engine update opportunity` -> activate ENGINE_UPDATES + BOOTSTRAP_RUNTIME + STORAGE + PERSISTENCE + CAMPAIGN_CARD when publication changes campaign engine metadata.
 

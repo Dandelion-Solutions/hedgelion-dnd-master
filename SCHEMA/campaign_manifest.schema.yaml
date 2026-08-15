@@ -12,6 +12,7 @@ fields:
   schema_version: integer
   campaign_id: string
   campaign_name: string|null
+  campaign_name_origin: enum[auto, player]|null
   branch: string
   status: enum[initializing, active, paused, completed, archived]
   mode: enum[singleplayer, multiplayer]
@@ -56,4 +57,7 @@ invariants:
   - explicit engine-owner development testing MAY use dev-v<version> with nullable SHA fields; current public main MUST NOT be queried merely to manufacture those SHA values
   - engine files MUST NOT be copied into campaign repository
   - update_policy defaults to ask when absent in an older manifest
+  - campaign_name may remain null until a useful broad campaign identity emerges
+  - campaign_name_origin is optional; absent/non-null legacy names are conservatively treated as sticky by CAMPAIGN_IDENTITY.md
+  - CAMPAIGN_CARD.campaign_name is a projection of this field and MUST NOT diverge from it
   - completed means the campaign has explicitly ended; a PC death alone MUST NOT automatically imply campaign completion

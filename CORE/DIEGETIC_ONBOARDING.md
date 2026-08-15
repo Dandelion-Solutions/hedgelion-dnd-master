@@ -1,6 +1,6 @@
 # Diegetic Character Onboarding
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_policy: ALWAYS_DURING_GAMEPLAY
 precedence: authoritative for pre-live story-first character setup and PROVISIONAL_IDENTITY durability; within this narrow scope it overrides conflicting zero-write/readiness language in NEW_CAMPAIGN_FAST_PATH.md, CAMPAIGN_SETUP.md, CHARACTER.md, CHARACTER_READINESS.md and DURABILITY_GUARD.md
 
@@ -9,6 +9,8 @@ precedence: authoritative for pre-live story-first character setup and PROVISION
 Character setup does not have to feel like a questionnaire.
 
 After the blank campaign scaffold exists, the Master may place the player into a short fictional onboarding situation and let ordinary interaction elicit missing player-owned facts such as the PC's name, self-identification, manner, immediate relationships or other character details.
+
+The vignette may also provide harmless DM-seeded external defaults under `CHARACTER.md` so the player does not have to design every visual/cosmetic detail before anything happens.
 
 This preserves an in-world start while keeping D&D mechanics and persistence honest.
 
@@ -25,7 +27,7 @@ Until `READY_PC` is durable, the vignette MUST NOT resolve outcomes that depend 
 - create irreversible failure/success consequences that would require normal live adjudication;
 - treat `mechanics_detail: 0` as permission to omit the hidden character build.
 
-Harmless dialogue, description and player-owned identity establishment are allowed. An NPC may ask the PC's name. A local situation may expose appearance, manner, a companion name or another setup fact without turning the vignette into mechanical play.
+Harmless dialogue, description and identity establishment are allowed. An NPC may ask the PC's name. A local situation may expose appearance, manner, a companion name or another setup fact without turning the vignette into mechanical play.
 
 ## Stable identity adoption
 
@@ -38,6 +40,16 @@ A player-supplied identity fact becomes a **stable setup fact** when the Master 
 
 Once the Master decides to adopt the fact, do not first narrate that it was remembered and only consider persistence afterward.
 
+## DM-seeded setup details
+
+The Master may establish harmless undefined surface details during the vignette — for example dark clothing, hair, an ordinary notebook or visible stylistic cues — when they fit the player's concept and do not grant mechanical capability.
+
+If presented as factual and not contradicted, these may join the durable provisional PC description at the next applicable checkpoint. They do not require a separate approval question.
+
+An explicit player correction has higher authority under `CHARACTER.md`. Apply/canonicalize the correction at the next required durability boundary, or immediately if another rule requires the corrected identity to be durable before further fiction relies on it.
+
+Never label a DM-seeded detail as `player_defined` merely because the player did not object.
+
 ## PROVISIONAL_IDENTITY durability boundary
 
 The first stable PC identity anchor established during diegetic onboarding creates a narrow **PROVISIONAL_IDENTITY** durability boundary.
@@ -46,11 +58,12 @@ Before emitting further player-facing fiction that relies on that remembered/ado
 
 The transaction must materialize ALL already-established durable setup facts that belong to the current campaign working set, not merely the name. Normally include when known:
 - stable `PLAYER_` binding and already-chosen campaign-only presentation preferences;
-- one stable `PC_` ID with `status: provisional`, the adopted identity/concept fields, and only mechanics genuinely established so far;
+- one stable `PC_` ID with `status: provisional`, the adopted identity/concept fields, current DM-seeded/player-established description, and only mechanics genuinely established so far;
 - `PC_INDEX` entry for that same PC;
 - singleplayer `CAMPAIGN_CARD.protagonist` fields already known, especially `name`; keep campaign/card lifecycle `initializing`;
 - already-settled campaign configuration such as D&D lore fidelity/style values;
-- any starting-location/NPC/relationship/premise facts already presented as durable setting truth and intended to survive into play, represented through their normal authoritative records/indexes.
+- any starting-location/NPC/relationship/premise facts already presented as durable setting truth and intended to survive into play, represented through their normal authoritative records/indexes;
+- when protagonist concept + broad surrounding world are both now stable enough, an optional first automatic campaign title under `CAMPAIGN_IDENTITY.md` (MANIFEST + card together), e.g. a broad formulation like `Эмо-вампир в мире розовых пони и радужных единорогов` rather than a caption for the current signpost scene.
 
 Do not invent additional world records, scene state or mechanics merely to make the batch larger. The rule is **flush established setup canon**, not `generate a complete world`.
 
@@ -61,6 +74,8 @@ If the preceding vignette fiction was intentionally only disposable framing and 
 `PROVISIONAL_IDENTITY` is not character acceptance, not `READY_PC`, not `PLAY_READY`, and not campaign activation.
 
 The provisional PC schema may still contain null/empty mechanical placeholders while the build is genuinely unresolved. Campaign/card status remains `initializing`.
+
+An explicit `save game` during this unfinished setup may flush more structured provisional state, but it STILL does not change lifecycle to `active` unless READY_PC + PLAY_READY independently become true.
 
 The first actual live scene still requires the full `CHARACTER_READINESS.md` gate and a durable READY_PC/play-ready frontier. Hidden mechanics are still complete mechanics.
 
@@ -90,7 +105,7 @@ If a genuinely material unresolved class/species/ability/resource choice cannot 
 
 ## Resume semantics
 
-A campaign stopped after `PROVISIONAL_IDENTITY` remains unfinished setup. On resume, use the durable provisional PC and saved setup/world facts, then continue character construction. Do not present it as an active adventure merely because the protagonist now has a name.
+A campaign stopped after `PROVISIONAL_IDENTITY` remains unfinished setup. On resume, use the durable provisional PC and saved setup/world facts, then continue character construction. Do not present it as an active adventure merely because the protagonist now has a name or resumable onboarding scene.
 
 ## Player-facing silence
 
