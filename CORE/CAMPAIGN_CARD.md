@@ -1,6 +1,6 @@
 # Campaign Card and Fast Campaign Menu
 
-framework_module_version: 0.1.1
+framework_module_version: 0.1.2
 load_when: campaign discovery/menu, campaign setup, campaign status/location/PC/membership/engine changes, persistence affecting card projection fields
 
 ## Purpose
@@ -36,7 +36,7 @@ Authoritative sources remain:
 
 A stale or tampered card must never grant gameplay authority, migrate an engine, alter canon or override those records.
 
-After the user selects a campaign, perform the normal authoritative verification. If loaded source records disagree with the card, trust the source records and refresh the card in the next allowed coherent campaign transaction.
+After the user selects a campaign, perform the normal authoritative verification. If loaded source records disagree with the card, trust the source records and refresh the card at the next allowed coherent campaign transaction.
 
 ## Fast menu read path
 
@@ -106,7 +106,7 @@ A PC death does not automatically complete a campaign. Mark `completed` only whe
 
 Whenever a durable transition changes any projected field, mark the card dirty too and publish it inside the SAME `CAMPAIGN_TREE_TXN` as the authoritative records.
 
-Typical triggers:
+Typical projected changes:
 - accepted/changed protagonist identity or role/race summary;
 - durable current focal-location change;
 - mode/status/campaign-name transition;
@@ -114,6 +114,21 @@ Typical triggers:
 - multiplayer join-policy change;
 - PLAYER binding activation/deactivation/reactivation or GitHub-login refresh.
 
-Do not create a separate GitHub write merely to keep the card cosmetically current. SOFT card changes may wait for the same normal persistence boundary as their authoritative source change.
+### Singleplayer save-boundary semantics
+
+For singleplayer, the card is also used to define a small number of natural persistence boundaries under `DURABILITY_GUARD.md`.
+
+These projected changes normally create a boundary:
+- protagonist becomes established/changes materially;
+- `current_location` is first established for live play or changes to a new human-facing focal location;
+- lifecycle status changes (`initializing -> active`, pause, completed, archived/reactivated).
+
+At such a boundary, do NOT publish a card-only commit. Publish the authoritative source transition + card projection + all accumulated valid SOFT campaign dirty state in ONE coherent transaction.
+
+`current_location` is intentionally coarse. It should name the location useful in the campaign menu, not tactical movement inside the same place. A move from tavern to market square may change it; moving between tables in the same tavern normally does not.
+
+Other card freshness changes that arise only as maintenance/projection cleanup do not automatically justify a special gameplay commit unless another rule creates a boundary.
+
+For multiplayer, publication timing follows shared-world/membership/live synchronization policy; do not delay a material shared change merely to imitate the sparse singleplayer cadence.
 
 For multiplayer `participant_github_logins`, include active PLAYER bindings only. Login labels are mutable conveniences; stable GitHub user IDs in PLAYER records remain the authorization binding.

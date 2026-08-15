@@ -11,8 +11,8 @@ branch_id_revision: 1
 access_control_revision: 4
 storage_format_revision: 2
 presentation_revision: 7
-persistence_revision: 3
-campaign_card_revision: 1
+persistence_revision: 4
+campaign_card_revision: 2
 campaign_update:
   compatibility: maintenance_required
 recommended_tag: v0.6
