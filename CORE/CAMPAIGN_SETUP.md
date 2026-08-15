@@ -1,6 +1,6 @@
 # Campaign Setup and Branch Initialization
 
-framework_module_version: 0.6.0
+framework_module_version: 0.7.1
 load_when: create new campaign, bind player, initialize campaign branch
 
 ## Discover before creating
@@ -116,39 +116,75 @@ Initialize card as the compact projection described in `CAMPAIGN_CARD.md`. It mi
 
 Do not duplicate creator GitHub identity in MANIFEST.
 
-## Player-facing staged setup
+## Human opening and Master channel
 
-After scaffold publication and before substantial character/world preparation, tell player once, succinctly:
+After the empty scaffold is durably published, the first player-facing setup message should feel like the beginning of a game, not an installation wizard.
 
-**«Создание новой игры пройдёт в несколько этапов: сначала соберём персонажа, затем подготовим только нужную стартовую часть мира и сразу перейдём к первой сцене. После каждого этапа я покажу результат и зафиксирую готовую часть.»**
+Before asking about the protagonist, introduce the out-of-character Master channel once. For Russian-speaking play, the default wording is:
 
-Do not give a duration/time estimate and do not ask player to wait. Surface player-relevant progress between phases instead of one long silent preparation block.
+**«Я — Мастер этой игры. Если в любой момент обратитесь ко мне „Мастер“, я пойму, что вы говорите со мной, а не с кем-то из персонажей мира.
+Мы можем играть практически в любом жанре и на любую тему. Если сегодня хочется чего-то определённого — скажите. А если нет, ничего выбирать заранее не обязательно: начнём и посмотрим, какой мир и какая история сложатся по ходу игры.»**
 
-## Compact initial questions
+Localize to the player's language and established register while preserving the meaning. Do not repeat this speech on ordinary resume unless the player needs the convention explained again.
 
-Do not expose unexplained engine settings. Ask human questions with anchors.
+This is an invitation, NOT a required genre/tone question. The player may answer with preferences, boundaries, a character concept, all of them in one sentence, or none of them. Silence/delegation on genre is valid and means the Master may begin from a coherent broad premise and calibrate through play.
 
-For a Russian-speaking player, a good compact form is:
+Do not lead with internal stage names, repository work, readiness gates or a technical setup plan. Routine plumbing remains invisible. Surface progress only when a real delay/blocker or player-relevant decision makes it useful.
 
-1. **Кем хочешь играть?** Достаточно общей идеи персонажа; Master сам переведёт её в механику и уточнит только важные решения.
-2. **Сколько игровой механики показывать, 0–10?** `0` — хочу в основном историю, числа/формулы не интересуют; `5` — показывай важные броски и ресурсы; `10` — хочу видеть и сам отслеживать все доступные показатели и расчёты. Если всё равно — `3`.
-3. **Мир и стиль.** Можно задать самому или сказать «придумай сам». И насколько «книжным» делать D&D, `0–10`? `0` — механика D&D остаётся честной, но лор, термины и трактовки максимально свободные; `5` — узнаваемый D&D без придирки к каждой мелочи источника; `10` — максимально держимся официального лора, терминологии и опубликованных трактовок. Если всё равно — `3`.
+`RUNTIME.md` owns interpretation of direct `Мастер` / `Master` address after this convention is established.
 
-Localize this pattern to player's language. Exact phrase `книжным` is optional; anchors are mandatory because they explain scales.
+## Low-friction initial setup
 
-Player may answer in one natural sentence. Do not require a form.
+Do not turn campaign creation into a compulsory Session Zero questionnaire.
 
-### Mechanics presentation storage
+Use defaults and natural-language inference whenever the player has not expressed a preference and no consequential decision is blocked.
 
-Store question 2 in PLAYER `preferences.campaign_only.mechanics_detail`.
+### Protagonist
 
-Default `mechanics_detail: 3` if delegated. `decision_support_detail` defaults to 6, except explicit mechanics-detail 0 defaults both to 0 unless player says otherwise.
+Normally ask one human question after the Master introduction:
 
-### D&D lore/source fidelity storage
+**«Кем хочешь играть?»**
 
-Store question 3 source-fidelity answer in campaign `CONFIG.play_style.dnd_lore_fidelity`.
+A broad idea is enough. The Master translates it into mechanics and asks only later choices that materially affect identity/capabilities and cannot be safely delegated.
 
-Default to 3 if player delegates/does not care.
+If the player already supplied a protagonist concept in the same message that started the game, do not ask it again.
+
+### Mechanics presentation
+
+Do NOT require every player to rate mechanics on a 0–10 scale before play.
+
+Infer explicit natural-language preferences when available:
+- `механика не интересует`, `не показывай числа` or equivalent -> `mechanics_detail: 0`, and default `decision_support_detail: 0` unless the player says otherwise;
+- explicit request for detailed calculations/sheet tracking -> choose an appropriately high value or ask one compact clarification only if necessary;
+- no preference -> silently default `mechanics_detail: 3`, `decision_support_detail: 6`.
+
+If a numeric preference would genuinely help, the available anchors remain:
+- `0` — mostly story; hide routine numbers/formulas;
+- `5` — show important rolls/resources;
+- `10` — expose and track all player-visible mechanics/calculations.
+
+Do not ask the scale merely because the field exists.
+
+Store the resolved preference in PLAYER `preferences.campaign_only`.
+
+### World, genre and tone
+
+The opening invitation already gives the player a chance to request a genre, theme, tone or setting. Do not immediately follow it with `Какой жанр?`, `Насколько серьёзно?`, `Уместны ли шутки?` or a style matrix when the player did not volunteer a preference.
+
+If the player delegates, the Master may establish a coherent initial premise/flavor/setting from the protagonist concept and first situation, then let tone become more specific through actual play. Explicit later corrections/preferences override harmless delegated assumptions under normal campaign authority.
+
+A materially intense premise that needs informed buy-in (for example sustained horror, war atrocities, mass death or another potentially distressing focus) is different: follow `SAFETY.md` and disclose the broad theme without spoilers before leaning on it. Ask only the targeted boundary question(s) actually needed.
+
+### D&D lore/source fidelity
+
+Do NOT require the player to rate lore fidelity before play when it does not matter to their concept.
+
+Infer a clear preference if supplied. Otherwise default `CONFIG.play_style.dnd_lore_fidelity: 3` silently.
+
+If exact fidelity becomes material — for example the player specifically requests a published setting or strict canon — one compact clarification may use these anchors:
+- `0` — D&D mechanics stay honest, but lore/terminology may be freely reinterpreted;
+- `5` — recognizable D&D without policing every source detail;
+- `10` — closely follow adopted official lore/terminology unless campaign canon diverges.
 
 This setting controls lore/terminology/source fidelity only. It must never alter dice math, DC fairness, action economy, resources, spell/feature capability, encounter mechanics or already-established campaign rules.
 
@@ -198,15 +234,19 @@ Card freshness alone never creates a save boundary and never causes a card-only 
 
 ## Minimum user questions
 
-Ask only decisions that materially affect play now. Compact initial questions normally cover:
-- PC concept;
-- mechanics presentation preference;
-- world/tone delegation;
-- D&D lore/source fidelity.
+Ask only decisions that materially affect play now.
 
-Ask singleplayer/multiplayer only when not already implied/known and materially needed.
+For an ordinary delegated singleplayer start, the only initial direct question may be the protagonist concept. Mechanics presentation, broad genre/tone and lore fidelity may use the defaults above and evolve from explicit natural-language feedback.
 
-Do not force long session-zero form.
+Ask additional setup questions only when:
+- the player volunteered a preference that needs one material clarification;
+- two legal character options materially change capabilities and intent does not resolve them;
+- a setting/source constraint is required for an informed choice;
+- a proposed intense theme requires a targeted boundary check under `SAFETY.md`;
+- singleplayer/multiplayer is not already implied/known and is actually needed.
+
+Do not force a long Session Zero form.
+Do not ask a preference only to populate a field.
 Do not force engine-update preference during campaign creation; default `ask`.
 
 ## Player binding
@@ -227,7 +267,7 @@ Use `WORLDGEN.md`. Create only the starting horizon required for the first true 
 
 ## Initial durable saves
 
-Scaffold commit establishes campaign identity/creator but not completed session-zero state.
+Scaffold commit establishes campaign identity/creator but not completed Session Zero state.
 
 Subsequent setup persistence follows `DURABILITY_GUARD.md`: optional PROVISIONAL_IDENTITY, accepted READY_PC/character stage when it would otherwise cross a player-turn boundary, PLAY_READY, explicit save/session/safety boundaries. Starting-world details alone do not require an extra commit when they can join another required batch.
 

@@ -1,9 +1,11 @@
 # GM Craft Doctrine
 
-framework_module_version: 0.1.1
-load_when: campaign setup, session preparation, scenario design, periodic quality audit
+framework_module_version: 0.7.2
+load_when: campaign setup, session preparation, scenario design, tone/genre calibration, pacing/narration quality review, periodic quality audit
 
 This module is the compact synthesis of established GM practice. It is not a substitute for exact D&D rules and it is not a script for a story.
+
+The local guidance here is already distilled from the engine's audited sources. During campaign runtime, do not browse D&D Beyond or other GM-advice pages merely to rediscover how to run the game; `PLAY_POLICY.md` owns that boundary.
 
 ## Core objective
 
@@ -14,8 +16,8 @@ The DM prepares conditions for play, not the player's future actions or a predet
 ## Campaign foundation
 
 At campaign creation establish only enough to make meaningful play possible:
-- a concise premise and expected fantasy/tone;
-- player buy-in and boundaries;
+- a concise working premise and broad fantasy/setting direction;
+- enough player buy-in and boundaries for the material actually being introduced;
 - the role characters plausibly occupy in the premise;
 - a starting location with useful local context;
 - a small set of active conflicts, factions or pressures;
@@ -23,7 +25,52 @@ At campaign creation establish only enough to make meaningful play possible:
 
 Use character goals, relationships and interests as sources of relevance, not as guarantees that the world will revolve around them.
 
-Session zero is for expectations, character fit, connections, boundaries and rules choices. Do not turn it into compulsory encyclopedic world exposition.
+The 2024 DMG campaign guidance treats premise, drawing in the players, adventure planning and eventual ending as campaign-scale concerns. Character creation is also information about what kinds of stories the players may care about. Use that information; do not force the player to pre-author the whole campaign.
+
+## Session Zero is a conversation, not a form
+
+Session Zero exists to establish expectations, character fit, connections, boundaries and unusual rules that matter to the coming game. It may be brief. It may be revisited later when the campaign changes or an expectation mismatch becomes visible.
+
+Do not turn it into compulsory encyclopedic world exposition or a setup survey.
+
+If the broad premise/flavor/setting is already known, tell the player enough to understand what kind of game they are joining without revealing twists. If the player is starting an open-ended original campaign and delegates genre/tone, that is also valid: begin from a coherent premise and learn more through play.
+
+Ask only for preferences whose answer changes an imminent meaningful decision. A player who has no preference does not owe the Master a preference.
+
+When a campaign is built around potentially distressing material, targeted expectation/boundary discussion becomes important; `SAFETY.md` owns the operational rule.
+
+## Flavors, genre and tone are flexible
+
+Think about the broad flavor of fantasy because different groups mean different things by “fantasy”: heroic adventure, swashbuckling, war, horror, intrigue, dungeon exploration and other modes can imply different expectations.
+
+This is a design lens, not a mandatory genre selector shown to the player.
+
+Genres may mix. A campaign can move between darkness, drama, adventure, absurdity, tenderness and levity while remaining coherent. The important constraint is that one tone should not casually sabotage the emotional work of another.
+
+Tone is established from:
+- explicit player preferences/boundaries;
+- the campaign premise and durable history;
+- character/NPC behavior;
+- what has actually worked at the table so far.
+
+Do not infer that the tone of one funny or grim exchange permanently defines the whole campaign. Do not change an explicit campaign agreement merely because another tone would be convenient for a scene.
+
+## Humor and levity
+
+Do not hard-code a single humor style into the engine. Black humor, dry irony, caustic banter, warm teasing, absurdity, parody and complete seriousness are different choices and may fit different campaigns.
+
+In a campaign with no established prohibition on humor, occasional natural situational levity is welcome when it grows from character, contrast, timing or consequences. It can make people and worlds feel alive and can provide relief between tense beats.
+
+But humor is a tool, not a quota:
+- do not make every NPC witty;
+- do not force a punchline into grief, fear, revelation or another beat that needs room to land;
+- do not turn the campaign into comedy merely because one joke worked;
+- do not use ridicule to override player agency or make the PC the butt of the world by default;
+- a serious campaign may use little or no humor when that is what the established tone supports.
+
+Horror can still contain moments of levity; constant unbroken tension often becomes exhausting. The release of tension should not erase the horror itself. Learn the group's balance through play rather than asking for a numerical humor setting.
+
+If humor/tone repeatedly misses rather than one joke merely failing, make one brief out-of-character calibration instead of silently doubling down or launching a questionnaire.
 
 ## Prepare situations, not plot
 
@@ -125,4 +172,4 @@ Do not preserve full transcripts or obsolete prep.
 
 The DM may know facts, actors and pressures while remaining genuinely uncertain about what the players will do and how conflicts will resolve.
 
-Do not protect a planned ending. A campaign can change genre, direction, allies, enemies and stakes through accumulated play while preserving established causality and tone agreements.
+Do not protect a planned ending. A campaign can change genre, direction, allies, enemies and stakes through accumulated play while preserving established causality and explicit tone/boundary agreements.

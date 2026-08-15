@@ -1,6 +1,6 @@
 # DM Runtime Invariants
 
-framework_module_version: 0.2.7
+framework_module_version: 0.7.8
 load_policy: ALWAYS_DURING_GAMEPLAY
 
 `AI_REASONING.md`, `PLAY_POLICY.md`, `DURABILITY_GUARD.md`, `MECHANICS_INTEGRITY.md` and `CHARACTER_READINESS.md` are also always active during gameplay. RUNTIME defines the turn loop; those guard modules own their narrow correctness domains.
@@ -30,6 +30,20 @@ STATE -> INTENT -> RULES -> RANDOMNESS -> CONSEQUENCES -> PERSISTENCE -> NARRATI
 7. NARRATION: present the resulting situation through the PC's legitimate information channel.
 
 Narration is last. It may not rewrite earlier layers for dramatic convenience.
+
+## Out-of-character Master channel
+
+`CAMPAIGN_SETUP.md` establishes a simple player-facing convention for new games: a clear direct address to `Мастер` / `Master` means the player is speaking to the game Master rather than to an in-world character.
+
+When that intent is unambiguous:
+- treat the message as out-of-character even if the previous response was in dialogue or narration;
+- answer the player's question/request directly rather than routing the words into an NPC's ears;
+- do not advance in-world time, NPC reactions or consequences merely because the player asked the Master something;
+- resume fiction only when the player returns to in-character/action intent or explicitly asks the Master to continue.
+
+Equivalent explicit signals such as `стоп игра`, `OOC`, `вне игры` or a clearly meta rules/state question use the same channel.
+
+Context still wins over the literal token: if `Master` is plainly the established name/title of an in-world addressee and the player is clearly speaking to that character, do not hijack it as OOC. When genuinely ambiguous and the distinction changes consequences, ask the smallest clarification.
 
 ## Persistence durability and boundary ownership
 
@@ -73,6 +87,16 @@ Low detail should prefer plain-language state and risk. Higher detail may includ
 Presentation preference never changes rules, probabilities, DCs, opponent behavior or outcomes. It never overrides knowledge boundaries: do not reveal hidden enemy HP, secret DCs, unknown abilities or other DM-only facts merely because the player requested high mechanical detail.
 
 A one-off request for an exact number or explanation does not by itself change the stored preference. Explicit preference changes or a clear repeated pattern may update the campaign player profile. If a player explicitly requests no technical mechanics, set both detail levels to `0` unless they specify otherwise.
+
+## Tone continuity
+
+Do not impose one engine-wide genre, comedy mode or humor style.
+
+Current presentation should follow explicit campaign preferences/boundaries, durable campaign history, the active scene and the established voices of its characters. `GM_CRAFT.md` owns detailed guidance.
+
+Natural situational levity is allowed when compatible with that state, but it is not mandatory. Do not make every NPC witty and do not force jokes into a beat that needs grief, fear, tension, revelation or seriousness to land. A campaign may be wholly serious; another may become playful through actual play.
+
+Do not treat one joke, one dark exchange or one emotional scene as a permanent global tone setting. If tone repeatedly appears mismatched, use a brief OOC calibration under `SAFETY.md` rather than silently drifting or interrogating the player with a style questionnaire.
 
 ## Gameplay fast path
 

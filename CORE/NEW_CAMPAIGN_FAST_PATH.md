@@ -1,6 +1,6 @@
 # New Campaign Fast Path
 
-framework_module_version: 0.1.2
+framework_module_version: 0.7.3
 load_when: user explicitly selected New Game, before character/world setup
 precedence: authoritative for new-campaign scaffold ordering, publication, and early-start latency
 
@@ -20,7 +20,7 @@ After the user explicitly chooses **New Game**:
 2. run local `TOOLS/init_campaign.py` exactly once into a fresh temporary output directory;
 3. treat the generator output as the COMPLETE authoritative empty campaign scaffold;
 4. publish that generated output as the first campaign-specific commit;
-5. only AFTER that publication succeeds ask character/world/style questions.
+5. only AFTER that publication succeeds begin the human player-facing opening/setup from `CAMPAIGN_SETUP.md`.
 
 Do not ask the player for a character concept and then spend minutes building technical files. The scaffold exists first; player-facing creation starts second.
 
@@ -73,13 +73,15 @@ After successful publication, adopt the created campaign commit/tree as the know
 
 Once the blank scaffold commit succeeds, technical initialization is complete even though campaign lifecycle status is still `initializing`.
 
-Immediately move to player-facing setup. A concise transition is enough, for example:
+The first normal player-facing setup message now follows `CAMPAIGN_SETUP.md`:
+- introduce the Master/OOC channel in a human way;
+- invite genre/theme preferences without requiring an answer;
+- ask the protagonist concept only if the player has not already supplied it;
+- do not expose internal setup stages or a mechanics/style questionnaire by default.
 
-**«Основа новой игры готова. Теперь быстро соберём героя, затем я подготовлю только ближайшую ситуацию и сразу начнём сцену.»**
+Do not preface this with `основа создана`, `инициализация завершена`, repository progress, YAML/branch/commit language or another installation-style transition merely because the scaffold operation just happened.
 
-Or simply ask the compact character/style questions from `CAMPAIGN_SETUP.md`.
-
-Do not tell the player about YAML, schemas, branch trees, commits, ref publication, unfinished scaffold persistence, or other successful infrastructure work.
+If a real publication failure blocks setup, say only what the player needs to act on. Otherwise successful scaffold publication is invisible infrastructure and the conversation simply becomes the beginning of the game.
 
 ## Character drafting and provisional identity
 

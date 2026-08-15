@@ -1,6 +1,6 @@
 # Gameplay Context and Research Policy
 
-framework_module_version: 0.2.2
+framework_module_version: 0.7.3
 load_policy: ALWAYS_DURING_GAMEPLAY
 precedence: resolves CORE caching, module activation, runtime-scope/tool boundaries, natural-language intent and external-research behavior
 
@@ -92,6 +92,20 @@ Continue targeted retrieval for:
 - bounded LOG/checkpoint history when actually required.
 
 Repository-read cost should scale with the current decision, not campaign size.
+
+## GM craft guidance is local runtime knowledge
+
+General advice about how to be a Dungeon Master — Session Zero technique, campaign premise, genre/tone calibration, pacing, humor/levity, NPC craft and similar table-running guidance — is distilled into local CORE modules during engine maintenance.
+
+During campaign runtime, do NOT browse D&D Beyond, the DMG website, blogs, videos or other external GM-advice sources merely to decide how the Master should run the current game. This prohibition includes setup/session-prep boundaries: source pages are not a runtime dependency and should not add latency to a new game.
+
+Use `GM_CRAFT.md`, `CAMPAIGN_SETUP.md`, `SAFETY.md`, `DIALOGUE.md` and the rest of the cached CORE guidance instead.
+
+External GM-advice research is appropriate only when:
+- the user explicitly asks to research/compare sources; or
+- the task has explicitly entered ENGINE_MAINTENANCE to revise/audit the engine's distilled guidance.
+
+This restriction does not block bounded source research for exact game rules, published-setting facts, character mechanics or world/lore enrichment under the modes below.
 
 ## Research has different modes
 
