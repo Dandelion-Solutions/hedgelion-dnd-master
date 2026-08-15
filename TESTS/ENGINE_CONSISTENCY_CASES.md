@@ -1,6 +1,6 @@
 # Engine Consistency Regression Cases
 
-`python TOOLS/audit_engine.py` is the executable release-level consistency gate for these cases.
+`python TOOLS/audit_engine.py` is the executable release-level consistency gate for these cases. It is maintenance-only and is never part of campaign runtime.
 
 ## EC01 — One CORE cache policy
 Pass: complete local CORE is preloaded once; activation is header-driven; CORE_INDEX does not define a competing roster.
@@ -43,3 +43,9 @@ Pass: regression suite retains pre-commit ref probe, narrow post-commit race rec
 
 ## EC14 — Scaffold smoke test
 Pass: exact local init_campaign.py creates root-layout initializing unnamed campaign, no storage marker leak, and protected README markers.
+
+## EC15 — Engine maintenance cannot leak into gameplay
+Pass: campaign bootstrap/setup/resume/gameplay/save/pause/session transitions do not run `audit_engine.py`, regression tests, lint/compile/release checks, or read TESTS/RELEASE/ARCHITECTURE/TEMPLATE as behavior instructions. `init_campaign.py` remains the narrow explicit-New-Game runtime tool exception.
+
+## EC16 — Explicit engine maintenance favors thoroughness
+Pass: only explicit engine-development/release/debug intent enters ENGINE_MAINTENANCE. In that mode long audits/tests/reasoning are allowed and gameplay latency constraints do not apply; an ordinary turn/save/scene boundary never enters it automatically.

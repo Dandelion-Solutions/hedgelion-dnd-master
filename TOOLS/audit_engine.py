@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
-"""Static consistency/smoke audit for the D&D Master engine tree.
-Standard-library only. Exits non-zero on normative contradictions or scaffold smoke failure.
+"""Maintenance-only consistency/smoke audit for the D&D Master engine tree.
+
+This executable is for explicit engine development/release maintenance. It is NOT
+part of campaign bootstrap, setup, gameplay, save, pause/resume, or campaign
+integrity fast paths and must never be invoked automatically by runtime.
+
+Standard-library only. Exits non-zero on normative contradictions or scaffold
+smoke failure.
 """
 from __future__ import annotations
 
@@ -68,6 +74,27 @@ def audit_core_activation() -> None:
 
     require("Activation is header-driven" in policy, "PLAY_POLICY must state header-driven activation")
     require("complete local `CORE/*.md`" in policy, "PLAY_POLICY must retain full-CORE-once preload contract")
+
+
+def audit_runtime_scope() -> None:
+    policy = text("CORE/PLAY_POLICY.md")
+    release = text("RELEASE/CHECKLIST.md")
+    require("## Runtime scope firewall" in policy, "PLAY_POLICY must define runtime scope firewall")
+    require("ENGINE_MAINTENANCE" in policy, "PLAY_POLICY must explicitly separate engine maintenance from campaign runtime")
+    for token in ("`ARCHITECTURE/`", "`RELEASE/`", "`TESTS/`", "`TEMPLATE/`"):
+        require(token in policy, f"PLAY_POLICY runtime firewall missing non-runtime area {token}")
+    require("`TOOLS/audit_engine.py`" in policy and "MUST NOT run" in policy, "PLAY_POLICY must forbid engine audit during campaign runtime")
+    require("`TOOLS/init_campaign.py`" in policy and "explicit New Game" in policy, "PLAY_POLICY must narrowly allow init_campaign only for New Game")
+    require("regression tests" in policy and "py_compile" in policy, "PLAY_POLICY must forbid opportunistic development checks during gameplay")
+    require("maintenance-only" in release.lower(), "release checklist must label audit_engine maintenance-only")
+
+    bad_refs = []
+    for p in sorted((ROOT / "CORE").glob("*.md")):
+        if p.name == "PLAY_POLICY.md":
+            continue
+        if "TOOLS/audit_engine.py" in p.read_text(encoding="utf-8"):
+            bad_refs.append(str(p.relative_to(ROOT)))
+    require(not bad_refs, f"runtime CORE modules must not invoke/reference audit_engine outside PLAY_POLICY firewall: {bad_refs}")
 
 
 def audit_no_stale_policy() -> None:
@@ -157,10 +184,12 @@ def audit_tests() -> None:
     do = text("TESTS/DIEGETIC_ONBOARDING_CASES.md")
     ci = text("TESTS/CAMPAIGN_IDENTITY_CASES.md")
     bs = text("TESTS/BOOTSTRAP_STORAGE_REGRESSION_CASES.md")
+    ec = text("TESTS/ENGINE_CONSISTENCY_CASES.md")
     require("PT30" in pt and "Narrow race after commit" in pt and "README guide" in pt, "persistence regressions must cover concurrency + path preservation")
     require("DO14" in do and "Explicit save during onboarding" in do, "diegetic onboarding regression coverage incomplete")
     require("CI13" in ci and "Card never invents" in ci, "campaign identity regression coverage incomplete")
     require("adopted identity" in bs.lower() or "PROVISIONAL_IDENTITY" in bs, "bootstrap regression must not demand zero writes through adopted identity")
+    require("EC15" in ec and "maintenance-only" in ec.lower(), "engine consistency cases must protect gameplay/maintenance separation")
 
     # Duplicate case IDs make regression references ambiguous and usually indicate
     # a copy/paste oversight. Check each regression document independently.
@@ -211,6 +240,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.parse_args()
     audit_core_activation()
+    audit_runtime_scope()
     audit_no_stale_policy()
     audit_persistence_ownership()
     audit_onboarding_and_identity()

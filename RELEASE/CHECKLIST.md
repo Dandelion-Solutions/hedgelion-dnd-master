@@ -4,6 +4,8 @@
 - [ ] New Project chat can materialize/extract the release Source code ZIP.
 - [ ] After exact package resolution, complete local `CORE/*.md` + `RULES/INDEX.md` + `RULES/README.md` are preloaded once into current-chat context; campaign/world data stays lazy.
 - [ ] Activation is header-driven: every `load_policy: ALWAYS_DURING_GAMEPLAY` module is active; `load_when:` modules are situational.
+- [ ] Runtime scope firewall holds: TESTS/RELEASE/ARCHITECTURE/TEMPLATE are not gameplay instruction sources; exact SCHEMA reads are targeted; development audits/tests/lint/compile do not run during campaign runtime.
+- [ ] `TOOLS/audit_engine.py` is maintenance-only and never invoked by bootstrap/setup/gameplay/save/pause/resume; `TOOLS/init_campaign.py` is the narrow explicit-New-Game runtime exception.
 - [ ] Existing campaign refuses silent engine-version substitution.
 
 ## Installation package
@@ -42,7 +44,7 @@
 - [ ] Post-update runtime reloads exact local target package.
 
 ## Regression
-- [ ] `python TOOLS/audit_engine.py` passes on the exact release tree.
+- [ ] In explicit engine-maintenance/release mode, `python TOOLS/audit_engine.py` passes on the exact release tree.
 - [ ] `TESTS/BOOTSTRAP_STORAGE_REGRESSION_CASES.md` reviewed.
 - [ ] `TESTS/ENGINE_UPDATE_CASES.md` reviewed.
 - [ ] Fresh-Project end-to-end test completed from GitHub-generated Source code ZIP.

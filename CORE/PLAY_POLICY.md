@@ -1,14 +1,16 @@
 # Gameplay Context and Research Policy
 
-framework_module_version: 0.2.1
+framework_module_version: 0.2.2
 load_policy: ALWAYS_DURING_GAMEPLAY
-precedence: resolves CORE caching, module activation, natural-language intent and external-research behavior
+precedence: resolves CORE caching, module activation, runtime-scope/tool boundaries, natural-language intent and external-research behavior
 
-This module separates four things that must not be conflated:
+This module separates things that must not be conflated:
 1. engine instructions being present in model context;
 2. a CORE module being relevant/active for the current decision;
 3. campaign/world data being retrieved;
-4. external research being performed.
+4. runtime tools/data contracts being used for a concrete game operation;
+5. external research being performed;
+6. engine-development/release maintenance being performed.
 
 ## Immutable CORE context cache
 
@@ -53,6 +55,30 @@ A situational module:
 - may still define an invariant when an always-active module explicitly delegates authority to it.
 
 Older instructions that say to lazily load/drop/reread situational CORE modules are superseded by this policy. Campaign/world/entity retrieval remains lazy.
+
+## Runtime scope firewall
+
+Campaign runtime and engine maintenance are deliberately separate execution modes.
+
+During campaign bootstrap/setup/resume/gameplay/save/pause/session transitions, the runtime instruction surface is:
+- the already-resolved Project/bootstrap contract needed to enter runtime;
+- the immutable local `CORE/*.md` cache;
+- `RULES/INDEX.md` + `RULES/README.md` and exact rule records explicitly required by the current decision;
+- exact campaign records and narrowly required schemas/data files.
+
+After bootstrap has resolved the exact engine/runtime, `INSTALL/` is no longer a gameplay instruction source. `ARCHITECTURE/`, `RELEASE/`, `TESTS/`, `TEMPLATE/`, historical audit documents and repository-level design prose are development/maintenance material, not gameplay instructions. Do not read, preload, activate or reason from them during ordinary campaign runtime merely because they are present in the package.
+
+`SCHEMA/` is a data contract, not a behavior-instruction library. Read an exact schema only when a concrete setup/persistence/repair operation actually needs validation; never preload or scan the schema tree during ordinary turns.
+
+`TOOLS/` is executable support, not an instruction source. Runtime tool execution is deny-by-default unless a current CORE/bootstrap contract explicitly requires that exact tool for the current operation. In the current engine:
+- `TOOLS/init_campaign.py` is allowed only for the explicit New Game scaffold boundary defined by `NEW_CAMPAIGN_FAST_PATH.md`;
+- `TOOLS/audit_engine.py` is **maintenance-only** and MUST NOT run during campaign bootstrap, character/world setup, gameplay, save, pause, resume, session transitions, campaign discovery, or ordinary campaign integrity checks.
+
+Likewise, do not run regression tests, linting, `py_compile`, release checks, repository-wide consistency scans or engine-wide static audits as opportunistic housekeeping during a game. A save boundary, scene transition, quiet moment, pause, context recovery, or completed player turn is NOT permission to enter engine maintenance.
+
+If a concrete campaign integrity problem appears during play, diagnose only the affected campaign scope under `INTEGRITY.md`; do not launch an engine-wide audit unless the user explicitly switches the task to engine maintenance/debugging.
+
+**ENGINE_MAINTENANCE** is entered only by explicit user intent to inspect/change/test the engine itself, or by an explicitly initiated engine release/update-maintenance task outside an unresolved campaign action. In that mode, exhaustive review, tests and long analysis are appropriate; gameplay latency constraints do not apply. Never enter ENGINE_MAINTENANCE automatically from ordinary play.
 
 ## Campaign data remains lazy
 
@@ -186,4 +212,4 @@ It is valid for the result to be `the magic has no purchase on an inanimate obje
 
 Immersion and response latency are protected by putting research at preparation boundaries instead of inside routine turns.
 
-Once exact engine instructions and the current working set are available, the default live turn should be resolved locally from them. Additional disk, GitHub or web operations need a concrete persistence, synchronization, missing-canon, preparation-enrichment or explicit-research reason.
+Once exact engine instructions and the current working set are available, the default live turn should be resolved locally from them. Additional disk, GitHub or web operations need a concrete persistence, synchronization, missing-canon, preparation-enrichment or explicit-research reason. Engine-development audit/test work is never such a reason during campaign runtime.

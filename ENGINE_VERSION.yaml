@@ -17,7 +17,8 @@ mechanics_integrity_revision: 1
 character_readiness_revision: 4
 save_contract_revision: 3
 campaign_identity_revision: 2
-consistency_audit_revision: 1
+runtime_scope_revision: 1
+consistency_audit_revision: 2
 campaign_update:
   compatibility: maintenance_required
 recommended_tag: v0.6
