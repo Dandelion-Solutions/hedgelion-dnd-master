@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.2.4
+framework_module_version: 0.2.5
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 ## Context model
@@ -13,6 +13,7 @@ Always active during gameplay:
 - `RUNTIME.md` — turn pipeline, agency, causality and canon boundaries.
 - `AI_REASONING.md` — LLM-specific correctness discipline.
 - `PLAY_POLICY.md` — CORE cache, activation semantics, natural-language intent and research policy.
+- `DURABILITY_GUARD.md` — zero-I/O durability-boundary classification; prevents accepted gameplay canon from remaining only in volatile chat state.
 
 All other modules remain present but dormant until their domain is relevant. In older module headers, `load_when` means activate-when after the CORE cache has been built; it is not an instruction to reread the file from disk.
 
@@ -53,11 +54,11 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 ## Activation examples
 
-`new campaign` -> activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; after scaffold exists, activate GM_CRAFT + CAMPAIGN_OPERATIONS + CHARACTER + SAFETY + WORLDGEN only as needed.
+`new campaign` -> DURABILITY_GUARD is already active; activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; before the first live scene DURABILITY_GUARD requires a post-scaffold PLAY_READY durable frontier.
 
 `campaign menu/discovery` -> activate BOOTSTRAP_RUNTIME + CAMPAIGN_CARD; prefer card-only presentation reads and defer authoritative/deep campaign loading until selection.
 
-`ordinary in-scene action` -> normally only always-active modules plus the smallest domain modules actually implicated by the action.
+`ordinary in-scene action` -> normally only always-active modules plus the smallest domain modules actually implicated by the action. DURABILITY_GUARD performs only an in-memory boundary check and causes no GitHub I/O unless a real save boundary exists.
 
 `spell/magic` -> activate MAGIC and ADJUDICATION only as needed.
 
@@ -65,7 +66,7 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 `session/world prep` -> activate PREP + WORLDGEN/LORE as needed; SOURCES may activate for one bounded enrichment pass.
 
-`campaign persistence boundary` -> activate PERSISTENCE + STORAGE; also activate CAMPAIGN_CARD when the durable delta changes any projected card field.
+`campaign persistence boundary` -> DURABILITY_GUARD decides that a boundary exists; activate PERSISTENCE + STORAGE; also activate CAMPAIGN_CARD when the durable delta changes any projected card field.
 
 `engine update opportunity` -> activate ENGINE_UPDATES + BOOTSTRAP_RUNTIME + STORAGE + PERSISTENCE + CAMPAIGN_CARD when publication changes campaign engine metadata.
 
