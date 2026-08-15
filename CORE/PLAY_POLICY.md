@@ -1,6 +1,6 @@
 # Gameplay Context and Research Policy
 
-framework_module_version: 0.2.0
+framework_module_version: 0.2.1
 load_policy: ALWAYS_DURING_GAMEPLAY
 precedence: resolves CORE caching, module activation, natural-language intent and external-research behavior
 
@@ -32,20 +32,25 @@ Do not rehydrate CORE merely because a module becomes relevant; it is already pr
 
 ## Loaded is not active
 
-Preloading a module does not mean running all of its procedures on every turn.
+Preloading a module does not mean executing all of its procedures on every turn.
 
-`load_when` / situational-routing language in older CORE modules is interpreted as an ACTIVATION condition once the CORE cache exists.
+Activation is header-driven and deterministic:
+- a CORE module with `load_policy: ALWAYS_DURING_GAMEPLAY` is semantically active throughout gameplay/setup runtime;
+- a CORE module with `load_when:` is present in the immutable cache but activates only when the current setup/scene/decision matches that condition;
+- `CORE_INDEX.md` summarizes routing for humans, but it does not create a second activation policy that can disagree with module headers.
 
-Always-active modules:
+The current always-active correctness guard set is:
 - `RUNTIME.md`;
 - `AI_REASONING.md`;
-- this `PLAY_POLICY.md`.
+- this `PLAY_POLICY.md`;
+- `DURABILITY_GUARD.md`;
+- `MECHANICS_INTEGRITY.md`;
+- `CHARACTER_READINESS.md`.
 
-Every other CORE module is dormant unless the current setup/scene/decision falls within its declared purpose or activation condition.
-
-A dormant module:
-- must not add checks, retrievals, research, bookkeeping or narration constraints to the current turn merely because its text is present in context;
-- may still supply a passive invariant if another active module explicitly depends on it.
+A situational module:
+- must not add checks, retrievals, research, bookkeeping or narration constraints to unrelated turns merely because its text is present in context;
+- becomes active from the already-preloaded cache, without a disk/GitHub reread;
+- may still define an invariant when an always-active module explicitly delegates authority to it.
 
 Older instructions that say to lazily load/drop/reread situational CORE modules are superseded by this policy. Campaign/world/entity retrieval remains lazy.
 

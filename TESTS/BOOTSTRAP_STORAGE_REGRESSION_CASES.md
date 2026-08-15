@@ -168,13 +168,13 @@ Pass: stop new-game initialization with a short actionable error. Never reconstr
 Generator output contains many files.
 Pass: first campaign-specific durable state is exactly one empty-scaffold commit/tree, with no invented lore/world content and no storage README/marker leakage.
 
-## B41 — Character drafting performs zero campaign writes
-Blank scaffold exists; player is still clarifying name/concept/class/species/style/preferences and has not accepted the character.
-Pass: keep draft in current working context and perform zero campaign GitHub writes. Persist one coherent character batch only after acceptance.
+## B41 — Exploratory drafting is local, adopted identity is the exception
+Blank scaffold exists and character details are still tentative.
+Pass: exploratory alternatives cause zero writes. If DIEGETIC_ONBOARDING adopts the first stable PC identity anchor, PROVISIONAL_IDENTITY is allowed/required before further fiction relies on it; otherwise batch until READY_PC/PLAY_READY or another authoritative boundary.
 
 ## B42 — Minimal world and first scene normally share launch batch
-Accepted PC is durable and no intervening player decision/pause exists.
-Pass: create only immediate starting horizon + scene/current routing + required initial recovery state + active status in one coherent launch transaction, then start narration. Do not create broad unused catalogs first.
+READY_PC is durable and no intervening player decision/pause exists.
+Pass: create only immediate starting horizon + scene/current routing + recovery state actually required + active status in one coherent PLAY_READY launch transaction, then start true live narration. Do not create broad unused catalogs first.
 
 ## B43 — Setup technical silence
 Scaffold/character/launch publication succeeds normally.

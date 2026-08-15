@@ -42,6 +42,9 @@ fields:
   last_event_id: string|null
 invariants:
   - voluntary personality/thoughts/emotions remain player-owned
+  - identity.description may contain current DM-seeded external/surface facts; this does not make them player-authored
+  - player_defined_traits contains only facts explicitly established by the player; silence never converts a DM-seeded default into player-defined authorship
+  - compatible explicit player corrections supersede DM-seeded surface defaults; mechanical/equipment/causally-dependent changes follow normal rules
   - provisional records may contain null/empty mechanical placeholders while the build is genuinely unresolved
   - status active requires READY_PC under CORE/CHARACTER_READINESS.md; mechanically required current-level values may not remain null/empty placeholders
   - an active PC must contain sufficient class/level/species-or-origin/ability/proficiency/defense/HP/movement/resource/feature/equipment state to resolve ordinary play without inventing character mechanics later

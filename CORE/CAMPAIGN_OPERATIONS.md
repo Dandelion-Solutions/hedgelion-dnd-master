@@ -1,6 +1,6 @@
 # Campaign Operations
 
-framework_module_version: 0.2.0
+framework_module_version: 0.2.1
 load_when: campaign start, session start/end, prep, recap, campaign maintenance
 
 ## Campaign-level organization
@@ -53,9 +53,9 @@ Take lightweight internal notes for facts likely to persist. Apply resolved cons
 
 Do not publish as each individual file becomes dirty. Do not create temporary/staging files in the campaign branch.
 
-Most ordinary singleplayer turns should use zero GitHub calls. SOFT dirty state may span multiple turns until a natural persistence boundary under `RUNTIME.md` / `PERSISTENCE.md`.
+Most ordinary singleplayer turns should use zero GitHub calls. SOFT dirty state may span multiple turns until `DURABILITY_GUARD.md` (or an explicit domain authority) declares a boundary.
 
-HARD changes publish at the logical completion boundary, still as one coherent campaign transaction.
+This module does not promote scene/quest/resource changes to HARD on its own. When a forced boundary exists, publish one coherent transaction.
 
 Engine update discovery is not part of the ordinary turn path.
 

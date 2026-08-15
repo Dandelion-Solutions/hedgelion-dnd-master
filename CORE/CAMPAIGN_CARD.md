@@ -1,6 +1,6 @@
 # Campaign Card and Fast Campaign Menu
 
-framework_module_version: 0.1.3
+framework_module_version: 0.1.4
 load_when: campaign discovery/menu, campaign setup, campaign status/location/PC/membership/engine changes, persistence affecting card projection fields
 
 ## Purpose
@@ -29,7 +29,7 @@ Do not store participant login lists in singleplayer cards.
 ## Projection, not authority
 
 Authoritative sources remain:
-- MANIFEST for mode/status/engine provenance/join policy and campaign name;
+- MANIFEST for mode/status/engine provenance/join policy;
 - PC/PLAYER records for characters and multiplayer bindings;
 - STATE/SCENE/WORLD for current location;
 - Git provenance + PLAYER binding rules for actual write authority.
@@ -40,13 +40,7 @@ After the user selects a campaign, perform the normal authoritative verification
 
 ### Campaign-name projection invariant
 
-`CAMPAIGN_CARD.campaign_name` MUST equal `MANIFEST.campaign_name`, including null.
-
-The card may not invent a catchy title merely for menu presentation. Automatic naming/renaming belongs to `CAMPAIGN_IDENTITY.md` and changes MANIFEST + card in one transaction.
-
-If MANIFEST and card disagree, MANIFEST wins. Refresh the card from MANIFEST; never mutate MANIFEST merely to preserve a stale card string.
-
-When the title changes and current README has identity markers, the same transaction may update the README overview under `CAMPAIGN_IDENTITY.md`.
+`CAMPAIGN_CARD.campaign_name` MUST equal `MANIFEST.campaign_name`, including null. The card never invents a title independently. Naming/renaming is governed by `CAMPAIGN_IDENTITY.md`; MANIFEST and card change in the same transaction. If they disagree, MANIFEST wins.
 
 ## Fast menu read path
 
@@ -104,13 +98,15 @@ Do not list all participant logins in the normal player-facing menu unless usefu
 ## Status semantics
 
 Supported card/manifest lifecycle:
-- `initializing` — setup not finished; a resumable pre-live onboarding vignette may already exist;
-- `active` — ongoing normal play with a valid PLAY_READY frontier;
+- `initializing` — setup not finished; durable pre-live onboarding/provisional PC/current setup location may already exist;
+- `active` — ongoing normal play with a valid READY_PC + PLAY_READY frontier;
 - `paused` — intentionally paused;
 - `completed` — story/campaign ended; `status_note` may summarize why;
 - `archived` — retained but hidden from normal menu.
 
-The presence of a provisional PC, current setup scene, known focal location or explicit save does not by itself authorize `active`.
+A provisional PC/current onboarding scene/current location/explicit save does not authorize `active`. `paused` is reserved for a campaign that already reached PLAY_READY and is then intentionally paused; unfinished stopped setup remains `initializing`.
+
+`protagonist.role_race` is a display summary only; during initializing it may show a broad durable concept even before exact species/class mechanics are complete.
 
 A PC death does not automatically complete a campaign. Mark `completed` only when the campaign is actually concluded under normal campaign authority.
 
@@ -128,14 +124,11 @@ Typical projected changes:
 
 ### Singleplayer save-boundary semantics
 
-For singleplayer, the card is also used to define a small number of natural persistence boundaries under `DURABILITY_GUARD.md`.
+The card never creates a persistence boundary. `DURABILITY_GUARD.md` is authoritative for WHEN singleplayer publication is required.
 
-These projected changes normally create a boundary:
-- protagonist becomes established/changes materially;
-- `current_location` is first established for live play or changes to a new human-facing focal location;
-- lifecycle status changes (`initializing -> active`, pause, completed, archived/reactivated).
+When that guard classifies a source transition as a boundary — for example protagonist establishment, PLAY_READY/current focal-location establishment or change, or a valid lifecycle transition — include the card projection in the SAME coherent transaction with the authoritative source transition and all causally valid accumulated SOFT state.
 
-At such a boundary, do NOT publish a card-only commit. Publish the authoritative source transition + card projection + all accumulated valid SOFT campaign dirty state in ONE coherent transaction.
+Do NOT publish a card-only commit.
 
 `current_location` is intentionally coarse. It should name the location useful in the campaign menu, not tactical movement inside the same place. A move from tavern to market square may change it; moving between tables in the same tavern normally does not.
 

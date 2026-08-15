@@ -1,6 +1,6 @@
 # Canonical Storage and Persistence
 
-framework_module_version: 0.6.0
+framework_module_version: 0.6.1
 load_when: session startup, state retrieval, persistence boundary, resync, canon conflict
 
 The engine package and campaign storage are separate.
@@ -60,7 +60,7 @@ During an active live epoch, `LIVE_SCENE.md` inserts its operational frontier fo
 
 Resolve names/relations through compact INDEX entries and fetch exact records only when current setup/scene/decision needs them. Do not recursively traverse the world graph.
 
-Stable-ID reservation remains HARD: publish the new record + required index coherently before relying on that ID as durable canon.
+A new stable ID may be allocated/reserved in the hot working set without an immediate singleplayer commit. Before any persistence transaction publishes a durable reference to that new ID, the SAME transaction must include the new record + required index entry. Multiplayer/shared visibility may require earlier publication under its own authority.
 
 ## Hot campaign frontier cache
 
@@ -100,21 +100,13 @@ Active live scenes follow `LIVE_SCENE.md`. Its single-file live CAS write path i
 
 Do not use a temporary live file as staging for ordinary campaign commits.
 
-## Consistency tiers
+## Working set and durability
 
-- HARD: durable commitment whose loss would make resumed canon materially wrong/incomplete; publish at its logical completion boundary.
-- SOFT: durable state that may remain dirty and batch until a natural boundary/safety threshold.
-- EPHEMERAL: current-chat-only unless promoted.
+`DURABILITY_GUARD.md` is authoritative for HARD/SOFT/EPHEMERAL classification and ordinary singleplayer save boundaries. This storage module does not invent additional timing rules.
 
-HARD does not mean per-file publication. All causally related records still publish as one coherent campaign transaction.
+Keep relevant canonical records plus dirty paths/final contents in memory. Do not write GitHub files as soon as each thought/consequence is discovered. Ordinary singleplayer quest/NPC/item/resource/relationship/scene changes may remain SOFT until a guard-defined boundary.
 
-## Working set and persistence boundaries
-
-Keep relevant canonical records + dirty paths/final contents in memory. Do not write GitHub files as soon as each individual thought/consequence is discovered.
-
-Normal singleplayer play should batch SOFT changes across ordinary turns and publish at boundaries such as meaningful action-sequence completion, scene/encounter transition, significant durable state/ownership/thread change, explicit save, pause/end, risky context transition, or accumulated dirty state becoming recovery-sensitive.
-
-Use `PERSISTENCE.md` for the exact publication algorithm and performance budget.
+When a boundary fires, publish the complete causally valid dirty delta through `PERSISTENCE.md`; HARD never means per-file publication.
 
 ## Concurrency
 

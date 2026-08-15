@@ -1,135 +1,92 @@
 # Durability Boundary Guard
 
-framework_module_version: 0.2.1
+framework_module_version: 0.3.0
 load_policy: ALWAYS_DURING_GAMEPLAY
-precedence: authoritative for deciding WHEN campaign state must become durable; PERSISTENCE.md remains authoritative for HOW publication is performed
+precedence: authoritative for deciding WHEN campaign state must become durable; SAVE_CONTRACT adds explicit save semantics; PERSISTENCE owns HOW publication is transported
 
 ## Purpose
 
-Low latency does not mean keeping the whole campaign only in chat memory, but singleplayer also does not need a Git commit for every meaningful event.
+Singleplayer should spend long stretches with zero GitHub traffic without allowing irreplaceable setup/play state to exist only in chat. This module is a zero-I/O boundary classifier: merely checking for a boundary performs no repository read.
 
-This module is a zero-I/O boundary classifier. Merely deciding whether a save boundary exists MUST NOT cause a GitHub read. Activate `PERSISTENCE.md` only after a real boundary is reached.
+Durable facts become true in the hot working set immediately. Most are SOFT and are flushed later. Only the boundaries below force publication in ordinary singleplayer.
 
-The durability profile is mode-aware. Singleplayer deliberately favors sparse commits and a large hot SOFT working set. Multiplayer/shared-world play may require earlier publication because another player can observe or change shared canon from another chat.
+## Readiness and onboarding
 
-If older setup/runtime/persistence examples imply that every quest, payment, item, companion or relationship change must immediately create a singleplayer commit, this module wins.
+The blank scaffold is not playable state.
 
-## Scaffold is not playable state
+`DIEGETIC_ONBOARDING.md` may create one pre-live `PROVISIONAL_IDENTITY` checkpoint containing a provisional PC and resumable setup fiction while lifecycle remains `initializing`.
 
-The initial generated scaffold commit proves only that an empty campaign container exists.
+Before the first true live scene, publish a coherent PLAY_READY frontier containing at least:
+- stable PLAYER binding/preferences;
+- READY_PC + PC index;
+- protagonist/menu projection as applicable;
+- minimum starting location/current scene routing;
+- only world/index/log records needed for honest resume;
+- MANIFEST/card lifecycle `active`.
 
-A campaign MUST NOT enter true live play while the authoritative branch still contains only the blank scaffold.
+A separate character-stage commit is optional if character + launch state can be published coherently together.
 
-Before the FIRST true live scene is presented, publish at least one post-scaffold coherent **PLAY_READY** campaign transaction containing the minimum durable state required to resume that scene correctly.
+## Semantic acceptance
 
-For singleplayer this normally includes:
-- stable PLAYER binding/preferences needed for play;
-- READY_PC record and PC index entry;
-- `CAMPAIGN_CARD.protagonist` summary;
-- initial focal location and minimal current-state/scene routing;
-- campaign/card lifecycle changed to `active` when normal play is beginning;
-- only the minimum world/index/log records needed to resume accurately.
+No magic `accept/confirm/готово` phrase is required. A mechanically ready character may be treated as accepted when the player explicitly approves it, continues with it without rejecting/correcting material choices, supplies later concrete facts on that basis, or the Master is about to frame true live play using it.
 
-A recurring companion already established before the first scene may be included in PLAY_READY, but do not delay launch to invent broad world content.
+If a materially different unresolved legal capability choice remains, keep the PC provisional and ask only the smallest necessary question.
 
-A separate character commit is OPTIONAL when character + initial focal location + opening situation are resolved without returning control to the player: they may be combined into one PLAY_READY transaction for lower latency.
+## Singleplayer forced boundaries
 
-`DIEGETIC_ONBOARDING.md` defines a deliberate pre-live exception: a resumable fictional onboarding vignette and provisional PC/world records may be durable while lifecycle remains `initializing`. That state is setup, not true live play.
+Normal forced publication boundaries are:
+1. `PROVISIONAL_IDENTITY` — narrowly as defined by `DIEGETIC_ONBOARDING.md`;
+2. character establishment when a READY_PC would otherwise cross another player-turn boundary only in RAM, unless the same response will publish PLAY_READY;
+3. PLAY_READY / first true live scene;
+4. live focal-location establishment/change when the coarse human-facing `CAMPAIGN_CARD.current_location` should change;
+5. campaign lifecycle transition (active/paused/completed/archived/reactivated as valid for the phase);
+6. explicit save/session boundary (`SAVE_CONTRACT.md` / intentional pause/end);
+7. rare catastrophic continuity boundary whose loss would make resume fundamentally wrong, such as permanent PC death/replacement;
+8. concrete safety flush when verified context loss/maintenance suspension would otherwise destroy the hot dirty set.
 
-## Acceptance is semantic, not a magic phrase
+Domain-specific multiplayer/live/access modules may require earlier shared publication. Their explicit boundary overrides the sparse singleplayer cadence only for that scope.
 
-Do not require an exact `accept`, `confirm`, `готово`, or similar command merely to make an already-settled character durable.
+## What stays SOFT in ordinary singleplayer
 
-A character is considered accepted when identity and mechanically necessary choices are sufficiently settled for play AND one of these is true:
-- the player explicitly approves it;
-- after seeing the character summary, the player continues into later setup decisions without rejecting/correcting it;
-- the player supplies later concrete facts for that character/party and the Master proceeds on that basis;
-- the Master is about to frame the first true live scene using that character.
+These changes normally do NOT force a commit by themselves:
+- quest/contract acceptance or progress;
+- payments, currency, ordinary rewards/resources;
+- ordinary item acquisition/use/loss;
+- meeting an NPC, relationship/reputation changes, clues, rumors, promises, debts;
+- recurring companion/follower introduction during live play;
+- routine HP/resource/tactical changes inside an ongoing sequence;
+- ordinary action-sequence/scene/encounter completion when no listed boundary also fires.
 
-If a materially important class/species/ability/resource choice is genuinely unresolved, the character remains provisional. Do not invent acceptance to avoid a needed question.
+They are still canon in the hot working set and MUST join the next applicable transaction.
 
-Beginning true live play itself may not be the first durable acceptance signal after narration; publish durability first.
+Several SOFT domains being dirty at once does not automatically create a boundary. "A lot happened" is not a boundary.
 
-## Singleplayer sparse-save profile
-
-Singleplayer is optimized for long stretches of zero-GitHub play from the hot working set.
-
-The normal key save boundaries are:
-1. **Provisional identity during diegetic onboarding** — only as defined narrowly by `DIEGETIC_ONBOARDING.md`.
-2. **Character establishment** — accepted/stable READY_PC becomes durable, either as a character-stage transaction or inside PLAY_READY.
-3. **PLAY_READY / first true live scene** — the first playable frontier must exist before normal mechanics-dependent narration begins.
-4. **Focal location establishment/change** — when the human-readable `CAMPAIGN_CARD.current_location` should change during live play, publish the authoritative location/current-state change + card update and flush all accumulated SOFT dirty canon in the same transaction.
-5. **Campaign lifecycle boundary** — pause, completion, archive/reactivation or another explicit status transition that must be visible in the campaign menu.
-6. **Explicit save/session boundary** — user asks to save, the session is intentionally paused/ended, or the runtime is entering a known context-loss/maintenance boundary where volatile state would be unsafe.
-7. **Rare catastrophic continuity boundary** — a truly exceptional irreversible transition whose loss would make resumption fundamentally wrong (for example PC death/permanent replacement or equivalent campaign-defining break). Use sparingly.
-
-A focal-location change means the campaign's menu-level location changes, not every movement within a room, combat grid or local conversation. Examples: tavern -> market square -> old quarry. Moving from one table to another in the same tavern does not create a card/save boundary.
-
-When any key boundary fires, include all causally valid accumulated SOFT changes in the same coherent transaction. Do not make a card-only commit and do not split the accumulated delta into multiple commits.
+A focal-location boundary is coarse: tavern -> market square may count; table -> stairs inside the same tavern normally does not. When a forced boundary fires, flush all causally valid accumulated SOFT state in the same coherent transaction.
 
 ## Explicit save is not activation
 
-An explicit save flushes dirty durable state but does not manufacture readiness.
+A save flushes established durable state but never manufactures readiness. If PC is provisional/not READY_PC and the fiction is pre-live onboarding, save the resumable setup truth and keep lifecycle `initializing`.
 
-If PC is still provisional/not READY_PC and the fiction is a pre-live onboarding vignette, save the resumable setup truth and keep lifecycle `initializing`.
+Only READY_PC + PLAY_READY justify `initializing -> active`.
 
-Only READY_PC + PLAY_READY may justify `initializing -> active`.
-
-## What normally remains SOFT in singleplayer
-
-The following are normally durable-but-bufferable SOFT state and do NOT create a commit by themselves after normal live play begins:
-- accepting or progressing a quest/contract/job;
-- receiving/paying ordinary or even meaningful currency/reward/deposit;
-- acquiring/using/losing ordinary items or resources;
-- meeting a new NPC, changing an NPC relationship, learning a clue or opening a thread;
-- gaining a recurring companion/follower during live play;
-- reputation, promises, debts, rumors, discoveries and other narrative commitments that can safely ride in the hot working set until the next key boundary;
-- routine HP/resource/tactical changes inside an ongoing sequence.
-
-These facts become dirty canon immediately in memory and MUST be included in the next applicable batch. `SOFT` means delayed publication, not optional truth.
-
-If one of these changes also causes a key boundary — for example the party accepts a job and then leaves the tavern for the quarry — the location transaction flushes the contract, payment, NPC/thread changes and current state together.
-
-Do not promote SOFT to an immediate singleplayer save merely because several SOFT domains are dirty at once. Accumulation is intentional.
-
-## Singleplayer safety flush
-
-Do not use a fixed timer, message count or arbitrary dirty-record count as an autosave schedule.
-
-A safety flush outside the key boundaries is exceptional. Use it only when there is a concrete recovery risk, such as:
-- verified/strongly indicated context compaction or impending context loss;
-- explicit maintenance/package switch that will invalidate the current hot state;
-- a complex long-running procedure that must be suspended before a normal location/session boundary;
-- another concrete reason the runtime cannot safely carry the dirty working set forward.
-
-"A lot happened" by itself is not enough. Prefer the next normal focal-location/session/lifecycle boundary.
-
-## Multiplayer/shared-world note
-
-Do not apply the sparse singleplayer profile blindly to multiplayer.
-
-Shared facts that another player may observe or act upon can require earlier publication under `MULTIPLAYER.md`, `LIVE_SCENE.md` and normal shared-world synchronization rules.
+An unfinished setup that is intentionally stopped remains `initializing`; `paused` is reserved for a campaign that has already reached PLAY_READY/normal play and is then intentionally paused.
 
 ## Runtime invariants
 
-The following states are bugs and require a coherent save/repair before further ordinary play:
-- a true live first scene exists while the campaign branch is still scaffold-only;
-- a singleplayer PC is already being used for normal mechanics-dependent play while `PC_INDEX`/stable PC record is empty remotely;
-- lifecycle is `active` while the PC is still provisional/not READY_PC or no PLAY_READY frontier exists;
-- campaign/card remain `initializing` after legitimate normal live play has begun with READY_PC/PLAY_READY;
-- the Master has completed a focal-location transition in live fiction but continues ordinary play with the old durable `CAMPAIGN_CARD.current_location` and no corresponding save transaction;
-- an explicit pause/end/save was acknowledged while the promised dirty working set was not durably published.
+Repair before further ordinary play if any is true:
+- true live play exists while only blank scaffold is durable;
+- normal PC mechanics-dependent play occurs while stable PC/index is absent;
+- lifecycle is `active` while PC is provisional/not READY_PC or PLAY_READY is absent;
+- lifecycle remains `initializing` after legitimate READY_PC/PLAY_READY live play began;
+- a live focal-location transition completed but durable card/current routing still describes the old focal location with no corresponding transaction;
+- explicit save/pause/end was acknowledged while promised dirty state was not published.
 
-A durable pre-live onboarding scene with provisional PC and lifecycle `initializing` is NOT an invariant violation.
+A durable pre-live onboarding vignette with provisional PC and `initializing` is valid.
 
-Do not expose repair plumbing unless it fails or requires user action.
-
-## Latency discipline
+## Cadence
 
 Expected singleplayer rhythm:
 
-`scaffold -> optional PROVISIONAL_IDENTITY -> character/PLAY_READY -> many zero-I/O turns -> focal-location/status/session boundary -> one large flush -> many zero-I/O turns`
+`scaffold -> optional PROVISIONAL_IDENTITY -> character/PLAY_READY -> many zero-I/O turns -> focal-location/lifecycle/session/save boundary -> one flush -> many zero-I/O turns`
 
-Most ordinary live turns use zero GitHub calls. Boundary classification itself uses zero GitHub calls. After successful own publication, continue from the known hot state without confirmation rereads.
-
-Do not solve durability by restoring per-turn repository polling or per-event commits.
+After successful own publication continue from known hot state without confirmation rereads.

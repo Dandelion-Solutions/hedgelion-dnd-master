@@ -1,6 +1,6 @@
 # Campaign Setup and Branch Initialization
 
-framework_module_version: 0.5.8
+framework_module_version: 0.6.0
 load_when: create new campaign, bind player, initialize campaign branch
 
 ## Discover before creating
@@ -160,29 +160,29 @@ Resolve PC first. Do not generate unrelated broad world lore while character ide
 
 A bounded official-source research pass is allowed during character setup when needed to establish exact durable mechanics. Batch it and store result; do not create future per-turn research dependency.
 
-When draft is mechanically valid, present compact human-readable character summary and obtain explicit player acceptance.
+Character setup may be presented directly or through the pre-live vignette in `DIEGETIC_ONBOARDING.md`; a name does not need a separate form field. If PROVISIONAL_IDENTITY fires, persist the provisional PLAYER/PC/setup bundle there and continue building the SAME PC ID.
 
-After acceptance create/persist stable PLAYER + PC records and required indexes as one coherent character-stage batch. In singleplayer, update the same batch's `CAMPAIGN_CARD.protagonist.name` and `role_race` from the accepted PC. In multiplayer, update cached active participant logins from PLAYER bindings instead; do not create a protagonist entry.
+When the draft is mechanically valid, present a compact human-readable summary if useful. Acceptance is semantic under `DURABILITY_GUARD.md`; do not require a ceremonial `accept/готово`.
 
-Tell player character stage is complete.
+Persist/promote stable PLAYER + READY_PC + required indexes as one coherent character-stage or combined PLAY_READY batch. In singleplayer update protagonist projection; in multiplayer update active participant-login cache instead. Tell the player the character stage is complete only when READY_PC is actually complete.
 
 ## Stage 2 — Minimal starting world
 
 Activate `WORLDGEN.md`, `PREP.md` as needed, and `SAFETY.md`.
 
-Create only starting horizon required for first meaningful scene: immediate location, relevant actors/pressures/clues, and boundaries/tone actually needed now.
+Create only the starting horizon required for the first true live scene: immediate location, relevant actors/pressures/clues, and boundaries/tone actually needed now. Reuse any location/NPC/premise already canonically established by diegetic onboarding; do not regenerate it as a separate world merely because setup has advanced stages.
 
 If trustworthy external material would materially improve this horizon, one bounded research/enrichment pass is allowed under `PLAY_POLICY.md`. Source use should respect `CONFIG.play_style.dnd_lore_fidelity`.
 
 Do not research merely because sources exist. Do not build continent encyclopedia, full faction network, distant history or unused NPC roster before play. Undefined distant details may remain undefined.
 
-Persist coherent starting-world batch when ready. In the SAME batch refresh `CAMPAIGN_CARD.current_location` to a human-readable focal location label when known. Give player only orientation their PC legitimately knows.
+Keep the starting-world delta in the hot working set until a `DURABILITY_GUARD.md` boundary requires publication. Normally it joins the character/PLAY_READY launch transaction rather than creating its own commit. When published, refresh `CAMPAIGN_CARD.current_location` in the SAME transaction when the coarse focal location is known. Give player only orientation their PC legitimately knows.
 
 ## Stage 3 — First scene
 
-Create starting scene/current-state routing plus initial semantic records and `CP_0000`/latest checkpoint required for reliable resume, then begin play immediately.
+Create/finish the minimum starting scene/current-state routing needed for reliable resume, then begin true live play immediately. A checkpoint is optional unless recovery policy independently requires it; do not manufacture `CP_0000` merely because launch occurs.
 
-When campaign is actually ready for normal play, set authoritative MANIFEST status `active` and card status `active` in the SAME coherent batch. Do not leave a ready campaign indefinitely marked `initializing`.
+Set MANIFEST/card `active` only when READY_PC + PLAY_READY are both true, in the same coherent launch batch. Durable pre-live onboarding remains `initializing`.
 
 Optional deeper worldbuilding/research happens later at normal prep boundaries, not inside routine live turns.
 
@@ -211,28 +211,26 @@ Do not force engine-update preference during campaign creation; default `ask`.
 
 ## Player binding
 
-Create stable `PLAYER_` record and `PC_` record when accepted, updating corresponding indexes in same persistence batch.
+Create stable PLAYER/PC identity records at the first applicable durability boundary: PROVISIONAL_IDENTITY, explicit save, or accepted READY_PC/PLAY_READY. A provisional checkpoint uses `status: provisional`; later promotion reuses the same IDs.
 
 `invite_only`: creator explicitly establishes player's binding.
 
 `open_contributors`: follow `MULTIPLAYER.md`; verified repository collaborator with sufficient access may self-create only their own initial binding.
 
-A provisional PC becomes active only after player acceptance and mechanically required choices are valid.
+A provisional PC becomes active only after semantic acceptance and READY_PC; campaign lifecycle becomes active only at PLAY_READY.
 
 For multiplayer, active PLAYER binding login labels are projected into `CAMPAIGN_CARD.multiplayer.participant_github_logins` in same durable membership transaction. Inactive bindings are omitted from that cached list.
 
 ## First world content
 
-Use `WORLDGEN.md`. Create only starting horizon required for first scene. Do not populate full world during initialization.
+Use `WORLDGEN.md`. Create only the starting horizon required for the first true live scene. Do not populate full world during initialization.
 
 ## Initial durable saves
 
 Scaffold commit establishes campaign identity/creator but not completed session-zero state.
 
-Subsequent setup MAY use separate coherent persistence batches at natural visible phase boundaries: accepted character, starting world, first-scene/checkpoint. This is intentional and protects completed setup while giving player progress.
+Subsequent setup persistence follows `DURABILITY_GUARD.md`: optional PROVISIONAL_IDENTITY, accepted READY_PC/character stage when it would otherwise cross a player-turn boundary, PLAY_READY, explicit save/session/safety boundaries. Starting-world details alone do not require an extra commit when they can join another required batch.
 
-Each phase batch includes any corresponding card projection changes; card is never saved separately.
-
-Do not create commit for every question/subchoice. Persist only coherent accepted phases or other HARD commitments.
+Each batch includes corresponding card projection changes; card is never saved separately. Do not create a commit for every question/subchoice.
 
 Do not import experimental content from older chats unless user explicitly makes it canonical.

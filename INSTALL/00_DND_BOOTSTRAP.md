@@ -205,7 +205,7 @@ This is model context, NOT ChatGPT Memory.
 
 Do not reread individual CORE modules later merely because their domain becomes relevant. `load_when`/routing conditions mean semantic ACTIVATION, not disk retrieval.
 
-Always activate `CORE/RUNTIME.md`, `CORE/AI_REASONING.md`, `CORE/PLAY_POLICY.md`. Other preloaded CORE modules remain dormant until relevant.
+Activation is header-driven by preloaded `CORE/PLAY_POLICY.md`: every module with `load_policy: ALWAYS_DURING_GAMEPLAY` is active; every module with `load_when:` is situational. `CORE_INDEX.md` summarizes routing but does not override headers.
 
 Rebuild full CORE cache only after exact engine-package switch or verified context loss/compaction. Campaign data remains lazy.
 

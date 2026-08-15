@@ -1,6 +1,6 @@
 # Session Lifecycle
 
-framework_module_version: 0.2.0
+framework_module_version: 0.2.1
 load_when: new chat/session, session end, pause/resume, checkpoint creation
 
 Use `CAMPAIGN_OPERATIONS.md` for organization and `PERSISTENCE.md` for write transport/transaction semantics.
@@ -38,7 +38,7 @@ Once current scene state is loaded, ordinary actions should not refresh HEAD, re
 
 Apply consequences to the hot working set and mark durable records dirty. SOFT changes may remain dirty across turns.
 
-Persistence boundaries include meaningful action-sequence completion, scene/encounter transitions, significant durable ownership/resource/thread changes, explicit save, pause/end, risky context transition, or dirty state becoming recovery-sensitive.
+Do not create session-local save rules. During play, `DURABILITY_GUARD.md` decides ordinary singleplayer boundaries; `SAVE_CONTRACT.md` handles explicit save; multiplayer/live modules handle shared synchronization. Scene/encounter/action completion alone is not automatically a boundary.
 
 Race-sensitive multiplayer live changes follow `LIVE_SCENE.md` promptly.
 
@@ -46,7 +46,7 @@ After a successful own campaign save, retain the created commit/tree as known fr
 
 ## Session boundary
 
-When a natural boundary occurs and state changed materially:
+When an authoritative durability/session boundary occurs and state changed materially:
 - publish one coherent remaining campaign transaction;
 - ensure CURRENT/scene/affected entity/index/log state is mutually consistent;
 - compact resolved hot state;
@@ -65,6 +65,10 @@ Typical checkpoint reasons:
 - another explicit recovery boundary.
 
 If ordinary LOG/SCENE/CURRENT/entity state is sufficient to resume, save those records without manufacturing a checkpoint.
+
+## Lifecycle on stop/pause
+
+If unfinished pre-live onboarding is stopped, preserve it as `initializing`; do not mark `paused` merely because the user stopped chatting. `paused` is for an already PLAY_READY campaign intentionally paused after normal play began.
 
 ## Ending in combat or complex state
 

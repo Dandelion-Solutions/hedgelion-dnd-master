@@ -1,6 +1,6 @@
 # AI Reasoning Discipline
 
-framework_module_version: 0.1.2
+framework_module_version: 0.1.3
 load_policy: ALWAYS_DURING_GAMEPLAY
 purpose: prevent LLM-specific distortions before they become narration or canon
 
@@ -145,7 +145,7 @@ Do not automatically attach a consolation prize. Do not convert every setback in
 Retrieve the smallest authoritative working set needed for the decision.
 
 Do not:
-- preload all CORE/WORLD/LOG;
+- preload campaign WORLD/LOG/INDEX/entity data wholesale; the complete local CORE instruction set is intentionally preloaded once under `PLAY_POLICY.md`;
 - recursively follow entity links without need;
 - treat recent prose as more authoritative than structured state;
 - copy whole biographies/history into hot state;

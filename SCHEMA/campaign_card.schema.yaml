@@ -28,7 +28,7 @@ fields:
       participant_github_logins: array[string]
 invariants:
   - CAMPAIGN_CARD is a compact menu/display projection, not an authority source for gameplay writes, access control, exact engine provenance or canon repair
-  - campaign_id/mode/status/campaign_name mirror authoritative campaign records when known
+  - campaign_id/mode/status mirror authoritative campaign records; campaign_name MUST exactly equal MANIFEST.campaign_name, including null
   - engine_version is the human semantic engine version; exact tag/SHA still comes from MANIFEST after selection
   - current_location is a human display label for the current focal location; split multiplayer may use a compact label such as "Несколько сцен"
   - singleplayer MUST use protagonist object and multiplayer null; participant_github_logins MUST NOT be stored for singleplayer
@@ -36,3 +36,6 @@ invariants:
   - creator_github_login and participant_github_logins are display/access-hint caches only; actual authority is revalidated from creator Git provenance and PLAYER bindings after selection
   - status_note is concise human context such as "погиб" or another completion/pause note; it must not become a substitute for event history
   - when authoritative source fields change, the card is updated in the same coherent campaign persistence transaction, never in a separate per-file commit
+  - status active requires READY_PC + durable PLAY_READY; a provisional onboarding scene/location may exist while status remains initializing
+  - paused is reserved for a campaign that already reached PLAY_READY/normal play; unfinished stopped setup remains initializing
+  - protagonist.role_race is display-only and may summarize a durable provisional concept; it is never authority for exact PC mechanics

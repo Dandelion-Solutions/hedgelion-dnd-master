@@ -1,6 +1,6 @@
 # New Campaign Fast Path
 
-framework_module_version: 0.1.1
+framework_module_version: 0.1.2
 load_when: user explicitly selected New Game, before character/world setup
 precedence: authoritative for new-campaign scaffold ordering, publication, and early-start latency
 
@@ -81,20 +81,18 @@ Or simply ask the compact character/style questions from `CAMPAIGN_SETUP.md`.
 
 Do not tell the player about YAML, schemas, branch trees, commits, ref publication, unfinished scaffold persistence, or other successful infrastructure work.
 
-## Character draft is local
+## Character drafting and provisional identity
 
-Before the player accepts a mechanically viable character, character discussion is provisional working state.
+Exploratory character discussion stays local by default. Do not commit every clarification, mechanical option, cosmetic choice or tentative name.
 
-Normally perform ZERO campaign GitHub writes while:
-- clarifying the character concept/name;
-- translating a natural-language concept into class/species/background mechanics;
-- choosing presentation preference;
-- choosing tone/world delegation/lore fidelity;
-- resolving cosmetic/backstory details that are not yet accepted canon.
+There are explicit exceptions:
+- `DIEGETIC_ONBOARDING.md` may create one `PROVISIONAL_IDENTITY` transaction as soon as the Master adopts a stable identity anchor for continued fictional use;
+- an explicit player save/session/maintenance safety boundary may flush honest provisional setup state;
+- another authoritative HARD rule may require publication.
 
-When the player accepts the character, persist the accepted PLAYER + PC + required indexes/card projection as one coherent character-stage transaction.
+A PROVISIONAL_IDENTITY save is not character acceptance or activation. PC remains `provisional`, campaign remains `initializing`, and the same PC ID is later promoted when READY_PC is complete.
 
-Do not commit every clarification or subchoice.
+Outside those exceptions, batch character setup. Once READY_PC is semantically accepted, persist the coherent character/PLAY_READY state according to `DURABILITY_GUARD.md`.
 
 ## Last blocker means launch now
 
@@ -119,7 +117,7 @@ Do not make the player type `и?` to make the Master resume its job.
 
 ## Fast launch after character acceptance
 
-After the accepted character is durable, prepare only the minimum horizon required for the first meaningful scene.
+After the READY_PC is semantically accepted/durable (possibly after an earlier provisional onboarding checkpoint), prepare only the minimum horizon required for the first true live scene.
 
 Do not create broad unused NPC/faction/location catalogs merely because schemas exist.
 

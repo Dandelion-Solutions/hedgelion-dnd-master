@@ -1,8 +1,8 @@
 # Character Mechanical Readiness
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_policy: ALWAYS_DURING_GAMEPLAY
-precedence: authoritative for deciding whether a player character is mechanically ready to become active or enter live play
+precedence: authoritative for deciding whether a player character is mechanically ready to become active or enter true mechanics-capable live play
 
 ## Purpose
 
@@ -16,7 +16,7 @@ If older setup text treats a name + species + class concept as sufficient for an
 
 ## READY_PC gate
 
-A PC may become `status: active`, enter `PLAY_READY`, or appear in the first live scene only after it passes the READY_PC gate.
+A PC may become `status: active`, enter `PLAY_READY`, or participate in the first true mechanics-capable live scene only after it passes READY_PC. `DIEGETIC_ONBOARDING.md` allows a mechanically inert pre-live setup vignette with a provisional PC; that exception does not weaken READY_PC.
 
 READY_PC requires a rules-grounded current-level character record sufficient to resolve ordinary play without inventing character mechanics on demand.
 
@@ -63,7 +63,7 @@ A player is not required to build the sheet manually.
 
 If the player delegates mechanics/bookkeeping, the Master MUST assemble a complete rules-valid build itself.
 
-Ask the player only about choices that materially affect identity, capabilities or desired play style. Do not turn hidden-mechanics play into a long character-builder questionnaire.
+Ask the player only about unresolved choices that materially affect legal capability or a player-owned identity decision that cannot safely be delegated. Harmless surface defaults may be seeded under `CHARACTER.md`. Do not turn hidden-mechanics play into a long character-builder questionnaire.
 
 For harmless bookkeeping choices the player has delegated:
 - use campaign/adopted defaults when defined;
@@ -108,13 +108,13 @@ If the character is accepted before the opening situation is ready, this may be 
 
 If character + starting location + opening situation are completed in one uninterrupted assistant response, they may be combined into one PLAY_READY transaction for lower latency.
 
-Either way, the first live scene may not be narrated before READY_PC is durable.
+Either way, the first true live scene may not be narrated before READY_PC is durable. A pre-live onboarding vignette may be narrated earlier only within `DIEGETIC_ONBOARDING.md` limits.
 
 ## Runtime precondition
 
 Before resolving any player-character action that depends on PC mechanics, assert READY_PC.
 
-If a campaign reaches live play with an incomplete PC sheet:
+If a campaign reaches true mechanics-capable live play with an incomplete PC sheet:
 1. stop using prose guesses for the missing values;
 2. preserve already-established identity/concept and player-owned choices;
 3. reconstruct the missing current-level mechanics from adopted rules and existing choices;
@@ -147,4 +147,4 @@ Do not:
 
 Correct fast path:
 
-`concept -> complete mechanical draft -> semantic acceptance -> one character/PLAY_READY save -> first scene`.
+`concept -> optional pre-live onboarding/PROVISIONAL_IDENTITY -> complete mechanical draft -> semantic acceptance -> character/PLAY_READY save -> first true live scene`.

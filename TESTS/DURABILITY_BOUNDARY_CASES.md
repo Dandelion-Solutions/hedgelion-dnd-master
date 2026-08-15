@@ -1,83 +1,69 @@
 # Durability Boundary Regression Cases
 
-These cases protect sparse low-latency singleplayer saves without allowing the playable campaign frontier to remain an empty scaffold or contradictory active/provisional state.
+These cases protect sparse low-latency singleplayer saves while separating pre-live onboarding from READY_PC/PLAY_READY live play.
 
 ## D01 — Scaffold is not play-ready
-Initial campaign scaffold commit exists, but PC/PLAYER/current scene are still empty.
-Pass: Master may ask setup questions or use a pre-live onboarding vignette, but MUST NOT begin true mechanics-dependent live play while scaffold is the only durable campaign commit.
+Pass: setup may begin, but true live play cannot begin while scaffold is the only durable campaign commit.
 
-## D02 — Combined play-ready launch is allowed
-READY_PC, initial focal location and opening situation all become settled without returning control to the player.
-Pass: one coherent post-scaffold PLAY_READY transaction may contain PC + PLAYER + indexes/card + minimal current scene/state + status active, then true live narration begins. No unnecessary separate commits.
+## D02 — Pre-live onboarding may be durable
+A provisional PC/name/setup scene exists under DIEGETIC_ONBOARDING. Pass: coherent PROVISIONAL_IDENTITY may be saved while lifecycle remains initializing.
 
-## D03 — Stable character cannot cross another user turn only in RAM
-PC identity/mechanics are settled. Master still needs to ask another setup question and return control.
-Pass: persist stable character/PLAYER/index/card before returning control, unless the same response will publish full PLAY_READY state.
+## D03 — Combined PLAY_READY launch is allowed
+READY_PC + starting location/situation resolve without another user turn. Pass: one coherent PLAY_READY transaction may activate the campaign and begin true live narration.
 
-## D04 — Semantic acceptance without magic phrase
-Master presents a viable character. Player answers a later companion/world question without rejecting the character.
-Pass: treat character as accepted for durability purposes; do not require an extra `confirm` round trip solely to save it.
+## D04 — Stable READY_PC cannot cross another user turn only in RAM
+Pass: persist character before returning control unless same response publishes full PLAY_READY.
 
-## D05 — Genuine unresolved mechanic stays provisional
-Character concept exists but a materially different class/ability choice remains unresolved.
-Pass: no forced acceptance/activation; ask the smallest required question or continue safe onboarding before true live play.
+## D05 — Semantic acceptance has no magic phrase
+Pass: continued use of mechanically ready hero may establish acceptance without extra confirm round trip.
 
-## D06 — First true live scene requires durable PC
-Master is about to resolve normal player action using the chosen hero.
-Pass: READY_PC + PLAYER + PC_INDEX + card protagonist and minimum resume state are durable first. `PC_INDEX.entries: []` with true live play is a failure.
+## D06 — Genuine unresolved mechanic stays provisional
+Pass: ask smallest necessary question; no activation.
 
-## D07 — Solo quest contract stays SOFT
-Singleplayer hero accepts a job for 100 gp, receives 50 gp now and will receive 50 gp later. No location/status/session boundary occurs.
-Pass: contract/thread/payment/NPC relationship/log become dirty canon in hot working set, but this event alone creates NO GitHub transaction.
+## D07 — True live scene requires READY_PC + PLAY_READY
+Pass: no mechanically capable live scene with empty/incomplete PC mechanics/index.
 
-## D08 — Solo recurring companion may stay SOFT
-During live singleplayer, a named dog becomes an ongoing companion after PLAY_READY.
-Pass: companion entity/relationship becomes dirty canon but does not require an immediate standalone commit. It is flushed at the next key boundary.
+## D08 — Solo quest contract stays SOFT
+Pass: contract/payment/NPC changes alone create no transaction.
 
-## D09 — No per-turn autosave
-Several meaningful solo actions produce quest, NPC, clue, resource and relationship SOFT changes while focal location remains unchanged.
-Pass: keep accumulating one dirty working set; ordinary turns perform zero GitHub calls.
+## D09 — Solo recurring companion may stay SOFT
+Pass: companion/relationship becomes dirty and waits for next forced boundary.
 
-## D10 — Multiple SOFT domains do not force a save by count
-Singleplayer dirty set contains recurring actor + active objective + currency/item changes + NPC relationship changes, but no concrete recovery risk and no key boundary.
-Pass: continue from hot state without inventing an autosave merely because many domains are dirty.
+## D10 — No per-turn autosave
+Pass: multiple ordinary meaningful turns may accumulate dirty state with zero GitHub traffic.
 
-## D11 — Focal location change flushes accumulated SOFT
-Hero leaves the tavern for the market square; `CAMPAIGN_CARD.current_location` must change. Dirty set also contains a contract, 50 gp payment, companion and NPC relationship changes.
-Pass: one coherent transaction publishes authoritative location/current state + card update + ALL valid accumulated SOFT changes. Exactly one commit.
+## D11 — Dirty-domain count is not a boundary
+Pass: quest + item + NPC + relationship dirty together still do not force save by count.
 
-## D12 — Tactical movement is not a focal-location boundary
-Hero moves from one table to another, upstairs/downstairs within the same tavern, or changes combat position.
-Pass: do not update `CAMPAIGN_CARD.current_location` and do not create a save merely for this movement.
+## D12 — Focal location change flushes accumulated SOFT
+Pass: live coarse location change publishes location/current/card plus all causally valid dirty SOFT state in one transaction.
 
-## D13 — Lifecycle boundary flush
-Singleplayer campaign is explicitly paused/completed or user asks to save/end session.
-Pass: publish intended lifecycle/current state + card status and all accumulated SOFT dirty canon in one coherent transaction. Save by itself preserves existing truthful lifecycle.
+## D13 — Tactical movement is not focal-location boundary
+Pass: movement within same menu-level location causes no card/save boundary.
 
-## D14 — Initializing cannot survive legitimate normal live play
-Campaign/card still say initializing, but READY_PC + PLAY_READY exist and Master has already begun normal adventure play.
-Pass: classify as durability invariant violation; publish/repair active state before further ordinary play.
+## D14 — Generic scene/encounter completion is not a solo boundary
+Pass: no commit unless another listed guard (location/lifecycle/save/safety/etc.) also fires.
 
-## D15 — Active cannot precede READY_PC
-Campaign/card say active while protagonist is `status: provisional` and required character mechanics are missing.
-Pass: classify as durability invariant violation. Repair back to initializing setup or complete READY_PC/PLAY_READY before further normal play.
+## D15 — Lifecycle boundary flush
+Pass: valid pause/completion/archive/reactivation publishes lifecycle + dirty state coherently.
 
-## D16 — Durable onboarding scene may remain initializing
-A pre-live story-first road/pony vignette has been saved with provisional PC and current scene routing so setup can resume.
-Pass: lifecycle remains initializing; the mere existence of current scene/location does not force active.
+## D16 — Explicit save is not activation
+Provisional onboarding PC is saved. Pass: flush structured truth and remain initializing.
 
-## D17 — Boundary check is zero-I/O
-Before an ordinary response runtime checks whether dirty state crossed a durability boundary.
-Pass: classification uses only hot working-set facts and performs no HEAD/fetch call. GitHub transport starts only if answer is yes.
+## D17 — Stop unfinished setup is not paused
+Pass: remain initializing; paused requires prior PLAY_READY/normal play.
 
-## D18 — Concrete context-loss risk may force exceptional flush
-A long solo scene has dirty SOFT state and runtime positively detects impending context compaction/maintenance that will invalidate hot state before a normal location/session boundary.
-Pass: one exceptional safety flush is allowed; do not use fixed timers or message counts.
+## D18 — Active requires READY_PC + PLAY_READY
+Pass: active + provisional/incomplete PC is invariant violation and must be repaired.
 
-## D19 — Multiplayer is not forced into sparse solo cadence
-A shared-world fact becomes material to another active player before a solo-style location boundary.
-Pass: follow MULTIPLAYER/LIVE_SCENE/shared durability rules and publish when required for shared canon; do not defer solely because singleplayer profile would.
+## D19 — Boundary check is zero-I/O
+Pass: classification uses hot state only; transport starts only after yes.
 
-## D20 — Successful save stays invisible
-Any PROVISIONAL_IDENTITY/PLAY_READY/location/lifecycle/safety transaction succeeds.
-Pass: continue fiction without commit/HEAD/YAML commentary. Surface persistence only if failure materially blocks or changes play.
+## D20 — Concrete context-loss risk may force safety flush
+Pass: verified compaction/maintenance suspension may flush dirty state; fixed message/timer/count autosave is forbidden.
+
+## D21 — Multiplayer may publish earlier
+Pass: shared visibility/access/live synchronization may override sparse solo cadence for that scope.
+
+## D22 — Successful persistence stays invisible
+Pass: no commit/HEAD/YAML narration unless user asks or failure/conflict needs action.

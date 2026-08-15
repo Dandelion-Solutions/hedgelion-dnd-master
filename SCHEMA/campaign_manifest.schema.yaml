@@ -57,7 +57,9 @@ invariants:
   - explicit engine-owner development testing MAY use dev-v<version> with nullable SHA fields; current public main MUST NOT be queried merely to manufacture those SHA values
   - engine files MUST NOT be copied into campaign repository
   - update_policy defaults to ask when absent in an older manifest
-  - campaign_name may remain null until a useful broad campaign identity emerges
-  - campaign_name_origin is optional; absent/non-null legacy names are conservatively treated as sticky by CAMPAIGN_IDENTITY.md
-  - CAMPAIGN_CARD.campaign_name is a projection of this field and MUST NOT diverge from it
+  - campaign_name_origin is optional; absent/non-null legacy names are conservatively treated as sticky by CORE/CAMPAIGN_IDENTITY.md
   - completed means the campaign has explicitly ended; a PC death alone MUST NOT automatically imply campaign completion
+  - status active requires READY_PC + a durable PLAY_READY frontier
+  - unfinished pre-live onboarding remains initializing even when provisional PC/scene/location are durable or explicitly saved
+  - paused is reserved for a campaign that previously reached PLAY_READY/normal play; stopping unfinished setup does not convert initializing to paused
+  - CAMPAIGN_CARD.campaign_name is an exact projection of campaign_name, including null

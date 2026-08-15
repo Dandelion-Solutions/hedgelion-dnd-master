@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.2.9
+framework_module_version: 0.3.0
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 ## Context model
@@ -9,16 +9,15 @@ After the exact engine package is resolved, the COMPLETE local `CORE/*.md` set i
 
 Preloaded != active.
 
-Always active during gameplay:
-- `RUNTIME.md` — turn pipeline, agency, causality and canon boundaries.
+Always active is determined by each module header (`load_policy: ALWAYS_DURING_GAMEPLAY`). Current guard set:
+- `RUNTIME.md` — turn pipeline, agency, causality and lifecycle gate.
 - `AI_REASONING.md` — LLM-specific correctness discipline.
-- `PLAY_POLICY.md` — CORE cache, activation semantics, natural-language intent and research policy.
-- `DURABILITY_GUARD.md` — zero-I/O durability-boundary classification; prevents accepted gameplay canon from remaining only in volatile chat state.
-- `SAVE_CONTRACT.md` — explicit-save completeness semantics; `save game` means materialize all dirty cross-session state, never summary-note persistence.
-- `MECHANICS_INTEGRITY.md` — pre-narration mechanical proof gate; hidden mechanics still require real rules resolution, RNG and a compact audit trace.
-- `CHARACTER_READINESS.md` — active-PC readiness gate; a concept cannot enter live play until its complete current-level D&D mechanics exist and are durable.
-- `DIEGETIC_ONBOARDING.md` — story-first pre-live onboarding and provisional identity durability.
-- `CAMPAIGN_IDENTITY.md` — evolving book-like campaign title and protected README overview projection without extra save traffic.
+- `PLAY_POLICY.md` — CORE cache/activation and research policy.
+- `DURABILITY_GUARD.md` — authoritative ordinary gameplay save-boundary classifier.
+- `MECHANICS_INTEGRITY.md` — pre-narration mechanical proof gate.
+- `CHARACTER_READINESS.md` — READY_PC gate.
+
+`CORE_INDEX.md` is a routing summary; it does not override module headers.
 
 All other modules remain present but dormant until their domain is relevant. In older module headers, `load_when` means activate-when after the CORE cache has been built; it is not an instruction to reread the file from disk.
 
@@ -26,6 +25,8 @@ All other modules remain present but dormant until their domain is relevant. In 
 - `ENGINE_UPDATES.md` — release discovery and safe campaign integration; activate only at update opportunities.
 - `NEW_CAMPAIGN_FAST_PATH.md` — authoritative ordering/transport/latency contract for creating a new campaign scaffold and reaching the first scene quickly.
 - `CAMPAIGN_SETUP.md` — substantive character/world setup after the fast-path scaffold exists.
+- `DIEGETIC_ONBOARDING.md` — pre-live story-first onboarding and PROVISIONAL_IDENTITY.
+- `CAMPAIGN_IDENTITY.md` — evolving campaign title and protected README overview.
 - `CAMPAIGN_CARD.md` — fast campaign menu projection, emoji/access hints and card-refresh discipline.
 - `GM_CRAFT.md` — setup/prep/design/audit craft.
 - `CAMPAIGN_OPERATIONS.md` — campaign/session organization and maintenance.
@@ -51,6 +52,7 @@ All other modules remain present but dormant until their domain is relevant. In 
 - `PREP.md` — situation-based preparation, strong starts and bounded enrichment research.
 - `STORAGE.md` — canonical storage model, targeted reads and durable data organization.
 - `PERSISTENCE.md` — authoritative GitHub write transaction/transport protocol; activate for any save/publication.
+- `SAVE_CONTRACT.md` — explicit-save completeness/lifecycle semantics; activate only for explicit save/save-and-stop.
 - `INTEGRITY.md` — bounded repair when canon is suspect/corrupt.
 - `MULTIPLAYER.md` — shared-world concurrency and access behavior.
 - `LIVE_SCENE.md` — temporary one-file CAS synchronization for shared actionable scenes.
@@ -59,21 +61,21 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 ## Activation examples
 
-`new campaign` -> DURABILITY_GUARD, SAVE_CONTRACT, MECHANICS_INTEGRITY, CHARACTER_READINESS, DIEGETIC_ONBOARDING and CAMPAIGN_IDENTITY are already active; activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; before the first true live scene CHARACTER_READINESS requires READY_PC and DURABILITY_GUARD requires a post-scaffold PLAY_READY durable frontier. Campaign name may remain null until hero + broad world identity justify one.
+`new campaign` -> always-active guards already apply; activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD, and activate DIEGETIC_ONBOARDING/CAMPAIGN_IDENTITY only if their conditions arise. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; before the first true live scene CHARACTER_READINESS requires READY_PC and DURABILITY_GUARD requires a post-scaffold PLAY_READY durable frontier.
 
 `campaign menu/discovery` -> activate BOOTSTRAP_RUNTIME + CAMPAIGN_CARD; prefer card-only presentation reads and defer authoritative/deep campaign loading until selection.
 
-`ordinary in-scene action` -> normally only always-active modules plus the smallest domain modules actually implicated by the action. DURABILITY_GUARD performs only an in-memory boundary check; CHARACTER_READINESS guarantees the active PC has usable mechanics; MECHANICS_INTEGRITY requires a real resolution class before any material outcome is narrated. CAMPAIGN_IDENTITY never creates standalone title/README traffic.
+`ordinary in-scene action` -> normally only always-active modules plus the smallest domain modules actually implicated by the action. DURABILITY_GUARD performs only an in-memory boundary check; CHARACTER_READINESS guarantees the active PC has usable mechanics; MECHANICS_INTEGRITY requires a real resolution class before any material outcome is narrated.
 
-`spell/magic` -> activate MAGIC and ADJUDICATION/RANDOMNESS as needed. MECHANICS_INTEGRITY remains the final mechanical proof gate.
+`spell/magic` -> activate MAGIC and ADJUDICATION/RANDOMNESS as needed; MECHANICS_INTEGRITY remains the final mechanical proof gate.
 
 `combat` -> activate COMBAT + RANDOMNESS/ADJUDICATION as needed. Assert READY_PC, establish/maintain combat mechanical state and current resolution trace before narrating uncertain combat outcomes.
 
 `session/world prep` -> activate PREP + WORLDGEN/LORE as needed; SOURCES may activate for one bounded enrichment pass.
 
-`campaign persistence boundary` -> DURABILITY_GUARD decides that a boundary exists; activate PERSISTENCE + STORAGE; also activate CAMPAIGN_CARD when the durable delta changes any projected card field. CAMPAIGN_IDENTITY may opportunistically establish/refresh an auto title or README overview only inside that already-required transaction.
+`campaign persistence boundary` -> DURABILITY_GUARD decides that a boundary exists; activate PERSISTENCE + STORAGE; also activate CAMPAIGN_CARD when the durable delta changes any projected card field.
 
-`explicit save / save game` -> SAVE_CONTRACT creates SAVE_ALL_DIRTY; activate PERSISTENCE + STORAGE and every domain needed to materialize missing dirty records. A summary-only save is invalid. Save alone never promotes unfinished onboarding to active.
+`explicit save / save game` -> activate SAVE_CONTRACT; it creates SAVE_ALL_DIRTY; activate PERSISTENCE + STORAGE and every domain needed to materialize missing dirty records. A summary-only save is invalid.
 
 `engine update opportunity` -> activate ENGINE_UPDATES + BOOTSTRAP_RUNTIME + STORAGE + PERSISTENCE + CAMPAIGN_CARD when publication changes campaign engine metadata.
 

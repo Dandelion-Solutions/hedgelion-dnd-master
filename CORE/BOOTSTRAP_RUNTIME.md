@@ -1,10 +1,11 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.6.3
+runtime_bootstrap_version: 0.6.4
 engine_repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_development_branch: main
 engine_owner_login: dkolyada
 storage_marker: DND_STORAGE.yaml
+load_when: project/campaign bootstrap, storage discovery, campaign selection, exact engine routing
 
 ## Repository and package model
 
@@ -28,10 +29,7 @@ After exact package resolution, complete local `CORE/*.md` instruction set MUST 
 
 This is immutable current-chat engine instruction cache, not ChatGPT Memory and not campaign canon.
 
-Preloaded != active:
-- `RUNTIME.md`, `AI_REASONING.md`, `PLAY_POLICY.md` always active during gameplay;
-- other CORE modules already present but activate only when domain relevant;
-- older `load_when` wording means activation semantics, not permission to reread file.
+Preloaded != active. Activation is header-driven under `PLAY_POLICY.md`: modules marked `load_policy: ALWAYS_DURING_GAMEPLAY` stay active; modules marked `load_when:` activate only when their domain is relevant. `CORE_INDEX.md` is a summary, not a competing policy. Older `load_when` wording never means permission to reread the file.
 
 During normal play do not reread/drop/reload situational CORE modules from disk or GitHub. Scene transitions only change activation set.
 
@@ -211,7 +209,7 @@ Treat GitHub as versioned current-state storage, not something to clone/pull.
 Keep active campaign branch + working-set `base_head_sha`.
 
 When campaign synchronization is actually required:
-1. fetch active branch HEAD only;
+1. fetch active campaign HEAD only;
 2. unchanged -> stop;
 3. changed -> compare base..HEAD server-side;
 4. intersect changed paths with loaded/dirty/current-decision dependencies;
@@ -243,7 +241,7 @@ If required campaign canon absent/inconsistent, do not invent it.
 
 Singleplayer gameplay writes are creator-only. Multiplayer writes require applicable PLAYER binding/protocol.
 
-Batch normal durable changes at natural boundaries. HARD commitments publish immediately to applicable canonical frontier. Never force-update live campaign/storage refs.
+Classify publication timing through `DURABILITY_GUARD.md` / explicit domain authorities. Do not invent additional "natural" boundaries in bootstrap. When a forced boundary exists, publish its coherent dirty batch. Never force-update live campaign/storage refs.
 
 Card projection changes join same campaign transaction as their authoritative source changes and never create a separate save boundary.
 

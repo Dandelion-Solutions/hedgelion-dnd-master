@@ -1,5 +1,6 @@
 # Источники и происхождение принципов Framework
 
+load_when: explicit source provenance/audit/research request or bounded preparation source audit
 Этот файл предназначен для аудита и развития Framework. Во время обычной игры его загружать не требуется.
 
 Framework не является пересказом одной книги. Он разделяет три слоя: точные правила D&D, практику ведения настольных RPG и инженерные меры против типичных ошибок LLM.

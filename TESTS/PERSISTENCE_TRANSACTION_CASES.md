@@ -1,35 +1,93 @@
 # Persistence Transaction Regression Cases
 
-These cases protect campaign branch transactions from self-races, whole-tree reconstruction, unrelated file rewriting and formatting drift.
+These cases protect zero-I/O live play, coherent campaign transactions, optimistic concurrency, ref-role separation, base-tree preservation and formatting stability.
 
-## PT01 — Existing campaign uses base tree
-Campaign branch already has scaffold or later history and PC/NPC/scene state becomes dirty.
-Pass: create_tree uses the pinned HEAD tree as `base_tree_sha`; routine save MUST NOT create a from-scratch tree.
+## PT01 — Ordinary live turn is offline from GitHub
+Singleplayer working set is sufficient and no DURABILITY boundary fires. Pass: resolve/narrate with zero GitHub calls; SOFT state remains dirty.
 
-## PT02 — Only semantically dirty paths enter delta
-Save changes PC, PC_INDEX, scene, CURRENT and card.
-Pass: tree delta contains those paths (and any directly required related records) only. Unrelated files inherit their exact blobs from base tree.
+## PT02 — Multi-record batch is one commit
+Dirty logical transition touches LOG/SCENE/CURRENT/entity/index. Pass: one tree, one ref probe, one commit, one non-force ref update.
 
-## PT03 — README guide survives ordinary save byte-for-byte
-README contains current overview/player-guide markers. Save does not need campaign identity overview change.
-Pass: README is absent from tree delta and remains byte-identical.
+## PT03 — One dirty campaign file still uses CAMPAIGN_TREE_TXN
+Pass: do not opportunistically switch to Contents API.
 
-## PT04 — Narrow README overview update preserves guide
-Campaign identity materially changes during an already-required save and README overview is stale.
-Pass: only content between `CAMPAIGN_OVERVIEW_BEGIN/END` changes; player-guide block, markers and outside bytes are preserved exactly from base content.
+## PT04 — No Contents API inside campaign transaction
+Pass: create/update/delete-file calls do not mutate the campaign ref.
 
-## PT05 — HOUSE_RULES survives unrelated save
-No house rule changed, but runtime locally parsed campaign files.
-Pass: `RULES/HOUSE_RULES.md` is absent from dirty delta and inherits exact base blob. Do not shorten/rewrite explanatory template prose.
+## PT05 — No remote staging
+Pass: no tmp/staging/create-then-delete artifacts or staging commits.
 
-## PT06 — YAML formatting is not dirtiness
-Runtime parsed YAML and serializer would change quotes, inline arrays or key formatting without semantic change.
-Pass: unchanged semantic paths are inherited from base tree; no formatting-only diff is published.
+## PT06 — Verify after tree, before commit
+Pass: prepare tree, probe ref, and create commit only if HEAD still equals pinned H.
 
-## PT07 — Unexpected unrelated changed path aborts plan
-Local planned tree would modify a path with no semantic dirty reason.
-Pass: fail local planned-tree assertion and rebuild before commit creation.
+## PT07 — External race before commit creates no stale commit
+Pass: if HEAD moved, discard unpublished tree and rebuild from new frontier.
 
-## PT08 — Blank scaffold remains the from-scratch exception
-New campaign initialization runs exact `TOOLS/init_campaign.py` and publishes its generated empty scaffold.
-Pass: this initialization MAY create tree from scratch as required by NEW_CAMPAIGN_FAST_PATH. Subsequent campaign writes use base-tree deltas.
+## PT08 — Narrow race after commit
+Pass: update_ref(force=false) rejects stale parent; never force; repin/rebuild. Unreachable commit is acceptable exceptional artifact.
+
+## PT09 — Conflict invalidates whole snapshot
+Pass: do not continue publishing pieces from mixed frontiers.
+
+## PT10 — Successful own publish updates known frontier
+Pass: adopt created commit/tree and clear published dirty state; no confirmation reread.
+
+## PT11 — Next live turn reuses known state
+Pass: no read/write just to reconfirm successful own publication.
+
+## PT12 — First save may lazily obtain tree
+Pass: fetch pinned commit tree once when first transaction needs it, not every startup/turn.
+
+## PT13 — Later save round-trip target
+Pass target with cached tree: create_tree + ref probe + create_commit + update_ref; no post-write reads.
+
+## PT14 — HARD is coherent, not per-file
+An explicit authoritative HARD boundary changes several records. Pass: one coherent batch.
+
+## PT15 — Many SOFT changes do not force save
+Quest/NPC/item/resource/relationship state changes but no DURABILITY boundary. Pass: no commit solely by count or "importance".
+
+## PT16 — Scene/encounter completion alone is not a singleplayer boundary
+Pass: remain dirty unless focal-location/lifecycle/save/safety/other explicit guard also fires.
+
+## PT17 — Sparse checkpoint
+Ordinary save is resumable from CURRENT/SCENE/entities. Pass: no checkpoint solely because publication happened.
+
+## PT18 — Mid-procedure stop may checkpoint
+Session ends mid-combat/complex procedure. Pass: exact transient state + checkpoint allowed when recovery benefits.
+
+## PT19 — Live epoch keeps one-file CAS
+Multiplayer active live epoch. Pass: use LIVE_SCENE CAS, not campaign tree for the live-owned file.
+
+## PT20 — No mixed live transaction
+Pass: do not combine LIVE_STATE CAS and campaign-tree mutation on the same live ref in one logical transaction.
+
+## PT21 — Storage metadata is separate
+Pass: default-branch storage metadata and campaign migration are independent transactions.
+
+## PT22 — No force push
+Any mismatch. Pass: force=false; repair by repin/rebuild.
+
+## PT23 — Existing campaign uses base tree
+Pass: routine create_tree uses pinned HEAD tree as base; never from scratch.
+
+## PT24 — Only semantic dirty paths enter delta
+Pass: unrelated paths inherit exact base blobs.
+
+## PT25 — README guide survives ordinary save byte-for-byte
+Pass: README absent from delta unless overview itself is legitimately dirty.
+
+## PT26 — Narrow README overview update preserves guide
+Pass: only bytes between overview begin/end change; protected guide/outside bytes remain exact.
+
+## PT27 — HOUSE_RULES survives unrelated save
+Pass: unchanged HOUSE_RULES absent from delta.
+
+## PT28 — YAML formatting is not dirtiness
+Pass: serializer quote/array/key-order/whitespace differences alone never publish.
+
+## PT29 — Unexpected unrelated path aborts plan
+Pass: local changed-path assertion fails and tree is rebuilt before commit.
+
+## PT30 — Blank scaffold is the from-scratch exception
+Pass: exact init_campaign generator output may create first campaign tree from scratch; all later campaign writes use base-tree deltas.

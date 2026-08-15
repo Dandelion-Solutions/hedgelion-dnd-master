@@ -117,7 +117,7 @@ Then:
 - switch runtime to exact local target package;
 - invalidate entire old engine instruction cache;
 - rebuild COMPLETE target CORE context once: all `CORE/*.md` + `RULES/INDEX.md` + `RULES/README.md`;
-- keep `RUNTIME.md`, `AI_REASONING.md`, `PLAY_POLICY.md` always-active and other modules activation-gated;
+- reapply target package's header-driven activation policy from `PLAY_POLICY.md` (`load_policy: ALWAYS_DURING_GAMEPLAY` vs `load_when:`);
 - reread only campaign records genuinely changed/required by migration if they are not already represented by the prepared final working set.
 
 Do not adjudicate with mixed old/new engine context.

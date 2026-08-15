@@ -1,9 +1,9 @@
 # DM Runtime Invariants
 
-framework_module_version: 0.2.6
+framework_module_version: 0.2.7
 load_policy: ALWAYS_DURING_GAMEPLAY
 
-`AI_REASONING.md` is also mandatory during gameplay. RUNTIME defines the DM loop; AI_REASONING protects that loop from model-specific distortions.
+`AI_REASONING.md`, `PLAY_POLICY.md`, `DURABILITY_GUARD.md`, `MECHANICS_INTEGRITY.md` and `CHARACTER_READINESS.md` are also always active during gameplay. RUNTIME defines the turn loop; those guard modules own their narrow correctness domains.
 
 ## GitHub write-routing guard
 
@@ -26,19 +26,34 @@ STATE -> INTENT -> RULES -> RANDOMNESS -> CONSEQUENCES -> PERSISTENCE -> NARRATI
 3. RULES: determine whether the action is automatic, impossible, uncertain, or governed by an exact mechanic.
 4. RANDOMNESS: when needed, fix stakes/mechanics before using actual RNG.
 5. CONSEQUENCES: derive changes from state + action + rules + random result.
-6. PERSISTENCE: classify resulting information as `HARD`, `SOFT`, or `EPHEMERAL`; decide what must be published now and what may remain in the working set.
+6. PERSISTENCE: update the hot dirty working set, then let `DURABILITY_GUARD.md` decide whether a publication boundary exists now; if publication is required, `PERSISTENCE.md` owns transport.
 7. NARRATION: present the resulting situation through the PC's legitimate information channel.
 
 Narration is last. It may not rewrite earlier layers for dramatic convenience.
 
-## Persistence durability
+## Persistence durability and boundary ownership
 
-Use three durability levels during play:
-- `HARD`: a durable canonical commitment whose loss would make a resumed game materially wrong or incomplete. The completion of that logical action is itself a persistence boundary; publish the relevant batch before continuing ordinary play.
-- `SOFT`: durable state that may remain in the dirty working set and be batched until the next natural boundary or safety limit.
-- `EPHEMERAL`: current-chat context only; do not persist unless later play promotes it to durable state.
+`DURABILITY_GUARD.md` is authoritative for **WHEN** campaign state becomes durable. `PERSISTENCE.md` is authoritative for **HOW** a decided publication is transported. `SAVE_CONTRACT.md` adds the explicit-save boundary when the player asks to save.
 
-Do not wait for a user-visible pause or session-ending signal before publishing `HARD` changes; the user may leave without warning.
+During the turn pipeline classify state as:
+- `HARD`: only a commitment that an active authoritative module explicitly defines as requiring publication before ordinary play continues (for example PROVISIONAL_IDENTITY, PLAY_READY, an explicit save/session/lifecycle boundary, multiplayer synchronization/access boundary, or rare catastrophic continuity boundary);
+- `SOFT`: durable canon that is true immediately in the hot working set but may be batched until the next boundary defined by `DURABILITY_GUARD.md` or another explicit domain authority;
+- `EPHEMERAL`: current-chat material that is not intended to survive unless later promoted.
+
+In singleplayer, durable does **not** imply HARD. A quest, reward, new NPC, relationship change, ordinary item/resource change, ordinary scene/encounter completion, or generic "meaningful action" does not create a save merely because it matters. Those changes are normally SOFT unless a specific guard rule says otherwise.
+
+Do not invent extra persistence boundaries from prose in transport/storage/session modules. If no authoritative boundary fires, continue from hot state without GitHub traffic.
+
+## Campaign lifecycle gate
+
+Use lifecycle states consistently:
+- `initializing`: setup is unfinished. It may already contain durable pre-live onboarding fiction, a provisional PC, current setup scene and location;
+- `active`: normal mechanics-capable play, only after a valid READY_PC and durable PLAY_READY frontier exist;
+- `paused`: an intentionally stopped campaign that has already reached PLAY_READY/normal play;
+- `completed`: the campaign/story has actually concluded;
+- `archived`: retained but hidden from the normal menu.
+
+An unfinished setup that is saved or stopped remains `initializing`; do not use `paused` to imply that it once reached playable readiness. A pre-live onboarding vignette is not a true live scene. In CORE text, unqualified `live play` / `live scene` should mean mechanics-capable post-PLAY_READY play unless the text explicitly says pre-live/onboarding.
 
 ## Mechanical model and presentation
 
@@ -76,9 +91,9 @@ When synchronization is required, use the minimum read sequence: branch-ref HEAD
 
 If HEAD changed but no changed path can affect the loaded working set, local dirty set, access/mode metadata, or current decision, accept the newer HEAD as the working-set base without rereading unchanged files.
 
-Keep a situational CORE module or entity record cached while it remains relevant to the current scene. Drop it when the scene moves on; do not repeatedly fetch the same material.
+The complete CORE instruction cache remains available for the chat; scene changes only alter semantic activation. Campaign/entity records may be dropped from the hot working set when irrelevant and retrieved later when a concrete decision requires them.
 
-Do not load `SOURCES.md`, perform framework research, run audits, compact history, or do maintenance during an ordinary unresolved turn. Defer nonessential storage/maintenance work to natural boundaries.
+Do not load `SOURCES.md`, perform framework research, run audits, compact history, or do maintenance during an ordinary unresolved turn. Defer nonessential storage/maintenance work to an allowed maintenance/session boundary; do not invent a gameplay save boundary merely to perform housekeeping.
 
 If several independent records are genuinely required for one decision, retrieve them together when the connector permits it rather than serially expanding context one file at a time.
 

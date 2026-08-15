@@ -2,8 +2,8 @@
 
 ## Runtime
 - [ ] New Project chat can materialize/extract the release Source code ZIP.
-- [ ] Extracted files are used lazily; full engine is not preloaded into model context.
-- [ ] `RUNTIME.md` + `AI_REASONING.md` are mandatory during gameplay.
+- [ ] After exact package resolution, complete local `CORE/*.md` + `RULES/INDEX.md` + `RULES/README.md` are preloaded once into current-chat context; campaign/world data stays lazy.
+- [ ] Activation is header-driven: every `load_policy: ALWAYS_DURING_GAMEPLAY` module is active; `load_when:` modules are situational.
 - [ ] Existing campaign refuses silent engine-version substitution.
 
 ## Installation package
@@ -42,6 +42,7 @@
 - [ ] Post-update runtime reloads exact local target package.
 
 ## Regression
+- [ ] `python TOOLS/audit_engine.py` passes on the exact release tree.
 - [ ] `TESTS/BOOTSTRAP_STORAGE_REGRESSION_CASES.md` reviewed.
 - [ ] `TESTS/ENGINE_UPDATE_CASES.md` reviewed.
 - [ ] Fresh-Project end-to-end test completed from GitHub-generated Source code ZIP.

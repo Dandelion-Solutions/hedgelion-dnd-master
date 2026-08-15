@@ -1,5 +1,8 @@
 # Pre-release audit engine 0.1.0
 
+> Historical snapshot: this file records the 0.1.0 audit and is not current normative runtime policy. Later releases preload the complete local CORE instruction set once and use semantic activation; old lazy-CORE observations below are retained only as history.
+
+
 Дата: 2026-08-13
 Цель: проверить `main` как чистую базу до первой campaign-ветки.
 
