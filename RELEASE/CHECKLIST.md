@@ -18,7 +18,11 @@
 - [ ] Storage discovery uses exact root `DND_STORAGE.yaml`.
 - [ ] <=5 accessible repositories may be exact-probed; >5 asks for repository name.
 - [ ] Own-storage and friend-storage onboarding both work.
-- [ ] Fresh own storage creates only v2 marker metadata on storage default branch.
+- [ ] Fresh own storage starts from a completely empty GitHub repository; user enables no README/.gitignore/license/template initializer.
+- [ ] Bootstrap creates the standard human-facing storage README first and publishes `DND_STORAGE.yaml` last; marker means initialization completed.
+- [ ] Fresh storage default branch contains no engine tree, campaign skeleton, hidden scaffold or placeholder files.
+- [ ] Interrupted README-only initialization is recoverable without duplicating/replacing the standard README.
+- [ ] A non-empty unrelated repository is not silently repurposed as storage.
 - [ ] Friend repository without marker is not modified by guest.
 - [ ] Legacy v1 storage is discoverable but copied engine files are never runtime source.
 
@@ -41,7 +45,7 @@
 - [ ] `TESTS/BOOTSTRAP_STORAGE_REGRESSION_CASES.md` reviewed.
 - [ ] `TESTS/ENGINE_UPDATE_CASES.md` reviewed.
 - [ ] Fresh-Project end-to-end test completed from GitHub-generated Source code ZIP.
-- [ ] New own storage tested.
+- [ ] New own storage tested from a completely empty repository.
 - [ ] Friend/collaborator flow tested.
 - [ ] Existing campaign resume tested in a second new Project chat.
 

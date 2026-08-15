@@ -1,6 +1,6 @@
 # D&D Master Bootstrap
 
-launcher_version: 13
+launcher_version: 14
 engine_repository: Dandelion-Solutions/hedgelion-dnd-master
 storage_marker: DND_STORAGE.yaml
 
@@ -54,11 +54,27 @@ Cache selected storage for current chat. Storage auto-selection does NOT imply c
 ## 3A. Own storage
 
 If user chooses own storage:
-1. ask them to create a normal repository in personal GitHub account; recommend Private + Add a README;
-2. ask repository name;
-3. verify repository owner login == authenticated login;
-4. if Connector cannot see it, instruct owner to grant ChatGPT/Codex GitHub App access;
-5. if root marker absent, initialize only marker.
+1. ask them to create a NEW EMPTY repository in their personal GitHub account;
+2. ask them to choose only repository name + desired visibility (`Private` or `Public`); explicitly tell them NOT to add README, `.gitignore`, license, template files or other initialization content;
+3. ask repository name;
+4. verify repository owner login == authenticated login;
+5. if Connector cannot see it, instruct owner to grant ChatGPT/Codex GitHub App access.
+
+### Fresh storage initialization
+
+The intended new-storage input is an empty repository.
+
+Before mutation:
+- verify root `DND_STORAGE.yaml` is absent;
+- verify the repository is empty, OR contains only the exact standard storage README from `TEMPLATE/STORAGE_README.md` as a recognizable partial initialization from an earlier interrupted attempt;
+- if marker is absent but unrelated/user content already exists, do NOT silently repurpose the repository as D&D storage; ask the user to provide a new empty repository or explicitly handle it as maintenance.
+
+For a completely empty repository, current Connector Git-data commit creation cannot make a parentless multi-file root commit. Therefore initialize safely in this order:
+1. create root `README.md` from exact local `TEMPLATE/STORAGE_README.md` as the repository's first commit;
+2. create root `DND_STORAGE.yaml` as the second commit;
+3. marker publication is LAST and defines successful storage initialization.
+
+If step 1 succeeded but step 2 failed/interrupted, a retry may recognize the exact standard README and create only the missing marker. Do not create a second README.
 
 Marker v2:
 
@@ -69,7 +85,9 @@ engine:
   baseline_version: "<local ENGINE_VERSION.engine_version>"
 ```
 
-Publish one normal UTF-8 metadata commit. Do not create campaign folders on storage default branch. Do not copy engine files.
+Do not create campaign folders on storage default branch. Do not copy engine files. Do not add `.gitignore`, license, hidden scaffolding or other placeholder files.
+
+After marker publication succeeds, storage initialization is complete. The storage README is human-facing guidance; `DND_STORAGE.yaml` remains the discovery marker.
 
 If supplied repository owner != authenticated user, route to friend flow instead of initializing as own storage.
 

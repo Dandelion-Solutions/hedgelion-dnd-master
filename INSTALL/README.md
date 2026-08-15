@@ -55,10 +55,10 @@ After bootstrap starts, the exact extracted engine's bootstrap and CORE define a
 
 Если подходящего campaign storage ещё нет, Master предложит:
 
-- **создать своё** — создайте обычный GitHub repository; рекомендуется `Private` + `Add a README`, затем сообщите Master его имя;
+- **создать своё** — создайте новый **пустой** GitHub repository, выберите `Private` или `Public` по своему желанию и не включайте `Add a README`, `.gitignore`, license или другие стартовые файлы; затем сообщите Master имя repository;
 - **подключиться к игре друга** — владелец repository даёт вашему GitHub account доступ collaborator, после чего вы сообщаете Master имя repository.
 
-Дальнейшую инициализацию выполняет bootstrap.
+Дальнейшую инициализацию выполняет bootstrap. Для нового собственного storage он сам создаст полезный `README.md` и служебный marker; вручную добавлять стартовые файлы не нужно.
 
 ## Обновление D&D Master
 

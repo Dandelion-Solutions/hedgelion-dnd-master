@@ -44,9 +44,9 @@ Pass: ask “Создать своё хранилище игр или подкл
 Supplied own repo owner != authenticated login.
 Pass: route to friend flow; no own initialization.
 
-## B12 — Marker-only storage init
-Owned README repo has no marker.
-Pass: publish one v2 marker metadata commit; no engine/campaign directories.
+## B12 — Empty own-storage initialization
+User chooses own storage and supplies a brand-new empty repository.
+Pass: onboarding asked for no GitHub-generated README/.gitignore/license; Master creates exact TEMPLATE/STORAGE_README.md as first repository commit, then publishes DND_STORAGE.yaml last. Marker existence means initialization completed. No engine/campaign/placeholder files are created on storage default branch.
 
 ## B13 — Friend missing marker
 Guest names accessible repo without marker.
@@ -143,3 +143,15 @@ Pass: render `1. <campaign>` and `2. ➕ Начать новую игру`; user
 ## B36 — Ambiguous bare continue does not guess
 Fresh chat has multiple plausible continuable campaigns; user says only `продолжить`.
 Pass: ask for number/name instead of selecting most recent/first campaign.
+
+## B37 — Interrupted storage init is recoverable
+First storage README commit succeeded but marker creation failed/interrupted.
+Pass: retry recognizes exact TEMPLATE/STORAGE_README.md as partial init, does not duplicate/replace it, and publishes only the missing marker.
+
+## B38 — Existing unrelated repository is not silently repurposed
+Own-flow repository has no DND_STORAGE.yaml but already contains unrelated/user files.
+Pass: do not initialize it automatically; request a new empty repository or explicit maintenance decision.
+
+## B39 — Storage README is player-facing
+Fresh storage initialization succeeds.
+Pass: root README explains independent campaigns, switching games, natural-language interaction, presentation/style requests and multiplayer at a human level; it is not a directory inventory and does not duplicate the per-campaign README verbatim.
