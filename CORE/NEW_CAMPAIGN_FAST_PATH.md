@@ -1,6 +1,6 @@
 # New Campaign Fast Path
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_when: user explicitly selected New Game, before character/world setup
 precedence: authoritative for new-campaign scaffold ordering, publication, and early-start latency
 
@@ -95,6 +95,27 @@ Normally perform ZERO campaign GitHub writes while:
 When the player accepts the character, persist the accepted PLAYER + PC + required indexes/card projection as one coherent character-stage transaction.
 
 Do not commit every clarification or subchoice.
+
+## Last blocker means launch now
+
+Setup is not a questionnaire that requires an explicit `continue` after every answer.
+
+After EACH player setup answer, determine whether any unresolved choice genuinely blocks a fair first scene or valid character mechanics.
+
+If a real blocker remains, ask only the smallest necessary question.
+
+If NO real blocker remains:
+1. do not answer with acknowledgement alone;
+2. do not ask `готов?`, `продолжаем?` or another ceremonial confirmation;
+3. do not invent another optional setup question merely to keep the setup phase open;
+4. finish the minimum required launch preparation/persistence silently;
+5. begin the first scene in the SAME player-facing response.
+
+A response such as **«Кабыздох — хромая собака Бдыра. Принято.»** followed by silence is a setup failure when nothing else materially blocks play. The correct behavior is to accept the detail and immediately continue into the opening scene.
+
+Optional companion details, cosmetic backstory, distant world facts and unused lore are not launch blockers. Resolve harmless details under player delegation, leave them undefined, or discover them through play.
+
+Do not make the player type `и?` to make the Master resume its job.
 
 ## Fast launch after character acceptance
 
