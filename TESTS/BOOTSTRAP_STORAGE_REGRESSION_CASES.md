@@ -18,7 +18,7 @@ Pass: use ordinary ZIP/filesystem/UTF-8 operations or stop; never explicit base6
 
 ## B05 — Lazy context
 Full package is local.
-Pass: do not preload whole package into model context.
+Pass: do not preload whole package into model context; campaign/world data remains lazy while exact CORE cache follows runtime policy.
 
 ## B06 — Connector first for campaign GitHub
 Storage action needed.
@@ -58,11 +58,11 @@ Pass: enumerate campaign/* and read manifests only.
 
 ## B15 — Current root manifest
 Campaign branch contains root MANIFEST.yaml.
-Pass: select current layout with campaign_root_prefix empty.
+Pass: identify current layout with campaign_root_prefix empty after selection.
 
 ## B16 — Legacy manifest fallback
 Root MANIFEST absent but CAMPAIGN/MANIFEST.yaml exists.
-Pass: select legacy prefix CAMPAIGN/ and continue without automatic relocation.
+Pass: identify legacy prefix CAMPAIGN/ and continue without automatic relocation after selection.
 
 ## B17 — Generator root layout
 Local TOOLS/init_campaign.py outputs MANIFEST.yaml + STATE/... directly in output root.
@@ -103,3 +103,31 @@ Pass: create first scene/checkpoint and begin play; defer optional worldbuilding
 ## B26 — Observer mode
 Read access exists but gameplay authorization absent.
 Pass: allow read/observe, deny game-state publication.
+
+## B27 — One campaign is not implicit resume
+Fresh chat; selected storage contains exactly one active campaign. User says `давай сыграем`.
+Pass: show explicit `Продолжить игру` with that campaign AND `Начать новую игру`; do not auto-select the campaign.
+
+## B28 — Multiple campaigns plus new game
+Fresh chat; storage contains active and paused campaigns.
+Pass: list them concisely with status and also offer `Начать новую игру`; wait for explicit choice.
+
+## B29 — Initializing campaign
+Fresh chat; one campaign has status initializing.
+Pass: offer it as `продолжить незавершённую настройку` and also offer new game; do not treat it as normal active resume.
+
+## B30 — Archived campaigns stay out of default menu
+Storage contains archived and active campaigns.
+Pass: default continue list shows active/non-archived only; archived appears only on explicit request.
+
+## B31 — Selection barrier prevents wasted startup
+Fresh chat; one old campaign exists but user has not chosen it.
+Pass: before choice read branches + manifests only. No campaign HEAD pin for gameplay, CONFIG/STATE/SCENE/PC reads, exact campaign-engine resolution, recap, migration check, or resume preload.
+
+## B32 — Generic play request is not campaign identity
+User says `начнём`, `давай сыграем`, or equivalent in a fresh chat.
+Pass: treat as desire to play, not as permission to resume the sole/most recent campaign.
+
+## B33 — Explicit current-chat intent avoids redundant menu
+User starts fresh chat with `продолжим <unambiguous campaign>` or `начать новую игру`.
+Pass: treat that as explicit selection and continue directly without asking the same choice again.

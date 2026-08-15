@@ -1,6 +1,6 @@
 # D&D Master Bootstrap
 
-launcher_version: 11
+launcher_version: 12
 engine_repository: Dandelion-Solutions/hedgelion-dnd-master
 storage_marker: DND_STORAGE.yaml
 
@@ -51,6 +51,8 @@ Outcomes:
 
 Cache selected storage for current chat.
 
+Storage auto-selection does NOT imply campaign auto-selection.
+
 ## 3A. Own storage
 
 If user chooses own storage:
@@ -81,27 +83,54 @@ Check root `DND_STORAGE.yaml`.
 
 If missing, do not create/repair it; owner must initialize storage. If present, select it. Read access may permit observer mode even when gameplay writes are not authorized.
 
-## 4. Campaign discovery and layout
+## 4. Campaign discovery, explicit choice, and layout
 
 Enumerate only branches matching `campaign/*`.
 
-Resolve each manifest:
+For each branch read only the minimum manifest needed to build the campaign menu:
 1. root `MANIFEST.yaml` — current layout;
 2. if absent, `CAMPAIGN/MANIFEST.yaml` — legacy layout.
 
-Read only manifest to list games. Do not scan WORLD/LOG/history.
+Do not scan WORLD/LOG/STATE/history while building the menu. Do not pin/load a campaign working set merely because only one campaign exists.
 
-Set `campaign_root_prefix` once:
-- current layout: empty;
-- legacy: `CAMPAIGN/`.
+### New-chat campaign choice gate
+
+A NEW CHAT never implicitly resumes an existing campaign.
+
+After storage selection:
+- if no non-archived campaign exists, offer/start the New Campaign flow;
+- if one or more campaigns have status `active`, `paused`, or `initializing`, present an explicit choice BEFORE any campaign-specific startup work:
+  - **Продолжить игру** — list available campaigns using `campaign_name` when present, otherwise branch name; include a concise status label;
+  - **Начать новую игру**.
+- mark `initializing` entries as unfinished setup rather than ordinary resumed play;
+- omit `archived` campaigns from the normal continue list unless the user explicitly asks for archived games.
+
+Even when exactly ONE continuable campaign exists, DO NOT auto-select it.
+
+Generic phrases such as `давай сыграем`, `начнём`, `хочу поиграть` or equivalent do NOT count as choosing the existing campaign.
+
+An unambiguous current-chat request such as `продолжить <campaign>` or `начать новую игру` already constitutes the choice; do not ask the same question again.
+
+Until the choice is explicit, STOP campaign-specific work. In particular, do NOT:
+- pin a campaign HEAD;
+- resolve its exact engine identity;
+- preload campaign-specific CONFIG/STATE/SCENE/PC data;
+- run resume recap/recovery;
+- perform campaign update/migration checks for that campaign.
+
+This gate is both an agency rule and a latency rule.
+
+### Layout after a campaign is chosen
+
+Resolve selected campaign layout:
+- current layout: root `MANIFEST.yaml`, `campaign_root_prefix` empty;
+- legacy layout: `CAMPAIGN/MANIFEST.yaml`, `campaign_root_prefix = "CAMPAIGN/"`.
 
 After manifest load prefer its `storage.*` roots. New writes to current layout MUST NOT create a `CAMPAIGN/` wrapper. Local engine directory `CAMPAIGN/` is template source, not a remote campaign path.
 
-If no campaign exists, offer new game. Otherwise allow continue/create.
-
 ## 5. Resolve exact engine, then build CORE context cache
 
-Before substantial setup or the first gameplay turn, resolve the exact local engine package:
+Only AFTER explicit campaign/new-game choice, resolve the exact local engine package:
 - existing campaign: package identity must match campaign integrated engine identity;
 - new campaign: package must match selected storage baseline/intended engine;
 - authorized development test: matching local development package is sufficient and SHA may be null.
@@ -149,7 +178,7 @@ Use already-preloaded CORE and follow `CAMPAIGN_SETUP.md`; surface useful result
 
 `CORE/BOOTSTRAP_RUNTIME.md` is already present in the CORE context cache.
 
-Pin campaign HEAD, resolve manifest/config/hot state and only current relevant campaign records. Do not lazily reread CORE from disk.
+Only after the user explicitly selected the campaign: pin campaign HEAD, resolve manifest/config/hot state and only current relevant campaign records. Do not lazily reread CORE from disk.
 
 If campaign expects another engine package, stop gameplay until exact package is supplied or authorized migration succeeds.
 

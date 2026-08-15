@@ -1,6 +1,6 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.6.1
+runtime_bootstrap_version: 0.6.2
 engine_repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_development_branch: main
 engine_owner_login: dkolyada
@@ -20,7 +20,9 @@ Campaign branches never merge back into storage default branch, public engine re
 
 ## Exact engine selection and CORE context cache
 
-Bootstrap may initially run from any valid local package needed to discover storage/campaign metadata. Before substantial setup or gameplay, resolve the exact package required by the selected/new campaign.
+Bootstrap may initially run from any valid local package needed to discover storage/campaign metadata. Before substantial setup or gameplay, resolve the exact package required by the EXPLICITLY SELECTED campaign/new-game flow.
+
+Do not use the existence of one campaign as permission to select its engine or preload its state.
 
 After exact package resolution, the complete local `CORE/*.md` instruction set MUST be loaded into current model context once. Also load `RULES/INDEX.md` and `RULES/README.md`.
 
@@ -87,8 +89,10 @@ At setup/startup:
 3. if more than 5 candidates are visible, ask for repository name instead of probing all;
 4. otherwise exact-probe only root `DND_STORAGE.yaml` on each default branch;
 5. marker existence identifies candidate; semantic validation is deferred until needed;
-6. one candidate -> select; several -> ask; none -> own/friend choice;
+6. one candidate -> select STORAGE; several -> ask which STORAGE; none -> own/friend choice;
 7. cache selected storage for current chat.
+
+Selecting one storage never selects one of its campaigns.
 
 Do not use global code search or broad repository scans for storage discovery.
 
@@ -115,7 +119,9 @@ Supported layouts:
 - current: `MANIFEST.yaml`, `CONFIG.yaml`, `STATE/`, `INDEX/`, `WORLD/`, `LOG/`, `CHECKPOINTS/`, `RULES/` directly at branch root;
 - legacy: same logical tree under `CAMPAIGN/`.
 
-Resolve once per campaign startup:
+During menu discovery, resolve only enough layout to read each manifest. Do not open the campaign working set yet.
+
+After a campaign is explicitly selected, resolve once:
 1. try root `MANIFEST.yaml`;
 2. only if absent try `CAMPAIGN/MANIFEST.yaml`;
 3. set root prefix empty/current or `CAMPAIGN/`/legacy;
@@ -123,19 +129,58 @@ Resolve once per campaign startup:
 
 New writes to current layout MUST NOT create a `CAMPAIGN/` wrapper. Local engine template directory `CAMPAIGN/` is scaffold source, not remote path. Opening legacy campaign does not automatically relocate it.
 
-## Campaign selection
+## Campaign selection — mandatory new-chat choice
 
-Enumerate only `campaign/*` and read resolved manifests only to show game list. A readable but unauthorized campaign may be observed read-only.
+Enumerate only `campaign/*` and read resolved manifests only to build the game list. A readable but unauthorized campaign may be offered as read-only/observer according to access rules.
 
-For existing campaign:
-1. pin campaign HEAD;
+A new chat MUST NOT infer `resume` from:
+- exactly one campaign existing;
+- one campaign being `active`;
+- one campaign being the most recent;
+- the previous chat having used that campaign;
+- a generic request such as `давай сыграем`.
+
+Default menu candidates:
+- `active` — normal continue candidate;
+- `paused` — continue candidate, labeled paused;
+- `initializing` — candidate to continue unfinished setup;
+- `archived` — excluded unless explicitly requested.
+
+If at least one non-archived campaign exists and the user has not already made an unambiguous current-chat choice, present:
+- **Продолжить игру** — concise list of candidates (`campaign_name` if set, otherwise branch; include status);
+- **Начать новую игру**.
+
+Even with exactly one candidate, wait for explicit choice.
+
+If the user's current-chat request already unambiguously identifies an existing campaign to continue or explicitly says to start a new game, treat that as the choice and do not ask redundantly.
+
+### Selection barrier
+
+Before explicit choice, do NOT perform campaign-specific startup work. No selected campaign exists yet.
+
+Forbidden before the gate resolves:
+- pinning a campaign HEAD for gameplay;
+- reading CONFIG, checkpoint, STATE, SCENE, PLAYER/PC or WORLD records;
+- resolving exact engine identity from a candidate campaign;
+- building a campaign-specific CORE cache;
+- recap/recovery/resume logic;
+- campaign-specific update/migration checks.
+
+The menu must therefore remain cheap: branches + manifests only.
+
+### Existing campaign after choice
+
+Only then:
+1. pin selected campaign HEAD;
 2. resolve manifest layout and CONFIG as needed at same HEAD;
 3. resolve creator/PLAYER authorization when a write may matter;
 4. ensure exact local engine identity matches campaign or enter authorized maintenance;
 5. ensure CORE cache belongs to that exact engine;
 6. continue checkpoint/state/scene lazy loading through resolved storage roots.
 
-For new campaign follow `CAMPAIGN_SETUP.md` from already-preloaded CORE.
+### New campaign after choice
+
+Use selected storage baseline/intended engine and follow `CAMPAIGN_SETUP.md` from the exact preloaded CORE package.
 
 ## Write authority
 
@@ -167,7 +212,9 @@ Full local CORE preload does not relax campaign-data lazy retrieval.
 
 ## Gameplay startup
 
-After campaign + matching engine + CORE cache are resolved:
+This section runs ONLY after the campaign-selection gate has resolved to an existing campaign.
+
+After selected campaign + matching engine + CORE cache are resolved:
 1. pin campaign HEAD;
 2. read resolved MANIFEST/CONFIG as needed;
 3. read latest checkpoint/hot STATE through storage roots;
@@ -182,7 +229,7 @@ If required campaign canon is absent/inconsistent, do not invent it.
 
 ## Persistence and synchronization
 
-`STORAGE.md` and `MULTIPLAYER.md` are already present in CORE cache; activate them at persistence/resync/multiplayer boundaries without rereading files.
+`STORAGE.md`, `PERSISTENCE.md`, and `MULTIPLAYER.md` are already present in CORE cache; activate them at persistence/resync/multiplayer boundaries without rereading files.
 
 Singleplayer gameplay writes are creator-only. Multiplayer writes require applicable PLAYER binding/protocol.
 
