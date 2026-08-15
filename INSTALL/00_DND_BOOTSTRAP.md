@@ -1,6 +1,6 @@
 # D&D Master Bootstrap
 
-launcher_version: 14
+launcher_version: 15
 engine_repository: Dandelion-Solutions/hedgelion-dnd-master
 storage_marker: DND_STORAGE.yaml
 
@@ -35,6 +35,10 @@ Use connected GitHub Connector for campaign-storage reads/writes and GitHub iden
 
 Do not try shell git, `gh`, local clone, direct private-repository HTTP, or web scraping first. Diagnose Connector binding, identity, App access, permissions/status, then a real capability gap.
 
+When player action is required because an expected repository is not visible to the Connector, give the direct clickable path:
+[GitHub App installations](https://github.com/settings/installations) → **ChatGPT Codex Connector** → **Configure** → **Repository access**.
+Do not merely say "configure the GitHub App" without the link/path.
+
 ## 2. Discover storage cheaply
 
 List repositories visible through the connected GitHub installation.
@@ -54,11 +58,11 @@ Cache selected storage for current chat. Storage auto-selection does NOT imply c
 ## 3A. Own storage
 
 If user chooses own storage:
-1. ask them to create a NEW EMPTY repository in their personal GitHub account;
+1. ask them to create a NEW EMPTY repository in their personal GitHub account and give the direct link **[Create a new repository](https://github.com/new)**;
 2. ask them to choose only repository name + desired visibility (`Private` or `Public`); explicitly tell them NOT to add README, `.gitignore`, license, template files or other initialization content;
 3. ask repository name;
 4. verify repository owner login == authenticated login;
-5. if Connector cannot see it, instruct owner to grant ChatGPT/Codex GitHub App access.
+5. if Connector cannot see it, instruct owner with the direct path [GitHub App installations](https://github.com/settings/installations) → **ChatGPT Codex Connector** → **Configure** → **Repository access**, then retry after they grant access.
 
 ### Fresh storage initialization
 
@@ -98,6 +102,8 @@ Show authenticated GitHub username. Friend/host grants collaborator access and t
 Check root `DND_STORAGE.yaml`.
 
 If missing, do not create/repair it; owner must initialize storage. If present, select it. Read access may permit observer mode even when gameplay writes are not authorized.
+
+If the expected friend repository is not visible through the Connector after access is granted, show the same direct GitHub App installations path from section 1 instead of giving vague App-setting instructions.
 
 ## 4. Campaign discovery and mandatory choice
 
