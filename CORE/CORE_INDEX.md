@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.2.3
+framework_module_version: 0.2.4
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 ## Context model
@@ -18,7 +18,8 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 - `BOOTSTRAP_RUNTIME.md` — campaign discovery/startup and runtime routing.
 - `ENGINE_UPDATES.md` — release discovery and safe campaign integration; activate only at update opportunities.
-- `CAMPAIGN_SETUP.md` — create/initialize a campaign.
+- `NEW_CAMPAIGN_FAST_PATH.md` — authoritative ordering/transport/latency contract for creating a new campaign scaffold and reaching the first scene quickly.
+- `CAMPAIGN_SETUP.md` — substantive character/world setup after the fast-path scaffold exists.
 - `CAMPAIGN_CARD.md` — fast campaign menu projection, emoji/access hints and card-refresh discipline.
 - `GM_CRAFT.md` — setup/prep/design/audit craft.
 - `CAMPAIGN_OPERATIONS.md` — campaign/session organization and maintenance.
@@ -52,7 +53,7 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 ## Activation examples
 
-`new campaign` -> activate GM_CRAFT + CAMPAIGN_OPERATIONS + CAMPAIGN_SETUP + CAMPAIGN_CARD + CHARACTER + SAFETY + WORLDGEN in addition to always-active modules.
+`new campaign` -> activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; after scaffold exists, activate GM_CRAFT + CAMPAIGN_OPERATIONS + CHARACTER + SAFETY + WORLDGEN only as needed.
 
 `campaign menu/discovery` -> activate BOOTSTRAP_RUNTIME + CAMPAIGN_CARD; prefer card-only presentation reads and defer authoritative/deep campaign loading until selection.
 

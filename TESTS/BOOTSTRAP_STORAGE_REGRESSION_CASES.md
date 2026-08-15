@@ -44,9 +44,17 @@ Pass: ask “Создать своё хранилище игр или подкл
 Supplied own repo owner != authenticated login.
 Pass: route to friend flow; no own initialization.
 
-## B12 — Empty own-storage initialization
-User chooses own storage and supplies a brand-new empty repository.
-Pass: onboarding asked for no GitHub-generated README/.gitignore/license; Master creates exact TEMPLATE/STORAGE_README.md as first repository commit, then publishes DND_STORAGE.yaml last. Marker existence means initialization completed. No engine/campaign/placeholder files are created on storage default branch.
+## B12 — Empty own storage initialization
+Owned NEW EMPTY repository has no marker.
+Pass: create exact TEMPLATE/STORAGE_README.md first, then create v2 DND_STORAGE.yaml LAST; no engine/campaign directories, .gitignore, license or hidden scaffolding. Marker publication defines successful installation.
+
+## B12a — Interrupted storage init retry
+Repository has no marker but contains only the exact standard storage README from a prior interrupted initialization.
+Pass: recognize partial initialization and create only the missing marker; do not duplicate/replace README.
+
+## B12b — Do not repurpose populated repo silently
+Owned repository has no marker and contains unrelated/user files.
+Pass: do not initialize it silently; ask for a new empty repository or explicit maintenance decision.
 
 ## B13 — Friend missing marker
 Guest names accessible repo without marker.
@@ -74,10 +82,10 @@ Pass: README gives player-facing play tips/orientation, not a directory inventor
 
 ## B19 — One scaffold publication
 Generated scaffold has many files.
-Pass: one UTF-8 tree + one initialization commit + non-force ref update; no per-file commits/base64.
+Pass: one UTF-8 tree + one initialization commit + non-force ref publication/update; no per-file commits/base64.
 
 ## B20 — Campaign excludes storage root
-Campaign branch created from storage default branch.
+Campaign branch is descended from storage default branch.
 Pass: first campaign tree excludes DND_STORAGE.yaml and storage README.
 
 ## B21 — Development ZIP needs no public-main SHA
@@ -90,7 +98,7 @@ Pass: resolve its published tag to exact commit SHA before new campaign/migratio
 
 ## B23 — Setup progress is staged
 New campaign scaffold exists.
-Pass: tell player setup has character -> minimal world -> first scene stages, with no duration estimate; surface/persist coherent results between stages rather than one long silent block.
+Pass: tell player setup has character -> minimal world -> first scene stages, with no duration estimate; surface coherent game-facing results rather than one long silent preparation block.
 
 ## B24 — Character before broad worldbuild
 New PC is unresolved.
@@ -144,14 +152,34 @@ Pass: render `1. <campaign>` and `2. ➕ Начать новую игру`; user
 Fresh chat has multiple plausible continuable campaigns; user says only `продолжить`.
 Pass: ask for number/name instead of selecting most recent/first campaign.
 
-## B37 — Interrupted storage init is recoverable
-First storage README commit succeeded but marker creation failed/interrupted.
-Pass: retry recognizes exact TEMPLATE/STORAGE_README.md as partial init, does not duplicate/replace it, and publishes only the missing marker.
+## B37 — Mandatory generator before questions
+User explicitly selects New Game.
+Pass: before asking character/world/style questions, run exact local TOOLS/init_campaign.py into a fresh output directory and successfully publish that generated scaffold.
 
-## B38 — Existing unrelated repository is not silently repurposed
-Own-flow repository has no DND_STORAGE.yaml but already contains unrelated/user files.
-Pass: do not initialize it automatically; request a new empty repository or explicit maintenance decision.
+## B38 — No semantic scaffold reconstruction
+New campaign template contains scene/NPC/location/faction/index placeholders.
+Pass: copy generator output mechanically. Do not open schemas to recreate those files, do not invent empty YAML blobs, and do not create scaffold files individually through GitHub Contents API.
 
-## B39 — Storage README is player-facing
-Fresh storage initialization succeeds.
-Pass: root README explains independent campaigns, switching games, natural-language interaction, presentation/style requests and multiplayer at a human level; it is not a directory inventory and does not duplicate the per-campaign README verbatim.
+## B39 — Generator failure has no per-file fallback
+TOOLS/init_campaign.py is missing/fails or generated output cannot be bulk-published.
+Pass: stop new-game initialization with a short actionable error. Never reconstruct scaffold file-by-file.
+
+## B40 — Blank scaffold is one technical commit
+Generator output contains many files.
+Pass: first campaign-specific durable state is exactly one empty-scaffold commit/tree, with no invented lore/world content and no storage README/marker leakage.
+
+## B41 — Character drafting performs zero campaign writes
+Blank scaffold exists; player is still clarifying name/concept/class/species/style/preferences and has not accepted the character.
+Pass: keep draft in current working context and perform zero campaign GitHub writes. Persist one coherent character batch only after acceptance.
+
+## B42 — Minimal world and first scene normally share launch batch
+Accepted PC is durable and no intervening player decision/pause exists.
+Pass: create only immediate starting horizon + scene/current routing + required initial recovery state + active status in one coherent launch transaction, then start narration. Do not create broad unused catalogs first.
+
+## B43 — Setup technical silence
+Scaffold/character/launch publication succeeds normally.
+Pass: player-facing text does not mention YAML, schemas, branch/ref/HEAD, commits, staging, or “technical initialization is not finished”. Use game-facing progress only.
+
+## B44 — No confirmation rereads after scaffold publication
+Blank scaffold publication succeeds and Connector returns the created commit/tree information.
+Pass: adopt it as known frontier; do not immediately refetch just-written scaffold files/HEAD solely to reconfirm own write.

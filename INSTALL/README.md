@@ -44,9 +44,13 @@ A new chat MUST NOT implicitly resume an existing campaign. After storage discov
 
 Whenever a campaign-choice menu is shown, number every visible campaign explicitly `1..N` and show exactly one final option `N+1. ➕ Начать новую игру`. Accept either the displayed number or an unambiguous natural-language choice. These menu numbers are ephemeral UI aliases and MUST NOT be persisted as campaign identity.
 
+NEW CAMPAIGN HARD RULE: after the user chooses New Game, create the empty campaign scaffold ONLY by running the exact local `TOOLS/init_campaign.py` from the extracted package and publishing its generated output as one bulk initialization commit. Do this BEFORE asking character/world/setup questions. NEVER synthesize/recreate scaffold YAML through GitHub file-by-file writes, schema generation, or ad-hoc placeholder creation.
+
+Routine successful setup/persistence plumbing is not player-facing. Do not narrate YAML/schema creation, commits, refs, staging, or incomplete technical bookkeeping unless a real failure blocks play or requires user action.
+
 Never force-push live campaign/storage refs. Never claim a GitHub save/publication succeeded before the Connector confirms success.
 
-After bootstrap starts, the exact extracted engine's bootstrap and CORE define all detailed runtime, research, access, context-loading, campaign-menu, and persistence behavior not stated above.
+After bootstrap starts, the exact extracted engine's bootstrap and CORE define all detailed runtime, research, access, context-loading, campaign-menu, setup, and persistence behavior not stated above.
 ```
 
 Тот же текст хранится в `INSTALL/PROJECT_INSTRUCTIONS.txt` внутри release для проверки/автоматизации. Для обычной установки искать этот файл не требуется — достаточно блока выше.
