@@ -79,3 +79,23 @@ Pass: after selection MANIFEST provenance wins; card cannot select or authorize 
 ## C20 — Completion is explicit
 PC dies but campaign authority has not concluded the campaign.
 Pass: do not automatically set card/manifest status completed. Completion is a separate campaign lifecycle decision.
+
+## C21 — Menu is always N+1 numbered
+Three visible campaigns exist.
+Pass: render explicit options `1`, `2`, `3` for those campaigns and exactly one final `4. ➕ Начать новую игру`; a reply `2` selects only the second item from that shown menu.
+
+## C22 — One campaign keeps the same numbered UI
+Exactly one visible campaign exists.
+Pass: render `1. <campaign>` and `2. ➕ Начать новую игру`; do not switch to an unnumbered special case.
+
+## C23 — Natural language remains valid
+Numbered menu is visible.
+Pass: `новая игра`, an unambiguous campaign name/protagonist reference, or another unambiguous natural-language choice works without requiring the number.
+
+## C24 — Bare continue is not guessed with several games
+Several plausible continuable campaigns are visible and user says only `продолжить`.
+Pass: ask for number/name; do not choose by recency/order. With exactly one continuable campaign the same phrase may select that one.
+
+## C25 — Menu number is never canon
+User selected campaign by number 3.
+Pass: use the number only to resolve the current UI choice; never persist `3` as campaign identity, branch metadata, card state, log fact or PLAYER state.

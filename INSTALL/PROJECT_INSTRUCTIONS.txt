@@ -19,6 +19,8 @@ Never store campaign/world/character canon in ChatGPT Memory. Canon lives only i
 
 A new chat MUST NOT implicitly resume an existing campaign. After storage discovery, require an explicit current-chat choice to continue/open a listed campaign or start a new game, unless the user's current message already makes that choice unambiguously.
 
+Whenever a campaign-choice menu is shown, number every visible campaign explicitly `1..N` and show exactly one final option `N+1. ➕ Начать новую игру`. Accept either the displayed number or an unambiguous natural-language choice. These menu numbers are ephemeral UI aliases and MUST NOT be persisted as campaign identity.
+
 Never force-push live campaign/storage refs. Never claim a GitHub save/publication succeeded before the Connector confirms success.
 
 After bootstrap starts, the exact extracted engine's bootstrap and CORE define all detailed runtime, research, access, context-loading, campaign-menu, and persistence behavior not stated above.

@@ -1,6 +1,6 @@
 # Campaign Card and Fast Campaign Menu
 
-framework_module_version: 0.1.0
+framework_module_version: 0.1.1
 load_when: campaign discovery/menu, campaign setup, campaign status/location/PC/membership/engine changes, persistence affecting card projection fields
 
 ## Purpose
@@ -48,6 +48,23 @@ For each `campaign/*` branch during new-chat discovery:
 
 A legacy campaign without a card may be backfilled only after it is explicitly selected and the required authoritative records are naturally loaded. Backfill joins the next normal campaign transaction; do not create a special menu-only commit unless the user explicitly requests maintenance.
 
+## Numbered choice contract
+
+Whenever one or more visible campaigns are presented as a choice, render one explicit ordered menu:
+- campaigns are numbered `1..N` in displayed order;
+- the final option is always `N+1. ➕ Начать новую игру`;
+- even when `N == 1`, show both `1.` and `2.` rather than switching to an unnumbered layout;
+- do not use unnumbered bullets as the primary campaign-choice interface.
+
+A displayed number is only an ephemeral alias for that exact menu. Never store it in MANIFEST, CAMPAIGN_CARD, branch names, logs, PLAYER records or campaign canon.
+
+Accept either:
+- the displayed number;
+- an unambiguous campaign name/branch/protagonist reference;
+- an unambiguous natural-language intent such as `новая игра`.
+
+With exactly one continuable campaign, a bare `продолжить` is unambiguous and may select it. With multiple plausible campaigns, bare `продолжить` is ambiguous: ask for the number/name rather than guessing.
+
 ## Emoji/menu semantics
 
 Use one primary emoji per row.
@@ -63,12 +80,14 @@ Priority:
 
 The icons are presentation hints, not authorization decisions.
 
-Recommended concise Russian rows:
-- `🟢 Джон Вольт — Человек, маг — Таверна "Пьяная кружка" — активная`
-- `🟥 Бобби Ли — Воин — Поле "Злая пустошь" — завершена: погиб`
-- `🔒 Элиас — Эльф, следопыт — Северная дорога — одиночная, только просмотр`
-- multiplayer `open_contributors`, unbound current user: `👀 <название/локация> — активная, можно присоединиться`
-- multiplayer `invite_only`, unbound current user: `👀 <название/локация> — активная, присоединение по приглашению`
+Recommended concise Russian menu:
+- `1. 🟢 Джон Вольт — Человек, маг — Таверна "Пьяная кружка" — активная`
+- `2. 🟥 Бобби Ли — Воин — Поле "Злая пустошь" — завершена: погиб`
+- `3. 🔒 Элиас — Эльф, следопыт — Северная дорога — одиночная, только просмотр`
+- `4. 👀 Рыночная площадь — активная, присоединение по приглашению`
+- `5. ➕ Начать новую игру`
+
+For multiplayer `open_contributors`, an unbound row may say `можно присоединиться`; for `invite_only`, use `присоединение по приглашению`.
 
 Do not list all participant logins in the normal player-facing menu unless useful or requested; they exist primarily to classify the current user cheaply.
 

@@ -10,7 +10,7 @@ install_layout_revision: 10
 branch_id_revision: 1
 access_control_revision: 4
 storage_format_revision: 2
-presentation_revision: 4
+presentation_revision: 5
 persistence_revision: 1
 campaign_card_revision: 1
 campaign_update:

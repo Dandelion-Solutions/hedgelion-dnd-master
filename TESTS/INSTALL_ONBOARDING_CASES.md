@@ -1,7 +1,7 @@
 # Install / Project Instructions Regression Cases
 
 ## I01 — Project Instructions are guardrails, not a second runtime manual
-Pass: Project Instructions contain startup loader requirements and hard prohibitions only. Detailed CORE cache, research, storage-discovery, menu, access and persistence algorithms live in bootstrap/CORE instead of being duplicated here.
+Pass: Project Instructions contain startup loader requirements and hard prohibitions/agency UX invariants only. Detailed CORE cache, research, storage-discovery, access and persistence algorithms live in bootstrap/CORE instead of being duplicated here.
 
 ## I02 — Every new chat enters bootstrap
 Fresh Project chat with release ZIP available.
@@ -25,3 +25,7 @@ Pass: Project-level guardrail plus bootstrap require explicit current-chat campa
 
 ## I07 — README stays user-facing
 Pass: installation README explains setup, own/friend storage choice, update and minimal troubleshooting. Internal branch layout, Git object topology, transaction algorithms and migration implementation details stay outside the installation README.
+
+## I08 — Numbered choice is a hard pre-bootstrap UX invariant
+Bootstrap needs to show one or more campaign choices.
+Pass: Project Instructions require visible campaigns `1..N` plus final `N+1. ➕ Начать новую игру`, while still accepting unambiguous natural language; menu numbers are not persisted.

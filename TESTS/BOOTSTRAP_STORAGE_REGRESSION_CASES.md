@@ -54,7 +54,7 @@ Pass: guest does not modify it; owner must initialize.
 
 ## B14 — Campaign discovery bounded
 Storage has many files.
-Pass: enumerate campaign/* and read manifests only.
+Pass: enumerate campaign/* and read campaign cards first; manifest is fallback only. Do not deep-load campaign state for menu presentation.
 
 ## B15 — Current root manifest
 Campaign branch contains root MANIFEST.yaml.
@@ -106,7 +106,7 @@ Pass: allow read/observe, deny game-state publication.
 
 ## B27 — One campaign is not implicit resume
 Fresh chat; selected storage contains exactly one active campaign. User says `давай сыграем`.
-Pass: show explicit `Продолжить игру` with that campaign AND `Начать новую игру`; do not auto-select the campaign.
+Pass: show explicit campaign choice plus `Начать новую игру`; do not auto-select the campaign.
 
 ## B28 — Multiple campaigns plus new game
 Fresh chat; storage contains active and paused campaigns.
@@ -114,15 +114,15 @@ Pass: list them concisely with status and also offer `Начать новую и
 
 ## B29 — Initializing campaign
 Fresh chat; one campaign has status initializing.
-Pass: offer it as `продолжить незавершённую настройку` and also offer new game; do not treat it as normal active resume.
+Pass: offer it as unfinished setup and also offer new game; do not treat it as normal active resume.
 
 ## B30 — Archived campaigns stay out of default menu
 Storage contains archived and active campaigns.
-Pass: default continue list shows active/non-archived only; archived appears only on explicit request.
+Pass: default menu shows non-archived visible entries; archived appears only on explicit request.
 
 ## B31 — Selection barrier prevents wasted startup
 Fresh chat; one old campaign exists but user has not chosen it.
-Pass: before choice read branches + manifests only. No campaign HEAD pin for gameplay, CONFIG/STATE/SCENE/PC reads, exact campaign-engine resolution, recap, migration check, or resume preload.
+Pass: before choice read branches + cards/legacy manifests only. No campaign HEAD pin for gameplay, CONFIG/STATE/SCENE/PC reads, exact campaign-engine resolution, recap, migration check, or resume preload.
 
 ## B32 — Generic play request is not campaign identity
 User says `начнём`, `давай сыграем`, or equivalent in a fresh chat.
@@ -131,3 +131,15 @@ Pass: treat as desire to play, not as permission to resume the sole/most recent 
 ## B33 — Explicit current-chat intent avoids redundant menu
 User starts fresh chat with `продолжим <unambiguous campaign>` or `начать новую игру`.
 Pass: treat that as explicit selection and continue directly without asking the same choice again.
+
+## B34 — Campaign menu uses N+1 numbering
+Fresh chat has N >= 1 visible campaign choices.
+Pass: render campaigns as explicit `1..N` entries and exactly one final `N+1. ➕ Начать новую игру`; number input resolves against that current menu only.
+
+## B35 — One campaign is still numbered
+Fresh chat has exactly one visible campaign.
+Pass: render `1. <campaign>` and `2. ➕ Начать новую игру`; user may answer `1`, `2`, `продолжить`, or `новая игра`.
+
+## B36 — Ambiguous bare continue does not guess
+Fresh chat has multiple plausible continuable campaigns; user says only `продолжить`.
+Pass: ask for number/name instead of selecting most recent/first campaign.
