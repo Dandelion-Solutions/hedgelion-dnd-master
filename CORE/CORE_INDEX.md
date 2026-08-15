@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.2.7
+framework_module_version: 0.2.8
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 ## Context model
@@ -14,6 +14,7 @@ Always active during gameplay:
 - `AI_REASONING.md` — LLM-specific correctness discipline.
 - `PLAY_POLICY.md` — CORE cache, activation semantics, natural-language intent and research policy.
 - `DURABILITY_GUARD.md` — zero-I/O durability-boundary classification; prevents accepted gameplay canon from remaining only in volatile chat state.
+- `SAVE_CONTRACT.md` — explicit-save completeness semantics; `save game` means materialize all dirty cross-session state, never summary-note persistence.
 - `MECHANICS_INTEGRITY.md` — pre-narration mechanical proof gate; hidden mechanics still require real rules resolution, RNG and a compact audit trace.
 - `CHARACTER_READINESS.md` — active-PC readiness gate; a concept cannot enter live play until its complete current-level D&D mechanics exist and are durable.
 
@@ -56,7 +57,7 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 ## Activation examples
 
-`new campaign` -> DURABILITY_GUARD, MECHANICS_INTEGRITY and CHARACTER_READINESS are already active; activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; before the first live scene CHARACTER_READINESS requires READY_PC and DURABILITY_GUARD requires a post-scaffold PLAY_READY durable frontier.
+`new campaign` -> DURABILITY_GUARD, SAVE_CONTRACT, MECHANICS_INTEGRITY and CHARACTER_READINESS are already active; activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; before the first live scene CHARACTER_READINESS requires READY_PC and DURABILITY_GUARD requires a post-scaffold PLAY_READY durable frontier.
 
 `campaign menu/discovery` -> activate BOOTSTRAP_RUNTIME + CAMPAIGN_CARD; prefer card-only presentation reads and defer authoritative/deep campaign loading until selection.
 
@@ -69,6 +70,8 @@ All other modules remain present but dormant until their domain is relevant. In 
 `session/world prep` -> activate PREP + WORLDGEN/LORE as needed; SOURCES may activate for one bounded enrichment pass.
 
 `campaign persistence boundary` -> DURABILITY_GUARD decides that a boundary exists; activate PERSISTENCE + STORAGE; also activate CAMPAIGN_CARD when the durable delta changes any projected card field.
+
+`explicit save / save game` -> SAVE_CONTRACT creates SAVE_ALL_DIRTY; activate PERSISTENCE + STORAGE and every domain needed to materialize missing dirty records. A summary-only save is invalid.
 
 `engine update opportunity` -> activate ENGINE_UPDATES + BOOTSTRAP_RUNTIME + STORAGE + PERSISTENCE + CAMPAIGN_CARD when publication changes campaign engine metadata.
 
