@@ -1,36 +1,71 @@
 # Установка D&D Master by Hedgelion
 
-D&D Master работает внутри ChatGPT Project. Engine поставляется готовым GitHub Release ZIP, а кампании хранятся отдельно в GitHub repository пользователя/хоста.
+D&D Master работает внутри ChatGPT Project. Ядро поставляется готовым **GitHub Release ZIP**, а игровые кампании хранятся отдельно в GitHub-репозитории пользователя или хоста.
 
-Терминал, `git clone`, ручное копирование engine в campaign repository и base64 для установки не нужны.
+## Что нужно
 
-## Установка Project
+- ChatGPT Project;
+- скачанный **Source code (zip)** нужного D&D Master Release;
+- GitHub account с подключённым GitHub Connector.
 
-1. Скачайте **Source code (zip)** нужного D&D Master Release.
-2. Создайте ChatGPT Project.
-3. Скопируйте `INSTALL/PROJECT_INSTRUCTIONS.txt` из этого release в Project Instructions.
-4. Добавьте ZIP целиком в Project Sources.
-5. Подключите GitHub plugin / Connector и авторизуйте свой GitHub account.
-6. Откройте новый чат и напишите: **«Давай сыграем в D&D»**.
+## Установка
 
-Новый чат при необходимости заново распакует package локально. Engine в campaign repository не копируется.
+1. Создайте новый ChatGPT Project.
+2. Скопируйте блок **Project Instructions** ниже целиком в настройки Project Instructions.
+3. Добавьте скачанный release ZIP целиком в **Project Sources**.
+4. Подключите GitHub Connector и авторизуйте свой GitHub account.
+5. Откройте новый чат и напишите, например: **«Давай сыграем»**.
 
-## Если storage ещё нет
+Ничего распаковывать вручную, клонировать или копировать в campaign repository не нужно.
 
-Master спросит: **«Создать своё хранилище игр или подключиться к игре друга?»**
+## Project Instructions — скопируйте целиком
 
-Для своего storage создайте обычный repository в личном GitHub account; рекомендуется Private + Add a README. Сообщите Master имя repository. Он создаст только маленький storage marker.
+```text
+This Project runs D&D Master.
 
-Для игры друга владелец добавляет ваш GitHub account collaborator и сообщает имя repository. Guest не исправляет marker/инфраструктуру владельца.
+At the start of EVERY new chat, before gameplay, setup, resume, or maintenance:
 
-## Новая campaign
+1. Ensure one D&D Master release ZIP is available from Project Sources or the current-chat attachment.
+2. Do not assume files extracted in another chat still exist in this chat.
+3. If the engine is not already extracted locally, extract the ZIP with ordinary ZIP/Python/shell file operations.
+4. NEVER use base64 to reconstruct, transfer, unpack, or install engine files.
+5. Locate the extracted engine root by `ENGINE_VERSION.yaml`.
+6. Open `INSTALL/00_DND_BOOTSTRAP.md` from that exact package and follow it before doing anything campaign-specific.
 
-Каждая игра живёт в отдельной `campaign/*` branch. Данные игры находятся прямо в корне этой branch — без дополнительной папки `CAMPAIGN/`.
+Do not merge files from different engine ZIPs.
 
-При первой настройке Master проведёт несколько видимых этапов: персонаж, минимальная стартовая часть мира, первая сцена. После каждого завершённого этапа результат можно зафиксировать, поэтому не требуется один длинный скрытый процесс подготовки.
+NEVER download, clone, pull, reconstruct, or copy engine source files from GitHub during normal Project startup. GitHub is for campaign storage and authorized release/update metadata only.
 
-## Updates
+Use the connected GitHub Connector as the default transport for campaign-storage GitHub reads/writes. Do not substitute shell `git`, `gh`, local clone, direct private-repository HTTP, or web scraping first.
 
-Для нового release замените/добавьте новый Source code ZIP и обновите Project Instructions из того же release. Existing campaigns сохраняют свою engine identity и мигрируются отдельно только при разрешённом maintenance.
+Never store campaign/world/character canon in ChatGPT Memory. Canon lives only in the selected campaign-storage repository.
 
-Если ChatGPT не видит новый private repository, владелец должен дать GitHub App доступ к нему. Master не лечит отсутствие ZIP через clone/pull или копирование engine-файлов из GitHub.
+A new chat MUST NOT implicitly resume an existing campaign. After storage discovery, require an explicit current-chat choice to continue/open a listed campaign or start a new game, unless the user's current message already makes that choice unambiguously.
+
+Never force-push live campaign/storage refs. Never claim a GitHub save/publication succeeded before the Connector confirms success.
+
+After bootstrap starts, the exact extracted engine's bootstrap and CORE define all detailed runtime, research, access, context-loading, campaign-menu, and persistence behavior not stated above.
+```
+
+Тот же текст хранится в `INSTALL/PROJECT_INSTRUCTIONS.txt` внутри release для проверки/автоматизации. Для обычной установки искать этот файл не требуется — достаточно блока выше.
+
+## Хранилище игр
+
+Если подходящего campaign storage ещё нет, Master предложит:
+
+- **создать своё** — создайте обычный GitHub repository; рекомендуется `Private` + `Add a README`, затем сообщите Master его имя;
+- **подключиться к игре друга** — владелец repository даёт вашему GitHub account доступ collaborator, после чего вы сообщаете Master имя repository.
+
+Дальнейшую инициализацию выполняет bootstrap.
+
+## Обновление D&D Master
+
+Скачайте ZIP нового release и замените старый ZIP в Project Sources. Затем заново скопируйте актуальный блок Project Instructions из `INSTALL/README.md` этого release.
+
+Существующие кампании не переключаются на новое ядро автоматически: совместимость и миграцию контролирует сам D&D Master.
+
+## Если что-то не работает
+
+**ChatGPT не видит private repository:** проверьте, что GitHub App/Connector получил доступ именно к этому repository.
+
+**Project Source ZIP недоступен в новом чате:** прикрепите тот же ZIP непосредственно к этому чату. Bootstrap продолжит работу с ним; не нужно использовать `git clone`, `pull` или base64.

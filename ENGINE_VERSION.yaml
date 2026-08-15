@@ -6,7 +6,7 @@ rules_baseline: D&D 2024 / SRD 5.2.1
 schema_version: 2
 ai_reasoning_revision: 2
 gm_craft_revision: 2
-install_layout_revision: 9
+install_layout_revision: 10
 branch_id_revision: 1
 access_control_revision: 4
 storage_format_revision: 2
