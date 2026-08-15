@@ -12,7 +12,7 @@ D&D Master работает внутри ChatGPT Project. Ядро постав�
 
 1. Создайте новый ChatGPT Project.
 2. Скопируйте блок **Project Instructions** ниже целиком в настройки Project Instructions.
-3. Добавьте скачанный release ZIP целиком в **Project Sources**.
+3. Добавьте [скачанный release](https://github.com/Dandelion-Solutions/hedgelion-dnd-master/releases) ZIP целиком в **Project Sources**.
 4. Подключите GitHub Connector и авторизуйте свой GitHub account.
 5. Откройте новый чат и напишите, например: **«Давай сыграем»**.
 
