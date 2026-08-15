@@ -13,7 +13,7 @@ fields:
   campaign_id: string
   campaign_name: string|null
   branch: string
-  status: enum[initializing, active, paused, archived]
+  status: enum[initializing, active, paused, completed, archived]
   mode: enum[singleplayer, multiplayer]
   engine:
     base_tag: string
@@ -56,3 +56,4 @@ invariants:
   - explicit engine-owner development testing MAY use dev-v<version> with nullable SHA fields; current public main MUST NOT be queried merely to manufacture those SHA values
   - engine files MUST NOT be copied into campaign repository
   - update_policy defaults to ask when absent in an older manifest
+  - completed means the campaign has explicitly ended; a PC death alone MUST NOT automatically imply campaign completion

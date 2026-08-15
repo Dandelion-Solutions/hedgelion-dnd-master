@@ -29,6 +29,14 @@ def yaml_nullable_string(value: str | None) -> str:
     return "null" if value is None else yaml_string(value)
 
 
+def semantic_engine_version(engine_tag: str) -> str:
+    if engine_tag.startswith("dev-v"):
+        return engine_tag[5:]
+    if engine_tag.startswith("v"):
+        return engine_tag[1:]
+    return engine_tag
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", required=True)
@@ -37,6 +45,7 @@ def main() -> int:
     parser.add_argument("--engine-tag", required=True)
     parser.add_argument("--engine-sha", required=False)
     parser.add_argument("--created-at", required=True)
+    parser.add_argument("--creator-github-login", required=True)
     parser.add_argument("--mode", choices=("singleplayer", "multiplayer"), default="singleplayer")
     parser.add_argument(
         "--source-root",
@@ -74,6 +83,37 @@ def main() -> int:
     for old, new in replacements:
         manifest = replace_once(manifest, old, new, manifest_path)
     manifest_path.write_text(manifest, encoding="utf-8")
+
+    card_path = output / "CAMPAIGN_CARD.yaml"
+    card = card_path.read_text(encoding="utf-8")
+    card = replace_once(card, "campaign_id: null", f"campaign_id: {yaml_string(args.campaign_id)}", card_path)
+    card = replace_once(card, "mode: singleplayer", f"mode: {args.mode}", card_path)
+    card = replace_once(
+        card,
+        "engine_version: null",
+        f"engine_version: {yaml_string(semantic_engine_version(args.engine_tag))}",
+        card_path,
+    )
+    card = replace_once(
+        card,
+        "creator_github_login: null",
+        f"creator_github_login: {yaml_string(args.creator_github_login)}",
+        card_path,
+    )
+    if args.mode == "multiplayer":
+        card = replace_once(
+            card,
+            "protagonist:\n  name: null\n  role_race: null",
+            "protagonist: null",
+            card_path,
+        )
+        card = replace_once(
+            card,
+            "multiplayer: null",
+            "multiplayer:\n  join_policy: invite_only\n  participant_github_logins: []",
+            card_path,
+        )
+    card_path.write_text(card, encoding="utf-8")
 
     current_path = output / "STATE" / "CURRENT.yaml"
     current = current_path.read_text(encoding="utf-8")

@@ -1,0 +1,13 @@
+schema_version: 1
+campaign_id: null
+campaign_name: null
+mode: singleplayer
+status: initializing
+status_note: null
+engine_version: null
+current_location: null
+protagonist:
+  name: null
+  role_race: null
+creator_github_login: null
+multiplayer: null

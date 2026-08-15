@@ -1,0 +1,38 @@
+schema_name: campaign_card
+schema_version: 1
+required:
+  - schema_version
+  - campaign_id
+  - mode
+  - status
+  - engine_version
+fields:
+  schema_version: integer
+  campaign_id: string
+  campaign_name: string|null
+  mode: enum[singleplayer, multiplayer]
+  status: enum[initializing, active, paused, completed, archived]
+  status_note: string|null
+  engine_version: string
+  current_location: string|null
+  protagonist:
+    type: object|null
+    fields:
+      name: string|null
+      role_race: string|null
+  creator_github_login: string|null
+  multiplayer:
+    type: object|null
+    fields:
+      join_policy: enum[invite_only, open_contributors]
+      participant_github_logins: array[string]
+invariants:
+  - CAMPAIGN_CARD is a compact menu/display projection, not an authority source for gameplay writes, access control, exact engine provenance or canon repair
+  - campaign_id/mode/status/campaign_name mirror authoritative campaign records when known
+  - engine_version is the human semantic engine version; exact tag/SHA still comes from MANIFEST after selection
+  - current_location is a human display label for the current focal location; split multiplayer may use a compact label such as "Несколько сцен"
+  - singleplayer MUST use protagonist object and multiplayer null; participant_github_logins MUST NOT be stored for singleplayer
+  - multiplayer MUST use protagonist null and multiplayer object; participant_github_logins contains active participant GitHub login labels only
+  - creator_github_login and participant_github_logins are display/access-hint caches only; actual authority is revalidated from creator Git provenance and PLAYER bindings after selection
+  - status_note is concise human context such as "погиб" or another completion/pause note; it must not become a substitute for event history
+  - when authoritative source fields change, the card is updated in the same coherent campaign persistence transaction, never in a separate per-file commit

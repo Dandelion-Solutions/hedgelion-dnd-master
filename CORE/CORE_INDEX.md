@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.2.2
+framework_module_version: 0.2.3
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 ## Context model
@@ -19,6 +19,7 @@ All other modules remain present but dormant until their domain is relevant. In 
 - `BOOTSTRAP_RUNTIME.md` — campaign discovery/startup and runtime routing.
 - `ENGINE_UPDATES.md` — release discovery and safe campaign integration; activate only at update opportunities.
 - `CAMPAIGN_SETUP.md` — create/initialize a campaign.
+- `CAMPAIGN_CARD.md` — fast campaign menu projection, emoji/access hints and card-refresh discipline.
 - `GM_CRAFT.md` — setup/prep/design/audit craft.
 - `CAMPAIGN_OPERATIONS.md` — campaign/session organization and maintenance.
 - `SESSION.md` — session start/resume/end/checkpoints.
@@ -51,7 +52,9 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 ## Activation examples
 
-`new campaign` -> activate GM_CRAFT + CAMPAIGN_OPERATIONS + CAMPAIGN_SETUP + CHARACTER + SAFETY + WORLDGEN in addition to always-active modules.
+`new campaign` -> activate GM_CRAFT + CAMPAIGN_OPERATIONS + CAMPAIGN_SETUP + CAMPAIGN_CARD + CHARACTER + SAFETY + WORLDGEN in addition to always-active modules.
+
+`campaign menu/discovery` -> activate BOOTSTRAP_RUNTIME + CAMPAIGN_CARD; prefer card-only presentation reads and defer authoritative/deep campaign loading until selection.
 
 `ordinary in-scene action` -> normally only always-active modules plus the smallest domain modules actually implicated by the action.
 
@@ -61,9 +64,11 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 `session/world prep` -> activate PREP + WORLDGEN/LORE as needed; SOURCES may activate for one bounded enrichment pass.
 
-`campaign persistence boundary` -> activate PERSISTENCE + STORAGE; use PERSISTENCE as authoritative write sequencing.
+`campaign persistence boundary` -> activate PERSISTENCE + STORAGE; also activate CAMPAIGN_CARD when the durable delta changes any projected card field.
 
-`engine update opportunity` -> activate ENGINE_UPDATES + BOOTSTRAP_RUNTIME + STORAGE + PERSISTENCE when publication is required.
+`engine update opportunity` -> activate ENGINE_UPDATES + BOOTSTRAP_RUNTIME + STORAGE + PERSISTENCE + CAMPAIGN_CARD when publication changes campaign engine metadata.
+
+`multiplayer membership change` -> activate MULTIPLAYER + CAMPAIGN_CARD + PERSISTENCE; participant display cache changes in the same campaign transaction.
 
 `multiplayer shared scene` -> activate MULTIPLAYER + LIVE_SCENE plus current domain modules; ordinary live-epoch writes follow LIVE_SCENE's one-file CAS profile, not campaign-tree transport.
 
