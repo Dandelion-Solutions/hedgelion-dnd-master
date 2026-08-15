@@ -1,4 +1,4 @@
-engine_version: 0.6
+engine_version: 0.7
 release_status: development
 repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_owner_login: dkolyada
@@ -21,4 +21,4 @@ runtime_scope_revision: 1
 consistency_audit_revision: 2
 campaign_update:
   compatibility: maintenance_required
-recommended_tag: v0.6
+recommended_tag: v0.7
