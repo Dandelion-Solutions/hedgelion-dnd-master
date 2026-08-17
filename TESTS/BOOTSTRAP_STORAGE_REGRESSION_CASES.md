@@ -183,3 +183,7 @@ Pass: player-facing text does not mention YAML, schemas, branch/ref/HEAD, commit
 ## B44 — No confirmation rereads after scaffold publication
 Blank scaffold publication succeeds and Connector returns the created commit/tree information.
 Pass: adopt it as known frontier; do not immediately refetch just-written scaffold files/HEAD solely to reconfirm own write.
+
+## B45 — Bootstrap text transport stays UTF-8
+Fresh own-storage initialization writes root `README.md` and `DND_STORAGE.yaml` before complete CORE preload.
+Pass: use Connector UTF-8/text interfaces for semantically textual repository payloads; do not manually Base64-encode/decode text for transport, chunking, staging, reconstruction or verification. Connector-internal Base64 required by an underlying API is allowed and is not an LLM/runtime conversion.

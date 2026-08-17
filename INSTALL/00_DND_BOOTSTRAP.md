@@ -33,6 +33,8 @@ If multiple local ZIPs are available, the package first used to run this launche
 
 Use connected GitHub Connector for campaign-storage reads/writes and GitHub identity/metadata. Resolve authenticated login.
 
+For semantically textual repository content, use Connector UTF-8/text interfaces whenever a correct text mode exists. Do not manually Base64-encode or Base64-decode text for GitHub transport, chunking, staging, reconstruction or verification. Connector-internal Base64 required by an underlying API is allowed; the runtime must not add its own redundant text-to-Base64-to-text cycle. Use explicit Base64 only for genuinely binary content or when a required Connector operation has no usable text mode.
+
 Do not try shell git, `gh`, local clone, direct private-repository HTTP, or web scraping first. Diagnose Connector binding, identity, App access, permissions/status, then a real capability gap.
 
 When player action is required because an expected repository is not visible to the Connector, give the direct clickable path:
