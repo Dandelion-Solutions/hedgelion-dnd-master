@@ -12,6 +12,8 @@ Universal record contracts: `ARCHITECTURE/CATALOG_CONTRACTS.md`
 
 Minimum entity structures: `ARCHITECTURE/ENTITY_STRUCTURES.md`
 
+Actor data model: `ARCHITECTURE/ACTOR_MODEL.md`
+
 Machine-readable registry: `CATALOG/core-catalog.json` version `1.1.0`
 
 ## 1. Purpose
