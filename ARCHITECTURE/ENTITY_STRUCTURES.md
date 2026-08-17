@@ -6,7 +6,10 @@ Target: `feature/mechanical-runtime-hot-state`
 
 Machine-readable field inventory: `CATALOG/entity-structures.json`
 
-Accepted actor structures: `ARCHITECTURE/ACTOR_MODEL.md`
+Accepted nested models:
+
+- `ARCHITECTURE/ACTOR_MODEL.md`;
+- `ARCHITECTURE/ASSET_MODEL.md`.
 
 ## 1. Field classes
 
@@ -73,7 +76,7 @@ localized `name`, optional `facets`, and optional `tags` remain in the envelope.
 | `definition.feat` | — | `prerequisites`, `activity_ids`, `rule_element_ids` |
 | `definition.feature` | — | `activity_ids`, `resource_ids`, `effect_ids`, `rule_element_ids` |
 | `definition.spell` | `level`, `school_id`, `activity_ids` | `components`, `casting_time`, `range`, `duration`, `concentration`, `ritual` |
-| `definition.asset` | — | `value`, `weight`, `activity_ids`, `resource_ids`, `container_capacity`, `attunement` |
+| `definition.asset` | — | `physical`, `value`, `rarity`, `property_ids`, `activity_ids`, `resource_ids`, `effect_ids`, `handling`, `capacity`, `stack`, `attunement`, `durability` |
 | `definition.activity` | `family_id`, `steps` | `activation`, `targeting`, `cost`, `duration`, `effect_ids` |
 | `definition.resource` | `mechanic_id` | `capacity`, `recovery`, `spending_policy` |
 | `definition.effect` | — | `duration`, `rule_element_ids`, `activity_ids`, `stacking` |
@@ -103,7 +106,7 @@ envelope and may be made mandatory by a kind-specific schema.
 |---|---|---|
 | `world.actor` | `name` | `roles`, `location_id`, `build`, `abilities`, `hp`, `resources` |
 | `world.actor_group` | `name` | `member_ids`, `leader_id`, `location_id`, `purpose` |
-| `world.asset` | — | `owner_actor_id`, `container_asset_id`, `location_id`, `quantity`, `charges`, `condition`, `identified` |
+| `world.asset` | — | `owner_actor_id`, `container_asset_id`, `location_id`, `quantity`, `equipment`, `attuned_actor_id`, `resources`, `durability`, `access` |
 | `world.location` | `name` | `parent_location_id`, `organization_id`, `environment_ids`, `status` |
 | `world.connection` | `from_location_id`, `to_location_id` | `direction`, `traversal_activity_id`, `status`, `requirements` |
 | `world.zone` | `location_id`, `name` | `participant_ids`, `effect_ids`, `geometry`, `status` |
@@ -172,6 +175,8 @@ automatically.
 
 ## 6. Next design boundary
 
-This inventory fixes field membership. Actor nested shapes are now accepted in
-`ARCHITECTURE/ACTOR_MODEL.md`. Nested shapes for the remaining kinds are still
-reviewed incrementally before implementation.
+This inventory fixes field membership. Actor and asset nested shapes are now
+accepted in `ARCHITECTURE/ACTOR_MODEL.md` and
+`ARCHITECTURE/ASSET_MODEL.md`. Nested shapes for the remaining kinds are still
+reviewed incrementally before implementation. The next boundary is Activities
+and Rule Elements.
