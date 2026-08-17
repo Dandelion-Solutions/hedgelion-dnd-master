@@ -1,13 +1,7 @@
-# Атрибуция D&D SRD 5.2.1
+# SRD 5.2.1 Attribution
 
-Hedgelion D&D Master использует и ссылается на механику **System Reference Document 5.2.1**, опубликованного Wizards of the Coast LLC.
+This work includes material from the System Reference Document 5.2.1 (“SRD 5.2.1”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.
 
-Официальная страница SRD:
-https://www.dndbeyond.com/srd
+## Adaptation notice
 
-SRD 5.2.1 распространяется по лицензии **Creative Commons Attribution 4.0 International (CC BY 4.0)**.
-
-Текст лицензии:
-https://creativecommons.org/licenses/by/4.0/
-
-Собственный Framework, архитектура хранения, процедуры мастера и инструменты кампании в этом репозитории являются отдельным материалом проекта. Названия D&D используются для идентификации базовой системы правил. Контент, не входящий в SRD, не должен автоматически считаться открытой частью rules corpus.
+Material from SRD 5.2.1 used by this project may be summarized, reorganized, structured, translated, or otherwise adapted for the engine and its rules layer. Such changes are modifications by this project and are not part of the original SRD 5.2.1.
