@@ -6,6 +6,7 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 This roadmap is the sequencing gate for the next mechanical-architecture work.
 It exists to prevent a later topic from displacing an unfinished earlier one.
+The engine-wide architecture workflow is `ARCHITECTURE/DESIGN_PROCESS.md`.
 
 ## Operating rule
 
@@ -24,16 +25,17 @@ It exists to prevent a later topic from displacing an unfinished earlier one.
 
 | # | Status | Scope | Required result | Exit gate |
 |---:|---|---|---|---|
-| 1 | **COMPLETE** | Finish the critical audit of already accepted architecture | One audit ledger covering catalog layers, envelopes, IDs, Actors, Assets, Activities, Rule Elements, persistence/time, modes, and information boundaries | Every finding is classified as fixed now, owned by steps 2–6, or deliberately deferred; no unowned blocker remains |
-| 2 | **IN PROGRESS** | Resources, Effects, Conditions, Duration, and Recovery | Minimal normative models plus schemas and catalog alignment | D&D health, temporary health, slots/uses, rests, timed effects, conditions, concentration, stacking, and expiry can be represented without duplicate authority |
+| 1 | **COMPLETE** | Finish the critical audit of already accepted architecture | One audit ledger covering catalog layers, envelopes, IDs, Actors, Assets, Activities, Rule Elements, persistence/time, modes, and information boundaries | Every finding is classified as fixed now, owned by steps 2–6, or deliberately deferred; no unowned blocker or backward dependency remains |
+| 2 | **IN PROGRESS — SUPERPOWERS GATE OPEN** | Resources, Effects, Conditions, Duration, and Recovery | Minimal normative models plus schemas and catalog alignment | D&D health, temporary health, slots/uses, rests, timed effects, conditions, concentration, stacking, and expiry can be represented without duplicate authority |
 | 3 | `BLOCKED BY 2` | `IntentPlan -> Resolution -> Signal/Event` | Exact compound-turn and execution boundary, operation contracts, event payloads, and focused mini-cases | Multiple intents, partial completion, suspension/resume, reactions, idempotency, and atomic mutation segments have deterministic receipts and tests |
-| 4 | `BLOCKED BY 3` | Durability, multiplayer, and event-local time | One compatible policy for SOFT/HARD publication, shared visibility, conflicts, chronology, and local time budgets | No proposal contradicts authoritative CORE publication barriers or live-scene ownership; recovery and narration ordering are explicit |
-| 5 | `BLOCKED BY 4` | Game modes and LLM execution budget | Minimal mode-profile contract for quick narrative, ordinary adventure, canonical D&D, and strict detective isolation | Each mode states which mechanics/context isolation are active; presentation detail is not confused with rules enforcement; ordinary turns retain a bounded fast path |
-| 6 | `BLOCKED BY 5` | Lore/chapters/knowledge/secrets plus promotion, migration, catalog-gap, and seed closure | Final cross-cutting contracts and architecture consistency pass | Durable narrative context, restricted knowledge, entity promotion, migrations, gap reports, and selected ruleset seed ownership are unambiguous; full audit passes |
+| 4 | `BLOCKED BY 3` | Lore, chapters, knowledge, secrets, and the minimum promotion interface | Minimum durable truth/disclosure model and context-selection boundary needed by shared play and strict isolation | Public/restricted knowledge has one authority; event disclosure and context assembly are defined; durable references cannot depend on unpromoted local entities |
+| 5 | `BLOCKED BY 4` | Durability, multiplayer, and event-local time | One compatible policy for SOFT/HARD publication, shared visibility, conflicts, chronology, and local time budgets | No proposal contradicts authoritative CORE publication barriers or live-scene ownership; recovery and narration ordering are explicit |
+| 6 | `BLOCKED BY 5` | Game modes and LLM execution budget plus migration, catalog-gap, full seed, and final closure | Minimal mode profiles and final cross-cutting architecture consistency pass | Mode activation and isolation are enforceable over the settled state model; promotion/migration/gap/seed ownership is complete; full audit passes |
 
 ## Current checkpoint
 
-Step 1 is closed in `ARCHITECTURE/CRITICAL_ARCHITECTURE_AUDIT.md`. Step 2 is
-active. Its first deliverable is a dependency/ownership map proving where each
-resource, effect, condition, duration, and recovery fact lives before any new
-field or schema is added.
+Step 1 is complete after owner approval of its adversarial second pass. Step 2
+is active for research and drafting, but its architecture cannot be accepted
+until the Superpowers gate in `DESIGN_PROCESS.md` is satisfied. The first Step 2
+deliverable remains the ownership map proving where every Resource, Effect,
+Condition, Duration, and Recovery fact lives before new schema fields are added.

@@ -407,6 +407,12 @@ cause extra LLM calls or produce a verbose chain of mechanical events.
 
 ## 6. Consumption, stacks, and transformation
 
+Physical currency may be represented as stackable Assets. A campaign may
+instead use an abstract currency-balance Resource for an account/domain, but the
+same funds never have both representations as writable authorities. Conversion
+between physical currency and a balance is an atomic transfer/conversion
+Activity; a convenient UI or SQLite total is only a derived projection.
+
 ### 6.1 Physical units and internal uses
 
 - interchangeable physical units use `quantity`;
@@ -438,6 +444,15 @@ preserves its `asset_id`, placement, and event history.
 
 Allowed results are declared by the Activity or another registered transition;
 the LLM cannot assign an arbitrary mechanically incompatible definition.
+
+Transformation also validates the bounded migration of definition-dependent
+state. Runtime preserves universal instance state such as identity, placement,
+and lineage, but it must explicitly remove state invalid under the new
+definition and initialize required new state through the operation contract.
+It never carries unknown old resource/effect fields forward and never accepts
+an arbitrary JSON Patch from the LLM. Thus a consumed healing potion cannot
+retain a healing charge after becoming an empty bottle, while a refill Activity
+may initialize the new valid charge as part of the reverse transformation.
 
 The transition is a directed edge, not a declaration that two asset kinds are
 generally compatible. Runtime validates the selected Activity's
@@ -509,6 +524,11 @@ materializes the definition's durability profile. At zero HP the asset is
 destroyed or transformed into a meaningful remainder. Zero-quantity and
 destroyed assets are absent from active world state, while their history
 remains in events and checkpoints.
+
+The world Asset's `durability` object is the only authority for that physical
+integrity value. Do not mirror the same value into the Asset's generic
+`resources` map. Charges, doses, fuel, and other independently spendable or
+recoverable pools remain Resources; structural integrity remains durability.
 
 ## 9. Facet guidance
 

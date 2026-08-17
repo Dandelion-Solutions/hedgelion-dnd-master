@@ -153,14 +153,23 @@ All members are optional until HP is needed. Maximum HP resolves from the first
 available base (actor, archetype, or build calculation), plus permanent actor
 adjustment and active Effect contributions.
 
+This `hp` object is the single Actor-state authority for current HP, maximum-HP
+components, and temporary HP. The generic `resources` map must not store a
+second HP or temporary-HP counter. Health-related engine capabilities may read
+and change this object, but they do not imply a duplicate
+`definition.resource` instance.
+
 `temporary` means D&D temporary HP and is non-negative. A temporary reduction
 of maximum HP is a signed Effect contribution to `actor.hp.maximum`, not a
 negative temporary-HP value. If resolved maximum falls below current HP,
 runtime clamps current HP to the new maximum and records the change.
 
 Current project policy treats zero HP as death or destruction unless a specific
-rule such as player-character death saves says otherwise. A broader lifecycle
-status remains deferred backlog work.
+rule says otherwise. In the selected D&D rules, a player character at zero HP
+uses unconscious/stable/death-save mechanics instead of being declared dead
+immediately. That exception derives from the Actor role and ruleset; it does not
+require a second HP field. A broader configurable lifecycle status remains
+deferred backlog work.
 
 ## 6. Resources
 
@@ -174,7 +183,10 @@ Resources are keyed by stable resource-definition ID:
 ```
 
 Capacity, recovery, and spending policy come from definitions/build. Actor
-state stores current values. No array position has identity.
+state stores current values. No array position has identity. Persistent
+resources such as spell slots and feature uses belong here. Procedure-local
+action/reaction/movement budgets belong to the active Resolution/Encounter
+state, not to this persistent Actor map.
 
 ## 7. Roles, placement, and ownership
 

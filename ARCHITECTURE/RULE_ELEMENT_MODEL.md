@@ -23,6 +23,12 @@ the same rules. The owning definition supplies identity and provenance. Runtime
 state such as an active effect or equipped asset determines whether that owner
 is currently available.
 
+An equipped Asset with passive embedded Rule Elements is evaluated directly
+from that Asset and its availability predicates. Runtime does not manufacture a
+duplicate `world.effect` merely to activate those rules. An Effect instance is
+materialized only when it has an independent target, duration, stack,
+parameter, or lifecycle that must survive separately from the equipment state.
+
 Consequently HDM does not create a standalone catalog file, canonical ID, or
 allocator entry for every modifier. If reuse later requires a shared collection,
 the reusable unit should be a Feature or Effect; a new rule-bundle entity is not

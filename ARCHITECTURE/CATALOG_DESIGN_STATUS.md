@@ -5,9 +5,10 @@ Status: **DISCUSSION CHECKPOINT**
 Target branch: `feature/mechanical-runtime-hot-state`
 
 Active sequencing is governed by `ARCHITECTURE/NEAR_TERM_ROADMAP.md`. The
-critical review ledger is `ARCHITECTURE/CRITICAL_ARCHITECTURE_AUDIT.md`. Its
-two review passes are complete; Step 2 (Resources, Effects, Conditions,
-Duration, and Recovery) is now the only active architecture block.
+engine-wide architecture workflow is `ARCHITECTURE/DESIGN_PROCESS.md`. The
+critical review ledger is `ARCHITECTURE/CRITICAL_ARCHITECTURE_AUDIT.md`; its
+adversarial second-pass verdict package is owner-approved. Step 2 is active,
+subject to its independent Superpowers architecture gate.
 
 This document records the current state of catalog design so that subsequent
 work does not depend on reconstructing decisions from a ChatGPT conversation.
@@ -16,16 +17,17 @@ marked as `AGREED`, `PROVISIONAL`, or `OPEN`.
 
 ## 1. Exact point of continuation
 
-The accepted catalog foundations were re-audited by logical block and then for
+The accepted catalog foundations were audited by logical block and for obvious
 cross-document contradictions. Stale selectable IDs and the obsolete
 per-transition durability table were removed/neutralized in `CATALOG_MODEL.md`.
-Every remaining fundamental gap is assigned to one of Steps 2–6 in the active
-roadmap; no unowned blocker remains.
 
-The next task is not general implementation. It is the Step 2 ownership map and
-minimum contracts for Resources, Effects, Conditions, Duration, and Recovery.
-Activity operation schemas and execution examples remain blocked until that
-state vocabulary is settled.
+The owner-approved adversarial second pass found deeper ownership and ordering risks:
+health and Asset durability can be confused with generic Resources;
+transformation lacks a settled definition-dependent state migration boundary;
+and multiplayer/mode stages depend on knowledge, visibility, promotion, and
+seed interfaces that were scheduled too late. The roadmap is reordered and the
+accepted semantic corrections are applied. The exact continuation point is now
+the Step 2 ownership map, before any new schema fields are introduced.
 
 The four-layer separation below is accepted:
 
