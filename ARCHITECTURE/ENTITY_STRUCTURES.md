@@ -156,7 +156,9 @@ CREATE TABLE world_records (
 
 HDM does not add `UNIQUE` constraints for kind-specific gameplay fields merely
 because SQLite can support them. Canonical identity and conflict policy belong
-to runtime/checkpoint logic.
+to runtime/checkpoint logic. The table's technical `PRIMARY KEY` is still
+required for local row identity and efficient replacement; it does not assert a
+new gameplay-level uniqueness rule.
 
 Frequently queried typed fields may receive generated columns, expression
 indexes, or partial indexes. Expected fields may be indexed when their access

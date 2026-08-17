@@ -301,27 +301,37 @@ The first capability registry should support these bounded primitives:
 |---|---|---|
 | `op.select_targets` | entity/context lookup | none |
 | `op.roll` | DiceEngine | none until owning segment commits |
-| `op.check` | actor/target/rules + roll | exported outcome |
-| `op.save` | actor/target/rules + roll | exported outcome |
-| `op.attack` | actor/target/defense + roll | exported hit/critical outcome |
-| `op.damage` | damage pipeline + optional rolls | HP/temp HP and related events |
-| `op.heal` | healing pipeline | HP/resource |
-| `op.temp_hp` | value/rules | temporary HP |
+| `op.resolve_check` | actor/target/rules + roll | exported outcome |
+| `op.resolve_contest` | opposing actors/rules + rolls | exported outcome |
+| `op.resolve_save` | actor/target/rules + roll | exported outcome |
+| `op.resolve_attack` | actor/target/defense + roll | exported hit/critical outcome |
+| `op.apply_damage` | damage pipeline + optional rolls | HP/temp HP and related events |
+| `op.apply_healing` | healing pipeline | HP/resource |
+| `op.set_temporary_hp` | value/rules | temporary HP |
 | `op.consume_resource` | resource state | resource amount/use gate |
 | `op.restore_resource` | resource state | resource amount/use gate |
 | `op.transfer_asset` | ownership/location | owner, inventory, location |
 | `op.transfer_currency` | balances/denomination | balances/events |
 | `op.move_entity` | location/reachability context | location/occupancy |
+| `op.teleport_entity` | destination/restrictions | location/occupancy |
+| `op.create_entity` | validated definition and initial state | new world record |
+| `op.retire_entity` | entity/remainder policy | entity leaves active world |
 | `op.create_effect` | effect definition/targets | EffectInstance |
+| `op.update_effect` | EffectInstance + bounded delta | effect state |
 | `op.remove_effect` | EffectInstance | effect status |
-| `op.set_condition` | condition rules | condition/effect state |
+| `op.transform_entity` | entity, guarded source and target definition | definition identity/state |
+| `op.create_zone` | zone definition/placement | ZoneInstance |
+| `op.update_zone` | ZoneInstance + bounded delta | zone state |
+| `op.remove_zone` | ZoneInstance | zone status |
+| `op.for_each_target` | bounded selected target set | child steps |
 | `op.branch` | typed prior result | selects finite branch |
-| `op.choice` | bounded options | suspends Resolution |
-| `op.reaction_window` | trigger bindings | suspends Resolution |
+| `op.request_choice` | bounded options | suspends Resolution |
+| `op.open_reaction_window` | trigger bindings | suspends Resolution |
 | `op.emit_fact` | validated semantic payload | event/fact within commit |
 | `op.schedule_followup` | registered Activity reference | bounded child Resolution |
+| `op.advance_local_time` | active procedure and validated budget | local time budget |
 
-An unarmed attack uses `op.attack` with a registered unarmed profile and no
+An unarmed attack uses `op.resolve_attack` with a registered unarmed profile and no
 asset. A body part is not an inventory item.
 
 ## 11. Multiple intents in one player message
@@ -575,6 +585,13 @@ Mapping outcomes are:
 | `narrative_only` | Fictional response with no mechanical mutation |
 | `clarification_required` | Material ambiguity prevents safe mapping |
 | `unsupported` | Required capability is absent |
+
+Validation depth follows consequence, not prose length. Narrative-only mapping
+may remain on the fast path. Any request that mutates canonical state, spends a
+resource, changes possession/location, transforms an entity, or rolls against
+mechanics must pass typed runtime preflight. Ambiguity that could change such a
+consequence returns `clarification_required`; harmless descriptive ambiguity may
+be adjudicated by the Master without another round trip.
 
 `unsupported` must never be rewritten as a fictional game rule. For example,
 an experimental runtime that lacks unarmed attacks reports a capability gap; it

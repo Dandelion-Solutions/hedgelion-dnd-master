@@ -70,6 +70,9 @@ decided alongside each independently identified record kind.
 
 - The physical HOT state is local operational truth. SQLite is a disposable
   working projection/transaction store. GitHub is durable campaign canon.
+- Durable recovery is snapshot-first. Events provide causal audit and bounded
+  catch-up after the snapshot frontier; HDM does not require replaying the full
+  campaign log to reconstruct current state.
 - A new environment must be able to reconstruct canonical state from GitHub at
   the last published checkpoint. Byte-identical SQLite recovery is unnecessary.
 - Incidental, non-canonical entities may disappear with the local environment.
@@ -81,6 +84,8 @@ decided alongside each independently identified record kind.
   or compression layer; Git transport compression is sufficient.
 - Lore, history, and story may also be stored as substantial chapter documents
   with metadata and entity references.
+- Publication uses compare-and-swap semantics against an expected Git HEAD.
+  Concurrent advancement requires reload/reconciliation and never a force push.
 
 ### `AGREED` — Chronology and play model
 

@@ -439,6 +439,19 @@ preserves its `asset_id`, placement, and event history.
 Allowed results are declared by the Activity or another registered transition;
 the LLM cannot assign an arbitrary mechanically incompatible definition.
 
+The transition is a directed edge, not a declaration that two asset kinds are
+generally compatible. Runtime validates the selected Activity's
+`from_definition_id` against the current asset before applying
+`to_definition_id`. A reverse transformation exists only when another Activity
+declares the reverse edge. Thus refill may permit empty bottle -> healing potion
+and deploy/stow may permit travelling mortar <-> siege mortar, while neither
+creates any route between a bottle and a mortar.
+
+Transition permissions belong to Activities rather than a per-asset list. This
+avoids duplicated reverse links and still permits new campaign assets: their
+definitions and connecting Activities are validated when loaded, before play
+can execute them.
+
 An empty bottle may later transform back through a refill Activity. Breaking it
 may transform it into broken glass when the remainder matters, or destroy it
 when it does not.
@@ -572,8 +585,10 @@ indexes are:
 
 The HOT cache stores complete resolved asset objects and may additionally cache
 derived possession, accessible contents, total carried weight, occupied hands,
-and container totals. Runtime invalidates affected derived values when an asset
-moves, transforms, splits, changes quantity, or changes equipment state.
+and container totals. The first implementation invalidates derived caches with
+the session's monotonically increasing `state_revision` after any committed
+mutation. This deliberately coarse rule is cheap and correct for chat-scale
+state. Targeted dependency invalidation is added only if profiling justifies it.
 
 The LLM sends semantic intent and bounded adjudication. Python performs graph
 lookup, hand accounting, validation, arithmetic, ID allocation, atomic state

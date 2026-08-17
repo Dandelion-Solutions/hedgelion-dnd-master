@@ -54,6 +54,12 @@ References to Activities, Effects, Resources, Rule Elements, or other
 definitions belong in kind-specific `data`. A loader validates those references
 against the reviewed registries.
 
+Registry IDs describe the engine's accepted vocabulary and are closed to
+ad-hoc LLM invention during play. Reusable definition instances are extensible
+at ruleset and campaign scope when they validate against that vocabulary.
+Adding a new executable primitive requires engine work; adding a sword, bottle,
+or mortar definition does not.
+
 ## 3. World-record envelope
 
 ```json
@@ -104,6 +110,10 @@ Definitions do not use inheritance or a universal override object.
 - Runtime changes to a particular object belong in kind-specific `state`.
 - A unique object with different permanent properties receives a campaign
   definition.
+- A new definition is justified when an object needs a reusable mechanical or
+  semantic identity that cannot be expressed as instance state, existing
+  definitions, facets, and tags. A different name or one-off description alone
+  does not require one.
 - Mechanical variations compose registered Activities, Effects, Resources,
   Rule Elements, and other catalog definitions.
 - An idea that cannot be represented by registered capabilities produces a
@@ -111,6 +121,31 @@ Definitions do not use inheritance or a universal override object.
 
 HDM does not define a plugin or free-form mechanics-extension contract at this
 stage.
+
+### 5.1 Definition changes are directed transformations
+
+`definition_id` may change only when the same world object remains but its
+reusable identity has changed. The permission is declared by a concrete
+Activity step using the registered `op.transform_entity` primitive; it is not a
+global compatibility matrix on asset kinds and is not inferred from facets.
+
+Each step names or binds:
+
+- the target world-record ID;
+- the required current `definition_id` (`from_definition_id`);
+- the resulting existing definition (`to_definition_id`).
+
+The runtime rejects a stale source, missing target definition, wrong world kind,
+or transition not present in the selected Activity. Reversibility requires a
+second directed step: potion to empty bottle and empty bottle to potion are two
+permissions, not one implicit bidirectional relation. The same mechanism covers
+deploy/stow forms such as travelling mortar to siege mortar without implying
+that arbitrary assets can transform into either.
+
+Campaign-authored assets remain possible. When a new form is needed, the Master
+may create a validated campaign definition and a campaign Activity that connects
+explicit endpoints using registered capabilities. The Master never mutates
+`definition_id` directly.
 
 ## 6. Version placement
 
@@ -160,6 +195,19 @@ The following data is deliberately excluded from the universal records:
 
 This placement avoids duplicating facts across every object while retaining
 their authoritative source.
+
+## 8.1 Authority of catalog artifacts
+
+JSON schemas and machine-readable catalog files are authoritative for IDs,
+shape, and validation. Markdown documents are authoritative for semantics,
+ownership boundaries, and rationale. A contradiction is a repository defect;
+runtime must not guess which representation to follow.
+
+Executable mechanics may use only registered typed fields and capabilities.
+`tags`, `details`, prose, and unknown optional fields may guide narration or
+catalog authoring but never become an unvalidated mechanical input. If a value
+starts affecting resolution, it is promoted to one agreed typed field and the
+relevant schema/loader is updated.
 
 ## 9. Identifier boundary
 

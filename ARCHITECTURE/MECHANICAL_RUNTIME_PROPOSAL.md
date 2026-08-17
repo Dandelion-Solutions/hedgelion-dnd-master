@@ -321,6 +321,12 @@ Every canonical HOT record tracks:
 Hydration must never overwrite a dirty record. A newer canonical record triggers
 targeted reconciliation or `STALE_HOT_REVISION`.
 
+`state_revision` is the session-wide committed-mutation counter and the initial
+cache invalidation token. Every successful mutating SQLite transaction advances
+it once, regardless of how many records the transaction changes. Derived cache
+entries stamped with an older revision are recomputed. This is intentionally
+coarse; it avoids a dependency graph until measured workload requires one.
+
 ## 7. Activity representation
 
 Activities are data, validated and compiled at hydration/definition load time.
@@ -683,6 +689,11 @@ Rebuild procedure:
    completeness;
 8. set `hot_revision = hard_revision` and open the session.
 
+Applying a post-snapshot event requires its stable event/idempotency ID to be
+absent from the snapshot's covered frontier and from the local applied-event
+set. Rebuild fails closed on an ambiguous frontier rather than guessing and
+possibly applying currency, damage, consumption, or transformation twice.
+
 Canonical snapshots are the primary recovery input; the semantic log supplies
 causal audit and bounded catch-up, not a requirement to replay the campaign from
 its beginning. Record/event frontiers must make it unambiguous which events are
@@ -749,6 +760,14 @@ The materializer returns final path contents/deletions, expected base HEAD/tree,
 semantic dirty reasons, event frontier, and a batch token. The host transports it
 through the existing `CAMPAIGN_TREE_TXN` algorithm. Only `ack_publication` after
 successful non-force ref update advances hard revisions and clears the batch.
+
+Publication uses optimistic concurrency at the branch frontier. The prepared
+batch names the exact expected base commit; the host updates the branch only if
+HEAD still equals that commit. If another writer advanced HEAD, the batch is not
+replayed or force-pushed. Runtime/host reload the new frontier, reconcile or
+reject conflicting touched records, and prepare a new batch with the same
+idempotency identities. Git commit order is therefore canonical publication
+order, but commit timestamps are not gameplay clocks.
 
 ### 14.3 Publication failure
 

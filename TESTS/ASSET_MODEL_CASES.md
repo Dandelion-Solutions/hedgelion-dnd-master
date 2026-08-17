@@ -96,3 +96,23 @@ of fuel uses a resource current value. The two mechanisms are not mixed.
 An asset has no `identified` boolean. Different actor knowledge is represented
 through lore and knowledge records, allowing one actor to know an item's nature
 while another does not.
+
+## A16 — Directed reversible transformation
+
+The refill Activity declares empty bottle -> healing potion and the consume
+Activity declares healing potion -> empty bottle. Either direction succeeds
+only when its guarded source definition matches. The existence of one Activity
+does not imply the reverse permission.
+
+## A17 — Unrelated transformation rejection
+
+An LLM request attempts to change a bottle into a siege mortar without selecting
+a validated Activity that contains that exact directed transition. Runtime
+rejects the request before mutation and emits no committed transformation event.
+
+## A18 — Deployable asset forms
+
+A travelling mortar and deployed siege mortar are two definitions for the same
+physical asset. Deploy and stow Activities declare opposite directed
+`op.transform_entity` steps. Each transition preserves asset ID, placement, and
+lineage while changing the definition atomically.
