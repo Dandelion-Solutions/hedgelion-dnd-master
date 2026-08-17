@@ -6,7 +6,10 @@
   "additionalProperties": false,
   "required": ["id", "kind", "name", "data"],
   "properties": {
-    "id": {"$ref": "#/$defs/machineId"},
+    "id": {
+      "allOf": [{"$ref": "#/$defs/machineId"}],
+      "description": "Stable semantic namespaced ID; reusable definitions do not use numeric allocation."
+    },
     "kind": {
       "type": "string",
       "pattern": "^definition\\.[a-z][a-z0-9_]*$"
