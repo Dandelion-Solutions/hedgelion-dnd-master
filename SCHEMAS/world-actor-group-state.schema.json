@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/world-actor-group-state.schema.json",
+  "title": "HDM world.actor_group state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name"],
+  "properties": {
+    "name": {"$ref": "#/$defs/localizedText"},
+    "member_ids": {"$ref": "#/$defs/idSet"},
+    "leader_id": {"$ref": "#/$defs/id"},
+    "location_id": {"$ref": "#/$defs/id"},
+    "purpose": {"type": "string", "minLength": 1},
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "localizedText": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 2,
+      "required": ["en"],
+      "propertyNames": {"pattern": "^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$"},
+      "additionalProperties": {"type": "string", "minLength": 1}
+    }
+  }
+}
