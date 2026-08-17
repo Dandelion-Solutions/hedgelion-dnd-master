@@ -44,8 +44,8 @@
 - [ ] Post-update runtime reloads exact local target package.
 
 ## Regression
-- [ ] Maintenance dependencies installed with `python -m pip install -r requirements-maintenance.txt`.
-- [ ] In explicit engine-maintenance/release mode, `python TOOLS/audit_engine.py` passes on the exact release tree.
+- [ ] Maintenance dependencies remain declared only in `TOOLS/requirements-maintenance.txt` and are not gameplay/runtime dependencies.
+- [ ] In explicit engine-maintenance/release mode, `TOOLS/run_maintenance_audit` prepares the isolated maintenance environment and passes on the exact release tree.
 - [ ] `TESTS/BOOTSTRAP_STORAGE_REGRESSION_CASES.md` reviewed.
 - [ ] `TESTS/ENGINE_UPDATE_CASES.md` reviewed.
 - [ ] Fresh-Project end-to-end test completed from GitHub-generated Source code ZIP.

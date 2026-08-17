@@ -184,6 +184,23 @@ true:
 Until one of these conditions occurs, do not spend tool calls or execution time
 testing native Git remote access.
 
+## Maintenance audit
+
+For explicit HDM engine development/release maintenance, the canonical audit
+entry point is:
+
+```text
+TOOLS/run_maintenance_audit
+```
+
+Use that command instead of manually selecting a virtualenv, installing
+maintenance packages, or invoking `TOOLS/audit_engine.py` directly. The launcher
+owns the isolated `.hdm-maintenance/` cache and reads dependencies from
+`TOOLS/requirements-maintenance.txt`.
+
+Do not install maintenance dependencies into the system Python. Do not make the
+gameplay runtime depend on the maintenance environment.
+
 ## Development versus gameplay
 
 This file defines **development tooling policy only**.

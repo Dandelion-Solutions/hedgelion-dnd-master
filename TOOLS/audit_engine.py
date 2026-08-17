@@ -5,8 +5,8 @@ This executable is for explicit engine development/release maintenance. It is NO
 part of campaign bootstrap, setup, gameplay, save, pause/resume, or campaign
 integrity fast paths and must never be invoked automatically by runtime.
 
-Install maintenance dependencies with
-`python -m pip install -r requirements-maintenance.txt`. Exits non-zero on
+Run maintenance audits through `TOOLS/run_maintenance_audit`; it prepares the
+isolated maintenance dependencies. Exits non-zero on
 normative contradictions, invalid JSON Schema/catalog data, or scaffold smoke
 failure.
 """
@@ -26,7 +26,7 @@ try:
 except ImportError:
     print(
         "ERROR: missing maintenance dependency 'jsonschema'; "
-        "run: python -m pip install -r requirements-maintenance.txt",
+        "run: TOOLS/run_maintenance_audit",
         file=sys.stderr,
     )
     raise SystemExit(2)

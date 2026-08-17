@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import sys
+import venv
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+CACHE_DIR = ROOT / ".hdm-maintenance"
+VENV_DIR = CACHE_DIR / "venv"
+FINGERPRINT_PATH = CACHE_DIR / "fingerprint.json"
+REQUIREMENTS = ROOT / "TOOLS" / "requirements-maintenance.txt"
+AUDIT = ROOT / "TOOLS" / "audit_engine.py"
+
+
+class PreparationError(RuntimeError):
+    def __init__(self, message: str, exit_code: int = 2):
+        super().__init__(message)
+        self.exit_code = exit_code
+
+
+def compute_fingerprint(
+    requirements_path: Path,
+    python_version: tuple[int, int],
+) -> dict[str, str]:
+    digest = hashlib.sha256(requirements_path.read_bytes()).hexdigest()
+    return {
+        "requirements_sha256": digest,
+        "python": f"{python_version[0]}.{python_version[1]}",
+    }
+
+
+def venv_python_path(venv_dir: Path) -> Path:
+    if os.name == "nt":
+        return venv_dir / "Scripts" / "python.exe"
+    return venv_dir / "bin" / "python"
+
+
+def load_fingerprint(path: Path) -> dict[str, str] | None:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(value, dict):
+        return None
+    if not all(isinstance(k, str) and isinstance(v, str) for k, v in value.items()):
+        return None
+    return value
+
+
+def cache_is_current(
+    venv_dir: Path,
+    fingerprint_path: Path,
+    expected: dict[str, str],
+) -> bool:
+    python = venv_python_path(venv_dir)
+    return (
+        python.is_file()
+        and os.access(python, os.X_OK)
+        and load_fingerprint(fingerprint_path) == expected
+    )
+
+
+def rebuild_environment(
+    root: Path,
+    expected: dict[str, str],
+    *,
+    builder_factory=venv.EnvBuilder,
+    runner=subprocess.run,
+) -> Path:
+    cache_dir = root / ".hdm-maintenance"
+    venv_dir = cache_dir / "venv"
+    fingerprint_path = cache_dir / "fingerprint.json"
+    requirements = root / "TOOLS" / "requirements-maintenance.txt"
+
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    fingerprint_path.unlink(missing_ok=True)
+    if venv_dir.exists():
+        shutil.rmtree(venv_dir)
+
+    try:
+        builder_factory(with_pip=True, clear=True).create(venv_dir)
+    except Exception as exc:
+        raise PreparationError(f"virtual environment creation failed: {exc}") from exc
+
+    python = venv_python_path(venv_dir)
+    pip_env = os.environ.copy()
+    pip_env["PIP_DISABLE_PIP_VERSION_CHECK"] = "1"
+    pip_env["PIP_NO_INPUT"] = "1"
+    pip_env["PIP_RETRIES"] = "1"
+    pip_env["PIP_CACHE_DIR"] = str(cache_dir / "pip-cache")
+    cp = runner(
+        [str(python), "-m", "pip", "install", "-r", str(requirements)],
+        cwd=root,
+        env=pip_env,
+    )
+    if cp.returncode != 0:
+        raise PreparationError(
+            f"maintenance dependency installation failed (exit {cp.returncode})",
+            cp.returncode,
+        )
+
+    tmp = fingerprint_path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(expected, sort_keys=True) + "\n", encoding="utf-8")
+    tmp.replace(fingerprint_path)
+    return python
+
+
+def ensure_environment(
+    root: Path,
+    *,
+    python_version: tuple[int, int] | None = None,
+    builder_factory=venv.EnvBuilder,
+    runner=subprocess.run,
+) -> Path:
+    version = python_version or (sys.version_info.major, sys.version_info.minor)
+    requirements = root / "TOOLS" / "requirements-maintenance.txt"
+    try:
+        expected = compute_fingerprint(requirements, version)
+    except OSError as exc:
+        raise PreparationError(f"cannot read TOOLS/requirements-maintenance.txt: {exc}") from exc
+    venv_dir = root / ".hdm-maintenance" / "venv"
+    fingerprint_path = root / ".hdm-maintenance" / "fingerprint.json"
+    if cache_is_current(venv_dir, fingerprint_path, expected):
+        return venv_python_path(venv_dir)
+    return rebuild_environment(
+        root,
+        expected,
+        builder_factory=builder_factory,
+        runner=runner,
+    )
+
+
+def run_audit(venv_python: Path, *, runner=subprocess.run) -> int:
+    return runner([str(venv_python), str(AUDIT)], cwd=ROOT).returncode
+
+
+def main() -> int:
+    try:
+        maintenance_python = ensure_environment(ROOT)
+    except PreparationError as exc:
+        print(
+            f"ERROR: maintenance environment preparation failed: {exc}",
+            file=sys.stderr,
+        )
+        return exc.exit_code
+    return run_audit(maintenance_python)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
