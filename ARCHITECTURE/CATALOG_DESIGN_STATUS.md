@@ -23,11 +23,12 @@ D&D5e, Avrae automation, and PF2e Rule Element prior art. The resulting baseline
 is fixed in `ARCHITECTURE/CATALOG_INVENTORY.md` and machine-readable catalog
 version 1.1.0. It is sufficient for schema design and explicitly extensible.
 
-The minimum universal definition and world-record envelopes are agreed and
-recorded in `ARCHITECTURE/CATALOG_CONTRACTS.md` with machine-readable base
-schemas. The next catalog task is to define minimum kind-specific structures.
-Identifier policy is decided alongside each independently identified record
-kind.
+The minimum universal envelopes and the required/expected field inventory for
+every definition and world-record kind are agreed. They are recorded in
+`ARCHITECTURE/CATALOG_CONTRACTS.md`, `ARCHITECTURE/ENTITY_STRUCTURES.md`, and
+`CATALOG/entity-structures.json`. The next catalog task is to define the nested
+value shapes, beginning with actors. Identifier policy is decided alongside
+each independently identified record kind.
 
 ## 2. Agreed catalog principles
 
@@ -97,11 +98,11 @@ kind.
 The class membership and layer boundaries in `CATALOG_INVENTORY.md` are now the
 reviewed baseline. They may be extended later through catalog versioning.
 
-The universal definition and world-record envelopes in
-`CATALOG_CONTRACTS.md` are accepted contracts. The following structures remain
+The universal envelopes and field membership in `CATALOG_CONTRACTS.md` and
+`ENTITY_STRUCTURES.md` are accepted contracts. The following structures remain
 proposals rather than accepted contracts:
 
-- minimum kind-specific fields and cross-record references;
+- nested shapes and validation rules for kind-specific fields and references;
 - exact executable contracts for the registered primitives and Rule Elements;
 - identifier policies and promotion rules for each record kind.
 
@@ -143,7 +144,7 @@ candidate, not a general identifier policy for all classes.
 
 ## 5. Other catalog questions still open
 
-1. Minimum kind-specific fields and reference rules.
+1. Nested shapes and validation rules for kind-specific fields and references.
 2. Exact Activity primitive contracts and composition limits.
 3. Execution semantics for multi-intent messages: ordering, atomic groups,
    partial failure, suspension, and action-economy boundaries.

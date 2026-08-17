@@ -10,6 +10,8 @@ Normative class inventory: `ARCHITECTURE/CATALOG_INVENTORY.md`
 
 Universal record contracts: `ARCHITECTURE/CATALOG_CONTRACTS.md`
 
+Minimum entity structures: `ARCHITECTURE/ENTITY_STRUCTURES.md`
+
 Machine-readable registry: `CATALOG/core-catalog.json` version `1.1.0`
 
 ## 1. Purpose
