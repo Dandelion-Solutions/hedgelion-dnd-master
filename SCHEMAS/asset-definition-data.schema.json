@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/asset-definition-data.schema.json",
+  "title": "HDM definition.asset data",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "physical": {"$ref": "#/$defs/physical"},
+    "value": {"$ref": "#/$defs/value"},
+    "rarity": {"$ref": "#/$defs/id"},
+    "property_ids": {"$ref": "#/$defs/idSet"},
+    "activity_ids": {"$ref": "#/$defs/idSet"},
+    "resource_ids": {"$ref": "#/$defs/idSet"},
+    "effect_ids": {"$ref": "#/$defs/idSet"},
+    "handling": {"$ref": "#/$defs/handling"},
+    "capacity": {"$ref": "#/$defs/capacity"},
+    "stack": {"$ref": "#/$defs/stack"},
+    "attunement": {"$ref": "#/$defs/attunement"},
+    "durability": {"$ref": "#/$defs/durability"},
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "physical": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "weight": {"type": "number", "minimum": 0},
+        "size_id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "value": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "currency_id"],
+      "properties": {
+        "amount": {"type": "integer", "minimum": 0},
+        "currency_id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "handling": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "held_hands": {"type": "integer", "minimum": 0},
+        "use_hands": {"type": "integer", "minimum": 0}
+      }
+    },
+    "capacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "weight": {"type": "number", "minimum": 0},
+        "volume": {"type": "number", "minimum": 0}
+      }
+    },
+    "stack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed"],
+      "properties": {"allowed": {"type": "boolean"}}
+    },
+    "attunement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "allowed_class_ids": {"$ref": "#/$defs/idSet"}
+      }
+    },
+    "durability": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "profile": {"$ref": "#/$defs/id"},
+        "armor_class": {"type": "integer", "minimum": 0},
+        "hp_maximum": {"type": "integer", "minimum": 1},
+        "damage_threshold": {"type": "integer", "minimum": 0}
+      }
+    }
+  },
+  "examples": [
+    {},
+    {
+      "physical": {"weight": 3},
+      "value": {"amount": 15, "currency_id": "currency.gp"},
+      "property_ids": ["equipment_property.versatile"],
+      "activity_ids": ["activity.longsword_attack"],
+      "handling": {"held_hands": 1, "use_hands": 2},
+      "durability": {"profile": "durability.resilient"}
+    }
+  ]
+}
