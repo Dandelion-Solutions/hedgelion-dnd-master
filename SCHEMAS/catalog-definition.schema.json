@@ -4,29 +4,21 @@
   "title": "HDM reusable catalog definition envelope",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "kind", "schema_version", "origin", "name", "data"],
+  "required": ["id", "kind", "name", "data"],
   "properties": {
     "id": {"$ref": "#/$defs/machineId"},
     "kind": {
       "type": "string",
       "pattern": "^definition\\.[a-z][a-z0-9_]*$"
     },
-    "schema_version": {"type": "integer", "minimum": 1},
-    "origin": {
-      "enum": ["engine", "ruleset", "campaign", "session"]
-    },
-    "name": {"type": "string", "minLength": 1},
+    "name": {"$ref": "#/$defs/localizedText"},
     "facets": {"$ref": "#/$defs/idSet"},
     "tags": {
       "type": "array",
       "uniqueItems": true,
       "items": {"type": "string", "minLength": 1}
     },
-    "requires": {"$ref": "#/$defs/idSet"},
-    "extends": {"$ref": "#/$defs/machineId"},
-    "data": {"type": "object"},
-    "provenance": {"type": "object"},
-    "extensions": {"$ref": "#/$defs/extensions"}
+    "data": {"type": "object"}
   },
   "$defs": {
     "machineId": {
@@ -39,10 +31,17 @@
       "uniqueItems": true,
       "items": {"$ref": "#/$defs/machineId"}
     },
-    "extensions": {
+    "localizedText": {
       "type": "object",
+      "minProperties": 1,
+      "maxProperties": 2,
+      "required": ["en"],
       "propertyNames": {
-        "pattern": "^[a-z][a-z0-9_-]*(?:\\.[a-z][a-z0-9_-]*)+$"
+        "pattern": "^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
       }
     }
   }

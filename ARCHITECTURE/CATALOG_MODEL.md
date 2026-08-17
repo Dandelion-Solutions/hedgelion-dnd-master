@@ -76,7 +76,8 @@ content selectable by the Master and never appear as catalog search results.
 
 ## 3. Catalog strata
 
-Definitions have an explicit origin:
+Definition origin is explicit in its catalog layer/path and loader context; it
+is not repeated in every definition record:
 
 | Origin | Meaning | May redefine engine semantics? |
 |---|---|---:|
@@ -90,71 +91,52 @@ Resolution order is explicit and never based on filename accident:
 ```text
 engine capability registry
   -> selected ruleset definitions
-  -> campaign definitions/overrides
-  -> session-local instances
+  -> campaign definitions
+  -> session-local definitions
 ```
 
-An override names the exact base definition and compatible schema version. It
-may replace data values or compose registered behavior. It may not change the
-meaning of a capability ID.
+Definitions compose registered behavior. HDM does not use a universal
+inheritance or override mechanism.
 
 ## 4. Universal definition envelope
 
-> **Contract notice:** the normative working prototype is now defined by
-> `CATALOG_CONTRACTS.md` and `SCHEMAS/catalog-definition.schema.json`. The
-> example below is retained as design history and is non-normative.
-
-Every reusable definition has this minimum envelope:
+The accepted minimum envelope is defined by `CATALOG_CONTRACTS.md` and
+`SCHEMAS/catalog-definition.schema.json`:
 
 ```json
 {
-  "id": "item.moonlace_brooch",
-  "schema_version": 1,
-  "definition_kind": "asset",
-  "origin": "campaign",
-  "label": "Moonlace Brooch",
+  "id": "campaign.moonlace_brooch",
+  "kind": "definition.asset",
+  "name": {"en": "Moonlace Brooch", "ru": "Брошь лунного кружева"},
   "tags": ["jewelry", "moon"],
   "facets": ["asset.wearable", "asset.decoration", "asset.artifact"],
-  "capabilities": [],
-  "data": {},
-  "extensions": {}
+  "data": {}
 }
 ```
 
 Required fields are deliberately small:
 
 - `id` is stable and unique within the resolved catalog;
-- `schema_version` selects validation/migration logic;
-- `definition_kind` selects the definition schema;
-- `origin` records provenance;
-- `label` is presentation, never identity;
+- `kind` selects the definition schema;
+- `name` stores English and at most one campaign/player language;
+- `data` is kind-specific validated content.
+
+Optional fields are:
+
 - `tags` support retrieval but never grant mechanics;
-- `facets` classify compatible aspects without forcing one inheritance tree;
-- `capabilities` reference registered executable definitions;
-- `data` is kind-specific validated content;
-- `extensions` is namespaced non-authoritative metadata unless a schema says
-  otherwise.
+- `facets` classify compatible aspects without forcing one inheritance tree.
 
 ## 5. Universal instance envelope
 
-> **Contract notice:** the normative working prototype is now defined by
-> `CATALOG_CONTRACTS.md` and `SCHEMAS/world-record.schema.json`. The example
-> below is retained as design history and is non-normative.
-
-A world instance is separate from its reusable definition:
+The accepted minimum envelope is defined by `CATALOG_CONTRACTS.md` and
+`SCHEMAS/world-record.schema.json`:
 
 ```json
 {
-  "id": "item.brooch.0042",
-  "kind": "asset",
-  "definition_id": "item.moonlace_brooch",
-  "canonicality": "CANONICAL",
-  "revision": 7,
-  "state": {},
-  "overrides": {},
-  "provenance": {
-    "campaign_path": "WORLD/ITEMS/item.brooch.0042.yaml"
-  }
+  "id": "asset-00042",
+  "kind": "world.asset",
+  "definition_id": "campaign.moonlace_brooch",
+  "state": {}
 }
 ```
 
@@ -446,7 +428,7 @@ Every event minimally records:
 | `resource.custom_counter` | validated bounded counter without new behavior |
 
 Resource definitions specify minimum, maximum or capacity expression, recovery
-policy, spending timing, durability policy, and provenance.
+policy, spending timing, and durability policy.
 
 ## 15. Effect and condition catalog
 
@@ -601,26 +583,26 @@ element, the Master:
 2. binds existing Activities/Rule Elements/resources;
 3. proposes natural values from the selected ruleset and fictional description;
 4. validates the definition;
-5. creates a campaign instance or definition with provenance;
+5. creates a campaign instance or definition;
 6. reports `unsupported` for any semantic part outside engine capabilities.
 
 Example custom artifact:
 
 ```json
 {
-  "id": "item.moonlace_brooch",
-  "schema_version": 1,
-  "definition_kind": "asset",
-  "origin": "campaign",
-  "label": "Moonlace Brooch",
+  "id": "campaign.moonlace_brooch",
+  "kind": "definition.asset",
+  "name": {
+    "en": "Moonlace Brooch",
+    "ru": "Брошь лунного кружева"
+  },
   "tags": ["jewelry", "moon"],
   "facets": ["asset.wearable", "asset.decoration", "asset.artifact"],
-  "capabilities": ["activity.moonlight_pulse"],
   "data": {
+    "activity_ids": ["activity.moonlight_pulse"],
     "rule_elements": ["re.moonlace_radiant_rider"],
     "resources": [{"kind": "resource.use", "capacity": 1, "recovery": "long_rest"}]
-  },
-  "extensions": {}
+  }
 }
 ```
 

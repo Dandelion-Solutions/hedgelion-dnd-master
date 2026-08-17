@@ -4,47 +4,21 @@
   "title": "HDM world-record envelope",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "id", "kind", "schema_version", "revision", "canonicality", "state"
-  ],
+  "required": ["id", "kind", "state"],
   "properties": {
     "id": {"$ref": "#/$defs/machineId"},
     "kind": {
       "type": "string",
       "pattern": "^world\\.[a-z][a-z0-9_]*$"
     },
-    "schema_version": {"type": "integer", "minimum": 1},
-    "revision": {"type": "integer", "minimum": 0},
-    "canonicality": {
-      "enum": [
-        "canonicality.ephemeral",
-        "canonicality.local",
-        "canonicality.canonical"
-      ]
-    },
     "definition_id": {"$ref": "#/$defs/machineId"},
-    "facets": {"$ref": "#/$defs/idSet"},
-    "state": {"type": "object"},
-    "overrides": {"type": "object"},
-    "provenance": {"type": "object"},
-    "extensions": {"$ref": "#/$defs/extensions"}
+    "state": {"type": "object"}
   },
   "$defs": {
     "machineId": {
       "type": "string",
       "minLength": 1,
       "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
-    },
-    "idSet": {
-      "type": "array",
-      "uniqueItems": true,
-      "items": {"$ref": "#/$defs/machineId"}
-    },
-    "extensions": {
-      "type": "object",
-      "propertyNames": {
-        "pattern": "^[a-z][a-z0-9_-]*(?:\\.[a-z][a-z0-9_-]*)+$"
-      }
     }
   }
 }

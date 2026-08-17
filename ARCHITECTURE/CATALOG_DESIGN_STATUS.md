@@ -23,16 +23,18 @@ D&D5e, Avrae automation, and PF2e Rule Element prior art. The resulting baseline
 is fixed in `ARCHITECTURE/CATALOG_INVENTORY.md` and machine-readable catalog
 version 1.1.0. It is sufficient for schema design and explicitly extensible.
 
-The universal definition and world-record envelope prototype is now recorded in
-`ARCHITECTURE/CATALOG_CONTRACTS.md` with machine-readable base schemas. The next
-catalog task is to review that boundary, then define minimum kind-specific
-structures. Identifier policy is decided alongside each independently
-identified record kind.
+The minimum universal definition and world-record envelopes are agreed and
+recorded in `ARCHITECTURE/CATALOG_CONTRACTS.md` with machine-readable base
+schemas. The next catalog task is to define minimum kind-specific structures.
+Identifier policy is decided alongside each independently identified record
+kind.
 
 ## 2. Agreed catalog principles
 
 ### `AGREED` — Core catalog and extensibility
 
+- Record structures follow minimum sufficiency: speculative fields and generic
+  extension mechanisms are not added without a concrete requirement.
 - The core repository contains a versioned catalog that serves as architecture
   documentation and as seed data for runtime/SQLite loading.
 - The catalog describes stable classes, facets, primitives, and policies. It
@@ -95,10 +97,10 @@ identified record kind.
 The class membership and layer boundaries in `CATALOG_INVENTORY.md` are now the
 reviewed baseline. They may be extended later through catalog versioning.
 
-The following structures remain proposals rather than accepted contracts:
+The universal definition and world-record envelopes in
+`CATALOG_CONTRACTS.md` are accepted contracts. The following structures remain
+proposals rather than accepted contracts:
 
-- the universal definition and instance envelopes in
-  `CATALOG_CONTRACTS.md` (complete working prototype awaiting review);
 - minimum kind-specific fields and cross-record references;
 - exact executable contracts for the registered primitives and Rule Elements;
 - identifier policies and promotion rules for each record kind.
@@ -141,24 +143,23 @@ candidate, not a general identifier policy for all classes.
 
 ## 5. Other catalog questions still open
 
-1. Minimum universal definition and instance envelopes.
-2. Minimum kind-specific fields and reference rules.
-3. Exact Activity primitive contracts and composition limits.
-4. Execution semantics for multi-intent messages: ordering, atomic groups,
+1. Minimum kind-specific fields and reference rules.
+2. Exact Activity primitive contracts and composition limits.
+3. Execution semantics for multi-intent messages: ordering, atomic groups,
    partial failure, suspension, and action-economy boundaries.
-5. Event payloads, granularity, and durability classification; the event-kind
+4. Event payloads, granularity, and durability classification; the event-kind
    baseline itself is reviewed.
-6. Minimum structures for assets and the division between facets, tags,
+5. Minimum structures for assets and the division between facets, tags,
    capabilities, and mutable state.
-7. Actor/NPC/companion archetypes and instance state.
-8. Effects, conditions, resources, durations, and recovery contracts.
-9. Lore, chapters, visibility/knowledge restrictions, and secret handling.
-10. Game-mode profiles, including quick narrative play, canonical mechanics,
+6. Actor/NPC/companion archetypes and instance state.
+7. Effects, conditions, resources, durations, and recovery contracts.
+8. Lore, chapters, visibility/knowledge restrictions, and secret handling.
+9. Game-mode profiles, including quick narrative play, canonical mechanics,
     and strict-information-isolation detective play.
-11. Event-local time budgets and multiplayer chronology.
-12. SOFT accumulation budgets and configurable HARD publication thresholds.
-13. Override, versioning, migration, promotion, and catalog-gap workflows.
-14. Standard ruleset seed data, including the selected D&D/SRD baseline.
+10. Event-local time budgets and multiplayer chronology.
+11. SOFT accumulation budgets and configurable HARD publication thresholds.
+12. Migration, promotion, and catalog-gap workflows.
+13. Standard ruleset seed data, including the selected D&D/SRD baseline.
 
 ## 6. Deferred work that must remain possible
 

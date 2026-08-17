@@ -1,6 +1,6 @@
 # HDM Catalog — Universal Record Contracts
 
-Status: **WORKING PROTOTYPE / READY FOR REVIEW**
+Status: **AGREED**
 
 Target: `feature/mechanical-runtime-hot-state`
 
@@ -9,16 +9,14 @@ Machine-readable schemas:
 - `SCHEMAS/catalog-definition.schema.json`
 - `SCHEMAS/world-record.schema.json`
 
-## 1. Scope
+## 1. Design rule
 
-This document defines the common envelope shared by reusable catalog
-definitions and the common envelope shared by durable or promotable world
-records. It does not define actor HP, item ownership, mission stages, or other
-kind-specific content. Those structures belong inside `data` or `state` and
-are designed next.
+HDM uses the minimum sufficient record shape. A field belongs in a record only
+when it describes that record and cannot be derived reliably from its kind,
+definition, storage context, event history, or checkpoint.
 
-The envelope is intentionally small. A field belongs here only when every
-consumer needs the same meaning for it.
+The common envelopes do not reserve speculative extension points. A concrete
+need must justify a new field or mechanism.
 
 ## 2. Reusable definition envelope
 
@@ -26,16 +24,13 @@ consumer needs the same meaning for it.
 {
   "id": "campaign.moonlace_brooch",
   "kind": "definition.asset",
-  "schema_version": 1,
-  "origin": "campaign",
-  "name": "Moonlace Brooch",
+  "name": {
+    "en": "Moonlace Brooch",
+    "ru": "Брошь лунного кружева"
+  },
   "facets": ["asset.wearable", "asset.decoration", "asset.artifact"],
   "tags": ["jewelry", "moon"],
-  "requires": ["op.create_effect"],
-  "extends": "ruleset.brooch",
-  "data": {},
-  "provenance": {},
-  "extensions": {}
+  "data": {}
 }
 ```
 
@@ -45,9 +40,7 @@ Required fields:
 |---|---|
 | `id` | Stable ASCII ID, unique in the resolved definition catalog. |
 | `kind` | Registered `definition.*` kind selecting the schema for `data`. |
-| `schema_version` | Integer version of that kind's data contract. |
-| `origin` | `engine`, `ruleset`, `campaign`, or `session`. |
-| `name` | Human-facing label; never used as identity. |
+| `name` | English name and, optionally, the campaign/player-language name. |
 | `data` | Kind-specific, schema-validated reusable content. |
 
 Optional fields:
@@ -56,14 +49,10 @@ Optional fields:
 |---|---|
 | `facets` | Registered classifiers. They do not grant behavior. |
 | `tags` | Search terms with no executable meaning. |
-| `requires` | Engine capability IDs that must exist before the definition can load. |
-| `extends` | One exact base definition. Multiple inheritance is not supported. |
-| `provenance` | Source, authorship, license, or import notes. Non-executable. |
-| `extensions` | Namespaced metadata not interpreted by core unless a schema explicitly claims it. |
 
-`requires` contains engine capabilities such as an `op.*` primitive. References
-to granted Activities, Effects, Resources, or Rule Elements are kind-specific
-relationships and belong in `data`; they are not blurred into `requires`.
+References to Activities, Effects, Resources, Rule Elements, or other
+definitions belong in kind-specific `data`. A loader validates those references
+against the reviewed registries.
 
 ## 3. World-record envelope
 
@@ -71,15 +60,8 @@ relationships and belong in `data`; they are not blurred into `requires`.
 {
   "id": "asset-00042",
   "kind": "world.asset",
-  "schema_version": 1,
-  "revision": 7,
-  "canonicality": "canonicality.canonical",
   "definition_id": "campaign.moonlace_brooch",
-  "facets": ["asset.quest_item"],
-  "state": {},
-  "overrides": {},
-  "provenance": {},
-  "extensions": {}
+  "state": {}
 }
 ```
 
@@ -89,94 +71,102 @@ Required fields:
 |---|---|
 | `id` | Runtime-allocated identity for this particular record. |
 | `kind` | Registered `world.*` kind selecting the schema for `state`. |
-| `schema_version` | Integer version of that kind's state contract. |
-| `revision` | Monotonic record revision used for conflict detection. Starts at zero. |
-| `canonicality` | Registered canonicality class. |
 | `state` | Kind-specific current world state. |
 
-Optional fields:
+`definition_id` is optional in the universal envelope. A kind-specific schema
+may require it when records of that kind are instantiated from reusable
+definitions. Lore facts, relationships, chapters, and timeline markers may be
+authored directly.
 
-| Field | Contract |
-|---|---|
-| `definition_id` | Reusable definition from which an instantiable record was created. |
-| `facets` | Valid instance-specific facets in addition to inherited facets. |
-| `overrides` | Validated instance-specific changes to definition data. |
-| `provenance` | Creation/import/promotion context. Non-executable. |
-| `extensions` | Namespaced metadata under the same rule as definitions. |
-
-Not every world record has a reusable definition. A lore fact, relationship,
-chapter, or timeline marker may be authored directly, so `definition_id` is
-optional. A kind-specific schema may require it for a narrower record class.
-
-Durability/publication status is deliberately absent. It describes the
-runtime's relationship with storage, not the fictional object. Dirty state,
-publication batches, and checkpoint frontiers remain runtime records.
+Instance-specific roles and classifications are kind-specific state. Facets
+from a reusable definition are not copied into the world record and there is no
+universal facet-merging algorithm.
 
 ## 4. Reference rules
 
 1. Records store forward references in semantically named kind-specific fields,
    for example `owner_actor_id`; there is no universal `references` bag.
-2. A reference stores an ID, not an embedded copy of the target record.
-   Small immutable value objects may still be embedded.
+2. A reference stores an ID, not an embedded copy of the target record. Small
+   immutable value objects may still be embedded.
 3. Persisted backlinks are avoided. SQLite may index reverse relationships as
    a disposable projection.
-4. A canonical record may not depend on an ephemeral or session-local record.
-   The publication planner must promote the dependency closure or reject the
-   publication.
-5. Durable referenced records are retired/tombstoned rather than silently
-   deleted, and their IDs are not reused.
-6. A base definition is single-valued (`extends`). Reusable behavior is
-   composed through registered Activities, Effects, Resources, and Rule
-   Elements instead of multiple inheritance.
-7. Cycles are not generally forbidden, because relationships and location
-   connections may naturally be reciprocal. Each kind-specific schema or
-   validator must decide whether a cycle is meaningful.
+4. Durable canon may not depend on an unpublished ephemeral entity. The
+   publication planner promotes the dependency or rejects the publication.
+5. Referenced durable records are retired/tombstoned rather than silently
+   deleted, and persistent IDs are not reused.
+6. Cycles are decided by kind-specific validation. Some relationships and
+   location connections are naturally reciprocal.
 
-These rules preserve referential integrity without turning the durable model
-into a manually maintained web of backlinks.
+## 5. Reuse and customization
 
-## 5. Versioning and resolution
+Definitions do not use inheritance or a universal override object.
 
-- `schema_version` versions structure and migration logic for one record kind.
-- `catalog_version` versions the resolved catalog seed as a whole and remains
-  in the catalog manifest, not repeated in every record.
-- Git/checkpoints preserve the exact durable frontier used by a campaign.
-- Changing a definition's mechanics is an explicit catalog change. Existing
-  instances are not silently rewritten; migration policy decides whether they
-  retain, re-resolve, or override the changed values.
-- Resolution order remains `engine -> ruleset -> campaign -> session`.
-- An override must name its base and validate against a compatible schema.
+- Runtime changes to a particular object belong in kind-specific `state`.
+- A unique object with different permanent properties receives a campaign
+  definition.
+- Mechanical variations compose registered Activities, Effects, Resources,
+  Rule Elements, and other catalog definitions.
+- An idea that cannot be represented by registered capabilities produces a
+  catalog-gap report instead of arbitrary executable data.
 
-This separates structural migration from content release numbering and avoids
-copying transport/version metadata into every object.
+HDM does not define a plugin or free-form mechanics-extension contract at this
+stage.
 
-## 6. Extension namespace
+## 6. Version placement
 
-Keys in `extensions` use a dotted namespace with at least one separator, for
-example `dandelion.hdm.debug` or `campaign.red_moon.foreshadowing`. Core ignores
-unknown extension values. An extension cannot alter authoritative mechanics
-unless the applicable schema and engine version explicitly define that key.
+Individual definitions and world records do not repeat schema or content
+versions. Compatible versions are recorded at the level that owns them:
 
-## 7. Identifier boundary
+- engine version;
+- catalog version;
+- campaign/checkpoint format version;
+- checkpoint Git frontier.
 
-The base schemas validate identifiers as non-empty machine strings; they do not
-hard-code a universal prefix, numeric width, or allocator. Those decisions are
-made per independently identified kind. This keeps `asset-00042`, a semantic
-definition ID, and a timeline slot from being forced into one counter policy.
+A loaded campaign is a coherent snapshot. Incompatible updates require an
+explicit campaign migration; HDM does not support mixed per-record schema
+versions inside one runtime state.
 
-The runtime remains the sole allocator for world-record IDs. Allocation and
-record creation are one atomic operation. Formatting width is a minimum display
-width, never an overflow limit.
+`definition_id` is therefore a plain stable reference. Checkpoint/catalog
+frontiers identify the corresponding definition snapshot.
 
-## 8. Deliberately excluded from the envelope
+## 7. Localization
 
-- wall-clock creation/update timestamps;
-- a generic status or lifecycle shared by unrelated kinds;
-- ownership, location, HP, visibility, or knowledge fields;
-- persisted backlinks;
-- transport state and Git commit information;
-- derived/cache-only values.
+Stored definition names contain:
 
-These are either kind-specific state, runtime metadata, or disposable indexes.
-Keeping them out prevents the universal object from becoming a second
-monolithic game model.
+- mandatory English (`en`);
+- at most one optional campaign/player-language value.
+
+If another player uses a different language, the LLM translates presentation
+text for that response. HDM does not accumulate a translation dictionary in
+every definition. Machine IDs remain language-independent.
+
+The same compact localized-text shape may be reused for kind-specific stored
+descriptions when a description is actually required.
+
+## 8. Metadata placement
+
+The following data is deliberately excluded from the universal records:
+
+| Information | Owner |
+|---|---|
+| canonical/local/ephemeral status | runtime and checkpoint frontier |
+| dirty/publication status | runtime dirty record/publication batch |
+| object creation or change history | mechanical/semantic event log |
+| source and license of a rules package | catalog/package metadata |
+| import and migration history | migration log |
+| Git commit and storage path | checkpoint/transport metadata |
+| reverse references | disposable SQLite indexes |
+| record revision | global state/checkpoint revision until per-record concurrency is justified |
+
+This placement avoids duplicating facts across every object while retaining
+their authoritative source.
+
+## 9. Identifier boundary
+
+The base schemas validate IDs as machine strings without imposing one prefix,
+numeric width, or allocator policy on unrelated classes. Identifier policy is
+defined per independently identified kind.
+
+The runtime remains the allocator for persistent world-record IDs. Allocation
+and record creation form one atomic operation. A configured numeric width is a
+minimum presentation width rather than an overflow limit.
