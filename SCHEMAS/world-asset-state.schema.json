@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/world-asset-state.schema.json",
+  "title": "HDM world.asset state",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "owner_actor_id": {"$ref": "#/$defs/id"},
+    "container_asset_id": {"$ref": "#/$defs/id"},
+    "location_id": {"$ref": "#/$defs/id"},
+    "quantity": {"type": "integer", "minimum": 1},
+    "equipment": {"$ref": "#/$defs/equipment"},
+    "attuned_actor_id": {"$ref": "#/$defs/id"},
+    "resources": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/id"},
+      "additionalProperties": {"$ref": "#/$defs/resourceState"}
+    },
+    "durability": {"$ref": "#/$defs/durabilityState"},
+    "access": {"const": "blocked"},
+    "details": {"type": "object"}
+  },
+  "allOf": [
+    {"not": {"required": ["owner_actor_id", "container_asset_id"]}},
+    {"not": {"required": ["owner_actor_id", "location_id"]}},
+    {"not": {"required": ["container_asset_id", "location_id"]}}
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "equipment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {"mode": {"enum": ["held", "worn"]}}
+    },
+    "resourceState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["current"],
+      "properties": {"current": {"type": "number", "minimum": 0}}
+    },
+    "durabilityState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hp_current"],
+      "properties": {"hp_current": {"type": "integer", "minimum": 0}}
+    }
+  },
+  "examples": [
+    {},
+    {
+      "owner_actor_id": "actor-00001",
+      "equipment": {"mode": "held"}
+    },
+    {
+      "container_asset_id": "asset-backpack-00001",
+      "quantity": 3
+    }
+  ]
+}
