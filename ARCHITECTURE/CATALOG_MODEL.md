@@ -172,12 +172,12 @@ provide its mechanics.
 
 ## 7. Definition, world, and runtime kind registries
 
-> **Inventory notice:** the exact reviewed class and capability IDs are defined
-> by `CATALOG_INVENTORY.md` and `core-catalog.json`. The tables in sections
-> 7–18 below record the earlier design derivation and examples. They are
-> non-normative where an ID differs from catalog version 1.2.0. This preserves
-> the reasoning without allowing the prototype lists to override the reviewed
-> inventory.
+> **Inventory notice:** the exact selectable class and capability IDs are
+> defined by `CATALOG_INVENTORY.md` and `core-catalog.json`. Sections 7–18 below
+> retain design explanation and examples, not a second registry. An identifier
+> written here is executable/selectable only when it also exists in catalog
+> version 1.2.0 (or in the selected validated definition package). Runtime and
+> the LLM must never recover an obsolete ID from this derivation document.
 
 ### 7.1 Content-definition kinds
 
@@ -231,7 +231,7 @@ registered rule.
 These records have schemas and storage contracts, but they are excluded from
 Master content selection and campaign-authored catalog extensions.
 
-## 8. Initial asset-facet catalog
+## 8. Asset-facet design
 
 Assets may combine any compatible facets:
 
@@ -249,11 +249,14 @@ Assets may combine any compatible facets:
 | `asset.currency` | Fungible denomination/value asset |
 | `asset.key` | Grants access or satisfies a predicate |
 | `asset.document` | Carries readable information/authority |
-| `asset.quest` | Mission-significant asset |
+| `asset.quest_item` | Mission-significant asset |
 | `asset.artifact` | Unique/high-significance rules-bearing asset |
 | `asset.vehicle` | Transport/platform asset |
-| `asset.material` | Crafting/ritual/component material |
-| `asset.misc` | No more specific facet is mechanically needed |
+| `asset.crafting_material` | Crafting/ritual/component material |
+
+The complete selectable facet list, including food, poison, trade goods, and
+treasure, is maintained only in `core-catalog.json`. There is deliberately no
+`asset.misc`: an otherwise unclassified Asset remains valid without a facet.
 
 Ownership normally implies immediate usability. The engine does not track
 `in_hand`, `in_backpack`, or similar microstates by default. Explicit blockers
@@ -367,30 +370,17 @@ clear actions appeared in one message.
 Each intent clause is recorded as `mapped`, `narrative_only`,
 `clarification_required`, or `unsupported`. No clause may disappear silently.
 
-## 12. Domain-transition catalog
+## 12. Domain-transition design
 
-These transitions represent already-adjudicated deterministic world changes.
-They share revision, atomicity, events, dirty tracking, and publication policy
-with Activities, but require no invented check or roll.
+Transitions represent already-adjudicated deterministic world changes. They
+share revision, atomicity, events, dirty tracking, and publication policy with
+Activities, but require no invented check or roll. The closed union is the
+`transition_kinds` registry in `core-catalog.json`; it is not JSON Patch.
 
-| ID | Core payload | Default durability |
-|---|---|---|
-| `transition.asset_transfer` | asset, from, to/location | IMMEDIATE |
-| `transition.asset_status` | asset, status/value | policy-defined |
-| `transition.currency_transfer` | denomination/value, from, to | IMMEDIATE |
-| `transition.location_change` | entity, from, to | focal: IMMEDIATE; tactical: BATCH |
-| `transition.contract_state` | contract, previous/new state, parties | IMMEDIATE |
-| `transition.companion_state` | actor, relationship/status | IMMEDIATE |
-| `transition.mission_state` | mission, stage/status | critical: IMMEDIATE |
-| `transition.entity_promotion` | entity, new canonicality | IMMEDIATE |
-| `transition.relationship_change` | parties, typed delta/value | policy-defined |
-| `transition.lore_commit` | fact, truth/knowledge policy | policy-defined |
-| `transition.chapter_append` | chapter metadata/content reference | BOUNDARY |
-| `transition.scene_change` | previous/new scene and roots | BOUNDARY |
-| `transition.timeline_place` | marker and abstract slot | BOUNDARY |
-| `transition.event_time_advance` | active procedure and budget delta | BATCH |
-
-The union is versioned and closed per engine version. It is not JSON Patch.
+Transition kind does not encode durability. The active domain authority and
+`DURABILITY_GUARD.md` classify a concrete result as HARD, SOFT, or EPHEMERAL.
+This document therefore does not maintain a competing per-transition timing
+table.
 
 ## 13. Mechanical-event catalog
 
@@ -399,17 +389,18 @@ Events are immutable committed facts. Initial families include:
 - `event.activity.completed`, `event.activity.rejected`;
 - `event.attack.hit`, `event.attack.missed`, `event.attack.critical`;
 - `event.check.resolved`, `event.save.resolved`;
-- `event.damage.applied`, `event.healing.applied`, `event.temp_hp.changed`;
+- `event.damage.applied`, `event.healing.applied`,
+  `event.temporary_hp.changed`;
 - `event.resource.consumed`, `event.resource.restored`;
 - `event.effect.created`, `event.effect.expired`, `event.effect.removed`;
-- `event.condition.applied`, `event.condition.removed`;
 - `event.asset.transferred`, `event.asset.status_changed`;
 - `event.currency.transferred`;
-- `event.location.changed`;
+- `event.entity.moved`, `event.entity.teleported`,
+  `event.entity.transformed`;
 - `event.contract.changed`, `event.mission.changed`;
-- `event.companion.changed`, `event.relationship.changed`;
+- `event.actor.state_changed`, `event.relationship.changed`;
 - `event.entity.promoted`;
-- `event.lore.committed`, `event.lore.revealed`;
+- `event.lore.committed`, `event.knowledge.changed`;
 - `event.chapter.appended`, `event.scene.changed`;
 - `event.timeline.placed`, `event.event_time.advanced`.
 
@@ -429,7 +420,13 @@ Every event minimally records:
 }
 ```
 
-## 14. Resource catalog
+## 14. Resource-definition examples
+
+The engine registry contains generic resource mechanics such as bounded pools,
+health, action budgets, and currency balances. Concrete D&D resources are
+reusable definitions supplied by a selected ruleset seed. The names below are
+design examples, not an additional engine registry; their final namespaced IDs
+and shapes are owned by the Resource design and seed-package steps.
 
 | ID | Semantics |
 |---|---|
@@ -456,7 +453,7 @@ effect facets are:
 
 - `effect.condition` — named rules condition;
 - `effect.modifier` — temporary stat/check/attack/damage contribution;
-- `effect.damage_over_time` and `effect.healing_over_time`;
+- `effect.periodic_damage` and `effect.periodic_healing`;
 - `effect.transformation` — replaces/adds bounded facets or capabilities;
 - `effect.zone` — applies by area/location membership;
 - `effect.concentration` — carries concentration lifecycle;

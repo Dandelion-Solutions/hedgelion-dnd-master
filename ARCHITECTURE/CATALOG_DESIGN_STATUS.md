@@ -4,12 +4,28 @@ Status: **DISCUSSION CHECKPOINT**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
+Active sequencing is governed by `ARCHITECTURE/NEAR_TERM_ROADMAP.md`. The
+critical review ledger is `ARCHITECTURE/CRITICAL_ARCHITECTURE_AUDIT.md`. Its
+two review passes are complete; Step 2 (Resources, Effects, Conditions,
+Duration, and Recovery) is now the only active architecture block.
+
 This document records the current state of catalog design so that subsequent
 work does not depend on reconstructing decisions from a ChatGPT conversation.
 It is a design checkpoint, not an implementation contract. Each statement is
 marked as `AGREED`, `PROVISIONAL`, or `OPEN`.
 
 ## 1. Exact point of continuation
+
+The accepted catalog foundations were re-audited by logical block and then for
+cross-document contradictions. Stale selectable IDs and the obsolete
+per-transition durability table were removed/neutralized in `CATALOG_MODEL.md`.
+Every remaining fundamental gap is assigned to one of Steps 2–6 in the active
+roadmap; no unowned blocker remains.
+
+The next task is not general implementation. It is the Step 2 ownership map and
+minimum contracts for Resources, Effects, Conditions, Duration, and Recovery.
+Activity operation schemas and execution examples remain blocked until that
+state vocabulary is settled.
 
 The four-layer separation below is accepted:
 
