@@ -53,6 +53,21 @@ The engine ships standard definitions. A campaign may create or modify content
 without changing Python as long as the result validates against registered
 capabilities.
 
+### 2.3 World-record kinds
+
+World records are canonical or local instances: a particular actor, item,
+location, organization, contract, mission, lore fact, chapter, scene, encounter,
+or timeline marker. Their kind IDs are registered for validation and routing,
+but the records themselves are campaign state rather than reusable catalog
+definitions.
+
+### 2.4 Runtime-record kinds
+
+Runtime records include sessions, intent plans, resolutions, events, traces,
+dirty records, publication batches, and maintenance audit entries. Their kind
+IDs are registered because storage and APIs need stable schemas. They are not
+content selectable by the Master and never appear as catalog search results.
+
 ## 3. Catalog strata
 
 Definitions have an explicit origin:
@@ -153,25 +168,58 @@ Facets alone never alter state. For example, `asset.weapon` makes an item
 discoverable as a weapon, but an attack Activity and validated damage profile
 provide its mechanics.
 
-## 7. Initial entity-kind catalog
+## 7. Definition, world, and runtime kind registries
+
+### 7.1 Content-definition kinds
+
+| ID | Reusable definition |
+|---|---|
+| `definition.actor_archetype` | Creature/NPC/PC baseline or template |
+| `definition.asset` | Item, weapon, artifact, tool, document, etc. |
+| `definition.activity` | Executable composition of registered primitives |
+| `definition.resource` | Capacity, spending and recovery policy |
+| `definition.effect` | EffectInstance template and duration policy |
+| `definition.condition` | Ruleset condition expressed through effects/rules |
+| `definition.rule_element` | Pure conditional Contribution definition |
+| `definition.trigger_binding` | Registered signal/event to reaction/follow-up mapping |
+| `definition.location_archetype` | Reusable location/zone properties |
+| `definition.mode_profile` | Enabled mechanics and presentation profile |
+
+### 7.2 World-record kinds
 
 | ID | Purpose | Typical mutable state |
 |---|---|---|
-| `entity.actor` | PC, NPC, creature, companion | HP, resources, effects, location, inventory |
-| `entity.asset` | Physical or conceptual owned/usable object | owner, location, charges, condition |
-| `entity.location` | Place or mechanically relevant zone | occupants, links, hazards, state |
-| `entity.organization` | Faction, guild, government, group | relationships, resources, status |
-| `entity.contract` | Agreement with state and parties | status, obligations, fulfillment |
-| `entity.mission` | Goal/progression structure | status, stages, dependencies |
-| `entity.scene` | Active narrative/mechanical context | participants, focal location, status |
-| `entity.encounter` | Bounded mechanical procedure | participants, initiative, phase |
-| `entity.lore_fact` | Canonical proposition and knowledge policy | truth status, audience, revelation |
-| `entity.chapter` | Human-readable narrative/history block | references, chronology span, visibility |
-| `entity.timeline_marker` | Abstract gameplay chronology placement | slot, label, scope |
+| `world.actor` | Particular PC, NPC, creature, companion | HP, resources, effects, location, inventory |
+| `world.asset` | Particular physical or conceptual object | owner, location, charges, condition |
+| `world.location` | Particular place or mechanically relevant zone | occupants, links, hazards, state |
+| `world.organization` | Faction, guild, government, group | relationships, resources, status |
+| `world.contract` | Agreement with state and parties | status, obligations, fulfillment |
+| `world.mission` | Goal/progression record | status, stages, dependencies |
+| `world.scene` | Active narrative/mechanical context | participants, focal location, status |
+| `world.encounter` | Bounded mechanical procedure | participants, initiative, phase |
+| `world.lore_fact` | Canonical proposition and knowledge policy | truth status, audience, revelation |
+| `world.chapter` | Human-readable narrative/history block | references, chronology span, visibility |
+| `world.timeline_marker` | Abstract gameplay chronology placement | slot, label, scope |
 
 Actor facets initially include PC, NPC, creature, companion, summon, swarm, and
-vehicle operator. These are roles/tags unless their distinction changes a
+vehicle operator. These remain roles/tags unless their distinction changes a
 registered rule.
+
+### 7.3 Runtime-record kinds
+
+| ID | Internal purpose |
+|---|---|
+| `runtime.session` | HOT runtime identity, frontier and transport mode |
+| `runtime.intent_plan` | Complete ordered interpretation of one player message |
+| `runtime.resolution` | Active/completed/suspended Activity invocation |
+| `runtime.mechanical_event` | Immutable committed runtime fact |
+| `runtime.resolution_trace` | Inputs, rolls, contributions, calculations and deltas |
+| `runtime.dirty_record` | HOT/canonical divergence and cause |
+| `runtime.publication_batch` | Prepared/acknowledged durable projection |
+| `runtime.maintenance_audit` | Non-gameplay diagnostic/control operation record |
+
+These records have schemas and storage contracts, but they are excluded from
+Master content selection and campaign-authored catalog extensions.
 
 ## 8. Initial asset-facet catalog
 
@@ -503,6 +551,11 @@ output before mechanics:
 5. mark unmatched clauses instead of dropping them;
 6. submit typed requests;
 7. narrate only from receipts plus non-mechanical adjudication.
+
+Turn identity is host-owned. Runtime state stores only `last_turn_number` as an
+integer. Before accepting a new ordinary message, Python increments it and
+formats `turn-{number:05d}`. No `next_turn` field is persisted; it is derived by
+adding one. Maintenance commands do not increment the counter.
 
 Mapping outcomes are:
 

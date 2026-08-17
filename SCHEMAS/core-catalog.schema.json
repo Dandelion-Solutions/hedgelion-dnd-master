@@ -17,7 +17,9 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "entity_kinds",
+        "content_definition_kinds",
+        "world_record_kinds",
+        "runtime_record_kinds",
         "asset_facets",
         "activity_families",
         "activity_primitives",
@@ -32,7 +34,9 @@
         "duration_units"
       ],
       "properties": {
-        "entity_kinds": {"$ref": "#/$defs/idRegistry"},
+        "content_definition_kinds": {"$ref": "#/$defs/idRegistry"},
+        "world_record_kinds": {"$ref": "#/$defs/idRegistry"},
+        "runtime_record_kinds": {"$ref": "#/$defs/idRegistry"},
         "asset_facets": {"$ref": "#/$defs/idRegistry"},
         "activity_families": {"$ref": "#/$defs/idRegistry"},
         "activity_primitives": {"$ref": "#/$defs/idRegistry"},

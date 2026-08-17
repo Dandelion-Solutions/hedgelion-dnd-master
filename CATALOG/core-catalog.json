@@ -2,18 +2,40 @@
   "catalog_version": "1.0.0",
   "schema_version": 1,
   "registries": {
-    "entity_kinds": [
-      "entity.actor",
-      "entity.asset",
-      "entity.location",
-      "entity.organization",
-      "entity.contract",
-      "entity.mission",
-      "entity.scene",
-      "entity.encounter",
-      "entity.lore_fact",
-      "entity.chapter",
-      "entity.timeline_marker"
+    "content_definition_kinds": [
+      "definition.actor_archetype",
+      "definition.asset",
+      "definition.activity",
+      "definition.resource",
+      "definition.effect",
+      "definition.condition",
+      "definition.rule_element",
+      "definition.trigger_binding",
+      "definition.location_archetype",
+      "definition.mode_profile"
+    ],
+    "world_record_kinds": [
+      "world.actor",
+      "world.asset",
+      "world.location",
+      "world.organization",
+      "world.contract",
+      "world.mission",
+      "world.scene",
+      "world.encounter",
+      "world.lore_fact",
+      "world.chapter",
+      "world.timeline_marker"
+    ],
+    "runtime_record_kinds": [
+      "runtime.session",
+      "runtime.intent_plan",
+      "runtime.resolution",
+      "runtime.mechanical_event",
+      "runtime.resolution_trace",
+      "runtime.dirty_record",
+      "runtime.publication_batch",
+      "runtime.maintenance_audit"
     ],
     "asset_facets": [
       "asset.weapon",
