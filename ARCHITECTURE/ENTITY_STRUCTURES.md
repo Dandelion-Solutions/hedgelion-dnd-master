@@ -6,6 +6,9 @@ Target: `feature/mechanical-runtime-hot-state`
 
 Machine-readable field inventory: `CATALOG/entity-structures.json`
 
+Machine-readable identifier policy: `CATALOG/identifier-policies.json`,
+validated by `SCHEMAS/identifier-policies.schema.json`.
+
 Accepted nested models:
 
 - `ARCHITECTURE/ACTOR_MODEL.md`;
