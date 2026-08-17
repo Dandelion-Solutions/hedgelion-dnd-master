@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/actor-archetype-data.schema.json",
+  "title": "HDM definition.actor_archetype data",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "creature_type_id": {"$ref": "#/$defs/id"},
+    "size_id": {"$ref": "#/$defs/id"},
+    "abilities": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/id"},
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "hp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maximum"],
+      "properties": {"maximum": {"type": "integer", "minimum": 0}}
+    },
+    "resources": {"type": "object"},
+    "activity_ids": {"$ref": "#/$defs/idSet"},
+    "feature_ids": {"$ref": "#/$defs/idSet"},
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    }
+  }
+}
