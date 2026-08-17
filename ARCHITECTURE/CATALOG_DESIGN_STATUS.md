@@ -23,9 +23,11 @@ D&D5e, Avrae automation, and PF2e Rule Element prior art. The resulting baseline
 is fixed in `ARCHITECTURE/CATALOG_INVENTORY.md` and machine-readable catalog
 version 1.1.0. It is sufficient for schema design and explicitly extensible.
 
-The next catalog task is to define the minimum universal definition and world
-instance envelopes, then the minimum kind-specific structures. Identifier
-policy is decided alongside each independently identified record kind.
+The universal definition and world-record envelope prototype is now recorded in
+`ARCHITECTURE/CATALOG_CONTRACTS.md` with machine-readable base schemas. The next
+catalog task is to review that boundary, then define minimum kind-specific
+structures. Identifier policy is decided alongside each independently
+identified record kind.
 
 ## 2. Agreed catalog principles
 
@@ -95,7 +97,8 @@ reviewed baseline. They may be extended later through catalog versioning.
 
 The following structures remain proposals rather than accepted contracts:
 
-- the universal definition and instance envelopes;
+- the universal definition and instance envelopes in
+  `CATALOG_CONTRACTS.md` (complete working prototype awaiting review);
 - minimum kind-specific fields and cross-record references;
 - exact executable contracts for the registered primitives and Rule Elements;
 - identifier policies and promotion rules for each record kind.

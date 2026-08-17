@@ -8,6 +8,8 @@ Companion document: `ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md`
 
 Normative class inventory: `ARCHITECTURE/CATALOG_INVENTORY.md`
 
+Universal record contracts: `ARCHITECTURE/CATALOG_CONTRACTS.md`
+
 Machine-readable registry: `CATALOG/core-catalog.json` version `1.1.0`
 
 ## 1. Purpose
@@ -98,6 +100,10 @@ meaning of a capability ID.
 
 ## 4. Universal definition envelope
 
+> **Contract notice:** the normative working prototype is now defined by
+> `CATALOG_CONTRACTS.md` and `SCHEMAS/catalog-definition.schema.json`. The
+> example below is retained as design history and is non-normative.
+
 Every reusable definition has this minimum envelope:
 
 ```json
@@ -130,6 +136,10 @@ Required fields are deliberately small:
   otherwise.
 
 ## 5. Universal instance envelope
+
+> **Contract notice:** the normative working prototype is now defined by
+> `CATALOG_CONTRACTS.md` and `SCHEMAS/world-record.schema.json`. The example
+> below is retained as design history and is non-normative.
 
 A world instance is separate from its reusable definition:
 

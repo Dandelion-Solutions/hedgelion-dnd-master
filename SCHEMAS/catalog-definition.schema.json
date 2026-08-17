@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/catalog-definition.schema.json",
+  "title": "HDM reusable catalog definition envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "kind", "schema_version", "origin", "name", "data"],
+  "properties": {
+    "id": {"$ref": "#/$defs/machineId"},
+    "kind": {
+      "type": "string",
+      "pattern": "^definition\\.[a-z][a-z0-9_]*$"
+    },
+    "schema_version": {"type": "integer", "minimum": 1},
+    "origin": {
+      "enum": ["engine", "ruleset", "campaign", "session"]
+    },
+    "name": {"type": "string", "minLength": 1},
+    "facets": {"$ref": "#/$defs/idSet"},
+    "tags": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "requires": {"$ref": "#/$defs/idSet"},
+    "extends": {"$ref": "#/$defs/machineId"},
+    "data": {"type": "object"},
+    "provenance": {"type": "object"},
+    "extensions": {"$ref": "#/$defs/extensions"}
+  },
+  "$defs": {
+    "machineId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "idSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/machineId"}
+    },
+    "extensions": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_-]*(?:\\.[a-z][a-z0-9_-]*)+$"
+      }
+    }
+  }
+}

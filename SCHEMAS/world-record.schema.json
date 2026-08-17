@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/world-record.schema.json",
+  "title": "HDM world-record envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id", "kind", "schema_version", "revision", "canonicality", "state"
+  ],
+  "properties": {
+    "id": {"$ref": "#/$defs/machineId"},
+    "kind": {
+      "type": "string",
+      "pattern": "^world\\.[a-z][a-z0-9_]*$"
+    },
+    "schema_version": {"type": "integer", "minimum": 1},
+    "revision": {"type": "integer", "minimum": 0},
+    "canonicality": {
+      "enum": [
+        "canonicality.ephemeral",
+        "canonicality.local",
+        "canonicality.canonical"
+      ]
+    },
+    "definition_id": {"$ref": "#/$defs/machineId"},
+    "facets": {"$ref": "#/$defs/idSet"},
+    "state": {"type": "object"},
+    "overrides": {"type": "object"},
+    "provenance": {"type": "object"},
+    "extensions": {"$ref": "#/$defs/extensions"}
+  },
+  "$defs": {
+    "machineId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "idSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/machineId"}
+    },
+    "extensions": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_-]*(?:\\.[a-z][a-z0-9_-]*)+$"
+      }
+    }
+  }
+}
