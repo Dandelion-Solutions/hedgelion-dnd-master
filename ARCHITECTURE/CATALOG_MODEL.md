@@ -1,10 +1,14 @@
 # HDM Engine Catalog — Model and Initial Taxonomy
 
-Status: **WORKING PROTOTYPE**
+Status: **WORKING PROTOTYPE / REVIEWED INVENTORY**
 
 Target: `feature/mechanical-runtime-hot-state`
 
 Companion document: `ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md`
+
+Normative class inventory: `ARCHITECTURE/CATALOG_INVENTORY.md`
+
+Machine-readable registry: `CATALOG/core-catalog.json` version `1.1.0`
 
 ## 1. Purpose
 
@@ -19,7 +23,7 @@ The catalog is not a list of every sword, spell, sentence, or possible player
 idea. Such a list cannot be complete. It is a catalog of stable classes,
 facets, primitives, and policies from which concrete content can be described.
 
-## 2. Two layers that must remain distinct
+## 2. Four layers that must remain distinct
 
 ### 2.1 Engine capability registry
 
@@ -169,6 +173,13 @@ discoverable as a weapon, but an attack Activity and validated damage profile
 provide its mechanics.
 
 ## 7. Definition, world, and runtime kind registries
+
+> **Inventory notice:** the exact reviewed class and capability IDs are defined
+> by `CATALOG_INVENTORY.md` and `core-catalog.json`. The tables in sections
+> 7–18 below record the earlier design derivation and examples. They are
+> non-normative where an ID differs from catalog version 1.1.0. This preserves
+> the reasoning without allowing the prototype lists to override the reviewed
+> inventory.
 
 ### 7.1 Content-definition kinds
 

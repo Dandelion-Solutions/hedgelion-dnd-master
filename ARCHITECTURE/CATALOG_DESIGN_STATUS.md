@@ -11,18 +11,21 @@ marked as `AGREED`, `PROVISIONAL`, or `OPEN`.
 
 ## 1. Exact point of continuation
 
-The four-layer separation below is accepted. The proposed contents of those
-layers have not yet been reviewed category by category:
+The four-layer separation below is accepted:
 
 1. engine capability registry;
 2. reusable content-definition catalog;
 3. campaign/world records;
 4. runtime records.
 
-The next catalog task is to review the proposed classes in those four layers,
-decide whether each class belongs there, and identify missing or redundant
-classes. Minimum field sets and executable contracts follow only after that
-review.
+The class inventory for those layers was reviewed against SRD 5.2.1, Foundry
+D&D5e, Avrae automation, and PF2e Rule Element prior art. The resulting baseline
+is fixed in `ARCHITECTURE/CATALOG_INVENTORY.md` and machine-readable catalog
+version 1.1.0. It is sufficient for schema design and explicitly extensible.
+
+The next catalog task is to define the minimum universal definition and world
+instance envelopes, then the minimum kind-specific structures. Identifier
+policy is decided alongside each independently identified record kind.
 
 ## 2. Agreed catalog principles
 
@@ -85,24 +88,20 @@ review.
 - Historical facts discovered during play remain lore unless placing them on
   the active gameplay timeline is operationally useful.
 
-## 3. Provisional model — review required
+## 3. Reviewed inventory and provisional structures
 
-The following structures exist in `CATALOG_MODEL.md` and
-`core-catalog.json`, but their presence is a proposal rather than acceptance of
-completeness or exact shape:
+The class membership and layer boundaries in `CATALOG_INVENTORY.md` are now the
+reviewed baseline. They may be extended later through catalog versioning.
 
-- definition kinds such as actor archetype, asset, activity, resource, effect,
-  condition, Rule Element, trigger binding, location archetype, and mode profile;
-- world kinds such as actor, asset, location, organization, contract, mission,
-  scene, encounter, lore fact, chapter, and timeline marker;
-- runtime kinds such as session, intent plan, resolution, mechanical event,
-  resolution trace, dirty record, publication batch, and maintenance audit;
+The following structures remain proposals rather than accepted contracts:
+
 - the universal definition and instance envelopes;
-- the initial activity, asset-facet, event, primitive, target, duration,
-  resource, and rules registries.
+- minimum kind-specific fields and cross-record references;
+- exact executable contracts for the registered primitives and Rule Elements;
+- identifier policies and promotion rules for each record kind.
 
-These entries are working material. Their current presence must not be cited as
-evidence that the catalog is complete or approved.
+Catalog membership is reviewed; schema and runtime behavior are not thereby
+approved or implemented.
 
 ## 4. Identifier and HOT-cache policy
 
@@ -139,12 +138,13 @@ candidate, not a general identifier policy for all classes.
 
 ## 5. Other catalog questions still open
 
-1. Complete class list and the layer containing each class.
-2. Minimum universal definition and instance envelopes.
-3. Exact Activity primitives and composition limits.
+1. Minimum universal definition and instance envelopes.
+2. Minimum kind-specific fields and reference rules.
+3. Exact Activity primitive contracts and composition limits.
 4. Execution semantics for multi-intent messages: ordering, atomic groups,
    partial failure, suspension, and action-economy boundaries.
-5. Event taxonomy, granularity, and durability classification.
+5. Event payloads, granularity, and durability classification; the event-kind
+   baseline itself is reviewed.
 6. Minimum structures for assets and the division between facets, tags,
    capabilities, and mutable state.
 7. Actor/NPC/companion archetypes and instance state.
@@ -171,7 +171,7 @@ candidate, not a general identifier policy for all classes.
 
 ## 7. Scope guard
 
-The catalog phase is complete only after the class inventory, minimum
-structures, extensibility boundaries, and their identifier policies have been
-reviewed and explicitly accepted. The current 195 catalog IDs are candidates,
-not a completeness metric.
+The class inventory and extensibility boundary are now reviewed. The catalog
+phase is complete only after minimum structures and their identifier policies
+have also been reviewed and accepted. Registry counts are never a completeness
+metric.
