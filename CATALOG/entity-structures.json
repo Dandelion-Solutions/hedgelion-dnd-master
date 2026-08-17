@@ -26,7 +26,7 @@
     "definition.feat": {"required": [], "expected": ["prerequisites", "activity_ids", "rule_element_ids"]},
     "definition.feature": {"required": [], "expected": ["activity_ids", "resource_ids", "effect_ids", "rule_element_ids"]},
     "definition.spell": {"required": ["level", "school_id", "activity_ids"], "expected": ["components", "casting_time", "range", "duration", "concentration", "ritual"]},
-    "definition.asset": {"required": [], "expected": ["value", "weight", "activity_ids", "resource_ids", "container_capacity", "attunement"]},
+    "definition.asset": {"required": [], "expected": ["physical", "value", "rarity", "property_ids", "activity_ids", "resource_ids", "effect_ids", "handling", "capacity", "stack", "attunement", "durability"]},
     "definition.activity": {"required": ["family_id", "steps"], "expected": ["activation", "targeting", "cost", "duration", "effect_ids"]},
     "definition.resource": {"required": ["mechanic_id"], "expected": ["capacity", "recovery", "spending_policy"]},
     "definition.effect": {"required": [], "expected": ["duration", "rule_element_ids", "activity_ids", "stacking"]},
@@ -46,7 +46,7 @@
   "world_records": {
     "world.actor": {"required": ["name"], "expected": ["roles", "location_id", "build", "abilities", "hp", "resources"]},
     "world.actor_group": {"required": ["name"], "expected": ["member_ids", "leader_id", "location_id", "purpose"]},
-    "world.asset": {"required": [], "expected": ["owner_actor_id", "container_asset_id", "location_id", "quantity", "charges", "condition", "identified"]},
+    "world.asset": {"required": [], "expected": ["owner_actor_id", "container_asset_id", "location_id", "quantity", "equipment", "attuned_actor_id", "resources", "durability", "access"]},
     "world.location": {"required": ["name"], "expected": ["parent_location_id", "organization_id", "environment_ids", "status"]},
     "world.connection": {"required": ["from_location_id", "to_location_id"], "expected": ["direction", "traversal_activity_id", "status", "requirements"]},
     "world.zone": {"required": ["location_id", "name"], "expected": ["participant_ids", "effect_ids", "geometry", "status"]},
