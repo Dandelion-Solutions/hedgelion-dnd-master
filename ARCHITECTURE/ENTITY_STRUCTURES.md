@@ -99,7 +99,7 @@ envelope and may be made mandatory by a kind-specific schema.
 
 | Kind | Required | Expected |
 |---|---|---|
-| `world.actor` | `name` | `roles`, `location_id`, `abilities`, `hp`, `resources`, `inventory_ids`, `effect_ids`, `allegiance` |
+| `world.actor` | `name` | `roles`, `location_id`, `build`, `abilities`, `hp`, `resources` |
 | `world.actor_group` | `name` | `member_ids`, `leader_id`, `location_id`, `purpose` |
 | `world.asset` | — | `owner_actor_id`, `container_asset_id`, `location_id`, `quantity`, `charges`, `condition`, `identified` |
 | `world.location` | `name` | `parent_location_id`, `organization_id`, `environment_ids`, `status` |
@@ -120,6 +120,10 @@ envelope and may be made mandatory by a kind-specific schema.
 
 Additional kind rules:
 
+- An actor's inventory and active effects are reverse projections of
+  `world.asset.owner_actor_id` and `world.effect.target_ids`; they are not
+  duplicated in actor state. Organizational allegiance is represented by
+  organization membership and relationships.
 - `world.asset` may have empty `state` when its definition contains all stable
   properties and no mutable fact is yet known.
 - `world.effect` requires `definition_id` in its kind-specific envelope.
