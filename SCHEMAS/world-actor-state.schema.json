@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/world-actor-state.schema.json",
+  "title": "HDM world.actor state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name"],
+  "properties": {
+    "name": {"$ref": "#/$defs/localizedText"},
+    "roles": {"$ref": "#/$defs/idSet"},
+    "location_id": {"$ref": "#/$defs/id"},
+    "build": {"$ref": "#/$defs/build"},
+    "abilities": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/id"},
+      "additionalProperties": {"$ref": "#/$defs/abilityComponents"}
+    },
+    "hp": {"$ref": "#/$defs/hp"},
+    "resources": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/id"},
+      "additionalProperties": {"$ref": "#/$defs/resourceState"}
+    },
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "localizedText": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 2,
+      "required": ["en"],
+      "propertyNames": {"pattern": "^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$"},
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level"],
+      "properties": {
+        "level": {"type": "integer", "minimum": 1},
+        "species_id": {"$ref": "#/$defs/id"},
+        "background_id": {"$ref": "#/$defs/id"},
+        "class_id": {"$ref": "#/$defs/id"},
+        "subclass_id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "abilityComponents": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "base": {"type": "integer", "minimum": 0},
+        "adjustment": {"type": "integer"}
+      }
+    },
+    "hp": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "current": {"type": "integer", "minimum": 0},
+        "maximum_base": {"type": "integer", "minimum": 0},
+        "maximum_adjustment": {"type": "integer"},
+        "temporary": {"type": "integer", "minimum": 0}
+      }
+    },
+    "resourceState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["current"],
+      "properties": {"current": {"type": "number", "minimum": 0}}
+    }
+  }
+}
