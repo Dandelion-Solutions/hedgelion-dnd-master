@@ -1,6 +1,15 @@
 # Engine Consistency Regression Cases
 
-`python TOOLS/audit_engine.py` is the executable release-level consistency gate for these cases. It is maintenance-only and is never part of campaign runtime.
+`python TOOLS/audit_engine.py` is the executable release-level consistency gate
+for these cases. Install its declared dependencies from
+`requirements-maintenance.txt`. It is maintenance-only and is never part of
+campaign runtime.
+
+## EC00 — JSON schemas and catalog instances
+Pass: every `SCHEMAS/*.schema.json` is a valid Draft 2020-12 schema, and the
+core catalog plus identifier-policy catalog validate against their declared
+schemas. A missing `jsonschema` dependency fails with an actionable install
+command instead of silently skipping validation.
 
 ## EC01 — One CORE cache policy
 Pass: complete local CORE is preloaded once; activation is header-driven; CORE_INDEX does not define a competing roster.
