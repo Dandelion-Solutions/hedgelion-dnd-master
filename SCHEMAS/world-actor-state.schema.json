@@ -5,6 +5,9 @@
   "type": "object",
   "additionalProperties": false,
   "required": ["name"],
+  "dependentRequired": {
+    "hp": ["life_state_id"]
+  },
   "properties": {
     "name": {"$ref": "#/$defs/localizedText"},
     "roles": {"$ref": "#/$defs/idSet"},
@@ -16,6 +19,7 @@
       "additionalProperties": {"$ref": "#/$defs/abilityComponents"}
     },
     "hp": {"$ref": "#/$defs/hp"},
+    "life_state_id": {"$ref": "#/$defs/id"},
     "resources": {
       "type": "object",
       "propertyNames": {"$ref": "#/$defs/id"},

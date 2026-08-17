@@ -111,7 +111,7 @@ envelope and may be made mandatory by a kind-specific schema.
 
 | Kind | Required | Expected |
 |---|---|---|
-| `world.actor` | `name` | `roles`, `location_id`, `build`, `abilities`, `hp`, `resources` |
+| `world.actor` | `name` | `roles`, `location_id`, `build`, `abilities`, `hp`, `life_state_id`, `resources` |
 | `world.actor_group` | `name` | `member_ids`, `leader_id`, `location_id`, `purpose` |
 | `world.asset` | — | `owner_actor_id`, `container_asset_id`, `location_id`, `quantity`, `equipment`, `attuned_actor_id`, `resources`, `durability`, `access` |
 | `world.location` | `name` | `parent_location_id`, `organization_id`, `environment_ids`, `status` |
@@ -136,6 +136,9 @@ Additional kind rules:
   `world.asset.owner_actor_id` and `world.effect.target_ids`; they are not
   duplicated in actor state. Organizational allegiance is represented by
   organization membership and relationships.
+- `hp` and `life_state_id` are separate Actor-state authorities. When `hp` is
+  materialized, `life_state_id` is required as well; zero HP alone never
+  determines death, destruction, or transformation.
 - `world.asset` may have empty `state` when its definition contains all stable
   properties and no mutable fact is yet known.
 - `world.effect` requires `definition_id` in its kind-specific envelope.

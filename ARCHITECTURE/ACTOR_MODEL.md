@@ -164,12 +164,27 @@ of maximum HP is a signed Effect contribution to `actor.hp.maximum`, not a
 negative temporary-HP value. If resolved maximum falls below current HP,
 runtime clamps current HP to the new maximum and records the change.
 
-Current project policy treats zero HP as death or destruction unless a specific
-rule says otherwise. In the selected D&D rules, a player character at zero HP
-uses unconscious/stable/death-save mechanics instead of being declared dead
-immediately. That exception derives from the Actor role and ruleset; it does not
-require a second HP field. A broader configurable lifecycle status remains
-deferred backlog work.
+HP and lifecycle state are separate authorities. When runtime first
+materializes an Actor's `hp`, it must materialize `life_state_id` in the same
+atomic transition. Reducing `hp.current` to zero invokes the selected ruleset's
+lifecycle resolution inside the same Activity; it does **not** by itself mean
+death or destruction.
+
+`life_state_id` stores only the Actor's current lifecycle classification. It is
+separate from creature type, facets, conditions, and active Effects. For
+example, a ruleset may resolve zero HP as unconsciousness, dying, stability,
+death, or destruction. A pending vampire transformation remains an Effect with
+its own trigger (such as midnight, dawn, ritual completion, or another event),
+not a timer hidden inside LifeState. When that trigger fires, one atomic
+Activity may transform the Actor's creature type/form, update
+`life_state_id`, and restore or set HP. An active undead Actor is therefore not
+necessarily "dead": `undead` describes its creature type/form, while
+LifeState describes its current lifecycle state.
+
+Step 2 of the architecture roadmap owns the minimum LifeState vocabulary and
+legal transition rules alongside health, Effects, Conditions, Duration, and
+Recovery. The engine must not hard-code a universal `0 HP -> dead` transition
+while that contract is being completed.
 
 ## 6. Resources
 

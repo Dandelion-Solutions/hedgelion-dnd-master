@@ -21,7 +21,7 @@ workflow only when a concrete invariant needs it.
 | Four catalog layers and class inventory | **PASS** | Capability registry, reusable definitions, world records, and runtime records are separated. Machine catalog 1.2.0 is the ID authority. |
 | Universal definition/world envelopes | **PASS** | Minimum required fields, forward references, localization, metadata placement, and no per-record version duplication are coherent. |
 | Identifier policy and HOT object cache | **PASS** | Runtime allocation, per-kind widths, local IDs before promotion, non-reuse, and optimistic multiplayer reconciliation have one owner. Concrete SQLite layout belongs to implementation, not this catalog contract. |
-| Actor model | **PASS WITH DEPENDENCY** | Progressive materialization, one actor model, derived level, split modifiers, lazy combat statistics, groups, and ownership are coherent. Resource/effect state cannot close before Step 2. Life-state variants beyond zero-health death/destruction remain optional backlog work. |
+| Actor model | **PASS WITH DEPENDENCY** | Progressive materialization, one actor model, derived level, split modifiers, lazy combat statistics, groups, and ownership are coherent. Resource/effect state cannot close before Step 2. LifeState is now required beside materialized HP; zero health is an input to ruleset lifecycle resolution, not a universal death/destruction result. |
 | Asset model | **PASS WITH DEPENDENCY** | Placement, accessibility, hands, implicit draw/stow, stacks, attunement, improvised use, durability, destruction, and directed definition transformation are coherent. Resource/effect details belong to Step 2. |
 | Activity model | **BASELINE, NOT CLOSED** | The recipe boundary and multi-intent distinction are sound. Exact operation schemas, segment commitment, suspension receipts, and focused examples belong to Step 3. |
 | Rule Elements and Trigger Bindings | **BASELINE, NOT CLOSED** | Embedded pure Contributions and Signal/Event separation are sound. Exact selector/operation value contracts, stacking tables, trigger mode semantics, and chain limits belong to Steps 2–3. |
@@ -176,8 +176,10 @@ an explicit boundary, an implementation could store the same current HP twice.
 the single state authority for hit points and temporary hit points. Generic
 Resource definitions may describe other pools; health mechanics may be reused
 as resolver capability/schema vocabulary but must not create a second Actor
-counter. Step 2 must either encode this distinction or present a demonstrably
-simpler single-authority alternative.
+counter. `life_state_id` is a separate Actor-state authority and must accompany
+materialized HP; it must not be inferred permanently from the numeric counter.
+Step 2 must encode this distinction and the minimum lifecycle transition
+contract without introducing a second health counter.
 
 ### P2-3 — Asset durability has the same duplication risk
 
@@ -293,7 +295,8 @@ not guess the final selector family before the health contract is written.
 
 The official 2024 Basic Rules treat temporary HP as distinct from normal HP,
 not healing, non-stacking, and normally lasting until depleted or a Long Rest.
-They require player-character death saves at zero HP and refresh a spent
+They require player-character death saves at zero HP rather than defining zero
+as immediate death, and refresh a spent
 Reaction at the start of the creature's next turn. Spell duration and
 Concentration are likewise explicit effect/procedure rules rather than a
 wall-clock service.

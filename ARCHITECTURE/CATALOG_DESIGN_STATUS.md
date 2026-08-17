@@ -27,7 +27,9 @@ transformation lacks a settled definition-dependent state migration boundary;
 and multiplayer/mode stages depend on knowledge, visibility, promotion, and
 seed interfaces that were scheduled too late. The roadmap is reordered and the
 accepted semantic corrections are applied. The exact continuation point is now
-the Step 2 ownership map, before any new schema fields are introduced.
+the Step 2 ownership map. Its first correction separates numeric HP from
+`life_state_id`; the remaining ownership map must close before further schema
+fields are introduced.
 
 The four-layer separation below is accepted:
 
@@ -182,7 +184,7 @@ approved or implemented.
    suspension, and action-economy boundaries.
 4. Event payloads, granularity, and durability classification; the event-kind
    baseline itself is reviewed.
-5. Effects, conditions, resources, durations, and recovery contracts.
+5. HP/LifeState, effects, conditions, resources, durations, and recovery contracts.
 6. Lore, chapters, visibility/knowledge restrictions, and secret handling.
 7. Game-mode profiles, including quick narrative play, canonical mechanics,
     and strict-information-isolation detective play.
@@ -190,6 +192,13 @@ approved or implemented.
 9. SOFT accumulation budgets and configurable HARD publication thresholds.
 10. Migration, promotion, and catalog-gap workflows.
 11. Standard ruleset seed data, including the selected D&D/SRD baseline.
+
+Step 2 also owns the now-active LifeState contract. HP remains the numeric
+health authority, but zero HP does not determine death by itself. When HP is
+materialized, a separate `life_state_id` is materialized with it. Scheduled or
+conditional transformations (for example undeath at dawn or after a ritual)
+remain Effects/Triggers and atomically update form/type, LifeState, and HP when
+resolved. This requirement supersedes the earlier deferred-lifecycle note.
 
 ## 6. Deferred work that must remain possible
 

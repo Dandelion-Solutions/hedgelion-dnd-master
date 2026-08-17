@@ -147,8 +147,8 @@ The accepted minimum envelope is defined by `CATALOG_CONTRACTS.md` and
 ```
 
 Definitions answer what a thing can be. Instances answer which thing exists and
-its current state. Current HP, ownership, charges, location, active effects, and
-knowledge are instance state, not catalog data.
+its current state. Current HP, lifecycle state, ownership, charges, location,
+active effects, and knowledge are instance state, not catalog data.
 
 ## 6. Classification uses facets, not exclusive subclasses
 
@@ -199,7 +199,7 @@ that grants them. See `RULE_ELEMENT_MODEL.md`.
 
 | ID | Purpose | Typical mutable state |
 |---|---|---|
-| `world.actor` | Particular PC, NPC, creature, companion | HP, resources, effects, location, inventory |
+| `world.actor` | Particular PC, NPC, creature, companion | HP, LifeState, resources, effects, location, inventory |
 | `world.asset` | Particular physical or conceptual object | owner, location, charges, condition |
 | `world.location` | Particular place or mechanically relevant zone | occupants, links, hazards, state |
 | `world.organization` | Faction, guild, government, group | relationships, resources, status |
