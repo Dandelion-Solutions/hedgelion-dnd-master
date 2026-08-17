@@ -341,7 +341,7 @@ It first produces an ordered `IntentPlan` containing every material clause:
 
 ```json
 {
-  "message_id": "turn-00042",
+  "message_id": "turn-000042",
   "intents": [
     {"order": 1, "verb": "leave", "object": "item.potion", "status": "mapped"},
     {"order": 2, "verb": "move", "destination": "location.hall", "status": "mapped"},
@@ -418,7 +418,7 @@ Every event minimally records:
   "event_kind": "event.asset.transferred",
   "schema_version": 1,
   "causation_id": "resolution-00000088",
-  "correlation_id": "turn-00042",
+  "correlation_id": "turn-000042",
   "entity_ids": ["item.potion", "actor.hero", "actor.goblin"],
   "before": {},
   "after": {},
@@ -573,7 +573,7 @@ output before mechanics:
 
 Turn identity is host-owned. Runtime state stores only `last_turn_number` as an
 integer. Before accepting a new ordinary message, Python increments it and
-formats `turn-{number:05d}`. No `next_turn` field is persisted; it is derived by
+formats `turn-{number:06d}`. No `next_turn` field is persisted; it is derived by
 adding one. Maintenance commands do not increment the counter.
 
 Mapping outcomes are:
