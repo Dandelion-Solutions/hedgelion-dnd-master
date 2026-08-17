@@ -6,6 +6,8 @@ Target: `feature/mechanical-runtime-hot-state`
 
 Machine-readable field inventory: `CATALOG/entity-structures.json`
 
+Accepted actor structures: `ARCHITECTURE/ACTOR_MODEL.md`
+
 ## 1. Field classes
 
 Each definition `data` and world-record `state` has three field classes:
@@ -170,13 +172,6 @@ automatically.
 
 ## 6. Next design boundary
 
-This inventory fixes field membership, not the nested shapes of mechanical
-values. The next review begins with:
-
-- `definition.actor_archetype`;
-- `world.actor`;
-- `world.actor_group`.
-
-That review decides actor roles, D&D-specific statistics, narrative-only
-actors, inventories, effects, and the point at which an incidental NPC is
-promoted into durable world state.
+This inventory fixes field membership. Actor nested shapes are now accepted in
+`ARCHITECTURE/ACTOR_MODEL.md`. Nested shapes for the remaining kinds are still
+reviewed incrementally before implementation.
