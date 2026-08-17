@@ -44,6 +44,7 @@
 - [ ] Post-update runtime reloads exact local target package.
 
 ## Regression
+- [ ] Maintenance dependencies installed with `python -m pip install -r requirements-maintenance.txt`.
 - [ ] In explicit engine-maintenance/release mode, `python TOOLS/audit_engine.py` passes on the exact release tree.
 - [ ] `TESTS/BOOTSTRAP_STORAGE_REGRESSION_CASES.md` reviewed.
 - [ ] `TESTS/ENGINE_UPDATE_CASES.md` reviewed.
