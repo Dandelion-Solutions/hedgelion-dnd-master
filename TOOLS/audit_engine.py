@@ -5,17 +5,30 @@ This executable is for explicit engine development/release maintenance. It is NO
 part of campaign bootstrap, setup, gameplay, save, pause/resume, or campaign
 integrity fast paths and must never be invoked automatically by runtime.
 
-Standard-library only. Exits non-zero on normative contradictions or scaffold
-smoke failure.
+Install maintenance dependencies with
+`python -m pip install -r requirements-maintenance.txt`. Exits non-zero on
+normative contradictions, invalid JSON Schema/catalog data, or scaffold smoke
+failure.
 """
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+try:
+    from jsonschema import Draft202012Validator
+except ImportError:
+    print(
+        "ERROR: missing maintenance dependency 'jsonschema'; "
+        "run: python -m pip install -r requirements-maintenance.txt",
+        file=sys.stderr,
+    )
+    raise SystemExit(2)
 
 ROOT = Path(__file__).resolve().parents[1]
 ERRORS: list[str] = []
@@ -208,6 +221,35 @@ def audit_schema_and_templates() -> None:
     require("root MANIFEST.yaml" in stub, "deprecated template stub must describe root-layout output")
 
 
+def audit_json_schemas() -> None:
+    schemas: dict[str, dict] = {}
+    for path in sorted((ROOT / "SCHEMAS").glob("*.schema.json")):
+        rel = str(path.relative_to(ROOT))
+        try:
+            schema = json.loads(path.read_text(encoding="utf-8"))
+            Draft202012Validator.check_schema(schema)
+            schemas[path.name] = schema
+        except Exception as exc:
+            # jsonschema exposes several validation exception subclasses. The
+            # audit reports their stable human-readable message without making
+            # the maintenance tool depend on that internal class hierarchy.
+            ERRORS.append(f"invalid JSON Schema {rel}: {exc}")
+
+    instance_pairs = {
+        "core-catalog.schema.json": "CATALOG/core-catalog.json",
+        "identifier-policies.schema.json": "CATALOG/identifier-policies.json",
+    }
+    for schema_name, instance_rel in instance_pairs.items():
+        schema = schemas.get(schema_name)
+        if schema is None:
+            continue
+        try:
+            instance = json.loads((ROOT / instance_rel).read_text(encoding="utf-8"))
+            Draft202012Validator(schema).validate(instance)
+        except Exception as exc:
+            ERRORS.append(f"invalid catalog instance {instance_rel}: {exc}")
+
+
 def audit_tests() -> None:
     pt = text("TESTS/PERSISTENCE_TRANSACTION_CASES.md")
     do = text("TESTS/DIEGETIC_ONBOARDING_CASES.md")
@@ -279,6 +321,7 @@ def main() -> int:
     audit_persistence_ownership()
     audit_onboarding_and_identity()
     audit_schema_and_templates()
+    audit_json_schemas()
     audit_tests()
     smoke_generator()
 
