@@ -27,8 +27,9 @@ The minimum universal envelopes and the required/expected field inventory for
 every definition and world-record kind are agreed. They are recorded in
 `ARCHITECTURE/CATALOG_CONTRACTS.md`, `ARCHITECTURE/ENTITY_STRUCTURES.md`, and
 `CATALOG/entity-structures.json`. The next catalog task is to define the nested
-value shapes, beginning with actors. Identifier policy is decided alongside
-each independently identified record kind.
+value shapes. Actor archetype, actor state, and actor-group state are accepted
+in `ARCHITECTURE/ACTOR_MODEL.md`; the remaining kinds follow. Identifier policy
+is decided alongside each independently identified record kind.
 
 ## 2. Agreed catalog principles
 
