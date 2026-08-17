@@ -10,6 +10,11 @@ Related contracts:
 - `ARCHITECTURE/ENTITY_STRUCTURES.md`;
 - `ARCHITECTURE/ACTOR_MODEL.md`.
 
+Machine-readable schemas:
+
+- `SCHEMAS/asset-definition-data.schema.json`;
+- `SCHEMAS/world-asset-state.schema.json`.
+
 ## 1. Scope
 
 An asset is a particular physical or conceptual object that can be owned,
