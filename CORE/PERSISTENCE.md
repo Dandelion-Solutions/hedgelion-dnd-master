@@ -23,6 +23,21 @@ Use this even for one dirty campaign file. Do not mix `create_file`, `update_fil
 ### STORAGE_METADATA_SINGLE — storage default branch
 Rare root storage metadata maintenance may use Contents API. It is a separate transaction from campaign publication.
 
+## Text payload transport discipline
+
+This rule applies to `CAMPAIGN_TREE_TXN`, `LIVE_STATE_CAS` and `STORAGE_METADATA_SINGLE` whenever the repository payload is semantically text, including YAML, JSON, Markdown, logs, checkpoints, indexes, configuration and generated campaign text.
+
+Use Connector UTF-8/text interfaces directly whenever a correct text mode exists:
+- read text as text;
+- create/update text with ordinary UTF-8 text arguments;
+- create Git-data text blobs with UTF-8 encoding rather than manually Base64-encoding them;
+- keep large text textual when chunking or reconstructing it, using line/range or equivalent text-safe reads instead of Base64 merely to move chunks;
+- verify exactness with actual file bytes, Git blob/content SHA or equivalent direct identity checks rather than a Base64 transform.
+
+Do not create helper scripts whose purpose is to Base64-convert textual repository payloads. Do not add an LLM/runtime `text -> Base64 -> text` cycle around a Connector operation.
+
+Connector-internal Base64 required by an underlying GitHub API is allowed and is not part of this prohibition. Explicit Base64 is allowed only for genuinely binary content or when the specific required Connector operation has no usable UTF-8/text mode; do not add extra encode/decode cycles beyond that technical boundary.
+
 ## Transaction snapshot
 
 At transaction start freeze repository, target ref, authorization, `pinned_head_sha`, known/base tree SHA, complete semantic dirty path set, final contents/deletions, and persistence reason.

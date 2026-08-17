@@ -91,3 +91,7 @@ Pass: local changed-path assertion fails and tree is rebuilt before commit.
 
 ## PT30 — Blank scaffold is the from-scratch exception
 Pass: exact init_campaign generator output may create first campaign tree from scratch; all later campaign writes use base-tree deltas.
+
+## PT31 — Text payload transport avoids manual Base64
+Campaign-tree, live-state CAS and storage-metadata publication handle semantically textual payloads.
+Pass: use Connector UTF-8/text modes whenever available; do not manually Base64-encode/decode text for reads, writes, chunking, staging or exactness checks. Connector-internal Base64 required by an underlying API is allowed and is not a runtime failure; genuine binary content or a required operation with no usable text mode remains an exception.
