@@ -6,7 +6,10 @@
   "additionalProperties": false,
   "required": ["id", "kind", "state"],
   "properties": {
-    "id": {"$ref": "#/$defs/machineId"},
+    "id": {
+      "allOf": [{"$ref": "#/$defs/machineId"}],
+      "description": "Validated further by the record kind's policy in CATALOG/identifier-policies.json."
+    },
     "kind": {
       "type": "string",
       "pattern": "^world\\.[a-z][a-z0-9_]*$"
