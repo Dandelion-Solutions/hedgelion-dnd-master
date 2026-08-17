@@ -22,6 +22,7 @@ from pathlib import Path
 
 try:
     from jsonschema import Draft202012Validator
+    from referencing import Registry, Resource
 except ImportError:
     print(
         "ERROR: missing maintenance dependency 'jsonschema'; "
@@ -235,8 +236,25 @@ def audit_json_schemas() -> None:
             # the maintenance tool depend on that internal class hierarchy.
             ERRORS.append(f"invalid JSON Schema {rel}: {exc}")
 
+    registry = Registry().with_resources(
+        (schema["$id"], Resource.from_contents(schema))
+        for schema in schemas.values()
+        if "$id" in schema
+    )
+
+    for schema_name, schema in schemas.items():
+        validator = Draft202012Validator(schema, registry=registry)
+        for index, example in enumerate(schema.get("examples", [])):
+            try:
+                validator.validate(example)
+            except Exception as exc:
+                ERRORS.append(
+                    f"invalid example {index} in SCHEMAS/{schema_name}: {exc}"
+                )
+
     instance_pairs = {
         "core-catalog.schema.json": "CATALOG/core-catalog.json",
+        "entity-structures.schema.json": "CATALOG/entity-structures.json",
         "identifier-policies.schema.json": "CATALOG/identifier-policies.json",
     }
     for schema_name, instance_rel in instance_pairs.items():
@@ -245,9 +263,32 @@ def audit_json_schemas() -> None:
             continue
         try:
             instance = json.loads((ROOT / instance_rel).read_text(encoding="utf-8"))
-            Draft202012Validator(schema).validate(instance)
+            Draft202012Validator(schema, registry=registry).validate(instance)
         except Exception as exc:
             ERRORS.append(f"invalid catalog instance {instance_rel}: {exc}")
+
+    try:
+        core = json.loads((ROOT / "CATALOG/core-catalog.json").read_text(encoding="utf-8"))
+        structures = json.loads((ROOT / "CATALOG/entity-structures.json").read_text(encoding="utf-8"))
+        identifiers = json.loads((ROOT / "CATALOG/identifier-policies.json").read_text(encoding="utf-8"))
+        require(
+            core["catalog_version"]
+            == structures["catalog_version"]
+            == identifiers["catalog_version"],
+            "all machine catalogs must use the same catalog_version",
+        )
+        require(
+            set(core["registries"]["content_definition_kinds"])
+            == set(structures["definitions"]),
+            "content_definition_kinds and entity-structure definition keys differ",
+        )
+        require(
+            set(core["registries"]["world_record_kinds"])
+            == set(structures["world_records"]),
+            "world_record_kinds and entity-structure world-record keys differ",
+        )
+    except Exception as exc:
+        ERRORS.append(f"catalog cross-validation failed: {exc}")
 
 
 def audit_tests() -> None:

@@ -53,9 +53,10 @@ Optional fields:
 | `facets` | Registered classifiers. They do not grant behavior. |
 | `tags` | Search terms with no executable meaning. |
 
-References to Activities, Effects, Resources, Rule Elements, or other
-definitions belong in kind-specific `data`. A loader validates those references
-against the reviewed registries.
+References to Activities, Effects, Resources, or other definitions belong in
+kind-specific `data`. Embedded Rule Elements and Trigger Bindings remain with
+the definition that grants them. A loader validates references and embedded
+mechanics against the reviewed registries and their dedicated schemas.
 
 Registry IDs describe the engine's accepted vocabulary and are closed to
 ad-hoc LLM invention during play. Reusable definition instances are extensible
@@ -118,7 +119,7 @@ Definitions do not use inheritance or a universal override object.
   definitions, facets, and tags. A different name or one-off description alone
   does not require one.
 - Mechanical variations compose registered Activities, Effects, Resources,
-  Rule Elements, and other catalog definitions.
+  and embedded Rule Elements/Trigger Bindings.
 - An idea that cannot be represented by registered capabilities produces a
   catalog-gap report instead of arbitrary executable data.
 

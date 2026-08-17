@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/trigger-binding.schema.json",
+  "title": "HDM embedded Trigger Binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["on", "activity_id"],
+  "properties": {
+    "on": {
+      "type": "string",
+      "pattern": "^(?:signal|event)\\.[a-z][a-z0-9_.]*$"
+    },
+    "activity_id": {"$ref": "#/$defs/machineId"},
+    "mode": {"enum": ["automatic", "offer", "schedule"]},
+    "actor": {"$ref": "#/$defs/bindingRef"},
+    "targets": {"$ref": "#/$defs/bindingRef"},
+    "predicate": {
+      "$ref": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json"
+    },
+    "gate": {"$ref": "#/$defs/gate"},
+    "priority": {"type": "integer"}
+  },
+  "$defs": {
+    "machineId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "bindingRef": {
+      "enum": [
+        "owner",
+        "signal.actor",
+        "signal.source",
+        "signal.target",
+        "signal.targets",
+        "event.actor",
+        "event.source",
+        "event.target",
+        "event.targets"
+      ]
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resource_ref"],
+      "properties": {
+        "resource_ref": {"$ref": "#/$defs/machineId"}
+      }
+    }
+  },
+  "examples": [
+    {
+      "on": "signal.attack.hit.pending",
+      "activity_id": "srd.activity.shield_reaction",
+      "mode": "offer",
+      "actor": "owner",
+      "predicate": {"fact": "owner.can_react"},
+      "gate": {"resource_ref": "owner.reaction"}
+    }
+  ]
+}

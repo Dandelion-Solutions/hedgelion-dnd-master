@@ -21,15 +21,17 @@ The four-layer separation below is accepted:
 The class inventory for those layers was reviewed against SRD 5.2.1, Foundry
 D&D5e, Avrae automation, and PF2e Rule Element prior art. The resulting baseline
 is fixed in `ARCHITECTURE/CATALOG_INVENTORY.md` and machine-readable catalog
-version 1.1.0. It is sufficient for schema design and explicitly extensible.
+version 1.2.0. It is sufficient for schema design and explicitly extensible.
 
 The minimum universal envelopes and the required/expected field inventory for
 every definition and world-record kind are agreed. They are recorded in
 `ARCHITECTURE/CATALOG_CONTRACTS.md`, `ARCHITECTURE/ENTITY_STRUCTURES.md`, and
 `CATALOG/entity-structures.json`. Actor and asset nested models are accepted in
-`ARCHITECTURE/ACTOR_MODEL.md` and `ARCHITECTURE/ASSET_MODEL.md`. The next
-catalog task is the Activity and Rule Element boundary. Identifier policy is
-decided alongside each independently identified record kind.
+`ARCHITECTURE/ACTOR_MODEL.md` and `ARCHITECTURE/ASSET_MODEL.md`. The first
+Activity and Rule Element contracts are captured by
+`ARCHITECTURE/ACTIVITY_MODEL.md` and `ARCHITECTURE/RULE_ELEMENT_MODEL.md`.
+Identifier policy is decided alongside each independently identified record
+kind.
 
 ## 2. Agreed catalog principles
 
@@ -61,8 +63,9 @@ decided alongside each independently identified record kind.
 - No material clause in a player message may be silently discarded.
 - One player message may contain several actions. The interface must not force
   the player to submit one microscopic action per message.
-- Activity executes a bounded action. Rule Elements provide typed conditional
-  contributions and do not mutate arbitrary state.
+- Activity executes a bounded mechanical procedure. Rule Elements provide typed
+  conditional contributions and do not mutate state. Trigger Bindings connect
+  registered Signals/Events to registered Activities without callbacks.
 - The dice component only produces rolls. Buffs, debuffs, modifiers, and
   consequences belong to resolution/rule processing.
 
@@ -105,11 +108,13 @@ The class membership and layer boundaries in `CATALOG_INVENTORY.md` are now the
 reviewed baseline. They may be extended later through catalog versioning.
 
 The universal envelopes and field membership in `CATALOG_CONTRACTS.md` and
-`ENTITY_STRUCTURES.md` are accepted contracts. The following structures remain
-proposals rather than accepted contracts:
+`ENTITY_STRUCTURES.md` are accepted contracts. Activity, Rule Element, and
+Trigger Binding now have a design baseline and structural JSON Schemas. The
+following details remain proposals rather than accepted contracts:
 
-- nested shapes and validation rules for kind-specific fields and references;
-- exact executable contracts for the registered primitives and Rule Elements.
+- remaining nested shapes and validation rules for other kind-specific fields;
+- exact operation-specific `args`/result and Rule Element value schemas;
+- measured composition and trigger-chain limits.
 
 Catalog membership is reviewed; schema and runtime behavior are not thereby
 approved or implemented.
@@ -153,9 +158,10 @@ approved or implemented.
 ## 5. Other catalog questions still open
 
 1. Nested shapes and validation rules for kind-specific fields and references.
-2. Exact Activity primitive contracts and composition limits.
-3. Execution semantics for multi-intent messages: ordering, atomic groups,
-   partial failure, suspension, and action-economy boundaries.
+2. Exact Activity primitive argument/result contracts and measured composition
+   limits.
+3. Focused validation of the sequential multi-intent, partial-failure,
+   suspension, and action-economy boundaries.
 4. Event payloads, granularity, and durability classification; the event-kind
    baseline itself is reviewed.
 5. Effects, conditions, resources, durations, and recovery contracts.
@@ -182,6 +188,6 @@ approved or implemented.
 ## 7. Scope guard
 
 The class inventory, universal structures, identifier policies, and
-extensibility boundary are reviewed. The next design boundary is the executable
-contract for Activities, Rule Elements, and directly related records. Registry
+extensibility boundary are reviewed. The first Activity/Rule Element contracts
+are recorded as a design baseline pending focused mechanical examples. Registry
 counts are never a completeness metric.

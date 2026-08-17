@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/rule-element.schema.json",
+  "title": "HDM embedded Rule Element",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["operation_id", "selector", "value"],
+  "properties": {
+    "operation_id": {
+      "type": "string",
+      "pattern": "^rule\\.[a-z][a-z0-9_]*$"
+    },
+    "selector": {"$ref": "#/$defs/machineId"},
+    "value": {
+      "description": "Validated against the exact value schema registered for operation_id and selector.",
+      "type": ["object", "array", "string", "number", "integer", "boolean"]
+    },
+    "predicate": {
+      "$ref": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json"
+    },
+    "stacking_key": {"$ref": "#/$defs/machineId"},
+    "priority": {"type": "integer"},
+    "gate": {"$ref": "#/$defs/gate"}
+  },
+  "$defs": {
+    "machineId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resource_ref"],
+      "properties": {
+        "resource_ref": {"$ref": "#/$defs/machineId"}
+      }
+    }
+  },
+  "examples": [
+    {
+      "operation_id": "rule.add_damage_component",
+      "selector": "damage.weapon",
+      "value": {"dice": "1d6", "damage_type_id": "damage.radiant"},
+      "predicate": {
+        "all": [
+          {"fact": "source.equipped"},
+          {"fact": "target.marked"}
+        ]
+      }
+    }
+  ]
+}

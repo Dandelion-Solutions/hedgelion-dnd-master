@@ -16,7 +16,7 @@ Actor data model: `ARCHITECTURE/ACTOR_MODEL.md`
 
 Asset data model: `ARCHITECTURE/ASSET_MODEL.md`
 
-Machine-readable registry: `CATALOG/core-catalog.json` version `1.1.0`
+Machine-readable registry: `CATALOG/core-catalog.json` version `1.2.0`
 
 ## 1. Purpose
 
@@ -160,7 +160,7 @@ Moonlace Brooch
   asset.decoration
   asset.artifact
   grants activity.moonlight_pulse
-  attaches rule element re.moonlace_rider
+  embeds a radiant-rider Rule Element
 ```
 
 This avoids choosing whether the brooch is “really” jewelry, an artifact, or a
@@ -175,7 +175,7 @@ provide its mechanics.
 > **Inventory notice:** the exact reviewed class and capability IDs are defined
 > by `CATALOG_INVENTORY.md` and `core-catalog.json`. The tables in sections
 > 7–18 below record the earlier design derivation and examples. They are
-> non-normative where an ID differs from catalog version 1.1.0. This preserves
+> non-normative where an ID differs from catalog version 1.2.0. This preserves
 > the reasoning without allowing the prototype lists to override the reviewed
 > inventory.
 
@@ -189,10 +189,11 @@ provide its mechanics.
 | `definition.resource` | Capacity, spending and recovery policy |
 | `definition.effect` | EffectInstance template and duration policy |
 | `definition.condition` | Ruleset condition expressed through effects/rules |
-| `definition.rule_element` | Pure conditional Contribution definition |
-| `definition.trigger_binding` | Registered signal/event to reaction/follow-up mapping |
 | `definition.location_archetype` | Reusable location/zone properties |
 | `definition.mode_profile` | Enabled mechanics and presentation profile |
+
+Rule Elements and Trigger Bindings are embedded values owned by the definition
+that grants them. See `RULE_ELEMENT_MODEL.md`.
 
 ### 7.2 World-record kinds
 
@@ -266,28 +267,30 @@ its ordered registered primitives.
 
 | ID | Typical natural-language intent |
 |---|---|
-| `activity.observe` | look, listen, inspect without a contested check |
+| `activity.perceive` | directly or passively observe |
+| `activity.search` | actively locate, inspect, or investigate |
 | `activity.communicate` | speak, signal, ask, threaten as expression |
 | `activity.influence` | persuade, deceive, intimidate, negotiate |
+| `activity.perform` | entertain, demonstrate, or present |
 | `activity.move` | go, approach, retreat, climb, jump, travel |
 | `activity.manipulate` | open, close, lock, unlock, press, pull, place |
 | `activity.use_asset` | drink, activate, read, play, apply, consume |
 | `activity.transfer` | give, take, drop, pay, steal, exchange |
 | `activity.attack` | armed, unarmed, spell, improvised attack |
 | `activity.defend` | dodge, guard, parry, take cover |
-| `activity.check` | attempt a task with uncertain outcome |
-| `activity.save` | resist an imposed effect |
-| `activity.heal` | restore HP or related resource |
-| `activity.cast_or_activate` | invoke a spell, feature, artifact, ritual |
-| `activity.apply_effect` | create a condition/buff/debuff/zone |
-| `activity.manage_resource` | spend, restore, reserve, recharge |
-| `activity.rest` | short/long/custom recovery procedure |
+| `activity.control` | grapple, shove, restrain, escape, or reposition another |
+| `activity.cast` | cast a spell or conduct a ritual |
+| `activity.activate_feature` | invoke a feature or artifact capability |
+| `activity.test` | attempt an uncertain task not covered more specifically |
 | `activity.assist` | help another action or grant a contribution |
-| `activity.search` | actively locate hidden information/entities |
-| `activity.stealth` | hide, sneak, conceal an action/object |
-| `activity.craft` | make, repair, dismantle, prepare |
-| `activity.environment` | interact with hazards, mechanisms, terrain |
-| `activity.composite` | rules-defined multi-step Activity |
+| `activity.conceal` | hide self, another subject, an object, or evidence |
+| `activity.prepare` | ready, aim, hold, or prepare a response |
+| `activity.rest` | execute a rules-bearing rest |
+| `activity.craft` | create, repair, dismantle, brew, or scribe |
+| `activity.downtime` | extended work, training, or research |
+| `activity.wait` | deliberately advance local time/procedure state |
+| `activity.command` | direct a companion, group, facility, or vehicle |
+| `activity.composite` | reusable rules-defined ordered composition |
 
 Communication and stated intent are still gameplay interactions even when they
 produce no mathematical change. They may resolve to `OBSERVED` rather than being
@@ -466,24 +469,12 @@ capability is the generic condition/effect machinery.
 
 ## 16. Rule-element catalog
 
-Rule Elements are pure contributions. Initial operations are:
-
-- `rule.add_flat`;
-- `rule.add_dice`;
-- `rule.grant_advantage`, `rule.grant_disadvantage`;
-- `rule.set_minimum`, `rule.set_maximum`, `rule.cap`, `rule.floor`;
-- `rule.multiply` with explicit phase and rounding;
-- `rule.override` for narrowly registered selectors;
-- `rule.add_damage_component`;
-- `rule.resistance`, `rule.immunity`, `rule.vulnerability`;
-- `rule.adjust_cost`;
-- `rule.grant_activity`, `rule.restrict_activity`;
-- `rule.adjust_target`, `rule.adjust_range`;
-- `rule.adjust_duration`;
-- `rule.usage_gate` for once-per-turn/rest/etc.
-
-Every contribution records selector, phase, predicate, value, stacking group,
-source, and usage policy. Rules cannot mutate state or call arbitrary Activities.
+The operation and selector IDs in `core-catalog.json` form the closed engine
+vocabulary. Rule Elements are embedded pure values with required
+`operation_id`, `selector`, and `value`; owner/source, timing, mutable use state,
+and recovery are not copied into them. Trigger Bindings are likewise embedded.
+The normative structure, evaluation, stacking, gating, and Signal/Event boundary
+are defined in `RULE_ELEMENT_MODEL.md`.
 
 ## 17. Target, position, and area catalog
 
@@ -603,7 +594,8 @@ When the player introduces a custom item, creature, action, effect, or lore
 element, the Master:
 
 1. chooses entity kind and compatible facets;
-2. binds existing Activities/Rule Elements/resources;
+2. binds existing Activities/resources and embeds validated Rule Elements or
+   Trigger Bindings where the definition grants them;
 3. proposes natural values from the selected ruleset and fictional description;
 4. validates the definition;
 5. creates a campaign instance or definition;
@@ -623,7 +615,13 @@ Example custom artifact:
   "facets": ["asset.wearable", "asset.decoration", "asset.artifact"],
   "data": {
     "activity_ids": ["activity.moonlight_pulse"],
-    "rule_elements": ["re.moonlace_radiant_rider"],
+    "rule_elements": [
+      {
+        "operation_id": "rule.add_damage_component",
+        "selector": "damage.weapon",
+        "value": {"dice": "1d6", "damage_type_id": "damage.radiant"}
+      }
+    ],
     "resources": [{"kind": "resource.use", "capacity": 1, "recovery": "long_rest"}]
   }
 }

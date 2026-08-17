@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.1.0",
+  "catalog_version": "1.2.0",
   "schema_version": 1,
   "registries": {
     "content_definition_kinds": [
@@ -14,7 +14,6 @@
       "definition.advancement", "definition.feat", "definition.feature",
       "definition.spell", "definition.asset", "definition.activity",
       "definition.resource", "definition.effect", "definition.condition",
-      "definition.rule_element", "definition.trigger_binding",
       "definition.recipe", "definition.hazard", "definition.terrain",
       "definition.environment", "definition.location_archetype",
       "definition.organization_archetype", "definition.mission_template",
@@ -154,6 +153,18 @@
       "rule.restrict_activity", "rule.grant_movement", "rule.grant_sense",
       "rule.grant_proficiency", "rule.grant_trait", "rule.usage_gate"
     ],
+    "rule_selectors": [
+      "ability.score", "ability.modifier", "test.roll", "check.roll",
+      "contest.roll", "save.roll", "initiative.roll", "check.dc",
+      "save.dc", "spell.dc", "attack.roll", "attack.critical_threshold",
+      "defense.armor_class", "damage.weapon", "damage.spell",
+      "damage.dealt", "damage.received", "healing.done",
+      "healing.received", "resource.cost", "resource.capacity",
+      "resource.recovery", "activity.availability", "activity.activation",
+      "target.count", "target.range", "target.area", "effect.duration",
+      "effect.stacks", "movement.speed", "sense.range",
+      "proficiency.rank", "actor.trait"
+    ],
     "target_kinds": [
       "target.none", "target.self", "target.entity", "target.entities",
       "target.asset", "target.location", "target.zone", "target.point"
@@ -167,13 +178,18 @@
       "range.unlimited", "range.same_location", "range.near",
       "range.reachable"
     ],
-    "trigger_phases": [
-      "trigger.pre_resolution", "trigger.pre_roll", "trigger.post_roll",
-      "trigger.pre_commit", "trigger.post_commit", "trigger.turn_start",
-      "trigger.turn_end", "trigger.round_start", "trigger.round_end",
-      "trigger.effect_start", "trigger.effect_end",
-      "trigger.entity_enter_zone", "trigger.entity_leave_zone",
-      "trigger.resource_threshold"
+    "signal_kinds": [
+      "signal.resolution.prepared", "signal.roll.pending",
+      "signal.roll.resolved", "signal.attack.hit.pending",
+      "signal.spell.cast.pending", "signal.damage.pending",
+      "signal.healing.pending",
+      "signal.resource.consumption.pending",
+      "signal.effect.application.pending", "signal.entity.move.pending",
+      "signal.entity.leave_reach.pending", "signal.entity.enter_zone.pending",
+      "signal.entity.leave_zone.pending", "signal.turn.start",
+      "signal.turn.end", "signal.round.start", "signal.round.end",
+      "signal.effect.start", "signal.effect.end",
+      "signal.resource.threshold.pending"
     ],
     "duration_modes": [
       "duration.instant", "duration.fixed", "duration.concentration",

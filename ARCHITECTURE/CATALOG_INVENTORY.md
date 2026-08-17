@@ -2,7 +2,7 @@
 
 Status: **REVIEWED BASELINE**
 
-Catalog version: `1.1.0`
+Catalog version: `1.2.0`
 
 This document fixes the class inventory used to design schemas and runtime
 contracts. "Complete" means sufficient coverage for the intended HDM
@@ -106,13 +106,16 @@ it. PC, NPC, companion, summon, and swarm are instance facets or roles.
 | `definition.resource` | Capacity, spending, and recovery policy |
 | `definition.effect` | Effect template, duration, rules, and lifecycle |
 | `definition.condition` | Named condition expressed through effects/rules |
-| `definition.rule_element` | Pure conditional contribution |
-| `definition.trigger_binding` | Signal/event to reaction/follow-up mapping |
 | `definition.recipe` | Craft inputs, work/time, checks, and outputs |
 
 A condition remains separately named because rules target it by identity. Its
 execution uses generic effect machinery. A recipe is reusable content that may
 be executed through several crafting Activities.
+
+Rule Elements and Trigger Bindings are embedded mechanical value objects owned
+by the Feature, Effect, Asset, equipment property, Feat, or Hazard
+that grants them. They have no independent lifecycle or canonical ID. Their
+exact contracts are defined in `RULE_ELEMENT_MODEL.md`.
 
 ### 3.4 World-building and host policy
 
@@ -236,7 +239,10 @@ organization facet.
 | `activity.downtime` | Extended work, training, or research |
 | `activity.wait` | Deliberately advance local time/procedure state |
 | `activity.command` | Direct a companion, group, facility, or vehicle |
-| `activity.composite` | Rules-defined or host-planned ordered composition |
+| `activity.composite` | Reusable rules-defined ordered composition |
+
+A host-planned natural-language turn remains an ordered
+`runtime.intent_plan`; it does not create a permanent composite definition.
 
 Saving throws, damage, healing, effects, and resource changes are resolver
 operations or consequences rather than player-intent families.

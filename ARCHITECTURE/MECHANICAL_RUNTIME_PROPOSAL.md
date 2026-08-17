@@ -75,7 +75,7 @@ The proposal is a synthesis of working patterns, not a copy of one engine.
 
 | Source | Pattern adopted | Pattern not imported |
 |---|---|---|
-| [Avrae Automation](https://avrae.readthedocs.io/en/latest/automation_ref.html) | Typed recursive effects, hit/miss and save branches, prior-step values, structured result tree | Avrae command/runtime surface and unrestricted expression environment |
+| [Avrae Automation](https://avrae.readthedocs.io/en/latest/automation_ref.html) | Typed mechanical nodes, hit/miss and save branches, prior-step values, structured results | Recursive automation trees, Avrae command/runtime surface, and unrestricted expression environment |
 | [Avrae d20](https://github.com/avrae/d20) | Dice grammar, result AST, keep/drop/reroll/min/max, execution limits | Global RNG ownership and direct execution of arbitrary LLM-provided strings |
 | [Foundry D&D5e Activities](https://github.com/foundryvtt/dnd5e/wiki/Activities) | Actor/Item/Activity split, activation, target, consumption, uses, effects, multiple activities per item | Foundry documents, hooks, UI, canvas, and module lifecycle |
 | [PF2e Rule Elements](https://github.com/foundryvtt/pf2e/wiki/Quickstart-guide-for-rule-elements) | Selector, predicate, modifier provenance, typed stacking | PF2e's complete actor-preparation pipeline and large rule-element catalogue |
@@ -107,7 +107,7 @@ maintenance review. Architectural ideas alone do not imply code copying.
 | `Step` | Typed unit inside an Activity | No |
 | `Signal` | Transient calculation/timing input exposed to Rule Elements | No |
 | `Contribution` | Typed modifier returned by a Rule Element | No |
-| `TriggerBinding` | Bounded mapping from a registered Signal/Event to a reaction or follow-up Activity | Its definition may be canonical |
+| `TriggerBinding` | Embedded bounded mapping from a registered Signal/Event to a reaction or follow-up Activity | No; its owner may be canonical |
 | `StateDelta` | Proposed mutation produced by resolution | No, until committed |
 | `MechanicalEvent` | Immutable fact produced by a committed segment | Locally committed; policy decides publication |
 | `ResolutionTrace` | Inputs, rolls, modifiers, calculations, rejected contributions and deltas | Normally HOT; selected details may be materialized |
@@ -121,7 +121,8 @@ new `resolution_id` is created. It ends as exactly one of:
 
 - `COMPLETED`;
 - `REJECTED` before any irreversible segment;
-- `ABORTED` with explicit compensating semantics for already committed segments.
+- `ABORTED` with explicit partial-completion reporting for already committed
+  segments; there is no general compensation or rollback language.
 
 `AWAITING_CHOICE`, `AWAITING_REACTION`, `HYDRATION_REQUIRED`, and
 `PUBLISH_REQUIRED` suspend the same Action. They do not create another Action.
@@ -336,46 +337,31 @@ They can be provided by:
 2. a canonical item, feature, spell, actor, or effect;
 3. campaign-specific data using supported primitives.
 
-An Activity contains:
-
-- stable ID and schema version;
-- owner/source provenance;
-- activation/action-economy type;
-- target contract;
-- range/area facts when mechanically required;
-- resource costs and commitment timing;
-- uses/recovery policy;
-- ordered typed steps;
-- bounded branches over typed results;
-- declared choice/reaction windows;
-- registered follow-up bindings when the Activity is a legal trigger target;
-- result exports usable by later steps.
+The normative data contract is `ACTIVITY_MODEL.md`. The definition envelope owns
+identity and localization; invocation context owns source provenance. Activity
+data requires only `family_id` and non-empty ordered `steps`. Activation,
+requirements, targeting, and Resource-referencing costs are optional. Uses and
+recovery belong to Resources; result duration belongs to the created Effect.
 
 Illustrative shape:
 
 ```yaml
-id: ACT_LONGSWORD_ATTACK
-type: activity
+family_id: activity.attack
 activation:
-  economy: action
-targets:
-  count: 1
-  kind: creature
+  economy_id: resource.action
+  amount: 1
+targeting:
+  kind_id: target.entity
+  minimum: 1
+  maximum: 1
+  range_mode_id: range.reachable
 steps:
-  - id: attack
-    op: attack
-    selector: attack.weapon.melee
-    ability: strength
-  - id: damage
-    op: damage
+  - op: op.resolve_attack
+    export: attack
+  - op: op.apply_damage
     when:
       result: attack.outcome
       in: [hit, critical]
-    components:
-      - dice: 1d8
-        type: slashing
-      - value: actor.ability.strength.mod
-        type: slashing
 ```
 
 ### 7.1 Allowed composition
@@ -411,31 +397,22 @@ reference, canonicality, and durability validation.
 ## 8. Rule Elements and effects
 
 An `EffectInstance` is state: source, target, start/end, duration, stacks, and
-attached Rule Elements. A `RuleElement` is a pure conditional contribution.
+attached Rule Elements. A `RuleElement` is a pure conditional contribution and
+an embedded value owned by the definition that grants it. The normative
+contract is `RULE_ELEMENT_MODEL.md`.
 
 Minimum RuleElement fields:
 
 ```yaml
-id: RE_ARTIFACT_RADIANT_RIDER
+operation_id: rule.add_damage_component
 selector: damage.weapon
-phase: prepare
-operation: add_damage_component
 value:
   dice: 1d6
-  damage_type: radiant
+  damage_type_id: damage.radiant
 predicate:
   all:
-    - source.equipped
-    - target.tag: marked
-usage:
-  key: artifact_rider
-  limit: 1
-  period: turn
-stacking:
-  group: artifact_rider
-  mode: once
-source:
-  entity_id: ITEM_ARTIFACT
+    - fact: source.equipped
+    - fact: target.marked
 ```
 
 Rule Elements may contribute only a fixed tagged union, initially including:
@@ -450,8 +427,11 @@ Rule Elements may contribute only a fixed tagged union, initially including:
 - effect duration or stack modification;
 - typed usage-gate request.
 
-The resolver, rather than the Rule Element, applies a usage change atomically.
-Every accepted and rejected Contribution retains source and reason in the trace.
+Owner provenance is derived rather than copied into the element. A registered
+selector owns timing, so Rule Elements have no independent `phase`. A limited
+element may reference a Resource gate; the resolver, rather than the Rule
+Element, applies the usage change atomically. Every accepted and rejected
+Contribution retains source and reason in the trace.
 
 ### 8.1 Predicates
 
@@ -469,7 +449,7 @@ first establish facts such as `target_within_5_ft_of_ally` in the typed context.
 
 ### 8.2 Trigger bindings and follow-ups
 
-TriggerBindings cover timing mechanics that are not passive modifiers:
+Embedded TriggerBindings cover timing mechanics that are not passive modifiers:
 
 1. A **pre-commit Signal binding** offers a reaction or choice while the current
    outcome can still change. Shield can react to `attack.hit.pending` before
@@ -483,8 +463,10 @@ The child receives a new `resolution_id`, the same `chain_id`, and the triggerin
 Event as `caused_by`. Mandatory children keep the ResolutionChain open even when
 the root Activity has completed.
 
-Bindings name a registered Activity and a registered Signal/Event selector.
-They cannot contain executable callbacks. The runtime enforces deterministic
+Bindings live on the Feature, Effect, Asset, equipment property,
+Feat, or Hazard that grants them. They name a registered Activity and a
+registered Signal/Event selector and have no independent canonical ID. They
+cannot contain executable callbacks. The runtime enforces deterministic
 ordering, a per-binding/per-event idempotency key, one-fire/usage gates, and a
 small configured chain-depth limit. Reaching that limit returns
 `TRIGGER_DEPTH_EXCEEDED`; it never silently drops or recursively continues.
@@ -594,7 +576,7 @@ materially caused durable state.
 
 A structured result/trace contains:
 
-- normalized request and resolved Activity version;
+- normalized request and resolved Activity identity/catalog frontier;
 - state revisions used;
 - selectors and predicates evaluated;
 - accepted/rejected Contributions with sources;
@@ -948,11 +930,12 @@ published rule explicitly defines a suspension between them.
 
 ### 18.3 Temporary buff/debuff
 
-An Activity creates an EffectInstance with duration and a Rule Element such as
-`selector: defense.ac`, `operation: add_flat`, `value: 2`. The actor's base AC
-record remains unchanged. Effective AC cache is invalidated and recomputed while
-the effect is active. Expiration removes/deactivates the instance and emits an
-event; no inverse edit of base AC is needed.
+An Activity creates an EffectInstance with duration and an embedded Rule Element
+such as `selector: defense.armor_class`, `operation_id: rule.add_flat`,
+`value: 2`. The actor's base AC record remains unchanged. Effective AC cache is
+invalidated and recomputed while the effect is active. Expiration
+removes/deactivates the instance and emits an event; no inverse edit of base AC
+is needed.
 
 ### 18.4 Resource-consuming action
 

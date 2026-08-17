@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json",
+  "title": "HDM closed mechanical predicate",
+  "$ref": "#/$defs/predicate",
+  "$defs": {
+    "machineId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "scalar": {
+      "type": ["string", "number", "integer", "boolean"]
+    },
+    "operand": {
+      "oneOf": [
+        {"$ref": "#/$defs/scalar"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ref"],
+          "properties": {
+            "ref": {"$ref": "#/$defs/machineId"}
+          }
+        }
+      ]
+    },
+    "predicate": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fact"],
+          "properties": {
+            "fact": {"$ref": "#/$defs/machineId"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["all"],
+          "properties": {
+            "all": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"$ref": "#/$defs/predicate"}
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["any"],
+          "properties": {
+            "any": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"$ref": "#/$defs/predicate"}
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["not"],
+          "properties": {
+            "not": {"$ref": "#/$defs/predicate"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["compare"],
+          "properties": {
+            "compare": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["left", "operator", "right"],
+              "properties": {
+                "left": {"$ref": "#/$defs/operand"},
+                "operator": {
+                  "enum": ["eq", "ne", "lt", "lte", "gt", "gte", "contains"]
+                },
+                "right": {"$ref": "#/$defs/operand"}
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "examples": [
+    {"fact": "source.equipped"},
+    {
+      "all": [
+        {"fact": "actor.can_act"},
+        {"not": {"fact": "actor.incapacitated"}}
+      ]
+    }
+  ]
+}

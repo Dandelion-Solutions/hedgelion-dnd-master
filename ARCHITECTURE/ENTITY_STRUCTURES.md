@@ -66,7 +66,7 @@ localized `name`, optional `facets`, and optional `tags` remain in the envelope.
 | `definition.language` | — | `script`, `rarity` |
 | `definition.damage_type` | — | `category` |
 | `definition.currency` | — | `base_ratio`, `physical_asset_id` |
-| `definition.equipment_property` | — | `activity_ids`, `rule_element_ids` |
+| `definition.equipment_property` | — | `activity_ids`, `rule_elements`, `trigger_bindings` |
 | `definition.weapon_mastery` | `activity_id` | `requirements` |
 | `definition.spell_school` | — | — |
 | `definition.rest_policy` | `duration`, `recovery_steps` | `interruption_policy` |
@@ -76,18 +76,16 @@ localized `name`, optional `facets`, and optional `tags` remain in the envelope.
 | `definition.class` | `hit_die` | `primary_ability_ids`, `proficiency_ids`, `resource_ids`, `advancement_id` |
 | `definition.subclass` | `class_id` | `feature_ids`, `advancement_id` |
 | `definition.advancement` | `levels` | `prerequisites`, `grants` |
-| `definition.feat` | — | `prerequisites`, `activity_ids`, `rule_element_ids` |
-| `definition.feature` | — | `activity_ids`, `resource_ids`, `effect_ids`, `rule_element_ids` |
+| `definition.feat` | — | `prerequisites`, `activity_ids`, `rule_elements`, `trigger_bindings` |
+| `definition.feature` | — | `activity_ids`, `resource_ids`, `effect_ids`, `rule_elements`, `trigger_bindings` |
 | `definition.spell` | `level`, `school_id`, `activity_ids` | `components`, `casting_time`, `range`, `duration`, `concentration`, `ritual` |
-| `definition.asset` | — | `physical`, `value`, `rarity`, `property_ids`, `activity_ids`, `resource_ids`, `effect_ids`, `handling`, `capacity`, `stack`, `attunement`, `durability` |
-| `definition.activity` | `family_id`, `steps` | `activation`, `targeting`, `cost`, `duration`, `effect_ids` |
+| `definition.asset` | — | `physical`, `value`, `rarity`, `property_ids`, `activity_ids`, `resource_ids`, `effect_ids`, `rule_elements`, `trigger_bindings`, `handling`, `capacity`, `stack`, `attunement`, `durability` |
+| `definition.activity` | `family_id`, `steps` | `activation`, `requirements`, `targeting`, `costs` |
 | `definition.resource` | `mechanic_id` | `capacity`, `recovery`, `spending_policy` |
-| `definition.effect` | — | `duration`, `rule_element_ids`, `activity_ids`, `stacking` |
+| `definition.effect` | — | `duration`, `rule_elements`, `trigger_bindings`, `activity_ids`, `stacking` |
 | `definition.condition` | `effect_ids` | `removal_conditions` |
-| `definition.rule_element` | `operation_id`, `selector`, `value` | `predicate`, `priority` |
-| `definition.trigger_binding` | `signal_id`, `activity_id` | `predicate`, `limits` |
 | `definition.recipe` | `inputs`, `outputs` | `activity_id`, `duration`, `requirements` |
-| `definition.hazard` | — | `detection`, `trigger_ids`, `activity_ids`, `disable_activity_ids` |
+| `definition.hazard` | — | `detection`, `trigger_bindings`, `activity_ids`, `disable_activity_ids` |
 | `definition.terrain` | — | `movement_rules`, `visibility_rules`, `hazard_ids` |
 | `definition.environment` | — | `effect_ids`, `hazard_ids`, `rest_modifiers` |
 | `definition.location_archetype` | — | `facet_ids`, `environment_ids`, `connection_defaults` |
@@ -99,6 +97,12 @@ localized `name`, optional `facets`, and optional `tags` remain in the envelope.
 An empty required list is intentional. A language, damage type, decorative
 asset, narrative effect, or template may be valid before it has mechanical
 attachments. Empty placeholder values are not required.
+
+Rule Elements and Trigger Bindings are embedded value objects, not definition
+kinds. Their contracts are specified by `RULE_ELEMENT_MODEL.md`; Activity data
+is specified by `ACTIVITY_MODEL.md`. The corresponding structural schemas are
+`SCHEMAS/rule-element.schema.json`, `SCHEMAS/trigger-binding.schema.json`, and
+`SCHEMAS/activity-definition-data.schema.json`.
 
 ## 4. World-record kinds
 
@@ -178,10 +182,11 @@ References that need fast reverse lookup may be projected into a disposable
 `record_refs(source_id, field, target_id)` table. `details` is never indexed
 automatically.
 
-## 6. Next design boundary
+## 6. Current design boundary
 
 This inventory fixes field membership. Actor and asset nested shapes are now
 accepted in `ARCHITECTURE/ACTOR_MODEL.md` and
-`ARCHITECTURE/ASSET_MODEL.md`. Nested shapes for the remaining kinds are still
-reviewed incrementally before implementation. The next boundary is Activities
-and Rule Elements.
+`ARCHITECTURE/ASSET_MODEL.md`. Activity and Rule Element shapes now have a
+design baseline in `ARCHITECTURE/ACTIVITY_MODEL.md` and
+`ARCHITECTURE/RULE_ELEMENT_MODEL.md`. Nested shapes for the remaining kinds are
+still reviewed incrementally before implementation.

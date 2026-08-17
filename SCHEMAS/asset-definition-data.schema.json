@@ -12,6 +12,14 @@
     "activity_ids": {"$ref": "#/$defs/idSet"},
     "resource_ids": {"$ref": "#/$defs/idSet"},
     "effect_ids": {"$ref": "#/$defs/idSet"},
+    "rule_elements": {
+      "type": "array",
+      "items": {"$ref": "https://hedgelion.invalid/schemas/rule-element.schema.json"}
+    },
+    "trigger_bindings": {
+      "type": "array",
+      "items": {"$ref": "https://hedgelion.invalid/schemas/trigger-binding.schema.json"}
+    },
     "handling": {"$ref": "#/$defs/handling"},
     "capacity": {"$ref": "#/$defs/capacity"},
     "stack": {"$ref": "#/$defs/stack"},

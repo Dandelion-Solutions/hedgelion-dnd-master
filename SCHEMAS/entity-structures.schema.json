@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/entity-structures.schema.json",
+  "title": "HDM required/expected entity field inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "catalog_version",
+    "details_field",
+    "details_semantics",
+    "definitions",
+    "world_records"
+  ],
+  "properties": {
+    "catalog_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "details_field": {"const": "details"},
+    "details_semantics": {"type": "string", "minLength": 1},
+    "definitions": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"pattern": "^definition\\.[a-z][a-z0-9_]*$"},
+      "additionalProperties": {"$ref": "#/$defs/fieldInventory"}
+    },
+    "world_records": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"pattern": "^world\\.[a-z][a-z0-9_]*$"},
+      "additionalProperties": {"$ref": "#/$defs/fieldInventory"}
+    }
+  },
+  "$defs": {
+    "fieldNameSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$"
+      }
+    },
+    "fieldInventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "expected"],
+      "properties": {
+        "required": {"$ref": "#/$defs/fieldNameSet"},
+        "expected": {"$ref": "#/$defs/fieldNameSet"},
+        "requires_definition_id": {"type": "boolean"}
+      }
+    }
+  }
+}
