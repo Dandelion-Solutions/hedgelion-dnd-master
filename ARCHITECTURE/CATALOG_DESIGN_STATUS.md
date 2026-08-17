@@ -26,10 +26,10 @@ version 1.1.0. It is sufficient for schema design and explicitly extensible.
 The minimum universal envelopes and the required/expected field inventory for
 every definition and world-record kind are agreed. They are recorded in
 `ARCHITECTURE/CATALOG_CONTRACTS.md`, `ARCHITECTURE/ENTITY_STRUCTURES.md`, and
-`CATALOG/entity-structures.json`. The next catalog task is to define the nested
-value shapes. Actor archetype, actor state, and actor-group state are accepted
-in `ARCHITECTURE/ACTOR_MODEL.md`; the remaining kinds follow. Identifier policy
-is decided alongside each independently identified record kind.
+`CATALOG/entity-structures.json`. Actor and asset nested models are accepted in
+`ARCHITECTURE/ACTOR_MODEL.md` and `ARCHITECTURE/ASSET_MODEL.md`. The next
+catalog task is the Activity and Rule Element boundary. Identifier policy is
+decided alongside each independently identified record kind.
 
 ## 2. Agreed catalog principles
 
@@ -151,17 +151,14 @@ candidate, not a general identifier policy for all classes.
    partial failure, suspension, and action-economy boundaries.
 4. Event payloads, granularity, and durability classification; the event-kind
    baseline itself is reviewed.
-5. Minimum structures for assets and the division between facets, tags,
-   capabilities, and mutable state.
-6. Actor/NPC/companion archetypes and instance state.
-7. Effects, conditions, resources, durations, and recovery contracts.
-8. Lore, chapters, visibility/knowledge restrictions, and secret handling.
-9. Game-mode profiles, including quick narrative play, canonical mechanics,
+5. Effects, conditions, resources, durations, and recovery contracts.
+6. Lore, chapters, visibility/knowledge restrictions, and secret handling.
+7. Game-mode profiles, including quick narrative play, canonical mechanics,
     and strict-information-isolation detective play.
-10. Event-local time budgets and multiplayer chronology.
-11. SOFT accumulation budgets and configurable HARD publication thresholds.
-12. Migration, promotion, and catalog-gap workflows.
-13. Standard ruleset seed data, including the selected D&D/SRD baseline.
+8. Event-local time budgets and multiplayer chronology.
+9. SOFT accumulation budgets and configurable HARD publication thresholds.
+10. Migration, promotion, and catalog-gap workflows.
+11. Standard ruleset seed data, including the selected D&D/SRD baseline.
 
 ## 6. Deferred work that must remain possible
 
