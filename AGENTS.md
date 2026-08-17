@@ -150,6 +150,42 @@ read current ref
 Use Connector-native higher-level operations when they provide the required
 semantics more directly.
 
+## Text-file transport policy
+
+For repository text files, use Connector UTF-8 text interfaces directly.
+This includes source code, Markdown, JSON, YAML, TOML, configuration files,
+plain-text files, and other content that is semantically text.
+
+### Mandatory rule
+
+Do **not** manually Base64-encode or Base64-decode text files as an intermediate
+step merely to move them through GitHub, the Connector, shell commands,
+temporary storage, chunking, patch preparation, or local verification.
+
+For text content:
+
+- prefer `fetch_file` with UTF-8 text output for reads;
+- use `create_file` / `update_file` with ordinary UTF-8 text for simple writes;
+- for atomic multi-file Git-data publication, use `create_blob` with
+  `encoding="utf-8"`, then create the tree/commit/ref update;
+- if a large text file must be read in chunks, use line/range-based text reads
+  and reassemble text directly; do not switch to Base64 merely for chunking;
+- when byte identity must be verified, hash the actual UTF-8 file bytes or Git
+  blob bytes directly rather than Base64-transforming the file first.
+
+The Connector may internally Base64-encode text when its underlying GitHub API
+requires that transport representation. That implementation detail is allowed;
+agents MUST NOT perform a redundant manual text -> Base64 -> text conversion
+around the Connector.
+
+Base64 is appropriate only for genuinely binary content, or when the specific
+available Connector operation explicitly requires Base64 and provides no text
+mode capable of carrying the content correctly. If a UTF-8/text mode exists,
+it is mandatory for text files.
+
+Do not create helper scripts whose only purpose is Base64 conversion of text
+for repository transport.
+
 ## Capability cache
 
 The following result is considered cached for this environment class:
