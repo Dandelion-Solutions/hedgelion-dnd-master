@@ -8,6 +8,9 @@ Machine-readable schemas:
 
 - `SCHEMAS/catalog-definition.schema.json`
 - `SCHEMAS/world-record.schema.json`
+- `SCHEMAS/identifier-policies.schema.json`
+
+Machine-readable identifier policy: `CATALOG/identifier-policies.json`
 
 ## 1. Design rule
 
@@ -211,10 +214,50 @@ relevant schema/loader is updated.
 
 ## 9. Identifier boundary
 
-The base schemas validate IDs as machine strings without imposing one prefix,
-numeric width, or allocator policy on unrelated classes. Identifier policy is
-defined per independently identified kind.
+The base envelopes validate IDs as machine strings. The loader additionally
+selects the exact prefix, scope, strategy, and minimum numeric width from
+`CATALOG/identifier-policies.json` according to record kind.
 
-The runtime remains the allocator for persistent world-record IDs. Allocation
-and record creation form one atomic operation. A configured numeric width is a
-minimum presentation width rather than an overflow limit.
+Definitions use stable semantic namespaced IDs and no numeric allocator.
+Protocol values are embedded and receive no independent identity by default.
+Timeline slots and encounter rounds are ordering/state values, not entity IDs.
+
+Persistent world-record IDs and independently numbered runtime records use
+campaign-scoped counters owned by runtime. Allocation and record creation form
+one atomic operation. One `campaign-allocator` object stores only
+`last_allocated` by policy; `next` is derived. The complete allocator is cached
+in HOT/SQLite and included in the durable closure whenever canonical allocation
+changes it.
+
+Minimum widths are presentation padding, chosen from plausible record volumes
+in a 200-hour campaign. They are not limits: after `turn-999999` comes
+`turn-1000000` without migration.
+
+### 9.1 Width groups
+
+| Width | Kinds |
+|---:|---|
+| 3 | actor group, organization, contract, chapter |
+| 4 | actor, location, connection, zone, mission, scene, encounter, hazard, lore fact, maintenance audit, catalog-gap report, session |
+| 5 | asset, relationship |
+| 6 | effect, knowledge, turn/interaction, publication batch, checkpoint |
+| 7 | message, resolution, semantic event |
+| 8 | mechanical event |
+
+Intent plans, commands, continuations, and resolution traces derive identity
+from their owning interaction or resolution. Dirty-record identity is its
+target record; the allocator is a singleton.
+
+### 9.2 Local identity and promotion
+
+Incidental actors, groups, assets, locations, zones, hazards, and effects may
+use session-scoped `local-*` IDs listed in the policy file. They remain HOT and
+need not enter durable canon. Promotion atomically allocates a campaign ID,
+rekeys the record and all local direct references, records lineage, and adds the
+allocator change to the publication closure. The LLM never performs this
+rewrite.
+
+Concurrent writers allocate against their pinned frontier. A failed Git HEAD
+comparison leaves all new IDs unpublished; runtime reloads the allocator and
+atomically rekeys only conflicting unpublished records before preparing a new
+batch. Published IDs are never changed or reused.
