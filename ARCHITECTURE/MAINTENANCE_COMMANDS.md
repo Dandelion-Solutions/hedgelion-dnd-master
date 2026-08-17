@@ -27,7 +27,7 @@ last_turn_number: integer >= 0
 ```
 
 An ordinary message atomically increments this value and derives its display ID
-as `turn-{last_turn_number:05d}`. Maintenance commands neither increment nor
+as `turn-{last_turn_number:06d}`. Maintenance commands neither increment nor
 persist a `next_turn`; the next number is always `last_turn_number + 1`.
 
 ## 2. `HDM_EXPORT_CURRENT_LOG`
