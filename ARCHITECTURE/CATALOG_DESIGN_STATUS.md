@@ -109,8 +109,7 @@ The universal envelopes and field membership in `CATALOG_CONTRACTS.md` and
 proposals rather than accepted contracts:
 
 - nested shapes and validation rules for kind-specific fields and references;
-- exact executable contracts for the registered primitives and Rule Elements;
-- identifier policies and promotion rules for each record kind.
+- exact executable contracts for the registered primitives and Rule Elements.
 
 Catalog membership is reviewed; schema and runtime behavior are not thereby
 approved or implemented.
@@ -132,21 +131,24 @@ approved or implemented.
   counters. Allocator state may be cached alongside those objects.
 - A process cache is an acceleration layer. Recoverable HOT state and the last
   durable checkpoint remain the relevant authorities after process loss.
+- Definitions use semantic namespaced IDs. Protocol values have no independent
+  ID by default. Timeline slots and encounter rounds are values, not identities.
+- Canonical world and independently numbered runtime records use the
+  campaign-scoped policies in `CATALOG/identifier-policies.json`; runtime owns
+  allocation and stores `last_allocated` in one `campaign-allocator` object.
+- Incidental actors, groups, assets, locations, zones, hazards, and effects may
+  use session-local IDs until runtime promotes and atomically rekeys them.
+- Widths range from three digits for low-volume records to eight for mechanical
+  events. `turn` uses six digits. Width is minimum padding and never an upper
+  bound.
+- Multiplayer allocation conflicts are resolved only for unpublished records
+  after optimistic Git-head comparison; published IDs never change.
 
 ### `OPEN`
 
-- Which entity classes require canonical sequential IDs at all.
-- Whether incidental/pass-through actors, objects, and locations receive only
-  runtime-local identity until promoted to canon.
-- Exact scopes and widths for scenes, actors, locations, assets, events,
-  chapters, turns, resolutions, and other records.
-- Whether every counter is stored independently or derived from an allocator
-  registry and existing records.
-- Collision handling and allocation strategy for concurrent multiplayer
-  writers.
-
-The previously discussed five-digit turn presentation is a reasonable
-candidate, not a general identifier policy for all classes.
+- No identifier-policy questions remain open at the catalog level. Concrete
+  SQLite tables and reconciliation algorithms belong to runtime implementation
+  design.
 
 ## 5. Other catalog questions still open
 
@@ -179,7 +181,7 @@ candidate, not a general identifier policy for all classes.
 
 ## 7. Scope guard
 
-The class inventory and extensibility boundary are now reviewed. The catalog
-phase is complete only after minimum structures and their identifier policies
-have also been reviewed and accepted. Registry counts are never a completeness
-metric.
+The class inventory, universal structures, identifier policies, and
+extensibility boundary are reviewed. The next design boundary is the executable
+contract for Activities, Rule Elements, and directly related records. Registry
+counts are never a completeness metric.
