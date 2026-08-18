@@ -1,1 +1,5 @@
-.hdm-maintenance/
+.hdm-devtools/
+.hdm-release/
+__pycache__/
+*.py[cod]
+.pytest_cache/

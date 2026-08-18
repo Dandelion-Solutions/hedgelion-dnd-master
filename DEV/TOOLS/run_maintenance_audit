@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import subprocess
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+TOOLS = REPO_ROOT / "DEV/TOOLS"
+sys.path.insert(0, str(TOOLS))
+from dev_tool_environment import PreparationError, ensure_environment
+
+
+def main() -> int:
+    try:
+        py = ensure_environment(REPO_ROOT)
+    except PreparationError as exc:
+        print(f"ERROR: DEV tool environment preparation failed: {exc}", file=sys.stderr)
+        return exc.exit_code
+    return subprocess.run([str(py), str(TOOLS / "audit_engine.py")], cwd=REPO_ROOT).returncode
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

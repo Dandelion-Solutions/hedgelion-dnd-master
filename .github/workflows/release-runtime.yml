@@ -1,0 +1,87 @@
+name: Publish runtime release asset
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Build runtime asset
+        id: build
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/hdm-release"
+          mkdir -p "$out"
+          log="$RUNNER_TEMP/hdm-release-build.log"
+          DEV/TOOLS/run_release_build \
+            --tag "$GITHUB_REF_NAME" \
+            --tag-mode \
+            --output "$out" | tee "$log"
+          result="$(tail -n 1 "$log")"
+          python - "$result" >> "$GITHUB_OUTPUT" <<'PY'
+          import json, sys
+          data = json.loads(sys.argv[1])
+          print(f"asset_name={data['asset_name']}")
+          print(f"runtime_zip={data['runtime_zip']}")
+          print(f"sha256_file={data['sha256_file']}")
+          PY
+
+      - name: Create release if needed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --verify-tag --title "$TAG" --generate-notes
+          fi
+
+      - name: Publish immutable assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          RUNTIME_ZIP: ${{ steps.build.outputs.runtime_zip }}
+          SHA_FILE: ${{ steps.build.outputs.sha256_file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp="$RUNNER_TEMP/existing-assets"
+          mkdir -p "$tmp"
+
+          publish_one() {
+            local path="$1"
+            local name
+            name="$(basename "$path")"
+            if gh release view "$TAG" --json assets --jq '.assets[].name' | grep -Fxq "$name"; then
+              rm -f "$tmp/$name"
+              gh release download "$TAG" -p "$name" -D "$tmp"
+              if cmp -s "$path" "$tmp/$name"; then
+                echo "Asset already exists with identical bytes: $name"
+                return 0
+              fi
+              echo "ERROR: immutable release asset already exists with different bytes: $name" >&2
+              return 1
+            fi
+            gh release upload "$TAG" "$path"
+          }
+
+          publish_one "$RUNTIME_ZIP"
+          publish_one "$SHA_FILE"

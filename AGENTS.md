@@ -2,250 +2,108 @@
 
 ## Scope
 
-This file governs **development work on the HDM engine repository**.
+This file governs **development work on the HDM engine repository**. It is not part of gameplay/runtime instructions and is never shipped in the runtime release asset.
 
-It is not part of the HDM game runtime, campaign runtime, player-facing
-bootstrap, campaign storage protocol, or release behavior.
+## Repository ownership geometry
 
-Gameplay must not depend on this file and must not load it as part of the HDM
-runtime instruction set. Gameplay transport and persistence rules are defined
-by the dedicated game Project Instructions and bootstrap.
+The source repository has two product ownership trees:
+
+- `GAME/` — exact source tree of the installed runtime distribution. The release builder archives the **contents** of this directory.
+- `DEV/` — architecture, tests, release policy, development catalogs/schemas, Superpowers artifacts and developer tooling.
+
+Repository root is reserved for repository infrastructure/metadata such as `.github/`, this `AGENTS.md`, root `README.md`, `.gitignore` and canonical legal files.
+
+Do not recreate old repository-root product/development directories such as `CORE/`, `TESTS/`, `TOOLS/`, `ARCHITECTURE/`, `RELEASE/`, `CATALOG/`, `SCHEMA/`, `SCHEMAS/`, `CAMPAIGN/`, `TEMPLATE/`, `MIGRATIONS/`, `INSTALL/` or `docs/`.
+
+## Superpowers artifacts
+
+All Superpowers design and implementation artifacts for this repository are development-only.
+
+Use only:
+
+```text
+DEV/docs/superpowers/specs/
+DEV/docs/superpowers/plans/
+```
+
+Do **not** create repository-root `docs/superpowers/` or repository-root `docs/` for Superpowers work. Historical specs/plans that are moved into DEV remain historical records; do not mechanically rewrite old path references when they describe the historical state accurately.
 
 ## GitHub transport policy
 
-For HDM development in ChatGPT Work / Codex environments with connected GitHub
-Connector access:
+For HDM development in ChatGPT Work / Codex environments with connected GitHub Connector access:
 
 ```text
 NATIVE_GIT_REMOTE = NATIVE_GIT_UNAVAILABLE
 GITHUB_REMOTE_TRANSPORT = CONNECTOR_REQUIRED
 ```
 
-This is a repository-level capability decision based on completed environment
-diagnostics. It is not a transient failure and MUST NOT be re-tested during
-ordinary development tasks.
+Use the connected GitHub Connector for all remote repository communication: refs, commits, trees, blobs, files, comparisons, branch updates, pull requests and issues.
 
-### Mandatory rule
+Do not use native Git/GitHub CLI/direct HTTP as a fallback for remote transport in this environment. In particular, do not run `git clone`, `git fetch`, `git pull`, `git push`, `git ls-remote`, `gh ...`, curl/Python HTTP credential workarounds or SSH/token bypasses.
 
-Use the connected **GitHub Connector** for all communication with the remote
-GitHub repository, including:
-
-- reading remote refs and branch HEADs;
-- reading commits, trees, blobs, and repository files;
-- comparing remote commits or refs;
-- creating or updating branches;
-- creating blobs, trees, and commits;
-- updating remote refs;
-- creating or updating repository files;
-- pull-request and issue operations.
-
-Do not use native Git or GitHub CLI as an alternative remote transport.
-
-## Prohibited remote operations
-
-In this environment class, do **not** use commands such as:
-
-```text
-git clone
-git fetch
-git pull
-git push
-git ls-remote
-git remote update
-gh ...
-```
-
-Do not use `curl`, Python HTTP clients, credential injection, temporary tokens,
-credential helpers, SSH setup, or other mechanisms to bypass the Connector for
-GitHub repository transport.
-
-Do not probe native Git authentication before using the Connector.
-
-Do not retry native Git after a Connector failure.
-
-If the Connector cannot perform a required repository operation, report the
-specific Connector capability gap instead of falling back to another GitHub
-transport.
+If the Connector lacks a required capability, report that specific capability gap rather than bypassing it.
 
 ## Local Git is allowed
 
-The prohibition applies to **remote GitHub transport**, not to Git itself.
+When a valid local checkout is already available, local-only Git operations are allowed, including status/diff/log/show/rev-parse/merge-base/merge/rebase/cherry-pick/add/restore/checkout/commit, provided they do not contact a remote.
 
-When a valid local checkout is available, local Git operations are permitted
-and should be used when useful, including operations such as:
-
-```text
-git status
-git diff
-git diff --cached
-git log
-git show
-git rev-parse
-git branch
-git merge-base
-git merge
-git rebase
-git cherry-pick
-git add
-git restore
-git checkout
-git commit
-```
-
-These operations may be used for local inspection, conflict analysis,
-conflict resolution, patch preparation, history analysis, staging, local
-commits, and other work that does not communicate with GitHub.
-
-A local Git command MUST NOT implicitly contact a remote repository.
-
-When an operation may contact a remote depending on configuration, do not use
-it unless it is explicitly constrained to local data.
-
-## Conflict-resolution workflow
-
-For merge or rebase conflict work:
-
-1. obtain authoritative remote refs, commits, and required file content through
-   the GitHub Connector;
-2. use local Git and filesystem tools freely to inspect and resolve conflicts in
-   the working tree;
-3. verify the resulting local tree and diff locally;
-4. publish the resulting repository objects through the GitHub Connector.
-
-Do not perform `git fetch`, `git pull`, or `git push` as part of conflict
-resolution.
+A local commit is not proof that GitHub changed.
 
 ## Remote state is authoritative
 
-Do not assume that a local checkout represents the current remote state.
+Before a correctness-sensitive remote write, read the current target ref through the Connector. Construct the intended commit from that verified parent, update the ref without force unless explicitly required, then verify the remote ref again.
 
-Before any operation whose correctness depends on the current branch HEAD,
-verify the relevant remote ref through the GitHub Connector.
-
-For remote writes:
-
-1. read the current target ref through the Connector;
-2. construct the intended commit from the expected parent;
-3. update the ref through the Connector without force unless an explicit task
-   requires otherwise;
-4. verify the resulting remote ref through the Connector before claiming that
-   publication succeeded.
-
-A successful local commit is not proof that the remote repository changed.
-
-## Connector publication pattern
-
-When a multi-file change must be published and an ordinary file-update API is
-not sufficient, use the GitHub Connector Git-data workflow:
+For multi-file/structural changes prefer Connector Git-data publication:
 
 ```text
 read current ref
--> create blobs
--> create tree based on the current tree
--> create commit with the expected parent
--> update ref
--> read ref again for verification
+-> create UTF-8 blobs / reuse existing blob+tree SHAs
+-> create tree from verified parent tree
+-> create commit with expected parent
+-> non-force update ref
+-> verify ref/tree
 ```
-
-Use Connector-native higher-level operations when they provide the required
-semantics more directly.
 
 ## Text-file transport policy
 
-For repository text files, use Connector UTF-8 text interfaces directly.
-This includes source code, Markdown, JSON, YAML, TOML, configuration files,
-plain-text files, and other content that is semantically text.
+For repository text files, use Connector UTF-8 text interfaces directly. Do not manually Base64-encode/decode Markdown, JSON, YAML, Python, configuration or other semantic text for transport, chunking, staging, reconstruction or verification.
 
-### Mandatory rule
+Connector-internal Base64 required by GitHub APIs is allowed; agents must not add a redundant manual text→Base64→text layer. Explicit Base64 is reserved for genuinely binary content or a Connector operation with no usable text mode.
 
-Do **not** manually Base64-encode or Base64-decode text files as an intermediate
-step merely to move them through GitHub, the Connector, shell commands,
-temporary storage, chunking, patch preparation, or local verification.
+## Version metadata
 
-For text content:
+- `DEV/ENGINE_DEVELOPMENT.yaml` is the complete development/release bookkeeping record.
+- `GAME/ENGINE_VERSION.yaml` is the minimal installed-package/runtime projection.
+- Shared fields must stay equal; builder/audit enforce this.
+- `ENGINE_VERSION.yaml` must remain unique in the tracked repository so runtime package-root discovery is unambiguous.
 
-- prefer `fetch_file` with UTF-8 text output for reads;
-- use `create_file` / `update_file` with ordinary UTF-8 text for simple writes;
-- for atomic multi-file Git-data publication, use `create_blob` with
-  `encoding="utf-8"`, then create the tree/commit/ref update;
-- if a large text file must be read in chunks, use line/range-based text reads
-  and reassemble text directly; do not switch to Base64 merely for chunking;
-- when byte identity must be verified, hash the actual UTF-8 file bytes or Git
-  blob bytes directly rather than Base64-transforming the file first.
+Runtime GAME files read package metadata only from package-root `ENGINE_VERSION.yaml`; they never read DEV metadata.
 
-The Connector may internally Base64-encode text when its underlying GitHub API
-requires that transport representation. That implementation detail is allowed;
-agents MUST NOT perform a redundant manual text -> Base64 -> text conversion
-around the Connector.
+## Development tools
 
-Base64 is appropriate only for genuinely binary content, or when the specific
-available Connector operation explicitly requires Base64 and provides no text
-mode capable of carrying the content correctly. If a UTF-8/text mode exists,
-it is mandatory for text files.
-
-Do not create helper scripts whose only purpose is Base64 conversion of text
-for repository transport.
-
-## Capability cache
-
-The following result is considered cached for this environment class:
+Canonical DEV entry points:
 
 ```text
-environment:
-  ChatGPT Work / Codex
-github_authentication:
-  connector-backed
-native_git_remote:
-  NATIVE_GIT_UNAVAILABLE
-remote_transport:
-  GitHub Connector
-retry_native_git:
-  false
+DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_release_build
 ```
 
-A new chat, new task, new branch, new checkout, or new repository operation does
-**not** invalidate this decision.
+Both own/reuse the isolated repository-local `.hdm-devtools/` environment declared by `DEV/TOOLS/requirements-dev-tools.txt`. Do not install DEV dependencies into system Python and do not make GAME/runtime depend on them.
 
-Re-evaluate native Git remote capability only when at least one of these is
-true:
+`GAME/TOOLS/init_campaign.py` is runtime support and remains Python-standard-library-only.
 
-1. the user explicitly requests a new native-Git investigation;
-2. the execution surface materially changes away from the diagnosed ChatGPT
-   Work / Codex connector-backed environment;
-3. native Git credentials are explicitly provisioned through a supported
-   mechanism;
-4. the environment explicitly provides a supported authenticated Git remote
-   transport and the user authorizes its verification.
+## Release boundary
 
-Until one of these conditions occurs, do not spend tool calls or execution time
-testing native Git remote access.
+`DEV/TOOLS/run_release_build` is the single authority for runtime package validation/composition, deterministic ZIP creation, asset naming and checksum creation. GitHub Actions must not maintain a second include/exclude list or duplicate builder dependency logic.
 
-## Maintenance audit
+The supported install artifact is `hedgelion-dnd-master-runtime-v<version>.zip`. GitHub-generated source archives are repository snapshots and are not gameplay packages.
 
-For explicit HDM engine development/release maintenance, the canonical audit
-entry point is:
+## GitHub Actions execution surface
 
-```text
-TOOLS/run_maintenance_audit
-```
+GitHub-hosted Actions is a different execution surface from connector-backed ChatGPT/Codex. A release workflow may use its scoped `GITHUB_TOKEN` and GitHub-provided tooling/API to create a Release and upload the builder-produced assets. This does not relax Connector-only remote transport for interactive development sessions.
 
-Use that command instead of manually selecting a virtualenv, installing
-maintenance packages, or invoking `TOOLS/audit_engine.py` directly. The launcher
-owns the isolated `.hdm-maintenance/` cache and reads dependencies from
-`TOOLS/requirements-maintenance.txt`.
-
-Do not install maintenance dependencies into the system Python. Do not make the
-gameplay runtime depend on the maintenance environment.
+Release assets for an immutable tag are immutable: never silently overwrite different bytes under the same tag/asset name.
 
 ## Development versus gameplay
 
-This file defines **development tooling policy only**.
-
-Do not copy these development instructions into HDM gameplay prompts or runtime
-CORE context.
-
-Do not modify the gameplay Project Instructions or gameplay bootstrap merely to
-mirror changes in this file.
-
-The game runtime has its own transport and persistence contract and remains
-independent from this development-agent policy.
+Development instructions, tests, release policy, catalogs under DEV and maintenance tooling must never be copied into gameplay prompts or runtime CORE context. GAME runtime behavior is defined only by the installed package and campaign storage contracts.
