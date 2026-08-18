@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import subprocess
 import sys
 import tempfile
@@ -7,6 +8,8 @@ import unittest
 import zipfile
 from datetime import datetime
 from pathlib import Path
+
+import yaml
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -63,6 +66,7 @@ class ReleaseIntegrationTests(unittest.TestCase):
             self.assertTrue(zip_b.is_file())
             self.assertEqual(zip_a.read_bytes(), zip_b.read_bytes())
             self.assertEqual(sha_a.read_text(encoding="utf-8"), sha_b.read_text(encoding="utf-8"))
+            package_sha256 = hashlib.sha256(zip_a.read_bytes()).hexdigest()
 
             expected_dt = git_commit_datetime("HEAD")
             expected_zip_time = (
@@ -77,6 +81,7 @@ class ReleaseIntegrationTests(unittest.TestCase):
             with zipfile.ZipFile(zip_a) as archive:
                 names = archive.namelist()
                 self.assertIn("ENGINE_VERSION.yaml", names)
+                self.assertIn("RUNTIME_PACKAGE.yaml", names)
                 self.assertIn("TOOLS/init_campaign.py", names)
                 self.assertTrue(any(name.startswith("CORE/") for name in names))
                 self.assertTrue(any(name.startswith("INSTALL/") for name in names))
@@ -85,30 +90,38 @@ class ReleaseIntegrationTests(unittest.TestCase):
                 self.assertNotIn("AGENTS.md", names)
                 file_times = {info.date_time for info in archive.infolist() if not info.is_dir()}
                 self.assertEqual(file_times, {expected_zip_time})
+                package_meta = yaml.safe_load(archive.read("RUNTIME_PACKAGE.yaml"))
                 archive.extractall(extracted)
 
             generator = extracted / "TOOLS" / "init_campaign.py"
+            generator_args = [
+                sys.executable,
+                str(generator),
+                "--output",
+                str(campaign),
+                "--campaign-id",
+                "camp-release-smoke",
+                "--branch",
+                "campaign/20990101",
+                "--engine-version",
+                str(package_meta["engine_version"]),
+                "--package-id",
+                str(package_meta["package_id"]),
+                "--package-sha256",
+                package_sha256,
+                "--created-at",
+                "2099-01-01T00:00:00+00:00",
+                "--creator-github-login",
+                "audit-user",
+                "--mode",
+                "singleplayer",
+                "--source-root",
+                str(extracted),
+            ]
+            if package_meta.get("source_commit_sha"):
+                generator_args.extend(["--source-commit-sha", str(package_meta["source_commit_sha"])])
             generated = subprocess.run(
-                [
-                    sys.executable,
-                    str(generator),
-                    "--output",
-                    str(campaign),
-                    "--campaign-id",
-                    "camp-release-smoke",
-                    "--branch",
-                    "campaign/20990101",
-                    "--engine-tag",
-                    "dev-v0.8",
-                    "--created-at",
-                    "2099-01-01T00:00:00+00:00",
-                    "--creator-github-login",
-                    "audit-user",
-                    "--mode",
-                    "singleplayer",
-                    "--source-root",
-                    str(extracted),
-                ],
+                generator_args,
                 cwd=extracted,
                 capture_output=True,
                 text=True,
@@ -119,6 +132,10 @@ class ReleaseIntegrationTests(unittest.TestCase):
             self.assertTrue((campaign / "README.md").is_file())
             self.assertFalse((campaign / "CAMPAIGN" / "MANIFEST.yaml").exists())
             self.assertFalse((campaign / "DND_STORAGE.yaml").exists())
+            manifest = yaml.safe_load((campaign / "MANIFEST.yaml").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["schema_version"], 3)
+            self.assertEqual(manifest["engine"]["current"]["package_sha256"], package_sha256)
+            self.assertEqual(manifest["engine"]["current"]["package_id"], package_meta["package_id"])
 
 
 if __name__ == "__main__":
