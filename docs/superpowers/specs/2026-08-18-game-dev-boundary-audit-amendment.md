@@ -193,7 +193,19 @@ The Actions workflow may use GitHub's authenticated release API or an appropriat
 
 The workflow itself remains thin and contains no package-composition logic.
 
-## 14. Maintenance audit must change semantics, not only paths
+## 14. Tagged runtime assets are immutable release objects
+
+A workflow rerun for an already-created immutable tag must not silently replace a different runtime ZIP with `--clobber`-style behavior.
+
+The builder must produce deterministic bytes and compute a SHA-256 digest for the runtime ZIP. Publishing logic must treat the tag + asset name as immutable identity:
+
+- if no runtime asset exists, publish the builder output;
+- if the same asset already exists and its bytes/digest are identical, the rerun may succeed without mutation;
+- if the same asset name exists with different bytes, fail the release job and surface an integrity error rather than overwrite it.
+
+A checksum sidecar or equivalent recorded digest is acceptable and recommended if it simplifies verification. The checksum is release metadata produced by the canonical builder/publish flow, not a second package-composition authority.
+
+## 15. Maintenance audit must change semantics, not only paths
 
 Current `audit_engine.py` contains assumptions that become wrong after migration:
 
@@ -208,13 +220,13 @@ The 0.8 audit must instead understand GAME and DEV as separate source trees, req
 
 The audit must additionally verify the final built archive, not merely the source tree.
 
-## 15. MIGRATIONS documentation contains stale engine-tree semantics
+## 16. MIGRATIONS documentation contains stale engine-tree semantics
 
 Current `MIGRATIONS/README.md` says migrations are needed when a normal merge of `main` into a campaign branch is insufficient. This contradicts the current runtime model: campaign updates migrate campaign data/metadata; engine files are local-package content and are not merged/copied into campaign branches.
 
 Before shipping MIGRATIONS in GAME 0.8, rewrite this README to match current update semantics. This is a real runtime-documentation correction, not merely a path rename.
 
-## 16. Historical records versus active regression contracts
+## 17. Historical records versus active regression contracts
 
 Some DEV files are historical artifacts, for example old pre-release audit records and prior Superpowers specs/plans. Global search-and-replace would corrupt their historical meaning.
 
@@ -226,13 +238,13 @@ Implementation must classify documents before rewriting:
 
 If a historical document is currently mixed into an active-test directory in a way that makes classification ambiguous, move it into an explicit history/archive subdirectory under DEV rather than silently rewriting history.
 
-## 17. Legal-file duplication is validated, not trusted
+## 18. Legal-file duplication is validated, not trusted
 
 Repository-root legal files remain canonical repository material and equivalent copies ship under GAME for the standalone runtime distribution.
 
 Release validation must compare root and GAME copies byte-for-byte (or exact normalized text only if a concrete newline policy is intentionally adopted) and fail on mismatch. Package-local notice references such as `LICENSES/SRD-5.2.1-ATTRIBUTION.md` must resolve within the extracted runtime tree.
 
-## 18. Required 0.8 migration regression coverage
+## 19. Required 0.8 migration regression coverage
 
 In addition to the original design tests, add regression checks for:
 
@@ -249,4 +261,5 @@ In addition to the original design tests, add regression checks for:
 - deprecated campaign-manifest stub is absent;
 - MIGRATIONS documentation matches data-migration-only engine update semantics;
 - GitHub Actions workflow invokes the canonical builder and does not duplicate package composition;
+- repeated publication for the same immutable tag cannot replace a different runtime asset;
 - extracted custom runtime asset passes bootstrap/package discovery and campaign-generator smoke tests.
