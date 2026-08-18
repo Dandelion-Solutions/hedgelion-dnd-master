@@ -1,9 +1,6 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.6.4
-engine_repository: Dandelion-Solutions/hedgelion-dnd-master
-engine_development_branch: main
-engine_owner_login: dkolyada
+runtime_bootstrap_version: 0.8.5
 storage_marker: DND_STORAGE.yaml
 load_when: project/campaign bootstrap, storage discovery, campaign selection, exact engine routing
 
@@ -11,9 +8,9 @@ load_when: project/campaign bootstrap, storage discovery, campaign selection, ex
 
 D&D Master runtime files come from exact local extracted release/development package selected for campaign. GitHub campaign storage does not contain engine copy.
 
-Canonical public engine repository: `Dandelion-Solutions/hedgelion-dnd-master`.
+Package-root `ENGINE_VERSION.yaml` is the sole machine-authoritative source for engine version, release status, canonical engine repository, development-owner identity, rules/schema baseline, update compatibility and recommended tag. Runtime behavior must not depend on hard-coded copies of those values in CORE prose.
 
-Public `main` is development state. Normal gameplay releases are tagged, but gameplay engine files are supplied by local ZIP, not cloned/downloaded during startup.
+Public `main` of `ENGINE_VERSION.repository` is development state. Normal gameplay releases are tagged, but gameplay engine files are supplied by the local runtime Release Asset, not cloned/downloaded during startup.
 
 Campaign storage default branch contains infrastructure metadata; games live in long-lived `campaign/YYYYMMDD[-NN]` branches and contain campaign data only.
 
@@ -42,12 +39,12 @@ Campaign WORLD/STATE/INDEX/LOG/entities remain lazy and are not preloaded with C
 When `ENGINE_VERSION.release_status: development`, explicit framework testing is allowed only when authenticated GitHub login equals `ENGINE_VERSION.engine_owner_login`.
 
 For that package:
-- runtime identity `dev-v<engine_version>`;
+- runtime identity `dev-v<ENGINE_VERSION.engine_version>`;
 - manifest engine SHA fields may be null;
 - local extracted package is runtime source;
 - do NOT query/pin current public `main` merely to manufacture SHA.
 
-Normal published campaigns use exact release tag + resolved tag commit SHA.
+Normal published campaigns use exact `ENGINE_VERSION.recommended_tag` + resolved tag commit SHA from `ENGINE_VERSION.repository`.
 
 ## External research boundary
 
@@ -194,7 +191,7 @@ Use selected storage baseline/intended engine and follow `CAMPAIGN_SETUP.md`. Ge
 
 ## Write authority
 
-Public engine `main` writes require authenticated login `dkolyada`.
+Engine repository writes are not a gameplay operation and are governed by the development/release policy of `ENGINE_VERSION.repository`; development-package authorization inside runtime uses `ENGINE_VERSION.engine_owner_login` rather than a hard-coded login.
 
 Storage default-branch metadata writes require authenticated repository owner.
 
@@ -249,7 +246,7 @@ Card projection changes join same campaign transaction as their authoritative so
 
 Engine updates are event-driven and owner-controlled under `ENGINE_UPDATES.md`.
 
-A newer GitHub tag does not install files. User supplies corresponding ZIP. Existing campaigns remain pinned until authorized migration succeeds.
+A newer GitHub tag does not install files. User supplies the corresponding runtime Release Asset. Existing campaigns remain pinned until authorized migration succeeds.
 
 After successful package switch, invalidate old CORE cache and build full cache from exact target package once before further adjudication. Update card engine_version inside same campaign migration transaction.
 
