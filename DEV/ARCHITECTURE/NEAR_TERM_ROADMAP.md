@@ -36,7 +36,7 @@ The engine-wide architecture workflow is `ARCHITECTURE/DESIGN_PROCESS.md`.
 
 Step 1 is complete after owner approval of its adversarial second pass. Step 2
 is active under the Superpowers architecture gate. Its live design spec is
-`docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`.
+`DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`.
 
 The ownership map must close before new Step 2 schema fields are introduced.
 Accepted ownership sub-decisions now include:

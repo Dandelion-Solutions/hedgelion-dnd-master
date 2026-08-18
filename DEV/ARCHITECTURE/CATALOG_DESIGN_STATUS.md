@@ -9,7 +9,7 @@ engine-wide architecture workflow is `ARCHITECTURE/DESIGN_PROCESS.md`. The
 critical review ledger is `ARCHITECTURE/CRITICAL_ARCHITECTURE_AUDIT.md`; its
 adversarial second-pass verdict package is owner-approved. Step 2 is active,
 subject to its independent Superpowers architecture gate. The live Step 2 design
-spec is `docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`.
+spec is `DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`.
 
 This document records the current state of catalog design so that subsequent
 work does not depend on reconstructing decisions from a ChatGPT conversation.

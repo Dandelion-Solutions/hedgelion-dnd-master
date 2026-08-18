@@ -6,7 +6,7 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Roadmap owner: Step 2 of `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 
-Process: Superpowers architecture brainstorming + explicit owner approval + critical pass before each accepted sub-decision.
+Process: the HP/LifeState boundary is inherited from the owner-approved Step 1 adversarial audit; the Resource/procedure-budget and Condition/Effect sub-decisions below were developed through the current Superpowers architecture brainstorming flow, critically challenged, and explicitly approved by the owner.
 
 This is the live Step 2 design spec. It records accepted ownership decisions as they close so they do not depend on chat history. Step 2 itself is not complete: exact Duration/expiry/concentration, remaining Effect/Recovery ownership, schema alignment, focused validation, and the final Step 2 critical pass remain open.
 
