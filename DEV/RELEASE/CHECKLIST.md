@@ -16,7 +16,8 @@
 - [ ] Tag publication is rejected unless status is `ready-for-tag` and tag equals `recommended_tag`.
 
 ## Runtime package
-- [ ] `DEV/TOOLS/run_release_build --tag <tag>` builds the local pre-tag candidate into ignored repository-root `builds/`; `--output <dir>` is an optional override for CI or other explicit destinations.
+- [ ] `python DEV/TOOLS/run_release_build.py` builds the local pre-tag candidate into ignored repository-root `builds/`; when `--tag` is omitted it uses `recommended_tag` from `DEV/ENGINE_DEVELOPMENT.yaml`; `--tag <tag>` and `--output <dir>` remain explicit overrides.
+- [ ] `-?`, `-h`, `--h` and `--help` print launcher usage, parameters and defaults without preparing the DEV tool environment or building an artifact.
 - [ ] Builder archives every valid file under `GAME/`, not a maintained include list, and does not add the `GAME/` wrapper.
 - [ ] ZIP root contains `ENGINE_VERSION.yaml`, `CORE/`, `RULES/`, `SCHEMA/`, `CAMPAIGN/`, `INSTALL/`, runtime `TOOLS/` and required support/legal files.
 - [ ] ZIP contains no `DEV/`, development tests, architecture, release policy or maintenance tooling.
@@ -44,7 +45,7 @@
 ## Tag and GitHub Release
 - [ ] Pre-tag candidate from the final `ready-for-tag` tree is tested in a fresh Project.
 - [ ] Create immutable tag exactly equal to `recommended_tag` from the approved release lineage.
-- [ ] Tag-triggered `.github/workflows/release-runtime.yml` checks out the exact tag and calls only `DEV/TOOLS/run_release_build` for package composition/validation, using an explicit runner-temporary `--output` rather than repository-local `builds/`.
+- [ ] Tag-triggered `.github/workflows/release-runtime.yml` checks out the exact tag and calls only `python DEV/TOOLS/run_release_build.py` for package composition/validation, using explicit `--tag "$GITHUB_REF_NAME"`, `--tag-mode` and a runner-temporary `--output`.
 - [ ] Workflow get-or-creates the GitHub Release for the tag.
 - [ ] Existing same-name runtime asset may be reused only when bytes/hash are identical; different bytes are a hard error and are never clobbered.
 - [ ] GitHub-generated `Source code (zip)` / `Source code (tar.gz)` remain source snapshots and **are not runtime installation artifacts**.
