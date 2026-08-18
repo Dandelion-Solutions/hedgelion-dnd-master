@@ -6,8 +6,10 @@ import json
 import os
 import re
 import stat
+import struct
 import subprocess
 import zipfile
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -41,7 +43,6 @@ REQUIRED_RUNTIME_ROOT_DIRS = ('CORE', 'INSTALL', 'RULES', 'SCHEMA', 'CAMPAIGN', 
 LEGAL_TOP_LEVEL = ('LICENSE', 'NOTICE', 'THIRD_PARTY_NOTICES.md')
 FORBIDDEN_JUNK_NAMES = {'.DS_Store'}
 FORBIDDEN_JUNK_SUFFIXES = ('.pyc', '.pyo')
-FIXED_ZIP_TIME = (1980, 1, 1, 0, 0, 0)
 
 
 def _is_relative_to(path: Path, parent: Path) -> bool:
@@ -126,6 +127,78 @@ def validate_tag_lineage(repo_root: Path) -> None:
     )
     if cp.returncode != 0:
         raise BuildError("tagged commit is not on the approved main release lineage")
+
+
+def _git_commit_datetime(repo_root: Path, revision: str) -> datetime:
+    cp = subprocess.run(
+        ["git", "show", "-s", "--format=%cI", revision],
+        cwd=repo_root,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    if cp.returncode != 0:
+        detail = cp.stderr.strip() or cp.stdout.strip() or f'exit {cp.returncode}'
+        raise BuildError(f'cannot read Git commit date for {revision}: {detail}')
+    raw = cp.stdout.strip()
+    try:
+        value = datetime.fromisoformat(raw)
+    except ValueError as exc:
+        raise BuildError(f'invalid Git commit date for {revision}: {raw!r}') from exc
+    if value.tzinfo is None:
+        raise BuildError(f'Git commit date has no timezone for {revision}: {raw!r}')
+    return value
+
+
+def resolve_archive_datetime(repo_root: Path, intended_tag: str) -> datetime:
+    """Choose stable human-meaningful ZIP time: tagged commit when present, otherwise HEAD."""
+    repo_root = repo_root.resolve()
+    if (repo_root / '.git').exists():
+        tag_ref = f'refs/tags/{intended_tag}'
+        probe = subprocess.run(
+            ["git", "show-ref", "--verify", "--quiet", tag_ref],
+            cwd=repo_root,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        if probe.returncode == 0:
+            return _git_commit_datetime(repo_root, f'{tag_ref}^{{commit}}')
+        if probe.returncode != 1:
+            detail = probe.stderr.strip() or probe.stdout.strip() or f'exit {probe.returncode}'
+            raise BuildError(f'cannot inspect Git tag {intended_tag}: {detail}')
+        return _git_commit_datetime(repo_root, 'HEAD')
+
+    # Direct unit-test/minimal-fixture builds may not be Git checkouts. Production CLI builds are.
+    game_root = repo_root / 'GAME'
+    mtimes = [path.stat().st_mtime for path, _rel in _iter_game_files(game_root)]
+    if not mtimes:
+        raise BuildError('cannot derive archive timestamp outside Git: GAME contains no files')
+    return datetime.fromtimestamp(max(mtimes)).astimezone()
+
+
+def _zip_timestamp_fields(value: datetime) -> tuple[tuple[int, int, int, int, int, int], bytes]:
+    if value.tzinfo is None:
+        raise BuildError('archive timestamp must include timezone information')
+    if value.year < 1980 or value.year > 2107:
+        raise BuildError(f'archive timestamp is outside ZIP date range: {value.isoformat()}')
+
+    # Classic ZIP/DOS timestamp has two-second precision. Preserve it for broad reader
+    # compatibility and also write the standard Extended Timestamp extra field with the
+    # full one-second Unix mtime so a one-second commit-date change still changes ZIP bytes.
+    dos_time = (
+        value.year,
+        value.month,
+        value.day,
+        value.hour,
+        value.minute,
+        value.second - (value.second % 2),
+    )
+    epoch = int(value.timestamp())
+    if epoch < 0 or epoch > 0xFFFFFFFF:
+        raise BuildError(f'archive timestamp cannot be represented as Unix ZIP mtime: {value.isoformat()}')
+    extended = struct.pack('<HHBI', 0x5455, 5, 0x01, epoch)
+    return dos_time, extended
 
 
 def validate_extracted_package_root(root: Path) -> Path:
@@ -274,11 +347,14 @@ def build_runtime_zip(repo_root: Path, output_dir: Path, intended_tag: str) -> P
     target = output_dir / runtime_asset_name(intended_tag)
     tmp = target.with_suffix(target.suffix + '.tmp')
     files = list(_iter_game_files(game_root))
+    archive_datetime = resolve_archive_datetime(repo_root, intended_tag)
+    zip_time, zip_extra = _zip_timestamp_fields(archive_datetime)
     with zipfile.ZipFile(tmp, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
         for path, rel in files:
             data = path.read_bytes()
-            info = zipfile.ZipInfo(rel, date_time=FIXED_ZIP_TIME)
+            info = zipfile.ZipInfo(rel, date_time=zip_time)
             info.create_system = 3
+            info.extra = zip_extra
             mode = 0o755 if os.access(path, os.X_OK) else 0o644
             info.external_attr = (stat.S_IFREG | mode) << 16
             info.compress_type = zipfile.ZIP_DEFLATED
