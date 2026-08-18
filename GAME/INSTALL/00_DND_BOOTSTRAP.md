@@ -312,6 +312,8 @@ If loaded authoritative data disagrees with card, trust authoritative data and m
 
 If campaign requires runtime bytes not currently present in Project Sources/current-chat attachment, follow `ENGINE_UPDATES.md` mismatch recovery. Do not silently run the wrong semantic version.
 
+MUST NOT end at a bare "cannot continue" response when a valid restore/update path exists. Present the applicable recovery action(s) from `ENGINE_UPDATES.md`, constrained by campaign-creator authority.
+
 ## 8. Gameplay research policy
 
 Normal gameplay is offline-first under `CORE/PLAY_POLICY.md`.
