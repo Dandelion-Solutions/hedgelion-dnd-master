@@ -1,7 +1,6 @@
 # D&D Master Bootstrap
 
-launcher_version: 15
-engine_repository: Dandelion-Solutions/hedgelion-dnd-master
+launcher_version: 16
 storage_marker: DND_STORAGE.yaml
 
 This bootstrap runs from an extracted local engine ZIP. Engine installation is NOT a GitHub operation.
@@ -10,6 +9,8 @@ This bootstrap runs from an extracted local engine ZIP. Engine installation is N
 
 Read local `ENGINE_VERSION.yaml` from the extracted package used as bootstrap host.
 
+Treat package-root `ENGINE_VERSION.yaml` as the sole machine-authoritative source for engine version, release status, canonical engine repository, development-owner identity, rules/schema baseline, update compatibility and recommended tag. Do not substitute repository-level DEV metadata or hard-coded copies from bootstrap prose.
+
 Use local CORE/RULES/SCHEMA/CAMPAIGN templates/TOOLS from an exact extracted package. Never clone, pull, reconstruct, or copy engine files from GitHub during normal startup. Never use base64 as a fallback.
 
 Do NOT preload campaign/world data.
@@ -17,13 +18,13 @@ Do NOT preload campaign/world data.
 ### Engine identity
 
 For a normal published package:
-- use `recommended_tag` as release tag;
-- resolve that tag through GitHub Connector to its exact public commit SHA when campaign creation/migration requires provenance;
+- use `ENGINE_VERSION.recommended_tag` as release tag;
+- resolve that tag in `ENGINE_VERSION.repository` through GitHub Connector to its exact public commit SHA when campaign creation/migration requires provenance;
 - never substitute public `main`.
 
-For `release_status: development`:
+For `ENGINE_VERSION.release_status: development`:
 - use only for explicit framework testing by authenticated login equal to `ENGINE_VERSION.engine_owner_login`;
-- identity is `dev-v<engine_version>`;
+- identity is `dev-v<ENGINE_VERSION.engine_version>`;
 - engine SHA may be null;
 - do NOT query/pin current public `main` merely to manufacture a SHA.
 
@@ -196,7 +197,7 @@ Only AFTER explicit campaign/new-game choice, resolve the exact local engine pac
 - new campaign: package must match selected storage baseline/intended engine;
 - authorized development test: matching local development package is sufficient and SHA may be null.
 
-If exact package is not locally available, request matching ZIP. Do not reconstruct it from GitHub/web.
+If exact package is not locally available, request matching runtime Release Asset. Do not reconstruct it from GitHub/web and do not substitute a GitHub-generated source archive.
 
 Once exact package is resolved, build engine instruction cache ONCE:
 1. read every local `CORE/*.md` file completely into current model context;
@@ -223,7 +224,7 @@ Expected root includes `README.md`, `CAMPAIGN_CARD.yaml`, `MANIFEST.yaml`, `CONF
 
 Do not wrap output in another `CAMPAIGN/`.
 
-For published engine pass exact tag + SHA. For authorized development package pass `dev-v<engine_version>` and omit SHA.
+For published engine pass exact tag + SHA. For authorized development package pass `dev-v<ENGINE_VERSION.engine_version>` and omit SHA.
 
 `CAMPAIGN_CARD.yaml` starts as a compact projection:
 - singleplayer: protagonist placeholders, no participant-login list;
@@ -280,7 +281,7 @@ Most ordinary singleplayer turns should use zero GitHub calls. Card freshness ne
 
 Storage-owner update checks are maintenance opportunities, not per-turn polling. Follow preloaded `CORE/ENGINE_UPDATES.md`.
 
-GitHub may discover newer tag, but engine FILES are installed only by user supplying corresponding ZIP. After successful engine migration/package switch, invalidate old CORE cache and preload full new CORE set once before further adjudication.
+GitHub may discover a newer tag in `ENGINE_VERSION.repository`, but engine FILES are installed only by the user supplying the corresponding runtime Release Asset. After successful engine migration/package switch, invalidate old CORE cache and preload full new CORE set once before further adjudication.
 
 When campaign engine version changes durably, refresh `CAMPAIGN_CARD.engine_version` in the SAME campaign migration transaction.
 
