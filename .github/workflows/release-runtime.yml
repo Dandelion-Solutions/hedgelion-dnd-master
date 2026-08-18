@@ -30,7 +30,7 @@ jobs:
           out="$RUNNER_TEMP/hdm-release"
           mkdir -p "$out"
           log="$RUNNER_TEMP/hdm-release-build.log"
-          DEV/TOOLS/run_release_build \
+          python DEV/TOOLS/run_release_build.py \
             --tag "$GITHUB_REF_NAME" \
             --tag-mode \
             --output "$out" | tee "$log"
