@@ -39,7 +39,7 @@ class RuntimePackageProvenanceTests(unittest.TestCase):
 
         self.assertEqual(meta["schema_version"], 1)
         self.assertEqual(meta["engine_version"], "0.8")
-        self.assertEqual(meta["package_id"], "v0.8")
+        self.assertEqual(meta["package_id"], "dev-v0.8")
         self.assertEqual(meta["source_state"], "clean_head")
         self.assertEqual(meta["source_ref"], "HEAD")
         self.assertEqual(meta["source_commit_sha"], expected_head)
@@ -58,7 +58,7 @@ class RuntimePackageProvenanceTests(unittest.TestCase):
 
         self.assertEqual(meta["schema_version"], 1)
         self.assertEqual(meta["engine_version"], "0.8")
-        self.assertEqual(meta["package_id"], "v0.8")
+        self.assertEqual(meta["package_id"], "dev-v0.8")
         self.assertIn(meta["source_state"], {"tagged", "clean_head", "dirty_worktree", "non_git"})
         self.assertIn("source_ref", meta)
         self.assertIn("source_commit_sha", meta)
