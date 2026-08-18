@@ -1,6 +1,6 @@
 # Engine Runtime Updates
 
-framework_module_version: 0.9.0
+framework_module_version: 0.9.1
 load_when: campaign/storage startup, explicit engine-update request, runtime mismatch, safe maintenance opportunity
 
 ## Distribution model
@@ -163,13 +163,34 @@ Storage baseline semantic-version change is a separate storage-owner metadata tr
 
 If both storage baseline and one campaign are intentionally updated, they remain separate authorities and separate durable transactions. Success/failure of one does not imply rollback or mutation of the other.
 
-## Package mismatch
+## Package mismatch recovery
 
-A mismatch is not automatically a terminal failure. Resolve available current-version packages, creator authority and any newer semantic-version alternative under the dedicated mismatch-recovery rules in bootstrap.
+A package mismatch is not automatically a terminal failure. Missing extracted cache is not package mismatch: if the required ZIP bytes exist, cache can be reconstructed silently.
+
+### Required current-version package is available
+
+If a valid package for `MANIFEST.engine.current.version` is present in Project Sources/current-chat attachments, resolve candidate provenance/digest under the exact/same-version rules above, then **reuse or silently re-extract** its isolated cache and continue. Missing/expired local extraction requires **no player prompt**.
+
+If a newer semantic-version ZIP also exists, creator update prompting may still happen under the normal semantic-version policy, but declining/postponing that offer does not invalidate the available current-version package.
+
+### Required current-version package is absent; user is not campaign creator
+
+The user lacks authority to change this campaign's semantic engine version. Tell them to **add the matching `hedgelion-dnd-master-runtime-v<version>.zip`** to Project Sources or the current chat, then automatically resume resolution once it becomes available.
+
+The runtime MUST NOT offer semantic-version migration of another creator's campaign. A newer ZIP being available does not substitute for the campaign's missing current-version runtime.
+
+### Required current-version package is absent; user is campaign creator
+
+Offer the creator the valid alternatives rather than a dead-end refusal:
+
+1. **Restore/add the campaign's current runtime version** by adding its matching runtime ZIP and continue unchanged. This is **preferred when one Project intentionally contains campaigns on different engine versions**.
+2. **Update the campaign to an available newer semantic version** through the normal authorized semantic-version maintenance flow, including compatibility/durability gates and the configured update prompt policy.
+
+If no newer valid runtime is available, only the restore/add-current-version path is offered.
 
 Never silently run a proven downgrade or a different semantic version merely because it is the only extracted package.
 
-Missing extracted cache is not package mismatch: if the required ZIP exists, silently re-extract it and continue.
+The player-facing response MUST NOT stop at "cannot continue" when one of the above recovery actions exists. State what package/version is needed and present only actions the current user is authorized to take.
 
 ## Runtime switch discipline
 
