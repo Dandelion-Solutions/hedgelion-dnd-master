@@ -1,6 +1,6 @@
 # Campaign Setup and Branch Initialization
 
-framework_module_version: 0.7.1
+framework_module_version: 0.8.0
 load_when: create new campaign, bind player, initialize campaign branch
 
 ## Discover before creating
@@ -9,27 +9,27 @@ Resolve campaign storage through `BOOTSTRAP_RUNTIME.md`.
 
 If gameplay is requested and no campaign branch is selected:
 - enumerate `campaign/*` only;
-- prefer `CAMPAIGN_CARD.yaml` / legacy card for fast menu presentation;
-- fall back to resolved manifest only when card is missing/invalid;
+- prefer `CAMPAIGN_CARD.yaml` for fast menu presentation;
+- fall back to the minimum authoritative manifest data only when the card is missing/invalid;
 - let the user explicitly continue/open an existing game or create a new one.
 
 Do not deep-load an existing campaign merely because it is the only one.
 
-## Engine source for a new campaign
+## Runtime source for a new campaign
 
-A new campaign is initialized from the LOCAL extracted engine package, never from engine files copied into storage.
+A new campaign is initialized from one exact validated local runtime package, never from engine files copied into storage.
 
-Read local `ENGINE_VERSION.yaml`.
+For New Game in an existing storage, resolve `DND_STORAGE.engine.baseline` to an available validated runtime ZIP under `BOOTSTRAP_RUNTIME.md` / `ENGINE_UPDATES.md`. Bind its isolated `current_runtime_root` before generation.
 
-For a published release resolve its `recommended_tag` to exact public commit SHA.
+Read semantic identity only from selected `current_runtime_root/ENGINE_VERSION.yaml` and exact artifact provenance only from `current_runtime_root/RUNTIME_PACKAGE.yaml` plus the final ZIP SHA-256.
 
-For explicit engine-owner development testing:
+For an authorized development package:
 - require authenticated GitHub login == `ENGINE_VERSION.engine_owner_login`;
-- identify package as `dev-v<engine_version>`;
-- engine SHA fields may be null;
-- do not query/pin public untagged `main` merely to manufacture a SHA.
+- logical package identity is `dev-v<engine_version>`;
+- dirty/non-Git package source commit may be null;
+- do not query/pin public untagged `main` merely to manufacture provenance.
 
-Do not use public untagged `main` as normal player runtime.
+Do not use public untagged `main` as normal player runtime and do not substitute another cached runtime version simply because it is already extracted.
 
 ## New campaign branch
 
@@ -43,18 +43,26 @@ The branch is created from storage default branch only to establish repository a
 
 ## Local scaffold generation
 
-Use local `TOOLS/init_campaign.py`.
+Use exact selected `current_runtime_root/TOOLS/init_campaign.py`. Do not find another generator elsewhere in the filesystem.
 
-The local engine directory `CAMPAIGN/` is a TEMPLATE SOURCE only. The generator copies the CONTENTS of that template directory into its output directory. That output directory is the ROOT TREE of the new campaign branch.
+The selected runtime directory `current_runtime_root/CAMPAIGN/` is a TEMPLATE SOURCE only. The generator copies the CONTENTS of that template directory into its output directory. That output directory is the ROOT TREE of the new campaign branch.
 
 A correct new campaign therefore has root paths such as `README.md`, `CAMPAIGN_CARD.yaml`, `MANIFEST.yaml`, `CONFIG.yaml`, `STATE/`, `WORLD/`, `INDEX/`, `LOG/`, `CHECKPOINTS/`, and `RULES/`.
 
-Do NOT wrap generator output in another remote `CAMPAIGN/` directory. The earlier nested layout is legacy-only.
+Do NOT wrap generator output in another remote `CAMPAIGN/` directory.
 
-The generator requires the authenticated campaign creator login through `--creator-github-login`. This value is written only to the compact menu card as a display/access hint; actual creator authority remains derived from Git history.
+Pass the validated portable runtime identity to the generator:
+- `--engine-version <ENGINE_VERSION.engine_version>`;
+- `--package-id <RUNTIME_PACKAGE.package_id>`;
+- `--source-commit-sha <RUNTIME_PACKAGE.source_commit_sha>` only when non-null;
+- `--package-sha256 <exact runtime ZIP sha256>`;
+- `--created-at <campaign creation timestamp>`;
+- `--creator-github-login <authenticated creator login>`.
+
+The creator login is written only to the compact menu card as a display/access hint; actual creator authority remains derived from Git history.
 
 The generator:
-- fills campaign technical ID, branch, engine identity, created timestamp and initial mode;
+- fills campaign technical ID, branch, portable runtime identity, created timestamp and initial mode;
 - initializes `CAMPAIGN_CARD.yaml` with campaign identity, semantic engine version, cached creator login and mode-specific menu shape;
 - does not contact GitHub;
 - does not use base64;
@@ -97,16 +105,20 @@ The first campaign initialization commit's `author.login` is the authoritative t
 
 ## Initial manifest/config/card
 
-Initialize manifest:
+Initialize manifest schema v3 with:
 - campaign ID and branch;
 - `status: initializing`;
 - mode (default `singleplayer` unless multiplayer already chosen);
-- engine `base_tag` / `base_sha` from local package identity;
-- engine `integrated_tag` / `integrated_main_sha` equal to base values;
+- `engine.created_with.version`, `package_id`, and `source_commit_sha` from the exact selected runtime identity;
+- `engine.current.version`, `package_id`, and `source_commit_sha` initially equal to `created_with`;
+- `engine.current.package_sha256` equal to the exact selected runtime ZIP digest;
+- `engine.current.adopted_at` equal to the initial adoption/creation timestamp;
 - `engine.update_policy: ask`;
 - `players.join_policy: invite_only` unless creator explicitly chooses `open_contributors`;
 - rules baseline;
 - created timestamp.
+
+`engine.created_with` is immutable creation provenance. Future compatible refreshes/semantic updates change only `engine.current` under `ENGINE_UPDATES.md`. Never persist `current_runtime_root` in MANIFEST.
 
 Current-layout manifest storage roots are `STATE`, `INDEX`, `WORLD`, `LOG`, `CHECKPOINTS`; house rules path is `RULES/HOUSE_RULES.md`.
 
@@ -269,7 +281,7 @@ Use `WORLDGEN.md`. Create only the starting horizon required for the first true 
 
 Scaffold commit establishes campaign identity/creator but not completed Session Zero state.
 
-Subsequent setup persistence follows `DURABILITY_GUARD.md`: optional PROVISIONAL_IDENTITY, accepted READY_PC/character stage when it would otherwise cross a player-turn boundary, PLAY_READY, explicit save/session/safety boundaries. Starting-world details alone do not require an extra commit when they can join another required batch.
+Subsequent setup persistence follows `DURABILITY_GUARD.md`: optional PROVISIONAL_IDENTITY, accepted READY_PC/character stage when it would otherwise cross a player-turn boundary, PLAY_READY, explicit save/session/safety/one-hour dirty boundaries. Starting-world details alone do not require an extra commit when they can join another required batch.
 
 Each batch includes corresponding card projection changes; card is never saved separately. Do not create a commit for every question/subchoice.
 
