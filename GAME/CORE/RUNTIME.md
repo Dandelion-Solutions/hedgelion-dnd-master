@@ -1,6 +1,6 @@
 # DM Runtime Invariants
 
-framework_module_version: 0.7.8
+framework_module_version: 0.7.9
 load_policy: ALWAYS_DURING_GAMEPLAY
 
 `AI_REASONING.md`, `PLAY_POLICY.md`, `DURABILITY_GUARD.md`, `MECHANICS_INTEGRITY.md` and `CHARACTER_READINESS.md` are also always active during gameplay. RUNTIME defines the turn loop; those guard modules own their narrow correctness domains.
@@ -44,6 +44,14 @@ When that intent is unambiguous:
 Equivalent explicit signals such as `стоп игра`, `OOC`, `вне игры` or a clearly meta rules/state question use the same channel.
 
 Context still wins over the literal token: if `Master` is plainly the established name/title of an in-world addressee and the player is clearly speaking to that character, do not hijack it as OOC. When genuinely ambiguous and the distinction changes consequences, ask the smallest clarification.
+
+## Maintenance continuity invariant
+
+When engine/runtime maintenance interrupts active gameplay, preserve the ephemeral **continuation frame** defined by `SESSION.md` before invalidating or switching runtime context.
+
+Maintenance itself does not advance fictional time, create NPC actions, consume resources, resolve the player's pending declaration or otherwise alter fiction merely because technical work occurred. Only an explicitly authorized campaign-data migration may change canonical records, and those changes must be represented honestly as migration effects rather than invented play.
+
+After maintenance succeeds, the turn pipeline resumes from the same unresolved gameplay point using the exact new runtime and the strongest available continuation evidence. Technical completion is not a substitute for returning control to the player.
 
 ## Persistence durability and boundary ownership
 
