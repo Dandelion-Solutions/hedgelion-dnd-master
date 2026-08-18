@@ -30,15 +30,18 @@ seed interfaces that were scheduled too late. The roadmap is reordered and the
 accepted semantic corrections are applied.
 
 Step 2 is now closing its ownership map before any new schema fields are added.
-The HP/LifeState boundary, Resource/procedure-budget ownership, and
-Condition/Effect/LifeState ownership have passed separate critical discussion
-and received explicit owner approval. Their current normative design record is
-the live Step 2 spec above.
+The HP/LifeState boundary, Resource/procedure-budget ownership,
+Condition/Effect/LifeState ownership, and maintained Effect-support ownership
+have passed critical discussion and received explicit owner approval. Their
+current normative design record is the live Step 2 spec above.
 
-The exact continuation point is **Duration / expiry / concentration ownership**.
-After that, Step 2 still owns remaining Effect/Recovery ownership, minimum
-LifeState transitions, health/effect selectors, schema/catalog alignment,
-focused cases, and its final critical pass.
+The exact continuation point is **intrinsic Duration / expiry anchors**.
+Concentration is no longer an open duration mode: maintained support is a
+separate Effect-to-Effect lifecycle relation, while a maintenance root may still
+have an intrinsic maximum lifetime. After intrinsic Duration/expiry, Step 2
+still owns remaining Effect/Recovery ownership, minimum LifeState transitions,
+health/effect selectors, schema/catalog alignment, focused cases, and its final
+critical pass.
 
 The four-layer separation below is accepted:
 
@@ -159,6 +162,18 @@ accepted ownership boundary.
   count, stacks, and valued severity are not one overloaded field.
 - LifeState and Condition are separate authorities, so lifecycle state such as
   dying/stable may coexist with a named Unconscious condition application.
+- Concentration is not a duration mode. A maintained Effect may have zero or one
+  immutable lifecycle parent; support relations form a forest rather than a
+  generic graph or predicate language.
+- A nonterminal parent provides structural support even while suppressed. A
+  terminal parent causes its full descendant closure to expire atomically;
+  child termination has no automatic effect on the parent.
+- Maintenance identity is stable for one episode; refresh updates the same
+  Effect instance, canonical storage keeps only the forward parent reference,
+  and reverse child indexes are disposable HOT/SQLite projections.
+- Durable promotion includes any required support-parent chain. Ruleset-specific
+  Concentration exclusivity remains ruleset behavior, not a generic uniqueness
+  subsystem.
 
 ## 3. Reviewed inventory and provisional structures
 
@@ -222,7 +237,7 @@ approved or implemented.
    suspension, and action-economy boundaries.
 4. Event payloads, granularity, and durability classification; the event-kind
    baseline itself is reviewed.
-5. Step 2 remaining ownership: Duration/expiry/concentration, remaining
+5. Step 2 remaining ownership: intrinsic Duration/expiry anchors, remaining
    Effect/Recovery behavior, minimum LifeState transitions, selectors, then
    schema/catalog alignment and focused cases.
 6. Lore, chapters, visibility/knowledge restrictions, and secret handling.
