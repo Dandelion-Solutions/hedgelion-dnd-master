@@ -1,6 +1,6 @@
 # Campaign Card and Fast Campaign Menu
 
-framework_module_version: 0.1.5
+framework_module_version: 0.1.4
 load_when: campaign discovery/menu, campaign setup, campaign status/location/PC/membership/engine changes, persistence affecting card projection fields
 
 ## Purpose
@@ -93,7 +93,7 @@ Recommended concise Russian menu:
 - `4. 👀 Рыночная площадь — активная, присоединение по приглашению`
 - `5. ➕ Начать новую игру`
 
-Do not add icon explanations to ordinary campaign rows. After the menu, the Master may offer only the compact italic prompt *Показать легенду?* If the user asks to show the legend, render exactly:
+Do not add icon explanations to ordinary campaign rows. After every rendered campaign-choice menu, the Master MUST append exactly one separate italic prompt: *Показать легенду?* If the user asks to show the legend, render exactly:
 
 - 🟢 активная игра (возможен несохраненный прогресс соседнем чате), можно продолжить тут;
 - 🟡 незавершённая настройка;
