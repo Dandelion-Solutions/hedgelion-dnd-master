@@ -1,6 +1,8 @@
 # Multi-runtime cache and maintenance continuity Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+Status: completed 2026-08-18
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Checkbox status below records completion evidence.
 
 **Goal:** Support multiple runtime ZIP versions per Project, portable campaign/storage runtime identity, silent compatible same-version refresh, creator-controlled semantic-version upgrades, transparent post-maintenance resume, and a one-hour durability ceiling for dirty HOT/SOFT state.
 
@@ -42,7 +44,7 @@
 - Produces: `validate_runtime_package_metadata(data: dict) -> None`
 - Existing `build_runtime_zip(...)` remains the package-composition authority.
 
-- [ ] **Step 1: Write failing provenance tests**
+- [x] **Step 1: Write failing provenance tests**
 
 Add tests that require:
 
@@ -57,7 +59,7 @@ self.assertEqual(meta["source_commit_sha"], expected_sha)
 
 Also assert there is exactly one `RUNTIME_PACKAGE.yaml`, it is at archive root, and no tracked `GAME/RUNTIME_PACKAGE.yaml` is required.
 
-- [ ] **Step 2: Run focused tests and verify RED**
+- [x] **Step 2: Run focused tests and verify RED**
 
 Run in CI/full checkout:
 
@@ -67,7 +69,7 @@ Run in CI/full checkout:
 
 Expected: FAIL because the generated member/functions do not yet exist.
 
-- [ ] **Step 3: Implement metadata classification**
+- [x] **Step 3: Implement metadata classification**
 
 Implement exact source states:
 
@@ -84,11 +86,11 @@ Implement exact source states:
 
 For `tagged`, require exact tag checkout and record the commit represented by the tag. For clean Git HEAD, record exact HEAD. For dirty worktree/non-Git, do not falsely claim exact source SHA.
 
-- [ ] **Step 4: Inject deterministic YAML directly into ZIP**
+- [x] **Step 4: Inject deterministic YAML directly into ZIP**
 
 Serialize with deterministic field ordering and UTF-8 bytes. Add exactly one root member after/among the sorted GAME members without creating a worktree file. Use the same deterministic timestamp/permission policy as other ZIP entries.
 
-- [ ] **Step 5: Update package-root validation**
+- [x] **Step 5: Update package-root validation**
 
 New-contract runtime packages require both:
 
@@ -99,7 +101,7 @@ RUNTIME_PACKAGE.yaml
 
 with no `GAME/` or `DEV/` wrapper.
 
-- [ ] **Step 6: Run focused + integration tests and verify GREEN**
+- [x] **Step 6: Run focused + integration tests and verify GREEN**
 
 Run:
 
@@ -109,7 +111,7 @@ Run:
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 Commit message:
 
@@ -134,7 +136,7 @@ feat: embed runtime package provenance
 - Campaign `engine.current`: `version`, `package_id`, `source_commit_sha`, `package_sha256`, `adopted_at`
 - Campaign `engine.update_policy`: `ask|auto`
 
-- [ ] **Step 1: Write failing schema/generator tests**
+- [x] **Step 1: Write failing schema/generator tests**
 
 Require new campaign output matching:
 
@@ -155,19 +157,19 @@ engine:
 
 Assert old `base_tag`, `base_sha`, `integrated_tag`, `integrated_main_sha` are absent from newly generated manifests.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run the relevant generator/manifest tests and confirm failure is due to old engine fields.
 
-- [ ] **Step 3: Update campaign template/schema**
+- [x] **Step 3: Update campaign template/schema**
 
 Replace the old fields with the new nested objects. Preserve creator authority as Git-history-derived; do not add creator login as MANIFEST authority.
 
-- [ ] **Step 4: Update `init_campaign.py` arguments/output**
+- [x] **Step 4: Update `init_campaign.py` arguments/output**
 
 Generator must receive/derive exact runtime identity from the validated package and emit both `created_with` and `current` equal at campaign creation. `created_with` is immutable thereafter.
 
-- [ ] **Step 5: Update storage marker contract to v3**
+- [x] **Step 5: Update storage marker contract to v3**
 
 Use:
 
@@ -185,11 +187,11 @@ engine:
 
 Do not persist environment paths.
 
-- [ ] **Step 6: Verify GREEN**
+- [x] **Step 6: Verify GREEN**
 
 Run focused schema/generator tests.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 Commit message:
 
@@ -213,33 +215,33 @@ feat: adopt portable runtime identity schema
 - `current_runtime_root = <session-cache>/hdm-runtime/<version>/<package_sha256>/`
 - ZIP indexing may inspect filename + root `ENGINE_VERSION.yaml` + root `RUNTIME_PACKAGE.yaml` + SHA-256 without full extraction.
 
-- [ ] **Step 1: Write failing text/contract tests**
+- [x] **Step 1: Write failing text/contract tests**
 
 Require Project Instructions to state that multiple runtime ZIPs may coexist, forbid eager extraction of all packages, and forbid assuming another chat's extracted cache survives.
 
 Require bootstrap text to state that absent cache is silently re-extracted from the exact ZIP.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run maintenance audit / focused contract tests; expected failure on the existing `exactly one ZIP` rule.
 
-- [ ] **Step 3: Rewrite canonical Project Instructions minimally**
+- [x] **Step 3: Rewrite canonical Project Instructions minimally**
 
 Replace the single-ZIP rule with supported multi-ZIP indexing. Preserve source-archive rejection, shape validation, no Base64, Connector-only campaign storage, and explicit campaign-choice gate.
 
-- [ ] **Step 4: Regenerate/synchronize embedded block**
+- [x] **Step 4: Regenerate/synchronize embedded block**
 
 `GAME/INSTALL/README.md` must contain exactly the same canonical Project Instructions block as `PROJECT_INSTRUCTIONS.txt`.
 
-- [ ] **Step 5: Implement runtime-root isolation contract in bootstrap prose**
+- [x] **Step 5: Implement runtime-root isolation contract in bootstrap prose**
 
 After exact package selection, every package-relative read must resolve beneath one `current_runtime_root`; sibling caches are inert. Never globally search for a convenient `ENGINE_VERSION.yaml`, `CORE/`, or `TOOLS/init_campaign.py` after selection.
 
-- [ ] **Step 6: Verify GREEN**
+- [x] **Step 6: Verify GREEN**
 
 Run maintenance audit and parity tests.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 Commit message:
 
@@ -262,7 +264,7 @@ feat: support lazy multi-runtime bootstrap
 - Same-version forward classification uses one bounded compare between recorded A and candidate B from `RUNTIME_PACKAGE.yaml`.
 - Prompt state is ephemeral key `(campaign_identity, target_engine_version)`.
 
-- [ ] **Step 1: Write failing policy tests**
+- [x] **Step 1: Write failing policy tests**
 
 Require these creator choices for a newer semantic version:
 
@@ -274,7 +276,7 @@ Require these creator choices for a newer semantic version:
 
 Require `Remind later` = 24-hour current-environment suppression and `Do not remind` = current-environment suppression for only that campaign+target version.
 
-- [ ] **Step 2: Write failing same-version classification tests/contracts**
+- [x] **Step 2: Write failing same-version classification tests/contracts**
 
 Require:
 
@@ -287,27 +289,27 @@ A diverged B -> ambiguous
 null provenance -> no automatic ancestry classification
 ```
 
-- [ ] **Step 3: Verify RED**
+- [x] **Step 3: Verify RED**
 
 Run focused tests/contracts.
 
-- [ ] **Step 4: Update engine-update authority**
+- [x] **Step 4: Update engine-update authority**
 
 Campaign creator controls campaign engine adoption. Storage owner controls only storage baseline. Repository write permission alone grants neither.
 
-- [ ] **Step 5: Add prompt suppression semantics**
+- [x] **Step 5: Add prompt suppression semantics**
 
 Explicitly keep reminder/suppression state out of Git, Memory, engine files, and campaign canon. It may vanish with the environment.
 
-- [ ] **Step 6: Add silent same-version refresh semantics**
+- [x] **Step 6: Add silent same-version refresh semantics**
 
 A unique proven descendant candidate is preferred over the old exact-digest candidate. Creator MANIFEST provenance refresh joins the next normal coherent transaction; non-creator may use compatible forward runtime but cannot persist MANIFEST changes.
 
-- [ ] **Step 7: Verify GREEN**
+- [x] **Step 7: Verify GREEN**
 
 Run focused policy tests and maintenance audit.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 Commit message:
 
@@ -330,23 +332,23 @@ feat: distinguish runtime refresh from engine upgrade
 - Exact/current-version ZIP absent + non-creator -> request matching ZIP only.
 - Exact/current-version ZIP absent + creator -> offer restore matching version OR update to available newer semantic version.
 
-- [ ] **Step 1: Add failing regression cases**
+- [x] **Step 1: Add failing regression cases**
 
 Cases must assert the runtime never stops at a bare "cannot continue" when a valid restore/update path exists.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run focused policy/audit checks.
 
-- [ ] **Step 3: Implement player-facing decision flow**
+- [x] **Step 3: Implement player-facing decision flow**
 
 Keep messages concise and action-oriented. Missing extracted cache is never player-facing; missing required ZIP is.
 
-- [ ] **Step 4: Verify GREEN**
+- [x] **Step 4: Verify GREEN**
 
 Run focused cases + audit.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Commit message:
 
@@ -368,25 +370,25 @@ feat: add engine mismatch recovery paths
 **Interfaces:**
 - Ephemeral continuation frame: selected campaign, durable frontier, scene/location, last meaningful player action, last meaningful Master/NPC utterance/outcome, unresolved decision point.
 
-- [ ] **Step 1: Write failing continuation regression cases**
+- [x] **Step 1: Write failing continuation regression cases**
 
 Require a successful maintenance flow to return to the same unresolved gameplay point rather than end with only a maintenance status.
 
 Require exact quotes only when current-chat evidence contains them; otherwise use durable semantic summary.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run focused policy tests.
 
-- [ ] **Step 3: Add continuation-frame contract**
+- [x] **Step 3: Add continuation-frame contract**
 
 Capture before refresh/migration, switch runtime atomically, invalidate/reload exact CORE, then restore the same gameplay point. Maintenance itself must not advance fictional time.
 
-- [ ] **Step 4: Verify GREEN**
+- [x] **Step 4: Verify GREEN**
 
 Run focused cases + audit.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Commit message:
 
@@ -409,7 +411,7 @@ feat: resume gameplay after engine maintenance
 - Forced boundary condition: `dirty_hot_or_soft && now - durable_frontier_time >= 1 hour`.
 - No-op/heartbeat commit prohibited when no dirty canonical state exists.
 
-- [ ] **Step 1: Write failing durability cases**
+- [x] **Step 1: Write failing durability cases**
 
 Require:
 
@@ -420,23 +422,23 @@ inactive chat >1h -> re-evaluate on next interaction; no background promise
 lost ephemeral state -> recover only durable canon, never invent lost unpublished canon
 ```
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run focused durability tests/cases.
 
-- [ ] **Step 3: Update durability authority**
+- [x] **Step 3: Update durability authority**
 
 Make the one-hour ceiling additive to immediate critical-event and existing batching rules. It does not replace stronger boundaries.
 
-- [ ] **Step 4: Update session/runtime startup behavior**
+- [x] **Step 4: Update session/runtime startup behavior**
 
 At the next interaction after a long gap, check stale dirty state before applying a new gameplay action when the dirty working set still exists.
 
-- [ ] **Step 5: Verify GREEN**
+- [x] **Step 5: Verify GREEN**
 
 Run focused durability cases + audit.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 Commit message:
 
@@ -458,7 +460,7 @@ feat: cap dirty hot state at one hour
 - Full source audit + full unittest suite are completion gates.
 - Built runtime ZIP must contain all valid GAME files plus exactly one generated provenance manifest.
 
-- [ ] **Step 1: Add cross-cutting RED tests**
+- [x] **Step 1: Add cross-cutting RED tests**
 
 Cover at minimum:
 
@@ -476,23 +478,23 @@ maintenance continuation
 one-hour dirty ceiling/no heartbeat
 ```
 
-- [ ] **Step 2: Verify RED where gaps remain**
+- [x] **Step 2: Verify RED where gaps remain**
 
 Run full audit + suite and inspect only genuine failures.
 
-- [ ] **Step 3: Close any implementation gaps minimally**
+- [x] **Step 3: Close any implementation gaps minimally**
 
 Do not broaden scope into legacy migration or unrelated mechanical-runtime roadmap work.
 
-- [ ] **Step 4: Build runtime ZIP twice from full checkout**
+- [x] **Step 4: Build runtime ZIP twice from full checkout**
 
 Run canonical launcher twice and verify deterministic bytes for unchanged source state. Inspect the ZIP root for `ENGINE_VERSION.yaml`, `RUNTIME_PACKAGE.yaml`, flattened GAME contents, and no DEV tree.
 
-- [ ] **Step 5: Run generator smoke from extracted ZIP**
+- [x] **Step 5: Run generator smoke from extracted ZIP**
 
 Use the extracted package's exact `TOOLS/init_campaign.py`; verify emitted campaign manifest uses only the new engine schema.
 
-- [ ] **Step 6: Run full verification**
+- [x] **Step 6: Run full verification**
 
 Run:
 
@@ -503,11 +505,11 @@ DEV/TOOLS/run_maintenance_audit
 
 Expected: all GREEN.
 
-- [ ] **Step 7: Update release checklist**
+- [x] **Step 7: Update release checklist**
 
 Document multiple runtime assets, generated provenance, portable storage/campaign identity, and current builder behavior. Do not touch root README.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 Commit message:
 
