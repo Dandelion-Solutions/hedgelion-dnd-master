@@ -11,6 +11,8 @@ Split the current repository-root `ENGINE_VERSION.yaml` into two consumer-owned 
 - `DEV/ENGINE_VERSION.yaml` — complete development/release bookkeeping superset;
 - `GAME/ENGINE_VERSION.yaml` — minimal installed-package/runtime projection.
 
+As part of the same migration, raise the HDM engine version from `0.7` to `0.8`. The new GAME/DEV physical boundary and custom runtime-release format therefore debut as engine `0.8`, not as an in-place restructuring of `0.7`.
+
 The runtime must never read version or compatibility metadata from `DEV/`. Development/release validation must ensure that shared fields in the two files remain coherent.
 
 ## DEV version file
@@ -29,6 +31,15 @@ Its responsibilities include:
 
 The current fields therefore remain valid in DEV, including all `*_revision` counters and `consistency_audit_revision`.
 
+The migration changes the shared release identity fields to:
+
+```yaml
+engine_version: 0.8
+recommended_tag: v0.8
+```
+
+`release_status` remains governed by the existing release lifecycle; this layout migration does not by itself falsely mark an unreleased development tree as published.
+
 Development tooling, release policy, maintenance audit and repository-facing documentation that need the complete bookkeeping record must read `DEV/ENGINE_VERSION.yaml`.
 
 ## GAME runtime projection
@@ -36,7 +47,7 @@ Development tooling, release policy, maintenance audit and repository-facing doc
 `GAME/ENGINE_VERSION.yaml` contains only package/runtime identity and compatibility fields needed by installed HDM behavior:
 
 ```yaml
-engine_version: 0.7
+engine_version: 0.8
 release_status: development
 repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_owner_login: dkolyada
@@ -44,7 +55,7 @@ rules_baseline: D&D 2024 / SRD 5.2.1
 schema_version: 2
 campaign_update:
   compatibility: maintenance_required
-recommended_tag: v0.7
+recommended_tag: v0.8
 ```
 
 The GAME file must not contain development-only revision counters such as:
@@ -110,11 +121,25 @@ The following fields exist in both files and must be equal:
 - `campaign_update.compatibility`;
 - `recommended_tag`.
 
+For this migration, both files must therefore report `engine_version: 0.8` and `recommended_tag: v0.8`.
+
 `DEV/ENGINE_VERSION.yaml` is the development/release superset. `GAME/ENGINE_VERSION.yaml` is the runtime projection used by the installed package.
 
 The canonical release builder and maintenance audit must fail if any shared field differs. They must also fail if GAME unexpectedly contains a development-only revision field.
 
 This avoids silent drift while preserving a clean runtime package.
+
+## Module-version policy during the 0.8 migration
+
+Raising the engine version to `0.8` does not mass-rewrite version headers of otherwise unchanged CORE modules.
+
+Follow the existing versioning policy:
+
+- a runtime/CORE module materially changed by this migration updates its module `MAJOR.MINOR` to `0.8` and increments that module's own revision exactly once;
+- an unchanged module keeps its existing module version even though the engine moves to `0.8`;
+- path-only relocation without a semantic change does not manufacture an unrelated revision unless the file's actual contract/text must change.
+
+Installation/bootstrap/update modules whose behavior or release-asset references change as part of this migration are treated as materially changed and versioned accordingly.
 
 ## Builder behavior
 
@@ -147,6 +172,7 @@ Regression coverage must verify at least:
 
 - DEV version file contains all current bookkeeping/revision fields;
 - GAME version file contains exactly the approved runtime projection fields;
+- both files report engine `0.8` and recommended tag `v0.8`;
 - shared fields are identical;
 - runtime ZIP includes only archive-root `ENGINE_VERSION.yaml` derived from GAME;
 - runtime bootstrap/setup/update paths continue to resolve package-root `ENGINE_VERSION.yaml`;
