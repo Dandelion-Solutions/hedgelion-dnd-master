@@ -126,7 +126,7 @@ Canonical DEV entry points:
 
 ```text
 DEV/TOOLS/run_maintenance_audit
-DEV/TOOLS/run_release_build
+DEV/TOOLS/run_release_build.py
 ```
 
 Both own/reuse the isolated repository-local `.hdm-devtools/` environment declared by `DEV/TOOLS/requirements-dev-tools.txt`. Do not install DEV dependencies into system Python and do not make GAME/runtime depend on them.
@@ -135,7 +135,7 @@ Both own/reuse the isolated repository-local `.hdm-devtools/` environment declar
 
 ## Release boundary
 
-`DEV/TOOLS/run_release_build` is the single authority for runtime package validation/composition, deterministic ZIP creation, asset naming and checksum creation. GitHub Actions must not maintain a second include/exclude list or duplicate builder dependency logic.
+`DEV/TOOLS/run_release_build.py` is the single authority for runtime package validation/composition, deterministic ZIP creation, asset naming and checksum creation. GitHub Actions must not maintain a second include/exclude list or duplicate builder dependency logic.
 
 The supported install artifact is `hedgelion-dnd-master-runtime-v<version>.zip`. GitHub-generated source archives are repository snapshots and are not gameplay packages.
 
