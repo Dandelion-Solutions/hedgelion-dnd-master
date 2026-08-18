@@ -16,13 +16,13 @@
 - [ ] Tag publication is rejected unless status is `ready-for-tag` and tag equals `recommended_tag`.
 
 ## Runtime package
-- [ ] `DEV/TOOLS/run_release_build --tag <tag> --output <dir>` builds the pre-tag candidate through the canonical entry point.
-- [ ] Builder archives contents of `GAME/`, not the `GAME/` wrapper.
+- [ ] `DEV/TOOLS/run_release_build --tag <tag>` builds the local pre-tag candidate into ignored repository-root `builds/`; `--output <dir>` is an optional override for CI or other explicit destinations.
+- [ ] Builder archives every valid file under `GAME/`, not a maintained include list, and does not add the `GAME/` wrapper.
 - [ ] ZIP root contains `ENGINE_VERSION.yaml`, `CORE/`, `RULES/`, `SCHEMA/`, `CAMPAIGN/`, `INSTALL/`, runtime `TOOLS/` and required support/legal files.
 - [ ] ZIP contains no `DEV/`, development tests, architecture, release policy or maintenance tooling.
 - [ ] Builder rejects output inside GAME, symlinks, build junk and case-insensitive path collisions.
-- [ ] Repeated builds from the same tree/parameters are byte-identical.
-- [ ] SHA-256 sidecar is produced.
+- [ ] Repeated builds from the same tree/parameters are byte-identical; rebuilding the same tag replaces the same local filename rather than accumulating numbered variants.
+- [ ] SHA-256 sidecar is produced next to the ZIP.
 - [ ] Package-local and destination-relative template links validate in their correct namespaces.
 - [ ] `INSTALL/README.md` embedded Project Instructions match `INSTALL/PROJECT_INSTRUCTIONS.txt`.
 
@@ -44,7 +44,7 @@
 ## Tag and GitHub Release
 - [ ] Pre-tag candidate from the final `ready-for-tag` tree is tested in a fresh Project.
 - [ ] Create immutable tag exactly equal to `recommended_tag` from the approved release lineage.
-- [ ] Tag-triggered `.github/workflows/release-runtime.yml` checks out the exact tag and calls only `DEV/TOOLS/run_release_build` for package composition/validation.
+- [ ] Tag-triggered `.github/workflows/release-runtime.yml` checks out the exact tag and calls only `DEV/TOOLS/run_release_build` for package composition/validation, using an explicit runner-temporary `--output` rather than repository-local `builds/`.
 - [ ] Workflow get-or-creates the GitHub Release for the tag.
 - [ ] Existing same-name runtime asset may be reused only when bytes/hash are identical; different bytes are a hard error and are never clobbered.
 - [ ] GitHub-generated `Source code (zip)` / `Source code (tar.gz)` remain source snapshots and **are not runtime installation artifacts**.
