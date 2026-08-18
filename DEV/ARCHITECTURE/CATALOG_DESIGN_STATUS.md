@@ -31,17 +31,19 @@ accepted semantic corrections are applied.
 
 Step 2 is now closing its ownership map before any new schema fields are added.
 The HP/LifeState boundary, Resource/procedure-budget ownership,
-Condition/Effect/LifeState ownership, and maintained Effect-support ownership
-have passed critical discussion and received explicit owner approval. Their
-current normative design record is the live Step 2 spec above.
+Condition/Effect/LifeState ownership, maintained Effect-support ownership, and
+Duration/Temporal Agenda ownership have passed critical discussion and received
+explicit owner approval. Their current normative design record is the live Step
+2 spec above.
 
-The exact continuation point is **intrinsic Duration / expiry anchors**.
-Concentration is no longer an open duration mode: maintained support is a
-separate Effect-to-Effect lifecycle relation, while a maintenance root may still
-have an intrinsic maximum lifetime. After intrinsic Duration/expiry, Step 2
-still owns remaining Effect/Recovery ownership, minimum LifeState transitions,
-health/effect selectors, schema/catalog alignment, focused cases, and its final
-critical pass.
+The exact continuation point is **remaining Effect / Recovery ownership**.
+Concentration is not a duration mode; maintained support is a separate
+Effect-to-Effect lifecycle relation. Intrinsic Duration now uses authoritative
+Effect temporal bindings with a lazy local metric coordinate and disposable
+Temporal Agenda rather than a universal clock or writable countdown. Step 2
+still owns generic Effect stacking/refresh/replacement, recovery/reset/recharge
+epochs and boundaries, minimum LifeState transitions, health/effect selectors,
+schema/catalog alignment, focused cases, and its final critical pass.
 
 The four-layer separation below is accepted:
 
@@ -135,6 +137,14 @@ accepted ownership boundary.
   not require a universal calendar or clock.
 - Event-local time budgets may be mechanically meaningful, for example a
   ten-minute effect duration.
+- Metric precision is demand-driven. A local monotonic coordinate advances only
+  through explicit runtime/procedure advancement while elapsed time is
+  mechanically material; it may freeze otherwise and never follows wall clock.
+- Intrinsic temporal bindings use the mechanically appropriate basis: metric
+  deadline, procedure boundary, or semantic boundary. Turn/rest/dawn semantics
+  are not forced into synthetic seconds.
+- Temporal Agenda data is a disposable HOT/SQLite due-index rebuilt from
+  authoritative bindings, not a persistent scheduler authority.
 - Gameplay timeline slots use increments of ten to leave room for later
   insertion, for example `00430`, `00440`.
 - Historical facts discovered during play remain lore unless placing them on
@@ -174,6 +184,19 @@ accepted ownership boundary.
 - Durable promotion includes any required support-parent chain. Ruleset-specific
   Concentration exclusivity remains ruleset behavior, not a generic uniqueness
   subsystem.
+- Definitions own reusable Duration semantics; each active Effect owns the
+  concrete temporal binding for its intrinsic lifetime. `remaining` is normally
+  derived, not a second mutable countdown authority.
+- Metric Duration uses a local exact monotonic coordinate only while elapsed
+  precision is materially needed. No global or wall-clock scheduler is added.
+- Procedure-relative and semantic expiry boundaries remain typed bases rather
+  than being coerced into metric seconds.
+- A requested time advance stops at the nearest due boundary, closes same-time
+  consequences, and exposes any unconsumed continuation rather than blindly
+  executing through a changed world state.
+- Re-anchoring derives remaining once only when an Effect actually transfers
+  across an incompatible temporal basis/context. A multi-target Effect owns one
+  lifecycle temporal binding rather than one clock per target.
 
 ## 3. Reviewed inventory and provisional structures
 
@@ -237,13 +260,13 @@ approved or implemented.
    suspension, and action-economy boundaries.
 4. Event payloads, granularity, and durability classification; the event-kind
    baseline itself is reviewed.
-5. Step 2 remaining ownership: intrinsic Duration/expiry anchors, remaining
-   Effect/Recovery behavior, minimum LifeState transitions, selectors, then
-   schema/catalog alignment and focused cases.
+5. Step 2 remaining ownership: generic Effect stacking/refresh/replacement,
+   Resource Recovery/reset/recharge epochs and boundaries, minimum LifeState
+   transitions, selectors, then schema/catalog alignment and focused cases.
 6. Lore, chapters, visibility/knowledge restrictions, and secret handling.
 7. Game-mode profiles, including quick narrative play, canonical mechanics,
    and strict-information-isolation detective play.
-8. Event-local time budgets and multiplayer chronology.
+8. Cross-scene event-local time reconciliation and multiplayer chronology.
 9. SOFT accumulation budgets and configurable HARD publication thresholds.
 10. Migration, promotion, and catalog-gap workflows.
 11. Standard ruleset seed data, including the selected D&D/SRD baseline.
