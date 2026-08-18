@@ -23,6 +23,7 @@
 - [ ] ZIP contains no `DEV/`, development tests, architecture, release policy or maintenance tooling.
 - [ ] Builder rejects output inside GAME, symlinks, build junk and case-insensitive path collisions.
 - [ ] Repeated builds from the same tree/parameters are byte-identical; rebuilding the same tag replaces the same local filename rather than accumulating numbered variants.
+- [ ] ZIP entry timestamps come from the commit pointed to by the requested tag when that tag exists; before the tag exists they come from `HEAD`. The timestamp is stable build metadata, not checkout filesystem mtime or a fixed epoch sentinel.
 - [ ] SHA-256 sidecar is produced next to the ZIP.
 - [ ] Package-local and destination-relative template links validate in their correct namespaces.
 - [ ] `INSTALL/README.md` embedded Project Instructions match `INSTALL/PROJECT_INSTRUCTIONS.txt`.
