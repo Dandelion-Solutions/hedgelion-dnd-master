@@ -183,14 +183,18 @@ Normal menu shows:
 
 `archived` is hidden unless user explicitly asks to show archived games.
 
-### Menu emoji semantics
+### Menu presentation contract
 
-When a valid card is available, use one primary emoji with this priority:
+Use one primary emoji per row. These mappings are fixed; do not substitute visually similar or semantically related emoji.
+
+When a valid card is available, use this priority:
 1. `completed` -> 🟥;
 2. singleplayer and cached `creator_github_login` differs from current authenticated login -> 🔒;
 3. multiplayer and current login is not in cached active `participant_github_logins` -> 👀;
-4. `paused` or `initializing` -> 🟡;
-5. active normal candidate -> 🟢.
+4. `initializing` -> 🟡;
+5. `paused` -> ⏸️;
+6. active normal candidate -> 🟢;
+7. new-game option -> ➕.
 
 These are hints only; revalidate authority after selection.
 
@@ -205,6 +209,18 @@ Prefer concise human rows, for example:
 - `🟥 Бобби Ли — Воин — Поле "Злая пустошь" — завершена: погиб`
 - `🔒 Элиас — Эльф, следопыт — Северная дорога — одиночная, только просмотр`
 - `👀 Рыночная площадь — активная, присоединение по приглашению`
+
+Do not add icon explanations to ordinary campaign rows. After every rendered campaign-choice menu, append exactly one separate italic prompt: *Показать легенду?*
+
+If the user asks to show the legend, render exactly:
+
+- 🟢 активная игра (возможен несохраненный прогресс соседнем чате), можно продолжить тут;
+- 🟡 незавершённая настройка;
+- ⏸️ игра на паузе, никакого несохраненного прогресса в другом чате нет, можно продолжить тут;
+- 🟥 завершённая история, продолжение невозможно;
+- 🔒 чужая одиночная кампания, доступная только для просмотра;
+- 👀 multiplayer-кампания, к которой можно подключиться.
+- ➕ начать новую игру.
 
 Do not normally print all participant logins; the cached list exists mainly to classify the current user cheaply.
 
