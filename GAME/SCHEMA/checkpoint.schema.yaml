@@ -1,5 +1,5 @@
 schema_name: checkpoint
-schema_version: 1
+schema_version: 2
 required: [schema_version, id, campaign_id, valid_through_event_id, state]
 fields:
   schema_version: integer
@@ -16,11 +16,15 @@ fields:
     active_scene_ids: array[string]
   recovery_notes: array[string]
   engine:
-    tag: string
-    integrated_main_sha: string|null
+    version: string
+    package_id: string
+    source_commit_sha: string|null
+    package_sha256: string
+    adopted_at: string
   schema_data_version: integer
 invariants:
   - checkpoint is compact recovery metadata, not a snapshot copy of all WORLD records
-  - current_state_path is resolved inside the campaign layout; new campaigns normally use STATE/CURRENT.yaml and legacy campaigns may use CAMPAIGN/STATE/CURRENT.yaml
+  - checkpoint engine is a recovery projection of MANIFEST.engine.current at checkpoint creation; it stores portable runtime identity, never current_runtime_root
+  - current_state_path is resolved inside the current campaign root layout and normally uses STATE/CURRENT.yaml
   - expected_commit_sha may be filled after commit identity is known; recovery must also be possible via event frontier
   - latest pointer references a canonical checkpoint ID/path
