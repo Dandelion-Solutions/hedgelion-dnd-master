@@ -65,19 +65,40 @@ def main() -> int:
     manifest_path = output / "MANIFEST.yaml"
     manifest = manifest_path.read_text(encoding="utf-8")
     source_sha = yaml_nullable_string(args.source_commit_sha)
+    old_engine = (
+        "engine:\n"
+        "  created_with:\n"
+        "    version: null\n"
+        "    package_id: null\n"
+        "    source_commit_sha: null\n"
+        "  current:\n"
+        "    version: null\n"
+        "    package_id: null\n"
+        "    source_commit_sha: null\n"
+        "    package_sha256: null\n"
+        "    adopted_at: null\n"
+        "  update_policy: ask"
+    )
+    new_engine = (
+        "engine:\n"
+        "  created_with:\n"
+        f"    version: {yaml_string(args.engine_version)}\n"
+        f"    package_id: {yaml_string(args.package_id)}\n"
+        f"    source_commit_sha: {source_sha}\n"
+        "  current:\n"
+        f"    version: {yaml_string(args.engine_version)}\n"
+        f"    package_id: {yaml_string(args.package_id)}\n"
+        f"    source_commit_sha: {source_sha}\n"
+        f"    package_sha256: {yaml_string(args.package_sha256.lower())}\n"
+        f"    adopted_at: {yaml_string(args.created_at)}\n"
+        "  update_policy: ask"
+    )
+    manifest = replace_once(manifest, old_engine, new_engine, manifest_path)
     replacements = [
         ("campaign_id: null", f"campaign_id: {yaml_string(args.campaign_id)}"),
         ("branch: null", f"branch: {yaml_string(args.branch)}"),
         ("status: uninitialized", "status: initializing"),
         ("mode: singleplayer", f"mode: {args.mode}"),
-        ("    version: null", f"    version: {yaml_string(args.engine_version)}"),
-        ("    package_id: null", f"    package_id: {yaml_string(args.package_id)}"),
-        ("    source_commit_sha: null", f"    source_commit_sha: {source_sha}"),
-        ("    version: null", f"    version: {yaml_string(args.engine_version)}"),
-        ("    package_id: null", f"    package_id: {yaml_string(args.package_id)}"),
-        ("    source_commit_sha: null", f"    source_commit_sha: {source_sha}"),
-        ("    package_sha256: null", f"    package_sha256: {yaml_string(args.package_sha256.lower())}"),
-        ("    adopted_at: null", f"    adopted_at: {yaml_string(args.created_at)}"),
         ("created_at: null", f"created_at: {yaml_string(args.created_at)}"),
     ]
     for old, new in replacements:
