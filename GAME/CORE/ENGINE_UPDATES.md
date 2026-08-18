@@ -14,7 +14,7 @@ A package has three distinct identities:
 
 Campaign storage contains no engine copy. GitHub release/tag metadata may assist discovery/provenance comparison, but it never installs engine files.
 
-GitHub-generated `Source code (zip)` / `Source code (tar.gz)` archives are source snapshots and MUST NOT be accepted as runtime packages.
+GitHub-generated `Source code (zip)` / `Source code (tar.gz)` archives are source snapshots and are **not runtime installation artifacts**; they MUST NOT be accepted as runtime packages.
 
 ## Portable runtime authorities
 
