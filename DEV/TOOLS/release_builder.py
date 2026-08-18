@@ -36,7 +36,8 @@ SHARED_FIELDS = (
     'schema_version',
     'recommended_tag',
 )
-REQUIRED_PACKAGE_DIRS = ('CORE', 'INSTALL', 'RULES', 'SCHEMA', 'CAMPAIGN', 'TEMPLATE', 'MIGRATIONS', 'TOOLS')
+# Presence checks only. Package composition recursively includes every valid file under GAME/.
+REQUIRED_RUNTIME_ROOT_DIRS = ('CORE', 'INSTALL', 'RULES', 'SCHEMA', 'CAMPAIGN', 'TEMPLATE', 'MIGRATIONS', 'TOOLS')
 LEGAL_TOP_LEVEL = ('LICENSE', 'NOTICE', 'THIRD_PARTY_NOTICES.md')
 FORBIDDEN_JUNK_NAMES = {'.DS_Store'}
 FORBIDDEN_JUNK_SUFFIXES = ('.pyc', '.pyo')
@@ -131,7 +132,7 @@ def validate_extracted_package_root(root: Path) -> Path:
     root = root.resolve()
     if not (root / 'ENGINE_VERSION.yaml').is_file():
         raise BuildError('not a flattened HDM runtime package root')
-    if not all((root / p).is_dir() for p in REQUIRED_PACKAGE_DIRS):
+    if not all((root / p).is_dir() for p in REQUIRED_RUNTIME_ROOT_DIRS):
         raise BuildError('not a flattened HDM runtime package root')
     if (root / 'GAME').exists() or (root / 'DEV').exists():
         raise BuildError('source repository layout is not an installable runtime package')
@@ -229,7 +230,7 @@ def validate_package_markdown(source_path: Path, game_root: Path) -> None:
 def validate_source_tree(repo_root: Path) -> None:
     repo_root = repo_root.resolve()
     game_root = repo_root / 'GAME'
-    for d in REQUIRED_PACKAGE_DIRS:
+    for d in REQUIRED_RUNTIME_ROOT_DIRS:
         if not (game_root / d).is_dir():
             raise BuildError(f'missing required GAME directory: {d}')
     if (game_root / 'TEMPLATE/CAMPAIGN_MANIFEST.yaml').exists():
