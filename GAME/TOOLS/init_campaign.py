@@ -29,21 +29,15 @@ def yaml_nullable_string(value: str | None) -> str:
     return "null" if value is None else yaml_string(value)
 
 
-def semantic_engine_version(engine_tag: str) -> str:
-    if engine_tag.startswith("dev-v"):
-        return engine_tag[5:]
-    if engine_tag.startswith("v"):
-        return engine_tag[1:]
-    return engine_tag
-
-
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", required=True)
     parser.add_argument("--campaign-id", required=True)
     parser.add_argument("--branch", required=True)
-    parser.add_argument("--engine-tag", required=True)
-    parser.add_argument("--engine-sha", required=False)
+    parser.add_argument("--engine-version", required=True)
+    parser.add_argument("--package-id", required=True)
+    parser.add_argument("--source-commit-sha", required=False)
+    parser.add_argument("--package-sha256", required=True)
     parser.add_argument("--created-at", required=True)
     parser.add_argument("--creator-github-login", required=True)
     parser.add_argument("--mode", choices=("singleplayer", "multiplayer"), default="singleplayer")
@@ -62,22 +56,28 @@ def main() -> int:
         raise RuntimeError(f"CAMPAIGN template not found: {source_campaign}")
     if output.exists():
         raise RuntimeError(f"Output already exists: {output}")
+    if len(args.package_sha256) != 64 or any(ch not in "0123456789abcdefABCDEF" for ch in args.package_sha256):
+        raise RuntimeError("--package-sha256 must be a 64-character hexadecimal SHA-256")
 
     # copytree copies CONTENTS into output. `output` itself is the future branch root.
     shutil.copytree(source_campaign, output)
 
     manifest_path = output / "MANIFEST.yaml"
     manifest = manifest_path.read_text(encoding="utf-8")
-    engine_sha = yaml_nullable_string(args.engine_sha)
+    source_sha = yaml_nullable_string(args.source_commit_sha)
     replacements = [
         ("campaign_id: null", f"campaign_id: {yaml_string(args.campaign_id)}"),
         ("branch: null", f"branch: {yaml_string(args.branch)}"),
         ("status: uninitialized", "status: initializing"),
         ("mode: singleplayer", f"mode: {args.mode}"),
-        ("  base_tag: null", f"  base_tag: {yaml_string(args.engine_tag)}"),
-        ("  base_sha: null", f"  base_sha: {engine_sha}"),
-        ("  integrated_tag: null", f"  integrated_tag: {yaml_string(args.engine_tag)}"),
-        ("  integrated_main_sha: null", f"  integrated_main_sha: {engine_sha}"),
+        ("    version: null", f"    version: {yaml_string(args.engine_version)}"),
+        ("    package_id: null", f"    package_id: {yaml_string(args.package_id)}"),
+        ("    source_commit_sha: null", f"    source_commit_sha: {source_sha}"),
+        ("    version: null", f"    version: {yaml_string(args.engine_version)}"),
+        ("    package_id: null", f"    package_id: {yaml_string(args.package_id)}"),
+        ("    source_commit_sha: null", f"    source_commit_sha: {source_sha}"),
+        ("    package_sha256: null", f"    package_sha256: {yaml_string(args.package_sha256.lower())}"),
+        ("    adopted_at: null", f"    adopted_at: {yaml_string(args.created_at)}"),
         ("created_at: null", f"created_at: {yaml_string(args.created_at)}"),
     ]
     for old, new in replacements:
@@ -91,7 +91,7 @@ def main() -> int:
     card = replace_once(
         card,
         "engine_version: null",
-        f"engine_version: {yaml_string(semantic_engine_version(args.engine_tag))}",
+        f"engine_version: {yaml_string(args.engine_version)}",
         card_path,
     )
     card = replace_once(
