@@ -325,6 +325,11 @@ def validate_destination_markdown(
     destination_rel: str,
 ) -> None:
     src = source_path.read_text(encoding='utf-8')
+    for source_prefix in ('GAME/', 'DEV/', 'TEMPLATE/'):
+        if source_prefix in src:
+            raise BuildError(
+                f'{source_path}: destination text leaks source prefix: {source_prefix}'
+            )
     base = Path(destination_rel).parent
     for raw in MARKDOWN_LINK_RE.findall(src):
         target = raw.strip().split('#', 1)[0]
