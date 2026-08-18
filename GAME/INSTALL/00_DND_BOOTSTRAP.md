@@ -1,34 +1,72 @@
 # D&D Master Bootstrap
 
-launcher_version: 16
+launcher_version: 17
 storage_marker: DND_STORAGE.yaml
 
-This bootstrap runs from an extracted local engine ZIP. Engine installation is NOT a GitHub operation.
+This bootstrap runs from a validated local runtime package. Engine installation is NOT a GitHub operation.
 
-## 0. Local engine package
+## 0. Local runtime packages
 
-Read local `ENGINE_VERSION.yaml` from the extracted package used as bootstrap host.
+A ChatGPT Project may contain several supported runtime ZIPs at once, for example different semantic engine versions required by different campaigns.
 
-Treat package-root `ENGINE_VERSION.yaml` as the sole machine-authoritative source for engine version, release status, canonical engine repository, development-owner identity, rules/schema baseline, update compatibility and recommended tag. Do not substitute repository-level DEV metadata or hard-coded copies from bootstrap prose.
+At chat startup, index available `hedgelion-dnd-master-runtime-v<version>.zip` assets cheaply. Do NOT eagerly extract every archive. For candidate classification, read only archive filename/root metadata as needed:
+- `ENGINE_VERSION.yaml` — semantic engine/runtime contract;
+- `RUNTIME_PACKAGE.yaml` — provenance of the exact built artifact;
+- SHA-256 of the complete ZIP when exact artifact/cache identity is needed.
 
-Use local CORE/RULES/SCHEMA/CAMPAIGN templates/TOOLS from an exact extracted package. Never clone, pull, reconstruct, or copy engine files from GitHub during normal startup. Never use base64 as a fallback.
+GitHub-generated `Source code (zip)` / `Source code (tar.gz)` archives are source snapshots, not runtime packages.
 
-Do NOT preload campaign/world data.
+The package used first to open this launcher is only a **bootstrap host** until explicit campaign/new-game selection resolves the required runtime. It does not pin an existing campaign to its own version.
+
+Do not assume an extracted package from another chat or an earlier environment still exists. Extracted runtime directories are disposable cache. If an exact selected package is not currently extracted, silently re-extract it from the available ZIP; missing cache alone is never a player-facing failure.
+
+Never clone, pull, reconstruct, or copy engine files from GitHub during normal startup. Never use base64 as an unpack/install fallback.
+
+### Package validation and artifact identity
+
+Before a package is used, require directly at its package root:
+- `ENGINE_VERSION.yaml`;
+- `RUNTIME_PACKAGE.yaml`;
+- `CORE/`;
+- `INSTALL/`;
+- `RULES/`;
+- `SCHEMA/`;
+- `CAMPAIGN/`;
+- `TOOLS/`.
+
+Reject source-repository wrappers such as `GAME/` or `DEV/`, nested package markers, mixed package trees, or malformed provenance metadata.
+
+Treat package-root `ENGINE_VERSION.yaml` as the sole machine-authoritative source for semantic engine metadata: version, release status, canonical engine repository, development-owner identity, rules/schema baseline, update compatibility and recommended tag.
+
+Treat package-root `RUNTIME_PACKAGE.yaml` as artifact provenance for the bytes that were built: package identity, source state/ref and exact source commit when available. Do not infer an old ZIP's source commit merely from where a mutable tag points today.
+
+### Isolated runtime cache and `current_runtime_root`
+
+After the required package is resolved, compute/verify its ZIP SHA-256 and bind one ephemeral current-chat path:
+
+```text
+current_runtime_root = <session-cache>/hdm-runtime/<version>/<package_sha256>/
+```
+
+The path is cache only. NEVER write `current_runtime_root` into storage/campaign Git, ChatGPT Memory, or campaign canon.
+
+If that exact cache directory exists, validate it before reuse. Otherwise silently extract the exact ZIP into that isolated directory and validate it there.
+
+After binding, ALL package-relative runtime access MUST resolve under that one `current_runtime_root`: `ENGINE_VERSION.yaml`, `RUNTIME_PACKAGE.yaml`, `CORE/`, `RULES/`, `SCHEMA/`, `CAMPAIGN/`, `TEMPLATE/`, `MIGRATIONS/`, `INSTALL/`, and runtime `TOOLS/`.
+
+MUST NOT globally search the working filesystem for a convenient `ENGINE_VERSION.yaml`, `CORE/`, `RULES/`, template, or `TOOLS/init_campaign.py` after runtime selection. Sibling cached runtime versions are inert. Never merge or borrow files across runtime roots.
+
+Do NOT preload campaign/world data during package/bootstrap discovery.
 
 ### Engine identity
 
-For a normal published package:
-- use `ENGINE_VERSION.recommended_tag` as release tag;
-- resolve that tag in `ENGINE_VERSION.repository` through GitHub Connector to its exact public commit SHA when campaign creation/migration requires provenance;
-- never substitute public `main`.
+For a normal published package, use its validated `RUNTIME_PACKAGE.package_id`, source provenance and final ZIP SHA-256. Resolve GitHub release/tag metadata only when an update/provenance operation actually needs server-side comparison; never substitute public `main` as gameplay runtime bytes.
 
 For `ENGINE_VERSION.release_status: development`:
 - use only for explicit framework testing by authenticated login equal to `ENGINE_VERSION.engine_owner_login`;
-- identity is `dev-v<ENGINE_VERSION.engine_version>`;
-- engine SHA may be null;
-- do NOT query/pin current public `main` merely to manufacture a SHA.
-
-If multiple local ZIPs are available, the package first used to run this launcher is only a bootstrap host until campaign/new-game selection resolves the exact required package.
+- package identity is `dev-v<ENGINE_VERSION.engine_version>`;
+- dirty/non-Git package provenance may have null source commit SHA;
+- do NOT query/pin public `main` merely to manufacture provenance.
 
 ## 1. GitHub Connector
 
@@ -73,24 +111,33 @@ The intended new-storage input is an empty repository.
 
 Before mutation:
 - verify root `DND_STORAGE.yaml` is absent;
-- verify the repository is empty, OR contains only the exact standard storage README from `TEMPLATE/STORAGE_README.md` as a recognizable partial initialization from an earlier interrupted attempt;
+- verify the repository is empty, OR contains only the exact standard storage README from selected `current_runtime_root/TEMPLATE/STORAGE_README.md` as a recognizable partial initialization from an earlier interrupted attempt;
 - if marker is absent but unrelated/user content already exists, do NOT silently repurpose the repository as D&D storage; ask the user to provide a new empty repository or explicitly handle it as maintenance.
 
+Before marker creation, resolve an owner-approved baseline runtime package from the available validated packages and bind its `current_runtime_root`. Storage baseline is portable package identity, never a filesystem path.
+
 For a completely empty repository, current Connector Git-data commit creation cannot make a parentless multi-file root commit. Therefore initialize safely in this order:
-1. create root `README.md` from exact local `TEMPLATE/STORAGE_README.md` as the repository's first commit;
+1. create root `README.md` from exact selected `current_runtime_root/TEMPLATE/STORAGE_README.md` as the repository's first commit;
 2. create root `DND_STORAGE.yaml` as the second commit;
 3. marker publication is LAST and defines successful storage initialization.
 
 If step 1 succeeded but step 2 failed/interrupted, a retry may recognize the exact standard README and create only the missing marker. Do not create a second README.
 
-Marker v2:
+Marker v3:
 
 ```yaml
-storage_format_version: 2
+storage_format_version: 3
 repository_role: campaign_storage
 engine:
-  baseline_version: "<local ENGINE_VERSION.engine_version>"
+  baseline:
+    version: "<selected ENGINE_VERSION.engine_version>"
+    package_id: "<selected RUNTIME_PACKAGE.package_id>"
+    source_commit_sha: "<selected RUNTIME_PACKAGE.source_commit_sha|null>"
+    package_sha256: "<selected ZIP sha256>"
+    adopted_at: "<timestamp>"
 ```
+
+`engine.baseline` is the default runtime identity for NEW campaigns only. It does not select or mutate an existing campaign runtime. Only storage owner may persist storage-baseline changes.
 
 Do not create campaign folders on storage default branch. Do not copy engine files. Do not add `.gitignore`, license, hidden scaffolding or other placeholder files.
 
@@ -124,7 +171,7 @@ Never open CONFIG/STATE/SCENE/WORLD/PC/PLAYER/LOG merely to make the menu pretti
 
 A card is a display projection only. It does not grant access, prove creator identity, select exact engine provenance or override canonical records. Authoritative verification happens after campaign selection.
 
-Legacy campaigns without a card remain valid. After one is explicitly selected and its real PC/location/access data is naturally loaded, construct/backfill the card in the next normal coherent campaign transaction; do not create a pre-selection migration commit.
+Legacy campaigns without a card remain valid for menu discovery where otherwise supported. This implementation does not invent backward migration for legacy engine-identity fields.
 
 ### Menu statuses
 
@@ -184,25 +231,27 @@ This gate is both an agency rule and a latency rule.
 
 ### Layout after selection
 
-For the SELECTED existing campaign resolve:
-- current layout: root `MANIFEST.yaml`, `campaign_root_prefix` empty;
-- legacy layout: `CAMPAIGN/MANIFEST.yaml`, `campaign_root_prefix = "CAMPAIGN/"`.
+For the SELECTED existing campaign resolve authoritative root `MANIFEST.yaml` under the current schema. Do not treat local engine directory `CAMPAIGN/` as a remote campaign path.
 
-After manifest load prefer its `storage.*` roots. New writes to current layout MUST NOT create a `CAMPAIGN/` wrapper. Local engine directory `CAMPAIGN/` is template source, not a remote campaign path.
+After manifest load prefer its `storage.*` roots. New writes to current layout MUST NOT create a `CAMPAIGN/` wrapper.
 
-## 5. Resolve exact engine, then build CORE context cache
+## 5. Resolve exact runtime, then build CORE context cache
 
-Only AFTER explicit campaign/new-game choice, resolve the exact local engine package:
-- existing campaign: package identity must match campaign integrated engine identity from authoritative MANIFEST;
-- new campaign: package must match selected storage baseline/intended engine;
-- authorized development test: matching local development package is sufficient and SHA may be null.
+Only AFTER explicit campaign/new-game choice, resolve the required portable runtime identity:
+- existing campaign: read authoritative `MANIFEST.engine.current`;
+- new campaign in existing storage: read `DND_STORAGE.engine.baseline`;
+- authorized development test: use matching validated development package identity.
 
-If exact package is not locally available, request matching runtime Release Asset. Do not reconstruct it from GitHub/web and do not substitute a GitHub-generated source archive.
+Index candidate ZIP metadata without eagerly extracting all packages. Candidate provenance MUST come from that ZIP's `RUNTIME_PACKAGE.yaml`, not from current mutable tag position.
 
-Once exact package is resolved, build engine instruction cache ONCE:
-1. read every local `CORE/*.md` file completely into current model context;
-2. read local `RULES/INDEX.md` and `RULES/README.md`;
-3. treat this set as immutable `core_context_identity = <exact engine identity>` for current chat.
+Select the package according to `CORE/ENGINE_UPDATES.md` rules for exact artifact, same-version refresh, semantic-version update and downgrade protection. If the needed ZIP is available but its extracted directory is absent, silently re-extract it. If the needed ZIP bytes themselves are unavailable, use the mismatch-recovery flow rather than pretending cache failure.
+
+After selection:
+1. compute/verify final ZIP `package_sha256`;
+2. bind/validate exact `current_runtime_root = <session-cache>/hdm-runtime/<version>/<package_sha256>/`;
+3. load every file under exact `current_runtime_root/CORE/*.md` completely into current model context;
+4. read exact `current_runtime_root/RULES/INDEX.md` and `RULES/README.md`;
+5. treat this as immutable `core_context_identity = <current runtime identity>` for current chat.
 
 This is model context, NOT ChatGPT Memory.
 
@@ -210,21 +259,29 @@ Do not reread individual CORE modules later merely because their domain becomes 
 
 Activation is header-driven by preloaded `CORE/PLAY_POLICY.md`: every module with `load_policy: ALWAYS_DURING_GAMEPLAY` is active; every module with `load_when:` is situational. `CORE_INDEX.md` summarizes routing but does not override headers.
 
-Rebuild full CORE cache only after exact engine-package switch or verified context loss/compaction. Campaign data remains lazy.
+Rebuild full CORE cache only after exact runtime-package switch or verified context loss/compaction. Campaign data remains lazy.
 
 ## 6. New campaign
 
 Use neutral branch `campaign/YYYYMMDD`, then `-02`, `-03`, etc. Create from current storage default-branch HEAD.
 
-Generate scaffold locally with `TOOLS/init_campaign.py`. Pass authenticated creator GitHub login through `--creator-github-login`.
+Resolve and bind the exact baseline runtime first. Generate scaffold ONLY with `current_runtime_root/TOOLS/init_campaign.py` and `current_runtime_root/CAMPAIGN/` template source.
 
-The generator copies CONTENTS of local template directory `CAMPAIGN/` into output, and that output is ROOT TREE of campaign branch.
+The generator copies CONTENTS of `CAMPAIGN/` into output, and that output is ROOT TREE of campaign branch.
 
 Expected root includes `README.md`, `CAMPAIGN_CARD.yaml`, `MANIFEST.yaml`, `CONFIG.yaml`, `STATE/`, `WORLD/`, `INDEX/`, `LOG/`, `CHECKPOINTS/`, `RULES/`.
 
 Do not wrap output in another `CAMPAIGN/`.
 
-For published engine pass exact tag + SHA. For authorized development package pass `dev-v<ENGINE_VERSION.engine_version>` and omit SHA.
+Pass exact validated runtime identity to the generator:
+- `--engine-version <ENGINE_VERSION.engine_version>`;
+- `--package-id <RUNTIME_PACKAGE.package_id>`;
+- `--source-commit-sha <RUNTIME_PACKAGE.source_commit_sha>` only when non-null;
+- `--package-sha256 <exact ZIP sha256>`;
+- `--created-at <timestamp>`;
+- authenticated creator through `--creator-github-login`.
+
+The new `MANIFEST.engine.created_with` and `MANIFEST.engine.current` start equal; `created_with` is immutable creation provenance and `current` is the campaign's portable current runtime identity.
 
 `CAMPAIGN_CARD.yaml` starts as a compact projection:
 - singleplayer: protagonist placeholders, no participant-login list;
@@ -247,13 +304,13 @@ As setup produces authoritative protagonist/location/status/multiplayer data, ke
 
 ## 7. Existing campaign startup
 
-`CORE/BOOTSTRAP_RUNTIME.md` is already present in CORE context cache.
+`CORE/BOOTSTRAP_RUNTIME.md` is already present in exact selected CORE context cache.
 
-Only after user explicitly selected campaign: pin HEAD, read authoritative MANIFEST/config/hot state and only current relevant campaign records. Revalidate access regardless of card icon. Do not lazily reread CORE from disk.
+Only after user explicitly selected campaign and exact runtime is bound: pin campaign HEAD, read authoritative MANIFEST/config/hot state and only current relevant campaign records. Revalidate access regardless of card icon. Do not lazily reread CORE from another runtime root.
 
 If loaded authoritative data disagrees with card, trust authoritative data and mark card for refresh in next allowed coherent persistence transaction.
 
-If campaign expects another engine package, stop gameplay until exact package is supplied or authorized migration succeeds.
+If campaign requires runtime bytes not currently present in Project Sources/current-chat attachment, follow `ENGINE_UPDATES.md` mismatch recovery. Do not silently run the wrong semantic version.
 
 ## 8. Gameplay research policy
 
@@ -271,7 +328,7 @@ GitHub Connector storage/sync and owner-approved release metadata operations rem
 
 ## 9. Campaign data fast path
 
-Use preloaded engine instructions + loaded campaign working set.
+Use preloaded exact engine instructions + loaded campaign working set.
 
 Normal turns should not require CORE disk reads, web research or campaign-wide scans. Retrieve campaign records only for missing canon/exact stored mechanics, scene/context dependencies, explicit resync, persistence boundary, multiplayer race-sensitive state or live operations.
 
@@ -279,18 +336,18 @@ Most ordinary singleplayer turns should use zero GitHub calls. Card freshness ne
 
 ## 10. Updates
 
-Storage-owner update checks are maintenance opportunities, not per-turn polling. Follow preloaded `CORE/ENGINE_UPDATES.md`.
+Runtime update/refresh checks are maintenance opportunities, not per-turn polling. Follow preloaded `CORE/ENGINE_UPDATES.md` for campaign-creator versus storage-owner authority and package-selection rules.
 
-GitHub may discover a newer tag in `ENGINE_VERSION.repository`, but engine FILES are installed only by the user supplying the corresponding runtime Release Asset. After successful engine migration/package switch, invalidate old CORE cache and preload full new CORE set once before further adjudication.
+A GitHub tag/release may provide metadata, but engine FILES are installed only from runtime ZIPs supplied in Project Sources/current-chat attachments. After successful runtime switch, invalidate old CORE cache and preload the complete new exact CORE set once before further adjudication.
 
-When campaign engine version changes durably, refresh `CAMPAIGN_CARD.engine_version` in the SAME campaign migration transaction.
+When campaign semantic engine version changes durably, refresh `CAMPAIGN_CARD.engine_version` in the SAME campaign maintenance transaction.
 
 ## Authority and persistence
 
 Before every GitHub publication resolve repository + target ref.
-- storage default branch: authenticated repository owner only, metadata maintenance only;
+- storage default branch: authenticated repository owner only, storage metadata maintenance only;
 - campaign/live refs: selected campaign scope plus creator/PLAYER authorization.
 
-Repository Write/Admin permission alone never grants gameplay authority.
+Repository Write/Admin permission alone never grants gameplay or campaign-engine-update authority.
 
 Never force-push live campaign/storage refs. Never claim save/update success before GitHub publication succeeds.
