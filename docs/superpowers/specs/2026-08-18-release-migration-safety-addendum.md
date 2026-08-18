@@ -159,7 +159,39 @@ The publishing step should use get-or-create semantics for the Release object wi
 
 For the runtime asset itself, immutable-tag integrity rules from the risk-audit amendment apply: an existing identical asset is a successful idempotent rerun; an existing same-name asset with different bytes is a hard error and must not be overwritten.
 
-## 10. Additional regression coverage
+## 10. Runtime ZIP shape is part of package identity
+
+Merely finding an `ENGINE_VERSION.yaml` recursively is not sufficient to accept an installation archive.
+
+After the GAME/DEV source split, GitHub's automatic Source code ZIP will itself contain `GAME/ENGINE_VERSION.yaml`. If startup recursively selects that directory as engine root, the unsupported source archive can accidentally remain bootable while DEV material is physically present in the same uploaded Project Source. That defeats the structural isolation goal.
+
+Therefore Project Instructions/bootstrap package selection must validate the selected ZIP as a runtime-distribution archive before treating it as an engine package.
+
+For the custom runtime asset:
+
+- `ENGINE_VERSION.yaml` is a direct top-level ZIP member;
+- `CORE/`, `INSTALL/`, `RULES/` and other required package trees are top-level siblings;
+- there is no top-level `GAME/` or `DEV/` source-tree wrapper;
+- the archive name follows the runtime-asset naming contract;
+- the runtime marker/version manifest validates.
+
+Do not recursively descend through an arbitrary source archive until an `ENGINE_VERSION.yaml` happens to be found and then reinterpret that nested directory as a valid release package.
+
+GitHub Source code archives must fail this package-shape validation even if they contain a perfectly valid source-tree `GAME/` subtree.
+
+This validation happens against ZIP member layout before or as part of extraction. After a validated runtime asset is extracted, ordinary package-root paths remain unchanged.
+
+## 11. Release tags must come from the supported release lineage
+
+A matching `v*` tag name and ready-for-tag metadata alone should not allow an accidental feature-branch commit to become the canonical public engine release.
+
+The tag-triggered release workflow/builder must verify that the tagged commit belongs to the supported release lineage, normally the repository default branch (`main`). It may be the current main HEAD or an ancestor intentionally tagged as a release, but it must be reachable from the authoritative release branch according to the release policy.
+
+This is a release-provenance check, not package-composition logic, and belongs in the canonical release validation path.
+
+In GitHub Actions the checkout must provide enough local history/ref information for this validation, or the entry point must receive equivalent authoritative context. This scoped use of repository history inside GitHub Actions does not alter the Connector-only transport rule for ChatGPT/Codex development sessions.
+
+## 12. Additional regression coverage
 
 Add tests/checks for:
 
@@ -171,4 +203,7 @@ Add tests/checks for:
 - `ready-for-tag` + exact recommended tag is accepted as the normal published package path;
 - pre-tag candidate and tag-triggered build from the same tree/parameters are byte-identical;
 - asset filename comes from builder output rather than duplicated workflow string logic;
-- current active DEV/root relative links resolve after the move.
+- current active DEV/root relative links resolve after the move;
+- GitHub Source code ZIP shape is rejected even though it contains `GAME/ENGINE_VERSION.yaml`;
+- custom runtime ZIP requires direct top-level package marker and package trees;
+- release tag commit is reachable from the supported release branch before asset publication.
