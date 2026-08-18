@@ -1,7 +1,7 @@
 # Session Lifecycle
 
-framework_module_version: 0.3.0
-load_when: new chat/session, session end, pause/resume, checkpoint creation, maintenance continuation
+framework_module_version: 0.4.0
+load_when: new chat/session, session end, pause/resume, checkpoint creation, maintenance continuation, inactive-gap durability check
 
 Use `CAMPAIGN_OPERATIONS.md` for organization and `PERSISTENCE.md` for write transport/transaction semantics.
 
@@ -30,13 +30,25 @@ An interrupted chat does not itself advance world time. Resume from persistent s
 
 A new singleplayer chat or explicit resync refreshes HEAD and the smallest relevant working set. Multiplayer follows its synchronization policy before race-sensitive actions/publication.
 
+### After a long inactive gap
+
+The runtime does not run in the background while the user is absent. It does not promise a timed save at exactly the one-hour mark without an interaction.
+
+At the **next user interaction** after a long inactive gap, before applying a new gameplay action, inspect the working set that actually survived in the current chat/environment:
+- if dirty HOT/SOFT canonical state still exists, evaluate the one-hour dirty durability ceiling from `DURABILITY_GUARD.md` against the known durable frontier;
+- if the ceiling has fired, publish the coherent dirty batch before applying the new gameplay action, subject to ordinary authority/concurrency checks;
+- if no canonical state is dirty, do not create a heartbeat/no-op write;
+- if unpublished state was lost with the old environment/context, recovery starts from durable canon rather than guessing what vanished.
+
+This check is interaction-driven and does not run in the background.
+
 ## During session
 
 Use the gameplay fast path from `RUNTIME.md`.
 
 Once current scene state is loaded, ordinary actions should not refresh HEAD, reread unchanged records, reload CORE or publish merely because another player message arrived.
 
-Apply consequences to the hot working set and mark durable records dirty. SOFT changes may remain dirty across turns.
+Apply consequences to the hot working set and mark durable records dirty. SOFT changes may remain dirty across turns, but `DURABILITY_GUARD.md`'s one-hour ceiling is the safety maximum for retaining unpublished canonical HOT/SOFT state.
 
 Do not create session-local save rules. During play, `DURABILITY_GUARD.md` decides ordinary singleplayer boundaries; `SAVE_CONTRACT.md` handles explicit save; multiplayer/live modules handle shared synchronization. Scene/encounter/action completion alone is not automatically a boundary.
 
