@@ -1,4 +1,4 @@
-schema_version: 2
+schema_version: 3
 campaign_id: null
 campaign_name: null
 campaign_name_origin: null
@@ -6,10 +6,16 @@ branch: null
 status: uninitialized
 mode: singleplayer
 engine:
-  base_tag: null
-  base_sha: null
-  integrated_tag: null
-  integrated_main_sha: null
+  created_with:
+    version: null
+    package_id: null
+    source_commit_sha: null
+  current:
+    version: null
+    package_id: null
+    source_commit_sha: null
+    package_sha256: null
+    adopted_at: null
   update_policy: ask
 rules:
   baseline: "D&D 2024 / SRD 5.2.1"
