@@ -1,6 +1,6 @@
 # Campaign Card and Fast Campaign Menu
 
-framework_module_version: 0.1.4
+framework_module_version: 0.1.5
 load_when: campaign discovery/menu, campaign setup, campaign status/location/PC/membership/engine changes, persistence affecting card projection fields
 
 ## Purpose
@@ -71,14 +71,16 @@ With exactly one continuable campaign, a bare `продолжить` is unambigu
 
 ## Emoji/menu semantics
 
-Use one primary emoji per row.
+Use one primary emoji per row. These mappings are fixed; do not substitute visually similar or semantically related emoji.
 
 Priority:
 1. `completed` -> 🟥.
 2. singleplayer where cached creator login is known and differs from current authenticated GitHub login -> 🔒.
 3. multiplayer where current login is not in cached active participant logins -> 👀.
-4. `paused` or `initializing` -> 🟡.
-5. active authorized/participant candidate -> 🟢.
+4. `initializing` -> 🟡.
+5. `paused` -> ⏸️.
+6. active authorized/participant candidate -> 🟢.
+7. new-game option -> ➕.
 
 `archived` stays out of the normal new-chat menu unless the user asks to show archived campaigns; when shown it may use 🟥.
 
@@ -90,6 +92,16 @@ Recommended concise Russian menu:
 - `3. 🔒 Элиас — Эльф, следопыт — Северная дорога — одиночная, только просмотр`
 - `4. 👀 Рыночная площадь — активная, присоединение по приглашению`
 - `5. ➕ Начать новую игру`
+
+Do not add icon explanations to ordinary campaign rows. After the menu, the Master may offer only the compact italic prompt *Показать легенду?* If the user asks to show the legend, render exactly:
+
+- 🟢 активная игра (возможен несохраненный прогресс соседнем чате), можно продолжить тут;
+- 🟡 незавершённая настройка;
+- ⏸️ игра на паузе, никакого несохраненного прогресса в другом чате нет, можно продолжить тут;
+- 🟥 завершённая история, продолжение невозможно;
+- 🔒 чужая одиночная кампания, доступная только для просмотра;
+- 👀 multiplayer-кампания, к которой можно подключиться.
+- ➕ начать новую игру.
 
 For multiplayer `open_contributors`, an unbound row may say `можно присоединиться`; for `invite_only`, use `присоединение по приглашению`.
 
