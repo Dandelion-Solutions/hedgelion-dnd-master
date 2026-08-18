@@ -8,16 +8,18 @@ This document amends `2026-08-18-game-dev-release-boundary-design.md` for engine
 
 Split the current repository-root `ENGINE_VERSION.yaml` into two consumer-owned files after the GAME/DEV migration:
 
-- `DEV/ENGINE_VERSION.yaml` — complete development/release bookkeeping superset;
-- `GAME/ENGINE_VERSION.yaml` — minimal installed-package/runtime projection.
+- `DEV/ENGINE_DEVELOPMENT.yaml` — complete development/release bookkeeping superset;
+- `GAME/ENGINE_VERSION.yaml` — minimal installed-package/runtime projection and the repository's unique engine-package marker filename.
 
 As part of the same migration, raise the HDM engine version from `0.7` to `0.8`. The new GAME/DEV physical boundary and custom runtime-release format therefore debut as engine `0.8`, not as an in-place restructuring of `0.7`.
 
 The runtime must never read version or compatibility metadata from `DEV/`. Development/release validation must ensure that shared fields in the two files remain coherent.
 
+The two files deliberately use different filenames. `ENGINE_VERSION.yaml` remains unique across the repository so package-root discovery cannot become ambiguous in a development checkout containing both GAME and DEV trees.
+
 ## DEV version file
 
-`DEV/ENGINE_VERSION.yaml` retains the complete content model of the current `ENGINE_VERSION.yaml`. No current metadata is discarded merely because it is not needed by gameplay.
+`DEV/ENGINE_DEVELOPMENT.yaml` retains the complete content model of the current `ENGINE_VERSION.yaml`. No current metadata is discarded merely because it is not needed by gameplay.
 
 Its responsibilities include:
 
@@ -40,7 +42,7 @@ recommended_tag: v0.8
 
 `release_status` remains governed by the existing release lifecycle; this layout migration does not by itself falsely mark an unreleased development tree as published.
 
-Development tooling, release policy, maintenance audit and repository-facing documentation that need the complete bookkeeping record must read `DEV/ENGINE_VERSION.yaml`.
+Development tooling, release policy, maintenance audit and repository-facing documentation that need the complete bookkeeping record must read `DEV/ENGINE_DEVELOPMENT.yaml`.
 
 ## GAME runtime projection
 
@@ -93,11 +95,11 @@ Runtime uses include:
 
 Bootstrap/setup/update documents inside GAME must continue referring to package-root `ENGINE_VERSION.yaml`, never `GAME/ENGINE_VERSION.yaml`.
 
-Where bootstrap currently duplicates the canonical engine repository as a hardcoded `engine_repository` value, the migration should prefer `ENGINE_VERSION.repository` as the package-owned source of that identity and remove unnecessary duplicate authority when safe.
+Where runtime Markdown currently duplicates package identity values such as canonical repository or engine owner as independent authoritative metadata, the migration should remove that duplicate authority and read the values from package-root `ENGINE_VERSION.yaml`. Narrative prose may mention the public repository when useful, but it must not become a second machine-authoritative source.
 
 ## Development consumers
 
-Repository development/release material must refer explicitly to `DEV/ENGINE_VERSION.yaml` when it needs the full metadata/revision record.
+Repository development/release material must refer explicitly to `DEV/ENGINE_DEVELOPMENT.yaml` when it needs the full metadata/revision record.
 
 Examples include:
 
@@ -107,6 +109,8 @@ Examples include:
 - development documentation that describes the repository bookkeeping record.
 
 A development test that is specifically validating installed-package behavior may instead inspect `GAME/ENGINE_VERSION.yaml`; the consumer determines which file is correct.
+
+`DEV/ENGINE_DEVELOPMENT.yaml` must never be used as an engine-root marker. Package-root discovery uses the unique filename `ENGINE_VERSION.yaml` and therefore resolves GAME in a source checkout and archive root in a runtime ZIP.
 
 ## Shared-field coherence
 
@@ -123,9 +127,11 @@ The following fields exist in both files and must be equal:
 
 For this migration, both files must therefore report `engine_version: 0.8` and `recommended_tag: v0.8`.
 
-`DEV/ENGINE_VERSION.yaml` is the development/release superset. `GAME/ENGINE_VERSION.yaml` is the runtime projection used by the installed package.
+`DEV/ENGINE_DEVELOPMENT.yaml` is the development/release superset. `GAME/ENGINE_VERSION.yaml` is the runtime projection used by the installed package.
 
 The canonical release builder and maintenance audit must fail if any shared field differs. They must also fail if GAME unexpectedly contains a development-only revision field.
+
+The builder/audit must additionally validate obvious runtime-template duplication where a shared version contract is represented outside the version files. In particular, the campaign scaffold's `schema_version` and default `rules.baseline` must remain coherent with the GAME runtime manifest unless a future schema explicitly defines a different relationship.
 
 This avoids silent drift while preserving a clean runtime package.
 
@@ -141,18 +147,22 @@ Follow the existing versioning policy:
 
 Installation/bootstrap/update modules whose behavior or release-asset references change as part of this migration are treated as materially changed and versioned accordingly.
 
+Development revision counters must also reflect the actual migration. At minimum the implementation plan must evaluate and update counters whose contracts materially change, including installation layout, runtime scope and consistency-audit revisions; unrelated counters must not be bumped mechanically.
+
 ## Builder behavior
 
-`DEV/TOOLS/build_release.py` must:
+The canonical release builder must:
 
-1. read `DEV/ENGINE_VERSION.yaml` for full release/development bookkeeping;
+1. read `DEV/ENGINE_DEVELOPMENT.yaml` for full release/development bookkeeping;
 2. read `GAME/ENGINE_VERSION.yaml` for the exact runtime manifest that will ship;
 3. validate shared-field equality;
 4. validate tag/release coherence using the appropriate shared release fields;
 5. package only `GAME/ENGINE_VERSION.yaml` as archive-root `ENGINE_VERSION.yaml`;
-6. never include `DEV/ENGINE_VERSION.yaml` in the runtime ZIP.
+6. never include `DEV/ENGINE_DEVELOPMENT.yaml` in the runtime ZIP.
 
-The GitHub Action remains unaware of this field split beyond invoking the builder.
+Reliable YAML parsing is a development-tool concern. The implementation must not invent a fragile ad-hoc YAML parser merely to keep the builder dependency-free. A small pinned development dependency such as PyYAML is acceptable and remains entirely outside GAME/runtime dependencies.
+
+The GitHub Action remains unaware of this field split beyond invoking the canonical release entry point.
 
 ## Migration of references
 
@@ -161,10 +171,12 @@ The implementation must audit every current `ENGINE_VERSION.yaml` reference and 
 Rules:
 
 - runtime/package instructions inside GAME keep `ENGINE_VERSION.yaml`;
-- development/release instructions become `DEV/ENGINE_VERSION.yaml` when they require the full record;
+- development/release instructions become `DEV/ENGINE_DEVELOPMENT.yaml` when they require the full record;
 - source-tree development tests that inspect the runtime package use `GAME/ENGINE_VERSION.yaml`;
 - build/release tooling may read both files for coherence validation;
-- no gameplay instruction may refer to `DEV/ENGINE_VERSION.yaml`.
+- no gameplay instruction may refer to `DEV/ENGINE_DEVELOPMENT.yaml`.
+
+The old repository-root `ENGINE_VERSION.yaml` is removed. There must be exactly one file named `ENGINE_VERSION.yaml` in the tracked repository tree after migration: `GAME/ENGINE_VERSION.yaml`.
 
 ## Tests
 
@@ -174,8 +186,10 @@ Regression coverage must verify at least:
 - GAME version file contains exactly the approved runtime projection fields;
 - both files report engine `0.8` and recommended tag `v0.8`;
 - shared fields are identical;
+- the repository contains exactly one tracked file named `ENGINE_VERSION.yaml`, under GAME;
 - runtime ZIP includes only archive-root `ENGINE_VERSION.yaml` derived from GAME;
 - runtime bootstrap/setup/update paths continue to resolve package-root `ENGINE_VERSION.yaml`;
 - development revision checks read DEV rather than GAME;
 - GAME contains no development-only revision counters;
-- changing a shared field in only one file makes builder/audit fail.
+- changing a shared field in only one file makes builder/audit fail;
+- campaign scaffold schema/rules baseline metadata is coherent with the GAME runtime manifest.
