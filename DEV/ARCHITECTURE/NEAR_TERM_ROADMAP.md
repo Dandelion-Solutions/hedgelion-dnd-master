@@ -55,11 +55,23 @@ Accepted ownership sub-decisions now include:
 - Condition and Effect definitions may share the same validated mechanical
   payload model without mandatory `Condition -> EffectDefinition` indirection;
 - LifeState and Condition remain distinct authorities, for example a dying or
-  stable lifecycle may coexist with an Unconscious condition application.
+  stable lifecycle may coexist with an Unconscious condition application;
+- Concentration is not a duration mode. Maintained Effect lifecycle support is
+  a narrow Effect-to-Effect relation with zero or one immutable parent per
+  dependent Effect, producing a forest rather than an arbitrary dependency
+  graph;
+- only parent terminal state breaks structural support; suppression does not.
+  Parent termination computes and atomically expires the full descendant
+  closure, while child termination has no automatic effect on the parent;
+- maintenance-root identity is stable for one episode, reverse child indexes are
+  HOT/SQLite projections, and ruleset-specific Concentration exclusivity is not
+  generalized into a second uniqueness subsystem.
 
-The exact continuation point is **Duration / expiry / concentration ownership**:
-settle duration specification versus progress, turn/round/local-time and
-condition/event endings, concentration dependencies, and explicit advancement
-without any background clock. Remaining Effect/Recovery ownership, minimum
-LifeState transitions, selectors, schema/catalog alignment, focused cases, and
-the final Step 2 critical pass follow before Step 2 can close.
+The exact continuation point is **intrinsic Duration / expiry anchors**: settle
+reusable duration specification versus concrete progress/anchors,
+turn/round/local-time and rest/event endings, and explicit advancement without
+any background clock. Concentration support itself is closed; a maintained root
+may still have an intrinsic maximum lifetime governed by the Duration contract.
+Remaining Effect/Recovery ownership, minimum LifeState transitions, selectors,
+schema/catalog alignment, focused cases, and the final Step 2 critical pass
+follow before Step 2 can close.
