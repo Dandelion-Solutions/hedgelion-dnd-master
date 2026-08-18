@@ -1,13 +1,13 @@
 # Canonical Storage and Persistence
 
-framework_module_version: 0.6.1
+framework_module_version: 0.7.0
 load_when: session startup, state retrieval, persistence boundary, resync, canon conflict
 
 The engine package and campaign storage are separate.
 
-- Engine/runtime/schema/rules are read from the locally extracted D&D Master release archive.
+- Engine/runtime/schema/rules are read only from the exact selected local `current_runtime_root`.
 - Persistent campaign canon lives only in the selected GitHub campaign-storage repository.
-- Chat context is temporary working state.
+- Chat context and extracted runtime cache are temporary working state.
 - ChatGPT Memory is never campaign storage.
 
 `PERSISTENCE.md` is authoritative for GitHub write transaction/transport semantics. This module defines what is stored, how it is retrieved, and how canonical working state is organized.
@@ -16,28 +16,37 @@ The engine package and campaign storage are separate.
 
 A campaign-storage repository is discovered by exact root `DND_STORAGE.yaml` on its default branch.
 
-Storage v2 marker:
+New storage uses marker v3:
 
 ```yaml
-storage_format_version: 2
+storage_format_version: 3
 repository_role: campaign_storage
 engine:
-  baseline_version: "<version>"
+  baseline:
+    version: "<version>"
+    package_id: "<package id>"
+    source_commit_sha: "<sha|null>"
+    package_sha256: "<sha256>"
+    adopted_at: "<timestamp>"
 ```
 
-Marker existence is sufficient for discovery; do not infer storage from repository name.
+Marker existence is sufficient for cheap storage discovery before semantic validation; do not infer storage from repository name.
 
-Storage default branch does not contain or need CORE/RULES/SCHEMA/INSTALL. `baseline_version` is a default/maintenance pointer and does not itself install an engine or mutate existing campaigns.
+`engine.baseline` is the storage-owner-approved portable runtime identity for **NEW campaigns only**. It does not install engine bytes and never selects, overrides or mutates the runtime identity of an existing campaign.
 
-Legacy v1 copied engine files are inert storage data, never runtime source.
+Only the authenticated storage owner may persist changes to `DND_STORAGE.engine.baseline`.
+
+Storage default branch does not contain or need CORE/RULES/SCHEMA/INSTALL. Engine bytes always come from validated runtime ZIPs in Project Sources/current-chat attachments and their disposable local cache.
+
+`current_runtime_root` is an environment-specific extracted path and MUST NOT be persisted in storage metadata.
 
 ## Campaign data layout
 
-Current campaign branches store data directly at branch root. Root `MANIFEST.yaml` is the current-layout discriminator and its `storage.*` fields route STATE/INDEX/WORLD/LOG/CHECKPOINTS.
+New/current campaign branches store data directly at branch root. Root `MANIFEST.yaml` is the layout discriminator and its `storage.*` fields route STATE/INDEX/WORLD/LOG/CHECKPOINTS.
 
-Legacy campaigns may store the same logical tree under `CAMPAIGN/`.
+Every existing campaign chooses its runtime from `MANIFEST.engine.current`, never from storage baseline. Storage baseline is consulted only for New Game.
 
-Resolve layout once before gameplay and use resolved manifest roots for every read/write. New current-layout writes MUST NOT create a `CAMPAIGN/` wrapper. Local engine `CAMPAIGN/` is template source only.
+Resolve layout once before gameplay and use manifest roots for every read/write. New writes MUST NOT create a `CAMPAIGN/` wrapper. Local selected-runtime `CAMPAIGN/` is template source only.
 
 ## Campaign write authorization
 
@@ -45,14 +54,14 @@ Before game-state writes determine campaign creator from the first campaign-spec
 
 - singleplayer: creator-only gameplay writes;
 - multiplayer: active PLAYER binding according to multiplayer rules;
-- creator-only operations remain creator-only;
-- storage-default metadata maintenance is authenticated repository-owner-only.
+- campaign semantic engine-version adoption: campaign creator only;
+- storage baseline metadata maintenance: authenticated repository-owner only.
 
-Repository permission is necessary infrastructure but not sufficient gameplay authority.
+Repository permission is necessary infrastructure but not sufficient gameplay or engine-adoption authority. Storage ownership and campaign creator authority are independent.
 
 ## Canonical read order
 
-Project Instructions -> local release launcher/runtime bootstrap -> campaign MANIFEST -> preloaded current CORE -> latest checkpoint/hot STATE -> exact WORLD records -> bounded LOG -> current chat -> older chats as recovery evidence only.
+Project Instructions -> exact selected local runtime launcher/bootstrap -> campaign MANIFEST -> preloaded exact current CORE -> latest checkpoint/hot STATE -> exact WORLD records -> bounded LOG -> current chat -> older chats as recovery evidence only.
 
 During an active live epoch, `LIVE_SCENE.md` inserts its operational frontier for the live-owned scope.
 
@@ -68,11 +77,12 @@ Each active campaign working set maintains:
 - `known_head_sha`;
 - `known_tree_sha` when resolved;
 - the exact loaded canonical records at that known frontier;
-- dirty in-memory records not yet durably published.
+- dirty in-memory records not yet durably published;
+- the known durable-frontier time required by `DURABILITY_GUARD.md` for the one-hour dirty-state ceiling.
 
 Startup/resync pins HEAD. Tree SHA may be resolved lazily at first save.
 
-A successful own campaign publication updates known HEAD/tree directly from the created commit/tree. Do not immediately refetch records the runtime just wrote. A later sync is required only for an explicit/external/concurrency/missing-canon reason under `RUNTIME.md` and `PERSISTENCE.md`.
+A successful own campaign publication updates known HEAD/tree/frontier time directly from the created commit/tree. Do not immediately refetch records the runtime just wrote. A later sync is required only for an explicit/external/concurrency/missing-canon reason under `RUNTIME.md` and `PERSISTENCE.md`.
 
 ## Lightweight repository reads
 
@@ -102,11 +112,11 @@ Do not use a temporary live file as staging for ordinary campaign commits.
 
 ## Working set and durability
 
-`DURABILITY_GUARD.md` is authoritative for HARD/SOFT/EPHEMERAL classification and ordinary singleplayer save boundaries. This storage module does not invent additional timing rules.
+`DURABILITY_GUARD.md` is authoritative for HARD/SOFT/EPHEMERAL classification and ordinary singleplayer save boundaries, including the one-hour ceiling for retained dirty HOT/SOFT canon. This storage module does not invent additional timing rules.
 
 Keep relevant canonical records plus dirty paths/final contents in memory. Do not write GitHub files as soon as each thought/consequence is discovered. Ordinary singleplayer quest/NPC/item/resource/relationship/scene changes may remain SOFT until a guard-defined boundary.
 
-When a boundary fires, publish the complete causally valid dirty delta through `PERSISTENCE.md`; HARD never means per-file publication.
+When a boundary fires, publish the complete causally valid dirty delta through `PERSISTENCE.md`; HARD never means per-file publication. Clean state never creates a heartbeat commit merely because the durable frontier is old.
 
 ## Concurrency
 
@@ -122,9 +132,11 @@ LOG is compact semantic history, not a transaction journal/transcript.
 
 A normal gameplay persistence batch does NOT automatically create a checkpoint. Checkpoints are recovery frontiers for session boundaries, major transitions, complex mid-procedure stops, risky maintenance/migration, or another concrete recovery need.
 
+When a checkpoint is created, its `engine` block is a recovery projection of the then-current `MANIFEST.engine.current` portable runtime identity (`version`, `package_id`, `source_commit_sha`, `package_sha256`, `adopted_at`). It never stores `current_runtime_root`.
+
 Do not touch MANIFEST checkpoint pointers when no new checkpoint is needed.
 
-Checkpoint/entity paths are layout-relative; new campaigns use root-layout paths.
+Checkpoint/entity paths are campaign-root-relative; new campaigns use root-layout paths.
 
 ## Canon conflicts
 
