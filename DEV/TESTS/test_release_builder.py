@@ -64,6 +64,15 @@ class ReleaseBuilderContractTests(unittest.TestCase):
             for d in ('CORE', 'INSTALL', 'RULES', 'SCHEMA', 'CAMPAIGN', 'TEMPLATE', 'MIGRATIONS', 'TOOLS'):
                 (root / d).mkdir()
             (root / 'ENGINE_VERSION.yaml').write_text('engine_version: 0.8\n')
+            (root / 'RUNTIME_PACKAGE.yaml').write_text(
+                'schema_version: 1\n'
+                'engine_version: "0.8"\n'
+                'package_id: dev-v0.8\n'
+                'source_state: non_git\n'
+                'source_ref: null\n'
+                'source_commit_sha: null\n',
+                encoding='utf-8',
+            )
             self.assertEqual(m.validate_extracted_package_root(root), root)
 
 
@@ -128,6 +137,7 @@ class ReleaseBuilderZipTests(unittest.TestCase):
             with zipfile.ZipFile(b) as zf:
                 names = zf.namelist()
             self.assertIn('ENGINE_VERSION.yaml', names)
+            self.assertIn('RUNTIME_PACKAGE.yaml', names)
             self.assertIn('CORE/x.md', names)
             self.assertNotIn('GAME/ENGINE_VERSION.yaml', names)
             self.assertFalse(any(n.startswith('DEV/') for n in names))
