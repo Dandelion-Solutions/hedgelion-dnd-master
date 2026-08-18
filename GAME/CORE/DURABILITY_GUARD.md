@@ -1,6 +1,6 @@
 # Durability Boundary Guard
 
-framework_module_version: 0.3.0
+framework_module_version: 0.4.0
 load_policy: ALWAYS_DURING_GAMEPLAY
 precedence: authoritative for deciding WHEN campaign state must become durable; SAVE_CONTRACT adds explicit save semantics; PERSISTENCE owns HOW publication is transported
 
@@ -42,7 +42,8 @@ Normal forced publication boundaries are:
 5. campaign lifecycle transition (active/paused/completed/archived/reactivated as valid for the phase);
 6. explicit save/session boundary (`SAVE_CONTRACT.md` / intentional pause/end);
 7. rare catastrophic continuity boundary whose loss would make resume fundamentally wrong, such as permanent PC death/replacement;
-8. concrete safety flush when verified context loss/maintenance suspension would otherwise destroy the hot dirty set.
+8. concrete safety flush when verified context loss/maintenance suspension would otherwise destroy the hot dirty set;
+9. the one-hour dirty durability ceiling defined below.
 
 Domain-specific multiplayer/live/access modules may require earlier shared publication. Their explicit boundary overrides the sparse singleplayer cadence only for that scope.
 
@@ -63,6 +64,40 @@ Several SOFT domains being dirty at once does not automatically create a boundar
 
 A focal-location boundary is coarse: tavern -> market square may count; table -> stairs inside the same tavern normally does not. When a forced boundary fires, flush all causally valid accumulated SOFT state in the same coherent transaction.
 
+## One-hour dirty durability ceiling
+
+The one-hour rule protects canonical HOT/SOFT state from remaining solely in an ephemeral chat/environment for too long. It is **additive** to every stronger/immediate boundary above; it never delays a boundary that should already have fired.
+
+Track the time of the latest known durable campaign frontier as `durable_frontier_time` in the current working set. Reuse already-known commit/frontier metadata; merely evaluating this timer should not require a repository read.
+
+The forced-boundary condition is:
+
+```text
+dirty_hot_or_soft == true
+AND now - durable_frontier_time >= 1 hour
+=> forced durability boundary
+```
+
+`dirty_hot_or_soft` means at least one canonical campaign record has a material unpublished change in the current HOT/SOFT working set. EPHEMERAL conversational material that is not canon does not count.
+
+When the condition is true, publish the complete causally coherent dirty campaign batch at the next available authoritative interaction/persistence point before allowing additional ordinary gameplay to extend the stale dirty frontier. Use `PERSISTENCE.md` for transport; this guard owns only the WHEN decision.
+
+A shorter normal boundary may flush the dirty set earlier. A critical/HARD boundary remains immediate under its own rule. Successful publication resets the dirty set and advances `durable_frontier_time` to the new known durable frontier.
+
+### No heartbeat commits
+
+If there is **no dirty canonical state**, elapsed wall-clock time alone is not a persistence reason. The one-hour rule MUST NOT create an empty/no-op commit, timestamp-only mutation, checkpoint, or other heartbeat merely to make the latest Git commit appear recent.
+
+The invariant is protection of unpublished canon, not continuous repository activity.
+
+### Inactive chat
+
+This runtime does not execute in the background while the user is absent. It cannot promise a commit exactly one hour after the last interaction.
+
+After a long inactive gap, if the current chat/environment still retains dirty HOT/SOFT working state, evaluate the ceiling at the next user interaction before applying a new gameplay action. If the condition is already true, create the required coherent publication first, subject to normal authorization/concurrency checks.
+
+If the environment lost that unpublished dirty state entirely, there are no truthful bytes to reconstruct. Recover only the latest durable campaign frontier and never invent the missing unpublished canon.
+
 ## Explicit save is not activation
 
 A save flushes established durable state but never manufactures readiness. If PC is provisional/not READY_PC and the fiction is pre-live onboarding, save the resumable setup truth and keep lifecycle `initializing`.
@@ -79,7 +114,8 @@ Repair before further ordinary play if any is true:
 - lifecycle is `active` while PC is provisional/not READY_PC or PLAY_READY is absent;
 - lifecycle remains `initializing` after legitimate READY_PC/PLAY_READY live play began;
 - a live focal-location transition completed but durable card/current routing still describes the old focal location with no corresponding transaction;
-- explicit save/pause/end was acknowledged while promised dirty state was not published.
+- explicit save/pause/end was acknowledged while promised dirty state was not published;
+- retained dirty HOT/SOFT state has exceeded the one-hour ceiling and ordinary gameplay is continuing without the required durability boundary.
 
 A durable pre-live onboarding vignette with provisional PC and `initializing` is valid.
 
@@ -87,6 +123,6 @@ A durable pre-live onboarding vignette with provisional PC and `initializing` is
 
 Expected singleplayer rhythm:
 
-`scaffold -> optional PROVISIONAL_IDENTITY -> character/PLAY_READY -> many zero-I/O turns -> focal-location/lifecycle/session/save boundary -> one flush -> many zero-I/O turns`
+`scaffold -> optional PROVISIONAL_IDENTITY -> character/PLAY_READY -> many zero-I/O turns -> focal-location/lifecycle/session/save/hourly-dirty boundary -> one flush -> many zero-I/O turns`
 
-After successful own publication continue from known hot state without confirmation rereads.
+The one-hour ceiling is a safety maximum for dirty state, not the normal desired commit frequency. After successful own publication continue from known hot state without confirmation rereads.
