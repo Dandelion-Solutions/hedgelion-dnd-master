@@ -44,10 +44,10 @@ class ReleaseLocalOutputTests(unittest.TestCase):
         self.assertEqual(Path(captured['cmd'][output_index]), ROOT / 'builds')
         self.assertEqual(captured['cwd'], ROOT)
 
-    def test_builds_directory_is_ignored_and_old_output_name_is_not(self):
+    def test_current_and_legacy_local_release_directories_are_ignored(self):
         ignored = (ROOT / '.gitignore').read_text(encoding='utf-8').splitlines()
         self.assertIn('builds/', ignored)
-        self.assertNotIn('.hdm-release/', ignored)
+        self.assertIn('.hdm-release/', ignored)
 
 
 if __name__ == '__main__':
