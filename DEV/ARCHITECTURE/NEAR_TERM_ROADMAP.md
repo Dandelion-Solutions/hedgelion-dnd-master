@@ -65,13 +65,27 @@ Accepted ownership sub-decisions now include:
   closure, while child termination has no automatic effect on the parent;
 - maintenance-root identity is stable for one episode, reverse child indexes are
   HOT/SQLite projections, and ruleset-specific Concentration exclusivity is not
-  generalized into a second uniqueness subsystem.
+  generalized into a second uniqueness subsystem;
+- reusable Duration semantics belong to definitions while each active Effect
+  owns its concrete temporal binding. Bindings use one mechanically appropriate
+  basis: metric deadline, procedure boundary, or semantic boundary;
+- metric elapsed time uses a lazy local monotonic coordinate, never wall clock
+  or a universal campaign clock. The coordinate advances only through explicit
+  runtime/procedure advancement and may freeze while no mechanic requires
+  metric precision;
+- the Temporal Agenda is a disposable HOT/SQLite due-index, not a canonical
+  scheduler entity or second duration authority;
+- metric advancement is interruptible at the nearest due boundary, resolves
+  same-time consequences before advancing further, and leaves continuation
+  validity/order to Step 3;
+- remaining duration is normally derived from an anchor. Re-anchoring occurs
+  only when an Effect crosses an actually incompatible temporal basis/context;
+  no writable countdown is maintained in parallel with a deadline.
 
-The exact continuation point is **intrinsic Duration / expiry anchors**: settle
-reusable duration specification versus concrete progress/anchors,
-turn/round/local-time and rest/event endings, and explicit advancement without
-any background clock. Concentration support itself is closed; a maintained root
-may still have an intrinsic maximum lifetime governed by the Duration contract.
-Remaining Effect/Recovery ownership, minimum LifeState transitions, selectors,
-schema/catalog alignment, focused cases, and the final Step 2 critical pass
-follow before Step 2 can close.
+The exact continuation point is **remaining Effect / Recovery ownership**:
+settle generic Effect stacking/refresh/replacement policy, Effect-definition
+versus instance-owned facts, non-support expiry/removal consequences, and
+Resource reset/recharge/recovery epochs across turn, rest, and named-event
+boundaries. Minimum LifeState transitions, selectors, schema/catalog alignment,
+focused cases, and the final Step 2 critical pass follow before Step 2 can
+close.
