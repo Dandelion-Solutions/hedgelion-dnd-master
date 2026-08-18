@@ -18,7 +18,7 @@ D&D Master — система для долгих одно- и многопол�
 6. Подключи GitHub Connector.
 7. Напиши **«Давай сыграем»**.
 
-> GitHub автоматически прикладывает к Release `Source code (zip)` и `Source code (tar.gz)`. Они содержат полный development repository и **не являются установочными пакетами игры**.
+> GitHub автоматически прикладывает к Release `Source code (zip)` и `Source code (tar.gz)`. Это снимки полного development repository; они **не установочные архивы игры**.
 
 Готовый канонический текст Project Instructions: [`GAME/INSTALL/PROJECT_INSTRUCTIONS.txt`](GAME/INSTALL/PROJECT_INSTRUCTIONS.txt).
 

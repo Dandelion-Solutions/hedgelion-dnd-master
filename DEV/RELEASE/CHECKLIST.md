@@ -47,5 +47,5 @@
 - [ ] Tag-triggered `.github/workflows/release-runtime.yml` checks out the exact tag and calls only `DEV/TOOLS/run_release_build` for package composition/validation.
 - [ ] Workflow get-or-creates the GitHub Release for the tag.
 - [ ] Existing same-name runtime asset may be reused only when bytes/hash are identical; different bytes are a hard error and are never clobbered.
-- [ ] GitHub-generated `Source code (zip)` / `Source code (tar.gz)` remain source snapshots and are not documented as installation artifacts.
+- [ ] GitHub-generated `Source code (zip)` / `Source code (tar.gz)` remain source snapshots and **are not runtime installation artifacts**.
 - [ ] Test the exact uploaded runtime asset in a fresh Project before announcing the release.
