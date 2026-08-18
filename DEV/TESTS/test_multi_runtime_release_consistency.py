@@ -42,6 +42,27 @@ class MultiRuntimeReleaseConsistencyTests(unittest.TestCase):
         self.assertIn("current", manifest["engine"])
         self.assertIn("baseline", storage_schema["fields"]["engine"])
 
+    def test_active_runtime_contracts_do_not_reintroduce_retired_engine_fields(self):
+        retired = ("base_tag", "base_sha", "integrated_tag", "integrated_main_sha", "baseline_version")
+        roots = (
+            GAME / "CORE",
+            GAME / "INSTALL",
+            GAME / "CAMPAIGN",
+            GAME / "SCHEMA",
+            GAME / "TOOLS",
+        )
+        text_suffixes = {".md", ".txt", ".yaml", ".yml", ".py"}
+        leaks: list[str] = []
+        for root in roots:
+            for path in sorted(root.rglob("*")):
+                if not path.is_file() or path.suffix.lower() not in text_suffixes:
+                    continue
+                src = path.read_text(encoding="utf-8")
+                for token in retired:
+                    if token in src:
+                        leaks.append(f"{path.relative_to(ROOT).as_posix()}: {token}")
+        self.assertEqual(leaks, [], "retired engine identity fields leaked into active runtime contracts")
+
     def test_root_readme_is_not_part_of_automatic_multi_runtime_implementation(self):
         agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
         self.assertIn("Root README editorial contract", agents)
