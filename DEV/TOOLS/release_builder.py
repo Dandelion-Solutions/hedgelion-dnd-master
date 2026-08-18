@@ -38,6 +38,15 @@ SHARED_FIELDS = (
     'schema_version',
     'recommended_tag',
 )
+RUNTIME_PACKAGE_FIELDS = {
+    'schema_version',
+    'engine_version',
+    'package_id',
+    'source_state',
+    'source_ref',
+    'source_commit_sha',
+}
+RUNTIME_PACKAGE_STATES = {'tagged', 'clean_head', 'dirty_worktree', 'non_git'}
 # Presence checks only. Package composition recursively includes every valid file under GAME/.
 REQUIRED_RUNTIME_ROOT_DIRS = ('CORE', 'INSTALL', 'RULES', 'SCHEMA', 'CAMPAIGN', 'TEMPLATE', 'MIGRATIONS', 'TOOLS')
 LEGAL_TOP_LEVEL = ('LICENSE', 'NOTICE', 'THIRD_PARTY_NOTICES.md')
@@ -73,6 +82,41 @@ def validate_game_manifest_shape(data: dict) -> None:
     campaign_update = data.get('campaign_update')
     if not isinstance(campaign_update, dict) or set(campaign_update) != {'compatibility'}:
         raise BuildError('GAME campaign_update must contain only compatibility')
+
+
+def validate_runtime_package_metadata(data: dict) -> None:
+    if not isinstance(data, dict):
+        raise BuildError('RUNTIME_PACKAGE manifest must be a mapping')
+    if set(data) != RUNTIME_PACKAGE_FIELDS:
+        extra = sorted(set(data) - RUNTIME_PACKAGE_FIELDS)
+        missing = sorted(RUNTIME_PACKAGE_FIELDS - set(data))
+        raise BuildError(f'invalid RUNTIME_PACKAGE fields; extra={extra} missing={missing}')
+    if data.get('schema_version') != 1:
+        raise BuildError('RUNTIME_PACKAGE schema_version must be 1')
+    state = data.get('source_state')
+    if state not in RUNTIME_PACKAGE_STATES:
+        raise BuildError(f'invalid RUNTIME_PACKAGE source_state: {state!r}')
+    if not isinstance(data.get('engine_version'), str) or not data['engine_version']:
+        raise BuildError('RUNTIME_PACKAGE engine_version must be a non-empty string')
+    if not isinstance(data.get('package_id'), str) or not data['package_id']:
+        raise BuildError('RUNTIME_PACKAGE package_id must be a non-empty string')
+    source_ref = data.get('source_ref')
+    source_sha = data.get('source_commit_sha')
+    if state == 'tagged':
+        if not isinstance(source_ref, str) or not source_ref:
+            raise BuildError('tagged RUNTIME_PACKAGE requires source_ref')
+        if not isinstance(source_sha, str) or not source_sha:
+            raise BuildError('tagged RUNTIME_PACKAGE requires source_commit_sha')
+    elif state == 'clean_head':
+        if source_ref != 'HEAD':
+            raise BuildError('clean_head RUNTIME_PACKAGE source_ref must be HEAD')
+        if not isinstance(source_sha, str) or not source_sha:
+            raise BuildError('clean_head RUNTIME_PACKAGE requires source_commit_sha')
+    else:
+        if source_sha is not None:
+            raise BuildError(f'{state} RUNTIME_PACKAGE must not claim source_commit_sha')
+        if source_ref is not None:
+            raise BuildError(f'{state} RUNTIME_PACKAGE source_ref must be null')
 
 
 def runtime_asset_name(tag: str) -> str:
@@ -112,6 +156,107 @@ def load_and_validate_manifests(
     if tag_mode and game.get('release_status') != 'ready-for-tag':
         raise BuildError('tag build requires release_status ready-for-tag')
     return dev, game
+
+
+def _run_git(repo_root: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ['git', *args],
+        cwd=repo_root,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+
+def _git_rev_parse(repo_root: Path, revision: str) -> str:
+    cp = _run_git(repo_root, 'rev-parse', revision)
+    if cp.returncode != 0:
+        detail = cp.stderr.strip() or cp.stdout.strip() or f'exit {cp.returncode}'
+        raise BuildError(f'cannot resolve Git revision {revision}: {detail}')
+    value = cp.stdout.strip()
+    if not value:
+        raise BuildError(f'empty Git revision for {revision}')
+    return value
+
+
+def build_runtime_package_metadata(repo_root: Path, intended_tag: str, tag_mode: bool = False) -> dict:
+    repo_root = repo_root.resolve()
+    _dev, game = load_and_validate_manifests(
+        repo_root,
+        intended_tag=intended_tag,
+        tag_mode=tag_mode,
+    )
+    version = str(game['engine_version'])
+    release_status = game.get('release_status')
+    development_package_id = f'dev-v{version}'
+
+    if not (repo_root / '.git').exists():
+        data = {
+            'schema_version': 1,
+            'engine_version': version,
+            'package_id': development_package_id if release_status == 'development' else intended_tag,
+            'source_state': 'non_git',
+            'source_ref': None,
+            'source_commit_sha': None,
+        }
+        validate_runtime_package_metadata(data)
+        return data
+
+    if tag_mode:
+        tag_ref = f'refs/tags/{intended_tag}'
+        tag_commit = _git_rev_parse(repo_root, f'{tag_ref}^{{commit}}')
+        head_commit = _git_rev_parse(repo_root, 'HEAD')
+        if tag_commit != head_commit:
+            raise BuildError(
+                f'tag-mode package must be built from exact tagged commit: '
+                f'{intended_tag}={tag_commit} HEAD={head_commit}'
+            )
+        data = {
+            'schema_version': 1,
+            'engine_version': version,
+            'package_id': intended_tag,
+            'source_state': 'tagged',
+            'source_ref': intended_tag,
+            'source_commit_sha': tag_commit,
+        }
+        validate_runtime_package_metadata(data)
+        return data
+
+    status = _run_git(repo_root, 'status', '--porcelain', '--untracked-files=normal')
+    if status.returncode != 0:
+        detail = status.stderr.strip() or status.stdout.strip() or f'exit {status.returncode}'
+        raise BuildError(f'cannot inspect Git worktree state: {detail}')
+    package_id = development_package_id if release_status == 'development' else intended_tag
+    if status.stdout.strip():
+        data = {
+            'schema_version': 1,
+            'engine_version': version,
+            'package_id': package_id,
+            'source_state': 'dirty_worktree',
+            'source_ref': None,
+            'source_commit_sha': None,
+        }
+    else:
+        data = {
+            'schema_version': 1,
+            'engine_version': version,
+            'package_id': package_id,
+            'source_state': 'clean_head',
+            'source_ref': 'HEAD',
+            'source_commit_sha': _git_rev_parse(repo_root, 'HEAD'),
+        }
+    validate_runtime_package_metadata(data)
+    return data
+
+
+def _runtime_package_yaml_bytes(data: dict) -> bytes:
+    validate_runtime_package_metadata(data)
+    return yaml.safe_dump(
+        data,
+        sort_keys=False,
+        allow_unicode=True,
+        default_flow_style=False,
+    ).encode('utf-8')
 
 
 def validate_tag_lineage(repo_root: Path) -> None:
@@ -205,6 +350,12 @@ def validate_extracted_package_root(root: Path) -> Path:
     root = root.resolve()
     if not (root / 'ENGINE_VERSION.yaml').is_file():
         raise BuildError('not a flattened HDM runtime package root')
+    if not (root / 'RUNTIME_PACKAGE.yaml').is_file():
+        raise BuildError('runtime package provenance marker is missing')
+    try:
+        validate_runtime_package_metadata(_load_yaml(root / 'RUNTIME_PACKAGE.yaml'))
+    except BuildError as exc:
+        raise BuildError(f'invalid runtime package provenance: {exc}') from exc
     if not all((root / p).is_dir() for p in REQUIRED_RUNTIME_ROOT_DIRS):
         raise BuildError('not a flattened HDM runtime package root')
     if (root / 'GAME').exists() or (root / 'DEV').exists():
@@ -308,6 +459,8 @@ def validate_source_tree(repo_root: Path) -> None:
             raise BuildError(f'missing required GAME directory: {d}')
     if (game_root / 'TEMPLATE/CAMPAIGN_MANIFEST.yaml').exists():
         raise BuildError('deprecated TEMPLATE/CAMPAIGN_MANIFEST.yaml must be absent')
+    if (game_root / 'RUNTIME_PACKAGE.yaml').exists():
+        raise BuildError('RUNTIME_PACKAGE.yaml is builder-generated and must not be tracked under GAME')
     validate_legal_copies(repo_root)
     validate_project_instructions_parity(game_root / 'INSTALL')
 
@@ -337,12 +490,40 @@ def validate_source_tree(repo_root: Path) -> None:
         validate_package_markdown(path, game_root)
 
 
-def build_runtime_zip(repo_root: Path, output_dir: Path, intended_tag: str) -> Path:
+def _write_zip_member(
+    zf: zipfile.ZipFile,
+    *,
+    name: str,
+    data: bytes,
+    zip_time: tuple[int, int, int, int, int, int],
+    zip_extra: bytes,
+    mode: int,
+) -> None:
+    info = zipfile.ZipInfo(name, date_time=zip_time)
+    info.create_system = 3
+    info.extra = zip_extra
+    info.external_attr = (stat.S_IFREG | mode) << 16
+    info.compress_type = zipfile.ZIP_DEFLATED
+    zf.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+
+
+def build_runtime_zip(
+    repo_root: Path,
+    output_dir: Path,
+    intended_tag: str,
+    tag_mode: bool = False,
+) -> Path:
     repo_root = repo_root.resolve()
     game_root = repo_root / 'GAME'
     output_dir = validate_output_dir(repo_root, output_dir)
-    load_and_validate_manifests(repo_root, intended_tag=intended_tag, tag_mode=False)
+    load_and_validate_manifests(
+        repo_root,
+        intended_tag=intended_tag,
+        tag_mode=tag_mode,
+    )
     validate_source_tree(repo_root)
+    package_metadata = build_runtime_package_metadata(repo_root, intended_tag, tag_mode=tag_mode)
+    package_metadata_bytes = _runtime_package_yaml_bytes(package_metadata)
     output_dir.mkdir(parents=True, exist_ok=True)
     target = output_dir / runtime_asset_name(intended_tag)
     tmp = target.with_suffix(target.suffix + '.tmp')
@@ -351,14 +532,22 @@ def build_runtime_zip(repo_root: Path, output_dir: Path, intended_tag: str) -> P
     zip_time, zip_extra = _zip_timestamp_fields(archive_datetime)
     with zipfile.ZipFile(tmp, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
         for path, rel in files:
-            data = path.read_bytes()
-            info = zipfile.ZipInfo(rel, date_time=zip_time)
-            info.create_system = 3
-            info.extra = zip_extra
-            mode = 0o755 if os.access(path, os.X_OK) else 0o644
-            info.external_attr = (stat.S_IFREG | mode) << 16
-            info.compress_type = zipfile.ZIP_DEFLATED
-            zf.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+            _write_zip_member(
+                zf,
+                name=rel,
+                data=path.read_bytes(),
+                zip_time=zip_time,
+                zip_extra=zip_extra,
+                mode=0o755 if os.access(path, os.X_OK) else 0o644,
+            )
+        _write_zip_member(
+            zf,
+            name='RUNTIME_PACKAGE.yaml',
+            data=package_metadata_bytes,
+            zip_time=zip_time,
+            zip_extra=zip_extra,
+            mode=0o644,
+        )
     tmp.replace(target)
     return target
 
@@ -442,7 +631,12 @@ def main(argv: list[str] | None = None) -> int:
         raise BuildError('DEV/ENGINE_DEVELOPMENT.yaml must define recommended_tag')
     if args.tag_mode:
         validate_tag_lineage(repo_root)
-    runtime_zip = build_runtime_zip(repo_root, Path(args.output), intended_tag)
+    runtime_zip = build_runtime_zip(
+        repo_root,
+        Path(args.output),
+        intended_tag,
+        tag_mode=args.tag_mode,
+    )
     sha256_file = write_sha256(runtime_zip)
     print(json.dumps({
         "asset_name": runtime_zip.name,
