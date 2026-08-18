@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 id: null
 campaign_id: null
 created_at: null
@@ -12,6 +12,9 @@ state:
   active_scene_ids: []
 recovery_notes: []
 engine:
-  tag: null
-  integrated_main_sha: null
+  version: null
+  package_id: null
+  source_commit_sha: null
+  package_sha256: null
+  adopted_at: null
 schema_data_version: 2
