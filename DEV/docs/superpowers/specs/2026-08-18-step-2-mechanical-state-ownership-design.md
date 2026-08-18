@@ -6,9 +6,9 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Roadmap owner: Step 2 of `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 
-Process: the HP/LifeState boundary is inherited from the owner-approved Step 1 adversarial audit; the Resource/procedure-budget, Condition/Effect, and maintained Effect support sub-decisions below were developed through the current Superpowers architecture brainstorming flow, critically challenged, and explicitly approved by the owner.
+Process: the HP/LifeState boundary is inherited from the owner-approved Step 1 adversarial audit; the Resource/procedure-budget, Condition/Effect, maintained Effect support, and Duration/Temporal Agenda sub-decisions below were developed through the current Superpowers architecture brainstorming flow, critically challenged, and explicitly approved by the owner.
 
-This is the live Step 2 design spec. It records accepted ownership decisions as they close so they do not depend on chat history. Step 2 itself is not complete: intrinsic Duration/expiry anchors, remaining Effect/Recovery ownership, schema alignment, focused validation, and the final Step 2 critical pass remain open.
+This is the live Step 2 design spec. It records accepted ownership decisions as they close so they do not depend on chat history. Step 2 itself is not complete: remaining Effect/Recovery ownership, minimum LifeState transitions, selectors, schema alignment, focused validation, and the final Step 2 critical pass remain open.
 
 No runtime implementation or new schema fields are authorized by this checkpoint. Existing schemas/catalog field inventories remain implementation-frozen where this document identifies an ownership decision whose exact shape is not yet closed.
 
@@ -250,7 +250,110 @@ A durable/canonical dependent Effect cannot point to a support parent that remai
 
 The support primitive does not introduce background processing. Cascade occurs only when an explicit runtime command/Activity boundary makes a support Effect terminal.
 
-## 6. Critical-pass results for accepted sub-decisions
+## 6. Duration ownership and lazy Temporal Agenda
+
+### ACCEPTED
+
+HDM separates reusable duration semantics from the concrete binding of one active Effect. A definition owns a reusable `DurationSpec`-equivalent rule; an Effect instance owns its concrete `TemporalBinding` for its intrinsic lifetime. Exact machine field names remain deferred until the ownership map closes.
+
+Campaign chronology remains primarily a sparse causal/partial order. Duration does not introduce a universal campaign clock. Temporal precision is activated only where a mechanic or currently executing procedure makes elapsed time material.
+
+### 6.1 Three temporal binding mechanisms
+
+A concrete intrinsic lifetime is materialized on the cheapest basis that preserves the rules:
+
+1. **metric deadline** — elapsed quantities such as one minute or one hour when a local metric coordinate is appropriate;
+2. **procedure boundary** — rules-relative edges such as the start or end of a particular participant's next turn;
+3. **semantic boundary** — qualifying events such as Long Rest completion, dawn, or another named rules event.
+
+These are alternative temporal bases, not three independent authorities for the same lifetime. A definition may say `1 minute`; runtime compiles that meaning into the basis that is mechanically correct in the current rules context. Encounter turn/round semantics must not be naively implemented as `+6 seconds` per participant turn.
+
+Rest completion is a semantic boundary even if the rest procedure also advances metric time. An interrupted rest therefore does not falsely satisfy `until Long Rest`. Likewise, dawn need not be fabricated as a number of seconds when only a semantic dawn boundary is known.
+
+### 6.2 Local metric context
+
+Where metric precision is required, the relevant local temporal context owns one monotonic exact coordinate. It advances only through explicit runtime/procedure advancement and never follows wall-clock time.
+
+The coordinate is demand-driven:
+
+```text
+metric obligations/procedure need elapsed precision
+    -> coordinate may advance
+
+no metric obligation and no current procedure needs elapsed precision
+    -> coordinate freezes
+```
+
+A dormant coordinate does not need an epoch reset. If precision becomes relevant again later, advancement may resume from the same arbitrary local coordinate because no mechanic required accounting for the intervening narrative compression.
+
+Metric storage should use exact integer quanta rather than floating-point time. The exact minimum unit is a schema decision to be made later; Step 2 fixes only the no-float/no-wall-clock ownership rule.
+
+### 6.3 Temporal Agenda is a disposable projection
+
+The Temporal Agenda is not a canonical entity and does not own Effect duration. It is a HOT/SQLite index rebuilt from authoritative temporal bindings and active procedure/semantic waiters.
+
+Conceptually it exposes indexed due work for:
+
+```text
+metric deadline -> owning record/effect IDs
+procedure edge  -> owning record/effect IDs
+semantic event  -> owning record/effect IDs
+```
+
+Its physical implementation may be an indexed SQL query, heap, or equivalent runtime structure without changing the architecture. No scheduler file is written to Git merely to mirror active bindings.
+
+If HOT state is lost, recovery restores the authoritative local metric coordinate when it is materially active, restores active bindings from snapshot state, and rebuilds the Agenda. Full campaign event replay is not required.
+
+### 6.4 Time advancement is interruptible
+
+A fictional transition that materially advances elapsed time reports one elapsed contribution to the runtime/procedure. Mechanical micro-operations such as arithmetic, a roll, or an inventory field mutation do not individually invent durations merely because a timed Effect exists.
+
+A requested metric advancement may not jump over the earliest due boundary. If `20 minutes` are requested and the next due boundary is in `10 minutes`, runtime advances only to that boundary, resolves the resulting state, and exposes the unconsumed remainder to Step 3 continuation logic.
+
+```text
+requested delta = 20m
+nearest boundary = 10m
+
+advance 10m
+resolve boundary and consequences
+return/retain 10m unconsumed continuation
+```
+
+The Duration subsystem does not automatically assume the original intent remains valid after the boundary. Step 3 owns whether the interrupted plan may resume, must be revalidated, or requires new player input.
+
+Before time can advance past a reached coordinate, all mechanically required same-time consequences at that coordinate must reach deterministic closure. Scheduler ordering is not allowed to change the final state. Trigger-chain bounds and causal receipt ordering belong to Step 3 rather than to a second scheduler callback engine.
+
+### 6.5 Re-anchoring between incompatible bases
+
+`remaining` is normally derived, not a mutable countdown authority.
+
+For a metric binding:
+
+```text
+remaining = deadline - context.now
+```
+
+If the same Effect must move to an incompatible temporal basis/context, runtime derives the remaining budget once at the transfer boundary and materializes an equivalent new binding. It does not keep both the old deadline and a writable `remaining` counter.
+
+```text
+old binding -> derive remaining once -> new binding
+```
+
+Ordinary combat/exploration transitions do not require re-anchoring unless their temporal bases are actually incompatible. A procedure-native turn/round binding may require re-anchoring when leaving that procedure if the Effect survives it.
+
+The temporal binding belongs to the Effect/lifecycle episode, not independently to each target's physical location. A multi-target Effect therefore does not acquire several clocks merely because targets later occupy different scenes. If a surviving temporal dependency begins to connect previously incomparable scene chronologies, the affected contexts must be minimally reconciled/transferred before their metric coordinates are compared; Step 5 owns the multiplayer/cross-scene reconciliation algorithm.
+
+### 6.6 Refresh, expiry, and lifecycle interaction
+
+Refreshing, extending, or shortening the same nonterminal lifecycle episode updates that Effect's authoritative binding and therefore the derived Agenda entry. The Effect identity remains stable.
+
+If an updated deadline is already at or before the current boundary, the Effect becomes due in the current same-time closure rather than creating an expiry event in the past. A terminal Effect is never refreshed back to life; a new application creates a new Effect instance.
+
+Intrinsic Duration and maintained support are orthogonal. A maintained Effect ends at the first valid terminal mechanism: its own intrinsic temporal boundary or loss of its structural support parent. `Concentration, up to 1 minute` therefore uses one maintenance/support episode plus one intrinsic TemporalBinding, not two duration authorities.
+
+No arbitrary future callback language is introduced. A reached temporal boundary reports a typed due fact; existing Effect/Trigger/Activity machinery owns the resulting mechanical transition.
+
+## 7. Critical-pass results for accepted sub-decisions
 
 The Resource model was challenged against:
 
@@ -291,23 +394,37 @@ The maintained-support model was challenged against:
 
 The accepted corrections are a single immutable Effect parent, forest topology, terminal-only support loss, downward-only atomic closure, stable maintenance identity, derived reverse indexes, promotion closure, and ruleset-owned Concentration exclusivity. No blocker was found that requires arbitrary dependency expressions or a separate maintenance subsystem.
 
-No blocker was found that requires a separate Resource entity, Condition world entity, separate action-economy/condition mutation subsystem, or generic dependency rule language.
+The Duration/Temporal Agenda model was challenged against:
 
-## 7. Exact continuation point
+- turning adaptive chronology into a universal world clock;
+- resetting scheduler epochs unnecessarily;
+- decrementing every timed Effect on every advance;
+- crossing a material expiry in the middle of a long declared action;
+- blindly resuming that action after the world changes;
+- same-time cascades and zero-time consequence chains;
+- treating each combatant turn as six additional elapsed seconds;
+- forcing all turn/rest/dawn boundaries into metric seconds;
+- multi-target Effects whose targets move into different scenes;
+- restart/hydration with a disposable agenda;
+- refresh/shorten producing past deadlines;
+- scheduler callbacks becoming a second execution engine.
 
-The next open ownership block is **intrinsic Duration / expiry anchors**.
+The accepted corrections are an anchor-first authoritative binding, a lazy local metric coordinate, three typed temporal bases, a disposable Agenda, interruptible next-boundary advancement, same-time closure, derived remaining/re-anchor only at incompatible-basis transfer, Effect-owned rather than target-owned temporal binding, semantic rest/dawn boundaries, and Step-3-owned continuation/trigger execution.
 
-It must settle, without introducing a background clock:
+No blocker was found that requires a separate Resource entity, Condition world entity, separate action-economy/condition mutation subsystem, generic dependency rule language, global clock, persistent scheduler entity, mass countdown updates, or arbitrary scheduled callbacks.
 
-- who owns reusable duration specification versus concrete current progress/anchors;
-- fixed turn/round/local-time durations such as `1 round` or `1 minute`;
-- relative boundaries such as `until the start/end of my/your next turn`;
-- rest/event endings such as `until Long Rest`, dawn, or another named event;
-- how event/condition-based endings relate to Trigger Bindings without becoming arbitrary duration predicates;
-- when duration progress must be stored versus derived from a stable anchor;
-- expiry advancement only through explicit runtime commands/Activities;
-- interaction with suspended Resolutions, procedure-local state, and maintained-support roots.
+## 8. Exact continuation point
 
-Concentration support itself is closed by Section 5. A Concentration root may still have an intrinsic maximum duration and rules that explicitly terminate that root; those are handled by the Duration/Trigger contracts rather than by a second concentration timer.
+The next open ownership block is **remaining Effect / Recovery ownership**.
 
-After intrinsic Duration/expiry closes, Step 2 still must close remaining Effect/Recovery ownership, exact minimum LifeState vocabulary/transitions, selectors, schema/catalog alignment, focused cases, and a final independent critical pass before the Step 2 gate can close.
+It must settle, without reopening the accepted support and Duration boundaries:
+
+- generic Effect application stacking/refresh/replacement versus independent applications;
+- which facts belong to Effect definition policy versus concrete Effect instance state;
+- expiry/removal consequences that are not structural support cascades;
+- Resource recovery/reset/recharge semantics and their authoritative owner;
+- recovery epochs and boundaries across procedure turn refresh, rests, and other named events;
+- interaction between Effect-driven capacity changes and Resource recovery without duplicate counters;
+- whether any remaining Step 2 recovery case requires state beyond Actor/Asset/procedure ResourceState plus typed temporal/semantic boundaries.
+
+After this block, Step 2 still must close exact minimum LifeState vocabulary/transitions, health/effect selectors, schema/catalog alignment, focused cases, and a final independent critical pass before the Step 2 gate can close.
