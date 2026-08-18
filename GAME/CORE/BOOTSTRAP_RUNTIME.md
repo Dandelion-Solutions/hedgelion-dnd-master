@@ -172,14 +172,30 @@ Never load PC/PLAYER/STATE/WORLD/SCENE/LOG merely to render menu.
 
 `CAMPAIGN_CARD.yaml` is a projection, not authority. Use `CAMPAIGN_CARD.md` for card schema/refresh semantics.
 
-### Menu icon hints
+### Menu presentation contract
+
+Use one primary emoji per row. These mappings are fixed; do not substitute visually similar or semantically related emoji.
 
 Primary emoji priority:
 1. completed -> 🟥;
 2. singleplayer and cached creator login differs from current authenticated login -> 🔒;
 3. multiplayer and current login absent from cached active participant logins -> 👀;
-4. paused/initializing -> 🟡;
-5. active normal candidate -> 🟢.
+4. initializing -> 🟡;
+5. paused -> ⏸️;
+6. active normal candidate -> 🟢;
+7. new-game option -> ➕.
+
+Do not add icon explanations to ordinary campaign rows. After every rendered campaign-choice menu, append exactly one separate italic prompt: *Показать легенду?*
+
+If the user asks to show the legend, render exactly:
+
+- 🟢 активная игра (возможен несохраненный прогресс соседнем чате), можно продолжить тут;
+- 🟡 незавершённая настройка;
+- ⏸️ игра на паузе, никакого несохраненного прогресса в другом чате нет, можно продолжить тут;
+- 🟥 завершённая история, продолжение невозможно;
+- 🔒 чужая одиночная кампания, доступная только для просмотра;
+- 👀 multiplayer-кампания, к которой можно подключиться.
+- ➕ начать новую игру.
 
 For unbound multiplayer:
 - `open_contributors`: label `можно присоединиться`, but verify collaborator/write eligibility after selection;
