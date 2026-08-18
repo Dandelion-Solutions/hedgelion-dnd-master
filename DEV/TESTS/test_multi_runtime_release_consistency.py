@@ -45,7 +45,7 @@ class MultiRuntimeReleaseConsistencyTests(unittest.TestCase):
     def test_root_readme_is_not_part_of_automatic_multi_runtime_implementation(self):
         agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
         self.assertIn("Root README editorial contract", agents)
-        self.assertIn("explicit owner instruction", agents)
+        self.assertIn("explicitly asks for, or explicitly approves", agents)
 
 
 if __name__ == "__main__":
