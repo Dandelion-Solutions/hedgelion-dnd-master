@@ -6,9 +6,9 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Roadmap owner: Step 2 of `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 
-Process: the HP/LifeState boundary is inherited from the owner-approved Step 1 adversarial audit; the Resource/procedure-budget and Condition/Effect sub-decisions below were developed through the current Superpowers architecture brainstorming flow, critically challenged, and explicitly approved by the owner.
+Process: the HP/LifeState boundary is inherited from the owner-approved Step 1 adversarial audit; the Resource/procedure-budget, Condition/Effect, and maintained Effect support sub-decisions below were developed through the current Superpowers architecture brainstorming flow, critically challenged, and explicitly approved by the owner.
 
-This is the live Step 2 design spec. It records accepted ownership decisions as they close so they do not depend on chat history. Step 2 itself is not complete: exact Duration/expiry/concentration, remaining Effect/Recovery ownership, schema alignment, focused validation, and the final Step 2 critical pass remain open.
+This is the live Step 2 design spec. It records accepted ownership decisions as they close so they do not depend on chat history. Step 2 itself is not complete: intrinsic Duration/expiry anchors, remaining Effect/Recovery ownership, schema alignment, focused validation, and the final Step 2 critical pass remain open.
 
 No runtime implementation or new schema fields are authorized by this checkpoint. Existing schemas/catalog field inventories remain implementation-frozen where this document identifies an ownership decision whose exact shape is not yet closed.
 
@@ -178,7 +178,79 @@ Condition application/removal uses the existing Effect mutation machinery rather
 
 Transient Condition applications may remain session-local/HOT until durable publication closure requires promotion. HOT/SQLite maintains derived indexes for fast `has_condition`, effective-value, and source lookups; those indexes are disposable projections, not canon.
 
-## 5. Critical-pass results for accepted sub-decisions
+## 5. Maintained Effect lifecycle support
+
+### ACCEPTED
+
+Concentration is not a duration mode. It is the first ruleset use of a narrow generic Effect-to-Effect lifecycle-support relation. Intrinsic duration and maintained support are orthogonal termination mechanisms.
+
+A concrete Effect instance may have **zero or one** structural lifecycle parent, referred to in this design as `support_effect_id`. The exact schema field name remains deferred until the ownership map closes, but the cardinality and semantics are accepted.
+
+Support relationships therefore form a forest rather than an arbitrary graph.
+
+### 5.1 Parent identity and mutability
+
+The lifecycle parent is selected when the dependent Effect is created and is immutable for that Effect instance.
+
+At creation time the parent must:
+
+- exist;
+- be nonterminal;
+- not be the child itself;
+- not make the support chain cyclic.
+
+The same maintenance episode keeps the same Effect identity. Refreshing duration, stacks, or allowed parameters updates that Effect in place. A new maintenance-root Effect ID represents a new lifecycle episode.
+
+Re-parenting an existing Effect is not supported in the initial contract. If rules genuinely move a dependent to another maintenance episode, runtime ends the old dependent and creates a new one under the new parent.
+
+### 5.2 Terminal versus suppressed support
+
+Support depends only on lifecycle existence, not on current mechanical effectiveness.
+
+```text
+parent nonterminal -> structural support exists
+parent suppressed  -> structural support still exists
+parent terminal    -> structural support is lost
+```
+
+Suppression, equipment predicates, range checks, antimagic, and other temporary activation conditions do not belong in this support primitive. If a ruleset says such a circumstance actually ends the maintenance episode, that rule explicitly transitions the root Effect to a terminal lifecycle state; the support relation reacts only to that terminal transition.
+
+The primitive does not accept arbitrary predicates, Actor fields, Resource expressions, OR trees, or multiple simultaneous parents.
+
+### 5.3 Downward-only cascade
+
+When a support parent becomes terminal, every descendant that structurally depends on it expires because support was lost. A child becoming terminal has no automatic effect on its parent.
+
+There is no generic `detach`, `restrict`, `auto_end_when_no_children`, or reverse-lifecycle policy. Rules that end a maintenance root when their own higher-level conditions are met do so explicitly through normal Effect/Activity/Trigger resolution.
+
+Before mutation, runtime computes the full descendant closure through a HOT/SQLite reverse index, validates the entire closure, and commits the lifecycle transition atomically. Canon stores only forward support references; reverse child indexes are disposable projections.
+
+Simultaneous intrinsic expiry and support loss must not make final state depend on SQL/update ordering. Step 2 requires deterministic terminal closure; Step 3 will own causal event ordering and receipts.
+
+### 5.4 Shared lifetime and Concentration
+
+A maintenance root may own a shared intrinsic maximum lifetime for its episode. Dependents do not copy the same remaining-time authority merely because they share that root.
+
+Conceptually, `Concentration, up to 1 minute` is represented as:
+
+```text
+concentration/maintenance root Effect
+    intrinsic maximum lifetime = 1 minute
+    -> dependent target Effect A
+    -> dependent target Effect B
+```
+
+If a dependent has a genuinely shorter independent limit, it may additionally own its own intrinsic lifetime. It then ends at the first of its own intrinsic boundary or loss of structural support.
+
+Ruleset-specific exclusivity such as D&D allowing only one current Concentration episode is not generalized into a maintenance-slot/uniqueness subsystem. The ruleset operation that begins a new Concentration episode atomically ends the old root (and therefore its descendants) and creates the new root.
+
+### 5.5 Durability and recovery boundary
+
+A durable/canonical dependent Effect cannot point to a support parent that remains local-only. Promotion closure therefore includes the required support-parent chain. An unresolved canonical support reference during hydration is an integrity failure, not permission to invent a replacement parent.
+
+The support primitive does not introduce background processing. Cascade occurs only when an explicit runtime command/Activity boundary makes a support Effect terminal.
+
+## 6. Critical-pass results for accepted sub-decisions
 
 The Resource model was challenged against:
 
@@ -204,20 +276,38 @@ The Condition/Effect model was challenged against:
 
 The accepted corrections are direct Condition-to-Effect application identity, shared mechanical payload, derived condition indexing, explicit application-versus-aggregation separation, local Effect IDs where appropriate, and strict LifeState/Condition separation.
 
-No blocker was found that requires a separate Resource entity, Condition world entity, or separate action-economy/condition mutation subsystem.
+The maintained-support model was challenged against:
 
-## 6. Exact continuation point
+- arbitrary predicate dependencies accidentally creating a second rule engine;
+- suppression being confused with termination;
+- multiple parents and dependency cycles;
+- re-parenting and refresh changing lifecycle identity;
+- partial/callback-driven cascades;
+- simultaneous termination causes;
+- reverse child-to-parent lifecycle semantics;
+- orphaned durable references after promotion/recovery;
+- unnecessary generic uniqueness policy for Concentration;
+- large descendant cascades.
 
-The next open ownership block is **Duration / expiry / concentration**.
+The accepted corrections are a single immutable Effect parent, forest topology, terminal-only support loss, downward-only atomic closure, stable maintenance identity, derived reverse indexes, promotion closure, and ruleset-owned Concentration exclusivity. No blocker was found that requires arbitrary dependency expressions or a separate maintenance subsystem.
+
+No blocker was found that requires a separate Resource entity, Condition world entity, separate action-economy/condition mutation subsystem, or generic dependency rule language.
+
+## 7. Exact continuation point
+
+The next open ownership block is **intrinsic Duration / expiry anchors**.
 
 It must settle, without introducing a background clock:
 
-- who owns the duration specification versus current duration progress;
-- turn-relative forms such as `until the start/end of my/your next turn`;
-- round-count and local-time durations such as `1 minute`;
-- event/condition-based endings such as `until Long Rest` or `until condition X`;
-- concentration as a lifecycle dependency rather than a second duration authority;
-- expiry/reset advancement only through explicit runtime commands/Activities;
-- interaction with suspended Resolutions and procedure-local state.
+- who owns reusable duration specification versus concrete current progress/anchors;
+- fixed turn/round/local-time durations such as `1 round` or `1 minute`;
+- relative boundaries such as `until the start/end of my/your next turn`;
+- rest/event endings such as `until Long Rest`, dawn, or another named event;
+- how event/condition-based endings relate to Trigger Bindings without becoming arbitrary duration predicates;
+- when duration progress must be stored versus derived from a stable anchor;
+- expiry advancement only through explicit runtime commands/Activities;
+- interaction with suspended Resolutions, procedure-local state, and maintained-support roots.
 
-After that, Step 2 still must close remaining Effect/Recovery ownership, exact minimum LifeState vocabulary/transitions, selectors, schema/catalog alignment, focused cases, and a final independent critical pass before the Step 2 gate can close.
+Concentration support itself is closed by Section 5. A Concentration root may still have an intrinsic maximum duration and rules that explicitly terminate that root; those are handled by the Duration/Trigger contracts rather than by a second concentration timer.
+
+After intrinsic Duration/expiry closes, Step 2 still must close remaining Effect/Recovery ownership, exact minimum LifeState vocabulary/transitions, selectors, schema/catalog alignment, focused cases, and a final independent critical pass before the Step 2 gate can close.
