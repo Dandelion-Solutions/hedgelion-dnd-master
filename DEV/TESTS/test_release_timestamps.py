@@ -77,6 +77,20 @@ class ReleaseTimestampTests(unittest.TestCase):
             observed = module.resolve_archive_datetime(root, "v10.0")
             self.assertEqual(observed, datetime.fromisoformat("2026-08-18T10:22:24+02:00"))
 
+    def test_one_second_commit_time_change_changes_zip_metadata_bytes(self):
+        module = load_module()
+        first = datetime.fromisoformat("2026-08-18T10:22:12+02:00")
+        second = datetime.fromisoformat("2026-08-18T10:22:13+02:00")
+
+        first_dos, first_extra = module._zip_timestamp_fields(first)
+        second_dos, second_extra = module._zip_timestamp_fields(second)
+
+        # Classic ZIP/DOS time truncates to two-second precision, so the visible
+        # compatibility field can be identical while the standard extended mtime
+        # still makes the archive metadata (and therefore SHA) different.
+        self.assertEqual(first_dos, second_dos)
+        self.assertNotEqual(first_extra, second_extra)
+
 
 if __name__ == "__main__":
     unittest.main()
