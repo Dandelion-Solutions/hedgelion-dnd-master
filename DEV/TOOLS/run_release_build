@@ -15,7 +15,7 @@ from dev_tool_environment import PreparationError, ensure_environment
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--tag", required=True)
-    parser.add_argument("--output", required=True)
+    parser.add_argument("--output", default=str(REPO_ROOT / "builds"))
     parser.add_argument("--tag-mode", action="store_true")
     args = parser.parse_args()
     try:
