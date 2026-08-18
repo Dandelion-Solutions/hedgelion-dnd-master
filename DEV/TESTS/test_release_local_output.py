@@ -1,4 +1,6 @@
+import contextlib
 import importlib.util
+import io
 import sys
 import unittest
 from pathlib import Path
@@ -66,6 +68,25 @@ class ReleaseLocalOutputTests(unittest.TestCase):
         self.assertEqual(rc, 0)
         tag_index = captured['cmd'].index('--tag') + 1
         self.assertEqual(captured['cmd'][tag_index], 'v0.8')
+
+    def test_launcher_help_aliases_describe_parameters_and_defaults(self):
+        module = load_launcher()
+        for alias in ('-?', '-h', '--h', '--help'):
+            with self.subTest(alias=alias):
+                buf = io.StringIO()
+                with (
+                    mock.patch.object(sys, 'argv', ['run_release_build.py', alias]),
+                    contextlib.redirect_stdout(buf),
+                ):
+                    with self.assertRaises(SystemExit) as exc:
+                        module.main()
+                self.assertEqual(exc.exception.code, 0)
+                help_text = buf.getvalue()
+                self.assertIn('--tag', help_text)
+                self.assertIn('ENGINE_DEVELOPMENT.yaml', help_text)
+                self.assertIn('--output', help_text)
+                self.assertIn('builds', help_text)
+                self.assertIn('--tag-mode', help_text)
 
     def test_current_and_legacy_local_release_directories_are_ignored(self):
         ignored = (ROOT / '.gitignore').read_text(encoding='utf-8').splitlines()
