@@ -351,15 +351,22 @@ def validate_destination_markdown(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo-root", default=str(Path(__file__).resolve().parents[2]))
-    parser.add_argument("--tag", required=True)
+    parser.add_argument("--tag")
     parser.add_argument("--output", required=True)
     parser.add_argument("--tag-mode", action="store_true")
     args = parser.parse_args(argv)
     repo_root = Path(args.repo_root).resolve()
-    load_and_validate_manifests(repo_root, intended_tag=args.tag, tag_mode=args.tag_mode)
+    dev, _game = load_and_validate_manifests(
+        repo_root,
+        intended_tag=args.tag,
+        tag_mode=args.tag_mode,
+    )
+    intended_tag = args.tag if args.tag is not None else dev.get('recommended_tag')
+    if not isinstance(intended_tag, str) or not intended_tag:
+        raise BuildError('DEV/ENGINE_DEVELOPMENT.yaml must define recommended_tag')
     if args.tag_mode:
         validate_tag_lineage(repo_root)
-    runtime_zip = build_runtime_zip(repo_root, Path(args.output), args.tag)
+    runtime_zip = build_runtime_zip(repo_root, Path(args.output), intended_tag)
     sha256_file = write_sha256(runtime_zip)
     print(json.dumps({
         "asset_name": runtime_zip.name,
