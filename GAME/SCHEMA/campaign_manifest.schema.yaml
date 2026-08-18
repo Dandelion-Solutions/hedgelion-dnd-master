@@ -1,5 +1,5 @@
 schema_name: campaign_manifest
-schema_version: 2
+schema_version: 3
 required:
   - schema_version
   - campaign_id
@@ -17,10 +17,16 @@ fields:
   status: enum[initializing, active, paused, completed, archived]
   mode: enum[singleplayer, multiplayer]
   engine:
-    base_tag: string
-    base_sha: string|null
-    integrated_tag: string|null
-    integrated_main_sha: string|null
+    created_with:
+      version: string
+      package_id: string
+      source_commit_sha: string|null
+    current:
+      version: string
+      package_id: string
+      source_commit_sha: string|null
+      package_sha256: string
+      adopted_at: string
     update_policy: enum[ask, auto]
   rules:
     baseline: string
@@ -47,17 +53,18 @@ invariants:
   - branch MUST match campaign/YYYYMMDD or campaign/YYYYMMDD-NN where NN >= 02
   - branch name MUST NOT encode lore, mode, player count or owner
   - force_push_allowed MUST be false for live campaigns
-  - campaign owner is derived from Git history and MUST NOT be duplicated in MANIFEST
-  - mode/join-policy/engine-policy changes follow creator/owner authorization
+  - campaign creator is derived from Git history and MUST NOT be duplicated as authority in MANIFEST
+  - mode/join-policy/engine-policy changes follow campaign-creator authorization
   - current-layout MANIFEST is at branch root and normally uses STATE, INDEX, WORLD, LOG, CHECKPOINTS roots without CAMPAIGN prefix
-  - legacy manifests under CAMPAIGN/ may retain CAMPAIGN-prefixed storage roots and remain valid
-  - base_tag/base_sha identify creation engine provenance
-  - integrated_tag/integrated_main_sha identify the engine currently required by the campaign
-  - published release tags SHOULD store their exact resolved public tag commit SHA
-  - explicit engine-owner development testing MAY use dev-v<version> with nullable SHA fields; current public main MUST NOT be queried merely to manufacture those SHA values
+  - legacy layout under CAMPAIGN/ may remain readable only where an explicit runtime contract permits it; new campaigns use root layout
+  - engine.created_with is immutable creation provenance
+  - engine.current identifies the portable runtime identity currently required by the campaign
+  - engine.current.package_sha256 identifies the exact last accepted ZIP but MUST NOT permanently lock the campaign to obsolete same-version bytes
+  - engine.current.source_commit_sha is source provenance and is not tied to a branch named main
+  - current_runtime_root is environment-specific and MUST NOT be persisted in MANIFEST
   - engine files MUST NOT be copied into campaign repository
-  - update_policy defaults to ask when absent in an older manifest
-  - campaign_name_origin is optional; absent/non-null legacy names are conservatively treated as sticky by CORE/CAMPAIGN_IDENTITY.md
+  - update_policy defaults to ask
+  - campaign_name_origin is optional only where an older non-engine compatibility rule explicitly permits it; new campaigns emit it
   - completed means the campaign has explicitly ended; a PC death alone MUST NOT automatically imply campaign completion
   - status active requires READY_PC + a durable PLAY_READY frontier
   - unfinished pre-live onboarding remains initializing even when provisional PC/scene/location are durable or explicitly saved
