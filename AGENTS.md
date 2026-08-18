@@ -15,6 +15,47 @@ Repository root is reserved for repository infrastructure/metadata such as `.git
 
 Do not recreate old repository-root product/development directories such as `CORE/`, `TESTS/`, `TOOLS/`, `ARCHITECTURE/`, `RELEASE/`, `CATALOG/`, `SCHEMA/`, `SCHEMAS/`, `CAMPAIGN/`, `TEMPLATE/`, `MIGRATIONS/`, `INSTALL/` or `docs/`.
 
+## Root README editorial contract
+
+The repository-root `README.md` is a **manually curated public-facing document owned by the repository owner**. It is not ordinary development documentation and must not be treated as a convenient place to dump technical state.
+
+### Do not modify it opportunistically
+
+Do **not** rewrite, reorganize, condense, expand, modernize, clean up, normalize, re-template or otherwise reshape the root `README.md` as a side effect of architecture work, repository moves, release/version changes, refactors, path migrations, tooling changes, audits or other unrelated implementation work.
+
+Do not perform broad/global path replacements in the root README. Do not replace the whole file merely because one link, path or statement became stale.
+
+Treat the existing wording, tone, jokes, pacing, whitespace, visual separators, section ordering, legal framing and closing text as intentional editorial choices.
+
+### Required editorial structure
+
+Preserve this high-level structure unless the repository owner explicitly asks to change it:
+
+1. **Legal/disclaimer header** — project independence / Wizards of the Coast and trademark framing at the top.
+2. **Friendly human-facing section** — approachable explanation of what the project is, why it is interesting and how it feels to use; this is the primary public face of the repository.
+3. **Quick start** — concise installation/start instructions written for a normal user.
+4. **Intentional visual separation** before the technical-interest section.
+5. **`Подробности для нёрдов` section** — conceptual architecture and implementation-relevant explanation for technically interested readers, but still written as readable public documentation rather than internal engineering notes.
+6. **License / third-party legal footer and friendly closing sign-off**.
+
+The nerd section may explain concepts such as GAME/DEV separation, storage, releases and high-level architecture, but it must not become a dump of internal technical debris: no audit logs, CI minutiae, debugging history, temporary implementation details, maintenance-process chatter, low-level agent workflow, internal checklists or other material that belongs under `DEV/`.
+
+### Technical changes do not automatically authorize README edits
+
+If a technical change makes a README statement, path or link inaccurate, **report the exact mismatch to the repository owner instead of silently rewriting the README**.
+
+Only edit the root README when the repository owner explicitly asks for, or explicitly approves, a README change as part of the current task. When such an edit is authorized:
+
+- make the **smallest targeted patch** needed;
+- preserve the surrounding voice, structure, formatting and editorial rhythm;
+- do not use the opportunity to rewrite adjacent text;
+- keep the friendly section friendly and the nerd section readable;
+- do not introduce internal implementation clutter merely because it is technically accurate.
+
+Direct edits made by the repository owner to `README.md` are authoritative. Do not revert them to an older version, regenerate them from another source or "restore" a previous agent-authored variant unless explicitly asked.
+
+The root README is **not machine-authoritative metadata**. Detailed architecture, release policy, tests, implementation plans and maintenance procedures belong under `DEV/`; runtime contracts belong under `GAME/`. The README should summarize only what is useful to human readers.
+
 ## Superpowers artifacts
 
 All Superpowers design and implementation artifacts for this repository are development-only.
