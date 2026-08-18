@@ -218,12 +218,19 @@ def audit_onboarding_and_identity() -> None:
 def audit_schema_and_templates() -> None:
     manifest = game_text("CAMPAIGN/MANIFEST.yaml")
     m_schema = game_text("SCHEMA/campaign_manifest.schema.yaml")
+    storage_schema = game_text("SCHEMA/dnd_storage.schema.yaml")
     c_schema = game_text("SCHEMA/campaign_card.schema.yaml")
     pc_schema = game_text("SCHEMA/pc.schema.yaml")
     readme = game_text("CAMPAIGN/README.md")
+    require("schema_version: 3" in manifest, "campaign scaffold manifest must use schema_version 3")
+    require("created_with:" in manifest and "current:" in manifest and "package_sha256:" in manifest, "campaign scaffold manifest must use portable runtime identity")
+    for stale in ("base_tag:", "base_sha:", "integrated_tag:", "integrated_main_sha:"):
+        require(stale not in manifest, f"campaign scaffold manifest leaked legacy engine field: {stale}")
     require("campaign_name_origin: null" in manifest, "campaign scaffold manifest must initialize campaign_name_origin")
+    require("schema_version: 3" in m_schema and "created_with:" in m_schema and "package_sha256:" in m_schema, "manifest schema must define runtime identity v3")
     require("campaign_name_origin" in m_schema, "manifest schema must define campaign_name_origin")
     require("READY_PC" in m_schema and "PLAY_READY" in m_schema, "manifest schema must encode active lifecycle gate")
+    require("schema_version: 3" in storage_schema and "baseline:" in storage_schema and "baseline_version" not in storage_schema, "storage schema must define portable baseline v3")
     require("MANIFEST.campaign_name" in c_schema and "including null" in c_schema, "card schema must encode exact name projection")
     require("DM-seeded" in pc_schema and "player_defined_traits" in pc_schema, "PC schema must encode seeded/player-authored distinction")
     markers = [
@@ -339,7 +346,7 @@ def audit_release_contracts() -> None:
             require(h1 == z2.read_bytes(), "runtime ZIP is not byte-reproducible")
             with zipfile.ZipFile(z2) as zf:
                 names = zf.namelist()
-                require("ENGINE_VERSION.yaml" in names and "CORE/PLAY_POLICY.md" in names and "TOOLS/init_campaign.py" in names, "runtime ZIP missing required root members")
+                require("ENGINE_VERSION.yaml" in names and "RUNTIME_PACKAGE.yaml" in names and "CORE/PLAY_POLICY.md" in names and "TOOLS/init_campaign.py" in names, "runtime ZIP missing required root members")
                 require(not any(n.startswith(("GAME/", "DEV/")) for n in names), "runtime ZIP contains GAME/DEV wrapper")
                 zf.extractall(out / "extract")
             release_builder.validate_extracted_package_root(out / "extract")
@@ -359,7 +366,9 @@ def smoke_generator() -> None:
         cmd = [
             sys.executable, str(script), "--output", str(out),
             "--campaign-id", "camp-audit", "--branch", "campaign/20990101",
-            "--engine-tag", f"dev-v{game_version}", "--created-at", "2099-01-01T00:00:00+00:00",
+            "--engine-version", str(game_version), "--package-id", f"dev-v{game_version}",
+            "--package-sha256", "0" * 64,
+            "--created-at", "2099-01-01T00:00:00+00:00",
             "--creator-github-login", "audit-user", "--mode", "singleplayer",
             "--source-root", str(GAME_ROOT),
         ]
@@ -372,8 +381,12 @@ def smoke_generator() -> None:
         manifest = (out / "MANIFEST.yaml").read_text(encoding="utf-8")
         card = (out / "CAMPAIGN_CARD.yaml").read_text(encoding="utf-8")
         readme = (out / "README.md").read_text(encoding="utf-8")
+        require("schema_version: 3" in manifest, "generated MANIFEST must use schema_version 3")
         require("status: initializing" in manifest, "generated MANIFEST must start initializing")
         require("campaign_name: null" in manifest and "campaign_name_origin: null" in manifest, "generated MANIFEST must start unnamed")
+        require("created_with:" in manifest and "current:" in manifest and "package_sha256:" in manifest, "generated MANIFEST missing portable runtime identity")
+        for stale in ("base_tag:", "base_sha:", "integrated_tag:", "integrated_main_sha:"):
+            require(stale not in manifest, f"generated MANIFEST leaked legacy engine field: {stale}")
         require("campaign_name: null" in card, "generated card must start with null campaign name")
         require("DND_MASTER:CAMPAIGN_OVERVIEW_BEGIN" in readme and "DND_MASTER:PLAYER_GUIDE_END" in readme, "generated README missing protected markers")
 
