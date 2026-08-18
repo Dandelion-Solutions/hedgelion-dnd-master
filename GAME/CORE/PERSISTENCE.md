@@ -1,12 +1,14 @@
 # Persistence Transport and Transaction Discipline
 
-framework_module_version: 0.2.0
+framework_module_version: 0.2.1
 load_when: a campaign/live/storage publication boundary has already been decided, explicit save transport, checkpoint publication, campaign migration
 precedence: authoritative for HOW GitHub writes are sequenced; it does not create ordinary gameplay save boundaries
 
 ## Boundary ownership
 
 Do not decide save timing here. `DURABILITY_GUARD.md` owns ordinary gameplay WHEN; `SAVE_CONTRACT.md` owns explicit save; multiplayer/live/access modules may explicitly force shared boundaries. If none of those authorities says publish now, this module does nothing.
+
+The **one-hour boundary** for dirty HOT/SOFT state is defined only by `DURABILITY_GUARD.md`. This transport module does not create or reinterpret that timing policy: once the guard says the hourly ceiling fired, publish the same complete coherent dirty batch through the ordinary campaign transaction profile below. Clean state never becomes writable merely because time elapsed.
 
 ## Transport profiles
 
