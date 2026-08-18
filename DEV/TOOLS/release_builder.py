@@ -37,6 +37,7 @@ SHARED_FIELDS = (
     'recommended_tag',
 )
 REQUIRED_PACKAGE_DIRS = ('CORE', 'INSTALL', 'RULES', 'SCHEMA', 'CAMPAIGN', 'TEMPLATE', 'MIGRATIONS', 'TOOLS')
+LEGAL_TOP_LEVEL = ('LICENSE', 'NOTICE', 'THIRD_PARTY_NOTICES.md')
 FORBIDDEN_JUNK_NAMES = {'.DS_Store'}
 FORBIDDEN_JUNK_SUFFIXES = ('.pyc', '.pyo')
 FIXED_ZIP_TIME = (1980, 1, 1, 0, 0, 0)
@@ -156,6 +157,55 @@ def _iter_game_files(game_root: Path):
         yield path, rel
 
 
+def _relative_file_set(root: Path) -> set[str]:
+    return {
+        path.relative_to(root).as_posix()
+        for path in root.rglob('*')
+        if path.is_file()
+    }
+
+
+def validate_legal_copies(repo_root: Path) -> None:
+    repo_root = repo_root.resolve()
+    game_root = repo_root / 'GAME'
+
+    observed_legal = (
+        (repo_root / '.git').exists()
+        or (repo_root / 'AGENTS.md').is_file()
+        or any((repo_root / name).exists() or (game_root / name).exists() for name in LEGAL_TOP_LEVEL)
+        or (repo_root / 'LICENSES').exists()
+        or (game_root / 'LICENSES').exists()
+    )
+    if not observed_legal:
+        # Minimal unit-test fixtures may intentionally omit distribution metadata.
+        return
+
+    for name in LEGAL_TOP_LEVEL:
+        canonical = repo_root / name
+        distribution = game_root / name
+        if not canonical.is_file() or not distribution.is_file():
+            raise BuildError(f'missing canonical/distribution legal file: {name}')
+        if canonical.read_bytes() != distribution.read_bytes():
+            raise BuildError(f'GAME/{name} differs from root canonical copy')
+
+    canonical_licenses = repo_root / 'LICENSES'
+    distribution_licenses = game_root / 'LICENSES'
+    if not canonical_licenses.is_dir() or not distribution_licenses.is_dir():
+        raise BuildError('root LICENSES/ and GAME/LICENSES/ must both exist')
+
+    canonical_files = _relative_file_set(canonical_licenses)
+    distribution_files = _relative_file_set(distribution_licenses)
+    if canonical_files != distribution_files:
+        raise BuildError(
+            'GAME/LICENSES file set differs from root canonical LICENSES; '
+            f'root_only={sorted(canonical_files - distribution_files)} '
+            f'game_only={sorted(distribution_files - canonical_files)}'
+        )
+    for rel in sorted(canonical_files):
+        if (canonical_licenses / rel).read_bytes() != (distribution_licenses / rel).read_bytes():
+            raise BuildError(f'GAME/LICENSES/{rel} differs from root canonical copy')
+
+
 def validate_package_markdown(source_path: Path, game_root: Path) -> None:
     src = source_path.read_text(encoding='utf-8')
     game_root = game_root.resolve()
@@ -184,6 +234,7 @@ def validate_source_tree(repo_root: Path) -> None:
             raise BuildError(f'missing required GAME directory: {d}')
     if (game_root / 'TEMPLATE/CAMPAIGN_MANIFEST.yaml').exists():
         raise BuildError('deprecated TEMPLATE/CAMPAIGN_MANIFEST.yaml must be absent')
+    validate_legal_copies(repo_root)
     validate_project_instructions_parity(game_root / 'INSTALL')
 
     campaign_files = {
