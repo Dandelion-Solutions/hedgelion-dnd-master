@@ -1,6 +1,6 @@
 # Engine Runtime Updates
 
-framework_module_version: 0.9.1
+framework_module_version: 0.9.2
 load_when: campaign/storage startup, explicit engine-update request, runtime mismatch, safe maintenance opportunity
 
 ## Distribution model
@@ -191,6 +191,23 @@ If no newer valid runtime is available, only the restore/add-current-version pat
 Never silently run a proven downgrade or a different semantic version merely because it is the only extracted package.
 
 The player-facing response MUST NOT stop at "cannot continue" when one of the above recovery actions exists. State what package/version is needed and present only actions the current user is authorized to take.
+
+## Gameplay continuation after maintenance
+
+Maintenance performed during an active campaign is a **transparent pause**, not the conclusion of the player's turn or the end of the gameplay response.
+
+Before a runtime refresh/update that may invalidate engine context, preserve the maintenance continuation frame defined by `SESSION.md`. That frame keeps the selected campaign, durable frontier, current scene/location, last meaningful player action, last meaningful Master/NPC utterance or outcome, and unresolved decision point without automatically promoting chat wording to canon.
+
+After successful maintenance and exact runtime switch:
+1. validate/restore the selected campaign working set under the new `current_runtime_root`;
+2. apply the already-known post-maintenance state without inventing new fictional events;
+3. mention successful maintenance briefly only when useful to the player;
+4. remind the player who last said/did what using the strongest available evidence;
+5. **return to the same unresolved gameplay point** and hand control back there.
+
+The runtime **MUST NOT end the player-facing response with only** a technical statement such as "campaign updated", "runtime switched" or "state saved" when active gameplay can safely resume.
+
+Exact dialogue/action evidence and fallback durable semantic-summary rules come from `SESSION.md`. Never manufacture a verbatim quote just to smooth the transition.
 
 ## Runtime switch discipline
 
