@@ -1,6 +1,6 @@
 # DM Runtime Invariants
 
-framework_module_version: 0.7.9
+framework_module_version: 0.8.0
 load_policy: ALWAYS_DURING_GAMEPLAY
 
 `AI_REASONING.md`, `PLAY_POLICY.md`, `DURABILITY_GUARD.md`, `MECHANICS_INTEGRITY.md` and `CHARACTER_READINESS.md` are also always active during gameplay. RUNTIME defines the turn loop; those guard modules own their narrow correctness domains.
@@ -58,13 +58,21 @@ After maintenance succeeds, the turn pipeline resumes from the same unresolved g
 `DURABILITY_GUARD.md` is authoritative for **WHEN** campaign state becomes durable. `PERSISTENCE.md` is authoritative for **HOW** a decided publication is transported. `SAVE_CONTRACT.md` adds the explicit-save boundary when the player asks to save.
 
 During the turn pipeline classify state as:
-- `HARD`: only a commitment that an active authoritative module explicitly defines as requiring publication before ordinary play continues (for example PROVISIONAL_IDENTITY, PLAY_READY, an explicit save/session/lifecycle boundary, multiplayer synchronization/access boundary, or rare catastrophic continuity boundary);
+- `HARD`: only a commitment that an active authoritative module explicitly defines as requiring publication before ordinary play continues (for example PROVISIONAL_IDENTITY, PLAY_READY, an explicit save/session/lifecycle boundary, multiplayer synchronization/access boundary, rare catastrophic continuity boundary, or the one-hour dirty ceiling once it fires);
 - `SOFT`: durable canon that is true immediately in the hot working set but may be batched until the next boundary defined by `DURABILITY_GUARD.md` or another explicit domain authority;
 - `EPHEMERAL`: current-chat material that is not intended to survive unless later promoted.
 
 In singleplayer, durable does **not** imply HARD. A quest, reward, new NPC, relationship change, ordinary item/resource change, ordinary scene/encounter completion, or generic "meaningful action" does not create a save merely because it matters. Those changes are normally SOFT unless a specific guard rule says otherwise.
 
 Do not invent extra persistence boundaries from prose in transport/storage/session modules. If no authoritative boundary fires, continue from hot state without GitHub traffic.
+
+### Lost ephemeral dirty state
+
+Extracted runtime cache and campaign dirty state have different recovery semantics. Runtime cache is reconstructable from an available immutable ZIP; unpublished campaign canon is not.
+
+If environment/context loss causes **lost ephemeral dirty state**, recover only from the latest durable campaign frontier plus other already-persisted canon. The runtime **MUST NOT invent unpublished canon**, reconstruct supposed player choices from plausibility, or pretend that lost HOT/SOFT mutations were committed.
+
+When surviving current-chat evidence still contains the dirty HOT/SOFT working set, `DURABILITY_GUARD.md` decides whether the one-hour ceiling requires publishing it before further ordinary play. When that working set itself is gone, the durable frontier is the truthful recovery boundary.
 
 ## Campaign lifecycle gate
 
