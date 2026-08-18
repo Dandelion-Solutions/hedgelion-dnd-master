@@ -5,11 +5,23 @@ import sys
 import tempfile
 import unittest
 import zipfile
+from datetime import datetime
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ASSET_NAME = "hedgelion-dnd-master-runtime-v0.8.zip"
+
+
+def git_commit_datetime(revision: str) -> datetime:
+    cp = subprocess.run(
+        ["git", "show", "-s", "--format=%cI", revision],
+        cwd=REPO_ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return datetime.fromisoformat(cp.stdout.strip())
 
 
 class ReleaseIntegrationTests(unittest.TestCase):
@@ -52,6 +64,16 @@ class ReleaseIntegrationTests(unittest.TestCase):
             self.assertEqual(zip_a.read_bytes(), zip_b.read_bytes())
             self.assertEqual(sha_a.read_text(encoding="utf-8"), sha_b.read_text(encoding="utf-8"))
 
+            expected_dt = git_commit_datetime("HEAD")
+            expected_zip_time = (
+                expected_dt.year,
+                expected_dt.month,
+                expected_dt.day,
+                expected_dt.hour,
+                expected_dt.minute,
+                expected_dt.second - (expected_dt.second % 2),
+            )
+
             with zipfile.ZipFile(zip_a) as archive:
                 names = archive.namelist()
                 self.assertIn("ENGINE_VERSION.yaml", names)
@@ -61,6 +83,8 @@ class ReleaseIntegrationTests(unittest.TestCase):
                 self.assertFalse(any(name.startswith("GAME/") for name in names))
                 self.assertFalse(any(name.startswith("DEV/") for name in names))
                 self.assertNotIn("AGENTS.md", names)
+                file_times = {info.date_time for info in archive.infolist() if not info.is_dir()}
+                self.assertEqual(file_times, {expected_zip_time})
                 archive.extractall(extracted)
 
             generator = extracted / "TOOLS" / "init_campaign.py"
