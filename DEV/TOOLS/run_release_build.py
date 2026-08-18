@@ -12,12 +12,48 @@ sys.path.insert(0, str(TOOLS))
 from dev_tool_environment import PreparationError, ensure_environment
 
 
+def _parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="run_release_build.py",
+        add_help=False,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description=(
+            "Build the deterministic HDM runtime ZIP and SHA-256 sidecar. "
+            "Development dependencies are prepared in the isolated .hdm-devtools environment."
+        ),
+    )
+    parser.add_argument(
+        "-h", "-?", "--h", "--help",
+        action="help",
+        help="show this usage/help text and exit",
+    )
+    parser.add_argument(
+        "--tag",
+        metavar="TAG",
+        help=(
+            "release tag, for example v0.8; when omitted, use recommended_tag "
+            "from DEV/ENGINE_DEVELOPMENT.yaml"
+        ),
+    )
+    parser.add_argument(
+        "--output",
+        metavar="DIR",
+        default=str(REPO_ROOT / "builds"),
+        help="directory for the generated runtime ZIP and .sha256 file",
+    )
+    parser.add_argument(
+        "--tag-mode",
+        action="store_true",
+        help=(
+            "enforce tagged-release checks (ready-for-tag status and approved Git lineage); "
+            "intended for the release workflow"
+        ),
+    )
+    return parser
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--tag")
-    parser.add_argument("--output", default=str(REPO_ROOT / "builds"))
-    parser.add_argument("--tag-mode", action="store_true")
-    args = parser.parse_args()
+    args = _parser().parse_args()
     try:
         py = ensure_environment(REPO_ROOT)
     except PreparationError as exc:
