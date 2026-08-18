@@ -35,10 +35,31 @@ The engine-wide architecture workflow is `ARCHITECTURE/DESIGN_PROCESS.md`.
 ## Current checkpoint
 
 Step 1 is complete after owner approval of its adversarial second pass. Step 2
-is active for research and drafting, but its architecture cannot be accepted
-until the Superpowers gate in `DESIGN_PROCESS.md` is satisfied. The first Step 2
-deliverable remains the ownership map proving where every Resource, HP,
-LifeState, Effect, Condition, Duration, and Recovery fact lives before further
-schema fields are added. The owner has explicitly moved LifeState from deferred
-work into Step 2: materialized HP requires a parallel current lifecycle state,
-while delayed transformations remain Effects/Triggers.
+is active under the Superpowers architecture gate. Its live design spec is
+`docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`.
+
+The ownership map must close before new Step 2 schema fields are introduced.
+Accepted ownership sub-decisions now include:
+
+- Actor `hp` is the sole HP/temporary-HP authority, while `life_state_id` is a
+  separate lifecycle authority and zero HP never hard-codes death;
+- generic Resource semantics use different lifetime owners for persistent
+  Actor/Asset state versus serializable procedure-local budgets; procedure
+  capacity is derived and procedure consumption is stored without making the
+  Resolution its owner;
+- non-interchangeable extra action-economy budgets use distinct Resource
+  definitions rather than inflating an unrestricted base budget;
+- `definition.condition` remains a named rules identity, while each concrete
+  application is ordinary Effect-instance state; Actor condition lists are
+  derived HOT/SQLite projections, not canon;
+- Condition and Effect definitions may share the same validated mechanical
+  payload model without mandatory `Condition -> EffectDefinition` indirection;
+- LifeState and Condition remain distinct authorities, for example a dying or
+  stable lifecycle may coexist with an Unconscious condition application.
+
+The exact continuation point is **Duration / expiry / concentration ownership**:
+settle duration specification versus progress, turn/round/local-time and
+condition/event endings, concentration dependencies, and explicit advancement
+without any background clock. Remaining Effect/Recovery ownership, minimum
+LifeState transitions, selectors, schema/catalog alignment, focused cases, and
+the final Step 2 critical pass follow before Step 2 can close.

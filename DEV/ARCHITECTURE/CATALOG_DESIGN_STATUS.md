@@ -8,7 +8,8 @@ Active sequencing is governed by `ARCHITECTURE/NEAR_TERM_ROADMAP.md`. The
 engine-wide architecture workflow is `ARCHITECTURE/DESIGN_PROCESS.md`. The
 critical review ledger is `ARCHITECTURE/CRITICAL_ARCHITECTURE_AUDIT.md`; its
 adversarial second-pass verdict package is owner-approved. Step 2 is active,
-subject to its independent Superpowers architecture gate.
+subject to its independent Superpowers architecture gate. The live Step 2 design
+spec is `docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`.
 
 This document records the current state of catalog design so that subsequent
 work does not depend on reconstructing decisions from a ChatGPT conversation.
@@ -26,10 +27,18 @@ health and Asset durability can be confused with generic Resources;
 transformation lacks a settled definition-dependent state migration boundary;
 and multiplayer/mode stages depend on knowledge, visibility, promotion, and
 seed interfaces that were scheduled too late. The roadmap is reordered and the
-accepted semantic corrections are applied. The exact continuation point is now
-the Step 2 ownership map. Its first correction separates numeric HP from
-`life_state_id`; the remaining ownership map must close before further schema
-fields are introduced.
+accepted semantic corrections are applied.
+
+Step 2 is now closing its ownership map before any new schema fields are added.
+The HP/LifeState boundary, Resource/procedure-budget ownership, and
+Condition/Effect/LifeState ownership have passed separate critical discussion
+and received explicit owner approval. Their current normative design record is
+the live Step 2 spec above.
+
+The exact continuation point is **Duration / expiry / concentration ownership**.
+After that, Step 2 still owns remaining Effect/Recovery ownership, minimum
+LifeState transitions, health/effect selectors, schema/catalog alignment,
+focused cases, and its final critical pass.
 
 The four-layer separation below is accepted:
 
@@ -52,6 +61,12 @@ Activity and Rule Element contracts are captured by
 `ARCHITECTURE/ACTIVITY_MODEL.md` and `ARCHITECTURE/RULE_ELEMENT_MODEL.md`.
 Identifier policy is decided alongside each independently identified record
 kind.
+
+For Step 2-owned fields, the live ownership spec supersedes older provisional
+wording when it explicitly says so. Exact machine field/schema changes remain
+frozen until the ownership map closes, so the current machine field inventory
+must not be treated as final Step 2 shape where the live spec records a newer
+accepted ownership boundary.
 
 ## 2. Agreed catalog principles
 
@@ -122,6 +137,29 @@ kind.
 - Historical facts discovered during play remain lore unless placing them on
   the active gameplay timeline is operationally useful.
 
+### `AGREED` — Step 2 ownership decisions closed so far
+
+- Actor `hp` is the single HP/temporary-HP authority; `life_state_id` is a
+  separate lifecycle authority and zero HP is not universal death.
+- Persistent Actor/Asset Resources and procedure-local budgets use one Resource
+  semantics but different lifetime owners. Procedure-local consumption is
+  serializable state owned by the active procedure/encounter, not the Actor and
+  not an individual Resolution; its capacity is derived.
+- Restricted/non-interchangeable additional action-economy budgets use distinct
+  Resource definitions rather than being folded into unrestricted capacity.
+- Activity/Rule Elements/Triggers resolve Resource references through one
+  storage-independent runtime interface.
+- `definition.condition` remains a named rules identity. A concrete application
+  is ordinary Effect-instance state; Actor condition lists are derived
+  HOT/SQLite indexes, not canon.
+- Condition and Effect definitions may share the same mechanical payload model;
+  a Condition does not require an intermediate Effect definition merely to hold
+  ordinary mechanics.
+- Multiple applications and effective Condition aggregation are separate; app
+  count, stacks, and valued severity are not one overloaded field.
+- LifeState and Condition are separate authorities, so lifecycle state such as
+  dying/stable may coexist with a named Unconscious condition application.
+
 ## 3. Reviewed inventory and provisional structures
 
 The class membership and layer boundaries in `CATALOG_INVENTORY.md` are now the
@@ -184,21 +222,23 @@ approved or implemented.
    suspension, and action-economy boundaries.
 4. Event payloads, granularity, and durability classification; the event-kind
    baseline itself is reviewed.
-5. HP/LifeState, effects, conditions, resources, durations, and recovery contracts.
+5. Step 2 remaining ownership: Duration/expiry/concentration, remaining
+   Effect/Recovery behavior, minimum LifeState transitions, selectors, then
+   schema/catalog alignment and focused cases.
 6. Lore, chapters, visibility/knowledge restrictions, and secret handling.
 7. Game-mode profiles, including quick narrative play, canonical mechanics,
-    and strict-information-isolation detective play.
+   and strict-information-isolation detective play.
 8. Event-local time budgets and multiplayer chronology.
 9. SOFT accumulation budgets and configurable HARD publication thresholds.
 10. Migration, promotion, and catalog-gap workflows.
 11. Standard ruleset seed data, including the selected D&D/SRD baseline.
 
-Step 2 also owns the now-active LifeState contract. HP remains the numeric
-health authority, but zero HP does not determine death by itself. When HP is
-materialized, a separate `life_state_id` is materialized with it. Scheduled or
-conditional transformations (for example undeath at dawn or after a ritual)
-remain Effects/Triggers and atomically update form/type, LifeState, and HP when
-resolved. This requirement supersedes the earlier deferred-lifecycle note.
+Step 2 continues to own LifeState. HP remains the numeric health authority, but
+zero HP does not determine death by itself. When HP is materialized, a separate
+`life_state_id` is materialized with it. Scheduled or conditional
+transformations remain Effects/Triggers and atomically update form/type,
+LifeState, and HP when resolved. This requirement supersedes the earlier
+deferred-lifecycle note.
 
 ## 6. Deferred work that must remain possible
 
