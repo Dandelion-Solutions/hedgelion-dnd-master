@@ -22,9 +22,8 @@ class ReleaseIntegrationTests(unittest.TestCase):
             campaign = temp_root / "campaign"
 
             command = [
-                str(REPO_ROOT / "DEV" / "TOOLS" / "run_release_build"),
-                "--tag",
-                "v0.8",
+                sys.executable,
+                str(REPO_ROOT / "DEV" / "TOOLS" / "run_release_build.py"),
             ]
 
             first = subprocess.run(
