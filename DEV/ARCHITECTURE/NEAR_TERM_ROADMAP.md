@@ -4,72 +4,72 @@ Status: **ACTIVE WORKING PLAN**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
-This roadmap is the sequencing gate for the next mechanical-architecture work.
-It exists to prevent a later topic from displacing an unfinished earlier one.
+This roadmap is the sequencing gate for the current architecture program. It is
+a status/order document, not a duplicate normative specification.
+
 The canonical engine-wide architecture workflow is `DEV/DESIGN_PROCESS.md`;
 HDM-specific additions are in `DEV/ARCHITECTURE/DESIGN_PROCESS.md`.
 
 ## Operating rule
 
-- Exactly one step may be `IN PROGRESS`.
-- A later step may be discussed only when it reveals a dependency of the active
-  step; it may not silently become the active implementation topic.
-- A step is complete only when its listed artifacts exist, its exit checks pass,
-  and unresolved questions are either assigned to a later numbered step or
-  recorded explicitly in the backlog with a reason.
-- Every completed step updates this file and
-  `DEV/ARCHITECTURE/CATALOG_DESIGN_STATUS.md` in the same change.
-- Architecture is reviewed before implementation. Repository consistency and
-  JSON Schema validation are run before claiming completion.
-- After all major architecture modules have designs, the owner intends a holistic
-  review and additional brainstorming pass over the **entire architecture,
-  structures, logic, ownership, schemas, and inter-module relationships**. This
-  global review applies to every current accepted/provisional checkpoint rather
-  than to one singled-out subsystem.
+- Exactly one numbered step may be `IN PROGRESS`.
+- Later steps may be inspected only to expose dependencies/contradictions; they
+  do not silently become the active task.
+- A step closes only when its required artifacts exist, its review/verification
+  gates pass, and every unresolved item is assigned to a later step or recorded
+  as deliberate deferred work/debt/backlog.
+- Every completed numbered step updates this roadmap and
+  `DEV/ARCHITECTURE/CATALOG_DESIGN_STATUS.md` in the same closure change.
+- Canonical architecture is reviewed before implementation.
+- After all major architecture modules have designs, run one additional holistic
+  review over the entire architecture, ownership graph, schemas, logic, and
+  cross-module relationships.
 
 ## Roadmap
 
 | # | Status | Scope | Required result | Exit gate |
 |---:|---|---|---|---|
-| 1 | **COMPLETE** | Finish the critical audit of already accepted architecture | One audit ledger covering catalog layers, envelopes, IDs, Actors, Assets, Activities, Rule Elements, persistence/time, modes, and information boundaries | Every finding is classified as fixed now, owned by steps 2–6, or deliberately deferred; no unowned blocker or backward dependency remains |
-| 2 | **IN PROGRESS — SUPERPOWERS GATE OPEN** | Resources, HP/LifeState, Effects, Conditions, Duration, and Recovery | Minimal normative models plus schemas and catalog alignment | D&D health, lifecycle outcomes, temporary health, slots/uses, rests, timed effects, conditions, concentration, stacking, expiry, and triggered transformations can be represented without duplicate authority or a hard-coded `0 HP -> dead` rule |
-| 3 | `BLOCKED BY 2` | `IntentPlan -> Resolution -> Signal/Event` | Exact compound-turn and execution boundary, operation contracts, event payloads, and focused mini-cases | Multiple intents, partial completion, suspension/resume, reactions, idempotency, and atomic mutation segments have deterministic receipts and tests |
-| 4 | `BLOCKED BY 3` | Lore, chapters, knowledge, secrets, and the minimum promotion interface | Minimum durable truth/disclosure model and context-selection boundary needed by shared play and strict isolation | Public/restricted knowledge has one authority; event disclosure and context assembly are defined; durable references cannot depend on unpromoted local entities |
-| 5 | `BLOCKED BY 4` | Durability, multiplayer, and event-local time | One compatible policy for SOFT/HARD publication, shared visibility, conflicts, chronology, and local time budgets | No proposal contradicts authoritative CORE publication barriers or live-scene ownership; recovery and narration ordering are explicit |
-| 6 | `BLOCKED BY 5` | Game modes and LLM execution budget plus migration, catalog-gap, full seed, and final closure | Minimal mode profiles and final cross-cutting architecture consistency pass | Mode activation and isolation are enforceable over the settled state model; promotion/migration/gap/seed ownership is complete; full audit passes |
+| 1 | **COMPLETE** | Critical audit of already accepted architecture | One owned audit ledger | Every finding fixed, assigned to steps 2–6, or consciously deferred; no unowned blocker |
+| 2 | **IN PROGRESS — FINAL CRITICAL PASS NEXT** | Resources, HP/LifeState, Effects, Conditions, Duration, Recovery, selector/query boundaries | Normative ownership models + aligned schemas/catalogs + focused cases | Health/lifecycle/resources/effects/conditions/time/recovery represent baseline D&D mechanics without duplicate authority; machine contracts and focused cases pass; independent final Step-2 review has no unresolved blocker |
+| 3 | `BLOCKED BY 2` | `IntentPlan -> Resolution -> Signal/Event` | Exact compound-turn/execution boundary, operation contracts, event payloads, checkpointable continuation semantics | Multiple intents, partial completion, reactions, suspension/resume, idempotency, atomic mutation segments, and deterministic receipts/tests are defined |
+| 4 | `BLOCKED BY 3` | Lore, chapters, knowledge, secrets, minimum promotion interface | Durable truth/disclosure model + context-selection boundary | Public/restricted knowledge has one authority; durable references cannot depend on unpromoted local entities |
+| 5 | `BLOCKED BY 4` | Durability, multiplayer, event-local time | Compatible SOFT/HARD publication, shared visibility/conflict/recovery model | Publication/live-scene ownership, cross-scene recovery, chronology, local time, and continuity restoration are coherent |
+| 6 | `BLOCKED BY 5` | Modes, LLM execution budget, migration, catalog gaps, full seed, final closure | Mode profiles + final cross-cutting consistency pass | Mode isolation enforceable; migration/gap/seed ownership complete; full audit passes |
 
 ## Deferred cross-cutting architecture item — LLM / deterministic-core integration
 
-The project contains two deliberately different execution domains: an LLM for
-natural-language interpretation, lore, narration, world/event generation,
-ambiguity and other non-formalizable work; and a deterministic runtime for typed
-identity, structures, mechanical truth, validation, calculation, mutation,
-persistence and indexed retrieval.
+The project deliberately combines two different execution domains:
 
-Their integration must receive an explicit cross-cutting design rather than be
-left to prompt convention or an assumption that the LLM keeps every catalog in
-working memory. This item does **not** create a new active roadmap stage and does
-not displace Step 2.
+- an LLM for natural-language interpretation, lore, narration, ambiguity,
+  world/event generation, and other non-formalizable work;
+- a deterministic runtime for identity, typed structures, mechanical truth,
+  validation, calculation, mutation, persistence, and indexed retrieval.
 
-Revisit trigger: no later than Step 3 execution-boundary design, with refinement
-in Step 4 context-selection work. The design must cover natural-language
-referent/entity mapping, typed intent/action binding, catalog lookup/hydration,
-ambiguity/clarification, provenance of LLM-adjudicated facts, deterministic
-validation, compact receipts/context, unsupported/homebrew mechanics, and the
-rule that engine-resolvable mechanical facts remain owned by the deterministic
-core rather than asserted by the LLM.
+Their integration must be an explicit typed boundary rather than prompt
+convention or an assumption that the LLM keeps every catalog in working memory.
+
+**Revisit trigger:** no later than Step 3, refined in Step 4.
+
+The design must cover referent/entity resolution (`this thing`, `that idiot`),
+typed intent/activity binding, catalog lookup/hydration, ambiguity/clarification,
+provenance of LLM-adjudicated facts, deterministic validation, compact
+receipts/context, unsupported/homebrew mechanics, and the rule that
+engine-resolvable mechanical facts remain deterministic-core authority.
+
+Step 2 already establishes one local invariant: an invocation that attempts to
+supply engine-owned direct/derived mechanical facts as LLM-adjudicated authority
+fails typed validation.
 
 ## Deferred cross-cutting architecture item — runtime continuity checkpoints
 
-`runtime-only` and `non-canonical` must not be treated as synonyms for
-`safe to lose`.
+`runtime-only` / `non-canonical` does not mean `safe to lose`.
 
 HDM must preserve enough continuity-critical runtime state in repository-backed
-recovery checkpoints to resume deterministically after a process/environment
-failure or in another chat/environment, without promoting that state to campaign
+recovery checkpoints to resume deterministically after process/environment
+failure or in another chat/environment without promoting that state to campaign
 canon merely because it is recoverable.
 
-The design must distinguish:
+Required distinction:
 
 ```text
 canonical/durable world authority
@@ -79,185 +79,107 @@ continuity-critical runtime authority
     -> recovery/checkpoint state, not campaign canon
 
 rebuildable projection/cache
-    -> may be discarded and rebuilt
+    -> discardable and reconstructable
 ```
 
 Examples requiring explicit classification include active procedure/encounter
 state, procedure-local ResourceState, suspended Continuations/choices/reactions,
-active local metric-coordinate state where still mechanically material,
-pending typed obligations that have not yet committed their consequence, and
-other runtime records whose loss would change future mechanics.
+mechanically material local metric-coordinate state, and pending typed
+obligations whose loss would change future mechanics.
 
-The Temporal Agenda itself remains a derived/disposable due-index when it can be
-rebuilt from authoritative bindings and checkpointed runtime state. Do **not**
-persist a second writable copy of its queue as mechanical authority merely for
-recovery convenience. Instead, the checkpoint contract must guarantee that all
-information required to rebuild the Agenda and pending trigger/boundary work is
-recoverable. An implementation may cache serialized indexes only as disposable
-acceleration data whose correctness is verified/rebuilt from the checkpoint
-sources.
+The Temporal Agenda remains a derived/rebuildable due-index. Recovery must
+persist the authoritative/checkpoint sources necessary to rebuild it and pending
+trigger/boundary work; a serialized index may be cached only as verified,
+disposable acceleration data.
 
-Revisit trigger: Step 3 must define which execution/runtime records and pending
-obligations are checkpointable together with idempotency/resume semantics; Step
-5 must close repository durability, publication/recovery boundaries, cross-chat/
-cross-environment restoration, and cleanup/expiry of obsolete checkpoint state.
-This requirement must be resolved before Step 5 can close.
+**Revisit trigger:** Step 3 defines checkpointable execution/runtime state and
+idempotent resume; Step 5 closes repository durability, publication/recovery,
+cross-environment restoration, and checkpoint cleanup/expiry. Step 5 cannot
+close while this item remains unresolved.
 
-## Current checkpoint
+## Step 2 accepted architecture
 
-Step 1 is complete after owner approval of its adversarial second pass. Step 2
-is active under the Superpowers architecture gate. Its live design spec is
-`DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`.
-The detailed preliminary Recovery B2 checkpoint is
-`DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`.
-The detailed preliminary Effect-application checkpoint is
-`DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`.
-The detailed preliminary LifeState checkpoint is
-`DEV/docs/superpowers/specs/2026-08-19-step-2-lifestate-policy-transition-design.md`.
-The health/effect selector-query direction, adversarial review, and accepted
-resolution are recorded in:
+The detailed normative reasoning remains in the Step-2 specs. Current accepted
+results include:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md`;
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-adversarial-review.md`;
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-resolution.md`.
+- Actor `hp` is sole HP/temporary-HP authority; `life_state_id` is separate and
+  zero HP never hard-codes death;
+- persistent Actor/Asset Resources and procedure-local Resources use one
+  semantic resolver but different lifetime/storage owners;
+- Conditions are named rules identities; concrete applications are ordinary
+  one-target Effect instances; Actor Condition lists are derived projections;
+- Condition definitions may own intrinsic mechanics directly;
+- Condition aggregation (`presence | cumulative_units`) and per-intrinsic-rule
+  scope (`aggregate_once | per_effective_application`) are orthogonal stages;
+- LifeState baseline is `active | dying | stable | dead`, with state-local
+  death-save/stable-recovery progress and prospective transition planning;
+- generic Effect stacks are removed; repeated independent applications are
+  separate Effect instances; reapplication and arbitration are separate policy
+  axes;
+- maintained/concentration support is an immutable Effect-parent forest,
+  separate from Duration;
+- reusable DurationSpec and concrete TemporalBinding are distinct; metric,
+  procedure-boundary, and semantic-boundary bases never use wall clock or a
+  duplicate writable remaining countdown;
+- Duration, Recovery, and procedure refresh share one registered boundary
+  vocabulary; state owners own automatic responses;
+- Temporal Agenda and reverse indexes are HOT/rebuildable projections, not
+  second authorities;
+- Calculation Selectors, MechanicalContext accessors/facts, and runtime-only
+  domain queries are separate surfaces;
+- MechanicalContext is pinned to one committed/prospective state-view identity;
+- dependency-cycle freedom uses registered dependency contracts plus a scoped
+  concrete DAG validated before prospective activation commits;
+- engine-owned mechanical reads use typed registered accessors and cannot be
+  forged by LLM invocation context.
 
-The ownership map must close before new Step 2 schema fields are introduced.
-Accepted ownership sub-decisions now include:
+## Step 2 artifacts
 
-- Actor `hp` is the sole HP/temporary-HP authority, while `life_state_id` is a
-  separate lifecycle authority and zero HP never hard-codes death;
-- generic Resource semantics use different lifetime owners for persistent
-  Actor/Asset state versus serializable procedure-local budgets; procedure
-  capacity is derived and procedure consumption is stored without making the
-  Resolution its owner;
-- non-interchangeable extra action-economy budgets use distinct Resource
-  definitions rather than inflating an unrestricted base budget;
-- `definition.condition` remains a named rules identity, while each concrete
-  application is ordinary Effect-instance state; Actor condition lists are
-  derived HOT/SQLite projections, not canon;
-- Condition and Effect definitions may share the same validated mechanical
-  payload model without mandatory `Condition -> EffectDefinition` indirection;
-- LifeState and Condition remain distinct authorities, for example a dying or
-  stable lifecycle may coexist with an Unconscious condition application;
-- Concentration is not a duration mode. Maintained Effect lifecycle support is
-  a narrow Effect-to-Effect relation with zero or one immutable parent per
-  dependent Effect, producing a forest rather than an arbitrary dependency
-  graph;
-- only parent terminal state breaks structural support; suppression does not.
-  Parent termination computes and atomically expires the full descendant
-  closure, while child termination has no automatic effect on the parent;
-- maintenance-root identity is stable for one episode, reverse child indexes are
-  HOT/SQLite projections, and ruleset-specific Concentration exclusivity is not
-  generalized into a second uniqueness subsystem;
-- reusable Duration semantics belong to definitions while each active Effect
-  owns its concrete temporal binding. Bindings use one mechanically appropriate
-  basis: metric deadline, procedure boundary, or semantic boundary;
-- metric elapsed time uses a lazy local monotonic coordinate, never wall clock
-  or a universal campaign clock. The coordinate advances only through explicit
-  runtime/procedure advancement and may freeze while no mechanic requires
-  metric precision;
-- the Temporal Agenda is a disposable HOT/SQLite due-index, not a canonical
-  scheduler entity or second duration authority;
-- metric advancement is interruptible at the nearest due boundary, resolves
-  same-time consequences before advancing further, and leaves continuation
-  validity/order to Step 3;
-- remaining duration is normally derived from an anchor. Re-anchoring occurs
-  only when an Effect crosses an actually incompatible temporal basis/context;
-  no writable countdown is maintained in parallel with a deadline;
-- **preliminary Recovery B2:** the producer owns whether a registered scoped
-  boundary occurred, while each authoritative state owner owns its own automatic
-  response; RestPolicy does not own cross-subsystem recovery mutation lists;
-- Duration/recovery/procedure refresh converge on one registered boundary
-  vocabulary, while a concrete BoundaryOccurrence is transient typed runtime
-  context rather than a world entity;
-- Resource definitions own baseline recovery, pure `resource.recovery` Rule
-  Element contributions may modify the calculation, and ResourceState remains
-  the sole mutable Resource authority;
-- Effect expiry and timed/procedure Resource recovery use the same disposable
-  Temporal Agenda/indexing infrastructure; no RecoveryScheduler or separate
-  action-economy reset engine is introduced;
-- boundary processing discovers the full immediately due set before mutation,
-  uses scoped indexes rather than campaign-wide broadcasts, and delegates exact
-  same-boundary phase ordering/idempotency to Step 3 and cross-scene
-  reconciliation to Step 5;
-- **preliminary Effect applications:** one independent target-local application
-  is one Effect instance. Multi-target persistent effects split into one
-  application per target; spatial mechanics may instead target one Zone/Asset/
-  Location record when that is the true lifecycle owner;
-- new Effect applications create new instances by default. Refresh preserves one
-  lifecycle identity only under explicit policy; replace atomically terminates
-  the old identity and creates a new one without overwriting provenance;
-- overlap arbitration is derived by target plus rules-origin/application family,
-  not by SQL uniqueness or Effect template name. Zero/one-candidate groups take
-  the fast path; rare overlaps use a registered whole-application comparator;
-- Effect arbitration decides which applications participate, while Rule Element
-  resolvers decide how their typed contributions add, collapse, override, or
-  otherwise combine;
-- generic mutable Effect stacks are not part of the preferred model. Independent
-  repeated units are separate applications; one-episode severity/intensity is a
-  typed application value or Resource when it has true resource semantics;
-- lifecycle, suppression/availability, and derived arbitration are separate
-  axes; winner/shadowed state is disposable HOT derivation rather than canonical
-  mutable authority;
-- genuine Effect-end consequences use typed Effect-end Signal/Event plus existing
-  TriggerBinding/Activity machinery. No arbitrary Effect-end callback language
-  or separate combination graph is introduced;
-- **preliminary LifeState:** the D&D baseline uses exactly `active`, `dying`,
-  `stable`, and `dead`; LifeState is separate from Conditions, creature type,
-  action availability, Effect lifecycle, and Actor entity retirement;
-- baseline lifecycle behavior is selected by a small registered policy such as
-  character-like versus monster-default. Important NPCs may override/inherit
-  policy without changing Actor kind, while special death-prevention Features
-  remain ordinary prospective rules mechanics rather than policy variants;
-- dying owns typed death-save progress with successes/failures only `0..2`.
-  Crossing the third-success/failure threshold atomically transitions to Stable/
-  Dead, so `dying + 3` is never canonical and death saves are not Resources;
-- Stable owns the real automatic `1d4`-hour recovery TemporalBinding required by
-  the D&D rule and shares the common Temporal Agenda rather than introducing a
-  lifecycle scheduler;
-- Dead starts no generic resurrection timer, revival-window list, world scan, or
-  Agenda work. A revival mechanic owns its own temporal eligibility constraint
-  and resolves the current death origin lazily only if/when that mechanic is
-  actually used;
-- snapshot/chronology handling must keep the current dead episode's transition
-  origin mechanically recoverable without forcing `dead_since` or a running
-  countdown into Actor state. Missing historical precision is adjudicated, never
-  invented;
-- automatic post-death returns such as a vampire rising at dawn are opt-in
-  indexed Feature/Effect/Trigger mechanics that materialize future obligations
-  only for Actors that actually have such a rule;
-- LifeStateResolver produces a prospective typed LifeStateTransitionPlan and
-  never commits by itself. HP, LifeState, state-local progress, lifecycle-origin
-  Conditions, and temporal-binding deltas commit atomically under Step 3;
-- every transition to Dead normalizes current HP to zero, but later restoration
-  of maximum HP does not resurrect the Actor. Ordinary healing of Dead is not a
-  second revival API;
-- death does not purge all Effects or retire/delete the Actor. Only interested
-  mechanics react; Concentration ends through the existing Effect/support path,
-  while other still-running Effects may persist through later revival;
-- **preliminary selector/query boundary:** calculation selectors, Mechanical
-  Context accessors, and runtime-only domain queries are separate surfaces and
-  declarative content never receives arbitrary world-query capability;
-- engine-owned direct/derived mechanical facts cannot be asserted by the LLM as
-  invocation authority; attempts to do so fail typed validation;
-- one MechanicalContext is pinned to one explicit committed/prospective
-  state-view identity, so lazy reads cannot silently span revisions;
-- mechanical dependency-cycle freedom uses registered dependency contracts plus
-  a scoped concrete DAG validated before prospective activation commits; Effect
-  availability, Effect arbitration, and Condition aggregation participate in
-  the same dependency analysis;
-- `condition.present` means mechanically effective named Condition state, while
-  the pure application calculation is named `condition.applicability`;
-- runtime domain-query contracts use only closed typed domain-specific keys;
-  generic filters/callbacks/query expressions remain forbidden;
-- `resource.available` is Resource-domain numeric availability, not Activity
-  activation eligibility; subject/entity-kind validity is part of accessor
-  registration;
-- machine naming in still-provisional architecture may be mechanically corrected
-  for namespace/semantic consistency without reopening human product decisions,
-  provided meaning and external compatibility do not change.
+Primary design chain:
 
-The exact continuation point is the bounded **valued/cumulative Condition
-semantics** design, with D&D Exhaustion as the required seed case. After that,
-Step 2 proceeds to schema/catalog alignment, focused validation cases, and the
-final independent Step 2 critical pass before the gate can close.
+- `DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-lifestate-policy-transition-design.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-resolution.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-design.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-resolution.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-condition-second-critical-pass.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-condition-intrinsic-rule-scope-resolution.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-schema-catalog-alignment-design.md`
+
+Machine alignment:
+
+- `DEV/CATALOG/core-catalog.json`
+- `DEV/CATALOG/entity-structures.json`
+- `DEV/CATALOG/mechanical-surfaces.json`
+- corresponding schemas under `DEV/SCHEMAS/`, including typed
+  MechanicalContext accessors, DurationSpec/TemporalBinding, Resource/Effect/
+  Condition/RestPolicy definition data, Actor/Effect world state;
+- `DEV/TESTS/test_step2_machine_contracts.py`;
+- `DEV/TESTS/test_step2_mechanical_examples.py`.
+
+## Exact continuation point
+
+**Run the final independent Step-2 critical architecture pass.**
+
+It must attack the *integrated* Step-2 result rather than one local spec and
+check at least:
+
+- cross-spec/schema contradictions and duplicate authority;
+- HP/LifeState/Condition interactions;
+- Effect application/arbitration/support/Condition aggregation interactions;
+- Resource lifetime/recovery/temporal interactions;
+- duration/boundary/Temporal Agenda recovery correctness;
+- selector/accessor/domain-query boundaries and dependency cycles;
+- LLM/deterministic authority leakage;
+- revision/prospective-state consistency;
+- recovery/checkpoint dependencies deliberately deferred to Steps 3/5;
+- performance/index implications and YAGNI;
+- whether machine alignment accidentally froze a Step-3/5 decision.
+
+If no blocker remains after resolution, Step 2 can close and Step 3 becomes the
+single active roadmap stage.
