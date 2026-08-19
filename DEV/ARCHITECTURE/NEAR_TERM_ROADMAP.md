@@ -4,7 +4,8 @@ Status: **ACTIVE WORKING PLAN**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
-This roadmap is the sequencing gate for the current architecture program. It is a status/order document, not a duplicate normative specification.
+This roadmap is the sequencing gate for the current architecture program. It is
+a status/order document, not a duplicate normative specification.
 
 Canonical process:
 
@@ -15,9 +16,12 @@ Canonical process:
 
 - Exactly one numbered step may be `IN PROGRESS`.
 - Later steps may be inspected only to expose dependencies/contradictions.
-- A step closes only after required artifacts/review/verification pass and every unresolved item has a later owner or explicit deferred/debt/backlog record.
-- Step closure updates this roadmap and `DEV/ARCHITECTURE/CATALOG_DESIGN_STATUS.md`.
-- After all major modules have designs, run one holistic architecture review over the complete ownership graph, schemas, logic, and cross-module relationships.
+- A step closes only after required artifacts/review/verification pass and every
+  unresolved item has a later owner or explicit deferred/debt/backlog record.
+- Step closure updates this roadmap and
+  `DEV/ARCHITECTURE/CATALOG_DESIGN_STATUS.md`.
+- After all major modules have designs, run one holistic architecture review over
+  the complete ownership graph, schemas, logic, and cross-module relationships.
 
 ## Roadmap
 
@@ -25,127 +29,182 @@ Canonical process:
 |---:|---|---|---|---|
 | 1 | **COMPLETE / ASSURED** | Critical audit of catalog/class architecture and accepted baseline | Owned audit ledger + retrospective assurance | Every finding fixed, assigned, or consciously deferred; no unowned blocker |
 | 2 | **COMPLETE / ASSURED** | Resources, HP/LifeState, Effects, Conditions, Duration, Recovery, selector/query boundaries | Normative ownership models + aligned schemas/catalogs + focused cases + retrospective assurance | No unresolved Step-2 blocker; maintenance/schema/unit-test validation passes |
-| 3 | **IN PROGRESS — DECISION GATE ACTIVE** | `IntentPlan -> Resolution -> Signal/Event`, including LLM/core execution boundary, Procedure ownership and checkpointable continuation | Exact typed compound-turn/execution contract, operation/result/event/receipt model, reaction/choice suspension, idempotent continuation/checkpoint semantics | Multiple intents, partial completion, reactions, suspension/resume, retries, atomic mutation segments, trigger chains, deterministic receipts, LLM intent binding, procedure-local state, and in-flight recovery have one coherent deterministic contract with focused cases and critical review |
-| 4 | `BLOCKED BY 3` | Lore, chapters, knowledge, secrets, minimum promotion interface | Durable truth/disclosure model + context-selection boundary | Public/restricted knowledge has one authority; durable references cannot depend on unpromoted local entities |
-| 5 | `BLOCKED BY 4` | Durability, multiplayer, event-local time | Compatible SOFT/HARD publication, shared visibility/conflict/recovery model | Publication/live-scene ownership, cross-scene recovery, chronology, local time, continuity restoration, and shared revision semantics are coherent |
+| 3 | **COMPLETE — FINAL SAME-HEAD CI REQUIRED FOR CLAIMED CLOSURE** | `IntentPlan -> Resolution -> Signal/Event`, including LLM/core execution boundary, Procedure ownership and checkpointable continuation | Canonical Alternative-C execution contract + machine schemas/catalogs + A–N cases + adversarial/final critical review | Final documentation/status HEAD passes maintenance audit, full DEV unit suite and `Validate engine source` |
+| 4 | **IN PROGRESS** | Lore, chapters, knowledge, secrets, disclosure, narrative projections, minimum promotion interface | One durable truth/disclosure model + knowledge-safe LLM context + transcript/SemanticEvent/Chapter projection contract | Public/restricted knowledge has one authority; durable references cannot depend on unpromoted local entities; narrative projections cannot become alternate truth; spectator/public projection has a safe visibility boundary |
+| 5 | `BLOCKED BY 4` | Durability, multiplayer, event-local time | Compatible SOFT/HARD publication, shared visibility/conflict/recovery model | Publication/live-scene ownership, cross-scene recovery, chronology, local time, continuity restoration, public/private projection transport, and shared revision semantics are coherent |
 | 6 | `BLOCKED BY 5` | Modes, LLM execution budget, migration, catalog gaps, full seed, final closure | Mode profiles + final cross-cutting consistency pass | Mode isolation enforceable; migration/gap/seed ownership complete; full audit passes |
 
-## Completed retrospective assurance overlay — Steps 1–2
+## Steps 1–2 retrospective assurance
 
-The non-numbered assurance overlay is complete. It did not reopen Steps 1 or 2 as active roadmap stages.
+The non-numbered retrospective assurance overlay is complete. Final resolution:
 
-Master plan and final resolution:
-
-- `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-plan.md`
 - `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
 
-Final slice status:
+Steps 1–2 remain closed and assured.
+
+## Step 3 closure chain
+
+Owner-approved architecture: **Alternative C**.
+
+Canonical/review artifacts:
+
+- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-decision-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md`
+- `DEV/docs/superpowers/plans/2026-08-19-step-3-execution-boundary-machine-contract.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-3-final-critical-review.md`
+
+Current Step-3 machine baseline:
 
 ```text
-0A Catalog meta-model and class boundaries      ASSURED / AMENDED
-0B Catalog evolution, identity, strata          ASSURED
-A  Actor mechanical state                       ASSURED / AMENDED
-B  Effects and Conditions                       ASSURED / AMENDED
-C  Temporal and Recovery                        ASSURED / AMENDED
-D  Mechanical evaluation/read boundaries        ASSURED / AMENDED
-E  Whole Steps 1–2 integration                  ASSURED / AMENDED
-```
+catalog_version = 1.4.0
 
-Key assurance amendments now entering Step 3:
+Interaction
+    -> IntentPlan
+        -> RuntimeCommand
+            -> ActionRequest -> Resolution(Activity)
+            OR
+            -> TransitionRequest -> direct deterministic execution
 
-- one coherent `ResolvedCatalogContext`; incompatible adoption migrates coherently or blocks;
-- catalog version `1.3.0` after admitting `runtime.procedure`;
-- `runtime.procedure` is the independent operational owner for procedure-local participant ResourceState, distinct from Encounter/Resolution/Continuation;
-- persistent Resource current state is normalized only from state-stable engine-derived capacity;
-- current Condition effectiveness includes `condition.applicability`;
-- live Effects may own finite owner-local scheduled-trigger due state independent of intrinsic lifetime;
-- explicitly established quantitative elapsed evidence is retained even with no armed timer;
-- invocation facts are a closed boolean `INVOCATION_ADJUDICATED` channel and reviewed state-sensitive Step-2 selectors admit `ENGINE_STATE` only;
-- structured dependency/input metadata + scoped prospective DAG reject cycles and forbidden transitive inputs;
-- live Effect recency must use compact immutable mechanical-order evidence independent of trace/event-body retention;
-- checkpoints are immutable recovery frontiers, not parallel mutable owners.
-
-Steps 1–2 remain closed.
-
-## Step 3 preserved Decision Gate
-
-Resume from:
-
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-task-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-research-draft.md`
-
-The decision pass must incorporate the assurance constraints rather than restarting from the earlier baseline.
-
-Current candidate responsibility split entering the gate:
-
-```text
-runtime.intent_plan
-    message-level ordered orchestration
-
-runtime.command
-    idempotent executable clause envelope
-
-runtime.resolution
-    one Activity invocation
+RuntimeCommand
+    root mandatory execution-chain closure owner
 
 runtime.procedure
-    one active rules-procedure lifetime / procedure-local Resource owner
+    sole procedure-local ResourceState owner
 
-ExecutionSegment
-    prospective atomic local commit kernel (candidate concept)
+Resolution / direct transition
+    -> embedded ExecutionSegment(s)
+        -> committed MechanicalEvents
+        -> receipts / idempotency
+        -> mandatory child descriptors
 
-runtime.continuation
-    portable suspended Resolution authority, not Procedure owner
-
-Signal / BoundaryOccurrence
-    transient/prospective execution context
-
-MechanicalEvent
-    immutable post-commit mechanical fact
+Continuation
+    portable suspended Resolution generation
 ```
 
-Material Step-3 decisions still requiring the human architect include exact execution ownership/segment/event boundaries and the associated trade-offs in the preserved Decision Brief. No candidate specification is canonicalized before that gate.
+Key Step-3 closure points:
 
-## Mandatory Step-3 carry-forward
+- IntentPlan is ordered message orchestration, not a transaction;
+- Resolution means exactly one Activity invocation;
+- deterministic transitions do not require fake Activities;
+- RuntimeCommand owns root mandatory descendant closure; no
+  `runtime.resolution_chain` exists;
+- ExecutionSegment is embedded under an independent execution owner; no
+  `runtime.execution_segment` exists;
+- `runtime.procedure` exclusively owns procedure-local spent ResourceState;
+- reaction children share Procedure by reference and parent recomputes from a
+  safe phase after expected child commits;
+- mandatory post-commit child identity is representable in the same committed
+  segment as the triggering Event;
+- MechanicalEvent identity is segment + stable ordinal;
+- invocation facts are explicit registered booleans with provenance; missing is
+  distinct from false and engine-owned facts cannot enter this channel;
+- incompatible ResolvedCatalogContext adoption cannot silently reinterpret an
+  in-flight command/continuation;
+- Effect recency uses compact target/application-family-local immutable episode
+  order evidence rather than wall time or retained trace bodies;
+- same-coordinate advancement cannot pass unresolved mandatory due work;
+- scheduled owner-local triggers enter ordinary child Resolution execution;
+- final narration is normally based on mechanically settled receipt closure and
+  never becomes mechanical authority.
 
-1. Natural-language intent/referent mapping must produce typed bounded requests; LLM cannot invent engine-owned facts/capability IDs.
-2. Accepted invocation facts carry explicit value/provenance/missing semantics and deterministic fingerprinting across suspension/retry.
-3. Resolution/Continuation pin ResolvedCatalogContext identity; incompatible adoption cannot silently reinterpret suspended work.
-4. Relevant commands/Resolutions bind one `runtime.procedure` identity and share its procedure-local Resources with child reactions.
-5. A child commit advances the parent frontier; parent re-pins/recomputes from a safe phase rather than trusting stale prospective state.
-6. Effect create/replace materializes compact immutable application-order evidence; refresh preserves it.
-7. Owner-local scheduled triggers create ordinary bounded due execution and atomically resolve `REARM | UNARM | OWNER TERMINAL`.
-8. Checkpointable in-flight state preserves source owners/inputs needed for deterministic resume; derived Agenda/DAG/winner caches remain rebuildable.
-9. Runtime-only/noncanonical state may still be continuity-critical and therefore checkpointable.
+Focused integrated cases A–N cover ordinary action, reactions, post-commit
+follow-ups, partial multi-intent completion, direct transitions, clarification,
+retry identity, suspended recovery, boundary occurrence, scheduled due work,
+Procedure sharing, incompatible catalog contexts, execution-chain limits, and
+Effect recency after trace compaction.
 
-## Later-stage ownership
+The final critical review reports zero unresolved Step-3 blockers. The only
+remaining closure condition is fresh `Validate engine source` success on the
+final roadmap/status/documentation HEAD.
 
-### Step 4
+## Step 4 — active architecture stage
 
-- lore/knowledge/secrets/disclosure authority;
-- knowledge-safe context selection and invocation-fact exposure;
-- explicit promotion of durable truth.
+Step 4 now owns the boundary among objective truth, disclosure/knowledge,
+conversation history, semantic campaign history and authored narrative.
 
-### Step 5
+Primary problem graph:
 
-- repository-backed runtime checkpoint publication/restoration;
-- SOFT/HARD durability and multiplayer reconciliation;
-- chronology evidence persistence/compaction and cross-scene time reconciliation;
-- shared revision/conflict semantics and checkpoint cleanup.
+```text
+world/lore truth authority
+    -> knowledge/disclosure authority
+    -> knowledge-safe LLM context
 
-### Step 6
+runtime.message / retained transcript
+    + committed MechanicalEvents/world/lore truth
+        -> runtime.semantic_event
+            -> world.chapter
+                -> optional spectator/public projection
+```
 
-- exact engine/ruleset/package/catalog snapshot identity metadata;
+The layers are not alternate truths:
+
+- transcript preserves what participants actually said when retained;
+- MechanicalEvents are technical committed mechanics facts;
+- SemanticEvents are compact campaign-history facts/projections;
+- Chapters are authored human-readable narrative/history projections.
+
+Step 4 must determine which claims each projection may make, how they anchor to
+truth/knowledge authority, how secrets remain inaccessible to unauthorized
+contexts, and when a situational invocation-adjudicated fact may be promoted to
+durable lore.
+
+### Mandatory Step-4 questions
+
+1. What is the sole authority for objective propositions, disputed claims and
+   unknown/unresolved truth?
+2. What is the sole authority for who knows what and what a given player/LLM
+   context may see?
+3. How do SemanticEvents compact MechanicalEvents/world changes without becoming
+   a second writable world state?
+4. How do Chapters cite/cover SemanticEvents/lore while remaining editable
+   narration rather than canon authority?
+5. What transcript subset, if any, is retained durably, and which layer owns
+   dialogue fidelity versus story truth?
+6. How are public/spectator projections generated so private secrets never leak
+   merely because the private campaign Git repository contains them?
+7. What promotion closure is required before a durable lore/event/chapter
+   reference can point to a currently local entity/definition?
+8. How are LLM discovery/context candidates filtered by knowledge/disclosure
+   without forcing full campaign state into model context?
+
+## Step 5 carry-forward
+
+Step 5 will own physical repository publication/restoration and shared-state
+behavior after Step 4 fixes the semantic visibility boundary, including:
+
+- checkpoint publication/restoration;
+- SOFT/HARD durability;
+- multiplayer/shared Procedure conflicts;
+- chronology evidence and cross-scene reconciliation;
+- private canonical versus public/spectator Git projection transport;
+- transcript/history retention/compaction mechanics;
+- checkpoint cleanup/expiry.
+
+## Step 6 carry-forward
+
+Step 6 retains:
+
+- exact engine/ruleset/package/catalog snapshot metadata;
 - full D&D seed and migration/catalog-gap closure;
-- complete structured selector/input/dependency metadata coverage;
-- exhaustive concrete ruleset verification and final architecture closure.
+- complete selector/input/dependency metadata coverage;
+- proven specialized simultaneous/scheduled ordering rules;
+- modes and LLM execution budget;
+- final holistic architecture/catalog/seed audit.
 
 ## Documentation debt
 
-Before implementation planning relies on `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md`, align its stale pre-Step-2 examples with current normative Activity/Rule Element/assurance contracts. Older explanatory catalog-version labels are likewise non-authoritative relative to the normative inventory/machine catalogs at `1.3.0`.
+`DEV/ARCHITECTURE/CATALOG_MODEL.md` and
+`DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` are historical derivation
+material with examples/version labels predating current canonical Step-2/3
+contracts. They are non-authoritative relative to `CATALOG_INVENTORY.md`, machine
+catalogs/schemas and the canonical specs. Add/strengthen supersession warnings
+before implementation work relies on those examples.
 
 ## Exact continuation point
 
-**Step 3 / Human Decision Gate: `IntentPlan -> Resolution -> Signal/Event`.**
+**Step 4 / Lore, Knowledge, Disclosure, Narrative Projection, and Promotion.**
 
-Do not begin candidate specification or implementation before the decision gate resolves the material execution-boundary choices.
+Begin with a solution-blind Task Brief over truth/knowledge/projection ownership,
+including the spectator-safe transcript → SemanticEvent → Chapter requirement.
