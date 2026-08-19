@@ -46,15 +46,17 @@ Master plan:
 
 - `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-plan.md`
 
-Execution order:
+Current assurance status:
 
-1. Catalog meta-model and class boundaries;
-2. Catalog evolution, identity, strata and discoverability;
-3. Actor mechanical state;
-4. Effects and Conditions;
-5. Temporal and Recovery;
-6. Mechanical evaluation/read boundaries;
-7. whole Steps 1–2 integrated architecture.
+```text
+0A Catalog meta-model and class boundaries      ASSURED / AMENDED
+0B Catalog evolution, identity, strata          ASSURED
+A  Actor mechanical state                       ASSURED / AMENDED
+B  Effects and Conditions                       ASSURED / AMENDED
+C  Temporal and Recovery                        ASSURED / AMENDED
+D  Mechanical evaluation/read boundaries        ACTIVE
+E  Whole Steps 1–2 integration                  PENDING D
+```
 
 Each slice begins with a solution-blind Task Charter and only then audits the
 accepted baseline against the independently reconstructed problem. Research is
@@ -69,9 +71,9 @@ Step 3 is paused only in sequencing, not discarded. Its saved checkpoint is:
 
 After assurance closes, Step 3 resumes from that Decision Gate.
 
-## Step 2 closure
+## Step 2 closure and assurance amendments
 
-Final verdict:
+Pre-assurance final verdict:
 
 - `DEV/docs/superpowers/specs/2026-08-19-step-2-final-critical-review.md`
 
@@ -79,17 +81,33 @@ Current status index:
 
 - `DEV/ARCHITECTURE/CATALOG_DESIGN_STATUS.md`
 
-Step 2 closes with the following core boundaries:
+Step 2 remains closed with the following core boundaries and assurance
+amendments:
 
 - Actor HP and LifeState are separate authorities;
 - persistent and procedure-local Resources use one semantic API but different
   lifetime/storage owners;
+- persistent Resource current state is normalized against state-stable capacity,
+  while procedure spent state is not rewritten by capacity changes;
 - target-local Effects are one application per target; generic mutable stacks
   are absent;
-- Effect reapplication matching/action, arbitration, support, and Rule Element
-  combination are separate responsibilities;
+- Effect reapplication matching/action, arbitration, support, Condition
+  aggregation, and Rule Element combination are separate responsibilities;
+- reusable definition identity, concrete source, rules-origin family identity,
+  and Step-3 causal execution identity are not overloaded;
 - Conditions use independent aggregation and intrinsic-rule-scope axes;
-- DurationSpec, TemporalBinding, and Temporal Agenda have distinct ownership;
+- current Condition effectiveness is gated by `condition.applicability`, so a
+  later immunity may suppress participation without terminating lifecycle;
+- DurationSpec, intrinsic TemporalBinding, owner-local scheduled-trigger state,
+  and Temporal Agenda have distinct ownership;
+- a live Effect may own finite next-due scheduled-trigger bindings keyed by
+  stable local declaration key, independently of intrinsic Effect lifetime;
+- terminal Effects cannot retain armed scheduled-trigger state;
+- Temporal Agenda remains a rebuildable projection and no global scheduler/job
+  entity is introduced;
+- explicit quantitative elapsed evidence is retained even when no timer is
+  currently armed; absent/approximate narrative time is not silently upgraded to
+  exact elapsed time;
 - boundary producers and state-owner automatic responders are separate;
 - Calculation Selectors, MechanicalContext accessors, and runtime domain queries
   are separate surfaces;
@@ -97,14 +115,27 @@ Step 2 closes with the following core boundaries:
   registered contracts plus scoped prospective DAG validation;
 - engine-owned mechanical facts cannot be supplied by the LLM as authority.
 
-The machine contracts and focused Step-2 tests are aligned with these decisions.
+The Slice-C temporal amendment is authoritative in:
 
-## Cross-cutting requirement now entering Step 3 — LLM / deterministic core
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-assurance-slice-c-temporal-recovery-resolution.md`
 
-The LLM/core boundary is no longer merely deferred because Step 3 owns the typed
-execution interface where it becomes operationally material.
+## Cross-cutting requirement entering Slice D and Step 3 — LLM / deterministic core
 
-Step 3 must define at least:
+The LLM/core boundary must remain closed at both read and execution surfaces.
+
+Slice D now re-tests:
+
+```text
+Calculation Selector
+MechanicalContext accessor/fact
+runtime-only Domain Query
+```
+
+including whether state-normalizing calculations can depend on invocation-only
+adjudicated facts and whether Condition/scheduled-trigger evaluation can bypass
+pinned state or the scoped dependency DAG.
+
+Step 3 must then define:
 
 ```text
 natural-language player input
@@ -122,10 +153,7 @@ mapping, but it may not invent executable capability IDs or assert engine-owned
 mechanical facts. The architecture must not depend on the LLM keeping the full
 catalog in prompt memory; it needs bounded lookup/hydration/context interfaces.
 
-Step 4 later refines durable knowledge/context selection, but Step 3 owns the
-execution-facing typed boundary.
-
-## Cross-cutting requirement now entering Step 3 — runtime continuity
+## Cross-cutting requirement entering Step 3 — runtime continuity
 
 `runtime-only` / `non-canonical` does not mean `safe to lose`.
 
@@ -137,7 +165,9 @@ including as applicable:
 - partially executed IntentPlan/Resolution state;
 - suspended choices/reactions/Continuations;
 - pending typed obligations/triggers;
-- mechanically material local metric-time anchors;
+- live owner-local scheduled-trigger due state when not already durable;
+- mechanically material local metric-time anchors and retained quantitative
+  chronology evidence;
 - idempotency/receipt information required for deterministic resume.
 
 The Temporal Agenda remains a rebuildable index rather than checkpoint
@@ -160,6 +190,7 @@ and checkpoint cleanup/expiry.
 - repository-backed runtime checkpoint publication/restoration;
 - SOFT/HARD durability and multiplayer reconciliation;
 - cross-scene/event-local-time integration;
+- chronology evidence persistence/compaction;
 - shared revision/conflict semantics and checkpoint cleanup.
 
 ### Step 6
@@ -167,13 +198,15 @@ and checkpoint cleanup/expiry.
 - full D&D seed and migration/catalog-gap closure;
 - exhaustive verification of concrete ruleset response tables, including health/
   lifecycle rules such as Long Rest HP restoration, without moving their
-  ownership into RestPolicy or ResourceState.
+  ownership into RestPolicy or ResourceState;
+- expansion of scheduled-trigger declaration shapes only for proven seed cases
+  outside the initial metric-delay + bounded-Activity contract.
 
 ## Exact continuation point
 
-**Temporary assurance overlay: Slice 0A / Catalog meta-model and class boundaries.**
+**Temporary assurance overlay: Slice D / Mechanical evaluation and read boundaries.**
 
-After the assurance overlay closes, resume:
+After Slice D and whole-system Slice E close, resume:
 
 **Step 3 / saved Decision Gate: `IntentPlan -> Resolution -> Signal/Event`.**
 
@@ -182,10 +215,11 @@ The preserved Step-3 first design pass includes:
 1. typed LLM-to-core intent/reference binding;
 2. compound/multiple-intent ordering and partial completion;
 3. prospective state and atomic mutation-segment boundaries;
-4. Signal/Event/BoundaryOccurrence authority and ordering;
+4. Signal/Event/BoundaryOccurrence and scheduled-trigger due-occurrence authority
+   and ordering;
 5. reaction/choice suspension and continuation identity;
 6. retries/idempotency/receipts;
-7. trigger-chain execution bounds;
+7. trigger-chain execution bounds and scheduled-trigger re-arm/unarm;
 8. provenance-sensitive selection/adjudication;
 9. checkpointable in-flight state and deterministic resume;
 10. interaction with the Step-2 scoped dependency DAG and pinned state views.
