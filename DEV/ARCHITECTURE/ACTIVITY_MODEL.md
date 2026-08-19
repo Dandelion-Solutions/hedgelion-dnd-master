@@ -1,6 +1,6 @@
 # HDM Activity Model
 
-Status: **DESIGN BASELINE — pending focused mechanical examples**
+Status: **DESIGN BASELINE — STEP 2 ASSURANCE FACT-INPUT ALIGNMENT APPLIED**
 
 This document defines the first executable contract for HDM Activities. It
 supersedes the provisional Activity shapes in `CATALOG_MODEL.md` and
@@ -63,7 +63,7 @@ added only when the procedure needs them:
   },
   "requirements": {
     "all": [
-      {"fact": "actor.can_act"}
+      {"fact": "fiction.target_reachable"}
     ]
   },
   "targeting": {
@@ -77,10 +77,16 @@ added only when the procedure needs them:
 }
 ```
 
+The example fact is an invocation-adjudicated fiction input, not an engine-owned
+mechanical claim. Engine-checkable requirements such as HP, Resource state,
+Condition state, equipment state, or derived ability to act use registered
+mechanical accessors/eligibility contracts instead of LLM facts.
+
 The fields mean:
 
 - `activation`: optional action-economy or procedure-time cost;
-- `requirements`: explicit mechanical facts required before resolution;
+- `requirements`: closed predicate over registered accessors and explicitly
+  registered invocation facts;
 - `targeting`: target cardinality, kind, range, and area when relevant;
 - `costs`: references to Resource state and the registered commitment point;
 - `steps`: ordered typed operations.
@@ -121,7 +127,7 @@ operation makes Activity compilation fail.
 The first composition language permits only:
 
 - a finite ordered sequence;
-- a predicate over explicit context or typed prior results;
+- a predicate over explicit registered context or typed prior results;
 - bounded iteration over an explicit target list;
 - a bounded branch over typed results;
 - a player/GM choice request;
@@ -141,7 +147,8 @@ from focused tests rather than guessed into the catalog.
 
 ## 4. ActionRequest and binding
 
-The LLM supplies an Activity reference plus invocation-specific bindings:
+The LLM supplies an Activity reference plus invocation-specific bindings.
+Conceptually:
 
 ```json
 {
@@ -149,20 +156,50 @@ The LLM supplies an Activity reference plus invocation-specific bindings:
   "actor_id": "actor-00001",
   "source_id": "asset-00001",
   "target_ids": ["actor-00014"],
-  "context_facts": ["source.accessible", "target.reachable"]
+  "context_facts": {
+    "fiction.target_visible": {
+      "value": true,
+      "provenance": "llm_adjudicated"
+    }
+  }
 }
 ```
 
-The request does not copy the Activity definition, actor statistics, or active
-Rule Elements. Runtime hydrates those records and rejects unknown fact IDs,
-engine-checkable contradictions, unknown references, missing requirements, or
-illegal parameters. Adjudicated fictional facts remain the LLM layer's
-responsibility and are explicit in the trace.
+This is a semantic example, not the final Step-3 RuntimeCommand schema.
 
-Fictional facts that the mathematical engine cannot infer — for example cover,
-visibility, or whether a chandelier can support an actor's weight — must be
-adjudicated first and passed as typed context. An Activity cannot discover
-unstated fiction by querying all lore.
+The request does not copy the Activity definition, actor statistics, or active
+Rule Elements. Runtime hydrates those records and rejects:
+
+- unknown fact IDs;
+- fact IDs not permitted by the consumer's input contract;
+- attempts to supply engine-owned mechanical state as an adjudicated fact;
+- unknown references;
+- missing requirements/facts;
+- illegal parameters or subject bindings.
+
+Invocation facts are registered in `CATALOG/mechanical-surfaces.json`. The
+initial fact channel is boolean and `INVOCATION_ADJUDICATED` only. Engine-owned
+facts remain accessors/calculations resolved from the pinned MechanicalContext.
+
+For a registered boolean invocation fact:
+
+```text
+explicit true  != explicit false != missing
+```
+
+Missing is not coerced to false. If compiled mechanics reference an invocation
+fact that was not accepted for the request, runtime returns a typed missing-input
+or adjudication requirement.
+
+Fictional facts that the mathematical engine cannot infer — for example whether
+a target is visible through an unusual fictional obstruction, or whether an
+improvised support can bear weight — may be adjudicated first and passed as
+registered typed context. An Activity cannot discover unstated fiction by
+querying all lore.
+
+Accepted invocation facts are explicit in the trace and, when execution may
+suspend/retry, become fixed causal execution inputs with provenance. They do not
+automatically become canonical world/lore facts.
 
 Ad-hoc play should normally bind a standard parameterized Activity such as an
 improvised attack or generic test. It does not create a persistent Activity ID
@@ -193,6 +230,9 @@ For assets, preflight applies the accepted handling contract:
 - an unarmed attack never requires a weapon and the mere presence of a weapon
   never creates an unnecessary choice.
 
+These engine-checkable facts are resolved from authoritative state/contracts,
+not supplied through the invocation fact channel.
+
 ## 6. Multiple intents in one message
 
 The host builds one ordered `runtime.intent_plan` containing every material
@@ -222,6 +262,7 @@ Resolution. The continuation persists:
 - Activity and bound entity references;
 - completed step position;
 - already generated authoritative rolls;
+- accepted invocation facts + provenance required for deterministic resumption;
 - typed exports;
 - relevant record revisions;
 - the pending choice or reaction contract;
@@ -230,6 +271,11 @@ Resolution. The continuation persists:
 SQLite transactions never remain open across chat messages. Resumption validates
 the stored revisions and never rerolls or repeats a committed mutation.
 
+Derived MechanicalContext values are not blindly trusted across suspension.
+Step 3 owns the safe recompute frontier and re-pinning rules; fixed accepted
+invocation facts remain fixed inputs to the resumed Resolution unless the
+contract explicitly requires new adjudication.
+
 ## 8. Efficient execution in ChatGPT
 
 The runtime compiles Activity definitions when loaded and caches the complete
@@ -237,20 +283,30 @@ compiled object. A normal call hydrates only the acting actor, explicit targets,
 the source, their relevant effects/resources, and the current procedure state.
 
 One host call should normally process the whole IntentPlan until it completes,
-fails, or requires a genuine human choice. The LLM is not invoked between
-mechanical steps and does not maintain a separate reasoning context for every
-NPC. It receives one compact, typed receipt and produces one coherent narrative
-answer.
+fails, or requires a genuine human choice/adjudication. The LLM is not invoked
+between deterministic mechanical steps and does not maintain a separate
+reasoning context for every NPC. It receives one compact, typed receipt and
+produces one coherent narrative answer.
+
+A due owner-local scheduled Effect trigger uses the same Activity binding/read
+contract. It does not gain arbitrary world-query access merely because its
+invocation was initiated by the Temporal Agenda.
 
 Meta and maintenance commands bypass Activity routing and must never be logged
 as fictional actions.
 
-## 9. Known limitations
+## 9. Known limitations and later ownership
 
 This model does not guarantee that the LLM maps prose correctly. It reduces the
 failure surface through a closed Activity/operation registry, strict schemas,
-explicit context facts, and typed runtime rejection. It also does not provide a
-tactical map, simulate wall-clock time, or make arbitrary homebrew executable.
+registered invocation facts, typed accessors, and typed runtime rejection. It
+also does not provide a tactical map, simulate wall-clock time, or make
+arbitrary homebrew executable.
+
+Step 3 owns the exact RuntimeCommand/ActionRequest schema for fact values and
+provenance, binder failure types, idempotency fingerprinting, and Continuation
+persistence. Step 4 owns durable lore/knowledge promotion and broader context
+selection. Step 6 owns full selector/fact seed closure.
 
 The remaining Activity work is deliberately narrow:
 
@@ -262,13 +318,12 @@ The remaining Activity work is deliberately narrow:
 
 ## 10. Design basis
 
-- [D&D SRD 5.2.1](https://media.dndbeyond.com/compendium-images/srd/5.2/SRD_CC_v5.2.1.pdf):
-  action, Bonus Action, Reaction, movement, tests, attacks, and GM adjudication;
-- [Foundry D&D5e Activities](https://github.com/foundryvtt/dnd5e/wiki/Activities):
-  multiple activities per source plus activation, consumption, targeting, and
-  effect separation;
-- [Avrae Automation Reference](https://avrae.readthedocs.io/en/latest/automation_ref.html):
-  typed mechanical nodes, target scopes, and result-dependent branches.
+- D&D SRD 5.2.1: action, Bonus Action, Reaction, movement, tests, attacks, and
+  GM adjudication;
+- Foundry D&D5e Activities: multiple activities per source plus activation,
+  consumption, targeting, and effect separation;
+- Avrae Automation Reference: typed mechanical nodes, target scopes, and
+  result-dependent branches.
 
 These are design references. HDM does not copy their UI, command language,
 document model, recursive automation surface, or implementation code.
