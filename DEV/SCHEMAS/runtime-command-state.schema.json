@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/runtime-command-state.schema.json",
+  "title": "HDM runtime.command state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "interaction_id", "intent_plan_id", "clause_id", "command_kind",
+    "catalog_context_fingerprint", "input_fingerprint", "disposition",
+    "invocation_facts", "pending_child_invocations"
+  ],
+  "properties": {
+    "interaction_id": {"type": "string", "minLength": 1},
+    "intent_plan_id": {"type": "string", "minLength": 1},
+    "clause_id": {"type": "string", "minLength": 1},
+    "command_kind": {"enum": ["action", "transition"]},
+    "catalog_context_fingerprint": {"type": "string", "minLength": 1},
+    "input_fingerprint": {"type": "string", "minLength": 1},
+    "disposition": {"enum": ["command.accepted", "command.settled"]},
+    "invocation_facts": {
+      "type": "array",
+      "items": {"$ref": "https://hedgelion.invalid/schemas/invocation-fact.schema.json"}
+    },
+    "root_resolution_id": {"type": "string", "minLength": 1},
+    "transition_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transition_kind", "payload"],
+      "properties": {
+        "transition_kind": {"type": "string", "pattern": "^transition\\.[a-z][a-z0-9_.]*$"},
+        "payload": {"type": "object"}
+      }
+    },
+    "pending_child_invocations": {
+      "type": "array",
+      "items": {"$ref": "https://hedgelion.invalid/schemas/pending-child-invocation.schema.json"}
+    },
+    "receipt_ref": {"type": "string", "minLength": 1},
+    "details": {"type": "object"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"command_kind": {"const": "action"}}, "required": ["command_kind"]},
+      "then": {
+        "required": ["root_resolution_id"],
+        "not": {"required": ["transition_request"]}
+      }
+    },
+    {
+      "if": {"properties": {"command_kind": {"const": "transition"}}, "required": ["command_kind"]},
+      "then": {
+        "required": ["transition_request"],
+        "not": {"required": ["root_resolution_id"]}
+      }
+    },
+    {
+      "if": {"properties": {"disposition": {"const": "command.settled"}}, "required": ["disposition"]},
+      "then": {
+        "properties": {"pending_child_invocations": {"maxItems": 0}}
+      }
+    }
+  ],
+  "examples": [
+    {
+      "interaction_id": "turn-000042",
+      "intent_plan_id": "turn-000042-plan",
+      "clause_id": "c1",
+      "command_kind": "action",
+      "catalog_context_fingerprint": "sha256:catalog-context-A",
+      "input_fingerprint": "sha256:command-input-A",
+      "disposition": "command.accepted",
+      "invocation_facts": [],
+      "root_resolution_id": "resolution-0000001",
+      "pending_child_invocations": []
+    }
+  ]
+}
