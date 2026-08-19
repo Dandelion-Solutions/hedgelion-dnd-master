@@ -22,6 +22,14 @@
   "$defs": {
     "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
     "scalar": {"type": ["string", "number", "integer", "boolean"]},
+    "terminalReasonId": {
+      "enum": [
+        "effect_end.expired",
+        "effect_end.removed",
+        "effect_end.replaced",
+        "effect_end.support_lost"
+      ]
+    },
     "lifecycle": {
       "oneOf": [
         {
@@ -36,7 +44,7 @@
           "required": ["state_id", "terminal_reason_id"],
           "properties": {
             "state_id": {"const": "effect_lifecycle.terminal"},
-            "terminal_reason_id": {"$ref": "#/$defs/machineId"}
+            "terminal_reason_id": {"$ref": "#/$defs/terminalReasonId"}
           }
         }
       ]
