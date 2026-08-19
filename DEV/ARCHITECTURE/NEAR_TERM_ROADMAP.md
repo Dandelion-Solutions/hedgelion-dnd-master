@@ -20,6 +20,11 @@ The engine-wide architecture workflow is `ARCHITECTURE/DESIGN_PROCESS.md`.
   `ARCHITECTURE/CATALOG_DESIGN_STATUS.md` in the same change.
 - Architecture is reviewed before implementation. Repository consistency and
   JSON Schema validation are run before claiming completion.
+- After all major architecture modules have designs, the owner intends a holistic
+  review and additional brainstorming pass over the **entire architecture,
+  structures, logic, ownership, schemas, and inter-module relationships**. This
+  global review applies to every current accepted/provisional checkpoint rather
+  than to one singled-out subsystem.
 
 ## Roadmap
 
@@ -39,6 +44,8 @@ is active under the Superpowers architecture gate. Its live design spec is
 `DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`.
 The detailed preliminary Recovery B2 checkpoint is
 `DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`.
+The detailed preliminary Effect-application checkpoint is
+`DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`.
 
 The ownership map must close before new Step 2 schema fields are introduced.
 Accepted ownership sub-decisions now include:
@@ -98,16 +105,33 @@ Accepted ownership sub-decisions now include:
 - boundary processing discovers the full immediately due set before mutation,
   uses scoped indexes rather than campaign-wide broadcasts, and delegates exact
   same-boundary phase ordering/idempotency to Step 3 and cross-scene
-  reconciliation to Step 5.
+  reconciliation to Step 5;
+- **preliminary Effect applications:** one independent target-local application
+  is one Effect instance. Multi-target persistent effects split into one
+  application per target; spatial mechanics may instead target one Zone/Asset/
+  Location record when that is the true lifecycle owner;
+- new Effect applications create new instances by default. Refresh preserves one
+  lifecycle identity only under explicit policy; replace atomically terminates
+  the old identity and creates a new one without overwriting provenance;
+- overlap arbitration is derived by target plus rules-origin/application family,
+  not by SQL uniqueness or Effect template name. Zero/one-candidate groups take
+  the fast path; rare overlaps use a registered whole-application comparator;
+- Effect arbitration decides which applications participate, while Rule Element
+  resolvers decide how their typed contributions add, collapse, override, or
+  otherwise combine;
+- generic mutable Effect stacks are not part of the preferred model. Independent
+  repeated units are separate applications; one-episode severity/intensity is a
+  typed application value or Resource when it has true resource semantics;
+- lifecycle, suppression/availability, and derived arbitration are separate
+  axes; winner/shadowed state is disposable HOT derivation rather than canonical
+  mutable authority;
+- genuine Effect-end consequences use typed Effect-end Signal/Event plus existing
+  TriggerBinding/Activity machinery. No arbitrary Effect-end callback language
+  or separate combination graph is introduced.
 
-Recovery B2 is explicitly preliminary: the owner plans a later holistic
-architecture review and additional brainstorming pass after the major modules
-are designed. That planned reopen does not block current sequencing; its review
-conditions are recorded in the detailed B2 checkpoint.
-
-The exact continuation point is **generic Effect application policy**: settle
-stacking versus independent applications, replacement versus refresh,
-unique-by-source/global semantics, definition policy versus concrete instance
-state, and non-support expiry/removal consequences. Minimum LifeState
-transitions, selectors, schema/catalog alignment, focused cases, and the final
-Step 2 critical pass follow before Step 2 can close.
+The exact continuation point is **minimum LifeState vocabulary and transitions**:
+settle the minimum stored lifecycle states, HP/death-save/healing interactions,
+Unconscious and other Condition relationships, terminal entity state, and
+revival/transformation boundaries. Health/effect selectors, schema/catalog
+alignment, focused cases, and the final Step 2 critical pass follow before Step
+2 can close.

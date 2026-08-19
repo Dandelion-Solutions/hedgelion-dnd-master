@@ -6,9 +6,11 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Roadmap owner: Step 2 of `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 
-Process: the HP/LifeState boundary is inherited from the owner-approved Step 1 adversarial audit; the Resource/procedure-budget, Condition/Effect, maintained Effect support, and Duration/Temporal Agenda sub-decisions below were developed through the current Superpowers architecture brainstorming flow, critically challenged, and explicitly approved by the owner. Recovery boundary ownership has additionally reached a **preliminarily accepted B2 checkpoint** that is intentionally marked for reopening during the owner's later holistic architecture review.
+Process: the HP/LifeState boundary is inherited from the owner-approved Step 1 adversarial audit; the Resource/procedure-budget, Condition/Effect, maintained Effect support, and Duration/Temporal Agenda sub-decisions below were developed through the current Superpowers architecture brainstorming flow, critically challenged, and explicitly approved by the owner. Recovery B2 and Effect-application ownership have additionally reached detailed **preliminarily accepted** checkpoints sufficient for current sequencing.
 
-This is the live Step 2 design spec. It records accepted ownership decisions as they close so they do not depend on chat history. Step 2 itself is not complete: generic Effect application/stacking policy, minimum LifeState transitions, selectors, schema alignment, focused validation, and the final Step 2 critical pass remain open. Recovery B2 is sufficiently closed for sequencing but is not permanently frozen against the planned final review.
+This is the live Step 2 design spec. It records accepted ownership decisions as they close so they do not depend on chat history. Step 2 itself is not complete: minimum LifeState transitions, selectors, schema alignment, focused validation, and the final Step 2 critical pass remain open.
+
+All architecture recorded here remains subject to the later holistic review of the **entire architecture, structures, logic, ownership, and inter-module relationships** after the major modules have designs. No single preliminary checkpoint is uniquely singled out as the only part to be reopened.
 
 No runtime implementation or new schema fields are authorized by this checkpoint. Existing schemas/catalog field inventories remain implementation-frozen where this document identifies an ownership decision whose exact shape is not yet closed.
 
@@ -136,11 +138,11 @@ Removing one application cannot incorrectly remove the named Condition while ano
 
 ### 4.1 Shared mechanical payload, not mandatory Effect-definition indirection
 
-Condition and Effect definitions may use the same validated mechanical payload model (Rule Elements, Trigger Bindings, Activities, stacking/aggregation semantics as justified by the final schema). A Condition does **not** require an additional `definition.effect` merely to hold its ordinary mechanics.
+Condition and Effect definitions may use the same validated mechanical payload model (Rule Elements, Trigger Bindings, Activities, aggregation/application semantics as justified by the final schema). A Condition does **not** require an additional `definition.effect` merely to hold its ordinary mechanics.
 
 The earlier idea that every Condition must grant mechanics only through required `effect_ids` is superseded for Step 2 ownership. Exact field names and schema changes remain deferred until the ownership map closes.
 
-A separate referenced/materialized Effect remains valid only when it genuinely has its own independent lifecycle, target set, duration, stacks, or parameters. This avoids a chain of duplicate lifecycle owners.
+A separate referenced/materialized Effect remains valid only when it genuinely has its own independent target-local lifecycle, duration, parameter, support relation, or provenance. This avoids a chain of duplicate lifecycle owners.
 
 ### 4.2 Application multiplicity versus mechanical aggregation
 
@@ -148,7 +150,7 @@ Several Effect applications may reference the same Condition definition because 
 
 The Condition definition owns the deterministic aggregation policy for its applications. The minimum policy vocabulary is intentionally kept small and will be finalized with schema work; simple presence and highest/effective-value behavior are the initial required cases unless further rules evidence proves another policy necessary.
 
-`world.effect.stacks`, number of applications, and a valued Condition's severity/value are separate concepts and must not be silently overloaded into one field.
+Application count, a Condition's effective value, and any typed application-local severity/intensity are separate concepts and must not be silently overloaded into one field. The later Effect-application checkpoint removes generic mutable Effect stacks from the preferred model.
 
 ### 4.3 LifeState is not Condition
 
@@ -199,7 +201,7 @@ At creation time the parent must:
 - not be the child itself;
 - not make the support chain cyclic.
 
-The same maintenance episode keeps the same Effect identity. Refreshing duration, stacks, or allowed parameters updates that Effect in place. A new maintenance-root Effect ID represents a new lifecycle episode.
+The same maintenance episode keeps the same Effect identity. Refreshing duration or other explicitly permitted application parameters updates that Effect in place. A new maintenance-root Effect ID represents a new lifecycle episode.
 
 Re-parenting an existing Effect is not supported in the initial contract. If rules genuinely move a dependent to another maintenance episode, runtime ends the old dependent and creates a new one under the new parent.
 
@@ -341,7 +343,9 @@ old binding -> derive remaining once -> new binding
 
 Ordinary combat/exploration transitions do not require re-anchoring unless their temporal bases are actually incompatible. A procedure-native turn/round binding may require re-anchoring when leaving that procedure if the Effect survives it.
 
-The temporal binding belongs to the Effect/lifecycle episode, not independently to each target's physical location. A multi-target Effect therefore does not acquire several clocks merely because targets later occupy different scenes. If a surviving temporal dependency begins to connect previously incomparable scene chronologies, the affected contexts must be minimally reconciled/transferred before their metric coordinates are compared; Step 5 owns the multiplayer/cross-scene reconciliation algorithm.
+Each persistent target-local Effect application owns its own temporal binding when it has an independent intrinsic lifetime. Multi-target Activities create separate target-local applications rather than one Effect with several clocks. When those applications share one maintained lifetime, the accepted support root owns that shared lifetime instead of copying it into every dependent.
+
+If a surviving temporal dependency begins to connect previously incomparable scene chronologies, the affected contexts must be minimally reconciled/transferred before their metric coordinates are compared; Step 5 owns the multiplayer/cross-scene reconciliation algorithm.
 
 ### 6.6 Refresh, expiry, and lifecycle interaction
 
@@ -355,13 +359,13 @@ No arbitrary future callback language is introduced. A reached temporal boundary
 
 ## 7. Recovery boundary ownership — B2 checkpoint
 
-### PRELIMINARILY ACCEPTED — REOPEN DURING FINAL ARCHITECTURE REVIEW
+### PRELIMINARILY ACCEPTED
 
 The detailed B2 design is recorded in:
 
 `DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`
 
-This section fixes the ownership boundary needed for Step 2 sequencing; the detailed companion records the full dependency analysis, failure modes, performance implications, rejected alternatives, and final-review reopen list.
+This section fixes the ownership boundary needed for Step 2 sequencing; the detailed companion records the full dependency analysis, failure modes, performance implications, rejected alternatives, and later holistic-review questions.
 
 ### 7.1 Boundary producer versus state-owner response
 
@@ -460,11 +464,41 @@ B2 deliberately leaves these details to their roadmap owners:
 
 Those are forward dependencies, not permission for Step 2 to create substitute Recovery-specific execution or reconciliation systems.
 
-### 7.12 Final-review reopen condition
+## 8. Effect application and arbitration checkpoint
 
-B2 is the active preliminary ownership contract, but the planned end-to-end architecture review must explicitly re-check the common boundary vocabulary, bounded automatic Resource response vocabulary, same-boundary phase assumptions, cross-scene scope requirements, and developer Boundary Impact tooling before the whole architecture is declared final.
+### PRELIMINARILY ACCEPTED
 
-## 8. Critical-pass results for accepted sub-decisions
+The detailed design is recorded in:
+
+`DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`
+
+The accepted-for-sequencing core is:
+
+```text
+ONE independent application
++ ONE target
+= ONE EffectInstance
+```
+
+A multi-target Activity that creates persistent target state creates separate target-local Effect applications. A Zone/Asset/Location may itself be the one target where the mechanic is spatial/object-local rather than creature-local.
+
+New applications create new Effect instances by default. Explicit refresh or replacement exists only when a validated definition/ruleset policy proves that behavior. Refresh preserves one lifecycle identity; replace ends the old Effect and creates a new identity without overwriting provenance.
+
+Overlap arbitration is derived from the target plus a rules-origin/application-family key. The family normally follows the rules-bearing spell/feature/condition origin rather than blindly following an Effect template ID, so two different spells may reuse one Effect template without being treated as the same application family.
+
+If no arbitration policy applies, all otherwise eligible applications participate. A registered arbitration policy may select one or a bounded subset of whole applications. It does not mix individual Rule Elements from competing applications into a synthetic Effect.
+
+Mechanical contribution combination remains Rule Element resolver behavior. Effect application policy only determines which applications participate.
+
+Generic mutable Effect stacks are not part of the preferred model. Repeated units with independent source/lifetime/removal are separate applications. A single lifecycle episode's changing intensity is a typed application parameter, or a Resource when it has genuine capacity/spending/recovery semantics.
+
+Lifecycle, availability/suppression, and derived arbitration are separate axes. A shadowed application remains a real nonterminal application; ending the current winner merely re-invalidates the affected target/family group so another still-valid application may become effective without any resurrection mutation.
+
+Effect-end cleanup is not scripted. Derived modifiers disappear when the Effect becomes terminal; support children use the accepted support closure; genuine stateful on-end behavior uses the existing typed Effect-end Signal/Event plus TriggerBinding/Activity path owned by Step 3.
+
+The current provisional `target_ids`, `world.effect.stacks`, `effect.stacks`, and broad `stacking_behaviors` inventory is therefore not treated as the final machine shape. Exact schema/catalog migration remains deferred until the ownership map closes.
+
+## 9. Critical-pass results for accepted sub-decisions
 
 The Resource model was challenged against:
 
@@ -520,7 +554,7 @@ The Duration/Temporal Agenda model was challenged against:
 - refresh/shorten producing past deadlines;
 - scheduler callbacks becoming a second execution engine.
 
-The accepted corrections are an anchor-first authoritative binding, a lazy local metric coordinate, three typed temporal bases, a disposable Agenda, interruptible next-boundary advancement, same-time closure, derived remaining/re-anchor only at incompatible-basis transfer, Effect-owned rather than target-owned temporal binding, semantic rest/dawn boundaries, and Step-3-owned continuation/trigger execution.
+The accepted corrections are an anchor-first authoritative binding, a lazy local metric coordinate, three typed temporal bases, a disposable Agenda, interruptible next-boundary advancement, same-time closure, derived remaining/re-anchor only at incompatible-basis transfer, target-local Effect temporal ownership/shared support-root lifetime, semantic rest/dawn boundaries, and Step-3-owned continuation/trigger execution.
 
 The preliminary Recovery B2 model was challenged against:
 
@@ -542,22 +576,39 @@ The preliminary Recovery B2 model was challenged against:
 
 The B2 corrections are boundary-producer/state-owner separation, a common registered boundary vocabulary, scoped occurrence identity, closed deterministic subsystem responders, `resource.recovery` pure contributions, one Temporal Agenda, indexed responder discovery, discover-first/mutate-later BoundaryPlan construction, Step-3-owned simultaneity/idempotency, Step-5-owned reconciliation, and a derived read-only Boundary Impact View. No blocker was found that requires authoritative Rest recovery lists, a persistent scheduler, a second recovery execution engine, or arbitrary callbacks.
 
-No blocker was found that requires a separate Resource entity, Condition world entity, separate action-economy/condition mutation subsystem, generic dependency rule language, global clock, persistent scheduler entity, mass countdown updates, arbitrary scheduled callbacks, or a Rest-owned cross-subsystem recovery list.
+The preliminary Effect-application model was challenged against:
 
-## 9. Exact continuation point
+- different spells/features reusing one Effect template;
+- loss of shared origin after splitting multi-target applications;
+- repeated applications with independent durations;
+- one-episode intensity/severity;
+- ambiguous or multi-dimensional potency;
+- shadowed Effects with real lifecycle/on-end consequences;
+- simultaneous winner removal and new application;
+- retry duplicates being confused with reapplication;
+- same spell from different sources/casters;
+- Zone/aura record explosion;
+- replacement interacting with immutable support parents;
+- suppression being conflated with arbitration.
 
-Recovery ownership is preliminarily closed by the B2 checkpoint. The next open Step 2 ownership block is **generic Effect application policy**.
+The accepted corrections are one-target applications, causal provenance instead of a CastGroup entity, rules-origin-derived application families, create-new default semantics, explicit refresh/replace only, whole-application registered arbitration, no generic stack counter, typed single-episode values, Zone targeting for spatial mechanics, prospective-state arbitration, and strict separation among lifecycle, suppression, arbitration, and Rule Element combination.
 
-It must settle, without reopening the accepted support/Duration boundaries unless a contradiction is found:
+No blocker was found that requires a separate Resource entity, Condition world entity, separate action-economy/condition mutation subsystem, generic dependency rule language, global clock, persistent scheduler entity, mass countdown updates, arbitrary scheduled callbacks, a Rest-owned cross-subsystem recovery list, multi-target mutable Effect records, generic stack-unit objects, persistent arbitration winners, or an Effect-combination graph.
 
-- stacking versus genuinely independent applications;
-- replacement versus refresh of an existing lifecycle episode;
-- unique-by-source versus unique-global behavior;
-- how `world.effect.stacks`, application multiplicity, and valued Effect parameters remain distinct;
-- which stacking/refresh policy belongs to the definition versus which mutable facts belong to the concrete Effect instance;
-- non-support expiry/removal consequences;
-- whether generic Effect policy can share machinery with the already accepted Condition aggregation boundary without conflating Condition identity with Effect application identity.
+## 10. Exact continuation point
 
-After generic Effect application policy, Step 2 still must close the exact minimum LifeState vocabulary/transitions, health/effect selectors, schema/catalog alignment, focused cases, and a final independent critical pass before the Step 2 gate can close.
+Recovery and generic Effect-application ownership are preliminarily closed for current sequencing.
 
-The planned later holistic architecture review and additional brainstorming pass may reopen the preliminary Recovery B2 checkpoint; that planned review is explicitly documented rather than being treated as an unresolved blocker to current Step 2 sequencing.
+The next open Step 2 ownership block is **minimum LifeState vocabulary and transitions**.
+
+It must settle:
+
+- the minimum lifecycle states actually required by the selected rules surface;
+- ownership of transitions among active/dying/stable/dead or equivalent ruleset states;
+- interaction with HP, healing, death saves, Conditions such as Unconscious, and terminal entity state;
+- which lifecycle facts are stored versus derived;
+- transformation/resurrection/revival interaction with Effect and Activity machinery without duplicate authority.
+
+After LifeState, Step 2 still must close health/effect selectors, schema/catalog alignment, focused cases, and a final independent critical pass before the Step 2 gate can close.
+
+The later holistic architecture review and additional brainstorming pass applies to **all** architecture, structures, logic, schemas, ownership rules, and inter-module relationships recorded across the project, including every currently accepted or preliminarily accepted Step 2 checkpoint.
