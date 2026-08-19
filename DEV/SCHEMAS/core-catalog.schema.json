@@ -29,7 +29,8 @@
         "effect_terminal_reasons", "boundary_kinds", "temporal_binding_kinds",
         "resource_recovery_operations", "target_kinds", "area_shapes",
         "range_modes", "signal_kinds", "duration_modes", "duration_units",
-        "resolution_states", "intent_execution_states", "mapping_outcomes",
+        "resolution_states", "command_dispositions", "execution_failure_codes",
+        "intent_execution_states", "mapping_outcomes",
         "canonicality_classes", "durability_classes", "publication_states",
         "knowledge_modes", "truth_statuses"
       ],
@@ -71,6 +72,8 @@
         "duration_modes": {"$ref": "#/$defs/idRegistry"},
         "duration_units": {"$ref": "#/$defs/idRegistry"},
         "resolution_states": {"$ref": "#/$defs/idRegistry"},
+        "command_dispositions": {"$ref": "#/$defs/idRegistry"},
+        "execution_failure_codes": {"$ref": "#/$defs/idRegistry"},
         "intent_execution_states": {"$ref": "#/$defs/idRegistry"},
         "mapping_outcomes": {"$ref": "#/$defs/idRegistry"},
         "canonicality_classes": {"$ref": "#/$defs/idRegistry"},
