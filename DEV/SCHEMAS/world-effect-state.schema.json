@@ -9,6 +9,7 @@
     "target_id": {"$ref": "#/$defs/machineId"},
     "source_id": {"$ref": "#/$defs/machineId"},
     "rules_origin_id": {"$ref": "#/$defs/machineId"},
+    "application_order_key": {"type": "integer", "minimum": 1},
     "parameters": {
       "type": "object",
       "propertyNames": {"$ref": "#/$defs/machineId"},
@@ -76,6 +77,7 @@
       "target_id": "actor-0042",
       "source_id": "actor-0007",
       "rules_origin_id": "spell.bless",
+      "application_order_key": 1,
       "lifecycle": {"state_id": "effect_lifecycle.active"}
     },
     {
