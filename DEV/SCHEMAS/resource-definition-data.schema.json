@@ -42,11 +42,21 @@
       "minLength": 1,
       "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
     },
+    "metricDelay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind_id", "amount", "unit_id"],
+      "properties": {
+        "kind_id": {"const": "duration.metric"},
+        "amount": {"type": "integer", "minimum": 1},
+        "unit_id": {"$ref": "#/$defs/machineId"}
+      }
+    },
     "recoveryTiming": {
       "type": "object",
       "properties": {
         "boundary_id": {"$ref": "#/$defs/machineId"},
-        "after": {"$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"}
+        "after": {"$ref": "#/$defs/metricDelay"}
       },
       "oneOf": [
         {"required": ["boundary_id"], "not": {"required": ["after"]}},
@@ -68,7 +78,7 @@
               ]
             },
             "boundary_id": {"$ref": "#/$defs/machineId"},
-            "after": {"$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"},
+            "after": {"$ref": "#/$defs/metricDelay"},
             "amount": {"type": "number", "exclusiveMinimum": 0}
           },
           "allOf": [
@@ -94,7 +104,7 @@
           "properties": {
             "operation_id": {"const": "resource_recovery.reset_spent"},
             "boundary_id": {"$ref": "#/$defs/machineId"},
-            "after": {"$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"}
+            "after": {"$ref": "#/$defs/metricDelay"}
           }
         }
       ]
