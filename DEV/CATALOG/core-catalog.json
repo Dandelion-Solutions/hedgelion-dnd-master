@@ -28,8 +28,8 @@
     ],
     "runtime_record_kinds": [
       "runtime.session", "runtime.message", "runtime.interaction",
-      "runtime.intent_plan", "runtime.command", "runtime.resolution",
-      "runtime.continuation", "runtime.mechanical_event",
+      "runtime.procedure", "runtime.intent_plan", "runtime.command",
+      "runtime.resolution", "runtime.continuation", "runtime.mechanical_event",
       "runtime.semantic_event", "runtime.resolution_trace",
       "runtime.dirty_record", "runtime.publication_batch",
       "runtime.checkpoint", "runtime.id_allocator",
