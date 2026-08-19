@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/pending-child-invocation.schema.json",
+  "title": "HDM pending mandatory child invocation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["firing_key", "root_command_id", "activity_id", "trigger_ref", "reason"],
+  "properties": {
+    "firing_key": {"type": "string", "minLength": 1},
+    "root_command_id": {"type": "string", "minLength": 1},
+    "activity_id": {"$ref": "#/$defs/machineId"},
+    "trigger_ref": {"type": "string", "minLength": 1},
+    "procedure_id": {"type": "string", "minLength": 1},
+    "child_resolution_id": {"type": "string", "minLength": 1},
+    "reason": {"enum": ["mandatory_followup", "execution_limit"]}
+  },
+  "$defs": {
+    "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+  },
+  "examples": [
+    {
+      "firing_key": "effect-000001:damage:event-00000001",
+      "root_command_id": "turn-000042-cmd-01",
+      "activity_id": "activity.concentration_save",
+      "trigger_ref": "event-00000001",
+      "reason": "mandatory_followup"
+    }
+  ]
+}
