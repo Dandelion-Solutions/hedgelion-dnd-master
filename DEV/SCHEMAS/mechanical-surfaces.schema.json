@@ -1,14 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/mechanical-surfaces.schema.json",
-  "title": "HDM reviewed mechanical selector/accessor metadata",
+  "title": "HDM reviewed mechanical selector/accessor/input metadata",
   "type": "object",
   "additionalProperties": false,
-  "required": ["catalog_version", "accessors", "selectors", "derived_node_kinds"],
+  "required": ["catalog_version", "context_facts", "accessors", "selectors", "derived_nodes"],
   "properties": {
     "catalog_version": {
       "type": "string",
       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "context_facts": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/machineId"},
+      "additionalProperties": {"$ref": "#/$defs/contextFactMetadata"}
     },
     "accessors": {
       "type": "object",
@@ -20,18 +25,18 @@
       "propertyNames": {"$ref": "#/$defs/machineId"},
       "additionalProperties": {"$ref": "#/$defs/selectorMetadata"}
     },
-    "derived_node_kinds": {
-      "type": "array",
-      "minItems": 1,
-      "uniqueItems": true,
-      "items": {
+    "derived_nodes": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
         "enum": [
           "effect_availability",
           "effect_arbitration",
           "condition_aggregation",
           "condition_intrinsic"
         ]
-      }
+      },
+      "additionalProperties": {"$ref": "#/$defs/derivedNodeMetadata"}
     }
   },
   "$defs": {
@@ -48,6 +53,37 @@
     "dependencyRef": {
       "type": "string",
       "pattern": "^(?:selector|accessor|derived):[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "dependencyKindSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "selector",
+          "accessor",
+          "effect_availability",
+          "effect_arbitration",
+          "condition_aggregation",
+          "condition_intrinsic"
+        ]
+      }
+    },
+    "inputClassSet": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["ENGINE_STATE", "INVOCATION_ADJUDICATED"]
+      }
+    },
+    "contextFactMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_class", "value_type"],
+      "properties": {
+        "source_class": {"const": "INVOCATION_ADJUDICATED"},
+        "value_type": {"const": "boolean"}
+      }
     },
     "accessorMetadata": {
       "type": "object",
@@ -71,7 +107,12 @@
     "selectorMetadata": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["allowed_operations", "contribution_type", "allowed_dependency_kinds"],
+      "required": [
+        "allowed_operations",
+        "contribution_type",
+        "allowed_dependency_kinds",
+        "allowed_input_classes"
+      ],
       "properties": {
         "allowed_operations": {"$ref": "#/$defs/idSet"},
         "operation_contracts": {
@@ -82,18 +123,21 @@
         "contribution_type": {
           "enum": ["numeric", "duration", "applicability", "recovery"]
         },
-        "allowed_dependency_kinds": {
+        "allowed_dependency_kinds": {"$ref": "#/$defs/dependencyKindSet"},
+        "allowed_input_classes": {"$ref": "#/$defs/inputClassSet"}
+      }
+    },
+    "derivedNodeMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_dependency_kinds", "allowed_input_classes", "dependencies"],
+      "properties": {
+        "allowed_dependency_kinds": {"$ref": "#/$defs/dependencyKindSet"},
+        "allowed_input_classes": {"$ref": "#/$defs/inputClassSet"},
+        "dependencies": {
           "type": "array",
           "uniqueItems": true,
-          "items": {
-            "enum": [
-              "accessor",
-              "effect_availability",
-              "effect_arbitration",
-              "condition_aggregation",
-              "condition_intrinsic"
-            ]
-          }
+          "items": {"$ref": "#/$defs/dependencyRef"}
         }
       }
     },
