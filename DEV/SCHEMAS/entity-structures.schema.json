@@ -28,7 +28,7 @@
       "type": "object",
       "minProperties": 1,
       "propertyNames": {"pattern": "^world\\.[a-z][a-z0-9_]*$"},
-      "additionalProperties": {"$ref": "#/$defs/fieldInventory"}
+      "additionalProperties": {"$ref": "#/$defs/worldFieldInventory"}
     }
   },
   "$defs": {
@@ -40,14 +40,53 @@
         "pattern": "^[a-z][a-z0-9_]*$"
       }
     },
+    "definitionKindSet": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^definition\\.[a-z][a-z0-9_]*$"
+      }
+    },
+    "definitionBinding": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": {
+            "mode": {"const": "forbidden"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "allowed_definition_kinds"],
+          "properties": {
+            "mode": {"enum": ["optional", "required"]},
+            "allowed_definition_kinds": {"$ref": "#/$defs/definitionKindSet"}
+          }
+        }
+      ]
+    },
     "fieldInventory": {
       "type": "object",
       "additionalProperties": false,
       "required": ["required", "expected"],
       "properties": {
         "required": {"$ref": "#/$defs/fieldNameSet"},
+        "expected": {"$ref": "#/$defs/fieldNameSet"}
+      }
+    },
+    "worldFieldInventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "expected", "definition_binding"],
+      "properties": {
+        "required": {"$ref": "#/$defs/fieldNameSet"},
         "expected": {"$ref": "#/$defs/fieldNameSet"},
-        "requires_definition_id": {"type": "boolean"}
+        "definition_binding": {"$ref": "#/$defs/definitionBinding"}
       }
     }
   }
