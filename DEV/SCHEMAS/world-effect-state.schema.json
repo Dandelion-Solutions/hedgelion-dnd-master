@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/world-effect-state.schema.json",
+  "title": "HDM world.effect state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["target_id", "lifecycle"],
+  "properties": {
+    "target_id": {"$ref": "#/$defs/machineId"},
+    "source_id": {"$ref": "#/$defs/machineId"},
+    "rules_origin_id": {"$ref": "#/$defs/machineId"},
+    "parameters": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/machineId"},
+      "additionalProperties": {"$ref": "#/$defs/scalar"}
+    },
+    "support_effect_id": {"$ref": "#/$defs/machineId"},
+    "temporal_binding": {"$ref": "https://hedgelion.invalid/schemas/temporal-binding.schema.json"},
+    "lifecycle": {"$ref": "#/$defs/lifecycle"},
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "scalar": {"type": ["string", "number", "integer", "boolean"]},
+    "lifecycle": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state_id"],
+          "properties": {"state_id": {"const": "effect_lifecycle.active"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state_id", "terminal_reason_id"],
+          "properties": {
+            "state_id": {"const": "effect_lifecycle.terminal"},
+            "terminal_reason_id": {"$ref": "#/$defs/machineId"}
+          }
+        }
+      ]
+    }
+  },
+  "examples": [
+    {
+      "target_id": "actor-0042",
+      "source_id": "actor-0007",
+      "rules_origin_id": "spell.bless",
+      "lifecycle": {"state_id": "effect_lifecycle.active"}
+    },
+    {
+      "target_id": "actor-0042",
+      "lifecycle": {
+        "state_id": "effect_lifecycle.terminal",
+        "terminal_reason_id": "effect_end.expired"
+      }
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/condition-definition-data.schema.json",
+  "title": "HDM definition.condition data",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["aggregation_policy_id"],
+  "properties": {
+    "aggregation_policy_id": {"$ref": "#/$defs/machineId"},
+    "parameter_schema": {"$ref": "#/$defs/parameterDeclarations"},
+    "value_constraints": {"$ref": "#/$defs/valueConstraints"},
+    "intrinsic_mechanics": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/intrinsicMechanic"}
+    },
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/machineId"}
+    },
+    "parameterDeclarations": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/machineId"},
+      "additionalProperties": {"$ref": "#/$defs/parameterDeclaration"}
+    },
+    "parameterDeclaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type_id"],
+      "properties": {
+        "type_id": {"enum": ["integer", "number", "boolean", "machine_id", "string"]},
+        "minimum": {"type": "number"},
+        "maximum": {"type": "number"},
+        "allowed_ids": {"$ref": "#/$defs/idSet"}
+      }
+    },
+    "valueConstraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "minimum": {"type": "integer"},
+        "maximum": {"type": "integer"}
+      }
+    },
+    "intrinsicMechanic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope_id"],
+      "properties": {
+        "scope_id": {"$ref": "#/$defs/machineId"},
+        "rule_element": {"$ref": "https://hedgelion.invalid/schemas/rule-element.schema.json"},
+        "trigger_binding": {"$ref": "https://hedgelion.invalid/schemas/trigger-binding.schema.json"}
+      },
+      "oneOf": [
+        {"required": ["rule_element"], "not": {"required": ["trigger_binding"]}},
+        {"required": ["trigger_binding"], "not": {"required": ["rule_element"]}}
+      ]
+    }
+  },
+  "examples": [
+    {
+      "aggregation_policy_id": "condition_aggregation.presence",
+      "intrinsic_mechanics": [
+        {
+          "scope_id": "condition_rule_scope.aggregate_once",
+          "rule_element": {
+            "operation_id": "rule.grant_disadvantage",
+            "selector": "attack.roll",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "aggregation_policy_id": "condition_aggregation.cumulative_units",
+      "value_constraints": {"minimum": 0, "maximum": 6}
+    }
+  ]
+}

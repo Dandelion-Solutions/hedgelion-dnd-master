@@ -15,14 +15,7 @@
     "operand": {
       "oneOf": [
         {"$ref": "#/$defs/scalar"},
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["ref"],
-          "properties": {
-            "ref": {"$ref": "#/$defs/machineId"}
-          }
-        }
+        {"$ref": "https://hedgelion.invalid/schemas/mechanical-accessor-ref.schema.json"}
       ]
     },
     "predicate": {
@@ -32,7 +25,10 @@
           "additionalProperties": false,
           "required": ["fact"],
           "properties": {
-            "fact": {"$ref": "#/$defs/machineId"}
+            "fact": {
+              "allOf": [{"$ref": "#/$defs/machineId"}],
+              "description": "Registered context fact. Engine-owned mechanical reads use typed accessor references instead."
+            }
           }
         },
         {
@@ -40,11 +36,7 @@
           "additionalProperties": false,
           "required": ["all"],
           "properties": {
-            "all": {
-              "type": "array",
-              "minItems": 1,
-              "items": {"$ref": "#/$defs/predicate"}
-            }
+            "all": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/predicate"}}
           }
         },
         {
@@ -52,20 +44,14 @@
           "additionalProperties": false,
           "required": ["any"],
           "properties": {
-            "any": {
-              "type": "array",
-              "minItems": 1,
-              "items": {"$ref": "#/$defs/predicate"}
-            }
+            "any": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/predicate"}}
           }
         },
         {
           "type": "object",
           "additionalProperties": false,
           "required": ["not"],
-          "properties": {
-            "not": {"$ref": "#/$defs/predicate"}
-          }
+          "properties": {"not": {"$ref": "#/$defs/predicate"}}
         },
         {
           "type": "object",
@@ -78,9 +64,7 @@
               "required": ["left", "operator", "right"],
               "properties": {
                 "left": {"$ref": "#/$defs/operand"},
-                "operator": {
-                  "enum": ["eq", "ne", "lt", "lte", "gt", "gte", "contains"]
-                },
+                "operator": {"enum": ["eq", "ne", "lt", "lte", "gt", "gte", "contains"]},
                 "right": {"$ref": "#/$defs/operand"}
               }
             }
@@ -92,10 +76,22 @@
   "examples": [
     {"fact": "source.equipped"},
     {
-      "all": [
-        {"fact": "actor.can_act"},
-        {"not": {"fact": "actor.incapacitated"}}
-      ]
+      "compare": {
+        "left": {
+          "accessor_id": "condition.present",
+          "subject": "target",
+          "condition_id": "condition.poisoned"
+        },
+        "operator": "eq",
+        "right": true
+      }
+    },
+    {
+      "compare": {
+        "left": {"accessor_id": "health.bloodied", "subject": "target"},
+        "operator": "eq",
+        "right": true
+      }
     }
   ]
 }

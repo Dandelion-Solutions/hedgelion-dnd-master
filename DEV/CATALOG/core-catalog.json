@@ -131,9 +131,8 @@
       "event.event_time.advanced"
     ],
     "resource_mechanics": [
-      "resource.health", "resource.temporary_health", "resource.die_pool",
-      "resource.tiered_pool", "resource.bounded_pool", "resource.binary",
-      "resource.cooldown", "resource.action_budget",
+      "resource.die_pool", "resource.tiered_pool", "resource.bounded_pool",
+      "resource.binary", "resource.cooldown", "resource.action_budget",
       "resource.movement_budget", "resource.currency_balance"
     ],
     "effect_facets": [
@@ -162,8 +161,57 @@
       "healing.received", "resource.cost", "resource.capacity",
       "resource.recovery", "activity.availability", "activity.activation",
       "target.count", "target.range", "target.area", "effect.duration",
-      "effect.stacks", "movement.speed", "sense.range",
-      "proficiency.rank", "actor.trait"
+      "health.maximum", "condition.applicability", "movement.speed",
+      "sense.range", "proficiency.rank", "actor.trait"
+    ],
+    "mechanical_accessors": [
+      "health.current", "health.temporary", "health.maximum",
+      "health.bloodied", "life.state", "condition.present",
+      "condition.value", "resource.capacity", "resource.available",
+      "owner_effect.parameter"
+    ],
+    "life_states": [
+      "life.active", "life.dying", "life.stable", "life.dead"
+    ],
+    "life_state_policies": [
+      "life_policy.dnd2024.character_like",
+      "life_policy.dnd2024.monster_default"
+    ],
+    "condition_aggregation_policies": [
+      "condition_aggregation.presence",
+      "condition_aggregation.cumulative_units"
+    ],
+    "condition_rule_scopes": [
+      "condition_rule_scope.aggregate_once",
+      "condition_rule_scope.per_effective_application"
+    ],
+    "effect_reapplication_policies": [
+      "effect_reapplication.refresh", "effect_reapplication.replace"
+    ],
+    "effect_arbitration_policies": [
+      "effect_arbitration.potency_then_recency"
+    ],
+    "effect_lifecycle_states": [
+      "effect_lifecycle.active", "effect_lifecycle.terminal"
+    ],
+    "effect_terminal_reasons": [
+      "effect_end.expired", "effect_end.removed", "effect_end.replaced",
+      "effect_end.support_lost"
+    ],
+    "boundary_kinds": [
+      "boundary.turn_start", "boundary.turn_end",
+      "boundary.round_start", "boundary.round_end",
+      "boundary.short_rest_complete", "boundary.long_rest_complete",
+      "boundary.dawn"
+    ],
+    "temporal_binding_kinds": [
+      "temporal.metric_deadline", "temporal.procedure_boundary",
+      "temporal.semantic_boundary"
+    ],
+    "resource_recovery_operations": [
+      "resource_recovery.reset_spent",
+      "resource_recovery.restore_to_capacity",
+      "resource_recovery.restore_amount"
     ],
     "target_kinds": [
       "target.none", "target.self", "target.entity", "target.entities",
@@ -192,24 +240,11 @@
       "signal.resource.threshold.pending"
     ],
     "duration_modes": [
-      "duration.instant", "duration.fixed", "duration.concentration",
-      "duration.until_event", "duration.until_rest", "duration.permanent",
-      "duration.uses"
+      "duration.instant", "duration.metric", "duration.boundary",
+      "duration.permanent"
     ],
     "duration_units": [
-      "unit.turn", "unit.round", "unit.minute", "unit.hour", "unit.day",
-      "unit.scene", "unit.abstract_slot"
-    ],
-    "recovery_triggers": [
-      "recovery.none", "recovery.short_rest", "recovery.long_rest",
-      "recovery.dawn", "recovery.turn_start", "recovery.turn_end",
-      "recovery.round_start", "recovery.round_end", "recovery.event",
-      "recovery.manual"
-    ],
-    "stacking_behaviors": [
-      "stack.stack", "stack.replace", "stack.refresh_duration",
-      "stack.keep_highest", "stack.keep_lowest", "stack.unique_by_source",
-      "stack.unique_global"
+      "unit.second", "unit.minute", "unit.hour", "unit.day"
     ],
     "resolution_states": [
       "PENDING", "RUNNING", "AWAITING_CHOICE", "AWAITING_REACTION",

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/effect-definition-data.schema.json",
+  "title": "HDM definition.effect data",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "duration": {"$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"},
+    "parameter_schema": {"$ref": "#/$defs/parameterDeclarations"},
+    "rule_elements": {
+      "type": "array",
+      "items": {"$ref": "https://hedgelion.invalid/schemas/rule-element.schema.json"}
+    },
+    "trigger_bindings": {
+      "type": "array",
+      "items": {"$ref": "https://hedgelion.invalid/schemas/trigger-binding.schema.json"}
+    },
+    "activity_ids": {"$ref": "#/$defs/idSet"},
+    "reapplication_policy_id": {"$ref": "#/$defs/machineId"},
+    "arbitration_policy_id": {"$ref": "#/$defs/machineId"},
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/machineId"}
+    },
+    "parameterDeclarations": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/machineId"},
+      "additionalProperties": {"$ref": "#/$defs/parameterDeclaration"}
+    },
+    "parameterDeclaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type_id"],
+      "properties": {
+        "type_id": {"enum": ["integer", "number", "boolean", "machine_id", "string"]},
+        "minimum": {"type": "number"},
+        "maximum": {"type": "number"},
+        "allowed_ids": {"$ref": "#/$defs/idSet"}
+      }
+    }
+  },
+  "examples": [
+    {
+      "duration": {"kind_id": "duration.metric", "amount": 1, "unit_id": "unit.minute"},
+      "rule_elements": [
+        {"operation_id": "rule.add_flat", "selector": "defense.armor_class", "value": 2}
+      ]
+    }
+  ]
+}

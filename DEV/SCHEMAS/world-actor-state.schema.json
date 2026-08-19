@@ -6,7 +6,8 @@
   "additionalProperties": false,
   "required": ["name"],
   "dependentRequired": {
-    "hp": ["life_state_id"]
+    "hp": ["life_state_id"],
+    "life_state_progress": ["life_state_id"]
   },
   "properties": {
     "name": {"$ref": "#/$defs/localizedText"},
@@ -19,7 +20,9 @@
       "additionalProperties": {"$ref": "#/$defs/abilityComponents"}
     },
     "hp": {"$ref": "#/$defs/hp"},
-    "life_state_id": {"$ref": "#/$defs/id"},
+    "life_state_id": {"$ref": "#/$defs/lifeStateId"},
+    "life_state_policy_id": {"$ref": "#/$defs/lifePolicyId"},
+    "life_state_progress": {"$ref": "#/$defs/lifeStateProgress"},
     "resources": {
       "type": "object",
       "propertyNames": {"$ref": "#/$defs/id"},
@@ -27,8 +30,35 @@
     },
     "details": {"type": "object"}
   },
+  "allOf": [
+    {
+      "if": {"properties": {"life_state_id": {"const": "life.dying"}}, "required": ["life_state_id"]},
+      "then": {
+        "required": ["life_state_progress"],
+        "properties": {"life_state_progress": {"$ref": "#/$defs/dyingProgress"}}
+      }
+    },
+    {
+      "if": {"properties": {"life_state_id": {"const": "life.stable"}}, "required": ["life_state_id"]},
+      "then": {
+        "required": ["life_state_progress"],
+        "properties": {"life_state_progress": {"$ref": "#/$defs/stableProgress"}}
+      }
+    },
+    {
+      "if": {
+        "properties": {"life_state_id": {"enum": ["life.active", "life.dead"]}},
+        "required": ["life_state_id"]
+      },
+      "then": {"not": {"required": ["life_state_progress"]}}
+    }
+  ],
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "lifeStateId": {"enum": ["life.active", "life.dying", "life.stable", "life.dead"]},
+    "lifePolicyId": {
+      "enum": ["life_policy.dnd2024.character_like", "life_policy.dnd2024.monster_default"]
+    },
     "idSet": {
       "type": "array",
       "uniqueItems": true,
@@ -74,11 +104,52 @@
         "temporary": {"type": "integer", "minimum": 0}
       }
     },
+    "deathSaves": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["successes", "failures"],
+      "properties": {
+        "successes": {"type": "integer", "minimum": 0, "maximum": 2},
+        "failures": {"type": "integer", "minimum": 0, "maximum": 2}
+      }
+    },
+    "dyingProgress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["death_saves"],
+      "properties": {"death_saves": {"$ref": "#/$defs/deathSaves"}}
+    },
+    "stableProgress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recovery_binding"],
+      "properties": {
+        "recovery_binding": {"$ref": "https://hedgelion.invalid/schemas/temporal-binding.schema.json"}
+      }
+    },
+    "lifeStateProgress": {
+      "oneOf": [
+        {"$ref": "#/$defs/dyingProgress"},
+        {"$ref": "#/$defs/stableProgress"}
+      ]
+    },
     "resourceState": {
       "type": "object",
       "additionalProperties": false,
       "required": ["current"],
-      "properties": {"current": {"type": "number", "minimum": 0}}
+      "properties": {
+        "current": {"type": "number", "minimum": 0},
+        "recovery_binding": {"$ref": "https://hedgelion.invalid/schemas/temporal-binding.schema.json"}
+      }
     }
-  }
+  },
+  "examples": [
+    {"name": {"en": "Grik"}},
+    {
+      "name": {"en": "Aria"},
+      "hp": {"current": 0, "maximum_base": 18},
+      "life_state_id": "life.dying",
+      "life_state_progress": {"death_saves": {"successes": 1, "failures": 0}}
+    }
+  ]
 }

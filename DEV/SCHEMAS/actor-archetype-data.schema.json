@@ -21,10 +21,14 @@
     "resources": {"type": "object"},
     "activity_ids": {"$ref": "#/$defs/idSet"},
     "feature_ids": {"$ref": "#/$defs/idSet"},
+    "life_state_policy_id": {"$ref": "#/$defs/lifePolicyId"},
     "details": {"type": "object"}
   },
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "lifePolicyId": {
+      "enum": ["life_policy.dnd2024.character_like", "life_policy.dnd2024.monster_default"]
+    },
     "idSet": {
       "type": "array",
       "uniqueItems": true,

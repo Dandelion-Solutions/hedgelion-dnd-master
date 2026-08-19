@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/mechanical-surfaces.schema.json",
+  "title": "HDM reviewed mechanical selector/accessor metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["catalog_version", "accessors", "selectors", "derived_node_kinds"],
+  "properties": {
+    "catalog_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "accessors": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/machineId"},
+      "additionalProperties": {"$ref": "#/$defs/accessorMetadata"}
+    },
+    "selectors": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/machineId"},
+      "additionalProperties": {"$ref": "#/$defs/selectorMetadata"}
+    },
+    "derived_node_kinds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "effect_availability",
+          "effect_arbitration",
+          "condition_aggregation",
+          "condition_intrinsic"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "machineId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "idSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/machineId"}
+    },
+    "dependencyRef": {
+      "type": "string",
+      "pattern": "^(?:selector|accessor|derived):[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "accessorMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_class", "value_type", "subject_kinds", "dependencies"],
+      "properties": {
+        "source_class": {
+          "enum": ["DIRECT_AUTHORITY", "DERIVED_MECHANICAL"]
+        },
+        "value_type": {
+          "enum": ["boolean", "integer", "number", "machine_id", "scalar"]
+        },
+        "subject_kinds": {"$ref": "#/$defs/idSet"},
+        "dependencies": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/dependencyRef"}
+        }
+      }
+    },
+    "selectorMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_operations", "contribution_type", "allowed_dependency_kinds"],
+      "properties": {
+        "allowed_operations": {"$ref": "#/$defs/idSet"},
+        "contribution_type": {
+          "enum": ["numeric", "duration", "applicability", "recovery"]
+        },
+        "allowed_dependency_kinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "accessor",
+              "effect_availability",
+              "effect_arbitration",
+              "condition_aggregation",
+              "condition_intrinsic"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

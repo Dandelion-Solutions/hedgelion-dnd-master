@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/temporal-binding.schema.json",
+  "title": "HDM concrete TemporalBinding",
+  "oneOf": [
+    {"$ref": "#/$defs/metricDeadline"},
+    {"$ref": "#/$defs/procedureBoundary"},
+    {"$ref": "#/$defs/semanticBoundary"}
+  ],
+  "$defs": {
+    "machineId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "metricDeadline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["basis_id", "context_id", "anchor_value", "deadline_value", "unit_id"],
+      "properties": {
+        "basis_id": {"const": "temporal.metric_deadline"},
+        "context_id": {"$ref": "#/$defs/machineId"},
+        "anchor_value": {"type": "integer", "minimum": 0},
+        "deadline_value": {"type": "integer", "minimum": 0},
+        "unit_id": {"$ref": "#/$defs/machineId"}
+      }
+    },
+    "procedureBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["basis_id", "boundary_id", "procedure_id", "anchor_id"],
+      "properties": {
+        "basis_id": {"const": "temporal.procedure_boundary"},
+        "boundary_id": {"$ref": "#/$defs/machineId"},
+        "procedure_id": {"$ref": "#/$defs/machineId"},
+        "anchor_id": {"$ref": "#/$defs/machineId"},
+        "subject_id": {"$ref": "#/$defs/machineId"},
+        "offset": {"type": "integer", "minimum": 1}
+      }
+    },
+    "semanticBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["basis_id", "boundary_id", "anchor_id"],
+      "properties": {
+        "basis_id": {"const": "temporal.semantic_boundary"},
+        "boundary_id": {"$ref": "#/$defs/machineId"},
+        "anchor_id": {"$ref": "#/$defs/machineId"},
+        "subject_id": {"$ref": "#/$defs/machineId"},
+        "scope_id": {"$ref": "#/$defs/machineId"}
+      }
+    }
+  },
+  "examples": [
+    {
+      "basis_id": "temporal.metric_deadline",
+      "context_id": "scene-0017",
+      "anchor_value": 120,
+      "deadline_value": 180,
+      "unit_id": "unit.second"
+    },
+    {
+      "basis_id": "temporal.procedure_boundary",
+      "boundary_id": "boundary.turn_start",
+      "procedure_id": "encounter-0012",
+      "anchor_id": "turn-000123",
+      "subject_id": "actor-0042",
+      "offset": 1
+    }
+  ]
+}

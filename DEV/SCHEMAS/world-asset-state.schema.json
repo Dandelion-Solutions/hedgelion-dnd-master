@@ -37,7 +37,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["current"],
-      "properties": {"current": {"type": "number", "minimum": 0}}
+      "properties": {
+        "current": {"type": "number", "minimum": 0},
+        "recovery_binding": {"$ref": "https://hedgelion.invalid/schemas/temporal-binding.schema.json"}
+      }
     },
     "durabilityState": {
       "type": "object",
@@ -48,13 +51,7 @@
   },
   "examples": [
     {},
-    {
-      "owner_actor_id": "actor-00001",
-      "equipment": {"mode": "held"}
-    },
-    {
-      "container_asset_id": "asset-backpack-00001",
-      "quantity": 3
-    }
+    {"owner_actor_id": "actor-00001", "equipment": {"mode": "held"}},
+    {"container_asset_id": "asset-backpack-00001", "quantity": 3}
   ]
 }
