@@ -42,12 +42,7 @@
       "operation_id": "rule.add_damage_component",
       "selector": "damage.weapon",
       "value": {"dice": "1d6", "damage_type_id": "damage.radiant"},
-      "predicate": {
-        "all": [
-          {"fact": "source.equipped"},
-          {"fact": "target.marked"}
-        ]
-      }
+      "predicate": {"fact": "fiction.target_visible"}
     }
   ]
 }
