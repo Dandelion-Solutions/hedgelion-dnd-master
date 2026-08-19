@@ -1,6 +1,6 @@
 # HDM Actor Data Model
 
-Status: **AGREED**
+Status: **AGREED — STEP 2 MACHINE ALIGNMENT APPLIED**
 
 Target: `feature/mechanical-runtime-hot-state`
 
@@ -9,6 +9,7 @@ Schemas:
 - `SCHEMAS/actor-archetype-data.schema.json`
 - `SCHEMAS/world-actor-state.schema.json`
 - `SCHEMAS/world-actor-group-state.schema.json`
+- `SCHEMAS/temporal-binding.schema.json`
 
 ## 1. One progressively materialized actor
 
@@ -16,24 +17,11 @@ Schemas:
 companions, and player characters. HDM does not create separate entity kinds
 for those levels of detail. Only `state.name` is required.
 
-Expected fields are added when known or needed:
-
-```json
-{
-  "name": {"en": "Old Innkeeper", "ru": "Старый трактирщик"},
-  "roles": ["actor.nonplayer_character"],
-  "location_id": "location-00017",
-  "details": {
-    "occupation": "innkeeper",
-    "appearance": "Седой мужчина с обожжённой рукой"
-  }
-}
-```
-
-HP and ability values are not generated for incidental actors in advance. An
-actor becomes mechanically materialized immediately before an interaction that
-requires those values. Known bosses, guards, blocking monsters, player
-characters, and other intentionally mechanical actors may be prepared earlier.
+Expected fields are added when known or needed. HP and ability values are not
+generated for incidental actors in advance. An actor becomes mechanically
+materialized immediately before an interaction that requires those values.
+Known bosses, guards, blocking monsters, player characters, and other
+intentionally mechanical actors may be prepared earlier.
 
 Materialization happens before any affected roll:
 
@@ -45,48 +33,31 @@ mechanics required
   -> execute Activity
 ```
 
-## 2. Actor archetype
+## 2. Actor archetype and LifeState policy
 
-`definition.actor_archetype` contains reusable constant or baseline data for a
-type of creature. A particular actor references it through `definition_id`.
+`definition.actor_archetype` contains reusable baseline data for a type of
+creature. A particular Actor references it through `definition_id`.
 
-```json
-{
-  "id": "ruleset.goblin_warrior",
-  "kind": "definition.actor_archetype",
-  "name": {"en": "Goblin Warrior", "ru": "Гоблин-воин"},
-  "data": {
-    "creature_type_id": "creature_type.humanoid",
-    "size_id": "size.small",
-    "abilities": {
-      "str": 8,
-      "dex": 14,
-      "con": 10,
-      "int": 10,
-      "wis": 8,
-      "cha": 8
-    },
-    "hp": {"maximum": 7},
-    "activity_ids": ["activity.goblin_scimitar"]
-  }
-}
+An archetype may declare `life_state_policy_id`. Policy resolution is:
+
+```text
+explicit Actor override, if materially present
+    -> archetype policy, if declared
+    -> selected ruleset default
 ```
 
-The instance stores only individual mutable or exceptional values:
+The initial registered D&D policies are:
 
-```json
-{
-  "id": "actor-00127",
-  "kind": "world.actor",
-  "definition_id": "ruleset.goblin_warrior",
-  "state": {
-    "name": {"en": "Grik"},
-    "roles": ["actor.nonplayer_character"],
-    "location_id": "location-00031",
-    "hp": {"current": 4}
-  }
-}
+```text
+life_policy.dnd2024.character_like
+life_policy.dnd2024.monster_default
 ```
+
+An ordinary Actor does not copy an inherited/default policy into state merely
+for convenience.
+
+The instance stores only individual mutable or exceptional values. Reusable
+baseline values stay in the archetype/definition.
 
 ## 3. Minimal build
 
@@ -94,20 +65,9 @@ The instance stores only individual mutable or exceptional values:
 companions, and exceptional NPCs. Its initial contract deliberately excludes
 advancement-choice history, respec, and multiclass structures.
 
-```json
-{
-  "level": 4,
-  "species_id": "species.human",
-  "background_id": "background.soldier",
-  "class_id": "class.fighter",
-  "subclass_id": "subclass.champion"
-}
-```
-
 Only `level` is required when `build` exists. The history that produced the
 level is retained by gameplay events; a resolved profile may be cached by the
-runtime. Multiclassing may later evolve `class_id` into a plural structure when
-there is a concrete requirement.
+runtime.
 
 An actor may use both `definition_id` and `build`. Resolution order is:
 
@@ -132,13 +92,12 @@ Actor ability state stores only instance-owned components:
 - `base`, when present, is the actor's own base value;
 - otherwise the resolver may use the archetype base;
 - `adjustment` is a permanent instance adjustment;
-- dynamic contributions come from active Effects;
-- resolved scores and modifiers live only in HOT cache.
+- dynamic contributions come from participating Effects;
+- resolved scores and modifiers live only in HOT cache/MechanicalContext.
 
-For an ordinary archetype instance, `state.abilities` is absent. For a player
-character without an archetype, `base` values provide the actor's scores.
+## 5. Hit points and LifeState
 
-## 5. Hit points
+The Actor HP authority is:
 
 ```json
 {
@@ -151,44 +110,68 @@ character without an archetype, `base` values provide the actor's scores.
 
 All members are optional until HP is needed. Maximum HP resolves from the first
 available base (actor, archetype, or build calculation), plus permanent actor
-adjustment and active Effect contributions.
+adjustment and active Rule Element contributions at the registered
+`health.maximum` calculation selector.
 
 This `hp` object is the single Actor-state authority for current HP, maximum-HP
 components, and temporary HP. The generic `resources` map must not store a
-second HP or temporary-HP counter. Health-related engine capabilities may read
-and change this object, but they do not imply a duplicate
-`definition.resource` instance.
+second HP or temporary-HP counter. The resolved maximum and `health.bloodied`
+are derived values and are never copied back into Actor state as writable
+aliases.
 
 `temporary` means D&D temporary HP and is non-negative. A temporary reduction
-of maximum HP is a signed Effect contribution to `actor.hp.maximum`, not a
-negative temporary-HP value. If resolved maximum falls below current HP,
-runtime clamps current HP to the new maximum and records the change.
+of maximum HP is a contribution to `health.maximum`, not a negative temporary-HP
+value. If resolved maximum falls below current HP, the prospective health plan
+normalizes current HP according to the registered health rules before commit.
 
 HP and lifecycle state are separate authorities. When runtime first
 materializes an Actor's `hp`, it must materialize `life_state_id` in the same
-atomic transition. Reducing `hp.current` to zero invokes the selected ruleset's
-lifecycle resolution inside the same Activity; it does **not** by itself mean
-death or destruction.
+atomic transition. Zero HP never directly means death.
 
-`life_state_id` stores only the Actor's current lifecycle classification. It is
-separate from creature type, facets, conditions, and active Effects. For
-example, a ruleset may resolve zero HP as unconsciousness, dying, stability,
-death, or destruction. A pending vampire transformation remains an Effect with
-its own trigger (such as midnight, dawn, ritual completion, or another event),
-not a timer hidden inside LifeState. When that trigger fires, one atomic
-Activity may transform the Actor's creature type/form, update
-`life_state_id`, and restore or set HP. An active undead Actor is therefore not
-necessarily "dead": `undead` describes its creature type/form, while
-LifeState describes its current lifecycle state.
+The initial LifeState vocabulary is exactly:
 
-Step 2 of the architecture roadmap owns the minimum LifeState vocabulary and
-legal transition rules alongside health, Effects, Conditions, Duration, and
-Recovery. The engine must not hard-code a universal `0 HP -> dead` transition
-while that contract is being completed.
+```text
+life.active
+life.dying
+life.stable
+life.dead
+```
+
+LifeState is distinct from creature type, Conditions, consciousness, action
+availability, Effect lifecycle, and entity retirement.
+
+### State-local progress
+
+`life_state_progress` exists only when the current LifeState intrinsically owns
+such progress:
+
+```text
+life.active -> absent
+
+life.dying ->
+    death_saves.successes = 0..2
+    death_saves.failures  = 0..2
+
+life.stable ->
+    recovery_binding = concrete TemporalBinding
+
+life.dead -> absent
+```
+
+A third death-save success/failure is a transition edge, not a stored value.
+Stable automatic recovery uses the common temporal machinery; it does not
+create a LifeState-specific scheduler.
+
+A dead Actor remains the same Actor identity. Death does not itself delete or
+retire the record, purge every Effect, or create a generic resurrection timer.
+Revival eligibility belongs to the concrete revival mechanic.
+
+Exact prospective ordering, atomic commit, idempotent receipts, and transition
+Signals/Events are Step-3 responsibilities.
 
 ## 6. Resources
 
-Resources are keyed by stable resource-definition ID:
+Persistent Actor Resources are keyed by stable Resource definition ID:
 
 ```json
 {
@@ -197,11 +180,17 @@ Resources are keyed by stable resource-definition ID:
 }
 ```
 
-Capacity, recovery, and spending policy come from definitions/build. Actor
-state stores current values. No array position has identity. Persistent
-resources such as spell slots and feature uses belong here. Procedure-local
-action/reaction/movement budgets belong to the active Resolution/Encounter
-state, not to this persistent Actor map.
+The Resource definition owns mechanic type, lifetime owner, storage model,
+baseline capacity/recovery semantics, and spending policy. Persistent
+Actor/Asset ResourceState stores its authoritative `current` value and may own a
+concrete `recovery_binding` when a real timed recovery obligation exists.
+
+Procedure-local Resources use their procedure lifetime owner and store consumed
+state (`spent`) there instead of becoming Actor fields. `resource.capacity` and
+`resource.available` hide this physical difference from declarative mechanics.
+
+The Temporal Agenda is a disposable due-index over authoritative temporal
+bindings. It is not a second Resource or recovery authority.
 
 ## 7. Roles, placement, and ownership
 
@@ -209,28 +198,38 @@ state, not to this persistent Actor map.
 - `location_id` is the actor's single physical world location.
 - Scene, encounter, and zone participation are not copied into actor state.
 - Inventory is derived from `world.asset.owner_actor_id`.
-- Active effects are derived from `world.effect.target_ids`.
+- Active target-local Effect applications are derived from `world.effect.target_id`.
+- Named Condition presence/value is derived from Condition-bearing Effect
+  applications and registered Condition aggregation; Actor state has no copied
+  Condition list.
 - Allegiance is represented by organization membership and relationships.
 - GitHub-user ownership of a main character belongs to campaign player
-  configuration, not the actor. Transfer and shared control are not currently
-  supported.
+  configuration, not the Actor.
 
-## 8. Actor groups
+## 8. MechanicalContext reads
 
-`world.actor_group` is a named collection, not an actor subtype:
+Declarative mechanics do not inspect Actor JSON through arbitrary property
+paths. The initial Actor-related registered MechanicalContext accessors include:
 
-```json
-{
-  "id": "actor-group-00012",
-  "kind": "world.actor_group",
-  "state": {
-    "name": {"en": "Northern Patrol", "ru": "Северный патруль"},
-    "member_ids": ["actor-00041", "actor-00042"],
-    "leader_id": "actor-00041"
-  }
-}
+```text
+health.current
+health.temporary
+health.maximum
+health.bloodied
+life.state
+condition.present
+condition.value
+resource.capacity
+resource.available
 ```
 
-It has no HP, abilities, or build. Group actions resolve through members or a
+Every calculation reads one pinned committed/prospective state-view identity.
+Engine-owned mechanical facts are resolved by the deterministic core; the LLM
+cannot supply them as trusted invocation facts.
+
+## 9. Actor groups
+
+`world.actor_group` is a named collection, not an Actor subtype. It has no HP,
+abilities, build, or LifeState. Group actions resolve through members or a
 separate Activity. A D&D swarm that acts as one creature remains a
 `world.actor` with the `actor.swarm` facet.
