@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/boundary-occurrence.schema.json",
+  "title": "HDM transient boundary occurrence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["boundary_id", "producer_id", "scope_subject_id", "occurrence_key", "causal_position"],
+  "properties": {
+    "boundary_id": {"$ref": "#/$defs/machineId"},
+    "producer_id": {"type": "string", "minLength": 1},
+    "scope_subject_id": {"type": "string", "minLength": 1},
+    "occurrence_key": {"type": "string", "minLength": 1},
+    "causal_position": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+  },
+  "examples": [
+    {
+      "boundary_id": "boundary.turn_end",
+      "producer_id": "procedure-000001",
+      "scope_subject_id": "actor-0001",
+      "occurrence_key": "procedure-000001:turn:actor-0001:7:end",
+      "causal_position": "resolution-0000001:segment:2"
+    }
+  ]
+}
