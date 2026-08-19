@@ -50,7 +50,7 @@ class RuntimeProcedureClassContractTest(unittest.TestCase):
             self.entity_structures["catalog_version"],
             self.mechanical_surfaces["catalog_version"],
         }
-        self.assertEqual(versions, {"1.3.0"})
+        self.assertEqual(versions, {"1.4.0"})
 
 
 if __name__ == "__main__":
