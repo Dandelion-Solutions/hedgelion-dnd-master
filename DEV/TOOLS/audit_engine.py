@@ -254,6 +254,22 @@ def audit_json_schemas() -> None:
             schemas[path.name] = schema
         except Exception as exc:
             ERRORS.append(f"invalid JSON Schema {rel}: {exc}")
+    required_step3_schemas = (
+        "invocation-fact.schema.json",
+        "intent-clause.schema.json",
+        "runtime-intent-plan-state.schema.json",
+        "runtime-command-state.schema.json",
+        "runtime-procedure-state.schema.json",
+        "runtime-resolution-state.schema.json",
+        "runtime-continuation-state.schema.json",
+        "execution-segment.schema.json",
+        "runtime-mechanical-event-state.schema.json",
+        "pending-child-invocation.schema.json",
+        "resolution-receipt.schema.json",
+        "boundary-occurrence.schema.json",
+    )
+    for required_schema in required_step3_schemas:
+        require(required_schema in schemas, f"missing Step-3 schema: {required_schema}")
     registry = Registry().with_resources(
         (schema["$id"], Resource.from_contents(schema))
         for schema in schemas.values() if "$id" in schema
@@ -269,6 +285,7 @@ def audit_json_schemas() -> None:
         "core-catalog.schema.json": "core-catalog.json",
         "entity-structures.schema.json": "entity-structures.json",
         "identifier-policies.schema.json": "identifier-policies.json",
+        "mechanical-surfaces.schema.json": "mechanical-surfaces.json",
     }
     for schema_name, filename in instance_pairs.items():
         schema = schemas.get(schema_name)
@@ -283,7 +300,11 @@ def audit_json_schemas() -> None:
         core = json.loads((DEV_ROOT / "CATALOG/core-catalog.json").read_text(encoding="utf-8"))
         structures = json.loads((DEV_ROOT / "CATALOG/entity-structures.json").read_text(encoding="utf-8"))
         identifiers = json.loads((DEV_ROOT / "CATALOG/identifier-policies.json").read_text(encoding="utf-8"))
-        require(core["catalog_version"] == structures["catalog_version"] == identifiers["catalog_version"], "all machine catalogs must use the same catalog_version")
+        surfaces = json.loads((DEV_ROOT / "CATALOG/mechanical-surfaces.json").read_text(encoding="utf-8"))
+        require(
+            core["catalog_version"] == structures["catalog_version"] == identifiers["catalog_version"] == surfaces["catalog_version"],
+            "all machine catalogs must use the same catalog_version",
+        )
         require(set(core["registries"]["content_definition_kinds"]) == set(structures["definitions"]), "content_definition_kinds and entity-structure definition keys differ")
         require(set(core["registries"]["world_record_kinds"]) == set(structures["world_records"]), "world_record_kinds and entity-structure world-record keys differ")
     except Exception as exc:
