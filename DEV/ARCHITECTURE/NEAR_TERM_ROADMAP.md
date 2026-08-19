@@ -59,6 +59,50 @@ validation, compact receipts/context, unsupported/homebrew mechanics, and the
 rule that engine-resolvable mechanical facts remain owned by the deterministic
 core rather than asserted by the LLM.
 
+## Deferred cross-cutting architecture item — runtime continuity checkpoints
+
+`runtime-only` and `non-canonical` must not be treated as synonyms for
+`safe to lose`.
+
+HDM must preserve enough continuity-critical runtime state in repository-backed
+recovery checkpoints to resume deterministically after a process/environment
+failure or in another chat/environment, without promoting that state to campaign
+canon merely because it is recoverable.
+
+The design must distinguish:
+
+```text
+canonical/durable world authority
+    -> campaign canon
+
+continuity-critical runtime authority
+    -> recovery/checkpoint state, not campaign canon
+
+rebuildable projection/cache
+    -> may be discarded and rebuilt
+```
+
+Examples requiring explicit classification include active procedure/encounter
+state, procedure-local ResourceState, suspended Continuations/choices/reactions,
+active local metric-coordinate state where still mechanically material,
+pending typed obligations that have not yet committed their consequence, and
+other runtime records whose loss would change future mechanics.
+
+The Temporal Agenda itself remains a derived/disposable due-index when it can be
+rebuilt from authoritative bindings and checkpointed runtime state. Do **not**
+persist a second writable copy of its queue as mechanical authority merely for
+recovery convenience. Instead, the checkpoint contract must guarantee that all
+information required to rebuild the Agenda and pending trigger/boundary work is
+recoverable. An implementation may cache serialized indexes only as disposable
+acceleration data whose correctness is verified/rebuilt from the checkpoint
+sources.
+
+Revisit trigger: Step 3 must define which execution/runtime records and pending
+obligations are checkpointable together with idempotency/resume semantics; Step
+5 must close repository durability, publication/recovery boundaries, cross-chat/
+cross-environment restoration, and cleanup/expiry of obsolete checkpoint state.
+This requirement must be resolved before Step 5 can close.
+
 ## Current checkpoint
 
 Step 1 is complete after owner approval of its adversarial second pass. Step 2
@@ -70,6 +114,12 @@ The detailed preliminary Effect-application checkpoint is
 `DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`.
 The detailed preliminary LifeState checkpoint is
 `DEV/docs/superpowers/specs/2026-08-19-step-2-lifestate-policy-transition-design.md`.
+The health/effect selector-query direction, adversarial review, and accepted
+resolution are recorded in:
+
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md`;
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-adversarial-review.md`;
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-resolution.md`.
 
 The ownership map must close before new Step 2 schema fields are introduced.
 Accepted ownership sub-decisions now include:
@@ -184,10 +234,30 @@ Accepted ownership sub-decisions now include:
   second revival API;
 - death does not purge all Effects or retire/delete the Actor. Only interested
   mechanics react; Concentration ends through the existing Effect/support path,
-  while other still-running Effects may persist through later revival.
+  while other still-running Effects may persist through later revival;
+- **preliminary selector/query boundary:** calculation selectors, Mechanical
+  Context accessors, and runtime-only domain queries are separate surfaces and
+  declarative content never receives arbitrary world-query capability;
+- engine-owned direct/derived mechanical facts cannot be asserted by the LLM as
+  invocation authority; attempts to do so fail typed validation;
+- one MechanicalContext is pinned to one explicit committed/prospective
+  state-view identity, so lazy reads cannot silently span revisions;
+- mechanical dependency-cycle freedom uses registered dependency contracts plus
+  a scoped concrete DAG validated before prospective activation commits; Effect
+  availability, Effect arbitration, and Condition aggregation participate in
+  the same dependency analysis;
+- `condition.present` means mechanically effective named Condition state, while
+  the pure application calculation is named `condition.applicability`;
+- runtime domain-query contracts use only closed typed domain-specific keys;
+  generic filters/callbacks/query expressions remain forbidden;
+- `resource.available` is Resource-domain numeric availability, not Activity
+  activation eligibility; subject/entity-kind validity is part of accessor
+  registration;
+- machine naming in still-provisional architecture may be mechanically corrected
+  for namespace/semantic consistency without reopening human product decisions,
+  provided meaning and external compatibility do not change.
 
-The exact continuation point is **health/effect selectors and query boundaries**:
-settle the minimum registered selector/query surface required by the accepted
-HP, LifeState, Condition, Effect, Resource, Duration, and Recovery models without
-creating duplicate stored authorities. Schema/catalog alignment, focused cases,
-and the final Step 2 critical pass follow before Step 2 can close.
+The exact continuation point is the bounded **valued/cumulative Condition
+semantics** design, with D&D Exhaustion as the required seed case. After that,
+Step 2 proceeds to schema/catalog alignment, focused validation cases, and the
+final independent Step 2 critical pass before the gate can close.
