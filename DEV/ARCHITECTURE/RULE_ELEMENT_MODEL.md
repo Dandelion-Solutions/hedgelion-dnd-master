@@ -1,6 +1,6 @@
 # HDM Rule Element Model
 
-Status: **DESIGN BASELINE — pending focused mechanical examples**
+Status: **DESIGN BASELINE — STEP 2 SELECTOR/CONTEXT ALIGNMENT APPLIED**
 
 This document defines passive mechanical contributions and bounded reactive
 bindings. It supersedes the provisional standalone `definition.rule_element`
@@ -14,25 +14,31 @@ A Rule Element answers one question:
 > explicit predicate is true?
 
 It is a pure embedded value object. It does not perform an Activity, mutate
-world state, spend resources, discover fiction, or call arbitrary code.
+world state, spend resources, discover fiction, issue domain queries, or call
+arbitrary code.
 
 Rule Elements live inside the reusable definition that grants the mechanic,
-normally a Feature, Effect, Asset, equipment property, or Feat. A named
-Condition grants its mechanics through referenced Effects instead of copying
-the same rules. The owning definition supplies identity and provenance. Runtime
-state such as an active effect or equipped asset determines whether that owner
-is currently available.
+normally a Feature, Effect, Condition, Asset, equipment property, or Feat. A
+named Condition may own intrinsic Rule Elements directly; it does not require a
+mandatory `Condition -> EffectDefinition` indirection. Concrete Condition
+applications are ordinary target-local `world.effect` instances whose
+`definition_id` references the Condition definition.
+
+The owning definition supplies stable rules identity. Runtime state such as an
+active Effect application or equipped Asset supplies concrete provenance and
+availability.
 
 An equipped Asset with passive embedded Rule Elements is evaluated directly
 from that Asset and its availability predicates. Runtime does not manufacture a
-duplicate `world.effect` merely to activate those rules. An Effect instance is
-materialized only when it has an independent target, duration, stack,
-parameter, or lifecycle that must survive separately from the equipment state.
+duplicate `world.effect` merely to activate those rules. An Effect application
+is materialized when it has an independent target, duration/temporal binding,
+validated application parameter, source/provenance relation, maintained support,
+or lifecycle that must survive separately from the equipment/definition.
 
-Consequently HDM does not create a standalone catalog file, canonical ID, or
-allocator entry for every modifier. If reuse later requires a shared collection,
-the reusable unit should be a Feature or Effect; a new rule-bundle entity is not
-introduced without evidence.
+Consequently HDM does not create a standalone catalog definition or canonical
+ID for every modifier. If reuse later requires a shared collection, the reusable
+unit should normally be a Feature, Effect, Condition, or other existing
+rules-bearing definition rather than a new rule-bundle entity.
 
 ## 2. Minimum structure
 
@@ -49,105 +55,201 @@ The minimum Rule Element is:
 }
 ```
 
-Only `operation_id`, `selector`, and `value` are required. Optional fields are:
+Only `operation_id`, `selector`, and `value` are required. Optional fields
+include `predicate`, `stacking_key`, `priority`, and a pure Resource gate.
 
-```json
-{
-  "predicate": {
-    "all": [
-      {"fact": "source.equipped"},
-      {"fact": "target.marked"}
-    ]
-  },
-  "stacking_key": "artifact-radiant-rider",
-  "priority": 100,
-  "gate": {
-    "resource_ref": "owner.radiant_rider_uses"
-  }
-}
+The embedded object has no standalone `id`, mutable source, phase, recovery
+policy, or usage counter:
+
+- provenance is derived from the owning definition and concrete runtime owner;
+- a registered selector denotes one calculation surface;
+- the Resource owns current/spent state, capacity semantics, and recovery;
+- Effect application arbitration decides which applications participate;
+- selector resolver policy decides how typed Contributions combine.
+
+`stacking_key` is a Rule-Element **contribution-combination** aid where a proven
+operation needs it. It is not the removed generic Effect `stacks` authority and
+does not control Effect application lifecycle.
+
+## 3. Three separate mechanical surfaces
+
+Step 2 fixes three intentionally different surfaces:
+
+```text
+Calculation Selector
+    -> what calculation accepts Contributions?
+
+MechanicalContext accessor/fact
+    -> what typed value may this calculation read from one pinned state view?
+
+Runtime-only domain query
+    -> how does engine infrastructure locate authoritative/indexed objects?
 ```
 
-The embedded object has no `id`, `source`, `phase`, recovery policy, or mutable
-usage counter:
+A Rule Element can contribute only to a registered Calculation Selector. A
+predicate can read only registered facts/accessors allowed by its contract.
+Declarative content cannot contain or execute runtime domain-query syntax.
 
-- provenance is derived from the owning definition and runtime instance;
-- a registered selector denotes the calculation point and allowed contribution;
-- the Resource owns current usage, capacity, spending, and recovery;
-- resolver policy owns default ordering and stacking.
+The initial structured selector/accessor metadata is in:
 
-For diagnostics, runtime assigns an internal address from owner identity plus
-the element's position in the validated definition. An optional local key may be
-added later only if an external reference proves necessary.
+```text
+CATALOG/mechanical-surfaces.json
+SCHEMAS/mechanical-surfaces.schema.json
+SCHEMAS/mechanical-accessor-ref.schema.json
+```
 
-## 3. Selectors, operations, and Contributions
+Semantic stems may be shared when the typed surface is unambiguous, for example:
 
-`selector` identifies a registered calculation surface such as an attack bonus,
-save DC, weapon damage, received damage, resource cost, range, or duration.
+```text
+selector:health.maximum
+accessor:health.maximum
+```
+
+Internal dependency identity always retains the surface kind.
+
+## 4. Selectors, operations, and Contributions
+
+`selector` identifies a registered calculation surface such as attack roll,
+received damage, Resource capacity/recovery, Effect duration, maximum HP, or
+Condition applicability.
 
 `operation_id` identifies the only transformation the element may contribute,
 for example a flat modifier, advantage state, extra damage component,
-resistance, cost adjustment, or bounded override.
+immunity, cost adjustment, duration adjustment, or bounded override.
 
 At catalog compilation, runtime validates that:
 
-1. both IDs exist in the selected engine/ruleset registry;
-2. the operation is legal for the selector;
-3. `value` matches that operation's exact JSON Schema;
-4. predicate facts are exposed for that selector;
-5. stacking, priority, and gate fields are valid for the operation.
+1. selector and operation IDs exist;
+2. the operation is legal for that selector;
+3. `value` matches the selector/operation value contract;
+4. predicates use only registered facts/accessors and legal arguments;
+5. subject/entity bindings are legal for those accessors;
+6. declared dependency classes are legal;
+7. the definition is statically acyclic where that can be proven.
 
 When evaluated, a Rule Element returns a typed `value.contribution`. The
-resolver accepts, combines, suppresses, or rejects Contributions according to
-the selector's deterministic policy. Every result retains owner/source and
-reason in the resolution trace.
+selector resolver accepts, combines, suppresses, or rejects Contributions
+according to deterministic policy and retains provenance/reason in the
+resolution trace.
 
-No general `phase` field is stored. A selector such as `attack.roll.bonus` or
-`damage.received` already identifies when it is evaluated. This prevents two
-timing fields from disagreeing. Non-commutative overrides may use `priority`;
-ordinary additive rules do not need it.
+No general `phase` field is stored. The calculation/operation contract owns
+when the selector is resolved. Exact compound-Resolution phase ordering remains
+Step 3 rather than becoming a second timing vocabulary on Rule Elements.
 
-## 4. Predicates
+## 5. MechanicalContext and predicates
 
-Predicates are closed `all` / `any` / `not` trees over explicit typed facts, with
-registered comparisons where required. They may inspect:
+Every predicate/calculation evaluates against one logically immutable
+`MechanicalContext` pinned to an explicit committed or prospective state-view
+identity. Lazy reads must resolve against that same view or detect invalidation
+and rebuild/reject the context. Silent cross-revision reads are forbidden.
 
-- actor, target, and source tags or conditions;
-- equipped, held, accessible, attuned, and identified state;
-- action, attack, damage, spell, weapon, and effect selectors;
-- range, cover, visibility, and reachability facts already adjudicated;
-- turn/round state and exposed Resource values;
-- typed results from the current resolution.
+Predicates are closed `all` / `any` / `not` trees with typed comparisons. There
+are two important input classes:
 
-Predicates cannot read arbitrary JSON paths, execute expressions, search all
-lore, or infer a fact absent from the runtime context. The LLM must explicitly
-adjudicate facts outside the engine's mathematical knowledge.
+### Registered context facts
 
-Missing facts make the predicate false or produce a typed validation issue when
-the owning mechanic declares the fact mandatory. They never invite the runtime
-to guess.
+Facts such as fiction-dependent visibility/reachability may be admitted when the
+operation contract explicitly marks them as host/LLM-adjudicated.
 
-## 5. Stacking and limited use
+### Registered MechanicalContext accessors
 
-Each registered rule operation defines its default combination policy. D&D
-advantage/disadvantage, resistance, replacement, minimum/maximum, and additive
-bonuses therefore remain resolver behavior rather than ad-hoc instructions
-copied into every Rule Element.
+Engine-owned state is read through exact typed accessor shapes, for example:
 
-`stacking_key` exists only when named-source or once-only behavior cannot be
-derived from the operation and owner. `priority` is limited to operations whose
-order changes the result. Runtime uses a deterministic tie-breaker and reports
-conflicting incompatible overrides instead of depending on JSON array order.
+```json
+{
+  "accessor_id": "condition.present",
+  "subject": "target",
+  "condition_id": "condition.poisoned"
+}
+```
+
+or:
+
+```json
+{
+  "accessor_id": "health.bloodied",
+  "subject": "target"
+}
+```
+
+The old arbitrary `{"ref":"some.path"}` operand is not part of the current
+schema. Accessors cannot read arbitrary JSON paths, run expressions, enumerate
+unrelated Effects, or search the world.
+
+Engine-owned direct/derived facts such as HP, LifeState, effective Conditions,
+Resource availability, or Bloodied state cannot be supplied by the LLM as
+trusted adjudicated values. Attempts to do so fail typed invocation validation.
+
+## 6. Dependency discipline
+
+Acyclicity is enforced through the accepted hybrid model:
+
+```text
+registered dependency contracts
+    +
+scoped concrete DAG for hydrated/prospective mechanics
+```
+
+Dependency analysis includes at least:
+
+- Calculation Selectors;
+- MechanicalContext accessors;
+- Effect availability/suppression derivation;
+- Effect arbitration;
+- Condition aggregation;
+- Condition intrinsic-rule evaluation.
+
+Independently valid definitions may create a cycle only when combined on one
+concrete target/procedure. Therefore prospective activation validates the scoped
+DAG before commit. No recursion order, cache order, SQL order, repeated-until-
+stable loop, or hidden fixed-point semantics may resolve such a cycle.
+
+## 7. Effect and Condition participation
+
+Effect application participation and Rule Element combination are different
+layers:
+
+```text
+Effect/Condition application lifecycle
+    -> availability
+    -> Effect arbitration or Condition aggregation
+    -> participating/effective mechanics
+    -> Rule Element collection
+    -> selector resolution
+```
+
+Generic Effect arbitration never substitutes for Condition aggregation.
+`cumulative_units` Conditions such as Exhaustion may deliberately retain
+multiple effective member applications.
+
+Condition intrinsic mechanics have their own per-item scope:
+
+```text
+aggregate_once
+per_effective_application
+```
+
+The latter receives only the bound context of the current effective Condition
+application (source/provenance and declared parameters as permitted), not an
+arbitrary query capability.
+
+## 8. Limited use and Resource gates
 
 `gate.resource_ref` may require an available limited-use Resource. The Rule
-Element itself remains pure: it requests a gate as part of its Contribution.
-The resolver validates and consumes the Resource atomically with the owning
-mechanical result. Capacity and recovery are never duplicated in the element.
+Element itself remains pure: it exposes the gate as part of eligibility/
+Contribution planning.
 
-## 6. Trigger Bindings
+`resource.capacity` and `resource.available` are derived MechanicalContext
+values independent of Activity eligibility. Exact reservation/consumption
+commit points, retries, and atomic mutation segments belong to Step 3.
+
+Capacity/recovery are never copied into the Rule Element.
+
+## 9. Trigger Bindings
 
 A Trigger Binding represents a reactive mechanic that cannot be expressed as a
 passive Contribution. It is also an embedded value object owned by the Feature,
-Effect, Asset, or other definition that grants it.
+Effect, Condition, Asset, or other rules-bearing definition.
 
 Minimum shape:
 
@@ -158,86 +260,76 @@ Minimum shape:
 }
 ```
 
-Expected optional fields are:
+It contains no callback, child steps, arbitrary payload mutation, executable
+query, or embedded Activity definition.
 
-```json
-{
-  "mode": "offer",
-  "actor": "owner",
-  "targets": "signal.source",
-  "predicate": {"fact": "owner.can_react"},
-  "gate": {"resource_ref": "owner.reaction"},
-  "priority": 100
-}
-```
+The current structural modes are `automatic`, `offer`, and `schedule`. Their
+exact Step-3 execution semantics, idempotency, reaction suspension/resume,
+Signal/Event ordering, child Resolution identity, and chain bounds remain owned
+by Step 3. Step 2 only requires that Trigger Bindings remain typed and bounded.
 
-The binding names a registered Signal or Event and a registered Activity. It
-contains no callback, child steps, arbitrary payload mutation, or embedded
-Activity definition.
+## 10. Signals, Events, and boundaries
 
-`mode` is one of:
+A Signal is transient calculation/timing context; an Event is a committed fact.
+Their exact execution contract is intentionally not finalized in this Step-2
+document.
 
-- `automatic`: invoke when the binding is eligible;
-- `offer`: suspend and request an eligible player's/GM's decision;
-- `schedule`: enqueue a mandatory post-commit child Resolution.
+Duration, Recovery, and procedure refresh now share one registered boundary
+vocabulary (`boundary.*`). A reached boundary may later be exposed through the
+Step-3 Signal/Event contract, but `signal.turn.start`, a BoundaryOccurrence, and
+an Event must not silently become three independent authorities for whether the
+same mechanical edge occurred.
 
-The registry restricts which modes are legal for each Signal/Event.
+There is no real-time/background event loop. Metric time advances only through
+explicit runtime/procedure advancement, and due work is discovered through the
+rebuildable Temporal Agenda.
 
-## 7. Signals and Events
-
-A Signal is transient calculation/timing context exposed before a mutation is
-irreversible. A pre-commit Trigger Binding may offer or automatically apply a
-reaction that changes the pending result. Declining or completing the reaction
-resumes the same Resolution without rerolling completed rolls.
-
-An Event is an immutable committed fact. A post-commit binding may schedule a
-new child Resolution with its own `resolution_id`, the same causal chain, and
-the Event as `caused_by`. That child may add new facts; it cannot delete or
-rewrite the triggering Event.
-
-Runtime enforces deterministic ordering, per-binding/per-signal idempotency,
-Resource gates, and a bounded trigger-chain depth. There is no background event
-loop: turn changes, duration ticks, rests, and local-time advancement require an
-explicit typed runtime command.
-
-## 8. Fast evaluation
+## 11. Fast evaluation
 
 On hydration/definition load, runtime compiles and indexes embedded Rule Elements
-by selector and Trigger Bindings by Signal/Event ID. A resolution evaluates only
-the entries supplied by the actor, source, targets, their active effects, and the
-current procedure state. It never scans the whole catalog or asks the LLM to
-recalculate modifiers.
+by selector and Trigger Bindings by Signal/Event identity. A Resolution evaluates
+only mechanics supplied by the actor, source, targets, their relevant active
+Effects/Conditions/Resources, and current procedure state.
 
-Changing a relevant working object invalidates its compiled cache entry through
-the existing coarse `state_revision` policy. The cache stores complete compiled
-objects and is disposable; canonical definitions and state remain recoverable
-from GitHub.
+Derived indexes/caches are disposable. Cache keys for accessor results include
+the pinned state-view identity and bound arguments; a committed-view result may
+not leak into a prospective view.
 
-## 9. Forbidden behavior
+Runtime never scans the whole campaign for an ordinary modifier and never asks
+the LLM to recalculate deterministic mechanics from prose.
+
+## 12. Forbidden behavior
 
 Rule Elements and Trigger Bindings cannot:
 
 - mutate state directly;
 - invoke Python, SQL, shell, network, GitHub, or arbitrary expressions;
-- invent selectors, facts, operations, Signals, Events, or Activities;
-- iterate or recurse;
+- invent selectors, accessors, facts, operations, Signals, Events, boundaries,
+  or Activities;
+- execute arbitrary world/domain queries;
+- iterate or recurse over world state;
 - rewrite committed Events;
 - own mutable counters or recovery schedules;
-- create undocumented action-economy costs;
+- create a generic Effect stack authority;
+- bypass the scoped dependency-DAG check;
+- treat LLM-provided engine facts as mechanical authority;
 - silently disclose or search narrative secrets.
 
-The remaining work is limited to the exact selector/fact registry, operation
-value schemas, Contribution combination tables, and focused examples for
-advantage, resistance, once-per-turn damage, reactions, and post-damage
-follow-ups.
+## 13. Current machine contract and remaining boundary
 
-## 10. Design basis
+Machine structure is defined by:
 
-- [PF2e Rule Elements](https://github.com/foundryvtt/pf2e/wiki/Quickstart-guide-for-rule-elements):
-  typed operation keys, selectors, predicates, values, provenance, and stacking;
-- [D&D SRD 5.2.1](https://media.dndbeyond.com/compendium-images/srd/5.2/SRD_CC_v5.2.1.pdf):
-  advantage/disadvantage, attack/save/damage timing, reactions, resistance,
-  vulnerability, immunity, resources, and effect durations.
+- `SCHEMAS/rule-element.schema.json`;
+- `SCHEMAS/trigger-binding.schema.json`;
+- `SCHEMAS/mechanical-predicate.schema.json`;
+- `SCHEMAS/mechanical-accessor-ref.schema.json`;
+- `CATALOG/core-catalog.json`;
+- `CATALOG/mechanical-surfaces.json`.
 
-HDM deliberately omits arbitrary data paths, expression evaluation, and the
-full PF2e actor-preparation pipeline.
+Step-2 focused schema cases are executable in
+`DEV/TESTS/test_step2_machine_contracts.py` and
+`DEV/TESTS/test_step2_mechanical_examples.py`.
+
+Remaining selector/operation value-contract expansion is seed-driven. Exact
+IntentPlan/Resolution ordering and mutation/receipt semantics are Step 3 rather
+than unfinished Rule Element design.
