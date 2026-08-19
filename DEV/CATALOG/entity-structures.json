@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.2.0",
+  "catalog_version": "1.3.0",
   "details_field": "details",
   "details_semantics": "arbitrary_llm_descriptive_nonmechanical_json",
   "definitions": {
