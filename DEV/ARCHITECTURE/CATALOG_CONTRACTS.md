@@ -8,9 +8,13 @@ Machine-readable schemas:
 
 - `SCHEMAS/catalog-definition.schema.json`
 - `SCHEMAS/world-record.schema.json`
+- `SCHEMAS/entity-structures.schema.json`
 - `SCHEMAS/identifier-policies.schema.json`
 
-Machine-readable identifier policy: `CATALOG/identifier-policies.json`
+Machine-readable contracts:
+
+- `CATALOG/entity-structures.json`
+- `CATALOG/identifier-policies.json`
 
 ## 1. Design rule
 
@@ -20,6 +24,33 @@ definition, storage context, event history, or checkpoint.
 
 The common envelopes do not reserve speculative extension points. A concrete
 need must justify a new field or mechanism.
+
+### 1.1 Canonical class-admission rule
+
+A new domain noun does not automatically justify a new catalog class or record.
+Classify a concept by responsibility and independent identity/lifecycle:
+
+1. If it introduces executable semantics that deterministic runtime must
+   implement, it belongs to a closed engine capability/protocol registry.
+   Campaign/LLM content cannot invent it.
+2. If it is reusable validated rules/content composed from registered semantics,
+   it is a `definition.*` record.
+3. If it is one particular campaign thing/fact with independent identity,
+   lifecycle, provenance, references, or mutable state, it is a `world.*`
+   record.
+4. If it is an independently addressable operational owner needed across
+   execution, retry, suspension, recovery, or audit but is not world canon, it
+   is a `runtime.*` record.
+5. Otherwise, if it exists only inside another owner/request/calculation and has
+   no independent lifecycle/reference requirement, it is an embedded typed
+   protocol/value object.
+6. Facets and tags classify/search. They never create identity or executable
+   semantics by themselves.
+
+If a previously embedded value later requires independent addressing, retry,
+reference, or lifecycle, promoting it to a record is an explicit architecture
+change. Serialization inside a runtime record does not itself grant independent
+identity.
 
 ## 2. Reusable definition envelope
 
@@ -83,10 +114,41 @@ Required fields:
 | `kind` | Registered `world.*` kind selecting the schema for `state`. |
 | `state` | Kind-specific current world state. |
 
-`definition_id` is optional in the universal envelope. A kind-specific schema
-may require it when records of that kind are instantiated from reusable
-definitions. Lore facts, relationships, chapters, and timeline markers may be
-authored directly.
+`definition_id` is optional in the universal envelope only because different
+world kinds have different reusable-definition relationships. Its semantic
+legality is **not** universal.
+
+`CATALOG/entity-structures.json` owns the closed `definition_binding` contract
+for every `world.*` kind:
+
+```text
+mode = forbidden
+    definition_id must be absent
+
+mode = optional
+    definition_id may be absent; if present its definition kind must be allowed
+
+mode = required
+    definition_id must be present and its definition kind must be allowed
+```
+
+The loader/compiler validates both referenced ID existence and referenced
+`definition.*` kind against this mapping. Runtime code must not infer a relation
+from similar names.
+
+Examples:
+
+```text
+world.actor  -> definition.actor_archetype
+world.asset  -> definition.asset
+world.effect -> definition.effect | definition.condition
+```
+
+The `world.effect` case proves that definition/world compatibility is a declared
+relation, not a `world.foo -> definition.foo` naming convention. Conversely, a
+reusable definition does not require a same-named world kind: a Condition
+application is a `world.effect`, and an Activity can execute without producing a
+persistent Activity instance.
 
 Instance-specific roles and classifications are kind-specific state. Facets
 from a reusable definition are not copied into the world record and there is no
@@ -106,6 +168,8 @@ universal facet-merging algorithm.
    deleted, and persistent IDs are not reused.
 6. Cycles are decided by kind-specific validation. Some relationships and
    location connections are naturally reciprocal.
+7. `definition_id` compatibility is validated from the machine
+   `definition_binding` table; existence alone is insufficient.
 
 ## 5. Reuse and customization
 
@@ -126,6 +190,13 @@ Definitions do not use inheritance or a universal override object.
 HDM does not define a plugin or free-form mechanics-extension contract at this
 stage.
 
+A reusable source definition does not prescribe the runtime owner of every
+application of that content. For example, a reusable hazard may describe a trap,
+poison, disease, or curse, while a concrete ongoing target-local disease/curse
+may be represented by the ordinary Effect/Condition lifecycle if that is its
+actual independent state owner. Do not create a `world.hazard` merely because a
+`definition.hazard` participated in provenance.
+
 ### 5.1 Definition changes are directed transformations
 
 `definition_id` may change only when the same world object remains but its
@@ -140,11 +211,12 @@ Each step names or binds:
 - the resulting existing definition (`to_definition_id`).
 
 The runtime rejects a stale source, missing target definition, wrong world kind,
-or transition not present in the selected Activity. Reversibility requires a
-second directed step: potion to empty bottle and empty bottle to potion are two
-permissions, not one implicit bidirectional relation. The same mechanism covers
-deploy/stow forms such as travelling mortar to siege mortar without implying
-that arbitrary assets can transform into either.
+a target definition kind incompatible with that world kind's
+`definition_binding`, or a transition not present in the selected Activity.
+Reversibility requires a second directed step: potion to empty bottle and empty
+bottle to potion are two permissions, not one implicit bidirectional relation.
+The same mechanism covers deploy/stow forms such as travelling mortar to siege
+mortar without implying that arbitrary assets can transform into either.
 
 Campaign-authored assets remain possible. When a new form is needed, the Master
 may create a validated campaign definition and a campaign Activity that connects
@@ -221,6 +293,11 @@ selects the exact prefix, scope, strategy, and minimum numeric width from
 
 Definitions use stable semantic namespaced IDs and no numeric allocator.
 Protocol values are embedded and receive no independent identity by default.
+Serializing a protocol value inside a trace, Continuation, or checkpoint does
+not change that rule: the owning runtime record owns persistence, versioning,
+and lifecycle. If independent addressing becomes necessary, introducing a
+runtime record is an explicit contract change.
+
 Timeline slots and encounter rounds are ordering/state values, not entity IDs.
 
 Persistent world-record IDs and independently numbered runtime records use
