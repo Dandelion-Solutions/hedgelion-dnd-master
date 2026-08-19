@@ -83,8 +83,8 @@ localized `name`, optional `facets`, and optional `tags` remain in the envelope.
 | `definition.asset` | — | `physical`, `value`, `rarity`, `property_ids`, `activity_ids`, `resource_ids`, `effect_ids`, `rule_elements`, `trigger_bindings`, `handling`, `capacity`, `stack`, `attunement`, `durability` |
 | `definition.activity` | `family_id`, `steps` | `activation`, `requirements`, `targeting`, `costs` |
 | `definition.resource` | `mechanic_id`, `lifetime_owner`, `state_model` | `capacity`, `recovery`, `spending_policy_id` |
-| `definition.effect` | — | `duration`, `parameter_schema`, `rule_elements`, `trigger_bindings`, `activity_ids`, `reapplication_policy_id`, `arbitration_policy_id` |
-| `definition.condition` | `aggregation_policy_id` | `parameter_schema`, `value_constraints`, `intrinsic_mechanics` |
+| `definition.effect` | — | `duration`, `parameter_schema`, `rule_elements`, `trigger_bindings`, `activity_ids`, `reapplication`, `arbitration_policy_id` |
+| `definition.condition` | `aggregation_policy_id` | `parameter_schema`, `value_constraints`, `intrinsic_mechanics`, `automatic_boundary_responses` |
 | `definition.recipe` | `inputs`, `outputs` | `activity_id`, `duration`, `requirements` |
 | `definition.hazard` | — | `detection`, `trigger_bindings`, `activity_ids`, `disable_activity_ids` |
 | `definition.terrain` | — | `movement_rules`, `visibility_rules`, `hazard_ids` |
@@ -113,10 +113,19 @@ Step-2 definition shapes are further constrained by:
 - `SCHEMAS/rest-policy-definition-data.schema.json`;
 - `SCHEMAS/duration-spec.schema.json`.
 
+Effect reapplication keeps matching semantics separate from the lifecycle
+action. `reapplication.match_policy_id` chooses the existing target/family
+application set (with optional same-source restriction in the initial closed
+vocabulary), while `reapplication.action_id` is only `refresh` or `replace`.
+Absence of `reapplication` retains the default create-new-application behavior.
+
 Condition aggregation and intrinsic-rule evaluation are deliberately separate:
 `aggregation_policy_id` determines effective named-Condition state and member
 applications; every item in `intrinsic_mechanics` independently declares
-`aggregate_once` or `per_effective_application` scope.
+`aggregate_once` or `per_effective_application` scope. A Condition may also own
+closed deterministic `automatic_boundary_responses` over its own applications;
+for example Exhaustion can remove one eligible unit on a completed Long Rest
+without making RestPolicy the owner of Condition mutation.
 
 ## 4. World-record kinds
 
@@ -157,8 +166,10 @@ Additional kind rules:
   Stable owns its concrete automatic-recovery `TemporalBinding`, and Active/Dead
   own no dying/stable progress.
 - Persistent Actor/Asset ResourceState owns its stored `current` amount and may
-  own a concrete `recovery_binding`; the Temporal Agenda remains a derived due
-  index over authoritative bindings rather than a second scheduler authority.
+  own a concrete `recovery_binding`; procedure-local ResourceState owns `spent`.
+  Resource definition/schema forbids swapping those storage models. The Temporal
+  Agenda remains a derived due index over authoritative bindings rather than a
+  second scheduler authority.
 - `world.asset` may have empty `state` when its definition contains all stable
   properties and no mutable fact is yet known.
 - One independent target-local application is one `world.effect`; `target_id` is
@@ -225,10 +236,13 @@ Actor and asset nested shapes are accepted in `ARCHITECTURE/ACTOR_MODEL.md` and
 `ARCHITECTURE/ASSET_MODEL.md`; Activity and Rule Element shapes are defined by
 `ARCHITECTURE/ACTIVITY_MODEL.md` and `ARCHITECTURE/RULE_ELEMENT_MODEL.md`.
 Step-2 machine contracts are validated by the schemas/catalogs under `DEV/` and
-focused tests in `DEV/TESTS/test_step2_machine_contracts.py` and
-`DEV/TESTS/test_step2_mechanical_examples.py`.
+focused tests in `DEV/TESTS/test_step2_machine_contracts.py`,
+`DEV/TESTS/test_step2_mechanical_examples.py`, and the focused Step-2 contract
+tests for Condition boundary/source bindings, Effect reapplication, and
+Resource lifetime/storage semantics.
 
 Exact IntentPlan/Resolution ordering, prospective-overlay representation,
-event/receipt identity, reaction suspension, multiplayer reconciliation, and
-repository continuity-checkpoint publication remain owned by later roadmap
-stages and are not silently encoded here.
+event/receipt identity, reaction suspension, source-sensitive remove-one
+adjudication, multiplayer reconciliation, and repository continuity-checkpoint
+publication remain owned by later roadmap stages and are not silently encoded
+here.
