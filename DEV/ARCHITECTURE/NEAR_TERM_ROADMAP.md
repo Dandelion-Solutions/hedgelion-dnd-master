@@ -6,7 +6,8 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 This roadmap is the sequencing gate for the next mechanical-architecture work.
 It exists to prevent a later topic from displacing an unfinished earlier one.
-The engine-wide architecture workflow is `ARCHITECTURE/DESIGN_PROCESS.md`.
+The canonical engine-wide architecture workflow is `DEV/DESIGN_PROCESS.md`;
+HDM-specific additions are in `DEV/ARCHITECTURE/DESIGN_PROCESS.md`.
 
 ## Operating rule
 
@@ -17,7 +18,7 @@ The engine-wide architecture workflow is `ARCHITECTURE/DESIGN_PROCESS.md`.
   and unresolved questions are either assigned to a later numbered step or
   recorded explicitly in the backlog with a reason.
 - Every completed step updates this file and
-  `ARCHITECTURE/CATALOG_DESIGN_STATUS.md` in the same change.
+  `DEV/ARCHITECTURE/CATALOG_DESIGN_STATUS.md` in the same change.
 - Architecture is reviewed before implementation. Repository consistency and
   JSON Schema validation are run before claiming completion.
 - After all major architecture modules have designs, the owner intends a holistic
@@ -36,6 +37,27 @@ The engine-wide architecture workflow is `ARCHITECTURE/DESIGN_PROCESS.md`.
 | 4 | `BLOCKED BY 3` | Lore, chapters, knowledge, secrets, and the minimum promotion interface | Minimum durable truth/disclosure model and context-selection boundary needed by shared play and strict isolation | Public/restricted knowledge has one authority; event disclosure and context assembly are defined; durable references cannot depend on unpromoted local entities |
 | 5 | `BLOCKED BY 4` | Durability, multiplayer, and event-local time | One compatible policy for SOFT/HARD publication, shared visibility, conflicts, chronology, and local time budgets | No proposal contradicts authoritative CORE publication barriers or live-scene ownership; recovery and narration ordering are explicit |
 | 6 | `BLOCKED BY 5` | Game modes and LLM execution budget plus migration, catalog-gap, full seed, and final closure | Minimal mode profiles and final cross-cutting architecture consistency pass | Mode activation and isolation are enforceable over the settled state model; promotion/migration/gap/seed ownership is complete; full audit passes |
+
+## Deferred cross-cutting architecture item — LLM / deterministic-core integration
+
+The project contains two deliberately different execution domains: an LLM for
+natural-language interpretation, lore, narration, world/event generation,
+ambiguity and other non-formalizable work; and a deterministic runtime for typed
+identity, structures, mechanical truth, validation, calculation, mutation,
+persistence and indexed retrieval.
+
+Their integration must receive an explicit cross-cutting design rather than be
+left to prompt convention or an assumption that the LLM keeps every catalog in
+working memory. This item does **not** create a new active roadmap stage and does
+not displace Step 2.
+
+Revisit trigger: no later than Step 3 execution-boundary design, with refinement
+in Step 4 context-selection work. The design must cover natural-language
+referent/entity mapping, typed intent/action binding, catalog lookup/hydration,
+ambiguity/clarification, provenance of LLM-adjudicated facts, deterministic
+validation, compact receipts/context, unsupported/homebrew mechanics, and the
+rule that engine-resolvable mechanical facts remain owned by the deterministic
+core rather than asserted by the LLM.
 
 ## Current checkpoint
 
