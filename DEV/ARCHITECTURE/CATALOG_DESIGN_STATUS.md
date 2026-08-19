@@ -14,6 +14,8 @@ The detailed preliminary Recovery B2 design is
 `DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`.
 The detailed preliminary Effect-application design is
 `DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`.
+The detailed preliminary LifeState design is
+`DEV/docs/superpowers/specs/2026-08-19-step-2-lifestate-policy-transition-design.md`.
 
 This document records the current state of catalog design so that subsequent
 work does not depend on reconstructing decisions from a ChatGPT conversation.
@@ -43,11 +45,12 @@ Step 2 is now closing its ownership map before any new schema fields are added.
 The HP/LifeState boundary, Resource/procedure-budget ownership,
 Condition/Effect/LifeState ownership, maintained Effect-support ownership, and
 Duration/Temporal Agenda ownership have passed critical discussion and received
-explicit owner approval. Recovery boundary ownership and generic Effect
-application/arbitration ownership have reached detailed **preliminarily accepted**
-checkpoints that are active for current sequencing.
+explicit owner approval. Recovery boundary ownership, generic Effect
+application/arbitration ownership, and LifeState policy/progress/transition
+ownership have reached detailed **preliminarily accepted** checkpoints that are
+active for current sequencing.
 
-The exact continuation point is **minimum LifeState vocabulary and transitions**.
+The exact continuation point is **health/effect selectors and query boundaries**.
 Concentration is not a duration mode; maintained support is a separate
 Effect-to-Effect lifecycle relation. Intrinsic Duration uses authoritative
 Effect temporal bindings with a lazy local metric coordinate and disposable
@@ -55,8 +58,11 @@ Temporal Agenda rather than a universal clock or writable countdown. Recovery
 uses boundary-producer/state-owner response ownership. Effect applications are
 one-target/one-episode records with create-new default semantics and derived
 rare-overlap arbitration rather than generic mutable stacks or multi-target
-state maps. Step 2 still owns minimum LifeState transitions, health/effect
-selectors, schema/catalog alignment, focused cases, and its final critical pass.
+state maps. LifeState uses a four-state D&D baseline, small registered lifecycle
+policies, state-local progress, prospective atomic transition planning, lazy
+revival eligibility, and opt-in automatic post-death mechanics. Step 2 still
+owns health/effect selectors, schema/catalog alignment, focused cases, and its
+final critical pass.
 
 The four-layer separation below is accepted:
 
@@ -289,6 +295,61 @@ accepted or preliminarily accepted ownership boundary.
   narrowed, or removed during later Step 2 schema/catalog alignment rather than
   expanded with more combined enum values.
 
+### `PROVISIONAL` — Step 2 LifeState policy/progress/transition ownership
+
+- The minimum D&D LifeState vocabulary is `active`, `dying`, `stable`, and
+  `dead`. `active` is ordinary lifecycle, not action availability. Unconscious,
+  Incapacitated, creature type, Effect lifecycle, and Actor retirement remain
+  separate authorities.
+- Baseline lifecycle behavior uses a small registered policy capability. The
+  initial D&D baseline needs character-like and monster-default behavior; an
+  important NPC may use an override/inherited policy without changing Actor kind.
+- Special death-prevention/alteration Features do not create combinatorial policy
+  variants. They participate in the normal prospective rules/Step-3 path before
+  the final lifecycle transition is committed.
+- Actor stores current `life_state_id` plus typed state-local progress only when
+  the current state requires it. Dying owns death-save successes/failures in the
+  range `0..2`; threshold value 3 is never canonical because it immediately
+  transitions to Stable/Dead.
+- Death saves are lifecycle progress, not Resources, and therefore do not acquire
+  generic resource capacity/spending/recovery semantics.
+- Stable owns the real automatic `1d4`-hour recovery TemporalBinding required by
+  the D&D rule. It uses the common Temporal Agenda; healing/damage cancels or
+  supersedes that binding prospectively rather than via a separate scheduler.
+- Dead creates no generic resurrection timer, no revival-window records, no
+  search for spells/NPCs/services, and no Agenda work merely because revival
+  could be possible.
+- A revival spell/Activity/feature/service owns its own temporal eligibility and
+  other requirements. The current death origin is hydrated lazily only when a
+  relevant mechanic actually needs time-since-death.
+- No mandatory `dead_since` countdown is added to Actor state, but snapshot/event
+  compaction must preserve enough provenance for the start of the current dead
+  episode to remain mechanically recoverable. If exact historical precision was
+  legitimately unavailable, runtime adjudicates instead of inventing time.
+- Automatic post-death returns/transformations are ordinary opt-in indexed
+  Feature/Effect/Trigger mechanics. Only an Actor with such an already-known
+  rule materializes a future temporal/semantic obligation.
+- LifeStateResolver is a typed planner, not a writer. It produces a prospective
+  LifeStateTransitionPlan carrying state/progress plus required HP,
+  Condition/Effect, temporal-binding, and provenance deltas for Step-3 atomic
+  commitment.
+- Any resolved transition to Dead normalizes `hp.current` to zero. Restoration of
+  maximum HP later does not revive the stored Dead state, and ordinary healing
+  does not function as a second revival API.
+- Character-like zero HP creates a lifecycle-origin Unconscious Condition
+  application; Stable keeps it; valid return to Active removes only that source-
+  local application and cannot accidentally remove an independent magical
+  Unconscious application.
+- Death does not universally purge Effects or retire/delete the Actor.
+  Concentration and other explicitly interested mechanics react through local
+  indexes and existing Effect/support/Trigger machinery; unrelated still-valid
+  Effects may persist through revival.
+- Dying Death Saves are driven by the relevant turn/procedure boundary, not by a
+  background timer. Step 3 must preserve mandatory lifecycle continuation when a
+  procedure would otherwise close with an unresolved dying participant.
+- Derived queries such as `is_dead`, `needs_death_save`, or `can_act` are HOT
+  computations/indexes, not additional writable Actor authorities.
+
 ## 3. Reviewed inventory and provisional structures
 
 The class membership and layer boundaries in `CATALOG_INVENTORY.md` are now the
@@ -330,9 +391,9 @@ approved or implemented.
   allocation and stores `last_allocated` in one `campaign-allocator` object.
 - Incidental actors, groups, assets, locations, zones, hazards, and effects may
   use session-local IDs until runtime promotes and atomically rekeys them.
-- Widths range from three digits for low-volume records to eight for mechanical
-  events. `turn` uses six digits. Width is minimum padding and never an upper
-  bound.
+- Widths range from three digits for low-volume records to eight digits for
+  mechanical events. `turn` uses six digits. Width is minimum padding and never
+  an upper bound.
 - Multiplayer allocation conflicts are resolved only for unpublished records
   after optimistic Git-head comparison; published IDs never change.
 
@@ -351,11 +412,10 @@ approved or implemented.
    suspension, and action-economy boundaries.
 4. Event payloads, granularity, and durability classification; the event-kind
    baseline itself is reviewed.
-5. Step 2 remaining ownership: minimum LifeState vocabulary/transitions and
-   health/effect selectors, then schema/catalog alignment and focused cases.
-   Recovery and Effect-application checkpoints are provisionally closed for
-   current sequencing; all architecture remains subject to the later holistic
-   review.
+5. Step 2 remaining architecture: health/effect selectors and query boundaries,
+   then schema/catalog alignment and focused cases. Recovery, Effect-application,
+   and LifeState checkpoints are provisionally closed for current sequencing;
+   all architecture remains subject to the later holistic review.
 6. Lore, chapters, visibility/knowledge restrictions, and secret handling.
 7. Game-mode profiles, including quick narrative play, canonical mechanics,
    and strict-information-isolation detective play.
@@ -364,12 +424,14 @@ approved or implemented.
 10. Migration, promotion, and catalog-gap workflows.
 11. Standard ruleset seed data, including the selected D&D/SRD baseline.
 
-Step 2 continues to own LifeState. HP remains the numeric health authority, but
-zero HP does not determine death by itself. When HP is materialized, a separate
-`life_state_id` is materialized with it. Scheduled or conditional
-transformations remain Effects/Triggers and atomically update form/type,
-LifeState, and HP when resolved. This requirement supersedes the earlier
-deferred-lifecycle note.
+Step 2 now has a preliminary LifeState transition baseline in addition to the
+previous HP ownership boundary. HP remains the numeric health authority while
+`life_state_id` is the stored lifecycle classification. The D&D baseline uses
+`active/dying/stable/dead`; state-local dying/stable progress is materialized
+only when required. Revival eligibility is lazy and mechanic-owned rather than a
+corpse timer. Scheduled or conditional transformations remain Effects/Triggers
+and may atomically update form/type, LifeState, and HP when resolved. Exact
+machine fields remain deferred until ownership/query design is complete.
 
 ## 6. Deferred work that must remain possible
 

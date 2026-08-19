@@ -6,9 +6,9 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Roadmap owner: Step 2 of `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 
-Process: the HP/LifeState boundary is inherited from the owner-approved Step 1 adversarial audit; the Resource/procedure-budget, Condition/Effect, maintained Effect support, and Duration/Temporal Agenda sub-decisions below were developed through the current Superpowers architecture brainstorming flow, critically challenged, and explicitly approved by the owner. Recovery B2 and Effect-application ownership have additionally reached detailed **preliminarily accepted** checkpoints sufficient for current sequencing.
+Process: the HP/LifeState boundary is inherited from the owner-approved Step 1 adversarial audit; the Resource/procedure-budget, Condition/Effect, maintained Effect support, and Duration/Temporal Agenda sub-decisions below were developed through the current Superpowers architecture brainstorming flow, critically challenged, and explicitly approved by the owner. Recovery B2, Effect-application ownership, and LifeState policy/progress/transition ownership have additionally reached detailed **preliminarily accepted** checkpoints sufficient for current sequencing.
 
-This is the live Step 2 design spec. It records accepted ownership decisions as they close so they do not depend on chat history. Step 2 itself is not complete: minimum LifeState transitions, selectors, schema alignment, focused validation, and the final Step 2 critical pass remain open.
+This is the live Step 2 design spec. It records accepted ownership decisions as they close so they do not depend on chat history. Step 2 itself is not complete: health/effect selectors, schema alignment, focused validation, and the final Step 2 critical pass remain open.
 
 All architecture recorded here remains subject to the later holistic review of the **entire architecture, structures, logic, ownership, and inter-module relationships** after the major modules have designs. No single preliminary checkpoint is uniquely singled out as the only part to be reopened.
 
@@ -35,7 +35,7 @@ The design must satisfy these invariants:
 4. procedure-local state is not written into persistent Actor resources;
 5. no wall-clock/background tick loop is introduced;
 6. Effect/Condition mechanics remain indexable and cheap enough for the HOT/SQLite fast path;
-7. Step 3 may choose exact commitment points, but Step 2 must expose valid resource/effect state transitions without owning Activity segment timing.
+7. Step 3 may choose exact commitment points, but Step 2 must expose valid resource/effect/lifecycle state transitions without owning Activity segment timing.
 
 ## 2. Already accepted health and lifecycle boundary
 
@@ -498,7 +498,48 @@ Effect-end cleanup is not scripted. Derived modifiers disappear when the Effect 
 
 The current provisional `target_ids`, `world.effect.stacks`, `effect.stacks`, and broad `stacking_behaviors` inventory is therefore not treated as the final machine shape. Exact schema/catalog migration remains deferred until the ownership map closes.
 
-## 9. Critical-pass results for accepted sub-decisions
+## 9. LifeState policy, progress, and transition checkpoint
+
+### PRELIMINARILY ACCEPTED
+
+The detailed LifeState design is recorded in:
+
+`DEV/docs/superpowers/specs/2026-08-19-step-2-lifestate-policy-transition-design.md`
+
+The minimum D&D baseline is:
+
+```text
+life.active
+life.dying
+life.stable
+life.dead
+```
+
+LifeState is current Actor lifecycle classification. It is separate from HP, Conditions such as Unconscious, creature type/form, action availability, Effect lifecycle, and world-record retirement.
+
+Baseline lifecycle behavior uses a small registered LifeStatePolicy rather than a generic FSM. The initial D&D policy surface distinguishes character-like death-save behavior from ordinary monster-default death. An important NPC may inherit/override the policy without changing Actor kind. Special Features that prevent or alter lethal outcomes remain ordinary rules mechanics in the prospective Step-3 path rather than creating combinatorial policy variants.
+
+Actor state owns current `life_state_id` plus typed state-local progress only where the current state intrinsically requires it. Dying owns Death Save successes/failures in the range `0..2`. Crossing a third success/failure atomically transitions to Stable/Dead, so `dying + 3` never becomes canonical and Death Saves are not Resources.
+
+Stable owns the genuine future automatic recovery obligation required by the D&D rule. Its `1d4`-hour delay is materialized as the ordinary common TemporalBinding and indexed by the existing Temporal Agenda. Healing/damage before the boundary prospectively cancels/supersedes that binding; no lifecycle scheduler is added.
+
+Dead is intentionally strongly lazy. Entering Dead creates no generic resurrection timer, no revival-window records, no world search for possible revival sources, and no Agenda entries merely because resurrection could someday become possible. A relevant revival spell/Activity/feature/service owns its own temporal eligibility constraint and hydrates the current death origin only if/when that mechanic genuinely needs time-since-death.
+
+There is no mandatory running `dead_since` counter in Actor state. However, the transition that began the current dead episode must remain mechanically recoverable across snapshot/event compaction so later lazy revival eligibility can resolve it. Exact provenance storage/chronology reconciliation belongs to Steps 3/5. If exact historical precision was legitimately unavailable, runtime requests adjudication instead of inventing a timestamp.
+
+Automatic post-death mechanics are opt-in. An already-active/known indexed Feature/Effect/Trigger such as a vampire-return rule may respond to entering Dead and create a real future temporal/semantic obligation. Ordinary dead enemies have no such listener and create no scheduling work.
+
+LifeStateResolver is a typed prospective planner. It consumes current Actor state, resolved policy, prospective HP/max-HP facts, and typed cause/provenance, then returns a transient LifeStateTransitionPlan. The plan may include LifeState/progress plus companion HP, Condition/Effect, and temporal-binding deltas. Step 3 owns atomic commit, event/receipt identity, and exact causal ordering.
+
+Every resolved transition to Dead normalizes `hp.current` to zero. Dead remains stored authority if a maximum-HP-reduction Effect later ends; restoration of numeric maximum HP does not resurrect the Actor. Ordinary healing is not a second `dead -> active` API; validated revival/transformation is required.
+
+Character-like zero HP creates a lifecycle-origin Unconscious Condition application through ordinary Effect machinery. Stable keeps that application. Valid return to Active removes only the lifecycle-origin application, leaving independent magical Unconscious applications intact.
+
+Death does not retire/delete the Actor and does not globally purge Effects. Only locally indexed interested mechanics react. Concentration terminates through the existing Effect/support lifecycle path, while other still-valid Effects may remain nonterminal and later become applicable after revival.
+
+Dying Death Saves are procedure-boundary behavior at the relevant turn start, not a background timer. Step 3 must ensure an encounter/procedure cannot silently close while discarding mechanically required future death-save continuation.
+
+## 10. Critical-pass results for accepted sub-decisions
 
 The Resource model was challenged against:
 
@@ -593,22 +634,37 @@ The preliminary Effect-application model was challenged against:
 
 The accepted corrections are one-target applications, causal provenance instead of a CastGroup entity, rules-origin-derived application families, create-new default semantics, explicit refresh/replace only, whole-application registered arbitration, no generic stack counter, typed single-episode values, Zone targeting for spatial mechanics, prospective-state arbitration, and strict separation among lifecycle, suppression, arbitration, and Rule Element combination.
 
-No blocker was found that requires a separate Resource entity, Condition world entity, separate action-economy/condition mutation subsystem, generic dependency rule language, global clock, persistent scheduler entity, mass countdown updates, arbitrary scheduled callbacks, a Rest-owned cross-subsystem recovery list, multi-target mutable Effect records, generic stack-unit objects, persistent arbitration winners, or an Effect-combination graph.
+The preliminary LifeState model was challenged against:
 
-## 10. Exact continuation point
+- deriving death from HP/death-save counters/Conditions;
+- policy explosion from special death-prevention Features;
+- direct death while current HP is positive;
+- restoration of maximum HP accidentally resurrecting a dead Actor;
+- Stable damage exposing sequential intermediate states;
+- storing third-success/failure values as duplicate Stable/Dead authority;
+- retry/resume applying one Death Save twice;
+- automatic Stable recovery conflicting with lazy temporal design;
+- revival-age queries after snapshot/event compaction;
+- old deaths for which exact metric chronology was legitimately unavailable;
+- automatic vampire/undead return accidentally scheduling every corpse;
+- conflating death with Actor retirement/deletion;
+- important NPCs needing character-like death saves;
+- conflating undead creature type with dead lifecycle;
+- globally purging Effects on death;
+- same-boundary revival versus automatic transformation.
 
-Recovery and generic Effect-application ownership are preliminarily closed for current sequencing.
+The accepted corrections are an explicit four-state LifeState authority, small registered baseline policies, state-local Death Save progress, prospective threshold normalization, common TemporalBinding for Stable recovery, strongly lazy Dead state, mechanic-owned revival windows, lazily recoverable current-death provenance, opt-in indexed post-death Trigger/Effect obligations, atomic LifeStateTransitionPlan semantics, and strict separation from Conditions/type/entity retirement. No blocker was found that requires a fifth baseline LifeState, generic FSM, separate lifecycle entity, DeathSave Resource, corpse scheduler, or mandatory resurrection timers.
 
-The next open Step 2 ownership block is **minimum LifeState vocabulary and transitions**.
+No blocker was found that requires a separate Resource entity, Condition world entity, separate action-economy/condition mutation subsystem, generic dependency rule language, global clock, persistent scheduler entity, mass countdown updates, arbitrary scheduled callbacks, a Rest-owned cross-subsystem recovery list, multi-target mutable Effect records, generic stack-unit objects, persistent arbitration winners, an Effect-combination graph, a generic LifeCycle entity, or a resurrection scheduler.
 
-It must settle:
+## 11. Exact continuation point
 
-- the minimum lifecycle states actually required by the selected rules surface;
-- ownership of transitions among active/dying/stable/dead or equivalent ruleset states;
-- interaction with HP, healing, death saves, Conditions such as Unconscious, and terminal entity state;
-- which lifecycle facts are stored versus derived;
-- transformation/resurrection/revival interaction with Effect and Activity machinery without duplicate authority.
+Recovery, generic Effect-application ownership, and LifeState policy/progress/transition ownership are preliminarily closed for current sequencing.
 
-After LifeState, Step 2 still must close health/effect selectors, schema/catalog alignment, focused cases, and a final independent critical pass before the Step 2 gate can close.
+The next open Step 2 architecture block is **health/effect selectors and query boundaries**.
+
+It must settle the minimum registered selector/query surface required by the accepted HP, LifeState, Condition, Effect, Resource, Duration, and Recovery models, including which values are direct authorities versus derived HOT calculations and which selectors are actually required by D&D mechanics.
+
+After selectors, Step 2 still must complete schema/catalog alignment, focused validation cases, and a final independent critical pass before the Step 2 gate can close.
 
 The later holistic architecture review and additional brainstorming pass applies to **all** architecture, structures, logic, schemas, ownership rules, and inter-module relationships recorded across the project, including every currently accepted or preliminarily accepted Step 2 checkpoint.

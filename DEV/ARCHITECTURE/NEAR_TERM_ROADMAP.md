@@ -46,6 +46,8 @@ The detailed preliminary Recovery B2 checkpoint is
 `DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`.
 The detailed preliminary Effect-application checkpoint is
 `DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`.
+The detailed preliminary LifeState checkpoint is
+`DEV/docs/superpowers/specs/2026-08-19-step-2-lifestate-policy-transition-design.md`.
 
 The ownership map must close before new Step 2 schema fields are introduced.
 Accepted ownership sub-decisions now include:
@@ -127,11 +129,43 @@ Accepted ownership sub-decisions now include:
   mutable authority;
 - genuine Effect-end consequences use typed Effect-end Signal/Event plus existing
   TriggerBinding/Activity machinery. No arbitrary Effect-end callback language
-  or separate combination graph is introduced.
+  or separate combination graph is introduced;
+- **preliminary LifeState:** the D&D baseline uses exactly `active`, `dying`,
+  `stable`, and `dead`; LifeState is separate from Conditions, creature type,
+  action availability, Effect lifecycle, and Actor entity retirement;
+- baseline lifecycle behavior is selected by a small registered policy such as
+  character-like versus monster-default. Important NPCs may override/inherit
+  policy without changing Actor kind, while special death-prevention Features
+  remain ordinary prospective rules mechanics rather than policy variants;
+- dying owns typed death-save progress with successes/failures only `0..2`.
+  Crossing the third-success/failure threshold atomically transitions to Stable/
+  Dead, so `dying + 3` is never canonical and death saves are not Resources;
+- Stable owns the real automatic `1d4`-hour recovery TemporalBinding required by
+  the D&D rule and shares the common Temporal Agenda rather than introducing a
+  lifecycle scheduler;
+- Dead starts no generic resurrection timer, revival-window list, world scan, or
+  Agenda work. A revival mechanic owns its own temporal eligibility constraint
+  and resolves the current death origin lazily only if/when that mechanic is
+  actually used;
+- snapshot/chronology handling must keep the current dead episode's transition
+  origin mechanically recoverable without forcing `dead_since` or a running
+  countdown into Actor state. Missing historical precision is adjudicated, never
+  invented;
+- automatic post-death returns such as a vampire rising at dawn are opt-in
+  indexed Feature/Effect/Trigger mechanics that materialize future obligations
+  only for Actors that actually have such a rule;
+- LifeStateResolver produces a prospective typed LifeStateTransitionPlan and
+  never commits by itself. HP, LifeState, state-local progress, lifecycle-origin
+  Conditions, and temporal-binding deltas commit atomically under Step 3;
+- every transition to Dead normalizes current HP to zero, but later restoration
+  of maximum HP does not resurrect the Actor. Ordinary healing of Dead is not a
+  second revival API;
+- death does not purge all Effects or retire/delete the Actor. Only interested
+  mechanics react; Concentration ends through the existing Effect/support path,
+  while other still-running Effects may persist through later revival.
 
-The exact continuation point is **minimum LifeState vocabulary and transitions**:
-settle the minimum stored lifecycle states, HP/death-save/healing interactions,
-Unconscious and other Condition relationships, terminal entity state, and
-revival/transformation boundaries. Health/effect selectors, schema/catalog
-alignment, focused cases, and the final Step 2 critical pass follow before Step
-2 can close.
+The exact continuation point is **health/effect selectors and query boundaries**:
+settle the minimum registered selector/query surface required by the accepted
+HP, LifeState, Condition, Effect, Resource, Duration, and Recovery models without
+creating duplicate stored authorities. Schema/catalog alignment, focused cases,
+and the final Step 2 critical pass follow before Step 2 can close.
