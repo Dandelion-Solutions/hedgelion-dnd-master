@@ -1,8 +1,8 @@
 # HDM Catalog Inventory
 
-Status: **REVIEWED BASELINE — STEPS 1–2 ASSURANCE APPLIED**
+Status: **REVIEWED BASELINE — STEPS 1–3 ARCHITECTURE APPLIED**
 
-Catalog version: `1.3.0`
+Catalog version: `1.4.0`
 
 This document fixes the class inventory used to design schemas and runtime
 contracts. "Complete" means sufficient coverage for the intended HDM
@@ -52,9 +52,9 @@ A concrete SRD spell is a `definition.spell`. Casting it uses a
 damage becomes an `event.damage.applied`. These are related objects at different
 boundaries, not four names for the same class.
 
-Transient requests, signals, contributions, deltas, rolls, and receipts are
-protocol value kinds. They are neither world entities nor content-search
-results.
+Transient requests, signals, contributions, deltas, rolls, segments, boundary
+occurrences, pending child descriptors, and receipts are protocol value kinds.
+They are neither world entities nor content-search results.
 
 ## 3. Reusable content-definition classes
 
@@ -166,11 +166,11 @@ owners unless they need independent identity.
 | `runtime.session` | HOT identity, frontiers, and transport mode |
 | `runtime.message` | Raw user/Master/tool message for transcript/audit |
 | `runtime.interaction` | Player input, plan/commands, and response boundary |
-| `runtime.procedure` | Independent active rules-procedure scope; owns participant-local procedure ResourceState and later Step-3 procedure/boundary state |
+| `runtime.procedure` | Independent rules-procedure scope and sole owner of participant-local procedure ResourceState |
 | `runtime.intent_plan` | Ordered material clauses from one player input |
-| `runtime.command` | Accepted typed runtime command envelope |
-| `runtime.resolution` | One Activity invocation and status |
-| `runtime.continuation` | Serialized suspension/choice/reaction state |
+| `runtime.command` | Accepted idempotent executable clause and mandatory descendant closure owner |
+| `runtime.resolution` | Exactly one Activity invocation and its execution state |
+| `runtime.continuation` | Portable state for one suspended Resolution generation |
 | `runtime.mechanical_event` | Immutable committed runtime fact |
 | `runtime.semantic_event` | Compact durable campaign-log projection |
 | `runtime.resolution_trace` | Rolls, contributions, calculations, deltas |
@@ -182,14 +182,17 @@ owners unless they need independent identity.
 | `runtime.catalog_gap_report` | Non-executable missing-capability report |
 
 `runtime.procedure` is an operational lifetime owner, not a generic workflow
-engine. It is distinct from `world.encounter`, which represents campaign-world
-encounter state; from `runtime.resolution`, which is one Activity invocation;
-and from `runtime.continuation`, which serializes one suspended Resolution. An
-Encounter may be a world referent for a runtime Procedure, but it is not the
-universal owner of procedure-local action/reaction/movement-style budgets.
+engine. It is distinct from `world.encounter`, from one-Activity
+`runtime.resolution`, and from `runtime.continuation`. An Encounter may be a
+world referent for a Procedure, but it is not the universal owner of
+procedure-local action/reaction/movement-style budgets.
 
-Protocol values may be embedded in traces or continuations but do not receive
-independent record identity by default.
+`ExecutionSegment` remains an embedded protocol value addressed through its
+owning command/resolution plus sequence. No `runtime.execution_segment` or
+`runtime.resolution_chain` class is admitted in catalog version 1.4.0.
+
+Protocol values may be embedded in traces, receipts, commands, continuations or
+checkpoints but do not receive independent record identity by default.
 
 ## 6. Structural facets
 
@@ -259,7 +262,8 @@ operations or consequences rather than player-intent families.
 
 The machine seed contains the exact closed IDs for operations, transitions,
 events, resources, effects, rules, targets, areas, ranges, triggers, time,
-stacking, state machines, publication, knowledge, and truth status.
+stacking, state machines, publication, knowledge, truth status, and Step-3
+execution outcomes/protocol values.
 
 - A condition uses `op.create_effect` with a `definition.condition`; there is
   no second condition-mutation primitive.
@@ -267,11 +271,9 @@ stacking, state machines, publication, knowledge, and truth status.
 - `rule.cap`/`rule.floor` are `rule.set_maximum`/`rule.set_minimum`.
 - Spell slots, charges, HP, and feature uses are content definitions over
   generic resource mechanics.
-- Intent mapping outcome (exact/composed/unsupported) and later execution state
-  (pending/executed/skipped/failed) are separate axes; their values are not
-  duplicated between two status registries.
-- Transitions are accepted commands; events are committed facts. Similar names
-  across those registries are intentional protocol pairs, not duplicate classes.
+- Intent mapping outcome and later execution state remain separate axes.
+- Transitions are accepted commands; events are committed facts.
+- Root command closure is not duplicated by a separate ResolutionChain class.
 
 ## 9. D&D/SRD seed coverage
 
