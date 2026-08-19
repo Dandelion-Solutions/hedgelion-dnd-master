@@ -65,7 +65,11 @@ class Step2MachineContractsTest(unittest.TestCase):
     def test_world_effect_inventory_has_one_target_and_no_stack_authority(self):
         effect = self.entity_structures["world_records"]["world.effect"]
         self.assertEqual(effect["required"], ["target_id", "lifecycle"])
-        self.assertTrue(effect["requires_definition_id"])
+        self.assertEqual(effect["definition_binding"]["mode"], "required")
+        self.assertEqual(
+            set(effect["definition_binding"]["allowed_definition_kinds"]),
+            {"definition.effect", "definition.condition"},
+        )
         fields = set(effect["required"]) | set(effect["expected"])
         self.assertNotIn("target_ids", fields)
         self.assertNotIn("stacks", fields)
