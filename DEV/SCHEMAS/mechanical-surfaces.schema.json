@@ -74,6 +74,11 @@
       "required": ["allowed_operations", "contribution_type", "allowed_dependency_kinds"],
       "properties": {
         "allowed_operations": {"$ref": "#/$defs/idSet"},
+        "operation_contracts": {
+          "type": "object",
+          "propertyNames": {"$ref": "#/$defs/machineId"},
+          "additionalProperties": {"$ref": "#/$defs/operationContract"}
+        },
         "contribution_type": {
           "enum": ["numeric", "duration", "applicability", "recovery"]
         },
@@ -91,6 +96,16 @@
           }
         }
       }
+    },
+    "operationContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fixed_value": {
+          "type": ["string", "number", "integer", "boolean"]
+        }
+      },
+      "minProperties": 1
     }
   }
 }
