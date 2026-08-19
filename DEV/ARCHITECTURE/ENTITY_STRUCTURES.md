@@ -1,10 +1,10 @@
 # HDM Catalog — Minimum Entity Structures
 
-Status: **AGREED BASELINE — STEP 2 MACHINE ALIGNMENT APPLIED**
+Status: **AGREED BASELINE — STEP 1 ASSURANCE + STEP 2 MACHINE ALIGNMENT APPLIED**
 
 Target: `feature/mechanical-runtime-hot-state`
 
-Machine-readable field inventory: `CATALOG/entity-structures.json`
+Machine-readable field and definition-binding inventory: `CATALOG/entity-structures.json`
 
 Machine-readable identifier policy: `CATALOG/identifier-policies.json`,
 validated by `SCHEMAS/identifier-policies.schema.json`.
@@ -32,8 +32,8 @@ mechanics, references, constraints, or automatic indexes. If a recurring
 property later becomes mechanically relevant, it receives one agreed typed
 field and existing useful values may be migrated.
 
-The universal definition and world-record envelopes remain defined by
-`ARCHITECTURE/CATALOG_CONTRACTS.md`.
+The universal definition/world envelopes and canonical class-admission rule are
+owned by `ARCHITECTURE/CATALOG_CONTRACTS.md`.
 
 ## 2. Research basis and exclusions
 
@@ -78,7 +78,7 @@ localized `name`, optional `facets`, and optional `tags` remain in the envelope.
 | `definition.subclass` | `class_id` | `feature_ids`, `advancement_id` |
 | `definition.advancement` | `levels` | `prerequisites`, `grants` |
 | `definition.feat` | — | `prerequisites`, `activity_ids`, `rule_elements`, `trigger_bindings` |
-| `definition.feature` | — | `activity_ids`, `resource_ids`, `effect_ids`, `rule_elements`, `trigger_bindings` |
+| `definition.feature` | — | `activity_ids`, `resource_ids`, `effect_ids`, `rule_elements`, `trigger_bindings`] |
 | `definition.spell` | `level`, `school_id`, `activity_ids` | `components`, `casting_time`, `range`, `duration`, `concentration`, `ritual` |
 | `definition.asset` | — | `physical`, `value`, `rarity`, `property_ids`, `activity_ids`, `resource_ids`, `effect_ids`, `rule_elements`, `trigger_bindings`, `handling`, `capacity`, `stack`, `attunement`, `durability` |
 | `definition.activity` | `family_id`, `steps` | `activation`, `requirements`, `targeting`, `costs` |
@@ -127,31 +127,43 @@ closed deterministic `automatic_boundary_responses` over its own applications;
 for example Exhaustion can remove one eligible unit on a completed Long Rest
 without making RestPolicy the owner of Condition mutation.
 
-## 4. World-record kinds
+## 4. World-record kinds and definition compatibility
 
-Fields below are inside `state`. `definition_id` remains in the universal
-envelope and may be made mandatory by a kind-specific schema.
+Fields below are inside `state`. `definition_id` stays in the universal envelope,
+but `CATALOG/entity-structures.json` declares whether it is forbidden, optional,
+or required for each world kind and which reusable definition kinds are legal.
+The loader validates the relation; it is not inferred from names.
 
-| Kind | Required | Expected |
-|---|---|---|
-| `world.actor` | `name` | `roles`, `location_id`, `build`, `abilities`, `hp`, `life_state_id`, `life_state_policy_id`, `life_state_progress`, `resources` |
-| `world.actor_group` | `name` | `member_ids`, `leader_id`, `location_id`, `purpose` |
-| `world.asset` | — | `owner_actor_id`, `container_asset_id`, `location_id`, `quantity`, `equipment`, `attuned_actor_id`, `resources`, `durability`, `access` |
-| `world.location` | `name` | `parent_location_id`, `organization_id`, `environment_ids`, `status` |
-| `world.connection` | `from_location_id`, `to_location_id` | `direction`, `traversal_activity_id`, `status`, `requirements` |
-| `world.zone` | `location_id`, `name` | `participant_ids`, `effect_ids`, `geometry`, `status` |
-| `world.organization` | `name` | `archetype_id`, `member_ids`, `leader_ids`, `location_ids`, `resources`, `status` |
-| `world.relationship` | `subject_id`, `object_id`, `relation` | `attitude`, `strength`, `status` |
-| `world.contract` | `party_ids`, `terms`, `status` | `obligations`, `deadlines`, `collateral_asset_ids`, `breach_consequences` |
-| `world.mission` | `name`, `status` | `stages`, `participant_ids`, `location_ids`, `reward_ids`, `dependencies` |
-| `world.scene` | `name` | `location_id`, `participant_ids`, `focal_entity_ids`, `status` |
-| `world.encounter` | `participant_ids`, `status` | `scene_id`, `initiative`, `round`, `active_participant_id`, `local_time` |
-| `world.hazard` | `status` | `location_id`, `zone_id`, `detected_by_actor_ids`, `effect_ids` |
-| `world.effect` | `target_id`, `lifecycle` | `source_id`, `rules_origin_id`, `parameters`, `support_effect_id`, `temporal_binding` |
-| `world.lore_fact` | `statement`, `truth_status` | `subject_ids`, `chronology`, `importance` |
-| `world.knowledge` | `fact_id`, `knower_id`, `status` | `learned_from_id`, `confidence` |
-| `world.chapter` | `title`, `body` | `entity_ids`, `scene_ids`, `timeline_span`, `visibility` |
-| `world.timeline_marker` | `slot`, `summary` | `entity_ids`, `scene_id`, `relative_to` |
+| Kind | Required state | Expected state | `definition_id` binding |
+|---|---|---|---|
+| `world.actor` | `name` | `roles`, `location_id`, `build`, `abilities`, `hp`, `life_state_id`, `life_state_policy_id`, `life_state_progress`, `resources` | optional `definition.actor_archetype` |
+| `world.actor_group` | `name` | `member_ids`, `leader_id`, `location_id`, `purpose` | forbidden |
+| `world.asset` | — | `owner_actor_id`, `container_asset_id`, `location_id`, `quantity`, `equipment`, `attuned_actor_id`, `resources`, `durability`, `access` | optional `definition.asset` |
+| `world.location` | `name` | `parent_location_id`, `organization_id`, `environment_ids`, `status` | optional `definition.location_archetype` |
+| `world.connection` | `from_location_id`, `to_location_id` | `direction`, `traversal_activity_id`, `status`, `requirements` | forbidden |
+| `world.zone` | `location_id`, `name` | `participant_ids`, `effect_ids`, `geometry`, `status` | forbidden |
+| `world.organization` | `name` | `member_ids`, `leader_ids`, `location_ids`, `resources`, `status` | optional `definition.organization_archetype` |
+| `world.relationship` | `subject_id`, `object_id`, `relation` | `attitude`, `strength`, `status` | forbidden |
+| `world.contract` | `party_ids`, `terms`, `status` | `obligations`, `deadlines`, `collateral_asset_ids`, `breach_consequences` | optional `definition.contract_template` |
+| `world.mission` | `name`, `status` | `stages`, `participant_ids`, `location_ids`, `reward_ids`, `dependencies` | optional `definition.mission_template` |
+| `world.scene` | `name` | `location_id`, `participant_ids`, `focal_entity_ids`, `status` | forbidden |
+| `world.encounter` | `participant_ids`, `status` | `scene_id`, `initiative`, `round`, `active_participant_id`, `local_time` | forbidden |
+| `world.hazard` | `status` | `location_id`, `zone_id`, `detected_by_actor_ids`, `effect_ids` | optional `definition.hazard` |
+| `world.effect` | `target_id`, `lifecycle` | `source_id`, `rules_origin_id`, `parameters`, `support_effect_id`, `temporal_binding` | required `definition.effect` or `definition.condition` |
+| `world.lore_fact` | `statement`, `truth_status` | `subject_ids`, `chronology`, `importance` | forbidden |
+| `world.knowledge` | `fact_id`, `knower_id`, `status` | `learned_from_id`, `confidence` | forbidden |
+| `world.chapter` | `title`, `body` | `entity_ids`, `scene_ids`, `timeline_span`, `visibility` | forbidden |
+| `world.timeline_marker` | `slot`, `summary` | `entity_ids`, `scene_id`, `relative_to` | forbidden |
+
+`world.organization` intentionally does **not** keep a second
+`state.archetype_id`; its reusable archetype relationship is the universal
+`definition_id` binding. The same one-path rule applies to every world kind.
+
+A reusable definition does not imply a same-named world record. A
+`definition.condition` materializes through `world.effect` when applied. A
+`definition.hazard` may be provenance for an Actor-local Effect/Condition rather
+than materializing a `world.hazard` when the placed-hazard lifecycle is not the
+actual state owner.
 
 Additional kind rules:
 
@@ -176,13 +188,12 @@ Additional kind rules:
   singular. Generic mutable `stacks`, stored arbitration winner/shadow state,
   copied Condition presence/value, reverse support children, and writable
   remaining-duration countdowns are not world-effect authorities.
-- `world.effect` requires `definition_id` in its kind-specific envelope. Its
-  definition may be an Effect or Condition definition according to loader
-  validation.
+- `world.effect` requires `definition_id`; its definition must be an allowed
+  Effect or Condition definition according to the machine binding table.
 - Maintained/concentration support is represented by immutable
   `support_effect_id`; concentration is not a duration mode.
-- `world.hazard` normally uses `definition_id`; an improvised narrative hazard
-  may exist without one until it gains mechanics.
+- `world.hazard` may exist without a definition while still narrative/local; if
+  it carries `definition_id`, only `definition.hazard` is compatible.
 - `world.knowledge` separates who knows a fact from the truth stored in
   `world.lore_fact`.
 - `world.zone` exists only for a mechanically or operationally significant
@@ -202,6 +213,10 @@ CREATE TABLE world_records (
     state_json    TEXT NOT NULL CHECK (json_valid(state_json))
 );
 ```
+
+Presence of the nullable SQL column does not authorize `definition_id` for every
+world kind. Hydration/validation uses `definition_binding` before a record is
+accepted into the typed runtime.
 
 HDM does not add `UNIQUE` constraints for kind-specific gameplay fields merely
 because SQLite can support them. Canonical identity and conflict policy belong
@@ -231,15 +246,13 @@ make a lookup cheap.
 
 ## 6. Current design boundary
 
-This inventory fixes field membership through the Step-2 machine alignment.
+This inventory fixes field membership and world-definition compatibility through
+the Step-1 retrospective assurance correction and Step-2 machine alignment.
 Actor and asset nested shapes are accepted in `ARCHITECTURE/ACTOR_MODEL.md` and
 `ARCHITECTURE/ASSET_MODEL.md`; Activity and Rule Element shapes are defined by
 `ARCHITECTURE/ACTIVITY_MODEL.md` and `ARCHITECTURE/RULE_ELEMENT_MODEL.md`.
-Step-2 machine contracts are validated by the schemas/catalogs under `DEV/` and
-focused tests in `DEV/TESTS/test_step2_machine_contracts.py`,
-`DEV/TESTS/test_step2_mechanical_examples.py`, and the focused Step-2 contract
-tests for Condition boundary/source bindings, Effect reapplication, and
-Resource lifetime/storage semantics.
+Machine contracts are validated by schemas/catalogs under `DEV/` and focused
+unit tests, including `DEV/TESTS/test_catalog_definition_binding_contract.py`.
 
 Exact IntentPlan/Resolution ordering, prospective-overlay representation,
 event/receipt identity, reaction suspension, source-sensitive remove-one
