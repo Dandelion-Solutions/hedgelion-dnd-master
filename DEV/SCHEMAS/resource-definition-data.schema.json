@@ -10,32 +10,93 @@
     "lifetime_owner": {"enum": ["actor", "asset", "procedure"]},
     "state_model": {"enum": ["current", "spent"]},
     "capacity": {"type": "number", "minimum": 0},
-    "recovery": {
-      "type": "array",
-      "items": {"$ref": "#/$defs/recovery"}
-    },
+    "recovery": {"type": "array"},
     "spending_policy_id": {"$ref": "#/$defs/machineId"},
     "details": {"type": "object"}
   },
+  "oneOf": [
+    {
+      "properties": {
+        "lifetime_owner": {"enum": ["actor", "asset"]},
+        "state_model": {"const": "current"},
+        "recovery": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/currentRecovery"}
+        }
+      }
+    },
+    {
+      "properties": {
+        "lifetime_owner": {"const": "procedure"},
+        "state_model": {"const": "spent"},
+        "recovery": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/spentRecovery"}
+        }
+      }
+    }
+  ],
   "$defs": {
     "machineId": {
       "type": "string",
       "minLength": 1,
       "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
     },
-    "recovery": {
+    "recoveryTiming": {
       "type": "object",
-      "additionalProperties": false,
-      "required": ["operation_id"],
       "properties": {
-        "operation_id": {"$ref": "#/$defs/machineId"},
         "boundary_id": {"$ref": "#/$defs/machineId"},
-        "after": {"$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"},
-        "amount": {"type": "number", "minimum": 0}
+        "after": {"$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"}
       },
       "oneOf": [
         {"required": ["boundary_id"], "not": {"required": ["after"]}},
         {"required": ["after"], "not": {"required": ["boundary_id"]}}
+      ]
+    },
+    "currentRecovery": {
+      "allOf": [
+        {"$ref": "#/$defs/recoveryTiming"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["operation_id"],
+          "properties": {
+            "operation_id": {
+              "enum": [
+                "resource_recovery.restore_to_capacity",
+                "resource_recovery.restore_amount"
+              ]
+            },
+            "boundary_id": {"$ref": "#/$defs/machineId"},
+            "after": {"$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"},
+            "amount": {"type": "number", "exclusiveMinimum": 0}
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {"operation_id": {"const": "resource_recovery.restore_amount"}},
+                "required": ["operation_id"]
+              },
+              "then": {"required": ["amount"]},
+              "else": {"not": {"required": ["amount"]}}
+            }
+          ]
+        }
+      ]
+    },
+    "spentRecovery": {
+      "allOf": [
+        {"$ref": "#/$defs/recoveryTiming"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["operation_id"],
+          "properties": {
+            "operation_id": {"const": "resource_recovery.reset_spent"},
+            "boundary_id": {"$ref": "#/$defs/machineId"},
+            "after": {"$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"}
+          }
+        }
       ]
     }
   },
