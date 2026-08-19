@@ -1,5 +1,15 @@
 {
   "catalog_version": "1.2.0",
+  "context_facts": {
+    "fiction.target_visible": {
+      "source_class": "INVOCATION_ADJUDICATED",
+      "value_type": "boolean"
+    },
+    "fiction.target_reachable": {
+      "source_class": "INVOCATION_ADJUDICATED",
+      "value_type": "boolean"
+    }
+  },
   "accessors": {
     "health.current": {
       "source_class": "DIRECT_AUTHORITY",
@@ -72,7 +82,8 @@
       "allowed_dependency_kinds": [
         "accessor", "effect_availability", "effect_arbitration",
         "condition_aggregation", "condition_intrinsic"
-      ]
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"]
     },
     "condition.applicability": {
       "allowed_operations": ["rule.immunity"],
@@ -83,7 +94,8 @@
       "allowed_dependency_kinds": [
         "accessor", "effect_availability", "effect_arbitration",
         "condition_aggregation", "condition_intrinsic"
-      ]
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"]
     },
     "resource.capacity": {
       "allowed_operations": [
@@ -94,7 +106,8 @@
       "allowed_dependency_kinds": [
         "accessor", "effect_availability", "effect_arbitration",
         "condition_aggregation", "condition_intrinsic"
-      ]
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"]
     },
     "resource.recovery": {
       "allowed_operations": ["rule.add_flat", "rule.multiply", "rule.override"],
@@ -102,7 +115,8 @@
       "allowed_dependency_kinds": [
         "accessor", "effect_availability", "effect_arbitration",
         "condition_aggregation", "condition_intrinsic"
-      ]
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"]
     },
     "effect.duration": {
       "allowed_operations": ["rule.adjust_duration", "rule.override"],
@@ -110,13 +124,37 @@
       "allowed_dependency_kinds": [
         "accessor", "effect_availability", "effect_arbitration",
         "condition_aggregation", "condition_intrinsic"
-      ]
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"]
     }
   },
-  "derived_node_kinds": [
-    "effect_availability",
-    "effect_arbitration",
-    "condition_aggregation",
-    "condition_intrinsic"
-  ]
+  "derived_nodes": {
+    "effect_availability": {
+      "allowed_dependency_kinds": [
+        "accessor", "condition_aggregation", "condition_intrinsic"
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"],
+      "dependencies": []
+    },
+    "effect_arbitration": {
+      "allowed_dependency_kinds": ["accessor", "effect_availability"],
+      "allowed_input_classes": ["ENGINE_STATE"],
+      "dependencies": ["derived:effect_availability"]
+    },
+    "condition_aggregation": {
+      "allowed_dependency_kinds": [
+        "selector", "accessor", "effect_availability"
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"],
+      "dependencies": [
+        "derived:effect_availability",
+        "selector:condition.applicability"
+      ]
+    },
+    "condition_intrinsic": {
+      "allowed_dependency_kinds": ["accessor", "condition_aggregation"],
+      "allowed_input_classes": ["ENGINE_STATE", "INVOCATION_ADJUDICATED"],
+      "dependencies": ["derived:condition_aggregation"]
+    }
+  }
 }
