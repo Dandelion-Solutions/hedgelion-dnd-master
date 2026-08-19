@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/runtime-mechanical-event-state.schema.json",
+  "title": "HDM runtime.mechanical_event state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["segment_id", "event_ordinal", "event_kind", "root_command_id", "causal_ref", "payload"],
+  "properties": {
+    "segment_id": {"type": "string", "minLength": 1},
+    "event_ordinal": {"type": "integer", "minimum": 1},
+    "event_kind": {"type": "string", "pattern": "^event\\.[a-z][a-z0-9_.]*$"},
+    "root_command_id": {"type": "string", "minLength": 1},
+    "causal_ref": {"type": "string", "minLength": 1},
+    "procedure_id": {"type": "string", "minLength": 1},
+    "payload": {"type": "object"},
+    "details": {"type": "object"}
+  },
+  "examples": [
+    {
+      "segment_id": "resolution-0000001:segment:1",
+      "event_ordinal": 1,
+      "event_kind": "event.damage.applied",
+      "root_command_id": "turn-000042-cmd-01",
+      "causal_ref": "resolution-0000001",
+      "payload": {"amount": 7, "target_id": "actor-0002"}
+    }
+  ]
+}
