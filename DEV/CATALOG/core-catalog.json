@@ -185,6 +185,9 @@
       "condition_rule_scope.aggregate_once",
       "condition_rule_scope.per_effective_application"
     ],
+    "condition_boundary_response_operations": [
+      "condition_response.remove_count"
+    ],
     "effect_reapplication_policies": [
       "effect_reapplication.refresh", "effect_reapplication.replace"
     ],
