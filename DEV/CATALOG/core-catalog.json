@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.3.0",
+  "catalog_version": "1.4.0",
   "schema_version": 1,
   "registries": {
     "content_definition_kinds": [
@@ -42,7 +42,9 @@
       "value.signal", "value.contribution", "value.state_delta",
       "value.roll_request", "value.roll_result", "value.choice_request",
       "value.reaction_offer", "value.resolution_receipt",
-      "value.publication_manifest", "value.validation_issue"
+      "value.publication_manifest", "value.validation_issue",
+      "value.execution_segment", "value.pending_child_invocation",
+      "value.invocation_fact", "value.boundary_occurrence"
     ],
     "actor_facets": [
       "actor.player_character", "actor.nonplayer_character",
@@ -257,6 +259,23 @@
       "PENDING", "RUNNING", "AWAITING_CHOICE", "AWAITING_REACTION",
       "HYDRATION_REQUIRED", "PUBLISH_REQUIRED", "COMPLETED", "REJECTED",
       "ABORTED", "FAILED"
+    ],
+    "command_dispositions": [
+      "command.accepted", "command.settled"
+    ],
+    "execution_failure_codes": [
+      "failure.idempotency_conflict",
+      "failure.hydration_required",
+      "failure.missing_reference",
+      "failure.catalog_context_incompatible",
+      "failure.continuation_conflict",
+      "failure.continuation_stale",
+      "failure.dependency_cycle",
+      "failure.transition_requires_procedure",
+      "failure.order_adjudication_required",
+      "failure.execution_limit",
+      "failure.invocation_fact_missing",
+      "failure.invocation_fact_unauthorized"
     ],
     "intent_execution_states": [
       "intent.pending", "intent.ready", "intent.executed",
