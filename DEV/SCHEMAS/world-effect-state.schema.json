@@ -16,11 +16,32 @@
     },
     "support_effect_id": {"$ref": "#/$defs/machineId"},
     "temporal_binding": {"$ref": "https://hedgelion.invalid/schemas/temporal-binding.schema.json"},
+    "scheduled_trigger_state": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/localTriggerKey"},
+      "additionalProperties": {"$ref": "https://hedgelion.invalid/schemas/temporal-binding.schema.json"}
+    },
     "lifecycle": {"$ref": "#/$defs/lifecycle"},
     "details": {"type": "object"}
   },
+  "allOf": [
+    {
+      "if": {
+        "required": ["lifecycle"],
+        "properties": {
+          "lifecycle": {
+            "required": ["state_id"],
+            "properties": {"state_id": {"const": "effect_lifecycle.terminal"}}
+          }
+        }
+      },
+      "then": {"not": {"required": ["scheduled_trigger_state"]}}
+    }
+  ],
   "$defs": {
     "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "localTriggerKey": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
     "scalar": {"type": ["string", "number", "integer", "boolean"]},
     "terminalReasonId": {
       "enum": [
@@ -55,6 +76,26 @@
       "target_id": "actor-0042",
       "source_id": "actor-0007",
       "rules_origin_id": "spell.bless",
+      "lifecycle": {"state_id": "effect_lifecycle.active"}
+    },
+    {
+      "target_id": "actor-0042",
+      "temporal_binding": {
+        "basis_id": "temporal.metric_deadline",
+        "context_id": "scene-0017",
+        "anchor_value": 0,
+        "deadline_value": 72,
+        "unit_id": "unit.hour"
+      },
+      "scheduled_trigger_state": {
+        "daily_save": {
+          "basis_id": "temporal.metric_deadline",
+          "context_id": "scene-0017",
+          "anchor_value": 0,
+          "deadline_value": 24,
+          "unit_id": "unit.hour"
+        }
+      },
       "lifecycle": {"state_id": "effect_lifecycle.active"}
     },
     {
