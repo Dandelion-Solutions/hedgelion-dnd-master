@@ -84,6 +84,26 @@ class Step2ResourceStorageContractTest(unittest.TestCase):
                 "operation_id": "resource_recovery.restore_to_capacity",
             }]))
 
+    def test_after_recovery_is_metric_only_not_a_second_boundary_encoding(self):
+        self.validator.validate(self.definition("actor", "current", [{
+            "after": {"kind_id": "duration.metric", "amount": 1, "unit_id": "unit.hour"},
+            "operation_id": "resource_recovery.restore_amount",
+            "amount": 1,
+        }]))
+        with self.assertRaises(ValidationError):
+            self.validator.validate(self.definition("actor", "current", [{
+                "after": {
+                    "kind_id": "duration.boundary",
+                    "boundary_id": "boundary.long_rest_complete",
+                },
+                "operation_id": "resource_recovery.restore_to_capacity",
+            }]))
+        with self.assertRaises(ValidationError):
+            self.validator.validate(self.definition("actor", "current", [{
+                "after": {"kind_id": "duration.permanent"},
+                "operation_id": "resource_recovery.restore_to_capacity",
+            }]))
+
 
 if __name__ == "__main__":
     unittest.main()
