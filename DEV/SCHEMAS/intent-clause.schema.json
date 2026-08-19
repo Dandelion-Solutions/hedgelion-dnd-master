@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/intent-clause.schema.json",
+  "title": "HDM bounded intent clause",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["clause_id", "order", "mapping_outcome", "execution_state"],
+  "properties": {
+    "clause_id": {"type": "string", "minLength": 1},
+    "order": {"type": "integer", "minimum": 1},
+    "mapping_outcome": {
+      "enum": ["exact", "composed", "narrative_only", "clarification_required", "unsupported"]
+    },
+    "execution_state": {
+      "enum": ["intent.pending", "intent.ready", "intent.executed", "intent.skipped_due_to_prior_result", "intent.failed"]
+    },
+    "guard": {"$ref": "#/$defs/guard"},
+    "command_id": {"type": "string", "minLength": 1},
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "scalar": {"type": ["string", "number", "boolean"]},
+    "guard": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["prior_clause_id", "source", "operator", "literal"],
+          "properties": {
+            "prior_clause_id": {"type": "string", "minLength": 1},
+            "source": {"const": "status"},
+            "operator": {"const": "eq"},
+            "literal": {"$ref": "#/$defs/scalar"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["prior_clause_id", "source", "export_id", "operator", "literal"],
+          "properties": {
+            "prior_clause_id": {"type": "string", "minLength": 1},
+            "source": {"const": "export"},
+            "export_id": {"type": "string", "minLength": 1},
+            "operator": {"const": "eq"},
+            "literal": {"$ref": "#/$defs/scalar"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["prior_clause_id", "source", "export_id", "operator", "literal_values"],
+          "properties": {
+            "prior_clause_id": {"type": "string", "minLength": 1},
+            "source": {"const": "export"},
+            "export_id": {"type": "string", "minLength": 1},
+            "operator": {"const": "in"},
+            "literal_values": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/scalar"}}
+          }
+        }
+      ]
+    }
+  },
+  "examples": [
+    {
+      "clause_id": "clause-02",
+      "order": 2,
+      "mapping_outcome": "exact",
+      "execution_state": "intent.ready",
+      "guard": {
+        "prior_clause_id": "clause-01",
+        "source": "status",
+        "operator": "eq",
+        "literal": "intent.executed"
+      }
+    }
+  ]
+}
