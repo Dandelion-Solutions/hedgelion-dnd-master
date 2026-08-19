@@ -21,7 +21,10 @@
         "state_model": {"const": "current"},
         "recovery": {
           "type": "array",
-          "items": {"$ref": "#/$defs/currentRecovery"}
+          "items": {"$ref": "#/$defs/currentRecovery"},
+          "contains": {"required": ["after"]},
+          "minContains": 0,
+          "maxContains": 1
         }
       }
     },
@@ -31,7 +34,10 @@
         "state_model": {"const": "spent"},
         "recovery": {
           "type": "array",
-          "items": {"$ref": "#/$defs/spentRecovery"}
+          "items": {"$ref": "#/$defs/spentRecovery"},
+          "contains": {"required": ["after"]},
+          "minContains": 0,
+          "maxContains": 1
         }
       }
     }
