@@ -29,6 +29,8 @@
     "bindingRef": {
       "enum": [
         "owner",
+        "condition.source",
+        "condition.target",
         "signal.actor",
         "signal.source",
         "signal.target",
@@ -56,6 +58,13 @@
       "actor": "owner",
       "predicate": {"fact": "owner.can_react"},
       "gate": {"resource_ref": "owner.reaction"}
+    },
+    {
+      "on": "signal.effect.end",
+      "activity_id": "activity.condition_followup",
+      "mode": "schedule",
+      "actor": "condition.source",
+      "targets": "condition.target"
     }
   ]
 }
