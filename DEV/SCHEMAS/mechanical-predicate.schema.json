@@ -27,7 +27,7 @@
           "properties": {
             "fact": {
               "allOf": [{"$ref": "#/$defs/machineId"}],
-              "description": "Registered context fact. Engine-owned mechanical reads use typed accessor references instead."
+              "description": "Registered boolean INVOCATION_ADJUDICATED context fact. Compilation resolves this ID through mechanical-surfaces metadata. Engine-owned mechanical reads use typed accessor references instead; missing invocation input is not equivalent to false."
             }
           }
         },
@@ -74,7 +74,7 @@
     }
   },
   "examples": [
-    {"fact": "source.equipped"},
+    {"fact": "fiction.target_visible"},
     {
       "compare": {
         "left": {
