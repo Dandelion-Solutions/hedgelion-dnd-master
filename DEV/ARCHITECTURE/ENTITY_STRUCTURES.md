@@ -78,7 +78,7 @@ localized `name`, optional `facets`, and optional `tags` remain in the envelope.
 | `definition.subclass` | `class_id` | `feature_ids`, `advancement_id` |
 | `definition.advancement` | `levels` | `prerequisites`, `grants` |
 | `definition.feat` | — | `prerequisites`, `activity_ids`, `rule_elements`, `trigger_bindings` |
-| `definition.feature` | — | `activity_ids`, `resource_ids`, `effect_ids`, `rule_elements`, `trigger_bindings`] |
+| `definition.feature` | — | `activity_ids`, `resource_ids`, `effect_ids`, `rule_elements`, `trigger_bindings` |
 | `definition.spell` | `level`, `school_id`, `activity_ids` | `components`, `casting_time`, `range`, `duration`, `concentration`, `ritual` |
 | `definition.asset` | — | `physical`, `value`, `rarity`, `property_ids`, `activity_ids`, `resource_ids`, `effect_ids`, `rule_elements`, `trigger_bindings`, `handling`, `capacity`, `stack`, `attunement`, `durability` |
 | `definition.activity` | `family_id`, `steps` | `activation`, `requirements`, `targeting`, `costs` |
