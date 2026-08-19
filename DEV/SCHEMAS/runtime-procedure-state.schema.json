@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/runtime-procedure-state.schema.json",
+  "title": "HDM runtime.procedure state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["participant_resources"],
+  "properties": {
+    "participant_resources": {
+      "type": "object",
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {
+        "type": "object",
+        "propertyNames": {"type": "string", "minLength": 1},
+        "additionalProperties": {"$ref": "#/$defs/spentResourceState"}
+      }
+    },
+    "world_context_id": {"type": "string", "minLength": 1},
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "spentResourceState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["spent"],
+      "properties": {
+        "spent": {"type": "integer", "minimum": 0}
+      }
+    }
+  },
+  "examples": [
+    {
+      "participant_resources": {
+        "actor-0001": {
+          "resource.action": {"spent": 1},
+          "resource.reaction": {"spent": 0}
+        }
+      }
+    }
+  ]
+}
