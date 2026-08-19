@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/execution-segment.schema.json",
+  "title": "HDM embedded committed execution segment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["segment_sequence", "commit_state", "event_ids", "pending_child_invocations", "receipt_exports", "affected_revision_refs"],
+  "properties": {
+    "segment_sequence": {"type": "integer", "minimum": 1},
+    "commit_state": {"const": "committed"},
+    "event_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "pending_child_invocations": {
+      "type": "array",
+      "items": {"$ref": "https://hedgelion.invalid/schemas/pending-child-invocation.schema.json"}
+    },
+    "receipt_exports": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+      "additionalProperties": {"$ref": "#/$defs/scalar"}
+    },
+    "affected_revision_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "continuation_id": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "scalar": {"type": ["string", "number", "boolean"]}
+  },
+  "examples": [
+    {
+      "segment_sequence": 1,
+      "commit_state": "committed",
+      "event_ids": ["event-00000001"],
+      "pending_child_invocations": [],
+      "receipt_exports": {"hit": true},
+      "affected_revision_refs": ["actor-0001@43"]
+    }
+  ]
+}
