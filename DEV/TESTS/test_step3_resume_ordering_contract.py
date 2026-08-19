@@ -86,7 +86,7 @@ class Step3ResumeOrderingContractTest(unittest.TestCase):
         }
         with self.assertRaises(ValidationError):
             validate("resolution-receipt.schema.json", invalid)
-        valid = dict(invalid, status="BLOCKED")
+        valid = dict(invalid, status="FAILED")
         validate("resolution-receipt.schema.json", valid)
 
 
