@@ -29,10 +29,44 @@ Canonical process:
 |---:|---|---|---|---|
 | 1 | **COMPLETE** | Critical audit of previously accepted architecture | Owned audit ledger | Every finding fixed, assigned, or consciously deferred; no unowned blocker |
 | 2 | **COMPLETE** | Resources, HP/LifeState, Effects, Conditions, Duration, Recovery, selector/query boundaries | Normative ownership models + aligned schemas/catalogs + focused cases | Final integrated review has no unresolved Step-2 blocker; maintenance/schema/unit-test validation passes |
-| 3 | **IN PROGRESS — ARCHITECTURE GATE OPEN** | `IntentPlan -> Resolution -> Signal/Event`, including LLM/core execution boundary and checkpointable continuation | Exact typed compound-turn/execution contract, operation/result/event/receipt model, reaction/choice suspension, idempotent continuation/checkpoint semantics | Multiple intents, partial completion, reactions, suspension/resume, retries, atomic mutation segments, trigger chains, deterministic receipts, LLM intent binding, and in-flight recovery have one coherent deterministic contract with focused cases and critical review |
+| 3 | **IN PROGRESS — PAUSED AT SAVED DECISION GATE FOR STEP-2 RETROSPECTIVE ASSURANCE** | `IntentPlan -> Resolution -> Signal/Event`, including LLM/core execution boundary and checkpointable continuation | Exact typed compound-turn/execution contract, operation/result/event/receipt model, reaction/choice suspension, idempotent continuation/checkpoint semantics | Multiple intents, partial completion, reactions, suspension/resume, retries, atomic mutation segments, trigger chains, deterministic receipts, LLM intent binding, and in-flight recovery have one coherent deterministic contract with focused cases and critical review |
 | 4 | `BLOCKED BY 3` | Lore, chapters, knowledge, secrets, minimum promotion interface | Durable truth/disclosure model + context-selection boundary | Public/restricted knowledge has one authority; durable references cannot depend on unpromoted local entities |
 | 5 | `BLOCKED BY 4` | Durability, multiplayer, event-local time | Compatible SOFT/HARD publication, shared visibility/conflict/recovery model | Publication/live-scene ownership, cross-scene recovery, chronology, local time, continuity restoration, and shared revision semantics are coherent |
 | 6 | `BLOCKED BY 5` | Modes, LLM execution budget, migration, catalog gaps, full seed, final closure | Mode profiles + final cross-cutting consistency pass | Mode isolation enforceable; migration/gap/seed ownership complete; full audit passes |
+
+## Temporary assurance overlay — Step 2 retrospective architecture assurance
+
+Step 2 remains **COMPLETE** and its accepted architecture remains the baseline.
+The current work is a non-numbered assurance overlay rather than a reopened
+roadmap stage. Its purpose is to test whether the early Step-2 problem framing
+omitted a material class of requirement, failure mode, quality attribute, or
+cross-system dependency before the canonical deep-design process was adopted.
+
+Master plan:
+
+- `DEV/docs/superpowers/specs/2026-08-19-step-2-retrospective-architecture-assurance-plan.md`
+
+The assurance uses five slices:
+
+1. Actor mechanical state — HP/LifeState/Resources/ownership/lifetime;
+2. Effects and Conditions;
+3. Temporal and Recovery;
+4. Mechanical evaluation/read boundaries;
+5. whole-Step-2 integrated architecture.
+
+Each slice begins with a solution-blind Task Charter, then audits the accepted
+baseline against that independently reconstructed problem. Research is targeted
+only at gaps, weak assumptions, unsafe deferrals, or credible counterexamples.
+A finding must show a concrete unmet requirement/counterexample before the
+accepted baseline is amended. Step 2 is formally reopened only if such a finding
+requires changing a Step-2 ownership/boundary decision.
+
+Step 3 is paused only in sequencing, not discarded. Its saved checkpoint is:
+
+- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-research-draft.md`
+
+After assurance closes, Step 3 resumes from that Decision Gate.
 
 ## Step 2 closure
 
@@ -136,9 +170,13 @@ and checkpoint cleanup/expiry.
 
 ## Exact continuation point
 
-**Step 3 / Architecture Task Brief: `IntentPlan -> Resolution -> Signal/Event`.**
+**Temporary assurance overlay: Slice A / Actor mechanical state.**
 
-The first Step-3 design pass must explicitly include, rather than postpone:
+After the assurance overlay closes, resume:
+
+**Step 3 / saved Decision Gate: `IntentPlan -> Resolution -> Signal/Event`.**
+
+The preserved Step-3 first design pass includes:
 
 1. typed LLM-to-core intent/reference binding;
 2. compound/multiple-intent ordering and partial completion;
