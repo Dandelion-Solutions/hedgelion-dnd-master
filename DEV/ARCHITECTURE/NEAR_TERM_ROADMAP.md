@@ -37,6 +37,8 @@ The engine-wide architecture workflow is `ARCHITECTURE/DESIGN_PROCESS.md`.
 Step 1 is complete after owner approval of its adversarial second pass. Step 2
 is active under the Superpowers architecture gate. Its live design spec is
 `DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`.
+The detailed preliminary Recovery B2 checkpoint is
+`DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`.
 
 The ownership map must close before new Step 2 schema fields are introduced.
 Accepted ownership sub-decisions now include:
@@ -80,12 +82,32 @@ Accepted ownership sub-decisions now include:
   validity/order to Step 3;
 - remaining duration is normally derived from an anchor. Re-anchoring occurs
   only when an Effect crosses an actually incompatible temporal basis/context;
-  no writable countdown is maintained in parallel with a deadline.
+  no writable countdown is maintained in parallel with a deadline;
+- **preliminary Recovery B2:** the producer owns whether a registered scoped
+  boundary occurred, while each authoritative state owner owns its own automatic
+  response; RestPolicy does not own cross-subsystem recovery mutation lists;
+- Duration/recovery/procedure refresh converge on one registered boundary
+  vocabulary, while a concrete BoundaryOccurrence is transient typed runtime
+  context rather than a world entity;
+- Resource definitions own baseline recovery, pure `resource.recovery` Rule
+  Element contributions may modify the calculation, and ResourceState remains
+  the sole mutable Resource authority;
+- Effect expiry and timed/procedure Resource recovery use the same disposable
+  Temporal Agenda/indexing infrastructure; no RecoveryScheduler or separate
+  action-economy reset engine is introduced;
+- boundary processing discovers the full immediately due set before mutation,
+  uses scoped indexes rather than campaign-wide broadcasts, and delegates exact
+  same-boundary phase ordering/idempotency to Step 3 and cross-scene
+  reconciliation to Step 5.
 
-The exact continuation point is **remaining Effect / Recovery ownership**:
-settle generic Effect stacking/refresh/replacement policy, Effect-definition
-versus instance-owned facts, non-support expiry/removal consequences, and
-Resource reset/recharge/recovery epochs across turn, rest, and named-event
-boundaries. Minimum LifeState transitions, selectors, schema/catalog alignment,
-focused cases, and the final Step 2 critical pass follow before Step 2 can
-close.
+Recovery B2 is explicitly preliminary: the owner plans a later holistic
+architecture review and additional brainstorming pass after the major modules
+are designed. That planned reopen does not block current sequencing; its review
+conditions are recorded in the detailed B2 checkpoint.
+
+The exact continuation point is **generic Effect application policy**: settle
+stacking versus independent applications, replacement versus refresh,
+unique-by-source/global semantics, definition policy versus concrete instance
+state, and non-support expiry/removal consequences. Minimum LifeState
+transitions, selectors, schema/catalog alignment, focused cases, and the final
+Step 2 critical pass follow before Step 2 can close.
