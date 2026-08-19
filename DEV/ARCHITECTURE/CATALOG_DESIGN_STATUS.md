@@ -1,6 +1,6 @@
 # HDM Catalog Design Status
 
-Status: **STEP 2 COMPLETE / ASSURANCE SLICE E ACTIVE — STEP 3 PAUSED AT SAVED DECISION GATE**
+Status: **STEPS 1–2 ASSURED / CLOSED — STEP 3 DECISION GATE ACTIVE**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
@@ -17,17 +17,13 @@ Sequencing authority:
 
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 
-Master assurance plan:
+Final retrospective assurance:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-plan.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
 
 ## 1. Current checkpoint
 
-Steps 1 and 2 remain complete. Step 3 has started but is temporarily paused at
-its saved Decision Gate while the non-numbered retrospective assurance overlay
-checks Steps 1–2 under the canonical deep-design process.
-
-Assurance status:
+Steps 1 and 2 are complete and have passed the retrospective deep-design assurance overlay.
 
 ```text
 0A Catalog meta-model / class boundaries       ASSURED / AMENDED
@@ -36,86 +32,82 @@ A  Actor mechanical state                      ASSURED / AMENDED
 B  Effects / Conditions                        ASSURED / AMENDED
 C  Temporal / Recovery                         ASSURED / AMENDED
 D  Mechanical evaluation / read boundaries     ASSURED / AMENDED
-E  Whole Steps 1–2 integration                 ACTIVE
+E  Whole Steps 1–2 integration                 ASSURED / AMENDED
 ```
 
-Authoritative assurance resolutions include:
+Step 3 is again the active numbered roadmap stage and resumes from its preserved human Decision Gate:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-assurance-slice-c-temporal-recovery-resolution.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-assurance-slice-d-mechanical-evaluation-resolution.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-research-draft.md`
 
-The original integrated Step-2 critical review remains the pre-assurance closure
-record:
+No Step-3 candidate specification or implementation is authorized before that material architecture decision.
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-final-critical-review.md`
+## 2. Current catalog/class baseline
 
-The assurance amendments refine that baseline without reopening Step 2 as the
-numbered active roadmap stage.
+- catalog version: `1.3.0`;
+- one coherent `ResolvedCatalogContext` interprets plain definition IDs;
+- same-ID shadowing inside one resolved context is invalid;
+- incompatible catalog/runtime adoption requires coherent migration or blocks;
+- `definition_id` world compatibility is explicit per `world.*` kind;
+- `runtime.procedure` is admitted as the independently addressable operational owner for procedure-local state;
+- `world.encounter`, `runtime.procedure`, `runtime.resolution`, and `runtime.continuation` are distinct lifetimes/responsibilities.
 
-## 2. Current Step-2 ownership map
+Normative class inventory:
+
+- `DEV/ARCHITECTURE/CATALOG_INVENTORY.md`
+
+Machine catalogs:
+
+- `DEV/CATALOG/core-catalog.json`
+- `DEV/CATALOG/entity-structures.json`
+- `DEV/CATALOG/identifier-policies.json`
+- `DEV/CATALOG/mechanical-surfaces.json`
+
+## 3. Step-2 ownership baseline
 
 ### Actor health and lifecycle
 
-- `world.actor.state.hp` is the sole HP/temporary-HP state authority.
-- Resolved maximum HP and Bloodied are derived; no copied writable aliases.
-- `life_state_id` is a separate lifecycle authority; zero HP does not hard-code death.
-- Initial LifeState vocabulary is `active`, `dying`, `stable`, `dead`.
-- Dying owns death-save progress 0..2; the third success/failure is a transition edge.
-- Stable owns its concrete recovery `TemporalBinding`.
-- Dead does not imply Actor deletion, Effect purge, or a generic resurrection timer.
+- `world.actor.state.hp` is the sole HP/temp-HP state authority;
+- maximum HP and Bloodied are derived;
+- `life_state_id` is a separate lifecycle authority;
+- Dying owns death-save progress; Stable owns its recovery `TemporalBinding`;
+- zero HP is not universal death and death does not purge Effects/delete Actor.
 
 ### Resources
 
-- Persistent Actor/Asset ResourceState owns `current`.
-- Procedure-local ResourceState owns `spent`.
-- Invalid lifetime/storage combinations are schema-rejected.
-- Persistent `current` is normalized against state-stable resolved capacity; a true capacity reduction below current clamps current in the same prospective transition, while capacity growth alone does not restore uses.
-- Procedure `spent` survives capacity changes; availability is derived.
-- Resource definitions own baseline recovery; Resource state remains the only mutable Resource authority.
-- Persistent Resource definitions may have at most one metric delayed-recovery policy in the initial contract; boundary recoveries remain independently allowed.
+- persistent Actor/Asset ResourceState owns `current`;
+- `runtime.procedure` owns participant-local procedure ResourceState storing `spent`;
+- persistent current is normalized against state-stable resolved capacity;
+- procedure spent survives capacity changes and availability is derived;
+- Resource definitions own baseline recovery, ResourceState remains sole mutable Resource authority;
+- the initial persistent contract allows at most one metric delayed-recovery policy plus independent registered boundary recoveries.
 
 ### Effects and Conditions
 
-- One independent target-local application is one `world.effect` with one `target_id`.
-- Generic mutable Effect stacks are removed.
-- New application is default; reapplication separates match policy from `refresh|replace` action.
-- Effect arbitration chooses applications; Rule Element resolvers combine Contributions.
-- Maintained/concentration support is an immutable Effect-parent forest, separate from Duration.
-- `definition_id`, reusable `rules_origin_id`, concrete `source_id`, and Step-3 causal execution identity are distinct provenance roles.
-- Effect terminal reasons are a closed registered vocabulary.
-- A Condition definition is named rules identity; concrete applications use Effect instances.
-- No Actor Condition list is canonical.
-- Condition aggregation and intrinsic-rule evaluation remain independent axes:
+- one independent target-local application is one `world.effect`;
+- generic mutable stacks are absent;
+- create/refresh/replace, arbitration, support, Condition aggregation, and Rule Element combination are separate responsibilities;
+- `definition_id`, reusable `rules_origin_id`, concrete `source_id`, and Step-3 causal execution identity are distinct;
+- Effect terminal reasons are closed registered values;
+- Conditions use ordinary Effect applications and no canonical Actor Condition list;
+- Condition aggregation policies are initially `presence` and `cumulative_units`;
+- intrinsic rule scopes are `aggregate_once` and `per_effective_application`;
+- `condition.applicability` gates current effectiveness, so later immunity may suppress a live application without terminating it;
+- Exhaustion uses independent effective unit applications and derived bounded value.
 
-```text
-ConditionAggregationPolicy
-    presence
-    cumulative_units
+### Duration, recovery, scheduled triggers
 
-IntrinsicRuleScope
-    aggregate_once
-    per_effective_application
-```
+- reusable `DurationSpec` and concrete owner `TemporalBinding` are separate;
+- no wall-clock/global campaign clock;
+- explicitly established quantitative elapsed evidence is retained even if no timer is armed;
+- Temporal Agenda is a rebuildable due index, not authority;
+- boundary producer and state-owner automatic response are separate;
+- `world.effect.temporal_binding` owns intrinsic lifetime only;
+- a live Effect may own finite `scheduled_trigger_state[key]` bindings for declarations in `definition.effect.scheduled_triggers[key]`;
+- terminal Effects cannot retain armed scheduled-trigger state;
+- Step 3 owns due execution and `REARM | UNARM | OWNER TERMINAL` semantics.
 
-- `condition.applicability` participates in current effectiveness, not only pre-create validation; later immunity can suppress participation without terminating application lifecycle.
-- Conditions may own closed automatic boundary responses over their own applications; RestPolicy does not mutate Conditions.
-- Exhaustion uses one effective application unit per level, derived value 0..6, per-unit provenance, threshold-crossing semantics, and Long Rest remove-one behavior.
-
-### Duration, Recovery, and owner-local scheduled triggers
-
-- Reusable `DurationSpec` and concrete active `TemporalBinding` are separate.
-- Concrete bases are metric deadline, procedure boundary, or semantic boundary.
-- No wall-clock or global campaign clock is introduced.
-- Uninferred narrative passage may remain imprecise, but explicitly established quantitative elapsed evidence must not be discarded merely because no timer is armed.
-- Boundary producers establish occurrences; state owners own responses.
-- `world.effect.temporal_binding` owns intrinsic Effect lifetime only.
-- A live Effect may independently own `scheduled_trigger_state[key]` for a declared owner-local metric scheduled trigger under `definition.effect.scheduled_triggers[key]`.
-- Terminal Effects cannot retain armed scheduled-trigger state.
-- Temporal Agenda indexes intrinsic lifetime, scheduled triggers, Resource recovery, LifeState recovery, and checkpointable runtime obligations, but remains a rebuildable projection rather than scheduler authority.
-
-### Calculation/read/query and invocation-input boundary
-
-Three surfaces remain distinct:
+### Evaluation/read/query boundary
 
 ```text
 Calculation Selector
@@ -123,113 +115,59 @@ MechanicalContext accessor / registered invocation fact
 runtime-only Domain Query
 ```
 
-- Declarative content cannot issue arbitrary world/SQL/JSON queries.
-- Engine-owned state uses typed accessors; arbitrary predicate `ref` paths are rejected.
-- Context facts are a registered boolean `INVOCATION_ADJUDICATED` input channel, not an open namespace.
-- Engine-owned HP/LifeState/Condition/Resource/equipment state cannot be supplied through that channel.
-- Explicit true, explicit false, and missing invocation facts are distinct; missing is not false.
-- Reviewed state-sensitive Step-2 selectors admit `ENGINE_STATE` only, including `health.maximum`, `resource.capacity`, `resource.recovery`, `condition.applicability`, and currently `effect.duration`.
-- Input-class restrictions are transitive through the same scoped dependency DAG.
-- Structured `derived_nodes` metadata now records dependency/input contracts.
-- `condition_aggregation` depends on current `condition.applicability` plus Effect availability.
-- MechanicalContext is pinned to one committed/prospective state-view identity; invocation-sensitive calculations also include the accepted invocation-input fingerprint.
-- Runtime multi-result queries have unordered semantic-set behavior unless their typed contract defines rules-significant order.
+- no arbitrary path/query/eval from declarative content;
+- engine-owned state uses typed accessors/calculations;
+- invocation facts are a closed boolean `INVOCATION_ADJUDICATED` channel;
+- explicit true/false/missing fact states are distinct;
+- state-sensitive reviewed Step-2 selectors admit only `ENGINE_STATE` transitively;
+- structured derived-node metadata carries dependency/input contracts;
+- current Condition aggregation depends on Effect availability plus current `condition.applicability`;
+- MechanicalContext is pinned to one state view; invocation-sensitive calculation identity also includes the accepted fact-input fingerprint;
+- unordered multi-result runtime queries cannot use storage order as gameplay semantics.
 
-### LLM authority boundary
+## 4. Mandatory Step-3 carry-forward
 
-The LLM may interpret natural language and adjudicate only explicitly permitted registered fiction-dependent inputs. It cannot assert deterministic engine-owned mechanical facts as trusted authority. Accepted invocation facts remain causal execution input, not automatically canonical lore.
+Step 3 must incorporate these already-assured constraints:
 
-Exact RuntimeCommand fact-value/provenance shape and continuation preservation remain Step-3 work; lore/secret context selection/promotion remains Step 4.
+1. `runtime.procedure` owns procedure-local participant ResourceState and any additional procedure/boundary state Step 3 proves necessary;
+2. Resolution/Continuation reference Procedure identity rather than copying procedure ResourceState;
+3. parent/child reactions share one Procedure and parent re-pins/recomputes after committed child effects;
+4. live Effect creation/replacement materializes compact immutable application-order evidence for recency arbitration; refresh preserves it;
+5. RuntimeCommand/Resolution/Continuation pin `ResolvedCatalogContext` identity/frontier;
+6. incompatible catalog adoption cannot silently reinterpret suspended execution;
+7. invocation facts require explicit values/provenance, missing-input failure, deterministic fingerprinting, and Continuation preservation;
+8. owner-local scheduled-trigger due work enters ordinary bounded Resolution execution;
+9. checkpoints serialize source owners/inputs at immutable recovery frontiers rather than derived Agenda/DAG/winner state.
 
-## 3. Current machine contract
-
-Primary catalogs:
-
-- `DEV/CATALOG/core-catalog.json`
-- `DEV/CATALOG/entity-structures.json`
-- `DEV/CATALOG/mechanical-surfaces.json`
-
-Primary Step-2 schemas include:
-
-- `DEV/SCHEMAS/world-actor-state.schema.json`
-- `DEV/SCHEMAS/world-effect-state.schema.json`
-- `DEV/SCHEMAS/resource-definition-data.schema.json`
-- `DEV/SCHEMAS/effect-definition-data.schema.json`
-- `DEV/SCHEMAS/condition-definition-data.schema.json`
-- `DEV/SCHEMAS/rest-policy-definition-data.schema.json`
-- `DEV/SCHEMAS/duration-spec.schema.json`
-- `DEV/SCHEMAS/temporal-binding.schema.json`
-- `DEV/SCHEMAS/mechanical-accessor-ref.schema.json`
-- `DEV/SCHEMAS/mechanical-surfaces.schema.json`
-- `DEV/SCHEMAS/mechanical-predicate.schema.json`
-- `DEV/SCHEMAS/rule-element.schema.json`
-
-Focused Step-2 tests under `DEV/TESTS/` now cover:
-
-- selector/accessor/input metadata and registry consistency;
-- rejection of unregistered invocation facts at compile-contract level;
-- state-sensitive selector rejection of invocation-adjudicated inputs;
-- structured derived-node metadata/current Condition applicability edge;
-- Poisoned/Frightened/Grappled/Exhaustion;
-- LifeState state-local progress;
-- one-target Effects and closed terminal reasons;
-- Condition source/target TriggerBinding and boundary response;
-- Effect reapplication match/action separation;
-- Resource lifetime/storage/capacity/recovery contracts;
-- owner-local scheduled Effect declarations/state, intrinsic-lifetime independence, terminal cancellation, and absence of a global scheduler kind.
-
-## 4. Primary Step-2 design and assurance chain
-
-Original Step-2 chain:
-
-- `DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-lifestate-policy-transition-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-resolution.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-resolution.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-condition-intrinsic-rule-scope-resolution.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-schema-catalog-alignment-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-final-critical-review.md`
-
-Retrospective assurance slice artifacts live under `DEV/docs/superpowers/specs/` and supersede conflicting earlier provisional wording where each resolution says so.
-
-## 5. Explicit later-stage dependencies
-
-### Step 3
-
-- exact compound Resolution ordering and atomic ExecutionSegment semantics;
-- prospective overlay representation;
-- Signal/Event/BoundaryOccurrence and scheduled-trigger due-occurrence identity;
-- reactions/choices and suspension/resume;
-- scheduled-trigger child Resolution construction and atomic `REARM | UNARM | OWNER TERMINAL` handling;
-- provenance-sensitive selection/adjudication;
-- dependency-cycle typed failure;
-- checkpointable in-flight execution state and deterministic resume;
-- explicit invocation-fact boolean values/provenance, binder validation, fingerprinting, and Continuation preservation;
-- natural-language referent/intent translation into typed engine requests.
+## 5. Later-stage ownership
 
 ### Step 4
 
-- durable lore/knowledge/secrets/disclosure authority;
-- context selection and knowledge-safe exposure of invocation-adjudicated facts;
-- promotion of genuinely durable adjudicated truth.
+- lore/knowledge/secrets/disclosure authority;
+- knowledge-safe context selection for invocation facts;
+- explicit promotion of situational adjudication into durable truth.
 
 ### Step 5
 
-- repository-backed runtime continuity checkpoint publication/restoration;
-- SOFT/HARD durability, multiplayer reconciliation, shared revision semantics;
-- chronology evidence persistence/compaction and cross-scene time reconciliation;
-- checkpoint cleanup/expiry and cross-environment recovery.
+- repository-backed checkpoint publication/restoration;
+- SOFT/HARD durability and multiplayer revision/conflict semantics;
+- chronology evidence persistence/compaction and cross-scene reconciliation;
+- checkpoint cleanup/expiry.
 
 ### Step 6
 
-- full D&D rules seed/migration/catalog-gap closure;
+- exact engine/ruleset/package/catalog snapshot identity metadata;
+- full D&D seed/migration/catalog-gap closure;
 - complete structured selector/input/dependency metadata coverage;
-- extension of scheduled-trigger/fact shapes only for proven seed cases.
+- proven extensions to scheduled-trigger/invocation-fact shapes;
+- final full architecture/catalog/seed audit.
 
-## 6. Exact continuation
+## 6. Documentation debt
 
-Proceed with retrospective assurance **Slice E / Whole Steps 1–2 Integration** under the master assurance plan.
+`DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` is historical proposal material and contains examples superseded by current Step-2 contracts. It must receive a supersession cleanup/warning before implementation planning relies on it.
 
-After Slice E and the final assurance artifact close, resume Step 3 from its preserved Task Brief/Research Decision Gate rather than restarting execution-boundary analysis.
+Older explanatory documents may contain stale catalog-version labels. The normative inventory and coordinated machine catalogs are `1.3.0`; stale labels are documentation debt, not authority.
+
+## 7. Exact continuation
+
+Resume **Step 3 / `IntentPlan -> Resolution -> Signal/Event` Decision Gate** from the preserved Task Brief and Research Draft.
