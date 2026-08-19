@@ -104,6 +104,34 @@ class Step2ResourceStorageContractTest(unittest.TestCase):
                 "operation_id": "resource_recovery.restore_to_capacity",
             }]))
 
+    def test_current_resource_has_at_most_one_metric_delay_recovery_policy(self):
+        one_metric_plus_boundaries = [
+            {
+                "after": {"kind_id": "duration.metric", "amount": 1, "unit_id": "unit.hour"},
+                "operation_id": "resource_recovery.restore_amount",
+                "amount": 1,
+            },
+            {
+                "boundary_id": "boundary.long_rest_complete",
+                "operation_id": "resource_recovery.restore_to_capacity",
+            },
+        ]
+        self.validator.validate(self.definition("actor", "current", one_metric_plus_boundaries))
+
+        two_metric = [
+            {
+                "after": {"kind_id": "duration.metric", "amount": 1, "unit_id": "unit.hour"},
+                "operation_id": "resource_recovery.restore_amount",
+                "amount": 1,
+            },
+            {
+                "after": {"kind_id": "duration.metric", "amount": 8, "unit_id": "unit.hour"},
+                "operation_id": "resource_recovery.restore_to_capacity",
+            },
+        ]
+        with self.assertRaises(ValidationError):
+            self.validator.validate(self.definition("asset", "current", two_metric))
+
 
 if __name__ == "__main__":
     unittest.main()
