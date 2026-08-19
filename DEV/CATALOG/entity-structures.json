@@ -55,7 +55,7 @@
     "world.scene": {"required": ["name"], "expected": ["location_id", "participant_ids", "focal_entity_ids", "status"], "definition_binding": {"mode": "forbidden"}},
     "world.encounter": {"required": ["participant_ids", "status"], "expected": ["scene_id", "initiative", "round", "active_participant_id", "local_time"], "definition_binding": {"mode": "forbidden"}},
     "world.hazard": {"required": ["status"], "expected": ["location_id", "zone_id", "detected_by_actor_ids", "effect_ids"], "definition_binding": {"mode": "optional", "allowed_definition_kinds": ["definition.hazard"]}},
-    "world.effect": {"required": ["target_id", "lifecycle"], "expected": ["source_id", "rules_origin_id", "parameters", "support_effect_id", "temporal_binding", "scheduled_trigger_state"], "definition_binding": {"mode": "required", "allowed_definition_kinds": ["definition.effect", "definition.condition"]}},
+    "world.effect": {"required": ["target_id", "lifecycle"], "expected": ["source_id", "rules_origin_id", "application_order_key", "parameters", "support_effect_id", "temporal_binding", "scheduled_trigger_state"], "definition_binding": {"mode": "required", "allowed_definition_kinds": ["definition.effect", "definition.condition"]}},
     "world.lore_fact": {"required": ["statement", "truth_status"], "expected": ["subject_ids", "chronology", "importance"], "definition_binding": {"mode": "forbidden"}},
     "world.knowledge": {"required": ["fact_id", "knower_id", "status"], "expected": ["learned_from_id", "confidence"], "definition_binding": {"mode": "forbidden"}},
     "world.chapter": {"required": ["title", "body"], "expected": ["entity_ids", "scene_ids", "timeline_span", "visibility"], "definition_binding": {"mode": "forbidden"}},
