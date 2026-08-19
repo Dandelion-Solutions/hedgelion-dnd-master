@@ -13,6 +13,10 @@
       "type": "array",
       "items": {"$ref": "#/$defs/intrinsicMechanic"}
     },
+    "automatic_boundary_responses": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/automaticBoundaryResponse"}
+    },
     "details": {"type": "object"}
   },
   "$defs": {
@@ -59,6 +63,16 @@
         {"required": ["rule_element"], "not": {"required": ["trigger_binding"]}},
         {"required": ["trigger_binding"], "not": {"required": ["rule_element"]}}
       ]
+    },
+    "automaticBoundaryResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["boundary_id", "operation_id", "count"],
+      "properties": {
+        "boundary_id": {"$ref": "#/$defs/machineId"},
+        "operation_id": {"const": "condition_response.remove_count"},
+        "count": {"type": "integer", "minimum": 1}
+      }
     }
   },
   "examples": [
@@ -77,7 +91,14 @@
     },
     {
       "aggregation_policy_id": "condition_aggregation.cumulative_units",
-      "value_constraints": {"minimum": 0, "maximum": 6}
+      "value_constraints": {"minimum": 0, "maximum": 6},
+      "automatic_boundary_responses": [
+        {
+          "boundary_id": "boundary.long_rest_complete",
+          "operation_id": "condition_response.remove_count",
+          "count": 1
+        }
+      ]
     }
   ]
 }
