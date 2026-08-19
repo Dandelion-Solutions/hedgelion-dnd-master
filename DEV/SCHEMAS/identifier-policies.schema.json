@@ -45,8 +45,8 @@
       "additionalProperties": false,
       "required": [
         "runtime.session", "runtime.message", "runtime.interaction",
-        "runtime.intent_plan", "runtime.command", "runtime.resolution",
-        "runtime.continuation", "runtime.mechanical_event",
+        "runtime.procedure", "runtime.intent_plan", "runtime.command",
+        "runtime.resolution", "runtime.continuation", "runtime.mechanical_event",
         "runtime.semantic_event", "runtime.resolution_trace",
         "runtime.dirty_record", "runtime.publication_batch",
         "runtime.checkpoint", "runtime.id_allocator",
@@ -56,6 +56,7 @@
         "runtime.session": {"$ref": "#/$defs/recordPolicy"},
         "runtime.message": {"$ref": "#/$defs/recordPolicy"},
         "runtime.interaction": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.procedure": {"$ref": "#/$defs/recordPolicy"},
         "runtime.intent_plan": {"$ref": "#/$defs/recordPolicy"},
         "runtime.command": {"$ref": "#/$defs/recordPolicy"},
         "runtime.resolution": {"$ref": "#/$defs/recordPolicy"},
