@@ -206,6 +206,34 @@ class Step2MechanicalExamplesTest(unittest.TestCase):
                 },
             })
 
+    def test_world_effect_terminal_reason_is_registered(self):
+        validator = self.validator("world-record.schema.json")
+        validator.validate({
+            "id": "effect-00003",
+            "kind": "world.effect",
+            "definition_id": "condition.poisoned",
+            "state": {
+                "target_id": "actor-00001",
+                "lifecycle": {
+                    "state_id": "effect_lifecycle.terminal",
+                    "terminal_reason_id": "effect_end.removed",
+                },
+            },
+        })
+        with self.assertRaises(ValidationError):
+            validator.validate({
+                "id": "effect-00004",
+                "kind": "world.effect",
+                "definition_id": "condition.poisoned",
+                "state": {
+                    "target_id": "actor-00001",
+                    "lifecycle": {
+                        "state_id": "effect_lifecycle.terminal",
+                        "terminal_reason_id": "effect_end.llm_invented",
+                    },
+                },
+            })
+
     def test_lifestate_progress_is_state_local(self):
         validator = self.validator("world-actor-state.schema.json")
         validator.validate({
