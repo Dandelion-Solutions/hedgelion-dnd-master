@@ -15,6 +15,12 @@
       "type": "array",
       "items": {"$ref": "https://hedgelion.invalid/schemas/trigger-binding.schema.json"}
     },
+    "scheduled_triggers": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/localTriggerKey"},
+      "additionalProperties": {"$ref": "#/$defs/scheduledTrigger"}
+    },
     "activity_ids": {"$ref": "#/$defs/idSet"},
     "reapplication": {"$ref": "#/$defs/reapplication"},
     "arbitration_policy_id": {"$ref": "#/$defs/machineId"},
@@ -22,10 +28,30 @@
   },
   "$defs": {
     "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "localTriggerKey": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
     "idSet": {
       "type": "array",
       "uniqueItems": true,
       "items": {"$ref": "#/$defs/machineId"}
+    },
+    "metricDelay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind_id", "amount", "unit_id"],
+      "properties": {
+        "kind_id": {"const": "duration.metric"},
+        "amount": {"type": "integer", "minimum": 1},
+        "unit_id": {"$ref": "#/$defs/machineId"}
+      }
+    },
+    "scheduledTrigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["after", "activity_id"],
+      "properties": {
+        "after": {"$ref": "#/$defs/metricDelay"},
+        "activity_id": {"$ref": "#/$defs/machineId"}
+      }
     },
     "reapplication": {
       "type": "object",
@@ -74,6 +100,14 @@
       "reapplication": {
         "match_policy_id": "effect_reapplication_match.target_family_source",
         "action_id": "effect_reapplication.refresh"
+      }
+    },
+    {
+      "scheduled_triggers": {
+        "daily_save": {
+          "after": {"kind_id": "duration.metric", "amount": 24, "unit_id": "unit.hour"},
+          "activity_id": "srd.activity.disease_save"
+        }
       }
     }
   ]
