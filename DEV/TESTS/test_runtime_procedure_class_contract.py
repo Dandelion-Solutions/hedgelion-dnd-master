@@ -20,6 +20,8 @@ class RuntimeProcedureClassContractTest(unittest.TestCase):
     def setUpClass(cls):
         cls.core = load_json(CATALOG / "core-catalog.json")
         cls.policies = load_json(CATALOG / "identifier-policies.json")
+        cls.entity_structures = load_json(CATALOG / "entity-structures.json")
+        cls.mechanical_surfaces = load_json(CATALOG / "mechanical-surfaces.json")
         cls.policy_schema = load_json(SCHEMAS / "identifier-policies.schema.json")
 
     def test_procedure_is_independent_runtime_record_not_world_or_protocol_kind(self):
@@ -40,6 +42,15 @@ class RuntimeProcedureClassContractTest(unittest.TestCase):
         runtime_schema = self.policy_schema["properties"]["runtime"]
         self.assertIn("runtime.procedure", runtime_schema["required"])
         self.assertIn("runtime.procedure", runtime_schema["properties"])
+
+    def test_new_runtime_class_advances_one_coherent_catalog_version(self):
+        versions = {
+            self.core["catalog_version"],
+            self.policies["catalog_version"],
+            self.entity_structures["catalog_version"],
+            self.mechanical_surfaces["catalog_version"],
+        }
+        self.assertEqual(versions, {"1.3.0"})
 
 
 if __name__ == "__main__":
