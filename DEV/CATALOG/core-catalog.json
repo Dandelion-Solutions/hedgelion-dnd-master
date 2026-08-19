@@ -188,7 +188,11 @@
     "condition_boundary_response_operations": [
       "condition_response.remove_count"
     ],
-    "effect_reapplication_policies": [
+    "effect_reapplication_match_policies": [
+      "effect_reapplication_match.target_family",
+      "effect_reapplication_match.target_family_source"
+    ],
+    "effect_reapplication_actions": [
       "effect_reapplication.refresh", "effect_reapplication.replace"
     ],
     "effect_arbitration_policies": [
