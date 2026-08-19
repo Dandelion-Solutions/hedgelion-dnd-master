@@ -25,6 +25,7 @@
     "runtime.session": {"strategy": "sequential", "prefix": "session", "minimum_width": 4, "scope": "campaign"},
     "runtime.message": {"strategy": "sequential", "prefix": "message", "minimum_width": 7, "scope": "campaign"},
     "runtime.interaction": {"strategy": "sequential", "prefix": "turn", "minimum_width": 6, "scope": "campaign"},
+    "runtime.procedure": {"strategy": "sequential", "prefix": "procedure", "minimum_width": 6, "scope": "campaign"},
     "runtime.intent_plan": {"strategy": "derived", "parent_kind": "runtime.interaction", "suffix": "plan"},
     "runtime.command": {"strategy": "derived", "parent_kind": "runtime.interaction", "suffix": "cmd", "ordinal_width": 2},
     "runtime.resolution": {"strategy": "sequential", "prefix": "resolution", "minimum_width": 7, "scope": "campaign"},
