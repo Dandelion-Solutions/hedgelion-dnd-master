@@ -6,9 +6,9 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Roadmap owner: Step 2 of `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 
-Process: the HP/LifeState boundary is inherited from the owner-approved Step 1 adversarial audit; the Resource/procedure-budget, Condition/Effect, maintained Effect support, and Duration/Temporal Agenda sub-decisions below were developed through the current Superpowers architecture brainstorming flow, critically challenged, and explicitly approved by the owner.
+Process: the HP/LifeState boundary is inherited from the owner-approved Step 1 adversarial audit; the Resource/procedure-budget, Condition/Effect, maintained Effect support, and Duration/Temporal Agenda sub-decisions below were developed through the current Superpowers architecture brainstorming flow, critically challenged, and explicitly approved by the owner. Recovery boundary ownership has additionally reached a **preliminarily accepted B2 checkpoint** that is intentionally marked for reopening during the owner's later holistic architecture review.
 
-This is the live Step 2 design spec. It records accepted ownership decisions as they close so they do not depend on chat history. Step 2 itself is not complete: remaining Effect/Recovery ownership, minimum LifeState transitions, selectors, schema alignment, focused validation, and the final Step 2 critical pass remain open.
+This is the live Step 2 design spec. It records accepted ownership decisions as they close so they do not depend on chat history. Step 2 itself is not complete: generic Effect application/stacking policy, minimum LifeState transitions, selectors, schema alignment, focused validation, and the final Step 2 critical pass remain open. Recovery B2 is sufficiently closed for sequencing but is not permanently frozen against the planned final review.
 
 No runtime implementation or new schema fields are authorized by this checkpoint. Existing schemas/catalog field inventories remain implementation-frozen where this document identifies an ownership decision whose exact shape is not yet closed.
 
@@ -353,7 +353,118 @@ Intrinsic Duration and maintained support are orthogonal. A maintained Effect en
 
 No arbitrary future callback language is introduced. A reached temporal boundary reports a typed due fact; existing Effect/Trigger/Activity machinery owns the resulting mechanical transition.
 
-## 7. Critical-pass results for accepted sub-decisions
+## 7. Recovery boundary ownership — B2 checkpoint
+
+### PRELIMINARILY ACCEPTED — REOPEN DURING FINAL ARCHITECTURE REVIEW
+
+The detailed B2 design is recorded in:
+
+`DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`
+
+This section fixes the ownership boundary needed for Step 2 sequencing; the detailed companion records the full dependency analysis, failure modes, performance implications, rejected alternatives, and final-review reopen list.
+
+### 7.1 Boundary producer versus state-owner response
+
+A procedure/event that establishes a boundary owns only whether that boundary occurred. Each state owner owns how its own state automatically responds.
+
+Conceptually:
+
+```text
+RestPolicy
+    -> qualifies and completes Long Rest
+    -> produces one long-rest-complete boundary occurrence
+
+ResourceDefinition
+    -> owns automatic Resource recovery semantics
+
+Effect instance
+    -> owns expiry binding
+
+HP/LifeState contract
+    -> owns health/lifecycle response
+```
+
+`RestPolicy` must not become an authoritative list of spell-slot, HP, Effect, Condition, Feature, or other cross-subsystem mutations merely because those mechanics respond to a completed rest.
+
+### 7.2 One registered boundary vocabulary
+
+Duration, recovery, and procedure refresh must use one semantic boundary identity for the same occurrence. Separate synonymous timing authorities such as `duration.until_rest`, `recovery.long_rest`, and a third independently meaningful rest-completion timing fact must converge during later catalog/schema alignment.
+
+The common vocabulary must cover proven procedure/semantic edges such as turn start/end, round start/end, successful short/long rest completion, dawn, and other named boundaries. Exact IDs remain deferred.
+
+`recovery.manual` is not forced into this temporal vocabulary: explicit restoration initiated by an Activity/command is an operation, not a temporal boundary.
+
+### 7.3 BoundaryOccurrence
+
+A concrete boundary occurrence is transient typed runtime context, not a canonical world entity or persistent scheduler record. It must support a stable occurrence identity, relevant context/provenance, and explicit qualifying scope/subjects so retries can be idempotent and unrelated scenes/actors are not accidentally affected.
+
+Exact occurrence/event fields belong to Step 3.
+
+### 7.4 Closed subsystem responders
+
+State-owner responders are closed typed contracts, not arbitrary callbacks.
+
+Resource recovery may perform only registered bounded Resource-domain operations such as reset consumption, restore toward currently derived capacity, bounded restoration, or cooldown/recharge advancement as proven by focused cases. Effect expiry uses Effect lifecycle machinery. HP/LifeState uses its own ruleset transition contract.
+
+Any mechanic requiring a choice, roll, optional use, reaction window, or spending another Resource belongs to Step-3 Activity/Trigger/Resolution behavior rather than automatic recovery.
+
+### 7.5 Resource baseline plus pure modifiers
+
+`definition.resource` owns baseline recovery semantics. Active Effects/Features may modify the calculation through the existing pure `resource.recovery` Rule Element selector/contribution model. Rule Elements never mutate ResourceState and never own counters.
+
+This preserves:
+
+```text
+ResourceDefinition -> baseline semantics
+Rule Elements       -> pure contributions
+ResourceResolver    -> deterministic calculation/mutation
+ResourceState       -> sole mutable authority
+```
+
+Multiple recovery modifiers therefore use deterministic contribution combination/conflict semantics rather than list/JSON execution order.
+
+### 7.6 One Temporal Agenda for expiry and recovery
+
+Timed Resource recovery/recharge bindings use the same accepted Temporal Agenda infrastructure as Effect expiry. No separate RecoveryScheduler or action-economy reset engine is introduced.
+
+Procedure-local resets likewise bind to procedure boundaries such as the relevant owner's turn start. The agenda/reverse indexes are disposable HOT/SQLite projections; authoritative state remains on the owning Resource/Effect/procedure state.
+
+### 7.7 Scoped indexed discovery
+
+Boundary handling must not broadcast across the campaign. HOT/SQLite derives bounded indexes equivalent to `(boundary kind, relevant scope/context) -> responder IDs` and evaluates only actually affected state owners.
+
+The intended cost of a boundary is proportional to the mechanics actually due, not total campaign size.
+
+### 7.8 Discover first, mutate later
+
+A reached boundary may simultaneously expire Effects, change derived capacities, reset Resources, and trigger support closure. Runtime therefore discovers the complete immediately due set and computes the prospective boundary closure **before** committing domain mutations.
+
+SQL/index/list iteration order is never mechanical ordering. The exact same-boundary phase/simultaneity contract, occurrence idempotency, causal receipts, and zero-time trigger-chain rules remain Step-3 responsibilities.
+
+### 7.9 Rest duration is not rest completion
+
+A rest procedure may advance metric time, but satisfying its nominal elapsed duration does not itself prove successful completion. RestPolicy applies interruption/qualification rules first; only success produces the semantic rest-completion boundary. Effects/recoveries that key off Long Rest therefore respond to successful completion, not merely to eight hours passing.
+
+### 7.10 Current baseline consequences
+
+The existing baseline field `definition.rest_policy.recovery_steps` is semantically superseded as an authoritative cross-subsystem recovery list. During later schema/catalog alignment it must be removed, renamed, or narrowed to rest-procedure semantics without duplicating state-owner recovery authority.
+
+The independent `recovery_triggers` registry is also provisional where it duplicates common boundary identities. Exact migration/compatibility changes remain deferred until the Step 2 ownership map closes.
+
+### 7.11 Deliberate forward dependencies
+
+B2 deliberately leaves these details to their roadmap owners:
+
+- Step 3: exact same-boundary phase ordering, event/receipt shape, idempotency keys, zero-time chain bounds, and choiceful follow-ups;
+- Step 5: cross-scene/multiplayer boundary reconciliation and local-time conflict handling.
+
+Those are forward dependencies, not permission for Step 2 to create substitute Recovery-specific execution or reconciliation systems.
+
+### 7.12 Final-review reopen condition
+
+B2 is the active preliminary ownership contract, but the planned end-to-end architecture review must explicitly re-check the common boundary vocabulary, bounded automatic Resource response vocabulary, same-boundary phase assumptions, cross-scene scope requirements, and developer Boundary Impact tooling before the whole architecture is declared final.
+
+## 8. Critical-pass results for accepted sub-decisions
 
 The Resource model was challenged against:
 
@@ -411,20 +522,42 @@ The Duration/Temporal Agenda model was challenged against:
 
 The accepted corrections are an anchor-first authoritative binding, a lazy local metric coordinate, three typed temporal bases, a disposable Agenda, interruptible next-boundary advancement, same-time closure, derived remaining/re-anchor only at incompatible-basis transfer, Effect-owned rather than target-owned temporal binding, semantic rest/dawn boundaries, and Step-3-owned continuation/trigger execution.
 
-No blocker was found that requires a separate Resource entity, Condition world entity, separate action-economy/condition mutation subsystem, generic dependency rule language, global clock, persistent scheduler entity, mass countdown updates, or arbitrary scheduled callbacks.
+The preliminary Recovery B2 model was challenged against:
 
-## 8. Exact continuation point
+- RestPolicy becoming a god-object over every recoverable state kind;
+- recovery existing outside rests;
+- duplicate RestPolicy/Resource authorities;
+- parallel duration/recovery timing vocabularies;
+- campaign-wide boundary broadcasts;
+- arbitrary responder callbacks becoming a second Trigger engine;
+- multiple recovery modifiers depending on array order;
+- choiceful recovery leaking into automatic state mutation;
+- a separate timed Recovery scheduler or action-economy reset engine;
+- rest duration being confused with successful rest completion;
+- simultaneous Effect expiry changing Resource capacity on the same boundary;
+- retry/resume applying one recovery occurrence twice;
+- responders recursively manufacturing new boundaries;
+- cross-scene scope leakage;
+- distributed ownership becoming hard for developers to inspect.
 
-The next open ownership block is **remaining Effect / Recovery ownership**.
+The B2 corrections are boundary-producer/state-owner separation, a common registered boundary vocabulary, scoped occurrence identity, closed deterministic subsystem responders, `resource.recovery` pure contributions, one Temporal Agenda, indexed responder discovery, discover-first/mutate-later BoundaryPlan construction, Step-3-owned simultaneity/idempotency, Step-5-owned reconciliation, and a derived read-only Boundary Impact View. No blocker was found that requires authoritative Rest recovery lists, a persistent scheduler, a second recovery execution engine, or arbitrary callbacks.
 
-It must settle, without reopening the accepted support and Duration boundaries:
+No blocker was found that requires a separate Resource entity, Condition world entity, separate action-economy/condition mutation subsystem, generic dependency rule language, global clock, persistent scheduler entity, mass countdown updates, arbitrary scheduled callbacks, or a Rest-owned cross-subsystem recovery list.
 
-- generic Effect application stacking/refresh/replacement versus independent applications;
-- which facts belong to Effect definition policy versus concrete Effect instance state;
-- expiry/removal consequences that are not structural support cascades;
-- Resource recovery/reset/recharge semantics and their authoritative owner;
-- recovery epochs and boundaries across procedure turn refresh, rests, and other named events;
-- interaction between Effect-driven capacity changes and Resource recovery without duplicate counters;
-- whether any remaining Step 2 recovery case requires state beyond Actor/Asset/procedure ResourceState plus typed temporal/semantic boundaries.
+## 9. Exact continuation point
 
-After this block, Step 2 still must close exact minimum LifeState vocabulary/transitions, health/effect selectors, schema/catalog alignment, focused cases, and a final independent critical pass before the Step 2 gate can close.
+Recovery ownership is preliminarily closed by the B2 checkpoint. The next open Step 2 ownership block is **generic Effect application policy**.
+
+It must settle, without reopening the accepted support/Duration boundaries unless a contradiction is found:
+
+- stacking versus genuinely independent applications;
+- replacement versus refresh of an existing lifecycle episode;
+- unique-by-source versus unique-global behavior;
+- how `world.effect.stacks`, application multiplicity, and valued Effect parameters remain distinct;
+- which stacking/refresh policy belongs to the definition versus which mutable facts belong to the concrete Effect instance;
+- non-support expiry/removal consequences;
+- whether generic Effect policy can share machinery with the already accepted Condition aggregation boundary without conflating Condition identity with Effect application identity.
+
+After generic Effect application policy, Step 2 still must close the exact minimum LifeState vocabulary/transitions, health/effect selectors, schema/catalog alignment, focused cases, and a final independent critical pass before the Step 2 gate can close.
+
+The planned later holistic architecture review and additional brainstorming pass may reopen the preliminary Recovery B2 checkpoint; that planned review is explicitly documented rather than being treated as an unresolved blocker to current Step 2 sequencing.
