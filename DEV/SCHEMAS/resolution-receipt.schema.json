@@ -16,7 +16,7 @@
       "enum": [
         "PENDING", "RUNNING", "AWAITING_CHOICE", "AWAITING_REACTION",
         "HYDRATION_REQUIRED", "PUBLISH_REQUIRED", "COMPLETED", "REJECTED",
-        "ABORTED", "FAILED", "BLOCKED"
+        "ABORTED", "FAILED"
       ]
     },
     "event_ids": {
@@ -51,6 +51,16 @@
       ]
     }
   },
+  "allOf": [
+    {
+      "if": {"required": ["failure_code"]},
+      "then": {
+        "properties": {
+          "status": {"enum": ["HYDRATION_REQUIRED", "REJECTED", "ABORTED", "FAILED"]}
+        }
+      }
+    }
+  ],
   "$defs": {
     "scalar": {"type": ["string", "number", "boolean"]}
   },
