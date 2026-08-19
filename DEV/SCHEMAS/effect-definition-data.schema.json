@@ -16,7 +16,7 @@
       "items": {"$ref": "https://hedgelion.invalid/schemas/trigger-binding.schema.json"}
     },
     "activity_ids": {"$ref": "#/$defs/idSet"},
-    "reapplication_policy_id": {"$ref": "#/$defs/machineId"},
+    "reapplication": {"$ref": "#/$defs/reapplication"},
     "arbitration_policy_id": {"$ref": "#/$defs/machineId"},
     "details": {"type": "object"}
   },
@@ -26,6 +26,25 @@
       "type": "array",
       "uniqueItems": true,
       "items": {"$ref": "#/$defs/machineId"}
+    },
+    "reapplication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["match_policy_id", "action_id"],
+      "properties": {
+        "match_policy_id": {
+          "enum": [
+            "effect_reapplication_match.target_family",
+            "effect_reapplication_match.target_family_source"
+          ]
+        },
+        "action_id": {
+          "enum": [
+            "effect_reapplication.refresh",
+            "effect_reapplication.replace"
+          ]
+        }
+      }
     },
     "parameterDeclarations": {
       "type": "object",
@@ -50,6 +69,12 @@
       "rule_elements": [
         {"operation_id": "rule.add_flat", "selector": "defense.armor_class", "value": 2}
       ]
+    },
+    {
+      "reapplication": {
+        "match_policy_id": "effect_reapplication_match.target_family_source",
+        "action_id": "effect_reapplication.refresh"
+      }
     }
   ]
 }
