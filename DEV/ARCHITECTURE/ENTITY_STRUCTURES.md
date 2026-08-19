@@ -83,7 +83,7 @@ localized `name`, optional `facets`, and optional `tags` remain in the envelope.
 | `definition.asset` | — | `physical`, `value`, `rarity`, `property_ids`, `activity_ids`, `resource_ids`, `effect_ids`, `rule_elements`, `trigger_bindings`, `handling`, `capacity`, `stack`, `attunement`, `durability` |
 | `definition.activity` | `family_id`, `steps` | `activation`, `requirements`, `targeting`, `costs` |
 | `definition.resource` | `mechanic_id`, `lifetime_owner`, `state_model` | `capacity`, `recovery`, `spending_policy_id` |
-| `definition.effect` | — | `duration`, `parameter_schema`, `rule_elements`, `trigger_bindings`, `activity_ids`, `reapplication`, `arbitration_policy_id` |
+| `definition.effect` | — | `duration`, `parameter_schema`, `rule_elements`, `trigger_bindings`, `scheduled_triggers`, `activity_ids`, `reapplication`, `arbitration_policy_id` |
 | `definition.condition` | `aggregation_policy_id` | `parameter_schema`, `value_constraints`, `intrinsic_mechanics`, `automatic_boundary_responses` |
 | `definition.recipe` | `inputs`, `outputs` | `activity_id`, `duration`, `requirements` |
 | `definition.hazard` | — | `detection`, `trigger_bindings`, `activity_ids`, `disable_activity_ids` |
@@ -99,10 +99,11 @@ An empty required list is intentional. A language, damage type, decorative
 asset, narrative effect, or template may be valid before it has mechanical
 attachments. Empty placeholder values are not required.
 
-Rule Elements and Trigger Bindings are embedded value objects, not definition
-kinds. Their contracts are specified by `RULE_ELEMENT_MODEL.md`; Activity data
-is specified by `ACTIVITY_MODEL.md`. The corresponding structural schemas are
-`SCHEMAS/rule-element.schema.json`, `SCHEMAS/trigger-binding.schema.json`, and
+Rule Elements and immediate Trigger Bindings are embedded value objects, not
+definition kinds. Their contracts are specified by `RULE_ELEMENT_MODEL.md`;
+Activity data is specified by `ACTIVITY_MODEL.md`. The corresponding structural
+schemas are `SCHEMAS/rule-element.schema.json`,
+`SCHEMAS/trigger-binding.schema.json`, and
 `SCHEMAS/activity-definition-data.schema.json`.
 
 Step-2 definition shapes are further constrained by:
@@ -118,6 +119,15 @@ action. `reapplication.match_policy_id` chooses the existing target/family
 application set (with optional same-source restriction in the initial closed
 vocabulary), while `reapplication.action_id` is only `refresh` or `replace`.
 Absence of `reapplication` retains the default create-new-application behavior.
+
+A `definition.effect` may also declare a finite owner-local
+`scheduled_triggers` map for proven elapsed-time mechanics that must invoke a
+bounded Activity while the Effect remains live. Each declaration has a stable
+local key, one positive metric `after` delay, and one `activity_id`. This is not
+a generic callback/scheduler language and does not replace boundary/Event
+TriggerBindings for turn, dawn, rest, or other native semantic/procedure edges.
+The authoritative amendment is
+`DEV/docs/superpowers/specs/2026-08-19-step-2-assurance-slice-c-temporal-recovery-resolution.md`.
 
 Condition aggregation and intrinsic-rule evaluation are deliberately separate:
 `aggregation_policy_id` determines effective named-Condition state and member
@@ -149,7 +159,7 @@ The loader validates the relation; it is not inferred from names.
 | `world.scene` | `name` | `location_id`, `participant_ids`, `focal_entity_ids`, `status` | forbidden |
 | `world.encounter` | `participant_ids`, `status` | `scene_id`, `initiative`, `round`, `active_participant_id`, `local_time` | forbidden |
 | `world.hazard` | `status` | `location_id`, `zone_id`, `detected_by_actor_ids`, `effect_ids` | optional `definition.hazard` |
-| `world.effect` | `target_id`, `lifecycle` | `source_id`, `rules_origin_id`, `parameters`, `support_effect_id`, `temporal_binding` | required `definition.effect` or `definition.condition` |
+| `world.effect` | `target_id`, `lifecycle` | `source_id`, `rules_origin_id`, `parameters`, `support_effect_id`, `temporal_binding`, `scheduled_trigger_state` | required `definition.effect` or `definition.condition` |
 | `world.lore_fact` | `statement`, `truth_status` | `subject_ids`, `chronology`, `importance` | forbidden |
 | `world.knowledge` | `fact_id`, `knower_id`, `status` | `learned_from_id`, `confidence` | forbidden |
 | `world.chapter` | `title`, `body` | `entity_ids`, `scene_ids`, `timeline_span`, `visibility` | forbidden |
@@ -188,6 +198,14 @@ Additional kind rules:
   singular. Generic mutable `stacks`, stored arbitration winner/shadow state,
   copied Condition presence/value, reverse support children, and writable
   remaining-duration countdowns are not world-effect authorities.
+- `world.effect.temporal_binding` owns only intrinsic Effect lifetime timing.
+  Independently, a live Effect may own `scheduled_trigger_state[key]`, where one
+  concrete `TemporalBinding` is the next-due state for a declared owner-local
+  scheduled trigger. A terminal Effect cannot retain armed scheduled-trigger
+  state. The Temporal Agenda indexes both forms but owns neither.
+- Each `scheduled_trigger_state` key must exist in the resolved owning Effect
+  definition's `scheduled_triggers`; loader/compiler validation enforces this
+  cross-record contract rather than inventing a second stored declaration.
 - `world.effect` requires `definition_id`; its definition must be an allowed
   Effect or Condition definition according to the machine binding table.
 - Maintained/concentration support is represented by immutable
@@ -247,15 +265,17 @@ make a lookup cheap.
 ## 6. Current design boundary
 
 This inventory fixes field membership and world-definition compatibility through
-the Step-1 retrospective assurance correction and Step-2 machine alignment.
-Actor and asset nested shapes are accepted in `ARCHITECTURE/ACTOR_MODEL.md` and
+the Step-1 retrospective assurance correction and Step-2 machine alignment,
+including the Slice-C owner-local scheduled-trigger amendment. Actor and asset
+nested shapes are accepted in `ARCHITECTURE/ACTOR_MODEL.md` and
 `ARCHITECTURE/ASSET_MODEL.md`; Activity and Rule Element shapes are defined by
 `ARCHITECTURE/ACTIVITY_MODEL.md` and `ARCHITECTURE/RULE_ELEMENT_MODEL.md`.
 Machine contracts are validated by schemas/catalogs under `DEV/` and focused
-unit tests, including `DEV/TESTS/test_catalog_definition_binding_contract.py`.
+unit tests, including `DEV/TESTS/test_catalog_definition_binding_contract.py`
+and `DEV/TESTS/test_step2_scheduled_trigger_contract.py`.
 
 Exact IntentPlan/Resolution ordering, prospective-overlay representation,
-event/receipt identity, reaction suspension, source-sensitive remove-one
-adjudication, multiplayer reconciliation, and repository continuity-checkpoint
-publication remain owned by later roadmap stages and are not silently encoded
-here.
+event/receipt identity, scheduled-trigger due execution/re-arm, reaction
+suspension, source-sensitive remove-one adjudication, multiplayer reconciliation,
+and repository continuity-checkpoint publication remain owned by later roadmap
+stages and are not silently encoded here.
