@@ -1,8 +1,8 @@
 # HDM Catalog Inventory
 
-Status: **REVIEWED BASELINE**
+Status: **REVIEWED BASELINE — STEPS 1–2 ASSURANCE APPLIED**
 
-Catalog version: `1.2.0`
+Catalog version: `1.3.0`
 
 This document fixes the class inventory used to design schemas and runtime
 contracts. "Complete" means sufficient coverage for the intended HDM
@@ -166,6 +166,7 @@ owners unless they need independent identity.
 | `runtime.session` | HOT identity, frontiers, and transport mode |
 | `runtime.message` | Raw user/Master/tool message for transcript/audit |
 | `runtime.interaction` | Player input, plan/commands, and response boundary |
+| `runtime.procedure` | Independent active rules-procedure scope; owns participant-local procedure ResourceState and later Step-3 procedure/boundary state |
 | `runtime.intent_plan` | Ordered material clauses from one player input |
 | `runtime.command` | Accepted typed runtime command envelope |
 | `runtime.resolution` | One Activity invocation and status |
@@ -179,6 +180,13 @@ owners unless they need independent identity.
 | `runtime.id_allocator` | Allocation state by identity policy |
 | `runtime.maintenance_audit` | Diagnostic/control operation audit |
 | `runtime.catalog_gap_report` | Non-executable missing-capability report |
+
+`runtime.procedure` is an operational lifetime owner, not a generic workflow
+engine. It is distinct from `world.encounter`, which represents campaign-world
+encounter state; from `runtime.resolution`, which is one Activity invocation;
+and from `runtime.continuation`, which serializes one suspended Resolution. An
+Encounter may be a world referent for a runtime Procedure, but it is not the
+universal owner of procedure-local action/reaction/movement-style budgets.
 
 Protocol values may be embedded in traces or continuations but do not receive
 independent record identity by default.
