@@ -75,7 +75,10 @@
       ]
     },
     "condition.applicability": {
-      "allowed_operations": ["rule.immunity", "rule.override"],
+      "allowed_operations": ["rule.immunity"],
+      "operation_contracts": {
+        "rule.immunity": {"fixed_value": true}
+      },
       "contribution_type": "applicability",
       "allowed_dependency_kinds": [
         "accessor", "effect_availability", "effect_arbitration",
