@@ -47,14 +47,40 @@
     },
     "future_rng_frontier": {"type": "string", "minLength": 1},
     "pending_response": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["kind", "offer_id", "responder_id"],
-      "properties": {
-        "kind": {"enum": ["choice", "reaction"]},
-        "offer_id": {"type": "string", "minLength": 1},
-        "responder_id": {"type": "string", "minLength": 1}
-      }
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "offer_id", "responder_id", "candidate_activity_ids"],
+          "properties": {
+            "kind": {"const": "reaction"},
+            "offer_id": {"type": "string", "minLength": 1},
+            "responder_id": {"type": "string", "minLength": 1},
+            "candidate_activity_ids": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "offer_id", "responder_id", "option_ids"],
+          "properties": {
+            "kind": {"const": "choice"},
+            "offer_id": {"type": "string", "minLength": 1},
+            "responder_id": {"type": "string", "minLength": 1},
+            "option_ids": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      ]
     },
     "unconsumed_advancement": {
       "type": "object",
