@@ -29,6 +29,7 @@ class CatalogDefinitionBindingContractTest(unittest.TestCase):
         for kind, spec in self.structures["world_records"].items():
             with self.subTest(kind=kind):
                 self.assertIn("definition_binding", spec)
+                self.assertNotIn("requires_definition_id", spec)
                 self.assertIn(spec["definition_binding"]["mode"], {"forbidden", "optional", "required"})
 
     def test_allowed_definition_kinds_are_registered(self):
@@ -70,6 +71,9 @@ class CatalogDefinitionBindingContractTest(unittest.TestCase):
                 continue
             with self.subTest(world_kind=world_kind):
                 self.assertEqual(spec["definition_binding"], {"mode": "forbidden"})
+
+    def test_universal_definition_link_does_not_duplicate_organization_archetype_state(self):
+        self.assertNotIn("archetype_id", self.structures["world_records"]["world.organization"]["expected"])
 
 
 if __name__ == "__main__":
