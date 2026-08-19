@@ -10,6 +10,8 @@ critical review ledger is `ARCHITECTURE/CRITICAL_ARCHITECTURE_AUDIT.md`; its
 adversarial second-pass verdict package is owner-approved. Step 2 is active,
 subject to its independent Superpowers architecture gate. The live Step 2 design
 spec is `DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`.
+The detailed preliminary Recovery B2 design is
+`DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`.
 
 This document records the current state of catalog design so that subsequent
 work does not depend on reconstructing decisions from a ChatGPT conversation.
@@ -33,17 +35,21 @@ Step 2 is now closing its ownership map before any new schema fields are added.
 The HP/LifeState boundary, Resource/procedure-budget ownership,
 Condition/Effect/LifeState ownership, maintained Effect-support ownership, and
 Duration/Temporal Agenda ownership have passed critical discussion and received
-explicit owner approval. Their current normative design record is the live Step
-2 spec above.
+explicit owner approval. Recovery boundary ownership has reached a detailed
+**preliminarily accepted B2 checkpoint** that is active for sequencing but is
+explicitly scheduled for reopening during the later holistic architecture
+review requested by the owner.
 
-The exact continuation point is **remaining Effect / Recovery ownership**.
+The exact continuation point is **generic Effect application policy**.
 Concentration is not a duration mode; maintained support is a separate
-Effect-to-Effect lifecycle relation. Intrinsic Duration now uses authoritative
+Effect-to-Effect lifecycle relation. Intrinsic Duration uses authoritative
 Effect temporal bindings with a lazy local metric coordinate and disposable
-Temporal Agenda rather than a universal clock or writable countdown. Step 2
-still owns generic Effect stacking/refresh/replacement, recovery/reset/recharge
-epochs and boundaries, minimum LifeState transitions, health/effect selectors,
-schema/catalog alignment, focused cases, and its final critical pass.
+Temporal Agenda rather than a universal clock or writable countdown. Recovery
+B2 uses boundary-producer/state-owner response ownership and the same Temporal
+Agenda infrastructure rather than a Rest-owned mutation list or second
+scheduler. Step 2 still owns generic Effect stacking/refresh/replacement,
+minimum LifeState transitions, health/effect selectors, schema/catalog
+alignment, focused cases, and its final critical pass.
 
 The four-layer separation below is accepted:
 
@@ -71,7 +77,7 @@ For Step 2-owned fields, the live ownership spec supersedes older provisional
 wording when it explicitly says so. Exact machine field/schema changes remain
 frozen until the ownership map closes, so the current machine field inventory
 must not be treated as final Step 2 shape where the live spec records a newer
-accepted ownership boundary.
+accepted or preliminarily accepted ownership boundary.
 
 ## 2. Agreed catalog principles
 
@@ -198,6 +204,45 @@ accepted ownership boundary.
   across an incompatible temporal basis/context. A multi-target Effect owns one
   lifecycle temporal binding rather than one clock per target.
 
+### `PROVISIONAL` — Step 2 Recovery B2 ownership
+
+- One registered boundary identity is shared by Duration, Recovery, and
+  procedure refresh when they refer to the same semantic occurrence. Parallel
+  synonymous timing registries are not separate authorities.
+- A RestPolicy or procedure owns whether its typed scoped boundary occurred; it
+  does not own mutations to unrelated Resource/HP/Effect state.
+- A concrete BoundaryOccurrence is transient typed runtime context with stable
+  occurrence identity and explicit scope/provenance, not a canonical world
+  entity or persistent scheduler record.
+- `definition.resource` owns baseline automatic recovery semantics. ResourceState
+  remains the sole mutable authority, and the common Resource resolver applies
+  recovery independent of Actor/Asset/procedure storage layout.
+- Active mechanics may modify recovery through pure `resource.recovery` Rule
+  Element contributions; they do not directly mutate ResourceState or own
+  recovery counters.
+- Automatic recovery is deterministic and bounded. Mechanics requiring choices,
+  rolls, optional use, reaction windows, or spending another Resource are owned
+  by Step-3 Activity/Trigger/Resolution execution instead.
+- Timed Resource recovery and Effect expiry share the same disposable Temporal
+  Agenda/index infrastructure. Turn/round resets use the same procedure-boundary
+  indexing rather than a separate action-economy reset engine.
+- Boundary discovery is scoped/indexed rather than campaign-wide. Runtime
+  discovers the complete immediately due set before mutation so SQL/list order
+  cannot become mechanical order.
+- Exact same-boundary phase ordering, occurrence idempotency/receipts, and
+  zero-time chain limits remain Step 3; cross-scene/multiplayer boundary
+  reconciliation remains Step 5.
+- `definition.rest_policy.recovery_steps` is provisionally superseded as an
+  authoritative cross-subsystem recovery list. The independent
+  `recovery_triggers` registry is likewise provisional where it duplicates the
+  common boundary vocabulary. Exact machine migration is deferred until schema
+  alignment.
+- Developer discoverability should be recovered through a derived read-only
+  Boundary Impact View, never by recreating a second editable recovery list.
+- This B2 block is intentionally scheduled for holistic re-review after the
+  major architecture modules have designs; its detailed reopen criteria are in
+  the Recovery B2 design document.
+
 ## 3. Reviewed inventory and provisional structures
 
 The class membership and layer boundaries in `CATALOG_INVENTORY.md` are now the
@@ -261,8 +306,9 @@ approved or implemented.
 4. Event payloads, granularity, and durability classification; the event-kind
    baseline itself is reviewed.
 5. Step 2 remaining ownership: generic Effect stacking/refresh/replacement,
-   Resource Recovery/reset/recharge epochs and boundaries, minimum LifeState
-   transitions, selectors, then schema/catalog alignment and focused cases.
+   minimum LifeState transitions, selectors, then schema/catalog alignment and
+   focused cases. Recovery B2 is provisionally closed for sequencing and is
+   explicitly scheduled for later holistic re-review.
 6. Lore, chapters, visibility/knowledge restrictions, and secret handling.
 7. Game-mode profiles, including quick narrative play, canonical mechanics,
    and strict-information-isolation detective play.
