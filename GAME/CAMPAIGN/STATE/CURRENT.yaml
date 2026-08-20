@@ -5,6 +5,4 @@ world_time:
   display: null
 active_scenes: []
 active_threads: []
-pending_global_consequences: []
-last_checkpoint_id: null
 last_event_id: null
