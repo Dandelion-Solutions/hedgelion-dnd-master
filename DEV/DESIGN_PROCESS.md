@@ -366,6 +366,72 @@ DONE
 
 The exact vocabulary may vary.
 
+### 8.8 Repository navigation index for growing projects
+
+As a repository grows, consider maintaining a compact **non-normative project
+navigation index** that records where major responsibilities live and which
+neighboring surfaces are commonly affected together. The filename and exact
+format are project-specific.
+
+There is no universal file-count threshold for when such an index becomes
+necessary. Raw repository size is only a proxy for discovery difficulty. Create
+or strengthen the index when one or more of these signals appears:
+
+- a complete structural inspection of the relevant project area is no longer
+  cheap enough to perform reliably at the start of ordinary substantive work;
+- several ownership domains, layers, packages, or source trees coexist and a
+  filename/keyword search does not reveal their relationships;
+- important concerns are cross-cutting and routinely require checking several
+  contracts, schemas, tests, tools, or operational surfaces together;
+- large homogeneous families such as schemas, migrations, tests, generated
+  contracts, plugins, or dated design artifacts make manual filename memory
+  unreliable;
+- agents or maintainers have already missed relevant files, stale references,
+  duplicate authority, or consumers because discovery started from remembered
+  names or one search query;
+- the cost of omitting a relevant dependency is materially higher than the cost
+  of maintaining a small navigation map;
+- onboarding, handoff, context loss, or a fresh agent/session repeatedly requires
+  reconstructing the same repository topology and dependency routes.
+
+Prefer creating the index slightly **before** repeated misses become normal. The
+purpose is to reduce discovery risk, not to prove that the project has crossed
+an arbitrary size boundary.
+
+A useful navigation index should normally capture:
+
+- major responsibility/ownership areas and their primary entry points;
+- source-of-truth status where confusion is likely;
+- common cross-system dependency routes or "check these together" surfaces;
+- links to existing local indexes rather than duplicating them;
+- patterns for large homogeneous families instead of manually enumerating every
+  member;
+- known historical/legacy surfaces that are useful for provenance but must not
+  override current owners.
+
+The navigation index must **not** become another semantic source of truth. It
+should summarize responsibilities and direct research to owning artifacts; full
+rules, schemas, contracts, enums, and architecture decisions remain in their
+actual owners. If the index conflicts with the current repository tree or an
+owning artifact, the tree/owner wins and the index is stale.
+
+For repository research, use the index as part of a structural discovery pass,
+not as a substitute for it:
+
+```text
+current tree/ref
+    -> navigation index, if present
+    -> actual owning artifacts
+    -> concrete symbol/path search for consumers and stale references
+```
+
+An empty keyword search is not evidence that a concept or dependency is absent
+when the relevant repository area or local indexes have not yet been inspected.
+
+Update the navigation index when structural or responsibility changes would make
+future discovery materially misleading. Do not require an edit for every new
+file that already belongs to a clearly covered homogeneous family.
+
 ---
 
 ## 9. The roadmap is a living model
