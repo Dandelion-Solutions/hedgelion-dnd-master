@@ -408,7 +408,7 @@ RED: the new Step-5.1 regression failed while the active schema/template still e
 
 GREEN: after removing the field/provisional invariant from `GAME/SCHEMA/current_state.schema.yaml` and the field from `GAME/CAMPAIGN/STATE/CURRENT.yaml`, and aligning the Step-5.0 regression with the new boundary, maintenance audit and the full DEV unit suite passed.
 
-A final exact-HEAD validation after roadmap/status canonicalization is still required before reporting Step 5.1 complete externally.
+Final closure requires fresh validation of the final branch revision after all canonical/status bookkeeping; that evidence is reported from CI rather than encoded as a mutable run identifier in this specification.
 
 ---
 
