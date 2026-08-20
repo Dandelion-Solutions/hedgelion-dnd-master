@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.4.0",
+  "catalog_version": "1.5.0",
   "schema_version": 1,
   "registries": {
     "content_definition_kinds": [
@@ -24,7 +24,7 @@
       "world.connection", "world.zone", "world.organization",
       "world.relationship", "world.contract", "world.mission", "world.scene",
       "world.encounter", "world.hazard", "world.effect", "world.lore_fact",
-      "world.knowledge", "world.chapter", "world.timeline_marker"
+      "world.knowledge", "world.timeline_marker"
     ],
     "runtime_record_kinds": [
       "runtime.session", "runtime.message", "runtime.interaction",
@@ -106,8 +106,7 @@
       "transition.mission_state", "transition.scene_state",
       "transition.encounter_state", "transition.hazard_state",
       "transition.lore_commit", "transition.knowledge_change",
-      "transition.chapter_append", "transition.timeline_place",
-      "transition.event_time_advance"
+      "transition.timeline_place", "transition.event_time_advance"
     ],
     "event_kinds": [
       "event.activity.completed", "event.activity.rejected",
@@ -129,8 +128,7 @@
       "event.contract.changed", "event.mission.changed",
       "event.scene.changed", "event.encounter.changed", "event.hazard.changed",
       "event.lore.committed", "event.knowledge.changed",
-      "event.chapter.appended", "event.timeline.placed",
-      "event.event_time.advanced"
+      "event.timeline.placed", "event.event_time.advanced"
     ],
     "resource_mechanics": [
       "resource.die_pool", "resource.tiered_pool", "resource.bounded_pool",
