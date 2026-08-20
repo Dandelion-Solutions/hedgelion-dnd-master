@@ -130,7 +130,12 @@ A branch movement caused by the same runtime mixing write APIs/transactions is a
 
 LOG is compact semantic history, not a transaction journal/transcript.
 
-A normal gameplay persistence batch does NOT automatically create a checkpoint. Checkpoints are recovery frontiers for session boundaries, major transitions, complex mid-procedure stops, risky maintenance/migration, or another concrete recovery need.
+A normal gameplay persistence batch does NOT automatically create a checkpoint.
+Checkpoints are sparse recovery descriptors/evidence associated with session
+boundaries, major transitions, complex mid-procedure stops, risky
+maintenance/migration, or another concrete recovery need. `MANIFEST.last_checkpoint_id`
+is the pointer to the selected descriptor; the checkpoint does not itself become
+current-state authority or a universal cross-domain frontier.
 
 When a checkpoint is created, its `engine` block is a recovery projection of the then-current `MANIFEST.engine.current` portable runtime identity (`version`, `package_id`, `source_commit_sha`, `package_sha256`, `adopted_at`). It never stores `current_runtime_root`.
 
