@@ -341,50 +341,90 @@ Step 5.4 introduces no mandatory handoff snapshot/ticket, generic resume-point
 record, campaign-global host/session lease, durable RELINQUISHED marker,
 authoritative capacity heuristic or raw model-context persistence.
 
-The owner carry-forward about periodic durability remains owned by Step 5.5:
+### Step 5.5 — CLOSED
 
-- maximum age/exposure of gameplay-significant unpublished SOFT must be designed
-  independently of whether a lifecycle warning exists;
-- no numerical threshold is currently approved;
-- the current runtime hard-coded `one hour` value is provisional/stale policy,
-  not an architectural constant;
-- advisory host-capacity risk may be considered by 5.5 as a durability-policy
-  input, but 5.4 does not decide whether it forces an opportunistic flush;
-- clean state must not create heartbeat/no-op publication.
+Canonical specification:
 
-Adversarial review found no owner-level blocker. Significant findings around
-late warnings, external source movement, post-freeze input, invisible volatile
-state in another host, accepted-message evidence and advisory-capacity semantics
-were resolved without reopening BARRIER-NATIVE.
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-canonical-spec.md`
 
-### Step 5.5 — NEXT, NOT STARTED
+Owner-approved decision: **EDGE-OBLIGATION / SCOPE-POLICY RECOVERY-CLOSURE DURABILITY**.
 
-Step 5.5 owns **SOFT / HARD / SAVE Durability Semantics**.
+Derivation/review artifacts include:
 
-It must now define one architecture-level durability classifier and completeness
-contract using the already-closed host/recovery semantics from 5.2–5.4.
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-analytical-challenge.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-owner-clarification-addendum.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-decision-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-resolution-gate.md`
+
+Canonical consequences include:
+
+```text
+EPHEMERAL/ESTABLISHED is separate from DURABLE/VOLATILE_DIRTY
+SOFT = established dirty state whose durability may currently defer
+HARD = MUST_BE_DURABLE_BEFORE(named edge), not an intrinsic fact class
+establishment follows native owner acceptance semantics
+required durable source closure is distinct from physical pending write set
+durability closure = policy roots + policy accumulation roots + required semantic/recovery dependencies
+ordinary singleplayer boundaries may protect accumulated local SOFT
+explicit save protects every established dirty root in selected save scope + required closure
+save success may compose compatible native durability domains; no global transaction implied
+clean already-durable save may succeed with zero heartbeat write
+failed save does not hard-lock coherent local/private play
+partial native success remains real authority even when overall save fails
+correctness-critical edge cannot be falsely crossed without required durability
+local/private dirty exposure is scope-aware risk-control/SLO, not semantic expiry
+exposure starts from actual unpublished state, not arbitrary commit age
+unrelated publication cannot falsely reset another dirty partition
+no exact timed flush without host execution opportunity
+no universal numeric dirty threshold
+advisory host-capacity heuristics may warn/opportunistically flush but are not correctness authority
+shared/live policies may impose stronger event-driven durability in Step 5.8
+checkpoint/Story/transcript/delivery remain separate ownership concerns
+```
+
+The current runtime hard-coded `one hour` / `durable_frontier_time` policy is now
+explicitly noncanonical implementation debt. Step 5.5 selects no universal
+numeric exposure threshold. Any later default must be a product/configuration
+choice under the scope-aware policy model, not an inherited architecture constant.
+
+Known machine-realization debt includes stale one-hour prose/tests and missing
+regressions for friendly failed-save continuation, clean already-durable save,
+partial multi-domain publication, and independent dirty-exposure partitions.
+
+Adversarial review found no owner-level blocker. It refined multi-domain save into
+a compatible composed native-source promise, separated durable source closure
+from pending write set, preserved real partial native publication, and confirmed
+that risk-control failure does not weaken correctness-critical durability edges.
+
+### Step 5.6 — NEXT, NOT STARTED
+
+Step 5.6 owns **Campaign Publication & Crash Consistency**.
+
+It must now provide the physical publication semantics that can prove or deny the
+logical durability promises fixed by Step 5.5.
 
 Required questions include at minimum:
 
-- exact SOFT / HARD / EPHEMERAL semantics;
-- exact forced controlled-handoff durability closure;
-- relation between accumulated SOFT and a forced boundary;
-- explicit SAVE_ALL_DIRTY relation to ordinary durability;
-- when HARD blocks further execution/narration;
-- complete dependency closure required by publication;
-- failure/acknowledgement semantics at the durability-class level, without
-  stealing physical Git crash consistency from 5.6;
-- independent maximum age/exposure policy for gameplay-significant unpublished
-  SOFT when ordinary forced boundaries accumulate slowly;
-- behavior when no background execution opportunity exists;
-- whether advisory host-capacity risk changes durability policy;
-- no-heartbeat behavior for clean state;
-- final disposition of the current provisional hard-coded `one hour` runtime
-  policy.
+- exact campaign-native transaction input/freeze point;
+- complete pending write-set derivation from a Step-5.5 required durable closure;
+- tree/commit/ref crash windows and exact success point;
+- optimistic concurrency / stale-head invalidation and rebuild;
+- prepared/unreachable commit objects;
+- ambiguous write acknowledgement / ref-update outcome;
+- retries/idempotency without false save acknowledgement;
+- adoption and dirty-state clearing only after actual publication result;
+- behavior when one native source publishes and another required source fails,
+  without inventing cross-domain distributed atomicity;
+- relation between campaign publication and optional checkpoint creation.
 
-No numeric dirty-age/capacity threshold is pre-approved by 5.4.
+Step 5.6 SHALL NOT redefine SOFT/HARD/SAVE semantics, scope-aware exposure policy,
+or the player-visible meaning of successful explicit save.
 
-**Do not begin Step 5.6 while Step 5.5 is in progress.**
+**Do not begin Step 5.7 while Step 5.6 is in progress.**
 
 ## Step 6 carry-forward
 
@@ -410,18 +450,17 @@ material predating current canonical Step-2/3/4/5 contracts. They are
 non-authoritative relative to current inventory, machine schemas/catalogs and
 canonical specs.
 
-The Step-5 expanded working agenda contains older wording referring to a
-`one-hour` dirty ceiling. Current owner direction and canonical Step 5.4 supersede
-that numerical assumption for sequencing purposes: Step 5.5 must decide the
-actual exposure policy/value rather than inheriting one hour as an approved
-constant.
+The Step-5 expanded working agenda still contains older wording referring to a
+`one-hour` dirty ceiling. Canonical Step 5.5 supersedes that numerical wording:
+there is no architecture-wide one-hour constant; unpublished exposure is
+scope-policy-owned and any numeric default is later product/configuration policy.
 
 ## Exact continuation point
 
-**Step 5.4 / Host Lifecycle & Session Handoff — CLOSED.**
+**Step 5.5 / SOFT / HARD / SAVE Durability Semantics — CLOSED.**
 
 Next architecture slice:
 
-**Step 5.5 / SOFT / HARD / SAVE Durability Semantics — NOT STARTED.**
+**Step 5.6 / Campaign Publication & Crash Consistency — NOT STARTED.**
 
-Do not begin Step 5.6 until Step 5.5 architecture closes.
+Do not begin Step 5.7 until Step 5.6 architecture closes.
