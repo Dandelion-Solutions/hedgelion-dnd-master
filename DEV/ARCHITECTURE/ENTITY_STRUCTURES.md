@@ -1,6 +1,6 @@
 # HDM Catalog — Minimum Entity Structures
 
-Status: **AGREED BASELINE — STEP 1 ASSURANCE + STEP 2 MACHINE ALIGNMENT + STEP-4 CHAPTER RETIREMENT APPLIED**
+Status: **AGREED BASELINE — STEP 1 ASSURANCE + STEP 2 MACHINE ALIGNMENT + STEP-4 + STEP-5.0 RETIREMENTS APPLIED**
 
 Target: `feature/mechanical-runtime-hot-state`
 
@@ -50,7 +50,8 @@ roll-display fields. D&D has no standard storage model for organizations,
 contracts, missions, lore, and abstract chronology; those structures are derived
 from HDM requirements. Literary narrative records and Chapter grouping are not
 world state: they belong to non-canonical `STORY/NARRATIVE` and its index under
-the canonical Step-4 Story contract.
+the canonical Step-4 Story contract. Chronology ordering values/frontiers are
+not promoted to a standalone world-record owner merely for bookkeeping.
 
 ## 3. Definition kinds
 
@@ -164,7 +165,11 @@ The loader validates the relation; it is not inferred from names.
 | `world.effect` | `target_id`, `lifecycle` | `source_id`, `rules_origin_id`, `parameters`, `support_effect_id`, `temporal_binding`, `scheduled_trigger_state` | required `definition.effect` or `definition.condition` |
 | `world.lore_fact` | `statement`, `truth_status` | `subject_ids`, `chronology`, `importance` | forbidden |
 | `world.knowledge` | `fact_id`, `knower_id`, `status` | `learned_from_id`, `confidence` | forbidden |
-| `world.timeline_marker` | `slot`, `summary` | `entity_ids`, `scene_id`, `relative_to` | forbidden |
+
+`world.timeline_marker` is deliberately absent. Step 5.0 retired the old
+standalone scalar-placement owner. Sparse numeric/local ordering remains allowed
+as an ordering value inside an explicit chronology domain; Step 5.9 owns the
+final chronology persistence representation.
 
 Literary records and Chapter groupings are deliberately absent from this table.
 They belong to the non-canonical `STORY/NARRATIVE` projection and its Story
@@ -270,19 +275,20 @@ make a lookup cheap.
 ## 6. Current design boundary
 
 This inventory fixes field membership and world-definition compatibility through
-the Step-1 retrospective assurance correction, Step-2 machine alignment, and
-the Step-4 retirement of literary Chapter from the world-record namespace,
-including the Slice-C owner-local scheduled-trigger amendment. Actor and asset
-nested shapes are accepted in `ARCHITECTURE/ACTOR_MODEL.md` and
-`ARCHITECTURE/ASSET_MODEL.md`; Activity and Rule Element shapes are defined by
+the Step-1 retrospective assurance correction, Step-2 machine alignment, Step-4
+retirement of literary Chapter from the world-record namespace, and Step-5.0
+retirement of the standalone timeline-marker world owner, including the Slice-C
+owner-local scheduled-trigger amendment. Actor and asset nested shapes are
+accepted in `ARCHITECTURE/ACTOR_MODEL.md` and `ARCHITECTURE/ASSET_MODEL.md`;
+Activity and Rule Element shapes are defined by
 `ARCHITECTURE/ACTIVITY_MODEL.md` and `ARCHITECTURE/RULE_ELEMENT_MODEL.md`.
 Machine contracts are validated by schemas/catalogs under `DEV/` and focused
 unit tests, including `DEV/TESTS/test_catalog_definition_binding_contract.py`,
-`DEV/TESTS/test_step2_scheduled_trigger_contract.py`, and
-`DEV/TESTS/test_step4_story_retirement_contract.py`.
+`DEV/TESTS/test_step2_scheduled_trigger_contract.py`,
+`DEV/TESTS/test_step4_story_retirement_contract.py`, and
+`DEV/TESTS/test_step_5_0_contamination.py`.
 
-Exact IntentPlan/Resolution ordering, prospective-overlay representation,
-event/receipt identity, scheduled-trigger due execution/re-arm, reaction
-suspension, source-sensitive remove-one adjudication, multiplayer reconciliation,
-and repository continuity-checkpoint publication remain owned by later roadmap
-stages and are not silently encoded here.
+Exact Step-5 frontier representation, durable runtime-record placement,
+publication/recovery protocol, multiplayer reconciliation, chronology
+persistence, Story persistence, retention and cleanup remain owned by later
+Step-5 slices and are not silently encoded here.
