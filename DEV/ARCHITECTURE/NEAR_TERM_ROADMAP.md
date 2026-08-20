@@ -280,51 +280,111 @@ scope, continuous bounded-recovery handoff, immediate-rearm overlap safety and
 stable experiment association for fixed RNG. No Step-5.3 architecture blocker
 remains.
 
-### Step 5.4 — IN PROGRESS
+### Step 5.4 — CLOSED
 
-Step 5.4 owns **Host Lifecycle & Session Handoff**.
+Canonical specification:
 
-Current research artifacts:
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-canonical-spec.md`
+
+Owner-approved decision: **BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF**.
+
+Derivation/review artifacts include:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-task-brief.md`
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-research-draft.md`
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-analytical-challenge.md`
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-decision-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-resolution-gate.md`
 
-Current recommendation awaiting owner approval:
+Canonical consequences include:
 
-**BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF**.
+```text
+host/chat/process lifecycle is not gameplay authority
+controlled handoff and unexpected loss have different guarantees
+successful handoff requires actual durable Resumable Runtime Closure
+handoff uses scoped mutation/semantic-acceptance quiescence, not a global lock
+external native-source movement revalidates/invalidate selected closure
+existing Step-3/5.2/5.3 native owners carry resume semantics
+clean handoff does not require a heartbeat write
+session metadata remains non-authoritative
+relinquished hosts must rehydrate/revalidate before later mutation
+hydration does not prove absence of unpublished volatile state in another host
+destructive maintenance uses the same handoff guarantee
+partial model reasoning/raw context is never recovery authority
+accepted-but-not-typed input requires resolvable evidence or materialization
+open execution preserves compatible accepted interpretation context
+```
 
-The proposed direction keeps gameplay/current execution authority in the native
-owners established by Steps 3, 5.2 and 5.3. A reliable known destructive-context
-boundary creates a scoped mutation-quiescence barrier and requires the promised
-resume state to reach a valid durable Resumable Runtime Closure before the old
-host may acknowledge a recovery-safe handoff. Unexpected loss has the weaker and
-honest guarantee of recovery to the newest actually durable compatible native
-source set; lost unpublished HOT/SOFT state is never invented.
+Host conversation/message/context capacity exhaustion is explicitly covered:
 
-The current recommendation deliberately introduces no mandatory handoff snapshot,
-durable transfer ticket, authoritative session record, campaign-global host lease
-or heartbeat commit. Persistent session metadata remains coordination/recovery
-projection; stale hosts must revalidate current native authority/revisions before
-mutation.
+```text
+RELIABLE_DESTRUCTIVE
+    -> controlled handoff opportunity/attempt
+    -> warning reliability does not guarantee enough execution budget
 
-Owner carry-forward about periodic safety flush is recorded in the task brief:
+ADVISORY_CAPACITY
+    -> OOC warning/recommend proactive transfer
+    -> no durability/recovery authority
 
-- reliable imminent context destruction is a Step-5.4 lifecycle trigger for a
-  recovery-publication attempt;
-- independent maximum age/exposure of gameplay-significant unpublished SOFT is
-  owned by Step 5.5;
-- no numerical dirty-age threshold is currently approved;
-- existing runtime prose that hard-codes a one-hour ceiling is provisional/stale
-  policy to be resolved in 5.5;
+NO_USABLE_SIGNAL / HARD STOP
+    -> unexpected-loss recovery to actual durable closure
+```
+
+No trustworthy remaining-message/token/capacity metric is assumed. Message count,
+approximate token count, chat age or a future locally derived predictor may only
+support an explicitly advisory heuristic unless a future host contract provides
+stronger reliable semantics.
+
+Step 5.4 introduces no mandatory handoff snapshot/ticket, generic resume-point
+record, campaign-global host/session lease, durable RELINQUISHED marker,
+authoritative capacity heuristic or raw model-context persistence.
+
+The owner carry-forward about periodic durability remains owned by Step 5.5:
+
+- maximum age/exposure of gameplay-significant unpublished SOFT must be designed
+  independently of whether a lifecycle warning exists;
+- no numerical threshold is currently approved;
+- the current runtime hard-coded `one hour` value is provisional/stale policy,
+  not an architectural constant;
+- advisory host-capacity risk may be considered by 5.5 as a durability-policy
+  input, but 5.4 does not decide whether it forces an opportunistic flush;
 - clean state must not create heartbeat/no-op publication.
 
-Step 5.4 does not decide SOFT/HARD/SAVE class semantics, the physical Git
-publication protocol, checkpoint wire format, live-epoch fencing/transfer,
-transcript retention, or host-delivery acknowledgement.
+Adversarial review found no owner-level blocker. Significant findings around
+late warnings, external source movement, post-freeze input, invisible volatile
+state in another host, accepted-message evidence and advisory-capacity semantics
+were resolved without reopening BARRIER-NATIVE.
 
-**Do not begin Step 5.5 while Step 5.4 is in progress.**
+### Step 5.5 — NEXT, NOT STARTED
+
+Step 5.5 owns **SOFT / HARD / SAVE Durability Semantics**.
+
+It must now define one architecture-level durability classifier and completeness
+contract using the already-closed host/recovery semantics from 5.2–5.4.
+
+Required questions include at minimum:
+
+- exact SOFT / HARD / EPHEMERAL semantics;
+- exact forced controlled-handoff durability closure;
+- relation between accumulated SOFT and a forced boundary;
+- explicit SAVE_ALL_DIRTY relation to ordinary durability;
+- when HARD blocks further execution/narration;
+- complete dependency closure required by publication;
+- failure/acknowledgement semantics at the durability-class level, without
+  stealing physical Git crash consistency from 5.6;
+- independent maximum age/exposure policy for gameplay-significant unpublished
+  SOFT when ordinary forced boundaries accumulate slowly;
+- behavior when no background execution opportunity exists;
+- whether advisory host-capacity risk changes durability policy;
+- no-heartbeat behavior for clean state;
+- final disposition of the current provisional hard-coded `one hour` runtime
+  policy.
+
+No numeric dirty-age/capacity threshold is pre-approved by 5.4.
+
+**Do not begin Step 5.6 while Step 5.5 is in progress.**
 
 ## Step 6 carry-forward
 
@@ -350,14 +410,18 @@ material predating current canonical Step-2/3/4/5 contracts. They are
 non-authoritative relative to current inventory, machine schemas/catalogs and
 canonical specs.
 
+The Step-5 expanded working agenda contains older wording referring to a
+`one-hour` dirty ceiling. Current owner direction and canonical Step 5.4 supersede
+that numerical assumption for sequencing purposes: Step 5.5 must decide the
+actual exposure policy/value rather than inheriting one hour as an approved
+constant.
+
 ## Exact continuation point
 
-**Step 5.4 / Host Lifecycle & Session Handoff — IN PROGRESS.**
+**Step 5.4 / Host Lifecycle & Session Handoff — CLOSED.**
 
-Current phase:
+Next architecture slice:
 
-**Research and analytical challenge complete; owner approval requested for
-BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF before candidate specification.**
+**Step 5.5 / SOFT / HARD / SAVE Durability Semantics — NOT STARTED.**
 
-Do not begin candidate canonicalization or Step 5.5 until the Step-5.4 design
-direction is approved.
+Do not begin Step 5.6 until Step 5.5 architecture closes.
