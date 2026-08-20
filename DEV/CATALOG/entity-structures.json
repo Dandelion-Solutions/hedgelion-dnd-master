@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.4.0",
+  "catalog_version": "1.5.0",
   "details_field": "details",
   "details_semantics": "arbitrary_llm_descriptive_nonmechanical_json",
   "definitions": {
@@ -58,7 +58,6 @@
     "world.effect": {"required": ["target_id", "lifecycle"], "expected": ["source_id", "rules_origin_id", "application_order_key", "parameters", "support_effect_id", "temporal_binding", "scheduled_trigger_state"], "definition_binding": {"mode": "required", "allowed_definition_kinds": ["definition.effect", "definition.condition"]}},
     "world.lore_fact": {"required": ["statement", "truth_status"], "expected": ["subject_ids", "chronology", "importance"], "definition_binding": {"mode": "forbidden"}},
     "world.knowledge": {"required": ["fact_id", "knower_id", "status"], "expected": ["learned_from_id", "confidence"], "definition_binding": {"mode": "forbidden"}},
-    "world.chapter": {"required": ["title", "body"], "expected": ["entity_ids", "scene_ids", "timeline_span", "visibility"], "definition_binding": {"mode": "forbidden"}},
     "world.timeline_marker": {"required": ["slot", "summary"], "expected": ["entity_ids", "scene_id", "relative_to"], "definition_binding": {"mode": "forbidden"}}
   }
 }
