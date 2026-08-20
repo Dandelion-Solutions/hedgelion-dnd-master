@@ -1,6 +1,6 @@
 # HDM Catalog Design Status
 
-Status: **STEPS 1–4 ARCHITECTURE CLOSED / STEP 5.0 COMPLETE — AWAITING OWNER REVIEW / STEP 5.1 NOT STARTED**
+Status: **STEPS 1–4 ARCHITECTURE CLOSED / STEP 5.0 CLOSED / STEP 5.1 CLOSED / STEP 5.2 NOT STARTED**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
@@ -22,250 +22,223 @@ Sequencing authority:
 Steps 1–2 are complete and retrospectively assured.
 
 Step 3 is closed: owner decision, candidate, adversarial review, canonical spec,
-machine-contract TDD alignment, integrated A–N cases, final critical review and
+machine-contract TDD alignment, integrated cases, final critical review and
 same-head validation completed successfully.
 
-Step 4 completed its full architecture rerun after adoption of six logical LLM
-roles. Its architecture is closed. The obsolete literary Chapter world surface
-has been removed from the active machine catalog and current normative catalog
-documents.
+Step 4 architecture is closed after its six-role rerun and Chapter retirement.
+Most Step-4 machine realization remains explicitly deferred until the remaining
+Steps 5–6 architecture sequence is complete.
 
-Step 5 remains the sole active numbered architecture stage. Its first bounded
-architecture slice, **5.0 Authority / Contamination Audit**, completed the full
-design cycle and approved cleanup. Step 5.1 has not started and must not start
-until the owner reviews the 5.0 result.
+Step 5 remains the sole active numbered architecture stage.
 
-Per owner direction, broad implementation planning for the remaining Step-4/5/6
-contracts waits until the remaining architecture sequence is complete.
+Completed Step-5 slices:
+
+```text
+5.0 Authority / Contamination Audit    CLOSED
+5.1 Frontier Model                     CLOSED
+```
+
+Next slice:
+
+```text
+5.2 Resumable Runtime Closure          NOT STARTED
+```
+
+Broad implementation planning remains blocked until the remaining architecture
+sequence is complete unless the owner explicitly changes that order.
 
 ## 2. Current machine baseline
 
 Active catalog version: `1.6.0`.
 
-Catalog `1.5.0` retired the old literary Chapter world vocabulary. Step 5.0 then
-advanced the coherent machine catalog to `1.6.0` to retire additional early
-abstractions that had no surviving accepted independent owner contract:
+Step 5.0 retired early owner-like placeholders that had no surviving accepted
+independent lifecycle/authority contract:
 
 ```text
-world.timeline_marker          removed
-transition.timeline_place      removed
-event.timeline.placed          removed
-runtime.dirty_record           removed
-runtime.publication_batch      removed
+world.timeline_marker
+transition.timeline_place
+event.timeline.placed
+runtime.dirty_record
+runtime.publication_batch
 ```
 
-Numeric/local sparse ordering remains available as an ordering value rather
-than an independently identified world record. Dirty bookkeeping and publication
-transactions remain required operational concepts; Step 5.5/5.6 must prove an
-independent lifecycle before any corresponding runtime record can be re-admitted.
+It also removed obsolete active template/schema surfaces including independent
+Secret storage/schema, untyped tactical storage, generic pending consequences,
+duplicate checkpoint pointers, duplicate MANIFEST chronology/event cursors and
+obsolete branch-root `CAMPAIGN/...` path spelling.
 
-All four coordinated machine catalog files are `1.6.0`:
-
-- `DEV/CATALOG/core-catalog.json`
-- `DEV/CATALOG/entity-structures.json`
-- `DEV/CATALOG/identifier-policies.json`
-- `DEV/CATALOG/mechanical-surfaces.json`
-
-Step 5.0 also removed active storage/schema affordances that could have leaked
-obsolete ownership into later design:
-
-```text
-GAME/CAMPAIGN/WORLD/SECRETS/
-GAME/SCHEMA/secret.schema.yaml
-
-GAME/CAMPAIGN/STATE/TACTICAL/
-scene.tactical_state_path
-
-STATE/CURRENT.pending_global_consequences
-
-STATE/CURRENT.last_checkpoint_id
-CHECKPOINTS/LATEST.yaml
-
-MANIFEST.world_time.frontier
-MANIFEST.last_event_id
-```
-
-The resulting active routing rules are:
+Current routing/ownership consequences include:
 
 - `MANIFEST.last_checkpoint_id` is the sole latest-checkpoint pointer;
-- `CURRENT.world_time.frontier` remains the compact globally reconciled
-  chronology frontier pending Step 5.1/5.9;
-- `CURRENT.last_event_id` remains a provisional semantic-log/recovery cursor,
-  not fictional total-order authority;
-- current campaign paths are branch-root-relative (`STATE/`, `WORLD/`, `LIVE/`,
-  `LOG/`, `CHECKPOINTS/`); obsolete campaign-storage `CAMPAIGN/...` wrapper
-  spelling is not current runtime routing;
-- `GAME/CAMPAIGN/` remains only the engine-source template directory whose
-  contents are copied into a new campaign branch root.
+- `CURRENT.world_time.frontier` remains the current chronology marker pending
+  the dedicated chronology slice;
+- `CURRENT.last_event_id` is now retired and absent from the active
+  current-state schema/template;
+- campaign-storage paths are branch-root-relative (`STATE/`, `WORLD/`, `LIVE/`,
+  `LOG/`, `CHECKPOINTS/`);
+- `GAME/CAMPAIGN/` is only the engine-source template directory copied into a
+  new campaign branch root.
 
-This catalog/version cleanup does **not** claim that deferred Step-4/5 machine
-realization already exists.
+This does not claim deferred Step-4/5 machine realization already exists.
 
-## 3. Current accepted execution/runtime owners
+## 3. Step 5.1 canonical frontier discipline
 
-The Step-3 owner graph remains intact:
+Canonical specification:
 
-```text
-Interaction
-    -> IntentPlan
-        -> RuntimeCommand
-            -> ActionRequest -> Resolution(Activity)
-            OR
-            -> TransitionRequest -> direct deterministic execution
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-canonical-spec.md`
 
-runtime.procedure
-    sole procedure-local ResourceState owner
+Owner-approved architecture: **B-NARROW**.
 
-Resolution / direct transition
-    -> embedded ExecutionSegment(s)
-        -> MechanicalEvents
-        -> receipts/idempotency
-        -> mandatory child descriptors
-
-Continuation
-    one portable suspended Resolution generation
-```
-
-Accepted runtime records retained through Step 5.0 include:
+Two cross-cutting laws are canonical:
 
 ```text
-runtime.session
-runtime.message
-runtime.interaction
-runtime.intent_plan
-runtime.command
-runtime.resolution
-runtime.procedure
-runtime.continuation
-runtime.mechanical_event
-runtime.semantic_event
-runtime.resolution_trace
-runtime.checkpoint
-runtime.id_allocator
-runtime.maintenance_audit
-runtime.catalog_gap_report
+LAW 1 — DOMAIN TYPING
+Every correctness-relevant progress/coverage/revision/cursor/frontier claim
+identifies its semantic domain/scope.
+
+LAW 2 — NO IMPLICIT CROSS-DOMAIN ORDER
+No ordering/comparison is inferred between different semantic domains unless an
+owning contract explicitly defines the relation.
 ```
 
-Their eventual durable placement/recovery enumeration is a Step-5 concern; it is
-not permission to create a generic runtime snapshot owner.
+No generic `runtime.frontier`, common Frontier schema/API/registry, universal
+comparison operation, global monotonic sequence or RecoveryCut record is
+admitted.
 
-## 4. Step-4 information architecture remains authoritative
+Important classifications:
 
-Canonical Step-4 specification:
+- HOT current state is a working/read view, not a frontier;
+- dirty state is unpublished delta/closure bookkeeping;
+- SOFT/HARD are durability classifications/requirements;
+- campaign ref/reachable commit provides campaign publication evidence;
+- live revisions are scope-local and independent live epochs are incomparable by
+  default;
+- checkpoint ID is a pointer; checkpoint is recovery descriptor/evidence, not
+  current-state authority;
+- chronology is independent of Git and SemanticEvent allocation order;
+- Story source coverage is projection metadata and may lag;
+- `runtime.id_allocator` / `campaign-allocator` owns campaign-scoped allocation
+  counters and conflict bookkeeping, not progress/frontier semantics.
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`
-
-Authority remains:
+A composed coherent read view may use several compatible native owners, but:
 
 ```text
-OBJECTIVE / CURRENT
-    ordinary world state owners
-    world.lore_fact
-
-FICTIONAL CURRENT PERSPECTIVE
-    world.knowledge
-
-HUMAN PLAYER EXPOSURE
-    runtime.disclosure
-
-HISTORICAL EVIDENCE
-    runtime.semantic_event / LOG
-    runtime.mechanical_event
-
-ROLE CONTEXT
-    deterministic Context Assembler
-        -> Interpreter
-        -> Dramaturg
-        -> Actor
-        -> Narrator
-        -> Chronicler
-        -> Commentator
-
-NON-CANONICAL PRESENTATION HISTORY
-    STORY/
-        TRANSCRIPT/
-        EVENTS/
-        MECHANICS/
-        NARRATIVE/
+composed read view != merged writable authority
 ```
 
-No generic Secret authority survives. Removal of the old Secret schema/template
-slot in Step 5.0 enforces that already-accepted semantic result; it does not yet
-perform the broader Step-4 migration of embedded legacy knowledge fields.
+Every mutation still routes to one current writable owner for its affected
+scope/entity.
 
-## 5. Step 5.0 full-cycle artifacts
+`coherent source cut` is only a conceptual per-operation selection/compatibility
+relation over native source markers. It has no independent identity, authority
+or Step-5.1 storage contract.
 
-Expanded Step-5 agenda:
+## 4. `CURRENT.last_event_id` disposition
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-expanded-architecture-agenda.md`
+The old provisional `STATE/CURRENT.last_event_id` has been retired as a global
+semantic-log/reconnect/recovery cursor.
 
-Step 5.0 design chain:
+It did not own any of the global problems it was tempting to blur together:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-0-authority-contamination-task-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-0-authority-contamination-research-draft.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-0-authority-contamination-decision-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-0-authority-contamination-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-0-authority-contamination-adversarial-review.md`
+- campaign reconnect/resync uses campaign revision/HEAD plus scoped changed-path
+  synchronization;
+- active shared-scene reconnect uses live-epoch state/revision semantics;
+- campaign-scoped ID allocation/conflict handling belongs to
+  `runtime.id_allocator` / `campaign-allocator`;
+- fictional chronology belongs to chronology evidence;
+- cold recovery may require campaign + live + operational roots.
 
-Accepted 5.0 rule:
+SemanticEvent IDs remain stable record identities. Explicit per-record
+`last_event_id` provenance fields are not retired by this decision.
+`checkpoint.valid_through_event_id` remains pending Step 5.7 and is not a
+universal recovery frontier.
 
-> an active catalog/template abstraction that appears to own semantics but has
-> no surviving accepted independent owner/lifecycle contract is removed rather
-> than left as a machine-visible placeholder. A later slice may re-admit a
-> suitable abstraction only after proving the need.
+## 5. Campaign allocator remains a distinct owner
 
-The audit intentionally distinguishes this from accepted owners whose durable
-placement is merely not yet designed.
+The accepted catalog contract remains:
 
-## 6. Explicit carry-forward after 5.0
+```text
+campaign-allocator singleton
+    -> last_allocated by identity policy
+    -> next derived
 
-Step 5.0 does not decide:
+allocation + record creation
+    -> atomic HOT operation
 
-- exact frontier/recovery-cut representation;
-- durable placement/enumeration of active RuntimeCommand/Resolution/Procedure/
-  Continuation roots;
-- exact dirty-set representation;
-- whether publication preparation ever needs independent durable identity;
-- publication-manifest final wire shape;
-- pending-work no-lost/no-double recovery protocol;
-- exact multiplayer/live-epoch reconciliation redesign;
-- chronology persistence representation;
-- whether sparse numeric sequence keys are useful inside specific chronology
-  domains;
-- Story publication/catch-up/retention;
-- transcript retention;
-- host delivery/disclosure acknowledgement;
-- GC/orphan cleanup frontiers.
+canonical allocation mutation
+    -> joins durable publication closure
 
-These remain owned by the corresponding later Step-5 slices in the expanded
-agenda.
+stale publication conflict
+    -> reload allocator
+    -> rekey only conflicting unpublished records/direct local refs
+    -> retry publication
 
-## 7. Deferred Step-4 machine realization
+published IDs
+    -> immutable / never reused
+```
 
-The integrated implementation program after Steps 5–6 must still realize, test
-and migrate at least:
+Central semantic ownership of counters does not imply a global synchronous lock
+on every gameplay action. Eligible local IDs remain local until promotion.
+Exact publication/retry and live contention semantics belong to later Step-5
+slices.
 
-- `world.lore_fact` truth/lifecycle normalization;
-- `world.knowledge` stance/current-owner normalization;
-- `runtime.disclosure` record/schema/provenance;
-- knowledge/disclosure transition and event contracts;
+## 6. Step 5.1 design chain
+
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-pre-research-charter.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-analytical-challenge.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-decision-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-resolution-gate.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-canonical-spec.md`
+
+Adversarial review result:
+
+```text
+BLOCKING / owner decision required: 0
+SIGNIFICANT mechanically resolved: 5
+MINOR resolved: 3
+```
+
+The B-NARROW decision survived review without reopening the owner decision.
+
+## 7. Design-process improvement
+
+`DEV/DESIGN_PROCESS.md` now includes the canonical
+**Problem-Framing / Task-Brief Quality Gate** before substantive deep-design
+research.
+
+The gate requires deliberate review of the research assignment itself for
+embedded solutions, stale assumptions, wrong abstraction boundaries,
+mis-scoping and framing that prevents negative/simpler outcomes. It explicitly
+does not prescribe one universal research-prompt template; framing must follow
+the actual project/stage/goals/unknowns/evidence/failure model/cost of error.
+
+## 8. Deferred Step-4 machine realization
+
+The integrated implementation program after Steps 5–6 must still realize and
+verify at least:
+
+- normalized `world.lore_fact` truth/lifecycle;
+- normalized `world.knowledge` stances/current ownership;
+- `runtime.disclosure`;
 - Context Assembler request/bundle/source-manifest contracts;
-- role-specific eligibility and disclosure-delivery tests;
-- Story root/layout/IDs/shards/index/four-layer schemas;
-- dependency-based Story availability;
-- legacy embedded-knowledge migration;
-- live-scene knowledge/disclosure compaction alignment.
+- role-specific source eligibility and disclosure evidence;
+- Story root/layout/IDs/index/availability schemas;
+- legacy knowledge/Secret migration;
+- live knowledge/disclosure compaction alignment.
 
-These are explicit deferred implementation obligations, not unresolved Step-4
+These are deferred implementation obligations, not unresolved Step-4
 architecture questions.
 
-## 8. Exact continuation
+## 9. Exact continuation
 
-Current review point:
+> **Step 5.1 / Frontier Model — CLOSED.**
 
-> **Step 5.0 / Authority & Contamination Audit — COMPLETE, awaiting owner review.**
+Next architecture slice:
 
-**Step 5.1 / Frontier Model is NOT STARTED.**
+> **Step 5.2 / Resumable Runtime Closure — NOT STARTED.**
 
-Do not begin Step 5.1 or broad implementation planning until the owner reviews
-this 5.0 result and explicitly continues the architecture sequence.
+Do not begin Step 5.2 as part of Step-5.1 closure.
