@@ -91,7 +91,10 @@ When an authoritative durability/session boundary occurs and state changed mater
 - create/update a checkpoint only when it improves exact recovery;
 - retain only active threads and useful next-horizon prep.
 
-## Checkpoints are sparse recovery frontiers
+## Checkpoints are sparse recovery descriptors
+
+A checkpoint records recovery evidence for a useful recovery boundary. It is not
+itself current-state authority and is not a universal cross-domain frontier.
 
 Do NOT create a checkpoint after each event, turn, or ordinary save.
 
