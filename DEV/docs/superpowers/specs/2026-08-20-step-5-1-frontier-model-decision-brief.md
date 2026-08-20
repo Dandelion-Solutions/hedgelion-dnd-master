@@ -12,6 +12,8 @@ Basis:
 - `2026-08-20-step-5-1-frontier-model-task-brief.md`
 - `2026-08-20-step-5-1-frontier-model-research-draft.md`
 - `2026-08-20-step-5-1-frontier-model-analytical-challenge.md`
+- owner feedback after the first Decision Brief;
+- current `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md` identifier/allocation contract.
 
 No candidate/canonical Step-5.1 specification should be produced until this decision is made.
 
@@ -81,14 +83,15 @@ These follow mechanically from current accepted architecture.
 ## 3.1 Not everything called a frontier is a frontier
 
 ```text
-HOT state       = working view over durable base + accepted delta
-Dirty set       = unpublished delta/closure
-SOFT/HARD       = durability classification/requirement
-Checkpoint ID   = pointer
-Checkpoint      = recovery descriptor/evidence
-Session HEAD    = observation/coordination evidence
-Resolution.cursor = execution cursor
-Temporal Agenda = derived index
+HOT state          = working view over durable base + accepted delta
+Dirty set          = unpublished delta/closure
+SOFT/HARD          = durability classification/requirement
+Checkpoint ID      = pointer
+Checkpoint         = recovery descriptor/evidence
+Session HEAD       = observation/coordination evidence
+Resolution.cursor  = execution cursor
+Temporal Agenda    = derived index
+ID allocator state = identity-allocation authority/bookkeeping, not progress
 ```
 
 ## 3.2 Campaign Git revision is scoped durability evidence
@@ -109,15 +112,54 @@ Git order, SemanticEvent ID allocation order and fictional chronology are distin
 
 Story can be durably behind canonical source and remain correct. Source coverage and literary/editorial revision are different concepts.
 
-## 3.6 `CURRENT.last_event_id` lacks a justified global-cursor role
+## 3.6 Campaign-scoped ID allocation already has a separate central owner
 
-Semantic event IDs are sequential identities, but current contracts do not guarantee that a maximum/last ID proves a dense published semantic-log prefix. Exact campaign revision already fixes the durable LOG tree. No current correctness consumer requires the global field.
+The current catalog contract already defines `runtime.id_allocator` / `campaign-allocator` as the owner of persistent campaign-scoped numeric allocation state.
 
-Recommendation independent of Option A/B: **retire `CURRENT.last_event_id` as a global semantic-log/recovery cursor.**
+Current accepted semantics include:
+
+```text
+one campaign-allocator singleton
+    -> last_allocated by identity policy
+    -> next is derived
+
+allocation + record creation
+    -> one atomic HOT operation
+
+canonical allocation change
+    -> allocator change joins the same durable publication closure
+
+multiplayer stale-publication conflict
+    -> reload current allocator
+    -> rekey only conflicting unpublished records
+    -> rebuild publication batch
+
+published IDs
+    -> never changed
+    -> never reused
+```
+
+This is the mechanism relevant to centralized counters for scenes, actors, assets, semantic/mechanical events and other campaign-scoped sequential record kinds.
+
+It is **not** a frontier/coverage mechanism. The exact Git publication failure/retry details remain Step 5.6 work, while live-epoch provisional identity and Story layer-local allocation remain in their owning later slices.
+
+## 3.7 `CURRENT.last_event_id` does not solve reconnect or allocator concurrency globally
+
+The field may have originated as a convenient fast-resume/event cursor, and that intent is understandable. Current architecture now has more precise mechanisms for the problems it would otherwise blur together:
+
+- campaign reconnect/resync pins/probes campaign HEAD and, when changed, compares changed paths before fetching affected records;
+- active shared-scene reconnect/synchronization uses the live epoch/head/state protocol;
+- campaign-scoped ID collision handling belongs to `campaign-allocator` plus optimistic publication/rekey semantics;
+- fictional chronology belongs to causal/order evidence, not event-ID order;
+- exact cold recovery may require checkpoint + typed operational roots, not one semantic-event scalar.
+
+A sequential SemanticEvent ID remains useful as record identity and may be referenced as provenance. But a single `CURRENT.last_event_id` cannot prove a complete coherent current/recovery state across campaign, live, runtime and chronology domains, and it duplicates no indispensable reconnect function once the scoped revision mechanisms above are used.
+
+Recommendation independent of Option A/B: **retire `CURRENT.last_event_id` as a global semantic-log/recovery/reconnect cursor.**
 
 Per-record `last_event_id` provenance pointers are a separate issue and are not covered by this retirement.
 
-## 3.7 Checkpoint event anchor needs later refinement
+## 3.8 Checkpoint event anchor needs later refinement
 
 `checkpoint.valid_through_event_id` may remain useful as one provenance/recovery anchor, but it cannot be treated as the universal recovery frontier for campaign + live + operational state. Step 5.7 must decide its final role.
 
@@ -162,6 +204,7 @@ NO generic comparison API
 NO universal dominates() function
 NO global monotonic sequence
 NO generic RecoveryCut record
+NO replacement for runtime.id_allocator
 NO requirement that all domains use the word frontier
 NO physical representation decision for 5.2/5.7/5.8/5.9
 ```
@@ -174,7 +217,8 @@ live revision     -> epoch/head/blob/revision semantics
 chronology        -> causal/order evidence
 RNG               -> stream state/cursor
 Continuation      -> generation/dependency refs
-Story             -> source-coverage semantics
+ID allocation     -> campaign-allocator / identity-policy semantics
+Story             -> source-coverage semantics + separate layer-local IDs
 ```
 
 ---
@@ -219,9 +263,10 @@ Approve **Option B-NARROW** with the following exact boundaries:
 5. any cross-domain relation must be explicitly named by the owning contracts (`based_on`, `projected_through`, `absorbed_from`, `compatible_with`, etc. as actually needed; no mandatory global relation enum);
 6. no common machine type/schema/API in Step 5.1;
 7. `coherent source cut` is conceptual only: a scope-indexed compatible selection of source markers for one read/recovery operation;
-8. HOT/dirty/SOFT/HARD/pointers/cursors/revisions remain separately classified;
-9. retire `CURRENT.last_event_id` global cursor;
-10. do not treat `checkpoint.valid_through_event_id` as universal recovery frontier; final field fate belongs to 5.7.
+8. HOT/dirty/SOFT/HARD/pointers/cursors/revisions/allocator state remain separately classified;
+9. preserve `runtime.id_allocator` as the distinct campaign-scoped identity-allocation owner; do not turn allocator counters into progress/frontier semantics;
+10. retire `CURRENT.last_event_id` global cursor;
+11. do not treat `checkpoint.valid_through_event_id` as universal recovery frontier; final field fate belongs to 5.7.
 
 ---
 
@@ -240,6 +285,8 @@ Evidence that would change it toward C:
 - domain-native contracts repeatedly produce correctness bugs that a common machine type would actually prevent.
 
 Neither condition is currently established.
+
+The allocator review does **not** move the recommendation toward C. It is instead evidence for domain-native ownership: identity allocation already has a concrete specialized owner and conflict contract that should not be generalized into Frontier semantics.
 
 ---
 
