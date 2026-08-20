@@ -25,7 +25,7 @@ Outside a live epoch, the campaign branch HEAD is the current canonical frontier
 
 During an active live epoch:
 - the campaign branch at `base_campaign_sha` supplies the durable base state;
-- `CAMPAIGN/LIVE/LIVE_STATE.yaml` on the live branch supplies authoritative operational overrides and newly established live facts for the scene;
+- `LIVE/LIVE_STATE.yaml` on the live branch supplies authoritative operational overrides and newly established live facts for the scene;
 - current truth for the live-owned scope is `base campaign state + live state`;
 - unrelated scenes/world records continue to use the current campaign branch normally.
 
@@ -41,7 +41,7 @@ Recommended branch form:
 Derive `epoch_id` deterministically from the scene and the pinned campaign HEAD used to open the epoch, for example `E_<first-12-hex-of-base_campaign_sha>`. The scene ID already makes simultaneous epochs in different scenes distinct.
 
 The only runtime-mutated file on a live branch is:
-`CAMPAIGN/LIVE/LIVE_STATE.yaml`
+`LIVE/LIVE_STATE.yaml`
 
 Do not edit normal campaign entity files directly on the live branch. This one-file discipline is what makes live synchronization cheap.
 
@@ -111,7 +111,7 @@ If live HEAD is unchanged:
 - resolve immediately from the cached state.
 
 If live HEAD changed:
-- fetch only `CAMPAIGN/LIVE/LIVE_STATE.yaml` pinned to that exact new SHA;
+- fetch only `LIVE/LIVE_STATE.yaml` pinned to that exact new SHA;
 - replace the cached live state/blob/head;
 - do not run `base..HEAD` compare for ordinary live synchronization because the branch is one-file write-isolated.
 
