@@ -55,11 +55,9 @@ class Step50ContaminationRetirementTests(unittest.TestCase):
     def test_current_state_has_no_generic_pending_or_checkpoint_duplicate(self):
         schema = self.read("GAME/SCHEMA/current_state.schema.yaml")
         template = self.read("GAME/CAMPAIGN/STATE/CURRENT.yaml")
-        for retired in ("pending_global_consequences", "last_checkpoint_id"):
+        for retired in ("pending_global_consequences", "last_checkpoint_id", "last_event_id"):
             self.assertNotIn(retired, schema)
             self.assertNotIn(retired, template)
-        self.assertIn("last_event_id", schema)
-        self.assertIn("last_event_id", template)
 
     def test_manifest_is_sole_latest_checkpoint_pointer(self):
         manifest_schema = self.read("GAME/SCHEMA/campaign_manifest.schema.yaml")
