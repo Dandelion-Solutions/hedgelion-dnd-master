@@ -245,15 +245,6 @@ Owner-fixed boundary:
 > Runtime repository/GitHub work is executed by deterministic Python core; LLM
 > roles do not directly own repository publication.
 
-Derivation/review artifacts:
-
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-task-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-research-draft.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-analytical-challenge.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-resolution-gate.md`
-
 Canonical consequences include:
 
 ```text
@@ -264,13 +255,8 @@ one campaign durability transaction
 
 prepared Git objects are never campaign authority
 preflight ref probe is optimization; final guard is parent(H)+non-force update
-confirmed success needs no redundant confirmation reread
-final transport distinguishes accepted / rejected / indeterminate
 ambiguous ACK uses bounded current-ref + lineage + current-closure verification
-lineage evidence alone does not prove current compatible closure
 HEAD movement is checked against bounded semantic/read/auth/recovery dependencies
-only proven-disjoint movement permits transport-only rebuild
-semantic overlap requires native-owner reconciliation or higher revalidation
 persistence retry does not replay accepted gameplay/RNG by default
 automatic contention retries are bounded
 publication dirty clearing is frozen-generation-specific
@@ -283,51 +269,101 @@ Host/deployment prerequisite discovered by 5.6:
 
 - every persistence-capable deployment must provide Python core a trustworthy
   authenticated `RepositoryPort`/equivalent;
-- current built-in ChatGPT Data Analysis Python cannot itself make external
-  web/API calls, so it does not alone provide a Python-to-GitHub bridge merely
-  because ChatGPT has a connected app;
-- bridge feasibility and acting-principal realization are explicit later
-  deployment/implementation obligations;
-- there is no LLM-Git fallback.
+- there is no LLM-owned Git fallback in canonical runtime architecture.
 
-Current runtime Markdown/tests remain machine-realization debt: the future Python
-persistence subsystem requires executable failure-injection regressions for lost
-ACK, post-success crash, generation-specific clearing, authorization races,
-bounded contention, partial multi-domain success and unavailable RepositoryPort.
+Preliminary Step-6 transport feasibility evidence is preserved in:
 
-### Step 5.7 — NEXT, NOT STARTED
+- `DEV/docs/superpowers/specs/2026-08-20-step-6-repository-port-transport-feasibility-spike.md`
 
-Step 5.7 owns **Checkpoint / Recovery Protocol**.
+### Step 5.7 — CLOSED
 
-It must define sparse recovery metadata and exact bounded recovery-source
-selection on top of Steps 5.2–5.6 without turning checkpoint into a second
-writable snapshot authority.
+Canonical specification:
+
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-canonical-spec.md`
+
+Architecture direction:
+
+**CURRENT-AUTHORITY-FIRST / CHECKPOINT-OPTIONAL NATIVE-ROUTED BOUNDED RECOVERY**.
+
+Derivation/review artifacts:
+
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-analytical-challenge.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-resolution-gate.md`
+
+Canonical consequences include:
+
+```text
+ordinary cold recovery starts from current campaign authority, not checkpoint
+campaign HEAD anchors discovery but does not prove complete multi-domain RRC
+current owning-scope routing selects native sources
+all participating mutable sources are exact-revision pinned per attempt
+Step-5.2 native typed routing/lifecycle owns bounded root discovery
+checkpoint may be completely ignored during healthy ordinary recovery
+checkpoint is optional immutable evidence/maintenance metadata, never state authority
+stale checkpoint never rolls newer valid native authority backward
+checkpoint hints are non-exhaustive and require current validation
+checkpoint absence does not invalidate save or recovery
+root-routing/lifecycle basis participates in final validation
+derived Agenda/cache/context state rebuilds
+recovery result is READY | RETRY | BLOCKED plus typed reason, separate from canon integrity
+READY is a validated basis, not a lock/lease or bypass of later CAS/fencing
+source movement causes bounded retry, not automatic corruption
+post-publication crash/lost ACK recovers actual current authority
+partial multi-domain publication remains real and is never checkpoint-rolled back
+accepted gameplay/RNG/choices are not replayed to rediscover persistence outcome
+valid_through_event_id is retired as generic checkpoint frontier
+expected_commit_sha is retired as self-referential checkpoint field
+checkpoint-local world_time is not chronology authority
+last_checkpoint_id is only an optional campaign-domain descriptor pointer
+checkpoint creation requires independent recovery/maintenance value, never freshness/age alone
+checkpoint + pointer publish in one campaign transaction; checkpoint is immutable
+historical rewind is not a default checkpoint guarantee and never uses force-ref rewind
+current recovery correctness does not depend on retaining old optional checkpoints
+```
+
+Machine-realization debt includes typed partitioned recovery routing, Procedure
+lifecycle/root-enrollment evidence, checkpoint-schema reduction, current-authority-
+first bootstrap, deterministic Python recovery executor, bounded retry/currentness
+tests and removal of old checkpoint-first/mandatory-checkpoint assumptions.
+
+### Step 5.8 — NEXT, NOT STARTED
+
+Step 5.8 owns **Multiplayer / Live-Epoch Ownership**.
+
+It must now define the exact temporary shared-scene authority protocol that makes
+Step-5.7 current native source selection and recovery decidable under concurrent
+writers.
 
 Required questions include at minimum:
 
-- what a checkpoint identifies versus what native current state owns;
-- exact recovery cut/source-composition semantics across campaign + active live
-  scopes + operational owners;
-- which active owner/reference manifests are needed for bounded hydration;
-- source selection and hydration order;
-- exact compatibility/revision validation before resume;
-- recovery outcomes such as `NORMAL_RESUME`, `RECOVERY_REQUIRED`,
-  `CANON_SUSPECT` or a smaller equivalent set;
-- behavior for missing/stale/corrupt references;
-- checkpoint lifecycle/cleanup/expiry boundaries;
-- interaction with Step-5.6 confirmed/ambiguous publication outcomes;
-- compatibility with engine/runtime identity and migration boundaries;
-- preservation of Step-5.2 rule that checkpoint cannot be sole active-root
-  authority.
+- opening/adopting one live epoch and binding its owning scope;
+- one-writer/entity ownership and authorization/lease/fencing semantics;
+- exact active CAS mutation contract;
+- stale writer detection and rejection;
+- cold-host recovery/adoption while another live writer may still exist;
+- freeze/close semantics;
+- compaction/absorption into campaign authority;
+- authority-transfer ordering that never leaves two writable owners or no valid
+  current owner;
+- crash windows during campaign/live partial publication/compaction;
+- closed-but-unabsorbed, abandoned, stuck and orphan live branches;
+- rollover/new epoch creation;
+- membership changes during an epoch;
+- entity transfer between live scopes;
+- rare multi-scene/global-event slow path;
+- compatibility with Step-4 knowledge/disclosure and Step-5.7 recovery routing.
 
 Exit target:
 
-> A cold runtime can select and validate a bounded compatible set of actual
-> native durable sources for the promised recovery point; checkpoint evidence
-> improves bounded exact recovery without becoming duplicate current-state
-> authority.
+> Every live-owned mutable entity/scope has exactly one decidable current writable
+> authority, stale writers cannot publish, and cold recovery can adopt/reject a
+> live source without guessing from branch age, checkpoint age or Git timestamps.
 
-**Do not begin Step 5.8 while Step 5.7 is in progress.**
+**Do not begin Step 5.9 while Step 5.8 is in progress.**
 
 ## Step 6 carry-forward
 
@@ -358,18 +394,20 @@ context/authority boundaries or Step-5 durability/recovery invariants.
   material where later canonical specs supersede them.
 - The Step-5 expanded agenda contains old `one-hour` wording superseded by
   canonical Step 5.5.
-- Current runtime persistence prose is partially ahead of machine implementation
-  and partially stale relative to Steps 5.5/5.6. Do not treat old LLM-facing Git
-  choreography as authority over the future Python persistence subsystem.
+- Current runtime persistence/recovery prose and schemas are partially stale
+  relative to Steps 5.2/5.5/5.6/5.7. In particular, old checkpoint-first wording,
+  `valid_through_event_id`, `expected_commit_sha`, mandatory PLAY_READY checkpoint
+  assumptions and missing typed recovery-routing/Procedure lifecycle realization
+  are implementation debt, not current architecture authority.
 - Broad GAME/schema/test realization remains deferred until the architecture
   sequence closes and implementation planning begins.
 
 ## Exact continuation point
 
-**Step 5.6 / Campaign Publication & Crash Consistency — CLOSED.**
+**Step 5.7 / Checkpoint / Recovery Protocol — CLOSED.**
 
 Next architecture slice:
 
-**Step 5.7 / Checkpoint / Recovery Protocol — NOT STARTED.**
+**Step 5.8 / Multiplayer / Live-Epoch Ownership — NOT STARTED.**
 
-Do not begin Step 5.8 until Step 5.7 architecture closes.
+Do not begin Step 5.9 until Step 5.8 architecture closes.
