@@ -1,10 +1,12 @@
 # HDM Catalog Design Status
 
-Status: **STEPS 1–3 CLOSED / STEP 4 IN PROGRESS — ARCHITECTURE CANONICAL, MACHINE ALIGNMENT PENDING**
+Status: **STEPS 1–4 ARCHITECTURE CLOSED / STEP 5 IN PROGRESS**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
-This file is a current-status index, not a second normative specification. Detailed reasoning/history lives in linked architecture/spec documents and Git history.
+This file is a current-status index, not a second normative specification.
+Detailed reasoning/history lives in linked architecture/spec documents and Git
+history.
 
 Canonical process:
 
@@ -19,41 +21,62 @@ Sequencing authority:
 
 Steps 1–2 are complete and retrospectively assured.
 
-Step 3 is closed: owner decision, candidate, adversarial review, canonical spec, machine-contract TDD alignment, integrated A–N cases, final critical review and final same-head validation all completed successfully.
+Step 3 is closed: owner decision, candidate, adversarial review, canonical spec,
+machine-contract TDD alignment, integrated A–N cases, final critical review and
+final same-head validation completed successfully.
 
-Step 4 is the sole active numbered stage.
+Step 4 completed its full architecture rerun after adoption of six logical LLM
+roles. Its architecture is closed. The obsolete literary Chapter world surface
+has also been removed from the active machine catalog and current normative
+catalog documents.
 
-Step-4 **architecture is now canonical**, but the stage remains open until catalogs/schemas/runtime/template/tests are aligned and freshly verified.
+Step 5 is the sole active numbered architecture stage.
 
-Canonical Step-4 specification:
-
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`
+Per owner direction, broad implementation planning for the remaining Step-4/5/6
+contracts waits until the remaining architecture sequence is complete.
 
 ## 2. Current machine baseline
 
-The implemented machine baseline remains catalog version `1.4.0` until Step-4 implementation deliberately updates it.
+Active catalog version: `1.5.0`.
 
-Current Steps 1–3 invariants remain in force, including:
+The `1.5.0` bump is deliberately narrow: it records the incompatible retirement
+of the old literary Chapter world vocabulary:
+
+```text
+world.chapter                removed
+transition.chapter_append    removed
+event.chapter.appended       removed
+```
+
+All four machine catalog files move coherently at `1.5.0`.
+
+This version bump does **not** claim that the rest of canonical Step-4 machine
+realization already exists. In particular, the current machine schemas still
+require later implementation alignment for normalized lore/knowledge,
+`runtime.disclosure`, Context Assembler contracts and Story schemas.
+
+Current Steps 1–3 implemented invariants remain in force, including:
 
 - one coherent `ResolvedCatalogContext`;
 - no same-ID shadowing inside one resolved context;
 - explicit definition/world binding compatibility;
 - `runtime.procedure` as sole procedure-local ResourceState owner;
 - distinct Encounter / Procedure / Resolution / Continuation lifetimes;
-- embedded ExecutionSegment and pending-child descriptors, not standalone workflow classes;
+- embedded ExecutionSegment and pending-child descriptors rather than generic
+  workflow records;
 - current world records as current-state authority;
 - MechanicalEvents as immutable committed mechanical evidence;
 - no generic scheduler/job/workflow engine.
 
-Normative current machine inventory/catalogs:
+Current normative catalog surfaces:
 
 - `DEV/ARCHITECTURE/CATALOG_INVENTORY.md`
+- `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`
+- `DEV/ARCHITECTURE/ENTITY_STRUCTURES.md`
 - `DEV/CATALOG/core-catalog.json`
 - `DEV/CATALOG/entity-structures.json`
 - `DEV/CATALOG/identifier-policies.json`
 - `DEV/CATALOG/mechanical-surfaces.json`
-
-These still reflect the implemented 1.4.0 baseline and therefore retain some Step-4 legacy IDs until the Step-4 machine-contract implementation lands.
 
 ## 3. Step-3 execution boundary
 
@@ -84,11 +107,13 @@ Continuation
     one portable suspended Resolution generation
 ```
 
-Step-4 context/knowledge work does not weaken any Step-3 execution authority.
+Step-4 information architecture does not weaken Step-3 execution authority.
 
-## 4. Step-4 full-cycle rerun
+## 4. Step-4 architecture closure
 
-The owner requested a full Step-4 rerun after approving six logical LLM roles.
+Canonical Step-4 specification:
+
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`
 
 Rerun artifacts:
 
@@ -98,13 +123,12 @@ Rerun artifacts:
 - `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-candidate-spec.md`
 - `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-adversarial-review.md`
 - `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-resolution-gate.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`
 
-Cross-cutting role draft:
+Cross-cutting LLM-role draft:
 
 - `DEV/docs/superpowers/specs/2026-08-20-llm-logical-roles-draft.md`
 
-Adversarial result:
+Adversarial result from the rerun:
 
 ```text
 owner-decision blockers: 0
@@ -112,7 +136,7 @@ mechanically resolved Step-4 findings: 10
 later-owner findings: 4
 ```
 
-No new owner-level semantic gate remained after the six-role rerun.
+No unresolved Step-4 product-semantic or ownership gate remains.
 
 ## 5. Canonical Step-4 authority model
 
@@ -152,28 +176,33 @@ NON-CANONICAL PRESENTATION HISTORY
 
 - `world.lore_fact` owns independently identified objective propositions;
 - objective truth semantics are `undetermined / established / disproven`;
-- in-world disagreement belongs to epistemic relations, not objective `disputed` truth;
+- in-world disagreement belongs to epistemic relations rather than objective
+  `disputed` truth;
 - lifecycle/supersession is separate from truth status;
-- identity-defining statement/scope cannot be silently rewritten after durable reference.
+- identity-defining proposition meaning/scope cannot be silently rewritten after
+  durable reference.
 
 ### Knowledge
 
 - `world.knowledge` is the sole durable current fictional epistemic owner;
-- initial stance semantics: `aware / known / believed / suspected / rejected`;
-- PC factual availability may become known through qualifying resolved sources;
-- voluntary PC belief/suspicion/rejection remains player-controlled unless a real rule forces cognition;
-- Actor may propose NPC/faction epistemic changes, but core commits them.
+- initial stance semantics are `aware / known / believed / suspected / rejected`;
+- PC factual availability may become `known` through qualifying resolved sources;
+- voluntary PC belief/suspicion/rejection remains player-controlled unless a
+  genuine rules/world mechanism constrains cognition;
+- Actor may propose NPC/faction epistemic changes; core commits authoritative
+  changes.
 
 ### Player disclosure
 
 - `runtime.disclosure` is separate from PC cognition;
 - it records sparse material human exposure;
-- statement exposure and objective truth-revision exposure are distinct;
-- Narrator returns structured disclosure refs and host records exposure only after player-facing emission/acceptance.
+- statement exposure and objective truth-transition exposure are distinct;
+- Narrator returns structured disclosure refs; host records exposure only after
+  the player-facing emission boundary.
 
 ### Secret
 
-No generic Secret authority remains. Secret is contextual source eligibility.
+No generic Secret authority survives.
 
 - objective truth -> lore/world owner;
 - fictional cognition -> `world.knowledge`;
@@ -183,7 +212,7 @@ No generic Secret authority remains. Secret is contextual source eligibility.
 
 ## 6. Six logical LLM roles and Context Assembler
 
-Accepted logical roles:
+Accepted roles:
 
 1. Interpreter;
 2. Dramaturg;
@@ -196,15 +225,20 @@ A role is not necessarily a separate physical model/agent call.
 
 Step-4 invariant:
 
-> each role consumes a separately eligible bounded source bundle plus typed prior-role results; raw private source context does not flow transitively between roles.
+> each role consumes a separately eligible bounded source bundle plus typed
+> prior-role results; raw private source context does not flow transitively
+> between roles.
 
-A narrower role cannot run inside a physical model context that still contains ineligible broader-role material. Step 6 must use genuine reset/isolation or separate calls where eligibility differs.
+A narrower role cannot run inside a physical model context that still contains
+ineligible broader-role material. Step 6 owns physical placement and must use
+genuine reset/isolation or separate calls when eligibility differs.
 
-Context Assembler is deterministic working machinery, not a seventh role or canonical owner.
+Context Assembler is deterministic working machinery, not a seventh LLM role or
+canonical owner.
 
-## 7. Canonical Story model
+## 7. Story and Chapter result
 
-Campaign branch contains one peer Story root:
+Campaign Story root:
 
 ```text
 STORY/
@@ -217,99 +251,83 @@ STORY/
 All Story layers are durable but non-canonical.
 
 - `TRANSCRIPT` — retained visible participant discourse;
-- `EVENTS` — story-facing adaptation of semantic LOG/history;
+- `EVENTS` — Story-facing adaptation of semantic LOG/history;
 - `MECHANICS` — curated player/spectator-relevant mechanics;
 - `NARRATIVE` — editable literary prose.
 
-Story IDs are independent per layer (`T...`, `E...`, `M...`, `N...`) with explicit many-to-many refs.
+Story IDs are independent per layer (`T...`, `E...`, `M...`, `N...`) with
+explicit many-to-many refs. Default storage is one record per file with
+deterministic thousand-slot shards.
 
-Default storage is one record per file with deterministic thousand-slot shards.
+Literary Chapters are **only NARRATIVE index groupings** over ordered N refs.
+They are not world records, runtime transitions or committed world events.
 
-Non-canonical does not imply fully regenerable: after source compaction, Story may be the only retained exact transcript/literary copy without becoming world/recovery authority.
+The active catalog no longer contains the retired Chapter IDs, and current
+catalog semantics/field/identifier documents agree with that classification.
 
-### Chapter retirement
+Historical design documents may retain references to those IDs solely as
+historical derivation material; they do not override current authority.
 
-Retire during Step-4 machine alignment:
+## 8. Deferred machine realization from Step 4
 
-```text
-world.chapter
-transition.chapter_append
-event.chapter.appended
-```
+Architecture closure is not implementation closure.
 
-Literary Chapters are NARRATIVE index groupings with explicit ordered N refs.
+The integrated implementation program after Steps 5–6 must still realize, test
+and migrate at least:
 
-### Commentator availability
-
-Story spoiler/reveal eligibility is dependency/reference based, not one scalar global chronology frontier.
-
-Availability applies to complete retrieval units including spoiler-bearing titles/refs/index entries.
-
-Material Story edits recompute availability metadata.
-
-Exact Commentator default perspective/spoiler mode remains Step 6.
-
-## 8. Promotion
-
-Invocation facts, preparation, Actor proposals, Narrator prose and Story prose do not become canon automatically.
-
-Promote/create a stable `world.lore_fact` when a canonical durable knowledge/disclosure/history reference or future consistency requires proposition identity.
-
-An untracked claim may be promoted with `truth_status=undetermined` without asserting it true.
-
-Durable references to local entities still require same-publication dependency closure or rejection.
-
-## 9. Required Step-4 machine alignment
-
-The implementation plan must cover at minimum:
-
-- catalog/version changes implied by retired/added/changed IDs;
-- `world.lore_fact` schema and truth/lifecycle separation;
-- `world.knowledge` schema/stances and uniqueness semantics;
-- `runtime.disclosure` class/schema/identifier policy;
-- knowledge/disclosure transitions/events/provenance;
-- Context Assembler protocol/bundle contracts and inspectable source manifests;
-- role-specific eligibility tests;
-- NarrationResult disclosure evidence;
-- Story root/layout/IDs/shards/index and four layer schemas;
+- `world.lore_fact` truth/lifecycle normalization;
+- `world.knowledge` stance/current-owner normalization;
+- `runtime.disclosure` record/schema/provenance;
+- knowledge/disclosure transition and event contracts;
+- Context Assembler request/bundle/source-manifest contracts;
+- role-specific eligibility and disclosure-delivery tests;
+- Story root/layout/IDs/shards/index/four-layer schemas;
 - dependency-based Story availability;
-- legacy Chapter/Secret/embedded-knowledge retirement and migration fixtures;
-- live-scene compaction alignment;
-- maintenance audit and integrated examples.
+- legacy Secret/embedded-knowledge migration;
+- live-scene knowledge/disclosure compaction alignment.
 
-No implementation begins before a `superpowers:writing-plans` implementation plan.
+These are explicit deferred implementation obligations, not unresolved Step-4
+architecture questions.
 
-## 10. Later-stage ownership
+## 9. Later-stage ownership
 
-### Step 5
+### Step 5 — active
 
-Owns physical durability/transport details:
+Owns architecture for:
 
+- repository-backed checkpoint publication/restoration;
+- SOFT/HARD durability;
+- multiplayer/shared conflict semantics and live-scene compaction transport;
+- chronology evidence and cross-scene reconciliation;
 - Story publication/body-index-availability coherence;
 - Story ID allocation under concurrency;
-- transcript/history retention/compaction;
-- checkpoint/publication interactions;
-- multiplayer conflicts and live-scene compaction transport;
-- chronology evidence persistence;
+- transcript/history retention and compaction;
 - exact host response-delivery acknowledgement.
 
-No default long-lived public/spectator branch.
+There is no default long-lived public/spectator branch.
 
 ### Step 6
 
-Owns:
+Owns architecture for:
 
 - physical model-call topology for six roles;
 - model selection/context isolation/token/latency/cost budgets;
 - preparation retention/cache policy if justified;
-- default Commentator spoiler/perspective profile and optional deep-source/debug mode;
+- default Commentator spoiler/perspective profile and optional deep-source/debug
+  mode;
 - optional narration semantic verification/evaluation;
-- full migration/catalog-gap/seed/final holistic closure.
+- engine/ruleset/package/catalog snapshot metadata;
+- migration/catalog-gap/full seed closure;
+- final holistic architecture audit and implementation-obligation consolidation.
 
-## 11. Exact continuation
+## 10. Exact continuation
 
-Step 4 remains the sole active numbered stage.
+Step 4 architecture is closed.
 
-Next action:
+The sole active architecture stage is now:
 
-> Use `superpowers:writing-plans` to produce the Step-4 machine-contract implementation plan from the canonical Step-4 specification, then implement via TDD and fresh same-head verification before claiming Step-4 closure.
+> **Step 5 / Durability, Multiplayer, Event-Local Time, Story/Transcript
+> Publication and Retention.**
+
+Do not begin broad implementation planning before the remaining architecture
+sequence is complete unless the owner explicitly changes that order.
