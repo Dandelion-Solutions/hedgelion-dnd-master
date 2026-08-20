@@ -1,6 +1,6 @@
 # HDM Catalog Design Status
 
-Status: **STEPS 1–4 ARCHITECTURE CLOSED / STEP 5.0 CLOSED / STEP 5.1 CLOSED / STEP 5.2 NOT STARTED**
+Status: **STEPS 1–4 ARCHITECTURE CLOSED / STEP 5.0–5.2 CLOSED / STEP 5.3 NOT STARTED**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
@@ -36,12 +36,13 @@ Completed Step-5 slices:
 ```text
 5.0 Authority / Contamination Audit    CLOSED
 5.1 Frontier Model                     CLOSED
+5.2 Resumable Runtime Closure          CLOSED
 ```
 
 Next slice:
 
 ```text
-5.2 Resumable Runtime Closure          NOT STARTED
+5.3 Temporal & Pending-Obligation Continuity    NOT STARTED
 ```
 
 Broad implementation planning remains blocked until the remaining architecture
@@ -72,8 +73,7 @@ Current routing/ownership consequences include:
 - `MANIFEST.last_checkpoint_id` is the sole latest-checkpoint pointer;
 - `CURRENT.world_time.frontier` remains the current chronology marker pending
   the dedicated chronology slice;
-- `CURRENT.last_event_id` is now retired and absent from the active
-  current-state schema/template;
+- `CURRENT.last_event_id` is retired from active current-state schema/template;
 - campaign-storage paths are branch-root-relative (`STATE/`, `WORLD/`, `LIVE/`,
   `LOG/`, `CHECKPOINTS/`);
 - `GAME/CAMPAIGN/` is only the engine-source template directory copied into a
@@ -89,7 +89,7 @@ Canonical specification:
 
 Owner-approved architecture: **B-NARROW**.
 
-Two cross-cutting laws are canonical:
+Two cross-cutting laws remain canonical:
 
 ```text
 LAW 1 — DOMAIN TYPING
@@ -105,7 +105,7 @@ No generic `runtime.frontier`, common Frontier schema/API/registry, universal
 comparison operation, global monotonic sequence or RecoveryCut record is
 admitted.
 
-Important classifications:
+Important consequences:
 
 - HOT current state is a working/read view, not a frontier;
 - dirty state is unpublished delta/closure bookkeeping;
@@ -120,33 +120,17 @@ Important classifications:
 - `runtime.id_allocator` / `campaign-allocator` owns campaign-scoped allocation
   counters and conflict bookkeeping, not progress/frontier semantics.
 
-A composed coherent read view may use several compatible native owners, but:
+A composed coherent read/recovery view may use several compatible native owners,
+but:
 
 ```text
 composed read view != merged writable authority
 ```
 
-Every mutation still routes to one current writable owner for its affected
-scope/entity.
-
-`coherent source cut` is only a conceptual per-operation selection/compatibility
-relation over native source markers. It has no independent identity, authority
-or Step-5.1 storage contract.
-
 ## 4. `CURRENT.last_event_id` disposition
 
-The old provisional `STATE/CURRENT.last_event_id` has been retired as a global
+The old provisional `STATE/CURRENT.last_event_id` remains retired as a global
 semantic-log/reconnect/recovery cursor.
-
-It did not own any of the global problems it was tempting to blur together:
-
-- campaign reconnect/resync uses campaign revision/HEAD plus scoped changed-path
-  synchronization;
-- active shared-scene reconnect uses live-epoch state/revision semantics;
-- campaign-scoped ID allocation/conflict handling belongs to
-  `runtime.id_allocator` / `campaign-allocator`;
-- fictional chronology belongs to chronology evidence;
-- cold recovery may require campaign + live + operational roots.
 
 SemanticEvent IDs remain stable record identities. Explicit per-record
 `last_event_id` provenance fields are not retired by this decision.
@@ -177,10 +161,10 @@ published IDs
     -> immutable / never reused
 ```
 
-Central semantic ownership of counters does not imply a global synchronous lock
-on every gameplay action. Eligible local IDs remain local until promotion.
-Exact publication/retry and live contention semantics belong to later Step-5
-slices.
+Step 5.2 adds the recovery consequence that a promised recoverable owner may not
+require a shorter-lived local identity that would disappear on cold restart;
+such dependencies must be promoted/materialized before that recovery source set
+is acknowledged.
 
 ## 6. Step 5.1 design chain
 
@@ -202,43 +186,115 @@ SIGNIFICANT mechanically resolved: 5
 MINOR resolved: 3
 ```
 
-The B-NARROW decision survived review without reopening the owner decision.
+## 7. Step 5.2 canonical recovery-closure discipline
 
-## 7. Design-process improvement
+Canonical specification:
 
-`DEV/DESIGN_PROCESS.md` now includes the canonical
-**Problem-Framing / Task-Brief Quality Gate** before substantive deep-design
-research.
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec.md`
+
+Canonical result:
+
+> **Resumable Runtime Closure is a correctness property over compatible
+> domain-native durable sources and gameplay-significant native owners reachable
+> from bounded typed recovery routing. It is not a new semantic owner or closure
+> record.**
+
+Key consequences:
+
+- native world/runtime/live owners remain current authority;
+- normal cold recovery requires bounded typed root discovery, not history/world
+  scans;
+- routing/index membership is recovery evidence only;
+- routing must be partitionable by existing writable scopes and cannot require a
+  globally hot singleton;
+- Procedure remains independently recovery-relevant across gaps between Commands;
+- Continuation/Resolution/Command preserve accepted fixed execution inputs and
+  pending child/response continuity under Step 3;
+- Temporal Agenda remains rebuildable from boundedly discoverable armed
+  due-capable native temporal owners;
+- one hydration attempt pins every mutable native source to an exact revision;
+- recovery resolves through current owning scope, so stale campaign copies cannot
+  silently replace live-owned truth;
+- owner activation/terminality drives required routing enrollment and publication
+  must keep membership coherent;
+- suspended execution requires resolvable compatible runtime/catalog/rules
+  interpretation context;
+- a checkpoint remains sparse recovery evidence and cannot be the sole current
+  active-root source;
+- exact root/index/checkpoint/live physical representation is deferred to 5.7/5.8.
+
+Minimum current logical independent root classes are:
+
+```text
+non-settled RuntimeCommand with unfinished descendant closure
+active Procedure
+materially unresolved accepted Interaction/IntentPlan when promised durable
+otherwise-unreachable armed due-capable temporal source owner
+```
+
+Common descendants such as Resolution and Continuation need not be redundantly
+rooted when bounded durable forward references already reach them.
+
+Step-5.2 adversarial review result:
+
+```text
+BLOCKING / owner decision required: 0
+SIGNIFICANT resolved:               6
+MINOR resolved:                     4
+```
+
+Significant refinements included pinned native hydration, owning-scope resolution,
+publication/root-enrollment completeness, Procedure lifecycle validation,
+temporal routing field exclusions and interpretation-context closure.
+
+Step 5.2 also carries the generated/emitted/acknowledged player-delivery ambiguity
+forward to Step 5.12 rather than making transcript/narration mechanical authority.
+
+## 8. Step 5.2 design chain
+
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-pre-research-charter.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-analytical-challenge.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-decision-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-resolution-gate.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec.md`
+
+## 9. Design-process improvement
+
+`DEV/DESIGN_PROCESS.md` includes the canonical **Problem-Framing / Task-Brief
+Quality Gate** before substantive deep-design research.
 
 The gate requires deliberate review of the research assignment itself for
 embedded solutions, stale assumptions, wrong abstraction boundaries,
-mis-scoping and framing that prevents negative/simpler outcomes. It explicitly
-does not prescribe one universal research-prompt template; framing must follow
-the actual project/stage/goals/unknowns/evidence/failure model/cost of error.
+mis-scoping and framing that prevents negative/simpler outcomes. It does not
+prescribe one universal prompt template.
 
-## 8. Deferred Step-4 machine realization
+## 10. Deferred machine realization
 
 The integrated implementation program after Steps 5–6 must still realize and
-verify at least:
+verify existing Step-4 obligations plus Step-5.2 recovery realization including:
 
-- normalized `world.lore_fact` truth/lifecycle;
-- normalized `world.knowledge` stances/current ownership;
-- `runtime.disclosure`;
-- Context Assembler request/bundle/source-manifest contracts;
-- role-specific source eligibility and disclosure evidence;
-- Story root/layout/IDs/index/availability schemas;
-- legacy knowledge/Secret migration;
-- live knowledge/disclosure compaction alignment.
+- normalized Step-4 truth/knowledge/disclosure/Story machine surfaces;
+- repository placement/schemas for accepted Step-3 runtime owners;
+- bounded active runtime and temporal-source recovery routing;
+- deterministic Procedure lifecycle evidence;
+- Interaction/message pending-input realization;
+- SAVE/session completeness alignment with operational owners;
+- cold hydration runtime/catalog interpretability validation;
+- later checkpoint/live physical routing selected by 5.7/5.8.
 
-These are deferred implementation obligations, not unresolved Step-4
+These are deferred implementation obligations, not unresolved Step-5.2
 architecture questions.
 
-## 9. Exact continuation
+## 11. Exact continuation
 
-> **Step 5.1 / Frontier Model — CLOSED.**
+> **Step 5.2 / Resumable Runtime Closure — CLOSED.**
 
 Next architecture slice:
 
-> **Step 5.2 / Resumable Runtime Closure — NOT STARTED.**
+> **Step 5.3 / Temporal & Pending-Obligation Continuity — NOT STARTED.**
 
-Do not begin Step 5.2 as part of Step-5.1 closure.
+Do not begin Step 5.3 as part of Step-5.2 closure verification.
