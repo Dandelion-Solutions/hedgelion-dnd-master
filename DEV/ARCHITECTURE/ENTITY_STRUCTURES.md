@@ -1,6 +1,6 @@
 # HDM Catalog — Minimum Entity Structures
 
-Status: **AGREED BASELINE — STEP 1 ASSURANCE + STEP 2 MACHINE ALIGNMENT APPLIED**
+Status: **AGREED BASELINE — STEP 1 ASSURANCE + STEP 2 MACHINE ALIGNMENT + STEP-4 CHAPTER RETIREMENT APPLIED**
 
 Target: `feature/mechanical-runtime-hot-state`
 
@@ -47,8 +47,10 @@ The structures were compared with:
 HDM adopts domain fields that represent game rules or persistent fiction. It
 does not copy VTT presentation, token, sheet, icon, ownership-UI, or derived
 roll-display fields. D&D has no standard storage model for organizations,
-contracts, missions, lore, chapters, and abstract chronology; those structures
-are derived from HDM requirements.
+contracts, missions, lore, and abstract chronology; those structures are derived
+from HDM requirements. Literary narrative records and Chapter grouping are not
+world state: they belong to non-canonical `STORY/NARRATIVE` and its index under
+the canonical Step-4 Story contract.
 
 ## 3. Definition kinds
 
@@ -162,8 +164,11 @@ The loader validates the relation; it is not inferred from names.
 | `world.effect` | `target_id`, `lifecycle` | `source_id`, `rules_origin_id`, `parameters`, `support_effect_id`, `temporal_binding`, `scheduled_trigger_state` | required `definition.effect` or `definition.condition` |
 | `world.lore_fact` | `statement`, `truth_status` | `subject_ids`, `chronology`, `importance` | forbidden |
 | `world.knowledge` | `fact_id`, `knower_id`, `status` | `learned_from_id`, `confidence` | forbidden |
-| `world.chapter` | `title`, `body` | `entity_ids`, `scene_ids`, `timeline_span`, `visibility` | forbidden |
 | `world.timeline_marker` | `slot`, `summary` | `entity_ids`, `scene_id`, `relative_to` | forbidden |
+
+Literary records and Chapter groupings are deliberately absent from this table.
+They belong to the non-canonical `STORY/NARRATIVE` projection and its Story
+index, not to a `world.*` state owner or definition-binding contract.
 
 `world.organization` intentionally does **not** keep a second
 `state.archetype_id`; its reusable archetype relationship is the universal
@@ -265,14 +270,16 @@ make a lookup cheap.
 ## 6. Current design boundary
 
 This inventory fixes field membership and world-definition compatibility through
-the Step-1 retrospective assurance correction and Step-2 machine alignment,
+the Step-1 retrospective assurance correction, Step-2 machine alignment, and
+the Step-4 retirement of literary Chapter from the world-record namespace,
 including the Slice-C owner-local scheduled-trigger amendment. Actor and asset
 nested shapes are accepted in `ARCHITECTURE/ACTOR_MODEL.md` and
 `ARCHITECTURE/ASSET_MODEL.md`; Activity and Rule Element shapes are defined by
 `ARCHITECTURE/ACTIVITY_MODEL.md` and `ARCHITECTURE/RULE_ELEMENT_MODEL.md`.
 Machine contracts are validated by schemas/catalogs under `DEV/` and focused
-unit tests, including `DEV/TESTS/test_catalog_definition_binding_contract.py`
-and `DEV/TESTS/test_step2_scheduled_trigger_contract.py`.
+unit tests, including `DEV/TESTS/test_catalog_definition_binding_contract.py`,
+`DEV/TESTS/test_step2_scheduled_trigger_contract.py`, and
+`DEV/TESTS/test_step4_story_retirement_contract.py`.
 
 Exact IntentPlan/Resolution ordering, prospective-overlay representation,
 event/receipt identity, scheduled-trigger due execution/re-arm, reaction
