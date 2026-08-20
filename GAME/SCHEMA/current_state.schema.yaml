@@ -14,8 +14,6 @@ fields:
       path: string
       player_character_ids: array[string]
   active_threads: array[string]
-  pending_global_consequences: array[object]
-  last_checkpoint_id: string|null
   last_event_id: string|null
 invariants:
   - keep this record compact and infrequently changing
@@ -23,5 +21,7 @@ invariants:
   - multiplayer may have multiple independent active scenes
   - world_time.frontier is a compact globally reconciled chronology frontier, not necessarily a timestamp or a total ordering of all scenes
   - independent scene chronologies may remain unordered until a cross-scene/shared dependency makes relative order material
+  - last_event_id is a compact semantic-log/recovery cursor pending Step-5 frontier/chronology design; it is not a fictional total-order authority
+  - pending work belongs to its typed owner; CURRENT has no generic pending-consequence bucket
   - do not advance/update world_time merely to account for harmless minute-by-minute passage that cannot affect play
   - biographies/history belong elsewhere
