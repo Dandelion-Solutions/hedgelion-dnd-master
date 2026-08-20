@@ -280,29 +280,51 @@ scope, continuous bounded-recovery handoff, immediate-rearm overlap safety and
 stable experiment association for fixed RNG. No Step-5.3 architecture blocker
 remains.
 
-### Step 5.4 — NEXT, NOT STARTED
+### Step 5.4 — IN PROGRESS
 
-Step 5.4 owns **Host Lifecycle & Session Handoff**. It must distinguish and define
-continuity semantics for at least:
+Step 5.4 owns **Host Lifecycle & Session Handoff**.
 
-- fresh/new chat;
-- explicit controlled session handoff;
-- known context/window expiration or controlled runtime restart;
-- maintenance restart;
-- unexpected process/context crash;
-- stale multiplayer chat;
-- network/write failure during a durability boundary.
+Current research artifacts:
 
-It must define when known impending context destruction requires a recovery
-publication attempt, what recovery-point objective is actually promised for
-unexpected loss, how semantic resume state is represented without persisting raw
-LLM/process memory, and how bootstrap proceeds from durable evidence only.
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-analytical-challenge.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-decision-brief.md`
 
-Step 5.4 may consume Step-5.2 resumable closure and Step-5.3 temporal/pending
-continuity invariants, but it may not silently decide SOFT/HARD/SAVE cadence,
-physical Git publication, checkpoint wire format or multiplayer live ownership.
+Current recommendation awaiting owner approval:
 
-**Do not start Step 5.4 as part of Step-5.3 closure verification.**
+**BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF**.
+
+The proposed direction keeps gameplay/current execution authority in the native
+owners established by Steps 3, 5.2 and 5.3. A reliable known destructive-context
+boundary creates a scoped mutation-quiescence barrier and requires the promised
+resume state to reach a valid durable Resumable Runtime Closure before the old
+host may acknowledge a recovery-safe handoff. Unexpected loss has the weaker and
+honest guarantee of recovery to the newest actually durable compatible native
+source set; lost unpublished HOT/SOFT state is never invented.
+
+The current recommendation deliberately introduces no mandatory handoff snapshot,
+durable transfer ticket, authoritative session record, campaign-global host lease
+or heartbeat commit. Persistent session metadata remains coordination/recovery
+projection; stale hosts must revalidate current native authority/revisions before
+mutation.
+
+Owner carry-forward about periodic safety flush is recorded in the task brief:
+
+- reliable imminent context destruction is a Step-5.4 lifecycle trigger for a
+  recovery-publication attempt;
+- independent maximum age/exposure of gameplay-significant unpublished SOFT is
+  owned by Step 5.5;
+- no numerical dirty-age threshold is currently approved;
+- existing runtime prose that hard-codes a one-hour ceiling is provisional/stale
+  policy to be resolved in 5.5;
+- clean state must not create heartbeat/no-op publication.
+
+Step 5.4 does not decide SOFT/HARD/SAVE class semantics, the physical Git
+publication protocol, checkpoint wire format, live-epoch fencing/transfer,
+transcript retention, or host-delivery acknowledgement.
+
+**Do not begin Step 5.5 while Step 5.4 is in progress.**
 
 ## Step 6 carry-forward
 
@@ -330,11 +352,12 @@ canonical specs.
 
 ## Exact continuation point
 
-**Step 5.3 / Temporal & Pending-Obligation Continuity — CLOSED.**
+**Step 5.4 / Host Lifecycle & Session Handoff — IN PROGRESS.**
 
-Next architecture slice:
+Current phase:
 
-**Step 5.4 / Host Lifecycle & Session Handoff — NOT STARTED.**
+**Research and analytical challenge complete; owner approval requested for
+BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF before candidate specification.**
 
-Do not begin Step 5.4 until Step-5.3 closure/result has been reported and the
-current status/head has been verified.
+Do not begin candidate canonicalization or Step 5.5 until the Step-5.4 design
+direction is approved.
