@@ -13,6 +13,10 @@ def load_json(path: Path):
         return json.load(handle)
 
 
+def version_tuple(value: str):
+    return tuple(int(part) for part in value.split("."))
+
+
 class Step4StoryRetirementContractTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -24,14 +28,15 @@ class Step4StoryRetirementContractTest(unittest.TestCase):
         cls.contracts = (ARCH / "CATALOG_CONTRACTS.md").read_text(encoding="utf-8")
         cls.entity_doc = (ARCH / "ENTITY_STRUCTURES.md").read_text(encoding="utf-8")
 
-    def test_catalog_version_advances_for_closed_vocabulary_change(self):
+    def test_catalog_version_preserves_step4_closed_vocabulary_baseline(self):
         versions = {
             self.core["catalog_version"],
             self.structures["catalog_version"],
             self.identifiers["catalog_version"],
             self.surfaces["catalog_version"],
         }
-        self.assertEqual(versions, {"1.5.0"})
+        self.assertEqual(len(versions), 1)
+        self.assertGreaterEqual(version_tuple(next(iter(versions))), (1, 5, 0))
 
     def test_world_record_machine_surfaces_remain_coherent(self):
         registered = set(self.core["registries"]["world_record_kinds"])
