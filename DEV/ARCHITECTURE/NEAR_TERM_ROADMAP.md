@@ -190,20 +190,61 @@ Important consequences:
 Adversarial review found no owner blocker and resolved all significant findings
 without reopening B-NARROW.
 
-### Step 5.2 — NEXT, NOT STARTED
+### Step 5.2 — CLOSED
 
-Step 5.2 owns **Resumable Runtime Closure**: determining which gameplay-significant
-in-memory/operational state must survive process/chat loss, what is authoritative
-versus recovery projection versus rebuildable cache versus truly ephemeral, and
-what minimum durable closure permits a fresh runtime to resume from the real
-recoverable point.
+Canonical specification:
 
-Step 5.2 must preserve the Step-5.1 domain-typing and no-implicit-cross-domain-
-order laws. It must not serialize derived Temporal Agenda as a new temporal
-authority; Temporal Agenda rebuild and pending-obligation lifecycle are primarily
-5.3 concerns.
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec.md`
 
-**Do not start 5.2 as part of 5.1 closure.**
+Step 5.2 defines **Resumable Runtime Closure** as a correctness property over
+compatible domain-native durable sources and bounded typed recovery-routing
+roots. It does not introduce a new state authority, universal snapshot,
+RecoveryCut record, serialized Temporal Agenda or mandatory closure record.
+
+Canonical consequences include:
+
+```text
+native owners remain authority
+bounded typed root discovery is required
+routing membership is recovery evidence, not owner state
+routing must be partitionable by native writable scope
+Procedure remains independently recoverable across gaps between Commands
+Temporal Agenda is rebuilt from boundedly discoverable armed due-capable owners
+fixed accepted execution inputs survive in Step-3 owners
+hydration pins each mutable native source to an exact revision
+recovery resolves through current owning scope; stale cross-domain fallback is forbidden
+root enrollment changes are correctness-critical derivatives of native lifecycle
+open execution requires resolvable compatible runtime/catalog interpretation context
+lost unpublished HOT/SOFT state is never invented after total context loss
+```
+
+Checkpoint remains sparse recovery evidence and cannot be the sole current active
+root source. Exact routing/checkpoint/live placement is intentionally deferred to
+5.7/5.8 after due-work, durability and publication constraints are known.
+
+Adversarial review found no blocking owner decision. Significant findings were
+resolved through pinned native hydration, owning-scope resolution, transactional
+root-membership completeness, Procedure lifecycle validation, temporal routing
+field exclusions and interpretation-context closure.
+
+### Step 5.3 — NEXT, NOT STARTED
+
+Step 5.3 owns **Temporal & Pending-Obligation Continuity**. It must define:
+
+- bounded reconstruction of due work from Step-5.2 temporal-source roots;
+- transition from owner-local armed due candidate to selected/materialized
+  mandatory invocation;
+- no-lost/no-double due execution;
+- interaction between pending children, Procedure boundaries and chronology
+  evidence;
+- exact continuity for already fixed/reserved RNG when mechanically required.
+
+Step 5.3 must preserve owner-local TemporalBindings, Step-3 stable firing/pending
+child semantics, Step-5.1 domain typing and Step-5.2 partitionable bounded recovery
+routing. It may not make Temporal Agenda the temporal authority or introduce a
+generic pending-job subsystem without a new architecture decision.
+
+**Do not start Step 5.3 as part of Step-5.2 closure verification.**
 
 ## Step 6 carry-forward
 
@@ -231,7 +272,11 @@ canonical specs.
 
 ## Exact continuation point
 
-**Step 5.2 / Resumable Runtime Closure — NOT STARTED.**
+**Step 5.2 / Resumable Runtime Closure — CLOSED.**
 
-Step 5.1 is closed. Do not begin Step 5.2 until the 5.1 closure/result has been
-reported and the architecture sequence is explicitly continued.
+Next architecture slice:
+
+**Step 5.3 / Temporal & Pending-Obligation Continuity — NOT STARTED.**
+
+Do not begin Step 5.3 until Step-5.2 closure/result has been reported and the
+current status/head has been verified.
