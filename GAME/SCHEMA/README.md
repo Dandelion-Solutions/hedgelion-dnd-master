@@ -8,7 +8,7 @@
 - Связи хранятся по ID, без копирования полных записей.
 - `null` означает, что значение отсутствует/ещё не установлено; неизвестный факт нельзя заменять догадкой.
 - Исторические детали уходят в `LOG`; entity/state records хранят актуальное состояние.
-- Objective truth, NPC/PC knowledge и player-visible information разделены.
+- Objective truth, NPC/PC knowledge и player-visible information разделены; отдельная `Secret`-запись не является самостоятельным владельцем truth/knowledge/disclosure.
 - Независимо меняющиеся среды по возможности разделяются на разные scene/entity files.
 
 ## Основные схемы
@@ -25,7 +25,6 @@
 - `faction.schema.yaml` — организация/группа.
 - `item.schema.yaml` — значимый предмет.
 - `lore.schema.yaml` — объективный устойчивый факт мира.
-- `secret.schema.yaml` — скрытая объективная истина.
 - `thread.schema.yaml` — активный процесс/угроза/проект.
 - `event.schema.yaml` — компактное семантическое изменение мира.
 - `checkpoint.schema.yaml` — recovery boundary.
