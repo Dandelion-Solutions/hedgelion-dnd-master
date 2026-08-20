@@ -33,6 +33,11 @@ class Step4StoryRetirementContractTest(unittest.TestCase):
         }
         self.assertEqual(versions, {"1.5.0"})
 
+    def test_world_record_machine_surfaces_remain_coherent(self):
+        registered = set(self.core["registries"]["world_record_kinds"])
+        self.assertEqual(registered, set(self.structures["world_records"]))
+        self.assertEqual(registered, set(self.identifiers["world"]))
+
     def test_world_chapter_is_not_a_world_record(self):
         self.assertNotIn(
             "world.chapter",
