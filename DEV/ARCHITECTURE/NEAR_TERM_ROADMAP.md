@@ -230,7 +230,7 @@ write-authority lookup is bounded/machine-decidable; no all-live scan
 live claim requires native writable-scope containment
 live-born accepted IDs use collision-free epoch-qualified stable namespace
 live atomicity is per native Step-3 durability edge, not per user message
-a accepted execution/RNG/Procedure/Continuation/temporal state survives close
+accepted execution/RNG/Procedure/Continuation/temporal state survives close
 absorption is forward campaign publication; no distributed transaction/force rollback
 SAVE does not close healthy live epochs merely to obtain durability
 revocation/controller removal closes affected live source before one combined campaign absorption+authorization transaction
