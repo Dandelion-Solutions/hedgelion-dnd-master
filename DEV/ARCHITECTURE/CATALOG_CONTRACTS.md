@@ -315,7 +315,7 @@ in a 200-hour campaign. They are not limits: after `turn-999999` comes
 
 | Width | Kinds |
 |---:|---|
-| 3 | actor group, organization, contract, chapter |
+| 3 | actor group, organization, contract |
 | 4 | actor, location, connection, zone, mission, scene, encounter, hazard, lore fact, maintenance audit, catalog-gap report, session |
 | 5 | asset, relationship |
 | 6 | effect, knowledge, turn/interaction, publication batch, checkpoint |
@@ -325,6 +325,10 @@ in a 200-hour campaign. They are not limits: after `turn-999999` comes
 Intent plans, commands, continuations, and resolution traces derive identity
 from their owning interaction or resolution. Dirty-record identity is its
 target record; the allocator is a singleton.
+
+Story layer-local IDs follow the canonical Step-4 Story contract and are outside
+this world/runtime allocator table. Literary Chapter boundaries are Story index
+metadata and therefore have no world-record ID policy.
 
 ### 9.2 Local identity and promotion
 
