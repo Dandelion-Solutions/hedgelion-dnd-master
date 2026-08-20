@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.5.0",
+  "catalog_version": "1.6.0",
   "schema_version": 1,
   "world": {
     "world.actor": {"strategy": "sequential", "prefix": "actor", "minimum_width": 4, "scope": "campaign", "local": {"prefix": "local-actor", "minimum_width": 3, "scope": "session"}},
@@ -17,8 +17,7 @@
     "world.hazard": {"strategy": "sequential", "prefix": "hazard", "minimum_width": 4, "scope": "campaign", "local": {"prefix": "local-hazard", "minimum_width": 3, "scope": "session"}},
     "world.effect": {"strategy": "sequential", "prefix": "effect", "minimum_width": 6, "scope": "campaign", "local": {"prefix": "local-effect", "minimum_width": 5, "scope": "session"}},
     "world.lore_fact": {"strategy": "sequential", "prefix": "fact", "minimum_width": 4, "scope": "campaign"},
-    "world.knowledge": {"strategy": "sequential", "prefix": "knowledge", "minimum_width": 6, "scope": "campaign"},
-    "world.timeline_marker": {"strategy": "sequential", "prefix": "marker", "minimum_width": 4, "scope": "campaign"}
+    "world.knowledge": {"strategy": "sequential", "prefix": "knowledge", "minimum_width": 6, "scope": "campaign"}
   },
   "runtime": {
     "runtime.session": {"strategy": "sequential", "prefix": "session", "minimum_width": 4, "scope": "campaign"},
@@ -32,8 +31,6 @@
     "runtime.mechanical_event": {"strategy": "sequential", "prefix": "event", "minimum_width": 8, "scope": "campaign"},
     "runtime.semantic_event": {"strategy": "sequential", "prefix": "semantic", "minimum_width": 7, "scope": "campaign"},
     "runtime.resolution_trace": {"strategy": "derived", "parent_kind": "runtime.resolution", "suffix": "trace"},
-    "runtime.dirty_record": {"strategy": "target_key", "target_field": "record_id"},
-    "runtime.publication_batch": {"strategy": "sequential", "prefix": "batch", "minimum_width": 6, "scope": "campaign"},
     "runtime.checkpoint": {"strategy": "sequential", "prefix": "rev", "minimum_width": 6, "scope": "campaign"},
     "runtime.id_allocator": {"strategy": "singleton", "id": "campaign-allocator"},
     "runtime.maintenance_audit": {"strategy": "sequential", "prefix": "audit", "minimum_width": 4, "scope": "campaign"},
