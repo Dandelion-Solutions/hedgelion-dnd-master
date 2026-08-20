@@ -29,7 +29,7 @@ If repository permission exists but no valid active player binding matches the a
 
 ## Joining policy
 
-`CAMPAIGN/MANIFEST.yaml -> players.join_policy` is one of:
+`MANIFEST.yaml -> players.join_policy` is one of:
 - `invite_only` — safe default. A new participant may join only when an active `PLAYER_` binding for that GitHub user has already been explicitly created/authorized by the campaign creator. The binding itself is the invitation; no separate invitation table is required.
 - `open_contributors` — a currently authenticated repository collaborator with verified write/push access may self-enroll by creating one new `PLAYER_` binding for their own stable GitHub user ID.
 
@@ -118,7 +118,7 @@ Do not let separate Masters independently improvise mutable versions of the same
 
 The framework does not depend on detecting online presence: differently controlled PCs sharing the same actionable scene are enough to require live mode.
 
-The live branch uses one runtime-mutated file and a special fast path. Ordinary live synchronization is a live-branch ref probe; if changed, fetch only `CAMPAIGN/LIVE/LIVE_STATE.yaml`. Do not perform campaign compare/history reads for every shared-scene turn.
+The live branch uses one runtime-mutated file and a special fast path. Ordinary live synchronization is a live-branch ref probe; if changed, fetch only `LIVE/LIVE_STATE.yaml`. Do not perform campaign compare/history reads for every shared-scene turn.
 
 Campaign branch writes for live-owned scene/entity state are deferred to close-time compaction. Shared live mutations are instead published immediately to the live frontier before narration when another player could observe/use the changed fact.
 
