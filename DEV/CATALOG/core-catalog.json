@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.5.0",
+  "catalog_version": "1.6.0",
   "schema_version": 1,
   "registries": {
     "content_definition_kinds": [
@@ -24,14 +24,13 @@
       "world.connection", "world.zone", "world.organization",
       "world.relationship", "world.contract", "world.mission", "world.scene",
       "world.encounter", "world.hazard", "world.effect", "world.lore_fact",
-      "world.knowledge", "world.timeline_marker"
+      "world.knowledge"
     ],
     "runtime_record_kinds": [
       "runtime.session", "runtime.message", "runtime.interaction",
       "runtime.procedure", "runtime.intent_plan", "runtime.command",
       "runtime.resolution", "runtime.continuation", "runtime.mechanical_event",
       "runtime.semantic_event", "runtime.resolution_trace",
-      "runtime.dirty_record", "runtime.publication_batch",
       "runtime.checkpoint", "runtime.id_allocator",
       "runtime.maintenance_audit", "runtime.catalog_gap_report"
     ],
@@ -106,7 +105,7 @@
       "transition.mission_state", "transition.scene_state",
       "transition.encounter_state", "transition.hazard_state",
       "transition.lore_commit", "transition.knowledge_change",
-      "transition.timeline_place", "transition.event_time_advance"
+      "transition.event_time_advance"
     ],
     "event_kinds": [
       "event.activity.completed", "event.activity.rejected",
@@ -128,7 +127,7 @@
       "event.contract.changed", "event.mission.changed",
       "event.scene.changed", "event.encounter.changed", "event.hazard.changed",
       "event.lore.committed", "event.knowledge.changed",
-      "event.timeline.placed", "event.event_time.advanced"
+      "event.event_time.advanced"
     ],
     "resource_mechanics": [
       "resource.die_pool", "resource.tiered_pool", "resource.bounded_pool",
