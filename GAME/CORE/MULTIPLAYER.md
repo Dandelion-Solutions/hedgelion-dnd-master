@@ -1,7 +1,7 @@
 # Shared-World Multiplayer
 
 framework_module_version: 0.1.7
-load_when: CAMPAIGN/MANIFEST mode == multiplayer OR explicit multiplayer management
+load_when: MANIFEST mode == multiplayer OR explicit multiplayer management
 
 ## Mode and ownership
 
