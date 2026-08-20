@@ -16,8 +16,7 @@
         "world.connection", "world.zone", "world.organization",
         "world.relationship", "world.contract", "world.mission",
         "world.scene", "world.encounter", "world.hazard", "world.effect",
-        "world.lore_fact", "world.knowledge", "world.chapter",
-        "world.timeline_marker"
+        "world.lore_fact", "world.knowledge", "world.timeline_marker"
       ],
       "properties": {
         "world.actor": {"$ref": "#/$defs/sequentialPolicy"},
@@ -36,7 +35,6 @@
         "world.effect": {"$ref": "#/$defs/sequentialPolicy"},
         "world.lore_fact": {"$ref": "#/$defs/sequentialPolicy"},
         "world.knowledge": {"$ref": "#/$defs/sequentialPolicy"},
-        "world.chapter": {"$ref": "#/$defs/sequentialPolicy"},
         "world.timeline_marker": {"$ref": "#/$defs/sequentialPolicy"}
       }
     },
