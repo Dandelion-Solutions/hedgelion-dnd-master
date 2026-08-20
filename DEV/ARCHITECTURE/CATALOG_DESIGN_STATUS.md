@@ -1,12 +1,10 @@
 # HDM Catalog Design Status
 
-Status: **STEPS 1–3 CLOSED / STEP 4 IN PROGRESS — FINAL STEP-3 SAME-HEAD CI PENDING**
+Status: **STEPS 1–3 CLOSED / STEP 4 IN PROGRESS — ARCHITECTURE CANONICAL, MACHINE ALIGNMENT PENDING**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
-This file is a current-status index, not a second normative specification.
-Detailed reasoning/history lives in the linked architecture/spec documents and
-Git history.
+This file is a current-status index, not a second normative specification. Detailed reasoning/history lives in linked architecture/spec documents and Git history.
 
 Canonical process:
 
@@ -21,33 +19,33 @@ Sequencing authority:
 
 Steps 1–2 are complete and retrospectively assured.
 
-Step 3 has completed its owner decision, candidate specification, adversarial
-review, canonical specification, machine-contract TDD alignment, integrated A–N
-cases and final critical review. The final review reports zero unresolved Step-3
-blockers.
+Step 3 is closed: owner decision, candidate, adversarial review, canonical spec, machine-contract TDD alignment, integrated A–N cases, final critical review and final same-head validation all completed successfully.
 
-Step 3 becomes unconditionally closed when `Validate engine source` succeeds on
-the final documentation/status HEAD containing this checkpoint.
+Step 4 is the sole active numbered stage.
 
-Step 4 is the sole active numbered architecture stage.
+Step-4 **architecture is now canonical**, but the stage remains open until catalogs/schemas/runtime/template/tests are aligned and freshly verified.
 
-## 2. Current catalog/class baseline
+Canonical Step-4 specification:
 
-- catalog version: `1.4.0`;
-- one coherent `ResolvedCatalogContext` interprets plain definition IDs;
-- same-ID shadowing inside one resolved context is invalid;
-- incompatible catalog/runtime adoption migrates coherently or blocks;
-- `definition_id` compatibility is explicit per `world.*` kind;
-- `runtime.procedure` is the independently addressable sole live owner for
-  procedure-local participant ResourceState;
-- `world.encounter`, `runtime.procedure`, `runtime.resolution`, and
-  `runtime.continuation` are distinct lifetimes;
-- `ExecutionSegment` and pending child invocation descriptors are protocol values,
-  not standalone runtime classes;
-- no `runtime.resolution_chain`, scheduler/job class or generic workflow engine is
-  part of the accepted baseline.
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`
 
-Normative inventory and machine catalogs:
+## 2. Current machine baseline
+
+The implemented machine baseline remains catalog version `1.4.0` until Step-4 implementation deliberately updates it.
+
+Current Steps 1–3 invariants remain in force, including:
+
+- one coherent `ResolvedCatalogContext`;
+- no same-ID shadowing inside one resolved context;
+- explicit definition/world binding compatibility;
+- `runtime.procedure` as sole procedure-local ResourceState owner;
+- distinct Encounter / Procedure / Resolution / Continuation lifetimes;
+- embedded ExecutionSegment and pending-child descriptors, not standalone workflow classes;
+- current world records as current-state authority;
+- MechanicalEvents as immutable committed mechanical evidence;
+- no generic scheduler/job/workflow engine.
+
+Normative current machine inventory/catalogs:
 
 - `DEV/ARCHITECTURE/CATALOG_INVENTORY.md`
 - `DEV/CATALOG/core-catalog.json`
@@ -55,21 +53,15 @@ Normative inventory and machine catalogs:
 - `DEV/CATALOG/identifier-policies.json`
 - `DEV/CATALOG/mechanical-surfaces.json`
 
-## 3. Step-3 canonical execution boundary
+These still reflect the implemented 1.4.0 baseline and therefore retain some Step-4 legacy IDs until the Step-4 machine-contract implementation lands.
+
+## 3. Step-3 execution boundary
 
 Canonical specification:
 
 - `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md`
 
-Final critical review:
-
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-final-critical-review.md`
-
-Machine-contract plan:
-
-- `DEV/docs/superpowers/plans/2026-08-19-step-3-execution-boundary-machine-contract.md`
-
-Current responsibility split:
+Core ownership remains:
 
 ```text
 Interaction
@@ -79,208 +71,245 @@ Interaction
             OR
             -> TransitionRequest -> direct deterministic execution
 
-RuntimeCommand
-    root mandatory execution-chain closure owner
-
 runtime.procedure
     sole procedure-local ResourceState owner
 
 Resolution / direct transition
-    -> embedded committed ExecutionSegment(s)
+    -> embedded ExecutionSegment(s)
         -> MechanicalEvents
-        -> receipts / idempotency
-        -> mandatory child invocation descriptors
+        -> receipts/idempotency
+        -> mandatory child descriptors
 
 Continuation
-    one suspended Resolution generation
+    one portable suspended Resolution generation
 ```
 
-### Intent / command
+Step-4 context/knowledge work does not weaken any Step-3 execution authority.
 
-- IntentPlan is finite ordered message-level orchestration, not a transaction;
-- earlier committed clauses do not roll back because a later clause fails;
-- initial conditional intent uses one narrow forward guard over typed prior-clause
-  status/export, not a workflow DSL;
-- RuntimeCommand separates action versus already-adjudicated deterministic
-  transition paths;
-- RuntimeCommand remains `command.accepted` while mechanically mandatory
-  descendants/pending work remain open and becomes `command.settled` only at
-  closure;
-- retry identity compares against stored accepted context/input before ambient
-  rebinding.
+## 4. Step-4 full-cycle rerun
 
-### Procedure / Resolution / Continuation
+The owner requested a full Step-4 rerun after approving six logical LLM roles.
 
-- `runtime.procedure` owns participant-local spent ResourceState;
-- Resolution means exactly one Activity invocation;
-- reaction/trigger child Resolutions reference the same root command and
-  Procedure where applicable;
-- Continuation references Procedure but cannot copy its ResourceState;
-- Continuation preserves fixed RNG, prior typed exports, dependency frontier,
-  accepted invocation facts, expected child refs and bounded choice/reaction
-  offers;
-- derived MechanicalContext/Agenda/DAG/winner caches and trusted prospective
-  deltas are not Continuation authority;
-- expected child commit causes parent re-pin/re-read/recompute from a safe phase,
-  not stale snapshot restoration.
+Rerun artifacts:
 
-### Segment / Event / trigger
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-decision-resolution.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-resolution-gate.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`
 
-- ExecutionSegment is the smallest local atomic execution-persistence edge and is
-  embedded under its owner;
-- MechanicalEvent identity is `segment + ordinal` and exists only after commit;
-- mandatory post-commit child/firing identity is representable in the same
-  committed segment as the triggering Event;
-- firing keys make retries idempotent;
-- execution-chain safety limits preserve pending mandatory work rather than
-  silently truncating it;
-- noncommutative simultaneous work requires registered ordering, controller
-  choice, or typed order adjudication — never SQL/list order.
+Cross-cutting role draft:
 
-### LLM / input authority
+- `DEV/docs/superpowers/specs/2026-08-20-llm-logical-roles-draft.md`
 
-- LLM interpretation may choose among bounded candidates and supply only
-  explicitly registered fiction-dependent invocation facts;
-- invocation facts require explicit boolean value + provenance; missing is not
-  false;
-- deterministic engine-owned state cannot be supplied as trusted LLM fact;
-- RuntimeCommand/Resolution/Continuation retain accepted catalog-context/input
-  identity needed for retry/recovery;
-- incompatible catalog adoption cannot silently reinterpret suspended execution.
-
-### Effect / temporal integration
-
-- live recency-sensitive Effects may retain positive integer
-  `application_order_key` as compact target/application-family-local episode
-  evidence;
-- recency is not wall time, Effect ID order, SQL order or old trace retention;
-- boundary occurrence has stable producer/scope/occurrence identity;
-- advancement freezes at reached due coordinate until mandatory same-coordinate
-  consequences close or are durably suspended;
-- unconsumed requested advancement remains explicit continuation input;
-- owner-local scheduled triggers create ordinary child Resolution work; Temporal
-  Agenda remains a rebuildable index.
-
-## 4. Current machine evidence
-
-Step-3 schema set now includes:
-
-- `invocation-fact.schema.json`;
-- `intent-clause.schema.json`;
-- `boundary-occurrence.schema.json`;
-- `pending-child-invocation.schema.json`;
-- `execution-segment.schema.json`;
-- `resolution-receipt.schema.json`;
-- `runtime-intent-plan-state.schema.json`;
-- `runtime-command-state.schema.json`;
-- `runtime-procedure-state.schema.json`;
-- `runtime-resolution-state.schema.json`;
-- `runtime-continuation-state.schema.json`;
-- `runtime-mechanical-event-state.schema.json`.
-
-`world-effect-state.schema.json` also carries the compact
-`application_order_key` evidence required by Step-3/Step-2 recency integration.
-
-Focused tests cover the individual ownership contracts plus integrated canonical
-cases A–N.
-
-`DEV/TOOLS/audit_engine.py` requires the Step-3 schema set, validates examples,
-validates all four machine catalogs, and enforces one coherent catalog version.
-
-## 5. Step-4 active problem
-
-Step 4 owns truth, knowledge/disclosure, narrative projection and minimum durable
-promotion.
-
-The central ownership graph to settle is:
+Adversarial result:
 
 ```text
-objective world/lore truth
-    -> who knows / may see it
-    -> knowledge-safe LLM context
-
-retained runtime.message transcript
-    + committed world/lore/MechanicalEvent sources
-        -> runtime.semantic_event
-            -> world.chapter
-                -> optional public/spectator projection
+owner-decision blockers: 0
+mechanically resolved Step-4 findings: 10
+later-owner findings: 4
 ```
 
-These layers must not become competing truths.
+No new owner-level semantic gate remained after the six-role rerun.
 
-Required Step-4 results include:
-
-1. one authority for objective propositions/truth status;
-2. one authority for disclosure/knowledge per subject/player/context;
-3. explicit promotion semantics from situational adjudication into durable lore;
-4. a SemanticEvent projection contract that compacts history without becoming
-   writable current-state authority;
-5. a Chapter contract that supports editable literary narration while remaining
-   anchored to factual sources;
-6. transcript-retention semantics sufficient for dialogue/scene reconstruction
-   without making raw chat canonical world truth;
-7. spectator/public visibility filtering that prevents secret leakage;
-8. knowledge-safe bounded discovery/context for LLM interpretation;
-9. promotion closure so durable lore/event/chapter references cannot depend on
-   unpublished local entities/definitions.
-
-## 6. Narrative/history layer carry-forward
-
-The intended layering is now explicit but not yet fully specified:
+## 5. Canonical Step-4 authority model
 
 ```text
-Transcript / runtime.message
-    what participants actually said, when retained
+OBJECTIVE / CURRENT
+    ordinary world state owners
+    world.lore_fact
 
-MechanicalEvent
-    technical committed mechanics fact
+FICTIONAL CURRENT PERSPECTIVE
+    world.knowledge
 
-SemanticEvent
-    compact factual campaign-history projection
+HUMAN PLAYER EXPOSURE
+    runtime.disclosure
 
-Chapter
-    human-readable authored narrative/history projection
+HISTORICAL EVIDENCE
+    runtime.semantic_event / LOG
+    runtime.mechanical_event
+
+ROLE CONTEXT
+    deterministic Context Assembler
+        -> Interpreter
+        -> Dramaturg
+        -> Actor
+        -> Narrator
+        -> Chronicler
+        -> Commentator
+
+NON-CANONICAL PRESENTATION HISTORY
+    STORY/
+        TRANSCRIPT/
+        EVENTS/
+        MECHANICS/
+        NARRATIVE/
 ```
 
-For future spectator use, a viewer-facing ChatGPT should be able to combine a
-visibility-safe SemanticEvent spine, selected public transcript and Chapters to
-reconstruct the campaign coherently. The private canonical campaign store itself
-must not be exposed as the spectator source when it contains restricted facts.
+### Truth
 
-Exact transcript retention, public projection transport and Git publication are
-split across Step 4 semantics and Step 5 durability/transport.
+- `world.lore_fact` owns independently identified objective propositions;
+- objective truth semantics are `undetermined / established / disproven`;
+- in-world disagreement belongs to epistemic relations, not objective `disputed` truth;
+- lifecycle/supersession is separate from truth status;
+- identity-defining statement/scope cannot be silently rewritten after durable reference.
 
-## 7. Later-stage ownership
+### Knowledge
+
+- `world.knowledge` is the sole durable current fictional epistemic owner;
+- initial stance semantics: `aware / known / believed / suspected / rejected`;
+- PC factual availability may become known through qualifying resolved sources;
+- voluntary PC belief/suspicion/rejection remains player-controlled unless a real rule forces cognition;
+- Actor may propose NPC/faction epistemic changes, but core commits them.
+
+### Player disclosure
+
+- `runtime.disclosure` is separate from PC cognition;
+- it records sparse material human exposure;
+- statement exposure and objective truth-revision exposure are distinct;
+- Narrator returns structured disclosure refs and host records exposure only after player-facing emission/acceptance.
+
+### Secret
+
+No generic Secret authority remains. Secret is contextual source eligibility.
+
+- objective truth -> lore/world owner;
+- fictional cognition -> `world.knowledge`;
+- human exposure -> `runtime.disclosure`;
+- reveal/clue planning -> Dramaturg preparation;
+- actual automatic reveal mechanics -> actual rules/world owner.
+
+## 6. Six logical LLM roles and Context Assembler
+
+Accepted logical roles:
+
+1. Interpreter;
+2. Dramaturg;
+3. Actor;
+4. Narrator;
+5. Chronicler;
+6. Commentator.
+
+A role is not necessarily a separate physical model/agent call.
+
+Step-4 invariant:
+
+> each role consumes a separately eligible bounded source bundle plus typed prior-role results; raw private source context does not flow transitively between roles.
+
+A narrower role cannot run inside a physical model context that still contains ineligible broader-role material. Step 6 must use genuine reset/isolation or separate calls where eligibility differs.
+
+Context Assembler is deterministic working machinery, not a seventh role or canonical owner.
+
+## 7. Canonical Story model
+
+Campaign branch contains one peer Story root:
+
+```text
+STORY/
+    TRANSCRIPT/
+    EVENTS/
+    MECHANICS/
+    NARRATIVE/
+```
+
+All Story layers are durable but non-canonical.
+
+- `TRANSCRIPT` — retained visible participant discourse;
+- `EVENTS` — story-facing adaptation of semantic LOG/history;
+- `MECHANICS` — curated player/spectator-relevant mechanics;
+- `NARRATIVE` — editable literary prose.
+
+Story IDs are independent per layer (`T...`, `E...`, `M...`, `N...`) with explicit many-to-many refs.
+
+Default storage is one record per file with deterministic thousand-slot shards.
+
+Non-canonical does not imply fully regenerable: after source compaction, Story may be the only retained exact transcript/literary copy without becoming world/recovery authority.
+
+### Chapter retirement
+
+Retire during Step-4 machine alignment:
+
+```text
+world.chapter
+transition.chapter_append
+event.chapter.appended
+```
+
+Literary Chapters are NARRATIVE index groupings with explicit ordered N refs.
+
+### Commentator availability
+
+Story spoiler/reveal eligibility is dependency/reference based, not one scalar global chronology frontier.
+
+Availability applies to complete retrieval units including spoiler-bearing titles/refs/index entries.
+
+Material Story edits recompute availability metadata.
+
+Exact Commentator default perspective/spoiler mode remains Step 6.
+
+## 8. Promotion
+
+Invocation facts, preparation, Actor proposals, Narrator prose and Story prose do not become canon automatically.
+
+Promote/create a stable `world.lore_fact` when a canonical durable knowledge/disclosure/history reference or future consistency requires proposition identity.
+
+An untracked claim may be promoted with `truth_status=undetermined` without asserting it true.
+
+Durable references to local entities still require same-publication dependency closure or rejection.
+
+## 9. Required Step-4 machine alignment
+
+The implementation plan must cover at minimum:
+
+- catalog/version changes implied by retired/added/changed IDs;
+- `world.lore_fact` schema and truth/lifecycle separation;
+- `world.knowledge` schema/stances and uniqueness semantics;
+- `runtime.disclosure` class/schema/identifier policy;
+- knowledge/disclosure transitions/events/provenance;
+- Context Assembler protocol/bundle contracts and inspectable source manifests;
+- role-specific eligibility tests;
+- NarrationResult disclosure evidence;
+- Story root/layout/IDs/shards/index and four layer schemas;
+- dependency-based Story availability;
+- legacy Chapter/Secret/embedded-knowledge retirement and migration fixtures;
+- live-scene compaction alignment;
+- maintenance audit and integrated examples.
+
+No implementation begins before a `superpowers:writing-plans` implementation plan.
+
+## 10. Later-stage ownership
 
 ### Step 5
 
-- repository-backed checkpoint publication/restoration;
-- SOFT/HARD durability and multiplayer revision/conflict semantics;
-- chronology evidence persistence/compaction and cross-scene reconciliation;
-- private canonical versus public/spectator Git projection transport;
-- transcript/history retention/compaction mechanics;
-- checkpoint cleanup/expiry.
+Owns physical durability/transport details:
+
+- Story publication/body-index-availability coherence;
+- Story ID allocation under concurrency;
+- transcript/history retention/compaction;
+- checkpoint/publication interactions;
+- multiplayer conflicts and live-scene compaction transport;
+- chronology evidence persistence;
+- exact host response-delivery acknowledgement.
+
+No default long-lived public/spectator branch.
 
 ### Step 6
 
-- exact engine/ruleset/package/catalog snapshot metadata;
-- full D&D seed/migration/catalog-gap closure;
-- complete structured selector/input/dependency metadata coverage;
-- proven specialized scheduled/simultaneous-order semantics;
-- mode isolation and LLM execution budget;
-- final holistic architecture/catalog/seed audit.
+Owns:
 
-## 8. Documentation debt
+- physical model-call topology for six roles;
+- model selection/context isolation/token/latency/cost budgets;
+- preparation retention/cache policy if justified;
+- default Commentator spoiler/perspective profile and optional deep-source/debug mode;
+- optional narration semantic verification/evaluation;
+- full migration/catalog-gap/seed/final holistic closure.
 
-`DEV/ARCHITECTURE/CATALOG_MODEL.md` and
-`DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` are historical derivation
-material containing older examples/version labels. They are not current authority
-for IDs/ownership. Current authority is the normative inventory, machine catalogs
-and canonical specs. Add/strengthen supersession warnings before implementation
-work relies on those historical examples.
+## 11. Exact continuation
 
-## 9. Exact continuation
+Step 4 remains the sole active numbered stage.
 
-Proceed with **Step 4 / Lore, Knowledge, Disclosure, Narrative Projection, and
-Promotion** using a solution-blind Task Brief and the canonical deep-design
-process.
+Next action:
+
+> Use `superpowers:writing-plans` to produce the Step-4 machine-contract implementation plan from the canonical Step-4 specification, then implement via TDD and fresh same-head verification before claiming Step-4 closure.
