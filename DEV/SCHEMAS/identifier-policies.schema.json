@@ -16,7 +16,7 @@
         "world.connection", "world.zone", "world.organization",
         "world.relationship", "world.contract", "world.mission",
         "world.scene", "world.encounter", "world.hazard", "world.effect",
-        "world.lore_fact", "world.knowledge", "world.timeline_marker"
+        "world.lore_fact", "world.knowledge"
       ],
       "properties": {
         "world.actor": {"$ref": "#/$defs/sequentialPolicy"},
@@ -34,8 +34,7 @@
         "world.hazard": {"$ref": "#/$defs/sequentialPolicy"},
         "world.effect": {"$ref": "#/$defs/sequentialPolicy"},
         "world.lore_fact": {"$ref": "#/$defs/sequentialPolicy"},
-        "world.knowledge": {"$ref": "#/$defs/sequentialPolicy"},
-        "world.timeline_marker": {"$ref": "#/$defs/sequentialPolicy"}
+        "world.knowledge": {"$ref": "#/$defs/sequentialPolicy"}
       }
     },
     "runtime": {
@@ -46,7 +45,6 @@
         "runtime.procedure", "runtime.intent_plan", "runtime.command",
         "runtime.resolution", "runtime.continuation", "runtime.mechanical_event",
         "runtime.semantic_event", "runtime.resolution_trace",
-        "runtime.dirty_record", "runtime.publication_batch",
         "runtime.checkpoint", "runtime.id_allocator",
         "runtime.maintenance_audit", "runtime.catalog_gap_report"
       ],
@@ -62,8 +60,6 @@
         "runtime.mechanical_event": {"$ref": "#/$defs/recordPolicy"},
         "runtime.semantic_event": {"$ref": "#/$defs/recordPolicy"},
         "runtime.resolution_trace": {"$ref": "#/$defs/recordPolicy"},
-        "runtime.dirty_record": {"$ref": "#/$defs/recordPolicy"},
-        "runtime.publication_batch": {"$ref": "#/$defs/recordPolicy"},
         "runtime.checkpoint": {"$ref": "#/$defs/recordPolicy"},
         "runtime.id_allocator": {"$ref": "#/$defs/recordPolicy"},
         "runtime.maintenance_audit": {"$ref": "#/$defs/recordPolicy"},
