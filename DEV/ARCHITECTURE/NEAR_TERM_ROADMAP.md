@@ -4,9 +4,7 @@ Status: **ACTIVE WORKING PLAN**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
-This roadmap is the sequencing gate for the current architecture program. It is
-a status/order document, not a duplicate normative specification. Closed-step
-semantic detail belongs to the linked canonical specifications.
+This roadmap is the sequencing/status gate for the current architecture program. It is intentionally compact; closed-step semantic detail belongs to linked canonical specifications rather than being duplicated here.
 
 Canonical process:
 
@@ -15,36 +13,29 @@ Canonical process:
 
 ## Operating rule
 
-- Exactly one numbered architecture step may be `IN PROGRESS`.
-- Later steps may be inspected only to expose dependencies/contradictions.
-- A step closes when its architecture artifacts/review/verification pass and
-  every unresolved implementation item has an explicit later owner or deferred
-  implementation obligation.
-- Architecture-stage closure does **not** imply that every accepted contract is
-  already implemented in GAME/runtime machine schemas.
-- Per owner direction, Steps 4–6 complete the remaining architecture sequence
-  before broad implementation planning begins.
-- After all major modules have designs, run one holistic architecture review over
-  the complete ownership graph, schemas, logic and cross-module relationships.
+- Exactly one numbered architecture slice may be `IN PROGRESS`.
+- Later slices may be inspected only to expose dependencies or contradictions.
+- A slice closes when its architecture/review/verification pass and unresolved implementation work has an explicit later owner/debt entry.
+- Architecture closure does **not** imply GAME/runtime/schema implementation is complete.
+- Steps 4–6 complete the architecture sequence before broad implementation planning.
+- After all major modules have designs, run one holistic architecture review over the full ownership graph, schemas, logic and cross-module relationships.
 
 ## Program roadmap
 
 | # | Status | Scope | Exit result |
 |---:|---|---|---|
-| 1 | **COMPLETE / ASSURED** | Critical audit of catalog/class architecture and accepted baseline | All findings fixed, owned or consciously deferred |
-| 2 | **COMPLETE / ASSURED** | Resources, HP/LifeState, Effects, Conditions, Duration, Recovery, selectors/query boundaries | Accepted ownership/mechanics contracts and assurance |
-| 3 | **COMPLETE / ASSURED** | `IntentPlan -> Resolution -> Signal/Event`, deterministic execution boundary, Procedure/Continuation | Canonical Alternative-C execution contract |
-| 4 | **COMPLETE / ARCHITECTURE CLOSED** | Truth/lore, fictional knowledge, disclosure, six logical LLM roles, Context Assembler, Story, promotion | Canonical information/role/Story architecture |
-| 5 | **IN PROGRESS** | Durability, recovery, multiplayer/live authority, chronology, Story/transcript publication/retention | Coherent publication/recovery/shared-state architecture through 5.14 |
-| 6 | `BLOCKED BY 5` | Modes, physical LLM orchestration/budget, deployment feasibility, migration/catalog/seed closure, holistic review | Enforceable mode/context topology and final architecture closure |
+| 1 | **COMPLETE / ASSURED** | Critical audit of catalog/class architecture and accepted baseline | Findings fixed, owned or consciously deferred |
+| 2 | **COMPLETE / ASSURED** | Resources, HP/LifeState, Effects, Conditions, Duration, Recovery, selectors/query boundaries | Accepted mechanics/ownership contracts and assurance |
+| 3 | **COMPLETE / ASSURED** | `IntentPlan -> Resolution -> Signal/Event`, deterministic execution, Procedure/Continuation | Canonical Alternative-C execution contract |
+| 4 | **COMPLETE / ARCHITECTURE CLOSED** | Truth/lore, knowledge, disclosure, six logical LLM roles, Context Assembler, Story, promotion | Canonical information/role/Story architecture |
+| 5 | **IN PROGRESS** | Durability, recovery, multiplayer/live authority, chronology, Story/transcript publication/retention | Coherent recoverable Step-5 architecture through 5.14 |
+| 6 | `BLOCKED BY 5` | Modes, physical LLM orchestration/budget, deployment feasibility, migration/catalog/seed closure, holistic review | Enforceable deployment/context topology and final architecture closure |
 
-## Steps 1–2 retrospective assurance
+## Steps 1–2 — CLOSED / ASSURED
 
 Final retrospective assurance:
 
 - `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
-
-Steps 1–2 remain closed and assured.
 
 ## Step 3 — CLOSED / ASSURED
 
@@ -61,24 +52,11 @@ Owner-approved architecture: **Alternative C**.
 Core ownership remains:
 
 ```text
-Interaction
-    -> IntentPlan
-        -> RuntimeCommand
-            -> ActionRequest -> Resolution(Activity)
-            OR
-            -> TransitionRequest -> direct deterministic execution
-
-runtime.procedure
-    sole procedure-local ResourceState owner
-
-Resolution / direct transition
-    -> embedded ExecutionSegment(s)
-        -> committed MechanicalEvents
-        -> receipts/idempotency
-        -> mandatory child descriptors
-
-Continuation
-    portable suspended Resolution generation
+Interaction -> IntentPlan -> RuntimeCommand
+RuntimeCommand -> Resolution(Activity) OR direct deterministic transition
+runtime.procedure -> sole Procedure ResourceState owner
+ExecutionSegment -> committed MechanicalEvents + receipts + mandatory children
+Continuation -> one portable suspended Resolution generation
 ```
 
 ## Step 4 — CLOSED
@@ -87,22 +65,11 @@ Canonical specification:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`
 
-Step 4 fixed objective-truth / fictional-knowledge / human-disclosure ownership,
-the six logical LLM roles, deterministic Context Assembler, noncanonical
-four-layer Story model and promotion/migration boundary.
+Step 4 fixed objective truth, fictional knowledge, human disclosure, six logical LLM roles, deterministic Context Assembler, noncanonical four-layer Story model and promotion boundary. Physical role-call topology remains Step 6.
 
-Physical role-call topology remains Step 6 work. Feasibility notes already
-preserved for that future spike:
+Deferred Step-6 feasibility input:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-6-llm-role-isolation-feasibility-spike-notes.md`
-
-The obsolete literary world vocabulary remains retired:
-
-```text
-world.chapter
-transition.chapter_append
-event.chapter.appended
-```
 
 ## Step 5 — active architecture stage
 
@@ -136,9 +103,7 @@ Final artifact:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-0-authority-contamination-final.md`
 
-5.0 retired obsolete/ownerless machine-visible abstractions before later
-persistence design. Catalog `1.6.0` remains the machine baseline produced by
-that cleanup.
+Obsolete/ownerless persistence abstractions were removed or assigned to later owners before later Step-5 work depended on them.
 
 ### Step 5.1 — CLOSED
 
@@ -148,34 +113,20 @@ Canonical specification:
 
 Owner-approved decision: **B-NARROW**.
 
-Canonical shared laws:
-
 ```text
-LAW 1 — DOMAIN TYPING
-Every correctness-relevant progress/coverage/revision/cursor/frontier claim
-identifies its semantic domain/scope.
-
-LAW 2 — NO IMPLICIT CROSS-DOMAIN ORDER
-No ordering/comparison is valid across different semantic domains unless a
-specific owning contract explicitly defines it.
+DOMAIN TYPING
+NO IMPLICIT CROSS-DOMAIN ORDER
 ```
 
-No generic Frontier record/API, universal sequence or RecoveryCut authority was
-introduced.
+No generic Frontier record/API, universal sequence or RecoveryCut authority.
 
 ### Step 5.2 — CLOSED
 
-Current canonical specification:
+Canonical specification:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md`
 
-Step 5.2 defines **Resumable Runtime Closure** as a correctness property over
-compatible domain-native durable sources + bounded typed recovery routing.
-Native owners remain authority; Temporal Agenda/caches are rebuilt; mutable
-sources are pinned to exact revisions; armed independently-due temporal owners
-remain enrolled; lost unpublished HOT/SOFT state is never invented.
-
-No universal snapshot/RecoveryCut/serialized Temporal Agenda was introduced.
+**Resumable Runtime Closure** is a property over compatible domain-native durable sources plus bounded typed recovery routing. Native owners remain authority; mutable sources are exact-revision pinned; Temporal Agenda/caches rebuild; lost unpublished HOT/SOFT is never invented.
 
 ### Step 5.3 — CLOSED
 
@@ -183,14 +134,7 @@ Canonical specification:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-3-temporal-pending-continuity-canonical-spec.md`
 
-Owner-approved decision: **A-NARROW / OWNER-CLAIM MATERIALIZATION**.
-
-Canonical consequences include derived due evaluation, distinct occurrence
-identity, direct/rearm/contingent-claim materialization, Step-3 execution
-authority, continuous bounded recovery reachability, experiment-scoped accepted
-RNG continuity and no implicit ordering between unrelated due obligations.
-
-No generic scheduler/job queue/pending ledger/firing authority was introduced.
+Owner-approved decision: **A-NARROW / OWNER-CLAIM MATERIALIZATION**. Temporal authority remains owner-local; due evaluation is derived; accepted occurrence/execution identities, fixed RNG and no-lost/no-double continuity are preserved without a global scheduler or total order.
 
 ### Step 5.4 — CLOSED
 
@@ -198,12 +142,7 @@ Canonical specification:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-canonical-spec.md`
 
-Owner-approved decision: **BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF**.
-
-Successful controlled handoff requires actual durable Resumable Runtime Closure;
-unexpected loss recovers only actual durable native sources. Host/chat lifecycle
-is not gameplay authority. Clean handoff creates no heartbeat write. Advisory
-capacity heuristics are not durability authority.
+Owner-approved decision: **BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF**. Controlled handoff requires actual durable RRC; unexpected loss recovers actual durable native sources; host/chat lifecycle is not gameplay authority; clean handoff creates no heartbeat.
 
 ### Step 5.5 — CLOSED
 
@@ -213,24 +152,19 @@ Canonical specification:
 
 Owner-approved decision: **EDGE-OBLIGATION / SCOPE-POLICY RECOVERY-CLOSURE DURABILITY**.
 
-Core canonical consequences:
+Key consequences:
 
 ```text
-EPHEMERAL/ESTABLISHED is separate from DURABLE/VOLATILE_DIRTY
-SOFT = established dirty state whose durability may currently defer
-HARD = MUST_BE_DURABLE_BEFORE(named edge), not an intrinsic fact class
-required durable source closure != physical pending write set
-durability closure = policy roots + accumulation roots + required dependencies
-explicit save protects every established dirty root in selected save scope + closure
-failed save does not hard-lock coherent local/private play
-correctness-critical edge cannot be falsely crossed without required durability
-unpublished exposure is scope-policy-owned risk control, not semantic expiry
-no universal numeric dirty threshold
+SOFT = ESTABLISHED + VOLATILE_DIRTY + MAY_DEFER
+HARD = MUST_BE_DURABLE_BEFORE(named edge)
+required durable closure != physical pending write set
+SAVE protects selected established dirty roots + required recovery closure
+failed ordinary save does not hard-lock coherent local/private play
+no universal dirty timeout
 clean state never creates heartbeat/no-op publication
 ```
 
-The old runtime `one hour / durable_frontier_time` contract is noncanonical
-implementation debt.
+The old runtime `one hour / durable_frontier_time` contract is noncanonical implementation debt.
 
 ### Step 5.6 — CLOSED
 
@@ -240,38 +174,18 @@ Canonical specification:
 
 Architecture direction: **PYTHON-OWNED SINGLE-REF CAS PUBLICATION**.
 
-Owner-fixed boundary:
-
-> Runtime repository/GitHub work is executed by deterministic Python core; LLM
-> roles do not directly own repository publication.
-
-Canonical consequences include:
+Owner-fixed boundary: runtime Git/repository publication belongs to deterministic Python core; LLM roles do not own repository transport.
 
 ```text
-one campaign durability transaction
-    -> one complete validated base-tree-derived tree
-    -> one single-parent commit from pinned H
-    -> one non-force/fast-forward authoritative ref transition
-
-prepared Git objects are never campaign authority
-preflight ref probe is optimization; final guard is parent(H)+non-force update
-ambiguous ACK uses bounded current-ref + lineage + current-closure verification
-HEAD movement is checked against bounded semantic/read/auth/recovery dependencies
-persistence retry does not replay accepted gameplay/RNG by default
-automatic contention retries are bounded
-publication dirty clearing is frozen-generation-specific
-successful native-domain publication remains real after another domain fails
-no distributed transaction, rollback-by-force, generic merge or transaction journal
-no checkpoint/Story/transcript publication merely because campaign state publishes
+complete campaign write-set
+-> one base-derived tree
+-> one single-parent commit from pinned H
+-> one non-force authoritative ref transition
 ```
 
-Host/deployment prerequisite discovered by 5.6:
+Prepared objects are nonauthority; ambiguous ACK requires bounded lineage/current-closure verification; conflicts are dependency-aware; accepted gameplay/RNG is not replayed merely because transport retries. No force push, generic merge or distributed transaction.
 
-- every persistence-capable deployment must provide Python core a trustworthy
-  authenticated `RepositoryPort`/equivalent;
-- there is no LLM-owned Git fallback in canonical runtime architecture.
-
-Preliminary Step-6 transport feasibility evidence is preserved in:
+Step-6 transport feasibility input:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-6-repository-port-transport-feasibility-spike.md`
 
@@ -281,102 +195,89 @@ Canonical specification:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-canonical-spec.md`
 
-Architecture direction:
+Architecture direction: **CURRENT-AUTHORITY-FIRST / CHECKPOINT-OPTIONAL NATIVE-ROUTED BOUNDED RECOVERY**.
 
-**CURRENT-AUTHORITY-FIRST / CHECKPOINT-OPTIONAL NATIVE-ROUTED BOUNDED RECOVERY**.
+Cold recovery starts from current campaign authority, resolves current native owning routes, exact-pins participating sources, discovers Step-5.2 roots, hydrates required closure, rebuilds derived state and returns `READY | RETRY | BLOCKED`. Checkpoint is optional immutable evidence/maintenance metadata, never current-state authority or mandatory startup anchor.
+
+### Step 5.8 — CLOSED
+
+Canonical specification:
+
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-canonical-spec.md`
+
+Architecture direction: **ROUTED FIXED-CLAIM LIVE EPOCH / EXACT-SOURCE CAS / TERMINAL SOURCE FREEZE / FORWARD CAMPAIGN ABSORPTION**.
 
 Derivation/review artifacts:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-task-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-research-draft.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-analytical-challenge.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-resolution-gate.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-analytical-challenge.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-resolution-gate.md`
 
 Canonical consequences include:
 
 ```text
-ordinary cold recovery starts from current campaign authority, not checkpoint
-campaign HEAD anchors discovery but does not prove complete multi-domain RRC
-current owning-scope routing selects native sources
-all participating mutable sources are exact-revision pinned per attempt
-Step-5.2 native typed routing/lifecycle owns bounded root discovery
-checkpoint may be completely ignored during healthy ordinary recovery
-checkpoint is optional immutable evidence/maintenance metadata, never state authority
-stale checkpoint never rolls newer valid native authority backward
-checkpoint hints are non-exhaustive and require current validation
-checkpoint absence does not invalidate save or recovery
-root-routing/lifecycle basis participates in final validation
-derived Agenda/cache/context state rebuilds
-recovery result is READY | RETRY | BLOCKED plus typed reason, separate from canon integrity
-READY is a validated basis, not a lock/lease or bypass of later CAS/fencing
-source movement causes bounded retry, not automatic corruption
-post-publication crash/lost ACK recovers actual current authority
-partial multi-domain publication remains real and is never checkpoint-rolled back
-accepted gameplay/RNG/choices are not replayed to rediscover persistence outcome
-valid_through_event_id is retired as generic checkpoint frontier
-expected_commit_sha is retired as self-referential checkpoint field
-checkpoint-local world_time is not chronology authority
-last_checkpoint_id is only an optional campaign-domain descriptor pointer
-checkpoint creation requires independent recovery/maintenance value, never freshness/age alone
-checkpoint + pointer publish in one campaign transaction; checkpoint is immutable
-historical rewind is not a default checkpoint guarantee and never uses force-ref rewind
-current recovery correctness does not depend on retaining old optional checkpoints
+current campaign routing selects one live epoch + immutable typed claims
+exact live source revision/HEAD is the CAS fence
+no leader/TTL lease/heartbeat correctness dependency
+exactly one current truth authority; at most one ordinary writable authority
+CLOSED_UNABSORBED = current truth with zero ordinary gameplay writers
+route-away requires confirmed source-local ACTIVE -> CLOSED fence
+claims may identify exact owners or owner-defined typed writable partitions
+write-authority lookup is bounded/machine-decidable; no all-live scan
+live claim requires native writable-scope containment
+live-born accepted IDs use collision-free epoch-qualified stable namespace
+live atomicity is per native Step-3 durability edge, not per user message
+a accepted execution/RNG/Procedure/Continuation/temporal state survives close
+absorption is forward campaign publication; no distributed transaction/force rollback
+SAVE does not close healthy live epochs merely to obtain durability
+revocation/controller removal closes affected live source before one combined campaign absorption+authorization transaction
+multi-live owner transfer freezes every affected source before one campaign transfer transaction
+partial multi-scope freeze is a valid recoverable mixed state
+cold host adopts ACTIVE or resumes CLOSED/absorption without leader takeover
+Step-4 truth/knowledge/disclosure remain separate semantic owners
+Python RepositoryPort owns live CAS; connector-specific CAS is feasibility evidence only
 ```
 
-Machine-realization debt includes typed partitioned recovery routing, Procedure
-lifecycle/root-enrollment evidence, checkpoint-schema reduction, current-authority-
-first bootstrap, deterministic Python recovery executor, bounded retry/currentness
-tests and removal of old checkpoint-first/mandatory-checkpoint assumptions.
+Machine-realization debt includes typed claim routing/lookup, containment rules per supported owner class, live ID namespace, Step-3-edge-aligned physical persistence, Procedure/Continuation/temporal routing through close/absorption, Step-4 knowledge/disclosure cleanup, Python `LiveSourceCAS`, concurrency/crash/save/handoff/transfer tests and fixed-claim rollover performance measurement.
 
-### Step 5.8 — NEXT, NOT STARTED
+### Step 5.9 — NEXT, NOT STARTED
 
-Step 5.8 owns **Multiplayer / Live-Epoch Ownership**.
+Step 5.9 owns **Chronology Persistence & Reconciliation**.
 
-It must now define the exact temporary shared-scene authority protocol that makes
-Step-5.7 current native source selection and recovery decidable under concurrent
-writers.
+Purpose: persist only temporal/causal evidence required for later correct rulings and recovery while preserving domain typing and partial ordering.
 
-Required questions include at minimum:
+Required investigation from the approved expanded agenda:
 
-- opening/adopting one live epoch and binding its owning scope;
-- one-writer/entity ownership and authorization/lease/fencing semantics;
-- exact active CAS mutation contract;
-- stale writer detection and rejection;
-- cold-host recovery/adoption while another live writer may still exist;
-- freeze/close semantics;
-- compaction/absorption into campaign authority;
-- authority-transfer ordering that never leaves two writable owners or no valid
-  current owner;
-- crash windows during campaign/live partial publication/compaction;
-- closed-but-unabsorbed, abandoned, stuck and orphan live branches;
-- rollover/new epoch creation;
-- membership changes during an epoch;
-- entity transfer between live scopes;
-- rare multi-scene/global-event slow path;
-- compatibility with Step-4 knowledge/disclosure and Step-5.7 recovery routing.
+- event-local partial ordering;
+- local scene frontiers;
+- globally reconciled sparse frontier;
+- retained quantitative elapsed evidence;
+- exact/approximate time;
+- cross-scene dependencies;
+- simultaneous/contested actions;
+- chronology interaction with Step-5.8 live compaction/recovery;
+- compaction of old chronology evidence without breaking still-live temporal predicates.
 
 Exit target:
 
-> Every live-owned mutable entity/scope has exactly one decidable current writable
-> authority, stale writers cannot publish, and cold recovery can adopt/reject a
-> live source without guessing from branch age, checkpoint age or Git timestamps.
+> Fictional chronology cannot be accidentally inferred from Git commit order, and retained evidence is sufficient for every still-live temporal obligation and causal dependency.
 
-**Do not begin Step 5.9 while Step 5.8 is in progress.**
+**Do not begin Step 5.10 while Step 5.9 is in progress.**
 
 ## Step 6 carry-forward
 
-Step 6 owns:
+Step 6 owns at least:
 
-- LLM role-isolation feasibility spike before physical orchestration design;
-- physical model-call topology for the six logical LLM roles;
-- model selection, context reset/isolation and role-call compatibility matrix;
-- minimum physical invocation count preserving Step-4 eligibility boundaries;
+- LLM role-isolation feasibility before physical orchestration design;
+- physical model-call topology for six logical roles;
+- model selection and real context reset/isolation compatibility;
+- minimum physical invocation count preserving Step-4 eligibility;
 - token/latency/cost budgets;
 - host/deployment capability profiles;
-- Step-5.6 Python `RepositoryPort` bridge feasibility for supported ChatGPT/API/app
-  deployment profiles;
+- deterministic Python `RepositoryPort` bridge feasibility for campaign and live CAS;
 - authenticated acting-principal transport feasibility;
 - Commentator serving/spoiler/perspective policy;
 - preparation caching/retention if justified;
@@ -384,30 +285,21 @@ Step 6 owns:
 - final holistic architecture/catalog/seed audit;
 - consolidation of implementation obligations before implementation planning.
 
-Step 6 may optimize physical role placement/deployment but cannot weaken Step-4
-context/authority boundaries or Step-5 durability/recovery invariants.
+Step 6 may optimize physical placement/deployment but cannot weaken Step-4 information boundaries or Step-5 durability/recovery/authority laws.
 
 ## Documentation / implementation debt
 
-- `DEV/ARCHITECTURE/CATALOG_MODEL.md` and
-  `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` remain historical derivation
-  material where later canonical specs supersede them.
-- The Step-5 expanded agenda contains old `one-hour` wording superseded by
-  canonical Step 5.5.
-- Current runtime persistence/recovery prose and schemas are partially stale
-  relative to Steps 5.2/5.5/5.6/5.7. In particular, old checkpoint-first wording,
-  `valid_through_event_id`, `expected_commit_sha`, mandatory PLAY_READY checkpoint
-  assumptions and missing typed recovery-routing/Procedure lifecycle realization
-  are implementation debt, not current architecture authority.
-- Broad GAME/schema/test realization remains deferred until the architecture
-  sequence closes and implementation planning begins.
+- `DEV/ARCHITECTURE/CATALOG_MODEL.md` and `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` remain historical derivation where later canonical specs supersede them.
+- The expanded Step-5 agenda contains older wording superseded by canonical slices; use the slice specs for semantics.
+- Runtime persistence/recovery/live prose and schemas are materially stale relative to Steps 5.2–5.8. Known debt includes checkpoint-first fields/assumptions, missing typed recovery routing and Procedure lifecycle, missing immutable live claims/bounded claim lookup, missing live-containment representation, campaign-only ID-allocation assumptions, one-high-level-action/one-live-write assumptions, legacy live knowledge representation and missing Python live `RepositoryPort` realization.
+- Broad GAME/schema/test realization remains deferred until the architecture sequence closes and implementation planning begins.
 
 ## Exact continuation point
 
-**Step 5.7 / Checkpoint / Recovery Protocol — CLOSED.**
+**Step 5.8 / Multiplayer / Live-Epoch Ownership — CLOSED.**
 
 Next architecture slice:
 
-**Step 5.8 / Multiplayer / Live-Epoch Ownership — NOT STARTED.**
+**Step 5.9 / Chronology Persistence & Reconciliation — NOT STARTED.**
 
-Do not begin Step 5.9 until Step 5.8 architecture closes.
+Do not begin Step 5.10 until Step 5.9 architecture closes.
