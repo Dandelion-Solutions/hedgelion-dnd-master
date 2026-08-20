@@ -33,6 +33,35 @@ For architecture/deep-work blocks:
 4. keep Superpowers artifacts under the repository locations defined by
    `AGENTS.md`.
 
+## Repository project-map / discovery requirement
+
+HDM maintains `DEV/PROJECT_MAP.md` as a **non-normative navigation and dependency
+index** for the repository. Its purpose is to prevent architecture research from
+being scoped only by remembered filenames or keyword-search hits as the project
+grows.
+
+Before substantive repository research:
+
+1. inspect the current remote branch/ref and current repository tree;
+2. consult `DEV/PROJECT_MAP.md` to identify likely owners, neighboring surfaces,
+   schemas, tests, support contracts and historical derivation that may matter;
+3. read the actual owning files before making correctness-sensitive claims;
+4. search concrete symbols/paths for consumers and stale references after the
+   structural pass;
+5. treat an empty keyword search as non-evidence of absence until the relevant
+   directory/tree and local indexes have also been checked.
+
+`DEV/PROJECT_MAP.md` is never a semantic source of truth and must not repeat full
+contracts merely for convenience. If it disagrees with an owning contract,
+schema, machine catalog, canonical specification, roadmap/status document or the
+actual current tree, that source wins and the map must be repaired.
+
+Update the project map when a file/directory/responsibility change would make
+future discovery materially misleading. Homogeneous families such as schemas,
+tests and dated design artifacts may be covered by path/pattern rather than by a
+manual entry for every member; the goal is reliable navigation and dependency
+discovery, not a second copy of repository contents.
+
 ## HDM decision rights
 
 Product requirements, gameplay semantics, project priorities, explicit risk
