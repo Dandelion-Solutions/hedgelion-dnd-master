@@ -1,0 +1,235 @@
+# Step 5.4 — Host Lifecycle & Session Handoff — Decision Brief
+
+Status: **HUMAN ARCHITECT APPROVAL REQUIRED — NOT CANONICAL**
+
+Date: 2026-08-20
+
+Inputs:
+
+- `2026-08-20-step-5-4-host-lifecycle-session-handoff-task-brief.md`
+- `2026-08-20-step-5-4-host-lifecycle-session-handoff-research-draft.md`
+- `2026-08-20-step-5-4-host-lifecycle-session-handoff-analytical-challenge.md`
+- Step-5.2 canonical v2
+- Step-5.3 canonical A-NARROW specification
+- Step-3 execution contract
+- current runtime lifecycle/persistence/session/live contracts
+
+---
+
+# 1. Approval requested
+
+Approve or reject the recommended Step-5.4 architecture direction:
+
+> **BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF**
+
+No implementation is requested by this decision.
+
+---
+
+# 2. Recommended architecture
+
+HDM does not add a durable handoff snapshot, generic transfer ticket, campaign-global host lease, or authoritative session record.
+
+Instead:
+
+```text
+ATTACHED HOST
+    -> explicit handoff or reliable imminent destructive-context signal
+    -> SCOPED HANDOFF BARRIER
+       freeze further acknowledged mutation in affected ownership scope
+       materialize promised unresolved semantics into existing native owners
+       establish a durable Step-5.2/5.3 Resumable Runtime Closure
+    -> RECOVERY_SAFE_HANDOFF acknowledged
+    -> old host relinquishes pre-handoff hot state
+
+UNEXPECTED LOSS / INCOMPLETE HANDOFF
+    -> no retroactive finalization
+    -> recover newest actually durable compatible native source set
+```
+
+A fresh host resumes through normal native hydration. It does not consume a handoff snapshot.
+
+---
+
+# 3. Core semantics
+
+## 3.1 Host lifecycle is separate from gameplay lifecycle
+
+Chat/context destruction does not itself:
+
+- pause/end the campaign;
+- advance fictional time;
+- close a Procedure;
+- cancel accepted execution;
+- create NPC/world actions.
+
+## 3.2 Controlled handoff is stronger than crash recovery
+
+A controlled recovery-safe handoff may be acknowledged only when every gameplay-significant state promised across that handoff is actually durably recoverable.
+
+Step 5.5 will define the exact durability class/dirty closure. Step 5.4 defines the lifecycle guarantee.
+
+## 3.3 Barrier requires scoped quiescence
+
+Once the handoff closure is frozen, the old host may not acknowledge additional gameplay mutation in that same scope until either:
+
+- the handoff succeeds and the host relinquishes; or
+- the handoff fails/is abandoned and normal attached operation resumes.
+
+This is not a campaign-global lock. Independent scopes may remain independent.
+
+## 3.4 Clean handoff does not require a heartbeat write
+
+If the complete promised resume state is already durably recoverable, the handoff may succeed without creating a commit merely to record that a handoff occurred.
+
+## 3.5 Failure does not become success by intent
+
+If publication fails while the old host survives, handoff remains incomplete.
+
+If the host is destroyed anyway, recovery uses unexpected/degraded-loss semantics and returns to the last actual durable closure.
+
+If a write may have succeeded but acknowledgement was lost, the fresh host determines the actual durable state through later 5.6/5.7 recovery rules; it does not trust remembered intent.
+
+---
+
+# 4. Semantic resume ownership
+
+No generic `resume_point` record is introduced.
+
+Use existing owners:
+
+| Situation | Resume owner/evidence |
+|---|---|
+| current world/scene state | native world or current live owner |
+| accepted player input before command | `Interaction` / `IntentPlan` when handoff promises that point |
+| accepted root execution | `RuntimeCommand` |
+| active/suspended Activity | `Resolution` / `Continuation` |
+| Procedure between commands | `runtime.procedure` |
+| Choice/Reaction | same Continuation generation/offer |
+| armed temporal work | native temporal source + typed routing |
+| accepted temporal firing | Step-5.3 source/execution closure |
+| exact wording only needed for presentation | not a recovery prerequisite |
+| exact wording genuinely preserves still-unmaterialized accepted meaning | specific Interaction/message evidence until typed meaning is materialized |
+
+Partial model reasoning / chain-of-thought is never a resume owner.
+
+---
+
+# 5. Session metadata
+
+Persistent `session` records remain coordination/recovery projection and optional observability metadata.
+
+They do not grant:
+
+- write authority;
+- current world/execution authority;
+- live-epoch authority;
+- definitive recovery frontier;
+- stale-host fencing by status alone.
+
+A stale/reopened host must revalidate current native authority/revisions before mutation. No campaign-global one-host lease is introduced.
+
+---
+
+# 6. Maintenance distinction
+
+Two cases become explicit:
+
+```text
+NON-DESTRUCTIVE MAINTENANCE
+    same host/context survives
+    -> ephemeral orientation/continuation frame may help presentation
+
+DESTRUCTIVE MAINTENANCE
+    host/context will be lost
+    -> ordinary controlled handoff barrier applies
+```
+
+Current runtime wording that relies only on a current-chat maintenance continuation frame is therefore insufficient for destructive maintenance and becomes later realization debt.
+
+---
+
+# 7. Context-expiry and periodic safety flush boundary
+
+The owner direction is incorporated as follows:
+
+```text
+reliable current context-expiry/destruction signal
+    -> Step 5.4 handoff barrier trigger
+
+generic risk that context may expire without a warning
+    -> Step 5.5 durability-risk / max dirty-age policy
+```
+
+No Step-5.4 timer value is approved.
+
+The existing runtime `one hour` dirty ceiling is **not** treated as canonical architecture. It is provisional/stale policy to be resolved by Step 5.5.
+
+The semantic risk metric should concern age/exposure of gameplay-significant unpublished state, not merely time since any Git commit. Clean state must not create heartbeat writes.
+
+---
+
+# 8. Alternatives considered
+
+## A — BARRIER-NATIVE — RECOMMENDED
+
+Reuse native owners; lifecycle adds a scoped barrier and acknowledgement precondition.
+
+**Pros:** minimal state, no duplicate authority, no clean heartbeat, domain-partitionable, works with current Step-5.2/5.3 model.
+
+**Cons:** temporarily quiesces affected mutation scope; later slices must implement physical durability/recovery mechanics.
+
+## B — Durable handoff ticket
+
+Persist source/target session, recovery refs, status and resume summary.
+
+**Pros:** explicit transfer observability.
+
+**Rejected because:** duplicates recovery/session/checkpoint concerns, risks becoming universal recovery-cut authority, creates clean handoff writes, requires retention/GC/repair, and does not solve live native ownership.
+
+## C — Authoritative session epoch/lease
+
+Make newest/current session generation the write-fencing authority.
+
+**Pros:** explicit stale-chat rejection.
+
+**Rejected because:** promotes coordination metadata into gameplay authority, conflicts with legitimate concurrent multiplayer/independent scopes, requires liveness/lease recovery, and duplicates native revision/authorization/live fencing.
+
+---
+
+# 9. Confidence and reversibility
+
+Recommendation confidence: **HIGH**.
+
+BARRIER-NATIVE does not prevent later addition of a scoped native lease/token if Step 5.8 proves one is required for a specific live ownership domain.
+
+It intentionally avoids making that future possibility a campaign-global abstraction now.
+
+A later optional audit record can also be added without changing handoff correctness if operational observability proves useful.
+
+---
+
+# 10. Carry-forward
+
+If approved, candidate specification will emit requirements to:
+
+- **5.5** — define handoff durability class/completeness and independent max unpublished-SOFT age policy; no numerical value pre-approved;
+- **5.6** — make authoritative publication outcome determinable across crash/ambiguous acknowledgement;
+- **5.7** — hydrate newest compatible valid native source set without handoff snapshot;
+- **5.8** — define any required live/scoped ownership fencing/transfer;
+- **5.11** — retain exact transcript only for genuine live semantic dependency;
+- **5.12** — separately define generated/emitted/acknowledged player-facing delivery.
+
+No Step 5.5 design begins as part of this approval.
+
+---
+
+# 11. Requested owner decision
+
+Approve or reject:
+
+```text
+BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF   [RECOMMENDED]
+```
+
+Approval authorizes candidate-spec formalization and adversarial/canonical closure of Step 5.4, not implementation.
