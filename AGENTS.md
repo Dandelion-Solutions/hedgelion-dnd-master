@@ -4,6 +4,17 @@
 
 This file governs **development work on the HDM engine repository**. It is not part of gameplay/runtime instructions and is never shipped in the runtime release asset.
 
+## Development design process
+
+Before architecture, system design, deep technical research, or other development work whose scope may affect architecture:
+
+1. read and follow `DEV/DESIGN_PROCESS.md`;
+2. for HDM architecture work, also read and follow `DEV/ARCHITECTURE/DESIGN_PROCESS.md`.
+
+`DEV/DESIGN_PROCESS.md` is the canonical general development/design process. `DEV/ARCHITECTURE/DESIGN_PROCESS.md` is the project-specific HDM adapter and adds constraints; it does not replace or weaken the general process.
+
+Do not rely on remembered versions of these rules. Read the current files on the active branch before substantive architecture/deep-work activity.
+
 ## Repository ownership geometry
 
 The source repository has two product ownership trees:
