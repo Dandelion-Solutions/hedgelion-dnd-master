@@ -57,10 +57,6 @@ Final critical review:
 
 - `DEV/docs/superpowers/specs/2026-08-19-step-3-final-critical-review.md`
 
-Machine-contract plan:
-
-- `DEV/docs/superpowers/plans/2026-08-19-step-3-execution-boundary-machine-contract.md`
-
 Core Step-3 ownership remains:
 
 ```text
@@ -86,142 +82,128 @@ Continuation
 
 ## Step 4 — closed architecture stage
 
-Step 4 completed a full design rerun after adoption of the six logical LLM roles.
-
 Canonical specification:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`
 
-Rerun chain:
+Step 4 fixed the objective-truth / fictional-knowledge / human-disclosure
+ownership split, the six logical LLM roles and deterministic Context Assembler,
+noncanonical four-layer Story model, promotion closure, and removal of separate
+Secret and literary Chapter authority.
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-task-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-research-draft.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-decision-resolution.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-resolution-gate.md`
-
-Cross-cutting role draft:
-
-- `DEV/docs/superpowers/specs/2026-08-20-llm-logical-roles-draft.md`
-
-### Canonical Step-4 ownership graph
+The obsolete literary world vocabulary remains retired:
 
 ```text
-CURRENT / OBJECTIVE
-    ordinary world state owners
-    world.lore_fact
-
-FICTIONAL PERSPECTIVE
-    world.knowledge
-
-HUMAN PLAYER EXPOSURE
-    runtime.disclosure
-
-HISTORY / EVIDENCE
-    runtime.semantic_event / LOG
-    runtime.mechanical_event
-
-ROLE CONTEXT
-    deterministic Context Assembler
-        -> Interpreter
-        -> Dramaturg
-        -> Actor
-        -> Narrator
-        -> Chronicler
-        -> Commentator
-
-NON-CANONICAL STORY
-    STORY/
-        TRANSCRIPT/
-        EVENTS/
-        MECHANICS/
-        NARRATIVE/
+world.chapter
+transition.chapter_append
+event.chapter.appended
 ```
 
-### Step-4 decisions settled
-
-- `world.lore_fact` owns independently identified objective propositions;
-- objective truth separates `undetermined / established / disproven` from record
-  lifecycle and in-world disagreement;
-- `world.knowledge` is the sole durable current fictional epistemic owner;
-- human-player exposure is separate `runtime.disclosure`, never implicit PC
-  knowledge;
-- legacy Secret has no independent truth/knowledge authority; secrecy is
-  contextual eligibility;
-- non-canonical reveal/clue preparation belongs to Dramaturg; actual reveal
-  mechanics remain with their real rules/world owner;
-- six logical LLM roles have role-specific source eligibility and typed handoffs;
-- narrower roles may not inherit broader hidden physical model context without a
-  genuine reset/isolation boundary;
-- `STORY` lives in the same campaign branch and is non-canonical;
-- `STORY/{TRANSCRIPT,EVENTS,MECHANICS,NARRATIVE}` uses layer-local IDs, explicit
-  crossrefs, one-record-per-file default and deterministic thousand-slot
-  sharding;
-- literary Chapters are NARRATIVE index groupings, not world entities;
-- Story spoiler/reveal eligibility is dependency/reference based rather than a
-  global chronological frontier;
-- durable knowledge/disclosure/history refs may promote an untracked proposition
-  as `world.lore_fact` with `undetermined` truth without asserting it true;
-- durable canonical refs close local-entity promotion dependencies.
-
-### Chapter retirement applied
-
-The obsolete literary-book seed has been removed from the active world machine
-namespace:
-
-```text
-world.chapter                RETIRED
-transition.chapter_append    RETIRED
-event.chapter.appended       RETIRED
-```
-
-Catalog version `1.5.0` is the first active closed vocabulary without those IDs.
-`CATALOG_INVENTORY.md`, `CATALOG_CONTRACTS.md`, `ENTITY_STRUCTURES.md`, machine
-entity structures and identifier policy all agree that literary Chapters are
-Story/NARRATIVE index metadata rather than world/runtime authority.
-
-Historical derivation documents may still mention the retired IDs as history;
-they are non-authoritative where they conflict with the current inventory and
-canonical Step-4 specification.
-
-### Deferred Step-4 machine realization
-
-Step-4 architecture is closed, but most of its accepted machine contracts are
-**not yet implemented**. This is deliberate, not an assertion of implementation.
-The deferred implementation obligation includes at least:
-
-- normalized `world.lore_fact` truth/lifecycle schema;
-- normalized `world.knowledge` stances/current ownership;
-- `runtime.disclosure` class/schema/provenance;
-- Context Assembler request/bundle/source-manifest contracts;
-- role-specific eligibility and NarrationResult disclosure evidence;
-- Story root/layout/record/index/availability schemas;
-- legacy Secret and embedded-knowledge migration;
-- live-scene knowledge/disclosure compaction alignment.
-
-These obligations must be carried into the integrated implementation program
-after Steps 5–6 architecture, unless a later architecture decision explicitly
-supersedes them.
+Most Step-4 machine realization remains explicitly deferred until the integrated
+implementation program after Steps 5–6 architecture.
 
 ## Step 5 — active architecture stage
 
-Step 5 now owns physical durability/transport and shared-state semantics needed
-by the already-defined Step-4 information/Story contracts, including:
+Expanded Step-5 architecture agenda:
 
-- checkpoint publication/restoration;
-- SOFT/HARD durability;
-- multiplayer/shared conflicts and live-scene compaction transport;
-- chronology evidence and cross-scene reconciliation;
-- Story record/index/availability publication atomicity;
-- Story ID allocation under concurrency;
-- transcript/history retention and compaction;
-- checkpoint cleanup/expiry;
-- exact host response-delivery acknowledgement used by disclosure persistence.
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-expanded-architecture-agenda.md`
 
-Step 5 does **not** own a separate long-lived public/spectator campaign branch;
-the accepted topology remains one durable campaign branch plus temporary
-live-scene branches only.
+The current slice order is:
+
+```text
+5.0  Authority / Contamination Audit
+5.1  Frontier Model
+5.2  Resumable Runtime Closure
+5.3  Temporal & Pending-Obligation Continuity
+5.4  Host Lifecycle & Session Handoff
+5.5  SOFT / HARD / SAVE Durability Semantics
+5.6  Campaign Publication & Crash Consistency
+5.7  Checkpoint / Recovery Protocol
+5.8  Multiplayer / Live-Epoch Ownership
+5.9  Chronology Persistence & Reconciliation
+5.10 Story Projection Durability
+5.11 Transcript / History Retention & Compaction
+5.12 Host Delivery / Disclosure Boundary
+5.13 Garbage Collection / Orphan Cleanup
+5.14 Full Recovery & Concurrency Adversarial Review
+```
+
+### Step 5.0 — CLOSED
+
+Final artifact:
+
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-0-authority-contamination-final.md`
+
+5.0 removed obsolete/ownerless machine-visible abstractions before they could
+leak into later persistence design, including independent Secret/tactical
+placeholders, generic pending consequences, old global timeline record IDs,
+premature dirty/publication record classes, duplicate checkpoint/frontier
+pointers and obsolete campaign-path wrapper spelling.
+
+Catalog `1.6.0` is the current machine baseline after those retirements.
+
+### Step 5.1 — CLOSED
+
+Canonical specification:
+
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-canonical-spec.md`
+
+Owner-approved decision: **B-NARROW**.
+
+Canonical shared laws:
+
+```text
+LAW 1 — DOMAIN TYPING
+Every correctness-relevant progress/coverage/revision/cursor/frontier claim
+identifies the semantic domain/scope in which it is meaningful.
+
+LAW 2 — NO IMPLICIT CROSS-DOMAIN ORDER
+No ordering/comparison is valid across different semantic domains unless a
+specific owning contract explicitly defines that relation.
+```
+
+Step 5.1 deliberately introduces no generic Frontier record/schema/API,
+universal comparison operation, global monotonic sequence or RecoveryCut record.
+Concrete representations remain domain-native.
+
+Important consequences:
+
+- frontier/progress metadata never becomes semantic authority merely by existing;
+- HOT current truth and campaign durability are distinct axes;
+- a composed coherent read view does not merge writable authority;
+- campaign publication, live operational revision, fictional chronology,
+  runtime continuation/RNG state and Story projection coverage remain distinct
+  domains;
+- `coherent source cut` is a conceptual one-operation selection/compatibility
+  relation, not an owner or required record;
+- `runtime.id_allocator` / `campaign-allocator` remains the distinct owner of
+  campaign-scoped allocation counters; centralized counter ownership is not a
+  frontier and does not imply a synchronous global gameplay lock;
+- `CURRENT.last_event_id` is retired from the active schema/template as a global
+  reconnect/recovery/log cursor;
+- SemanticEvent identities and explicit per-record provenance remain valid;
+- `checkpoint.valid_through_event_id` remains a narrower 5.7 question and is not
+  treated as the universal recovery frontier;
+- numeric/sparse ordering remains allowed inside an explicit chronology domain;
+  5.9 owns final chronology representation.
+
+Adversarial review found no owner blocker and resolved all significant findings
+without reopening B-NARROW.
+
+### Step 5.2 — NEXT, NOT STARTED
+
+Step 5.2 owns **Resumable Runtime Closure**: determining which gameplay-significant
+in-memory/operational state must survive process/chat loss, what is authoritative
+versus recovery projection versus rebuildable cache versus truly ephemeral, and
+what minimum durable closure permits a fresh runtime to resume from the real
+recoverable point.
+
+Step 5.2 must preserve the Step-5.1 domain-typing and no-implicit-cross-domain-
+order laws. It must not serialize derived Temporal Agenda as a new temporal
+authority; Temporal Agenda rebuild and pending-obligation lifecycle are primarily
+5.3 concerns.
+
+**Do not start 5.2 as part of 5.1 closure.**
 
 ## Step 6 carry-forward
 
@@ -230,33 +212,26 @@ Step 6 owns:
 - physical model-call topology for the six logical LLM roles;
 - model selection, context reset/isolation and role-call compatibility matrix;
 - token/latency/cost budgets;
-- default Commentator spoiler/perspective mode and optional deep-source/debug
-  mode;
-- optional narration semantic verification/evaluation;
+- Commentator serving/spoiler/perspective policy;
 - preparation caching/retention if justified;
-- exact engine/ruleset/package/catalog snapshot metadata;
-- full D&D seed and migration/catalog-gap closure;
+- migration/catalog-gap/full-seed closure;
 - final holistic architecture/catalog/seed audit;
-- consolidation of implementation obligations discovered in Steps 4–6 before
-  implementation planning begins.
+- consolidation of implementation obligations before implementation planning.
 
 Step 6 may optimize role placement but cannot weaken Step-4 context/authority
-boundaries.
+boundaries or Step-5 durability/recovery invariants.
 
 ## Documentation debt
 
 `DEV/ARCHITECTURE/CATALOG_MODEL.md` and
 `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` remain historical derivation
-material with examples/version labels predating current canonical Step-2/3/4
-contracts. They are non-authoritative relative to `CATALOG_INVENTORY.md`,
-machine catalogs/schemas and canonical specs. Strengthen supersession warnings
-before implementation relies on those historical examples.
+material predating current canonical Step-2/3/4/5 contracts. They are
+non-authoritative relative to current inventory, machine schemas/catalogs and
+canonical specs.
 
 ## Exact continuation point
 
-**Step 5 / Durability, Multiplayer, Event-Local Time, Story/Transcript
-Publication and Retention.**
+**Step 5.2 / Resumable Runtime Closure — NOT STARTED.**
 
-Do not begin broad implementation planning merely because Step 4 is closed;
-complete the remaining architecture sequence first unless the owner explicitly
-changes that order.
+Step 5.1 is closed. Do not begin Step 5.2 until the 5.1 closure/result has been
+reported and the architecture sequence is explicitly continued.
