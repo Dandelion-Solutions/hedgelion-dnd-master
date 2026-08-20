@@ -1,6 +1,6 @@
 # HDM Catalog — Universal Record Contracts
 
-Status: **AGREED**
+Status: **AGREED — STEP-5.0 CONTAMINATION RETIREMENTS APPLIED**
 
 Target: `feature/mechanical-runtime-hot-state`
 
@@ -51,6 +51,11 @@ If a previously embedded value later requires independent addressing, retry,
 reference, or lifecycle, promoting it to a record is an explicit architecture
 change. Serialization inside a runtime record does not itself grant independent
 identity.
+
+The same rule applies to operational bookkeeping. A dirty-set entry or prepared
+publication snapshot is not a `runtime.*` record merely because the runtime may
+serialize it locally. Step 5.5/5.6 must prove independent identity/lifecycle
+before such a class is admitted.
 
 ## 2. Reusable definition envelope
 
@@ -261,7 +266,8 @@ The following data is deliberately excluded from the universal records:
 | Information | Owner |
 |---|---|
 | canonical/local/ephemeral status | runtime and checkpoint frontier |
-| dirty/publication status | runtime dirty record/publication batch |
+| dirty state | HOT working-set bookkeeping owned by the runtime representation selected in Step 5.5; no independent `runtime.dirty_record` is admitted in catalog 1.6.0 |
+| publication preparation/status | frozen transport/publication state selected in Step 5.6; no independent `runtime.publication_batch` is pre-admitted |
 | object creation or change history | mechanical/semantic event log |
 | source and license of a rules package | catalog/package metadata |
 | import and migration history | migration log |
@@ -299,6 +305,8 @@ and lifecycle. If independent addressing becomes necessary, introducing a
 runtime record is an explicit contract change.
 
 Timeline slots and encounter rounds are ordering/state values, not entity IDs.
+A sparse numeric timeline value MAY order events inside an explicit local/domain
+chronology without becoming a campaign-global chronology authority.
 
 Persistent world-record IDs and independently numbered runtime records use
 campaign-scoped counters owned by runtime. Allocation and record creation form
@@ -318,13 +326,14 @@ in a 200-hour campaign. They are not limits: after `turn-999999` comes
 | 3 | actor group, organization, contract |
 | 4 | actor, location, connection, zone, mission, scene, encounter, hazard, lore fact, maintenance audit, catalog-gap report, session |
 | 5 | asset, relationship |
-| 6 | effect, knowledge, turn/interaction, publication batch, checkpoint |
+| 6 | effect, knowledge, turn/interaction, checkpoint |
 | 7 | message, resolution, semantic event |
 | 8 | mechanical event |
 
 Intent plans, commands, continuations, and resolution traces derive identity
-from their owning interaction or resolution. Dirty-record identity is its
-target record; the allocator is a singleton.
+from their owning interaction or resolution. The allocator is a singleton.
+Dirty bookkeeping and publication snapshots have no record-ID policy in catalog
+1.6.0.
 
 Story layer-local IDs follow the canonical Step-4 Story contract and are outside
 this world/runtime allocator table. Literary Chapter boundaries are Story index
