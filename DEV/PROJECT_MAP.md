@@ -297,13 +297,6 @@ Current template responsibilities:
 - `SESSIONS/_TEMPLATE.yaml` — runtime session record template/root.
 - `RULES/HOUSE_RULES.md` — campaign-local durable rulings/house rules.
 
-Inventory finding requiring later explicit disposition:
-
-- `INDEX/SECRET_INDEX.yaml` still exists in the current template even though the
-  independent generic Secret schema/root was retired in Step 5.0. Treat this as
-  a suspected stale template/index artifact; do not infer a revived Secret owner
-  from its presence.
-
 ## 7.5 `GAME/INSTALL/`
 
 - `00_DND_BOOTSTRAP.md` — package bootstrap procedure executed before campaign-specific work.
