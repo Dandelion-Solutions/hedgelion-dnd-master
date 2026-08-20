@@ -5,7 +5,8 @@ Status: **ACTIVE WORKING PLAN**
 Target branch: `feature/mechanical-runtime-hot-state`
 
 This roadmap is the sequencing gate for the current architecture program. It is
-a status/order document, not a duplicate normative specification.
+a status/order document, not a duplicate normative specification. Closed-step
+semantic detail belongs to the linked canonical specifications.
 
 Canonical process:
 
@@ -26,28 +27,26 @@ Canonical process:
 - After all major modules have designs, run one holistic architecture review over
   the complete ownership graph, schemas, logic and cross-module relationships.
 
-## Roadmap
+## Program roadmap
 
-| # | Status | Scope | Required architecture result | Exit gate |
-|---:|---|---|---|---|
-| 1 | **COMPLETE / ASSURED** | Critical audit of catalog/class architecture and accepted baseline | Owned audit ledger + retrospective assurance | Every finding fixed, assigned, or consciously deferred; no unowned blocker |
-| 2 | **COMPLETE / ASSURED** | Resources, HP/LifeState, Effects, Conditions, Duration, Recovery, selector/query boundaries | Normative ownership models + aligned schemas/catalogs + focused cases + retrospective assurance | No unresolved Step-2 blocker; validation passed |
-| 3 | **COMPLETE / ASSURED** | `IntentPlan -> Resolution -> Signal/Event`, including LLM/core execution boundary, Procedure ownership and checkpointable continuation | Canonical Alternative-C execution contract + machine schemas/catalogs + A–N cases + adversarial/final critical review | Final same-head validation succeeded; no unresolved Step-3 blocker |
-| 4 | **COMPLETE / ARCHITECTURE CLOSED** | Truth/lore, fictional knowledge, human disclosure, six-role LLM context boundaries, Story projections, promotion | Canonical truth/knowledge/disclosure owners + deterministic Context Assembler + role handoffs + four-layer Story contract + promotion/migration contract | Full-cycle rerun + adversarial resolution complete; obsolete Chapter world authority removed; no unresolved Step-4 architecture blocker; remaining machine realization explicitly deferred |
-| 5 | **IN PROGRESS** | Durability, multiplayer, event-local time, Story/transcript publication/retention | Compatible SOFT/HARD publication, shared visibility/conflict/recovery model, Story persistence/compaction | Publication/live-scene ownership, cross-scene recovery, chronology, Story/index publication, transcript retention and shared revision semantics are coherent |
-| 6 | `BLOCKED BY 5` | Modes, physical LLM orchestration/budget, migration, catalog gaps, full seed, final closure | Mode profiles + role-call compatibility/isolation + final cross-cutting consistency pass | Mode/context isolation enforceable; migration/gap/seed ownership complete; holistic architecture audit passes |
+| # | Status | Scope | Exit result |
+|---:|---|---|---|
+| 1 | **COMPLETE / ASSURED** | Critical audit of catalog/class architecture and accepted baseline | All findings fixed, owned or consciously deferred |
+| 2 | **COMPLETE / ASSURED** | Resources, HP/LifeState, Effects, Conditions, Duration, Recovery, selectors/query boundaries | Accepted ownership/mechanics contracts and assurance |
+| 3 | **COMPLETE / ASSURED** | `IntentPlan -> Resolution -> Signal/Event`, deterministic execution boundary, Procedure/Continuation | Canonical Alternative-C execution contract |
+| 4 | **COMPLETE / ARCHITECTURE CLOSED** | Truth/lore, fictional knowledge, disclosure, six logical LLM roles, Context Assembler, Story, promotion | Canonical information/role/Story architecture |
+| 5 | **IN PROGRESS** | Durability, recovery, multiplayer/live authority, chronology, Story/transcript publication/retention | Coherent publication/recovery/shared-state architecture through 5.14 |
+| 6 | `BLOCKED BY 5` | Modes, physical LLM orchestration/budget, deployment feasibility, migration/catalog/seed closure, holistic review | Enforceable mode/context topology and final architecture closure |
 
 ## Steps 1–2 retrospective assurance
 
-The non-numbered retrospective assurance overlay is complete:
+Final retrospective assurance:
 
 - `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
 
 Steps 1–2 remain closed and assured.
 
-## Step 3 closure
-
-Owner-approved architecture: **Alternative C**.
+## Step 3 — CLOSED / ASSURED
 
 Canonical specification:
 
@@ -57,7 +56,9 @@ Final critical review:
 
 - `DEV/docs/superpowers/specs/2026-08-19-step-3-final-critical-review.md`
 
-Core Step-3 ownership remains:
+Owner-approved architecture: **Alternative C**.
+
+Core ownership remains:
 
 ```text
 Interaction
@@ -73,23 +74,27 @@ runtime.procedure
 Resolution / direct transition
     -> embedded ExecutionSegment(s)
         -> committed MechanicalEvents
-        -> receipts / idempotency
+        -> receipts/idempotency
         -> mandatory child descriptors
 
 Continuation
     portable suspended Resolution generation
 ```
 
-## Step 4 — closed architecture stage
+## Step 4 — CLOSED
 
 Canonical specification:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`
 
-Step 4 fixed the objective-truth / fictional-knowledge / human-disclosure
-ownership split, the six logical LLM roles and deterministic Context Assembler,
-noncanonical four-layer Story model, promotion closure, and removal of separate
-Secret and literary Chapter authority.
+Step 4 fixed objective-truth / fictional-knowledge / human-disclosure ownership,
+the six logical LLM roles, deterministic Context Assembler, noncanonical
+four-layer Story model and promotion/migration boundary.
+
+Physical role-call topology remains Step 6 work. Feasibility notes already
+preserved for that future spike:
+
+- `DEV/docs/superpowers/specs/2026-08-20-step-6-llm-role-isolation-feasibility-spike-notes.md`
 
 The obsolete literary world vocabulary remains retired:
 
@@ -99,16 +104,13 @@ transition.chapter_append
 event.chapter.appended
 ```
 
-Most Step-4 machine realization remains explicitly deferred until the integrated
-implementation program after Steps 5–6 architecture.
-
 ## Step 5 — active architecture stage
 
-Expanded Step-5 architecture agenda:
+Expanded historical/working agenda:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-expanded-architecture-agenda.md`
 
-The current slice order is:
+Current slice order:
 
 ```text
 5.0  Authority / Contamination Audit
@@ -134,13 +136,9 @@ Final artifact:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-0-authority-contamination-final.md`
 
-5.0 removed obsolete/ownerless machine-visible abstractions before they could
-leak into later persistence design, including independent Secret/tactical
-placeholders, generic pending consequences, old global timeline record IDs,
-premature dirty/publication record classes, duplicate checkpoint/frontier
-pointers and obsolete campaign-path wrapper spelling.
-
-Catalog `1.6.0` is the current machine baseline after those retirements.
+5.0 retired obsolete/ownerless machine-visible abstractions before later
+persistence design. Catalog `1.6.0` remains the machine baseline produced by
+that cleanup.
 
 ### Step 5.1 — CLOSED
 
@@ -155,40 +153,15 @@ Canonical shared laws:
 ```text
 LAW 1 — DOMAIN TYPING
 Every correctness-relevant progress/coverage/revision/cursor/frontier claim
-identifies the semantic domain/scope in which it is meaningful.
+identifies its semantic domain/scope.
 
 LAW 2 — NO IMPLICIT CROSS-DOMAIN ORDER
 No ordering/comparison is valid across different semantic domains unless a
-specific owning contract explicitly defines that relation.
+specific owning contract explicitly defines it.
 ```
 
-Step 5.1 deliberately introduces no generic Frontier record/schema/API,
-universal comparison operation, global monotonic sequence or RecoveryCut record.
-Concrete representations remain domain-native.
-
-Important consequences:
-
-- frontier/progress metadata never becomes semantic authority merely by existing;
-- HOT current truth and campaign durability are distinct axes;
-- a composed coherent read view does not merge writable authority;
-- campaign publication, live operational revision, fictional chronology,
-  runtime continuation/RNG state and Story projection coverage remain distinct
-  domains;
-- `coherent source cut` is a conceptual one-operation selection/compatibility
-  relation, not an owner or required record;
-- `runtime.id_allocator` / `campaign-allocator` remains the distinct owner of
-  campaign-scoped allocation counters; centralized counter ownership is not a
-  frontier and does not imply a synchronous global gameplay lock;
-- `CURRENT.last_event_id` is retired from the active schema/template as a global
-  reconnect/recovery/log cursor;
-- SemanticEvent identities and explicit per-record provenance remain valid;
-- `checkpoint.valid_through_event_id` remains a narrower 5.7 question and is not
-  treated as the universal recovery frontier;
-- numeric/sparse ordering remains allowed inside an explicit chronology domain;
-  5.9 owns final chronology representation.
-
-Adversarial review found no owner blocker and resolved all significant findings
-without reopening B-NARROW.
+No generic Frontier record/API, universal sequence or RecoveryCut authority was
+introduced.
 
 ### Step 5.2 — CLOSED
 
@@ -196,47 +169,13 @@ Current canonical specification:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md`
 
-The earlier `...canonical-spec.md` remains historical derivation and is superseded
-for current Step-5.2 authority by v2.
-
 Step 5.2 defines **Resumable Runtime Closure** as a correctness property over
-compatible domain-native durable sources and bounded typed recovery routing. It
-does not introduce a new state authority, universal snapshot, RecoveryCut record,
-serialized Temporal Agenda or mandatory closure record.
+compatible domain-native durable sources + bounded typed recovery routing.
+Native owners remain authority; Temporal Agenda/caches are rebuilt; mutable
+sources are pinned to exact revisions; armed independently-due temporal owners
+remain enrolled; lost unpublished HOT/SOFT state is never invented.
 
-Canonical consequences include:
-
-```text
-native owners remain authority
-bounded typed operational-root discovery is required
-routing membership is recovery evidence, not owner state
-routing must be partitionable by native writable scope
-Procedure remains independently recoverable across gaps between Commands
-Temporal Agenda is rebuilt from native temporal owners
-all armed independently-due temporal source owners stay enrolled while armed
-fixed accepted execution inputs survive in Step-3 owners
-hydration pins each mutable native source to an exact revision
-recovery resolves through current owning scope; stale cross-domain fallback is forbidden
-root enrollment changes are correctness-critical derivatives of native lifecycle
-open execution requires resolvable compatible runtime/catalog interpretation context
-lost unpublished HOT/SOFT state is never invented after total context loss
-```
-
-The unconditional armed-temporal enrollment rule deliberately avoids a dynamic
-reachability optimization: a due-capable armed owner remains in typed temporal
-routing even if another active root also reaches it. Only owner identity/routing
-is duplicated; deadlines, due state, ordering, firing state and lifecycle remain
-native owner/chronology/execution semantics.
-
-Checkpoint remains sparse recovery evidence and cannot be the sole current active
-root source. Exact routing/checkpoint/live placement is intentionally deferred to
-5.7/5.8 after due-work, durability and publication constraints are known.
-
-Adversarial review plus addendum found no blocking owner decision. Significant
-findings were resolved through pinned native hydration, owning-scope resolution,
-root-membership completeness, Procedure lifecycle validation, temporal routing
-field exclusions, interpretation-context closure and simplified armed-temporal
-enrollment.
+No universal snapshot/RecoveryCut/serialized Temporal Agenda was introduced.
 
 ### Step 5.3 — CLOSED
 
@@ -246,39 +185,12 @@ Canonical specification:
 
 Owner-approved decision: **A-NARROW / OWNER-CLAIM MATERIALIZATION**.
 
-Canonical consequences include:
+Canonical consequences include derived due evaluation, distinct occurrence
+identity, direct/rearm/contingent-claim materialization, Step-3 execution
+authority, continuous bounded recovery reachability, experiment-scoped accepted
+RNG continuity and no implicit ordering between unrelated due obligations.
 
-```text
-Temporal due evaluation is derived: NOT_DUE | DUE | INDETERMINATE
-occurrence identity is distinct from timing value
-accepted occurrence G must stop being freshly materializable
-materialization uses one of:
-    DIRECT FINALIZATION
-    SAFE IMMEDIATE REARM
-    CONTINGENT CLAIMED(G,F)
-Step-3 remains accepted execution authority
-CLAIMED exists only while source-owner settlement depends on F
-source/execution closure is an integrity invariant
-bounded recovery reachability remains continuous across root handoff
-multiple due obligations do not gain implicit storage/ID order
-cold hydration/host elapsed time do not invent fictional advancement
-accepted RNG continuity is experiment-scoped, not a universal future stream
-accepted firing resumes under pinned compatible interpretation context
-```
-
-Step 5.3 introduces no generic scheduler, generic pending-obligation/job record,
-standalone firing authority, durable due marker, authoritative Temporal Agenda,
-synthetic background RuntimeCommand or universal future RNG frontier.
-
-The current machine schemas intentionally remain behind the canonical semantic
-contract in places such as temporal occurrence generation/claim representation
-and `Continuation.future_rng_frontier`; those are recorded implementation
-obligations for the integrated machine-realization program after architecture.
-
-Adversarial review resolved significant refinements around conditional claim
-scope, continuous bounded-recovery handoff, immediate-rearm overlap safety and
-stable experiment association for fixed RNG. No Step-5.3 architecture blocker
-remains.
+No generic scheduler/job queue/pending ledger/firing authority was introduced.
 
 ### Step 5.4 — CLOSED
 
@@ -288,58 +200,10 @@ Canonical specification:
 
 Owner-approved decision: **BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF**.
 
-Derivation/review artifacts include:
-
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-task-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-research-draft.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-analytical-challenge.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-decision-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-resolution-gate.md`
-
-Canonical consequences include:
-
-```text
-host/chat/process lifecycle is not gameplay authority
-controlled handoff and unexpected loss have different guarantees
-successful handoff requires actual durable Resumable Runtime Closure
-handoff uses scoped mutation/semantic-acceptance quiescence, not a global lock
-external native-source movement revalidates/invalidate selected closure
-existing Step-3/5.2/5.3 native owners carry resume semantics
-clean handoff does not require a heartbeat write
-session metadata remains non-authoritative
-relinquished hosts must rehydrate/revalidate before later mutation
-hydration does not prove absence of unpublished volatile state in another host
-destructive maintenance uses the same handoff guarantee
-partial model reasoning/raw context is never recovery authority
-accepted-but-not-typed input requires resolvable evidence or materialization
-open execution preserves compatible accepted interpretation context
-```
-
-Host conversation/message/context capacity exhaustion is explicitly covered:
-
-```text
-RELIABLE_DESTRUCTIVE
-    -> controlled handoff opportunity/attempt
-    -> warning reliability does not guarantee enough execution budget
-
-ADVISORY_CAPACITY
-    -> OOC warning/recommend proactive transfer
-    -> no durability/recovery authority
-
-NO_USABLE_SIGNAL / HARD STOP
-    -> unexpected-loss recovery to actual durable closure
-```
-
-No trustworthy remaining-message/token/capacity metric is assumed. Message count,
-approximate token count, chat age or a future locally derived predictor may only
-support an explicitly advisory heuristic unless a future host contract provides
-stronger reliable semantics.
-
-Step 5.4 introduces no mandatory handoff snapshot/ticket, generic resume-point
-record, campaign-global host/session lease, durable RELINQUISHED marker,
-authoritative capacity heuristic or raw model-context persistence.
+Successful controlled handoff requires actual durable Resumable Runtime Closure;
+unexpected loss recovers only actual durable native sources. Host/chat lifecycle
+is not gameplay authority. Clean handoff creates no heartbeat write. Advisory
+capacity heuristics are not durability authority.
 
 ### Step 5.5 — CLOSED
 
@@ -349,118 +213,163 @@ Canonical specification:
 
 Owner-approved decision: **EDGE-OBLIGATION / SCOPE-POLICY RECOVERY-CLOSURE DURABILITY**.
 
-Derivation/review artifacts include:
-
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-task-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-research-draft.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-analytical-challenge.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-owner-clarification-addendum.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-decision-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-resolution-gate.md`
-
-Canonical consequences include:
+Core canonical consequences:
 
 ```text
 EPHEMERAL/ESTABLISHED is separate from DURABLE/VOLATILE_DIRTY
 SOFT = established dirty state whose durability may currently defer
 HARD = MUST_BE_DURABLE_BEFORE(named edge), not an intrinsic fact class
-establishment follows native owner acceptance semantics
-required durable source closure is distinct from physical pending write set
-durability closure = policy roots + policy accumulation roots + required semantic/recovery dependencies
-ordinary singleplayer boundaries may protect accumulated local SOFT
-explicit save protects every established dirty root in selected save scope + required closure
-save success may compose compatible native durability domains; no global transaction implied
-clean already-durable save may succeed with zero heartbeat write
+required durable source closure != physical pending write set
+durability closure = policy roots + accumulation roots + required dependencies
+explicit save protects every established dirty root in selected save scope + closure
 failed save does not hard-lock coherent local/private play
-partial native success remains real authority even when overall save fails
 correctness-critical edge cannot be falsely crossed without required durability
-local/private dirty exposure is scope-aware risk-control/SLO, not semantic expiry
-exposure starts from actual unpublished state, not arbitrary commit age
-unrelated publication cannot falsely reset another dirty partition
-no exact timed flush without host execution opportunity
+unpublished exposure is scope-policy-owned risk control, not semantic expiry
 no universal numeric dirty threshold
-advisory host-capacity heuristics may warn/opportunistically flush but are not correctness authority
-shared/live policies may impose stronger event-driven durability in Step 5.8
-checkpoint/Story/transcript/delivery remain separate ownership concerns
+clean state never creates heartbeat/no-op publication
 ```
 
-The current runtime hard-coded `one hour` / `durable_frontier_time` policy is now
-explicitly noncanonical implementation debt. Step 5.5 selects no universal
-numeric exposure threshold. Any later default must be a product/configuration
-choice under the scope-aware policy model, not an inherited architecture constant.
+The old runtime `one hour / durable_frontier_time` contract is noncanonical
+implementation debt.
 
-Known machine-realization debt includes stale one-hour prose/tests and missing
-regressions for friendly failed-save continuation, clean already-durable save,
-partial multi-domain publication, and independent dirty-exposure partitions.
+### Step 5.6 — CLOSED
 
-Adversarial review found no owner-level blocker. It refined multi-domain save into
-a compatible composed native-source promise, separated durable source closure
-from pending write set, preserved real partial native publication, and confirmed
-that risk-control failure does not weaken correctness-critical durability edges.
+Canonical specification:
 
-### Step 5.6 — NEXT, NOT STARTED
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-canonical-spec.md`
 
-Step 5.6 owns **Campaign Publication & Crash Consistency**.
+Architecture direction: **PYTHON-OWNED SINGLE-REF CAS PUBLICATION**.
 
-It must now provide the physical publication semantics that can prove or deny the
-logical durability promises fixed by Step 5.5.
+Owner-fixed boundary:
+
+> Runtime repository/GitHub work is executed by deterministic Python core; LLM
+> roles do not directly own repository publication.
+
+Derivation/review artifacts:
+
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-analytical-challenge.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-resolution-gate.md`
+
+Canonical consequences include:
+
+```text
+one campaign durability transaction
+    -> one complete validated base-tree-derived tree
+    -> one single-parent commit from pinned H
+    -> one non-force/fast-forward authoritative ref transition
+
+prepared Git objects are never campaign authority
+preflight ref probe is optimization; final guard is parent(H)+non-force update
+confirmed success needs no redundant confirmation reread
+final transport distinguishes accepted / rejected / indeterminate
+ambiguous ACK uses bounded current-ref + lineage + current-closure verification
+lineage evidence alone does not prove current compatible closure
+HEAD movement is checked against bounded semantic/read/auth/recovery dependencies
+only proven-disjoint movement permits transport-only rebuild
+semantic overlap requires native-owner reconciliation or higher revalidation
+persistence retry does not replay accepted gameplay/RNG by default
+automatic contention retries are bounded
+publication dirty clearing is frozen-generation-specific
+successful native-domain publication remains real after another domain fails
+no distributed transaction, rollback-by-force, generic merge or transaction journal
+no checkpoint/Story/transcript publication merely because campaign state publishes
+```
+
+Host/deployment prerequisite discovered by 5.6:
+
+- every persistence-capable deployment must provide Python core a trustworthy
+  authenticated `RepositoryPort`/equivalent;
+- current built-in ChatGPT Data Analysis Python cannot itself make external
+  web/API calls, so it does not alone provide a Python-to-GitHub bridge merely
+  because ChatGPT has a connected app;
+- bridge feasibility and acting-principal realization are explicit later
+  deployment/implementation obligations;
+- there is no LLM-Git fallback.
+
+Current runtime Markdown/tests remain machine-realization debt: the future Python
+persistence subsystem requires executable failure-injection regressions for lost
+ACK, post-success crash, generation-specific clearing, authorization races,
+bounded contention, partial multi-domain success and unavailable RepositoryPort.
+
+### Step 5.7 — NEXT, NOT STARTED
+
+Step 5.7 owns **Checkpoint / Recovery Protocol**.
+
+It must define sparse recovery metadata and exact bounded recovery-source
+selection on top of Steps 5.2–5.6 without turning checkpoint into a second
+writable snapshot authority.
 
 Required questions include at minimum:
 
-- exact campaign-native transaction input/freeze point;
-- complete pending write-set derivation from a Step-5.5 required durable closure;
-- tree/commit/ref crash windows and exact success point;
-- optimistic concurrency / stale-head invalidation and rebuild;
-- prepared/unreachable commit objects;
-- ambiguous write acknowledgement / ref-update outcome;
-- retries/idempotency without false save acknowledgement;
-- adoption and dirty-state clearing only after actual publication result;
-- behavior when one native source publishes and another required source fails,
-  without inventing cross-domain distributed atomicity;
-- relation between campaign publication and optional checkpoint creation.
+- what a checkpoint identifies versus what native current state owns;
+- exact recovery cut/source-composition semantics across campaign + active live
+  scopes + operational owners;
+- which active owner/reference manifests are needed for bounded hydration;
+- source selection and hydration order;
+- exact compatibility/revision validation before resume;
+- recovery outcomes such as `NORMAL_RESUME`, `RECOVERY_REQUIRED`,
+  `CANON_SUSPECT` or a smaller equivalent set;
+- behavior for missing/stale/corrupt references;
+- checkpoint lifecycle/cleanup/expiry boundaries;
+- interaction with Step-5.6 confirmed/ambiguous publication outcomes;
+- compatibility with engine/runtime identity and migration boundaries;
+- preservation of Step-5.2 rule that checkpoint cannot be sole active-root
+  authority.
 
-Step 5.6 SHALL NOT redefine SOFT/HARD/SAVE semantics, scope-aware exposure policy,
-or the player-visible meaning of successful explicit save.
+Exit target:
 
-**Do not begin Step 5.7 while Step 5.6 is in progress.**
+> A cold runtime can select and validate a bounded compatible set of actual
+> native durable sources for the promised recovery point; checkpoint evidence
+> improves bounded exact recovery without becoming duplicate current-state
+> authority.
+
+**Do not begin Step 5.8 while Step 5.7 is in progress.**
 
 ## Step 6 carry-forward
 
 Step 6 owns:
 
+- LLM role-isolation feasibility spike before physical orchestration design;
 - physical model-call topology for the six logical LLM roles;
 - model selection, context reset/isolation and role-call compatibility matrix;
+- minimum physical invocation count preserving Step-4 eligibility boundaries;
 - token/latency/cost budgets;
+- host/deployment capability profiles;
+- Step-5.6 Python `RepositoryPort` bridge feasibility for supported ChatGPT/API/app
+  deployment profiles;
+- authenticated acting-principal transport feasibility;
 - Commentator serving/spoiler/perspective policy;
 - preparation caching/retention if justified;
 - migration/catalog-gap/full-seed closure;
 - final holistic architecture/catalog/seed audit;
 - consolidation of implementation obligations before implementation planning.
 
-Step 6 may optimize role placement but cannot weaken Step-4 context/authority
-boundaries or Step-5 durability/recovery invariants.
+Step 6 may optimize physical role placement/deployment but cannot weaken Step-4
+context/authority boundaries or Step-5 durability/recovery invariants.
 
-## Documentation debt
+## Documentation / implementation debt
 
-`DEV/ARCHITECTURE/CATALOG_MODEL.md` and
-`DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` remain historical derivation
-material predating current canonical Step-2/3/4/5 contracts. They are
-non-authoritative relative to current inventory, machine schemas/catalogs and
-canonical specs.
-
-The Step-5 expanded working agenda still contains older wording referring to a
-`one-hour` dirty ceiling. Canonical Step 5.5 supersedes that numerical wording:
-there is no architecture-wide one-hour constant; unpublished exposure is
-scope-policy-owned and any numeric default is later product/configuration policy.
+- `DEV/ARCHITECTURE/CATALOG_MODEL.md` and
+  `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` remain historical derivation
+  material where later canonical specs supersede them.
+- The Step-5 expanded agenda contains old `one-hour` wording superseded by
+  canonical Step 5.5.
+- Current runtime persistence prose is partially ahead of machine implementation
+  and partially stale relative to Steps 5.5/5.6. Do not treat old LLM-facing Git
+  choreography as authority over the future Python persistence subsystem.
+- Broad GAME/schema/test realization remains deferred until the architecture
+  sequence closes and implementation planning begins.
 
 ## Exact continuation point
 
-**Step 5.5 / SOFT / HARD / SAVE Durability Semantics — CLOSED.**
+**Step 5.6 / Campaign Publication & Crash Consistency — CLOSED.**
 
 Next architecture slice:
 
-**Step 5.6 / Campaign Publication & Crash Consistency — NOT STARTED.**
+**Step 5.7 / Checkpoint / Recovery Protocol — NOT STARTED.**
 
-Do not begin Step 5.7 until Step 5.6 architecture closes.
+Do not begin Step 5.8 until Step 5.7 architecture closes.
