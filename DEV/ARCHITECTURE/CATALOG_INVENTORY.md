@@ -1,8 +1,8 @@
 # HDM Catalog Inventory
 
-Status: **REVIEWED BASELINE — STEPS 1–3 + STEP-4 CHAPTER RETIREMENT APPLIED**
+Status: **REVIEWED BASELINE — STEPS 1–3 + STEP-4 + STEP-5.0 RETIREMENTS APPLIED**
 
-Catalog version: `1.5.0`
+Catalog version: `1.6.0`
 
 This document fixes the class inventory used to design schemas and runtime
 contracts. "Complete" means sufficient coverage for the intended HDM
@@ -53,12 +53,16 @@ damage becomes an `event.damage.applied`. These are related objects at different
 boundaries, not four names for the same class.
 
 Transient requests, signals, contributions, deltas, rolls, segments, boundary
-occurrences, pending child descriptors, and receipts are protocol value kinds.
-They are neither world entities nor content-search results.
+occurrences, pending child descriptors, publication manifests, and receipts are
+protocol value kinds. They are neither world entities nor content-search results.
 
 Literary Story projections are outside these canonical/current record classes.
 `STORY/NARRATIVE` owns non-canonical literary records; literary chapter
 boundaries are index groupings over those records, not world-record kinds.
+
+A numeric timeline slot or local sparse sequence may be used as an ordering
+**value** inside an explicit chronology domain. It is not an independently
+identified world record and does not establish a campaign-global total order.
 
 ## 3. Reusable content-definition classes
 
@@ -134,9 +138,11 @@ exact contracts are defined in `RULE_ELEMENT_MODEL.md`.
 | `definition.contract_template` | Parties/terms/obligation structure |
 | `definition.mode_profile` | Mechanics, information, and presentation policy |
 
-Lore facts, scenes, and timeline markers are campaign records rather than
-reusable engine content. Literary narrative records live under non-canonical
-`STORY/NARRATIVE`; chapter boundaries are index groupings over that layer.
+Lore facts and scenes are campaign records rather than reusable engine content.
+Chronology ordering lives in event/frontier/value contracts rather than a
+standalone `world.timeline_marker`. Literary narrative records live under
+non-canonical `STORY/NARRATIVE`; chapter boundaries are index groupings over that
+layer.
 
 ## 4. World-record classes
 
@@ -157,11 +163,11 @@ reusable engine content. Literary narrative records live under non-canonical
 | `world.hazard` | Placed or active hazard |
 | `world.effect` | Effect instance attached to a subject/zone |
 | `world.lore_fact` | Canonical proposition and truth status |
-| `world.knowledge` | Who knows a fact and how/when it became known |
-| `world.timeline_marker` | Abstract gameplay chronology placement |
+| `world.knowledge` | In-fiction epistemic state for a knower/proposition |
 
-Inventories, HP, pools, occupancy, and mission stages remain state inside their
-owners unless they need independent identity.
+Inventories, HP, pools, occupancy, mission stages, chronology ordering values,
+and similar owner-local state remain inside their owners unless a proven
+independent identity/lifecycle requires a record.
 
 Literary Chapters are not catalog records. `STORY/NARRATIVE` stores the
 non-canonical literary records, while Chapter title/order/range is maintained by
@@ -171,8 +177,8 @@ Story index metadata over NARRATIVE record references.
 
 | ID | Stored operational/audit object |
 |---|---|
-| `runtime.session` | HOT identity, frontiers, and transport mode |
-| `runtime.message` | Raw user/Master/tool message for transcript/audit |
+| `runtime.session` | Session coordination/runtime identity evidence |
+| `runtime.message` | Raw user/Master/tool message when retained for transcript/audit |
 | `runtime.interaction` | Player input, plan/commands, and response boundary |
 | `runtime.procedure` | Independent rules-procedure scope and sole owner of participant-local procedure ResourceState |
 | `runtime.intent_plan` | Ordered material clauses from one player input |
@@ -182,8 +188,6 @@ Story index metadata over NARRATIVE record references.
 | `runtime.mechanical_event` | Immutable committed runtime fact |
 | `runtime.semantic_event` | Compact durable campaign-log projection |
 | `runtime.resolution_trace` | Rolls, contributions, calculations, deltas |
-| `runtime.dirty_record` | HOT/canonical divergence and cause |
-| `runtime.publication_batch` | Prepared/acknowledged Git unit |
 | `runtime.checkpoint` | Recoverable state/frontier descriptor |
 | `runtime.id_allocator` | Allocation state by identity policy |
 | `runtime.maintenance_audit` | Diagnostic/control operation audit |
@@ -197,7 +201,13 @@ procedure-local action/reaction/movement-style budgets.
 
 `ExecutionSegment` remains an embedded protocol value addressed through its
 owning command/resolution plus sequence. No `runtime.execution_segment` or
-`runtime.resolution_chain` class is admitted in catalog version 1.5.0.
+`runtime.resolution_chain` class is admitted in catalog version 1.6.0.
+
+`runtime.dirty_record` and `runtime.publication_batch` are not admitted in
+catalog 1.6.0. Dirty bookkeeping and publication transactions remain required
+operational concepts, but Step 5.5/5.6 must prove independent identity/lifecycle
+before any corresponding runtime record is re-admitted. `value.publication_manifest`
+remains an embedded protocol value and does not by itself create a record owner.
 
 Protocol values may be embedded in traces, receipts, commands, continuations or
 checkpoints but do not receive independent record identity by default.
@@ -270,7 +280,7 @@ operations or consequences rather than player-intent families.
 
 The machine seed contains the exact closed IDs for operations, transitions,
 events, resources, effects, rules, targets, areas, ranges, triggers, time,
-stacking, state machines, publication, knowledge, truth status, and Step-3
+stacking, state machines, publication values, knowledge, truth status, and Step-3
 execution outcomes/protocol values.
 
 - A condition uses `op.create_effect` with a `definition.condition`; there is
@@ -282,6 +292,9 @@ execution outcomes/protocol values.
 - Intent mapping outcome and later execution state remain separate axes.
 - Transitions are accepted commands; events are committed facts.
 - Root command closure is not duplicated by a separate ResolutionChain class.
+- Chronology is not duplicated by a standalone timeline-marker world owner.
+- Generic dirty/publication record identities are not pre-admitted before their
+  Step-5 lifecycle slices prove a need.
 
 ## 9. D&D/SRD seed coverage
 
