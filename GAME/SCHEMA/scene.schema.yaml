@@ -15,7 +15,6 @@ fields:
     relevant_item_ids: array[string]
     persistent_feature_refs: array[string]
     transient_facts: array[object]
-  tactical_state_path: string|null
   summary: string
   last_event_id: string|null
   live_epoch:
@@ -33,6 +32,7 @@ invariants:
   - local_time may be exact, approximate, narrative, or null according to what materially matters; do not force timestamps for bookkeeping
   - chronology_frontier_event_id identifies the local event frontier when future ordering/reconciliation needs it; it is not a global clock
   - persistent entity changes still belong in canonical entity records after live compaction
+  - exact tactical/procedure state belongs to typed owners; scene has no generic tactical-state storage path
   - at most one live_epoch may be authoritative for a scene at a time
   - when live_epoch is non-null, current mutable scene truth is base campaign state plus the referenced live state
   - clearing live_epoch after compaction records the exact absorbed live HEAD in last_absorbed_live_head_sha
