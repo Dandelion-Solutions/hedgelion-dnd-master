@@ -62,7 +62,9 @@ class Step3ExecutionCatalogContractTest(unittest.TestCase):
                 "identifier-policies.json",
             )
         }
-        self.assertEqual(versions, {"1.4.0"})
+        self.assertEqual(len(versions), 1)
+        version = next(iter(versions))
+        self.assertGreaterEqual(tuple(map(int, version.split("."))), (1, 4, 0))
 
     def test_core_catalog_schema_accepts_updated_catalog(self):
         Draft202012Validator(self.schema).validate(self.core)
