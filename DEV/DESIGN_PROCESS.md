@@ -427,6 +427,51 @@ As relevant, include:
 The brief exists to make the investigation purposeful rather than an open-ended
 search for interesting information.
 
+### 10.1 Problem-Framing / Task-Brief Quality Gate
+
+The formulation of the Task Brief is itself part of the architecture work. A
+well-executed investigation can still produce a convincing but wrong answer if
+the question was framed incorrectly, assumed the wrong abstraction boundary, or
+silently embedded the desired solution.
+
+Before substantive research begins, give explicit attention to the quality of
+the research/draft assignment and revise it when necessary. There is no
+universal template for a correct research prompt: its framing must follow the
+specific project, stage, goals, unknowns, evidence state, failure model and cost
+of error.
+
+At minimum, challenge the framing for:
+
+- a proposed solution, architecture, technology, record type or terminology
+  already embedded in the question as if it were established;
+- stale or unverified assumptions being treated as facts;
+- a scope or abstraction boundary inherited from an earlier project stage that
+  current evidence may no longer justify;
+- a question so narrow that it can optimize one subsystem while missing the
+  actual cross-system problem;
+- a question so broad that research cannot distinguish decision-relevant
+  evidence from interesting background;
+- missing counterexamples, negative outcomes or simpler alternatives that the
+  investigation must remain able to discover;
+- wording that makes deletion, derivation, deferral, or rejection of the
+  proposed abstraction impossible as a valid research result.
+
+Ask explicitly:
+
+> If the initial framing is wrong, could a competent and honest investigation
+> still follow this assignment and return a persuasive but architecturally wrong
+> answer?
+
+If yes, improve the Task Brief before research. The brief should constrain the
+investigation enough to make it purposeful while remaining solution-blind enough
+that evidence can invalidate its initial terminology, assumptions, decomposition
+or candidate approach.
+
+The required depth of this framing review is proportional to the architectural
+risk. Fundamental, cross-cutting, hard-to-reverse or poorly understood work
+requires substantially more attention to the research prompt than a narrow,
+well-bounded investigation.
+
 ---
 
 ## 11. Step 2 — Research & Architecture Draft
