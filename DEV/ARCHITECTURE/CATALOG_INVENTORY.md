@@ -1,8 +1,8 @@
 # HDM Catalog Inventory
 
-Status: **REVIEWED BASELINE — STEPS 1–3 ARCHITECTURE APPLIED**
+Status: **REVIEWED BASELINE — STEPS 1–3 + STEP-4 CHAPTER RETIREMENT APPLIED**
 
-Catalog version: `1.4.0`
+Catalog version: `1.5.0`
 
 This document fixes the class inventory used to design schemas and runtime
 contracts. "Complete" means sufficient coverage for the intended HDM
@@ -55,6 +55,10 @@ boundaries, not four names for the same class.
 Transient requests, signals, contributions, deltas, rolls, segments, boundary
 occurrences, pending child descriptors, and receipts are protocol value kinds.
 They are neither world entities nor content-search results.
+
+Literary Story projections are outside these canonical/current record classes.
+`STORY/NARRATIVE` owns non-canonical literary records; literary chapter
+boundaries are index groupings over those records, not world-record kinds.
 
 ## 3. Reusable content-definition classes
 
@@ -130,8 +134,9 @@ exact contracts are defined in `RULE_ELEMENT_MODEL.md`.
 | `definition.contract_template` | Parties/terms/obligation structure |
 | `definition.mode_profile` | Mechanics, information, and presentation policy |
 
-Lore facts, chapters, scenes, and timeline markers are campaign records rather
-than reusable engine content.
+Lore facts, scenes, and timeline markers are campaign records rather than
+reusable engine content. Literary narrative records live under non-canonical
+`STORY/NARRATIVE`; chapter boundaries are index groupings over that layer.
 
 ## 4. World-record classes
 
@@ -153,11 +158,14 @@ than reusable engine content.
 | `world.effect` | Effect instance attached to a subject/zone |
 | `world.lore_fact` | Canonical proposition and truth status |
 | `world.knowledge` | Who knows a fact and how/when it became known |
-| `world.chapter` | Human-readable narrative/history projection |
 | `world.timeline_marker` | Abstract gameplay chronology placement |
 
 Inventories, HP, pools, occupancy, and mission stages remain state inside their
 owners unless they need independent identity.
+
+Literary Chapters are not catalog records. `STORY/NARRATIVE` stores the
+non-canonical literary records, while Chapter title/order/range is maintained by
+Story index metadata over NARRATIVE record references.
 
 ## 5. Runtime-record classes
 
@@ -189,7 +197,7 @@ procedure-local action/reaction/movement-style budgets.
 
 `ExecutionSegment` remains an embedded protocol value addressed through its
 owning command/resolution plus sequence. No `runtime.execution_segment` or
-`runtime.resolution_chain` class is admitted in catalog version 1.4.0.
+`runtime.resolution_chain` class is admitted in catalog version 1.5.0.
 
 Protocol values may be embedded in traces, receipts, commands, continuations or
 checkpoints but do not receive independent record identity by default.
