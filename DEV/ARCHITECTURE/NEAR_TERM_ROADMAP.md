@@ -4,8 +4,7 @@ Status: **ACTIVE WORKING PLAN**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
-This roadmap is the sequencing gate for the current architecture program. It is
-a status/order document, not a duplicate normative specification.
+This roadmap is the sequencing gate for the current architecture program. It is a status/order document, not a duplicate normative specification.
 
 Canonical process:
 
@@ -16,12 +15,9 @@ Canonical process:
 
 - Exactly one numbered step may be `IN PROGRESS`.
 - Later steps may be inspected only to expose dependencies/contradictions.
-- A step closes only after required artifacts/review/verification pass and every
-  unresolved item has a later owner or explicit deferred/debt/backlog record.
-- Step closure updates this roadmap and
-  `DEV/ARCHITECTURE/CATALOG_DESIGN_STATUS.md`.
-- After all major modules have designs, run one holistic architecture review over
-  the complete ownership graph, schemas, logic, and cross-module relationships.
+- A step closes only after required artifacts/review/verification pass and every unresolved item has a later owner or explicit deferred/debt/backlog record.
+- Step closure updates this roadmap and `DEV/ARCHITECTURE/CATALOG_DESIGN_STATUS.md`.
+- After all major modules have designs, run one holistic architecture review over the complete ownership graph, schemas, logic and cross-module relationships.
 
 ## Roadmap
 
@@ -29,46 +25,46 @@ Canonical process:
 |---:|---|---|---|---|
 | 1 | **COMPLETE / ASSURED** | Critical audit of catalog/class architecture and accepted baseline | Owned audit ledger + retrospective assurance | Every finding fixed, assigned, or consciously deferred; no unowned blocker |
 | 2 | **COMPLETE / ASSURED** | Resources, HP/LifeState, Effects, Conditions, Duration, Recovery, selector/query boundaries | Normative ownership models + aligned schemas/catalogs + focused cases + retrospective assurance | No unresolved Step-2 blocker; maintenance/schema/unit-test validation passes |
-| 3 | **COMPLETE — FINAL SAME-HEAD CI REQUIRED FOR CLAIMED CLOSURE** | `IntentPlan -> Resolution -> Signal/Event`, including LLM/core execution boundary, Procedure ownership and checkpointable continuation | Canonical Alternative-C execution contract + machine schemas/catalogs + A–N cases + adversarial/final critical review | Final documentation/status HEAD passes maintenance audit, full DEV unit suite and `Validate engine source` |
-| 4 | **IN PROGRESS** | Lore, chapters, knowledge, secrets, disclosure, narrative projections, minimum promotion interface | One durable truth/disclosure model + knowledge-safe LLM context + transcript/SemanticEvent/Chapter projection contract | Public/restricted knowledge has one authority; durable references cannot depend on unpromoted local entities; narrative projections cannot become alternate truth; spectator/public projection has a safe visibility boundary |
-| 5 | `BLOCKED BY 4` | Durability, multiplayer, event-local time | Compatible SOFT/HARD publication, shared visibility/conflict/recovery model | Publication/live-scene ownership, cross-scene recovery, chronology, local time, continuity restoration, public/private projection transport, and shared revision semantics are coherent |
-| 6 | `BLOCKED BY 5` | Modes, LLM execution budget, migration, catalog gaps, full seed, final closure | Mode profiles + final cross-cutting consistency pass | Mode isolation enforceable; migration/gap/seed ownership complete; full audit passes |
+| 3 | **COMPLETE / ASSURED** | `IntentPlan -> Resolution -> Signal/Event`, including LLM/core execution boundary, Procedure ownership and checkpointable continuation | Canonical Alternative-C execution contract + machine schemas/catalogs + A–N cases + adversarial/final critical review | Final same-head validation succeeded; no unresolved Step-3 blocker |
+| 4 | **IN PROGRESS — ARCHITECTURE CANONICAL / MACHINE ALIGNMENT PENDING** | Truth/lore, fictional knowledge, human disclosure, six-role LLM context boundaries, Story projections, promotion | Canonical truth/knowledge/disclosure owners + deterministic Context Assembler + role handoffs + four-layer Story contract + promotion/migration contract | Machine catalogs/schemas/runtime/template/tests align with canonical Step-4 spec; no duplicate knowledge/Secret/Chapter authority; validation passes |
+| 5 | `BLOCKED BY 4` | Durability, multiplayer, event-local time, Story/transcript publication/retention | Compatible SOFT/HARD publication, shared visibility/conflict/recovery model, Story persistence/compaction | Publication/live-scene ownership, cross-scene recovery, chronology, Story/index publication, transcript retention and shared revision semantics are coherent |
+| 6 | `BLOCKED BY 5` | Modes, physical LLM orchestration/budget, migration, catalog gaps, full seed, final closure | Mode profiles + role-call compatibility/isolation + final cross-cutting consistency pass | Mode/context isolation enforceable; migration/gap/seed ownership complete; full audit passes |
 
 ## Steps 1–2 retrospective assurance
 
-The non-numbered retrospective assurance overlay is complete. Final resolution:
+The non-numbered retrospective assurance overlay is complete:
 
 - `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
 
 Steps 1–2 remain closed and assured.
 
-## Step 3 closure chain
+## Step 3 closure
 
 Owner-approved architecture: **Alternative C**.
 
-Canonical/review artifacts:
+Canonical specification:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-decision-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-adversarial-review.md`
 - `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md`
-- `DEV/docs/superpowers/plans/2026-08-19-step-3-execution-boundary-machine-contract.md`
+
+Final critical review:
+
 - `DEV/docs/superpowers/specs/2026-08-19-step-3-final-critical-review.md`
 
-Current Step-3 machine baseline:
+Machine-contract plan:
+
+- `DEV/docs/superpowers/plans/2026-08-19-step-3-execution-boundary-machine-contract.md`
+
+Current machine baseline remains catalog version `1.4.0` until Step-4 machine alignment deliberately changes it.
+
+Core Step-3 ownership remains:
 
 ```text
-catalog_version = 1.4.0
-
 Interaction
     -> IntentPlan
         -> RuntimeCommand
             -> ActionRequest -> Resolution(Activity)
             OR
             -> TransitionRequest -> direct deterministic execution
-
-RuntimeCommand
-    root mandatory execution-chain closure owner
 
 runtime.procedure
     sole procedure-local ResourceState owner
@@ -83,128 +79,135 @@ Continuation
     portable suspended Resolution generation
 ```
 
-Key Step-3 closure points:
+## Step 4 — active stage
 
-- IntentPlan is ordered message orchestration, not a transaction;
-- Resolution means exactly one Activity invocation;
-- deterministic transitions do not require fake Activities;
-- RuntimeCommand owns root mandatory descendant closure; no
-  `runtime.resolution_chain` exists;
-- ExecutionSegment is embedded under an independent execution owner; no
-  `runtime.execution_segment` exists;
-- `runtime.procedure` exclusively owns procedure-local spent ResourceState;
-- reaction children share Procedure by reference and parent recomputes from a
-  safe phase after expected child commits;
-- mandatory post-commit child identity is representable in the same committed
-  segment as the triggering Event;
-- MechanicalEvent identity is segment + stable ordinal;
-- invocation facts are explicit registered booleans with provenance; missing is
-  distinct from false and engine-owned facts cannot enter this channel;
-- incompatible ResolvedCatalogContext adoption cannot silently reinterpret an
-  in-flight command/continuation;
-- Effect recency uses compact target/application-family-local immutable episode
-  order evidence rather than wall time or retained trace bodies;
-- same-coordinate advancement cannot pass unresolved mandatory due work;
-- scheduled owner-local triggers enter ordinary child Resolution execution;
-- final narration is normally based on mechanically settled receipt closure and
-  never becomes mechanical authority.
+Step-4 architecture has completed its full design rerun with the six accepted logical LLM roles and has a canonical specification:
 
-Focused integrated cases A–N cover ordinary action, reactions, post-commit
-follow-ups, partial multi-intent completion, direct transitions, clarification,
-retry identity, suspended recovery, boundary occurrence, scheduled due work,
-Procedure sharing, incompatible catalog contexts, execution-chain limits, and
-Effect recency after trace compaction.
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`
 
-The final critical review reports zero unresolved Step-3 blockers. The only
-remaining closure condition is fresh `Validate engine source` success on the
-final roadmap/status/documentation HEAD.
+Rerun chain:
 
-## Step 4 — active architecture stage
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-decision-resolution.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-resolution-gate.md`
 
-Step 4 now owns the boundary among objective truth, disclosure/knowledge,
-conversation history, semantic campaign history and authored narrative.
+Cross-cutting role draft:
 
-Primary problem graph:
+- `DEV/docs/superpowers/specs/2026-08-20-llm-logical-roles-draft.md`
+
+### Canonical Step-4 ownership graph
 
 ```text
-world/lore truth authority
-    -> knowledge/disclosure authority
-    -> knowledge-safe LLM context
+CURRENT / OBJECTIVE
+    ordinary world state owners
+    world.lore_fact
 
-runtime.message / retained transcript
-    + committed MechanicalEvents/world/lore truth
-        -> runtime.semantic_event
-            -> world.chapter
-                -> optional spectator/public projection
+FICTIONAL PERSPECTIVE
+    world.knowledge
+
+HUMAN PLAYER EXPOSURE
+    runtime.disclosure
+
+HISTORY / EVIDENCE
+    runtime.semantic_event / LOG
+    runtime.mechanical_event
+
+ROLE CONTEXT
+    deterministic Context Assembler
+        -> Interpreter
+        -> Dramaturg
+        -> Actor
+        -> Narrator
+        -> Chronicler
+        -> Commentator
+
+NON-CANONICAL STORY
+    STORY/
+        TRANSCRIPT/
+        EVENTS/
+        MECHANICS/
+        NARRATIVE/
 ```
 
-The layers are not alternate truths:
+### Step-4 decisions now settled
 
-- transcript preserves what participants actually said when retained;
-- MechanicalEvents are technical committed mechanics facts;
-- SemanticEvents are compact campaign-history facts/projections;
-- Chapters are authored human-readable narrative/history projections.
+- `world.lore_fact` owns independently identified objective propositions;
+- objective truth separates `undetermined / established / disproven` from record lifecycle and in-world disagreement;
+- `world.knowledge` is the sole durable current fictional epistemic owner;
+- human-player exposure is separate `runtime.disclosure`, never implicit PC knowledge;
+- legacy Secret is retired as a truth/knowledge authority; secrecy is contextual eligibility;
+- non-canonical reveal/clue preparation belongs to Dramaturg; real reveal mechanics remain with their actual rule/world owner;
+- six logical LLM roles have role-specific source eligibility; a role consumes typed handoffs, not another role's raw private context;
+- a narrower role cannot physically follow a broader secret-bearing role in the same model context unless the platform provides genuine reset/isolation;
+- `STORY` lives in the same campaign branch and is non-canonical;
+- `STORY/{TRANSCRIPT,EVENTS,MECHANICS,NARRATIVE}` has layer-local IDs, explicit crossrefs, one-record-per-file default and deterministic thousand-slot sharding;
+- literary Chapters are NARRATIVE index grouping, not `world.chapter` entities;
+- Story spoiler/reveal eligibility is dependency/reference based rather than one global chronological frontier;
+- durable knowledge/disclosure/history refs may promote an untracked proposition as `world.lore_fact` with `undetermined` truth without asserting it true;
+- durable canonical refs still close local-entity promotion dependencies.
 
-Step 4 must determine which claims each projection may make, how they anchor to
-truth/knowledge authority, how secrets remain inaccessible to unauthorized
-contexts, and when a situational invocation-adjudicated fact may be promoted to
-durable lore.
+### Step-4 legacy retirements required by implementation
 
-### Mandatory Step-4 questions
+Retire/replace as machine authority:
 
-1. What is the sole authority for objective propositions, disputed claims and
-   unknown/unresolved truth?
-2. What is the sole authority for who knows what and what a given player/LLM
-   context may see?
-3. How do SemanticEvents compact MechanicalEvents/world changes without becoming
-   a second writable world state?
-4. How do Chapters cite/cover SemanticEvents/lore while remaining editable
-   narration rather than canon authority?
-5. What transcript subset, if any, is retained durably, and which layer owns
-   dialogue fidelity versus story truth?
-6. How are public/spectator projections generated so private secrets never leak
-   merely because the private campaign Git repository contains them?
-7. What promotion closure is required before a durable lore/event/chapter
-   reference can point to a currently local entity/definition?
-8. How are LLM discovery/context candidates filtered by knowledge/disclosure
-   without forcing full campaign state into model context?
+```text
+world.chapter
+transition.chapter_append
+event.chapter.appended
+legacy Secret truth/knowledge ownership
+embedded PC/NPC/Faction current knowledge ownership
+objective truth.disputed semantics
+```
+
+Migration must preserve evidence conservatively rather than guessing ambiguous old truth/disclosure state.
+
+### Step-4 exact continuation
+
+Architecture is canonical, but the numbered stage remains active until machine alignment and verification are complete.
+
+Next action:
+
+1. use `superpowers:writing-plans` for the Step-4 machine-contract implementation plan;
+2. implement catalog/schema/runtime/template/test alignment through TDD;
+3. run integrated/adversarial machine cases and maintenance audit;
+4. run final same-head verification;
+5. only then close Step 4 and activate Step 5.
 
 ## Step 5 carry-forward
 
-Step 5 will own physical repository publication/restoration and shared-state
-behavior after Step 4 fixes the semantic visibility boundary, including:
+Step 5 owns physical repository durability/transport after Step-4 semantics are implemented, including:
 
 - checkpoint publication/restoration;
 - SOFT/HARD durability;
-- multiplayer/shared Procedure conflicts;
+- multiplayer/shared conflicts and live-scene compaction transport;
 - chronology evidence and cross-scene reconciliation;
-- private canonical versus public/spectator Git projection transport;
-- transcript/history retention/compaction mechanics;
-- checkpoint cleanup/expiry.
+- Story record/index/availability publication atomicity;
+- Story ID allocation under concurrency;
+- transcript/history retention and compaction;
+- checkpoint cleanup/expiry;
+- exact host response-delivery acknowledgement used by disclosure persistence.
+
+Step 5 does **not** own a separate long-lived public/spectator campaign branch; the accepted topology remains one durable campaign branch plus temporary live-scene branches only.
 
 ## Step 6 carry-forward
 
-Step 6 retains:
+Step 6 owns:
 
+- physical model-call topology for the six logical LLM roles;
+- model selection, context reset/isolation and role-call compatibility matrix;
+- token/latency/cost budgets;
+- default Commentator spoiler/perspective mode and optional deep-source/debug mode;
+- optional narration semantic verification/evaluation;
+- preparation caching/retention if justified;
 - exact engine/ruleset/package/catalog snapshot metadata;
 - full D&D seed and migration/catalog-gap closure;
-- complete selector/input/dependency metadata coverage;
-- proven specialized simultaneous/scheduled ordering rules;
-- modes and LLM execution budget;
 - final holistic architecture/catalog/seed audit.
+
+Step 6 may optimize role placement but cannot weaken Step-4 context/authority boundaries.
 
 ## Documentation debt
 
-`DEV/ARCHITECTURE/CATALOG_MODEL.md` and
-`DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` are historical derivation
-material with examples/version labels predating current canonical Step-2/3
-contracts. They are non-authoritative relative to `CATALOG_INVENTORY.md`, machine
-catalogs/schemas and the canonical specs. Add/strengthen supersession warnings
-before implementation work relies on those examples.
-
-## Exact continuation point
-
-**Step 4 / Lore, Knowledge, Disclosure, Narrative Projection, and Promotion.**
-
-Begin with a solution-blind Task Brief over truth/knowledge/projection ownership,
-including the spectator-safe transcript → SemanticEvent → Chapter requirement.
+`DEV/ARCHITECTURE/CATALOG_MODEL.md` and `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` remain historical derivation material with examples/version labels predating current canonical Step-2/3/4 contracts. They are non-authoritative relative to `CATALOG_INVENTORY.md`, machine catalogs/schemas and canonical specs. Strengthen supersession warnings before implementation relies on those historical examples.
