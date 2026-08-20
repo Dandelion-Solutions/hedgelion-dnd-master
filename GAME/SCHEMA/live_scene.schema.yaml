@@ -61,8 +61,7 @@ fields:
   touched_campaign_paths: array[string]
   touched_entity_ids: array[string]
 invariants:
-  - only the resolved campaign LIVE/LIVE_STATE.yaml is runtime-mutated on a live branch
-  - current-layout live path is LIVE/LIVE_STATE.yaml; legacy layout resolves to CAMPAIGN/LIVE/LIVE_STATE.yaml
+  - only LIVE/LIVE_STATE.yaml is runtime-mutated on a live branch
   - revision increments once for each successful logical live-state write
   - absent overlay fields inherit from base_campaign_sha
   - overlay set/unset paths are explicit and deterministic; prose is not a merge instruction
