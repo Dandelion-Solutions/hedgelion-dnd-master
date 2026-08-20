@@ -188,9 +188,12 @@ MINOR resolved: 3
 
 ## 7. Step 5.2 canonical recovery-closure discipline
 
-Canonical specification:
+Current canonical specification:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md`
+
+The earlier `...canonical-spec.md` remains historical derivation and is
+superseded for current Step-5.2 authority by v2.
 
 Canonical result:
 
@@ -202,52 +205,38 @@ Canonical result:
 Key consequences:
 
 - native world/runtime/live owners remain current authority;
-- normal cold recovery requires bounded typed root discovery, not history/world
-  scans;
+- normal cold recovery requires bounded typed operational-root discovery, not
+  history/world scans;
 - routing/index membership is recovery evidence only;
 - routing must be partitionable by existing writable scopes and cannot require a
   globally hot singleton;
 - Procedure remains independently recovery-relevant across gaps between Commands;
 - Continuation/Resolution/Command preserve accepted fixed execution inputs and
   pending child/response continuity under Step 3;
-- Temporal Agenda remains rebuildable from boundedly discoverable armed
-  due-capable native temporal owners;
+- Temporal Agenda remains rebuildable from native temporal owners;
+- every armed temporal owner whose admitted obligation can become due
+  independently of ordinary owner loading stays in typed temporal-source routing
+  for its whole armed lifetime, even if another root also reaches it;
 - one hydration attempt pins every mutable native source to an exact revision;
 - recovery resolves through current owning scope, so stale campaign copies cannot
   silently replace live-owned truth;
-- owner activation/terminality drives required routing enrollment and publication
-  must keep membership coherent;
+- owner activation/terminality drives required operational-root enrollment and
+  publication must keep membership coherent;
 - suspended execution requires resolvable compatible runtime/catalog/rules
   interpretation context;
 - a checkpoint remains sparse recovery evidence and cannot be the sole current
   active-root source;
 - exact root/index/checkpoint/live physical representation is deferred to 5.7/5.8.
 
-Minimum current logical independent root classes are:
+For temporal routing, duplicate **references** are intentionally allowed where
+needed for the simpler armed-lifetime invariant. Routing never owns duplicated
+deadline, due/order/firing state or lifecycle.
 
-```text
-non-settled RuntimeCommand with unfinished descendant closure
-active Procedure
-materially unresolved accepted Interaction/IntentPlan when promised durable
-otherwise-unreachable armed due-capable temporal source owner
-```
+Step-5.2 review chain found no blocking owner decision. The final refinement
+removed a conditional reachability optimization that would have coupled temporal
+enrollment to unrelated root termination.
 
-Common descendants such as Resolution and Continuation need not be redundantly
-rooted when bounded durable forward references already reach them.
-
-Step-5.2 adversarial review result:
-
-```text
-BLOCKING / owner decision required: 0
-SIGNIFICANT resolved:               6
-MINOR resolved:                     4
-```
-
-Significant refinements included pinned native hydration, owning-scope resolution,
-publication/root-enrollment completeness, Procedure lifecycle validation,
-temporal routing field exclusions and interpretation-context closure.
-
-Step 5.2 also carries the generated/emitted/acknowledged player-delivery ambiguity
+Step 5.2 also carries generated/emitted/acknowledged player-delivery ambiguity
 forward to Step 5.12 rather than making transcript/narration mechanical authority.
 
 ## 8. Step 5.2 design chain
@@ -260,7 +249,9 @@ forward to Step 5.12 rather than making transcript/narration mechanical authorit
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-candidate-spec.md`
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-adversarial-review.md`
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-resolution-gate.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-adversarial-review-addendum.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-resolution-gate-addendum.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md`
 
 ## 9. Design-process improvement
 
@@ -284,7 +275,8 @@ verify existing Step-4 obligations plus Step-5.2 recovery realization including:
 - Interaction/message pending-input realization;
 - SAVE/session completeness alignment with operational owners;
 - cold hydration runtime/catalog interpretability validation;
-- later checkpoint/live physical routing selected by 5.7/5.8.
+- later checkpoint/live physical routing selected by 5.7/5.8;
+- exact future-RNG representation reconciled by Step 5.3.
 
 These are deferred implementation obligations, not unresolved Step-5.2
 architecture questions.
