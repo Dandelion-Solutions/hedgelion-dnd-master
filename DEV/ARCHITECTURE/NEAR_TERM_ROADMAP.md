@@ -238,24 +238,71 @@ root-membership completeness, Procedure lifecycle validation, temporal routing
 field exclusions, interpretation-context closure and simplified armed-temporal
 enrollment.
 
-### Step 5.3 — NEXT, NOT STARTED
+### Step 5.3 — CLOSED
 
-Step 5.3 owns **Temporal & Pending-Obligation Continuity**. It must define:
+Canonical specification:
 
-- bounded reconstruction of due work from Step-5.2 temporal-source routing;
-- transition from owner-local armed due candidate to selected/materialized
-  mandatory invocation;
-- no-lost/no-double due execution;
-- interaction between pending children, Procedure boundaries and chronology
-  evidence;
-- exact continuity for already fixed/reserved RNG when mechanically required.
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-3-temporal-pending-continuity-canonical-spec.md`
 
-Step 5.3 must preserve owner-local TemporalBindings, Step-3 stable firing/pending
-child semantics, Step-5.1 domain typing and Step-5.2 partitionable bounded recovery
-routing. It may not make Temporal Agenda the temporal authority or introduce a
-generic pending-job subsystem without a new architecture decision.
+Owner-approved decision: **A-NARROW / OWNER-CLAIM MATERIALIZATION**.
 
-**Do not start Step 5.3 as part of Step-5.2 closure verification.**
+Canonical consequences include:
+
+```text
+Temporal due evaluation is derived: NOT_DUE | DUE | INDETERMINATE
+occurrence identity is distinct from timing value
+accepted occurrence G must stop being freshly materializable
+materialization uses one of:
+    DIRECT FINALIZATION
+    SAFE IMMEDIATE REARM
+    CONTINGENT CLAIMED(G,F)
+Step-3 remains accepted execution authority
+CLAIMED exists only while source-owner settlement depends on F
+source/execution closure is an integrity invariant
+bounded recovery reachability remains continuous across root handoff
+multiple due obligations do not gain implicit storage/ID order
+cold hydration/host elapsed time do not invent fictional advancement
+accepted RNG continuity is experiment-scoped, not a universal future stream
+accepted firing resumes under pinned compatible interpretation context
+```
+
+Step 5.3 introduces no generic scheduler, generic pending-obligation/job record,
+standalone firing authority, durable due marker, authoritative Temporal Agenda,
+synthetic background RuntimeCommand or universal future RNG frontier.
+
+The current machine schemas intentionally remain behind the canonical semantic
+contract in places such as temporal occurrence generation/claim representation
+and `Continuation.future_rng_frontier`; those are recorded implementation
+obligations for the integrated machine-realization program after architecture.
+
+Adversarial review resolved significant refinements around conditional claim
+scope, continuous bounded-recovery handoff, immediate-rearm overlap safety and
+stable experiment association for fixed RNG. No Step-5.3 architecture blocker
+remains.
+
+### Step 5.4 — NEXT, NOT STARTED
+
+Step 5.4 owns **Host Lifecycle & Session Handoff**. It must distinguish and define
+continuity semantics for at least:
+
+- fresh/new chat;
+- explicit controlled session handoff;
+- known context/window expiration or controlled runtime restart;
+- maintenance restart;
+- unexpected process/context crash;
+- stale multiplayer chat;
+- network/write failure during a durability boundary.
+
+It must define when known impending context destruction requires a recovery
+publication attempt, what recovery-point objective is actually promised for
+unexpected loss, how semantic resume state is represented without persisting raw
+LLM/process memory, and how bootstrap proceeds from durable evidence only.
+
+Step 5.4 may consume Step-5.2 resumable closure and Step-5.3 temporal/pending
+continuity invariants, but it may not silently decide SOFT/HARD/SAVE cadence,
+physical Git publication, checkpoint wire format or multiplayer live ownership.
+
+**Do not start Step 5.4 as part of Step-5.3 closure verification.**
 
 ## Step 6 carry-forward
 
@@ -283,11 +330,11 @@ canonical specs.
 
 ## Exact continuation point
 
-**Step 5.2 / Resumable Runtime Closure — CLOSED.**
+**Step 5.3 / Temporal & Pending-Obligation Continuity — CLOSED.**
 
 Next architecture slice:
 
-**Step 5.3 / Temporal & Pending-Obligation Continuity — NOT STARTED.**
+**Step 5.4 / Host Lifecycle & Session Handoff — NOT STARTED.**
 
-Do not begin Step 5.3 until Step-5.2 closure/result has been reported and the
+Do not begin Step 5.4 until Step-5.3 closure/result has been reported and the
 current status/head has been verified.
