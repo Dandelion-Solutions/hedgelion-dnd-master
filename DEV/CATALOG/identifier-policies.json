@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.4.0",
+  "catalog_version": "1.5.0",
   "schema_version": 1,
   "world": {
     "world.actor": {"strategy": "sequential", "prefix": "actor", "minimum_width": 4, "scope": "campaign", "local": {"prefix": "local-actor", "minimum_width": 3, "scope": "session"}},
@@ -18,7 +18,6 @@
     "world.effect": {"strategy": "sequential", "prefix": "effect", "minimum_width": 6, "scope": "campaign", "local": {"prefix": "local-effect", "minimum_width": 5, "scope": "session"}},
     "world.lore_fact": {"strategy": "sequential", "prefix": "fact", "minimum_width": 4, "scope": "campaign"},
     "world.knowledge": {"strategy": "sequential", "prefix": "knowledge", "minimum_width": 6, "scope": "campaign"},
-    "world.chapter": {"strategy": "sequential", "prefix": "chapter", "minimum_width": 3, "scope": "campaign"},
     "world.timeline_marker": {"strategy": "sequential", "prefix": "marker", "minimum_width": 4, "scope": "campaign"}
   },
   "runtime": {
