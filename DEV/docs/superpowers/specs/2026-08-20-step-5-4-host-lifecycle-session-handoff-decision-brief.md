@@ -1,8 +1,10 @@
 # Step 5.4 — Host Lifecycle & Session Handoff — Decision Brief
 
-Status: **HUMAN ARCHITECT APPROVAL REQUIRED — NOT CANONICAL**
+Status: **OWNER APPROVED — CANDIDATE/CANONICALIZATION AUTHORIZED**
 
 Date: 2026-08-20
+
+Owner decision recorded: 2026-08-20
 
 Inputs:
 
@@ -16,17 +18,21 @@ Inputs:
 
 ---
 
-# 1. Approval requested
+# 1. Owner decision
 
-Approve or reject the recommended Step-5.4 architecture direction:
+Approved architecture direction:
 
 > **BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF**
 
-No implementation is requested by this decision.
+The owner also explicitly added host conversation/message/context capacity exhaustion to Step-5.4 scope under the following constraint:
+
+> HDM currently has no trustworthy remaining-capacity signal that may be treated as architecture authority. Future capacity estimation may exist only as an advisory heuristic unless a host supplies a reliable contract.
+
+This decision authorizes candidate-spec formalization, adversarial review and canonical closure of Step 5.4. It does not authorize implementation or Step-5.5 design.
 
 ---
 
-# 2. Recommended architecture
+# 2. Approved architecture
 
 HDM does not add a durable handoff snapshot, generic transfer ticket, campaign-global host lease, or authoritative session record.
 
@@ -42,7 +48,7 @@ ATTACHED HOST
     -> RECOVERY_SAFE_HANDOFF acknowledged
     -> old host relinquishes pre-handoff hot state
 
-UNEXPECTED LOSS / INCOMPLETE HANDOFF
+UNEXPECTED LOSS / INCOMPLETE HANDOFF / UNWARNED HOST HARD STOP
     -> no retroactive finalization
     -> recover newest actually durable compatible native source set
 ```
@@ -86,7 +92,7 @@ If the complete promised resume state is already durably recoverable, the handof
 
 If publication fails while the old host survives, handoff remains incomplete.
 
-If the host is destroyed anyway, recovery uses unexpected/degraded-loss semantics and returns to the last actual durable closure.
+If the host is destroyed anyway, recovery uses unexpected/degraded-loss semantics and returns to the newest actual durable compatible closure.
 
 If a write may have succeeded but acknowledgement was lost, the fresh host determines the actual durable state through later 5.6/5.7 recovery rules; it does not trust remembered intent.
 
@@ -149,7 +155,44 @@ Current runtime wording that relies only on a current-chat maintenance continuat
 
 ---
 
-# 7. Context-expiry and periodic safety flush boundary
+# 7. Host-capacity and context-expiry signal contract
+
+Step 5.4 distinguishes capability from guarantee:
+
+```text
+RELIABLE IMPENDING-DESTRUCTION SIGNAL
+    host contract says current context/chat will become unusable
+    -> controlled handoff barrier trigger
+
+ADVISORY NEAR-CAPACITY SIGNAL
+    host warns that exhaustion may be approaching
+    but remaining messages/tokens/time are not guaranteed
+    -> player-facing warning/recommendation MAY be emitted
+    -> proactive handoff MAY be attempted
+    -> correctness does not depend on completion before cutoff
+
+NO USABLE SIGNAL / HARD STOP
+    host becomes unwritable without actionable warning
+    -> unexpected-loss semantics
+```
+
+The architecture does **not** currently assume access to a reliable remaining-message, remaining-token, remaining-context-capacity or time-to-hard-stop metric.
+
+Message count, approximate token count, chat age, remembered product limits and inferred capacity are not authoritative remaining-capacity evidence.
+
+A future heuristic may estimate risk and issue advisory warnings, but:
+
+- it must be explicitly non-authoritative;
+- false positives may cause only unnecessary early handoff suggestions;
+- false negatives must degrade safely to unexpected-loss recovery;
+- it must not redefine what state is durable or recoverable;
+- it must not be required for correctness.
+
+No numerical capacity threshold or prediction algorithm is approved by Step 5.4.
+
+---
+
+# 8. Context-expiry and periodic safety flush boundary
 
 The owner direction is incorporated as follows:
 
@@ -157,8 +200,11 @@ The owner direction is incorporated as follows:
 reliable current context-expiry/destruction signal
     -> Step 5.4 handoff barrier trigger
 
-generic risk that context may expire without a warning
-    -> Step 5.5 durability-risk / max dirty-age policy
+advisory near-capacity signal
+    -> optional warning/proactive handoff recommendation
+
+generic risk that context may expire without usable warning
+    -> Step 5.5 durability-risk / max unpublished-SOFT exposure policy
 ```
 
 No Step-5.4 timer value is approved.
@@ -169,9 +215,9 @@ The semantic risk metric should concern age/exposure of gameplay-significant unp
 
 ---
 
-# 8. Alternatives considered
+# 9. Alternatives considered
 
-## A — BARRIER-NATIVE — RECOMMENDED
+## A — BARRIER-NATIVE — APPROVED
 
 Reuse native owners; lifecycle adds a scoped barrier and acknowledgement precondition.
 
@@ -197,9 +243,9 @@ Make newest/current session generation the write-fencing authority.
 
 ---
 
-# 9. Confidence and reversibility
+# 10. Confidence and reversibility
 
-Recommendation confidence: **HIGH**.
+Recommendation/decision confidence: **HIGH**.
 
 BARRIER-NATIVE does not prevent later addition of a scoped native lease/token if Step 5.8 proves one is required for a specific live ownership domain.
 
@@ -207,29 +253,35 @@ It intentionally avoids making that future possibility a campaign-global abstrac
 
 A later optional audit record can also be added without changing handoff correctness if operational observability proves useful.
 
+Likewise, future host-capacity telemetry or a predictive heuristic may be added as a warning/trigger adapter without changing recovery correctness, because the base architecture already supports the no-warning hard-stop case.
+
 ---
 
-# 10. Carry-forward
+# 11. Carry-forward
 
-If approved, candidate specification will emit requirements to:
+Candidate/canonical specification must emit requirements to:
 
-- **5.5** — define handoff durability class/completeness and independent max unpublished-SOFT age policy; no numerical value pre-approved;
+- **5.5** — define handoff durability class/completeness and independent maximum unpublished-SOFT exposure policy; no numerical value pre-approved;
 - **5.6** — make authoritative publication outcome determinable across crash/ambiguous acknowledgement;
 - **5.7** — hydrate newest compatible valid native source set without handoff snapshot;
 - **5.8** — define any required live/scoped ownership fencing/transfer;
 - **5.11** — retain exact transcript only for genuine live semantic dependency;
 - **5.12** — separately define generated/emitted/acknowledged player-facing delivery.
 
-No Step 5.5 design begins as part of this approval.
+Host-capacity warning heuristics, if ever implemented, must remain capability-dependent/advisory unless a future host contract provides stronger reliable semantics.
+
+No Step 5.5 design begins as part of this decision.
 
 ---
 
-# 11. Requested owner decision
-
-Approve or reject:
+# 12. Decision record
 
 ```text
-BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF   [RECOMMENDED]
+BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF   [APPROVED]
+
+HOST CAPACITY EXHAUSTION                         [IN SCOPE]
+RELIABLE REMAINING-CAPACITY METRIC               [NOT ASSUMED]
+FUTURE CAPACITY HEURISTIC                         [ADVISORY ONLY / DEFERRED]
 ```
 
-Approval authorizes candidate-spec formalization and adversarial/canonical closure of Step 5.4, not implementation.
+Proceed to candidate specification, adversarial review and canonical closure of Step 5.4. Do not implement runtime changes and do not begin Step 5.5 until Step 5.4 closes.
