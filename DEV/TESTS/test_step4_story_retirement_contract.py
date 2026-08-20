@@ -5,7 +5,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 CATALOG = ROOT / "DEV" / "CATALOG"
-INVENTORY = ROOT / "DEV" / "ARCHITECTURE" / "CATALOG_INVENTORY.md"
+ARCH = ROOT / "DEV" / "ARCHITECTURE"
 
 
 def load_json(path: Path):
@@ -19,7 +19,19 @@ class Step4StoryRetirementContractTest(unittest.TestCase):
         cls.core = load_json(CATALOG / "core-catalog.json")
         cls.structures = load_json(CATALOG / "entity-structures.json")
         cls.identifiers = load_json(CATALOG / "identifier-policies.json")
-        cls.inventory = INVENTORY.read_text(encoding="utf-8")
+        cls.surfaces = load_json(CATALOG / "mechanical-surfaces.json")
+        cls.inventory = (ARCH / "CATALOG_INVENTORY.md").read_text(encoding="utf-8")
+        cls.contracts = (ARCH / "CATALOG_CONTRACTS.md").read_text(encoding="utf-8")
+        cls.entity_doc = (ARCH / "ENTITY_STRUCTURES.md").read_text(encoding="utf-8")
+
+    def test_catalog_version_advances_for_closed_vocabulary_change(self):
+        versions = {
+            self.core["catalog_version"],
+            self.structures["catalog_version"],
+            self.identifiers["catalog_version"],
+            self.surfaces["catalog_version"],
+        }
+        self.assertEqual(versions, {"1.5.0"})
 
     def test_world_chapter_is_not_a_world_record(self):
         self.assertNotIn(
@@ -34,8 +46,9 @@ class Step4StoryRetirementContractTest(unittest.TestCase):
         self.assertNotIn("transition.chapter_append", registries["transition_kinds"])
         self.assertNotIn("event.chapter.appended", registries["event_kinds"])
 
-    def test_normative_inventory_does_not_classify_chapter_as_world_authority(self):
-        self.assertNotIn("| `world.chapter` |", self.inventory)
+    def test_current_normative_docs_have_no_world_chapter_authority(self):
+        for text in (self.inventory, self.contracts, self.entity_doc):
+            self.assertNotIn("world.chapter", text)
         self.assertIn("STORY/NARRATIVE", self.inventory)
         self.assertIn("chapter", self.inventory.lower())
         self.assertIn("index", self.inventory.lower())
