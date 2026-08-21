@@ -243,29 +243,75 @@ Python RepositoryPort owns live CAS; connector-specific CAS is feasibility evide
 
 Machine-realization debt includes typed claim routing/lookup, containment rules per supported owner class, live ID namespace, Step-3-edge-aligned physical persistence, Procedure/Continuation/temporal routing through close/absorption, Step-4 knowledge/disclosure cleanup, Python `LiveSourceCAS`, concurrency/crash/save/handoff/transfer tests and fixed-claim rollover performance measurement.
 
-### Step 5.9 — NEXT, NOT STARTED
+### Step 5.9 — CLOSED
 
-Step 5.9 owns **Chronology Persistence & Reconciliation**.
+Canonical specification:
 
-Purpose: persist only temporal/causal evidence required for later correct rulings and recovery while preserving domain typing and partial ordering.
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-canonical-spec.md`
+
+Architecture direction: **OWNER-ANCHORED SPARSE CHRONOLOGY / DOMAIN-TYPED ORDER / TYPED METRIC COORDINATES / MATERIAL BRIDGE RECONCILIATION / FORWARD-EXTENSIBLE HISTORY**.
+
+Owner-approved temporal capability boundary:
+
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-9-forward-extensible-time-boundary-owner-decision.md`
+
+Derivation/review artifacts:
+
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-9-chronology-persistence-reconciliation-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-9-chronology-persistence-reconciliation-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-20-step-5-9-chronology-persistence-reconciliation-analytical-challenge.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-resolution-gate.md`
+
+Canonical consequences include:
+
+```text
+Git/ref/ID/CAS/host order never becomes fictional chronology implicitly
+causal ancestry, domain-typed precedence and metric coordinate order remain distinct
+independent scenes/processes may remain incomparable indefinitely
+no mandatory global current world clock or generic global chronology frontier
+metric contexts are rulers; native temporal scopes/providers own exact/bounded position evidence
+TemporalBinding metric due evaluation re-resolves deterministic owner-specific position provider
+exact/bounded evidence preserves uncertainty and feeds NOT_DUE | DUE | INDETERMINATE
+cross-scope chronology uses sparse material bridge relations only when concrete dependencies require them
+late-established historical relations extend append-only history through immutable relation evidence rather than rewriting old events
+protected temporal/causal consumers require bounded durable relation-evidence routing; arbitrary historical analytics are not a baseline retention promise
+scope-local frontier is bounded ActiveExtensionFrontier, not all historical maxima; real semantic joins may collapse branches without ordering them
+live close/absorption/successor order is technical and does not create fictional order; chronology identity survives source movement
+bounded component-local metric constraint reasoning is allowed; campaign-wide temporal CSP/vector clocks are not baseline machinery
+compaction eligibility preserves protected-consumer decidability, feasible metric evidence and unique causal provenance
+baseline causal history is forward-extensible; mutable-past rewrite, branching authoritative worldlines and causal-loop mechanics require a future explicit extension
+immutable-history backward calendar travel remains representable because causal order and calendar order are separate domains
+Dramaturg eventual policy must not deliberately prepare unsupported mutable-past/branching/causal-loop baseline premises
+```
+
+Machine-realization debt includes typed relation domain/context representation, stable late-relation evidence IDs/refs, owner-specific temporal position-provider routing, exact/bounded metric position and elapsed evidence, ActiveExtensionFrontier representation, bounded relation dependency indexes where required, live chronology preservation, migration of `CURRENT.world_time.frontier`/singleton scene frontier/ambiguous sequence fields, scoped integrity checks and Step-4 Dramaturg temporal capability guard realization.
+
+### Step 5.10 — NEXT, NOT STARTED
+
+Step 5.10 owns **Story Projection Durability**.
+
+Purpose: make Story a durable but non-canonical read model that can lag, restart and catch up safely.
 
 Required investigation from the approved expanded agenda:
 
-- event-local partial ordering;
-- local scene frontiers;
-- globally reconciled sparse frontier;
-- retained quantitative elapsed evidence;
-- exact/approximate time;
-- cross-scene dependencies;
-- simultaneous/contested actions;
-- chronology interaction with Step-5.8 live compaction/recovery;
-- compaction of old chronology evidence without breaking still-live temporal predicates.
+- Story record and index publication atomicity;
+- layer-local ID allocation under concurrency;
+- cross-reference closure;
+- dependency/reveal availability;
+- projection frontiers per layer;
+- lag/catch-up semantics;
+- idempotent Chronicler restart;
+- correction/regeneration;
+- source provenance after compaction;
+- guarantee that NARRATIVE failure cannot block canonical gameplay publication.
 
 Exit target:
 
-> Fictional chronology cannot be accidentally inferred from Git commit order, and retained evidence is sufficient for every still-live temporal obligation and causal dependency.
+> Story may lag or be regenerated/corrected without becoming gameplay authority, and a restarted Chronicler can catch up without duplicate or invented events.
 
-**Do not begin Step 5.10 while Step 5.9 is in progress.**
+**Do not begin Step 5.11 while Step 5.10 is in progress.**
 
 ## Step 6 carry-forward
 
@@ -291,15 +337,16 @@ Step 6 may optimize physical placement/deployment but cannot weaken Step-4 infor
 
 - `DEV/ARCHITECTURE/CATALOG_MODEL.md` and `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` remain historical derivation where later canonical specs supersede them.
 - The expanded Step-5 agenda contains older wording superseded by canonical slices; use the slice specs for semantics.
-- Runtime persistence/recovery/live prose and schemas are materially stale relative to Steps 5.2–5.8. Known debt includes checkpoint-first fields/assumptions, missing typed recovery routing and Procedure lifecycle, missing immutable live claims/bounded claim lookup, missing live-containment representation, campaign-only ID-allocation assumptions, one-high-level-action/one-live-write assumptions, legacy live knowledge representation and missing Python live `RepositoryPort` realization.
+- Runtime persistence/recovery/live/chronology prose and schemas are materially stale relative to Steps 5.2–5.9. Known debt includes checkpoint-first fields/assumptions, missing typed recovery routing and Procedure lifecycle, missing immutable live claims/bounded claim lookup, missing live-containment representation, campaign-only ID-allocation assumptions, one-high-level-action/one-live-write assumptions, legacy live knowledge representation, missing Python live `RepositoryPort`, generic `CURRENT.world_time.frontier`, singleton chronology-frontier assumptions, ambiguous local sequence semantics, missing typed chronology relation domains/metric providers and missing bounded chronology dependency routing.
+- The owner-approved Step-5.9 forward-extensible temporal capability boundary must be reflected in eventual Dramaturg/runtime role policy; mutable-past/branching/causal-loop baseline preparation is not supported absent a future explicit extension.
 - Broad GAME/schema/test realization remains deferred until the architecture sequence closes and implementation planning begins.
 
 ## Exact continuation point
 
-**Step 5.8 / Multiplayer / Live-Epoch Ownership — CLOSED.**
+**Step 5.9 / Chronology Persistence & Reconciliation — CLOSED.**
 
 Next architecture slice:
 
-**Step 5.9 / Chronology Persistence & Reconciliation — NOT STARTED.**
+**Step 5.10 / Story Projection Durability — NOT STARTED.**
 
-Do not begin Step 5.10 until Step 5.9 architecture closes.
+Do not begin Step 5.11 until Step 5.10 architecture closes.
