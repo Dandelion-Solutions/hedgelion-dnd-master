@@ -183,7 +183,7 @@ complete campaign write-set
 -> one non-force authoritative ref transition
 ```
 
-Prepared objects are nonauthority; ambiguous ACK requires bounded lineage/current-closure verification; conflicts are dependency-aware; accepted gameplay/RNG is not replayed merely because transport retries. No force push, generic merge or distributed transaction.
+Prepared objects are nonauthority; ambiguous ACK requires bounded lineage/current-closure proof; conflicts are dependency-aware; accepted gameplay/RNG is not replayed merely because transport retries. No force push, generic merge or distributed transaction.
 
 Step-6 transport feasibility input:
 
@@ -384,13 +384,17 @@ ordinary gameplay does no history scan and retained transcript is not automatica
 
 Machine-realization debt includes `runtime.message` schema/paths, accepted-text exactness and whole/slice refs, digest/provenance envelope, semantic-discharge checks, typed exact-dependency routing, natural-owner promotion, Selective-Exact Transcript source policy, deterministic exact-archive certification, Step-5.10 cursor continuity, Step-5.8-compatible live message IDs, host divergence hooks, OOC/multiplayer retention rules, exact-unavailable query semantics, legacy migration, Step-5.12 delivery integration, Step-5.13 envelope GC and bounded maintenance/integrity tests.
 
-### Step 5.12 — NEXT, NOT STARTED
+### Step 5.12 — IN PROGRESS
+
+Task brief:
+
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-task-brief.md`
 
 Step 5.12 owns **Host Delivery / Disclosure Boundary**.
 
-Purpose: define the authoritative boundary between generated player-facing output and output actually emitted on the host surface, including idempotent retry/duplicate handling and coherent `runtime.disclosure` / outbound-message evidence.
+Purpose: define the authoritative boundary between generated player-facing output and output actually emitted on the host surface, including retry/duplicate handling and coherent `runtime.disclosure` / outbound-message evidence without assuming a distributed transaction or undocumented ChatGPT callback.
 
-Required investigation includes host emission acknowledgement semantics, generated-vs-emitted NarrationResult, retry/regeneration/branch behavior, outbound `runtime.message` establishment, disclosure advancement, crash/ambiguous-delivery behavior, multiplayer recipient subsets and interaction with Step-5.11 retained Transcript candidates.
+Required investigation includes host emission acknowledgement semantics, generated-vs-emitted NarrationResult, external-side-effect crash windows, retry/regeneration/branch behavior, outbound `runtime.message` establishment, disclosure advancement, ambiguous delivery recovery, multiplayer recipient subsets and interaction with Step-5.11 retained Transcript candidates.
 
 **Do not begin Step 5.13 while Step 5.12 is in progress.**
 
@@ -426,10 +430,10 @@ Step 6 may optimize physical placement/deployment but cannot weaken Step-4 infor
 
 ## Exact continuation point
 
-**Step 5.11 / Transcript & History Retention and Compaction — CLOSED.**
+**Step 5.12 / Host Delivery & Disclosure Boundary — IN PROGRESS.**
 
-Next architecture slice:
+Current design artifact:
 
-**Step 5.12 / Host Delivery & Disclosure Boundary — NOT STARTED.**
+`DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-task-brief.md`
 
 Do not begin Step 5.13 until Step 5.12 architecture closes.
