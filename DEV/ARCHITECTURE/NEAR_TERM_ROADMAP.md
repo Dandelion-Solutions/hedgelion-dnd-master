@@ -288,11 +288,16 @@ Dramaturg eventual policy must not deliberately prepare unsupported mutable-past
 
 Machine-realization debt includes typed relation domain/context representation, stable late-relation evidence IDs/refs, owner-specific temporal position-provider routing, exact/bounded metric position and elapsed evidence, ActiveExtensionFrontier representation, bounded relation dependency indexes where required, live chronology preservation, migration of `CURRENT.world_time.frontier`/singleton scene frontier/ambiguous sequence fields, scoped integrity checks and Step-4 Dramaturg temporal capability guard realization.
 
-### Step 5.10 — NEXT, NOT STARTED
+### Step 5.10 — IN PROGRESS
 
 Step 5.10 owns **Story Projection Durability**.
 
 Purpose: make Story a durable but non-canonical read model that can lag, restart and catch up safely.
+
+Current research artifacts:
+
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-research-draft.md`
 
 Required investigation from the approved expanded agenda:
 
@@ -306,6 +311,10 @@ Required investigation from the approved expanded agenda:
 - correction/regeneration;
 - source provenance after compaction;
 - guarantee that NARRATIVE failure cannot block canonical gameplay publication.
+
+Additional deployment constraint exposed by current platform research:
+
+> Step-5.10 correctness must work in one ordinary sequential ChatGPT execution stream without requiring Work, Pro/Enterprise-only capabilities or a permanently running background Story worker. Richer physical orchestration remains Step 6.
 
 Exit target:
 
@@ -343,10 +352,8 @@ Step 6 may optimize physical placement/deployment but cannot weaken Step-4 infor
 
 ## Exact continuation point
 
-**Step 5.9 / Chronology Persistence & Reconciliation — CLOSED.**
+**Step 5.10 / Story Projection Durability — IN PROGRESS.**
 
-Next architecture slice:
-
-**Step 5.10 / Story Projection Durability — NOT STARTED.**
+Current phase: research complete enough for analytical challenge; candidate/canonical architecture not yet approved or closed.
 
 Do not begin Step 5.11 until Step 5.10 architecture closes.
