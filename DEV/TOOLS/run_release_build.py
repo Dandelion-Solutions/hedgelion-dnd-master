@@ -45,7 +45,7 @@ def _parser() -> argparse.ArgumentParser:
         "--tag-mode",
         action="store_true",
         help=(
-            "enforce tagged-release checks (ready-for-tag status and approved Git lineage); "
+            "enforce tagged-release checks (exact tag identity and approved Git lineage); "
             "intended for the release workflow"
         ),
     )
