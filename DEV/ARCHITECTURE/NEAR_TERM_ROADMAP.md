@@ -331,15 +331,68 @@ Transcript candidate admission remains coordinated with Step 5.11/5.12 delivery/
 
 Machine-realization debt includes Story root/scaffold/migration, four layer schemas/indexes, StoryLayerProjectionState, layer-local allocator, typed projection-source contracts/generations, bounded candidate enumeration/coverage, StorySourceBundle/StoryProjectionDraft protocols, availability/ref closure, Python Story publication/conflict handling, Commentator lag status, structural correction tooling, 5.11/5.12/5.13 integration and no-background/multi-worker tests.
 
-### Step 5.11 — NEXT, NOT STARTED
+### Step 5.11 — CLOSED
 
-Step 5.11 owns **Transcript / History Retention & Compaction**.
+Canonical specification:
 
-Purpose: define exact-utterance/history retention and deletion independently from truth, knowledge, disclosure and Story projection authority.
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md`
 
-Required investigation from the expanded agenda includes exact participant utterance boundaries, OOC/tool/system exclusions, multiplayer observable speech/event relations, retention policy/duration, Story refs to retained/deleted sources, minimum evidence surviving exact-text deletion, disclosure/LOG interaction, and Step-5.10 projection-before-delete/cursor-continuity handoffs.
+Owner-approved product decision:
 
-**Do not begin Step 5.12 while Step 5.11 is in progress.**
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-11-selective-exact-semantic-continuity-owner-decision.md`
+
+Architecture direction: **STABLE MESSAGE EVIDENCE / SELECTIVE EXACT PROTECTION / SEMANTIC-DISCHARGE COMPACTION / OPTIONAL VERIFIED TRANSCRIPT ARCHIVE**.
+
+Derivation/review artifacts:
+
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-analytical-challenge.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-decision-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-resolution-gate.md`
+
+Canonical consequences include:
+
+```text
+HDM guarantees semantic continuity, not universal verbatim recall
+visible ChatGPT history is mutable host context, not campaign transcript authority
+runtime.message owns stable accepted communication evidence identity
+exactness means exact accepted HDM text representation, not undocumented host bytes or original voice acoustics
+message arrival creates no per-message save/publication edge
+exact payload is retained only while typed consumers require it or an explicit archival policy protects it
+exact protection uses the smallest sufficient whole/slice representation; mixed IC/OOC payload is not over-retained
+enduring exact game semantics move to their natural canonical owners such as contracts/documents/puzzle text
+payload compaction requires semantic-content discharge; a message_id alone cannot preserve lost proposition meaning
+bounded owner-declared exact dependencies/protection routing replace campaign-wide reference scans
+runtime.message payload transitions EXACT_RETAINED -> COMPACTED while stable provenance/enumeration identity survives
+hash/digest verifies an available copy but cannot reconstruct deleted text
+STORY/TRANSCRIPT may preserve verified exact historical text without becoming gameplay truth authority
+material Story edits revoke verified-exact status when archived content no longer matches source/slice digest
+Step-5.10 Transcript candidate identity survives payload compaction; MAY_OMIT and MUST_MATERIALIZE retain their distinct laws
+live-born message identity follows Step-5.8 collision-safe source-native identity and survives absorption
+host edit/retry/branch/delete cannot rewrite already accepted campaign history
+in-fiction communication gist is not backfilled into invented exact dialogue
+knowledge/disclosure/truth/chronology remain separate owners from retained transcript
+OOC/meta/personal conversation is not permanently archived exactly by default
+maintenance age/storage pressure may select already-eligible compaction candidates but does not define semantic TTL
+compaction failure/ambiguity biases toward extra retention rather than premature irreversible loss
+legacy campaigns never invent exact quotes that were not durably retained
+ordinary gameplay does no history scan and retained transcript is not automatically loaded into LLM context
+```
+
+Machine-realization debt includes `runtime.message` schema/paths, accepted-text exactness and whole/slice refs, digest/provenance envelope, semantic-discharge checks, typed exact-dependency routing, natural-owner promotion, Selective-Exact Transcript source policy, deterministic exact-archive certification, Step-5.10 cursor continuity, Step-5.8-compatible live message IDs, host divergence hooks, OOC/multiplayer retention rules, exact-unavailable query semantics, legacy migration, Step-5.12 delivery integration, Step-5.13 envelope GC and bounded maintenance/integrity tests.
+
+### Step 5.12 — NEXT, NOT STARTED
+
+Step 5.12 owns **Host Delivery / Disclosure Boundary**.
+
+Purpose: define the authoritative boundary between generated player-facing output and output actually emitted on the host surface, including idempotent retry/duplicate handling and coherent `runtime.disclosure` / outbound-message evidence.
+
+Required investigation includes host emission acknowledgement semantics, generated-vs-emitted NarrationResult, retry/regeneration/branch behavior, outbound `runtime.message` establishment, disclosure advancement, crash/ambiguous-delivery behavior, multiplayer recipient subsets and interaction with Step-5.11 retained Transcript candidates.
+
+**Do not begin Step 5.13 while Step 5.12 is in progress.**
 
 ## Step 6 carry-forward
 
@@ -355,6 +408,7 @@ Step 6 owns at least:
 - authenticated acting-principal transport feasibility;
 - Commentator serving/spoiler/perspective policy;
 - Story/Chronicler activation policy and optional future async execution using the Step-5.10 coverage/CAS protocol;
+- stable host invocation/message/revision identity feasibility for Step-3/5.11/5.12 edit-retry-branch semantics;
 - preparation caching/retention if justified;
 - migration/catalog-gap/full-seed closure;
 - final holistic architecture/catalog/seed audit;
@@ -366,16 +420,16 @@ Step 6 may optimize physical placement/deployment but cannot weaken Step-4 infor
 
 - `DEV/ARCHITECTURE/CATALOG_MODEL.md` and `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` remain historical derivation where later canonical specs supersede them.
 - The expanded Step-5 agenda contains older wording superseded by canonical slices; use the slice specs for semantics.
-- Runtime persistence/recovery/live/chronology/Story prose and schemas are materially stale relative to Steps 5.2–5.10. Known debt includes checkpoint-first fields/assumptions, missing typed recovery routing and Procedure lifecycle, missing immutable live claims/bounded claim lookup, missing live-containment representation, campaign-only ID-allocation assumptions, one-high-level-action/one-live-write assumptions, legacy live knowledge representation, missing Python live `RepositoryPort`, generic `CURRENT.world_time.frontier`, singleton chronology-frontier assumptions, ambiguous local sequence semantics, missing typed chronology relation domains/metric providers/bounded chronology dependency routing, and the currently absent Story root/layer schemas/projection coverage/allocator/publication machinery.
+- Runtime persistence/recovery/live/chronology/Story/transcript prose and schemas are materially stale relative to Steps 5.2–5.11. Known debt includes checkpoint-first fields/assumptions, missing typed recovery routing and Procedure lifecycle, missing immutable live claims/bounded claim lookup, missing live-containment representation, campaign-only ID-allocation assumptions, one-high-level-action/one-live-write assumptions, legacy live knowledge representation, missing Python live `RepositoryPort`, generic `CURRENT.world_time.frontier`, singleton chronology-frontier assumptions, ambiguous local sequence semantics, missing typed chronology relation domains/metric providers/bounded chronology dependency routing, absent Story root/layer schemas/projection machinery, and absent finalized `runtime.message` exact-payload/provenance/protection/compaction machinery including Step-5.8-compatible live message identity.
 - The owner-approved Step-5.9 forward-extensible temporal capability boundary must be reflected in eventual Dramaturg/runtime role policy; mutable-past/branching/causal-loop baseline preparation is not supported absent a future explicit extension.
 - Broad GAME/schema/test realization remains deferred until the architecture sequence closes and implementation planning begins.
 
 ## Exact continuation point
 
-**Step 5.10 / Story Projection Durability — CLOSED.**
+**Step 5.11 / Transcript & History Retention and Compaction — CLOSED.**
 
 Next architecture slice:
 
-**Step 5.11 / Transcript & History Retention and Compaction — NOT STARTED.**
+**Step 5.12 / Host Delivery & Disclosure Boundary — NOT STARTED.**
 
-Do not begin Step 5.12 until Step 5.11 architecture closes.
+Do not begin Step 5.13 until Step 5.12 architecture closes.
