@@ -1,6 +1,6 @@
 # D&D Master Bootstrap
 
-launcher_version: 17
+launcher_version: 18
 storage_marker: DND_STORAGE.yaml
 
 This bootstrap runs from a validated local runtime package. Engine installation is NOT a GitHub operation.
@@ -60,13 +60,19 @@ Do NOT preload campaign/world data during package/bootstrap discovery.
 
 ### Engine identity
 
-For a normal published package, use its validated `RUNTIME_PACKAGE.package_id`, source provenance and final ZIP SHA-256. Resolve GitHub release/tag metadata only when an update/provenance operation actually needs server-side comparison; never substitute public `main` as gameplay runtime bytes.
+Package publication class comes from exact `RUNTIME_PACKAGE.yaml` provenance, not from a manually staged manifest status.
 
-For `ENGINE_VERSION.release_status: development`:
-- use only for explicit framework testing by authenticated login equal to `ENGINE_VERSION.engine_owner_login`;
-- package identity is `dev-v<ENGINE_VERSION.engine_version>`;
-- dirty/non-Git package provenance may have null source commit SHA;
-- do NOT query/pin public `main` merely to manufacture provenance.
+Treat a package as a normal published runtime when:
+- `RUNTIME_PACKAGE.source_state: tagged`;
+- `RUNTIME_PACKAGE.package_id == ENGINE_VERSION.recommended_tag`;
+- `RUNTIME_PACKAGE.source_ref == ENGINE_VERSION.recommended_tag`;
+- the recommended tag is the version tag for `ENGINE_VERSION.engine_version`.
+
+A correctly tagged package is a published runtime regardless of `ENGINE_VERSION.release_status`. Use its validated release package identity, source provenance and final ZIP SHA-256. Resolve GitHub release/tag metadata only when an update/provenance operation actually needs server-side comparison; never substitute public `main` as gameplay runtime bytes.
+
+A development package is an untagged artifact with package identity `dev-v<ENGINE_VERSION.engine_version>` and a non-tagged `RUNTIME_PACKAGE.source_state`. Use it only for explicit framework testing by authenticated login equal to `ENGINE_VERSION.engine_owner_login`; dirty/non-Git package provenance may have null source commit SHA. Do NOT query/pin public `main` merely to manufacture provenance.
+
+Reject inconsistent identity combinations instead of guessing publication class, including tagged provenance with a non-release package id/ref or an untagged artifact claiming the release package identity.
 
 ## 1. GitHub Connector
 
