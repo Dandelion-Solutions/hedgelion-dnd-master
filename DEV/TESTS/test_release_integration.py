@@ -27,6 +27,22 @@ def git_commit_datetime(revision: str) -> datetime:
     return datetime.fromisoformat(cp.stdout.strip())
 
 
+def expected_archive_datetime(tag: str) -> datetime:
+    tag_ref = f"refs/tags/{tag}"
+    probe = subprocess.run(
+        ["git", "show-ref", "--verify", "--quiet", tag_ref],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    if probe.returncode == 0:
+        return git_commit_datetime(f"{tag_ref}^{{commit}}")
+    if probe.returncode != 1:
+        detail = probe.stderr.strip() or probe.stdout.strip() or f"exit {probe.returncode}"
+        raise RuntimeError(f"cannot inspect Git tag {tag}: {detail}")
+    return git_commit_datetime("HEAD")
+
+
 class ReleaseIntegrationTests(unittest.TestCase):
     def test_canonical_entry_point_builds_reproducible_flat_runtime_and_generator_smoke(self) -> None:
         with tempfile.TemporaryDirectory(prefix="hdm-release-integration-") as td:
@@ -68,7 +84,10 @@ class ReleaseIntegrationTests(unittest.TestCase):
             self.assertEqual(sha_a.read_text(encoding="utf-8"), sha_b.read_text(encoding="utf-8"))
             package_sha256 = hashlib.sha256(zip_a.read_bytes()).hexdigest()
 
-            expected_dt = git_commit_datetime("HEAD")
+            release_manifest = yaml.safe_load(
+                (REPO_ROOT / "DEV" / "ENGINE_DEVELOPMENT.yaml").read_text(encoding="utf-8")
+            )
+            expected_dt = expected_archive_datetime(str(release_manifest["recommended_tag"]))
             expected_zip_time = (
                 expected_dt.year,
                 expected_dt.month,
