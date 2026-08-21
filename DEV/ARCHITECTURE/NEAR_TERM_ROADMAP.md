@@ -288,39 +288,58 @@ Dramaturg eventual policy must not deliberately prepare unsupported mutable-past
 
 Machine-realization debt includes typed relation domain/context representation, stable late-relation evidence IDs/refs, owner-specific temporal position-provider routing, exact/bounded metric position and elapsed evidence, ActiveExtensionFrontier representation, bounded relation dependency indexes where required, live chronology preservation, migration of `CURRENT.world_time.frontier`/singleton scene frontier/ambiguous sequence fields, scoped integrity checks and Step-4 Dramaturg temporal capability guard realization.
 
-### Step 5.10 — IN PROGRESS
+### Step 5.10 — CLOSED
 
-Step 5.10 owns **Story Projection Durability**.
+Canonical specification:
 
-Purpose: make Story a durable but non-canonical read model that can lag, restart and catch up safely.
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md`
 
-Current research artifacts:
+Architecture direction: **LAYER-LOCAL COVERAGE / QUEUE-FREE PULL CATCH-UP / DETERMINISTIC STORY PUBLICATION / OPTIONAL GENERATIVE CHRONICLER / GAMEPLAY-PRIORITY SAME-REF CAS**.
+
+Derivation/review artifacts:
 
 - `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-task-brief.md`
 - `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-analytical-challenge.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-resolution-gate.md`
 
-Required investigation from the approved expanded agenda:
+Canonical consequences include:
 
-- Story record and index publication atomicity;
-- layer-local ID allocation under concurrency;
-- cross-reference closure;
-- dependency/reveal availability;
-- projection frontiers per layer;
-- lag/catch-up semantics;
-- idempotent Chronicler restart;
-- correction/regeneration;
-- source provenance after compaction;
-- guarantee that NARRATIVE failure cannot block canonical gameplay publication.
+```text
+Story remains durable non-canonical projection and never gameplay authority
+no required Work/Pro/Enterprise/background-worker dependency
+backlog = typed source-domain basis minus compatible layer coverage
+campaign HEAD is transport pin, never Story source watermark
+coverage is typed by layer + source domain + semantic projection-contract generation
+cursor-capable source domains require append-monotonic projection enumeration
+MUST_MATERIALIZE vs MAY_OMIT controls legal coverage advancement
+no durable Story job queue/worker claim/lease is baseline authority
+Chronicler proposes editorial/generative draft; deterministic core owns final IDs, validation, coverage and publication
+Story IDs are layer-local, assigned at publication from Story-local non-reusing allocator state
+ordinary catch-up publishes one layer closure; layers may lag independently
+coverage/output/index/availability/allocator advance crash-coherently
+Story-only campaign movement is semantically disjoint from ordinary gameplay and may cause transport-only rebuild, never mechanics/RNG replay
+Story yields under repeated contention and has no freshness priority
+SAVE/RRC/gameplay recovery never require Story catch-up
+source retention may require typed projection closure only when Step-5.11 policy says so
+source cursor interpretability/resume continuity must survive lawful 5.11/5.13 compaction
+source_refs preserve provenance identity but do not by themselves promise permanent full-payload retention
+Transcript candidate admission remains coordinated with Step 5.11/5.12 delivery/retention boundaries
+```
 
-Additional deployment constraint exposed by current platform research:
+Machine-realization debt includes Story root/scaffold/migration, four layer schemas/indexes, StoryLayerProjectionState, layer-local allocator, typed projection-source contracts/generations, bounded candidate enumeration/coverage, StorySourceBundle/StoryProjectionDraft protocols, availability/ref closure, Python Story publication/conflict handling, Commentator lag status, structural correction tooling, 5.11/5.12/5.13 integration and no-background/multi-worker tests.
 
-> Step-5.10 correctness must work in one ordinary sequential ChatGPT execution stream without requiring Work, Pro/Enterprise-only capabilities or a permanently running background Story worker. Richer physical orchestration remains Step 6.
+### Step 5.11 — NEXT, NOT STARTED
 
-Exit target:
+Step 5.11 owns **Transcript / History Retention & Compaction**.
 
-> Story may lag or be regenerated/corrected without becoming gameplay authority, and a restarted Chronicler can catch up without duplicate or invented events.
+Purpose: define exact-utterance/history retention and deletion independently from truth, knowledge, disclosure and Story projection authority.
 
-**Do not begin Step 5.11 while Step 5.10 is in progress.**
+Required investigation from the expanded agenda includes exact participant utterance boundaries, OOC/tool/system exclusions, multiplayer observable speech/event relations, retention policy/duration, Story refs to retained/deleted sources, minimum evidence surviving exact-text deletion, disclosure/LOG interaction, and Step-5.10 projection-before-delete/cursor-continuity handoffs.
+
+**Do not begin Step 5.12 while Step 5.11 is in progress.**
 
 ## Step 6 carry-forward
 
@@ -335,6 +354,7 @@ Step 6 owns at least:
 - deterministic Python `RepositoryPort` bridge feasibility for campaign and live CAS;
 - authenticated acting-principal transport feasibility;
 - Commentator serving/spoiler/perspective policy;
+- Story/Chronicler activation policy and optional future async execution using the Step-5.10 coverage/CAS protocol;
 - preparation caching/retention if justified;
 - migration/catalog-gap/full-seed closure;
 - final holistic architecture/catalog/seed audit;
@@ -346,14 +366,16 @@ Step 6 may optimize physical placement/deployment but cannot weaken Step-4 infor
 
 - `DEV/ARCHITECTURE/CATALOG_MODEL.md` and `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` remain historical derivation where later canonical specs supersede them.
 - The expanded Step-5 agenda contains older wording superseded by canonical slices; use the slice specs for semantics.
-- Runtime persistence/recovery/live/chronology prose and schemas are materially stale relative to Steps 5.2–5.9. Known debt includes checkpoint-first fields/assumptions, missing typed recovery routing and Procedure lifecycle, missing immutable live claims/bounded claim lookup, missing live-containment representation, campaign-only ID-allocation assumptions, one-high-level-action/one-live-write assumptions, legacy live knowledge representation, missing Python live `RepositoryPort`, generic `CURRENT.world_time.frontier`, singleton chronology-frontier assumptions, ambiguous local sequence semantics, missing typed chronology relation domains/metric providers and missing bounded chronology dependency routing.
+- Runtime persistence/recovery/live/chronology/Story prose and schemas are materially stale relative to Steps 5.2–5.10. Known debt includes checkpoint-first fields/assumptions, missing typed recovery routing and Procedure lifecycle, missing immutable live claims/bounded claim lookup, missing live-containment representation, campaign-only ID-allocation assumptions, one-high-level-action/one-live-write assumptions, legacy live knowledge representation, missing Python live `RepositoryPort`, generic `CURRENT.world_time.frontier`, singleton chronology-frontier assumptions, ambiguous local sequence semantics, missing typed chronology relation domains/metric providers/bounded chronology dependency routing, and the currently absent Story root/layer schemas/projection coverage/allocator/publication machinery.
 - The owner-approved Step-5.9 forward-extensible temporal capability boundary must be reflected in eventual Dramaturg/runtime role policy; mutable-past/branching/causal-loop baseline preparation is not supported absent a future explicit extension.
 - Broad GAME/schema/test realization remains deferred until the architecture sequence closes and implementation planning begins.
 
 ## Exact continuation point
 
-**Step 5.10 / Story Projection Durability — IN PROGRESS.**
+**Step 5.10 / Story Projection Durability — CLOSED.**
 
-Current phase: research complete enough for analytical challenge; candidate/canonical architecture not yet approved or closed.
+Next architecture slice:
 
-Do not begin Step 5.11 until Step 5.10 architecture closes.
+**Step 5.11 / Transcript & History Retention and Compaction — NOT STARTED.**
+
+Do not begin Step 5.12 until Step 5.11 architecture closes.
