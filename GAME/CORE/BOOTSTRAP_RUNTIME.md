@@ -1,6 +1,6 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.8.6
+runtime_bootstrap_version: 0.8.7
 storage_marker: DND_STORAGE.yaml
 load_when: project/campaign bootstrap, storage discovery, campaign selection, exact runtime routing
 
@@ -75,18 +75,23 @@ Rebuild full CORE cache only after exact runtime-package switch or verified loss
 
 Campaign WORLD/STATE/INDEX/LOG/entities remain lazy and are not preloaded with CORE.
 
-## Development-package identity
+## Runtime package publication identity
 
-When `ENGINE_VERSION.release_status: development`, explicit framework testing is allowed only when authenticated GitHub login equals `ENGINE_VERSION.engine_owner_login`.
+Package publication class is determined by exact artifact provenance, not by a manually staged manifest status.
 
-For that package:
-- logical runtime identity is `dev-v<ENGINE_VERSION.engine_version>`;
-- `RUNTIME_PACKAGE.source_state` distinguishes clean HEAD, dirty worktree and non-Git builds;
-- dirty/non-Git package source commit SHA may be null;
-- exact artifact identity is still the final ZIP SHA-256;
-- do NOT query/pin public `main` merely to manufacture provenance.
+Treat a validated package as a normal published runtime when all of these are true:
+- `RUNTIME_PACKAGE.source_state: tagged`;
+- `RUNTIME_PACKAGE.package_id == ENGINE_VERSION.recommended_tag`;
+- `RUNTIME_PACKAGE.source_ref == ENGINE_VERSION.recommended_tag`;
+- the recommended tag is the version tag for `ENGINE_VERSION.engine_version`.
 
-Normal published packages use release package identity/provenance carried by their own `RUNTIME_PACKAGE.yaml` plus final ZIP digest.
+A correctly tagged package is a published runtime regardless of `ENGINE_VERSION.release_status`. `release_status` remains descriptive source/development bookkeeping and MUST NOT make an exact tagged runtime owner-only.
+
+A development package is an untagged artifact with logical runtime identity `dev-v<ENGINE_VERSION.engine_version>` and a non-tagged `RUNTIME_PACKAGE.source_state` such as clean HEAD, dirty worktree or non-Git. Explicit framework testing of such a development package is allowed only when authenticated GitHub login equals `ENGINE_VERSION.engine_owner_login`; dirty/non-Git package source commit SHA may be null.
+
+Reject inconsistent identity combinations rather than guessing publication class, including tagged provenance with a non-release package id/ref or an untagged artifact claiming the release package identity.
+
+Exact artifact identity is still the final ZIP SHA-256. Do NOT query/pin public `main` merely to manufacture provenance.
 
 ## External research boundary
 
