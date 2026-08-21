@@ -28,8 +28,8 @@ Canonical process:
 | 2 | **COMPLETE / ASSURED** | Resources, HP/LifeState, Effects, Conditions, Duration, Recovery, selectors/query boundaries | Accepted mechanics/ownership contracts and assurance |
 | 3 | **COMPLETE / ASSURED** | `IntentPlan -> Resolution -> Signal/Event`, deterministic execution, Procedure/Continuation | Canonical Alternative-C execution contract |
 | 4 | **COMPLETE / ARCHITECTURE CLOSED** | Truth/lore, knowledge, disclosure, six logical LLM roles, Context Assembler, Story, promotion | Canonical information/role/Story architecture |
-| 5 | **IN PROGRESS** | Durability, recovery, multiplayer/live authority, chronology, Story/transcript publication/retention/cleanup | Coherent recoverable Step-5 architecture through 5.14 |
-| 6 | `BLOCKED BY 5` | Modes, physical LLM orchestration/budget, deployment feasibility, migration/catalog/seed closure, holistic review | Enforceable deployment/context topology and final architecture closure |
+| 5 | **COMPLETE / ARCHITECTURE CLOSED** | Durability, recovery, multiplayer/live authority, chronology, Story/transcript publication/retention/cleanup | Integrated Step-5 architecture survived full recovery/concurrency adversarial review |
+| 6 | **NEXT / NOT STARTED** | Modes, physical LLM orchestration/budget, deployment feasibility, migration/catalog/seed closure, holistic review | Enforceable deployment/context topology and final architecture closure |
 
 ## Steps 1–2 — CLOSED / ASSURED
 
@@ -61,13 +61,17 @@ Deferred Step-6 feasibility input:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-6-llm-role-isolation-feasibility-spike-notes.md`
 
-## Step 5 — active architecture stage
+## Step 5 — CLOSED / ARCHITECTURE CLOSED
 
 Expanded historical/working agenda:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-expanded-architecture-agenda.md`
 
-Current slice order:
+Canonical integrated final review:
+
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md`
+
+Completed slice order:
 
 ```text
 5.0  Authority / Contamination Audit
@@ -239,26 +243,34 @@ failure/ambiguity biases toward extra retention rather than premature irreversib
 
 Machine-realization debt includes target-kind cleanup contracts/generations, typed blocker classes, completeness-typed protection routing, cleanup-compatibility migration, bounded candidate selection, SafeRetirementAssessment validation, survivor/reference migration, runtime execution-detail/idempotency compaction, checkpoint retirement/pointer coherence, compact-message-envelope retirement, Story/chronology derivative-generation cleanup, live absorbed/orphan ref cleanup when RepositoryPort supports it, Git-history semantic exclusion from ordinary recovery/exact recall, maintenance diagnostics and crash/concurrency/integrity tests.
 
-### Step 5.14 — NEXT, NOT STARTED
+### Step 5.14 — CLOSED
 
-Step 5.14 owns **Full Recovery & Concurrency Adversarial Review** of the complete Step-5 architecture.
+Canonical final review:
 
-Purpose: attack the integrated Steps 5.0–5.13 model as one system, find cross-slice contradictions or contamination that local reviews could not expose, and close Step 5 only if publication, recovery, pending execution, live authority, chronology, Story, transcript, disclosure and cleanup remain coherent under combined crash/concurrency scenarios.
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md`
 
-Minimum review must include the expanded-agenda scenarios plus any stronger cases discovered in Steps 5.1–5.13. It must perform a final authority/contamination sweep and distinguish:
+Supporting review chain:
+
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-integrated-adversarial-review-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-analytical-challenge.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-resolution-gate.md`
+
+Step 5.14 attacked all 30 integrated scenario routes plus seven stronger composite crash/concurrency cases and performed the final authority/contamination sweep. No unresolved Step-5 architecture blocker or new owner-level product decision remained.
+
+Canonical Step-5.14 integration clarifications include:
 
 ```text
-architecture blocker
-implementation debt
-Step-6 feasibility dependency
-accepted product limitation/risk
+role-context current source basis is domain-composed, not campaign-HEAD-only
+cross-source cleanup protection precedes consumer dependency acceptance
+runtime.disclosure monotonic merge is owner-specific and never generic last-writer-wins
+partial multi-live prerequisite freeze is technical currentness, not partial fictional establishment
+Step-6 physical feasibility failure rejects/refines a deployment profile before weakening Step-4/5 semantics
 ```
 
-Step 5.14 SHALL NOT silently redesign Step 6 physical LLM topology or begin broad implementation. It may reopen an earlier Step-5 slice only if integrated adversarial evidence proves a real architectural contradiction.
+Step 5 is therefore **COMPLETE / ARCHITECTURE CLOSED**.
 
-**Do not begin Step 6 until Step 5.14 closes Step 5.**
-
-## Step 6 carry-forward
+## Step 6 — NEXT / NOT STARTED
 
 Step 6 owns at least:
 
@@ -281,23 +293,37 @@ Step 6 owns at least:
 - final holistic architecture/catalog/seed audit;
 - consolidation of implementation obligations before implementation planning.
 
+Step-5.14 identifies the following as material Step-6 feasibility gates:
+
+```text
+SD-1 deterministic authenticated RepositoryPort               blocking for persistence-capable profile
+SD-2 pre-player-visible Narrator staging/validation            blocking for secret-bearing profile
+SD-3 stable invocation/message/retry identity                  significant / potentially blocking
+SD-4 authenticated acting-principal + recipient/audience       blocking for secure multiplayer profile
+SD-5 genuine role-context isolation/reset                      blocking for mixed-privilege role topology
+SD-6 live-ref deletion                                         optional / nonblocking
+```
+
 Step 6 may optimize physical placement/deployment but cannot weaken Step-4 information boundaries or Step-5 durability/recovery/authority laws.
 
 ## Documentation / implementation debt
 
 - `DEV/ARCHITECTURE/CATALOG_MODEL.md` and `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` remain historical derivation where later canonical specs supersede them.
-- The expanded Step-5 agenda contains older wording superseded by canonical slices; use the slice specs for semantics.
-- Runtime persistence/recovery/live/chronology/Story/transcript/disclosure/cleanup prose and schemas are materially stale relative to canonical Steps 5.2–5.13; broad realization remains deferred until the architecture sequence closes and implementation planning begins.
+- The expanded Step-5 agenda contains older wording superseded by canonical slices; use the slice specs and Step-5.14 integration clarifications for semantics.
+- Runtime persistence/recovery/live/chronology/Story/transcript/disclosure/cleanup prose and schemas are materially stale relative to canonical Steps 5.2–5.14; broad realization remains deferred until Step-6 architecture closes and the normal implementation-planning gate is reached.
 - Player-facing help/manual must eventually document the Step-5.12 interruption/Retry/edit limitation.
 - The Step-5.9 forward-extensible temporal capability boundary must be reflected in eventual Dramaturg/runtime role policy.
 - Git current-tree cleanup is not secure historical erasure; no product/API promise to the contrary exists in Step 5.13.
+- Step-5.14 integrated implementation tests must cover its 30 required scenarios and stronger composite cases; local per-slice tests are not sufficient for final realization assurance.
 
 ## Exact continuation point
 
-**Step 5.13 / Garbage Collection & Orphan Cleanup — CLOSED.**
+**Step 5.14 / Full Recovery & Concurrency Adversarial Review — CLOSED.**
 
-Next architecture slice:
+**Step 5 / Persistence, Recovery & Concurrency — COMPLETE / ARCHITECTURE CLOSED.**
 
-**Step 5.14 / Full Recovery & Concurrency Adversarial Review — NOT STARTED.**
+Next architecture stage:
 
-Do not begin Step 6 until Step 5.14 closes Step 5.
+**Step 6 / Physical LLM Orchestration, Deployment Feasibility & Final Architecture Closure — NEXT / NOT STARTED.**
+
+Do not begin broad implementation until Step-6 architecture closes and the normal planning gate is reached.
