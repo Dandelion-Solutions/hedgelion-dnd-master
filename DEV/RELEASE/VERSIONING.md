@@ -10,11 +10,9 @@ The engine release version uses two numeric components with an optional prerelea
 
 Git tags are immutable release/reference points and use the exact `recommended_tag` spelling. Untagged commits on `main` are development state and MUST NOT be offered to campaigns as normal updates.
 
-Release status meanings:
-- `development` — owner-only explicit development package; tag-mode release build is forbidden;
-- `ready-for-tag` — tree is eligible for its exact recommended tag; once that immutable tag exists, the tagged runtime asset is a normal published package.
+`release_status` is descriptive development bookkeeping, not a tag-publication gate. The normal source-tree value may remain `development` when an immutable release tag is created. A tag-mode build is authorized by the tag itself: it must be a valid version tag, equal `recommended_tag`, correspond to `v<engine_version>`, resolve to the exact checked-out commit, and satisfy release-lineage validation. No manual `ready-for-tag` transition is required.
 
-Published provenance comes from exact tag identity/commit resolution. The tagged tree is not mutated afterward merely to change status to `published`.
+Published provenance comes from exact tag identity/commit resolution. The tagged tree is not mutated afterward merely to change release status.
 
 A release intended for campaign integration declares `campaign_update.compatibility` in both version manifests:
 - `compatible` — normal automatic integration may proceed when runtime safety checks pass;
