@@ -34,6 +34,16 @@ class MultiRuntimeBootstrapContractTests(unittest.TestCase):
         self.assertIn("package_sha256", src)
         self.assertIn("silently re-extract", src.lower())
 
+    def test_tagged_runtime_is_published_independent_of_release_status(self):
+        install = (GAME / "INSTALL" / "00_DND_BOOTSTRAP.md").read_text(encoding="utf-8")
+        core = (GAME / "CORE" / "BOOTSTRAP_RUNTIME.md").read_text(encoding="utf-8")
+
+        for src in (install, core):
+            self.assertIn("RUNTIME_PACKAGE.source_state: tagged", src)
+            self.assertIn("regardless of `ENGINE_VERSION.release_status`", src)
+            self.assertIn("dev-v<ENGINE_VERSION.engine_version>", src)
+            self.assertNotIn("For `ENGINE_VERSION.release_status: development`:", src)
+
 
 if __name__ == "__main__":
     unittest.main()
