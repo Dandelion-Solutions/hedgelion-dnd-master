@@ -90,7 +90,11 @@ PLAN BASELINE
     no baseline dependency on Pro / Enterprise / Edu-only capability
 
 PLAYER EXPERIENCE
-    one user-visible gameplay chat
+    one user-visible gameplay chat per human player
+    in multiplayer, different human players use separate ChatGPT chats
+    and separate ChatGPT accounts
+    Narrator[player_A] and Narrator[player_B] are therefore not candidates
+    for one shared player-facing physical chat/invocation in the baseline topology
 
 GAMEPLAY LLM ROLES
     Interpreter
@@ -115,6 +119,8 @@ TURN LATENCY
 IMPLICATION
     five logical roles MUST NOT be assumed to mean five heavyweight sequential model calls every turn
 ```
+
+The separate-account multiplayer baseline removes one potential same-invocation cross-player Narrator co-location problem, but does **not** remove the need to authenticate the current acting principal, bind the current `PLAYER_`/PC recipient correctly, or fence every player-visible surface in each account/chat.
 
 Formal Step 6 must turn these into measurable budgets and supported-profile requirements rather than leave them as prose aspirations.
 
@@ -143,6 +149,15 @@ A logical role does not automatically require:
 - its own model call every turn.
 
 Physical co-location is legal only where information eligibility and output contracts permit it.
+
+Compatibility must be evaluated against the **effective information envelope of the concrete invocation**, not merely the logical role name. Two invocations of the same logical role may be physically incompatible when subject/player/purpose eligibility differs. The clearest current example is:
+
+```text
+Actor[NPC_A]
+    may know material forbidden to Actor[NPC_B]
+```
+
+Therefore `Actor + Actor` is not automatically a compatible physical grouping.
 
 ## 3.2 Narrower-context role isolation must be real
 
@@ -309,20 +324,34 @@ Measure at least:
 - model latency variance;
 - structured-output regeneration rate;
 - role-specific context size;
+- time to first player-visible output where relevant;
+- time to validated complete player-visible output;
 - whether any work can be safely deferred after player-visible response.
 
 ---
 
-# 6. Physical role compatibility matrix is required
+# 6. Physical invocation / eligibility-envelope compatibility matrix is required
 
-Before choosing prompts/models/topology, formal Step 6 should build a matrix for every relevant pair/group of roles.
+Before choosing prompts/models/topology, formal Step 6 should build a matrix for every relevant pair/group of **effective invocation envelopes**, not only every pair of logical role names.
+
+An effective invocation envelope includes at least the material dimensions that can change source eligibility, such as:
+
+```text
+logical role
+subject / NPC identity where applicable
+player / recipient identity where applicable
+purpose / mode
+eligible source classes
+selected source basis
+allowed typed prior-role results
+```
 
 For each pair/group record:
 
 ```text
 sources eligible to all
-sources eligible only to role A
-sources eligible only to role B
+sources eligible only to invocation A
+sources eligible only to invocation B
 typed A -> B information allowed?
 raw-context inheritance allowed?
 genuine reset required?
@@ -333,16 +362,19 @@ latency benefit of co-location?
 
 The important question is not whether two roles *can be instructed* in one prompt.
 
-It is whether they can safely share one physical invocation **without violating either role's effective information envelope**.
+It is whether they can safely share one physical invocation **without violating either invocation's effective information envelope**.
 
-Pairs that deserve particular scrutiny:
+Pairs/groups that deserve particular scrutiny:
 
 - Dramaturg -> Narrator;
-- Actor -> Narrator;
+- Actor[subject] -> Narrator;
+- Actor[NPC_A] + Actor[NPC_B];
 - Interpreter -> Narrator;
 - Interpreter -> Dramaturg;
-- Dramaturg -> Actor;
+- Dramaturg -> Actor[subject];
 - gameplay roles -> Chronicler.
+
+For the current multiplayer baseline, `Narrator[player_A]` and `Narrator[player_B]` are physically separated by distinct player ChatGPT accounts/chats and therefore are not a same-player-facing-invocation co-location candidate. Formal Step 6 must still prove the authenticated mapping from each host account/chat to the correct recipient/audience and prevent cross-recipient source/tool contamination.
 
 ---
 
@@ -384,11 +416,45 @@ Questions:
 - how invalid output is repaired without replaying accepted mechanics;
 - how hidden reasoning is prevented from becoming required persistence state.
 
+## 7.1 Result lifecycle / retry / crash boundary
+
+Each nondeterministic result family should also have an explicit lifecycle contract. Formal Step 6 should record at least:
+
+```text
+result identity / attempt identity if required
+ephemeral vs retained
+recomputable vs exact-result retention required
+validation boundary
+acceptance / freeze boundary
+whether regeneration is permitted after acceptance
+what survives host/model crash
+what a retry is allowed to repeat
+what a retry must never replay
+when the result's exact prose/bytes may be discarded
+```
+
+The architecture must distinguish cases such as:
+
+```text
+LLM result produced
+    -> crash before deterministic acceptance
+
+accepted mechanics / state transition
+    -> Narrator generation fails
+
+validated NarrationResult
+    -> host emission fails or is interrupted
+```
+
+A fresh prose attempt after accepted mechanics must not replay accepted mechanics or consume fresh RNG merely because presentation failed.
+
+The goal is not to persist every model response. It is to preserve exactly the nondeterministic evidence/identity required to make retry, recovery and idempotency semantics unambiguous.
+
 Goal: not maximum JSON, but the **minimum typed interface sufficient to keep nondeterminism outside semantic authority**.
 
 ---
 
-# 8. Pre-player-visible Narrator boundary
+# 8. Pre-player-visible Narrator and host-emission boundary
 
 This is likely one of the hardest physical problems.
 
@@ -401,7 +467,7 @@ Narrator produces material output
     -> only then player-visible emission
 ```
 
-Step 6 must test whether the baseline one-chat topology can physically realize this boundary.
+Step 6 must test whether the baseline one-chat-per-player topology can physically realize this boundary.
 
 Important distinction:
 
@@ -422,6 +488,56 @@ Mechanisms to investigate without assuming any one works:
 - platform-provided hidden/non-visible tool/model boundary.
 
 If no such boundary exists for a proposed baseline profile, that is an architectural feasibility result, not a prompt-writing problem.
+
+## 8.1 Player-visible host surface inventory and fencing
+
+Formal Step 6 must inventory the **actual** player-visible surfaces exposed by each supported host profile rather than assuming that only the final assistant prose is visible.
+
+The inventory should test applicable surfaces such as:
+
+- ordinary assistant-message text;
+- streamed/partial assistant text;
+- tool/app/widget output;
+- generated or attached artifacts;
+- citations/cards/previews or other host-rendered content;
+- error/fallback surfaces that can contain model- or tool-derived material.
+
+This list is an investigation checklist, not a claim that every candidate surface exists or is controllable on every provider.
+
+For every admitted player-visible surface, Step 6 must answer:
+
+```text
+Can unvalidated secret-bearing candidate material reach it?
+Can the surface be buffered/fenced until validation completes?
+Who controls the render boundary?
+Can a tool or host error bypass the intended Narrator boundary?
+What recipient/account identity is bound to the surface?
+```
+
+A deployment profile cannot satisfy SD-2 merely because its nominal final-text path is safe while another player-visible host surface can expose unvalidated material.
+
+## 8.2 Streaming versus validation is an explicit architecture trade-off
+
+If the host streams Narrator tokens directly to the player before complete validation, then those tokens are already player-visible and cannot satisfy a strict:
+
+```text
+generate complete candidate
+-> validate
+-> emit
+```
+
+boundary.
+
+Conversely, full buffering until validation may increase perceived latency and time-to-first-token even when total turn time remains acceptable.
+
+Formal Step 6 must therefore make an explicit supported-profile choice among mechanisms such as:
+
+- validated full-buffer emission;
+- a genuinely hidden staged Narrator call followed by safe outer rendering;
+- another provider/host primitive that proves equivalent fencing;
+- restriction/rejection of a profile that cannot provide the required boundary.
+
+Prompt instructions are not a substitute for this physical proof.
 
 ---
 
@@ -501,7 +617,8 @@ Formal Step 6 should define:
 - safe degraded modes;
 - OOC technical failure messaging;
 - when a turn must stop rather than guess;
-- how repeated LLM calls preserve Step-3 idempotency and fixed RNG.
+- how repeated LLM calls preserve Step-3 idempotency and fixed RNG;
+- how result-lifecycle identities from §7.1 distinguish regeneration from replay.
 
 ---
 
@@ -549,6 +666,8 @@ What physical request corresponds to a new Interaction?
 Can host Retry be distinguished from a genuinely new player action?
 What happens after edit/branch from old host history?
 ```
+
+For the multiplayer baseline, each human player's distinct ChatGPT account/chat should be treated as a product-topology constraint, not by itself as proof of HDM identity binding. The supported profile must still establish how the authenticated host principal maps to the intended campaign `PLAYER_`, controlled PC(s), recipient/audience and repository authorization.
 
 Step 6 must not promise more host-history repair than Step 5.12 requires.
 
@@ -636,7 +755,8 @@ Attack the proposed topology with:
 - requests to summarize hidden context;
 - adversarial tool output containing instructions;
 - repeated calls after role changes;
-- positive controls where typed eligible handoff intentionally exposes a permitted derived fact.
+- positive controls where typed eligible handoff intentionally exposes a permitted derived fact;
+- same-logical-role cross-subject tests such as `Actor[NPC_A]` secret canaries excluded from `Actor[NPC_B]`.
 
 Distinguish:
 
@@ -684,12 +804,13 @@ Provider adapters may differ physically, but may not alter canonical role author
 
 Do not compare platforms mainly by marketing labels or model benchmark scores.
 
-First derive an HDM capability checklist, then compare candidate platforms against it.
+First derive an HDM capability checklist from the accepted semantic/profile requirements, effective eligibility envelopes, host-emission boundaries and quality/latency constraints; then compare candidate platforms against it.
 
 Likely capability dimensions:
 
 ```text
-one user-visible chat UX
+one user-visible chat UX per player
+multi-account multiplayer mapping
 hidden/internal model calls from one interaction
 fresh isolated invocations / context reset
 multiple logical roles
@@ -740,6 +861,7 @@ Evaluate at least:
 - can it reduce the number of externally visible orchestration compromises?
 - can it provide genuine role isolation?
 - can it support deterministic tools/repository transport?
+- can it fence all player-visible host surfaces before validated secret-bearing emission?
 - does it improve or worsen player UX?
 - total user cost;
 - deployment/maintenance burden;
@@ -769,6 +891,8 @@ well-defined requirements for a future second adapter
 ```
 
 instead of implementing multiple providers immediately.
+
+Step-6 architecture closure should require at least one proven primary supported deployment profile plus an explicit capability boundary. It should **not** require implementing a second provider merely to demonstrate abstract portability unless comparison evidence shows that the second provider is itself required for the intended product envelope.
 
 ## 15.6 Cost target
 
@@ -878,7 +1002,20 @@ Step 6 may need explicit style/length budgets by scene mode rather than unconstr
 
 ## 16.10 Deterministic vs LLM-owned routing decisions
 
-Need to decide which role-activation decisions are deterministic policy and which, if any, may be proposed by an LLM.
+A strong candidate Step-6 law to test is:
+
+> Physical role activation, privilege/context selection and tool eligibility are owned by deterministic orchestration policy. An LLM may return a bounded typed escalation/proposal signal, but it may not self-grant a broader information envelope, privileged role, tool or unbounded extra call graph.
+
+This matters for more than cost. If an LLM can decide for itself that it now needs Dramaturg-only context or a privileged repository tool, role activation becomes a privilege-escalation boundary and nondeterministic routing can bypass the Context Assembler.
+
+Formal Step 6 should therefore decide:
+
+- which activations are deterministic from current operation state/policy;
+- which bounded LLM hints may request escalation;
+- which deterministic validator admits or rejects such escalation;
+- maximum call depth / retry budget;
+- whether parallel branches are allowed and how their results rejoin;
+- how routing decisions are traced without becoming persistent semantic authority.
 
 Avoid circular behavior such as invoking an expensive role merely to ask whether that role was necessary.
 
@@ -890,6 +1027,33 @@ LLM-generated tool arguments must not bypass deterministic authorization, reposi
 
 Role isolation may duplicate context across calls. Need to measure actual cost rather than assume architectural cleanliness is free.
 
+## 16.13 Interaction modes and capability envelopes
+
+The roadmap explicitly places **Modes** in Step 6. Formal work should inventory the interaction/deployment modes that materially change eligible roles, tools, context, emission surfaces or latency expectations before physical topology is selected.
+
+At minimum examine:
+
+```text
+ordinary gameplay
+OOC / administrative interaction
+Commentator / spectator interaction
+recovery / new-chat hydration / controlled handoff
+Story catch-up / maintenance
+```
+
+The purpose is not to invent a generic durable `Mode` state owner. A mode may ultimately be only deterministic routing/context policy. The required result is to prevent assumptions from one mode—for example ordinary player narration—from leaking into another mode with different privileges, sources or latency constraints.
+
+For each admitted mode record at least:
+
+- authenticated principal / recipient expectation;
+- eligible logical roles and effective role instances;
+- admissible tools/capabilities;
+- player-visible surfaces;
+- context/source envelope;
+- blocking vs deferable work;
+- latency/quality expectations;
+- transition/handoff rules into and out of the mode.
+
 ---
 
 # 17. Candidate Step-6 work decomposition
@@ -899,75 +1063,105 @@ Exact numbering is not approved. A plausible research/design decomposition is:
 ```text
 6.0  Step-6 task brief + capability/evidence ledger
 
-6.1  Baseline product / host capability research
+6.1  Interaction modes + effective eligibility / host-surface requirements
+     - gameplay / OOC-admin / Commentator / recovery-handoff / maintenance
+     - per-player chat/account baseline and recipient mapping requirements
+     - effective role-instance envelopes, not role names alone
+     - actual player-visible host surfaces and required fencing
+     - derive the HDM capability checklist before provider selection
+
+6.2  Baseline product / host capability research
      - current ChatGPT Plus capabilities
      - current invocation/tool/context behavior
+     - SD-1..SD-5 proof obligations relevant to the baseline profile
      - required direct experiments
 
-6.2  Cross-platform / alternative-AI comparison
-     - derive HDM capability matrix first
+6.3  Cross-platform / alternative-AI comparison
+     - use the HDM capability matrix derived from 6.1/6.2 requirements
      - compare viable providers / business models
      - recommendation on primary platform and portability boundary
+     - no requirement to implement a second adapter absent material value
 
-6.3  Role information / compatibility matrix
-     - exact eligible sources per role
+6.4  Role information / effective compatibility matrix
+     - exact eligible sources per concrete invocation envelope
+     - subject-scoped compatibility such as Actor[NPC_A] vs Actor[NPC_B]
      - typed cross-role handoffs
      - legal physical co-location
 
-6.4  Physical invocation and context-isolation topology
+6.5  Physical invocation and context-isolation topology
      - minimum call graph
      - reset/isolation mechanism
-     - single-chat UX mapping
+     - single-chat-per-player UX mapping
 
-6.5  Typed role result contracts and validation
+6.6  Typed role result + lifecycle contracts and validation
      - Interpreter
      - Dramaturg
      - Actor
      - Narrator
      - Chronicler
+     - attempt/result identity, retention, regeneration and crash/retry boundaries
 
-6.6  Role activation / fast-path policy
+6.7  Deterministic role activation / fast-path policy
      - always / conditional / deferable
+     - bounded LLM escalation hints only where admitted
      - common path optimization
      - escalation for complex turns
 
-6.7  Context/retrieval/cache strategy
+6.8  Context/retrieval/cache strategy
      - role-specific bundles
      - long-campaign boundedness
      - host-memory exclusion
 
-6.8  Model assignment / specialization
+6.9  Model assignment / specialization
      - same vs different models
      - quality/latency/cost evidence
 
-6.9  Latency / token / cost budget
+6.10 Latency / token / cost budget
      - p50/p90/p95 targets
+     - time-to-first-visible vs validated-complete timing where relevant
      - ordinary vs exceptional operations
      - Plus/user economics
 
-6.10 Failure / retry / degradation semantics
+6.11 Failure / retry / degradation semantics
      - timeouts
      - invalid structured output
      - unavailable role/model
      - no mechanics replay
 
-6.11 Narrator pre-visible validation / disclosure physical proof
+6.12 Narrator pre-visible validation + host-emission-surface proof
+     - actual player-visible surface inventory
+     - streaming/buffering behavior
+     - recipient binding
+     - secret-bearing output fenced until validation
 
-6.12 RepositoryPort / host identity / recipient feasibility closure
+6.13 RepositoryPort / host identity / recipient feasibility closure
 
-6.13 Role-isolation + prompt-injection + quality eval suite
+6.14 Role-isolation + prompt-injection + quality eval suite
+     - include same-role cross-subject canary tests
 
-6.14 Commentator architecture
+6.15 Commentator architecture
      - separate context
      - perspective/spoiler policy
      - serving/activation
 
-6.15 Migration / catalogs / schemas / seeds / prompt-package closure
+6.16 Migration / catalogs / schemas / seeds / prompt-package closure
 
-6.16 Final Steps 1–6 holistic architecture review
+6.17 Final Steps 1–6 holistic architecture review
 
-6.17 Architecture closure + implementation-obligation consolidation
+6.18 Architecture closure + implementation-obligation consolidation
 ```
+
+The intended dependency direction is:
+
+```text
+semantic/profile requirements
+    -> effective eligibility + mode + host-surface requirements
+    -> provider/host capability evidence
+    -> supported deployment profile(s)
+    -> physical topology
+```
+
+Platform research may run in parallel for efficiency, but platform capabilities should not define HDM's semantic requirements merely because a provider happens to expose a convenient feature.
 
 This is a working decomposition only. Formal Step-6 task framing should challenge whether it is too granular, missing a dependency, or ordering research after decisions that depend on it.
 
@@ -977,48 +1171,56 @@ This is a working decomposition only. Formal Step-6 task framing should challeng
 
 The following can be explored without treating answers as canonical decisions:
 
-1. Under the one-chat Plus constraint, what physical mechanisms could genuinely isolate role contexts?
-2. Can the Narrator be staged/validated before player-visible rendering in a supported consumer-chat topology?
-3. What is the minimum viable call graph for high-quality ordinary turns?
-4. Which role pairs are actually context-compatible?
-5. Can Dramaturg work be amortized across multiple turns without making the world stale or railroaded?
-6. When does Actor add enough quality to justify another call?
-7. How often does Chronicler need to run for Story to remain useful?
-8. What exact quality failures appear if Interpreter/Narrator are co-located?
-9. What latency budget should be assigned to every physical phase?
-10. Which retry/degradation policies preserve mechanics while meeting the one-minute ceiling?
-11. What host identity information is actually available for Interaction/Retry/recipient binding?
-12. Can the current ChatGPT tool/runtime surface support a deterministic RepositoryPort cheaply enough?
-13. Which alternative AI platforms currently offer stronger hidden-call, isolation, tool, identity or orchestration capabilities at reasonable cost?
-14. Could an API-first or hybrid deployment be cheaper than a premium consumer subscription at realistic HDM usage?
-15. What is the smallest provider-neutral boundary that keeps future migration possible without overengineering today?
-16. What canary/prompt-injection tests should qualify a topology as actually isolated?
-17. What eval set distinguishes a mechanically correct but boring Master from a genuinely good one?
-18. Which multimodal capabilities belong in baseline vs later extension?
-19. What engine/prompt/model versioning is needed so open campaigns remain compatible?
-20. What final architecture surfaces from Steps 1–5 are still not represented in machine catalogs/schemas/seeds?
+1. Under the one-chat-per-player Plus constraint, what physical mechanisms could genuinely isolate incompatible role contexts?
+2. Can the Narrator be staged/validated before **every relevant player-visible host surface** renders secret-bearing material in a supported consumer-chat topology?
+3. What streaming/buffering behavior is actually available, and what latency cost follows from strict pre-visible validation?
+4. What is the minimum viable call graph for high-quality ordinary turns?
+5. Which **effective role instances** are actually context-compatible, especially `Actor[NPC_A]` versus `Actor[NPC_B]`?
+6. Can Dramaturg work be amortized across multiple turns without making the world stale or railroaded?
+7. When does Actor add enough quality to justify another call?
+8. How often does Chronicler need to run for Story to remain useful?
+9. What exact quality failures appear if Interpreter/Narrator are co-located where their envelopes are compatible?
+10. What lifecycle/identity must each nondeterministic result retain across crash, retry and regeneration?
+11. Which role-activation decisions can be purely deterministic, and which bounded escalation hints—if any—should an LLM be allowed to propose?
+12. What latency budget should be assigned to every physical phase?
+13. Which retry/degradation policies preserve mechanics while meeting the one-minute ceiling?
+14. What host identity information is actually available for Interaction/Retry/recipient binding, and how does each player's separate account/chat map to `PLAYER_`/PC authority?
+15. Can the current ChatGPT tool/runtime surface support a deterministic RepositoryPort cheaply enough?
+16. Which alternative AI platforms currently offer stronger hidden-call, isolation, tool, identity, pre-visible staging or orchestration capabilities at reasonable cost?
+17. Could an API-first or hybrid deployment be cheaper than a premium consumer subscription at realistic HDM usage?
+18. What is the smallest provider-neutral boundary that keeps future migration possible without overengineering today?
+19. What canary/prompt-injection tests should qualify a topology as actually isolated, including same-logical-role cross-subject contamination?
+20. What eval set distinguishes a mechanically correct but boring Master from a genuinely good one?
+21. Which interaction modes materially change role/tool/context/emission eligibility, and can they remain deterministic routing policy rather than a new state owner?
+22. Which multimodal capabilities belong in baseline vs later extension?
+23. What engine/prompt/model versioning is needed so open campaigns remain compatible?
+24. What final architecture surfaces from Steps 1–5 are still not represented in machine catalogs/schemas/seeds?
 
 ---
 
 # 19. Current preliminary recommendation
 
-Before designing role prompts in detail, Step 6 should first establish three things with direct evidence:
+Before designing role prompts in detail, Step 6 should first establish four things with direct evidence:
 
 ```text
-1. PHYSICAL HOST / PROVIDER CAPABILITY
-2. REAL CONTEXT ISOLATION / PRE-VISIBLE VALIDATION
-3. END-TO-END LATENCY BUDGET
+1. HDM REQUIRED CAPABILITY / MODE / EFFECTIVE ELIGIBILITY ENVELOPES
+2. PHYSICAL HOST / PROVIDER CAPABILITY
+3. REAL CONTEXT ISOLATION + PRE-VISIBLE HOST-SURFACE VALIDATION
+4. END-TO-END LATENCY BUDGET
 ```
+
+This ordering matters. HDM should derive what the accepted architecture requires before grading providers against those requirements; provider convenience must not silently redefine the requirement set.
 
 At the same time, platform research should not be artificially restricted to ChatGPT if another affordable AI platform can satisfy the inherited architecture materially better.
 
 Only after those constraints are measured should HDM choose:
 
+- supported deployment profile(s);
 - physical role topology;
 - role co-location;
 - model assignment;
 - prompt/result realization;
-- fast-path activation policy.
+- deterministic fast-path activation policy.
 
 The reason is simple:
 
@@ -1026,13 +1228,29 @@ The reason is simple:
 
 Likewise, there is little value in building a large provider abstraction before proving that a second platform is materially useful.
 
+A reasonable Step-6 closure target is therefore:
+
+```text
+one proven primary supported deployment profile
++
+explicit unsupported/restricted capability boundaries
++
+stable internal role/result contracts
++
+small host capability boundary sufficient for future reassessment
+```
+
+not mandatory implementation of multiple providers.
+
 The intended design posture is therefore:
 
 ```text
+requirements-first
 capability-first
 measurement-first
 minimal hot path
 strict semantic boundaries
+deterministic privilege/routing control
 provider-aware but not provider-overabstracted
 quality evaluated explicitly
 ```
