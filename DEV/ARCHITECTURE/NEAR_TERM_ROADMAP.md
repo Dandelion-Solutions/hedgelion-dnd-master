@@ -384,19 +384,64 @@ ordinary gameplay does no history scan and retained transcript is not automatica
 
 Machine-realization debt includes `runtime.message` schema/paths, accepted-text exactness and whole/slice refs, digest/provenance envelope, semantic-discharge checks, typed exact-dependency routing, natural-owner promotion, Selective-Exact Transcript source policy, deterministic exact-archive certification, Step-5.10 cursor continuity, Step-5.8-compatible live message IDs, host divergence hooks, OOC/multiplayer retention rules, exact-unavailable query semantics, legacy migration, Step-5.12 delivery integration, Step-5.13 envelope GC and bounded maintenance/integrity tests.
 
-### Step 5.12 — IN PROGRESS
+### Step 5.12 — CLOSED
 
-Task brief:
+Canonical specification:
+
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md`
+
+Owner-approved scope/product decision:
+
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-12-minimal-host-delivery-owner-scope-decision.md`
+
+Architecture direction: **VALIDATED EMISSION-COMMIT / SOFT OUTBOUND DISCLOSURE CLOSURE / NO BASELINE DELIVERY-ACK SUBSYSTEM / DOCUMENTED INTERRUPTION RISK / RECIPIENT-SCOPED DISCLOSURE**.
+
+Derivation/review artifacts:
 
 - `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-task-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-research-draft.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-analytical-challenge.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-candidate-spec-v2.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-adversarial-review-addendum-v2.md`
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-resolution-gate.md`
 
-Step 5.12 owns **Host Delivery / Disclosure Boundary**.
+Canonical consequences include:
 
-Purpose: define the authoritative boundary between generated player-facing output and output actually emitted on the host surface, including retry/duplicate handling and coherent `runtime.disclosure` / outbound-message evidence without assuming a distributed transaction or undocumented ChatGPT callback.
+```text
+normal uninterrupted Master output is the supported baseline
+host interruption/edit/Retry/branch are not campaign rewind/correction mechanisms
+validated material player-facing output crosses logical EMISSION_COMMIT before becoming supported delivery evidence
+runtime.message + material runtime.disclosure transitions form one HOT OutboundEmissionClosure
+outbound/disclosure is normally SOFT and creates no generic second post-narration publication
+loss of unsaved disclosure may cause later repetition but never replay mechanics/RNG/fiction
+pending gameplay communication obligations remain with native gameplay/runtime owners, never delivery bookkeeping
+player interruption after EMISSION_COMMIT may over-confirm what was actually visible; this is documented owner-accepted presentation risk
+no prefix/chunk exposure ledger, durable delivery outbox, background resend worker or post-render ACK state machine is baseline
+material disclosure refs and recipient eligibility remain pre-emission integrity requirements
+intentional gameplay secrets/reveals use the validated Master response path; auxiliary visible surfaces may not bypass eligibility
+outbound exactness is exact to the emission-committed HDM response representation, not proof every character rendered/read after interruption
+human disclosure is player-scoped and remains separate from fictional world.knowledge
+outbound message IDs remain Step-5.8/5.11 collision-safe/source-native under concurrency
+semantic truth-transition lineage, not Git/host order, governs disclosure revision merge
+presentation repair/repetition does not create a second fictional speech/action
+Story Transcript candidates come from emission-committed outbound messages, never private drafts
+```
 
-Required investigation includes host emission acknowledgement semantics, generated-vs-emitted NarrationResult, external-side-effect crash windows, retry/regeneration/branch behavior, outbound `runtime.message` establishment, disclosure advancement, ambiguous delivery recovery, multiplayer recipient subsets and interaction with Step-5.11 retained Transcript candidates.
+Machine-realization debt includes `runtime.disclosure` machine/catalog/schema realization, outbound `runtime.message` schema/provenance/compaction, typed NarrationResult disclosure refs, deterministic pre-emission validation/completeness guard, HOT OutboundEmissionClosure, Step-5.5/5.6 dirty publication integration, live-safe outbound IDs, recipient binding, Transcript source routing, legacy live knowledge/disclosure cleanup, auxiliary visible-surface fencing hooks, player help/manual warnings and regression cases.
 
-**Do not begin Step 5.13 while Step 5.12 is in progress.**
+Explicitly **not** Step-5.12 implementation debt: durable delivery outbox, autonomous resend worker, token/chunk exposure frontier, generic delayed-delivery reconciliation, full Retry/edit/branch repair or a per-response Git write solely for delivery tracking.
+
+### Step 5.13 — NEXT, NOT STARTED
+
+Step 5.13 owns **Garbage Collection / Orphan Cleanup**.
+
+Purpose: define when obsolete physical artifacts/evidence may be safely removed without stranding any active owner, recovery dependency, chronology relation, retained exact-text requirement, Story projection source, disclosure/message provenance or live-epoch handoff evidence.
+
+Required investigation includes dependency-aware cleanup of superseded runtime/Continuation/receipt/checkpoint artifacts, compacted `runtime.message` envelopes, old Story sources/index generations, chronology evidence, closed/absorbed live branches, orphan prepared Git objects/branches where manageable, retention roots created by Steps 5.2–5.12, safe-delete proof, failure ordering and bounded maintenance without campaign-wide scans.
+
+**Do not begin Step 5.14 while Step 5.13 is in progress.**
 
 ## Step 6 carry-forward
 
@@ -413,27 +458,32 @@ Step 6 owns at least:
 - Commentator serving/spoiler/perspective policy;
 - Story/Chronicler activation policy and optional future async execution using the Step-5.10 coverage/CAS protocol;
 - stable host invocation/message/revision identity feasibility for Step-3/5.11/5.12 edit-retry-branch semantics;
+- physical pre-player-visible staging/validation feasibility for Step-4/5.12 material Narrator output before any secret-bearing content is rendered;
+- inventory/fencing of actual player-visible host surfaces such as final response, commentary/tool UI, citations/widgets/errors where applicable;
+- authenticated recipient/audience mapping for supported host profiles, including whether precise per-player disclosure is possible on any shared-human surface;
+- whether any cheap trustworthy completed-message acknowledgement is available and worth using as an optional strengthening without becoming baseline correctness machinery;
 - preparation caching/retention if justified;
 - migration/catalog-gap/full-seed closure;
 - final holistic architecture/catalog/seed audit;
 - consolidation of implementation obligations before implementation planning.
 
-Step 6 may optimize physical placement/deployment but cannot weaken Step-4 information boundaries or Step-5 durability/recovery/authority laws.
+Step 6 may optimize physical placement/deployment but cannot weaken Step-4 information boundaries or Step-5 durability/recovery/authority laws. It may strengthen host-delivery evidence cheaply, but may not introduce a mandatory delivery outbox/background reliability subsystem without a new explicit owner decision.
 
 ## Documentation / implementation debt
 
 - `DEV/ARCHITECTURE/CATALOG_MODEL.md` and `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` remain historical derivation where later canonical specs supersede them.
 - The expanded Step-5 agenda contains older wording superseded by canonical slices; use the slice specs for semantics.
-- Runtime persistence/recovery/live/chronology/Story/transcript prose and schemas are materially stale relative to Steps 5.2–5.11. Known debt includes checkpoint-first fields/assumptions, missing typed recovery routing and Procedure lifecycle, missing immutable live claims/bounded claim lookup, missing live-containment representation, campaign-only ID-allocation assumptions, one-high-level-action/one-live-write assumptions, legacy live knowledge representation, missing Python live `RepositoryPort`, generic `CURRENT.world_time.frontier`, singleton chronology-frontier assumptions, ambiguous local sequence semantics, missing typed chronology relation domains/metric providers/bounded chronology dependency routing, absent Story root/layer schemas/projection machinery, and absent finalized `runtime.message` exact-payload/provenance/protection/compaction machinery including Step-5.8-compatible live message identity.
+- Runtime persistence/recovery/live/chronology/Story/transcript/disclosure prose and schemas are materially stale relative to Steps 5.2–5.12. Known debt includes checkpoint-first fields/assumptions, missing typed recovery routing and Procedure lifecycle, missing immutable live claims/bounded claim lookup, missing live-containment representation, campaign-only ID-allocation assumptions, one-high-level-action/one-live-write assumptions, legacy live knowledge/disclosure representation, missing Python live `RepositoryPort`, generic `CURRENT.world_time.frontier`, singleton chronology-frontier assumptions, ambiguous local sequence semantics, missing typed chronology relation domains/metric providers/bounded chronology dependency routing, absent Story root/layer schemas/projection machinery, absent finalized `runtime.message` exact-payload/provenance/protection/compaction machinery including Step-5.8-compatible live message identity, and absent finalized `runtime.disclosure` / OutboundEmissionClosure / recipient-scoped delivery integration.
+- Player-facing help/manual must eventually document the Step-5.12 interruption/Retry/edit limitation: let Master responses complete when important information may be present; use a new message for correction/clarification rather than treating host history controls as campaign rewind.
 - The owner-approved Step-5.9 forward-extensible temporal capability boundary must be reflected in eventual Dramaturg/runtime role policy; mutable-past/branching/causal-loop baseline preparation is not supported absent a future explicit extension.
 - Broad GAME/schema/test realization remains deferred until the architecture sequence closes and implementation planning begins.
 
 ## Exact continuation point
 
-**Step 5.12 / Host Delivery & Disclosure Boundary — IN PROGRESS.**
+**Step 5.12 / Host Delivery & Disclosure Boundary — CLOSED.**
 
-Current design artifact:
+Next architecture slice:
 
-`DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-task-brief.md`
+**Step 5.13 / Garbage Collection & Orphan Cleanup — NOT STARTED.**
 
-Do not begin Step 5.13 until Step 5.12 architecture closes.
+Do not begin Step 5.14 until Step 5.13 architecture closes.
