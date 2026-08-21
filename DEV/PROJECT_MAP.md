@@ -56,6 +56,7 @@ leak into one another merely for development convenience.
 | Concern | Primary surfaces | Frequent neighbors |
 |---|---|---|
 | Architecture process / current stage | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`, relevant canonical specs in `DEV/docs/superpowers/specs/` |
+| Architecture research / second-round idea pool | `DEV/docs/superpowers/specs/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, current canonical architecture and roadmap when evaluating candidates |
 | Integrated canonical architecture lookup (Steps 1–5) | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | owning canonical specs/model contracts, `NEAR_TERM_ROADMAP.md`, Step-5.14 review artifacts |
 | Catalog/class ownership | `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `CATALOG_INVENTORY.md`, `ENTITY_STRUCTURES.md`, `CATALOG_RESOLUTION.md`, `DEV/CATALOG/` | `DEV/SCHEMAS/`, Actor/Asset/Activity/Rule Element models, catalog tests |
 | Deterministic mechanics/execution | `DEV/ARCHITECTURE/ACTIVITY_MODEL.md`, `RULE_ELEMENT_MODEL.md`, accepted Step-2/Step-3 specs | `GAME/CORE/RUNTIME.md`, `MECHANICS_INTEGRITY.md`, `RANDOMNESS.md`, runtime/value schemas/tests |
@@ -177,6 +178,7 @@ assume a prose spec is the only consumer.
 ## 6.8 `DEV/docs/superpowers/`
 
 - `specs/` — dated design chain artifacts. Status inside each artifact determines whether it is research, candidate, review, resolution, canonical or historical derivation. Prefer the latest canonical/current status references from roadmap/status docs rather than filename recency alone.
+- `specs/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` — non-normative architecture research dossier and second-round idea pool; its candidates are research input, not accepted HDM architecture or roadmap sequencing.
 - `plans/` — implementation plans produced after approved designs. They are execution guidance, not architecture authority when a later canonical spec supersedes assumptions.
 
 The accepted architecture through Step 5.13 is indexed in
