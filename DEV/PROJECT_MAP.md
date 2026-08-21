@@ -2,7 +2,7 @@
 
 Status: **NON-NORMATIVE INTERNAL NAVIGATION INDEX**
 
-Last structural inventory: 2026-08-20
+Last structural inventory: 2026-08-21
 
 ## 1. Purpose
 
@@ -55,7 +55,8 @@ leak into one another merely for development convenience.
 
 | Concern | Primary surfaces | Frequent neighbors |
 |---|---|---|
-| Architecture process / current stage | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`, `DEV/ARCHITECTURE/CATALOG_DESIGN_STATUS.md` | relevant canonical specs in `DEV/docs/superpowers/specs/` |
+| Architecture process / current stage | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`, relevant canonical specs in `DEV/docs/superpowers/specs/` |
+| Integrated canonical architecture lookup (Steps 1–5) | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | owning canonical specs/model contracts, `NEAR_TERM_ROADMAP.md`, Step-5.14 review artifacts |
 | Catalog/class ownership | `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `CATALOG_INVENTORY.md`, `ENTITY_STRUCTURES.md`, `CATALOG_RESOLUTION.md`, `DEV/CATALOG/` | `DEV/SCHEMAS/`, Actor/Asset/Activity/Rule Element models, catalog tests |
 | Deterministic mechanics/execution | `DEV/ARCHITECTURE/ACTIVITY_MODEL.md`, `RULE_ELEMENT_MODEL.md`, accepted Step-2/Step-3 specs | `GAME/CORE/RUNTIME.md`, `MECHANICS_INTEGRITY.md`, `RANDOMNESS.md`, runtime/value schemas/tests |
 | Persistence / durability / recovery | `GAME/CORE/STORAGE.md`, `PERSISTENCE.md`, `DURABILITY_GUARD.md`, `SAVE_CONTRACT.md`, `SESSION.md`, `INTEGRITY.md` | `RUNTIME.md`, `RANDOMNESS.md`, `LIVE_SCENE.md`, `MULTIPLAYER.md`, checkpoint/current/session schemas, Step-5 specs, `MAINTENANCE_COMMANDS.md` |
@@ -94,6 +95,7 @@ follow references from the owning artifacts.
 - `DEV/ARCHITECTURE/DESIGN_PROCESS.md` — HDM-specific adapter/additional constraints.
 - `DEV/ENGINE_DEVELOPMENT.yaml` — development engine/revision metadata; richer than the shipped runtime marker.
 - `DEV/PROJECT_MAP.md` — this non-normative repository navigation/dependency map.
+- `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` — derivative Steps-1–5 semantic locator/integration map optimized for cross-stage research and Step-5.14; never overrides its linked primary sources.
 
 ## 6.2 `DEV/ARCHITECTURE/`
 
@@ -104,8 +106,8 @@ Current durable architecture/navigation documents:
 - `ACTOR_MODEL.md` — progressive `world.actor` materialization, archetype/instance split and actor mechanical-state ownership.
 - `ASSET_MODEL.md` — unified reusable/instance model for physical/conceptual assets and their placement/use/lifecycle boundary.
 - `BRANCH_MODEL.md` — engine repository vs runtime package vs campaign-storage topology; campaign/live branch roles and package boundaries.
+- `CANONICAL_ARCHITECTURE_INDEX.md` — non-normative cross-stage canonical locator, ownership/invariant map and Step-5.14 scenario router for Steps 1–5.
 - `CATALOG_CONTRACTS.md` — universal definition/world/runtime class-admission and record-envelope contracts.
-- `CATALOG_DESIGN_STATUS.md` — current architecture/catalog status index and exact continuation point; not a second normative spec.
 - `CATALOG_INVENTORY.md` — reviewed class inventory/classification; machine IDs live in `DEV/CATALOG/core-catalog.json`.
 - `CATALOG_RESOLUTION.md` — deterministic `ResolvedCatalogContext`, definition-ID uniqueness and catalog evolution/resolution rules.
 - `CRITICAL_ARCHITECTURE_AUDIT.md` — completed Step-1 audit history/findings and dispositions.
@@ -114,8 +116,9 @@ Current durable architecture/navigation documents:
 - `NEAR_TERM_ROADMAP.md` — sequencing authority for the active mechanical architecture program.
 - `RULE_ELEMENT_MODEL.md` — pure embedded passive contribution model and bounded reactive binding boundary.
 
-Historical/derivation surfaces that must not override newer accepted contracts:
+Historical/derivation/status surfaces that must not override newer accepted contracts:
 
+- `CATALOG_DESIGN_STATUS.md` — historical architecture/catalog status snapshot; current sequencing comes from `NEAR_TERM_ROADMAP.md`.
 - `CATALOG_MODEL.md` — initial catalog taxonomy/derivation; points to newer normative inventory/contracts.
 - `MECHANICAL_RUNTIME_PROPOSAL.md` — early physical hot-state/runtime proposal; useful for provenance, not authority where later canonical Steps 2–5 supersede it.
 
@@ -176,10 +179,11 @@ assume a prose spec is the only consumer.
 - `specs/` — dated design chain artifacts. Status inside each artifact determines whether it is research, candidate, review, resolution, canonical or historical derivation. Prefer the latest canonical/current status references from roadmap/status docs rather than filename recency alone.
 - `plans/` — implementation plans produced after approved designs. They are execution guidance, not architecture authority when a later canonical spec supersedes assumptions.
 
-Important current chains include Step 3 execution, Step 4 information/Story,
-Step 5 expanded agenda, Step 5.0 contamination cleanup and Step 5.1 frontier
-model. When resuming a numbered architecture slice, start from
-`NEAR_TERM_ROADMAP.md` and its linked chain.
+The accepted architecture through Step 5.13 is indexed in
+`DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`; use that file to locate the
+owning primary specification, then read the primary source before making a
+correctness-sensitive decision. Numbered architecture sequencing remains owned by
+`NEAR_TERM_ROADMAP.md`.
 
 ---
 
@@ -336,7 +340,7 @@ single located file owns a problem.
 ## 8.1 Persistence/recovery
 
 ```text
-Step-5 canonical/current specs
+CANONICAL_ARCHITECTURE_INDEX -> owning Step-5 canonical specs
     -> RUNTIME / STORAGE / SESSION
     -> DURABILITY_GUARD / SAVE_CONTRACT
     -> PERSISTENCE / INTEGRITY
@@ -390,9 +394,10 @@ ACCESS_CONTROL / BRANCH_MODEL
 
 ```text
 Step-4 canonical spec
+    -> Step-5.10 / 5.11 / 5.12 canonical specs
     -> AI_REASONING / INFORMATION / LORE / NARRATIVE / PREP / GM_CRAFT
     -> current entity schemas where legacy knowledge fields still exist
-    -> later Step-4 machine realization + Step-5 Story/disclosure durability work
+    -> deferred Step-6 physical role/context realization
 ```
 
 ---
@@ -403,12 +408,11 @@ For substantive repository work:
 
 1. inspect the current branch/ref and current repository tree;
 2. read this map to identify likely owners and neighboring dependency surfaces;
-3. read the actual referenced owners/contracts/schemas/tests;
-4. search the repository for concrete symbols/paths to find consumers and stale references;
-5. treat a zero-result keyword search as **non-evidence of absence** until the
-   relevant directory/tree and local indexes have also been checked;
-6. update this map when a structural/responsibility change would make future
-   discovery materially misleading.
+3. for cross-stage architecture questions, use `CANONICAL_ARCHITECTURE_INDEX.md` to locate the owning accepted specifications;
+4. read the actual referenced owners/contracts/schemas/tests;
+5. search the repository for concrete symbols/paths to find consumers and stale references;
+6. treat a zero-result keyword search as **non-evidence of absence** until the relevant directory/tree and local indexes have also been checked;
+7. update this map when a structural/responsibility change would make future discovery materially misleading.
 
 A file move/addition/deletion does not automatically require a prose entry when
 it belongs to an already covered homogeneous family. Update the map when the
