@@ -11,9 +11,9 @@
 ## Version metadata
 - [ ] `DEV/ENGINE_DEVELOPMENT.yaml` contains the full development/release bookkeeping record.
 - [ ] `GAME/ENGINE_VERSION.yaml` contains only the approved semantic runtime projection and shared fields remain identical.
-- [ ] version/recommended_tag are coherent.
-- [ ] For release preparation, change shared `release_status` from `development` to `ready-for-tag` in both files.
-- [ ] Tag publication is rejected unless status is `ready-for-tag` and tag equals `recommended_tag`.
+- [ ] `engine_version` and `recommended_tag` are coherent: `recommended_tag == v<engine_version>` and uses a supported version-tag form.
+- [ ] No manual release-status transition is required before tagging; `release_status` is descriptive bookkeeping and does not authorize or block tag-mode publication.
+- [ ] Tag publication requires the actual tag to equal `recommended_tag`, point at the exact checked-out commit, and pass approved-main-lineage validation.
 
 ## Runtime package composition and provenance
 - [ ] `python DEV/TOOLS/run_release_build.py` builds the local pre-tag candidate into ignored repository-root `builds/`; when `--tag` is omitted it uses `recommended_tag` from `DEV/ENGINE_DEVELOPMENT.yaml`; `--tag <tag>` and `--output <dir>` remain explicit overrides.
@@ -75,8 +75,8 @@
 - [ ] `GAME/MIGRATIONS/README.md` describes campaign data/schema migration only; no engine-tree merge semantics remain.
 
 ## Tag and GitHub Release
-- [ ] Pre-tag candidate from the final `ready-for-tag` tree is tested in a fresh Project.
-- [ ] Create immutable tag exactly equal to `recommended_tag` from the approved release lineage.
+- [ ] Pre-tag candidate from the final version-coherent tree is tested in a fresh Project.
+- [ ] Create immutable version tag exactly equal to `recommended_tag` from the approved release lineage; creating the tag itself is the release trigger and requires no manifest status edit.
 - [ ] Tag-triggered `.github/workflows/release-runtime.yml` checks out the exact tag and calls only `python DEV/TOOLS/run_release_build.py` for package composition/validation, using explicit `--tag "$GITHUB_REF_NAME"`, `--tag-mode` and runner-temporary `--output`.
 - [ ] Tagged package `RUNTIME_PACKAGE.yaml` records `source_state: tagged`, the release tag as source ref, and the exact tagged source commit represented by the ZIP.
 - [ ] Workflow get-or-creates the GitHub Release for the tag.
