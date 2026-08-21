@@ -52,6 +52,7 @@ REQUIRED_RUNTIME_ROOT_DIRS = ('CORE', 'INSTALL', 'RULES', 'SCHEMA', 'CAMPAIGN', 
 LEGAL_TOP_LEVEL = ('LICENSE', 'NOTICE', 'THIRD_PARTY_NOTICES.md')
 FORBIDDEN_JUNK_NAMES = {'.DS_Store'}
 FORBIDDEN_JUNK_SUFFIXES = ('.pyc', '.pyo')
+VERSION_TAG_RE = re.compile(r'^v\d+\.\d+(?:-[0-9A-Za-z][0-9A-Za-z.-]*)?$')
 
 
 def _is_relative_to(path: Path, parent: Path) -> bool:
@@ -120,7 +121,7 @@ def validate_runtime_package_metadata(data: dict) -> None:
 
 
 def runtime_asset_name(tag: str) -> str:
-    if not tag.startswith('v') or len(tag) < 2:
+    if VERSION_TAG_RE.fullmatch(tag) is None:
         raise BuildError(f'invalid release tag: {tag}')
     return f'hedgelion-dnd-master-runtime-{tag}.zip'
 
@@ -149,12 +150,16 @@ def load_and_validate_manifests(
             raise BuildError(f'shared manifest field differs: {key}')
     if dev.get('campaign_update') != game.get('campaign_update'):
         raise BuildError('shared manifest field differs: campaign_update')
-    if str(game.get('engine_version')) != '0.8' or game.get('recommended_tag') != 'v0.8':
-        raise BuildError('engine 0.8 migration requires version 0.8 / tag v0.8')
-    if intended_tag is not None and intended_tag != game.get('recommended_tag'):
-        raise BuildError('intended tag differs from recommended_tag')
-    if tag_mode and game.get('release_status') != 'ready-for-tag':
-        raise BuildError('tag build requires release_status ready-for-tag')
+    engine_version = str(game.get('engine_version'))
+    expected_tag = f'v{engine_version}'
+    if VERSION_TAG_RE.fullmatch(expected_tag) is None:
+        raise BuildError(f'invalid engine version for release tag: {engine_version}')
+    if game.get('recommended_tag') != expected_tag:
+        raise BuildError('recommended_tag must equal v<engine_version>')
+    if intended_tag is not None:
+        runtime_asset_name(intended_tag)
+        if intended_tag != game.get('recommended_tag'):
+            raise BuildError('intended tag differs from recommended_tag')
     return dev, game
 
 
