@@ -38,8 +38,8 @@ D&D Master задуман не как одноразовый чат, котор�
 
 Установка специально сделана простой:
 
-1. Открой нужный GitHub Release.
-2. Скачай **runtime asset** `hedgelion-dnd-master-runtime-v<version>.zip`.
+1. Открой нужный [GitHub Release](https://github.com/Dandelion-Solutions/hedgelion-dnd-master/releases).
+2. Скачай **runtime asset** `hedgelion-dnd-master-runtime-vX.Y.zip`.
 3. Создай ChatGPT Project.
 4. Скопируй Project Instructions из [`GAME/INSTALL/README.md`](GAME/INSTALL/README.md).
 5. Добавь runtime ZIP в Project Sources.

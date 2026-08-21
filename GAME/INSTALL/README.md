@@ -5,7 +5,7 @@ D&D Master работает внутри ChatGPT Project. Для игры исп
 ## Что нужно
 
 - ChatGPT Project;
-- один или несколько runtime ZIP вида `hedgelion-dnd-master-runtime-v<version>.zip` из нужных GitHub Releases;
+- один или несколько runtime ZIP вида `hedgelion-dnd-master-runtime-vX.Y.zip` из нужных GitHub Releases;
 - GitHub account с подключённым GitHub Connector.
 
 > GitHub автоматически показывает у каждого Release ссылки `Source code (zip)` и `Source code (tar.gz)`. Это снимки полного development-репозитория и **не установочные архивы D&D Master**. Для Project Sources нужен именно runtime asset, приложенный к Release отдельно.
@@ -13,11 +13,11 @@ D&D Master работает внутри ChatGPT Project. Для игры исп
 ## Установка
 
 1. Открой нужный [GitHub Release](https://github.com/Dandelion-Solutions/hedgelion-dnd-master/releases).
-2. Скачай asset `hedgelion-dnd-master-runtime-v<version>.zip`.
+2. Скачай asset `hedgelion-dnd-master-runtime-vX.Y.zip`.
 3. Создай новый ChatGPT Project.
 4. Скопируй блок **Project Instructions** ниже целиком в настройки Project Instructions.
 5. Добавь runtime ZIP целиком в **Project Sources**. Если в одном Project живут игры на разных версиях движка, добавь соответствующие runtime ZIP рядом — старые версии удалять не требуется.
-6. Подключи GitHub Connector и авторизуй свой GitHub account.
+6. Подключи GitHub Connector и авторизуй свой GitHub account. Мастер подскажет как сделать!
 7. Открой новый чат и напиши, например: **«Давай сыграем»**.
 
 Ничего распаковывать вручную, клонировать или копировать в campaign repository не нужно.
@@ -58,14 +58,14 @@ Never force-push live campaign/storage refs. Never claim a GitHub save/publicati
 After bootstrap starts, the exact selected engine's bootstrap and CORE define all detailed runtime, package-selection, research, access, context-loading, campaign-menu, setup, update, and persistence behavior not stated above.
 ```
 
-Тот же текст хранится в `INSTALL/PROJECT_INSTRUCTIONS.txt` внутри runtime package. Release audit требует, чтобы обе копии совпадали.
+Тот же текст хранится в `INSTALL/PROJECT_INSTRUCTIONS.txt` внутри runtime package (на всякий случай).
 
 ## Хранилище игр
 
-Если подходящего campaign storage ещё нет, Master предложит:
+Если подходящего campaign storage ещё нет, Мастер предложит:
 
-- **создать своё** — создай новый **пустой** GitHub repository, выбери `Private` или `Public` и не включай `Add a README`, `.gitignore`, license или другие стартовые файлы; затем сообщи Master имя repository;
-- **подключиться к игре друга** — владелец repository даёт твоему GitHub account доступ collaborator, после чего сообщи Master имя repository.
+- **создать своё** — создай новый **пустой** GitHub repository, выбери `Private` или `Public` и не включай `Add a README`, `.gitignore`, `license` или другие стартовые файлы; затем сообщи Мастеру имя repository;
+- **подключиться к игре друга** — владелец repository даёт твоему GitHub account доступ collaborator, после чего сообщи Мастеру имя repository.
 
 Если repository не виден Connector, открой GitHub App installations → **ChatGPT Codex Connector** → **Configure** → **Repository access** и добавь нужный repository.
 
@@ -75,11 +75,11 @@ After bootstrap starts, the exact selected engine's bootstrap and CORE define al
 
 Скачай новый runtime asset и добавь его в Project Sources рядом с уже используемыми версиями. Затем заново скопируй актуальный блок Project Instructions из `INSTALL/README.md` нового release.
 
-Старые runtime ZIP можно оставить, если в этом Project есть кампании на старых версиях. Master выберет нужный пакет после выбора конкретной игры. Обновление существующей кампании выполняется только по runtime-правилам и полномочиям её создателя.
+Старые runtime ZIP можно оставить, если в этом Project есть кампании на старых версиях. Мастер выберет нужный пакет после выбора конкретной игры. Обновление существующей кампании выполняется только по runtime-правилам и полномочиям её создателя.
 
 ## Если что-то не работает
 
-**Project получил GitHub source archive вместо runtime asset:** удали его из Project Sources и добавь `hedgelion-dnd-master-runtime-v<version>.zip`. Правильный новый runtime archive имеет `ENGINE_VERSION.yaml` и `RUNTIME_PACKAGE.yaml` непосредственно в корне рядом с `CORE/` и `INSTALL/`.
+**Project получил GitHub source archive вместо runtime asset:** удали его из Project Sources и добавь `hedgelion-dnd-master-runtime-vX.Y.zip`. Правильный новый runtime archive имеет `ENGINE_VERSION.yaml` и `RUNTIME_PACKAGE.yaml` непосредственно в корне рядом с `CORE/` и `INSTALL/`.
 
 **ChatGPT не видит private repository:** проверь Repository access у установки **ChatGPT Codex Connector**.
 
