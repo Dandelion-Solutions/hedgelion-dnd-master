@@ -47,6 +47,11 @@ class ReleaseBuilderContractTests(unittest.TestCase):
         m = load_module()
         self.assertEqual(m.runtime_asset_name('v0.8'), 'hedgelion-dnd-master-runtime-v0.8.zip')
 
+    def test_runtime_asset_name_rejects_non_version_tag(self):
+        m = load_module()
+        with self.assertRaises(m.BuildError):
+            m.runtime_asset_name('vbanana')
+
     def test_source_archive_shape_is_rejected(self):
         m = load_module()
         with tempfile.TemporaryDirectory() as td:
@@ -112,13 +117,22 @@ class ReleaseBuilderZipTests(unittest.TestCase):
             with self.assertRaises(m.BuildError):
                 m.load_and_validate_manifests(root)
 
-    def test_tag_mode_requires_ready_for_tag(self):
+    def test_tag_mode_allows_development_status(self):
         m = load_module()
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             self._write_manifest_pair(root, status='development')
-            with self.assertRaises(m.BuildError):
-                m.load_and_validate_manifests(root, intended_tag='v0.8', tag_mode=True)
+            m.load_and_validate_manifests(root, intended_tag='v0.8', tag_mode=True)
+
+    def test_manifest_validation_is_not_hardcoded_to_v0_8(self):
+        m = load_module()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            self._write_manifest_pair(root, status='development')
+            for rel in ('GAME/ENGINE_VERSION.yaml', 'DEV/ENGINE_DEVELOPMENT.yaml'):
+                p = root / rel
+                p.write_text(p.read_text(encoding='utf-8').replace('0.8', '0.9'), encoding='utf-8')
+            m.load_and_validate_manifests(root, intended_tag='v0.9', tag_mode=True)
 
     def test_build_zip_flattens_game_and_is_reproducible(self):
         import hashlib
@@ -235,7 +249,7 @@ class ReleaseLineageTests(unittest.TestCase):
             root=Path(td)
             game=root/'GAME'; dev=root/'DEV'; game.mkdir(); dev.mkdir()
             manifest=(
-                'engine_version: 0.8\nrelease_status: ready-for-tag\n'
+                'engine_version: 0.8\nrelease_status: development\n'
                 'repository: Dandelion-Solutions/hedgelion-dnd-master\nengine_owner_login: dkolyada\n'
                 'rules_baseline: D&D 2024 / SRD 5.2.1\nschema_version: 2\n'
                 'campaign_update:\n  compatibility: maintenance_required\nrecommended_tag: v0.8\n'
