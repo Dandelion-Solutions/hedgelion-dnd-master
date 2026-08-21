@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json",
+  "title": "HDM closed mechanical predicate",
+  "$ref": "#/$defs/predicate",
+  "$defs": {
+    "machineId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "scalar": {
+      "type": ["string", "number", "integer", "boolean"]
+    },
+    "operand": {
+      "oneOf": [
+        {"$ref": "#/$defs/scalar"},
+        {"$ref": "https://hedgelion.invalid/schemas/mechanical-accessor-ref.schema.json"}
+      ]
+    },
+    "predicate": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fact"],
+          "properties": {
+            "fact": {
+              "allOf": [{"$ref": "#/$defs/machineId"}],
+              "description": "Registered boolean INVOCATION_ADJUDICATED context fact. Compilation resolves this ID through mechanical-surfaces metadata. Engine-owned mechanical reads use typed accessor references instead; missing invocation input is not equivalent to false."
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["all"],
+          "properties": {
+            "all": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/predicate"}}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["any"],
+          "properties": {
+            "any": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/predicate"}}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["not"],
+          "properties": {"not": {"$ref": "#/$defs/predicate"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["compare"],
+          "properties": {
+            "compare": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["left", "operator", "right"],
+              "properties": {
+                "left": {"$ref": "#/$defs/operand"},
+                "operator": {"enum": ["eq", "ne", "lt", "lte", "gt", "gte", "contains"]},
+                "right": {"$ref": "#/$defs/operand"}
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "examples": [
+    {"fact": "fiction.target_visible"},
+    {
+      "compare": {
+        "left": {
+          "accessor_id": "condition.present",
+          "subject": "target",
+          "condition_id": "condition.poisoned"
+        },
+        "operator": "eq",
+        "right": true
+      }
+    },
+    {
+      "compare": {
+        "left": {"accessor_id": "health.bloodied", "subject": "target"},
+        "operator": "eq",
+        "right": true
+      }
+    }
+  ]
+}

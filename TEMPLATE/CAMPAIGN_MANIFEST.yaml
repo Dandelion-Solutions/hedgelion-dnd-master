@@ -1,3 +1,0 @@
-# Deprecated compatibility stub.
-# The authoritative empty template source is local CAMPAIGN/MANIFEST.yaml.
-# TOOLS/init_campaign.py copies the CONTENTS of CAMPAIGN/ to the generated campaign root, so a new branch contains root MANIFEST.yaml (not CAMPAIGN/MANIFEST.yaml).

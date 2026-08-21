@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/runtime-resolution-state.schema.json",
+  "title": "HDM runtime.resolution state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "root_command_id", "activity_id", "catalog_context_fingerprint", "status",
+    "next_segment_sequence", "invocation_facts", "fixed_rng_results",
+    "prior_step_exports", "child_resolution_ids"
+  ],
+  "properties": {
+    "root_command_id": {"type": "string", "minLength": 1},
+    "initiating_command_id": {"type": "string", "minLength": 1},
+    "causal_invocation_key": {"type": "string", "minLength": 1},
+    "activity_id": {"type": "string", "minLength": 1},
+    "catalog_context_fingerprint": {"type": "string", "minLength": 1},
+    "procedure_id": {"type": "string", "minLength": 1},
+    "status": {
+      "enum": [
+        "PENDING", "RUNNING", "AWAITING_CHOICE", "AWAITING_REACTION",
+        "HYDRATION_REQUIRED", "PUBLISH_REQUIRED", "COMPLETED", "REJECTED",
+        "ABORTED", "FAILED"
+      ]
+    },
+    "cursor": {"type": "string", "minLength": 1},
+    "safe_recompute_phase": {"type": "string", "minLength": 1},
+    "next_segment_sequence": {"type": "integer", "minimum": 1},
+    "invocation_facts": {
+      "type": "array",
+      "items": {"$ref": "https://hedgelion.invalid/schemas/invocation-fact.schema.json"}
+    },
+    "fixed_rng_results": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/scalar"}
+    },
+    "prior_step_exports": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/scalar"}
+    },
+    "child_resolution_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "continuation_id": {"type": "string", "minLength": 1},
+    "trace_id": {"type": "string", "minLength": 1},
+    "details": {"type": "object"}
+  },
+  "anyOf": [
+    {"required": ["initiating_command_id"]},
+    {"required": ["causal_invocation_key"]}
+  ],
+  "$defs": {
+    "scalar": {"type": ["string", "number", "boolean"]}
+  },
+  "examples": [
+    {
+      "root_command_id": "turn-000042-cmd-01",
+      "initiating_command_id": "turn-000042-cmd-01",
+      "activity_id": "activity.attack.basic",
+      "catalog_context_fingerprint": "ctx",
+      "status": "RUNNING",
+      "next_segment_sequence": 1,
+      "invocation_facts": [],
+      "fixed_rng_results": [],
+      "prior_step_exports": {},
+      "child_resolution_ids": []
+    }
+  ]
+}

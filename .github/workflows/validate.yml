@@ -1,0 +1,31 @@
+name: Validate engine source
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source tree
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Run full maintenance audit
+        run: DEV/TOOLS/run_maintenance_audit
+
+      - name: Run DEV unit tests
+        run: .hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v

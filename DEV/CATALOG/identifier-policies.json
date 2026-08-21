@@ -1,0 +1,45 @@
+{
+  "catalog_version": "1.6.0",
+  "schema_version": 1,
+  "world": {
+    "world.actor": {"strategy": "sequential", "prefix": "actor", "minimum_width": 4, "scope": "campaign", "local": {"prefix": "local-actor", "minimum_width": 3, "scope": "session"}},
+    "world.actor_group": {"strategy": "sequential", "prefix": "group", "minimum_width": 3, "scope": "campaign", "local": {"prefix": "local-group", "minimum_width": 3, "scope": "session"}},
+    "world.asset": {"strategy": "sequential", "prefix": "asset", "minimum_width": 5, "scope": "campaign", "local": {"prefix": "local-asset", "minimum_width": 4, "scope": "session"}},
+    "world.location": {"strategy": "sequential", "prefix": "location", "minimum_width": 4, "scope": "campaign", "local": {"prefix": "local-location", "minimum_width": 3, "scope": "session"}},
+    "world.connection": {"strategy": "sequential", "prefix": "connection", "minimum_width": 4, "scope": "campaign"},
+    "world.zone": {"strategy": "sequential", "prefix": "zone", "minimum_width": 4, "scope": "campaign", "local": {"prefix": "local-zone", "minimum_width": 3, "scope": "session"}},
+    "world.organization": {"strategy": "sequential", "prefix": "organization", "minimum_width": 3, "scope": "campaign"},
+    "world.relationship": {"strategy": "sequential", "prefix": "relationship", "minimum_width": 5, "scope": "campaign"},
+    "world.contract": {"strategy": "sequential", "prefix": "contract", "minimum_width": 3, "scope": "campaign"},
+    "world.mission": {"strategy": "sequential", "prefix": "mission", "minimum_width": 4, "scope": "campaign"},
+    "world.scene": {"strategy": "sequential", "prefix": "scene", "minimum_width": 4, "scope": "campaign"},
+    "world.encounter": {"strategy": "sequential", "prefix": "encounter", "minimum_width": 4, "scope": "campaign"},
+    "world.hazard": {"strategy": "sequential", "prefix": "hazard", "minimum_width": 4, "scope": "campaign", "local": {"prefix": "local-hazard", "minimum_width": 3, "scope": "session"}},
+    "world.effect": {"strategy": "sequential", "prefix": "effect", "minimum_width": 6, "scope": "campaign", "local": {"prefix": "local-effect", "minimum_width": 5, "scope": "session"}},
+    "world.lore_fact": {"strategy": "sequential", "prefix": "fact", "minimum_width": 4, "scope": "campaign"},
+    "world.knowledge": {"strategy": "sequential", "prefix": "knowledge", "minimum_width": 6, "scope": "campaign"}
+  },
+  "runtime": {
+    "runtime.session": {"strategy": "sequential", "prefix": "session", "minimum_width": 4, "scope": "campaign"},
+    "runtime.message": {"strategy": "sequential", "prefix": "message", "minimum_width": 7, "scope": "campaign"},
+    "runtime.interaction": {"strategy": "sequential", "prefix": "turn", "minimum_width": 6, "scope": "campaign"},
+    "runtime.procedure": {"strategy": "sequential", "prefix": "procedure", "minimum_width": 6, "scope": "campaign"},
+    "runtime.intent_plan": {"strategy": "derived", "parent_kind": "runtime.interaction", "suffix": "plan"},
+    "runtime.command": {"strategy": "derived", "parent_kind": "runtime.interaction", "suffix": "cmd", "ordinal_width": 2},
+    "runtime.resolution": {"strategy": "sequential", "prefix": "resolution", "minimum_width": 7, "scope": "campaign"},
+    "runtime.continuation": {"strategy": "derived", "parent_kind": "runtime.resolution", "suffix": "cont"},
+    "runtime.mechanical_event": {"strategy": "sequential", "prefix": "event", "minimum_width": 8, "scope": "campaign"},
+    "runtime.semantic_event": {"strategy": "sequential", "prefix": "semantic", "minimum_width": 7, "scope": "campaign"},
+    "runtime.resolution_trace": {"strategy": "derived", "parent_kind": "runtime.resolution", "suffix": "trace"},
+    "runtime.checkpoint": {"strategy": "sequential", "prefix": "rev", "minimum_width": 6, "scope": "campaign"},
+    "runtime.id_allocator": {"strategy": "singleton", "id": "campaign-allocator"},
+    "runtime.maintenance_audit": {"strategy": "sequential", "prefix": "audit", "minimum_width": 4, "scope": "campaign"},
+    "runtime.catalog_gap_report": {"strategy": "sequential", "prefix": "gap", "minimum_width": 4, "scope": "campaign"}
+  },
+  "non_records": {
+    "definitions": "semantic_namespaced_id",
+    "protocol_values": "embedded_no_independent_id",
+    "timeline_slot": "ordering_value_not_identity",
+    "encounter_round": "state_value_not_identity"
+  }
+}

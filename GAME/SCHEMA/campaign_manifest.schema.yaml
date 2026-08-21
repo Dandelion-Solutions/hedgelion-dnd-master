@@ -1,0 +1,71 @@
+schema_name: campaign_manifest
+schema_version: 3
+required:
+  - schema_version
+  - campaign_id
+  - branch
+  - status
+  - mode
+  - engine
+  - storage
+fields:
+  schema_version: integer
+  campaign_id: string
+  campaign_name: string|null
+  campaign_name_origin: enum[auto, player]|null
+  branch: string
+  status: enum[initializing, active, paused, completed, archived]
+  mode: enum[singleplayer, multiplayer]
+  engine:
+    created_with:
+      version: string
+      package_id: string
+      source_commit_sha: string|null
+    current:
+      version: string
+      package_id: string
+      source_commit_sha: string|null
+      package_sha256: string
+      adopted_at: string
+    update_policy: enum[ask, auto]
+  rules:
+    baseline: string
+    house_rules_path: string|null
+  storage:
+    state_root: string
+    index_root: string
+    world_root: string
+    event_log_root: string
+    checkpoints_root: string
+  sync:
+    force_push_allowed: boolean
+    persistence_policy: enum[batched]
+  world_time:
+    calendar_id: string|null
+  players:
+    join_policy: enum[invite_only, open_contributors]
+    player_ids: array[string]
+  last_checkpoint_id: string|null
+  created_at: string
+invariants:
+  - branch MUST match campaign/YYYYMMDD or campaign/YYYYMMDD-NN where NN >= 02
+  - branch name MUST NOT encode lore, mode, player count or owner
+  - force_push_allowed MUST be false for live campaigns
+  - campaign creator is derived from Git history and MUST NOT be duplicated as authority in MANIFEST
+  - mode/join-policy/engine-policy changes follow campaign-creator authorization
+  - current-layout MANIFEST is at branch root and uses STATE, INDEX, WORLD, LOG, CHECKPOINTS roots without a campaign-storage wrapper
+  - MANIFEST.last_checkpoint_id is the sole latest-checkpoint pointer; checkpoint payloads remain immutable recovery projections
+  - current chronology frontier and semantic-log cursor belong to STATE/CURRENT, not MANIFEST
+  - engine.created_with is immutable creation provenance
+  - engine.current identifies the portable runtime identity currently required by the campaign
+  - engine.current.package_sha256 identifies the exact last accepted ZIP but MUST NOT permanently lock the campaign to obsolete same-version bytes
+  - engine.current.source_commit_sha is source provenance and is not tied to a branch named main
+  - current_runtime_root is environment-specific and MUST NOT be persisted in MANIFEST
+  - engine files MUST NOT be copied into campaign repository
+  - update_policy defaults to ask
+  - campaign_name_origin is optional only where an older non-engine compatibility rule explicitly permits it; new campaigns emit it
+  - completed means the campaign has explicitly ended; a PC death alone MUST NOT automatically imply campaign completion
+  - status active requires READY_PC + a durable PLAY_READY frontier
+  - unfinished pre-live onboarding remains initializing even when provisional PC/scene/location are durable or explicitly saved
+  - paused is reserved for a campaign that previously reached PLAY_READY/normal play; stopping unfinished setup does not convert initializing to paused
+  - CAMPAIGN_CARD.campaign_name is an exact projection of campaign_name, including null

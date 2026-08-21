@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/rest-policy-definition-data.schema.json",
+  "title": "HDM definition.rest_policy data",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["duration", "completion_boundary_id"],
+  "properties": {
+    "duration": {"$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"},
+    "completion_boundary_id": {"$ref": "#/$defs/machineId"},
+    "requirements": {"$ref": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json"},
+    "interruption_policy_id": {"$ref": "#/$defs/machineId"},
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+  },
+  "examples": [
+    {
+      "duration": {"kind_id": "duration.metric", "amount": 8, "unit_id": "unit.hour"},
+      "completion_boundary_id": "boundary.long_rest_complete"
+    }
+  ]
+}

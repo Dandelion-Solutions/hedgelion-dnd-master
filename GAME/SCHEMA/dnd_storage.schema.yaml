@@ -1,0 +1,30 @@
+schema_name: dnd_storage
+schema_version: 3
+required:
+  - storage_format_version
+  - repository_role
+  - engine
+fields:
+  storage_format_version: integer
+  repository_role: enum[campaign_storage]
+  engine:
+    baseline:
+      version: string
+      package_id: string
+      source_commit_sha: string|null
+      package_sha256: string
+      adopted_at: string
+invariants:
+  - file MUST exist at repository root on the campaign-storage repository default branch
+  - file MUST NOT exist in the canonical public engine repository
+  - exact root-file existence is sufficient for storage discovery before semantic validation
+  - storage_format_version 3 stores portable runtime identity and MUST NOT require a copied engine tree
+  - engine.baseline identifies the storage-owner-approved default runtime for NEW campaigns only
+  - engine.baseline MUST NOT select, mutate, or override an existing campaign runtime
+  - source_commit_sha and package_sha256 record provenance of the accepted baseline artifact
+  - adopted_at is audit metadata and MUST NOT be used as forward-versus-downgrade ordering authority
+  - current_runtime_root is environment-specific and MUST NOT be stored in DND_STORAGE.yaml
+  - engine source files are supplied by local runtime ZIPs, not by campaign storage
+  - the authoritative storage metadata is the copy on the storage default branch
+  - existing campaign/live branches resolve runtime only from MANIFEST.engine.current
+  - storage metadata writes are storage-owner-only

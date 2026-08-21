@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/resource-definition-data.schema.json",
+  "title": "HDM definition.resource data",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mechanic_id", "lifetime_owner", "state_model"],
+  "properties": {
+    "mechanic_id": {"$ref": "#/$defs/machineId"},
+    "lifetime_owner": {"enum": ["actor", "asset", "procedure"]},
+    "state_model": {"enum": ["current", "spent"]},
+    "capacity": {"type": "number", "minimum": 0},
+    "recovery": {"type": "array"},
+    "spending_policy_id": {"$ref": "#/$defs/machineId"},
+    "details": {"type": "object"}
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "lifetime_owner": {"enum": ["actor", "asset"]},
+        "state_model": {"const": "current"},
+        "recovery": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/currentRecovery"},
+          "contains": {"required": ["after"]},
+          "minContains": 0,
+          "maxContains": 1
+        }
+      }
+    },
+    {
+      "properties": {
+        "lifetime_owner": {"const": "procedure"},
+        "state_model": {"const": "spent"},
+        "recovery": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/spentRecovery"},
+          "contains": {"required": ["after"]},
+          "minContains": 0,
+          "maxContains": 1
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "machineId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "metricDelay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind_id", "amount", "unit_id"],
+      "properties": {
+        "kind_id": {"const": "duration.metric"},
+        "amount": {"type": "integer", "minimum": 1},
+        "unit_id": {"$ref": "#/$defs/machineId"}
+      }
+    },
+    "recoveryTiming": {
+      "type": "object",
+      "properties": {
+        "boundary_id": {"$ref": "#/$defs/machineId"},
+        "after": {"$ref": "#/$defs/metricDelay"}
+      },
+      "oneOf": [
+        {"required": ["boundary_id"], "not": {"required": ["after"]}},
+        {"required": ["after"], "not": {"required": ["boundary_id"]}}
+      ]
+    },
+    "currentRecovery": {
+      "allOf": [
+        {"$ref": "#/$defs/recoveryTiming"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["operation_id"],
+          "properties": {
+            "operation_id": {
+              "enum": [
+                "resource_recovery.restore_to_capacity",
+                "resource_recovery.restore_amount"
+              ]
+            },
+            "boundary_id": {"$ref": "#/$defs/machineId"},
+            "after": {"$ref": "#/$defs/metricDelay"},
+            "amount": {"type": "number", "exclusiveMinimum": 0}
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {"operation_id": {"const": "resource_recovery.restore_amount"}},
+                "required": ["operation_id"]
+              },
+              "then": {"required": ["amount"]},
+              "else": {"not": {"required": ["amount"]}}
+            }
+          ]
+        }
+      ]
+    },
+    "spentRecovery": {
+      "allOf": [
+        {"$ref": "#/$defs/recoveryTiming"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["operation_id"],
+          "properties": {
+            "operation_id": {"const": "resource_recovery.reset_spent"},
+            "boundary_id": {"$ref": "#/$defs/machineId"},
+            "after": {"$ref": "#/$defs/metricDelay"}
+          }
+        }
+      ]
+    }
+  },
+  "examples": [
+    {
+      "mechanic_id": "resource.bounded_pool",
+      "lifetime_owner": "actor",
+      "state_model": "current",
+      "capacity": 3,
+      "recovery": [
+        {
+          "boundary_id": "boundary.long_rest_complete",
+          "operation_id": "resource_recovery.restore_to_capacity"
+        }
+      ]
+    },
+    {
+      "mechanic_id": "resource.action_budget",
+      "lifetime_owner": "procedure",
+      "state_model": "spent",
+      "capacity": 1,
+      "recovery": [
+        {
+          "boundary_id": "boundary.turn_start",
+          "operation_id": "resource_recovery.reset_spent"
+        }
+      ]
+    }
+  ]
+}

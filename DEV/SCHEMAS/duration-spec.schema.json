@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/duration-spec.schema.json",
+  "title": "HDM reusable DurationSpec",
+  "oneOf": [
+    {"$ref": "#/$defs/instant"},
+    {"$ref": "#/$defs/metric"},
+    {"$ref": "#/$defs/boundary"},
+    {"$ref": "#/$defs/permanent"}
+  ],
+  "$defs": {
+    "machineId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "role": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "instant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind_id"],
+      "properties": {"kind_id": {"const": "duration.instant"}}
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind_id", "amount", "unit_id"],
+      "properties": {
+        "kind_id": {"const": "duration.metric"},
+        "amount": {"type": "integer", "minimum": 1},
+        "unit_id": {"$ref": "#/$defs/machineId"}
+      }
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind_id", "boundary_id"],
+      "properties": {
+        "kind_id": {"const": "duration.boundary"},
+        "boundary_id": {"$ref": "#/$defs/machineId"},
+        "count": {"type": "integer", "minimum": 1},
+        "subject_role": {"$ref": "#/$defs/role"}
+      }
+    },
+    "permanent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind_id"],
+      "properties": {"kind_id": {"const": "duration.permanent"}}
+    }
+  },
+  "examples": [
+    {"kind_id": "duration.metric", "amount": 1, "unit_id": "unit.minute"},
+    {"kind_id": "duration.boundary", "boundary_id": "boundary.turn_end", "subject_role": "target"},
+    {"kind_id": "duration.permanent"}
+  ]
+}

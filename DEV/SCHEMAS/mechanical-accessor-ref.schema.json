@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/mechanical-accessor-ref.schema.json",
+  "title": "HDM typed MechanicalContext accessor reference",
+  "oneOf": [
+    {"$ref": "#/$defs/healthCurrent"},
+    {"$ref": "#/$defs/healthTemporary"},
+    {"$ref": "#/$defs/healthMaximum"},
+    {"$ref": "#/$defs/healthBloodied"},
+    {"$ref": "#/$defs/lifeState"},
+    {"$ref": "#/$defs/conditionPresent"},
+    {"$ref": "#/$defs/conditionValue"},
+    {"$ref": "#/$defs/resourceCapacity"},
+    {"$ref": "#/$defs/resourceAvailable"},
+    {"$ref": "#/$defs/ownerEffectParameter"}
+  ],
+  "$defs": {
+    "machineId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "role": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "healthCurrent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accessor_id", "subject"],
+      "properties": {
+        "accessor_id": {"const": "health.current"},
+        "subject": {"$ref": "#/$defs/role"}
+      }
+    },
+    "healthTemporary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accessor_id", "subject"],
+      "properties": {
+        "accessor_id": {"const": "health.temporary"},
+        "subject": {"$ref": "#/$defs/role"}
+      }
+    },
+    "healthMaximum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accessor_id", "subject"],
+      "properties": {
+        "accessor_id": {"const": "health.maximum"},
+        "subject": {"$ref": "#/$defs/role"}
+      }
+    },
+    "healthBloodied": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accessor_id", "subject"],
+      "properties": {
+        "accessor_id": {"const": "health.bloodied"},
+        "subject": {"$ref": "#/$defs/role"}
+      }
+    },
+    "lifeState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accessor_id", "subject"],
+      "properties": {
+        "accessor_id": {"const": "life.state"},
+        "subject": {"$ref": "#/$defs/role"}
+      }
+    },
+    "conditionPresent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accessor_id", "subject", "condition_id"],
+      "properties": {
+        "accessor_id": {"const": "condition.present"},
+        "subject": {"$ref": "#/$defs/role"},
+        "condition_id": {"$ref": "#/$defs/machineId"}
+      }
+    },
+    "conditionValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accessor_id", "subject", "condition_id"],
+      "properties": {
+        "accessor_id": {"const": "condition.value"},
+        "subject": {"$ref": "#/$defs/role"},
+        "condition_id": {"$ref": "#/$defs/machineId"}
+      }
+    },
+    "resourceCapacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accessor_id", "subject", "resource_id"],
+      "properties": {
+        "accessor_id": {"const": "resource.capacity"},
+        "subject": {"$ref": "#/$defs/role"},
+        "resource_id": {"$ref": "#/$defs/machineId"}
+      }
+    },
+    "resourceAvailable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accessor_id", "subject", "resource_id"],
+      "properties": {
+        "accessor_id": {"const": "resource.available"},
+        "subject": {"$ref": "#/$defs/role"},
+        "resource_id": {"$ref": "#/$defs/machineId"}
+      }
+    },
+    "ownerEffectParameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accessor_id", "parameter_id"],
+      "properties": {
+        "accessor_id": {"const": "owner_effect.parameter"},
+        "parameter_id": {"$ref": "#/$defs/machineId"}
+      }
+    }
+  },
+  "examples": [
+    {"accessor_id": "health.current", "subject": "target"},
+    {
+      "accessor_id": "condition.present",
+      "subject": "target",
+      "condition_id": "condition.poisoned"
+    },
+    {
+      "accessor_id": "resource.available",
+      "subject": "actor",
+      "resource_id": "resource.reaction"
+    }
+  ]
+}

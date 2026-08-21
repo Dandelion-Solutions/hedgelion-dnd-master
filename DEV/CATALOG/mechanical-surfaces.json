@@ -1,0 +1,160 @@
+{
+  "catalog_version": "1.6.0",
+  "context_facts": {
+    "fiction.target_visible": {
+      "source_class": "INVOCATION_ADJUDICATED",
+      "value_type": "boolean"
+    },
+    "fiction.target_reachable": {
+      "source_class": "INVOCATION_ADJUDICATED",
+      "value_type": "boolean"
+    }
+  },
+  "accessors": {
+    "health.current": {
+      "source_class": "DIRECT_AUTHORITY",
+      "value_type": "integer",
+      "subject_kinds": ["world.actor"],
+      "dependencies": []
+    },
+    "health.temporary": {
+      "source_class": "DIRECT_AUTHORITY",
+      "value_type": "integer",
+      "subject_kinds": ["world.actor"],
+      "dependencies": []
+    },
+    "health.maximum": {
+      "source_class": "DERIVED_MECHANICAL",
+      "value_type": "integer",
+      "subject_kinds": ["world.actor"],
+      "dependencies": ["selector:health.maximum"]
+    },
+    "health.bloodied": {
+      "source_class": "DERIVED_MECHANICAL",
+      "value_type": "boolean",
+      "subject_kinds": ["world.actor"],
+      "dependencies": ["accessor:health.current", "accessor:health.maximum"]
+    },
+    "life.state": {
+      "source_class": "DIRECT_AUTHORITY",
+      "value_type": "machine_id",
+      "subject_kinds": ["world.actor"],
+      "dependencies": []
+    },
+    "condition.present": {
+      "source_class": "DERIVED_MECHANICAL",
+      "value_type": "boolean",
+      "subject_kinds": ["world.actor"],
+      "dependencies": ["derived:condition_aggregation"]
+    },
+    "condition.value": {
+      "source_class": "DERIVED_MECHANICAL",
+      "value_type": "scalar",
+      "subject_kinds": ["world.actor"],
+      "dependencies": ["derived:condition_aggregation"]
+    },
+    "resource.capacity": {
+      "source_class": "DERIVED_MECHANICAL",
+      "value_type": "number",
+      "subject_kinds": ["world.actor", "world.asset"],
+      "dependencies": ["selector:resource.capacity"]
+    },
+    "resource.available": {
+      "source_class": "DERIVED_MECHANICAL",
+      "value_type": "number",
+      "subject_kinds": ["world.actor", "world.asset"],
+      "dependencies": ["accessor:resource.capacity"]
+    },
+    "owner_effect.parameter": {
+      "source_class": "DIRECT_AUTHORITY",
+      "value_type": "scalar",
+      "subject_kinds": [],
+      "dependencies": []
+    }
+  },
+  "selectors": {
+    "health.maximum": {
+      "allowed_operations": [
+        "rule.add_flat", "rule.set_minimum", "rule.set_maximum",
+        "rule.multiply", "rule.override"
+      ],
+      "contribution_type": "numeric",
+      "allowed_dependency_kinds": [
+        "accessor", "effect_availability", "effect_arbitration",
+        "condition_aggregation", "condition_intrinsic"
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"]
+    },
+    "condition.applicability": {
+      "allowed_operations": ["rule.immunity"],
+      "operation_contracts": {
+        "rule.immunity": {"fixed_value": true}
+      },
+      "contribution_type": "applicability",
+      "allowed_dependency_kinds": [
+        "accessor", "effect_availability", "effect_arbitration",
+        "condition_aggregation", "condition_intrinsic"
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"]
+    },
+    "resource.capacity": {
+      "allowed_operations": [
+        "rule.add_flat", "rule.set_minimum", "rule.set_maximum",
+        "rule.multiply", "rule.override"
+      ],
+      "contribution_type": "numeric",
+      "allowed_dependency_kinds": [
+        "accessor", "effect_availability", "effect_arbitration",
+        "condition_aggregation", "condition_intrinsic"
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"]
+    },
+    "resource.recovery": {
+      "allowed_operations": ["rule.add_flat", "rule.multiply", "rule.override"],
+      "contribution_type": "recovery",
+      "allowed_dependency_kinds": [
+        "accessor", "effect_availability", "effect_arbitration",
+        "condition_aggregation", "condition_intrinsic"
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"]
+    },
+    "effect.duration": {
+      "allowed_operations": ["rule.adjust_duration", "rule.override"],
+      "contribution_type": "duration",
+      "allowed_dependency_kinds": [
+        "accessor", "effect_availability", "effect_arbitration",
+        "condition_aggregation", "condition_intrinsic"
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"]
+    }
+  },
+  "derived_nodes": {
+    "effect_availability": {
+      "allowed_dependency_kinds": [
+        "accessor", "condition_aggregation", "condition_intrinsic"
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"],
+      "dependencies": []
+    },
+    "effect_arbitration": {
+      "allowed_dependency_kinds": ["accessor", "effect_availability"],
+      "allowed_input_classes": ["ENGINE_STATE"],
+      "dependencies": ["derived:effect_availability"]
+    },
+    "condition_aggregation": {
+      "allowed_dependency_kinds": [
+        "selector", "accessor", "effect_availability"
+      ],
+      "allowed_input_classes": ["ENGINE_STATE"],
+      "dependencies": [
+        "derived:effect_availability",
+        "selector:condition.applicability"
+      ]
+    },
+    "condition_intrinsic": {
+      "allowed_dependency_kinds": ["accessor", "condition_aggregation"],
+      "allowed_input_classes": ["ENGINE_STATE", "INVOCATION_ADJUDICATED"],
+      "dependencies": ["derived:condition_aggregation"]
+    }
+  }
+}

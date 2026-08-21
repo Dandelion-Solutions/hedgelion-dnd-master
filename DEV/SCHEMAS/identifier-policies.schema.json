@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/identifier-policies.schema.json",
+  "title": "HDM identifier allocation policies",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["catalog_version", "schema_version", "world", "runtime", "non_records"],
+  "properties": {
+    "catalog_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "schema_version": {"const": 1},
+    "world": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "world.actor", "world.actor_group", "world.asset", "world.location",
+        "world.connection", "world.zone", "world.organization",
+        "world.relationship", "world.contract", "world.mission",
+        "world.scene", "world.encounter", "world.hazard", "world.effect",
+        "world.lore_fact", "world.knowledge"
+      ],
+      "properties": {
+        "world.actor": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.actor_group": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.asset": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.location": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.connection": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.zone": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.organization": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.relationship": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.contract": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.mission": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.scene": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.encounter": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.hazard": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.effect": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.lore_fact": {"$ref": "#/$defs/sequentialPolicy"},
+        "world.knowledge": {"$ref": "#/$defs/sequentialPolicy"}
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime.session", "runtime.message", "runtime.interaction",
+        "runtime.procedure", "runtime.intent_plan", "runtime.command",
+        "runtime.resolution", "runtime.continuation", "runtime.mechanical_event",
+        "runtime.semantic_event", "runtime.resolution_trace",
+        "runtime.checkpoint", "runtime.id_allocator",
+        "runtime.maintenance_audit", "runtime.catalog_gap_report"
+      ],
+      "properties": {
+        "runtime.session": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.message": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.interaction": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.procedure": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.intent_plan": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.command": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.resolution": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.continuation": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.mechanical_event": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.semantic_event": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.resolution_trace": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.checkpoint": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.id_allocator": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.maintenance_audit": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.catalog_gap_report": {"$ref": "#/$defs/recordPolicy"}
+      }
+    },
+    "non_records": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["definitions", "protocol_values", "timeline_slot", "encounter_round"],
+      "properties": {
+        "definitions": {"const": "semantic_namespaced_id"},
+        "protocol_values": {"const": "embedded_no_independent_id"},
+        "timeline_slot": {"const": "ordering_value_not_identity"},
+        "encounter_round": {"const": "state_value_not_identity"}
+      }
+    }
+  },
+  "$defs": {
+    "localPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prefix", "minimum_width", "scope"],
+      "properties": {
+        "prefix": {"type": "string", "pattern": "^local-[a-z][a-z0-9-]*$"},
+        "minimum_width": {"type": "integer", "minimum": 1, "maximum": 12},
+        "scope": {"const": "session"}
+      }
+    },
+    "sequentialPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "prefix", "minimum_width", "scope"],
+      "properties": {
+        "strategy": {"const": "sequential"},
+        "prefix": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "minimum_width": {"type": "integer", "minimum": 1, "maximum": 12},
+        "scope": {"enum": ["campaign", "session"]},
+        "local": {"$ref": "#/$defs/localPolicy"}
+      }
+    },
+    "recordPolicy": {
+      "oneOf": [
+        {"$ref": "#/$defs/sequentialPolicy"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["strategy", "parent_kind", "suffix"],
+          "properties": {
+            "strategy": {"const": "derived"},
+            "parent_kind": {"type": "string", "pattern": "^runtime\\.[a-z][a-z0-9_]*$"},
+            "suffix": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*$"},
+            "ordinal_width": {"type": "integer", "minimum": 1, "maximum": 6}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["strategy", "target_field"],
+          "properties": {
+            "strategy": {"const": "target_key"},
+            "target_field": {"type": "string", "minLength": 1}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["strategy", "id"],
+          "properties": {
+            "strategy": {"const": "singleton"},
+            "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"}
+          }
+        }
+      ]
+    }
+  }
+}

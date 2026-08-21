@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/runtime-intent-plan-state.schema.json",
+  "title": "HDM runtime.intent_plan state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["interaction_id", "clauses"],
+  "properties": {
+    "interaction_id": {"type": "string", "minLength": 1},
+    "clauses": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "https://hedgelion.invalid/schemas/intent-clause.schema.json"}
+    },
+    "details": {"type": "object"}
+  },
+  "examples": [
+    {
+      "interaction_id": "turn-000042",
+      "clauses": [
+        {"clause_id": "c1", "order": 1, "mapping_outcome": "exact", "execution_state": "intent.executed"},
+        {"clause_id": "c2", "order": 2, "mapping_outcome": "exact", "execution_state": "intent.failed"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+schema_version: 3
+campaign_id: null
+campaign_name: null
+campaign_name_origin: null
+branch: null
+status: uninitialized
+mode: singleplayer
+engine:
+  created_with:
+    version: null
+    package_id: null
+    source_commit_sha: null
+  current:
+    version: null
+    package_id: null
+    source_commit_sha: null
+    package_sha256: null
+    adopted_at: null
+  update_policy: ask
+rules:
+  baseline: "D&D 2024 / SRD 5.2.1"
+  house_rules_path: "RULES/HOUSE_RULES.md"
+storage:
+  state_root: "STATE"
+  index_root: "INDEX"
+  world_root: "WORLD"
+  event_log_root: "LOG"
+  checkpoints_root: "CHECKPOINTS"
+sync:
+  force_push_allowed: false
+  persistence_policy: batched
+world_time:
+  calendar_id: null
+players:
+  join_policy: invite_only
+  player_ids: []
+last_checkpoint_id: null
+created_at: null

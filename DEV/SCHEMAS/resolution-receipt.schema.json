@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/resolution-receipt.schema.json",
+  "title": "HDM execution receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["execution_owner_id", "segment_refs", "status", "event_ids", "exports", "pending_child_refs"],
+  "properties": {
+    "execution_owner_id": {"type": "string", "minLength": 1},
+    "segment_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "status": {
+      "enum": [
+        "PENDING", "RUNNING", "AWAITING_CHOICE", "AWAITING_REACTION",
+        "HYDRATION_REQUIRED", "PUBLISH_REQUIRED", "COMPLETED", "REJECTED",
+        "ABORTED", "FAILED"
+      ]
+    },
+    "event_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "exports": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+      "additionalProperties": {"$ref": "#/$defs/scalar"}
+    },
+    "pending_child_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "failure_code": {
+      "enum": [
+        "failure.idempotency_conflict",
+        "failure.hydration_required",
+        "failure.missing_reference",
+        "failure.catalog_context_incompatible",
+        "failure.continuation_conflict",
+        "failure.continuation_stale",
+        "failure.dependency_cycle",
+        "failure.transition_requires_procedure",
+        "failure.order_adjudication_required",
+        "failure.execution_limit",
+        "failure.invocation_fact_missing",
+        "failure.invocation_fact_unauthorized"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {"required": ["failure_code"]},
+      "then": {
+        "properties": {
+          "status": {"enum": ["HYDRATION_REQUIRED", "REJECTED", "ABORTED", "FAILED"]}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "scalar": {"type": ["string", "number", "boolean"]}
+  },
+  "examples": [
+    {
+      "execution_owner_id": "resolution-0000001",
+      "segment_refs": ["resolution-0000001:segment:1"],
+      "status": "COMPLETED",
+      "event_ids": ["event-00000001"],
+      "exports": {"hit": true},
+      "pending_child_refs": []
+    }
+  ]
+}

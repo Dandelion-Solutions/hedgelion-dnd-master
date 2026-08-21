@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/world-record.schema.json",
+  "title": "HDM world-record envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "kind", "state"],
+  "properties": {
+    "id": {
+      "allOf": [{"$ref": "#/$defs/machineId"}],
+      "description": "Validated further by the record kind's policy in CATALOG/identifier-policies.json."
+    },
+    "kind": {"type": "string", "pattern": "^world\\.[a-z][a-z0-9_]*$"},
+    "definition_id": {"$ref": "#/$defs/machineId"},
+    "state": {"type": "object"}
+  },
+  "allOf": [
+    {
+      "if": {"required": ["kind"], "properties": {"kind": {"const": "world.actor"}}},
+      "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-actor-state.schema.json"}}}
+    },
+    {
+      "if": {"required": ["kind"], "properties": {"kind": {"const": "world.actor_group"}}},
+      "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-actor-group-state.schema.json"}}}
+    },
+    {
+      "if": {"required": ["kind"], "properties": {"kind": {"const": "world.asset"}}},
+      "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-asset-state.schema.json"}}}
+    },
+    {
+      "if": {"required": ["kind"], "properties": {"kind": {"const": "world.effect"}}},
+      "then": {
+        "required": ["definition_id"],
+        "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-effect-state.schema.json"}}
+      }
+    }
+  ],
+  "$defs": {
+    "machineId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    }
+  }
+}

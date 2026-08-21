@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/invocation-fact.schema.json",
+  "title": "HDM registered invocation-adjudicated fact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["fact_id", "value", "provenance_class", "provenance_ref"],
+  "properties": {
+    "fact_id": {"$ref": "#/$defs/machineId"},
+    "value": {"type": "boolean"},
+    "provenance_class": {"const": "INVOCATION_ADJUDICATED"},
+    "provenance_ref": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+  },
+  "examples": [
+    {
+      "fact_id": "fiction.target_visible",
+      "value": true,
+      "provenance_class": "INVOCATION_ADJUDICATED",
+      "provenance_ref": "turn-000042:fact:1"
+    }
+  ]
+}

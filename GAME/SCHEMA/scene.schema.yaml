@@ -1,0 +1,38 @@
+schema_name: scene_state
+schema_version: 2
+required: [schema_version, scene_id, status, participant_ids, player_character_ids]
+fields:
+  schema_version: integer
+  scene_id: string
+  status: enum[active, suspended, resolved]
+  location_id: string|null
+  local_time: object|null
+  chronology_frontier_event_id: string|null
+  participant_ids: array[string]
+  player_character_ids: array[string]
+  active_thread_ids: array[string]
+  environment:
+    relevant_item_ids: array[string]
+    persistent_feature_refs: array[string]
+    transient_facts: array[object]
+  summary: string
+  last_event_id: string|null
+  live_epoch:
+    type: object|null
+    fields:
+      epoch_id: string
+      branch: string
+      state_path: string
+      base_campaign_sha: string
+      opening_live_head_sha: string
+  last_absorbed_live_head_sha: string|null
+invariants:
+  - scene is an environment-level concurrency boundary when practical
+  - summary contains current actionable state, not session transcript
+  - local_time may be exact, approximate, narrative, or null according to what materially matters; do not force timestamps for bookkeeping
+  - chronology_frontier_event_id identifies the local event frontier when future ordering/reconciliation needs it; it is not a global clock
+  - persistent entity changes still belong in canonical entity records after live compaction
+  - exact tactical/procedure state belongs to typed owners; scene has no generic tactical-state storage path
+  - at most one live_epoch may be authoritative for a scene at a time
+  - when live_epoch is non-null, current mutable scene truth is base campaign state plus the referenced live state
+  - clearing live_epoch after compaction records the exact absorbed live HEAD in last_absorbed_live_head_sha
