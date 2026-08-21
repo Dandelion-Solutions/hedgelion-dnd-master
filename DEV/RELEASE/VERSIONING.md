@@ -10,7 +10,9 @@ The engine release version uses two numeric components with an optional prerelea
 
 Git tags are immutable release/reference points and use the exact `recommended_tag` spelling. Untagged commits on `main` are development state and MUST NOT be offered to campaigns as normal updates.
 
-`release_status` is descriptive development bookkeeping, not a tag-publication gate. The normal source-tree value may remain `development` when an immutable release tag is created. A tag-mode build is authorized by the tag itself: it must be a valid version tag, equal `recommended_tag`, correspond to `v<engine_version>`, resolve to the exact checked-out commit, and satisfy release-lineage validation. No manual `ready-for-tag` transition is required.
+`release_status` remains meaningful development-package bookkeeping, but it is not a tag-publication gate. For an untagged build, `release_status: development` produces development package identity `dev-v<engine_version>` and runtime use remains subject to the development-package authorization gate. A tag-mode build is authorized by the tag itself: it must be a valid version tag, equal `recommended_tag`, correspond to `v<engine_version>`, resolve to the exact checked-out commit, and satisfy release-lineage validation. No manual `ready-for-tag` transition is required.
+
+A correctly tagged package has release provenance from the immutable tag even when the source-tree status remains `development`; this does not weaken the separate authorization rules for untagged development packages.
 
 Published provenance comes from exact tag identity/commit resolution. The tagged tree is not mutated afterward merely to change release status.
 

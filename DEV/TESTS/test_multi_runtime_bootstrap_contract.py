@@ -42,7 +42,22 @@ class MultiRuntimeBootstrapContractTests(unittest.TestCase):
             self.assertIn("RUNTIME_PACKAGE.source_state: tagged", src)
             self.assertIn("regardless of `ENGINE_VERSION.release_status`", src)
             self.assertIn("dev-v<ENGINE_VERSION.engine_version>", src)
-            self.assertNotIn("For `ENGINE_VERSION.release_status: development`:", src)
+
+    def test_development_runtime_requires_engine_owned_campaign_repository(self):
+        install = (GAME / "INSTALL" / "00_DND_BOOTSTRAP.md").read_text(encoding="utf-8")
+        core = (GAME / "CORE" / "BOOTSTRAP_RUNTIME.md").read_text(encoding="utf-8")
+        setup = (GAME / "CORE" / "CAMPAIGN_SETUP.md").read_text(encoding="utf-8")
+
+        for src in (install, core, setup):
+            self.assertIn("ENGINE_VERSION.engine_owner_login", src)
+        self.assertIn("repository owner", install.lower())
+        self.assertIn("repository owner", core.lower())
+        self.assertIn("owner login of the selected campaign/storage repository", setup.lower())
+        self.assertIn("ENGINE_VERSION.release_status: development", install)
+        self.assertIn("ENGINE_VERSION.release_status: development", core)
+        self.assertNotIn("allowed only when authenticated GitHub login equals `ENGINE_VERSION.engine_owner_login`", core)
+        self.assertNotIn("authenticated login equal to `ENGINE_VERSION.engine_owner_login`", install)
+        self.assertNotIn("require authenticated GitHub login == `ENGINE_VERSION.engine_owner_login`", setup)
 
 
 if __name__ == "__main__":

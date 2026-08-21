@@ -1,6 +1,6 @@
 # Campaign Setup and Branch Initialization
 
-framework_module_version: 0.8.0
+framework_module_version: 0.8.1
 load_when: create new campaign, bind player, initialize campaign branch
 
 ## Discover before creating
@@ -24,7 +24,8 @@ For New Game in an existing storage, resolve `DND_STORAGE.engine.baseline` to an
 Read semantic identity only from selected `current_runtime_root/ENGINE_VERSION.yaml` and exact artifact provenance only from `current_runtime_root/RUNTIME_PACKAGE.yaml` plus the final ZIP SHA-256.
 
 For an authorized development package:
-- require authenticated GitHub login == `ENGINE_VERSION.engine_owner_login`;
+- require the owner login of the selected campaign/storage repository to equal `ENGINE_VERSION.engine_owner_login`;
+- authenticated user identity, collaborator membership, Write/Admin permission, campaign creator identity, or PLAYER binding is not a substitute for that repository-owner gate;
 - logical package identity is `dev-v<engine_version>`;
 - dirty/non-Git package source commit may be null;
 - do not query/pin public untagged `main` merely to manufacture provenance.

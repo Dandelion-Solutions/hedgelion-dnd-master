@@ -1,6 +1,6 @@
 # D&D Master Bootstrap
 
-launcher_version: 18
+launcher_version: 19
 storage_marker: DND_STORAGE.yaml
 
 This bootstrap runs from a validated local runtime package. Engine installation is NOT a GitHub operation.
@@ -58,9 +58,9 @@ MUST NOT globally search the working filesystem for a convenient `ENGINE_VERSION
 
 Do NOT preload campaign/world data during package/bootstrap discovery.
 
-### Engine identity
+### Engine identity and development-package authorization
 
-Package publication class comes from exact `RUNTIME_PACKAGE.yaml` provenance, not from a manually staged manifest status.
+Package class uses both source release status and exact `RUNTIME_PACKAGE.yaml` provenance.
 
 Treat a package as a normal published runtime when:
 - `RUNTIME_PACKAGE.source_state: tagged`;
@@ -70,9 +70,13 @@ Treat a package as a normal published runtime when:
 
 A correctly tagged package is a published runtime regardless of `ENGINE_VERSION.release_status`. Use its validated release package identity, source provenance and final ZIP SHA-256. Resolve GitHub release/tag metadata only when an update/provenance operation actually needs server-side comparison; never substitute public `main` as gameplay runtime bytes.
 
-A development package is an untagged artifact with package identity `dev-v<ENGINE_VERSION.engine_version>` and a non-tagged `RUNTIME_PACKAGE.source_state`. Use it only for explicit framework testing by authenticated login equal to `ENGINE_VERSION.engine_owner_login`; dirty/non-Git package provenance may have null source commit SHA. Do NOT query/pin public `main` merely to manufacture provenance.
+A development package is an untagged artifact where `ENGINE_VERSION.release_status: development`, package identity is `dev-v<ENGINE_VERSION.engine_version>`, and `RUNTIME_PACKAGE.source_state` is non-tagged.
 
-Reject inconsistent identity combinations instead of guessing publication class, including tagged provenance with a non-release package id/ref or an untagged artifact claiming the release package identity.
+Before a development package may be selected for an existing campaign or New Game, resolve the repository owner for the repository containing that campaign, or the selected storage repository for New Game. The repository owner login MUST equal `ENGINE_VERSION.engine_owner_login`. Authenticated user identity, collaborator membership, Write/Admin permission, campaign creator identity, or PLAYER binding does not substitute for this repository-owner gate.
+
+If the selected campaign/storage repository owner is not the engine owner, refuse the development package and require a normal published runtime. Dirty/non-Git development-package provenance may have null source commit SHA. Do NOT query/pin public `main` merely to manufacture provenance.
+
+Reject inconsistent identity combinations instead of guessing package class, including tagged provenance with a non-release package id/ref or an untagged artifact claiming the release package identity.
 
 ## 1. GitHub Connector
 

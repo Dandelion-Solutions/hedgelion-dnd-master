@@ -1,6 +1,6 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.8.7
+runtime_bootstrap_version: 0.8.8
 storage_marker: DND_STORAGE.yaml
 load_when: project/campaign bootstrap, storage discovery, campaign selection, exact runtime routing
 
@@ -75,9 +75,9 @@ Rebuild full CORE cache only after exact runtime-package switch or verified loss
 
 Campaign WORLD/STATE/INDEX/LOG/entities remain lazy and are not preloaded with CORE.
 
-## Runtime package publication identity
+## Runtime package publication and development authorization
 
-Package publication class is determined by exact artifact provenance, not by a manually staged manifest status.
+Package class uses both source release status and exact artifact provenance.
 
 Treat a validated package as a normal published runtime when all of these are true:
 - `RUNTIME_PACKAGE.source_state: tagged`;
@@ -85,11 +85,15 @@ Treat a validated package as a normal published runtime when all of these are tr
 - `RUNTIME_PACKAGE.source_ref == ENGINE_VERSION.recommended_tag`;
 - the recommended tag is the version tag for `ENGINE_VERSION.engine_version`.
 
-A correctly tagged package is a published runtime regardless of `ENGINE_VERSION.release_status`. `release_status` remains descriptive source/development bookkeeping and MUST NOT make an exact tagged runtime owner-only.
+A correctly tagged package is a published runtime regardless of `ENGINE_VERSION.release_status`. The immutable version tag is the publication event; `release_status` is not a tag-build gate and does not make an otherwise valid tagged runtime development-only.
 
-A development package is an untagged artifact with logical runtime identity `dev-v<ENGINE_VERSION.engine_version>` and a non-tagged `RUNTIME_PACKAGE.source_state` such as clean HEAD, dirty worktree or non-Git. Explicit framework testing of such a development package is allowed only when authenticated GitHub login equals `ENGINE_VERSION.engine_owner_login`; dirty/non-Git package source commit SHA may be null.
+A development package is an untagged artifact where `ENGINE_VERSION.release_status: development`, logical runtime identity is `dev-v<ENGINE_VERSION.engine_version>`, and `RUNTIME_PACKAGE.source_state` is non-tagged such as clean HEAD, dirty worktree or non-Git.
 
-Reject inconsistent identity combinations rather than guessing publication class, including tagged provenance with a non-release package id/ref or an untagged artifact claiming the release package identity.
+Before a development package may be used for an existing campaign or New Game, resolve the owner login of the repository that contains the selected campaign, or the selected storage repository for New Game. That repository owner MUST equal `ENGINE_VERSION.engine_owner_login`. Authenticated user identity, collaborator membership, Write/Admin permission, campaign creator identity, or PLAYER binding MUST NOT substitute for this repository-owner gate.
+
+If the selected campaign/storage repository owner is not the engine owner, refuse use of the development package and require a normal published runtime instead. Dirty/non-Git development-package source commit SHA may be null.
+
+Reject inconsistent identity combinations rather than guessing package class, including tagged provenance with a non-release package id/ref or an untagged artifact claiming the release package identity.
 
 Exact artifact identity is still the final ZIP SHA-256. Do NOT query/pin public `main` merely to manufacture provenance.
 

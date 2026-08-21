@@ -8,7 +8,7 @@ ai_reasoning_revision: 3
 gm_craft_revision: 7
 install_layout_revision: 14
 branch_id_revision: 1
-access_control_revision: 4
+access_control_revision: 5
 storage_format_revision: 4
 presentation_revision: 12
 persistence_revision: 8
