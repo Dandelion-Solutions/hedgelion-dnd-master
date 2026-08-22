@@ -4,8 +4,6 @@ Status: **PRELIMINARY FEASIBILITY SPIKE — NOT CANONICAL**
 
 Date: 2026-08-20
 
-Target development branch: `feature/mechanical-runtime-hot-state`
-
 Purpose: preserve current evidence for the Step-6 host/deployment feasibility work created by canonical Step 5.6. This document does not reopen Step 5.6 and does not start Step 6.
 
 ## 1. Question
