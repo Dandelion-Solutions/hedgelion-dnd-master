@@ -2,8 +2,6 @@
 
 Status: **AGREED — STEP-5.0 CONTAMINATION RETIREMENTS APPLIED**
 
-Target: `feature/mechanical-runtime-hot-state`
-
 Machine-readable schemas:
 
 - `SCHEMAS/catalog-definition.schema.json`
