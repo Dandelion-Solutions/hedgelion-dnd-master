@@ -4,8 +4,6 @@ Status: **ACTIVE ARCHITECTURE TASK BRIEF — FULL-CYCLE RERUN**
 
 Date: 2026-08-20
 
-Target branch: `feature/mechanical-runtime-hot-state`
-
 Process authority:
 
 - `DEV/DESIGN_PROCESS.md`
