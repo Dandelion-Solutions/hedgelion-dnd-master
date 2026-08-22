@@ -4,8 +4,6 @@ Status: **RESOLUTION GATE PASSED — CANONICALIZATION AUTHORIZED**
 
 Date: 2026-08-21
 
-Target branch: `feature/mechanical-runtime-hot-state`
-
 Inputs:
 
 - `2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-task-brief.md`
