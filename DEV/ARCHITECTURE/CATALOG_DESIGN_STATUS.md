@@ -2,8 +2,6 @@
 
 Status: **STEPS 1–4 ARCHITECTURE CLOSED / STEP 5.0–5.2 CLOSED / STEP 5.3 NOT STARTED**
 
-Target branch: `feature/mechanical-runtime-hot-state`
-
 This file is a current-status index, not a second normative specification.
 Detailed reasoning/history lives in linked architecture/spec documents and Git
 history.
