@@ -2,8 +2,6 @@
 
 Status: **AGREED BASELINE — STEP 1 ASSURANCE + STEP 2 MACHINE ALIGNMENT + STEP-4 + STEP-5.0 RETIREMENTS APPLIED**
 
-Target: `feature/mechanical-runtime-hot-state`
-
 Machine-readable field and definition-binding inventory: `CATALOG/entity-structures.json`
 
 Machine-readable identifier policy: `CATALOG/identifier-policies.json`,
