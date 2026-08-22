@@ -2,8 +2,6 @@
 
 Status: **ACTIVE WORKING PLAN**
 
-Target branch: `feature/mechanical-runtime-hot-state`
-
 This roadmap is the sequencing/status gate for the current architecture program. It is intentionally compact; closed-step semantic detail belongs to linked canonical specifications rather than being duplicated here.
 
 Canonical process:
