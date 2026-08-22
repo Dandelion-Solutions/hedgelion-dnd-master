@@ -2,8 +2,6 @@
 
 Status: **AGREED — STEP 2 MACHINE ALIGNMENT APPLIED**
 
-Target: `feature/mechanical-runtime-hot-state`
-
 Schemas:
 
 - `SCHEMAS/actor-archetype-data.schema.json`
