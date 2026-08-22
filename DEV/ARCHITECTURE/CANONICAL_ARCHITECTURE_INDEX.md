@@ -4,8 +4,6 @@ Status: **DERIVATIVE / NON-NORMATIVE NAVIGATION AND INTEGRATION INDEX**
 
 Date: 2026-08-21
 
-Target branch: `feature/mechanical-runtime-hot-state`
-
 Architecture state: **STEPS 1–5 CLOSED; STEP 6 NEXT / NOT STARTED**
 
 ---
