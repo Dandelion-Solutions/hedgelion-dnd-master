@@ -152,7 +152,7 @@ The first schema allowed invalid combinations such as:
 ```text
 actor + spent
 asset + spent
-procedure + spent
+procedure + current
 ```
 
 although the architecture already fixes persistent Actor/Asset state as
