@@ -6,8 +6,6 @@ Implementation status: **not started**
 
 Target baseline: D&D Master engine `0.7`, D&D 2024 / SRD 5.2.1
 
-Target branch: `feature/mechanical-runtime-hot-state`
-
 This document proposes the smallest general architecture that turns the current
 conceptual hot working set into a physical mechanical runtime. It is a review
 document, not an implementation contract yet. Existing CORE contracts remain
