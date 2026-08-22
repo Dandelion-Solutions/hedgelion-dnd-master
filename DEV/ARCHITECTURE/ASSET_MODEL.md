@@ -2,8 +2,6 @@
 
 Status: **AGREED ARCHITECTURE**
 
-Target: `feature/mechanical-runtime-hot-state`
-
 Related contracts:
 
 - `ARCHITECTURE/CATALOG_CONTRACTS.md`;
