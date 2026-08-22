@@ -2,8 +2,6 @@
 
 Status: **WORKING PROTOTYPE / REVIEWED INVENTORY**
 
-Target: `feature/mechanical-runtime-hot-state`
-
 Companion document: `ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md`
 
 Normative class inventory: `ARCHITECTURE/CATALOG_INVENTORY.md`
