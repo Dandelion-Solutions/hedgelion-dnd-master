@@ -4,8 +4,6 @@ Status: **DEFERRED FEASIBILITY-SPIKE INPUT — NOT CANONICAL ARCHITECTURE**
 
 Date: 2026-08-20
 
-Target branch: `feature/mechanical-runtime-hot-state`
-
 ## Purpose
 
 Preserve the architecture questions, hypotheses and test agenda that must be resolved before Step 6 physically maps the six already-canonical logical LLM roles onto model invocations, chats, agents, models or orchestration infrastructure.
