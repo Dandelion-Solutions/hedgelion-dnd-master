@@ -2,7 +2,7 @@
 
 Status: **NON-NORMATIVE INTERNAL NAVIGATION INDEX**
 
-Last structural inventory: 2026-08-21
+Last structural inventory: 2026-08-22
 
 ## 1. Purpose
 
@@ -32,7 +32,8 @@ repository:
 - `DEV/SCHEMAS/*.schema.json` — development machine-contract schemas;
 - `DEV/TESTS/test_*.py` — executable regression/contract tests;
 - `DEV/TESTS/*_CASES.md` and related Markdown cases — scenario/acceptance case catalogs;
-- `DEV/docs/superpowers/specs/*.md` — dated architecture/design derivation and canonical specs;
+- `DEV/docs/superpowers/research/*.md` — non-normative research, reconnaissance, evidence and feasibility-study inputs;
+- `DEV/docs/superpowers/specs/*.md` — dated architecture/design, review, decision and canonicalization-chain artifacts;
 - `DEV/docs/superpowers/plans/*.md` — dated implementation plans created after approved designs.
 
 When a task touches one of these families, inspect filenames/current references
@@ -56,7 +57,8 @@ leak into one another merely for development convenience.
 | Concern | Primary surfaces | Frequent neighbors |
 |---|---|---|
 | Architecture process / current stage | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`, relevant canonical specs in `DEV/docs/superpowers/specs/` |
-| Architecture research / second-round idea pool | `DEV/docs/superpowers/specs/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, current canonical architecture and roadmap when evaluating candidates |
+| Architecture research / second-round idea pool | `DEV/docs/superpowers/research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, current canonical architecture and roadmap when evaluating candidates |
+| Host/platform feasibility / physical LLM orchestration | `DEV/docs/superpowers/research/2026-08-22-platform-feasibility-comparative-research.md` | Step-6 feasibility inputs in `DEV/docs/superpowers/specs/`, Step-4 role/context architecture, Step-5 persistence/multiplayer/disclosure architecture |
 | Integrated canonical architecture lookup (Steps 1–5) | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | owning canonical specs/model contracts, `NEAR_TERM_ROADMAP.md`, Step-5.14 review artifacts |
 | Catalog/class ownership | `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `CATALOG_INVENTORY.md`, `ENTITY_STRUCTURES.md`, `CATALOG_RESOLUTION.md`, `DEV/CATALOG/` | `DEV/SCHEMAS/`, Actor/Asset/Activity/Rule Element models, catalog tests |
 | Deterministic mechanics/execution | `DEV/ARCHITECTURE/ACTIVITY_MODEL.md`, `RULE_ELEMENT_MODEL.md`, accepted Step-2/Step-3 specs | `GAME/CORE/RUNTIME.md`, `MECHANICS_INTEGRITY.md`, `RANDOMNESS.md`, runtime/value schemas/tests |
@@ -177,8 +179,10 @@ assume a prose spec is the only consumer.
 
 ## 6.8 `DEV/docs/superpowers/`
 
-- `specs/` — dated design chain artifacts. Status inside each artifact determines whether it is research, candidate, review, resolution, canonical or historical derivation. Prefer the latest canonical/current status references from roadmap/status docs rather than filename recency alone.
-- `specs/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` — non-normative architecture research dossier and second-round idea pool; its candidates are research input, not accepted HDM architecture or roadmap sequencing.
+- `research/` — non-normative research, reconnaissance, evidence gathering and feasibility-study inputs. These artifacts inform later architecture work but do not become accepted architecture merely by being retained here.
+- `research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` — non-normative architecture research dossier and second-round idea pool; its candidates are research input, not accepted HDM architecture or roadmap sequencing.
+- `research/2026-08-22-platform-feasibility-comparative-research.md` — living comparative host-platform feasibility study for ChatGPT, Claude, Perplexity and API-controlled deployment surfaces; it records evidence and required probes for physical role orchestration, background work, storage and GitHub integration.
+- `specs/` — dated architecture/design, review, decision and canonicalization-chain artifacts. Prefer the latest canonical/current status references from roadmap/status docs rather than filename recency alone.
 - `plans/` — implementation plans produced after approved designs. They are execution guidance, not architecture authority when a later canonical spec supersedes assumptions.
 
 The accepted architecture through Step 5.13 is indexed in

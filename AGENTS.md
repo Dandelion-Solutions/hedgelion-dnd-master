@@ -69,16 +69,23 @@ The root README is **not machine-authoritative metadata**. Detailed architecture
 
 ## Superpowers artifacts
 
-All Superpowers design and implementation artifacts for this repository are development-only.
+All Superpowers research, design and implementation artifacts for this repository are development-only.
 
 Use only:
 
 ```text
+DEV/docs/superpowers/research/
 DEV/docs/superpowers/specs/
 DEV/docs/superpowers/plans/
 ```
 
-Do **not** create repository-root `docs/superpowers/` or repository-root `docs/` for Superpowers work. Historical specs/plans that are moved into DEV remain historical records; do not mechanically rewrite old path references when they describe the historical state accurately.
+Placement semantics:
+
+- `research/` — non-normative research, reconnaissance, evidence gathering and feasibility-study artifacts that have not entered an approved design/specification chain;
+- `specs/` — architecture/design, review, decision and canonicalization-chain artifacts;
+- `plans/` — implementation plans produced after approved designs.
+
+Do **not** create repository-root `docs/superpowers/` or repository-root `docs/` for Superpowers work. Historical research/specs/plans that are moved into DEV remain historical records; do not mechanically rewrite old path references when they describe the historical state accurately.
 
 ## GitHub transport policy
 
