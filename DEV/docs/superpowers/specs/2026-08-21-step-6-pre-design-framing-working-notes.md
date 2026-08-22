@@ -4,8 +4,6 @@ Status: **NON-CANONICAL / WORKING THOUGHTS / PRE-DESIGN FRAME**
 
 Date: 2026-08-21
 
-Target branch: `feature/mechanical-runtime-hot-state`
-
 Purpose:
 
 > Capture the current Step-6 framing, constraints, questions and preliminary hypotheses before the formal Step-6 task brief, platform research and architecture cycle begins.
