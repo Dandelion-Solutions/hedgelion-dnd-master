@@ -2,8 +2,6 @@
 
 Status: **AGREED STEP-1 ARCHITECTURE — RETROSPECTIVE ASSURANCE AMENDMENT**
 
-Target: `feature/mechanical-runtime-hot-state`
-
 Related contracts:
 
 - `ARCHITECTURE/CATALOG_MODEL.md`
