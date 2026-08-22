@@ -2,8 +2,6 @@
 
 Status: **FINAL REVIEW COMPLETE — NO UNRESOLVED STEP-2 BLOCKER**
 
-Target branch: `feature/mechanical-runtime-hot-state`
-
 Review scope: the integrated Step-2 architecture for Resources, HP/LifeState,
 Effects, Conditions, Duration, Recovery, selector/query boundaries, and the
 aligned machine schemas/catalogs/tests.
@@ -154,7 +152,7 @@ The first schema allowed invalid combinations such as:
 ```text
 actor + spent
 asset + spent
-procedure + current
+procedure + spent
 ```
 
 although the architecture already fixes persistent Actor/Asset state as
