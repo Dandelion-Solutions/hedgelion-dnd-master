@@ -87,6 +87,14 @@ Placement semantics:
 
 Do **not** create repository-root `docs/superpowers/` or repository-root `docs/` for Superpowers work. Historical research/specs/plans that are moved into DEV remain historical records; do not mechanically rewrite old path references when they describe the historical state accurately.
 
+## Transient development branches in documentation
+
+The active development branch/ref is session-specific repository state, not architecture semantics.
+
+Do not write transient feature/research branch names into durable architecture, status, roadmap, contract, research, specification or implementation-plan documents as `Target`, `Target branch`, `Target development branch`, or equivalent working metadata. Determine the active ref from the repository at work time instead.
+
+Record an exact branch/ref only when that identity is itself material evidence needed to reproduce or interpret a historical experiment, Git operation, release/provenance event, migration, comparison or failure. Accurate historical provenance must not be rewritten merely because later work moved to another branch.
+
 ## GitHub transport policy
 
 For HDM development in ChatGPT Work / Codex environments with connected GitHub Connector access:
