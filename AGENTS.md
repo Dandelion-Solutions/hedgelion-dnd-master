@@ -95,6 +95,26 @@ Do not write transient feature/research branch names into durable architecture, 
 
 Record an exact branch/ref only when that identity is itself material evidence needed to reproduce or interpret a historical experiment, Git operation, release/provenance event, migration, comparison or failure. Accurate historical provenance must not be rewritten merely because later work moved to another branch.
 
+## Branch creation guardrail
+
+Remote branch creation is **prohibited by default**.
+
+Never create a branch for probing, discovery, existence checks, temporary work, no-op operations, tool testing, recovery, uncertainty resolution, or as a substitute for a read-only ref query.
+
+Never create disposable or placeholder branches with names such as `temp-*`, `do-not-use`, `noop`, `no-op`, `stop`, `scratch`, `test`, `ignore-me`, or equivalent variants.
+
+A remote branch may be created only when the repository owner has explicitly requested a new branch or has explicitly approved the **exact branch name and exact base ref** for the current task.
+
+Before any remote branch-creation action, the agent must state the exact intended branch name and base ref and obtain explicit owner approval. A general request to modify files, continue development, work on the current branch, or inspect repository state is not branch-creation approval.
+
+If the connected GitHub interface does not expose remote ref deletion, branch creation must be treated as effectively irreversible for the session. This makes branch creation an especially high-risk write and never an acceptable experiment or discovery operation.
+
+Use read-only operations for branch/ref discovery and verification, including branch search, current-file reads on a named ref, commit/ref comparison, and other Connector read surfaces. A create/write operation must never be used to answer a read-only question.
+
+When an active development branch/ref is already specified, all ordinary reads and writes remain on that ref unless the repository owner explicitly changes the target.
+
+For the current HDM rearchitecture program, the active development target is `v1/engine-rearchitecture`. Do not create another branch unless the repository owner explicitly requests or approves it under the rule above.
+
 ## GitHub transport policy
 
 For HDM development in ChatGPT Work / Codex environments with connected GitHub Connector access:
