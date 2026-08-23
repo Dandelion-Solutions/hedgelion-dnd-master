@@ -2,7 +2,7 @@
 
 Status: **NON-NORMATIVE INTERNAL NAVIGATION INDEX**
 
-Last structural inventory: 2026-08-22
+Last structural inventory: 2026-08-23
 
 ## 1. Purpose
 
@@ -59,6 +59,7 @@ leak into one another merely for development convenience.
 | Architecture process / current stage | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`, relevant canonical specs in `DEV/docs/superpowers/specs/` |
 | Architecture research / second-round idea pool | `DEV/docs/superpowers/research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, current canonical architecture and roadmap when evaluating candidates |
 | Host/platform feasibility / physical LLM orchestration | `DEV/docs/superpowers/research/2026-08-22-platform-feasibility-comparative-research.md` | Step-6 feasibility inputs in `DEV/docs/superpowers/specs/`, Step-4 role/context architecture, Step-5 persistence/multiplayer/disclosure architecture |
+| Role-context validation evidence | `DEV/docs/superpowers/research/2026-08-23-role-context-validation-protocol-1-sequential-containment.md`, `2026-08-23-role-context-validation-protocol-2-collapsed-multi-role.md`, `2026-08-23-role-context-validation-protocol-3-reasoning-budget.md` | Step-4 canonical role/context spec, Step-6 role-isolation feasibility notes, host/platform feasibility research, `GAME/CORE/AI_REASONING.md`, `NPC.md`, `NARRATIVE.md`, `PREP.md` |
 | Integrated canonical architecture lookup (Steps 1–5) | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | owning canonical specs/model contracts, `NEAR_TERM_ROADMAP.md`, Step-5.14 review artifacts |
 | Catalog/class ownership | `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `CATALOG_INVENTORY.md`, `ENTITY_STRUCTURES.md`, `CATALOG_RESOLUTION.md`, `DEV/CATALOG/` | `DEV/SCHEMAS/`, Actor/Asset/Activity/Rule Element models, catalog tests |
 | Deterministic mechanics/execution | `DEV/ARCHITECTURE/ACTIVITY_MODEL.md`, `RULE_ELEMENT_MODEL.md`, accepted Step-2/Step-3 specs | `GAME/CORE/RUNTIME.md`, `MECHANICS_INTEGRITY.md`, `RANDOMNESS.md`, runtime/value schemas/tests |
@@ -182,6 +183,9 @@ assume a prose spec is the only consumer.
 - `research/` — non-normative research, reconnaissance, evidence gathering and feasibility-study inputs. These artifacts inform later architecture work but do not become accepted architecture merely by being retained here.
 - `research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` — non-normative architecture research dossier and second-round idea pool; its candidates are research input, not accepted HDM architecture or roadmap sequencing.
 - `research/2026-08-22-platform-feasibility-comparative-research.md` — living comparative host-platform feasibility study for ChatGPT, Claude, Perplexity and API-controlled deployment surfaces; it records evidence and required probes for physical role orchestration, background work, storage and GitHub integration.
+- `research/2026-08-23-role-context-validation-protocol-1-sequential-containment.md` — completed first-stage evidence that sequential logical roles can preserve behavioral containment inside one shared conversational history; pilot/instrument evidence, not physical-isolation proof.
+- `research/2026-08-23-role-context-validation-protocol-2-collapsed-multi-role.md` — completed collapsed-generation evidence for Dramaturg/Actor/Narrator role rebinding, hidden-to-eligible transitions and same-generation logical separation.
+- `research/2026-08-23-role-context-validation-protocol-3-reasoning-budget.md` — completed matched reasoning-budget validation across 150 turns, including long-history secrets, multi-NPC dialogue, player-facing quality observations, creativity authority levels and the accepted high-reasoning working baseline.
 - `specs/` — dated architecture/design, review, decision and canonicalization-chain artifacts. Prefer the latest canonical/current status references from roadmap/status docs rather than filename recency alone.
 - `plans/` — implementation plans produced after approved designs. They are execution guidance, not architecture authority when a later canonical spec supersedes assumptions.
 
@@ -229,7 +233,7 @@ Bootstrap/campaign lifecycle:
 - `CAMPAIGN_SETUP.md` — substantive character/world setup after scaffold creation.
 - `DIEGETIC_ONBOARDING.md` — story-first onboarding/provisional identity.
 - `CAMPAIGN_IDENTITY.md` — evolving campaign title/overview identity.
-- `CAMPAIGN_CARD.md` — compact campaign-menu projection and refresh discipline.
+- `CAMPAIGN_CARD.md` — compact campaign discovery/menu projection and refresh discipline.
 - `CAMPAIGN_OPERATIONS.md` — campaign/session organization and maintenance operations.
 - `SESSION.md` — session start/resume/end and coordination/maintenance-continuation state.
 
@@ -401,6 +405,7 @@ ACCESS_CONTROL / BRANCH_MODEL
 ```text
 Step-4 canonical spec
     -> Step-5.10 / 5.11 / 5.12 canonical specs
+    -> role-context validation protocols 1-3
     -> AI_REASONING / INFORMATION / LORE / NARRATIVE / PREP / GM_CRAFT
     -> current entity schemas where legacy knowledge fields still exist
     -> deferred Step-6 physical role/context realization
