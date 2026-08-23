@@ -1,327 +1,558 @@
-# HDM Mechanical Architecture — Six-Step Roadmap
+# HDM Architecture Round 2 — Active Roadmap
 
 Status: **ACTIVE WORKING PLAN**
 
-This roadmap is the sequencing/status gate for the current architecture program. It is intentionally compact; closed-step semantic detail belongs to linked canonical specifications rather than being duplicated here.
+Date: 2026-08-23
+
+This file is the sequencing/status authority for the active HDM architecture program.
 
 Canonical process:
 
 - `DEV/DESIGN_PROCESS.md`
 - `DEV/ARCHITECTURE/DESIGN_PROCESS.md`
 
-## Operating rule
+Round-1 closure/rebaseline decision:
 
-- Exactly one numbered architecture slice may be `IN PROGRESS`.
-- Later slices may be inspected only to expose dependencies or contradictions.
-- A slice closes when its architecture/review/verification pass and unresolved implementation work has an explicit later owner/debt entry.
-- Architecture closure does **not** imply GAME/runtime/schema implementation is complete.
-- Steps 4–6 complete the architecture sequence before broad implementation planning.
-- After all major modules have designs, run one holistic architecture review over the full ownership graph, schemas, logic and cross-module relationships.
+- `DEV/docs/superpowers/specs/2026-08-23-round-1-step-6-closure-round-2-rebaseline-owner-decision.md`
 
-## Program roadmap
+Single-context role-containment amendment:
 
-| # | Status | Scope | Exit result |
-|---:|---|---|---|
-| 1 | **COMPLETE / ASSURED** | Critical audit of catalog/class architecture and accepted baseline | Findings fixed, owned or consciously deferred |
-| 2 | **COMPLETE / ASSURED** | Resources, HP/LifeState, Effects, Conditions, Duration, Recovery, selectors/query boundaries | Accepted mechanics/ownership contracts and assurance |
-| 3 | **COMPLETE / ASSURED** | `IntentPlan -> Resolution -> Signal/Event`, deterministic execution, Procedure/Continuation | Canonical Alternative-C execution contract |
-| 4 | **COMPLETE / ARCHITECTURE CLOSED** | Truth/lore, knowledge, disclosure, six logical LLM roles, Context Assembler, Story, promotion | Canonical information/role/Story architecture |
-| 5 | **COMPLETE / ARCHITECTURE CLOSED** | Durability, recovery, multiplayer/live authority, chronology, Story/transcript publication/retention/cleanup | Integrated Step-5 architecture survived full recovery/concurrency adversarial review |
-| 6 | **NEXT / NOT STARTED** | Modes, physical LLM orchestration/budget, deployment feasibility, migration/catalog/seed closure, holistic review | Enforceable deployment/context topology and final architecture closure |
+- `DEV/docs/superpowers/specs/2026-08-23-step-4-single-context-role-containment-canonical-amendment.md`
 
-## Steps 1–2 — CLOSED / ASSURED
+---
 
-Final retrospective assurance:
+# 1. Program transition
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
+Round 1 established the mechanical/runtime architecture strong base through Steps 1-5.
 
-## Step 3 — CLOSED / ASSURED
+The former Step 6 is no longer an active stage. It is:
 
-Canonical specification:
+> **CLOSED AS A SEPARATE STAGE / NOT EXECUTED AS ORIGINALLY DECOMPOSED / USEFUL SCOPE REALLOCATED TO ROUND 2**
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md`
+This does not claim that the old Step-6 exit criteria were completed. The original decomposition was retired because completed validation and the later Step-4 amendment invalidated its mandatory physical-role-isolation premise.
 
-Final critical review:
+Round-1 status:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-final-critical-review.md`
+| Stage | Final status | Round-2 meaning |
+|---|---|---|
+| 1 | **COMPLETE / ASSURED** | inherited strong base |
+| 2 | **COMPLETE / ASSURED** | inherited strong base |
+| 3 | **COMPLETE / ASSURED** | inherited strong base |
+| 4 | **COMPLETE / ARCHITECTURE CLOSED + LATER AMENDMENT** | inherited; single-context role containment is current law |
+| 5 | **COMPLETE / ARCHITECTURE CLOSED** | inherited strong base |
+| 6 | **CLOSED AS SEPARATE STAGE / REALLOCATED** | useful unresolved work redistributed across Round 2 |
 
-Owner-approved architecture: **Alternative C**.
+Detailed Round-1 semantic lookup remains in:
 
-## Step 4 — CLOSED
+- `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`;
+- the owning canonical specifications and owner decisions.
 
-Canonical specification:
+Where that derivative index still describes Step 6 as next, this current roadmap and the Round-1 closure decision supersede that sequencing/status text.
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`
+---
 
-Step 4 fixed objective truth, fictional knowledge, human disclosure, six logical LLM roles, deterministic Context Assembler, noncanonical four-layer Story model and promotion boundary. Physical role-call topology remains Step 6.
+# 2. Round-2 baseline
 
-Deferred Step-6 feasibility input:
+## 2.1 Current product/deployment baseline
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-6-llm-role-isolation-feasibility-spike-notes.md`
-
-## Step 5 — CLOSED / ARCHITECTURE CLOSED
-
-Expanded historical/working agenda:
-
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-expanded-architecture-agenda.md`
-
-Canonical integrated final review:
-
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md`
-
-Completed slice order:
+Round 2 designs for:
 
 ```text
-5.0  Authority / Contamination Audit
-5.1  Frontier Model
-5.2  Resumable Runtime Closure
-5.3  Temporal & Pending-Obligation Continuity
-5.4  Host Lifecycle & Session Handoff
-5.5  SOFT / HARD / SAVE Durability Semantics
-5.6  Campaign Publication & Crash Consistency
-5.7  Checkpoint / Recovery Protocol
-5.8  Multiplayer / Live-Epoch Ownership
-5.9  Chronology Persistence & Reconciliation
-5.10 Story Projection Durability
-5.11 Transcript / History Retention & Compaction
-5.12 Host Delivery / Disclosure Boundary
-5.13 Garbage Collection / Orphan Cleanup
-5.14 Full Recovery & Concurrency Adversarial Review
+primary AI host              ChatGPT
+plan                         ChatGPT Plus
+player-facing surface        ordinary public chat
+physical LLM topology        one LLM / one physical chat context
+ordinary gameplay execution  one user request / one assistant turn
+private HDM hosting          out of current scope
+direct model API calls       out of current scope
+future Claude migration      possible future compatibility concern, not current driver
 ```
 
-### Step 5.0 — CLOSED
+For multiplayer, each human player may use a separate player-facing chat/account as already assumed by the existing architecture. Round 2 must not invent a shared multi-user AI-chat dependency.
 
-Final artifact:
+## 2.2 Role-containment baseline
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-0-authority-contamination-final.md`
+HDM SHALL make one LLM sequentially execute multiple logical roles inside one physical chat context while preserving different knowledge and authority boundaries.
 
-### Step 5.1 — CLOSED
+Physical availability of information does not make it logically eligible for the active role.
 
-Canonical specification:
+The system prompt, Project Instructions and shipped Markdown reasoning/procedure instructions are part of role-containment machinery, including:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-canonical-spec.md`
+- role rebinding;
+- truth / cognition / observation / disclosure separation;
+- no transitive knowledge inheritance;
+- Actor-specific epistemics;
+- Dramaturg latent state;
+- Narrator disclosure discipline;
+- creativity -> commit boundary.
 
-Decision: **B-NARROW / DOMAIN TYPING / NO IMPLICIT CROSS-DOMAIN ORDER**. No generic Frontier record/API, universal sequence or RecoveryCut authority.
+Round 2 designs the runtime/instruction machinery implied by this law. It does not reopen mandatory physical isolation.
 
-### Step 5.2 — CLOSED
+---
 
-Canonical specification:
+# 3. Round-2 evidence base
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md`
+Round 2 uses all relevant current evidence without treating research as architecture automatically:
 
-Resumable Runtime Closure is a property over compatible domain-native durable sources plus bounded typed recovery routing. Native owners remain authority; mutable sources are exact-revision pinned; derived indexes/caches rebuild; lost unpublished HOT/SOFT is never invented.
+- accepted Steps 1-5 architecture;
+- the single-context Step-4 canonical amendment;
+- role-context validation Protocols 1-3;
+- `DEV/docs/superpowers/research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md`;
+- current relevant host/platform feasibility research interpreted under the new baseline;
+- useful unresolved former Step-6 spikes/working notes;
+- actual current GAME/DEV runtime, schemas, catalogs, tests and documentation as each stage requires.
 
-### Step 5.3 — CLOSED
+External/research ideas must still survive HDM-specific analysis, simplification and approval before becoming architecture.
 
-Canonical specification:
+---
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-3-temporal-pending-continuity-canonical-spec.md`
+# 4. Operating rules
 
-Integration amendment:
+- Exactly one Round-2 architecture stage may be `IN PROGRESS` at a time.
+- A later stage may be inspected to expose dependencies or contradictions but must not silently replace the active stage.
+- Each stage follows the normal task-brief -> research -> alternatives/recommendation -> decision -> specification -> adversarial review -> closure process at a depth proportional to risk.
+- Round-1 architecture is not automatically re-reviewed.
+- A closed Round-1 topic enters Round 2 only if new work materially extends it, contradicts it, introduces a new consumer it cannot satisfy, or makes it insufficient.
+- Independent confirmation of an accepted Round-1 principle is evidence, not a new roadmap stage.
+- Research candidates that solve no concrete current HDM problem remain deferred even if attractive.
+- YAGNI applies aggressively: do not create a new authority, subsystem, registry, scheduler, agent framework, plugin framework or generic graph unless a real current requirement needs it.
+- Broad implementation remains deferred until the relevant Round-2 architecture closes and the normal implementation-planning gate is reached.
+- The roadmap is living. If a stage proves wrongly grouped or wrongly ordered, change the roadmap rather than preserving the first decomposition by inertia.
 
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-3-5-9-temporal-agenda-chronology-integration-canonical-amendment.md`
+---
 
-Decision: **A-NARROW / OWNER-CLAIM MATERIALIZATION**. Temporal authority remains owner-local; due evaluation is derived; accepted occurrence/execution identities, fixed RNG and no-lost/no-double continuity survive restart without a global scheduler.
+# 5. Round-2 stage registry
 
-### Step 5.4 — CLOSED
+| Stage | Status | Scope | Exit result |
+|---|---|---|---|
+| R2.0 | **COMPLETE / REBASELINED** | close former Step 6; establish single-context/ChatGPT-Plus baseline; derive problem horizon | old Step-6 sequencing retired; Round-2 dependency structure established |
+| R2.1 | **NEXT / NOT STARTED** | continuity, memory and history-aligned derived-state model | explicit continuity layers/lifecycles, consolidation and history-alignment contracts without duplicate authority |
+| R2.2 | **PLANNED** | Context Runtime: retrieval, allocation, complete decision packets, trace/observability | bounded explainable role-context construction policy over R2.1 sources |
+| R2.3 | **PLANNED** | Actor continuity, cognition, directional relationships and private state | bounded persistent/transient Actor model compatible with Step-4 knowledge and player agency |
+| R2.4 | **PLANNED** | single-context LLM turn architecture and shipped instruction machinery | enforceable logical role pipeline, rebinding, activation, handoffs, tool/authority boundaries and instruction composition |
+| R2.5 | **PLANNED** | Dramaturg/narrative dynamics, latent planning, world pressure, long-range narrative continuity and Chronicler integration | useful adaptive narrative development without plot authority or maintenance-turn pollution |
+| R2.6 | **PLANNED** | multiplayer collaboration and scene topology | sync/async collaboration, split-party, participant/controller/channel semantics and recipient-scoped projections over existing Step-5 authority |
+| R2.7 | **PLANNED** | ChatGPT-Plus runtime reliability, evaluation, failure/degradation and security/quality validation | tested supported host envelope and integrated nondeterministic-layer assurance criteria |
+| R2.8 | **PLANNED** | secondary modes and optional-capability gate | explicit admit/defer/reject decisions for Commentator refinements, extensibility, multimodal and future-provider portability surfaces |
+| R2.9 | **PLANNED** | machine-realization mapping and holistic architecture closure | catalog/schema/seed/runtime-doc obligations mapped; cross-round adversarial review passed; implementation obligations consolidated |
 
-Canonical specification:
+---
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-canonical-spec.md`
+# 6. R2.0 — Rebaseline and problem horizon — COMPLETE
 
-Decision: **BARRIER-NATIVE / SCOPED RECOVERY-SAFE HANDOFF**.
+Completed by the owner decision and this roadmap.
 
-### Step 5.5 — CLOSED
+Results:
 
-Canonical specification:
+- former Step 6 closed as a separate stage;
+- mandatory physical role isolation removed from the active problem set;
+- ChatGPT Plus ordinary chat fixed as current baseline;
+- private hosting/direct API removed from current scope;
+- Round-1 closed architecture retained as strong base;
+- new work grouped by unresolved dependency rather than old numbering;
+- external idea dossier, experiments and former Step-6 evidence retained as inputs rather than automatic requirements.
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-canonical-spec.md`
+---
 
-Decision: **EDGE-OBLIGATION / SCOPE-POLICY RECOVERY-CLOSURE DURABILITY**. SOFT/HARD are durability obligations at named semantic edges; explicit SAVE protects selected established dirty roots plus required recovery closure; no universal dirty timeout/heartbeat.
+# 7. R2.1 — Continuity, Memory and History-Aligned Derived State
 
-### Step 5.6 — CLOSED
+## Problem
 
-Canonical specification:
+Round 1 defines canonical current state, knowledge, disclosure, history evidence, Story and selective exact retention, but it does not yet define a complete long-campaign continuity architecture for LLM reasoning.
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-canonical-spec.md`
+Round 2 must distinguish durable truth from derived continuity products and decide how long-lived semantic memory survives Retry/Edit/branch/history changes without becoming hidden authority.
 
-Direction: **PYTHON-OWNED SINGLE-REF CAS PUBLICATION**. Complete base-derived tree -> single-parent commit -> non-force authoritative ref transition; ambiguous ACK is resolved by bounded currentness/lineage proof; accepted gameplay/RNG is not replayed because transport retries.
+## Primary questions
 
-Step-6 transport feasibility input:
+- Which continuity classes actually exist: authoritative state, recent exact evidence, broad summary, episodic recall, entity-local continuity, private Actor continuity, transient scene state, deep archive?
+- Which are authoritative, derived, rebuildable, cached, exact-protected or disposable?
+- What is the minimum viable layer set rather than the maximum imaginable one?
+- When may recent evidence be consolidated into longer-lived derived representations?
+- How are summaries/memories associated with source revisions/history ancestry?
+- What happens to derived continuity after Retry/Edit/branch divergence?
+- What exact-recall promise already follows from Step 5.11 and what additional retrieval promise, if any, is needed?
+- How are stale, conflicting, duplicate or superseded derived continuity records repaired or retired?
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-6-repository-port-transport-feasibility-spike.md`
+## Round-1 constraints preserved
 
-### Step 5.7 — CLOSED
+Do not reopen:
 
-Canonical specification:
+- current canonical ownership;
+- Step-4 truth/knowledge/disclosure separation;
+- Step-5 selective exact retention semantics;
+- the rule that Story/summary/memory does not become canon by persistence or usefulness.
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-canonical-spec.md`
+## Candidate research inputs
 
-Direction: **CURRENT-AUTHORITY-FIRST / CHECKPOINT-OPTIONAL NATIVE-ROUTED BOUNDED RECOVERY**. Cold recovery resolves current native authority/routes first; checkpoint is optional evidence/metadata, never current-state authority.
+Strongly relevant Dossier areas include D01, D05-D08, D18 and related STRONG/negative-intelligence items. Their recommendations remain candidates, not stage outcomes.
 
-### Step 5.8 — CLOSED
+## Exit result
 
-Canonical specification:
+A canonical continuity model that defines:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-canonical-spec.md`
+- admitted continuity layers and their owners/lifecycles;
+- provenance/source-coverage rules;
+- consolidation/stability boundaries;
+- history/branch alignment obligations for derived state;
+- rebuild/repair/retirement semantics;
+- exact versus semantic recall promises;
+- explicit rejection of duplicate authority.
 
-Direction: **ROUTED FIXED-CLAIM LIVE EPOCH / EXACT-SOURCE CAS / TERMINAL SOURCE FREEZE / FORWARD CAMPAIGN ABSORPTION**. At most one ordinary writable authority exists for a claimed scope; CLOSED_UNABSORBED remains recoverable current truth with no ordinary writer; accepted identities/lifecycles survive absorption.
+---
 
-### Step 5.9 — CLOSED
+# 8. R2.2 — Context Runtime, Retrieval, Allocation and Observability
 
-Canonical specification:
+Depends on: **R2.1**.
 
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-canonical-spec.md`
+## Problem
 
-Owner-approved temporal capability boundary:
+Step 4 established deterministic Context Assembler ownership and role eligibility. Round 2 must design how a real long campaign produces one bounded role-local execution projection under finite context pressure.
 
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-9-forward-extensible-time-boundary-owner-decision.md`
+## Primary questions
 
-Direction: **OWNER-ANCHORED SPARSE CHRONOLOGY / DOMAIN-TYPED ORDER / TYPED METRIC COORDINATES / MATERIAL BRIDGE RECONCILIATION / FORWARD-EXTENSIBLE HISTORY**. Git/ref/ID order never becomes fictional chronology; protected consumers retain bounded temporal/causal evidence; mutable-past/branching/causal-loop baseline mechanics require a future explicit extension.
+- What is a context candidate and what metadata/provenance accompanies it?
+- Which semantic classes receive hard minimum reservations versus optional budget?
+- Which inputs are `required`, `protected`, `downgradable` or `omittable`?
+- Which decision packets must remain complete rather than be partially truncated?
+- What representation downgrade chain is permitted before omission/defer?
+- How are relevance, entity/scope selectors, chronology, witnessed knowledge and long-range retrieval combined without building a second rules engine?
+- How is starvation prevented deterministically?
+- How are duplicate semantic facts removed across multiple derived channels?
+- How can context assembly run in dry-run/test mode?
+- What trace explains inclusion, exclusion, ranking, downgrade, budget use and final placement without becoming player-visible secret leakage?
 
-### Step 5.10 — CLOSED
+## Round-1 constraints preserved
 
-Canonical specification:
+Context Assembler remains a deterministic projection capability, not canonical authority, generic ACL, universal query language or campaign-wide scan license.
 
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md`
+## Candidate research inputs
 
-Direction: **LAYER-LOCAL COVERAGE / QUEUE-FREE PULL CATCH-UP / DETERMINISTIC STORY PUBLICATION / OPTIONAL GENERATIVE CHRONICLER / GAMEPLAY-PRIORITY SAME-REF CAS**. Story remains noncanonical, may lag independently, requires no background worker and never blocks gameplay/SAVE/recovery.
+D02-D04, D14, D19 and relevant STRONG items such as critical pins, typed dependency activation, tokenizer accounting, dry-run assembly, starvation/fairness and party-size degradation.
 
-### Step 5.11 — CLOSED
+## Exit result
 
-Canonical specification:
+A canonical bounded Context Runtime contract covering:
 
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md`
+- candidate acquisition and typed selection;
+- semantic budget allocation;
+- complete decision-packet rules;
+- downgrade/defer behavior;
+- retrieval/dependency limits;
+- deterministic dedup/fairness rules where justified;
+- inspectable context trace and dry-run behavior;
+- failure semantics when correctness-critical context cannot be assembled completely.
 
-Owner-approved product decision:
+---
 
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-11-selective-exact-semantic-continuity-owner-decision.md`
+# 9. R2.3 — Actor Continuity, Cognition and Relationships
 
-Direction: **STABLE MESSAGE EVIDENCE / SELECTIVE EXACT PROTECTION / SEMANTIC-DISCHARGE COMPACTION / OPTIONAL VERIFIED TRANSCRIPT ARCHIVE**. HDM guarantees semantic continuity, not universal verbatim recall; exact wording survives only when protected or deliberately archived; compaction cannot destroy meaning still promised by a surviving consumer.
+Depends on: **R2.1, R2.2**.
 
-### Step 5.12 — CLOSED
+## Problem
 
-Canonical specification:
+Step 4 defines fictional epistemic relations and Actor role eligibility, but living NPC continuity requires more than a `world.knowledge` row: stable identity, evolving goals, directional relationships, private plans, transient states and evidence-driven updates need explicit boundaries.
 
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md`
+## Primary questions
 
-Owner-approved scope/product decision:
+- Which Actor state belongs to stable foundation, durable evolving continuity and transient private state?
+- Which state is canonical world fact versus subject-local fictional cognition?
+- How are goals, intentions, promises, relationships and suspicions represented without universal social/epistemic over-modeling?
+- Are relationships directional `A -> B`, and which material dimensions deserve typed persistence?
+- When does Actor cognition run, and how is sparse/event-driven activation preferred over simulating every NPC every turn?
+- What counts as sufficient evidence for a durable cognition mutation?
+- How does `NO_CHANGE` work as a legitimate assessment result?
+- How are transient states refreshed/expired without using arbitrary turn-count TTL where fictional time matters?
+- Which NPCs receive deep continuity and how are inactive/background actors compacted safely?
+- How is PC/player agency protected from Actor-style automatic cognition mutation?
 
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-12-minimal-host-delivery-owner-scope-decision.md`
+## Round-1 constraints preserved
 
-Direction: **VALIDATED EMISSION-COMMIT / SOFT OUTBOUND DISCLOSURE CLOSURE / NO BASELINE DELIVERY-ACK SUBSYSTEM / DOCUMENTED INTERRUPTION RISK / RECIPIENT-SCOPED DISCLOSURE**. Normal uninterrupted Master output is the supported baseline; interruption/Retry/edit do not justify outbox/worker/chunk-ledger machinery.
+- `world.knowledge` remains the durable current fictional epistemic owner for proposition stance;
+- objective truth remains separate;
+- PC voluntary belief/emotion/interpretation is not silently chosen by the engine;
+- LLM-produced cognition changes remain proposals until accepted by the proper owner path.
 
-### Step 5.13 — CLOSED
+## Exit result
 
-Canonical specification:
+A bounded Actor-continuity architecture with explicit state classes, authority, lifecycle, evidence/provenance, directional relation semantics, sparse activation and persistence boundaries.
 
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md`
+---
 
-Direction: **OWNER-GATED RETIREMENT / CLOSED BLOCKER CONTRACTS / COMPLETENESS-TYPED PROTECTION ROUTING / PINNED CURRENT-BASIS SAFE-RETIREMENT PROOF / SURVIVOR-BEFORE-REMOVAL / OPTIONAL POST-AUTHORITY REF CLEANUP / SEMANTIC RETENTION SEPARATE FROM GIT-HISTORY REACHABILITY / HOST-MANAGED GIT OBJECT RECLAMATION**.
+# 10. R2.4 — Single-Context LLM Turn and Instruction Machinery
 
-Canonical consequences include:
+Depends on: **R2.2, R2.3**.
+
+## Problem
+
+The single-context Step-4 amendment is now canonical, but its execution machinery is not designed. Round 2 must define how one LLM in one ChatGPT chat/user request reliably traverses several logical role phases without collapsing their knowledge or authority contracts.
+
+## Primary questions
+
+- What is the stable global runtime constitution?
+- What belongs in Project Instructions versus shipped MD runtime/procedure modules versus turn-built role frames?
+- What is the canonical conceptual turn envelope?
+- How is role rebinding made explicit before Interpreter, Dramaturg, each Actor and Narrator phase?
+- Which roles are always, conditionally or rarely activated?
+- How do multiple Actor phases observe earlier public actions/speech without inheriting private cognition?
+- What are the minimal cross-role handoffs?
+- What should remain prose and what requires minimal structured result/receipt?
+- How does deterministic Python/runtime/tooling remain the only acceptance/commit gateway?
+- How are deterministic mechanics interleaved with role phases when a turn requires them?
+- How are invalid role outputs, retries and already-accepted mechanics handled without replay?
+- How are system prompt, Project Instructions and shipped MD versioned/tested as correctness-relevant runtime assets?
+- Should reusable first-party procedure modules be adopted, partially adopted or rejected?
+- How is untrusted player/world/tool text kept data rather than instruction?
+- How is hidden chain-of-thought kept out of runtime protocols and persistence requirements?
+
+## Explicit non-goal
+
+Do not design separate agents/chats/model calls merely to recreate the superseded physical-isolation architecture.
+
+## Exit result
+
+A canonical one-request/one-assistant-turn LLM runtime architecture defining:
+
+- role phase order and conditional activation;
+- role rebinding semantics;
+- turn-envelope and role-frame structure;
+- instruction ownership/composition;
+- allowed logical handoffs;
+- deterministic authority/tool gateway;
+- nondeterministic-result lifecycle where needed;
+- failure/retry/degradation behavior;
+- instruction versioning and regression obligations.
+
+---
+
+# 11. R2.5 — Dramaturg, Narrative Dynamics and Long-Range Narrative Continuity
+
+Depends on: **R2.1-R2.4**.
+
+## Problem
+
+Step 4 admits noncanonical Dramaturg preparation and Step 5 admits optional/lagging Chronicler Story projection. Round 2 must decide what adaptive narrative/world-development machinery is actually useful without turning preparation into plot authority or auxiliary maintenance into gameplay turns.
+
+## Primary questions
+
+- What private/provisional Dramaturg state is worth retaining across turns?
+- How are pressures, unresolved situations, likely reactions and latent branches represented without predetermining outcomes?
+- Which narrative developments are pure suggestions, which are fictional cognition and which require canonical event/commit paths?
+- Should world pressures have staged progression, and if so how is railroading prevented?
+- How should timeskip/domain advancement interact with existing temporal owners?
+- What pacing/anti-stagnation signals are advisory only?
+- How do global narrative continuity and episodic/entity retrieval feed Dramaturg without becoming a giant summary blob?
+- Where does Chronicler run logically, how much lag is acceptable, and which continuity products may it help produce without gaining canon authority?
+- How are auxiliary semantic maintenance operations kept invisible from the player-facing turn history?
+
+## Exit result
+
+A bounded adaptive narrative architecture that preserves player agency, causality and commit boundaries while supplying useful long-term Dramaturg/Story continuity.
+
+---
+
+# 12. R2.6 — Multiplayer Collaboration and Scene Topology
+
+Depends on: **R2.1-R2.5** plus inherited Step-5 authority/concurrency architecture.
+
+## Problem
+
+Round 1 closed shared-state durability/concurrency, but multiplayer collaboration semantics remain broader than storage: asynchronous participation, split party, rejoin/catch-up, input coordination and controller ownership need explicit product/runtime contracts.
+
+## Primary questions
+
+- What collaboration state is actually needed beyond canonical world/live state?
+- How do synchronous and asynchronous play share one architecture without universal round-robin?
+- What are the baseline coordination modes for free-form shared scene versus strict actor sequence?
+- When are multiple participant inputs collected before one resolution?
+- How are OOC/social coordination, diegetic speech and actionable intent distinguished?
+- How does participant identity bind to controlled PC(s), and how is delegation/controller transfer explicit and reversible?
+- How is absence handled without silently giving the AI control of a PC?
+- What does join/rejoin mean at an active scene/frontier?
+- What bounded catch-up projection does a returning participant receive?
+- How does split-party create independent scene/context/chronology frontiers while preserving one shared canon?
+- What material causal bridges force reconciliation between scenes?
+- Which shared outcomes are observationally final under existing Step-5 publication/delivery semantics and where, if anywhere, does Round 2 need an extension rather than a restatement?
+- How do recipient-specific Context Runtime projections avoid secret leakage across players/scenes?
+
+## Round-1 constraints preserved
+
+Do not replace Step-5 live/currentness/concurrency ownership with a new generic collaboration authority or let network/message order define fictional chronology.
+
+## Exit result
+
+A narrow collaboration/scene architecture supporting synchronous and asynchronous play, split-party and explicit participant/controller/channel semantics over the existing Step-5 shared-state model.
+
+---
+
+# 13. R2.7 — ChatGPT-Plus Reliability, Evaluation, Security and Quality
+
+Depends on the concrete contracts produced by **R2.1-R2.6**.
+
+## Problem
+
+Round 2 must prove that the designed nondeterministic layer is usable and testable on the current ChatGPT-Plus ordinary-chat baseline rather than treating prompt success as self-evident.
+
+## Primary questions
+
+- What ChatGPT-Plus capabilities/limitations materially affect the accepted architecture?
+- How does long-chat growth/provider-managed history behavior interact with campaign-owned continuity/context rebuilding?
+- What latency envelope is acceptable for ordinary versus exceptional turns?
+- Which work may degrade/defer when latency/context pressure rises, and which correctness inputs may not?
+- What host Retry/Edit/branch behaviors can HDM safely support under existing Step-5 semantics?
+- Which player-visible host surfaces materially matter under the ordinary-chat baseline?
+- What residual Narrator emission/disclosure limitation must be documented if the host cannot provide pre-visible candidate staging?
+- How are prompt injection, role confusion, cross-Actor contamination and unauthorized tool/state mutation attacked in tests?
+- What evaluation dimensions are independent: correctness, role containment, gameplay quality, latency, robustness?
+- How are model/reasoning-profile drift and instruction-package changes regression-tested?
+- Which diagnostics are retained without creating a new secret archive or player-visible leak surface?
+
+## Evidence rule
+
+Use current official platform evidence and direct probes only where the architecture actually depends on a host property. Do not turn provider feature reconnaissance into the roadmap itself.
+
+## Exit result
+
+One explicit supported ChatGPT-Plus capability envelope with:
+
+- known limitations/degradation behavior;
+- role-containment and prompt-injection regression suite requirements;
+- context/continuity evaluation obligations;
+- gameplay-quality evaluation axes;
+- latency/robustness targets;
+- residual-risk statements where the host cannot provide a stronger guarantee.
+
+---
+
+# 14. R2.8 — Secondary Modes and Optional-Capability Gate
+
+Depends on the core architecture above.
+
+Purpose: prevent optional ideas from contaminating the baseline while still making explicit V1 decisions.
+
+Evaluate and either **ADMIT / DEFER / REJECT** at least:
+
+- Commentator serving/perspective/spoiler refinements not already fixed by Steps 4-5;
+- multimodal/voice/attachments beyond normalized text/evidence intake;
+- extension/plugin/script capability model;
+- reusable runtime-procedure module registry beyond the minimum needed by R2.4;
+- future provider portability boundary and possible later Claude migration;
+- explicit solo/shared fork product semantics where not already required;
+- optional advanced memory/cognition features that failed the earlier YAGNI gate.
+
+This stage is not permission to build these systems. Its exit may legitimately be mostly `DEFER` decisions.
+
+## Exit result
+
+A bounded V1 capability envelope and explicit deferred list with no speculative subsystem left masquerading as a baseline dependency.
+
+---
+
+# 15. R2.9 — Machine-Realization Mapping and Holistic Architecture Closure
+
+Depends on: all admitted Round-2 architecture stages.
+
+## Scope
+
+- map accepted Round-1 + Round-2 architecture to GAME runtime ownership;
+- identify catalog/schema/seed/template/migration obligations;
+- identify shipped prompt/Project Instruction/MD asset obligations;
+- identify tests/evals/tooling required for realization;
+- reconcile stale derivative/status/navigation documents;
+- confirm no duplicate authority or hidden persistence owner was introduced;
+- confirm context/memory/Actor/multiplayer designs compose with Step-3/5 retry, durability, recovery and concurrency semantics;
+- run full cross-round adversarial review;
+- classify remaining work as implementation obligation, explicit deferred capability, accepted debt or future architecture;
+- prepare the handoff to implementation planning only after architecture closure.
+
+## Exit result
 
 ```text
-native owners define liveness/terminality; cleanup is not a new authority
-no universal GC frontier, global mark-and-sweep semantic graph or generic durable refcount
-cleanup is admitted only under a compatible closed CleanupContract for the target representation
-negative blocker proof is valid only from complete typed protection routing under one coherent current native basis
-unknown/incompatible cleanup contract or stale/incomplete protection evidence => retain/retry/repair
-required survivor/replacement evidence exists before source representation disappears
-surviving refs distinguish current-dereference, opaque provenance and survivor-backed semantics
-current-tree retirement does not erase ancestor Git history
-Git-history bytes are transport/audit provenance and do not restore semantic/exact capabilities already lawfully compacted away
-ACTIVE and CLOSED_UNABSORBED live sources cannot be cleaned; absorbed/non-authoritative refs are post-authority cleanup only
-prepared/unselected Git objects are nonauthority; server object reclamation remains host-managed
-candidate discovery may be stale/incomplete because every actual retirement revalidates the full safe-retirement proof
-ordinary gameplay performs no garbage scan; cleanup is bounded maintenance work
-cleanup contract/protection semantics participate in runtime/catalog compatibility and migration
-failure/ambiguity biases toward extra retention rather than premature irreversible loss
+Round-2 architecture closed
++
+accepted canonical specification chain complete
++
+machine/runtime realization obligations traceable
++
+full integrated review passes
++
+implementation planning may begin
 ```
 
-Machine-realization debt includes target-kind cleanup contracts/generations, typed blocker classes, completeness-typed protection routing, cleanup-compatibility migration, bounded candidate selection, SafeRetirementAssessment validation, survivor/reference migration, runtime execution-detail/idempotency compaction, checkpoint retirement/pointer coherence, compact-message-envelope retirement, Story/chronology derivative-generation cleanup, live absorbed/orphan ref cleanup when RepositoryPort supports it, Git-history semantic exclusion from ordinary recovery/exact recall, maintenance diagnostics and crash/concurrency/integrity tests.
+No implementation is authorized merely by reaching this roadmap stage; the normal Superpowers design/specification/planning gates still apply.
 
-### Step 5.14 — CLOSED
+---
 
-Canonical final review:
+# 16. Dependency spine
 
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md`
-
-Supporting review chain:
-
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-task-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-integrated-adversarial-review-draft.md`
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-analytical-challenge.md`
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-resolution-gate.md`
-
-Step 5.14 attacked all 30 integrated scenario routes plus seven stronger composite crash/concurrency cases and performed the final authority/contamination sweep. No unresolved Step-5 architecture blocker or new owner-level product decision remained.
-
-Canonical Step-5.14 integration clarifications include:
+The intended dependency direction is:
 
 ```text
-role-context current source basis is domain-composed, not campaign-HEAD-only
-cross-source cleanup protection precedes consumer dependency acceptance
-runtime.disclosure monotonic merge is owner-specific and never generic last-writer-wins
-partial multi-live prerequisite freeze is technical currentness, not partial fictional establishment
-Step-6 physical feasibility failure rejects/refines a deployment profile before weakening Step-4/5 semantics
+ROUND-1 STRONG BASE
+        |
+        v
+R2.1 Continuity / Memory / History-Aligned Derived State
+        |
+        v
+R2.2 Context Runtime / Retrieval / Budgets / Trace
+        |
+        v
+R2.3 Actor Continuity / Cognition / Relationships
+        |
+        v
+R2.4 Single-Context LLM Turn / Instruction Machinery
+        |
+        +----------------------+
+        |                      |
+        v                      v
+R2.5 Narrative Dynamics   R2.6 Multiplayer Collaboration
+        |                      |
+        +-----------+----------+
+                    v
+R2.7 ChatGPT-Plus Reliability / Eval / Security / Quality
+                    |
+                    v
+R2.8 Secondary/Optional Capability Gate
+                    |
+                    v
+R2.9 Machine Mapping / Holistic Closure
 ```
 
-Step 5 is therefore **COMPLETE / ARCHITECTURE CLOSED**.
+Parallel research is allowed when it does not create premature decisions, but canonical stage closure follows the dependency order above.
 
-## Step 6 — NEXT / NOT STARTED
+---
 
-Step 6 owns at least:
+# 17. Explicitly not separate Round-2 stages
 
-- LLM role-isolation feasibility before physical orchestration design;
-- physical model-call topology for six logical roles;
-- model selection and real context reset/isolation compatibility;
-- minimum physical invocation count preserving Step-4 eligibility;
-- token/latency/cost budgets;
-- host/deployment capability profiles;
-- deterministic Python `RepositoryPort` bridge feasibility for campaign/live publication and optional post-authority ref cleanup;
-- authenticated acting-principal transport feasibility;
-- Commentator serving/spoiler/perspective policy;
-- Story/Chronicler activation policy and optional future async execution using Step-5.10 coverage/CAS;
-- stable host invocation/message/revision identity feasibility for Step-3/5.11/5.12 edit-retry-branch semantics;
-- physical pre-player-visible staging/validation feasibility for Step-4/5.12 material Narrator output before secret-bearing content is rendered;
-- inventory/fencing of actual player-visible host surfaces;
-- authenticated recipient/audience mapping for supported host profiles;
-- whether cheap trustworthy completed-message acknowledgement is available and worth optional strengthening;
-- migration/catalog-gap/full-seed closure, including cleanup-contract/protection-routing compatibility realization;
-- final holistic architecture/catalog/seed audit;
-- consolidation of implementation obligations before implementation planning.
+Unless a later stage exposes a real contradiction/extension need, the following remain inherited rather than being re-planned:
 
-Step-5.14 identifies the following as material Step-6 feasibility gates:
+- deterministic mechanics and RNG ownership;
+- IntentPlan/Resolution/Procedure execution boundary;
+- objective truth ownership;
+- basic `world.knowledge` proposition stance semantics;
+- human disclosure ownership;
+- Story non-authority;
+- base promotion/commit boundary;
+- durability classes and publication/recovery semantics;
+- existing live currentness/concurrency ownership;
+- canonical chronology principles;
+- selective exact transcript/history retention;
+- cleanup authority/safety principles;
+- mandatory physical LLM role isolation (superseded, not pending).
 
-```text
-SD-1 deterministic authenticated RepositoryPort               blocking for persistence-capable profile
-SD-2 pre-player-visible Narrator staging/validation            blocking for secret-bearing profile
-SD-3 stable invocation/message/retry identity                  significant / potentially blocking
-SD-4 authenticated acting-principal + recipient/audience       blocking for secure multiplayer profile
-SD-5 genuine role-context isolation/reset                      blocking for mixed-privilege role topology
-SD-6 live-ref deletion                                         optional / nonblocking
-```
+If Round 2 later requires changing one of these, the active stage must explicitly identify the dependency and open a superseding decision rather than silently rewriting it.
 
-Step 6 may optimize physical placement/deployment but cannot weaken Step-4 information boundaries or Step-5 durability/recovery/authority laws.
+---
 
-## Documentation / implementation debt
+# 18. Exact continuation point
 
-- `DEV/ARCHITECTURE/CATALOG_MODEL.md` and `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` remain historical derivation where later canonical specs supersede them.
-- The expanded Step-5 agenda contains older wording superseded by canonical slices; use the slice specs and Step-5.14 integration clarifications for semantics.
-- Runtime persistence/recovery/live/chronology/Story/transcript/disclosure/cleanup prose and schemas are materially stale relative to canonical Steps 5.2–5.14; broad realization remains deferred until Step-6 architecture closes and the normal implementation-planning gate is reached.
-- Player-facing help/manual must eventually document the Step-5.12 interruption/Retry/edit limitation.
-- The Step-5.9 forward-extensible temporal capability boundary must be reflected in eventual Dramaturg/runtime role policy.
-- Git current-tree cleanup is not secure historical erasure; no product/API promise to the contrary exists in Step 5.13.
-- Step-5.14 integrated implementation tests must cover its 30 required scenarios and stronger composite cases; local per-slice tests are not sufficient for final realization assurance.
+**Round 1: CLOSED / strong base retained.**
 
-## Exact continuation point
+**Former Step 6: CLOSED AS SEPARATE STAGE / useful scope reallocated to Round 2.**
 
-**Step 5.14 / Full Recovery & Concurrency Adversarial Review — CLOSED.**
-
-**Step 5 / Persistence, Recovery & Concurrency — COMPLETE / ARCHITECTURE CLOSED.**
+**Round 2: ACTIVE.**
 
 Next architecture stage:
 
-**Step 6 / Physical LLM Orchestration, Deployment Feasibility & Final Architecture Closure — NEXT / NOT STARTED.**
+> **R2.1 — Continuity, Memory and History-Aligned Derived State — NEXT / NOT STARTED**
 
-Do not begin broad implementation until Step-6 architecture closes and the normal planning gate is reached.
+The next substantive action is to create the R2.1 Architecture Task Brief and begin the normal architecture/deep-work cycle. Broad implementation remains blocked.
