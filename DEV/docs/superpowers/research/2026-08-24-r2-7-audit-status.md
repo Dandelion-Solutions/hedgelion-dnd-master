@@ -1,6 +1,6 @@
 # R2.7 — Audit Status / Durable Cursor
 
-Status: **PAUSED BY OWNER — HOUSE RULES 8-STEP DESIGN NEXT; S6D AFTER**
+Status: **PAUSED BY OWNER — HOUSE RULES STEP 1 COMPLETE / STEP 2 NEXT; S6D AFTER**
 
 Date: 2026-08-24
 
@@ -19,6 +19,10 @@ Current sequencing owner:
 House Rules design input:
 
 - `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md`
+
+House Rules Step-1 Task Brief:
+
+- `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
 
 S6D decomposition/evidence inputs:
 
@@ -49,8 +53,9 @@ OWNER_GATE: PROGRAM PAUSE / HOUSE_RULES_THEN_S6D
 FINAL_RECONCILIATION: NOT_STARTED
 
 NEXT_WORKSTREAM: HOUSE_RULES_ARCHITECTURE
-HOUSE_RULES_STATUS: DESIGN BRIEF EXISTS / FULL 8-STEP LOOP NOT STARTED
-HOUSE_RULES_START: next chat begins with Step 1 Task-Brief review/challenge
+HOUSE_RULES_STATUS: STEP 1 COMPLETE / STEP 2 RESEARCH NEXT
+HOUSE_RULES_TASK_BRIEF: DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md
+HOUSE_RULES_NEXT: Step 2 — Research & Architecture Draft
 
 FOLLOWING_WORKSTREAM: S6D — Step-6 Residual Rules/Seed Debt Closure
 S6D_STATUS: PREPARED / NOT STARTED
@@ -58,6 +63,8 @@ S6D_EXECUTION_RULE: each numbered task/domain runs its own full 8-step deep-desi
 S6D_START_TRIGGER: House Rules Step 8 canonicalization complete
 R2_7_RESUME_TRIGGER: S6D integrated closure/resolution gate complete
 ```
+
+The roadmap still owns program sequencing. If its narrative continuation text still says that the next chat begins House Rules Step 1, this durable cursor is the later workstream-progress record: Step 1 is now complete and Step 2 is next. The sequencing itself is unchanged.
 
 ## R2.7 progress at pause
 
@@ -118,9 +125,9 @@ SLOW PATH: only for a concrete material trigger
 
 House Rules and S6D must not weaken this requirement.
 
-## House Rules design boundary to examine, not assume
+## House Rules design boundary — Step-1 challenge result
 
-The existing design brief proposes a two-channel direction:
+The design input proposed a two-channel direction:
 
 ```text
 formalizable mechanic
@@ -133,9 +140,18 @@ nonformalizable/open-ended fiction judgment
     -> deterministic mechanics/RNG/state acceptance where applicable
 ```
 
-This is **not yet canonical**. The next chat must run Step 1 of the full deep-design loop and may revise the framing.
+Step 1 did **not** accept that decomposition as canonical. The Task Brief classifies it as a useful hypothesis and requires Step 2 to test whether representation/execution form, lifecycle/durability and authority/ownership are better treated as independent axes.
 
-The owner specifically suspects that `HOUSE_RULES.md` was intended to carry part of HDM logic that is not faithfully formalizable in Python and therefore must remain LLM-interpreted. That suspected responsibility must be researched and designed explicitly rather than silently removed by over-formalization.
+Step 1 also established these framing corrections:
+
+- the design brief's Section 13 allowance for early independent S6D work is stale and superseded by the sequencing owner decision;
+- `HOUSE_RULES.md` must not be assumed to own every durable campaign ruling because its current file contract is narrower than the ruling precedence/persistence language in `PLAY_POLICY.md`;
+- a new `GAME/CORE/RULINGS.md`, generic ruling record/DSL, stable ruling ID schema or specific typed receiving surface must be justified by evidence rather than embedded in the assignment;
+- examples such as `fiction.target_reachable` are illustrative and do not prove an existing canonical machine type;
+- retrieval/discoverability is part of correctness because durable precedent must remain applicable without introducing an ordinary-turn full-corpus/repository scan;
+- the intended LLM-readable campaign policy responsibility remains explicitly in scope and must not be silently eliminated by over-formalization.
+
+Full details and Step-2 Source Manifest/questions/alternatives are in the Step-1 Task Brief.
 
 ## Eight-step rule
 
@@ -160,11 +176,12 @@ At the start of the next chat:
 2. read current roadmap;
 3. read this status file;
 4. read `2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`;
-5. read the House Rules architecture design brief;
-6. begin **House Rules Step 1 — Architecture Task Brief review/challenge**;
-7. do not resume WP-06;
-8. do not start S6D until House Rules Step 8 canonicalization closes;
-9. after House Rules closes, process each numbered S6D task/domain through its own full eight-step cycle;
-10. after S6D integrated closure, recover the full R2.7 pre-pause obligations from blob `d486825dc5c9463b2e2159086e6c7102c3caf354` plus House Rules/S6D closure artifacts and resume WP-06.
+5. read `2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md` as noncanonical design input;
+6. read `2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md` as the completed Step-1 framing and current research assignment;
+7. begin **House Rules Step 2 — Research & Architecture Draft** using its Source Manifest/evidence gates;
+8. do not resume WP-06;
+9. do not start S6D until House Rules Step 8 canonicalization closes;
+10. after House Rules closes, process each numbered S6D task/domain through its own full eight-step cycle;
+11. after S6D integrated closure, recover the full R2.7 pre-pause obligations from blob `d486825dc5c9463b2e2159086e6c7102c3caf354` plus House Rules/S6D closure artifacts and resume WP-06.
 
 Conversation history is not a checkpoint.
