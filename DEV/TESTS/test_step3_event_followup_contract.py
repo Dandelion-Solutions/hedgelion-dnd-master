@@ -53,6 +53,7 @@ class Step3EventFollowupContractTest(unittest.TestCase):
         segment = {
             "segment_sequence": 1,
             "commit_state": "committed",
+            "resulting_execution_state": "COMPLETED",
             "event_ids": ["event-00000001"],
             "pending_child_invocations": [{
                 "firing_key": "effect-1:damage:event-00000001",
