@@ -22,6 +22,51 @@ wins and this map is stale.
 
 Use this file for discovery; read the actual owning artifacts for correctness.
 
+### 1.1 Fresh-session research route
+
+For a fresh HDM development/architecture chat, this map participates in the
+bootstrap chain defined by `AGENTS.md` and the design-process files:
+
+```text
+current remote ref/state
+-> AGENTS.md
+-> DEV/DESIGN_PROCESS.md
+-> DEV/ARCHITECTURE/DESIGN_PROCESS.md
+-> DEV/PROJECT_MAP.md
+-> DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md when architecture sequencing matters
+-> concern route below
+-> task-specific Source Manifest
+-> actual owning artifacts
+-> relevant schemas/tests/runtime consumers/research evidence
+```
+
+Do not preload the whole repository merely because it is large. Use this map to
+identify the relevant dependency subgraph, then inspect that subgraph deeply
+enough to support the claims being made.
+
+Do not stop at this map, an executive summary, a roadmap heading or a derivative
+index. These are routing/compression surfaces. Correctness-sensitive conclusions
+must return to the actual owning artifacts and relevant evidence.
+
+### 1.2 Source-role legend
+
+When building a task-specific Source Manifest, distinguish these roles:
+
+- **CANONICAL / OWNING** — current source of semantic authority for the concern;
+- **CANONICAL AMENDMENT / OWNER DECISION** — later accepted change or explicit
+  decision that can supersede earlier wording;
+- **DERIVATIVE LOCATOR / INDEX** — navigation/integration aid that points to
+  owners but does not override them;
+- **RESEARCH INPUT** — evidence/candidate material that requires analysis before
+  it can influence architecture;
+- **HISTORICAL / SUPERSEDED DERIVATION** — provenance/background only unless a
+  current question specifically depends on it;
+- **IMPLEMENTATION / MACHINE CONTRACT / TEST** — concrete realization or
+  executable/scenario evidence that may constrain or verify architecture.
+
+A fresh chat should identify source roles before combining documents. Similar
+terminology does not imply equal authority.
+
 ## 2. Coverage convention
 
 The map lists stable human-authored/runtime surfaces individually where their
@@ -38,6 +83,11 @@ repository:
 
 When a task touches one of these families, inspect filenames/current references
 rather than assuming this map enumerates every member.
+
+For an enumerated research/review/requirement set, the absence of every item from
+this map is intentional: the map routes to the owning source. If later work
+claims coverage of that set, item-level accounting belongs in the research/design
+process, not in this navigation index.
 
 ## 3. Repository ownership geometry
 
@@ -56,20 +106,20 @@ leak into one another merely for development convenience.
 
 | Concern | Primary surfaces | Frequent neighbors |
 |---|---|---|
-| Architecture process / current stage | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`, relevant canonical specs in `DEV/docs/superpowers/specs/` |
-| Architecture research / second-round idea pool | `DEV/docs/superpowers/research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, current canonical architecture and roadmap when evaluating candidates |
-| Host/platform feasibility / physical LLM orchestration | `DEV/docs/superpowers/research/2026-08-22-platform-feasibility-comparative-research.md` | Step-6 feasibility inputs in `DEV/docs/superpowers/specs/`, Step-4 role/context architecture, Step-5 persistence/multiplayer/disclosure architecture |
-| Role-context validation evidence | `DEV/docs/superpowers/research/2026-08-23-role-context-validation-protocol-1-sequential-containment.md`, `2026-08-23-role-context-validation-protocol-2-collapsed-multi-role.md`, `2026-08-23-role-context-validation-protocol-3-reasoning-budget.md` | Step-4 canonical role/context spec, Step-6 role-isolation feasibility notes, host/platform feasibility research, `GAME/CORE/AI_REASONING.md`, `NPC.md`, `NARRATIVE.md`, `PREP.md` |
-| Integrated canonical architecture lookup (Steps 1–5) | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | owning canonical specs/model contracts, `NEAR_TERM_ROADMAP.md`, Step-5.14 review artifacts |
+| Architecture process / current stage | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | Round-1 closure/rebaseline owner decision, Step-4 single-context amendment, `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`, relevant owning canonical specs |
+| Architecture research / Round-2 idea pool | `DEV/docs/superpowers/research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` | current Round-2 roadmap, current canonical architecture, relevant owner decisions/amendments, applicable runtime/schema/test owners when evaluating candidates |
+| Host/platform feasibility / LLM orchestration | `DEV/docs/superpowers/research/2026-08-22-platform-feasibility-comparative-research.md` | Step-4 single-context amendment, Round-1 closure/rebaseline decision, role-context protocols, R2.4/R2.7 roadmap scope; former Step-6 feasibility notes are historical inputs only |
+| Role-context validation evidence | `DEV/docs/superpowers/research/2026-08-23-role-context-validation-protocol-1-sequential-containment.md`, `2026-08-23-role-context-validation-protocol-2-collapsed-multi-role.md`, `2026-08-23-role-context-validation-protocol-3-reasoning-budget.md` | Step-4 canonical spec + single-context amendment, Round-2 roadmap, `GAME/CORE/AI_REASONING.md`, `NPC.md`, `NARRATIVE.md`, `PREP.md`; former Step-6 isolation notes are derivation/provenance only |
+| Integrated canonical architecture lookup (Round 1) | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | owning canonical specs/model contracts, Step-4 single-context amendment, Round-1 closure/rebaseline decision, current `NEAR_TERM_ROADMAP.md` |
 | Catalog/class ownership | `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `CATALOG_INVENTORY.md`, `ENTITY_STRUCTURES.md`, `CATALOG_RESOLUTION.md`, `DEV/CATALOG/` | `DEV/SCHEMAS/`, Actor/Asset/Activity/Rule Element models, catalog tests |
 | Deterministic mechanics/execution | `DEV/ARCHITECTURE/ACTIVITY_MODEL.md`, `RULE_ELEMENT_MODEL.md`, accepted Step-2/Step-3 specs | `GAME/CORE/RUNTIME.md`, `MECHANICS_INTEGRITY.md`, `RANDOMNESS.md`, runtime/value schemas/tests |
 | Persistence / durability / recovery | `GAME/CORE/STORAGE.md`, `PERSISTENCE.md`, `DURABILITY_GUARD.md`, `SAVE_CONTRACT.md`, `SESSION.md`, `INTEGRITY.md` | `RUNTIME.md`, `RANDOMNESS.md`, `LIVE_SCENE.md`, `MULTIPLAYER.md`, checkpoint/current/session schemas, Step-5 specs, `MAINTENANCE_COMMANDS.md` |
-| Multiplayer / shared mutable state | `GAME/CORE/MULTIPLAYER.md`, `LIVE_SCENE.md` | `CHRONOLOGY.md`, `PERSISTENCE.md`, access control, live/session/player schemas, Step-5 specs |
-| Chronology / temporal continuity | `GAME/CORE/CHRONOLOGY.md`, accepted Step-2 temporal specs | `RUNTIME.md`, `RANDOMNESS.md`, `LIVE_SCENE.md`, `MULTIPLAYER.md`, Step-5.1+ specs |
+| Multiplayer / shared mutable state | `GAME/CORE/MULTIPLAYER.md`, `LIVE_SCENE.md` | `CHRONOLOGY.md`, `PERSISTENCE.md`, access control, live/session/player schemas, Step-5 specs, Round-2 R2.6 when collaboration/scene topology exceeds inherited Step-5 scope |
+| Chronology / temporal continuity | `GAME/CORE/CHRONOLOGY.md`, accepted Step-2 temporal specs | `RUNTIME.md`, `RANDOMNESS.md`, `LIVE_SCENE.md`, `MULTIPLAYER.md`, Step-5.1+ specs, Round-2 continuity work where derived state/history alignment is involved |
 | Campaign bootstrap / creation | `GAME/INSTALL/00_DND_BOOTSTRAP.md`, `GAME/CORE/BOOTSTRAP_RUNTIME.md`, `NEW_CAMPAIGN_FAST_PATH.md`, `CAMPAIGN_SETUP.md`, `GAME/TOOLS/init_campaign.py` | `GAME/CAMPAIGN/`, campaign schemas, `BRANCH_MODEL.md`, `ACCESS_CONTROL.md` |
 | Runtime packaging / versioning / update | `DEV/TOOLS/release_builder.py`, `run_release_build.py`, `DEV/RELEASE/`, `.github/workflows/release-runtime.yml`, `GAME/ENGINE_VERSION.yaml`, `GAME/CORE/ENGINE_UPDATES.md` | `GAME/INSTALL/`, `GAME/MIGRATIONS/`, release tests |
 | Rules/source routing | `GAME/RULES/`, `GAME/CORE/SOURCES.md`, `PLAY_POLICY.md` | domain CORE modules, character readiness, prep/worldgen |
-| LLM/runtime reasoning and presentation | `GAME/CORE/AI_REASONING.md`, `GM_CRAFT.md`, `PREP.md`, `NARRATIVE.md`, `INFORMATION.md`, `LORE.md` | Step-4 canonical spec and deferred Step-4 machine realization |
+| LLM/runtime reasoning and presentation | `GAME/CORE/AI_REASONING.md`, `GM_CRAFT.md`, `PREP.md`, `NARRATIVE.md`, `INFORMATION.md`, `LORE.md` | Step-4 canonical spec + single-context amendment, role-context protocols, Round-2 R2.1/R2.2/R2.3/R2.4 as relevant |
 | Support / diagnostics / maintenance | `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` | `GAME/CORE/SESSION.md`, `INTEGRITY.md`, `STORAGE.md`, `PERSISTENCE.md`, checkpoint/session schemas, Step-5 recovery design |
 | Access / repository/campaign ownership | `DEV/ARCHITECTURE/ACCESS_CONTROL.md`, `BRANCH_MODEL.md` | `GAME/CORE/MULTIPLAYER.md`, bootstrap, persistence, player/session schemas |
 | Consistency verification | `DEV/TOOLS/run_maintenance_audit`, `audit_engine.py`, `DEV/TESTS/`, `.github/workflows/validate.yml` | catalogs/schemas/contracts being changed |
@@ -81,7 +131,9 @@ follow references from the owning artifacts.
 
 # 5. Root and CI infrastructure
 
-- `AGENTS.md` — repository ownership boundaries, authoritative development/release workflow and placement rules.
+- `AGENTS.md` — repository ownership boundaries, fresh-session bootstrap,
+  documentation-evidence discipline, authoritative development/release workflow
+  and placement rules.
 - `.github/workflows/validate.yml` — CI validation: maintenance audit plus DEV unit tests.
 - `.github/workflows/release-runtime.yml` — tagged/runtime release build and publication workflow.
 - `.gitignore` — repository-local generated/cache exclusions.
@@ -95,11 +147,14 @@ follow references from the owning artifacts.
 
 ## 6.1 Process and version markers
 
-- `DEV/DESIGN_PROCESS.md` — canonical generic architecture/deep-work procedure.
-- `DEV/ARCHITECTURE/DESIGN_PROCESS.md` — HDM-specific adapter/additional constraints.
+- `DEV/DESIGN_PROCESS.md` — canonical generic architecture/deep-work procedure,
+  including the AI-architect/human-architect operating contract and repository
+  evidence/synthesis completeness gate.
+- `DEV/ARCHITECTURE/DESIGN_PROCESS.md` — HDM-specific adapter/additional
+  constraints, including HDM Source Manifest and item-level evidence rules.
 - `DEV/ENGINE_DEVELOPMENT.yaml` — development engine/revision metadata; richer than the shipped runtime marker.
 - `DEV/PROJECT_MAP.md` — this non-normative repository navigation/dependency map.
-- `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` — derivative Steps-1–5 semantic locator/integration map optimized for cross-stage research and Step-5.14; never overrides its linked primary sources.
+- `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` — derivative Round-1 semantic locator/integration map; never overrides linked primary sources, later canonical amendments/owner decisions or current roadmap sequencing.
 
 ## 6.2 `DEV/ARCHITECTURE/`
 
@@ -110,14 +165,14 @@ Current durable architecture/navigation documents:
 - `ACTOR_MODEL.md` — progressive `world.actor` materialization, archetype/instance split and actor mechanical-state ownership.
 - `ASSET_MODEL.md` — unified reusable/instance model for physical/conceptual assets and their placement/use/lifecycle boundary.
 - `BRANCH_MODEL.md` — engine repository vs runtime package vs campaign-storage topology; campaign/live branch roles and package boundaries.
-- `CANONICAL_ARCHITECTURE_INDEX.md` — non-normative cross-stage canonical locator, ownership/invariant map and Step-5.14 scenario router for Steps 1–5.
+- `CANONICAL_ARCHITECTURE_INDEX.md` — non-normative Round-1 cross-stage canonical locator/ownership/invariant map. Where its sequencing/status text is stale, current roadmap and later owner decisions/amendments win.
 - `CATALOG_CONTRACTS.md` — universal definition/world/runtime class-admission and record-envelope contracts.
 - `CATALOG_INVENTORY.md` — reviewed class inventory/classification; machine IDs live in `DEV/CATALOG/core-catalog.json`.
 - `CATALOG_RESOLUTION.md` — deterministic `ResolvedCatalogContext`, definition-ID uniqueness and catalog evolution/resolution rules.
 - `CRITICAL_ARCHITECTURE_AUDIT.md` — completed Step-1 audit history/findings and dispositions.
 - `ENTITY_STRUCTURES.md` — minimum/expected field structures and definition-binding inventory for catalog/world records.
 - `MAINTENANCE_COMMANDS.md` — internal, intentionally player-undocumented operator/support command contract proposal (`HDM_EXPORT_CURRENT_LOG`, `HDM_EXPORT_CHECKPOINT_LOG`, `HDM_RESET_LAST_CHECKPOINT`).
-- `NEAR_TERM_ROADMAP.md` — sequencing authority for the active mechanical architecture program.
+- `NEAR_TERM_ROADMAP.md` — sequencing/status authority for the active Round-2 architecture program.
 - `RULE_ELEMENT_MODEL.md` — pure embedded passive contribution model and bounded reactive binding boundary.
 
 Historical/derivation/status surfaces that must not override newer accepted contracts:
@@ -181,19 +236,23 @@ assume a prose spec is the only consumer.
 ## 6.8 `DEV/docs/superpowers/`
 
 - `research/` — non-normative research, reconnaissance, evidence gathering and feasibility-study inputs. These artifacts inform later architecture work but do not become accepted architecture merely by being retained here.
-- `research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` — non-normative architecture research dossier and second-round idea pool; its candidates are research input, not accepted HDM architecture or roadmap sequencing.
-- `research/2026-08-22-platform-feasibility-comparative-research.md` — living comparative host-platform feasibility study for ChatGPT, Claude, Perplexity and API-controlled deployment surfaces; it records evidence and required probes for physical role orchestration, background work, storage and GitHub integration.
+- `research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` — non-normative architecture research dossier and Round-2 idea pool. Its classifications, applicability qualifiers and revisit triggers are part of the research evidence; candidates are not accepted architecture or mandatory roadmap work merely because they are DIAMOND/STRONG.
+- `research/2026-08-22-platform-feasibility-comparative-research.md` — comparative host-platform feasibility study; interpret it under the current product/deployment baseline in the Round-2 roadmap and later accepted decisions rather than mechanically inheriting superseded Step-6 premises.
 - `research/2026-08-23-role-context-validation-protocol-1-sequential-containment.md` — completed first-stage evidence that sequential logical roles can preserve behavioral containment inside one shared conversational history; pilot/instrument evidence, not physical-isolation proof.
 - `research/2026-08-23-role-context-validation-protocol-2-collapsed-multi-role.md` — completed collapsed-generation evidence for Dramaturg/Actor/Narrator role rebinding, hidden-to-eligible transitions and same-generation logical separation.
 - `research/2026-08-23-role-context-validation-protocol-3-reasoning-budget.md` — completed matched reasoning-budget validation across 150 turns, including long-history secrets, multi-NPC dialogue, player-facing quality observations, creativity authority levels and the accepted high-reasoning working baseline.
-- `specs/` — dated architecture/design, review, decision and canonicalization-chain artifacts. Prefer the latest canonical/current status references from roadmap/status docs rather than filename recency alone.
+- `specs/2026-08-23-step-4-single-context-role-containment-canonical-amendment.md` — current canonical amendment replacing mandatory physical-role-isolation assumptions with logical role containment in one physical chat context while preserving Step-4 authority/knowledge boundaries.
+- `specs/2026-08-23-round-1-step-6-closure-round-2-rebaseline-owner-decision.md` — owner-approved transition decision: former Step 6 is closed as a separate stage and useful unresolved scope is reallocated into Round 2 without claiming old Step-6 exit criteria were completed.
+- `specs/` — other dated architecture/design, review, decision and canonicalization-chain artifacts. Prefer current roadmap/owner decisions and the actual owning canonical sources over filename recency alone.
 - `plans/` — implementation plans produced after approved designs. They are execution guidance, not architecture authority when a later canonical spec supersedes assumptions.
 
-The accepted architecture through Step 5.13 is indexed in
-`DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`; use that file to locate the
-owning primary specification, then read the primary source before making a
-correctness-sensitive decision. Numbered architecture sequencing remains owned by
-`NEAR_TERM_ROADMAP.md`.
+Round-1 accepted architecture is located through
+`DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` and its owning primary
+specifications. Current sequencing/status is owned by
+`DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`. Where the derivative canonical index
+still describes the former Step 6 as next, the current roadmap and Round-1
+closure/rebaseline owner decision supersede that sequencing/status text. The
+Step-4 single-context amendment is current canonical law for role containment.
 
 ---
 
@@ -391,25 +450,33 @@ engine update
 ## 8.4 Multiplayer
 
 ```text
-ACCESS_CONTROL / BRANCH_MODEL
+Round-1 canonical ownership / Step-5 shared-state specs
+    -> ACCESS_CONTROL / BRANCH_MODEL
     -> MULTIPLAYER
     -> LIVE_SCENE
     -> player/session/live schemas
     -> PERSISTENCE
     -> CHRONOLOGY
-    -> Step-5 frontier/recovery/publication/live design
+    -> R2.6 only for collaboration/scene-topology questions not already solved
 ```
 
-## 8.5 LLM information/Story architecture
+## 8.5 LLM information / continuity / Story / role-context architecture
 
 ```text
-Step-4 canonical spec
-    -> Step-5.10 / 5.11 / 5.12 canonical specs
+Round-1 canonical locator
+    -> Step-4 canonical role/truth/knowledge/context spec
+    -> Step-4 single-context canonical amendment
+    -> Step-5.10 / 5.11 / 5.12 canonical specs as relevant
     -> role-context validation protocols 1-3
-    -> AI_REASONING / INFORMATION / LORE / NARRATIVE / PREP / GM_CRAFT
-    -> current entity schemas where legacy knowledge fields still exist
-    -> deferred Step-6 physical role/context realization
+    -> current Round-2 roadmap
+    -> R2.1 continuity / R2.2 context runtime / R2.3 actor continuity / R2.4 turn machinery as relevant
+    -> AI_REASONING / INFORMATION / LORE / NPC / NARRATIVE / PREP / GM_CRAFT
+    -> current entity schemas/tests where machine realization is implicated
 ```
+
+Former Step-6 physical-role-isolation notes are historical/derivation inputs. Do
+not route new work through them as an active stage; the Round-1 closure decision
+and Step-4 single-context amendment supersede that premise.
 
 ---
 
@@ -419,17 +486,31 @@ For substantive repository work:
 
 1. inspect the current branch/ref and current repository tree;
 2. read this map to identify likely owners and neighboring dependency surfaces;
-3. for cross-stage architecture questions, use `CANONICAL_ARCHITECTURE_INDEX.md` to locate the owning accepted specifications;
-4. read the actual referenced owners/contracts/schemas/tests;
-5. search the repository for concrete symbols/paths to find consumers and stale references;
-6. treat a zero-result keyword search as **non-evidence of absence** until the relevant directory/tree and local indexes have also been checked;
-7. update this map when a structural/responsibility change would make future discovery materially misleading.
+3. read the current roadmap/status authority when sequencing or accepted stage
+   state matters;
+4. build the task-specific Source Manifest required by `DEV/DESIGN_PROCESS.md`;
+5. for cross-stage architecture questions, use `CANONICAL_ARCHITECTURE_INDEX.md`
+   only to locate owning accepted specifications and then follow later
+   amendments/owner decisions;
+6. read the actual referenced owners/contracts/schemas/tests/research sources to
+   the depth required by the claim;
+7. search the repository for concrete symbols/paths to find consumers and stale
+   references;
+8. treat a zero-result keyword search as **non-evidence of absence** until the
+   relevant directory/tree and local indexes have also been checked;
+9. before a roadmap/specification/coverage claim, run the repository-evidence and
+   synthesis completeness gate in the design process;
+10. update this map when a structural/responsibility change would make future
+    discovery materially misleading.
 
 A file move/addition/deletion does not automatically require a prose entry when
 it belongs to an already covered homogeneous family. Update the map when the
-responsibility map, primary entry point, source-of-truth status, or dependency
-route changes.
+responsibility map, primary entry point, source-of-truth status, dependency route
+or bootstrap guidance changes.
 
 Do not place a rule only in this map. If a statement affects runtime or
 architecture correctness, it belongs in the owning contract/spec/schema and may
 only be linked/summarized here.
+
+Do not treat this map's coverage as semantic coverage of the repository. Its job
+is to route the agent to the evidence needed to prove a task-specific conclusion.
