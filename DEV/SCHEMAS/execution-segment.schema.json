@@ -4,10 +4,20 @@
   "title": "HDM embedded committed execution segment",
   "type": "object",
   "additionalProperties": false,
-  "required": ["segment_sequence", "commit_state", "event_ids", "pending_child_invocations", "receipt_exports", "affected_revision_refs"],
+  "required": [
+    "segment_sequence", "commit_state", "resulting_execution_state", "event_ids",
+    "pending_child_invocations", "receipt_exports", "affected_revision_refs"
+  ],
   "properties": {
     "segment_sequence": {"type": "integer", "minimum": 1},
     "commit_state": {"const": "committed"},
+    "resulting_execution_state": {
+      "enum": [
+        "PENDING", "RUNNING", "AWAITING_CHOICE", "AWAITING_REACTION",
+        "HYDRATION_REQUIRED", "PUBLISH_REQUIRED", "COMPLETED", "REJECTED",
+        "ABORTED", "FAILED"
+      ]
+    },
     "event_ids": {
       "type": "array",
       "uniqueItems": true,
@@ -36,6 +46,7 @@
     {
       "segment_sequence": 1,
       "commit_state": "committed",
+      "resulting_execution_state": "COMPLETED",
       "event_ids": ["event-00000001"],
       "pending_child_invocations": [],
       "receipt_exports": {"hit": true},
