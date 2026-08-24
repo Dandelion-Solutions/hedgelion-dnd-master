@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/cost-spec.schema.json",
+  "title": "HDM CostSpec value",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["resource_ref", "amount", "commitment_id"],
+  "properties": {
+    "resource_ref": {"$ref": "#/$defs/id"},
+    "amount": {"type": "number", "minimum": 0},
+    "commitment_id": {"$ref": "#/$defs/id"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+  },
+  "description": "CostSpec describes an Activity cost; current/spent Resource state remains owned by Actor/Asset/Procedure according to the Resource definition. Commitment timing is a registered deterministic execution contract.",
+  "examples": [
+    {"resource_ref": "resource.spell_slot.level_1", "amount": 1, "commitment_id": "cost_commit.on_accept"}
+  ]
+}
