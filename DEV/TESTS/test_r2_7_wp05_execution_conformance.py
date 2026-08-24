@@ -15,6 +15,8 @@ class R27WP05ExecutionConformanceTests(unittest.TestCase):
         "action-request.schema.json",
         "transition-request.schema.json",
         "roll-result.schema.json",
+        "choice-request.schema.json",
+        "reaction-offer.schema.json",
         "runtime-interaction-state.schema.json",
         "runtime-intent-plan-state.schema.json",
         "runtime-command-state.schema.json",
@@ -120,6 +122,19 @@ class R27WP05ExecutionConformanceTests(unittest.TestCase):
             self.assertIn(optional, props)
         self.assertNotIn("committed_receipt_refs", props)
         self.assertNotIn("receipt_ref", props)
+
+    def test_pending_choice_and_reaction_are_registered_portable_value_schemas(self):
+        self.assertTrue((SCHEMAS / "choice-request.schema.json").is_file())
+        self.assertTrue((SCHEMAS / "reaction-offer.schema.json").is_file())
+        continuation = self.load("runtime-continuation-state.schema.json")
+        refs = {
+            branch["$ref"]
+            for branch in continuation["properties"]["pending_response"]["oneOf"]
+        }
+        self.assertEqual(refs, {
+            "https://hedgelion.invalid/schemas/choice-request.schema.json",
+            "https://hedgelion.invalid/schemas/reaction-offer.schema.json",
+        })
 
     def test_fixed_rng_is_typed_and_reusable_across_resolution_and_continuation(self):
         self.assertTrue((SCHEMAS / "roll-result.schema.json").is_file())
