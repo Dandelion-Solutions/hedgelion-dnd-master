@@ -112,6 +112,18 @@ class Step3ExecutionOwnerContractTest(unittest.TestCase):
             with self.assertRaises(ValidationError):
                 validate("runtime-resolution-state.schema.json", invalid)
 
+    def test_resolution_terminal_failure_retains_typed_failure_code(self):
+        value = resolution()
+        value["status"] = "FAILED"
+        value["failure_code"] = "failure.order_adjudication_required"
+        value["segments"] = []
+        validate("runtime-resolution-state.schema.json", value)
+
+        missing = dict(value)
+        missing.pop("failure_code")
+        with self.assertRaises(ValidationError):
+            validate("runtime-resolution-state.schema.json", missing)
+
     def test_continuation_references_committed_segments_and_copies_no_procedure_or_derived_state(self):
         value = continuation()
         validate("runtime-continuation-state.schema.json", value)
