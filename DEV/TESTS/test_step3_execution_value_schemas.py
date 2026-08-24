@@ -65,16 +65,23 @@ class Step3ExecutionValueSchemasTest(unittest.TestCase):
         with self.assertRaises(ValidationError):
             validate("intent-clause.schema.json", invalid)
 
-    def test_execution_segment_is_receipt_not_world_snapshot(self):
+    def test_execution_segment_is_complete_receipt_evidence_not_world_snapshot(self):
         valid = {
             "segment_sequence": 1,
             "commit_state": "committed",
+            "resulting_execution_state": "COMPLETED",
             "event_ids": ["event-00000001"],
             "pending_child_invocations": [],
             "receipt_exports": {"hit": True},
             "affected_revision_refs": ["actor-0001@43"],
         }
         validate("execution-segment.schema.json", valid)
+
+        missing_state = dict(valid)
+        missing_state.pop("resulting_execution_state")
+        with self.assertRaises(ValidationError):
+            validate("execution-segment.schema.json", missing_state)
+
         invalid = dict(valid)
         invalid["world_state"] = {"actor-0001": {"hp": 3}}
         with self.assertRaises(ValidationError):
