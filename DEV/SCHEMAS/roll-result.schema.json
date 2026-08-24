@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/roll-result.schema.json",
+  "title": "HDM fixed random result value",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["roll_id", "expression", "raw_values"],
+  "properties": {
+    "roll_id": {"$ref": "#/$defs/id"},
+    "expression": {"type": "string", "minLength": 1},
+    "raw_values": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "integer"}
+    },
+    "source_kind": {
+      "enum": ["rng.system", "rng.player", "rng.external"]
+    },
+    "provenance_ref": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+  },
+  "examples": [
+    {
+      "roll_id": "roll.attack.1",
+      "expression": "1d20",
+      "raw_values": [17],
+      "source_kind": "rng.system"
+    }
+  ]
+}
