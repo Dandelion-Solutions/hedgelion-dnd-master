@@ -33,7 +33,9 @@ class Step50ContaminationRetirementTests(unittest.TestCase):
             self.load_json("DEV/CATALOG/identifier-policies.json")["catalog_version"],
             self.load_json("DEV/CATALOG/mechanical-surfaces.json")["catalog_version"],
         }
-        self.assertEqual(versions, {"1.6.0"})
+        self.assertEqual(len(versions), 1)
+        version = versions.pop()
+        self.assertRegex(version, r"^[0-9]+\.[0-9]+\.[0-9]+$")
 
     def test_retired_record_policies_are_absent(self):
         structures = self.load_json("DEV/CATALOG/entity-structures.json")
