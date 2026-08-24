@@ -83,6 +83,12 @@ class R27WP04ActorAssetConformanceTests(unittest.TestCase):
         for derived in ("armor_class", "attack_bonus", "save_bonus", "proficiency_bonus", "derived"):
             self.assertNotIn(derived, serialized)
 
+    def test_campaign_actor_name_does_not_require_an_english_translation(self):
+        actor = self.load_json("DEV/SCHEMAS/world-actor-state.schema.json")
+        text = actor["$defs"]["localizedText"]
+        self.assertNotIn("required", text)
+        self.assertEqual(text["minProperties"], 1)
+
     def test_asset_state_keeps_single_placement_and_no_epistemic_aliases(self):
         asset = self.load_json("DEV/SCHEMAS/world-asset-state.schema.json")
         props = asset["properties"]
