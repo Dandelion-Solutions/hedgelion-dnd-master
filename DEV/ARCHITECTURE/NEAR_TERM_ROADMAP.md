@@ -1,36 +1,34 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP**
+Status: **ACTIVE PROGRAM ROADMAP — R2.7 PAUSED / S6D PREPARED**
 
 Date: 2026-08-24
 
-This file is the sequencing/status authority for Architecture Round 2.
+This file is the sequencing/status authority for Architecture Round 2 and the bounded pre-resume S6D debt-closure workstream.
 
 Canonical process:
 
 - `DEV/DESIGN_PROCESS.md`
 - `DEV/ARCHITECTURE/DESIGN_PROCESS.md`
 
-Program decisions:
+Primary program decisions:
 
 - `DEV/docs/superpowers/specs/2026-08-23-round-1-step-6-closure-round-2-rebaseline-owner-decision.md`
 - `DEV/docs/superpowers/specs/2026-08-23-step-4-single-context-role-containment-canonical-amendment.md`
 - `DEV/docs/superpowers/specs/2026-08-24-round-2-roadmap-owner-decision.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md`
+- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
 
-Evidence accounting:
+Evidence/accounting:
 
 - `DEV/docs/superpowers/research/2026-08-24-round-2-evidence-disposition-ledger.md`
+- `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md`
 
-This roadmap is the owner-approved Round-2 decomposition and supersedes the earlier R2.1–R2.9 thematic stage plan.
+Detailed architecture belongs to its owning specifications. This roadmap is a routing/status authority and should not be used as a substitute for those sources.
 
 ---
 
 # 1. Program baseline
-
-Round 1 remains the accepted architecture base.
-
-Current product/deployment baseline:
 
 ```text
 primary AI host              ChatGPT
@@ -48,13 +46,13 @@ Single-context role law:
 
 > Physical availability of information does not make it logically eligible for the active HDM role.
 
-System prompt, Project Instructions and shipped HDM reasoning/procedure instructions participate in role-containment machinery but do not become canonical-state authority.
+Broad implementation remains blocked until final architecture closure and explicit implementation planning.
 
 ---
 
 # 2. Round-1 preservation rule
 
-A closed Round-1 topic becomes active Round-2 work only when current work:
+A closed Round-1 topic becomes active only when current work:
 
 1. materially extends the accepted contract;
 2. exposes a contradiction or invalid assumption;
@@ -63,304 +61,179 @@ A closed Round-1 topic becomes active Round-2 work only when current work:
 
 Independent confirmation or thematic overlap is evidence, not a new stage.
 
----
-
-# 3. Evidence / activation rule
-
-Item-level accounting of all 24 DIAMOND and 58 STRONG candidates remains the Round-2 accounting basis. R2.5 additionally fired the preserved S14 revisit trigger narrowly for multiplayer retained noncanonical Dramaturg planning continuity; this does not create a new numbered stage.
-
-Research classification is not backlog state. Dormant items create no current task until their preserved trigger fires. RESERVE / NEGATIVE evidence remains stage-local adversarial input.
+The former Round-1 Step 6 remains **closed as a separate physical-LLM stage**. Its retired mandatory physical-isolation topology is not revived by S6D.
 
 ---
 
-# 4. Operating rules
+# 3. Operating rules
 
-- Exactly one numbered Round-2 stage may be `IN PROGRESS`.
-- Later stages may be inspected only for dependency/contradiction visibility relevant to the active stage.
-- Each stage follows task brief -> Source Manifest/evidence extraction -> alternatives/recommendation -> owner decision where required -> candidate specification -> adversarial review -> closure.
-- Before Decision Brief, candidate specification, coverage claim or closure, Source Manifest/evidence/synthesis-completeness gates must pass.
+- At most one numbered Round-2 stage may be `IN PROGRESS`.
+- A bounded inserted debt-closure workstream may temporarily pause that stage when owner-approved and explicitly represented here.
+- Before a Decision Brief, candidate specification, coverage claim or closure, Source Manifest/evidence/synthesis-completeness gates must pass.
 - Owning sources beat roadmaps, indexes, summaries and remembered state.
 - YAGNI applies aggressively: no new authority, registry, scheduler, generic graph, plugin/agent framework or subsystem without a current requirement.
-- Broad implementation remains blocked until Round-2 architecture closes and implementation planning is explicitly entered.
-- Dormant work reserves no stage number. If its trigger becomes true, insert the smallest bounded stage only when dependency ordering requires one; otherwise resolve the delta inside the active owning stage.
+- Clean-slate pre-release structural canonicalization is authorized: no current user campaign requires backward-compatible migration from the present scaffold.
+- Future released-campaign evolution/migration policy remains a separate R2.7 responsibility.
+- Normal gameplay smoothness remains a cross-project invariant: ordinary-turn correctness should be local/bounded and must not gain unnecessary network/repository/extra-LLM round trips.
 
 ---
 
-# 5. Stage registry
+# 4. Stage registry
 
 | Stage | Status | Scope | Exit result |
 |---|---|---|---|
 | R2.0 | **COMPLETE / EVIDENCE-REBASELINED** | evidence rebaseline/scope reconstruction | 82/82 DIAMOND/STRONG accounted; dependency graph owner-approved |
-| R2.1 | **COMPLETE / ARCHITECTURE CLOSED** | continuity, memory and history-aligned derived state | reuse-first continuity; Story nonauthoritative orientation; history/exact/repair contracts |
-| R2.2 | **COMPLETE / ARCHITECTURE CLOSED** | Actor continuity, cognition and directed relationships | source-Actor-owned sparse continuity; directed relationships; lazy-discovery handoff |
-| R2.3 | **COMPLETE / ARCHITECTURE CLOSED** | Context Runtime, retrieval, lazy discovery and allocation | bounded multi-channel discovery; typed packet closure; packet-first allocation; storage/index boundaries |
-| R2.4 | **COMPLETE / ARCHITECTURE CLOSED** | single-context LLM execution and instruction architecture | registered TurnEnvelope; minimal typed gateways; deterministic authority; first-safe-opportunity Chronicler service |
-| R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration and multiplayer interaction semantics | agency-safe scoped collaboration; bounded async joint input; recipient catch-up; two-level noncanonical Dramaturg coordination |
-| R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance, evaluation, security and degradation | observable behavioral-containment MVP envelope; fixed Connector path; S53 capability envelope; integrated Protocol-4 validation deferred to implemented-MVP acceptance |
-| R2.7 | **IN PROGRESS** | whole-project final architecture & machine-realization audit | full Round-1+Round-2 architecture↔machine conformance; implementation-planning entry gate |
+| R2.1 | **COMPLETE / ARCHITECTURE CLOSED** | continuity/history-aligned derived state | reuse-first continuity; Story remains nonauthoritative |
+| R2.2 | **COMPLETE / ARCHITECTURE CLOSED** | Actor continuity/cognition/relationships | source-Actor-owned sparse continuity; directed relationships |
+| R2.3 | **COMPLETE / ARCHITECTURE CLOSED** | Context Runtime/retrieval/allocation | bounded discovery; typed closure; packet-first allocation; storage/index boundaries |
+| R2.4 | **COMPLETE / ARCHITECTURE CLOSED** | single-context LLM execution/instructions | TurnEnvelope; role rebinding; deterministic authority; Chronicler service policy |
+| R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer | agency-safe collaboration; maximal safe frontier; two-level noncanonical Dramaturg planning |
+| R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation | behavioral-containment MVP; fixed Connector transport; post-MVP integrated acceptance |
+| S6D | **PREPARED / NOT STARTED** | residual rules/seed/catalog debt historically deferred to Step 6 | full supported rules seed and machine-contract closure before R2.7 resumes |
+| R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit | final architecture↔machine conformance and implementation-planning entry gate |
 
 ---
 
-# 6. Dependency graph
+# 5. Current dependency graph
 
 ```text
-R2.0 Evidence Rebaseline
-        |
-        v
-R2.1 Continuity / History-Aligned Derived State
-        |
-        v
-R2.2 Actor Continuity / Cognition / Relationships
-        |
-        v
-R2.3 Context Runtime / Retrieval / Lazy Discovery / Allocation
-        |
-        v
-R2.4 Single-Context LLM Execution / Instructions
-        |
-        v
-R2.5 Collaboration / Multiplayer Interaction
-        |
-        v
-R2.6 ChatGPT Assurance / Evaluation / Security
-        |
-        v
-R2.7 Whole-Project Final Architecture / Machine Audit
-        |
-        v
-Implementation Planning
+R2.0
+ -> R2.1
+ -> R2.2
+ -> R2.3
+ -> R2.4
+ -> R2.5
+ -> R2.6
+ -> R2.7 WP-01..WP-05 CLOSED
+ -> R2.7 WP-06 PARTIAL / PAUSED
+ -> S6D PREPARED / NOT STARTED
+ -> S6D closure gate
+ -> R2.7 WP-06 RESUME
+ -> R2.7 WP-07..WP-27
+ -> R2.7 final reconciliation
+ -> Implementation Planning
 ```
 
----
-
-# 7. R2.0 — Evidence Rebaseline & Scope Reconstruction — COMPLETE
-
-Closed results:
-
-- current process/bootstrap and repository owners re-read;
-- accepted Round-1 architecture reconciled against research;
-- 82/82 DIAMOND/STRONG candidates individually dispositioned;
-- `revisit when` / scope qualifiers preserved;
-- active, inherited and dormant work separated;
-- Actor-before-Context dependency established;
-- no mandatory standalone Narrative Dynamics stage justified;
-- no generic optional-capability gate justified;
-- collaboration narrowed to deltas not already owned by Step 5;
-- R2.1–R2.7 graph owner-approved.
+No S6D execution begins until the owner explicitly asks to start it after the current architecture discussion.
 
 ---
 
-# 8. R2.1 — Continuity, Memory & History-Aligned Derived State — COMPLETE
+# 6. Closed Round-2 results
 
-Canonical result:
+## R2.0
 
-- no generic memory/continuity authority;
-- current semantic questions remain with native owners;
-- Story remains durable/noncanonical/optional and may serve eligible gameplay roles as broad/episodic orientation;
-- material current/source-specific decisions escalate to proper source owners;
-- source-bound does not imply current;
-- projection absence does not imply semantic absence;
-- history alignment uses HDM source/currentness/correction/projection-generation semantics rather than host Retry/Edit ancestry;
-- exact recall remains Step-5.11 Selective Exact;
-- no per-turn/background continuity-maintenance correctness clock.
+Evidence rebaseline complete; all 82 DIAMOND/STRONG candidates individually accounted; active/inherited/dormant work separated.
 
-Owning R2.1 artifacts remain under `DEV/docs/superpowers/specs/` and `DEV/docs/superpowers/research/` dated `2026-08-24-r2-1-*`.
+## R2.1
 
----
+No generic memory authority; Story is durable/noncanonical orientation; exact/current questions remain with native owners.
 
-# 9. R2.2 — Actor Continuity, Cognition & Directed Relationships — COMPLETE
+## R2.2
 
-Canonical result:
+Actor owns current non-epistemic private continuity; `world.knowledge` remains epistemic authority; directed relationship facets belong to source Actor.
 
-- source Actor owns current non-epistemic private continuity;
-- `world.knowledge` remains proposition-stance authority;
-- foundation / durable evolving cognition / transient private state are semantic lifetimes, not three stores;
-- sparse directed relationships belong to source Actor;
-- Actor cognition is sparse/event-driven with valid `NO_CHANGE`;
-- persisted transient state uses fictional invalidation rather than generic turn TTL;
-- player voluntary mental state remains player-owned;
-- Story/history may inform but not establish current cognition;
-- full entity state is not required merely to discover relevance.
+## R2.3
 
-Owning R2.2 artifacts remain under `DEV/docs/superpowers/specs/` and `DEV/docs/superpowers/research/` dated `2026-08-24-r2-2-*`.
+Context Runtime performs bounded typed discovery/closure/allocation; indexes/caches are routing/acceleration, not authority; exact physical root/HOT mapping remains final-audit work.
+
+## R2.4
+
+One physical chat/turn can sequence logical roles through explicit rebinding and typed handoffs; accepted mechanics/RNG do not replay after downstream LLM failure; Narrator is the ordinary visible phase; Chronicler yields to current-turn correctness/latency.
+
+## R2.5
+
+Multiplayer uses independent participant TurnEnvelopes over one canon; player agency is fenced; collaboration obligations collect only; shared/local Dramaturg horizons are noncanonical and canon may invalidate preparation without plot restoration.
+
+## R2.6
+
+MVP secrecy correctness is observable behavioral containment, not physical isolation. Existing feasibility evidence is sufficient pre-implementation; production-like Protocol-4 scenarios move to implemented-MVP acceptance. Repository transport remains deterministic Python/core preparation + GitHub Connector with no alternate transport fallback/probing.
+
+Owning artifacts for each stage remain under dated `DEV/docs/superpowers/specs/` and `DEV/docs/superpowers/research/` paths.
 
 ---
 
-# 10. R2.3 — Context Runtime, Retrieval, Lazy Discovery & Allocation — COMPLETE
-
-Canonical result:
-
-- Context Runtime realizes Step-4 Context Assembler and stores no new truth;
-- scene/location is cheapest primary discovery seed, not a closed-world oracle;
-- bounded multi-channel discovery precedes full semantic load;
-- required context is a bounded typed dependency closure;
-- routed currentness/eligibility precede role-local use;
-- packet-first allocation preserves required representation floors before optional material;
-- long-range retrieval expands progressively/dependency-specifically;
-- `ASSEMBLED`, `ASSEMBLED_DEGRADED`, `UNSATISFIABLE` are explicit outcomes;
-- high-cardinality file-per-record families require deterministic routing-only sharding;
-- current `*_INDEX.yaml` files intentionally remain monolithic until a measured scale trigger fires;
-- SQLite/HOT may host current SOFT owner state and acceleration structures but storage format creates no semantic authority;
-- R2.7 owns exact physical roots/shard/index/SQLite mapping.
-
-Owning R2.3 artifacts remain under `DEV/docs/superpowers/specs/` and `DEV/docs/superpowers/research/` dated `2026-08-24-r2-3-*`.
-
----
-
-# 11. R2.4 — Single-Context LLM Execution & Instruction Architecture — COMPLETE
-
-Canonical result:
-
-- one user request / one assistant turn / one physical context remains baseline;
-- registered `TurnEnvelope` owns legal logical phase/control boundaries but no semantic authority;
-- Interpreter/Dramaturg/Actor phases are conditional and each phase rebinds role/subject/purpose/context/authority/output contract;
-- minimal typed handoffs cross phase boundaries; raw private role context and hidden chain-of-thought do not;
-- deterministic owners remain the only acceptance path for mechanics/state/Story coverage/disclosure;
-- accepted mechanics/RNG never replay merely because a later LLM/Story/Narrator phase fails;
-- full CORE remains physically present while activation is semantic and phase-scoped;
-- data/instruction and role-switch boundaries are explicit;
-- Narrator is the only ordinary player-visible logical phase and uses Step-5.12 validation/`EMISSION_COMMIT`;
-- compatible Story backlog creates a deferred Chronicler service obligation evaluated every ordinary TurnEnvelope;
-- Story receives bounded service at the first safe opportunity after protecting current correctness and Narrator/output capacity;
-- no Story scheduler/job queue/background worker/fixed-turn SLA or Story commit-every-turn requirement;
-- no same-envelope Story feedback into gameplay roles;
-- Story cannot durably outrun its admitted Step-5.10 source basis;
-- Narrator is freshly rebound after Chronicler service and Story contention yields before visible-response capacity is threatened;
-- R2.6 closed the host-assurance contract; final integrated containment/latency/injection/anti-starvation validation is an implemented-MVP acceptance obligation.
-
-Owning R2.4 artifacts remain under `DEV/docs/superpowers/specs/` and `DEV/docs/superpowers/research/` dated `2026-08-24-r2-4-*`.
-
----
-
-# 12. R2.5 — Collaboration & Multiplayer Interaction Semantics — COMPLETE
+# 7. S6D — Step-6 Residual Rules/Seed Debt Closure — PREPARED / NOT STARTED
 
 Owning artifacts:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-task-brief.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-5-collaboration-multiplayer-evidence-ledger.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-5-agency-dramaturg-coordination-evidence-addendum.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-decision-brief-v2.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-owner-decision.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-canonical-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-resolution-gate.md`
+- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
+- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
+- `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
-Canonical result:
+Purpose:
 
-- multiple participant chats remain independent TurnEnvelopes over one campaign repository/canon;
-- no campaign-global active-player/turn queue;
-- `INDEPENDENT_IMMEDIATE`, `AGENCY_DEPENDENT_COLLECTIVE`, and `RULE_OWNED_ORDERED` are distinct coordination families;
-- another player becomes required only after positive bounded material agency dependency plus applicable currentness/chronology verification;
-- dependent play advances to a maximal safe semantic/visible frontier before waiting;
-- absence is neither consent nor immunity from automatic consequences where no valid choice/reaction exists;
-- external player coordination is allowed but does not authorize another player's PC;
-- bounded collaboration obligations own collection/generation only, not gameplay consequence;
-- contribution reuse is purpose/scope/generation-bound;
-- join/rejoin acquires current route/mode/context/catch-up before mutation;
-- catch-up is recipient-scoped projection and never a read receipt;
-- player-local retained Dramaturg horizons are admitted;
-- a shared Dramaturg horizon is active only in multiplayer and coordinates campaign-level noncanonical preparation across chats;
-- all Dramaturg horizons distinguish source-anchored constraints from provisional direction and remain noncanonical;
-- **history is not written in advance**: preparation has no entitlement to occur, canon invalidates preparation, and no plot-restoration machinery is allowed;
-- shared coherence constrains preparation rather than player/Actor freedom; shared provisional direction remains revisable;
-- local horizons may develop independently while staying compatible with canon/applicable shared planning basis;
-- local/shared preparation is lazily discovered/loaded through R2.3 and never requires a global per-turn planning scan;
-- concurrent shared-horizon updates require current-generation/exact-base fencing and semantic rebase rather than blind merge;
-- Story and Dramaturg planning retain separate retrospective/prospective lifecycles;
-- S14 revisit trigger fired narrowly for multiplayer retained noncanonical planning; no standalone Narrative Dynamics stage was created;
-- R2.6 closed architecture-stage host assurance; actual agency/planning/current-generation/lazy-load reliability remains implemented-MVP acceptance work.
+Close still-applicable rules/catalog/seed obligations explicitly deferred by accepted Steps 1–2 to later Step 6 and proven unresolved by R2.7 WP-06.
 
-R2.5 Diamond/Strong disposition is recorded in its canonical spec/resolution gate.
+S6D owns, where still unsatisfied:
+
+- ruleset/package/catalog snapshot identity required for deterministic `ResolvedCatalogContext` reconstruction;
+- full supported D&D seed/catalog-gap coverage;
+- complete selector/accessor/input/dependency machine metadata;
+- exact supported Activity protocol value and primitive-operation contracts;
+- stable character advancement/choice-slot seed sufficient for READY_PC;
+- concrete HP/LifeState/Resource/Effect/Condition/Duration/Recovery seed closure;
+- proven scheduled-trigger/invocation-fact extensions only where real supported cases require them;
+- whole supported rules-seed coverage/adversarial audit.
+
+S6D does **not** reopen retired physical role-isolation architecture and does not build backward compatibility for nonexistent current campaigns.
+
+Campaign Rulings / House Rules architecture is a parallel design dependency for the S6D mechanical boundary where LLM-only adjudication must produce typed execution inputs:
+
+- `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md`
 
 ---
 
-# 13. R2.6 — ChatGPT-Plus Assurance, Evaluation, Security & Degradation — COMPLETE
+# 8. R2.7 — Whole-Project Final Architecture & Machine Audit — PAUSED AT WP-06
 
-Owning closure artifacts:
-
-- `DEV/docs/superpowers/specs/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-6-chatgpt-plus-assurance-evidence-ledger.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-6-current-host-assurance-synthesis.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-6-production-like-assurance-protocol.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-6-protocol-4-frozen-fixture-contract.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-behavioral-assurance-owner-clarification.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-resolution-gate.md`
-
-Canonical result:
-
-- MVP secrecy/role-boundary guarantee is **observable behavioral containment**, not physical/cognitive isolation;
-- physical presence of ineligible information is permitted; material ineligible use/disclosure is not;
-- the internal suppression/ignoring mechanism is outside the HDM correctness contract;
-- prior ineligibility is not permanent forgetting: lawfully eligible information must remain normally usable;
-- retained Protocols 1-3 are sufficient pre-implementation feasibility evidence for architecture continuation;
-- full production-like Protocol-4 execution moves to the implemented-MVP acceptance stage rather than requiring a parallel pre-implementation MVP harness;
-- cheap bounded blocker checks remain allowed when a concrete host/architecture incompatibility question appears;
-- Narrator baseline is pre-Narrator semantic admission + fresh recipient-scoped rebind + logical `EMISSION_COMMIT`; no byte-exact outbox is required;
-- ambient Project/chat memory is physical context only, never campaign authority/currentness/knowledge/disclosure;
-- context allocation does not depend on exact hidden remaining-token telemetry;
-- S53 resolves to a supported capability/behavior envelope with High recommended, not exact cross-player model identity;
-- D15 remains dormant;
-- repository transport remains fixed to deterministic Python/core preparation + GitHub Connector; no transport reselection/fallback probes;
-- experiments/prototypes/raw fixtures/instrumentation belong in HDM Lab by default;
-- Protocol-4-derived scenarios remain mandatory downstream test/release-readiness obligations and are not discarded.
-
-Resolution gate: **17/17 PASS; unresolved architecture blockers 0**.
-
----
-
-# 14. R2.7 — Whole-Project Final Architecture & Machine-Realization Audit — IN PROGRESS
-
-Current scope owners:
+Scope owners:
 
 - `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`
 - `DEV/docs/superpowers/research/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-7-audit-execution-protocol.md`
+- `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md`
 
-The earlier `2026-08-24-r2-7-machine-realization-holistic-closure-task-brief.md` is superseded as the active brief.
-
-R2.7 depends on the **complete accepted architecture**, not only R2.1-R2.6:
-
-- Round-1 Steps 1-5 and their owning model contracts;
-- later canonical amendments/owner decisions;
-- Round-2 R2.1-R2.6;
-- current GAME runtime/schema/template/install/update/migration surfaces;
-- current DEV architecture/catalog/schema/test/tool/release/CI surfaces where they constrain implementation readiness.
-
-R2.7 must prove both directions:
+R2.7 is a whole-project bidirectional proof, not a Round-2-only mapping:
 
 ```text
 ARCHITECTURE -> MACHINE
-    every accepted semantic responsibility has a concrete runtime/storage/schema/instruction/test destination
-    or an explicit no-representation disposition
+    every accepted semantic responsibility has a concrete destination
+    or explicit no-representation disposition
 
 MACHINE -> ARCHITECTURE
-    every material current machine/runtime responsibility has an accepted owner
-    or is explicitly classified as derived / implementation-only / stale / debt / historical / out of scope
+    every material machine/runtime responsibility has an accepted owner
+    or explicit derived / implementation-only / stale / debt / historical / out-of-scope disposition
 ```
 
-Minimum whole-project audit horizon is the 27-domain `WP-01` through `WP-27` inventory in the scope-discovery artifact. It includes global authority, catalog/mechanics/execution, rules/domain CORE, truth/knowledge/disclosure, role/context/instructions, persistence/root/sharding/index/HOT/SQLite, durability/publication/recovery/chronology, multiplayer/live/collaboration/planning, bootstrap/update/migration, diagnostics/tests/CI/release/version/legal, scale/degradation/failure, supersession and final implementation-planning readiness.
+Current progress:
 
-Physical storage/root/index/sharding/HOT/SQLite mapping is project-wide. Existing pre-Round-2 scaffold families receive no presumption of correctness.
+```text
+WP-01 CLOSED
+WP-02 CLOSED
+WP-03 CLOSED
+WP-04 CLOSED
+WP-05 CLOSED
+WP-06 IN PROGRESS / PAUSED
+WP-07..WP-27 NOT STARTED
+```
 
-Instruction/CORE/Project-Instructions conformance is project-wide. Round-2-specific holistic review, all 82 DIAMOND/STRONG dispositions and later S14/S53/D15 changes remain mandatory sub-ledgers nested inside the broader audit.
+The immutable pre-pause R2.7 status/forward-obligation set is preserved by blob SHA recorded in the active audit status file.
 
-Implementation planning begins only after the whole-project audit establishes that no unresolved architecture question remains which could materially change component authority, persistent data model, runtime interfaces, transaction/currentness/recovery topology, bootstrap/migration/update path, instruction architecture or test/release acceptance topology.
+R2.7 resumes only after an S6D resolution gate explicitly closes the inserted workstream.
 
 ---
 
-# 15. Explicitly removed mandatory stages
+# 9. Explicitly removed mandatory stages / dormant work
 
-Round 2 has no mandatory standalone Narrative Dynamics stage. Existing preparation/process/NPC/narration architecture remains in force. R2.5 narrow S14 activation is owned inside multiplayer collaboration because that concrete consumer triggered it; it does not activate generic authored-arc/world-pressure/planning machinery.
+Round 2 has no mandatory standalone Narrative Dynamics stage. R2.5's narrow S14 activation remains owned by multiplayer collaboration and does not activate generic authored-plot machinery.
 
-Round 2 has no generic optional-capability gate. Extensions, spectator/replay, solo forks, spatial sidecars, mixed AI/human controllers, cache-specific optimization and similar ideas remain dormant until their own triggers occur.
+Round 2 has no generic optional-capability gate. Extensions, spectator/replay, solo forks, spatial sidecars, mixed AI/human controllers and cache-specific optimization remain dormant until their own triggers occur.
+
+The former physical-LLM Step 6 remains historical; S6D is a different, bounded residual debt closure.
 
 ---
 
-# 16. Current continuation point
+# 10. Current continuation point
 
 ```text
 R2.0  COMPLETE / EVIDENCE-REBASELINED
@@ -370,16 +243,17 @@ R2.3  COMPLETE / ARCHITECTURE CLOSED
 R2.4  COMPLETE / ARCHITECTURE CLOSED
 R2.5  COMPLETE / ARCHITECTURE CLOSED
 R2.6  COMPLETE / ARCHITECTURE CLOSED
-R2.7  IN PROGRESS — WHOLE-PROJECT FINAL AUDIT
+R2.7  PAUSED AT WP-06
+S6D   PREPARED / NOT STARTED
 
-R2.7 next activity:
-    construct whole-project Source Manifest / coverage ledger
-    -> build global semantic-owner inventory
-    -> perform bidirectional architecture <-> machine conformance audit
-    -> resolve full-project persistence/HOT/index/instruction/bootstrap/migration/test/release mappings
-    -> whole-project adversarial composition review
-    -> owner gates only for genuine residual trade-offs
-    -> canonical final architecture / implementation-planning entry gate
+CURRENT ACTIVITY:
+    architecture discussion — Campaign Rulings / House Rules and any other owner questions
+
+WHEN OWNER SAYS START S6D:
+    S6D Task 1 Source Manifest + residual debt ledger
+    -> tasks 2..11
+    -> S6D canonical closure / resolution gate
+    -> R2.7 WP-06 resume
 
 Broad implementation: BLOCKED.
 ```
