@@ -21,42 +21,65 @@
       "type": "array",
       "items": {"$ref": "https://hedgelion.invalid/schemas/invocation-fact.schema.json"}
     },
+    "action_request": {
+      "$ref": "https://hedgelion.invalid/schemas/action-request.schema.json"
+    },
     "root_resolution_id": {"type": "string", "minLength": 1},
     "transition_request": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["transition_kind", "payload"],
-      "properties": {
-        "transition_kind": {"type": "string", "pattern": "^transition\\.[a-z][a-z0-9_.]*$"},
-        "payload": {"type": "object"}
-      }
+      "$ref": "https://hedgelion.invalid/schemas/transition-request.schema.json"
+    },
+    "direct_transition_segments": {
+      "type": "array",
+      "items": {"$ref": "https://hedgelion.invalid/schemas/execution-segment.schema.json"}
     },
     "pending_child_invocations": {
       "type": "array",
       "items": {"$ref": "https://hedgelion.invalid/schemas/pending-child-invocation.schema.json"}
     },
-    "receipt_ref": {"type": "string", "minLength": 1},
     "details": {"type": "object"}
   },
   "allOf": [
     {
       "if": {"properties": {"command_kind": {"const": "action"}}, "required": ["command_kind"]},
       "then": {
-        "required": ["root_resolution_id"],
-        "not": {"required": ["transition_request"]}
+        "required": ["action_request", "root_resolution_id"],
+        "not": {
+          "anyOf": [
+            {"required": ["transition_request"]},
+            {"required": ["direct_transition_segments"]}
+          ]
+        }
       }
     },
     {
       "if": {"properties": {"command_kind": {"const": "transition"}}, "required": ["command_kind"]},
       "then": {
         "required": ["transition_request"],
-        "not": {"required": ["root_resolution_id"]}
+        "not": {
+          "anyOf": [
+            {"required": ["action_request"]},
+            {"required": ["root_resolution_id"]}
+          ]
+        }
       }
     },
     {
       "if": {"properties": {"disposition": {"const": "command.settled"}}, "required": ["disposition"]},
       "then": {
         "properties": {"pending_child_invocations": {"maxItems": 0}}
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command_kind": {"const": "transition"},
+          "disposition": {"const": "command.settled"}
+        },
+        "required": ["command_kind", "disposition"]
+      },
+      "then": {
+        "required": ["direct_transition_segments"],
+        "properties": {"direct_transition_segments": {"minItems": 1}}
       }
     }
   ],
@@ -70,6 +93,11 @@
       "input_fingerprint": "sha256:command-input-A",
       "disposition": "command.accepted",
       "invocation_facts": [],
+      "action_request": {
+        "activity_id": "activity.attack.basic",
+        "actor_id": "actor-0001",
+        "target_ids": ["actor-0002"]
+      },
       "root_resolution_id": "resolution-0000001",
       "pending_child_invocations": []
     }
