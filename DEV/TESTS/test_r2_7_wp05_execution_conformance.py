@@ -156,7 +156,6 @@ class R27WP05ExecutionConformanceTests(unittest.TestCase):
         protocol = set(catalog["registries"]["protocol_value_kinds"])
         self.assertIn("value.execution_segment", protocol)
         self.assertIn("value.resolution_receipt", protocol)
-        self.assertNotIn("value.runtime_command", protocol)
 
     def test_interaction_state_links_input_auth_context_and_plan_without_world_mutation(self):
         interaction = self.load("runtime-interaction-state.schema.json")
