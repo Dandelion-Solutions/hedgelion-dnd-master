@@ -73,16 +73,47 @@
       "propertyNames": {"pattern": "^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$"},
       "additionalProperties": {"type": "string", "minLength": 1}
     },
+    "classProgressionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class_id", "level"],
+      "properties": {
+        "class_id": {"$ref": "#/$defs/id"},
+        "level": {"type": "integer", "minimum": 1},
+        "subclass_id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "classProgression": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/classProgressionEntry"}
+    },
+    "choiceBindings": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/id"},
+      "additionalProperties": {"$ref": "#/$defs/idSet"}
+    },
+    "spellcastingState": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "known_spell_ids": {"$ref": "#/$defs/idSet"},
+        "prepared_spell_ids": {"$ref": "#/$defs/idSet"},
+        "spellbook_spell_ids": {"$ref": "#/$defs/idSet"}
+      }
+    },
     "build": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["level"],
+      "required": ["class_progression"],
       "properties": {
-        "level": {"type": "integer", "minimum": 1},
         "species_id": {"$ref": "#/$defs/id"},
         "background_id": {"$ref": "#/$defs/id"},
-        "class_id": {"$ref": "#/$defs/id"},
-        "subclass_id": {"$ref": "#/$defs/id"}
+        "class_progression": {"$ref": "#/$defs/classProgression"},
+        "choice_bindings": {"$ref": "#/$defs/choiceBindings"},
+        "spellcasting": {"$ref": "#/$defs/spellcastingState"}
       }
     },
     "abilityComponents": {
@@ -224,6 +255,12 @@
     {"name": {"en": "Grik"}},
     {
       "name": {"en": "Aria"},
+      "build": {
+        "species_id": "species.human",
+        "background_id": "background.soldier",
+        "class_progression": [{"class_id": "class.fighter", "level": 3}],
+        "choice_bindings": {"advancement.fighter.level_1.style": ["feature.defense_style"]}
+      },
       "hp": {"current": 0, "maximum_base": 18},
       "life_state_id": "life.dying",
       "life_state_progress": {"death_saves": {"successes": 1, "failures": 0}}
