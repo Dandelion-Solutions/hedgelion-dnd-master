@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/transition-request.schema.json",
+  "title": "HDM TransitionRequest value",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["transition_kind", "payload"],
+  "properties": {
+    "transition_kind": {
+      "type": "string",
+      "pattern": "^transition\\.[a-z][a-z0-9_.]*$"
+    },
+    "payload": {
+      "type": "object",
+      "minProperties": 1
+    }
+  },
+  "examples": [
+    {
+      "transition_kind": "transition.location_change",
+      "payload": {
+        "target_id": "actor-0001",
+        "destination_id": "location-0002"
+      }
+    }
+  ]
+}
