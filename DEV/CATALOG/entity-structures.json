@@ -17,7 +17,7 @@
     "definition.weapon_mastery": {"required": ["activity_id"], "expected": ["requirements"]},
     "definition.spell_school": {"required": [], "expected": []},
     "definition.rest_policy": {"required": ["duration", "completion_boundary_id"], "expected": ["requirements", "interruption_policy_id"]},
-    "definition.actor_archetype": {"required": [], "expected": ["creature_type_id", "size_id", "abilities", "resources", "activity_ids", "feature_ids", "life_state_policy_id"]},
+    "definition.actor_archetype": {"required": [], "expected": ["creature_type_id", "size_id", "abilities", "hp", "resources", "activity_ids", "feature_ids", "life_state_policy_id"]},
     "definition.species": {"required": ["size_options", "speed"], "expected": ["creature_type_id", "feature_ids", "language_ids"]},
     "definition.background": {"required": [], "expected": ["ability_options", "proficiency_options", "feat_ids", "equipment_options"]},
     "definition.class": {"required": ["hit_die"], "expected": ["primary_ability_ids", "proficiency_ids", "resource_ids", "advancement_id"]},
