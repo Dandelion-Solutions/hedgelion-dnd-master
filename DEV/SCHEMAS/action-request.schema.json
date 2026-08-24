@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/action-request.schema.json",
+  "title": "HDM ActionRequest value",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["activity_id", "actor_id"],
+  "properties": {
+    "activity_id": {"$ref": "#/$defs/id"},
+    "actor_id": {"$ref": "#/$defs/id"},
+    "source_id": {"$ref": "#/$defs/id"},
+    "target_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "parameter_bindings": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/id"},
+      "additionalProperties": {"$ref": "#/$defs/bindingValue"}
+    }
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "scalar": {"type": ["string", "number", "boolean"]},
+    "bindingValue": {
+      "oneOf": [
+        {"$ref": "#/$defs/scalar"},
+        {"type": "array", "items": {"$ref": "#/$defs/scalar"}}
+      ]
+    }
+  },
+  "examples": [
+    {
+      "activity_id": "srd.activity.longsword_attack",
+      "actor_id": "actor-0001",
+      "source_id": "asset-00001",
+      "target_ids": ["actor-0014"]
+    }
+  ]
+}
