@@ -10,7 +10,8 @@ cost of being wrong is materially higher than the cost of doing the analysis.
 
 It is intentionally generic. Project-specific architecture documents may add
 constraints, terminology, gates, or deliverables, but should not weaken the
-reasoning, review, decision-rights, or evidence requirements defined here.
+reasoning, review, decision-rights, evidence-completeness, or source-traceability
+requirements defined here.
 
 The process is not intended for every small engineering task. A local function,
 small validation rule, obvious schema correction, narrow endpoint, or similarly
@@ -41,8 +42,12 @@ Before substantive work:
    `superpowers:writing-plans` for implementation planning.
 
 Superpowers supplies the workflow discipline. This document strengthens it with
-explicit decision rights, evidence discipline, analytical challenge gates,
-traceability, risk handling, and agent/human responsibility separation.
+explicit decision rights, evidence discipline, repository-source completeness,
+analytical challenge gates, traceability, risk handling, and agent/human
+responsibility separation.
+
+Using the correct workflow skill is not itself evidence that repository research
+or architecture analysis was complete. The substantive gates below still apply.
 
 ---
 
@@ -113,12 +118,13 @@ When uncertain between bounded and architectural, use the heavier path.
 
 ## 4. Human and agent decision rights
 
-The process separates **decision-making** from **mechanical technical work**.
+The process separates **decision-making** from **technical evidence work**.
 
 The human architect/owner should spend attention on decisions that require
 judgment, priorities, risk acceptance, or product intent. The agent should do
-research, analysis, formalization, consistency work, documentation, examples,
-bookkeeping, and implementation decomposition.
+research, repository/document inspection, analysis, formalization, consistency
+work, documentation, examples, bookkeeping, implementation decomposition and
+verification-oriented traceability.
 
 ### 4.1 Human Architect decides
 
@@ -194,6 +200,47 @@ Questions such as "Which option do you prefer?" are insufficient when the agent
 has not first explained why the options matter, how they differ, which one it
 recommends, and what evidence supports the recommendation.
 
+### 4.5 AI-architect / human-architect operating contract
+
+The architecture partnership is intentionally asymmetric in workload.
+
+The **agent owns evidence work**. This includes discovering relevant sources,
+reading them to the depth required by the question, extracting material claims
+and qualifiers, reconciling source roles and supersession, checking consumers and
+cross-system effects, maintaining traceability, detecting omissions and producing
+a decision-ready synthesis.
+
+The **human architect owns human judgment**. This includes product meaning,
+priorities, material trade-offs, explicit risk acceptance, hard-to-reverse choices
+and other decisions that remain genuinely reasonable after the technical evidence
+has been exhausted.
+
+Repository or documentation volume does not move evidence responsibility from
+the agent to the human. A large corpus requires better routing, source selection,
+structured extraction and completeness checks; it does not justify asking the
+human to read the corpus to determine what the agent missed.
+
+The intended interface is:
+
+```text
+Agent:
+  repository state
+  -> relevant evidence set
+  -> extraction / reconciliation
+  -> alternatives / consequences
+  -> recommendation
+  -> exact residual human decision
+
+Human architect:
+  product intent / priorities / risk judgment
+  -> architectural decision
+
+Agent:
+  formalization / consistency / traceability / verification mapping
+```
+
+Human review is a decision gate, not a substitute for agent research completeness.
+
 ---
 
 ## 5. Information layers
@@ -240,6 +287,108 @@ For external sources consider:
 - whether a cited best practice depends on assumptions absent from this project.
 
 "A source recommends X" and "X is appropriate here" are separate claims.
+
+### 6.1 Repository Source Manifest
+
+Before correctness-sensitive deep synthesis, construct a task-specific **Source
+Manifest** from current project state and the repository's navigation/ownership
+information.
+
+The manifest exists to answer:
+
+- which sources are relevant to this question;
+- what authority role each source has;
+- why it is included;
+- which part must be inspected;
+- which neighboring owners/consumers may change the conclusion;
+- whether the source has been inspected deeply enough for the claim being made.
+
+A practical form is:
+
+```text
+Source:
+Authority role: CANONICAL | AMENDMENT/DECISION | DERIVATIVE | RESEARCH | HISTORICAL | IMPLEMENTATION/TEST
+Why relevant:
+Required scope:
+Important neighbors/dependencies:
+Inspection status:
+```
+
+The manifest need not become a permanent standalone artifact for every task. It
+may live in the Architecture Task Brief, research notes or another inspectable
+working artifact. The required property is auditable source selection, not
+ceremony.
+
+Do not read the entire repository merely to claim completeness. Use project
+indexes and ownership routes to discover the relevant dependency subgraph, then
+inspect that task-specific set to the depth required by the decision.
+
+### 6.2 Evidence extraction and synthesis completeness gate
+
+**NO ROADMAP, DECISION BRIEF, CANDIDATE SPECIFICATION, COVERAGE CLAIM OR
+CANONICALIZATION CLAIM may rely on undocumented thematic sampling when the
+relevant source material is available.**
+
+Before synthesis, extract enough structured evidence from the Source Manifest to
+preserve the semantics that can affect the conclusion.
+
+For material source items, record as applicable:
+
+```text
+Source/item:
+Actual claim:
+Authority/classification:
+Qualifiers / applicability conditions:
+Exceptions / negative findings:
+Revisit/defer trigger:
+Related accepted decision/owner:
+Current interpretation/disposition:
+Rationale:
+```
+
+This is an evidence ledger, not private chain-of-thought. It records source facts,
+qualifiers, relationships and dispositions necessary to audit the result.
+
+Hard requirements:
+
+1. **Owning sources beat summaries.** Navigation indexes, executive summaries,
+   roadmaps, derivative indexes, prior-chat summaries, remembered content and
+   search snippets are discovery/compression aids, not substitutes for owning
+   artifacts when a correctness-sensitive claim depends on them.
+2. **Qualifiers survive compression.** Scope conditions, `only if`, `revisit
+   when`, defer triggers, exceptions, confidence, non-goals and negative findings
+   are part of the evidence. Dropping them can reverse the meaning of a finding.
+3. **Enumerated sets require accounting.** If a source contains enumerated
+   requirements, findings, risks, review issues, candidates, test cases, schema
+   members, deferred items or similar records, a claim of coverage requires
+   item-level accounting or an equally strong mechanically verifiable mapping.
+   Broad thematic similarity is not coverage evidence.
+4. **Coverage does not imply activation.** An accounted item may be already
+   satisfied, conditional/dormant, safely deferred, out of current scope or
+   rejected. Completeness means the item is understood and correctly dispositioned,
+   not that it becomes current architecture work.
+5. **Research is not authority.** A detailed research artifact remains research
+   until the architecture process evaluates and adopts its relevant principle.
+6. **Closed decisions are not reopened by keyword overlap.** New evidence should
+   first be classified as confirming, extending, contradicting, serving a new
+   consumer, or exposing insufficiency in the accepted design.
+7. **Human proofreading is not the gate.** The agent must run the completeness
+   check itself before asking for architectural judgment.
+
+Before moving from research to Decision Brief, explicitly check:
+
+```text
+[ ] Source Manifest covers the relevant ownership/dependency subgraph.
+[ ] Actual owning sources were inspected where available.
+[ ] Material enumerated items are accounted for where coverage is claimed.
+[ ] Qualifiers, exceptions and revisit triggers were preserved.
+[ ] Current accepted decisions and superseding amendments were reconciled.
+[ ] Consumers/tests/schemas relevant to the claim were checked.
+[ ] No conclusion depends only on a summary, search snippet or remembered state.
+[ ] Remaining questions genuinely require human judgment or new evidence.
+```
+
+If any required check fails, synthesis is premature.
 
 ---
 
@@ -421,6 +570,7 @@ not as a substitute for it:
 ```text
 current tree/ref
     -> navigation index, if present
+    -> task-specific Source Manifest
     -> actual owning artifacts
     -> concrete symbol/path search for consumers and stale references
 ```
@@ -452,6 +602,10 @@ Update the roadmap when evidence changes the architecture map.
 
 Do not preserve a bad decomposition merely because it existed first.
 
+A roadmap rebaseline that claims to derive its problem horizon from prior
+requirements, research or review findings must pass the evidence and synthesis
+completeness gate before the coverage claim is treated as established.
+
 ---
 
 # Part III — The Eight-Step Deep-Design Loop
@@ -474,6 +628,7 @@ The Task Brief should define:
 - quality attributes that may distinguish solutions;
 - unknowns that require investigation;
 - repository/docs/code that must be inspected;
+- initial Source Manifest / discovery route for repository evidence;
 - external evidence that may be required;
 - questions the result must answer;
 - success/exit criteria.
@@ -519,7 +674,7 @@ At minimum, challenge the framing for:
   evidence from interesting background;
 - missing counterexamples, negative outcomes or simpler alternatives that the
   investigation must remain able to discover;
-- wording that makes deletion, derivation, deferral, or rejection of the
+- wording that makes deletion, derivation, deferral, dormancy or rejection of the
   proposed abstraction impossible as a valid research result.
 
 Ask explicitly:
@@ -556,7 +711,29 @@ Use, as applicable:
 6. established practice in comparable systems;
 7. secondary sources.
 
-### 11.2 Draft contents
+Within the project, distinguish owning/canonical sources from derivative indexes,
+research inputs, historical derivation and implementation/test evidence.
+
+### 11.2 Repository/document research execution
+
+Before drafting the recommendation:
+
+1. refine the Source Manifest as references and dependency routes are discovered;
+2. inspect the actual owning artifacts rather than stopping at routing indexes or
+   summaries;
+3. extract material claims and qualifiers into inspectable working evidence;
+4. reconcile later amendments, superseding decisions and current consumers;
+5. account for enumerated source items when the result claims coverage;
+6. run the synthesis-completeness checklist in section 6.2.
+
+Do not begin architecture synthesis merely because the high-level themes look
+familiar. Extraction precedes synthesis.
+
+A large source corpus should be processed selectively through ownership and
+dependency routing. The goal is not to hold the entire repository in working
+context; it is to avoid unsupported conclusions about the relevant subset.
+
+### 11.3 Draft contents
 
 Include only relevant sections, but consider:
 
@@ -583,7 +760,7 @@ Include only relevant sections, but consider:
 - edge cases;
 - integration effects.
 
-### 11.3 Alternatives
+### 11.4 Alternatives
 
 When multiple credible solutions exist, present normally two or three real
 alternatives or a justified hybrid.
@@ -743,6 +920,10 @@ Do not ask the architect to review structures that are mechanically implied by
 an already accepted decision unless a structural choice itself changes the
 trade-off.
 
+Do not present a large source corpus to the human as a substitute for synthesis.
+The Decision Brief should expose traceable evidence and uncertainty while keeping
+the human's task focused on judgment, not completeness checking.
+
 ---
 
 ## 14. Step 4 — Collaborative Architecture Review
@@ -817,7 +998,7 @@ As relevant, include:
 
 ### 15.1 Agent responsibility for completeness
 
-The agent owns the mechanical completeness of this document.
+The agent owns the mechanical and documentary completeness of this document.
 
 The human architect should not be required to proofread hundreds or thousands
 of lines merely to ensure that:
@@ -827,10 +1008,12 @@ of lines merely to ensure that:
 - terminology is consistent;
 - an enum was fully listed;
 - cross-references were updated;
-- a decision was recorded in the correct section.
+- a decision was recorded in the correct section;
+- a relevant source qualifier or already accepted decision was silently dropped;
+- an enumerated finding was forgotten during synthesis.
 
-Those are agent responsibilities and should be checked mechanically or by
-self-review where possible.
+Those are agent responsibilities and should be checked mechanically, through
+structured source accounting, or by self-review where possible.
 
 ---
 
@@ -911,7 +1094,10 @@ Review only categories relevant to the design, including as applicable:
 - YAGNI violations;
 - missing failure semantics;
 - missing ownership/authority;
-- requirements that are only implicit.
+- requirements that are only implicit;
+- evidence-set omissions or source-role confusion;
+- dropped qualifiers, revisit triggers or negative findings;
+- coverage claims unsupported by item-level accounting where required.
 
 For AI/LLM systems also consider when relevant:
 
@@ -1011,14 +1197,20 @@ Check:
 11. Risk Register is updated;
 12. Deferred / Debt / Backlog is updated;
 13. roadmap status and next continuation point are updated;
-14. traceability is sufficient for material requirements/decisions.
+14. traceability is sufficient for material requirements/decisions;
+15. Source Manifest coverage is sufficient for the claims made;
+16. material enumerated source items and qualifiers were accounted for where
+    coverage was claimed;
+17. no correctness-sensitive conclusion depends only on a derivative summary,
+    search snippet or remembered state.
 
 Then save the architecture as the canonical project artifact.
 
 The human architect approves the significant architectural decisions and the
 final decision summary. The human is not required to manually revalidate every
-line of mechanical formalization if those decisions were already reviewed and
-the agent completed the consistency gates.
+line of mechanical formalization or re-read the underlying source corpus if those
+decisions were already reviewed and the agent completed the evidence and
+consistency gates.
 
 ---
 
@@ -1091,12 +1283,30 @@ Reason deferred: current deployment is single-node
 Revisit trigger: before multi-node execution is introduced
 ```
 
-### 21.3 Backlog
+### 21.3 Conditional / Dormant
+
+A known candidate or concern whose own applicability condition has not occurred.
+It is preserved so the project can return to it when the condition becomes true,
+but it does not create current architecture work merely because it is known.
+
+Record where useful:
+
+```text
+Item:
+Why dormant:
+Revisit trigger:
+Current owner/context:
+```
+
+Do not promote `revisit when X` into an immediate TODO unless `X` is now true or
+new evidence creates an independent current requirement.
+
+### 21.4 Backlog
 
 An idea, enhancement, optional direction, or future investigation without a
 current commitment to implement it.
 
-### 21.4 Architecture Debt
+### 21.5 Architecture Debt
 
 A knowingly suboptimal architecture choice accepted because of time, cost,
 compatibility, delivery pressure, or another explicit reason.
@@ -1118,9 +1328,9 @@ design gate.
 
 ---
 
-## 22. Deferred is not unresolved architecture
+## 22. Deferred/dormant is not unresolved architecture
 
-Deferral is valid only if:
+Deferral or dormancy is valid only if:
 
 - the current scope remains correct without resolving the item;
 - a safe boundary exists;
@@ -1172,7 +1382,8 @@ Risk acceptance that changes project trade-offs belongs to the human architect.
 For material requirements and decisions, preserve a navigable chain such as:
 
 ```text
-Requirement / Constraint
+Requirement / Constraint / Research Finding
+  -> Applicability / Disposition
   -> Invariant / Architecture Decision
   -> Canonical Specification
   -> Implementation Plan
@@ -1190,6 +1401,9 @@ Traceability should allow an agent to detect questions such as:
 - Does a superseded decision still appear in the spec?
 - Is there a schema field with no current architectural rationale?
 - Which test verifies a critical invariant?
+- Which research finding was adopted, rejected, deferred or left dormant, and
+  under what trigger?
+- Is a coverage claim missing an enumerated source item or qualifier?
 
 ---
 
@@ -1259,6 +1473,9 @@ credibly expected.
 
 Extensibility should be directional: easy in expected directions, not universal
 for every imaginable future.
+
+Known research candidates with unmet revisit triggers are not current
+requirements merely because they are documented.
 
 ---
 
@@ -1334,18 +1551,25 @@ uncertainty as an assumption or human decision rather than inventing a target.
 
 ---
 
-## 35. Stop research when it stops changing decisions
+## 35. Stop research when it stops changing decisions — after coverage is sound
 
-Research is complete when additional evidence no longer materially changes:
+Research is complete when both are true:
 
-- constraints;
-- credible alternatives;
-- risk assessment;
-- recommendation;
-- confidence;
-- required architecture decisions.
+1. the task-specific evidence set and required completeness checks are sound for
+   the claims being made; and
+2. additional evidence no longer materially changes:
+   - constraints;
+   - credible alternatives;
+   - risk assessment;
+   - recommendation;
+   - confidence;
+   - required architecture decisions.
 
 Do not continue research merely to accumulate citations or appear thorough.
+
+Do not use diminishing returns as an excuse to stop before the relevant owners,
+material qualifiers or enumerated items required for a coverage claim have been
+accounted for.
 
 ---
 
@@ -1412,6 +1636,9 @@ A deep-design block is architecture-complete when:
 - material requirements and constraints are known;
 - relevant quality attributes are identified;
 - material assumptions are visible;
+- the task-specific Source Manifest/evidence set is sufficient for the claims made;
+- actual owning sources were inspected where available;
+- material source qualifiers and enumerated items were accounted for when required;
 - invariants are defined;
 - credible alternatives were considered;
 - the chosen approach is explicit;
@@ -1425,7 +1652,8 @@ A deep-design block is architecture-complete when:
 - all `BLOCKING` findings are closed;
 - `SIGNIFICANT` findings are resolved or explicitly accepted/deferred;
 - significant risks are mitigated or consciously accepted;
-- unresolved work is correctly classified as TODO, Deferred, Backlog, or Debt;
+- unresolved work is correctly classified as TODO, Deferred, Conditional/Dormant,
+  Backlog, or Debt;
 - Decision Log / ADR is updated;
 - Risk Register is updated when needed;
 - roadmap is updated;
@@ -1442,62 +1670,63 @@ Only then should the block move into implementation planning.
 ## 39. End-to-end flow
 
 ```text
-PROJECT CONTEXT
+PROJECT CONTEXT / CURRENT REPOSITORY STATE
       |
       v
-Goals / Non-goals / Constraints / Quality Attributes
+Navigation / Ownership Discovery
       |
       v
-Architecture & Development Roadmap
-      |
-      +-----------------------------+
-      |                             |
-      v                             v
-Fundamental Block A            Fundamental Block B ...
+Task-specific Source Manifest
       |
       v
-1. Architecture Task Brief
+Architecture Task Brief
       |
       v
-2. Research + Architecture Draft
+Evidence Extraction / Reconciliation
       |
       v
-   Analytical Quality Gate
+Repository Evidence & Synthesis Completeness Gate
       |
       v
-3. Decision Brief
+Research + Architecture Draft
       |
       v
-4. Human Architecture Review
+Analytical Quality Gate
+      |
+      v
+Decision Brief
+      |
+      v
+Human Architecture Review
       |
       +---- material unknown ----> focused research loop ----+
       |                                                       |
       <-------------------------------------------------------+
       |
       v
-5. Candidate Specification
+Candidate Specification
       |
       v
-   Cross-System Impact Analysis
+Cross-System Impact Analysis
       |
       v
-6. Adversarial Review
+Adversarial Review
       |
       v
-7. Resolution Gate
+Resolution Gate
       |
       +---- material redesign ----> review/resolution loop ---+
       |                                                       |
       <-------------------------------------------------------+
       |
       v
-8. Canonicalization
+Canonicalization
       |
       +--> Decision Log / ADR
       +--> Assumption/Evidence Ledger
+      +--> Source/Disposition Traceability
       +--> Risk Register
-      +--> TODO / Deferred / Backlog / Debt
-      +--> Traceability
+      +--> TODO / Deferred / Dormant / Backlog / Debt
       +--> Roadmap update
       |
       v
@@ -1514,10 +1743,15 @@ Implementation / Verification
 The human architect should receive **necessary and sufficient information for
 judgment**.
 
-The agent should perform **the maximum amount of research, challenge,
-formalization, verification, bookkeeping, and technical detail work that does
-not require human judgment**.
+The agent should perform **the maximum amount of repository research, evidence
+extraction, challenge, formalization, verification, bookkeeping, consistency
+checking and technical detail work that does not require human judgment**.
+
+Documentation volume is an agent workload problem, not a human review problem.
+Completeness does not mean reading everything for every task; it means correctly
+discovering the relevant source set, exhausting that set to the degree required
+by the claims being made, and preserving the semantics that affect the decision.
 
 The process succeeds when the human spends time choosing goals and meaningful
-trade-offs rather than catching preventable analytical mistakes or manually
-checking mechanical documentation consistency.
+trade-offs rather than reconstructing repository state, catching preventable
+analytical omissions or manually checking documentary consistency.
