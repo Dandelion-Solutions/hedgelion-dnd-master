@@ -33,6 +33,9 @@
       "minItems": 1,
       "items": {"$ref": "https://hedgelion.invalid/schemas/execution-segment.schema.json"}
     },
+    "direct_transition_receipt": {
+      "$ref": "https://hedgelion.invalid/schemas/resolution-receipt.schema.json"
+    },
     "pending_child_invocations": {
       "type": "array",
       "items": {"$ref": "https://hedgelion.invalid/schemas/pending-child-invocation.schema.json"}
@@ -47,7 +50,8 @@
         "not": {
           "anyOf": [
             {"required": ["transition_request"]},
-            {"required": ["direct_transition_segments"]}
+            {"required": ["direct_transition_segments"]},
+            {"required": ["direct_transition_receipt"]}
           ]
         }
       }
@@ -79,7 +83,7 @@
         "required": ["command_kind", "disposition"]
       },
       "then": {
-        "required": ["direct_transition_segments"]
+        "required": ["direct_transition_receipt"]
       }
     },
     {
@@ -89,6 +93,22 @@
           "pending_child_invocations": {"minItems": 1}
         },
         "required": ["command_kind", "pending_child_invocations"]
+      },
+      "then": {
+        "required": ["direct_transition_segments", "direct_transition_receipt"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "direct_transition_receipt": {
+            "properties": {
+              "status": {"enum": ["PUBLISH_REQUIRED", "COMPLETED"]}
+            },
+            "required": ["status"]
+          }
+        },
+        "required": ["direct_transition_receipt"]
       },
       "then": {
         "required": ["direct_transition_segments"]
