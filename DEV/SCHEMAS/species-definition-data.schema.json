@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/species-definition-data.schema.json",
+  "title": "HDM definition.species data",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["size_options", "speed"],
+  "properties": {
+    "creature_type_id": {"$ref": "#/$defs/id"},
+    "size_options": {"$ref": "#/$defs/idSet"},
+    "speed": {"type": "number", "exclusiveMinimum": 0},
+    "feature_ids": {"$ref": "#/$defs/idSet"},
+    "language_ids": {"$ref": "#/$defs/idSet"},
+    "choice_slots": {"$ref": "#/$defs/choiceSlots"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "choiceSlots": {"type": "array", "items": {"$ref": "https://hedgelion.invalid/schemas/build-choice-slot.schema.json"}}
+  }
+}
