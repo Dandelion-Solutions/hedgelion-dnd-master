@@ -68,8 +68,7 @@
     "localizedText": {
       "type": "object",
       "minProperties": 1,
-      "maxProperties": 2,
-      "required": ["en"],
+      "maxProperties": 4,
       "propertyNames": {"pattern": "^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$"},
       "additionalProperties": {"type": "string", "minLength": 1}
     },
@@ -252,7 +251,7 @@
     }
   },
   "examples": [
-    {"name": {"en": "Grik"}},
+    {"name": {"ru": "Бдыр"}},
     {
       "name": {"en": "Aria"},
       "build": {
