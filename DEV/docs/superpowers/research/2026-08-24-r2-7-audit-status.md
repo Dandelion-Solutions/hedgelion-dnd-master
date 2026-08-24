@@ -25,11 +25,11 @@ Owner clarification:
 
 ```text
 AUDIT_STATUS: IN_PROGRESS
-LAST_CLOSED_DOMAIN: WP-02
-CURRENT_DOMAIN: WP-03
-CURRENT_DOMAIN_TOPIC: Catalog / class / capability completeness
-CURRENT_SLICE: canonical class inventory + stale/missing closed vocabulary
-NEXT_DOMAIN: WP-04
+LAST_CLOSED_DOMAIN: WP-03
+CURRENT_DOMAIN: WP-04
+CURRENT_DOMAIN_TOPIC: Actor / Asset / mechanical-state model
+CURRENT_SLICE: canonical owner/state inventory + current schema reverse audit
+NEXT_DOMAIN: WP-05
 OWNER_GATE: NONE
 FINAL_RECONCILIATION: NOT_STARTED
 ```
@@ -40,8 +40,8 @@ FINAL_RECONCILIATION: NOT_STARTED
 |---|---|---|
 | WP-01 | CLOSED | `2026-08-24-r2-7-WP-01-product-deployment-repository-boundary-mini-report.md` |
 | WP-02 | CLOSED | `2026-08-24-r2-7-WP-02-global-authority-duplicate-owner-mini-report.md` |
-| WP-03 | IN PROGRESS | pending |
-| WP-04 | NOT STARTED | — |
+| WP-03 | CLOSED | `2026-08-24-r2-7-WP-03-catalog-class-capability-completeness-mini-report.md` |
+| WP-04 | IN PROGRESS | pending |
 | WP-05 | NOT STARTED | — |
 | WP-06 | NOT STARTED | — |
 | WP-07 | NOT STARTED | — |
@@ -76,7 +76,6 @@ FINAL_RECONCILIATION: NOT_STARTED
 | WP-01/F04 | WP-23 | complete reverse package proof: shipped runtime is self-contained under GAME and has no DEV correctness dependency; include install/profile readiness | YES |
 | WP-01/F05 | WP-25 | verify missing/denied/failing Connector behavior is finite and never activates alternate transport probing | YES |
 | WP-01/F06 | WP-26 | repair public governance/document routing: general experiment->Lab rule in AGENTS and stale active `default/first` transport wording | YES |
-| WP-02/F01 | WP-03 | final closed class/vocabulary cleanup, including disclosure, truth and relationship vocabulary | YES |
 | WP-02/F02 | WP-04 | unified Actor/Asset + Actor-private relationship/current-state model | YES |
 | WP-02/F03 | WP-07 | final truth/knowledge/disclosure/message semantic record model | YES |
 | WP-02/F04 | WP-10 | final persistent record families/schemas and removal of legacy parallel schema families | YES |
@@ -87,6 +86,20 @@ FINAL_RECONCILIATION: NOT_STARTED
 | WP-02/F09 | WP-19 | final campaign scaffold emits only canonical structures | YES |
 | WP-02/F10 | WP-22 | duplicate-owner / retired-vocabulary regression suite | YES |
 | WP-02/F11 | WP-26 | remove stale CORE/schema-routing wording | YES |
+| WP-03/F01 | WP-04 | finalize Actor/Asset state field vocabulary and Actor-private continuity/relationship representation | YES |
+| WP-03/F02 | WP-05 | verify execution record/protocol vocabularies against complete deterministic pipeline schemas | YES |
+| WP-03/F03 | WP-07 | finalize lore/knowledge/disclosure/message shapes; eliminate remaining epistemic duplicate fields such as hazard detection lists where applicable | YES |
+| WP-03/F04 | WP-10 | materialize all accepted durable/runtime record families into final schemas/roots or explicit NO-DURABLE-RECORD dispositions | YES |
+| WP-03/F05 | WP-11 | final whole-project identity policy, including independently writable/source-native IDs; do not assume current sequential policies survive | YES |
+| WP-03/F06 | WP-16 | align LIVE/session identities and currentness/fencing with final source-native rules | YES |
+| WP-03/F07 | WP-17 | define exact collaboration-obligation schema/identity/current-generation representation | YES |
+| WP-03/F08 | WP-18 | define physical Story/planning record families without promoting them into gameplay authority | YES |
+| WP-03/F09 | WP-20 | define future post-release catalog/schema evolution policy; current 1.6.0 -> 2.0.0 transition requires no migration | YES |
+| WP-03/F10 | WP-22 | execute/extend regression and schema-validation suite for catalog generation 2.0.0 | YES |
+| WP-03/F11 | WP-23 | verify release/package metadata and v1.0-alpha manifest parity in final package audit | YES |
+| WP-03/F12 | WP-26 | remove stale active prose/version references that still present old catalog inventory as current authority | YES |
+
+WP-02/F01 is discharged by WP-03.
 
 ## Closed-domain summary
 
@@ -110,7 +123,17 @@ OWNER_GATE: NONE
 FORWARD_OBLIGATIONS: 11
 ```
 
-Main WP-02 machine debt: legacy embedded epistemic stores; retired hidden-information IDs; stale lore truth axis; missing disclosure realization; generic relationship owner; global chronology frontier scaffold; stale checkpoint fields; recovery wording; message/live identity/fencing mismatches; missing physical realization for accepted operational/noncanonical owner families.
+### WP-03
+
+```text
+VERDICT: CLOSED / READ-BACK VERIFIED
+CATALOG_GENERATION: 2.0.0
+CLASS_ADMISSION_BLOCKERS: 0
+OWNER_GATE: NONE
+EXECUTABLE_FULL_SUITE_VERIFICATION: WP-22
+```
+
+Main WP-03 result: stale generic relationship/truth/durability/publication vocabulary retired; accepted Step-4/5 and Round-2 closed vocabulary materialized without creating generic new authority records.
 
 ## Current owner decisions / clarifications
 
@@ -124,6 +147,17 @@ R2.7 STRUCTURAL CANONICALIZATION: AUTHORIZED
 
 R2.7 must finish with self-consistent architecture plus final data models/catalogs/schemas/templates/folder scaffold. Future post-release migration/evolution policy remains WP-20 work.
 
+### v1.0-alpha pre-release identity
+
+```text
+ENGINE_VERSION: 1.0-alpha
+RECOMMENDED_TAG: v1.0-alpha
+RELEASE_STATUS: development
+CATALOG_GENERATION: 2.0.0
+```
+
+No tag/release publication has been performed.
+
 ## Open owner decisions
 
 `NONE`.
@@ -133,8 +167,8 @@ R2.7 must finish with self-consistent architecture plus final data models/catalo
 При новом чате после repository bootstrap прочитать этот файл и продолжить с:
 
 ```text
-CURRENT_DOMAIN: WP-03
-CURRENT_SLICE: canonical class inventory + stale/missing closed vocabulary
+CURRENT_DOMAIN: WP-04
+CURRENT_SLICE: canonical owner/state inventory + current schema reverse audit
 ```
 
-Затем прочитать WP-02 report, current closed catalogs/contracts and task-specific WP-03 owning sources. Conversation history не является checkpoint.
+Затем прочитать WP-03 report, Actor/Asset architecture owners, R2.2 canonical Actor continuity spec and task-specific GAME schemas/CORE consumers. Conversation history не является checkpoint.
