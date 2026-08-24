@@ -12,27 +12,46 @@ Schemas:
 Owning additions:
 
 - `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-canonical-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-7-wp-04-progressive-ready-pc-owner-clarification.md`
 
 ## 1. One progressively materialized Actor
 
 `world.actor` represents narrative NPCs, mechanically resolved creatures, companions, summons, swarms and player characters. HDM does not create separate entity kinds for those levels of detail. PC/NPC/companion distinctions are Actor roles/facets unless a concrete rule proves another owner.
 
-Only `state.name` is universally required. Expected fields are added when known or needed. HP, build choices, private continuity and relationship views are not generated for incidental Actors in advance.
+No Actor-state content field is universally required merely to create a stable Actor identity. The world-record `id` is the stable record identity. `state.name` is optional; `state.concept` is an optional normalized nonmechanical framing statement. Expected mechanical/private fields are added when known or needed. HP, build choices, private continuity and relationship views are not generated for incidental Actors in advance.
 
-For a player character, progressive materialization may happen during gameplay under `GAME/CORE/DIEGETIC_ONBOARDING.md`. READY_PC is not a prerequisite for the first scene. Before any mechanically relevant outcome, every dependency material to that outcome must already be established; full READY_PC is the later completeness boundary for ordinary unrestricted mechanics-capable play.
+A provisional player character may therefore exist before a name is known. A stable player-authored concept such as `я буду демоном огня` may justify a PROVISIONAL_IDENTITY durability boundary while the same Actor remains mechanically incomplete.
+
+`concept` is not executable mechanics. It may guide preparation/inference, but any mechanical consequence must be translated into accepted rules-valid archetype/build/Actor state before adjudication relies on it.
+
+For a player character, progressive materialization may happen during gameplay under `GAME/CORE/DIEGETIC_ONBOARDING.md`. READY_PC is not a prerequisite for the first scene. Before any mechanically relevant outcome, every dependency material to that outcome must already be established. READY_PC is the later **initial mechanical commitment frontier** for ordinary unrestricted mechanics-capable play; it is not a requirement that every possible dossier field or future mechanic be eagerly materialized.
 
 Mechanical materialization follows:
 
 ```text
 mechanics required
-  -> resolve the bounded dependencies needed for this outcome
+  -> resolve bounded dependencies for this outcome
+  -> use explicit player choices / rules inheritance / accepted concept inference / defaults
   -> select/load reusable definitions as required
   -> populate sufficient typed Actor/Asset/Effect state
-  -> validate the current state view
+  -> validate current state view
   -> execute Activity
 ```
 
-Missing untracked state never authorizes speculative durable filling.
+Missing untracked state never authorizes context-sensitive speculative filling.
+
+### 1.1 Initial mechanical commitment and safe laziness
+
+Before READY_PC, every unresolved discretionary choice that could materially change ordinary current-play legality, probability, defense, resource availability, capability or consequence must be committed through the onboarding precedence in `CHARACTER_READINESS.md`.
+
+After READY_PC, a not-yet-materialized value is safe only when it is:
+
+- uniquely/deterministically derivable from already committed authoritative anchors;
+- descriptive/nonmechanical;
+- created by a genuine later acquisition/evolution boundary; or
+- governed by a deterministic/delegated policy fixed before the situation where the value matters.
+
+HDM never waits for a favorable situation and then selects a previously open mechanical option to fit it.
 
 ## 2. Actor archetype and LifeState policy
 
@@ -54,6 +73,8 @@ life_policy.dnd2024.monster_default
 ```
 
 An ordinary Actor does not copy inherited/default policy into state merely for convenience. Instance state stores only individual mutable or exceptional values.
+
+A concept may motivate selection/creation of a compatible archetype, but the selected validated `definition_id` is the mechanical/reusable anchor. The prose concept does not override archetype/rules contracts.
 
 ## 3. Reconstructable build state
 
@@ -97,6 +118,8 @@ archetype
   -> derived MechanicalContext
 ```
 
+A player need not state level, HP maximum, resource capacity or every proficiency as questionnaire answers when those values can be validly selected/derived from accepted anchors. Master-side bookkeeping may establish them through the approved readiness precedence, but once a discretionary commitment is relied upon or crosses READY_PC it cannot be silently retuned to fit later circumstances.
+
 WP-06 owns the final advancement/choice-definition contract that supplies stable choice IDs and validates each `choice_bindings` selection against the loaded ResolvedCatalogContext. Structurally valid arbitrary choice keys are not automatically legal.
 
 ## 4. Abilities
@@ -115,6 +138,8 @@ Actor ability state stores only instance-owned components:
 - `adjustment` is a permanent instance adjustment;
 - dynamic contributions come from participating Effects;
 - resolved scores/modifiers live only in HOT cache/MechanicalContext.
+
+Before READY_PC, common checks/saves must already be deterministically resolvable from committed Actor/archetype/build sources. The number does not have to be player-spoken or redundantly copied when it is uniquely derivable.
 
 ## 5. Hit points and LifeState
 
@@ -174,6 +199,8 @@ Persistent Actor Resources are keyed by stable Resource definition ID:
 
 Resource definition owns mechanic type, lifetime owner, storage model, capacity/recovery semantics and spending policy. Actor/Asset ResourceState stores authoritative `current` and may own a concrete `recovery_binding` when a real timed recovery obligation exists.
 
+Resource capacity is normally derived from the accepted definition + Actor/build/archetype/Effect context. The player is not asked to invent a capacity merely because the engine needs one.
+
 Procedure-local Resources own their consumed state in the Procedure rather than becoming Actor fields. MechanicalContext accessors hide this physical difference. Temporal Agenda is a derived due-index, not Resource authority.
 
 ## 7. Actor-private continuity
@@ -200,6 +227,8 @@ identity
 ```
 
 Each entry is a concise statement with optional accepted `source_refs`. Ordinary cognition does not rewrite foundation by accumulation; material foundation change uses the stronger R2.2 transition boundary.
+
+For a player-controlled PC, voluntary self-concept/inner identity remains player-owned. Top-level `concept` is a compact current framing input; it does not authorize Actor cognition machinery to invent the player's beliefs, goals or self-interpretation.
 
 ### 7.2 Durable evolving cognition
 
@@ -259,6 +288,8 @@ Player binding/control lives outside Actor state. Mutation authorization, not sc
 
 ## 8. Roles, placement, ownership and derived relations
 
+- `name` is optional current presentation identity; stable record identity is Actor ID.
+- `concept` is optional nonmechanical framing/player-intent summary; it is not executable mechanics.
 - `roles` are mutable instance classifications such as PC/NPC/companion.
 - `location_id` is Actor's single physical world location.
 - Scene/encounter/zone participation is not copied into Actor state.
@@ -288,7 +319,7 @@ resource.available
 
 Every calculation reads one pinned committed/prospective state-view identity. Engine-owned mechanical facts are deterministic; LLM cannot supply them as trusted invocation facts.
 
-Actor continuity is not automatically a MechanicalContext source. A future mechanic consuming a continuity facet requires an explicit registered selector/accessor rather than ad-hoc prose reads.
+Concept text and Actor continuity are not automatically MechanicalContext sources. A concept-derived mechanical choice must first be promoted into validated Actor/build/archetype/definition state. A future mechanic consuming a continuity facet requires an explicit registered selector/accessor rather than ad-hoc prose reads.
 
 ## 10. Actor groups
 
