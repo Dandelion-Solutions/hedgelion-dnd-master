@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/feat-definition-data.schema.json",
+  "title": "HDM definition.feat data",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "prerequisites": {"$ref": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json"},
+    "activity_ids": {"$ref": "#/$defs/idSet"},
+    "rule_elements": {"type": "array", "items": {"$ref": "https://hedgelion.invalid/schemas/rule-element.schema.json"}},
+    "trigger_bindings": {"type": "array", "items": {"$ref": "https://hedgelion.invalid/schemas/trigger-binding.schema.json"}},
+    "choice_slots": {"type": "array", "items": {"$ref": "https://hedgelion.invalid/schemas/build-choice-slot.schema.json"}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+  }
+}
