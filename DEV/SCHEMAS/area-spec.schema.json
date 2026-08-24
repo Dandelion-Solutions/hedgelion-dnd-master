@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/area-spec.schema.json",
+  "title": "HDM AreaSpec value",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["shape_id", "unit_id", "dimensions"],
+  "properties": {
+    "shape_id": {"$ref": "#/$defs/id"},
+    "unit_id": {"$ref": "#/$defs/id"},
+    "dimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "size": {"type": "number", "exclusiveMinimum": 0},
+        "radius": {"type": "number", "exclusiveMinimum": 0},
+        "height": {"type": "number", "exclusiveMinimum": 0},
+        "length": {"type": "number", "exclusiveMinimum": 0},
+        "width": {"type": "number", "exclusiveMinimum": 0}
+      }
+    }
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+  },
+  "description": "Shape-specific required/forbidden dimension combinations are validated by the registered area-shape contract at catalog compilation/runtime binding.",
+  "examples": [
+    {"shape_id": "area.sphere", "unit_id": "unit.foot", "dimensions": {"radius": 20}},
+    {"shape_id": "area.cylinder", "unit_id": "unit.foot", "dimensions": {"radius": 10, "height": 40}}
+  ]
+}
