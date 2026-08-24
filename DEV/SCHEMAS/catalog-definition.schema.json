@@ -10,60 +10,32 @@
       "allOf": [{"$ref": "#/$defs/machineId"}],
       "description": "Stable semantic namespaced ID; reusable definitions do not use numeric allocation."
     },
-    "kind": {
-      "type": "string",
-      "pattern": "^definition\\.[a-z][a-z0-9_]*$"
-    },
+    "kind": {"type": "string", "pattern": "^definition\\.[a-z][a-z0-9_]*$"},
     "name": {"$ref": "#/$defs/localizedText"},
     "facets": {"$ref": "#/$defs/idSet"},
-    "tags": {
-      "type": "array",
-      "uniqueItems": true,
-      "items": {"type": "string", "minLength": 1}
-    },
+    "tags": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
     "data": {"type": "object"}
   },
   "allOf": [
-    {
-      "if": {"required": ["kind"], "properties": {"kind": {"const": "definition.activity"}}},
-      "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/activity-definition-data.schema.json"}}}
-    },
-    {
-      "if": {"required": ["kind"], "properties": {"kind": {"const": "definition.asset"}}},
-      "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/asset-definition-data.schema.json"}}}
-    },
-    {
-      "if": {"required": ["kind"], "properties": {"kind": {"const": "definition.actor_archetype"}}},
-      "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/actor-archetype-data.schema.json"}}}
-    },
-    {
-      "if": {"required": ["kind"], "properties": {"kind": {"const": "definition.resource"}}},
-      "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/resource-definition-data.schema.json"}}}
-    },
-    {
-      "if": {"required": ["kind"], "properties": {"kind": {"const": "definition.effect"}}},
-      "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/effect-definition-data.schema.json"}}}
-    },
-    {
-      "if": {"required": ["kind"], "properties": {"kind": {"const": "definition.condition"}}},
-      "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/condition-definition-data.schema.json"}}}
-    },
-    {
-      "if": {"required": ["kind"], "properties": {"kind": {"const": "definition.rest_policy"}}},
-      "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/rest-policy-definition-data.schema.json"}}}
-    }
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.activity"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/activity-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.asset"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/asset-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.actor_archetype"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/actor-archetype-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.species"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/species-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.background"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/background-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.class"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/class-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.subclass"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/subclass-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.advancement"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/advancement-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.feat"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/feat-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.feature"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/feature-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.spell"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/spell-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.resource"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/resource-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.effect"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/effect-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.condition"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/condition-definition-data.schema.json"}}}},
+    {"if": {"required": ["kind"], "properties": {"kind": {"const": "definition.rest_policy"}}}, "then": {"properties": {"data": {"$ref": "https://hedgelion.invalid/schemas/rest-policy-definition-data.schema.json"}}}}
   ],
   "$defs": {
-    "machineId": {
-      "type": "string",
-      "minLength": 1,
-      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
-    },
-    "idSet": {
-      "type": "array",
-      "uniqueItems": true,
-      "items": {"$ref": "#/$defs/machineId"}
-    },
+    "machineId": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/machineId"}},
     "localizedText": {
       "type": "object",
       "minProperties": 1,
@@ -89,10 +61,7 @@
         "lifetime_owner": "procedure",
         "state_model": "spent",
         "capacity": 1,
-        "recovery": [{
-          "boundary_id": "boundary.turn_start",
-          "operation_id": "resource_recovery.reset_spent"
-        }]
+        "recovery": [{"boundary_id": "boundary.turn_start", "operation_id": "resource_recovery.reset_spent"}]
       }
     }
   ]
