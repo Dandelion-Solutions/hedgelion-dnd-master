@@ -169,6 +169,14 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
                 "receipt_exports": {},
                 "affected_revision_refs": ["actor-1@6"],
             }],
+            "direct_transition_receipt": {
+                "execution_owner_id": "turn-1-cmd-01",
+                "segment_refs": ["turn-1-cmd-01:segment:1"],
+                "status": "COMPLETED",
+                "event_ids": ["event-2"],
+                "exports": {},
+                "pending_child_refs": [],
+            },
             "pending_child_invocations": [],
         })
 
@@ -279,6 +287,8 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
             "action-request.schema.json",
             "transition-request.schema.json",
             "roll-result.schema.json",
+            "choice-request.schema.json",
+            "reaction-offer.schema.json",
             "runtime-interaction-state.schema.json",
             "runtime-command-state.schema.json",
             "runtime-resolution-state.schema.json",
