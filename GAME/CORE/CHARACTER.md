@@ -1,130 +1,167 @@
 # Character Creation and Onboarding
 
-framework_module_version: 0.5.5
+framework_module_version: 0.6.0
 load_when: new campaign, new PC, replacement PC, level-up choices requiring onboarding
 
 ## Goal
 
-A player should be able to begin without studying the rulebooks. The DM handles procedural bookkeeping, explains consequential choices, and may seed harmless undefined external details so play can start without a character-design questionnaire.
+A player should be able to begin without studying rulebooks or completing a character-sheet questionnaire. The Master handles procedural bookkeeping, translates broad concepts into rules-valid mechanics, explains consequential choices, and may seed harmless undefined external details.
 
 The player retains final authority over self-identification and inner life. Explicit compatible player corrections/choices outrank DM-seeded defaults.
 
-The character remains fully rules-grounded even when the player prefers not to see character-sheet arithmetic.
+The character remains rules-grounded even when the player never speaks the underlying numbers.
 
 ## Staged new-campaign handoff
 
-When character creation is the first stage of a new campaign, work toward a useful player-visible PC result before doing substantial unrelated world generation.
+Character creation may overlap the first gameplay scenes under `DIEGETIC_ONBOARDING.md`.
 
-After meaningful choices are resolved, surface a concise current character summary instead of disappearing into a long hidden build. When all mechanically required choices for initial play are valid, present one compact acceptance summary covering the identity/concept and the mechanics/resources that materially define play.
+The expected progression is:
 
-After semantic player acceptance under `DURABILITY_GUARD.md` and READY_PC under `CHARACTER_READINESS.md`, the PC may become active. A provisional identity/setup checkpoint may exist earlier under `DIEGETIC_ONBOARDING.md`.
+```text
+broad protagonist concept or other stable anchor
+    -> early durable provisional Actor
+    -> rapid rules-valid mechanical materialization
+    -> READY_PC initial mechanical commitment frontier
+    -> ordinary unrestricted play
+    -> later safe lazy details and normal evolution
+```
+
+READY_PC is not a requirement that every dossier field or every derivable number be eagerly populated.
+
+After meaningful choices are resolved, surface a concise current character summary only when useful. Do not disappear into a long hidden build and do not require ceremonial acceptance wording.
 
 ## Creation order
 
-Use the campaign's adopted D&D rules baseline. For D&D 2024/SRD 5.2.1, character creation normally establishes class/level, origin/background/species/languages, ability scores, class details, equipment and derived statistics.
+Use the campaign's adopted D&D rules baseline. For D&D 2024/SRD 5.2.1, initial mechanical commitments commonly require a class/level or equivalent archetype anchor, origin/background/species choices when applicable, ability inputs, core proficiencies/capabilities, HP, meaningful equipment/resources and current spell/feature selections that can affect ordinary play.
+
+This does not mean the player must select or even see every value manually.
 
 Character creation/level-up is a preparation boundary, not a live-turn rules lookup loop. When exact durable mechanics are materially important and not already available locally, a bounded official-source research pass is allowed under `PLAY_POLICY.md`.
 
-Prefer batching such lookups, establish the chosen mechanics once, and store the resulting abilities/features/spells/resources in campaign records so ordinary play does not need to reopen the source.
+Prefer batching lookups and storing accepted anchors/selections once so ordinary play does not depend on repeated research.
 
 ## Start from concept when useful
 
-For a novice, first ask for the smallest useful fictional concept: what sort of adventurer they want to play, or offer a few broad archetypal examples only if they need help.
+Normally ask for the smallest useful fictional concept if the player has not already supplied one. A broad answer is enough.
 
-Translate the concept into mechanical options and explain only choices that materially differ.
+Example:
 
-If the player delegates bookkeeping, the DM may assemble a rules-valid mechanical draft from the concept and ask only about unresolved choices that materially change capability or desired play style. Do not require a novice to select unexplained numbers merely because the character sheet contains them.
+```text
+player: Я буду демоном огня.
+```
 
-Do not force the player to select every cosmetic/backstory detail before play. Undefined history may remain undefined; harmless surface details may be seeded by the DM and revised naturally later.
+The Master may translate that explicit concept into a compatible rules-valid archetype/build, capabilities and values. The concept itself is not executable mechanics; accepted Actor/build/archetype state is.
+
+When the player delegates bookkeeping, use this precedence:
+
+```text
+1. explicit player statement/choice
+2. deterministic rules inheritance from accepted anchors
+3. strong rules-valid inference from explicit concept
+4. campaign/rules default
+5. deterministic conservative Master default
+6. one targeted question if materially different legal choices remain unresolved
+```
+
+Do not require the player to state level, maximum HP, resource capacity or every proficiency when HDM can correctly derive/select them through this policy.
+
+If two legal options materially change identity/play style/capability and neither intent nor a pre-existing delegated/default policy resolves them, ask one compact question.
+
+Do not force every cosmetic/backstory detail before play. Undefined history may remain undefined.
 
 ## Mechanical transparency preference
 
-When creating a new campaign player and no preference is stored, ask this as a HUMAN presentation preference rather than an unexplained numeric setting.
+Presentation detail never changes underlying mechanics.
 
-Use anchors equivalent to:
+Infer explicit natural-language preferences when possible. If no preference is expressed, campaign setup may apply its defaults without stopping onboarding merely to populate a presentation field.
 
-**«Сколько игровой механики тебе показывать, от 0 до 10?**
-- **0** — числа, формулы и служебная механика меня не интересуют; хочу в основном жить внутри истории.
-- **5** — показывай важные броски, ресурсы и последствия, но без постоянной бухгалтерии.
-- **10** — хочу видеть и сам отслеживать все доступные мне показатели, модификаторы, ресурсы и расчёты.
+When a numeric scale is useful, anchors remain:
+- `0` — mostly story; hide routine numbers/formulas;
+- `5` — show important rolls/resources;
+- `10` — expose and track all player-visible mechanics/calculations.
 
-Если всё равно — поставлю обычные **3/10**.»
+Store the resulting preference in PLAYER campaign-only preferences.
 
-Localize the wording to the player's language. Do not ask `how much mechanics 0..10?` without explaining what the scale means.
-
-Store the answer as `mechanics_detail` in the stable campaign PLAYER record.
-
-`decision_support_detail` remains an internal presentation safeguard for consequential informed choices and defaults to 6. If the player explicitly chooses mechanics detail 0 because they want no technical mechanics, default both detail values to 0 unless they specify otherwise.
-
-These preferences alter only how mechanics are PRESENTED. They never alter underlying mechanics, randomness, DCs, enemy state, world truth or player capability.
-
-Do not turn onboarding into a questionnaire. The player may change the preference later, and a one-off request for a number does not by itself redefine the profile.
-
-## Character authority and DM-seeded defaults
+## Character authority and Master-seeded defaults
 
 The player's strongest authority covers:
-- name/self-identification when the player defines or corrects it;
-- voluntary personality, beliefs, desires, fears and interpretation of their experiences;
-- explicitly established personal history/appearance/manner, subject to campaign boundaries and already-established causal facts;
+- name/self-identification when defined or corrected;
+- voluntary personality, beliefs, desires, fears and interpretation of experiences;
+- explicitly established personal history/appearance/manner, subject to campaign causality;
 - deliberate current actions and choices.
 
-The DM MUST NOT declare unchosen inner emotion, belief, desire, fear or self-concept as authoritative PC fact.
+The Master MUST NOT declare unchosen inner emotion, belief, desire, fear or self-concept as authoritative PC fact.
 
-The DM MAY seed undefined ordinary external/surface details when they fit the concept and do not grant hidden mechanical advantage: clothing style, hair, visible mannerism, ordinary keepsake, etc. A factual seeded description may become current canon even while the PC is provisional; it remains DM-seeded, not player-authored.
+The Master MAY:
+- normalize a broad player concept into a compact Actor `concept` framing;
+- seed undefined harmless external/surface details when they fit the concept and grant no hidden mechanical advantage;
+- under delegated bookkeeping, select deterministic/conservative rules-valid mechanical defaults consistent with explicit player intent.
 
-If the player explicitly corrects such a detail, adopt the correction unless it conflicts with established rules, world facts or causality. A setup clarification such as `у меня не плащ, а длинное чёрное пальто` normally replaces the seeded description. A live change such as `я сменил плащ на кольчугу` requires the armor to exist/be owned and be mechanically legal. A statement like `я такой сильный, что булыжники грызу` is strong intent about capability and should inform the strongest compatible rules-valid build; it does not bypass ability-score limits.
+A mechanical inference becomes ordinary committed Actor/build/Asset state after validation. It is not marked as player-spoken merely because the Master derived it from the player's concept.
 
-Do not demand approval for every harmless detail. Do not silently rewrite prior consequences if they materially depended on the old fact.
+Explicit compatible player corrections supersede harmless seeded details. Changes that affect already-used mechanics/equipment/causal outcomes follow normal correction/repair rules instead of free retroactive retuning.
 
-## Mechanics before activation
+## Initial mechanical commitment / READY_PC
 
-Treat a draft PC as `provisional` until required choices and derived mechanics are valid.
+Treat the PC as provisional until `CHARACTER_READINESS.md` confirms the initial mechanical commitment frontier.
 
-Before activation, ensure the canonical PC record contains the base mechanics and persistent state needed to derive actual gameplay values: abilities, proficiencies, defenses, HP, movement, resources, features/spells, equipment and applicable persistent modifiers/conditions.
+Before READY_PC, establish enough authoritative anchors to derive ordinary current-play mechanics without leaving discretionary options strategically open. This normally covers the current build/archetype/level basis, ability/check/save basis, common proficiencies/capabilities, HP/LifeState, defense/movement dependencies, meaningful equipment, core resources/actions and applicable spell/feature selections.
 
-Derived values may be calculated from canonical dependencies instead of redundantly stored, but they must be deterministic under the adopted rules. Never guess a missing modifier during play merely because the player does not want to see the number.
+Derived values need not be stored redundantly. A value that is uniquely derivable from committed anchors may be computed later.
 
-A provisional PC may already contain durable identity/concept/appearance facts under `DIEGETIC_ONBOARDING.md`; that does not make it READY_PC. Do not let exploratory alternatives silently become mechanical canon.
+Do **not** keep an initial choice unresolved merely because the exact field has not yet been needed. If its alternatives could affect ordinary current play, bind it before READY_PC without using situational knowledge to choose the advantageous branch.
+
+## Safe post-READY laziness
+
+After READY_PC, later materialization is safe when it is:
+- deterministic from already committed anchors;
+- descriptive/nonmechanical;
+- a genuine new choice created by level-up/acquisition/preparation or another future boundary;
+- governed by a selection policy fixed before the situation where it matters.
+
+This permits a compact initial persistent model without enabling retroactive character optimization.
 
 ## Starting equipment
 
-Use the actual class/background starting-equipment rules or an explicitly adopted alternative. Record every selected item and starting currency before the first scene where ownership matters.
+Use actual class/background starting-equipment rules or an explicitly adopted alternative. Record mechanically significant current equipment before any outcome relies on its ownership/effect.
 
-Do not invent a mysterious magical item as a free story hook unless:
-- the rules/background explicitly provide it; or
-- the player/DM consciously adopts it as a campaign premise and its balance/hidden properties are canonically defined.
-
-Ordinary descriptive possessions seeded by the DM must not silently create mechanical gear/wealth. If an object affects AC, attacks, resources, spellcasting or economy, resolve it through actual equipment/build rules before relying on it mechanically.
+Ordinary descriptive possessions seeded by the Master must not silently create mechanical gear/wealth. If an object affects AC, attacks, resources, spellcasting or economy, resolve it through actual Asset/build rules before relying on it.
 
 ## Ability-score method
 
-Use the campaign's declared method (standard array, point cost, random generation or another explicit house rule). Do not silently switch methods.
+Use the campaign's adopted method. The player need not manually assign every score if bookkeeping is delegated and the chosen deterministic rules-valid assignment is compatible with explicit concept/preferences.
 
-If random generation is chosen, generate honestly under `RANDOMNESS.md` and persist the raw results until assignment is canonical.
+If random generation is chosen, generate honestly under `RANDOMNESS.md` and preserve the raw results until assignment is canonical.
 
-For a novice, explain mechanical tradeoffs in plain language before requesting a meaningful assignment choice. Exact values may remain hidden in ordinary play according to the player's presentation preference.
+Do not alter an already committed assignment after seeing which check would benefit.
 
 ## Spells/features
 
-For spellcasters, store the exact known/prepared spells/features/resources necessary to play the current level. Do not preload the full spell catalog into runtime context.
+Before READY_PC, commit every current discretionary spell/feature selection whose alternatives could materially affect ordinary current play.
 
-When the player needs to choose a spell/feature, retrieve the relevant candidate set and summarize meaningful differences without requiring them to memorize rule text. A bounded setup lookup may be used to establish these durable mechanics, but gameplay should then use the stored result rather than repeatedly researching it.
+Always-granted or uniquely derivable capabilities do not need copied Actor fields merely to prove readiness; they may resolve from the accepted catalog/build anchors.
+
+A genuinely later preparation/level-up/acquisition choice is normal future evolution, not an incomplete initial character.
+
+Do not preload the full spell/feature catalog into runtime context.
 
 ## Character motif vs mechanic
 
-A narrative concept such as "spells often go wrong" is fiction until a concrete recurring mechanic is explicitly adopted.
+A narrative concept such as `spells often go wrong` is fiction until a concrete recurring mechanic is explicitly adopted.
 
-If it should affect outcomes, design the trigger, probabilities/table/effects and balance before play, explain the meaningful consequences to the player, and persist it as a campaign rule/feature.
-
-Never implement such a motif through secret dice manipulation.
+If it should affect outcomes, establish a registered rules-valid mechanic before relying on it. Never implement motifs through secret dice manipulation or ad-hoc narration-as-mechanics.
 
 ## First-session onboarding
 
-Before entering the first true live scene, verify only what is needed now:
-- PC record is canonical and mechanically valid;
-- starting resources/equipment are recorded;
-- player mechanics-presentation preference is stored or defaults are applied;
-- any campaign-specific premise or safety boundary is known;
-- player understands that natural-language actions are allowed and rules will be explained when needed.
+Do not treat the first gameplay scene as something that must wait for a complete sheet.
 
-Do not lecture through the whole character sheet before the relevant mechanics appear.
+During the first few meaningful interactions, the Master should normally:
+- preserve the stable protagonist anchor early through PROVISIONAL_IDENTITY;
+- use concept/inheritance/defaults to rapidly fill the initial mechanical commitment frontier;
+- play scenes that are already honest under the current provisional dependency set;
+- ask only targeted material questions;
+- cross READY_PC once dangerous initial ambiguity is closed.
+
+This is not a hard turn-count SLA, and players may intentionally explore longer.
+
+Do not stretch onboarding merely because additional descriptive fields could still be filled.
