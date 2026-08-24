@@ -42,7 +42,7 @@
     "definition.mode_profile": {"required": ["resolution_policy"], "expected": ["enabled_subsystems", "information_policy", "timing_policy"]}
   },
   "world_records": {
-    "world.actor": {"required": ["name"], "expected": ["roles", "location_id", "build", "abilities", "hp", "life_state_id", "life_state_policy_id", "life_state_progress", "resources"], "definition_binding": {"mode": "optional", "allowed_definition_kinds": ["definition.actor_archetype"]}},
+    "world.actor": {"required": ["name"], "expected": ["roles", "location_id", "build", "abilities", "hp", "life_state_id", "life_state_policy_id", "life_state_progress", "resources", "continuity"], "definition_binding": {"mode": "optional", "allowed_definition_kinds": ["definition.actor_archetype"]}},
     "world.actor_group": {"required": ["name"], "expected": ["member_ids", "leader_id", "location_id", "purpose"], "definition_binding": {"mode": "forbidden"}},
     "world.asset": {"required": [], "expected": ["owner_actor_id", "container_asset_id", "location_id", "quantity", "equipment", "attuned_actor_id", "resources", "durability", "access"], "definition_binding": {"mode": "optional", "allowed_definition_kinds": ["definition.asset"]}},
     "world.location": {"required": ["name"], "expected": ["parent_location_id", "organization_id", "environment_ids", "status"], "definition_binding": {"mode": "optional", "allowed_definition_kinds": ["definition.location_archetype"]}},
