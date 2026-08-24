@@ -1,29 +1,27 @@
 # Character Mechanical Readiness
 
-framework_module_version: 1.0.2
+framework_module_version: 1.1.0
 load_policy: ALWAYS_DURING_GAMEPLAY
-precedence: authoritative for deciding whether a player character is mechanically ready for unrestricted mechanics-capable play; DIEGETIC_ONBOARDING owns gameplay-first provisional character materialization
+precedence: authoritative for deciding whether a player character has crossed the initial mechanical commitment frontier for ordinary mechanics-capable play; DIEGETIC_ONBOARDING owns gameplay-first provisional materialization
 
 ## Purpose
 
-A fictional concept is not a complete D&D character sheet.
+A fictional concept is not executable character mechanics, but a player also does not need to fill a complete character sheet before HDM can play.
 
-The Master may hide character-sheet arithmetic from the player, but it MUST still create and maintain every authoritative mechanical dependency needed to run D&D honestly.
+The Master may hide arithmetic and may perform delegated bookkeeping. It MUST still establish enough authoritative mechanical commitments to run ordinary D&D honestly and MUST NOT choose previously open mechanics opportunistically after seeing the situation where they matter.
 
-`mechanics_detail: 0` changes presentation only. It never permits missing mechanics at the moment they are required for adjudication.
+`mechanics_detail: 0` changes presentation only.
 
-**READY_PC is not a gate on beginning gameplay.** A campaign may already be playing through `DIEGETIC_ONBOARDING.md` with a provisional PC. READY_PC means the same Actor has become complete enough for ordinary mechanics-capable play without unresolved build choices that could change legality, probability or consequence.
-
-If older text requires waiting for a fully completed sheet before the first player-facing scene, this module plus `DIEGETIC_ONBOARDING.md` wins.
+**READY_PC is not a gate on beginning gameplay and is not a 100%-filled dossier predicate.** A campaign may already be playing with a provisional PC. READY_PC means that the same Actor has crossed a reconstructable **initial mechanical commitment frontier**: ordinary current-play mechanics no longer depend on discretionary choices that remain conveniently open.
 
 ## Progressive readiness and local mechanical sufficiency
 
-Before READY_PC, evaluate the immediate proposed outcome against its actual dependencies.
+Before READY_PC, evaluate the immediate proposed outcome against its actual dependency set.
 
 A mechanically relevant provisional-PC outcome may be resolved only when:
-- every authoritative Actor/build/Asset/Effect/rules dependency needed for that outcome is already established;
-- no still-unresolved player-owned build choice can materially change the action's legality, modifier, defense, resource availability or consequence;
-- the runtime can derive the result without inventing a missing mechanical value.
+- every authoritative Actor/build/Asset/Effect/rules dependency needed for that bounded outcome is already established or uniquely derivable from committed anchors;
+- no unresolved discretionary choice can materially change the action's legality, modifier, defense, resource availability or consequence;
+- the runtime can derive the result without choosing a missing value to fit the current situation.
 
 If those conditions are not met, do not guess. Continue gameplay without crossing that mechanical boundary, or establish the smallest missing dependency/choice first under `DIEGETIC_ONBOARDING.md`.
 
@@ -31,177 +29,214 @@ This local sufficiency rule does not itself make the character READY_PC.
 
 ## READY_PC gate
 
-READY_PC is a deterministic completeness condition over the current PC Actor plus its required referenced Assets/definitions/effects/player binding.
+READY_PC is a deterministic semantic predicate over the current PC Actor plus required referenced Assets/Effects/definitions/player binding.
 
-A PC may become fully `active` for ordinary mechanics-capable play, and the campaign may cross its PLAY_READY lifecycle frontier, only after READY_PC succeeds and the required durability transaction is confirmed.
+A PC may become fully `active` for ordinary unrestricted mechanics-capable play, and the campaign may cross its PLAY_READY lifecycle frontier, only after READY_PC succeeds and the required durability transaction is confirmed.
 
-READY_PC requires a rules-grounded current-level character state sufficient to resolve ordinary play without inventing character mechanics on demand.
+READY_PC requires that ordinary current-play mechanics be reconstructable without context-sensitive completion of unresolved character choices.
 
-For the adopted D&D rules baseline, this normally includes when applicable:
-- stable Actor identity plus controlled player binding;
-- species/origin/background dependencies required by the ruleset;
-- complete class progression and every material selected advancement choice;
-- all six ability scores/components required to derive current values;
-- proficiency sources and every material selected proficiency/language/tool/weapon/armor choice;
-- max/current HP and hit-die/recovery dependencies required by the build;
-- movement/speed and defense dependencies;
-- starting/current equipment, weapons, armor, currency and meaningful inventory through authoritative Asset records;
-- current class/species/background/feat/feature selections and their rules definitions;
-- limited-use Actor Resources such as Rage uses, spell slots, points or similar class resources;
-- spellcasting selection state when applicable, including exact known/prepared/spellbook membership required by the ruleset;
-- persistent modifiers/Effects required to derive current mechanics;
-- enough accepted definition/catalog data to deterministically derive common checks, saves, attacks, defenses, resource use and action availability.
+For the adopted D&D rules baseline, the committed frontier normally includes, when applicable:
+- stable Actor ID plus controlled player binding; **name is not required**;
+- an accepted rules/build anchor sufficient to establish current level/progression/capability baseline, such as class progression and/or a validated Actor archetype;
+- species/origin/background anchors when materially required by the selected rules/build;
+- ability-score inputs sufficient to derive common checks and saves;
+- proficiency/capability sources sufficient for ordinary checks, saves, attacks and equipment legality;
+- max/current HP and LifeState/recovery basis when HP is material to the Actor;
+- ordinary defense and movement dependencies;
+- mechanically significant starting/current equipment through authoritative Assets;
+- current core resource and action/capability sources;
+- spellcasting selection state required for ordinary current play when applicable;
+- persistent Effects/modifiers required for current mechanics;
+- every discretionary initial choice whose alternatives could materially change ordinary current-play legality, probability, defense, resource availability, capability or consequence.
 
-Not every redundant derived number is stored. AC, proficiency bonus, attack/save/skill modifiers, spell DC, movement totals and similar values may be recomputed from authoritative dependencies and cached in HOT/MechanicalContext.
+Not every redundant derived number is stored. AC, proficiency bonus, attack/save/skill modifiers, spell DC, movement totals, resource capacities and similar values may be recomputed from authoritative dependencies when their value is uniquely determined.
 
-A schema-valid Actor full of structurally legal but incomplete build choices is NOT READY_PC.
+A schema-valid Actor with a strategically open initial option is NOT READY_PC merely because the missing field has not yet been encountered.
+
+## What may remain unmaterialized after READY_PC
+
+READY_PC does not require eager completion of every future/dossier field.
+
+A missing value may remain safely unmaterialized after READY_PC only when at least one condition holds:
+
+1. **deterministic derivation** — the value is uniquely derivable from already committed class/species/archetype/level/feature/Asset/Effect/rules anchors;
+2. **nonmechanical detail** — the value is descriptive/backstory/presentation state that cannot alter adjudication;
+3. **future evolution** — the choice/value does not exist yet and will arise at a genuine future boundary such as level-up, new equipment, new feature acquisition or later spell preparation;
+4. **precommitted selection policy** — a deterministic/delegated rule fixing the future selection was established before any situation where one option could become advantageous.
+
+If a still-open choice could have changed an earlier or currently pending outcome, it was not safely deferrable and READY_PC should not have been granted with that option open.
 
 ## Character-build authority
 
 The authoritative current PC build is the unified `world.actor` build/state model plus its referenced definitions, Assets and Effects.
 
-The Actor build stores instance-owned selections needed for reconstruction, not a second flattened mechanics sheet. In particular:
+The Actor stores instance-owned selections needed for reconstruction, not a second flattened mechanics sheet:
 
 ```text
+Actor definition_id / archetype when applicable
 build.class_progression
 build.choice_bindings
-build.spellcasting (when applicable)
+build.spellcasting when applicable
 Actor abilities / hp / resources
 world.asset ownership/equipment
 world.effect applications
 ```
 
-Resolved features, proficiencies, attacks, defenses and other mechanically derivable capability surfaces are computed from those dependencies. Do not persist a parallel `mechanics` blob merely because a sheet UI would display them together.
+Resolved features, proficiencies, attacks, defenses and other deterministically derivable capability surfaces are computed from those dependencies.
+
+`Actor.concept` is nonmechanical framing. It may guide preparation, but mechanical outcomes consume the validated mechanical commitments produced from it, never the concept text itself.
+
+## Mechanical initialization precedence
+
+The player is not required to name engine values such as maximum HP, level or resource capacity when HDM can establish them correctly.
+
+For initial materialization, use:
+
+```text
+1. explicit player statement or explicit choice
+2. deterministic rules inheritance from already accepted class/species/archetype/level/features
+3. strong rules-valid inference from explicit player concept
+4. adopted campaign/rules default
+5. deterministic conservative Master default under delegated bookkeeping
+6. one targeted player question when materially different legal choices remain unresolved
+```
+
+Examples:
+- `я буду демоном огня` may justify selection/creation of a compatible validated archetype/build and its implied fire-related capabilities;
+- maximum HP and resource capacity normally derive from the accepted build/archetype/resource definitions instead of being asked as questionnaire fields;
+- a starting level may come from an adopted campaign default or another accepted deterministic setup policy;
+- if two materially different legal options remain equally compatible with the player's intent, ask only when no delegated deterministic/default policy resolves them.
+
+Concept inference cannot bypass rules validation, invent an illegal capability or silently exceed the selected rules baseline.
+
+## No situational optimization
+
+Initial discretionary choices must be fixed without using knowledge of the encounter/problem where one branch becomes useful.
+
+Do not:
+- leave a proficiency open until a matching check appears;
+- choose a spell/feature only after learning that the current obstacle is vulnerable to it;
+- raise a stat/resource/defense retroactively to justify an already attempted outcome;
+- reinterpret an earlier broad concept to obtain a new advantage after the relevant situation is known.
+
+Once a material mechanical commitment is accepted and relied upon, later correction follows normal rules/repair rather than silent retuning.
 
 ## Provisional state
 
-A provisional PC may contain only the mechanical fields genuinely established so far. Missing expected mechanics remain absent rather than being filled with null/empty placeholders for convenience.
+A provisional PC may contain only the facts and mechanics actually committed so far. Missing expected mechanics remain absent rather than null/empty placeholders.
 
-The provisional Actor may already participate in gameplay under `DIEGETIC_ONBOARDING.md`. It may accumulate identity/build/world facts naturally through scenes.
+The provisional Actor may already participate in gameplay and may already be durable after PROVISIONAL_IDENTITY.
 
 Examples of safe provisional gameplay include:
-- dialogue in which the name, background or visible identity becomes established;
-- ordinary movement with no unresolved movement mechanic;
-- interaction that does not require a check or resource;
-- a mechanically relevant action whose complete bounded dependency set is already established.
+- dialogue before a name is known;
+- scenes based on an accepted protagonist concept;
+- ordinary movement with no unresolved movement dependency;
+- interaction that does not require a check/resource;
+- a mechanically relevant action whose complete bounded dependency set is established.
 
-Examples that must stop at the mechanical boundary until dependencies exist include:
-- an attack while attack capability/proficiency/weapon state is unresolved;
-- a save/check whose ability/proficiency inputs could still change through unresolved build choices;
-- spell use before spellcasting legality/selection/resources are established;
-- damage/condition/resource consequences when required defenses/resources/life-state dependencies are unfinished.
+Examples that must stop at the mechanical boundary include:
+- an attack while attack capability/proficiency/weapon state remains discretionary;
+- a save/check whose inputs could still change through open build choices;
+- spell use before spellcasting legality/selections/resources are committed;
+- damage/condition/resource consequences while required defense/HP/LifeState inputs remain unresolved.
 
-## Delegated bookkeeping
+## Delegated bookkeeping and onboarding latency
 
-A player is not required to build the sheet manually.
+If the player delegates mechanics/bookkeeping, the Master SHOULD actively assemble the initial rules-valid commitment frontier instead of serially interviewing the player.
 
-If the player delegates mechanics/bookkeeping, the Master SHOULD progressively assemble a complete rules-valid build behind the scenes and through play.
+Use inheritance/inference/defaults first. Ask only about choices that materially affect identity/play style/capability and cannot be safely resolved through an accepted deterministic/delegated policy.
 
-Ask the player only about unresolved choices that materially affect legal capability or a player-owned identity decision that cannot safely be delegated. Harmless surface defaults may be seeded under `CHARACTER.md` / `DIEGETIC_ONBOARDING.md`.
+The normal goal is READY_PC during the first few meaningful interactions, not after a long artificial onboarding sequence. This is guidance rather than a fixed SLA; deliberate character exploration may take longer.
 
-For harmless bookkeeping choices the player has delegated:
-- use campaign/adopted defaults when defined;
-- otherwise choose conservative rules-valid defaults/recommended options;
-- prefer a deterministic non-random default when randomness is not part of the player's desired character concept;
-- never choose a mechanically invalid shortcut merely to make READY_PC arrive sooner.
-
-If two unresolved legal options materially change what the character can do and the player's intent does not resolve them, ask one compact targeted question when that choice becomes necessary or when readiness convergence otherwise requires it.
-
-Do not front-load all such questions merely because they will eventually need answers.
+Do not manufacture low-stakes scenes solely to avoid completing the mechanical baseline.
 
 ## Exact mechanics source during onboarding
 
 Character materialization is a preparation/onboarding boundary.
 
-Use already-loaded exact campaign mechanics first. If the local package/model context is not sufficient to establish an exact durable current-level mechanic, perform ONE bounded official-source setup lookup under `PLAY_POLICY.md` / `RULES/README.md`, establish the required values/features once, and store the authoritative dependencies.
+Use already-loaded exact campaign mechanics first. If the local package/model context is insufficient to establish an exact durable mechanic, perform ONE bounded official-source setup lookup under `PLAY_POLICY.md` / `RULES/README.md`, batch related needs, and store the accepted mechanical dependencies.
 
-Batch lookups where possible. Do not browse separately for every field and do not create a future dependency on browsing during ordinary turns.
-
-Do not use community/forum material as authority for exact character mechanics when an official/SRD source is available.
+Do not create a per-turn research dependency and do not use community/forum material as authority when an adopted official/SRD source is available.
 
 ## READY_PC detection
 
-The runtime should treat readiness as a continuously reevaluable predicate, not as a ceremonial phase-completion command.
+Treat readiness as continuously reevaluable, not as a ceremonial phase command.
 
 After each accepted onboarding/build delta that can affect readiness:
 
 ```text
-update same provisional Actor / referenced state
-    -> evaluate READY_PC
+update same provisional Actor / referenced owners
+    -> evaluate initial mechanical commitment frontier
     -> if false: continue provisional gameplay
     -> if true: validate semantic acceptance / player-owned choices
     -> publish coherent READY_PC durability transaction
-    -> mark same PC mechanics-ready
+    -> same Actor becomes mechanics-ready
 ```
 
-Do not require the player to say `готово`, `finish character creation`, `accept` or another magic word when the build is already semantically settled. `DURABILITY_GUARD.md` owns semantic acceptance and save timing.
+No magic `готово` / `finish character creation` word is required when the initial commitments are already semantically settled.
 
 ## Persistence barrier
 
-The first confirmed READY_PC transaction MUST make the current character reconstructable from durable campaign state. It contains, directly or by reference:
+The first confirmed READY_PC transaction MUST make the initial mechanically committed character reconstructable from durable campaign state. It contains, directly or by reference:
 - stable PLAYER binding/preferences;
-- the same stable PC Actor ID already used during provisional onboarding;
-- complete READY_PC Actor/build state;
-- required Asset/equipment records and other directly required owner records;
-- PC index entry/current projection updates as applicable;
+- the same stable PC Actor ID used during provisional onboarding;
+- the READY_PC Actor/build/archetype state needed to reconstruct the initial commitment frontier;
+- required Assets/Effects and other directly required owner records;
+- PC index/current projections as applicable;
 - campaign-card protagonist projection for singleplayer;
-- other launch/current routing required by PLAY_READY when that frontier is crossed in the same transaction.
+- launch/current routing required by PLAY_READY when crossed in the same transaction.
 
-This may be:
-- a dedicated READY_PC transaction while gameplay onboarding is already underway; or
-- combined with PLAY_READY when character + required launch state become ready together.
+This is not the first possible PC write: PROVISIONAL_IDENTITY may already have durably stored the Actor, concept/name and partial mechanics earlier.
 
-The player-facing fiction does not begin at this transaction; it may have begun several scenes earlier. The transaction marks the point from which ordinary mechanics-capable play no longer depends on unfinished character construction.
+The READY_PC transaction does not promise a 100%-filled lifelong dossier. Later deterministic lazy materialization and genuine future character evolution use normal durability rules.
 
 ## Runtime precondition after READY_PC
 
-Once READY_PC has been reached, ordinary PC mechanics must remain reconstructable from current authoritative dependencies.
+Once READY_PC has been reached, ordinary current-play mechanics must remain reconstructable from committed authoritative dependencies.
 
-If later integrity checking finds that a mechanics-capable PC has become incomplete:
-1. stop only outcomes that depend on the missing mechanics;
-2. preserve already-established identity/concept and player-owned choices;
-3. reconstruct missing current mechanics from adopted rules and existing accepted selections when deterministic;
-4. ask the player only if a genuinely material unresolved choice cannot be inferred/delegated safely;
-5. publish one coherent repair transaction when durability rules require it;
+If later integrity checking finds an open/missing value:
+1. if uniquely derivable from committed anchors, derive/materialize it without changing character capability;
+2. if it is a genuine new evolution/acquisition choice, resolve it at that new boundary;
+3. if it could have affected prior/current play and was never committed, treat that as an integrity defect rather than choosing the convenient option now;
+4. preserve player-owned identity/concept and already committed choices;
+5. publish a coherent repair when durability rules require it;
 6. never invent retrospective stats merely to justify past outcomes.
 
-Unsupported past mechanical outcomes are repaired under `MECHANICS_INTEGRITY.md`.
+Unsupported past outcomes are handled under `MECHANICS_INTEGRITY.md`.
 
 ## Presentation
 
 At low mechanics detail, onboarding may remain entirely diegetic. Example:
 
-- NPC: `Как тебя зовут?`
-- player answers;
-- the Master continues the scene and adopts that identity;
-- mechanics are materialized progressively when they become relevant.
+- player: `Хочу быть демоном огня.`
+- Master begins a compatible scene and internally establishes a rules-valid mechanical direction;
+- NPC later asks the name;
+- remaining baseline mechanics are derived/committed without presenting a questionnaire;
+- READY_PC may become true silently once the initial commitment frontier is complete.
 
-When READY_PC becomes true, routine persistence may remain invisible. Do not interrupt the fiction with a technical announcement unless the player asked for status or a genuine blocker requires explanation.
-
-If the player asks `покажи мои характеристики`, show exactly the authoritative/derived values currently established. Before READY_PC, clearly distinguish settled values from genuinely unresolved ones; after READY_PC, ordinary current-level mechanics must be available.
+If the player asks for current characteristics, show exactly the authoritative/derived values currently established and distinguish settled commitments from genuinely open provisional choices.
 
 ## Latency discipline
-
-Progressive onboarding does not justify repeated repository or research churn.
 
 Do not:
 - save after every identity/backstory answer;
 - browse separately for every field;
 - reread unchanged character state every turn;
 - repeatedly recalculate unchanged derived values;
-- pause an otherwise harmless scene simply because unrelated character fields remain unresolved.
+- pause harmless fiction because unrelated character details remain undefined;
+- keep mechanically consequential initial choices open merely to prolong diegetic onboarding.
 
-Correct story-first path is conceptually:
+Correct story-first path:
 
 ```text
 campaign scaffold
     -> gameplay begins with provisional PC
-    -> identity/build facts emerge and are accepted
-    -> PROVISIONAL_IDENTITY durability boundary when stable identity is first relied upon
-    -> continue gameplay + progressively materialize mechanics
-    -> READY_PC becomes true
+    -> stable protagonist anchor adopted
+    -> PROVISIONAL_IDENTITY durability boundary
+    -> rapid rules-valid initial mechanical materialization
+    -> READY_PC initial commitment frontier
     -> durable READY_PC / PLAY_READY frontier
-    -> ordinary unrestricted mechanics-capable play
+    -> ordinary unrestricted play + safe lazy details/future evolution
 ```
 
-A direct-build player may skip most provisional discovery and reach READY_PC immediately. Both paths produce the same authoritative final Actor model.
+A direct-build player may reach READY_PC immediately. Both paths produce the same authoritative Actor model.
