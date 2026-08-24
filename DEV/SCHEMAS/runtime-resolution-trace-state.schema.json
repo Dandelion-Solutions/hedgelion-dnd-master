@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/runtime-resolution-trace-state.schema.json",
+  "title": "HDM runtime.resolution_trace state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["resolution_id", "root_command_id", "entries"],
+  "properties": {
+    "resolution_id": {"$ref": "#/$defs/id"},
+    "root_command_id": {"$ref": "#/$defs/id"},
+    "entries": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/traceEntry"}
+    },
+    "compaction_state": {
+      "enum": ["trace.active", "trace.compacted"]
+    },
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "scalar": {"type": ["string", "number", "boolean"]},
+    "traceValue": {
+      "oneOf": [
+        {"$ref": "#/$defs/scalar"},
+        {"type": "array", "items": {"$ref": "#/$defs/scalar"}}
+      ]
+    },
+    "traceEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence", "kind"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 1},
+        "kind": {
+          "enum": [
+            "trace.binding",
+            "trace.validation",
+            "trace.calculation",
+            "trace.rng",
+            "trace.segment"
+          ]
+        },
+        "segment_ref": {"type": "string", "minLength": 1},
+        "operation_id": {"$ref": "#/$defs/id"},
+        "refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "values": {
+          "type": "object",
+          "propertyNames": {"$ref": "#/$defs/id"},
+          "additionalProperties": {"$ref": "#/$defs/traceValue"}
+        },
+        "summary": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "examples": [
+    {
+      "resolution_id": "resolution-0000001",
+      "root_command_id": "turn-000042-cmd-01",
+      "entries": [
+        {
+          "sequence": 1,
+          "kind": "trace.rng",
+          "refs": ["roll.attack.1"],
+          "values": {"raw": [17]}
+        }
+      ],
+      "compaction_state": "trace.active"
+    }
+  ]
+}
