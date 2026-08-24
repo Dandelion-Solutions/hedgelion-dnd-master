@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/target-spec.schema.json",
+  "title": "HDM TargetSpec value",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind_id", "minimum", "maximum"],
+  "properties": {
+    "kind_id": {"$ref": "#/$defs/id"},
+    "minimum": {"type": "integer", "minimum": 0},
+    "maximum": {"type": "integer", "minimum": 0},
+    "range": {"$ref": "#/$defs/range"},
+    "area": {"$ref": "https://hedgelion.invalid/schemas/area-spec.schema.json"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode_id"],
+      "properties": {
+        "mode_id": {"$ref": "#/$defs/id"},
+        "distance": {"type": "number", "exclusiveMinimum": 0},
+        "unit_id": {"$ref": "#/$defs/id"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"mode_id": {"const": "range.distance"}}, "required": ["mode_id"]},
+          "then": {"required": ["distance", "unit_id"]}
+        }
+      ]
+    }
+  },
+  "description": "Catalog/runtime compilation additionally enforces minimum <= maximum and target/range/area compatibility for the registered target kind.",
+  "examples": [
+    {"kind_id": "target.entity", "minimum": 1, "maximum": 1, "range": {"mode_id": "range.reachable"}},
+    {"kind_id": "target.point", "minimum": 1, "maximum": 1, "range": {"mode_id": "range.distance", "distance": 60, "unit_id": "unit.foot"}, "area": {"shape_id": "area.sphere", "unit_id": "unit.foot", "dimensions": {"radius": 20}}}
+  ]
+}
