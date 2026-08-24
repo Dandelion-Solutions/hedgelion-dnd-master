@@ -95,8 +95,8 @@ Research classification is not backlog state. Dormant items create no current ta
 | R2.3 | **COMPLETE / ARCHITECTURE CLOSED** | Context Runtime, retrieval, lazy discovery and allocation | bounded multi-channel discovery; typed packet closure; packet-first allocation; storage/index boundaries |
 | R2.4 | **COMPLETE / ARCHITECTURE CLOSED** | single-context LLM execution and instruction architecture | registered TurnEnvelope; minimal typed gateways; deterministic authority; first-safe-opportunity Chronicler service |
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration and multiplayer interaction semantics | agency-safe scoped collaboration; bounded async joint input; recipient catch-up; two-level noncanonical Dramaturg coordination |
-| R2.6 | **IN PROGRESS** | ChatGPT-Plus assurance, evaluation, security and degradation | tested supported host envelope and explicit supported/degraded/unsupported behavior |
-| R2.7 | **PLANNED** | machine-realization mapping and holistic closure | GAME/DEV/schema/catalog/instruction/test obligations mapped; cross-round review passed; implementation-planning entry criteria satisfied |
+| R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance, evaluation, security and degradation | observable behavioral-containment MVP envelope; fixed Connector path; S53 capability envelope; integrated Protocol-4 validation deferred to implemented-MVP acceptance |
+| R2.7 | **IN PROGRESS** | machine-realization mapping and holistic closure | GAME/DEV/schema/catalog/instruction/test obligations mapped; cross-round review passed; implementation-planning entry criteria satisfied |
 
 ---
 
@@ -225,7 +225,7 @@ Canonical result:
 - no same-envelope Story feedback into gameplay roles;
 - Story cannot durably outrun its admitted Step-5.10 source basis;
 - Narrator is freshly rebound after Chronicler service and Story contention yields before visible-response capacity is threatened;
-- R2.6 owns production-like containment/latency/injection/anti-starvation validation.
+- R2.6 closed the host-assurance contract; final integrated containment/latency/injection/anti-starvation validation is an implemented-MVP acceptance obligation.
 
 Owning R2.4 artifacts remain under `DEV/docs/superpowers/specs/` and `DEV/docs/superpowers/research/` dated `2026-08-24-r2-4-*`.
 
@@ -268,50 +268,50 @@ Canonical result:
 - concurrent shared-horizon updates require current-generation/exact-base fencing and semantic rebase rather than blind merge;
 - Story and Dramaturg planning retain separate retrospective/prospective lifecycles;
 - S14 revisit trigger fired narrowly for multiplayer retained noncanonical planning; no standalone Narrative Dynamics stage was created;
-- R2.6 owns actual-host validation of agency gating, planning containment, concurrent planning update feasibility, lazy-load behavior and multi-chat synchronization limits.
+- R2.6 closed architecture-stage host assurance; actual agency/planning/current-generation/lazy-load reliability remains implemented-MVP acceptance work.
 
 R2.5 Diamond/Strong disposition is recorded in its canonical spec/resolution gate.
 
 ---
 
-# 13. R2.6 — ChatGPT-Plus Assurance, Evaluation, Security & Degradation — IN PROGRESS
+# 13. R2.6 — ChatGPT-Plus Assurance, Evaluation, Security & Degradation — COMPLETE
 
-Depends on concrete R2.1–R2.5 architecture.
+Owning closure artifacts:
 
-Primary active research: S53-delta plus actual assurance obligations produced upstream. D15 remains dormant unless retry evaluation specifically triggers it.
+- `DEV/docs/superpowers/specs/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md`
+- `DEV/docs/superpowers/research/2026-08-24-r2-6-chatgpt-plus-assurance-evidence-ledger.md`
+- `DEV/docs/superpowers/research/2026-08-24-r2-6-current-host-assurance-synthesis.md`
+- `DEV/docs/superpowers/research/2026-08-24-r2-6-production-like-assurance-protocol.md`
+- `DEV/docs/superpowers/research/2026-08-24-r2-6-protocol-4-frozen-fixture-contract.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-behavioral-assurance-owner-clarification.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-resolution-gate.md`
 
-R2.6 must establish the supported host envelope empirically/currently rather than assuming product behavior.
+Canonical result:
 
-Required behavior will be classified as:
+- MVP secrecy/role-boundary guarantee is **observable behavioral containment**, not physical/cognitive isolation;
+- physical presence of ineligible information is permitted; material ineligible use/disclosure is not;
+- the internal suppression/ignoring mechanism is outside the HDM correctness contract;
+- prior ineligibility is not permanent forgetting: lawfully eligible information must remain normally usable;
+- retained Protocols 1-3 are sufficient pre-implementation feasibility evidence for architecture continuation;
+- full production-like Protocol-4 execution moves to the implemented-MVP acceptance stage rather than requiring a parallel pre-implementation MVP harness;
+- cheap bounded blocker checks remain allowed when a concrete host/architecture incompatibility question appears;
+- Narrator baseline is pre-Narrator semantic admission + fresh recipient-scoped rebind + logical `EMISSION_COMMIT`; no byte-exact outbox is required;
+- ambient Project/chat memory is physical context only, never campaign authority/currentness/knowledge/disclosure;
+- context allocation does not depend on exact hidden remaining-token telemetry;
+- S53 resolves to a supported capability/behavior envelope with High recommended, not exact cross-player model identity;
+- D15 remains dormant;
+- repository transport remains fixed to deterministic Python/core preparation + GitHub Connector; no transport reselection/fallback probes;
+- experiments/prototypes/raw fixtures/instrumentation belong in HDM Lab by default;
+- Protocol-4-derived scenarios remain mandatory downstream test/release-readiness obligations and are not discarded.
 
-```text
-SUPPORTED
-SUPPORTED WITH DOCUMENTED LIMITATION
-DEGRADED MODE
-UNSUPPORTED
-```
-
-Minimum assurance domains now include:
-
-- Protocols 1–3 role-containment regression;
-- Chronicler -> Narrator containment and first-safe-opportunity anti-starvation;
-- Context Runtime packet/degradation behavior under realistic pressure;
-- instruction/data/role-switch injection resistance;
-- Narrator emission fencing;
-- agency-gating false-positive/false-negative behavior;
-- maximal-safe-frontier narration behavior;
-- stale collaboration generation handling;
-- shared/local Dramaturg planning -> Narrator/catch-up leakage containment;
-- shared-horizon concurrent update/rebase feasibility through the supported repository path;
-- lazy planning retrieval and split-party coherence without global scans;
-- host limitations affecting multi-chat/repository synchronization;
-- explicit shared serving/model/safety profile behavior where current product semantics expose a material common profile.
-
-R2.6 begins with a task-specific Source Manifest and current capability/evidence verification. It does not reopen accepted upstream semantics merely because implementation would be easier another way.
+Resolution gate: **17/17 PASS; unresolved architecture blockers 0**.
 
 ---
 
-# 14. R2.7 — Machine Realization Mapping & Holistic Architecture Closure — PLANNED
+# 14. R2.7 — Machine Realization Mapping & Holistic Architecture Closure — IN PROGRESS
 
 Depends on: **R2.1–R2.6**.
 
@@ -327,6 +327,17 @@ R2.7 specifically maps each durable record family to:
 - migrations and validation/tests.
 
 R2.7 additionally maps R2.5 collaboration and Dramaturg planning identities/generations, physical roots, current-generation fencing, discovery metadata, retention and schema/runtime/instruction integration.
+
+R2.7 also owns the R2.6 machine/instruction/test handoff:
+
+- exact CORE/Project-Instructions placement of the behavioral eligibility rule;
+- `ineligible now -> do not materially use/disclose` plus `lawfully eligible later -> may use normally`;
+- Context Runtime status/result realization and conservative estimator hooks;
+- Narrator/`EMISSION_COMMIT` realization;
+- deployment capability prerequisites and visible auxiliary-surface test obligations;
+- fixed Connector call/currentness mapping;
+- Protocol-4-derived test/evaluation catalog and MVP release/readiness gates;
+- Lab-vs-public experiment/result boundary.
 
 Closure includes cross-round authority/duplicate-owner review, Retry/recovery/concurrency composition, history/continuity/context consistency, Actor/context/role-containment composition, multiplayer recipient/secrecy/planning composition, dormant-trigger preservation, full candidate-disposition recheck and stale derivative/status repair.
 
@@ -351,14 +362,14 @@ R2.2  COMPLETE / ARCHITECTURE CLOSED
 R2.3  COMPLETE / ARCHITECTURE CLOSED
 R2.4  COMPLETE / ARCHITECTURE CLOSED
 R2.5  COMPLETE / ARCHITECTURE CLOSED
-R2.6  IN PROGRESS
-R2.7  PLANNED
+R2.6  COMPLETE / ARCHITECTURE CLOSED
+R2.7  IN PROGRESS
 
-R2.6 next activity:
+R2.7 next activity:
     construct task-specific dependency subgraph / Source Manifest
-    -> verify current ChatGPT-Plus/platform capability evidence
-    -> build assurance matrix from concrete R2.1–R2.5 obligations
-    -> alternatives/decision only where a real supported/degraded/unsupported product trade-off remains
+    -> map accepted semantic owners into GAME/DEV/schema/catalog/instruction/test obligations
+    -> perform holistic duplicate-authority / composition / dormant-trigger review
+    -> produce implementation-planning entry criteria
 
 Broad implementation: BLOCKED.
 ```
