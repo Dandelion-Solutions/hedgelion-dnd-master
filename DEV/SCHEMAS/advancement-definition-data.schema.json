@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/advancement-definition-data.schema.json",
+  "title": "HDM definition.advancement data",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["levels"],
+  "properties": {
+    "prerequisites": {"$ref": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json"},
+    "initial": {"$ref": "#/$defs/stage"},
+    "levels": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/levelEntry"}
+    }
+  },
+  "$defs": {
+    "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/machineId"}
+    },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "automatic_grant_definition_ids": {"$ref": "#/$defs/idSet"},
+        "choice_slots": {
+          "type": "array",
+          "items": {"$ref": "https://hedgelion.invalid/schemas/build-choice-slot.schema.json"}
+        }
+      }
+    },
+    "levelEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level"],
+      "properties": {
+        "level": {"type": "integer", "minimum": 1},
+        "automatic_grant_definition_ids": {"$ref": "#/$defs/idSet"},
+        "choice_slots": {
+          "type": "array",
+          "items": {"$ref": "https://hedgelion.invalid/schemas/build-choice-slot.schema.json"}
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "levels": [
+        {
+          "level": 1,
+          "automatic_grant_definition_ids": ["feature.fighter.second_wind"],
+          "choice_slots": [
+            {
+              "choice_id": "advancement.fighter.level_1.style",
+              "minimum": 1,
+              "maximum": 1,
+              "options": [
+                {"option_id": "choice.fighting_style.defense", "grant_definition_ids": ["feature.fighting_style.defense"]}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
