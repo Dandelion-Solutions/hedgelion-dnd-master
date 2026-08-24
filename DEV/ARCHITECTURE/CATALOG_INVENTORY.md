@@ -1,325 +1,419 @@
 # HDM Catalog Inventory
 
-Status: **REVIEWED BASELINE — STEPS 1–3 + STEP-4 + STEP-5.0 RETIREMENTS APPLIED**
+Status: **R2.7 WP-03 CANONICAL CLASSIFICATION — STRUCTURAL REALIZATION IN PROGRESS**
 
-Catalog version: `1.6.0`
+Catalog generation: `2.0.0`
 
-This document fixes the class inventory used to design schemas and runtime
-contracts. "Complete" means sufficient coverage for the intended HDM
-architecture and the SRD 5.2.1 rules surface. Future catalog versions may add
-missing classes without repurposing existing IDs.
+`2.0.0` is the unreleased clean-slate R2.7 machine-contract generation. Later R2.7 domains may make coordinated changes inside this generation before the final architecture gate closes; no campaign or released runtime depends on the superseded `1.6.0` scaffold.
 
-The exact machine-readable IDs are in `CATALOG/core-catalog.json`. This document
-is authoritative for their classification.
+The exact closed machine IDs are in `DEV/CATALOG/core-catalog.json`. This document is authoritative for classification and class-admission semantics. Exact persistent schemas, roots, sharding and HOT/SQLite realization are owned by later R2.7 domains.
 
-## 1. Review basis
+---
 
-The inventory was cross-checked against these primary sources:
+## 1. Classification rule
 
-- [System Reference Document 5.2.1](https://www.dndbeyond.com/srd), especially
-  Playing the Game, character creation, equipment, spellcasting, the Rules
-  Glossary, hazards/environment, magic items, and monster stat blocks;
-- [Foundry D&D5e activities](https://github.com/foundryvtt/dnd5e/wiki/Activities)
-  and the current `foundryvtt/dnd5e` data models, which separate actors, items,
-  activities, effects, and attack/check/damage/heal/save/summon/teleport/
-  transform behavior;
-- [Avrae Automation Reference](https://avrae.readthedocs.io/en/latest/automation_ref.html)
-  and `avrae/avrae` automation effects, which demonstrate bounded target, roll,
-  attack, check, save, damage, temporary-HP, counter, spell, condition, and
-  effect operations;
-- [PF2e Rule Elements](https://github.com/foundryvtt/pf2e/wiki/Quickstart-guide-for-rule-elements),
-  used as prior art for selectors, predicates, provenance, stacking, grants,
-  restrictions, and data-driven modifiers.
+Every machine concept belongs to the smallest class that matches its independent responsibility and lifecycle:
 
-HDM does not copy any source's complete hierarchy. Foundry's broad `Item`
-container deliberately combines equipment, classes, species, spells, and feats.
-HDM keeps those reusable definitions separate while allowing a physical asset
-to expose several compatible facets.
+1. **engine capability / closed enum** — executable or protocol meaning implemented and reviewed by the engine;
+2. **`definition.*`** — reusable validated rules/content composed from registered capabilities;
+3. **`world.*`** — one particular campaign thing/fact with independent world identity/lifecycle/current state;
+4. **`runtime.*`** — independently addressable non-world operational/evidence owner required across retry, suspension, recovery, collaboration, disclosure or audit;
+5. **embedded `value.*`** — typed request/result/control object without independent lifecycle;
+6. **noncanonical projection family outside the canonical/current record catalog** — Story and retained Dramaturg planning, which have their own projection lifecycles but cannot become gameplay authority.
 
-## 2. Separation rule
+Facets/tags classify or route. They never grant executable semantics or create independent identity.
 
-Every registry belongs to exactly one group:
+A concept is not promoted to a record merely because it is serialized, cached or useful to an LLM.
 
-1. **content definitions** — reusable rules/content selected or composed by the
-   Master;
-2. **world records** — particular things and facts in a campaign;
-3. **runtime records** — stored operational/audit objects;
-4. **engine capabilities and protocol enums** — executable operations and
-   closed values understood by Python.
+---
 
-A concrete SRD spell is a `definition.spell`. Casting it uses a
-`definition.activity`; one invocation is a `runtime.resolution`; committed
-damage becomes an `event.damage.applied`. These are related objects at different
-boundaries, not four names for the same class.
+## 2. Reusable definition classes
 
-Transient requests, signals, contributions, deltas, rolls, segments, boundary
-occurrences, pending child descriptors, publication manifests, and receipts are
-protocol value kinds. They are neither world entities nor content-search results.
+Catalog 2.0 retains the accepted reusable definition families. Exact IDs are machine-owned in `core-catalog.json`.
 
-Literary Story projections are outside these canonical/current record classes.
-`STORY/NARRATIVE` owns non-canonical literary records; literary chapter
-boundaries are index groupings over those records, not world-record kinds.
+### Rules vocabulary
 
-A numeric timeline slot or local sparse sequence may be used as an ordering
-**value** inside an explicit chronology domain. It is not an independently
-identified world record and does not establish a campaign-global total order.
+- `definition.ability`
+- `definition.skill`
+- `definition.proficiency`
+- `definition.size_category`
+- `definition.creature_type`
+- `definition.movement_mode`
+- `definition.sense`
+- `definition.language`
+- `definition.damage_type`
+- `definition.currency`
+- `definition.equipment_property`
+- `definition.weapon_mastery`
+- `definition.spell_school`
+- `definition.rest_policy`
 
-## 3. Reusable content-definition classes
+### Actor construction / progression
 
-### 3.1 Rules vocabulary
+- `definition.actor_archetype`
+- `definition.species`
+- `definition.background`
+- `definition.class`
+- `definition.subclass`
+- `definition.advancement`
+- `definition.feat`
+- `definition.feature`
 
-| ID | Boundary |
+### Executable/state-bearing reusable content
+
+- `definition.spell`
+- `definition.asset`
+- `definition.activity`
+- `definition.resource`
+- `definition.effect`
+- `definition.condition`
+- `definition.recipe`
+
+### World-building / policy content
+
+- `definition.hazard`
+- `definition.terrain`
+- `definition.environment`
+- `definition.location_archetype`
+- `definition.organization_archetype`
+- `definition.mission_template`
+- `definition.contract_template`
+- `definition.mode_profile`
+
+A reusable definition never becomes mutable world-instance state. A new executable primitive is engine work, not campaign-authored content.
+
+---
+
+## 3. World-record classes
+
+Catalog 2.0 world owners are:
+
+| ID | Responsibility |
 |---|---|
-| `definition.ability` | Ability score and rules identity |
-| `definition.skill` | Skill/check specialization |
-| `definition.proficiency` | Proficiency category, rank, or group |
-| `definition.size_category` | Rules-bearing size |
-| `definition.creature_type` | Creature taxonomy used by rules/targets |
-| `definition.movement_mode` | Walk, climb, fly, swim, burrow, or custom mode |
-| `definition.sense` | Vision/sense capability |
-| `definition.language` | Language or communication system |
-| `definition.damage_type` | Damage identity and interactions |
-| `definition.currency` | Denomination and conversion policy |
-| `definition.equipment_property` | Weapon, armor, tool, or gear property |
-| `definition.weapon_mastery` | Weapon-mastery behavior |
-| `definition.spell_school` | Spell-school vocabulary |
-| `definition.rest_policy` | Rest and recovery/time contract |
+| `world.actor` | particular PC/NPC/creature/companion current state, including source-Actor-owned non-epistemic continuity when retained |
+| `world.actor_group` | independently identified group/roster/crowd where group identity matters |
+| `world.asset` | particular item/document/vehicle/currency holding/object |
+| `world.location` | particular place |
+| `world.connection` | independently stateful traversable/lockable link |
+| `world.zone` | mechanically relevant bounded area |
+| `world.organization` | faction/government/guild/household/institution |
+| `world.contract` | agreement and independently stateful obligations/terms |
+| `world.mission` | independently tracked goal/stage/progression owner |
+| `world.scene` | scene/environment current state and bounded routing context |
+| `world.encounter` | world-facing encounter referent where independently useful; not generic Procedure authority |
+| `world.hazard` | independently stateful placed/active hazard when hazard identity/lifecycle is required |
+| `world.effect` | concrete Effect/Condition application owner |
+| `world.lore_fact` | independently identified objective proposition + truth/lifecycle |
+| `world.knowledge` | current fictional subject-to-proposition epistemic relation |
 
-These are ruleset data. Python implements generic operations; an SRD seed later
-supplies concrete abilities, damage types, conditions, and other definitions.
+### Retired generic relationship record
 
-### 3.2 Actor construction and advancement
+`world.relationship` is **not** admitted in catalog 2.0.
 
-| ID | Boundary |
+R2.2 assigns subjective directed relationship continuity to the source Actor:
+
+```text
+(source_actor_id, target_subject_id)
+    -> sparse trust / affinity / fear / respect / hostility / felt_obligation
+```
+
+Objective social facts remain with their natural owners such as organization membership, contract, ownership or another specific future typed owner. A future objective relation class must prove independent identity/lifecycle; the old generic `attitude/strength/status` container is not retained as an extensibility placeholder.
+
+### Lore and knowledge
+
+`world.lore_fact` uses separate axes:
+
+```text
+truth_status:
+    truth.undetermined
+    truth.established
+    truth.disproven
+
+record_status:
+    lore_record.active
+    lore_record.superseded
+```
+
+In-world disagreement does not add `truth.disputed`; it belongs to `world.knowledge`.
+
+`world.knowledge` is conceptually keyed by `(knower_id, fact_id)` and uses:
+
+```text
+epistemic.aware
+epistemic.known
+epistemic.believed
+epistemic.suspected
+epistemic.rejected
+```
+
+Legacy Actor/PC/Faction embedded knowledge arrays are not parallel writable owners.
+
+---
+
+## 4. Runtime-record classes
+
+Catalog 2.0 runtime owners are:
+
+| ID | Responsibility |
 |---|---|
-| `definition.actor_archetype` | Reusable PC/NPC/monster/stat-block baseline |
-| `definition.species` | Species package and traits |
-| `definition.background` | Background/origin package |
-| `definition.class` | Class progression |
-| `definition.subclass` | Class-linked specialization |
-| `definition.advancement` | Reusable level/choice/grant progression step |
-| `definition.feat` | Selectable feat package |
-| `definition.feature` | Class, species, monster, item, or campaign feature |
+| `runtime.session` | independently retained session coordination/lifecycle evidence where required |
+| `runtime.message` | accepted communication evidence identity and retained exact/compacted payload state |
+| `runtime.interaction` | one accepted external exchange/invocation identity |
+| `runtime.intent_plan` | finite ordered material clauses from one Interaction |
+| `runtime.command` | accepted idempotent root execution request + mandatory descendant closure disposition |
+| `runtime.procedure` | independent procedure-local operational state owner |
+| `runtime.resolution` | exactly one Activity invocation state |
+| `runtime.continuation` | one suspended Resolution generation |
+| `runtime.mechanical_event` | immutable committed mechanical evidence |
+| `runtime.semantic_event` | compact accepted semantic-history evidence |
+| `runtime.resolution_trace` | bounded diagnostic/calculation evidence |
+| `runtime.disclosure` | sparse human-player material exposure relation |
+| `runtime.collaboration_obligation` | bounded unresolved multi-human contribution collection/generation owner |
+| `runtime.checkpoint` | optional immutable recovery/maintenance descriptor |
+| `runtime.id_allocator` | allocation state only where the selected identity policy actually uses campaign allocation |
+| `runtime.maintenance_audit` | maintenance/diagnostic audit object |
+| `runtime.catalog_gap_report` | explicit unsupported-capability report |
 
-`actor_archetype` covers monsters; a separate `monster` kind would duplicate
-it. PC, NPC, companion, summon, and swarm are instance facets or roles.
+### Disclosure
 
-### 3.3 Executable and state-bearing definitions
+`runtime.disclosure` is conceptually keyed by `(player_id, fact_id)`. It owns material human exposure only. It does not own PC knowledge, objective truth or host read receipts.
 
-| ID | Boundary |
-|---|---|
-| `definition.spell` | Spell metadata plus Activities/effects |
-| `definition.asset` | Item, vehicle, document, currency, or other asset |
-| `definition.activity` | Bounded executable composition of primitives |
-| `definition.resource` | Capacity, spending, and recovery policy |
-| `definition.effect` | Effect template, duration, rules, and lifecycle |
-| `definition.condition` | Named condition expressed through effects/rules |
-| `definition.recipe` | Craft inputs, work/time, checks, and outputs |
+### Collaboration
 
-A condition remains separately named because rules target it by identity. Its
-execution uses generic effect machinery. A recipe is reusable content that may
-be executed through several crafting Activities.
+`runtime.collaboration_obligation` is admitted because R2.5 proves an independent recoverable lifecycle/generation when unresolved human input must survive participant/chat gaps and no native Procedure/Continuation/Choice owner already owns the response obligation.
 
-Rule Elements and Trigger Bindings are embedded mechanical value objects owned
-by the Feature, Effect, Asset, equipment property, Feat, or Hazard
-that grants them. They have no independent lifecycle or canonical ID. Their
-exact contracts are defined in `RULE_ELEMENT_MODEL.md`.
+It owns collection/waiting/current-generation state only, never gameplay consequence or PC control.
 
-### 3.4 World-building and host policy
+---
 
-| ID | Boundary |
-|---|---|
-| `definition.hazard` | Trap, poison, disease, curse, or environmental hazard |
-| `definition.terrain` | Rules-bearing terrain properties |
-| `definition.environment` | Light, weather, temperature, pressure, etc. |
-| `definition.location_archetype` | Place/facility structure and capabilities |
-| `definition.organization_archetype` | Organization structure and roles |
-| `definition.mission_template` | Goal/stage/reward structure |
-| `definition.contract_template` | Parties/terms/obligation structure |
-| `definition.mode_profile` | Mechanics, information, and presentation policy |
+## 5. Values, not records
 
-Lore facts and scenes are campaign records rather than reusable engine content.
-Chronology ordering lives in event/frontier/value contracts rather than a
-standalone `world.timeline_marker`. Literary narrative records live under
-non-canonical `STORY/NARRATIVE`; chapter boundaries are index groupings over that
-layer.
+The following remain embedded typed values because they do not independently own lifecycle/state merely by crossing a phase/API boundary:
 
-## 4. World-record classes
+### Deterministic execution values
 
-| ID | Particular campaign object |
-|---|---|
-| `world.actor` | Character, NPC, creature, companion, summon, or swarm |
-| `world.actor_group` | Party, roster, crowd, crew, or targetable group |
-| `world.asset` | Item, stack, document, currency holding, or vehicle |
-| `world.location` | Place in the world hierarchy |
-| `world.connection` | Navigable/lockable link between locations |
-| `world.zone` | Mechanically relevant bounded area |
-| `world.organization` | Faction, guild, state, household, or institution |
-| `world.relationship` | Typed relationship between world subjects |
-| `world.contract` | Agreement, obligations, and state |
-| `world.mission` | Goal, stages, and progression |
-| `world.scene` | Current or historical narrative context |
-| `world.encounter` | Bounded encounter/combat context |
-| `world.hazard` | Placed or active hazard |
-| `world.effect` | Effect instance attached to a subject/zone |
-| `world.lore_fact` | Canonical proposition and truth status |
-| `world.knowledge` | In-fiction epistemic state for a knower/proposition |
+- `value.runtime_command`
+- `value.action_request`
+- `value.transition_request`
+- `value.intent_clause`
+- `value.target_spec`
+- `value.area_spec`
+- `value.duration_spec`
+- `value.cost_spec`
+- `value.signal`
+- `value.contribution`
+- `value.state_delta`
+- `value.roll_request`
+- `value.roll_result`
+- `value.choice_request`
+- `value.reaction_offer`
+- `value.resolution_receipt`
+- `value.execution_segment`
+- `value.pending_child_invocation`
+- `value.invocation_fact`
+- `value.boundary_occurrence`
+- `value.publication_manifest`
+- `value.validation_issue`
 
-Inventories, HP, pools, occupancy, mission stages, chronology ordering values,
-and similar owner-local state remain inside their owners unless a proven
-independent identity/lifecycle requires a record.
+### Step-4 / Round-2 typed gateway values
 
-Literary Chapters are not catalog records. `STORY/NARRATIVE` stores the
-non-canonical literary records, while Chapter title/order/range is maintained by
-Story index metadata over NARRATIVE record references.
+- `value.epistemic_delta`
+- `value.role_context_request`
+- `value.context_need_profile`
+- `value.role_context_bundle`
+- `value.context_trace`
+- `value.context_budget_envelope`
+- `value.turn_envelope`
+- `value.interpreter_result`
+- `value.preparation_draft`
+- `value.actor_proposal`
+- `value.story_projection_draft`
+- `value.narration_result`
+- `value.story_service_decision`
 
-## 5. Runtime-record classes
+`RoleContextBundle`, `ContextTrace` and `TurnEnvelope` do not become campaign memory/current truth merely because implementations may serialize them for diagnostics or local execution.
 
-| ID | Stored operational/audit object |
-|---|---|
-| `runtime.session` | Session coordination/runtime identity evidence |
-| `runtime.message` | Raw user/Master/tool message when retained for transcript/audit |
-| `runtime.interaction` | Player input, plan/commands, and response boundary |
-| `runtime.procedure` | Independent rules-procedure scope and sole owner of participant-local procedure ResourceState |
-| `runtime.intent_plan` | Ordered material clauses from one player input |
-| `runtime.command` | Accepted idempotent executable clause and mandatory descendant closure owner |
-| `runtime.resolution` | Exactly one Activity invocation and its execution state |
-| `runtime.continuation` | Portable state for one suspended Resolution generation |
-| `runtime.mechanical_event` | Immutable committed runtime fact |
-| `runtime.semantic_event` | Compact durable campaign-log projection |
-| `runtime.resolution_trace` | Rolls, contributions, calculations, deltas |
-| `runtime.checkpoint` | Recoverable state/frontier descriptor |
-| `runtime.id_allocator` | Allocation state by identity policy |
-| `runtime.maintenance_audit` | Diagnostic/control operation audit |
-| `runtime.catalog_gap_report` | Non-executable missing-capability report |
+---
 
-`runtime.procedure` is an operational lifetime owner, not a generic workflow
-engine. It is distinct from `world.encounter`, from one-Activity
-`runtime.resolution`, and from `runtime.continuation`. An Encounter may be a
-world referent for a Procedure, but it is not the universal owner of
-procedure-local action/reaction/movement-style budgets.
+## 6. Closed semantic/protocol vocabularies added in 2.0
 
-`ExecutionSegment` remains an embedded protocol value addressed through its
-owning command/resolution plus sequence. No `runtime.execution_segment` or
-`runtime.resolution_chain` class is admitted in catalog version 1.6.0.
+Catalog 2.0 registers later accepted architecture where exact machine spelling was previously deferred.
 
-`runtime.dirty_record` and `runtime.publication_batch` are not admitted in
-catalog 1.6.0. Dirty bookkeeping and publication transactions remain required
-operational concepts, but Step 5.5/5.6 must prove independent identity/lifecycle
-before any corresponding runtime record is re-admitted. `value.publication_manifest`
-remains an embedded protocol value and does not by itself create a record owner.
+### Actor continuity
 
-Protocol values may be embedded in traces, receipts, commands, continuations or
-checkpoints but do not receive independent record identity by default.
+- lifetimes: `actor_continuity.foundation`, `actor_continuity.durable_evolving`, `actor_continuity.transient_private`;
+- cognition purposes: `cognition.react`, `cognition.reflect`, `cognition.plan`, `cognition.reconsider`, `cognition.relationship_update`;
+- subjective relationship facets: `relationship.trust`, `relationship.affinity`, `relationship.fear`, `relationship.respect`, `relationship.hostility`, `relationship.felt_obligation`.
 
-## 6. Structural facets
+### Logical roles / Context Runtime
 
-Facets may combine and never execute mechanics by themselves.
+- roles: Interpreter, Dramaturg, Actor, Narrator, Chronicler, Commentator under `role.*` IDs;
+- discovery channels: current scope, scene manifest, explicit ref, active dependency, live current, index lookup, history hint;
+- representation classes: exact, full structured, compact structured, summary, reference only;
+- assembly outcomes: assembled, assembled degraded, unsatisfiable.
 
-- Actors: `actor.player_character`, `actor.nonplayer_character`,
-  `actor.companion`, `actor.summon`, `actor.swarm`, `actor.mount`,
-  `actor.hireling`, `actor.temporary`.
-- Assets: `asset.weapon`, `asset.armor`, `asset.shield`, `asset.ammunition`,
-  `asset.consumable`, `asset.tool`, `asset.spellcasting_focus`,
-  `asset.container`, `asset.wearable`, `asset.currency`, `asset.key`,
-  `asset.document`, `asset.quest_item`, `asset.magic`, `asset.artifact`,
-  `asset.vehicle`, `asset.mount_gear`, `asset.crafting_material`,
-  `asset.food_drink`, `asset.poison`, `asset.trade_good`, `asset.treasure`,
-  `asset.decoration`.
-- Locations: `location.plane`, `location.world`, `location.region`,
-  `location.settlement`, `location.district`, `location.site`,
-  `location.structure`, `location.room`, `location.wilderness`,
-  `location.dungeon`, `location.battlefield`, `location.abstract`.
-- Organizations: `organization.faction`, `organization.government`,
-  `organization.guild`, `organization.religious`,
-  `organization.military`, `organization.business`, `organization.criminal`,
-  `organization.family`, `organization.community`.
+These enums control deterministic assembly/routing contracts; they create no context authority.
 
-There is no `asset.misc` facet. An otherwise unclassified asset remains valid
-with an empty or campaign-specific facet set. Creature type, species, class,
-and allegiance are referenced definitions or mutable relationships.
-An adventuring party is a `world.actor_group`; it is not duplicated as an
-organization facet.
+### Chronicler service
 
-## 7. Activity intent families
+- `story_service.no_backlog`
+- `story_service.service`
+- `story_service.defer`
 
-| ID | Primary intent |
-|---|---|
-| `activity.perceive` | Directly or passively observe |
-| `activity.search` | Actively locate, inspect, or investigate |
-| `activity.communicate` | Speak, signal, write, or express |
-| `activity.influence` | Persuade, deceive, intimidate, negotiate |
-| `activity.perform` | Entertain, demonstrate, or present |
-| `activity.move` | Reposition, travel, pursue, flee, climb, jump, swim |
-| `activity.manipulate` | Open, close, lock, place, operate, break, alter |
-| `activity.use_asset` | Drink, read, apply, consume, or operate an asset |
-| `activity.transfer` | Take, give, drop, steal, pay, or exchange |
-| `activity.attack` | Attempt harm through an attack |
-| `activity.defend` | Dodge, guard, parry, take cover, or protect |
-| `activity.control` | Grapple, shove, restrain, escape, reposition another |
-| `activity.cast` | Cast a spell or conduct a ritual |
-| `activity.activate_feature` | Invoke a feature or artifact capability |
-| `activity.test` | Attempt an uncertain task not covered more specifically |
-| `activity.assist` | Help another subject's activity |
-| `activity.conceal` | Hide self, another subject, an object, or evidence |
-| `activity.prepare` | Ready, aim, hold, or prepare a response |
-| `activity.rest` | Execute a rules-bearing rest |
-| `activity.craft` | Create, repair, dismantle, brew, or scribe |
-| `activity.downtime` | Extended work, training, or research |
-| `activity.wait` | Deliberately advance local time/procedure state |
-| `activity.command` | Direct a companion, group, facility, or vehicle |
-| `activity.composite` | Reusable rules-defined ordered composition |
+No durable Story scheduler/job queue is implied.
 
-A host-planned natural-language turn remains an ordered
-`runtime.intent_plan`; it does not create a permanent composite definition.
+### Collaboration / input
 
-Saving throws, damage, healing, effects, and resource changes are resolver
-operations or consequences rather than player-intent families.
+Coordination families:
 
-## 8. Capability deduplication
+- `collaboration.independent_immediate`
+- `collaboration.agency_dependent_collective`
+- `collaboration.rule_owned_ordered`
 
-The machine seed contains the exact closed IDs for operations, transitions,
-events, resources, effects, rules, targets, areas, ranges, triggers, time,
-stacking, state machines, publication values, knowledge, truth status, and Step-3
-execution outcomes/protocol values.
+Input classes:
 
-- A condition uses `op.create_effect` with a `definition.condition`; there is
-  no second condition-mutation primitive.
-- Summoning uses `op.create_entity`; enchantment uses an effect on an asset.
-- `rule.cap`/`rule.floor` are `rule.set_maximum`/`rule.set_minimum`.
-- Spell slots, charges, HP, and feature uses are content definitions over
-  generic resource mechanics.
-- Intent mapping outcome and later execution state remain separate axes.
-- Transitions are accepted commands; events are committed facts.
-- Root command closure is not duplicated by a separate ResolutionChain class.
-- Chronology is not duplicated by a standalone timeline-marker world owner.
-- Generic dirty/publication record identities are not pre-admitted before their
-  Step-5 lifecycle slices prove a need.
+- `input.ooc_coordination`
+- `input.diegetic_communication`
+- `input.actionable_intent`
+- `input.control_signal`
 
-## 9. D&D/SRD seed coverage
+Collaboration lifecycle:
 
-A separate SRD 5.2.1 seed must later populate at least:
+- `collaboration.open`
+- `collaboration.closed`
+- `collaboration.resolved`
+- `collaboration.obsolete`
 
-- abilities, skills, proficiencies, sizes, creature types, movement modes,
-  senses, languages, damage types, and conditions;
-- species, backgrounds, classes, subclasses, advancements, feats, features,
-  spells, and monster archetypes;
-- coins, weapons, masteries, armor, tools, gear, mounts, vehicles, magic items,
-  and recipes;
-- actions, bonus actions, reactions, rests, travel/exploration, environments,
-  poisons, traps, curses/contagions, and encounter rules.
+Typed explicit non-action results include pass/ready/no-further-input. Presence, silence and timeout are not equivalent results.
 
-Concrete SRD names and mechanics do not belong in the engine capability seed.
+### Dramaturg planning content class
 
-## 10. Extension test
+- `planning.source_anchored_constraint`
+- `planning.provisional_dramaturgic_direction`
 
-A later addition must answer:
+These classify noncanonical planning entries. They do not make planning a `world.*` owner.
 
-1. Is it reusable content, a world instance, a runtime record, or a protocol/
-   executable value?
-2. Does an existing class plus facets/capabilities already express it?
-3. Does it need independent identity and lifecycle?
-4. Does it introduce Python behavior or only validated data?
+### Chronology / recovery / Story / message retention
 
-New IDs require a catalog version change. Existing IDs are never silently
-repurposed.
+Closed vocabularies include:
+
+- chronology relation kinds: causes, precedes, same-coordinate, elapsed;
+- recovery outcomes: ready, retry, blocked;
+- Story layers: transcript, events, mechanics, narrative;
+- Story candidate dispositions: must-materialize, may-omit;
+- message payload states: exact-retained, compacted.
+
+Exact physical representations remain owned by their later R2.7 domains.
+
+---
+
+## 7. Durability/publication vocabulary correction
+
+Catalog 1.6 incorrectly represented `soft|hard` as intrinsic durability classes and exposed a generic publication-state ladder.
+
+Step 5.5 instead defines independent logical axes:
+
+```text
+SEMANTIC SURVIVAL
+    survival.ephemeral
+    survival.established
+
+CURRENT DURABILITY
+    durability.durable
+    durability.volatile_dirty
+
+CURRENT OBLIGATION
+    durability.may_defer
+    durability.must_be_durable_before(edge)
+```
+
+`SOFT` and `HARD` remain useful prose shorthands; they are not persistent intrinsic fact types.
+
+Step 5.6 final ref transition exposes exactly the epistemic outcomes:
+
+- `repository_ref.confirmed_accepted`
+- `repository_ref.confirmed_rejected`
+- `repository_ref.indeterminate`
+
+Prepared Git objects, queued work or a transport request do not become publication authority through a generic `publication.state` enum.
+
+Therefore catalog 2.0 retires:
+
+- `canonicality_classes`;
+- old `durability_classes`;
+- old generic `publication_states`;
+- old `knowledge_modes`.
+
+---
+
+## 8. Noncanonical projection families remain outside world/runtime catalog classes
+
+### Story
+
+Story is a durable noncanonical source-bound projection with its own layer-local records, IDs and projection progress. It is deliberately not modeled as `world.story_*` or generic `runtime.memory`.
+
+### Dramaturg horizons
+
+Player-local and multiplayer-shared Dramaturg horizons are retained noncanonical prospective planning projections. Their exact record/root/schema and generation fencing are owned by WP-18. They are not admitted as world truth or generic runtime workflow classes by WP-03.
+
+### Context products
+
+RoleContextBundle, ContextTrace and transient recap/working continuity are values/projections, not durable record classes.
+
+---
+
+## 9. Extension boundary
+
+HDM still has no generic plugin/provider/free-form executable extension architecture.
+
+A new catalog addition must answer:
+
+1. which class-admission category owns it;
+2. why an existing class/value/facet cannot express it;
+3. whether independent identity/lifecycle truly exists;
+4. whether it adds executable engine behavior or validated data only;
+5. which schema/tests/versioned registry change together.
+
+Campaign/LLM content may add validated definitions but cannot invent new executable capability IDs or protocol authority.
+
+---
+
+## 10. Explicitly retired IDs/classes
+
+At minimum, current machine contracts must not re-admit:
+
+- `world.timeline_marker`;
+- generic `world.relationship`;
+- standalone Secret record authority;
+- `runtime.dirty_record`;
+- `runtime.publication_batch`;
+- `runtime.execution_segment`;
+- `runtime.resolution_chain`;
+- `transition.timeline_place`;
+- `transition.relationship_change` as a generic relationship owner mutation;
+- `event.timeline.placed`;
+- `event.relationship.changed` as a generic relationship-owner event;
+- `truth.disputed` on the objective truth axis.
+
+Later WPs may retire additional stale machine vocabulary when their owning semantics are examined. Existing IDs are never silently repurposed for a different meaning.
+
+---
+
+## 11. R2.7 handoff
+
+WP-03 fixes class admission and the closed catalog vocabulary. It does **not** claim final answers for:
+
+- Actor/Asset state field shapes — WP-04;
+- execution-record schemas/identity details — WP-05;
+- truth/knowledge/disclosure/message full schemas — WP-07;
+- Context Runtime schema realization — WP-08/09;
+- all durable record roots/schemas — WP-10;
+- source-native IDs, sharding and index topology — WP-11;
+- HOT/SQLite — WP-12;
+- recovery/checkpoint — WP-14;
+- chronology storage — WP-15;
+- LIVE identity/fencing/packing — WP-16;
+- collaboration full schema — WP-17;
+- Story/planning projection schemas — WP-18.
+
+Those domains may refine coordinated `2.0.0` machine artifacts before R2.7 final closure without creating a compatibility obligation to the discarded `1.6.0` scaffold.
