@@ -88,6 +88,20 @@ class R27WP05ExecutionConformanceTests(unittest.TestCase):
         for duplicate in ("procedure_resources", "resource_state_copy", "world_state"):
             self.assertNotIn(duplicate, props)
 
+    def test_segment_contains_complete_minimum_receipt_evidence(self):
+        segment = self.load("execution-segment.schema.json")
+        required = set(segment["required"])
+        self.assertTrue({
+            "segment_sequence",
+            "commit_state",
+            "resulting_execution_state",
+            "event_ids",
+            "pending_child_invocations",
+            "receipt_exports",
+            "affected_revision_refs",
+        } <= required)
+        self.assertNotIn("world_state", segment["properties"])
+
     def test_direct_transition_segments_live_on_command_owner(self):
         command = self.load("runtime-command-state.schema.json")
         props = command["properties"]
