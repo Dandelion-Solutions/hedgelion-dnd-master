@@ -14,9 +14,8 @@
       "required": [
         "world.actor", "world.actor_group", "world.asset", "world.location",
         "world.connection", "world.zone", "world.organization",
-        "world.relationship", "world.contract", "world.mission",
-        "world.scene", "world.encounter", "world.hazard", "world.effect",
-        "world.lore_fact", "world.knowledge"
+        "world.contract", "world.mission", "world.scene", "world.encounter",
+        "world.hazard", "world.effect", "world.lore_fact", "world.knowledge"
       ],
       "properties": {
         "world.actor": {"$ref": "#/$defs/sequentialPolicy"},
@@ -26,7 +25,6 @@
         "world.connection": {"$ref": "#/$defs/sequentialPolicy"},
         "world.zone": {"$ref": "#/$defs/sequentialPolicy"},
         "world.organization": {"$ref": "#/$defs/sequentialPolicy"},
-        "world.relationship": {"$ref": "#/$defs/sequentialPolicy"},
         "world.contract": {"$ref": "#/$defs/sequentialPolicy"},
         "world.mission": {"$ref": "#/$defs/sequentialPolicy"},
         "world.scene": {"$ref": "#/$defs/sequentialPolicy"},
@@ -34,7 +32,7 @@
         "world.hazard": {"$ref": "#/$defs/sequentialPolicy"},
         "world.effect": {"$ref": "#/$defs/sequentialPolicy"},
         "world.lore_fact": {"$ref": "#/$defs/sequentialPolicy"},
-        "world.knowledge": {"$ref": "#/$defs/sequentialPolicy"}
+        "world.knowledge": {"$ref": "#/$defs/recordPolicy"}
       }
     },
     "runtime": {
@@ -44,9 +42,10 @@
         "runtime.session", "runtime.message", "runtime.interaction",
         "runtime.procedure", "runtime.intent_plan", "runtime.command",
         "runtime.resolution", "runtime.continuation", "runtime.mechanical_event",
-        "runtime.semantic_event", "runtime.resolution_trace",
-        "runtime.checkpoint", "runtime.id_allocator",
-        "runtime.maintenance_audit", "runtime.catalog_gap_report"
+        "runtime.semantic_event", "runtime.resolution_trace", "runtime.disclosure",
+        "runtime.collaboration_obligation", "runtime.checkpoint",
+        "runtime.id_allocator", "runtime.maintenance_audit",
+        "runtime.catalog_gap_report"
       ],
       "properties": {
         "runtime.session": {"$ref": "#/$defs/recordPolicy"},
@@ -60,6 +59,8 @@
         "runtime.mechanical_event": {"$ref": "#/$defs/recordPolicy"},
         "runtime.semantic_event": {"$ref": "#/$defs/recordPolicy"},
         "runtime.resolution_trace": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.disclosure": {"$ref": "#/$defs/recordPolicy"},
+        "runtime.collaboration_obligation": {"$ref": "#/$defs/recordPolicy"},
         "runtime.checkpoint": {"$ref": "#/$defs/recordPolicy"},
         "runtime.id_allocator": {"$ref": "#/$defs/recordPolicy"},
         "runtime.maintenance_audit": {"$ref": "#/$defs/recordPolicy"},
@@ -101,9 +102,25 @@
         "local": {"$ref": "#/$defs/localPolicy"}
       }
     },
+    "compositeKeyPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "fields", "scope"],
+      "properties": {
+        "strategy": {"const": "composite_key"},
+        "fields": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}
+        },
+        "scope": {"enum": ["campaign", "session"]}
+      }
+    },
     "recordPolicy": {
       "oneOf": [
         {"$ref": "#/$defs/sequentialPolicy"},
+        {"$ref": "#/$defs/compositeKeyPolicy"},
         {
           "type": "object",
           "additionalProperties": false,
