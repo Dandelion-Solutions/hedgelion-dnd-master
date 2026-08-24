@@ -31,12 +31,21 @@ def base_continuation():
         "generation": 2,
         "root_command_id": "cmd",
         "resolution_id": "resolution-1",
+        "activity_id": "activity.attack.basic",
+        "actor_id": "actor-1",
+        "target_ids": ["actor-2"],
         "catalog_context_fingerprint": "ctx",
+        "execution_cursor": "step.attack.resolve",
         "safe_recompute_phase": "determine",
         "invocation_facts": [],
-        "fixed_rng_results": [17],
+        "fixed_rng_results": [{
+            "roll_id": "roll.attack.1",
+            "expression": "1d20",
+            "raw_values": [17],
+            "source_kind": "rng.system",
+        }],
         "prior_step_exports": {},
-        "committed_receipt_refs": ["resolution-1:segment:1"],
+        "committed_segment_refs": ["resolution-1:segment:1"],
         "dependency_frontier_refs": ["actor-1@2"],
         "expected_child_resolution_ids": [],
         "future_rng_frontier": "rng:4",
@@ -75,6 +84,13 @@ class Step3ResumeOrderingContractTest(unittest.TestCase):
         validate("runtime-continuation-state.schema.json", value)
         invalid = dict(value)
         invalid["unconsumed_advancement"] = {"amount": -1, "unit_id": "unit.minute", "context_id": "scene-1"}
+        with self.assertRaises(ValidationError):
+            validate("runtime-continuation-state.schema.json", invalid)
+
+    def test_resume_keeps_fixed_rng_and_rejects_old_prospective_state(self):
+        value = base_continuation()
+        validate("runtime-continuation-state.schema.json", value)
+        invalid = dict(value, prospective_delta={"hp": -3})
         with self.assertRaises(ValidationError):
             validate("runtime-continuation-state.schema.json", invalid)
 
