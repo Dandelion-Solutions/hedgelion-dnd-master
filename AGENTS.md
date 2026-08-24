@@ -4,6 +4,35 @@
 
 This file governs **development work on the HDM engine repository**. It is not part of gameplay/runtime instructions and is never shipped in the runtime release asset.
 
+## Fresh development-session bootstrap
+
+A fresh development chat/session must recover current project state from the repository before doing substantive analysis, proposing architecture, or asking the repository owner to restate information that is already recoverable from project sources.
+
+For architecture/deep-work activity, use this bootstrap order:
+
+```text
+current remote ref/state
+-> AGENTS.md
+-> DEV/DESIGN_PROCESS.md
+-> DEV/ARCHITECTURE/DESIGN_PROCESS.md
+-> DEV/PROJECT_MAP.md
+-> current roadmap/status authority
+-> task-specific owning artifacts and relevant evidence
+```
+
+At minimum:
+
+1. determine the active remote ref and read current repository state through the connected GitHub transport;
+2. read the current `AGENTS.md` on that ref;
+3. read the current applicable design-process files rather than relying on remembered versions;
+4. read `DEV/PROJECT_MAP.md` and use it to identify the task-specific ownership/dependency route;
+5. read the current roadmap/status authority for architecture sequencing when the task is architectural;
+6. inspect the actual owning artifacts and relevant neighboring consumers before making correctness-sensitive claims.
+
+Conversation history, model memory, handoff summaries, prior-agent summaries, search snippets and derivative indexes may accelerate orientation, but they are not substitutes for current repository evidence when the owning source is available.
+
+Do not make the repository owner reconstruct repository topology, previous decisions, document contents, accepted constraints, or current stage state that the agent can establish from the repository itself.
+
 ## Development design process
 
 Before architecture, system design, deep technical research, or other development work whose scope may affect architecture:
@@ -14,6 +43,22 @@ Before architecture, system design, deep technical research, or other developmen
 `DEV/DESIGN_PROCESS.md` is the canonical general development/design process. `DEV/ARCHITECTURE/DESIGN_PROCESS.md` is the project-specific HDM adapter and adds constraints; it does not replace or weaken the general process.
 
 Do not rely on remembered versions of these rules. Read the current files on the active branch before substantive architecture/deep-work activity.
+
+## Documentation evidence and synthesis discipline
+
+Repository documentation volume is an **agent workload problem**, not a human proofreading obligation.
+
+The agent is responsible for discovering the relevant source set, reading it to the depth required by the claim, preserving material qualifiers, reconciling it with current owners, and checking completeness before synthesis. The repository owner should receive decision-ready conclusions and genuine architectural trade-offs, not a request to manually verify whether the agent missed something in a large document corpus.
+
+Hard rules:
+
+- `DEV/PROJECT_MAP.md`, `CANONICAL_ARCHITECTURE_INDEX.md`, roadmaps, summaries, executive syntheses, search results and conversation summaries are routing/compression aids. They do not replace actual owning artifacts for correctness-sensitive conclusions.
+- Do not claim architecture, roadmap, requirement, research or review coverage from thematic overlap, representative sampling, remembered content, headings, or an executive summary when the underlying relevant source material is available.
+- When a source contains individually enumerated requirements, findings, risks, review issues, candidates, test cases, schema members, deferred items or similar records, preserve item-level semantics where the task depends on coverage. A broad statement such as "the themes are covered" is not evidence that the set is accounted for.
+- Qualifiers are part of the evidence. Conditions such as scope limits, confidence, exceptions, non-goals, `revisit when`, defer triggers, negative findings and applicability constraints must survive extraction and synthesis.
+- For deep work, use the source-manifest / evidence-extraction / completeness gates defined by `DEV/DESIGN_PROCESS.md` and the HDM-specific rules in `DEV/ARCHITECTURE/DESIGN_PROCESS.md` before producing a roadmap, Decision Brief, candidate specification, coverage claim or canonicalization result.
+- A large repository does **not** imply preloading or rereading the entire repository for every task. Use `DEV/PROJECT_MAP.md` to identify the relevant dependency subgraph, then exhaust that task-specific source set to the degree necessary for the claims being made.
+- Do not ask the human architect to compensate for incomplete document research. Escalate only the residual product semantics, priorities, material trade-offs, risk acceptance or other decisions that genuinely require human judgment.
 
 ## Repository ownership geometry
 
