@@ -73,6 +73,7 @@ def resolution(status="COMPLETED"):
         "segments": [{
             "segment_sequence": 1,
             "commit_state": "committed",
+            "resulting_execution_state": status,
             "event_ids": ["event-1"],
             "pending_child_invocations": [],
             "receipt_exports": {"hit": True},
@@ -122,6 +123,7 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
         validate("execution-segment.schema.json", {
             "segment_sequence": 1,
             "commit_state": "committed",
+            "resulting_execution_state": "COMPLETED",
             "event_ids": ["event-1"],
             "pending_child_invocations": [{
                 "firing_key": "event-1:binding-1",
@@ -161,6 +163,7 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
             "direct_transition_segments": [{
                 "segment_sequence": 1,
                 "commit_state": "committed",
+                "resulting_execution_state": "COMPLETED",
                 "event_ids": ["event-2"],
                 "pending_child_invocations": [],
                 "receipt_exports": {},
