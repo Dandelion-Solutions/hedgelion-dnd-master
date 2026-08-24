@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.6.0",
+  "catalog_version": "2.0.0",
   "details_field": "details",
   "details_semantics": "arbitrary_llm_descriptive_nonmechanical_json",
   "definitions": {
@@ -49,14 +49,13 @@
     "world.connection": {"required": ["from_location_id", "to_location_id"], "expected": ["direction", "traversal_activity_id", "status", "requirements"], "definition_binding": {"mode": "forbidden"}},
     "world.zone": {"required": ["location_id", "name"], "expected": ["participant_ids", "effect_ids", "geometry", "status"], "definition_binding": {"mode": "forbidden"}},
     "world.organization": {"required": ["name"], "expected": ["member_ids", "leader_ids", "location_ids", "resources", "status"], "definition_binding": {"mode": "optional", "allowed_definition_kinds": ["definition.organization_archetype"]}},
-    "world.relationship": {"required": ["subject_id", "object_id", "relation"], "expected": ["attitude", "strength", "status"], "definition_binding": {"mode": "forbidden"}},
     "world.contract": {"required": ["party_ids", "terms", "status"], "expected": ["obligations", "deadlines", "collateral_asset_ids", "breach_consequences"], "definition_binding": {"mode": "optional", "allowed_definition_kinds": ["definition.contract_template"]}},
     "world.mission": {"required": ["name", "status"], "expected": ["stages", "participant_ids", "location_ids", "reward_ids", "dependencies"], "definition_binding": {"mode": "optional", "allowed_definition_kinds": ["definition.mission_template"]}},
     "world.scene": {"required": ["name"], "expected": ["location_id", "participant_ids", "focal_entity_ids", "status"], "definition_binding": {"mode": "forbidden"}},
     "world.encounter": {"required": ["participant_ids", "status"], "expected": ["scene_id", "initiative", "round", "active_participant_id", "local_time"], "definition_binding": {"mode": "forbidden"}},
     "world.hazard": {"required": ["status"], "expected": ["location_id", "zone_id", "detected_by_actor_ids", "effect_ids"], "definition_binding": {"mode": "optional", "allowed_definition_kinds": ["definition.hazard"]}},
     "world.effect": {"required": ["target_id", "lifecycle"], "expected": ["source_id", "rules_origin_id", "application_order_key", "parameters", "support_effect_id", "temporal_binding", "scheduled_trigger_state"], "definition_binding": {"mode": "required", "allowed_definition_kinds": ["definition.effect", "definition.condition"]}},
-    "world.lore_fact": {"required": ["statement", "truth_status"], "expected": ["subject_ids", "chronology", "importance"], "definition_binding": {"mode": "forbidden"}},
-    "world.knowledge": {"required": ["fact_id", "knower_id", "status"], "expected": ["learned_from_id", "confidence"], "definition_binding": {"mode": "forbidden"}}
+    "world.lore_fact": {"required": ["statement", "truth_status", "record_status"], "expected": ["subject_refs", "scope", "chronology", "provenance_refs", "supersedes_fact_id", "superseded_by_fact_id", "importance", "last_truth_transition_ref"], "definition_binding": {"mode": "forbidden"}},
+    "world.knowledge": {"required": ["knower_id", "fact_id", "stance"], "expected": ["supporting_source_refs", "last_changed_event_id", "confidence"], "definition_binding": {"mode": "forbidden"}}
   }
 }
