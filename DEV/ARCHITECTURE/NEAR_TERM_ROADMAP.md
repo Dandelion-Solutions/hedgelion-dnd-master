@@ -1,10 +1,10 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — R2.7 PAUSED / S6D PREPARED**
+Status: **ACTIVE PROGRAM ROADMAP — R2.7 PAUSED / HOUSE RULES DESIGN NEXT / S6D AFTER**
 
 Date: 2026-08-24
 
-This file is the sequencing/status authority for Architecture Round 2 and the bounded pre-resume S6D debt-closure workstream.
+This file is the sequencing/status authority for Architecture Round 2 and the inserted pre-resume architecture workstreams.
 
 Canonical process:
 
@@ -18,13 +18,14 @@ Primary program decisions:
 - `DEV/docs/superpowers/specs/2026-08-24-round-2-roadmap-owner-decision.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md`
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
+- `DEV/docs/superpowers/specs/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
 
 Evidence/accounting:
 
 - `DEV/docs/superpowers/research/2026-08-24-round-2-evidence-disposition-ledger.md`
 - `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md`
 
-Detailed architecture belongs to its owning specifications. This roadmap is a routing/status authority and should not be used as a substitute for those sources.
+Detailed architecture belongs to owning specifications. This roadmap is a routing/status authority and should not be used as a substitute for those sources.
 
 ---
 
@@ -68,13 +69,14 @@ The former Round-1 Step 6 remains **closed as a separate physical-LLM stage**. I
 # 3. Operating rules
 
 - At most one numbered Round-2 stage may be `IN PROGRESS`.
-- A bounded inserted debt-closure workstream may temporarily pause that stage when owner-approved and explicitly represented here.
+- Owner-approved inserted architecture work may temporarily pause that stage when explicitly represented here.
 - Before a Decision Brief, candidate specification, coverage claim or closure, Source Manifest/evidence/synthesis-completeness gates must pass.
 - Owning sources beat roadmaps, indexes, summaries and remembered state.
 - YAGNI applies aggressively: no new authority, registry, scheduler, generic graph, plugin/agent framework or subsystem without a current requirement.
 - Clean-slate pre-release structural canonicalization is authorized: no current user campaign requires backward-compatible migration from the present scaffold.
 - Future released-campaign evolution/migration policy remains a separate R2.7 responsibility.
 - Normal gameplay smoothness remains a cross-project invariant: ordinary-turn correctness should be local/bounded and must not gain unnecessary network/repository/extra-LLM round trips.
+- House Rules and every numbered S6D task/domain use the full eight-step deep-design loop from `DEV/DESIGN_PROCESS.md`; the existing S6D plan is decomposition/coverage guidance, not permission for direct checklist execution.
 
 ---
 
@@ -89,7 +91,8 @@ The former Round-1 Step 6 remains **closed as a separate physical-LLM stage**. I
 | R2.4 | **COMPLETE / ARCHITECTURE CLOSED** | single-context LLM execution/instructions | TurnEnvelope; role rebinding; deterministic authority; Chronicler service policy |
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer | agency-safe collaboration; maximal safe frontier; two-level noncanonical Dramaturg planning |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation | behavioral-containment MVP; fixed Connector transport; post-MVP integrated acceptance |
-| S6D | **PREPARED / NOT STARTED** | residual rules/seed/catalog debt historically deferred to Step 6 | full supported rules seed and machine-contract closure before R2.7 resumes |
+| House Rules | **NEXT / DESIGN BRIEF EXISTS** | campaign rulings, house rules, LLM-only adjudication boundary | canonical ruling/house-rule architecture via full eight-step loop |
+| S6D | **PREPARED / BLOCKED BY HOUSE RULES** | residual rules/seed/catalog debt historically deferred to Step 6 | each numbered task/domain canonicalized by its own eight-step loop; integrated S6D closure |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit | final architecture↔machine conformance and implementation-planning entry gate |
 
 ---
@@ -106,15 +109,19 @@ R2.0
  -> R2.6
  -> R2.7 WP-01..WP-05 CLOSED
  -> R2.7 WP-06 PARTIAL / PAUSED
- -> S6D PREPARED / NOT STARTED
- -> S6D closure gate
+ -> HOUSE RULES full 8-step deep-design loop
+ -> HOUSE RULES canonicalization
+ -> S6D Task/Domain 1 full 8-step loop
+ -> S6D Task/Domain 2 full 8-step loop
+ -> ... each numbered S6D task/domain independently ...
+ -> S6D integrated closure / resolution gate
  -> R2.7 WP-06 RESUME
  -> R2.7 WP-07..WP-27
  -> R2.7 final reconciliation
  -> Implementation Planning
 ```
 
-No S6D execution begins until the owner explicitly asks to start it after the current architecture discussion.
+House Rules is mandatory before S6D starts. S6D may not begin directly from its existing plan.
 
 ---
 
@@ -152,9 +159,36 @@ Owning artifacts for each stage remain under dated `DEV/docs/superpowers/specs/`
 
 ---
 
-# 7. S6D — Step-6 Residual Rules/Seed Debt Closure — PREPARED / NOT STARTED
+# 7. House Rules Architecture — NEXT
 
-Owning artifacts:
+Design input:
+
+- `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md`
+
+Sequencing owner:
+
+- `DEV/docs/superpowers/specs/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
+
+The current design brief is not canonical. The next chat begins with Step 1 — Architecture Task Brief review/challenge — and then performs the full eight-step deep-design loop:
+
+1. Architecture Task Brief
+2. Research & Architecture Draft
+3. Decision Brief
+4. Collaborative Architecture Review
+5. Candidate Specification
+6. Adversarial Architecture Review
+7. Resolution Gate
+8. Canonicalization
+
+The design must explicitly investigate the intended role of the LLM-readable campaign rules layer for logic that cannot be faithfully formalized in Python/catalog mechanics, without allowing LLM judgment to become direct authority over engine-owned state, RNG, or deterministic mutation.
+
+House Rules Step 8 canonicalization is the start gate for S6D.
+
+---
+
+# 8. S6D — Step-6 Residual Rules/Seed Debt Closure — PREPARED / BLOCKED BY HOUSE RULES
+
+Owning/decomposition artifacts:
 
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
@@ -173,17 +207,16 @@ S6D owns, where still unsatisfied:
 - stable character advancement/choice-slot seed sufficient for READY_PC;
 - concrete HP/LifeState/Resource/Effect/Condition/Duration/Recovery seed closure;
 - proven scheduled-trigger/invocation-fact extensions only where real supported cases require them;
-- whole supported rules-seed coverage/adversarial audit.
+- whole supported rules-seed coverage/adversarial audit;
+- integration of the canonical House Rules mechanical boundary.
+
+**Execution override:** the existing numbered S6D plan is a decomposition/coverage index only. Every numbered task/domain must itself run the complete eight-step deep-design loop before closure. If a task exposes multiple independently material architecture sub-blocks, split them and run separate cycles rather than forcing them into one reasoning run.
 
 S6D does **not** reopen retired physical role-isolation architecture and does not build backward compatibility for nonexistent current campaigns.
 
-Campaign Rulings / House Rules architecture is a parallel design dependency for the S6D mechanical boundary where LLM-only adjudication must produce typed execution inputs:
-
-- `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md`
-
 ---
 
-# 8. R2.7 — Whole-Project Final Architecture & Machine Audit — PAUSED AT WP-06
+# 9. R2.7 — Whole-Project Final Architecture & Machine Audit — PAUSED AT WP-06
 
 Scope owners:
 
@@ -219,21 +252,21 @@ WP-07..WP-27 NOT STARTED
 
 The immutable pre-pause R2.7 status/forward-obligation set is preserved by blob SHA recorded in the active audit status file.
 
-R2.7 resumes only after an S6D resolution gate explicitly closes the inserted workstream.
+R2.7 resumes only after House Rules canonicalization and S6D integrated closure.
 
 ---
 
-# 9. Explicitly removed mandatory stages / dormant work
+# 10. Explicitly removed mandatory stages / dormant work
 
 Round 2 has no mandatory standalone Narrative Dynamics stage. R2.5's narrow S14 activation remains owned by multiplayer collaboration and does not activate generic authored-plot machinery.
 
 Round 2 has no generic optional-capability gate. Extensions, spectator/replay, solo forks, spatial sidecars, mixed AI/human controllers and cache-specific optimization remain dormant until their own triggers occur.
 
-The former physical-LLM Step 6 remains historical; S6D is a different, bounded residual debt closure.
+The former physical-LLM Step 6 remains historical; S6D is a distinct residual debt-closure workstream.
 
 ---
 
-# 10. Current continuation point
+# 11. Current continuation point
 
 ```text
 R2.0  COMPLETE / EVIDENCE-REBASELINED
@@ -244,15 +277,16 @@ R2.4  COMPLETE / ARCHITECTURE CLOSED
 R2.5  COMPLETE / ARCHITECTURE CLOSED
 R2.6  COMPLETE / ARCHITECTURE CLOSED
 R2.7  PAUSED AT WP-06
-S6D   PREPARED / NOT STARTED
+HOUSE RULES  NEXT / FULL 8-STEP LOOP
+S6D   PREPARED / BLOCKED BY HOUSE RULES
 
-CURRENT ACTIVITY:
-    architecture discussion — Campaign Rulings / House Rules and any other owner questions
-
-WHEN OWNER SAYS START S6D:
-    S6D Task 1 Source Manifest + residual debt ledger
-    -> tasks 2..11
-    -> S6D canonical closure / resolution gate
+NEXT CHAT:
+    bootstrap repository
+    -> read audit status + sequencing owner decision + House Rules design brief
+    -> begin House Rules Step 1 Task-Brief review/challenge
+    -> complete House Rules Steps 2..8
+    -> only then begin S6D, one full eight-step cycle per numbered task/domain
+    -> S6D integrated closure
     -> R2.7 WP-06 resume
 
 Broad implementation: BLOCKED.
