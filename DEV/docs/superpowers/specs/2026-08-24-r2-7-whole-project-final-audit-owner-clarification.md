@@ -134,3 +134,29 @@ R2.7 closure must establish that no unresolved architecture question remains who
 - test/release acceptance topology.
 
 Only then may implementation planning begin.
+
+---
+
+# 10. Pre-release data compatibility / migration clarification
+
+Owner clarification on 2026-08-24:
+
+> No real campaigns/games currently depend on the existing campaign schemas, catalog shapes, templates or folder structures. R2.7 may therefore replace or delete stale machine structures directly without preserving backward compatibility with the current scaffold.
+
+For the current architecture-finalization transition:
+
+```text
+EXISTING USER CAMPAIGNS REQUIRING MIGRATION: NONE
+BACKWARD-COMPATIBILITY REQUIREMENT FOR CURRENT SCAFFOLD: NONE
+LEGACY FIELD/RECORD PRESERVATION REQUIREMENT: NONE
+```
+
+Consequences:
+
+- stale/retired fields, record classes, catalog entries, templates and roots MAY be removed rather than carried as aliases/dual-write compatibility surfaces;
+- final schemas/catalogs/templates/folder structures SHALL represent only the accepted final architecture unless a separate current consumer proves otherwise;
+- no migration artifact is required merely to transform the present unreleased scaffold into the final R2.7 machine model;
+- this clarification does **not** remove the requirement for WP-20 to define a coherent future schema/version/evolution policy for campaigns created after release;
+- this clarification does **not** authorize implementation before R2.7 closure; R2.7 still maps exact final replacements and implementation planning remains the next gate.
+
+The final R2.7 closure target is therefore not a compatibility-preserving compromise. It is one **self-consistent final architecture with complete data models, schemas, catalogs, templates and folder structures** suitable for implementation planning.
