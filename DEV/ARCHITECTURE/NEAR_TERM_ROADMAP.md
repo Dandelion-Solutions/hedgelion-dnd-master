@@ -16,6 +16,7 @@ Program decisions:
 - `DEV/docs/superpowers/specs/2026-08-23-round-1-step-6-closure-round-2-rebaseline-owner-decision.md`
 - `DEV/docs/superpowers/specs/2026-08-23-step-4-single-context-role-containment-canonical-amendment.md`
 - `DEV/docs/superpowers/specs/2026-08-24-round-2-roadmap-owner-decision.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md`
 
 Evidence accounting:
 
@@ -96,7 +97,7 @@ Research classification is not backlog state. Dormant items create no current ta
 | R2.4 | **COMPLETE / ARCHITECTURE CLOSED** | single-context LLM execution and instruction architecture | registered TurnEnvelope; minimal typed gateways; deterministic authority; first-safe-opportunity Chronicler service |
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration and multiplayer interaction semantics | agency-safe scoped collaboration; bounded async joint input; recipient catch-up; two-level noncanonical Dramaturg coordination |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance, evaluation, security and degradation | observable behavioral-containment MVP envelope; fixed Connector path; S53 capability envelope; integrated Protocol-4 validation deferred to implemented-MVP acceptance |
-| R2.7 | **IN PROGRESS** | machine-realization mapping and holistic closure | GAME/DEV/schema/catalog/instruction/test obligations mapped; cross-round review passed; implementation-planning entry criteria satisfied |
+| R2.7 | **IN PROGRESS** | whole-project final architecture & machine-realization audit | full Round-1+Round-2 architecture↔machine conformance; implementation-planning entry gate |
 
 ---
 
@@ -124,7 +125,7 @@ R2.5 Collaboration / Multiplayer Interaction
 R2.6 ChatGPT Assurance / Evaluation / Security
         |
         v
-R2.7 Machine Mapping / Holistic Closure
+R2.7 Whole-Project Final Architecture / Machine Audit
         |
         v
 Implementation Planning
@@ -311,37 +312,43 @@ Resolution gate: **17/17 PASS; unresolved architecture blockers 0**.
 
 ---
 
-# 14. R2.7 — Machine Realization Mapping & Holistic Architecture Closure — IN PROGRESS
+# 14. R2.7 — Whole-Project Final Architecture & Machine-Realization Audit — IN PROGRESS
 
-Depends on: **R2.1–R2.6**.
+Current scope owners:
 
-Map accepted architecture to GAME runtime ownership/documents, DEV catalogs/schemas, seeds/templates/migrations, Project Instructions, shipped instruction assets, tests/evaluations, tooling/diagnostics and persistence obligations.
+- `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`
+- `DEV/docs/superpowers/research/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`
 
-R2.7 specifically maps each durable record family to:
+The earlier `2026-08-24-r2-7-machine-realization-holistic-closure-task-brief.md` is superseded as the active brief.
 
-- physical root;
-- flat vs sharded storage policy;
-- deterministic shard rule where required;
-- monolithic index owner/path;
-- SQLite hydration/query realization;
-- migrations and validation/tests.
+R2.7 depends on the **complete accepted architecture**, not only R2.1-R2.6:
 
-R2.7 additionally maps R2.5 collaboration and Dramaturg planning identities/generations, physical roots, current-generation fencing, discovery metadata, retention and schema/runtime/instruction integration.
+- Round-1 Steps 1-5 and their owning model contracts;
+- later canonical amendments/owner decisions;
+- Round-2 R2.1-R2.6;
+- current GAME runtime/schema/template/install/update/migration surfaces;
+- current DEV architecture/catalog/schema/test/tool/release/CI surfaces where they constrain implementation readiness.
 
-R2.7 also owns the R2.6 machine/instruction/test handoff:
+R2.7 must prove both directions:
 
-- exact CORE/Project-Instructions placement of the behavioral eligibility rule;
-- `ineligible now -> do not materially use/disclose` plus `lawfully eligible later -> may use normally`;
-- Context Runtime status/result realization and conservative estimator hooks;
-- Narrator/`EMISSION_COMMIT` realization;
-- deployment capability prerequisites and visible auxiliary-surface test obligations;
-- fixed Connector call/currentness mapping;
-- Protocol-4-derived test/evaluation catalog and MVP release/readiness gates;
-- Lab-vs-public experiment/result boundary.
+```text
+ARCHITECTURE -> MACHINE
+    every accepted semantic responsibility has a concrete runtime/storage/schema/instruction/test destination
+    or an explicit no-representation disposition
 
-Closure includes cross-round authority/duplicate-owner review, Retry/recovery/concurrency composition, history/continuity/context consistency, Actor/context/role-containment composition, multiplayer recipient/secrecy/planning composition, dormant-trigger preservation, full candidate-disposition recheck and stale derivative/status repair.
+MACHINE -> ARCHITECTURE
+    every material current machine/runtime responsibility has an accepted owner
+    or is explicitly classified as derived / implementation-only / stale / debt / historical / out of scope
+```
 
-Implementation planning begins only after architecture blockers are closed and machine-realization/test obligations are explicit.
+Minimum whole-project audit horizon is the 27-domain `WP-01` through `WP-27` inventory in the scope-discovery artifact. It includes global authority, catalog/mechanics/execution, rules/domain CORE, truth/knowledge/disclosure, role/context/instructions, persistence/root/sharding/index/HOT/SQLite, durability/publication/recovery/chronology, multiplayer/live/collaboration/planning, bootstrap/update/migration, diagnostics/tests/CI/release/version/legal, scale/degradation/failure, supersession and final implementation-planning readiness.
+
+Physical storage/root/index/sharding/HOT/SQLite mapping is project-wide. Existing pre-Round-2 scaffold families receive no presumption of correctness.
+
+Instruction/CORE/Project-Instructions conformance is project-wide. Round-2-specific holistic review, all 82 DIAMOND/STRONG dispositions and later S14/S53/D15 changes remain mandatory sub-ledgers nested inside the broader audit.
+
+Implementation planning begins only after the whole-project audit establishes that no unresolved architecture question remains which could materially change component authority, persistent data model, runtime interfaces, transaction/currentness/recovery topology, bootstrap/migration/update path, instruction architecture or test/release acceptance topology.
 
 ---
 
@@ -363,13 +370,16 @@ R2.3  COMPLETE / ARCHITECTURE CLOSED
 R2.4  COMPLETE / ARCHITECTURE CLOSED
 R2.5  COMPLETE / ARCHITECTURE CLOSED
 R2.6  COMPLETE / ARCHITECTURE CLOSED
-R2.7  IN PROGRESS
+R2.7  IN PROGRESS — WHOLE-PROJECT FINAL AUDIT
 
 R2.7 next activity:
-    construct task-specific dependency subgraph / Source Manifest
-    -> map accepted semantic owners into GAME/DEV/schema/catalog/instruction/test obligations
-    -> perform holistic duplicate-authority / composition / dormant-trigger review
-    -> produce implementation-planning entry criteria
+    construct whole-project Source Manifest / coverage ledger
+    -> build global semantic-owner inventory
+    -> perform bidirectional architecture <-> machine conformance audit
+    -> resolve full-project persistence/HOT/index/instruction/bootstrap/migration/test/release mappings
+    -> whole-project adversarial composition review
+    -> owner gates only for genuine residual trade-offs
+    -> canonical final architecture / implementation-planning entry gate
 
 Broad implementation: BLOCKED.
 ```
