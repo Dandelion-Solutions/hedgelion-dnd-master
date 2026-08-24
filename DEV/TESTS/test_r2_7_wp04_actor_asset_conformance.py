@@ -57,6 +57,17 @@ class R27WP04ActorAssetConformanceTests(unittest.TestCase):
         self.assertIn("continuity", actor["expected"])
         self.assertNotIn("world.relationship", structures["world_records"])
 
+    def test_provisional_actor_does_not_require_name_and_has_typed_concept_anchor(self):
+        actor = self.load_json("DEV/SCHEMAS/world-actor-state.schema.json")
+        self.assertNotIn("name", actor.get("required", []))
+        self.assertIn("concept", actor["properties"])
+
+        structures = self.load_json("DEV/CATALOG/entity-structures.json")
+        inventory = structures["world_records"]["world.actor"]
+        self.assertNotIn("name", inventory["required"])
+        self.assertIn("name", inventory["expected"])
+        self.assertIn("concept", inventory["expected"])
+
     def test_actor_build_stores_only_instance_owned_reconstruction_choices(self):
         actor = self.load_json("DEV/SCHEMAS/world-actor-state.schema.json")
         build = actor["$defs"]["build"]
