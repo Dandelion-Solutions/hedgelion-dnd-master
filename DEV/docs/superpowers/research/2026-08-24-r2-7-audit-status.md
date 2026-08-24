@@ -25,11 +25,11 @@ Owner clarification:
 
 ```text
 AUDIT_STATUS: IN_PROGRESS
-LAST_CLOSED_DOMAIN: WP-03
-CURRENT_DOMAIN: WP-04
-CURRENT_DOMAIN_TOPIC: Actor / Asset / mechanical-state model
-CURRENT_SLICE: canonical owner/state inventory + current schema reverse audit
-NEXT_DOMAIN: WP-05
+LAST_CLOSED_DOMAIN: WP-04
+CURRENT_DOMAIN: WP-05
+CURRENT_DOMAIN_TOPIC: Deterministic execution / resolution / RNG / retry
+CURRENT_SLICE: owning execution graph + runtime-schema reverse audit
+NEXT_DOMAIN: WP-06
 OWNER_GATE: NONE
 FINAL_RECONCILIATION: NOT_STARTED
 ```
@@ -41,8 +41,8 @@ FINAL_RECONCILIATION: NOT_STARTED
 | WP-01 | CLOSED | `2026-08-24-r2-7-WP-01-product-deployment-repository-boundary-mini-report.md` |
 | WP-02 | CLOSED | `2026-08-24-r2-7-WP-02-global-authority-duplicate-owner-mini-report.md` |
 | WP-03 | CLOSED | `2026-08-24-r2-7-WP-03-catalog-class-capability-completeness-mini-report.md` |
-| WP-04 | IN PROGRESS | pending |
-| WP-05 | NOT STARTED | — |
+| WP-04 | CLOSED | `2026-08-24-r2-7-WP-04-actor-asset-mechanical-state-mini-report.md` |
+| WP-05 | IN PROGRESS | pending |
 | WP-06 | NOT STARTED | — |
 | WP-07 | NOT STARTED | — |
 | WP-08 | NOT STARTED | — |
@@ -72,34 +72,45 @@ FINAL_RECONCILIATION: NOT_STARTED
 |---|---|---|---|
 | WP-01/F01 | WP-08 | map absolute fixed-Connector rule into final Project Instructions / CORE instruction ownership without duplicate/conflicting owners | YES |
 | WP-01/F02 | WP-19 | verify/finalize bootstrap/new-campaign surfaces so `00_DND_BOOTSTRAP.md` and `BOOTSTRAP_RUNTIME.md` contain no alternate-transport loophole | YES |
-| WP-01/F03 | WP-22 | define static/integration regression coverage for no-fallback semantics and preserve Project Instructions parity | YES |
-| WP-01/F04 | WP-23 | complete reverse package proof: shipped runtime is self-contained under GAME and has no DEV correctness dependency; include install/profile readiness | YES |
-| WP-01/F05 | WP-25 | verify missing/denied/failing Connector behavior is finite and never activates alternate transport probing | YES |
-| WP-01/F06 | WP-26 | repair public governance/document routing: general experiment->Lab rule in AGENTS and stale active `default/first` transport wording | YES |
-| WP-02/F02 | WP-04 | unified Actor/Asset + Actor-private relationship/current-state model | YES |
+| WP-01/F03 | WP-22 | static/integration regression for no-fallback semantics and Project Instructions parity | YES |
+| WP-01/F04 | WP-23 | prove shipped runtime self-contained under GAME and no DEV correctness dependency | YES |
+| WP-01/F05 | WP-25 | missing/denied/failing Connector is finite and never activates alternate transport probing | YES |
+| WP-01/F06 | WP-26 | public governance: experiment->Lab rule and stale `default/first` transport wording | YES |
 | WP-02/F03 | WP-07 | final truth/knowledge/disclosure/message semantic record model | YES |
 | WP-02/F04 | WP-10 | final persistent record families/schemas and removal of legacy parallel schema families | YES |
 | WP-02/F05 | WP-11 | roots/IDs/index/sharding for accepted owner families | YES |
 | WP-02/F06 | WP-14 | final checkpoint/session/recovery representation, current-authority-first | YES |
-| WP-02/F07 | WP-15 | remove global chronology-frontier authority and define exact sparse chronology realization | YES |
+| WP-02/F07 | WP-15 | remove global chronology-frontier authority and define sparse chronology realization | YES |
 | WP-02/F08 | WP-16 | final LIVE native-owner packing/identity/fencing/currentness | YES |
 | WP-02/F09 | WP-19 | final campaign scaffold emits only canonical structures | YES |
 | WP-02/F10 | WP-22 | duplicate-owner / retired-vocabulary regression suite | YES |
 | WP-02/F11 | WP-26 | remove stale CORE/schema-routing wording | YES |
-| WP-03/F01 | WP-04 | finalize Actor/Asset state field vocabulary and Actor-private continuity/relationship representation | YES |
 | WP-03/F02 | WP-05 | verify execution record/protocol vocabularies against complete deterministic pipeline schemas | YES |
-| WP-03/F03 | WP-07 | finalize lore/knowledge/disclosure/message shapes; eliminate remaining epistemic duplicate fields such as hazard detection lists where applicable | YES |
-| WP-03/F04 | WP-10 | materialize all accepted durable/runtime record families into final schemas/roots or explicit NO-DURABLE-RECORD dispositions | YES |
-| WP-03/F05 | WP-11 | final whole-project identity policy, including independently writable/source-native IDs; do not assume current sequential policies survive | YES |
-| WP-03/F06 | WP-16 | align LIVE/session identities and currentness/fencing with final source-native rules | YES |
-| WP-03/F07 | WP-17 | define exact collaboration-obligation schema/identity/current-generation representation | YES |
-| WP-03/F08 | WP-18 | define physical Story/planning record families without promoting them into gameplay authority | YES |
-| WP-03/F09 | WP-20 | define future post-release catalog/schema evolution policy; current 1.6.0 -> 2.0.0 transition requires no migration | YES |
-| WP-03/F10 | WP-22 | execute/extend regression and schema-validation suite for catalog generation 2.0.0 | YES |
-| WP-03/F11 | WP-23 | verify release/package metadata and v1.0-alpha manifest parity in final package audit | YES |
-| WP-03/F12 | WP-26 | remove stale active prose/version references that still present old catalog inventory as current authority | YES |
+| WP-03/F03 | WP-07 | finalize lore/knowledge/disclosure/message shapes and remove remaining epistemic duplicates | YES |
+| WP-03/F04 | WP-10 | materialize all accepted durable/runtime record families or explicit NO-DURABLE-RECORD dispositions | YES |
+| WP-03/F05 | WP-11 | final whole-project identity policy including independently writable/source-native IDs | YES |
+| WP-03/F06 | WP-16 | align LIVE/session identities and currentness/fencing | YES |
+| WP-03/F07 | WP-17 | exact collaboration-obligation schema/identity/current-generation representation | YES |
+| WP-03/F08 | WP-18 | physical Story/planning families without gameplay authority promotion | YES |
+| WP-03/F09 | WP-20 | future post-release catalog/schema evolution policy | YES |
+| WP-03/F10 | WP-22 | execute/extend catalog generation regression/schema validation | YES |
+| WP-03/F11 | WP-23 | verify release/package metadata and v1.0-alpha manifest parity | YES |
+| WP-03/F12 | WP-26 | remove stale active prose/version references | YES |
+| WP-04/F01 | WP-06 | final advancement schema, stable choice IDs and validation of Actor `choice_bindings`; verify READY_PC reconstruction | YES |
+| WP-04/F02 | WP-07 | prevent Actor/Asset/Effect-adjacent epistemic/disclosure aliases | YES |
+| WP-04/F03 | WP-10 | replace/remove legacy shipped PC/NPC/item schema families with unified Actor/Asset/Effect schemas | YES |
+| WP-04/F04 | WP-11 | final Actor/Asset/Effect IDs and roots/sharding | YES |
+| WP-04/F05 | WP-12 | HOT/SQLite projections for Actor build/continuity/Asset/Effect | YES |
+| WP-04/F06 | WP-13 | map progressive Actor materialization and state changes into durability/persistence transitions | YES |
+| WP-04/F07 | WP-19 | align bootstrap/campaign lifecycle with gameplay-first provisional onboarding and READY_PC convergence | YES |
+| WP-04/F08 | WP-22 | execute WP-04 regression/schema validation + provisional local-sufficiency integration tests | YES |
+| WP-04/F09 | WP-24 | complete D&D domain coverage against reconstructable Actor build | YES |
+| WP-04/F10 | WP-26 | remove stale `pre-live/not true live play` and legacy PC/NPC/item routing wording | YES |
 
-WP-02/F01 is discharged by WP-03.
+Discharged:
+- WP-02/F01 -> WP-03;
+- WP-02/F02 -> WP-04;
+- WP-03/F01 -> WP-04.
 
 ## Closed-domain summary
 
@@ -109,8 +120,6 @@ WP-02/F01 is discharged by WP-03.
 VERDICT: CLOSED
 ARCHITECTURE_BLOCKERS: 0
 OWNER_GATE: NONE
-IMPLEMENTATION_GAPS: 3 classes
-FORWARD_OBLIGATIONS: 6
 ```
 
 ### WP-02
@@ -120,7 +129,6 @@ VERDICT: CLOSED / READ-BACK VERIFIED
 ARCHITECTURE_OWNER_CONFLICTS: 0
 MACHINE_STALE_OR_MISSING_CLUSTERS: 12
 OWNER_GATE: NONE
-FORWARD_OBLIGATIONS: 11
 ```
 
 ### WP-03
@@ -130,10 +138,18 @@ VERDICT: CLOSED / READ-BACK VERIFIED
 CATALOG_GENERATION: 2.0.0
 CLASS_ADMISSION_BLOCKERS: 0
 OWNER_GATE: NONE
-EXECUTABLE_FULL_SUITE_VERIFICATION: WP-22
 ```
 
-Main WP-03 result: stale generic relationship/truth/durability/publication vocabulary retired; accepted Step-4/5 and Round-2 closed vocabulary materialized without creating generic new authority records.
+### WP-04
+
+```text
+VERDICT: CLOSED / READ-BACK VERIFIED
+UNIFIED_ACTOR_ASSET_MODEL: MACHINE-ALIGNED
+R2.2_CONTINUITY: MATERIALIZED
+RECONSTRUCTABLE_BUILD: MATERIALIZED
+GAMEPLAY_FIRST_ONBOARDING: ACCEPTED + CORE-ALIGNED
+OWNER_GATE: NONE
+```
 
 ## Current owner decisions / clarifications
 
@@ -158,6 +174,19 @@ CATALOG_GENERATION: 2.0.0
 
 No tag/release publication has been performed.
 
+### Gameplay-first progressive character materialization
+
+```text
+GAMEPLAY MAY BEGIN BEFORE READY_PC: YES
+PROVISIONAL PC DURING GAMEPLAY: YES
+CAMPAIGN LIFECYCLE MAY REMAIN initializing DURING THIS PLAY: YES
+READY_PC: continuously reevaluated completeness predicate
+READY_PC DURABILITY: persist same stable Actor when completeness becomes true
+MECHANICAL OUTCOME BEFORE READY_PC: only when its entire material dependency set is already established
+```
+
+Do not restore the retired interpretation `READY_PC before first gameplay scene`.
+
 ## Open owner decisions
 
 `NONE`.
@@ -167,8 +196,8 @@ No tag/release publication has been performed.
 При новом чате после repository bootstrap прочитать этот файл и продолжить с:
 
 ```text
-CURRENT_DOMAIN: WP-04
-CURRENT_SLICE: canonical owner/state inventory + current schema reverse audit
+CURRENT_DOMAIN: WP-05
+CURRENT_SLICE: owning execution graph + runtime-schema reverse audit
 ```
 
-Затем прочитать WP-03 report, Actor/Asset architecture owners, R2.2 canonical Actor continuity spec and task-specific GAME schemas/CORE consumers. Conversation history не является checkpoint.
+Then read WP-04 report, Step-3 canonical execution owners/schemas, R2.4 no-mechanics-replay law and current runtime execution machine surfaces. Conversation history is not a checkpoint.
