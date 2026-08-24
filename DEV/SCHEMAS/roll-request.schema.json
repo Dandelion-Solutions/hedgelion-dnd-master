@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/roll-request.schema.json",
+  "title": "HDM RollRequest value",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["roll_id", "expression", "purpose_id"],
+  "properties": {
+    "roll_id": {"$ref": "#/$defs/id"},
+    "expression": {"type": "string", "minLength": 1},
+    "purpose_id": {"$ref": "#/$defs/id"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+  },
+  "description": "Transient deterministic RNG request. It is not durable authority. Once generated and accepted, the corresponding typed RollResult becomes fixed execution history under Resolution/Continuation when continuity requires it.",
+  "examples": [
+    {"roll_id": "roll.attack.1", "expression": "1d20", "purpose_id": "roll.attack"}
+  ]
+}
