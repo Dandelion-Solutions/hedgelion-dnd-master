@@ -123,6 +123,20 @@ class Step3ExecutionValueSchemasTest(unittest.TestCase):
             },
         )
 
+    def test_failed_receipt_requires_registered_failure_code(self):
+        failed = {
+            "execution_owner_id": "resolution-0000001",
+            "segment_refs": [],
+            "status": "FAILED",
+            "event_ids": [],
+            "exports": {},
+            "pending_child_refs": [],
+        }
+        with self.assertRaises(ValidationError):
+            validate("resolution-receipt.schema.json", failed)
+        failed["failure_code"] = "failure.order_adjudication_required"
+        validate("resolution-receipt.schema.json", failed)
+
 
 if __name__ == "__main__":
     unittest.main()
