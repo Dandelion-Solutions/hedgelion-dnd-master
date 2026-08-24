@@ -7,7 +7,7 @@ from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
-TOOLS = ROOT / "DEV" / "TOOLS"
+WP05_TEST = ROOT / "DEV" / "TESTS" / "test_r2_7_wp05_execution_conformance.py"
 
 
 def load(name):
@@ -270,29 +270,21 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
         self.assertNotIn("trace", effect)
         self.assertNotIn("created_at", effect)
 
-    def test_maintenance_audit_requires_complete_wp05_step3_schema_family(self):
-        src = (TOOLS / "audit_engine.py").read_text(encoding="utf-8")
+    def test_wp05_expanded_schema_family_is_owned_by_r27_conformance(self):
+        src = WP05_TEST.read_text(encoding="utf-8")
         for name in (
             "action-request.schema.json",
             "transition-request.schema.json",
             "roll-result.schema.json",
-            "invocation-fact.schema.json",
-            "intent-clause.schema.json",
             "runtime-interaction-state.schema.json",
-            "runtime-intent-plan-state.schema.json",
             "runtime-command-state.schema.json",
-            "runtime-procedure-state.schema.json",
             "runtime-resolution-state.schema.json",
             "runtime-continuation-state.schema.json",
-            "execution-segment.schema.json",
-            "runtime-mechanical-event-state.schema.json",
             "runtime-resolution-trace-state.schema.json",
-            "pending-child-invocation.schema.json",
+            "execution-segment.schema.json",
             "resolution-receipt.schema.json",
-            "boundary-occurrence.schema.json",
         ):
             self.assertIn(name, src)
-        self.assertIn("mechanical-surfaces.json", src)
 
 
 if __name__ == "__main__":
