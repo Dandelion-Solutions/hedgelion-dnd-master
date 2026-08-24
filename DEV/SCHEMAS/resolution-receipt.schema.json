@@ -34,7 +34,30 @@
       "uniqueItems": true,
       "items": {"type": "string", "minLength": 1}
     },
-    "failure_code": {
+    "failure_code": {"$ref": "#/$defs/failureCode"}
+  },
+  "allOf": [
+    {
+      "if": {"required": ["failure_code"]},
+      "then": {
+        "properties": {
+          "status": {"enum": ["HYDRATION_REQUIRED", "REJECTED", "ABORTED", "FAILED"]}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {"enum": ["HYDRATION_REQUIRED", "REJECTED", "FAILED"]}
+        },
+        "required": ["status"]
+      },
+      "then": {"required": ["failure_code"]}
+    }
+  ],
+  "$defs": {
+    "scalar": {"type": ["string", "number", "boolean"]},
+    "failureCode": {
       "enum": [
         "failure.idempotency_conflict",
         "failure.hydration_required",
@@ -50,19 +73,6 @@
         "failure.invocation_fact_unauthorized"
       ]
     }
-  },
-  "allOf": [
-    {
-      "if": {"required": ["failure_code"]},
-      "then": {
-        "properties": {
-          "status": {"enum": ["HYDRATION_REQUIRED", "REJECTED", "ABORTED", "FAILED"]}
-        }
-      }
-    }
-  ],
-  "$defs": {
-    "scalar": {"type": ["string", "number", "boolean"]}
   },
   "examples": [
     {
