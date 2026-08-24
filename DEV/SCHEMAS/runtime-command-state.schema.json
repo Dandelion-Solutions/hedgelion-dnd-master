@@ -30,6 +30,7 @@
     },
     "direct_transition_segments": {
       "type": "array",
+      "minItems": 1,
       "items": {"$ref": "https://hedgelion.invalid/schemas/execution-segment.schema.json"}
     },
     "pending_child_invocations": {
@@ -78,8 +79,19 @@
         "required": ["command_kind", "disposition"]
       },
       "then": {
-        "required": ["direct_transition_segments"],
-        "properties": {"direct_transition_segments": {"minItems": 1}}
+        "required": ["direct_transition_segments"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command_kind": {"const": "transition"},
+          "pending_child_invocations": {"minItems": 1}
+        },
+        "required": ["command_kind", "pending_child_invocations"]
+      },
+      "then": {
+        "required": ["direct_transition_segments"]
       }
     }
   ],
