@@ -1,4 +1,4 @@
-engine_version: 0.8
+engine_version: 1.0-alpha
 release_status: development
 repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_owner_login: dkolyada
@@ -6,4 +6,4 @@ rules_baseline: D&D 2024 / SRD 5.2.1
 schema_version: 2
 campaign_update:
   compatibility: maintenance_required
-recommended_tag: v0.8
+recommended_tag: v1.0-alpha
