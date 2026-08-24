@@ -35,6 +35,7 @@
         "ABORTED", "FAILED"
       ]
     },
+    "failure_code": {"$ref": "#/$defs/failureCode"},
     "cursor": {"type": "string", "minLength": 1},
     "safe_recompute_phase": {"type": "string", "minLength": 1},
     "next_segment_sequence": {"type": "integer", "minimum": 1},
@@ -63,9 +64,30 @@
     "trace_id": {"type": "string", "minLength": 1},
     "details": {"type": "object"}
   },
-  "anyOf": [
-    {"required": ["initiating_command_id"]},
-    {"required": ["causal_invocation_key"]}
+  "allOf": [
+    {
+      "anyOf": [
+        {"required": ["initiating_command_id"]},
+        {"required": ["causal_invocation_key"]}
+      ]
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {"enum": ["HYDRATION_REQUIRED", "REJECTED", "FAILED"]}
+        },
+        "required": ["status"]
+      },
+      "then": {"required": ["failure_code"]}
+    },
+    {
+      "if": {"required": ["failure_code"]},
+      "then": {
+        "properties": {
+          "status": {"enum": ["HYDRATION_REQUIRED", "REJECTED", "ABORTED", "FAILED"]}
+        }
+      }
+    }
   ],
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
@@ -74,6 +96,22 @@
       "oneOf": [
         {"$ref": "#/$defs/scalar"},
         {"type": "array", "items": {"$ref": "#/$defs/scalar"}}
+      ]
+    },
+    "failureCode": {
+      "enum": [
+        "failure.idempotency_conflict",
+        "failure.hydration_required",
+        "failure.missing_reference",
+        "failure.catalog_context_incompatible",
+        "failure.continuation_conflict",
+        "failure.continuation_stale",
+        "failure.dependency_cycle",
+        "failure.transition_requires_procedure",
+        "failure.order_adjudication_required",
+        "failure.execution_limit",
+        "failure.invocation_fact_missing",
+        "failure.invocation_fact_unauthorized"
       ]
     }
   },
