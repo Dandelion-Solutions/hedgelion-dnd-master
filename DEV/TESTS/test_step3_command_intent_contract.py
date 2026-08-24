@@ -26,6 +26,26 @@ def validate(name, value):
     Draft202012Validator(schema(name), registry=registry()).validate(value)
 
 
+def action_command():
+    return {
+        "interaction_id": "turn-000042",
+        "intent_plan_id": "turn-000042-plan",
+        "clause_id": "c1",
+        "command_kind": "action",
+        "catalog_context_fingerprint": "sha256:catalog-context-A",
+        "input_fingerprint": "sha256:command-input-A",
+        "disposition": "command.accepted",
+        "invocation_facts": [],
+        "action_request": {
+            "activity_id": "activity.attack.basic",
+            "actor_id": "actor-0001",
+            "target_ids": ["actor-0002"],
+        },
+        "root_resolution_id": "resolution-0000001",
+        "pending_child_invocations": [],
+    }
+
+
 class Step3CommandIntentContractTest(unittest.TestCase):
     def test_intent_plan_allows_partial_completion_without_transaction_authority(self):
         value = {
@@ -43,21 +63,16 @@ class Step3CommandIntentContractTest(unittest.TestCase):
             with self.assertRaises(ValidationError):
                 validate("runtime-intent-plan-state.schema.json", invalid)
 
-    def test_action_command_links_resolution_and_closes_only_without_pending_children(self):
-        value = {
-            "interaction_id": "turn-000042",
-            "intent_plan_id": "turn-000042-plan",
-            "clause_id": "c1",
-            "command_kind": "action",
-            "catalog_context_fingerprint": "sha256:catalog-context-A",
-            "input_fingerprint": "sha256:command-input-A",
-            "disposition": "command.accepted",
-            "invocation_facts": [],
-            "root_resolution_id": "resolution-0000001",
-            "pending_child_invocations": [],
-        }
+    def test_action_command_links_normalized_request_and_resolution(self):
+        value = action_command()
         validate("runtime-command-state.schema.json", value)
-        settled = dict(value, disposition="command.settled")
+        missing_request = dict(value)
+        missing_request.pop("action_request")
+        with self.assertRaises(ValidationError):
+            validate("runtime-command-state.schema.json", missing_request)
+
+    def test_command_closes_only_without_pending_children(self):
+        settled = dict(action_command(), disposition="command.settled")
         settled["pending_child_invocations"] = [{
             "firing_key": "f1", "root_command_id": "turn-000042-cmd-01",
             "activity_id": "activity.followup", "trigger_ref": "event-00000001",
@@ -67,23 +82,59 @@ class Step3CommandIntentContractTest(unittest.TestCase):
             validate("runtime-command-state.schema.json", settled)
 
     def test_action_and_transition_paths_do_not_collapse(self):
-        action = {
-            "interaction_id": "turn-1", "intent_plan_id": "turn-1-plan", "clause_id": "c1",
-            "command_kind": "action", "catalog_context_fingerprint": "ctx", "input_fingerprint": "fp",
-            "disposition": "command.accepted", "invocation_facts": [], "root_resolution_id": "resolution-1",
-            "pending_child_invocations": [],
-        }
-        invalid_action = dict(action, transition_request={"transition_kind": "transition.location_change"})
+        action = action_command()
+        invalid_action = dict(action, transition_request={
+            "transition_kind": "transition.location_change",
+            "payload": {"target_id": "actor-1", "destination_id": "location-2"},
+        })
         with self.assertRaises(ValidationError):
             validate("runtime-command-state.schema.json", invalid_action)
-        transition = dict(action)
-        transition.pop("root_resolution_id")
-        transition["command_kind"] = "transition"
-        transition["transition_request"] = {"transition_kind": "transition.location_change", "payload": {"target_id": "actor-1", "destination_id": "location-2"}}
+
+        transition = {
+            "interaction_id": "turn-1",
+            "intent_plan_id": "turn-1-plan",
+            "clause_id": "c1",
+            "command_kind": "transition",
+            "catalog_context_fingerprint": "ctx",
+            "input_fingerprint": "fp",
+            "disposition": "command.accepted",
+            "invocation_facts": [],
+            "transition_request": {
+                "transition_kind": "transition.location_change",
+                "payload": {"target_id": "actor-1", "destination_id": "location-2"},
+            },
+            "pending_child_invocations": [],
+        }
         validate("runtime-command-state.schema.json", transition)
         invalid_transition = dict(transition, resolution_cursor="effect")
         with self.assertRaises(ValidationError):
             validate("runtime-command-state.schema.json", invalid_transition)
+
+    def test_settled_direct_transition_keeps_committed_segment_evidence_on_command(self):
+        transition = {
+            "interaction_id": "turn-1",
+            "intent_plan_id": "turn-1-plan",
+            "clause_id": "c1",
+            "command_kind": "transition",
+            "catalog_context_fingerprint": "ctx",
+            "input_fingerprint": "fp",
+            "disposition": "command.settled",
+            "invocation_facts": [],
+            "transition_request": {
+                "transition_kind": "transition.location_change",
+                "payload": {"target_id": "actor-1", "destination_id": "location-2"},
+            },
+            "direct_transition_segments": [{
+                "segment_sequence": 1,
+                "commit_state": "committed",
+                "event_ids": ["event-00000001"],
+                "pending_child_invocations": [],
+                "receipt_exports": {},
+                "affected_revision_refs": ["actor-1@2"],
+            }],
+            "pending_child_invocations": [],
+        }
+        validate("runtime-command-state.schema.json", transition)
 
 
 if __name__ == "__main__":
