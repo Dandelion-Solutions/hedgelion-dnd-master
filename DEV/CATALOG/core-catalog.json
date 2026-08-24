@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.6.0",
+  "catalog_version": "2.0.0",
   "schema_version": 1,
   "registries": {
     "content_definition_kinds": [
@@ -22,7 +22,7 @@
     "world_record_kinds": [
       "world.actor", "world.actor_group", "world.asset", "world.location",
       "world.connection", "world.zone", "world.organization",
-      "world.relationship", "world.contract", "world.mission", "world.scene",
+      "world.contract", "world.mission", "world.scene",
       "world.encounter", "world.hazard", "world.effect", "world.lore_fact",
       "world.knowledge"
     ],
@@ -31,6 +31,7 @@
       "runtime.procedure", "runtime.intent_plan", "runtime.command",
       "runtime.resolution", "runtime.continuation", "runtime.mechanical_event",
       "runtime.semantic_event", "runtime.resolution_trace",
+      "runtime.disclosure", "runtime.collaboration_obligation",
       "runtime.checkpoint", "runtime.id_allocator",
       "runtime.maintenance_audit", "runtime.catalog_gap_report"
     ],
@@ -43,7 +44,14 @@
       "value.reaction_offer", "value.resolution_receipt",
       "value.publication_manifest", "value.validation_issue",
       "value.execution_segment", "value.pending_child_invocation",
-      "value.invocation_fact", "value.boundary_occurrence"
+      "value.invocation_fact", "value.boundary_occurrence",
+      "value.epistemic_delta", "value.role_context_request",
+      "value.context_need_profile", "value.role_context_bundle",
+      "value.context_trace", "value.context_budget_envelope",
+      "value.turn_envelope", "value.interpreter_result",
+      "value.preparation_draft", "value.actor_proposal",
+      "value.story_projection_draft", "value.narration_result",
+      "value.story_service_decision"
     ],
     "actor_facets": [
       "actor.player_character", "actor.nonplayer_character",
@@ -101,11 +109,10 @@
       "transition.currency_transfer", "transition.location_change",
       "transition.connection_state", "transition.zone_state",
       "transition.organization_state", "transition.membership_change",
-      "transition.relationship_change", "transition.contract_state",
-      "transition.mission_state", "transition.scene_state",
-      "transition.encounter_state", "transition.hazard_state",
-      "transition.lore_commit", "transition.knowledge_change",
-      "transition.event_time_advance"
+      "transition.contract_state", "transition.mission_state",
+      "transition.scene_state", "transition.encounter_state",
+      "transition.hazard_state", "transition.lore_commit",
+      "transition.knowledge_change", "transition.event_time_advance"
     ],
     "event_kinds": [
       "event.activity.completed", "event.activity.rejected",
@@ -123,9 +130,9 @@
       "event.effect.updated", "event.effect.expired", "event.effect.removed",
       "event.zone.created", "event.zone.updated", "event.zone.removed",
       "event.connection.changed", "event.organization.changed",
-      "event.membership.changed", "event.relationship.changed",
-      "event.contract.changed", "event.mission.changed",
-      "event.scene.changed", "event.encounter.changed", "event.hazard.changed",
+      "event.membership.changed", "event.contract.changed",
+      "event.mission.changed", "event.scene.changed",
+      "event.encounter.changed", "event.hazard.changed",
       "event.lore.committed", "event.knowledge.changed",
       "event.event_time.advanced"
     ],
@@ -236,8 +243,7 @@
       "signal.resolution.prepared", "signal.roll.pending",
       "signal.roll.resolved", "signal.attack.hit.pending",
       "signal.spell.cast.pending", "signal.damage.pending",
-      "signal.healing.pending",
-      "signal.resource.consumption.pending",
+      "signal.healing.pending", "signal.resource.consumption.pending",
       "signal.effect.application.pending", "signal.entity.move.pending",
       "signal.entity.leave_reach.pending", "signal.entity.enter_zone.pending",
       "signal.entity.leave_zone.pending", "signal.turn.start",
@@ -261,18 +267,12 @@
       "command.accepted", "command.settled"
     ],
     "execution_failure_codes": [
-      "failure.idempotency_conflict",
-      "failure.hydration_required",
-      "failure.missing_reference",
-      "failure.catalog_context_incompatible",
-      "failure.continuation_conflict",
-      "failure.continuation_stale",
-      "failure.dependency_cycle",
-      "failure.transition_requires_procedure",
-      "failure.order_adjudication_required",
-      "failure.execution_limit",
-      "failure.invocation_fact_missing",
-      "failure.invocation_fact_unauthorized"
+      "failure.idempotency_conflict", "failure.hydration_required",
+      "failure.missing_reference", "failure.catalog_context_incompatible",
+      "failure.continuation_conflict", "failure.continuation_stale",
+      "failure.dependency_cycle", "failure.transition_requires_procedure",
+      "failure.order_adjudication_required", "failure.execution_limit",
+      "failure.invocation_fact_missing", "failure.invocation_fact_unauthorized"
     ],
     "intent_execution_states": [
       "intent.pending", "intent.ready", "intent.executed",
@@ -282,19 +282,105 @@
       "exact", "composed", "narrative_only", "clarification_required",
       "unsupported"
     ],
-    "canonicality_classes": [
-      "canonicality.ephemeral", "canonicality.local", "canonicality.canonical"
-    ],
-    "durability_classes": [
-      "durability.ephemeral", "durability.soft", "durability.hard"
-    ],
-    "publication_states": [
-      "publication.local", "publication.queued", "publication.prepared",
-      "publication.published", "publication.blocked"
-    ],
-    "knowledge_modes": ["public", "restricted"],
     "truth_statuses": [
-      "undetermined", "established", "disputed", "disproven"
+      "truth.undetermined", "truth.established", "truth.disproven"
+    ],
+    "lore_record_statuses": [
+      "lore_record.active", "lore_record.superseded"
+    ],
+    "epistemic_stances": [
+      "epistemic.aware", "epistemic.known", "epistemic.believed",
+      "epistemic.suspected", "epistemic.rejected"
+    ],
+    "disclosure_aspects": [
+      "disclosure.statement", "disclosure.objective_status"
+    ],
+    "semantic_survival_states": [
+      "survival.ephemeral", "survival.established"
+    ],
+    "current_durability_states": [
+      "durability.durable", "durability.volatile_dirty"
+    ],
+    "durability_obligation_kinds": [
+      "durability.may_defer", "durability.must_be_durable_before"
+    ],
+    "repository_ref_outcomes": [
+      "repository_ref.confirmed_accepted",
+      "repository_ref.confirmed_rejected",
+      "repository_ref.indeterminate"
+    ],
+    "actor_continuity_lifetimes": [
+      "actor_continuity.foundation", "actor_continuity.durable_evolving",
+      "actor_continuity.transient_private"
+    ],
+    "actor_cognition_purposes": [
+      "cognition.react", "cognition.reflect", "cognition.plan",
+      "cognition.reconsider", "cognition.relationship_update"
+    ],
+    "actor_relationship_facets": [
+      "relationship.trust", "relationship.affinity", "relationship.fear",
+      "relationship.respect", "relationship.hostility",
+      "relationship.felt_obligation"
+    ],
+    "logical_roles": [
+      "role.interpreter", "role.dramaturg", "role.actor",
+      "role.narrator", "role.chronicler", "role.commentator"
+    ],
+    "context_discovery_channels": [
+      "context.current_scope", "context.scene_manifest",
+      "context.explicit_ref", "context.active_dependency",
+      "context.live_current", "context.index_lookup", "context.history_hint"
+    ],
+    "context_representation_classes": [
+      "context.exact", "context.full_structured",
+      "context.compact_structured", "context.summary",
+      "context.reference_only"
+    ],
+    "context_assembly_outcomes": [
+      "context.assembled", "context.assembled_degraded",
+      "context.unsatisfiable"
+    ],
+    "story_service_outcomes": [
+      "story_service.no_backlog", "story_service.service",
+      "story_service.defer"
+    ],
+    "collaboration_coordination_families": [
+      "collaboration.independent_immediate",
+      "collaboration.agency_dependent_collective",
+      "collaboration.rule_owned_ordered"
+    ],
+    "input_semantic_classes": [
+      "input.ooc_coordination", "input.diegetic_communication",
+      "input.actionable_intent", "input.control_signal"
+    ],
+    "collaboration_states": [
+      "collaboration.open", "collaboration.closed",
+      "collaboration.resolved", "collaboration.obsolete"
+    ],
+    "collaboration_nonaction_results": [
+      "collaboration.pass", "collaboration.ready",
+      "collaboration.no_further_input"
+    ],
+    "planning_entry_classes": [
+      "planning.source_anchored_constraint",
+      "planning.provisional_dramaturgic_direction"
+    ],
+    "chronology_relation_kinds": [
+      "chronology.causes", "chronology.precedes",
+      "chronology.same_coordinate", "chronology.elapsed"
+    ],
+    "recovery_outcomes": [
+      "recovery.ready", "recovery.retry", "recovery.blocked"
+    ],
+    "story_layers": [
+      "story.transcript", "story.events", "story.mechanics",
+      "story.narrative"
+    ],
+    "story_candidate_dispositions": [
+      "story.must_materialize", "story.may_omit"
+    ],
+    "message_payload_states": [
+      "message.exact_retained", "message.compacted"
     ]
   }
 }
