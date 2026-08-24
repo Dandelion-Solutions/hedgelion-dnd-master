@@ -9,12 +9,39 @@ The canonical generic architecture/deep-work procedure is:
 `DEV/DESIGN_PROCESS.md`
 
 That document governs task classification, human/agent decision rights,
-research and evidence discipline, analytical challenge, the eight-step
-deep-design loop, adversarial review, canonicalization, deferred work, risk,
-traceability, and the transition from architecture into implementation planning.
+research and evidence discipline, repository evidence completeness, analytical
+challenge, the eight-step deep-design loop, adversarial review,
+canonicalization, deferred work, risk, traceability, and the transition from
+architecture into implementation planning.
 
 This file adds HDM-specific constraints. It must not be interpreted as a weaker
 alternative process.
+
+## Fresh-session architecture bootstrap
+
+A fresh HDM architecture/deep-work chat must recover its working state from the
+repository before it starts substantive synthesis or asks the project owner to
+restate previous work.
+
+Follow the repository bootstrap in `AGENTS.md`, then establish at least:
+
+1. the current remote ref and repository state;
+2. the current versions of `AGENTS.md`, `DEV/DESIGN_PROCESS.md`, this file and
+   `DEV/PROJECT_MAP.md`;
+3. the current architecture sequencing/status authority in
+   `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`;
+4. the current canonical/derivative locator state needed for the task, including
+   `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` where applicable;
+5. the task-specific owning artifacts, neighboring schemas/tests/runtime
+   contracts and research inputs identified through the project map.
+
+Conversation summaries, previous-chat handoffs, model memory and remembered
+filenames may help orientation only. They do not establish current architecture
+state when repository sources are available.
+
+Do not ask the project owner questions such as "what did we decide about X?" or
+"which file owns Y?" until repository research has shown that the answer is not
+recoverable from the current project sources.
 
 ## Superpowers requirement
 
@@ -33,6 +60,11 @@ For architecture/deep-work blocks:
 4. keep Superpowers artifacts under the repository locations defined by
    `AGENTS.md`.
 
+Superpowers is workflow discipline, not a substitute for repository research.
+Invoking the correct skill does not satisfy the evidence or completeness gates
+unless the required source discovery, extraction, reconciliation and review are
+actually performed.
+
 ## Repository project-map / discovery requirement
 
 HDM maintains `DEV/PROJECT_MAP.md` as a **non-normative navigation and dependency
@@ -44,11 +76,17 @@ Before substantive repository research:
 
 1. inspect the current remote branch/ref and current repository tree;
 2. consult `DEV/PROJECT_MAP.md` to identify likely owners, neighboring surfaces,
-   schemas, tests, support contracts and historical derivation that may matter;
-3. read the actual owning files before making correctness-sensitive claims;
-4. search concrete symbols/paths for consumers and stale references after the
+   schemas, tests, support contracts, research inputs and historical derivation
+   that may matter;
+3. construct the task-specific **Source Manifest** required by
+   `DEV/DESIGN_PROCESS.md` rather than treating one located file as the whole
+   evidence set;
+4. read the actual owning files before making correctness-sensitive claims;
+5. follow relevant references into schemas, tests, runtime consumers and later
+   amendments/owner decisions when they can change the conclusion;
+6. search concrete symbols/paths for consumers and stale references after the
    structural pass;
-5. treat an empty keyword search as non-evidence of absence until the relevant
+7. treat an empty keyword search as non-evidence of absence until the relevant
    directory/tree and local indexes have also been checked.
 
 `DEV/PROJECT_MAP.md` is never a semantic source of truth and must not repeat full
@@ -62,6 +100,137 @@ tests and dated design artifacts may be covered by path/pattern rather than by a
 manual entry for every member; the goal is reliable navigation and dependency
 discovery, not a second copy of repository contents.
 
+## HDM repository-evidence and synthesis gate
+
+HDM architecture work must satisfy the generic repository-evidence completeness
+gate in `DEV/DESIGN_PROCESS.md` before producing correctness-sensitive synthesis.
+The project-specific interpretation is below.
+
+### Task-specific evidence set
+
+The Source Manifest should include, where relevant:
+
+- current requirements and product constraints;
+- canonical owning architecture/specifications;
+- later canonical amendments and explicit owner decisions;
+- current roadmap/status authority;
+- derivative indexes used only to locate owners;
+- relevant research dossiers, experiments and feasibility studies;
+- affected `GAME/` runtime contracts;
+- affected DEV catalogs/schemas/machine contracts;
+- executable and scenario/adversarial tests;
+- historical/derivation artifacts only when provenance, supersession or a
+  previous assumption materially affects the current question.
+
+The manifest is task-specific. HDM does **not** require reading the entire
+repository for every architecture question. The agent must instead discover the
+relevant dependency subgraph and read that subgraph deeply enough to support the
+claims being made.
+
+### Source roles must stay distinct
+
+During research and synthesis, explicitly distinguish at least:
+
+```text
+CANONICAL / OWNING
+CANONICAL AMENDMENT / OWNER DECISION
+DERIVATIVE LOCATOR / INDEX
+RESEARCH INPUT
+HISTORICAL / SUPERSEDED DERIVATION
+IMPLEMENTATION / MACHINE CONTRACT / TEST EVIDENCE
+```
+
+A research artifact does not become architecture because it is detailed or
+persuasive. A derivative index does not override its linked owner. A historical
+artifact does not regain authority because a current question resembles it.
+
+### Enumerated findings and qualifiers
+
+When an HDM source contains individually enumerated findings, candidates,
+requirements, risks, review issues, test cases, deferred items or similar
+records, item-level semantics must be preserved whenever the work claims
+coverage or derives sequencing from that corpus.
+
+For each relevant item record enough structured evidence to recover:
+
+```text
+Source/item:
+Actual claim:
+Classification/authority:
+Qualifiers / applicability conditions:
+Revisit/defer trigger, if any:
+Existing HDM owner/decision, if any:
+Conflict / extension / new consumer / no delta:
+Current disposition:
+Rationale:
+```
+
+Qualifiers are not editorial decoration. `revisit when`, `only if`, scope limits,
+non-goals, exceptions, confidence, negative findings and explicit defer
+conditions are part of the finding and must survive compression.
+
+For research candidates, useful dispositions include:
+
+```text
+ACTIVE — current architecture work must consider it
+INHERITED / ALREADY SATISFIED — current accepted architecture already covers it
+CONDITIONAL / DORMANT — no current work; preserve the explicit revisit trigger
+OUT OF CURRENT SCOPE — excluded by current product/deployment scope
+REJECTED — consciously not adopted after analysis
+```
+
+`CONDITIONAL / DORMANT` is not an instruction to study the item immediately. If
+the source itself says to return only when a trigger occurs and that trigger has
+not occurred, preserving the trigger is normally sufficient.
+
+The External Architecture Idea Dossier is one example of this rule, not the
+reason for it. The same discipline applies to any enumerated research corpus,
+review finding set, requirement list, schema contract, test inventory, migration
+set or other correctness-sensitive collection.
+
+### No thematic-coverage shortcut
+
+A roadmap or architecture document must not claim that a source set is covered
+merely because its broad themes resemble roadmap headings.
+
+Before claiming coverage of an enumerated corpus, the agent must account for the
+relevant items individually or through an equally strong mechanically verifiable
+mapping. The output may be compact, but the underlying accounting must exist.
+
+A synthesis may classify items as inherited, dormant, out-of-scope or rejected;
+coverage does **not** mean every item becomes a roadmap stage or current task.
+
+### Round-1 preservation rule
+
+Round-1 architecture is a strong accepted base. A new research item or later
+stage does not reopen a closed Round-1 topic merely because it discusses the same
+subject.
+
+Before reopening, classify whether the new work:
+
+1. materially extends the accepted decision;
+2. exposes a real contradiction or invalid assumption;
+3. introduces a new consumer the accepted decision cannot satisfy;
+4. makes the accepted decision insufficient for a current requirement.
+
+If none apply, the new evidence is confirmation/context rather than new
+architecture work.
+
+### Human review is not the completeness mechanism
+
+The project owner is not the final parser, proofreader or memory system for the
+document corpus.
+
+Before escalating a decision, the agent must independently establish everything
+that can be established through repository inspection, source reconciliation,
+structured evidence extraction, tests and logical consequence. The owner should
+receive the decision-ready delta: what is established, what changed, what
+remains genuinely ambiguous, the credible alternatives, the recommendation and
+the exact human decision required.
+
+Do not ask the owner to read large source sets merely to discover whether the
+agent omitted a dependency, qualifier, prior decision or enumerated finding.
+
 ## HDM decision rights
 
 Product requirements, gameplay semantics, project priorities, explicit risk
@@ -69,13 +238,14 @@ acceptance, and material architecture trade-offs remain owned by the project
 owner/human architect.
 
 The agent is responsible for the research, analytical challenge, recommendation,
-mechanical formalization, detailed examples, consistency checking, critique
-resolution, roadmap/status bookkeeping, and specification completeness required
-by `DEV/DESIGN_PROCESS.md`.
+mechanical formalization, detailed examples, consistency checking, source
+coverage, critique resolution, roadmap/status bookkeeping, traceability and
+specification completeness required by `DEV/DESIGN_PROCESS.md`.
 
 Do not make the owner compensate for incomplete analysis by presenting raw
-options without a recommendation, or by asking for manual validation of
-mechanical documentation details that follow from already accepted decisions.
+options without a recommendation, by asking for manual validation of mechanical
+documentation details that follow from already accepted decisions, or by asking
+the owner to reconstruct evidence that exists in repository sources.
 
 ## HDM architecture sequencing gate
 
@@ -89,13 +259,16 @@ For that roadmap:
   relevant to the active stage, but it may not silently replace the active
   stage;
 - a stage is complete only when its required artifacts exist, its exit checks
-  pass, and unresolved work is explicitly owned, deferred, or recorded in the
-  appropriate backlog/debt mechanism;
+  pass, and unresolved work is explicitly owned, deferred, dormant with a
+  meaningful trigger, or recorded in the appropriate backlog/debt mechanism;
 - architecture is reviewed before implementation;
 - accepted decisions must remain compatible with existing canonical HDM
   architecture unless an explicit superseding decision is made;
 - the roadmap and related architecture status must identify the exact next
-  continuation point.
+  continuation point;
+- a roadmap rebaseline that claims to derive a problem horizon from a research
+  corpus must pass the repository-evidence and synthesis gate above before that
+  coverage claim is treated as assured.
 
 ## HDM-specific analytical emphasis
 
@@ -119,7 +292,11 @@ As relevant, challenge designs for:
   single-scene design;
 - hard-coded D&D rules where a registered policy/mechanic is required for
   extensibility;
-- generic abstraction introduced without a concrete current requirement.
+- generic abstraction introduced without a concrete current requirement;
+- research compression that drops qualifiers, revisit triggers or negative
+  evidence;
+- roadmap/spec synthesis that assumes broad thematic overlap proves source
+  coverage.
 
 ## Development/runtime separation
 
@@ -152,12 +329,16 @@ environment after its connection is checked:
 The design process itself should be visible through development artifacts, not
 through product/runtime state.
 
-Normally it is sufficient that the roadmap/specification history shows:
+Normally it is sufficient that the task brief, research/specification history
+and roadmap show, at proportional depth:
 
+- the relevant Source Manifest or otherwise auditable source coverage;
 - the workflow/review performed;
 - the decisions made;
 - material risks/findings and their disposition;
-- intentionally deferred work;
+- applicability qualifiers and revisit triggers that matter to future work;
+- intentionally deferred/dormant work;
 - the exit-gate state and next continuation point.
 
-Do not create runtime entities solely to prove that architecture review occurred.
+Do not create runtime entities solely to prove that architecture review or
+document research occurred.
