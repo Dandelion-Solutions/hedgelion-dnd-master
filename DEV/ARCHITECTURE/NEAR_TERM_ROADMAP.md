@@ -1,61 +1,37 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE WORKING PLAN**
+Status: **ACTIVE PROGRAM ROADMAP**
 
-Date: 2026-08-23
+Date: 2026-08-24
 
-This file is the sequencing/status authority for the active HDM architecture program.
+This file is the sequencing/status authority for Architecture Round 2.
 
 Canonical process:
 
 - `DEV/DESIGN_PROCESS.md`
 - `DEV/ARCHITECTURE/DESIGN_PROCESS.md`
 
-Round-1 closure/rebaseline decision:
+Program decisions:
 
 - `DEV/docs/superpowers/specs/2026-08-23-round-1-step-6-closure-round-2-rebaseline-owner-decision.md`
-
-Single-context role-containment amendment:
-
 - `DEV/docs/superpowers/specs/2026-08-23-step-4-single-context-role-containment-canonical-amendment.md`
+- `DEV/docs/superpowers/specs/2026-08-24-round-2-roadmap-owner-decision.md`
+
+Evidence accounting:
+
+- `DEV/docs/superpowers/research/2026-08-24-round-2-evidence-disposition-ledger.md`
+
+This roadmap is a **new decomposition**. It supersedes the earlier Round-2 R2.1–R2.9 stage plan rather than polishing or preserving that stage structure.
 
 ---
 
-# 1. Program transition
+# 1. Program baseline
 
-Round 1 established the mechanical/runtime architecture strong base through Steps 1-5.
+Round 1 remains a strong accepted architecture base.
 
-The former Step 6 is no longer an active stage. It is:
+The former Round-1 Step 6 is closed as a separate stage. Its useful unresolved questions were reclassified under the current Round-2 dependency graph.
 
-> **CLOSED AS A SEPARATE STAGE / NOT EXECUTED AS ORIGINALLY DECOMPOSED / USEFUL SCOPE REALLOCATED TO ROUND 2**
-
-This does not claim that the old Step-6 exit criteria were completed. The original decomposition was retired because completed validation and the later Step-4 amendment invalidated its mandatory physical-role-isolation premise.
-
-Round-1 status:
-
-| Stage | Final status | Round-2 meaning |
-|---|---|---|
-| 1 | **COMPLETE / ASSURED** | inherited strong base |
-| 2 | **COMPLETE / ASSURED** | inherited strong base |
-| 3 | **COMPLETE / ASSURED** | inherited strong base |
-| 4 | **COMPLETE / ARCHITECTURE CLOSED + LATER AMENDMENT** | inherited; single-context role containment is current law |
-| 5 | **COMPLETE / ARCHITECTURE CLOSED** | inherited strong base |
-| 6 | **CLOSED AS SEPARATE STAGE / REALLOCATED** | useful unresolved work redistributed across Round 2 |
-
-Detailed Round-1 semantic lookup remains in:
-
-- `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`;
-- the owning canonical specifications and owner decisions.
-
-Where that derivative index still describes Step 6 as next, this current roadmap and the Round-1 closure decision supersede that sequencing/status text.
-
----
-
-# 2. Round-2 baseline
-
-## 2.1 Current product/deployment baseline
-
-Round 2 designs for:
+Current product/deployment baseline:
 
 ```text
 primary AI host              ChatGPT
@@ -63,496 +39,462 @@ plan                         ChatGPT Plus
 player-facing surface        ordinary public chat
 physical LLM topology        one LLM / one physical chat context
 ordinary gameplay execution  one user request / one assistant turn
-private HDM hosting          out of current scope
-direct model API calls       out of current scope
-future Claude migration      possible future compatibility concern, not current driver
+private HDM hosting          OUT OF CURRENT SCOPE
+direct model API calls       OUT OF CURRENT SCOPE
+mandatory paid inference     OUT OF CURRENT SCOPE
+future provider migration    compatibility concern only, not a current driver
 ```
 
-For multiplayer, each human player may use a separate player-facing chat/account as already assumed by the existing architecture. Round 2 must not invent a shared multi-user AI-chat dependency.
+Single-context role law:
 
-## 2.2 Role-containment baseline
+> Physical availability of information does not make it logically eligible for the active HDM role.
 
-HDM SHALL make one LLM sequentially execute multiple logical roles inside one physical chat context while preserving different knowledge and authority boundaries.
-
-Physical availability of information does not make it logically eligible for the active role.
-
-The system prompt, Project Instructions and shipped Markdown reasoning/procedure instructions are part of role-containment machinery, including:
-
-- role rebinding;
-- truth / cognition / observation / disclosure separation;
-- no transitive knowledge inheritance;
-- Actor-specific epistemics;
-- Dramaturg latent state;
-- Narrator disclosure discipline;
-- creativity -> commit boundary.
-
-Round 2 designs the runtime/instruction machinery implied by this law. It does not reopen mandatory physical isolation.
+The system prompt, Project Instructions and shipped HDM reasoning/procedure instructions are part of role-containment machinery, but they do not become canonical-state authority.
 
 ---
 
-# 3. Round-2 evidence base
+# 2. Round-1 preservation rule
 
-Round 2 uses all relevant current evidence without treating research as architecture automatically:
+A closed Round-1 topic becomes active Round-2 architecture work only when current work:
 
-- accepted Steps 1-5 architecture;
-- the single-context Step-4 canonical amendment;
-- role-context validation Protocols 1-3;
-- `DEV/docs/superpowers/research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md`;
-- current relevant host/platform feasibility research interpreted under the new baseline;
-- useful unresolved former Step-6 spikes/working notes;
-- actual current GAME/DEV runtime, schemas, catalogs, tests and documentation as each stage requires.
+1. materially extends the accepted contract;
+2. exposes a contradiction or invalid assumption;
+3. introduces a new consumer that the accepted contract cannot satisfy; or
+4. makes the accepted decision insufficient for a current requirement.
 
-External/research ideas must still survive HDM-specific analysis, simplification and approval before becoming architecture.
+Independent confirmation or thematic overlap is not a new stage.
+
+Examples inherited rather than reopened:
+
+- LLM interpretation/proposal versus deterministic mechanical commit;
+- objective truth versus fictional knowledge versus human disclosure;
+- Story nonauthority;
+- accepted gameplay/RNG not replayed because presentation is retried;
+- Step-5 durability/recovery/currentness/concurrency foundations;
+- Git/transport order not defining fictional chronology;
+- selective exact versus semantic history principles.
+
+---
+
+# 3. Evidence/activation rule
+
+The current roadmap was derived from item-level accounting of all 24 DIAMOND and 58 STRONG research candidates.
+
+Current disposition:
+
+```text
+ACTIVE / ACTIVE DELTA          43
+INHERITED / ALREADY SATISFIED  16
+CONDITIONAL / DORMANT          23
+unaccounted                     0
+```
+
+Research classification is not a backlog state.
+
+A `CONDITIONAL / DORMANT` item creates no immediate task. Its explicit revisit trigger is preserved in the evidence ledger.
+
+RESERVE / NEGATIVE INTELLIGENCE records remain stage-local adversarial evidence. This roadmap does not claim that every such record is an activated requirement.
 
 ---
 
 # 4. Operating rules
 
-- Exactly one Round-2 architecture stage may be `IN PROGRESS` at a time.
-- A later stage may be inspected to expose dependencies or contradictions but must not silently replace the active stage.
-- Each stage follows the normal task-brief -> research -> alternatives/recommendation -> decision -> specification -> adversarial review -> closure process at a depth proportional to risk.
-- Round-1 architecture is not automatically re-reviewed.
-- A closed Round-1 topic enters Round 2 only if new work materially extends it, contradicts it, introduces a new consumer it cannot satisfy, or makes it insufficient.
-- Independent confirmation of an accepted Round-1 principle is evidence, not a new roadmap stage.
-- Research candidates that solve no concrete current HDM problem remain deferred even if attractive.
-- YAGNI applies aggressively: do not create a new authority, subsystem, registry, scheduler, agent framework, plugin framework or generic graph unless a real current requirement needs it.
-- Broad implementation remains deferred until the relevant Round-2 architecture closes and the normal implementation-planning gate is reached.
-- The roadmap is living. If a stage proves wrongly grouped or wrongly ordered, change the roadmap rather than preserving the first decomposition by inertia.
+- Exactly one numbered Round-2 stage may be `IN PROGRESS`.
+- Later stages may be inspected only to expose dependencies/contradictions relevant to the active stage.
+- Each stage follows task brief -> source extraction/research -> alternatives/recommendation -> owner decision where required -> candidate specification -> adversarial review -> closure.
+- Before a Decision Brief, candidate specification, coverage claim or closure claim, the Source Manifest/evidence/completeness gates must pass.
+- Owning sources beat roadmaps, indexes, summaries and remembered state.
+- YAGNI applies aggressively: no new authority, registry, scheduler, generic graph, plugin framework, agent framework or subsystem without a current requirement.
+- Broad implementation remains blocked until Round-2 architecture closes and the normal implementation-planning gate begins.
+- This roadmap is living. Change the decomposition when evidence changes the dependency graph.
+- Dormant work does not reserve stage numbers. If a trigger becomes true, insert the smallest required bounded stage where dependencies require it.
 
 ---
 
-# 5. Round-2 stage registry
+# 5. Stage registry
 
 | Stage | Status | Scope | Exit result |
 |---|---|---|---|
-| R2.0 | **COMPLETE / REBASELINED** | close former Step 6; establish single-context/ChatGPT-Plus baseline; derive problem horizon | old Step-6 sequencing retired; Round-2 dependency structure established |
-| R2.1 | **NEXT / NOT STARTED** | continuity, memory and history-aligned derived-state model | explicit continuity layers/lifecycles, consolidation and history-alignment contracts without duplicate authority |
-| R2.2 | **PLANNED** | Context Runtime: retrieval, allocation, complete decision packets, trace/observability | bounded explainable role-context construction policy over R2.1 sources |
-| R2.3 | **PLANNED** | Actor continuity, cognition, directional relationships and private state | bounded persistent/transient Actor model compatible with Step-4 knowledge and player agency |
-| R2.4 | **PLANNED** | single-context LLM turn architecture and shipped instruction machinery | enforceable logical role pipeline, rebinding, activation, handoffs, tool/authority boundaries and instruction composition |
-| R2.5 | **PLANNED** | Dramaturg/narrative dynamics, latent planning, world pressure, long-range narrative continuity and Chronicler integration | useful adaptive narrative development without plot authority or maintenance-turn pollution |
-| R2.6 | **PLANNED** | multiplayer collaboration and scene topology | sync/async collaboration, split-party, participant/controller/channel semantics and recipient-scoped projections over existing Step-5 authority |
-| R2.7 | **PLANNED** | ChatGPT-Plus runtime reliability, evaluation, failure/degradation and security/quality validation | tested supported host envelope and integrated nondeterministic-layer assurance criteria |
-| R2.8 | **PLANNED** | secondary modes and optional-capability gate | explicit admit/defer/reject decisions for Commentator refinements, extensibility, multimodal and future-provider portability surfaces |
-| R2.9 | **PLANNED** | machine-realization mapping and holistic architecture closure | catalog/schema/seed/runtime-doc obligations mapped; cross-round adversarial review passed; implementation obligations consolidated |
+| R2.0 | **COMPLETE / EVIDENCE-REBASELINED** | rebuild Round-2 problem horizon from accepted architecture + item-level research disposition | 82/82 DIAMOND/STRONG accounted; previous stage decomposition retired; new dependency graph owner-approved |
+| R2.1 | **IN PROGRESS** | continuity, memory and history-aligned derived state | minimum continuity classes/lifecycles, provenance, consolidation, history alignment, repair/retirement and exact-vs-semantic promise |
+| R2.2 | **PLANNED** | Actor continuity, cognition and directed relationships | bounded Actor private/durable/transient state model compatible with Step-4 epistemics and player agency |
+| R2.3 | **PLANNED** | Context Runtime, retrieval and allocation | bounded deterministic context projection over admitted R2.1/R2.2 sources with complete-packet, budget, trace and degradation rules |
+| R2.4 | **PLANNED** | single-context LLM execution and instruction architecture | one-request/one-assistant-turn role pipeline, rebinding, handoffs, instruction composition and deterministic authority gateway |
+| R2.5 | **PLANNED** | collaboration and multiplayer interaction semantics | sync/async input, mode coordination, rejoin/catch-up and recipient-scoped context over inherited Step-5 shared-state architecture |
+| R2.6 | **PLANNED** | ChatGPT-Plus assurance, evaluation, security and degradation | tested supported host envelope and explicit supported/degraded/unsupported behavior |
+| R2.7 | **PLANNED** | machine-realization mapping and holistic closure | GAME/DEV/schema/catalog/instruction/test obligations mapped; cross-round review passed; implementation-planning entry criteria satisfied |
 
 ---
 
-# 6. R2.0 — Rebaseline and problem horizon — COMPLETE
+# 6. Dependency graph
 
-Completed by the owner decision and this roadmap.
+```text
+R2.0 Evidence Rebaseline
+        |
+        v
+R2.1 Continuity / History-Aligned Derived State
+        |
+        v
+R2.2 Actor Continuity / Cognition / Relationships
+        |
+        v
+R2.3 Context Runtime / Retrieval / Allocation
+        |
+        v
+R2.4 Single-Context LLM Execution / Instructions
+        |
+        v
+R2.5 Collaboration / Multiplayer Interaction
+        |
+        v
+R2.6 ChatGPT Assurance / Evaluation / Security
+        |
+        v
+R2.7 Machine Mapping / Holistic Closure
+        |
+        v
+Implementation Planning
+```
 
-Results:
-
-- former Step 6 closed as a separate stage;
-- mandatory physical role isolation removed from the active problem set;
-- ChatGPT Plus ordinary chat fixed as current baseline;
-- private hosting/direct API removed from current scope;
-- Round-1 closed architecture retained as strong base;
-- new work grouped by unresolved dependency rather than old numbering;
-- external idea dossier, experiments and former Step-6 evidence retained as inputs rather than automatic requirements.
+A later-stage dependency may be inspected early, but it does not become active unless the roadmap is explicitly changed.
 
 ---
 
-# 7. R2.1 — Continuity, Memory and History-Aligned Derived State
+# 7. R2.0 — Evidence Rebaseline & Scope Reconstruction — COMPLETE
+
+R2.0 replaced the previous thematic problem-horizon claim with a source-backed rebaseline.
+
+Completed results:
+
+- current repository/process/bootstrap sources re-read;
+- accepted Round-1 owners reconciled against the research horizon;
+- all 82 DIAMOND/STRONG candidates individually dispositioned;
+- `revisit when`/scope qualifiers preserved;
+- active versus inherited versus dormant work separated;
+- old Context-before-Actor ordering rejected;
+- no mandatory Narrative Dynamics subsystem justified;
+- no generic optional-capability gate justified;
+- collaboration work narrowed to deltas not already owned by Step 5;
+- new R2.1–R2.7 dependency graph owner-approved.
+
+R2.0 creates no runtime implementation.
+
+---
+
+# 8. R2.1 — Continuity, Memory & History-Aligned Derived State — IN PROGRESS
+
+Task brief:
+
+- `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-memory-history-task-brief.md`
 
 ## Problem
 
-Round 1 defines canonical current state, knowledge, disclosure, history evidence, Story and selective exact retention, but it does not yet define a complete long-campaign continuity architecture for LLM reasoning.
+HDM already owns current truth, fictional knowledge, disclosure, semantic/mechanical evidence, Story and selective exact history.
 
-Round 2 must distinguish durable truth from derived continuity products and decide how long-lived semantic memory survives Retry/Edit/branch/history changes without becoming hidden authority.
+It does not yet have a complete architecture for **derived long-campaign continuity used by LLM reasoning**.
 
-## Primary questions
+R2.1 must define the minimum continuity products that survive long campaigns without becoming duplicate canon or depending on mutable host conversation memory.
 
-- Which continuity classes actually exist: authoritative state, recent exact evidence, broad summary, episodic recall, entity-local continuity, private Actor continuity, transient scene state, deep archive?
-- Which are authoritative, derived, rebuildable, cached, exact-protected or disposable?
-- What is the minimum viable layer set rather than the maximum imaginable one?
-- When may recent evidence be consolidated into longer-lived derived representations?
-- How are summaries/memories associated with source revisions/history ancestry?
-- What happens to derived continuity after Retry/Edit/branch divergence?
-- What exact-recall promise already follows from Step 5.11 and what additional retrieval promise, if any, is needed?
-- How are stale, conflicting, duplicate or superseded derived continuity records repaired or retired?
+## Primary active research inputs
 
-## Round-1 constraints preserved
+D01, D05, D06, D07, D08, D09-delta, D18, S03, S04, S19, S27.
 
-Do not reopen:
+Relevant negative/adversarial evidence remains stage-local research input.
 
-- current canonical ownership;
-- Step-4 truth/knowledge/disclosure separation;
-- Step-5 selective exact retention semantics;
-- the rule that Story/summary/memory does not become canon by persistence or usefulness.
+## Required decisions
 
-## Candidate research inputs
+- admitted continuity classes;
+- authoritative versus derived/rebuildable/disposable classification;
+- source provenance/coverage;
+- stability/consolidation boundary;
+- history/ancestry alignment after Retry/Edit/branch/correction;
+- stale/conflict/repair/rebuild/retirement behavior;
+- semantic versus exact recall promises;
+- Story/Chronicler relationship;
+- bounded evidence-bound derived mutation where generative transformation is used.
 
-Strongly relevant Dossier areas include D01, D05-D08, D18 and related STRONG/negative-intelligence items. Their recommendations remain candidates, not stage outcomes.
+## Constraints
 
-## Exit result
+Do not reopen Step-4 truth/knowledge/disclosure ownership or Step-5 selective exact history.
 
-A canonical continuity model that defines:
+Do not design Actor cognition details, context ranking/budgets or LLM orchestration here.
 
-- admitted continuity layers and their owners/lifecycles;
-- provenance/source-coverage rules;
-- consolidation/stability boundaries;
-- history/branch alignment obligations for derived state;
-- rebuild/repair/retirement semantics;
-- exact versus semantic recall promises;
-- explicit rejection of duplicate authority.
+## Exit
+
+Canonical continuity architecture plus explicit downstream contracts for R2.2/R2.3 and closed adversarial review.
 
 ---
 
-# 8. R2.2 — Context Runtime, Retrieval, Allocation and Observability
+# 9. R2.2 — Actor Continuity, Cognition & Directed Relationships
 
 Depends on: **R2.1**.
 
-## Problem
+## Why before Context Runtime
 
-Step 4 established deterministic Context Assembler ownership and role eligibility. Round 2 must design how a real long campaign produces one bounded role-local execution projection under finite context pressure.
+R2.2 defines the Actor-owned/private source semantics that R2.3 will later select.
 
-## Primary questions
+The projection layer must not invent upstream state semantics for retrieval convenience.
 
-- What is a context candidate and what metadata/provenance accompanies it?
-- Which semantic classes receive hard minimum reservations versus optional budget?
-- Which inputs are `required`, `protected`, `downgradable` or `omittable`?
-- Which decision packets must remain complete rather than be partially truncated?
-- What representation downgrade chain is permitted before omission/defer?
-- How are relevance, entity/scope selectors, chronology, witnessed knowledge and long-range retrieval combined without building a second rules engine?
-- How is starvation prevented deterministically?
-- How are duplicate semantic facts removed across multiple derived channels?
-- How can context assembly run in dry-run/test mode?
-- What trace explains inclusion, exclusion, ranking, downgrade, budget use and final placement without becoming player-visible secret leakage?
+## Primary active research inputs
 
-## Round-1 constraints preserved
+D10, D11-delta, D12-delta, D13, S07, S10, S11; specialized use of D09/S27 where Actor mutation requires it.
 
-Context Assembler remains a deterministic projection capability, not canonical authority, generic ACL, universal query language or campaign-wide scan license.
+## Required decisions
 
-## Candidate research inputs
+- stable foundation versus durable evolving continuity versus transient state;
+- exact boundary of `world.knowledge` versus other Actor-private cognition;
+- goals/intentions/promises/private plans;
+- directional `A -> B` relationship semantics;
+- minimum useful relation dimensions;
+- evidence-bound persistent updates;
+- `NO_CHANGE`;
+- sparse/event-driven cognition;
+- expiry/refresh using appropriate fictional-time semantics;
+- active/relevant Actor depth without over-modeling;
+- PC agency exclusions.
 
-D02-D04, D14, D19 and relevant STRONG items such as critical pins, typed dependency activation, tokenizer accounting, dry-run assembly, starvation/fairness and party-size degradation.
+## Inherited constraints
 
-## Exit result
+`world.knowledge` remains the durable proposition-stance owner. Objective truth remains separate. Player voluntary belief/emotion/interpretation is not silently committed.
 
-A canonical bounded Context Runtime contract covering:
+## Exit
 
-- candidate acquisition and typed selection;
-- semantic budget allocation;
-- complete decision-packet rules;
-- downgrade/defer behavior;
-- retrieval/dependency limits;
-- deterministic dedup/fairness rules where justified;
-- inspectable context trace and dry-run behavior;
-- failure semantics when correctness-critical context cannot be assembled completely.
+Bounded Actor continuity architecture with one owner per semantic concern and explicit R2.3 context-source contract.
 
 ---
 
-# 9. R2.3 — Actor Continuity, Cognition and Relationships
+# 10. R2.3 — Context Runtime, Retrieval & Allocation
 
 Depends on: **R2.1, R2.2**.
 
 ## Problem
 
-Step 4 defines fictional epistemic relations and Actor role eligibility, but living NPC continuity requires more than a `world.knowledge` row: stable identity, evolving goals, directional relationships, private plans, transient states and evidence-driven updates need explicit boundaries.
+Step 4 already defines Context Assembler eligibility/projection semantics. R2.3 must design a real bounded long-campaign execution projection over finite ChatGPT context.
 
-## Primary questions
+## Primary active research inputs
 
-- Which Actor state belongs to stable foundation, durable evolving continuity and transient private state?
-- Which state is canonical world fact versus subject-local fictional cognition?
-- How are goals, intentions, promises, relationships and suspicions represented without universal social/epistemic over-modeling?
-- Are relationships directional `A -> B`, and which material dimensions deserve typed persistence?
-- When does Actor cognition run, and how is sparse/event-driven activation preferred over simulating every NPC every turn?
-- What counts as sufficient evidence for a durable cognition mutation?
-- How does `NO_CHANGE` work as a legitimate assessment result?
-- How are transient states refreshed/expired without using arbitrary turn-count TTL where fictional time matters?
-- Which NPCs receive deep continuity and how are inactive/background actors compacted safely?
-- How is PC/player agency protected from Actor-style automatic cognition mutation?
+D02, D03, D04, D14, D19, D24-delta, S02, S22, S25, S29, S36, S40, S48, S49, plus D18 retrieval realization and R2.1 dedup requirements.
 
-## Round-1 constraints preserved
+## Required decisions
 
-- `world.knowledge` remains the durable current fictional epistemic owner for proposition stance;
-- objective truth remains separate;
-- PC voluntary belief/emotion/interpretation is not silently chosen by the engine;
-- LLM-produced cognition changes remain proposals until accepted by the proper owner path.
+- context candidate/source metadata;
+- eligibility and recipient/subject scope;
+- `required | protected | downgradable | omittable`;
+- minimum complete decision packets;
+- representation downgrade before defer;
+- broad/episodic/entity/exact retrieval;
+- typed selectors/dependency activation;
+- dedup across continuity channels;
+- token/model-limit accounting;
+- party-size degradation;
+- starvation/fairness;
+- dry-run;
+- inclusion/exclusion/representation trace;
+- failure/defer semantics when correctness-critical context is incomplete.
 
-## Exit result
+## Constraints
 
-A bounded Actor-continuity architecture with explicit state classes, authority, lifecycle, evidence/provenance, directional relation semantics, sparse activation and persistence boundaries.
+Context Runtime is a deterministic projection capability, not canon, ACL authority, generic knowledge graph, universal query language or campaign-wide scan permission.
+
+## Exit
+
+Canonical bounded Context Runtime contract consumable by R2.4 and R2.5.
 
 ---
 
-# 10. R2.4 — Single-Context LLM Turn and Instruction Machinery
+# 11. R2.4 — Single-Context LLM Execution & Instruction Architecture
 
-Depends on: **R2.2, R2.3**.
+Depends on: **R2.1–R2.3**.
 
 ## Problem
 
-The single-context Step-4 amendment is now canonical, but its execution machinery is not designed. Round 2 must define how one LLM in one ChatGPT chat/user request reliably traverses several logical role phases without collapsing their knowledge or authority contracts.
+The canonical single-context law exists; the concrete turn/instruction machinery does not.
 
-## Primary questions
+## Primary active research inputs
 
-- What is the stable global runtime constitution?
-- What belongs in Project Instructions versus shipped MD runtime/procedure modules versus turn-built role frames?
-- What is the canonical conceptual turn envelope?
-- How is role rebinding made explicit before Interpreter, Dramaturg, each Actor and Narrator phase?
-- Which roles are always, conditionally or rarely activated?
-- How do multiple Actor phases observe earlier public actions/speech without inheriting private cognition?
-- What are the minimal cross-role handoffs?
-- What should remain prose and what requires minimal structured result/receipt?
-- How does deterministic Python/runtime/tooling remain the only acceptance/commit gateway?
-- How are deterministic mechanics interleaved with role phases when a turn requires them?
-- How are invalid role outputs, retries and already-accepted mechanics handled without replay?
-- How are system prompt, Project Instructions and shipped MD versioned/tested as correctness-relevant runtime assets?
-- Should reusable first-party procedure modules be adopted, partially adopted or rejected?
-- How is untrusted player/world/tool text kept data rather than instruction?
-- How is hidden chain-of-thought kept out of runtime protocols and persistence requirements?
+D16-delta, S21, S28, role-context Protocols 1–3, current Step-4 amendment, current host-feasibility evidence, useful non-superseded former Step-6 questions, reusable-instruction working note.
 
-## Explicit non-goal
+## Required decisions
 
-Do not design separate agents/chats/model calls merely to recreate the superseded physical-isolation architecture.
+- one-turn envelope;
+- role activation/sequencing;
+- role rebinding;
+- Interpreter/Dramaturg/Actor(s)/Narrator handoffs;
+- Chronicler/Commentator placement where relevant;
+- minimal typed nondeterministic results;
+- retry/freeze lifecycle for those results;
+- deterministic tool/validation/commit gateway;
+- mechanics interleaving;
+- Narrator/emission boundary;
+- stable constitution versus Project Instructions versus shipped procedure modules versus role frame;
+- admit/partial/reject reusable first-party procedure modules;
+- instruction versioning/regression;
+- untrusted text as data;
+- injection/role-confusion defenses;
+- no hidden chain-of-thought persistence requirement.
 
-## Exit result
+`D16` does not imply separate subagents/background calls. Invisible auxiliary work may be a logical phase inside the same supported turn when that is sufficient.
 
-A canonical one-request/one-assistant-turn LLM runtime architecture defining:
+## Exit
 
-- role phase order and conditional activation;
-- role rebinding semantics;
-- turn-envelope and role-frame structure;
-- instruction ownership/composition;
-- allowed logical handoffs;
-- deterministic authority/tool gateway;
-- nondeterministic-result lifecycle where needed;
-- failure/retry/degradation behavior;
-- instruction versioning and regression obligations.
+Canonical one-request/one-assistant-turn LLM execution architecture for the current ChatGPT-Plus baseline.
 
 ---
 
-# 11. R2.5 — Dramaturg, Narrative Dynamics and Long-Range Narrative Continuity
+# 12. R2.5 — Collaboration & Multiplayer Interaction Semantics
 
-Depends on: **R2.1-R2.4**.
+Depends on: **R2.1–R2.4** and inherited Step-5 multiplayer/live/chronology architecture.
 
 ## Problem
 
-Step 4 admits noncanonical Dramaturg preparation and Step 5 admits optional/lagging Chronicler Story projection. Round 2 must decide what adaptive narrative/world-development machinery is actually useful without turning preparation into plot authority or auxiliary maintenance into gameplay turns.
+Step 5 already owns shared-state currentness, CAS, chronology and split-scene foundations. R2.5 designs the missing collaboration/input/context layer.
 
-## Primary questions
+## Primary active research inputs
 
-- What private/provisional Dramaturg state is worth retaining across turns?
-- How are pressures, unresolved situations, likely reactions and latent branches represented without predetermining outcomes?
-- Which narrative developments are pure suggestions, which are fictional cognition and which require canonical event/commit paths?
-- Should world pressures have staged progression, and if so how is railroading prevented?
-- How should timeskip/domain advancement interact with existing temporal owners?
-- What pacing/anti-stagnation signals are advisory only?
-- How do global narrative continuity and episodic/entity retrieval feed Dramaturg without becoming a giant summary blob?
-- Where does Chronicler run logically, how much lag is acceptable, and which continuity products may it help produce without gaining canon authority?
-- How are auxiliary semantic maintenance operations kept invisible from the player-facing turn history?
+D21, D22-delta, D23, S43, S44, S45, S54; D20/D24 and authenticated binding rules as inherited constraints.
 
-## Exit result
+## Required decisions
 
-A bounded adaptive narrative architecture that preserves player agency, causality and commit boundaries while supplying useful long-term Dramaturg/Story continuity.
+- synchronous versus asynchronous interaction;
+- free-form versus strict-sequence coordination policy;
+- multi-participant input collection/batching;
+- OOC/social versus diegetic speech versus actionable intent;
+- expected-contribution/readiness semantics only where actually needed;
+- absence without implicit PC takeover;
+- catch-up projection;
+- join/rejoin conversational/action frontier;
+- split-party context integration over existing independent scene/chronology frontiers;
+- recipient-scoped Context Runtime outputs;
+- shared-established outcome versus local retry/correction behavior.
+
+## Non-goal
+
+Do not redesign live CAS, campaign routing, chronology ownership or participant authentication already owned by accepted runtime architecture unless a concrete insufficiency is proven.
+
+## Exit
+
+Narrow collaboration architecture that composes with Step 5 rather than replacing it.
 
 ---
 
-# 12. R2.6 — Multiplayer Collaboration and Scene Topology
+# 13. R2.6 — ChatGPT-Plus Assurance, Evaluation, Security & Degradation
 
-Depends on: **R2.1-R2.5** plus inherited Step-5 authority/concurrency architecture.
+Depends on: **R2.1–R2.5 concrete architecture**.
 
 ## Problem
 
-Round 1 closed shared-state durability/concurrency, but multiplayer collaboration semantics remain broader than storage: asynchronous participation, split party, rejoin/catch-up, input coordination and controller ownership need explicit product/runtime contracts.
+Only after HDM knows what the runtime requires can it test the actual ChatGPT-Plus operating envelope.
 
-## Primary questions
+## Primary active research input
 
-- What collaboration state is actually needed beyond canonical world/live state?
-- How do synchronous and asynchronous play share one architecture without universal round-robin?
-- What are the baseline coordination modes for free-form shared scene versus strict actor sequence?
-- When are multiple participant inputs collected before one resolution?
-- How are OOC/social coordination, diegetic speech and actionable intent distinguished?
-- How does participant identity bind to controlled PC(s), and how is delegation/controller transfer explicit and reversible?
-- How is absence handled without silently giving the AI control of a PC?
-- What does join/rejoin mean at an active scene/frontier?
-- What bounded catch-up projection does a returning participant receive?
-- How does split-party create independent scene/context/chronology frontiers while preserving one shared canon?
-- What material causal bridges force reconciliation between scenes?
-- Which shared outcomes are observationally final under existing Step-5 publication/delivery semantics and where, if anywhere, does Round 2 need an extension rather than a restatement?
-- How do recipient-specific Context Runtime projections avoid secret leakage across players/scenes?
+S53-delta plus concrete obligations from R2.1–R2.5.
 
-## Round-1 constraints preserved
+D15 remains dormant unless retry evaluation demonstrates the specific repetitive-sibling failure and justifies a PoC.
 
-Do not replace Step-5 live/currentness/concurrency ownership with a new generic collaboration authority or let network/message order define fictional chronology.
+## Required assurance areas
 
-## Exit result
+- long-chat/context behavior;
+- role-containment regression;
+- cross-Actor/private-state contamination;
+- instruction conflict/drift;
+- prompt injection/untrusted data;
+- player-visible host surfaces;
+- Retry/Edit/branch behavior;
+- latency/tail latency;
+- tool/connector failure;
+- context-incomplete/defer behavior;
+- recovery after context loss;
+- model/reasoning-profile change;
+- gameplay quality and over-completion;
+- diagnostics without secret exposure.
 
-A narrow collaboration/scene architecture supporting synchronous and asynchronous play, split-party and explicit participant/controller/channel semantics over the existing Step-5 shared-state model.
-
----
-
-# 13. R2.7 — ChatGPT-Plus Reliability, Evaluation, Security and Quality
-
-Depends on the concrete contracts produced by **R2.1-R2.6**.
-
-## Problem
-
-Round 2 must prove that the designed nondeterministic layer is usable and testable on the current ChatGPT-Plus ordinary-chat baseline rather than treating prompt success as self-evident.
-
-## Primary questions
-
-- What ChatGPT-Plus capabilities/limitations materially affect the accepted architecture?
-- How does long-chat growth/provider-managed history behavior interact with campaign-owned continuity/context rebuilding?
-- What latency envelope is acceptable for ordinary versus exceptional turns?
-- Which work may degrade/defer when latency/context pressure rises, and which correctness inputs may not?
-- What host Retry/Edit/branch behaviors can HDM safely support under existing Step-5 semantics?
-- Which player-visible host surfaces materially matter under the ordinary-chat baseline?
-- What residual Narrator emission/disclosure limitation must be documented if the host cannot provide pre-visible candidate staging?
-- How are prompt injection, role confusion, cross-Actor contamination and unauthorized tool/state mutation attacked in tests?
-- What evaluation dimensions are independent: correctness, role containment, gameplay quality, latency, robustness?
-- How are model/reasoning-profile drift and instruction-package changes regression-tested?
-- Which diagnostics are retained without creating a new secret archive or player-visible leak surface?
-
-## Evidence rule
-
-Use current official platform evidence and direct probes only where the architecture actually depends on a host property. Do not turn provider feature reconnaissance into the roadmap itself.
-
-## Exit result
-
-One explicit supported ChatGPT-Plus capability envelope with:
-
-- known limitations/degradation behavior;
-- role-containment and prompt-injection regression suite requirements;
-- context/continuity evaluation obligations;
-- gameplay-quality evaluation axes;
-- latency/robustness targets;
-- residual-risk statements where the host cannot provide a stronger guarantee.
-
----
-
-# 14. R2.8 — Secondary Modes and Optional-Capability Gate
-
-Depends on the core architecture above.
-
-Purpose: prevent optional ideas from contaminating the baseline while still making explicit V1 decisions.
-
-Evaluate and either **ADMIT / DEFER / REJECT** at least:
-
-- Commentator serving/perspective/spoiler refinements not already fixed by Steps 4-5;
-- multimodal/voice/attachments beyond normalized text/evidence intake;
-- extension/plugin/script capability model;
-- reusable runtime-procedure module registry beyond the minimum needed by R2.4;
-- future provider portability boundary and possible later Claude migration;
-- explicit solo/shared fork product semantics where not already required;
-- optional advanced memory/cognition features that failed the earlier YAGNI gate.
-
-This stage is not permission to build these systems. Its exit may legitimately be mostly `DEFER` decisions.
-
-## Exit result
-
-A bounded V1 capability envelope and explicit deferred list with no speculative subsystem left masquerading as a baseline dependency.
-
----
-
-# 15. R2.9 — Machine-Realization Mapping and Holistic Architecture Closure
-
-Depends on: all admitted Round-2 architecture stages.
-
-## Scope
-
-- map accepted Round-1 + Round-2 architecture to GAME runtime ownership;
-- identify catalog/schema/seed/template/migration obligations;
-- identify shipped prompt/Project Instruction/MD asset obligations;
-- identify tests/evals/tooling required for realization;
-- reconcile stale derivative/status/navigation documents;
-- confirm no duplicate authority or hidden persistence owner was introduced;
-- confirm context/memory/Actor/multiplayer designs compose with Step-3/5 retry, durability, recovery and concurrency semantics;
-- run full cross-round adversarial review;
-- classify remaining work as implementation obligation, explicit deferred capability, accepted debt or future architecture;
-- prepare the handoff to implementation planning only after architecture closure.
-
-## Exit result
+Classify required behavior as:
 
 ```text
-Round-2 architecture closed
-+
-accepted canonical specification chain complete
-+
-machine/runtime realization obligations traceable
-+
-full integrated review passes
-+
-implementation planning may begin
+SUPPORTED
+SUPPORTED WITH DOCUMENTED LIMITATION
+DEGRADED MODE
+UNSUPPORTED
 ```
 
-No implementation is authorized merely by reaching this roadmap stage; the normal Superpowers design/specification/planning gates still apply.
+Protocol 1–3 findings become regression evidence, not permission to reopen mandatory physical isolation.
+
+## Exit
+
+Measured/tested supported ChatGPT-Plus envelope and explicit assurance obligations.
 
 ---
 
-# 16. Dependency spine
+# 14. R2.7 — Machine Realization Mapping & Holistic Architecture Closure
 
-The intended dependency direction is:
+Depends on: **R2.1–R2.6**.
+
+This remains architecture closure, not broad implementation.
+
+## Required mapping
+
+Map accepted Round-1 + Round-2 architecture to:
+
+- GAME runtime ownership/documents;
+- DEV catalogs;
+- schemas;
+- seeds/templates;
+- migrations;
+- Project Instructions;
+- shipped instruction/procedure assets;
+- tests/evaluations;
+- tooling/diagnostics;
+- persistence obligations.
+
+## Required closure review
+
+- cross-round authority/duplicate-owner sweep;
+- Retry/recovery/concurrency composition;
+- history/continuity/context consistency;
+- Actor/context/role containment composition;
+- multiplayer recipient/secrecy composition;
+- dormant-trigger preservation;
+- full 82-candidate disposition recheck;
+- stale derivative/status/navigation document repair;
+- implementation/deferred/dormant/debt classification.
+
+## Exit
+
+Architecture is ready for Superpowers implementation planning only when:
+
+- no unresolved architecture blocker remains;
+- machine-realization obligations are explicit;
+- adversarial review passes;
+- implementation boundaries and tests are mapped;
+- broad implementation has not already leaked into the architecture phase.
+
+---
+
+# 15. Explicitly removed mandatory stages
+
+Round 2 has **no mandatory standalone Narrative Dynamics stage**.
+
+Existing preparation/process/NPC/narration architecture remains in force. Retained planning, staged world pressure, additional timeskip or anti-stagnation machinery is introduced only if a preserved dormant trigger becomes a real requirement and existing owners prove insufficient.
+
+Round 2 has **no generic optional-capability gate**.
+
+Extensions, spectator/replay, solo forks, spatial sidecars, mixed AI/human controllers, cache-specific optimization and similar conditional ideas remain dormant until their own triggers occur.
+
+---
+
+# 16. Current continuation point
 
 ```text
-ROUND-1 STRONG BASE
-        |
-        v
-R2.1 Continuity / Memory / History-Aligned Derived State
-        |
-        v
-R2.2 Context Runtime / Retrieval / Budgets / Trace
-        |
-        v
-R2.3 Actor Continuity / Cognition / Relationships
-        |
-        v
-R2.4 Single-Context LLM Turn / Instruction Machinery
-        |
-        +----------------------+
-        |                      |
-        v                      v
-R2.5 Narrative Dynamics   R2.6 Multiplayer Collaboration
-        |                      |
-        +-----------+----------+
-                    v
-R2.7 ChatGPT-Plus Reliability / Eval / Security / Quality
-                    |
-                    v
-R2.8 Secondary/Optional Capability Gate
-                    |
-                    v
-R2.9 Machine Mapping / Holistic Closure
+R2.0  COMPLETE / EVIDENCE-REBASELINED
+R2.1  IN PROGRESS
+R2.2  PLANNED
+R2.3  PLANNED
+R2.4  PLANNED
+R2.5  PLANNED
+R2.6  PLANNED
+R2.7  PLANNED
+
+R2.1 task brief established.
+Next activity: R2.1 source extraction and evidence ledger.
+Broad implementation: BLOCKED.
 ```
-
-Parallel research is allowed when it does not create premature decisions, but canonical stage closure follows the dependency order above.
-
----
-
-# 17. Explicitly not separate Round-2 stages
-
-Unless a later stage exposes a real contradiction/extension need, the following remain inherited rather than being re-planned:
-
-- deterministic mechanics and RNG ownership;
-- IntentPlan/Resolution/Procedure execution boundary;
-- objective truth ownership;
-- basic `world.knowledge` proposition stance semantics;
-- human disclosure ownership;
-- Story non-authority;
-- base promotion/commit boundary;
-- durability classes and publication/recovery semantics;
-- existing live currentness/concurrency ownership;
-- canonical chronology principles;
-- selective exact transcript/history retention;
-- cleanup authority/safety principles;
-- mandatory physical LLM role isolation (superseded, not pending).
-
-If Round 2 later requires changing one of these, the active stage must explicitly identify the dependency and open a superseding decision rather than silently rewriting it.
-
----
-
-# 18. Exact continuation point
-
-**Round 1: CLOSED / strong base retained.**
-
-**Former Step 6: CLOSED AS SEPARATE STAGE / useful scope reallocated to Round 2.**
-
-**Round 2: ACTIVE.**
-
-Next architecture stage:
-
-> **R2.1 — Continuity, Memory and History-Aligned Derived State — NEXT / NOT STARTED**
-
-The next substantive action is to create the R2.1 Architecture Task Brief and begin the normal architecture/deep-work cycle. Broad implementation remains blocked.
