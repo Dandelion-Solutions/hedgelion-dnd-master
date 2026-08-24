@@ -64,16 +64,6 @@ A closed Round-1 topic becomes active Round-2 architecture work only when curren
 
 Independent confirmation or thematic overlap is evidence, not a new stage.
 
-Inherited examples include:
-
-- LLM interpretation/proposal versus deterministic mechanical commit;
-- objective truth versus fictional knowledge versus human disclosure;
-- Story nonauthority;
-- accepted gameplay/RNG not replayed because presentation is retried;
-- Step-5 durability/recovery/currentness/concurrency foundations;
-- Git/transport order not defining fictional chronology;
-- selective exact versus semantic history principles.
-
 ---
 
 # 3. Evidence / activation rule
@@ -115,8 +105,8 @@ RESERVE / NEGATIVE INTELLIGENCE remains stage-local adversarial evidence rather 
 |---|---|---|---|
 | R2.0 | **COMPLETE / EVIDENCE-REBASELINED** | rebuild Round-2 problem horizon from accepted architecture + item-level research disposition | 82/82 DIAMOND/STRONG accounted; previous decomposition retired; dependency graph owner-approved |
 | R2.1 | **COMPLETE / ARCHITECTURE CLOSED** | continuity, memory and history-aligned derived state | reuse-first continuity source/lifecycle model; Story admitted only as nonauthoritative orientation; history/exact/repair contracts closed |
-| R2.2 | **IN PROGRESS** | Actor continuity, cognition and directed relationships | bounded Actor private/durable/transient state model compatible with Step-4 epistemics and player agency |
-| R2.3 | **PLANNED** | Context Runtime, retrieval and allocation | bounded deterministic projection over admitted R2.1/R2.2 sources with complete-packet, budget, trace and degradation rules |
+| R2.2 | **COMPLETE / ARCHITECTURE CLOSED** | Actor continuity, cognition and directed relationships | source-Actor-owned sparse continuity; directed relationships; sparse cognition; player-agency and lazy-discovery handoff closed |
+| R2.3 | **IN PROGRESS** | Context Runtime, retrieval, lazy discovery and allocation | bounded deterministic projection over R2.1/R2.2 sources with candidate discovery, complete-packet, budget, trace and degradation rules |
 | R2.4 | **PLANNED** | single-context LLM execution and instruction architecture | one-request/one-assistant-turn role pipeline, rebinding, handoffs, instruction composition and deterministic authority gateway |
 | R2.5 | **PLANNED** | collaboration and multiplayer interaction semantics | sync/async input, mode coordination, rejoin/catch-up and recipient-scoped context over inherited Step-5 shared-state architecture |
 | R2.6 | **PLANNED** | ChatGPT-Plus assurance, evaluation, security and degradation | tested supported host envelope and explicit supported/degraded/unsupported behavior |
@@ -136,7 +126,7 @@ R2.1 Continuity / History-Aligned Derived State
 R2.2 Actor Continuity / Cognition / Relationships
         |
         v
-R2.3 Context Runtime / Retrieval / Allocation
+R2.3 Context Runtime / Retrieval / Lazy Discovery / Allocation
         |
         v
 R2.4 Single-Context LLM Execution / Instructions
@@ -158,8 +148,6 @@ Implementation Planning
 
 # 7. R2.0 — Evidence Rebaseline & Scope Reconstruction — COMPLETE
 
-R2.0 replaced the previous thematic problem-horizon claim with source-backed accounting.
-
 Closed results:
 
 - current process/bootstrap and repository owners re-read;
@@ -177,24 +165,12 @@ Closed results:
 
 # 8. R2.1 — Continuity, Memory & History-Aligned Derived State — COMPLETE
 
-Task brief:
+Artifacts:
 
 - `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-memory-history-task-brief.md`
-
-Evidence ledger:
-
 - `DEV/docs/superpowers/research/2026-08-24-r2-1-continuity-evidence-ledger.md`
-
-Owner decision:
-
 - `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-projection-owner-decision.md`
-
-Canonical specification:
-
 - `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-history-canonical-spec.md`
-
-Adversarial review / closure:
-
 - `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-adversarial-review.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-resolution-gate.md`
 
@@ -206,163 +182,168 @@ Canonical result:
 - material role decisions depending on current/source-specific correctness escalate to the proper source class;
 - source-bound does not imply current;
 - projection absence does not imply semantic absence;
-- history alignment uses HDM-owned source refs/currentness/correction/semantic projection generation, not host Retry/Edit ancestry;
+- history alignment uses HDM-owned source refs/currentness/correction/semantic projection generation rather than host Retry/Edit ancestry;
 - only admitted HDM evidence may enter durable continuity;
 - stale/incompatible projections degrade to stronger evidence rather than guessing;
 - entity continuity begins as a scoped view rather than a durable synopsis;
 - exact recall remains Step-5.11 Selective Exact;
 - no per-turn/background continuity-maintenance correctness clock.
 
-R2.1 active research items are fully dispositioned in its resolution gate. Conditional entity synopsis / separate projection machinery remains dormant until a downstream trigger proves need.
-
 ---
 
-# 9. R2.2 — Actor Continuity, Cognition & Directed Relationships — IN PROGRESS
+# 9. R2.2 — Actor Continuity, Cognition & Directed Relationships — COMPLETE
 
-Task brief:
+Artifacts:
 
 - `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-cognition-task-brief.md`
+- `DEV/docs/superpowers/research/2026-08-24-r2-2-actor-continuity-evidence-ledger.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-decision-brief.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-owner-decision.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-canonical-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-resolution-gate.md`
 
-Depends on: **R2.1**.
+Canonical result:
 
-## Why before Context Runtime
+- source Actor semantically owns current non-epistemic private continuity;
+- `world.knowledge` remains proposition-stance authority;
+- foundation / durable evolving cognition / transient private state are distinct lifetimes, not three stores;
+- foundation changes require an explicit stronger transition boundary;
+- goals/objectives/intentions/commitments remain sparse;
+- relationships are directed source-Actor views with sparse typed facets and no universal scalar;
+- objective social facts remain with native owners;
+- Actor cognition is sparse/event-driven with explicit semantic purpose and valid `NO_CHANGE`;
+- one assessment produces one bounded Actor-purpose delta rather than arbitrary whole-Actor rewrite;
+- persisted transient state needs inspectable fictional invalidation rather than generic turn TTL;
+- progressive materialization prevents incidental-NPC over-modeling;
+- player-controlled voluntary mental state remains player-owned;
+- Story/history may inform but not establish current cognition.
 
-R2.2 defines Actor-owned/private source semantics that R2.3 will later select. Projection machinery must not invent upstream state semantics for retrieval convenience.
+Mandatory R2.3 handoff from owner requirement:
 
-## Primary active research inputs
+> **LLM/runtime semantic detail SHALL be lazy-loaded. Full entity records are not required merely to discover potential scene/location/decision relevance.**
 
-D10, D11-delta, D12-delta, D13, S07, S10, S11; specialized D09/S27 application where Actor mutation needs it.
+R2.2 therefore requires R2.3 to provide compact derived discovery metadata while preserving these constraints:
 
-## Required decisions
+- discovery/index metadata is not semantic authority;
+- omission is not general proof of absence;
+- currentness follows routed/live authority;
+- discovery is multi-channel, not location-only;
+- secret-bearing metadata remains eligibility-protected;
+- existing CURRENT/SCENE/INDEX/live surfaces are candidate realization inputs, not pre-selected final design.
 
-- stable foundation versus durable evolving continuity versus transient Actor state;
-- exact boundary of `world.knowledge` versus other Actor-private cognition;
-- goals/intentions/promises/private plans;
-- directional `A -> B` relationship semantics;
-- minimum useful relationship dimensions;
-- evidence-bound persistent updates;
-- `NO_CHANGE`;
-- sparse/event-driven cognition;
-- transient expiry/refresh using appropriate fictional-time semantics;
-- active/relevant Actor depth without over-modeling;
-- PC agency exclusions;
-- explicit R2.3 source contract for resulting Actor state.
-
-## Inherited constraints
-
-- `world.knowledge` remains current proposition-stance owner;
-- objective truth remains separate;
-- Story/generic continuity is not current Actor cognition;
-- consuming information does not automatically establish belief/knowledge;
-- player voluntary belief/emotion/interpretation is not silently committed;
-- LLM cognition output remains proposal until proper validation/commit.
-
-## Exit
-
-Bounded Actor continuity architecture with one owner per semantic concern, lifecycle/evidence rules, directional relationships, sparse cognition and explicit R2.3 handoff.
+R2.2 Diamond/Strong disposition is recorded item-by-item in its resolution gate.
 
 ---
 
-# 10. R2.3 — Context Runtime, Retrieval & Allocation
+# 10. R2.3 — Context Runtime, Retrieval, Lazy Discovery & Allocation — IN PROGRESS
 
 Depends on: **R2.1, R2.2**.
 
+R2.3 now owns the complete path from cheap candidate awareness to bounded role-local context construction.
+
 Primary active research inputs:
 
-D02, D03, D04, D14, D19, D24-delta, S02, S22, S25, S29, S36, S40, S48, S49, plus D18 retrieval realization and R2.1 dedup requirements.
+- D02 — context as materialized bounded projection;
+- D03 — semantic allocator/reservations/degradation;
+- D04 — context assembly trace;
+- D14 — complete decision packets before defer;
+- D19 — typed reactive selectors;
+- D24-delta — recipient/controlled-Actor scoped projections;
+- S02 — multi-signal ranking;
+- S22 — bounded dependency activation;
+- S25 — centralized token/model-limit accounting;
+- S29 — side-effect-free dry-run;
+- S36 — witness/knowledge-aware retrieval;
+- S40 — starvation/fairness;
+- S48 — explicit entity/Actor targeting as hint;
+- S49 — party-size-aware representation/budget;
+- D18 retrieval realization;
+- R2.1 source-aware dedup/Story-history escalation;
+- R2.2 lazy-discovery/currentness/secrecy handoff.
 
-Required scope:
+Required decisions include at least:
 
-- context candidate/source metadata;
-- role/player/subject eligibility;
-- `required | protected | downgradable | omittable`;
-- complete decision packets;
-- representation downgrade before defer;
+### Discovery / lazy load
+
+- first-tier scene/location/entity candidate manifest semantics;
+- whether existing scene refs and campaign reverse indexes are sufficient, complementary or incomplete;
+- candidate metadata needed to rank/filter before full entity load;
+- discovery from physical co-location plus explicit refs, active threads, causal/process dependencies, ownership/relationship links and recent accepted evidence;
+- false-negative protection when indexes are stale/incomplete;
+- current/live routing and overlays;
+- secret-safe pre-load metadata;
+- fallback that avoids a global full-record scan.
+
+### Selection / eligibility
+
+- role/player/subject/purpose eligibility;
+- typed selectors and bounded dependency activation;
+- explicit entity/Actor targeting as hint, never privilege escalation;
+- source/currentness verification before material use.
+
+### Loading / representation
+
+- `required | protected | downgradable | omittable` classes;
+- complete minimum decision packets;
+- representation ladder before omission/defer;
 - broad/episodic/entity/exact retrieval;
-- typed selectors/dependency activation;
-- source-aware dedup;
+- source-aware semantic dedup;
 - token/model-limit accounting;
-- party-size degradation;
-- starvation/fairness;
-- dry-run;
-- inclusion/exclusion/representation trace;
-- failure/defer when correctness-critical context is incomplete.
+- party-size-aware degradation and starvation prevention.
 
-Context Runtime remains deterministic projection, not canon, ACL authority, generic knowledge graph, universal query language or campaign-wide scan permission.
+### Trace / diagnostics
+
+- dry-run assembly;
+- inclusion/exclusion/currentness/eligibility/rank/budget/representation trace;
+- secret handling inside trace;
+- failure/defer behavior when correctness-critical context cannot be assembled completely.
+
+Constraints:
+
+- Context Runtime remains deterministic projection, not canon;
+- no generic ACL authority, universal knowledge graph/query language or campaign-wide scan permission;
+- archive availability does not imply preload;
+- index omission does not imply semantic absence unless an exact exhaustive contract says so;
+- R2.3 does not redesign upstream R2.1/R2.2 semantic owners.
+
+Exit result:
+
+> canonical bounded Context Runtime contract covering discovery -> select/verify -> lazy load -> project, with explainable budgets/degradation and correctness-safe failure behavior.
 
 ---
 
-# 11. R2.4 — Single-Context LLM Execution & Instruction Architecture
+# 11. R2.4 — Single-Context LLM Execution & Instruction Architecture — PLANNED
 
 Depends on: **R2.1–R2.3**.
 
-Primary evidence:
+Primary evidence: D16-delta, S21, S28, role-context Protocols 1–3, Step-4 single-context amendment, current host-feasibility evidence, useful non-superseded former Step-6 questions and reusable-instruction working note.
 
-D16-delta, S21, S28, role-context Protocols 1–3, Step-4 single-context amendment, current host-feasibility evidence, useful non-superseded former Step-6 questions and the reusable-instruction working note.
-
-Required scope:
-
-- one-turn envelope and phase activation;
-- role rebinding and Actor-to-Actor public/private transfer semantics;
-- minimal typed handoffs/results and retry/freeze lifecycle;
-- deterministic tool/validation/commit gateway and mechanics interleaving;
-- Narrator/emission boundary;
-- stable constitution vs Project Instructions vs shipped procedures vs role frame;
-- admit/partial/reject reusable first-party procedure modules;
-- instruction versioning/regression;
-- untrusted text as data and injection/role-confusion defense;
-- no hidden chain-of-thought persistence requirement.
+Scope includes one-turn envelope/activation, role rebinding, typed handoffs, deterministic authority/tool gateway, mechanics interleaving, Narrator/emission boundary, instruction ownership/composition/versioning and injection/role-confusion defense.
 
 D16 does not imply separate subagents/background calls.
 
 ---
 
-# 12. R2.5 — Collaboration & Multiplayer Interaction Semantics
+# 12. R2.5 — Collaboration & Multiplayer Interaction Semantics — PLANNED
 
 Depends on: **R2.1–R2.4** plus inherited Step-5 multiplayer/live/chronology architecture.
 
-Primary active research:
+Primary active research: D21, D22-delta, D23, S43, S44, S45, S54; D20/D24 and authenticated binding remain inherited constraints.
 
-D21, D22-delta, D23, S43, S44, S45, S54; D20/D24 and authenticated binding as inherited constraints.
-
-Required scope:
-
-- sync versus async interaction;
-- free-form versus strict-sequence coordination;
-- multi-participant input collection/batching;
-- OOC/social vs diegetic vs actionable intent;
-- absence without implicit PC takeover;
-- catch-up and join/rejoin conversational/action frontier;
-- split-party context integration over existing scene/chronology frontiers;
-- recipient-scoped Context Runtime outputs;
-- shared-established outcome vs local retry/correction.
+Scope is the collaboration/input/context delta: sync/async interaction, coordination modes, batching, OOC/diegetic/actionable separation, absence without PC takeover, catch-up/rejoin and recipient-scoped Context Runtime composition.
 
 Do not redesign live CAS, campaign routing, chronology ownership or participant authentication without proven insufficiency.
 
 ---
 
-# 13. R2.6 — ChatGPT-Plus Assurance, Evaluation, Security & Degradation
+# 13. R2.6 — ChatGPT-Plus Assurance, Evaluation, Security & Degradation — PLANNED
 
 Depends on concrete R2.1–R2.5 architecture.
 
 Primary active research: S53-delta plus actual obligations produced upstream. D15 remains dormant unless retry evaluation triggers it.
 
-Assurance areas:
-
-- long-chat/context behavior;
-- role-containment/cross-Actor contamination;
-- instruction conflict/drift;
-- injection/untrusted data;
-- player-visible host surfaces;
-- Retry/Edit/branch;
-- latency/tool failure;
-- context-incomplete/defer behavior;
-- recovery after context loss;
-- model/reasoning-profile change;
-- gameplay-quality/over-completion regressions;
-- diagnostics without secret exposure.
-
-Classify required behavior as:
+Required behavior will be classified as:
 
 ```text
 SUPPORTED
@@ -375,33 +356,15 @@ Protocols 1–3 become regression evidence, not a reason to reopen mandatory phy
 
 ---
 
-# 14. R2.7 — Machine Realization Mapping & Holistic Architecture Closure
+# 14. R2.7 — Machine Realization Mapping & Holistic Architecture Closure — PLANNED
 
 Depends on: **R2.1–R2.6**.
 
-Map accepted architecture to:
+Map accepted architecture to GAME runtime ownership/documents, DEV catalogs/schemas, seeds/templates/migrations, Project Instructions, shipped instruction assets, tests/evaluations, tooling/diagnostics and persistence obligations.
 
-- GAME runtime ownership/documents;
-- DEV catalogs/schemas;
-- seeds/templates/migrations;
-- Project Instructions and shipped instruction/procedure assets;
-- tests/evaluations;
-- tooling/diagnostics;
-- persistence obligations.
+Closure includes cross-round authority/duplicate-owner review, Retry/recovery/concurrency composition, history/continuity/context consistency, Actor/context/role-containment composition, multiplayer recipient/secrecy composition, dormant-trigger preservation, full 82-candidate disposition recheck and stale derivative/status repair.
 
-Closure review must include:
-
-- cross-round authority/duplicate-owner sweep;
-- Retry/recovery/concurrency composition;
-- history/continuity/context consistency;
-- Actor/context/role-containment composition;
-- multiplayer recipient/secrecy composition;
-- dormant-trigger preservation;
-- full 82-candidate disposition recheck;
-- stale derivative/status/navigation repair;
-- implementation/deferred/dormant/debt classification.
-
-Implementation planning begins only after no architecture blocker remains and machine-realization/test obligations are explicit.
+Implementation planning begins only after architecture blockers are closed and machine-realization/test obligations are explicit.
 
 ---
 
@@ -418,16 +381,16 @@ Round 2 has **no generic optional-capability gate**. Extensions, spectator/repla
 ```text
 R2.0  COMPLETE / EVIDENCE-REBASELINED
 R2.1  COMPLETE / ARCHITECTURE CLOSED
-R2.2  IN PROGRESS
-R2.3  PLANNED
+R2.2  COMPLETE / ARCHITECTURE CLOSED
+R2.3  IN PROGRESS
 R2.4  PLANNED
 R2.5  PLANNED
 R2.6  PLANNED
 R2.7  PLANNED
 
-R2.2 next activity:
+R2.3 next activity:
     establish task-specific Source Manifest
-    -> extract Actor/cognition/relationship evidence
+    -> extract Context Runtime / lazy-discovery evidence
     -> alternatives/recommendation
 
 Broad implementation: BLOCKED.
