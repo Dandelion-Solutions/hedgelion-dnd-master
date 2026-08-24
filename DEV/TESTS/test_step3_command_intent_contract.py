@@ -64,12 +64,13 @@ def transition_command(disposition="command.accepted"):
     }
 
 
-def committed_transition_segment():
+def committed_transition_segment(pending=None):
     return {
         "segment_sequence": 1,
         "commit_state": "committed",
+        "resulting_execution_state": "COMPLETED",
         "event_ids": ["event-00000001"],
-        "pending_child_invocations": [],
+        "pending_child_invocations": list(pending or []),
         "receipt_exports": {},
         "affected_revision_refs": ["actor-1@2"],
     }
@@ -131,18 +132,19 @@ class Step3CommandIntentContractTest(unittest.TestCase):
         validate("runtime-command-state.schema.json", transition)
 
     def test_post_commit_direct_transition_with_pending_child_keeps_segment_evidence(self):
-        transition = transition_command()
-        transition["pending_child_invocations"] = [{
+        pending = {
             "firing_key": "event-00000001:binding-1",
             "root_command_id": "turn-1-cmd-01",
             "activity_id": "activity.followup",
             "trigger_ref": "event-00000001",
             "reason": "mandatory_followup",
-        }]
+        }
+        transition = transition_command()
+        transition["pending_child_invocations"] = [pending]
         with self.assertRaises(ValidationError):
             validate("runtime-command-state.schema.json", transition)
 
-        transition["direct_transition_segments"] = [committed_transition_segment()]
+        transition["direct_transition_segments"] = [committed_transition_segment([pending])]
         validate("runtime-command-state.schema.json", transition)
 
 
