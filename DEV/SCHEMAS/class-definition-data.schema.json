@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/class-definition-data.schema.json",
+  "title": "HDM definition.class data",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["hit_die", "advancement_id"],
+  "properties": {
+    "hit_die": {"type": "string", "pattern": "^d[1-9][0-9]*$"},
+    "primary_ability_ids": {"$ref": "#/$defs/idSet"},
+    "proficiency_ids": {"$ref": "#/$defs/idSet"},
+    "resource_ids": {"$ref": "#/$defs/idSet"},
+    "feature_ids": {"$ref": "#/$defs/idSet"},
+    "advancement_id": {"$ref": "#/$defs/id"},
+    "choice_slots": {"$ref": "#/$defs/choiceSlots"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "choiceSlots": {"type": "array", "items": {"$ref": "https://hedgelion.invalid/schemas/build-choice-slot.schema.json"}}
+  }
+}
