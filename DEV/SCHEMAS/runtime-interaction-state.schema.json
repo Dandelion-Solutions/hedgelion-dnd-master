@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/runtime-interaction-state.schema.json",
+  "title": "HDM runtime.interaction state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["campaign_id", "session_id", "player_id", "input_message_id", "intent_plan_id"],
+  "properties": {
+    "campaign_id": {"$ref": "#/$defs/id"},
+    "session_id": {"$ref": "#/$defs/id"},
+    "player_id": {"$ref": "#/$defs/id"},
+    "input_message_id": {"$ref": "#/$defs/id"},
+    "intent_plan_id": {"$ref": "#/$defs/id"},
+    "authenticated_principal_ref": {"type": "string", "minLength": 1},
+    "host_invocation_ref": {"type": "string", "minLength": 1},
+    "response_message_id": {"$ref": "#/$defs/id"},
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+  },
+  "examples": [
+    {
+      "campaign_id": "campaign-001",
+      "session_id": "session-0001",
+      "player_id": "player-0001",
+      "input_message_id": "message-0000001",
+      "intent_plan_id": "turn-000001-plan",
+      "authenticated_principal_ref": "github:user:example"
+    }
+  ]
+}
