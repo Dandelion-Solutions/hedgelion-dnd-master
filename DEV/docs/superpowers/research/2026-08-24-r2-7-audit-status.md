@@ -12,9 +12,10 @@ Task brief:
 
 - `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`
 
-Owner clarification:
+Owner clarifications:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md`;
+- `DEV/docs/superpowers/specs/2026-08-24-r2-7-wp-04-progressive-ready-pc-owner-clarification.md`;
 - clean-slate pre-release rule: no current campaign migration/backward compatibility is required;
 - R2.7 structural canonicalization of catalogs/schemas/templates/folder scaffold is authorized and required as owning domains close;
 - broad runtime behavior/code remains post-R2.7 implementation-planning work.
@@ -96,16 +97,16 @@ FINAL_RECONCILIATION: NOT_STARTED
 | WP-03/F10 | WP-22 | execute/extend catalog generation regression/schema validation | YES |
 | WP-03/F11 | WP-23 | verify release/package metadata and v1.0-alpha manifest parity | YES |
 | WP-03/F12 | WP-26 | remove stale active prose/version references | YES |
-| WP-04/F01 | WP-06 | final advancement schema, stable choice IDs and validation of Actor `choice_bindings`; verify READY_PC reconstruction | YES |
+| WP-04/F01 | WP-06 | final advancement schema, stable choice IDs and validation of Actor `choice_bindings`; prove D&D READY_PC initial commitment frontier | YES |
 | WP-04/F02 | WP-07 | prevent Actor/Asset/Effect-adjacent epistemic/disclosure aliases | YES |
 | WP-04/F03 | WP-10 | replace/remove legacy shipped PC/NPC/item schema families with unified Actor/Asset/Effect schemas | YES |
 | WP-04/F04 | WP-11 | final Actor/Asset/Effect IDs and roots/sharding | YES |
 | WP-04/F05 | WP-12 | HOT/SQLite projections for Actor build/continuity/Asset/Effect | YES |
-| WP-04/F06 | WP-13 | map progressive Actor materialization and state changes into durability/persistence transitions | YES |
-| WP-04/F07 | WP-19 | align bootstrap/campaign lifecycle with gameplay-first provisional onboarding and READY_PC convergence | YES |
-| WP-04/F08 | WP-22 | execute WP-04 regression/schema validation + provisional local-sufficiency integration tests | YES |
-| WP-04/F09 | WP-24 | complete D&D domain coverage against reconstructable Actor build | YES |
-| WP-04/F10 | WP-26 | remove stale `pre-live/not true live play` and legacy PC/NPC/item routing wording | YES |
+| WP-04/F06 | WP-13 | map early PROVISIONAL_IDENTITY, READY_PC commitment and later safe lazy materialization into durability/persistence transitions | YES |
+| WP-04/F07 | WP-19 | align bootstrap/campaign lifecycle with gameplay-first provisional onboarding and READY_PC activation | YES |
+| WP-04/F08 | WP-22 | execute WP-04 regression/schema validation; test provisional persistence, concept-guided defaults, anti-retrofit and lazy deterministic materialization | YES |
+| WP-04/F09 | WP-24 | complete D&D domain coverage against the initial commitment frontier and reconstructable Actor build | YES |
+| WP-04/F10 | WP-26 | remove stale `pre-live/not true live play`, complete-dossier and legacy PC/NPC/item routing wording | YES |
 
 Discharged:
 - WP-02/F01 -> WP-03;
@@ -143,11 +144,14 @@ OWNER_GATE: NONE
 ### WP-04
 
 ```text
-VERDICT: CLOSED / READ-BACK VERIFIED
+VERDICT: CLOSED / READ-BACK VERIFIED AFTER OWNER CLARIFICATION
 UNIFIED_ACTOR_ASSET_MODEL: MACHINE-ALIGNED
 R2.2_CONTINUITY: MATERIALIZED
 RECONSTRUCTABLE_BUILD: MATERIALIZED
-GAMEPLAY_FIRST_ONBOARDING: ACCEPTED + CORE-ALIGNED
+EARLY_PROVISIONAL_ACTOR_PERSISTENCE: ACCEPTED
+ACTOR_NAME_REQUIRED: NO
+READY_PC: INITIAL_MECHANICAL_COMMITMENT_FRONTIER
+SITUATION_AWARE_LATE_SELECTION: FORBIDDEN
 OWNER_GATE: NONE
 ```
 
@@ -174,18 +178,25 @@ CATALOG_GENERATION: 2.0.0
 
 No tag/release publication has been performed.
 
-### Gameplay-first progressive character materialization
+### Gameplay-first progressive character materialization / READY_PC
 
 ```text
 GAMEPLAY MAY BEGIN BEFORE READY_PC: YES
 PROVISIONAL PC DURING GAMEPLAY: YES
-CAMPAIGN LIFECYCLE MAY REMAIN initializing DURING THIS PLAY: YES
-READY_PC: continuously reevaluated completeness predicate
-READY_PC DURABILITY: persist same stable Actor when completeness becomes true
-MECHANICAL OUTCOME BEFORE READY_PC: only when its entire material dependency set is already established
+EARLY PROVISIONAL DURABLE WRITE: YES
+NAME REQUIRED FOR PROVISIONAL ACTOR: NO
+STABLE ACTOR ID: record identity
+CONCEPT FIELD: nonmechanical framing / preparation input only
+READY_PC: initial mechanical commitment frontier, not 100%-filled dossier
+MECHANICAL INFERENCE: allowed through rules-valid explicit/inherited/concept/default/delegated precedence
+SITUATION-AWARE RETROFIT: FORBIDDEN
+POST-READY LAZY MATERIALIZATION: only deterministic/nonmechanical/future-boundary/precommitted-policy cases
+CAMPAIGN LIFECYCLE MAY REMAIN initializing DURING PROVISIONAL PLAY: YES
 ```
 
-Do not restore the retired interpretation `READY_PC before first gameplay scene`.
+Do not restore either retired interpretation:
+- `READY_PC before first gameplay scene`;
+- `READY_PC means every possible character field is eagerly filled`.
 
 ## Open owner decisions
 
