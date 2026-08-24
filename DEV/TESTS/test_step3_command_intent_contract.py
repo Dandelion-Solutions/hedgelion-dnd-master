@@ -76,6 +76,20 @@ def committed_transition_segment(pending=None):
     }
 
 
+def direct_receipt(status="COMPLETED", pending_refs=None, failure_code=None):
+    value = {
+        "execution_owner_id": "turn-1-cmd-01",
+        "segment_refs": ["turn-1-cmd-01:segment:1"] if status == "COMPLETED" else [],
+        "status": status,
+        "event_ids": ["event-00000001"] if status == "COMPLETED" else [],
+        "exports": {},
+        "pending_child_refs": list(pending_refs or []),
+    }
+    if failure_code is not None:
+        value["failure_code"] = failure_code
+    return value
+
+
 class Step3CommandIntentContractTest(unittest.TestCase):
     def test_intent_plan_allows_partial_completion_without_transaction_authority(self):
         value = {
@@ -126,12 +140,13 @@ class Step3CommandIntentContractTest(unittest.TestCase):
         with self.assertRaises(ValidationError):
             validate("runtime-command-state.schema.json", invalid_transition)
 
-    def test_settled_direct_transition_keeps_committed_segment_evidence_on_command(self):
+    def test_settled_direct_transition_keeps_segment_and_embedded_receipt_evidence(self):
         transition = transition_command("command.settled")
         transition["direct_transition_segments"] = [committed_transition_segment()]
+        transition["direct_transition_receipt"] = direct_receipt()
         validate("runtime-command-state.schema.json", transition)
 
-    def test_post_commit_direct_transition_with_pending_child_keeps_segment_evidence(self):
+    def test_post_commit_direct_transition_with_pending_child_keeps_segment_and_receipt(self):
         pending = {
             "firing_key": "event-00000001:binding-1",
             "root_command_id": "turn-1-cmd-01",
@@ -145,7 +160,17 @@ class Step3CommandIntentContractTest(unittest.TestCase):
             validate("runtime-command-state.schema.json", transition)
 
         transition["direct_transition_segments"] = [committed_transition_segment([pending])]
+        transition["direct_transition_receipt"] = direct_receipt(pending_refs=[pending["firing_key"]])
         validate("runtime-command-state.schema.json", transition)
+
+    def test_settled_precommit_direct_transition_failure_needs_no_fake_segment(self):
+        transition = transition_command("command.settled")
+        transition["direct_transition_receipt"] = direct_receipt(
+            status="FAILED",
+            failure_code="failure.transition_requires_procedure",
+        )
+        validate("runtime-command-state.schema.json", transition)
+        self.assertNotIn("direct_transition_segments", transition)
 
 
 if __name__ == "__main__":
