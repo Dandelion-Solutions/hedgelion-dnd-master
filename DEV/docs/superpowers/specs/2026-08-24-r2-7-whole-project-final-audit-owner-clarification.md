@@ -121,7 +121,7 @@ A replacement whole-project R2.7 Task Brief v2 owns current execution scope.
 
 # 9. Implementation gate
 
-Implementation planning remains blocked until the whole-project R2.7 audit closes.
+Broad runtime implementation remains blocked until the whole-project R2.7 audit closes.
 
 R2.7 closure must establish that no unresolved architecture question remains whose answer could materially change:
 
@@ -129,19 +129,19 @@ R2.7 closure must establish that no unresolved architecture question remains who
 - persistent data model;
 - runtime interfaces;
 - transaction/currentness/recovery topology;
-- bootstrap/migration/update path;
+- bootstrap/update path;
 - instruction architecture;
 - test/release acceptance topology.
 
-Only then may implementation planning begin.
+Only then may broad runtime implementation planning begin.
 
 ---
 
-# 10. Pre-release data compatibility / migration clarification
+# 10. Pre-release data compatibility and structural-canonicalization clarification
 
 Owner clarification on 2026-08-24:
 
-> No real campaigns/games currently depend on the existing campaign schemas, catalog shapes, templates or folder structures. R2.7 may therefore replace or delete stale machine structures directly without preserving backward compatibility with the current scaffold.
+> No real campaigns/games currently depend on the existing campaign schemas, catalog shapes, templates or folder structures. R2.7 may therefore replace or delete stale machine structures directly without preserving backward compatibility with the current scaffold. By R2.7 closure, the repository must contain the final self-consistent architecture together with its final data models, catalogs, schemas, templates and folder structures.
 
 For the current architecture-finalization transition:
 
@@ -149,14 +149,24 @@ For the current architecture-finalization transition:
 EXISTING USER CAMPAIGNS REQUIRING MIGRATION: NONE
 BACKWARD-COMPATIBILITY REQUIREMENT FOR CURRENT SCAFFOLD: NONE
 LEGACY FIELD/RECORD PRESERVATION REQUIREMENT: NONE
+R2.7 STRUCTURAL CANONICALIZATION: AUTHORIZED
 ```
+
+R2.7 is therefore authorized and required to directly canonicalize architecture machine-contract surfaces as their owning WP domains close, including as applicable:
+
+- `DEV/CATALOG/*` closed machine vocabularies and structures;
+- `DEV/SCHEMAS/*` architecture/machine schemas;
+- `GAME/SCHEMA/*` persistent campaign schemas;
+- `GAME/CAMPAIGN/*` campaign templates and folder scaffold;
+- schema/catalog/template indexes and closely coupled structural documentation;
+- empty/placeholder roots whose existence or absence is part of the final storage topology.
 
 Consequences:
 
 - stale/retired fields, record classes, catalog entries, templates and roots MAY be removed rather than carried as aliases/dual-write compatibility surfaces;
 - final schemas/catalogs/templates/folder structures SHALL represent only the accepted final architecture unless a separate current consumer proves otherwise;
 - no migration artifact is required merely to transform the present unreleased scaffold into the final R2.7 machine model;
-- this clarification does **not** remove the requirement for WP-20 to define a coherent future schema/version/evolution policy for campaigns created after release;
-- this clarification does **not** authorize implementation before R2.7 closure; R2.7 still maps exact final replacements and implementation planning remains the next gate.
+- WP-20 still defines coherent **future** schema/version/evolution policy for campaigns created after release;
+- structural canonicalization during R2.7 does not authorize broad gameplay/runtime implementation such as deterministic execution engine code, persistence orchestration, Context Runtime implementation or other post-architecture behavior work before the normal implementation-planning gate.
 
-The final R2.7 closure target is therefore not a compatibility-preserving compromise. It is one **self-consistent final architecture with complete data models, schemas, catalogs, templates and folder structures** suitable for implementation planning.
+The final R2.7 closure target is therefore not a compatibility-preserving compromise and not merely a change map. It is one **self-consistent final architecture with complete data models, catalogs, schemas, templates and folder structures**, plus an implementation-ready map for the remaining runtime behavior/code.
