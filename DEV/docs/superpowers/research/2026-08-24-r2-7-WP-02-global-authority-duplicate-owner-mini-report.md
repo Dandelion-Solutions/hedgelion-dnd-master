@@ -1,221 +1,251 @@
 # WP-02 — Global authority / duplicate-owner audit
 
-Статус: **IN PROGRESS**
+Статус: **CLOSED — VERIFIED SUBJECT TO READ-BACK**
 
 Date: 2026-08-24
 
-## 1. Краткий вывод текущего slice
+## 1. Итог
 
-Первый slice (`canonical owner inventory + authority taxonomy`) завершён.
+WP-02 завершил двусторонний audit semantic ownership.
 
-Принятая архитектура Round 1 + Round 2 внутренне последовательно различает:
+На уровне accepted architecture конфликтов владельцев не обнаружено. Round 1 + Round 2 последовательно различают:
 
-1. **semantic/current owners** — единственные writable/current владельцы своих семантических concerns;
-2. **historical/evidence owners** — владеют фактом принятого события/сообщения/результата, но не текущим world state;
-3. **narrow operational/noncanonical owners** — владеют только собственным bounded progress/control lifecycle (например Story projection progress или collaboration generation), не gameplay truth;
-4. **derived/helper projections** — indexes, Agenda, ContextTrace, MechanicalContext и другие ускорители/представления без самостоятельной semantic authority.
+- semantic/current owners;
+- historical/evidence owners;
+- narrow operational/noncanonical owners;
+- derived/helper projections.
 
-На уровне accepted architecture owner-level противоречия не найдено. Следующий обязательный slice — reverse audit текущих machine/runtime surfaces: существуют ли в `GAME/SCHEMA`, campaign templates, CORE, DEV catalogs/schemas или legacy fields физические представления, которые нарушают эту taxonomy либо создают второй writable owner.
+Проблема находится не в принятой semantic architecture, а в текущем machine scaffold: часть `GAME/SCHEMA`, campaign templates, DEV catalog vocabulary и CORE wording всё ещё отражает более ранние модели и может создать второй writable owner либо направить реализацию к superseded semantics.
 
-Полная derivative owner matrix:
-
-- `DEV/docs/superpowers/research/2026-08-24-r2-7-global-semantic-owner-matrix.md`
+Owner clarification дополнительно установил clean-slate правило: реальных кампаний нет, поэтому R2.7 удаляет/заменяет stale структуры без backward compatibility. К closure R2.7 должны существовать финальные самосогласованные models/catalogs/schemas/templates/folder scaffold; broad runtime code остаётся после implementation-planning gate.
 
 ---
 
-## 2. Покрытые вопросы
+## 2. Архитектурный результат
 
 ```text
-WP-02/Q1 every mutable/current concern exactly one accepted authority?
-    ARCHITECTURE LAYER: SATISFIED
-    MACHINE LAYER: NOT YET AUDITED
-
-WP-02/Q2 definition/current/derived/Story/planning/session separation?
-    ARCHITECTURE LAYER: SATISFIED
-    MACHINE LAYER: NOT YET AUDITED
-
-WP-02/Q3 can YAML/SQLite/index/chat/Story/checkpoint/prep become second owner?
-    CANONICAL LAW: NO
-    CURRENT MACHINE CONFORMANCE: NEXT SLICE
-
-WP-02/Q4 deterministic acceptance distinct from LLM proposal/narration?
-    ARCHITECTURE LAYER: SATISFIED
-    CURRENT CORE/MACHINE CONFORMANCE: NEXT SLICE / WP-05/WP-08 deeper follow-up
+ARCHITECTURE OWNER-LEVEL CONFLICTS: 0
+MACHINE CONFORMANCE GAPS: MATERIAL / EXPECTED PRE-IMPLEMENTATION DEBT
+OWNER DECISION REQUIRED: 0
+BACKWARD-COMPATIBILITY BLOCKER: 0
 ```
 
----
+Ключевой закон WP-02:
 
-## 3. Source Manifest delta
-
-Current primary owners inspected for this slice:
-
-| Source | Authority role | Slice use |
-|---|---|---|
-| `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md` | AGREED semantic/model contract | class admission; definition/world/runtime/value boundaries; metadata placement; no duplicate state |
-| `DEV/ARCHITECTURE/CATALOG_RESOLUTION.md` | AGREED Step-1 architecture | ResolvedCatalogContext, no same-ID shadowing, discovery != authority |
-| `DEV/ARCHITECTURE/ACTOR_MODEL.md` | AGREED Actor machine/model contract | Actor HP/resources/lifestate/derived inventory/condition boundaries |
-| `DEV/ARCHITECTURE/ASSET_MODEL.md` | AGREED Asset model | definition/instance/placement/resource ownership, derived access/possession |
-| Step-3 execution canonical spec | CANONICAL | Interaction/IntentPlan/Command/Procedure/Resolution/Continuation/Event/receipt authority |
-| Step-4 truth/knowledge/context/Story canonical spec | CANONICAL | lore/knowledge/disclosure separation; context non-authority; preparation noncanonical |
-| Step-5.0 authority contamination final | CANONICAL CLOSED REVIEW | retired duplicate/premature owners; preserved runtime owners |
-| Step-5.7 recovery canonical | CANONICAL | current-authority-first; checkpoint optional/non-authoritative; derived rebuild |
-| Step-5.8 live ownership canonical | CANONICAL | live physical partition != semantic mega-owner; routing selects source authority |
-| Step-5.9 chronology canonical | CANONICAL | sparse relation evidence; no global clock/time owner |
-| Step-5.10 Story canonical | CANONICAL | Story layer-local projection ownership only; Chronicler no IDs/progress/canon |
-| Step-5.11 transcript canonical | CANONICAL | runtime.message evidence vs truth/current state; selective exact |
-| Step-5.12 delivery/disclosure canonical | CANONICAL | message/disclosure/knowledge/truth separation; EMISSION_COMMIT |
-| Step-5.14 integrated canonical final | CANONICAL INTEGRATION | cross-slice false-authority sweep |
-| R2.1 continuity canonical | CANONICAL | no generic memory authority; Story orientation only |
-| R2.2 Actor continuity canonical | CANONICAL | source-Actor private continuity; `world.knowledge` remains epistemic owner |
-| R2.3 Context Runtime canonical | CANONICAL | context/index/trace/SQLite authority boundaries |
-| R2.4 single-context execution canonical | CANONICAL | TurnEnvelope control only; typed drafts; deterministic acceptance |
-| R2.5 multiplayer canonical | CANONICAL | collaboration collection-only; planning noncanonical |
-
-The current derivative `CANONICAL_ARCHITECTURE_INDEX.md` was used only to locate owners and identify the integrated invariant set; correctness claims above were then checked against primary sources.
+> Физическая копия, cache, LIVE packing, SQLite row, Story record, checkpoint hint или index не становится вторым owner автоматически. Конфликт существует тогда, когда representation может независимо отвечать/мутировать semantic concern, уже принадлежащий другому accepted owner.
 
 ---
 
-## 4. Установленные факты и ограничения
+## 3. Material machine findings
 
-### WP02-F01 — one owner means one semantic writer, not one physical copy
+### WP02-M01 — legacy embedded epistemic stores
 
-Hydration, sharding, LIVE packing, SQLite/HOT working copies and derived views may move/duplicate bytes without transferring semantic ownership.
+Текущие `npc.schema.yaml`, `pc.schema.yaml` и `faction.schema.yaml` содержат writable `knowledge` / belief / suspicion arrays. `item.schema.yaml` содержит `identified_by_pc_ids`; `thread.schema.yaml` содержит `known_by_pc_ids`.
 
-### WP02-F02 — historical evidence has bounded authority
+Disposition: **STALE DUPLICATE OWNER**.
 
-Events/messages/receipts can authoritatively prove their own accepted occurrence/evidence semantics while still being unable to answer current-state questions.
+Final architecture routes current fictional proposition stance through common `world.knowledge`; PC voluntary mental state remains player-owned. Эти embedded arrays не сохраняются ради совместимости.
 
-### WP02-F03 — noncanonical state may own noncanonical progress
+Targets: WP-04, WP-07, WP-10, WP-22.
 
-Story projection state, collaboration generation and Dramaturg planning generation may be real persistent state. Their persistence does not promote them to gameplay canon/current authority.
+### WP02-M02 — retired Secret remnants
 
-### WP02-F04 — accepted LLM products require downstream acceptance
+`item.schema.yaml` и `location.schema.yaml` всё ещё содержат `secret_ids`, хотя standalone Secret record/root/schema уже retired.
 
-Interpretation/proposal/editorial/narrative output remains non-authoritative until the relevant deterministic/native acceptance boundary establishes the owned consequence.
+Disposition: **STALE RETIRED SURFACE**.
 
-### WP02-F05 — physical currentness may precede durability
+Final: удалить поля; secrecy определяется eligibility над truth/knowledge/disclosure, а не отдельным Secret owner.
 
-HOT/SQLite can contain newer `ESTABLISHED` SOFT owner state than Git. This does not make SQLite format the authority and does not make Git automatically newer semantically.
+Targets: WP-07, WP-10, WP-19.
 
-### WP02-F06 — current routing can select another physical native source
+### WP02-M03 — stale objective-truth model
 
-During LIVE, current campaign routing may select a live source for claimed owners. The underlying Actor/Asset/Procedure/etc owner remains the same semantic owner.
+`lore.schema.yaml` использует общий `status = canonical|superseded|disputed_in_world`; `DEV/CATALOG/core-catalog.json` всё ещё допускает objective truth `disputed`.
+
+Disposition: **CLASS MODEL MISMATCH / RETIRED VOCABULARY**.
+
+Final: независимые axes objective `truth_status = undetermined|established|disproven` и record lifecycle; in-world dispute принадлежит `world.knowledge`.
+
+Targets: WP-03, WP-07, WP-10, WP-22.
+
+### WP02-M04 — missing accepted disclosure owner realization
+
+`runtime.disclosure` принят Step 4/5.12, но отсутствует в текущем closed runtime catalog и не имеет final shipped persistent family/root.
+
+Disposition: **MISSING REALIZATION**.
+
+Targets: WP-03, WP-07, WP-10, WP-11.
+
+### WP02-M05 — generic `world.relationship` superseded by R2.2
+
+Старый catalog всё ещё содержит `world.relationship(subject_id, object_id, relation, attitude, strength, status)` и generic relationship transition/event vocabulary. Поздний R2.2 закрепляет subjective directed relationship view за source Actor; objective social facts остаются у natural typed owners.
+
+Disposition: **STALE GENERIC OWNER**.
+
+Final baseline: generic `world.relationship` в нынешней форме retired. Если будущий objective relationship действительно потребует independent lifecycle, он должен доказать отдельный конкретный typed owner; старый generic container не сохраняется как placeholder.
+
+Targets: WP-03, WP-04, WP-05, WP-10.
+
+### WP02-M06 — global chronology frontier scaffold
+
+`current_state.schema.yaml`, `GAME/CAMPAIGN/STATE/CURRENT.yaml` и CORE `CHRONOLOGY.md` всё ещё используют `CURRENT.world_time.frontier` как globally reconciled chronology frontier.
+
+Step 5.9 требует owner-anchored sparse chronology и не вводит mandatory global current fictional clock/frontier.
+
+Disposition: **STALE AUTHORITY/CURRENTNESS SHAPE**.
+
+Final: global-frontier semantics удалить/заменить точными owner/domain chronology relations/providers, которые будут закрыты WP-15; CURRENT остаётся compact routing/current-state surface, но не world-time authority.
+
+Targets: WP-10, WP-14, WP-15, WP-19.
+
+### WP02-M07 — checkpoint schema/template materially stale
+
+Текущие checkpoint schema/template требуют/хранят:
+
+- `valid_through_event_id`;
+- `expected_commit_sha`;
+- copied `world_time`;
+- active PC/thread/scene lists.
+
+Step 5.7 прямо отвергает первые два как canonical recovery semantics, а copied time/lists допускает только как optional non-authoritative hints при доказанной полезности.
+
+Disposition: **STALE RETIRED / UNPROVEN HINT SURFACES**.
+
+Clean-slate default: удалить; WP-14 может вернуть узкий hint только если докажет bounded recovery/diagnostic value.
+
+Targets: WP-14, WP-19, WP-22.
+
+### WP02-M08 — recovery instruction mismatch
+
+`GAME/CORE/STORAGE.md` в `Canonical read order` ставит checkpoint/hot STATE раньше exact WORLD owner reads, что конфликтует с Step-5.7 `current-authority-first` recovery.
+
+Disposition: **INSTRUCTION MISMATCH**.
+
+Targets: WP-14, WP-26.
+
+### WP02-M09 — runtime.message identity mismatch
+
+`identifier-policies.json` всё ещё делает `runtime.message` campaign-global sequential ID. Step 5.12 требует collision-safe source-native identity для independently writable session/live scopes без global pre-response reservation.
+
+Disposition: **IDENTITY MISMATCH**.
+
+Targets: WP-03, WP-07, WP-11, WP-16.
+
+### WP02-M10 — LIVE physical packing can become semantic mega-owner
+
+`live_scene.schema.yaml` / `LIVE_SCENE.md` содержат generic live fact/knowledge/disclosure packing, provisional IDs и более старую write-fence модель. Step 5.8 позднее требует, чтобы physical LIVE partition не заменял native semantic owners; accepted live-born externally referenced identities должны быть stable; authoritative fencing uses exact live source revision.
+
+Важно: `observable_events.perceived_by_pc_ids` может законно выжить как historical perception evidence, но не как current `world.knowledge`/`runtime.disclosure` authority. `live_facts.known_by_pc_ids` как current knowledge copy — stale.
+
+Targets: WP-07, WP-11, WP-12, WP-13, WP-16.
+
+### WP02-M11 — durable reverse presence risk
+
+`location.schema.yaml -> state.present_entity_ids` хранит reverse presence while Actor/Asset natural owners carry current placement.
+
+Disposition: **DUPLICATE-OWNER RISK**.
+
+Clean-slate final default: не хранить второй writable current-presence owner. Если lookup требует reverse presence, использовать derived/rebuildable routing/index либо specifically proven scene membership contract.
+
+Targets: WP-04, WP-09, WP-10, WP-11.
+
+### WP02-M12 — accepted owner families still missing physical realization
+
+Final shipped persistent/HOT representation ещё отсутствует для ряда уже принятых owners: common `world.knowledge`, `runtime.disclosure`, часть Step-3 operational records, Story projection progress, collaboration obligation, player-local/shared Dramaturg horizons и другие R2.x typed products.
+
+Disposition: **MISSING REALIZATION**, не разрешение переиспользовать legacy fields.
+
+Targets: WP-05, WP-07, WP-10..WP-12, WP-14, WP-17, WP-18.
 
 ---
 
-## 5. Architecture -> machine
+## 4. Class-model mismatch, не duplicate owner
 
-Current slice establishes the semantic side only. Exact physical destinations are intentionally deferred to later WP domains.
+Существующие GAME schemas (`pc`, `npc`, `item`, `faction`, etc.) и accepted DEV catalog (`world.actor`, `world.asset`, `world.organization`, etc.) представляют разные поколения machine model.
 
-The global matrix already records all currently identified owner classes and explicit non-owner relations. Machine realization status remains `TO AUDIT` where existing schemas/templates may still encode older assumptions.
+Само наличие двух названий ещё не доказывает duplicate semantic writer, потому что physical/schema specialization может представлять один owner. Но финальная архитектура должна иметь один согласованный envelope/kind model. Clean-slate owner decision разрешает полностью заменить legacy schema family вместо поддержки обоих вариантов.
 
----
-
-## 6. Machine -> architecture
-
-`NOT YET COMPLETE`.
-
-Next slice must inspect at minimum:
-
-- `GAME/SCHEMA/*.schema.yaml`;
-- `GAME/CAMPAIGN/` current templates/indexes;
-- `DEV/CATALOG/*.json` and relevant `DEV/SCHEMAS/*.schema.json`;
-- current `GAME/CORE` storage/session/live/current/persistence modules;
-- legacy/stale fields known from Step-5.0 and later canonical amendments;
-- current machine surfaces corresponding to Story, message/disclosure/knowledge and R2.2–R2.5 additions.
+Targets: WP-03, WP-04, WP-10.
 
 ---
 
-## 7. Конфликты / stale / negative findings
+## 5. Adversarial false-positive check
 
-### Negative finding WP02-N01
+Проверены потенциальные случаи, где audit мог ошибочно удалить допустимое evidence:
 
-No accepted architecture-level duplicate-owner conflict was found in the canonical model.
+- Event/perception evidence может авторитетно доказывать факт восприятия, не становясь current knowledge owner.
+- Checkpoint может хранить собственный immutable descriptor/provenance, но не current state/recovery completeness.
+- Story projection state действительно владеет layer-local coverage/allocator progress, но не canon.
+- LIVE source может физически содержать current native owner bytes, но не становится semantic mega-owner.
+- Reverse indexes могут хранить copies только как derived/rebuildable structures с owner-based currentness.
 
-### Negative finding WP02-N02
-
-No accepted architecture authorizes a generic `memory`, universal snapshot/frontier, global scheduler, global chronology clock, global active-player state, Story-as-canon, checkpoint-as-current-state or SQLite-as-canon abstraction.
-
-### Machine findings
-
-Pending next slice.
+После этой проверки новых owner trade-offs не появилось.
 
 ---
 
-## 8. Автоматически принятые технические решения
+## 6. Existing test gap
 
-### AUTO-02-01 — four-class ownership taxonomy
+`DEV/TESTS/test_step_5_0_contamination.py` защищает ранние retirement cases (`world.timeline_marker`, generic pending bucket, duplicate checkpoint pointer, old Secret root/schema, tactical bucket), но не проверяет новые post-Step-4/Step-5/R2 stale surfaces, перечисленные выше.
 
-Use the four classes `SEMANTIC_CURRENT`, `HISTORICAL_EVIDENCE`, `NARROW_OPERATIONAL_NONCANONICAL`, `DERIVED_HELPER` in R2.7 ledgers where classification clarity is needed.
-
-This is a derivative audit vocabulary only; it creates no runtime classes/schemas.
-
-Why no owner gate: it summarizes already accepted semantic distinctions without changing them.
-
-### AUTO-02-02 — local authority must be named with scope
-
-Future mappings must not label Story/collaboration/checkpoint merely `NON_AUTHORITATIVE`. They must state the narrow concern they do own, then explicitly state the stronger semantics they do not own.
-
-Why no owner gate: avoids losing accepted local lifecycle semantics during implementation.
+Forward obligation: WP-22 должен добавить whole-project static/schema regression class для duplicate-owner/retired-vocabulary запретов после structural canonicalization.
 
 ---
 
-## 9. Implementation obligations
+## 7. Negative findings
 
-No new implementation obligations are closed in slice A. Exact stale/duplicate machine surfaces are identified in later slices.
-
----
-
-## 10. Verification / MVP acceptance obligations
-
-Pending machine reverse audit. Likely regression classes will include duplicate-owner schema/static checks and runtime acceptance-boundary tests, but no coverage claim is made yet.
+- Accepted architecture не создаёт generic memory database, universal RecoveryCut/snapshot, global scheduler, global active-player state, Story-as-canon или SQLite-as-canon.
+- Active `WORLD/SECRETS/` root и `secret.schema.yaml` уже отсутствуют; Step-5.0 retirement частично реализован правильно.
+- `index.schema.yaml` уже говорит, что index — routing, не entity database.
+- `event.schema.yaml` уже отвергает mandatory campaign-global event order.
+- `scene.schema.yaml` уже отвергает generic tactical-state owner и помечает local chronology frontier как non-global.
 
 ---
 
-## 11. Forward obligations
+## 8. Forward obligations created by WP-02
 
-No new forward obligations from slice A yet.
+```text
+WP-02/F01 -> WP-03  final closed class/vocabulary cleanup, including disclosure, truth and relationship vocabulary
+WP-02/F02 -> WP-04  unified Actor/Asset + Actor-private relationship/current-state model
+WP-02/F03 -> WP-07  final truth/knowledge/disclosure/message semantic record model
+WP-02/F04 -> WP-10  final persistent record families/schemas and removal of legacy parallel schema families
+WP-02/F05 -> WP-11  roots/IDs/index/sharding for accepted owner families
+WP-02/F06 -> WP-14  final checkpoint/session/recovery representation, current-authority-first
+WP-02/F07 -> WP-15  remove global chronology-frontier authority and define exact sparse chronology realization
+WP-02/F08 -> WP-16  final LIVE native-owner packing/identity/fencing/currentness
+WP-02/F09 -> WP-19  final campaign scaffold emits only canonical structures
+WP-02/F10 -> WP-22  duplicate-owner / retired-vocabulary regression suite
+WP-02/F11 -> WP-26  remove stale CORE/schema-routing wording
+```
 
-Existing WP-01 forward obligations remain open in the durable status ledger.
+All are final-closure blocking until discharged by their owning domains.
 
 ---
 
-## 12. Round-2 Diamond / Strong delta
+## 9. Round-2 Diamond / Strong disposition
 
-`NO DELTA` in slice A.
+No new D/S activation.
 
-R2.1/R2.2/R2.3/R2.5 owner distinctions are preserved; no dormant item is activated.
+R2.2 directed source-Actor relationships and R2.3 SQLite/index non-authority are materially enforced by this audit. R2.5 planning remains narrow noncanonical state. Dormant items remain dormant.
 
 ---
 
-## 13. Human decision
+## 10. Human decision
 
 ```text
 NONE
 ```
 
+The clean-slate structural-canonicalization decision supplied by the owner has been incorporated into the governing R2.7 owner clarification.
+
 ---
 
-## 14. Closure verdict
+## 11. Closure verdict
 
 ```text
 DOMAIN: WP-02
-VERDICT: IN_PROGRESS
-COMPLETED_SLICE: canonical owner inventory + authority taxonomy
-OWNER_LEVEL_CONFLICTS: 0
-NEXT_SLICE: derived/helper/non-owner taxonomy + current machine reverse inventory
+VERDICT: MAY CLOSE
+ARCHITECTURE OWNER CONFLICTS: 0
+MACHINE STALE/MISSING CLUSTERS: 12
 OWNER_GATE: NONE
-```
-
----
-
-## 15. Точка продолжения
-
-```text
-read audit-status
--> global semantic-owner matrix
--> inspect current GAME/SCHEMA + GAME/CAMPAIGN + DEV/CATALOG/SCHEMAS
--> inspect current storage/session/live/index/current runtime consumers
--> classify every apparent owner/copy against the owner matrix
--> checkpoint machine reverse findings before adversarial WP-02 closure
+NEXT_DOMAIN: WP-03 — catalog/class/capability completeness
 ```
