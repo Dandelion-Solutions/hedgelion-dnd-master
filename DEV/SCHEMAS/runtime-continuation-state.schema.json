@@ -5,18 +5,32 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "generation", "root_command_id", "resolution_id",
-    "catalog_context_fingerprint", "safe_recompute_phase", "invocation_facts",
-    "fixed_rng_results", "prior_step_exports", "committed_receipt_refs",
-    "dependency_frontier_refs", "expected_child_resolution_ids",
-    "future_rng_frontier"
+    "generation", "root_command_id", "resolution_id", "activity_id", "actor_id",
+    "catalog_context_fingerprint", "execution_cursor", "safe_recompute_phase",
+    "invocation_facts", "fixed_rng_results", "prior_step_exports",
+    "committed_segment_refs", "dependency_frontier_refs",
+    "expected_child_resolution_ids", "future_rng_frontier"
   ],
   "properties": {
     "generation": {"type": "integer", "minimum": 1},
     "root_command_id": {"type": "string", "minLength": 1},
     "resolution_id": {"type": "string", "minLength": 1},
+    "activity_id": {"$ref": "#/$defs/id"},
+    "actor_id": {"$ref": "#/$defs/id"},
+    "source_id": {"$ref": "#/$defs/id"},
+    "target_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "parameter_bindings": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/id"},
+      "additionalProperties": {"$ref": "#/$defs/bindingValue"}
+    },
     "catalog_context_fingerprint": {"type": "string", "minLength": 1},
     "procedure_id": {"type": "string", "minLength": 1},
+    "execution_cursor": {"type": "string", "minLength": 1},
     "safe_recompute_phase": {"type": "string", "minLength": 1},
     "invocation_facts": {
       "type": "array",
@@ -24,13 +38,13 @@
     },
     "fixed_rng_results": {
       "type": "array",
-      "items": {"$ref": "#/$defs/scalar"}
+      "items": {"$ref": "https://hedgelion.invalid/schemas/roll-result.schema.json"}
     },
     "prior_step_exports": {
       "type": "object",
       "additionalProperties": {"$ref": "#/$defs/scalar"}
     },
-    "committed_receipt_refs": {
+    "committed_segment_refs": {
       "type": "array",
       "uniqueItems": true,
       "items": {"type": "string", "minLength": 1}
@@ -95,19 +109,32 @@
     "details": {"type": "object"}
   },
   "$defs": {
-    "scalar": {"type": ["string", "number", "boolean"]}
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "scalar": {"type": ["string", "number", "boolean"]},
+    "bindingValue": {
+      "oneOf": [
+        {"$ref": "#/$defs/scalar"},
+        {"type": "array", "items": {"$ref": "#/$defs/scalar"}}
+      ]
+    }
   },
   "examples": [
     {
       "generation": 1,
       "root_command_id": "turn-000042-cmd-01",
       "resolution_id": "resolution-0000001",
+      "activity_id": "activity.attack.basic",
+      "actor_id": "actor-0001",
+      "target_ids": ["actor-0002"],
       "catalog_context_fingerprint": "ctx",
+      "execution_cursor": "step.attack.resolve",
       "safe_recompute_phase": "determine",
       "invocation_facts": [],
-      "fixed_rng_results": [17],
+      "fixed_rng_results": [
+        {"roll_id": "roll.attack.1", "expression": "1d20", "raw_values": [17], "source_kind": "rng.system"}
+      ],
       "prior_step_exports": {"attack_roll": 17},
-      "committed_receipt_refs": ["resolution-0000001:segment:1"],
+      "committed_segment_refs": ["resolution-0000001:segment:1"],
       "dependency_frontier_refs": ["actor-0001@12"],
       "expected_child_resolution_ids": [],
       "future_rng_frontier": "rng:42"
