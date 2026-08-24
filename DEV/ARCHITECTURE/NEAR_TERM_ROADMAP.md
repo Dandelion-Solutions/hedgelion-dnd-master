@@ -66,14 +66,7 @@ Independent confirmation or thematic overlap is evidence, not a new stage.
 
 # 3. Evidence / activation rule
 
-Item-level accounting of all 24 DIAMOND and 58 STRONG candidates remains:
-
-```text
-ACTIVE / ACTIVE DELTA          43
-INHERITED / ALREADY SATISFIED  16
-CONDITIONAL / DORMANT          23
-unaccounted                     0
-```
+Item-level accounting of all 24 DIAMOND and 58 STRONG candidates remains the Round-2 accounting basis. R2.5 additionally fired the preserved S14 revisit trigger narrowly for multiplayer retained noncanonical Dramaturg planning continuity; this does not create a new numbered stage.
 
 Research classification is not backlog state. Dormant items create no current task until their preserved trigger fires. RESERVE / NEGATIVE evidence remains stage-local adversarial input.
 
@@ -88,7 +81,7 @@ Research classification is not backlog state. Dormant items create no current ta
 - Owning sources beat roadmaps, indexes, summaries and remembered state.
 - YAGNI applies aggressively: no new authority, registry, scheduler, generic graph, plugin/agent framework or subsystem without a current requirement.
 - Broad implementation remains blocked until Round-2 architecture closes and implementation planning is explicitly entered.
-- Dormant work reserves no stage number. If a trigger becomes true, insert the smallest bounded stage where dependencies require it.
+- Dormant work reserves no stage number. If its trigger becomes true, insert the smallest bounded stage only when dependency ordering requires one; otherwise resolve the delta inside the active owning stage.
 
 ---
 
@@ -101,8 +94,8 @@ Research classification is not backlog state. Dormant items create no current ta
 | R2.2 | **COMPLETE / ARCHITECTURE CLOSED** | Actor continuity, cognition and directed relationships | source-Actor-owned sparse continuity; directed relationships; lazy-discovery handoff |
 | R2.3 | **COMPLETE / ARCHITECTURE CLOSED** | Context Runtime, retrieval, lazy discovery and allocation | bounded multi-channel discovery; typed packet closure; packet-first allocation; storage/index boundaries |
 | R2.4 | **COMPLETE / ARCHITECTURE CLOSED** | single-context LLM execution and instruction architecture | registered TurnEnvelope; minimal typed gateways; deterministic authority; first-safe-opportunity Chronicler service |
-| R2.5 | **IN PROGRESS** | collaboration and multiplayer interaction semantics | sync/async input, mode coordination, rejoin/catch-up and recipient-scoped context over inherited Step-5 shared-state architecture |
-| R2.6 | **PLANNED** | ChatGPT-Plus assurance, evaluation, security and degradation | tested supported host envelope and explicit supported/degraded/unsupported behavior |
+| R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration and multiplayer interaction semantics | agency-safe scoped collaboration; bounded async joint input; recipient catch-up; two-level noncanonical Dramaturg coordination |
+| R2.6 | **IN PROGRESS** | ChatGPT-Plus assurance, evaluation, security and degradation | tested supported host envelope and explicit supported/degraded/unsupported behavior |
 | R2.7 | **PLANNED** | machine-realization mapping and holistic closure | GAME/DEV/schema/catalog/instruction/test obligations mapped; cross-round review passed; implementation-planning entry criteria satisfied |
 
 ---
@@ -158,15 +151,6 @@ Closed results:
 
 # 8. R2.1 — Continuity, Memory & History-Aligned Derived State — COMPLETE
 
-Artifacts:
-
-- `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-memory-history-task-brief.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-1-continuity-evidence-ledger.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-projection-owner-decision.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-history-canonical-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-resolution-gate.md`
-
 Canonical result:
 
 - no generic memory/continuity authority;
@@ -179,19 +163,11 @@ Canonical result:
 - exact recall remains Step-5.11 Selective Exact;
 - no per-turn/background continuity-maintenance correctness clock.
 
+Owning R2.1 artifacts remain under `DEV/docs/superpowers/specs/` and `DEV/docs/superpowers/research/` dated `2026-08-24-r2-1-*`.
+
 ---
 
 # 9. R2.2 — Actor Continuity, Cognition & Directed Relationships — COMPLETE
-
-Artifacts:
-
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-cognition-task-brief.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-2-actor-continuity-evidence-ledger.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-decision-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-owner-decision.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-canonical-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-resolution-gate.md`
 
 Canonical result:
 
@@ -205,20 +181,11 @@ Canonical result:
 - Story/history may inform but not establish current cognition;
 - full entity state is not required merely to discover relevance.
 
+Owning R2.2 artifacts remain under `DEV/docs/superpowers/specs/` and `DEV/docs/superpowers/research/` dated `2026-08-24-r2-2-*`.
+
 ---
 
 # 10. R2.3 — Context Runtime, Retrieval, Lazy Discovery & Allocation — COMPLETE
-
-Artifacts:
-
-- `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-lazy-discovery-task-brief.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-3-context-runtime-evidence-ledger.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-decision-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-owner-decision.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-resolution-gate.md`
 
 Canonical result:
 
@@ -235,22 +202,11 @@ Canonical result:
 - SQLite/HOT may host current SOFT owner state and acceleration structures but storage format creates no semantic authority;
 - R2.7 owns exact physical roots/shard/index/SQLite mapping.
 
+Owning R2.3 artifacts remain under `DEV/docs/superpowers/specs/` and `DEV/docs/superpowers/research/` dated `2026-08-24-r2-3-*`.
+
 ---
 
 # 11. R2.4 — Single-Context LLM Execution & Instruction Architecture — COMPLETE
-
-Artifacts:
-
-- `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-task-brief.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-4-single-context-llm-execution-evidence-ledger.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-4-chronicler-service-owner-clarification.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-4-chronicler-service-evidence-addendum.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-decision-brief-v2.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-owner-decision.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-resolution-gate.md`
 
 Canonical result:
 
@@ -271,36 +227,60 @@ Canonical result:
 - Narrator is freshly rebound after Chronicler service and Story contention yields before visible-response capacity is threatened;
 - R2.6 owns production-like containment/latency/injection/anti-starvation validation.
 
-R2.4 Diamond/Strong disposition is recorded in its resolution gate.
+Owning R2.4 artifacts remain under `DEV/docs/superpowers/specs/` and `DEV/docs/superpowers/research/` dated `2026-08-24-r2-4-*`.
 
 ---
 
-# 12. R2.5 — Collaboration & Multiplayer Interaction Semantics — IN PROGRESS
+# 12. R2.5 — Collaboration & Multiplayer Interaction Semantics — COMPLETE
 
-Depends on: **R2.1–R2.4** plus inherited Step-5 multiplayer/live/chronology architecture.
+Owning artifacts:
 
-Primary active research: D21, D22-delta, D23, S43, S44, S45, S54; D20/D24 and authenticated binding remain inherited constraints.
+- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-task-brief.md`
+- `DEV/docs/superpowers/research/2026-08-24-r2-5-collaboration-multiplayer-evidence-ledger.md`
+- `DEV/docs/superpowers/research/2026-08-24-r2-5-agency-dramaturg-coordination-evidence-addendum.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-decision-brief-v2.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-owner-decision.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-candidate-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-adversarial-review.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-canonical-spec.md`
+- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-resolution-gate.md`
 
-Scope is the collaboration/input/context delta:
+Canonical result:
 
-- sync/async interaction semantics;
-- mode coordination;
-- input collection/batching;
-- OOC vs diegetic vs actionable separation;
-- absence without automatic PC takeover;
-- join/rejoin/catch-up;
-- recipient-scoped Context Runtime / TurnEnvelope composition;
-- split-party independent scenes/frontiers and causal bridges only where current Step-5 owners are insufficient.
+- multiple participant chats remain independent TurnEnvelopes over one campaign repository/canon;
+- no campaign-global active-player/turn queue;
+- `INDEPENDENT_IMMEDIATE`, `AGENCY_DEPENDENT_COLLECTIVE`, and `RULE_OWNED_ORDERED` are distinct coordination families;
+- another player becomes required only after positive bounded material agency dependency plus applicable currentness/chronology verification;
+- dependent play advances to a maximal safe semantic/visible frontier before waiting;
+- absence is neither consent nor immunity from automatic consequences where no valid choice/reaction exists;
+- external player coordination is allowed but does not authorize another player's PC;
+- bounded collaboration obligations own collection/generation only, not gameplay consequence;
+- contribution reuse is purpose/scope/generation-bound;
+- join/rejoin acquires current route/mode/context/catch-up before mutation;
+- catch-up is recipient-scoped projection and never a read receipt;
+- player-local retained Dramaturg horizons are admitted;
+- a shared Dramaturg horizon is active only in multiplayer and coordinates campaign-level noncanonical preparation across chats;
+- all Dramaturg horizons distinguish source-anchored constraints from provisional direction and remain noncanonical;
+- **history is not written in advance**: preparation has no entitlement to occur, canon invalidates preparation, and no plot-restoration machinery is allowed;
+- shared coherence constrains preparation rather than player/Actor freedom; shared provisional direction remains revisable;
+- local horizons may develop independently while staying compatible with canon/applicable shared planning basis;
+- local/shared preparation is lazily discovered/loaded through R2.3 and never requires a global per-turn planning scan;
+- concurrent shared-horizon updates require current-generation/exact-base fencing and semantic rebase rather than blind merge;
+- Story and Dramaturg planning retain separate retrospective/prospective lifecycles;
+- S14 revisit trigger fired narrowly for multiplayer retained noncanonical planning; no standalone Narrative Dynamics stage was created;
+- R2.6 owns actual-host validation of agency gating, planning containment, concurrent planning update feasibility, lazy-load behavior and multi-chat synchronization limits.
 
-Do not redesign live CAS, campaign routing, chronology ownership or participant authentication without proven insufficiency.
+R2.5 Diamond/Strong disposition is recorded in its canonical spec/resolution gate.
 
 ---
 
-# 13. R2.6 — ChatGPT-Plus Assurance, Evaluation, Security & Degradation — PLANNED
+# 13. R2.6 — ChatGPT-Plus Assurance, Evaluation, Security & Degradation — IN PROGRESS
 
 Depends on concrete R2.1–R2.5 architecture.
 
-Primary active research: S53-delta plus actual obligations produced upstream. D15 remains dormant unless retry evaluation triggers it.
+Primary active research: S53-delta plus actual assurance obligations produced upstream. D15 remains dormant unless retry evaluation specifically triggers it.
+
+R2.6 must establish the supported host envelope empirically/currently rather than assuming product behavior.
 
 Required behavior will be classified as:
 
@@ -311,7 +291,23 @@ DEGRADED MODE
 UNSUPPORTED
 ```
 
-Protocols 1–3 remain regression evidence. R2.6 must also test Chronicler->Narrator containment and first-safe-opportunity anti-starvation under production-like load mixtures.
+Minimum assurance domains now include:
+
+- Protocols 1–3 role-containment regression;
+- Chronicler -> Narrator containment and first-safe-opportunity anti-starvation;
+- Context Runtime packet/degradation behavior under realistic pressure;
+- instruction/data/role-switch injection resistance;
+- Narrator emission fencing;
+- agency-gating false-positive/false-negative behavior;
+- maximal-safe-frontier narration behavior;
+- stale collaboration generation handling;
+- shared/local Dramaturg planning -> Narrator/catch-up leakage containment;
+- shared-horizon concurrent update/rebase feasibility through the supported repository path;
+- lazy planning retrieval and split-party coherence without global scans;
+- host limitations affecting multi-chat/repository synchronization;
+- explicit shared serving/model/safety profile behavior where current product semantics expose a material common profile.
+
+R2.6 begins with a task-specific Source Manifest and current capability/evidence verification. It does not reopen accepted upstream semantics merely because implementation would be easier another way.
 
 ---
 
@@ -330,7 +326,9 @@ R2.7 specifically maps each durable record family to:
 - SQLite hydration/query realization;
 - migrations and validation/tests.
 
-Closure includes cross-round authority/duplicate-owner review, Retry/recovery/concurrency composition, history/continuity/context consistency, Actor/context/role-containment composition, multiplayer recipient/secrecy composition, dormant-trigger preservation, full 82-candidate disposition recheck and stale derivative/status repair.
+R2.7 additionally maps R2.5 collaboration and Dramaturg planning identities/generations, physical roots, current-generation fencing, discovery metadata, retention and schema/runtime/instruction integration.
+
+Closure includes cross-round authority/duplicate-owner review, Retry/recovery/concurrency composition, history/continuity/context consistency, Actor/context/role-containment composition, multiplayer recipient/secrecy/planning composition, dormant-trigger preservation, full candidate-disposition recheck and stale derivative/status repair.
 
 Implementation planning begins only after architecture blockers are closed and machine-realization/test obligations are explicit.
 
@@ -338,7 +336,7 @@ Implementation planning begins only after architecture blockers are closed and m
 
 # 15. Explicitly removed mandatory stages
 
-Round 2 has no mandatory standalone Narrative Dynamics stage. Existing preparation/process/NPC/narration architecture remains in force; extra planning/world-pressure/timeskip/anti-stagnation machinery appears only if a preserved dormant trigger becomes real and existing owners prove insufficient.
+Round 2 has no mandatory standalone Narrative Dynamics stage. Existing preparation/process/NPC/narration architecture remains in force. R2.5 narrow S14 activation is owned inside multiplayer collaboration because that concrete consumer triggered it; it does not activate generic authored-arc/world-pressure/planning machinery.
 
 Round 2 has no generic optional-capability gate. Extensions, spectator/replay, solo forks, spatial sidecars, mixed AI/human controllers, cache-specific optimization and similar ideas remain dormant until their own triggers occur.
 
@@ -352,14 +350,15 @@ R2.1  COMPLETE / ARCHITECTURE CLOSED
 R2.2  COMPLETE / ARCHITECTURE CLOSED
 R2.3  COMPLETE / ARCHITECTURE CLOSED
 R2.4  COMPLETE / ARCHITECTURE CLOSED
-R2.5  IN PROGRESS
-R2.6  PLANNED
+R2.5  COMPLETE / ARCHITECTURE CLOSED
+R2.6  IN PROGRESS
 R2.7  PLANNED
 
-R2.5 next activity:
+R2.6 next activity:
     construct task-specific dependency subgraph / Source Manifest
-    -> extract collaboration/multiplayer delta evidence
-    -> alternatives/recommendation only for material unresolved owner choices
+    -> verify current ChatGPT-Plus/platform capability evidence
+    -> build assurance matrix from concrete R2.1–R2.5 obligations
+    -> alternatives/decision only where a real supported/degraded/unsupported product trade-off remains
 
 Broad implementation: BLOCKED.
 ```
