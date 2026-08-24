@@ -4,13 +4,13 @@
   "title": "HDM world.actor state",
   "type": "object",
   "additionalProperties": false,
-  "required": ["name"],
   "dependentRequired": {
     "hp": ["life_state_id"],
     "life_state_progress": ["life_state_id"]
   },
   "properties": {
     "name": {"$ref": "#/$defs/localizedText"},
+    "concept": {"type": "string", "minLength": 1},
     "roles": {"$ref": "#/$defs/idSet"},
     "location_id": {"$ref": "#/$defs/id"},
     "build": {"$ref": "#/$defs/build"},
@@ -251,6 +251,7 @@
     }
   },
   "examples": [
+    {"concept": "огненный демон", "roles": ["actor.player_character"]},
     {"name": {"ru": "Бдыр"}},
     {
       "name": {"en": "Aria"},
