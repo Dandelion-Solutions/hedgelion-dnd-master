@@ -26,11 +26,11 @@ Owner clarifications:
 
 ```text
 AUDIT_STATUS: IN_PROGRESS
-LAST_CLOSED_DOMAIN: WP-04
-CURRENT_DOMAIN: WP-05
-CURRENT_DOMAIN_TOPIC: Deterministic execution / resolution / RNG / retry
-CURRENT_SLICE: owning execution graph + runtime-schema reverse audit
-NEXT_DOMAIN: WP-06
+LAST_CLOSED_DOMAIN: WP-05
+CURRENT_DOMAIN: WP-06
+CURRENT_DOMAIN_TOPIC: Rules / adjudication / domain-module compatibility
+CURRENT_SLICE: owning rule-domain graph + CORE/domain reverse audit
+NEXT_DOMAIN: WP-07
 OWNER_GATE: NONE
 FINAL_RECONCILIATION: NOT_STARTED
 ```
@@ -43,8 +43,8 @@ FINAL_RECONCILIATION: NOT_STARTED
 | WP-02 | CLOSED | `2026-08-24-r2-7-WP-02-global-authority-duplicate-owner-mini-report.md` |
 | WP-03 | CLOSED | `2026-08-24-r2-7-WP-03-catalog-class-capability-completeness-mini-report.md` |
 | WP-04 | CLOSED | `2026-08-24-r2-7-WP-04-actor-asset-mechanical-state-mini-report.md` |
-| WP-05 | IN PROGRESS | pending |
-| WP-06 | NOT STARTED | — |
+| WP-05 | CLOSED | `2026-08-24-r2-7-WP-05-deterministic-execution-mini-report.md` |
+| WP-06 | IN PROGRESS | pending |
 | WP-07 | NOT STARTED | — |
 | WP-08 | NOT STARTED | — |
 | WP-09 | NOT STARTED | — |
@@ -86,7 +86,6 @@ FINAL_RECONCILIATION: NOT_STARTED
 | WP-02/F09 | WP-19 | final campaign scaffold emits only canonical structures | YES |
 | WP-02/F10 | WP-22 | duplicate-owner / retired-vocabulary regression suite | YES |
 | WP-02/F11 | WP-26 | remove stale CORE/schema-routing wording | YES |
-| WP-03/F02 | WP-05 | verify execution record/protocol vocabularies against complete deterministic pipeline schemas | YES |
 | WP-03/F03 | WP-07 | finalize lore/knowledge/disclosure/message shapes and remove remaining epistemic duplicates | YES |
 | WP-03/F04 | WP-10 | materialize all accepted durable/runtime record families or explicit NO-DURABLE-RECORD dispositions | YES |
 | WP-03/F05 | WP-11 | final whole-project identity policy including independently writable/source-native IDs | YES |
@@ -107,11 +106,27 @@ FINAL_RECONCILIATION: NOT_STARTED
 | WP-04/F08 | WP-22 | execute WP-04 regression/schema validation; test provisional persistence, concept-guided defaults, anti-retrofit and lazy deterministic materialization | YES |
 | WP-04/F09 | WP-24 | complete D&D domain coverage against the initial commitment frontier and reconstructable Actor build | YES |
 | WP-04/F10 | WP-26 | remove stale `pre-live/not true live play`, complete-dossier and legacy PC/NPC/item routing wording | YES |
+| WP-05/F01 | WP-06 | finalize `target_spec`, `area_spec`, `duration_spec`, `cost_spec`, `roll_request`, `signal`, `state_delta` semantics/interfaces and prove all gameplay domain modules route material mechanics through Step-3 execution | YES |
+| WP-05/F02 | WP-10 | assign final durable/native record families/roots for recovery-relevant execution owners; no receipt/segment standalone family | YES |
+| WP-05/F03 | WP-11 | finalize identities/routing for Interaction/Command/Resolution/Continuation/Event and segment/event/firing derived identities | YES |
+| WP-05/F04 | WP-12 | map execution owners/segments/RNG/dirty state to HOT/SQLite and atomic transaction boundaries | YES |
+| WP-05/F05 | WP-13 | map accepted execution frontier to durability/SAVE/publication without commit-every-turn behavior | YES |
+| WP-05/F06 | WP-14 | prove cold recovery of active execution, fixed RNG, Continuation and committed segment frontier with no accepted-mechanics replay; reconcile `RANDOMNESS.md` wording | YES |
+| WP-05/F07 | WP-15 | integrate BoundaryOccurrence, temporal due work and mandatory child/firing identity with chronology/Agenda without generic scheduler authority | YES |
+| WP-05/F08 | WP-16 | bind authenticated participant/session/live currentness into Interaction/execution without transport order or stale live state becoming mechanics authority | YES |
+| WP-05/F09 | WP-22 | execute/extend WP-05 deterministic/schema/retry/RNG/no-replay regression and add new schemas to global maintenance audit | YES |
+| WP-05/F10 | WP-24 | prove normal-turn execution checks are bounded/local and do not introduce unnecessary GitHub/network/extra-LLM round-trips; quantify slow-path triggers/costs | YES |
+| WP-05/F11 | WP-25 | reconcile execution failure codes with whole-project error/degradation taxonomy and finite failure behavior | YES |
+| WP-05/F12 | WP-26 | align CORE prose with fixed-RNG suspension/recovery and final deterministic execution terminology without creating verbose per-turn trace requirements | YES |
+| WP-05/F13 | WP-17 | materialize `value.contribution` only inside collaboration owner contract; do not route ordinary gameplay response through generic contribution queue | YES |
+| WP-05/F14 | WP-13 | materialize `value.publication_manifest` under publication contract, not deterministic execution authority | YES |
+| WP-05/F15 | WP-21/WP-25 | assign `value.validation_issue` to diagnostics/error surfaces without gameplay authority | YES |
 
 Discharged:
 - WP-02/F01 -> WP-03;
 - WP-02/F02 -> WP-04;
-- WP-03/F01 -> WP-04.
+- WP-03/F01 -> WP-04;
+- WP-03/F02 -> WP-05.
 
 ## Closed-domain summary
 
@@ -152,6 +167,19 @@ EARLY_PROVISIONAL_ACTOR_PERSISTENCE: ACCEPTED
 ACTOR_NAME_REQUIRED: NO
 READY_PC: INITIAL_MECHANICAL_COMMITMENT_FRONTIER
 SITUATION_AWARE_LATE_SELECTION: FORBIDDEN
+OWNER_GATE: NONE
+```
+
+### WP-05
+
+```text
+VERDICT: CLOSED / READ-BACK VERIFIED
+STEP3_OWNER_GRAPH: MACHINE-MAPPED
+FIXED_RNG_RETRY: MACHINE-MAPPED
+NO_MECHANICS_REPLAY: PRESERVED
+RUNTIME_SMOOTHNESS: EXPLICIT DOWNSTREAM PERFORMANCE INVARIANT
+EXECUTABLE_CI: DEFERRED TO WP-22; NO FALSE PASS CLAIM
+ARCHITECTURE_BLOCKERS: 0
 OWNER_GATE: NONE
 ```
 
@@ -198,6 +226,19 @@ Do not restore either retired interpretation:
 - `READY_PC before first gameplay scene`;
 - `READY_PC means every possible character field is eagerly filled`.
 
+### Gameplay smoothness / hot-path performance
+
+```text
+NORMAL TURN: bounded/local execution from already-loaded working set
+UNNECESSARY NETWORK/REPOSITORY ROUND-TRIP: FORBIDDEN
+UNNECESSARY EXTRA LLM ADJUDICATION PASS: FORBIDDEN
+BROAD INTEGRITY/REPOSITORY SCAN IN ORDINARY TURN: FORBIDDEN
+SLOW PATH: only for concrete material trigger (missing source, stale shared state, durability edge, conflict/recovery/integrity suspicion, etc.)
+CORRECTNESS EVIDENCE: should be produced as part of typed local execution/atomic commit where possible
+```
+
+WP-24 owns final performance/scale proof; this requirement must not be weakened by persistence/recovery safety machinery.
+
 ## Open owner decisions
 
 `NONE`.
@@ -207,8 +248,8 @@ Do not restore either retired interpretation:
 При новом чате после repository bootstrap прочитать этот файл и продолжить с:
 
 ```text
-CURRENT_DOMAIN: WP-05
-CURRENT_SLICE: owning execution graph + runtime-schema reverse audit
+CURRENT_DOMAIN: WP-06
+CURRENT_SLICE: owning rule-domain graph + CORE/domain reverse audit
 ```
 
-Then read WP-04 report, Step-3 canonical execution owners/schemas, R2.4 no-mechanics-replay law and current runtime execution machine surfaces. Conversation history is not a checkpoint.
+Then read WP-05 report, Step-1/2 rule-element/activity owners, current catalog/mechanical surfaces, advancement definitions and implicated GAME/CORE domain modules. Conversation history is not a checkpoint.
