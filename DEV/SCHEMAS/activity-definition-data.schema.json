@@ -8,13 +8,16 @@
   "properties": {
     "family_id": {"$ref": "#/$defs/machineId"},
     "activation": {"$ref": "#/$defs/activation"},
-    "requirements": {
-      "$ref": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json"
+    "parameters": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/resultName"},
+      "additionalProperties": {"$ref": "https://hedgelion.invalid/schemas/activity-parameter-spec.schema.json"}
     },
-    "targeting": {"$ref": "#/$defs/targeting"},
+    "requirements": {"$ref": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json"},
+    "targeting": {"$ref": "https://hedgelion.invalid/schemas/target-spec.schema.json"},
     "costs": {
       "type": "array",
-      "items": {"$ref": "#/$defs/cost"}
+      "items": {"$ref": "https://hedgelion.invalid/schemas/cost-spec.schema.json"}
     },
     "steps": {
       "type": "array",
@@ -43,37 +46,6 @@
         "amount": {"type": "integer", "minimum": 0}
       }
     },
-    "targeting": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["kind_id"],
-      "properties": {
-        "kind_id": {"$ref": "#/$defs/machineId"},
-        "minimum": {"type": "integer", "minimum": 0},
-        "maximum": {"type": "integer", "minimum": 0},
-        "range_mode_id": {"$ref": "#/$defs/machineId"},
-        "area": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["shape_id"],
-          "properties": {
-            "shape_id": {"$ref": "#/$defs/machineId"},
-            "size": {"type": "number", "exclusiveMinimum": 0},
-            "unit_id": {"$ref": "#/$defs/machineId"}
-          }
-        }
-      }
-    },
-    "cost": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["resource_ref", "amount"],
-      "properties": {
-        "resource_ref": {"$ref": "#/$defs/machineId"},
-        "amount": {"type": "integer", "minimum": 0},
-        "commitment_id": {"$ref": "#/$defs/machineId"}
-      }
-    },
     "resultCondition": {
       "type": "object",
       "additionalProperties": false,
@@ -96,20 +68,15 @@
       "additionalProperties": false,
       "required": ["op"],
       "properties": {
-        "op": {
-          "type": "string",
-          "pattern": "^op\\.[a-z][a-z0-9_]*$"
-        },
+        "op": {"type": "string", "pattern": "^op\\.[a-z][a-z0-9_]*$"},
         "args": {
           "type": "object",
-          "description": "Validated again against the exact schema registered for op."
+          "description": "Validated against the exact registered operation contract selected by op."
         },
         "when": {
           "oneOf": [
             {"$ref": "#/$defs/resultCondition"},
-            {
-              "$ref": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json"
-            }
+            {"$ref": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json"}
           ]
         },
         "export": {"$ref": "#/$defs/resultName"}
@@ -119,20 +86,23 @@
   "examples": [
     {
       "family_id": "activity.attack",
-      "activation": {"economy_id": "resource.action", "amount": 1},
       "targeting": {
         "kind_id": "target.entity",
         "minimum": 1,
         "maximum": 1,
-        "range_mode_id": "range.reachable"
+        "range": {"mode_id": "range.reachable"}
       },
       "steps": [
         {"op": "op.resolve_attack", "export": "attack"},
-        {
-          "op": "op.apply_damage",
-          "when": {"result": "attack.outcome", "in": ["hit", "critical"]}
-        }
+        {"op": "op.apply_damage", "when": {"result": "attack.outcome", "in": ["hit", "critical"]}}
       ]
+    },
+    {
+      "family_id": "activity.test",
+      "parameters": {
+        "dc": {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "minimum": 1}
+      },
+      "steps": [{"op": "op.resolve_check", "args": {"dc_parameter": "dc"}}]
     }
   ]
 }
