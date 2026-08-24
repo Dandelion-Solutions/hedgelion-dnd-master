@@ -53,6 +53,7 @@ def resolution():
         "segments": [{
             "segment_sequence": 1,
             "commit_state": "committed",
+            "resulting_execution_state": "AWAITING_REACTION",
             "event_ids": ["event-00000001"],
             "pending_child_invocations": [],
             "receipt_exports": {"attack_roll": 17},
