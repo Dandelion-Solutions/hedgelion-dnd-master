@@ -1,61 +1,50 @@
 # HDM Catalog — Universal Record Contracts
 
-Status: **AGREED — STEP-5.0 CONTAMINATION RETIREMENTS APPLIED**
+Status: **R2.7 WP-03 CANONICAL CLASS/ENVELOPE CONTRACT**
 
-Machine-readable schemas:
-
-- `SCHEMAS/catalog-definition.schema.json`
-- `SCHEMAS/world-record.schema.json`
-- `SCHEMAS/entity-structures.schema.json`
-- `SCHEMAS/identifier-policies.schema.json`
+Active unreleased catalog generation: `2.0.0`.
 
 Machine-readable contracts:
 
-- `CATALOG/entity-structures.json`
-- `CATALOG/identifier-policies.json`
+- `DEV/CATALOG/core-catalog.json`
+- `DEV/CATALOG/entity-structures.json`
+- `DEV/CATALOG/identifier-policies.json`
+- `DEV/CATALOG/mechanical-surfaces.json`
 
-## 1. Design rule
+Machine-readable schemas:
 
-HDM uses the minimum sufficient record shape. A field belongs in a record only
-when it describes that record and cannot be derived reliably from its kind,
-definition, storage context, event history, or checkpoint.
+- `DEV/SCHEMAS/core-catalog.schema.json`
+- `DEV/SCHEMAS/catalog-definition.schema.json`
+- `DEV/SCHEMAS/world-record.schema.json`
+- `DEV/SCHEMAS/entity-structures.schema.json`
+- `DEV/SCHEMAS/identifier-policies.schema.json`
 
-The common envelopes do not reserve speculative extension points. A concrete
-need must justify a new field or mechanism.
+Exact current class classification is in `CATALOG_INVENTORY.md`.
 
-### 1.1 Canonical class-admission rule
+---
 
-A new domain noun does not automatically justify a new catalog class or record.
-Classify a concept by responsibility and independent identity/lifecycle:
+## 1. Minimum-sufficient class rule
 
-1. If it introduces executable semantics that deterministic runtime must
-   implement, it belongs to a closed engine capability/protocol registry.
-   Campaign/LLM content cannot invent it.
-2. If it is reusable validated rules/content composed from registered semantics,
-   it is a `definition.*` record.
-3. If it is one particular campaign thing/fact with independent identity,
-   lifecycle, provenance, references, or mutable state, it is a `world.*`
-   record.
-4. If it is an independently addressable operational owner needed across
-   execution, retry, suspension, recovery, or audit but is not world canon, it
-   is a `runtime.*` record.
-5. Otherwise, if it exists only inside another owner/request/calculation and has
-   no independent lifecycle/reference requirement, it is an embedded typed
-   protocol/value object.
-6. Facets and tags classify/search. They never create identity or executable
-   semantics by themselves.
+HDM does not create a record merely because a concept has a name or because an implementation can serialize it.
 
-If a previously embedded value later requires independent addressing, retry,
-reference, or lifecycle, promoting it to a record is an explicit architecture
-change. Serialization inside a runtime record does not itself grant independent
-identity.
+Class admission is responsibility/lifecycle driven:
 
-The same rule applies to operational bookkeeping. A dirty-set entry or prepared
-publication snapshot is not a `runtime.*` record merely because the runtime may
-serialize it locally. Step 5.5/5.6 must prove independent identity/lifecycle
-before such a class is admitted.
+1. executable semantics -> closed engine capability/protocol registry;
+2. reusable validated rules/content -> `definition.*`;
+3. particular campaign thing/fact with independent world identity/lifecycle -> `world.*`;
+4. independently addressable non-world operational/evidence owner needed across retry/suspension/recovery/collaboration/disclosure/audit -> `runtime.*`;
+5. otherwise -> embedded typed `value.*`;
+6. Story/Dramaturg retained noncanonical projections remain dedicated projection families outside canonical/current world/runtime record authority unless a later approved design explicitly changes that boundary.
 
-## 2. Reusable definition envelope
+Facets and tags classify/search only. They do not create identity or executable behavior.
+
+A future promotion from embedded value/projection to independent record requires an explicit owner/lifecycle proof.
+
+---
+
+## 2. Definition envelope
+
+Reusable definitions use the universal envelope:
 
 ```json
 {
@@ -65,40 +54,28 @@ before such a class is admitted.
     "en": "Moonlace Brooch",
     "ru": "Брошь лунного кружева"
   },
-  "facets": ["asset.wearable", "asset.decoration", "asset.artifact"],
+  "facets": ["asset.wearable", "asset.artifact"],
   "tags": ["jewelry", "moon"],
   "data": {}
 }
 ```
 
-Required fields:
+Required semantic fields:
 
-| Field | Contract |
-|---|---|
-| `id` | Stable ASCII ID, unique in the resolved definition catalog. |
-| `kind` | Registered `definition.*` kind selecting the schema for `data`. |
-| `name` | English name and, optionally, the campaign/player-language name. |
-| `data` | Kind-specific, schema-validated reusable content. |
+- `id` — stable semantic namespaced definition identity inside one resolved catalog;
+- `kind` — registered `definition.*` kind selecting the kind-specific `data` contract;
+- `name` — English name plus optional campaign/player-language presentation name;
+- `data` — validated kind-specific reusable content.
 
-Optional fields:
+Optional `facets` and `tags` support classification/discovery only.
 
-| Field | Contract |
-|---|---|
-| `facets` | Registered classifiers. They do not grant behavior. |
-| `tags` | Search terms with no executable meaning. |
+Definitions may reference other definitions and embedded registered Rule Elements/Trigger Bindings according to their kind-specific schema. Campaign/LLM content cannot introduce a new executable primitive merely by writing an unknown ID into data.
 
-References to Activities, Effects, Resources, or other definitions belong in
-kind-specific `data`. Embedded Rule Elements and Trigger Bindings remain with
-the definition that grants them. A loader validates references and embedded
-mechanics against the reviewed registries and their dedicated schemas.
-
-Registry IDs describe the engine's accepted vocabulary and are closed to
-ad-hoc LLM invention during play. Reusable definition instances are extensible
-at ruleset and campaign scope when they validate against that vocabulary.
-Adding a new executable primitive requires engine work; adding a sword, bottle,
-or mortar definition does not.
+---
 
 ## 3. World-record envelope
+
+Particular campaign things/facts use the world envelope:
 
 ```json
 {
@@ -109,244 +86,182 @@ or mortar definition does not.
 }
 ```
 
-Required fields:
+Required semantic fields:
 
-| Field | Contract |
-|---|---|
-| `id` | Runtime-allocated identity for this particular record. |
-| `kind` | Registered `world.*` kind selecting the schema for `state`. |
-| `state` | Kind-specific current world state. |
+- stable record `id` according to the selected kind identity policy;
+- registered `world.*` `kind`;
+- kind-specific current `state`.
 
-`definition_id` is optional in the universal envelope only because different
-world kinds have different reusable-definition relationships. Its semantic
-legality is **not** universal.
+`definition_id` is legal only where `DEV/CATALOG/entity-structures.json` declares the world-kind binding as optional or required and the referenced definition kind is admitted.
 
-`CATALOG/entity-structures.json` owns the closed `definition_binding` contract
-for every `world.*` kind:
+No naming convention such as `world.foo -> definition.foo` creates binding automatically.
 
-```text
-mode = forbidden
-    definition_id must be absent
+World state never stores a complete reusable definition copy merely for convenience.
 
-mode = optional
-    definition_id may be absent; if present its definition kind must be allowed
+---
 
-mode = required
-    definition_id must be present and its definition kind must be allowed
-```
+## 4. Runtime-record boundary
 
-The loader/compiler validates both referenced ID existence and referenced
-`definition.*` kind against this mapping. Runtime code must not infer a relation
-from similar names.
+`runtime.*` records are admitted only where non-world operational/evidence state has independent addressability/lifecycle.
+
+Current admitted examples include:
+
+- Interaction/IntentPlan/Command/Procedure/Resolution/Continuation execution owners;
+- accepted message evidence;
+- human disclosure relation;
+- collaboration obligation generation;
+- mechanical/semantic events and trace;
+- checkpoint descriptor;
+- allocation/audit/gap-report records.
+
+A runtime record does not become gameplay/world truth merely because it is durable.
+
+Conversely, a durable operational requirement must not be hidden in chat memory, an index or a generic checkpoint blob when its owning contract requires independent recovery/reference semantics.
+
+---
+
+## 5. Reference rules
+
+1. Owners store semantically named forward references, not embedded copies of other mutable records.
+2. Small immutable/typed protocol values may be embedded.
+3. Persisted backlinks are avoided unless a concrete owner proves them semantically necessary.
+4. Reverse lookup/index structures are derived/rebuildable by default and never become a competing semantic owner.
+5. A durable publication cannot leave a durable reference to an unpublished dependency whose natural owner must survive.
+6. Stable externally referenced IDs are not silently reused or repurposed.
+7. Cycles are validated by kind-specific semantics, not forbidden globally.
+8. Definition binding is machine-validated from the exact resolved catalog context.
+
+---
+
+## 6. Current state versus evidence/projection
+
+HDM distinguishes current semantic ownership from historical evidence and projections.
 
 Examples:
 
 ```text
-world.actor  -> definition.actor_archetype
-world.asset  -> definition.asset
-world.effect -> definition.effect | definition.condition
+world.actor HP                  -> current Actor owner
+MechanicalEvent                 -> committed occurrence evidence
+world.knowledge                 -> current subject proposition stance
+runtime.message                 -> accepted communication evidence
+runtime.disclosure              -> human exposure relation
+Story                           -> noncanonical source-bound projection
+ContextTrace                    -> diagnostic projection
+index/reverse lookup            -> derived routing helper
+checkpoint                      -> optional descriptor/evidence
 ```
 
-The `world.effect` case proves that definition/world compatibility is a declared
-relation, not a `world.foo -> definition.foo` naming convention. Conversely, a
-reusable definition does not require a same-named world kind: a Condition
-application is a `world.effect`, and an Activity can execute without producing a
-persistent Activity instance.
+A historical/derived representation cannot answer a current semantic question unless its owner contract explicitly gives it that responsibility.
 
-Instance-specific roles and classifications are kind-specific state. Facets
-from a reusable definition are not copied into the world record and there is no
-universal facet-merging algorithm.
+---
 
-## 4. Reference rules
+## 7. Identifier contract
 
-1. Records store forward references in semantically named kind-specific fields,
-   for example `owner_actor_id`; there is no universal `references` bag.
-2. A reference stores an ID, not an embedded copy of the target record. Small
-   immutable value objects may still be embedded.
-3. Persisted backlinks are avoided. SQLite may index reverse relationships as
-   a disposable projection.
-4. Durable canon may not depend on an unpublished ephemeral entity. The
-   publication planner promotes the dependency or rejects the publication.
-5. Referenced durable records are retired/tombstoned rather than silently
-   deleted, and persistent IDs are not reused.
-6. Cycles are decided by kind-specific validation. Some relationships and
-   location connections are naturally reciprocal.
-7. `definition_id` compatibility is validated from the machine
-   `definition_binding` table; existence alone is insufficient.
+`DEV/CATALOG/identifier-policies.json` owns the machine identity strategy for each admitted world/runtime record kind.
 
-## 5. Reuse and customization
+The policy set may use more than one strategy because semantic identity requirements differ:
 
-Definitions do not use inheritance or a universal override object.
+- namespaced semantic definition IDs;
+- sequential campaign/session allocation where one allocator genuinely owns the namespace;
+- parent-derived IDs for subordinate values/records;
+- semantic composite keys for relation owners such as `world.knowledge` and `runtime.disclosure`;
+- singleton IDs where one campaign owner is intentional.
 
-- Runtime changes to a particular object belong in kind-specific `state`.
-- A unique object with different permanent properties receives a campaign
-  definition.
-- A new definition is justified when an object needs a reusable mechanical or
-  semantic identity that cannot be expressed as instance state, existing
-  definitions, facets, and tags. A different name or one-off description alone
-  does not require one.
-- Mechanical variations compose registered Activities, Effects, Resources,
-  and embedded Rule Elements/Trigger Bindings.
-- An idea that cannot be represented by registered capabilities produces a
-  catalog-gap report instead of arbitrary executable data.
+Exact source-native identity policy for independently writable/live-created records is finalized by WP-11/WP-16. Catalog 2.0 SHALL not infer fictional order, authority or currentness from numeric/lexical ID order.
 
-HDM does not define a plugin or free-form mechanics-extension contract at this
-stage.
+Minimum numeric widths, where a sequential policy survives, are presentation padding rather than capacity limits.
 
-A reusable source definition does not prescribe the runtime owner of every
-application of that content. For example, a reusable hazard may describe a trap,
-poison, disease, or curse, while a concrete ongoing target-local disease/curse
-may be represented by the ordinary Effect/Condition lifecycle if that is its
-actual independent state owner. Do not create a `world.hazard` merely because a
-`definition.hazard` participated in provenance.
+### 7.1 Composite relation identity
 
-### 5.1 Definition changes are directed transformations
+Current accepted relation-owner semantics include:
 
-`definition_id` may change only when the same world object remains but its
-reusable identity has changed. The permission is declared by a concrete
-Activity step using the registered `op.transform_entity` primitive; it is not a
-global compatibility matrix on asset kinds and is not inferred from facets.
+```text
+world.knowledge
+    key = (knower_id, fact_id)
 
-Each step names or binds:
+runtime.disclosure
+    key = (player_id, fact_id)
+```
 
-- the target world-record ID;
-- the required current `definition_id` (`from_definition_id`);
-- the resulting existing definition (`to_definition_id`).
+A physical implementation may encode a deterministic ID/path from that composite key, but it may not create several independent current rows for the same semantic relation merely because surrogate allocation permits it.
 
-The runtime rejects a stale source, missing target definition, wrong world kind,
-a target definition kind incompatible with that world kind's
-`definition_binding`, or a transition not present in the selected Activity.
-Reversibility requires a second directed step: potion to empty bottle and empty
-bottle to potion are two permissions, not one implicit bidirectional relation.
-The same mechanism covers deploy/stow forms such as travelling mortar to siege
-mortar without implying that arbitrary assets can transform into either.
+### 7.2 No chronology from IDs
 
-Campaign-authored assets remain possible. When a new form is needed, the Master
-may create a validated campaign definition and a campaign Activity that connects
-explicit endpoints using registered capabilities. The Master never mutates
-`definition_id` directly.
+Timeline slots, scene-local sequences, event IDs, Git revisions and allocation counters are never campaign-global fictional chronology merely by being ordered values.
 
-## 6. Version placement
+---
 
-Individual definitions and world records do not repeat schema or content
-versions. Compatible versions are recorded at the level that owns them:
+## 8. Catalog resolution
 
-- engine version;
-- catalog version;
-- campaign/checkpoint format version;
-- checkpoint Git frontier.
+All execution/validation occurs against one logical `ResolvedCatalogContext` as defined by `CATALOG_RESOLUTION.md`.
 
-A loaded campaign is a coherent snapshot. Incompatible updates require an
-explicit campaign migration; HDM does not support mixed per-record schema
-versions inside one runtime state.
+Within one resolved context:
 
-`definition_id` is therefore a plain stable reference. Checkpoint/catalog
-frontiers identify the corresponding definition snapshot.
+```text
+one definition_id -> at most one definition
+```
 
-## 7. Localization
+Loaded sources do not shadow same-ID definitions by layer order.
 
-Stored definition names contain:
+Discovery/ranking returns candidates; deterministic validation against the same accepted context establishes whether an ID/kind/capability is actually legal.
 
-- mandatory English (`en`);
-- at most one optional campaign/player-language value.
+Model memory, fuzzy search rank, storage filename order and remote mutable tags are not catalog authority.
 
-If another player uses a different language, the LLM translates presentation
-text for that response. HDM does not accumulate a translation dictionary in
-every definition. Machine IDs remain language-independent.
+---
 
-The same compact localized-text shape may be reused for kind-specific stored
-descriptions when a description is actually required.
+## 9. Definition customization/evolution
 
-## 8. Metadata placement
+Definitions do not use a universal inheritance/override object.
 
-The following data is deliberately excluded from the universal records:
+- one-off mutable object change -> world state;
+- reusable campaign-specific content -> new validated campaign definition;
+- rules-bearing behavior -> registered capabilities composed in validated definitions;
+- unsupported executable idea -> typed catalog gap rather than arbitrary executable prose.
 
-| Information | Owner |
-|---|---|
-| canonical/local/ephemeral status | runtime and checkpoint frontier |
-| dirty state | HOT working-set bookkeeping owned by the runtime representation selected in Step 5.5; no independent `runtime.dirty_record` is admitted in catalog 1.6.0 |
-| publication preparation/status | frozen transport/publication state selected in Step 5.6; no independent `runtime.publication_batch` is pre-admitted |
-| object creation or change history | mechanical/semantic event log |
-| source and license of a rules package | catalog/package metadata |
-| import and migration history | migration log |
-| Git commit and storage path | checkpoint/transport metadata |
-| reverse references | disposable SQLite indexes |
-| record revision | global state/checkpoint revision until per-record concurrency is justified |
+A definition ID is never silently repurposed to incompatible meaning.
 
-This placement avoids duplicating facts across every object while retaining
-their authoritative source.
+A world record changes `definition_id` only through an explicitly admitted transition/mechanic such as a validated transform operation; similar facets/names do not authorize transformation.
 
-## 8.1 Authority of catalog artifacts
+---
 
-JSON schemas and machine-readable catalog files are authoritative for IDs,
-shape, and validation. Markdown documents are authoritative for semantics,
-ownership boundaries, and rationale. A contradiction is a repository defect;
-runtime must not guess which representation to follow.
+## 10. Catalog generation and pre-release R2.7 rule
 
-Executable mechanics may use only registered typed fields and capabilities.
-`tags`, `details`, prose, and unknown optional fields may guide narration or
-catalog authoring but never become an unvalidated mechanical input. If a value
-starts affecting resolution, it is promoted to one agreed typed field and the
-relevant schema/loader is updated.
+Catalog generation identifies the coherent engine machine-contract set; it is not a per-record version field.
 
-## 9. Identifier boundary
+R2.7 uses `2.0.0` as one **unreleased** clean-slate machine generation because this architecture audit intentionally removes/changes prior catalog IDs and semantics and no real campaign depends on `1.6.0`.
 
-The base envelopes validate IDs as machine strings. The loader additionally
-selects the exact prefix, scope, strategy, and minimum numeric width from
-`CATALOG/identifier-policies.json` according to record kind.
+Until R2.7 final closure, later owning domains may make coordinated changes to the `2.0.0` artifacts without providing a `1.6.0 -> 2.0.0` campaign migration.
 
-Definitions use stable semantic namespaced IDs and no numeric allocator.
-Protocol values are embedded and receive no independent identity by default.
-Serializing a protocol value inside a trace, Continuation, or checkpoint does
-not change that rule: the owning runtime record owns persistence, versioning,
-and lifecycle. If independent addressing becomes necessary, introducing a
-runtime record is an explicit contract change.
+After release, incompatible semantic catalog changes require the future version/evolution contract defined by WP-20; same-version published refreshes may not silently change catalog meaning.
 
-Timeline slots and encounter rounds are ordering/state values, not entity IDs.
-A sparse numeric timeline value MAY order events inside an explicit local/domain
-chronology without becoming a campaign-global chronology authority.
+World records do not repeat catalog version fields solely to reconstruct the resolved definition set.
 
-Persistent world-record IDs and independently numbered runtime records use
-campaign-scoped counters owned by runtime. Allocation and record creation form
-one atomic operation. One `campaign-allocator` object stores only
-`last_allocated` by policy; `next` is derived. The complete allocator is cached
-in HOT/SQLite and included in the durable closure whenever canonical allocation
-changes it.
+---
 
-Minimum widths are presentation padding, chosen from plausible record volumes
-in a 200-hour campaign. They are not limits: after `turn-999999` comes
-`turn-1000000` without migration.
+## 11. Machine/prose authority
 
-### 9.1 Width groups
+Machine-readable catalog/schema files are authoritative for exact IDs and validation shape.
 
-| Width | Kinds |
-|---:|---|
-| 3 | actor group, organization, contract |
-| 4 | actor, location, connection, zone, mission, scene, encounter, hazard, lore fact, maintenance audit, catalog-gap report, session |
-| 5 | asset, relationship |
-| 6 | effect, knowledge, turn/interaction, checkpoint |
-| 7 | message, resolution, semantic event |
-| 8 | mechanical event |
+Canonical Markdown owning contracts are authoritative for semantic responsibility, authority limits and rationale.
 
-Intent plans, commands, continuations, and resolution traces derive identity
-from their owning interaction or resolution. The allocator is a singleton.
-Dirty bookkeeping and publication snapshots have no record-ID policy in catalog
-1.6.0.
+A contradiction between them is a repository defect. Runtime must not guess which one to prefer or synthesize a reconciliation.
 
-Story layer-local IDs follow the canonical Step-4 Story contract and are outside
-this world/runtime allocator table. Literary Chapter boundaries are Story index
-metadata and therefore have no world-record ID policy.
+Nonmechanical fields such as tags/descriptive details may guide retrieval/narration but cannot become mechanics without explicit promotion into a registered typed contract.
 
-### 9.2 Local identity and promotion
+---
 
-Incidental actors, groups, assets, locations, zones, hazards, and effects may
-use session-scoped `local-*` IDs listed in the policy file. They remain HOT and
-need not enter durable canon. Promotion atomically allocates a campaign ID,
-rekeys the record and all local direct references, records lineage, and adds the
-allocator change to the publication closure. The LLM never performs this
-rewrite.
+## 12. R2.7 downstream handoff
 
-Concurrent writers allocate against their pinned frontier. A failed Git HEAD
-comparison leaves all new IDs unpublished; runtime reloads the allocator and
-atomically rekeys only conflicting unpublished records before preparing a new
-batch. Published IDs are never changed or reused.
+WP-03 fixes the universal classification and closed vocabulary. Later R2.7 domains must finish:
+
+- exact Actor/Asset state structures;
+- execution-record schemas;
+- truth/knowledge/disclosure/message schemas;
+- Context Runtime and TurnEnvelope schemas;
+- durable record roots/sharding/indexes;
+- source-native/multiplayer identity policies;
+- HOT/SQLite tables;
+- recovery/checkpoint physical contracts;
+- Story/planning projection schemas.
+
+Those later details may refine coordinated catalog 2.0 artifacts, but they may not violate the class-admission/authority rules above without reopening the applicable accepted architecture.
