@@ -57,6 +57,32 @@ class R27WP04ActorAssetConformanceTests(unittest.TestCase):
         self.assertIn("continuity", actor["expected"])
         self.assertNotIn("world.relationship", structures["world_records"])
 
+    def test_actor_build_stores_only_instance_owned_reconstruction_choices(self):
+        actor = self.load_json("DEV/SCHEMAS/world-actor-state.schema.json")
+        build = actor["$defs"]["build"]
+        self.assertEqual(
+            set(build["properties"]),
+            {"species_id", "background_id", "class_progression", "choice_bindings", "spellcasting"},
+        )
+        self.assertIn("class_progression", build["required"])
+        self.assertNotIn("level", build["properties"])
+        self.assertNotIn("class_id", build["properties"])
+        self.assertNotIn("subclass_id", build["properties"])
+
+        progression = actor["$defs"]["classProgression"]
+        self.assertTrue(progression["minItems"] >= 1)
+        entry = actor["$defs"]["classProgressionEntry"]
+        self.assertEqual(set(entry["required"]), {"class_id", "level"})
+
+        spellcasting = actor["$defs"]["spellcastingState"]
+        self.assertEqual(
+            set(spellcasting["properties"]),
+            {"known_spell_ids", "prepared_spell_ids", "spellbook_spell_ids"},
+        )
+        serialized = json.dumps(build)
+        for derived in ("armor_class", "attack_bonus", "save_bonus", "proficiency_bonus", "derived"):
+            self.assertNotIn(derived, serialized)
+
     def test_asset_state_keeps_single_placement_and_no_epistemic_aliases(self):
         asset = self.load_json("DEV/SCHEMAS/world-asset-state.schema.json")
         props = asset["properties"]
