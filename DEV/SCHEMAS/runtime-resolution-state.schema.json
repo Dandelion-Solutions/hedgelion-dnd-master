@@ -5,15 +5,27 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "root_command_id", "activity_id", "catalog_context_fingerprint", "status",
+    "root_command_id", "activity_id", "actor_id", "catalog_context_fingerprint", "status",
     "next_segment_sequence", "invocation_facts", "fixed_rng_results",
-    "prior_step_exports", "child_resolution_ids"
+    "prior_step_exports", "child_resolution_ids", "segments"
   ],
   "properties": {
     "root_command_id": {"type": "string", "minLength": 1},
     "initiating_command_id": {"type": "string", "minLength": 1},
     "causal_invocation_key": {"type": "string", "minLength": 1},
-    "activity_id": {"type": "string", "minLength": 1},
+    "activity_id": {"$ref": "#/$defs/id"},
+    "actor_id": {"$ref": "#/$defs/id"},
+    "source_id": {"$ref": "#/$defs/id"},
+    "target_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "parameter_bindings": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/id"},
+      "additionalProperties": {"$ref": "#/$defs/bindingValue"}
+    },
     "catalog_context_fingerprint": {"type": "string", "minLength": 1},
     "procedure_id": {"type": "string", "minLength": 1},
     "status": {
@@ -32,7 +44,7 @@
     },
     "fixed_rng_results": {
       "type": "array",
-      "items": {"$ref": "#/$defs/scalar"}
+      "items": {"$ref": "https://hedgelion.invalid/schemas/roll-result.schema.json"}
     },
     "prior_step_exports": {
       "type": "object",
@@ -43,6 +55,10 @@
       "uniqueItems": true,
       "items": {"type": "string", "minLength": 1}
     },
+    "segments": {
+      "type": "array",
+      "items": {"$ref": "https://hedgelion.invalid/schemas/execution-segment.schema.json"}
+    },
     "continuation_id": {"type": "string", "minLength": 1},
     "trace_id": {"type": "string", "minLength": 1},
     "details": {"type": "object"}
@@ -52,20 +68,30 @@
     {"required": ["causal_invocation_key"]}
   ],
   "$defs": {
-    "scalar": {"type": ["string", "number", "boolean"]}
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "scalar": {"type": ["string", "number", "boolean"]},
+    "bindingValue": {
+      "oneOf": [
+        {"$ref": "#/$defs/scalar"},
+        {"type": "array", "items": {"$ref": "#/$defs/scalar"}}
+      ]
+    }
   },
   "examples": [
     {
       "root_command_id": "turn-000042-cmd-01",
       "initiating_command_id": "turn-000042-cmd-01",
       "activity_id": "activity.attack.basic",
+      "actor_id": "actor-0001",
+      "target_ids": ["actor-0002"],
       "catalog_context_fingerprint": "ctx",
       "status": "RUNNING",
       "next_segment_sequence": 1,
       "invocation_facts": [],
       "fixed_rng_results": [],
       "prior_step_exports": {},
-      "child_resolution_ids": []
+      "child_resolution_ids": [],
+      "segments": []
     }
   ]
 }
