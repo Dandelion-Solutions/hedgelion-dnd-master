@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/activity-parameter-spec.schema.json",
+  "title": "HDM Activity invocation parameter declaration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source_class", "value_type"],
+  "properties": {
+    "source_class": {
+      "enum": ["INVOCATION_ADJUDICATED", "PLAYER_CHOICE", "ENGINE_BOUND"]
+    },
+    "value_type": {
+      "enum": ["boolean", "integer", "number", "machine_id", "string"]
+    },
+    "cardinality": {"enum": ["single", "many"]},
+    "minimum": {"type": "number"},
+    "maximum": {"type": "number"},
+    "allowed_values": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": ["string", "number", "boolean"]}
+    },
+    "allowed_definition_kinds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^definition\\.[a-z][a-z0-9_]*$"}
+    }
+  },
+  "description": "Runtime validates ActionRequest parameter_bindings against the selected Activity declaration before command acceptance. INVOCATION_ADJUDICATED values are fixed causal inputs, not world state. ENGINE_BOUND values are supplied/revalidated by deterministic code rather than trusted from the LLM.",
+  "examples": [
+    {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "minimum": 1},
+    {"source_class": "PLAYER_CHOICE", "value_type": "machine_id", "allowed_values": ["approach.careful", "approach.fast"]}
+  ]
+}
