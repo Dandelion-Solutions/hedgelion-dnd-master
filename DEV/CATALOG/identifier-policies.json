@@ -1,5 +1,5 @@
 {
-  "catalog_version": "1.6.0",
+  "catalog_version": "2.0.0",
   "schema_version": 1,
   "world": {
     "world.actor": {"strategy": "sequential", "prefix": "actor", "minimum_width": 4, "scope": "campaign", "local": {"prefix": "local-actor", "minimum_width": 3, "scope": "session"}},
@@ -9,7 +9,6 @@
     "world.connection": {"strategy": "sequential", "prefix": "connection", "minimum_width": 4, "scope": "campaign"},
     "world.zone": {"strategy": "sequential", "prefix": "zone", "minimum_width": 4, "scope": "campaign", "local": {"prefix": "local-zone", "minimum_width": 3, "scope": "session"}},
     "world.organization": {"strategy": "sequential", "prefix": "organization", "minimum_width": 3, "scope": "campaign"},
-    "world.relationship": {"strategy": "sequential", "prefix": "relationship", "minimum_width": 5, "scope": "campaign"},
     "world.contract": {"strategy": "sequential", "prefix": "contract", "minimum_width": 3, "scope": "campaign"},
     "world.mission": {"strategy": "sequential", "prefix": "mission", "minimum_width": 4, "scope": "campaign"},
     "world.scene": {"strategy": "sequential", "prefix": "scene", "minimum_width": 4, "scope": "campaign"},
@@ -17,7 +16,7 @@
     "world.hazard": {"strategy": "sequential", "prefix": "hazard", "minimum_width": 4, "scope": "campaign", "local": {"prefix": "local-hazard", "minimum_width": 3, "scope": "session"}},
     "world.effect": {"strategy": "sequential", "prefix": "effect", "minimum_width": 6, "scope": "campaign", "local": {"prefix": "local-effect", "minimum_width": 5, "scope": "session"}},
     "world.lore_fact": {"strategy": "sequential", "prefix": "fact", "minimum_width": 4, "scope": "campaign"},
-    "world.knowledge": {"strategy": "sequential", "prefix": "knowledge", "minimum_width": 6, "scope": "campaign"}
+    "world.knowledge": {"strategy": "composite_key", "fields": ["knower_id", "fact_id"], "scope": "campaign"}
   },
   "runtime": {
     "runtime.session": {"strategy": "sequential", "prefix": "session", "minimum_width": 4, "scope": "campaign"},
@@ -31,6 +30,8 @@
     "runtime.mechanical_event": {"strategy": "sequential", "prefix": "event", "minimum_width": 8, "scope": "campaign"},
     "runtime.semantic_event": {"strategy": "sequential", "prefix": "semantic", "minimum_width": 7, "scope": "campaign"},
     "runtime.resolution_trace": {"strategy": "derived", "parent_kind": "runtime.resolution", "suffix": "trace"},
+    "runtime.disclosure": {"strategy": "composite_key", "fields": ["player_id", "fact_id"], "scope": "campaign"},
+    "runtime.collaboration_obligation": {"strategy": "sequential", "prefix": "collaboration", "minimum_width": 6, "scope": "campaign"},
     "runtime.checkpoint": {"strategy": "sequential", "prefix": "rev", "minimum_width": 6, "scope": "campaign"},
     "runtime.id_allocator": {"strategy": "singleton", "id": "campaign-allocator"},
     "runtime.maintenance_audit": {"strategy": "sequential", "prefix": "audit", "minimum_width": 4, "scope": "campaign"},
