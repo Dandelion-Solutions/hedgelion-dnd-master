@@ -2,14 +2,45 @@ import json
 import unittest
 from pathlib import Path
 
+from jsonschema import Draft202012Validator
+from referencing import Registry, Resource
+
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
 
 
 class R27WP05ExecutionConformanceTests(unittest.TestCase):
+    WP05_SCHEMAS = (
+        "action-request.schema.json",
+        "transition-request.schema.json",
+        "roll-result.schema.json",
+        "runtime-interaction-state.schema.json",
+        "runtime-intent-plan-state.schema.json",
+        "runtime-command-state.schema.json",
+        "runtime-procedure-state.schema.json",
+        "runtime-resolution-state.schema.json",
+        "runtime-continuation-state.schema.json",
+        "runtime-mechanical-event-state.schema.json",
+        "runtime-resolution-trace-state.schema.json",
+        "execution-segment.schema.json",
+        "pending-child-invocation.schema.json",
+        "resolution-receipt.schema.json",
+        "boundary-occurrence.schema.json",
+        "invocation-fact.schema.json",
+        "intent-clause.schema.json",
+    )
+
     def load(self, name):
         return json.loads((SCHEMAS / name).read_text(encoding="utf-8"))
+
+    def registry(self):
+        result = Registry()
+        for path in SCHEMAS.glob("*.json"):
+            data = json.loads(path.read_text(encoding="utf-8"))
+            if "$id" in data:
+                result = result.with_resource(data["$id"], Resource.from_contents(data))
+        return result
 
     def test_independent_step3_owners_have_machine_schemas(self):
         for name in (
@@ -23,6 +54,16 @@ class R27WP05ExecutionConformanceTests(unittest.TestCase):
             "runtime-resolution-trace-state.schema.json",
         ):
             self.assertTrue((SCHEMAS / name).is_file(), name)
+
+    def test_wp05_schema_examples_are_draft_2020_12_valid(self):
+        registry = self.registry()
+        for name in self.WP05_SCHEMAS:
+            schema = self.load(name)
+            Draft202012Validator.check_schema(schema)
+            validator = Draft202012Validator(schema, registry=registry)
+            for index, example in enumerate(schema.get("examples", [])):
+                with self.subTest(schema=name, example=index):
+                    validator.validate(example)
 
     def test_action_and_transition_requests_are_embedded_protocol_schemas(self):
         for name in ("action-request.schema.json", "transition-request.schema.json"):
