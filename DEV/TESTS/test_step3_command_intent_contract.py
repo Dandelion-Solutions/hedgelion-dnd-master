@@ -46,6 +46,35 @@ def action_command():
     }
 
 
+def transition_command(disposition="command.accepted"):
+    return {
+        "interaction_id": "turn-1",
+        "intent_plan_id": "turn-1-plan",
+        "clause_id": "c1",
+        "command_kind": "transition",
+        "catalog_context_fingerprint": "ctx",
+        "input_fingerprint": "fp",
+        "disposition": disposition,
+        "invocation_facts": [],
+        "transition_request": {
+            "transition_kind": "transition.location_change",
+            "payload": {"target_id": "actor-1", "destination_id": "location-2"},
+        },
+        "pending_child_invocations": [],
+    }
+
+
+def committed_transition_segment():
+    return {
+        "segment_sequence": 1,
+        "commit_state": "committed",
+        "event_ids": ["event-00000001"],
+        "pending_child_invocations": [],
+        "receipt_exports": {},
+        "affected_revision_refs": ["actor-1@2"],
+    }
+
+
 class Step3CommandIntentContractTest(unittest.TestCase):
     def test_intent_plan_allows_partial_completion_without_transaction_authority(self):
         value = {
@@ -90,50 +119,30 @@ class Step3CommandIntentContractTest(unittest.TestCase):
         with self.assertRaises(ValidationError):
             validate("runtime-command-state.schema.json", invalid_action)
 
-        transition = {
-            "interaction_id": "turn-1",
-            "intent_plan_id": "turn-1-plan",
-            "clause_id": "c1",
-            "command_kind": "transition",
-            "catalog_context_fingerprint": "ctx",
-            "input_fingerprint": "fp",
-            "disposition": "command.accepted",
-            "invocation_facts": [],
-            "transition_request": {
-                "transition_kind": "transition.location_change",
-                "payload": {"target_id": "actor-1", "destination_id": "location-2"},
-            },
-            "pending_child_invocations": [],
-        }
+        transition = transition_command()
         validate("runtime-command-state.schema.json", transition)
         invalid_transition = dict(transition, resolution_cursor="effect")
         with self.assertRaises(ValidationError):
             validate("runtime-command-state.schema.json", invalid_transition)
 
     def test_settled_direct_transition_keeps_committed_segment_evidence_on_command(self):
-        transition = {
-            "interaction_id": "turn-1",
-            "intent_plan_id": "turn-1-plan",
-            "clause_id": "c1",
-            "command_kind": "transition",
-            "catalog_context_fingerprint": "ctx",
-            "input_fingerprint": "fp",
-            "disposition": "command.settled",
-            "invocation_facts": [],
-            "transition_request": {
-                "transition_kind": "transition.location_change",
-                "payload": {"target_id": "actor-1", "destination_id": "location-2"},
-            },
-            "direct_transition_segments": [{
-                "segment_sequence": 1,
-                "commit_state": "committed",
-                "event_ids": ["event-00000001"],
-                "pending_child_invocations": [],
-                "receipt_exports": {},
-                "affected_revision_refs": ["actor-1@2"],
-            }],
-            "pending_child_invocations": [],
-        }
+        transition = transition_command("command.settled")
+        transition["direct_transition_segments"] = [committed_transition_segment()]
+        validate("runtime-command-state.schema.json", transition)
+
+    def test_post_commit_direct_transition_with_pending_child_keeps_segment_evidence(self):
+        transition = transition_command()
+        transition["pending_child_invocations"] = [{
+            "firing_key": "event-00000001:binding-1",
+            "root_command_id": "turn-1-cmd-01",
+            "activity_id": "activity.followup",
+            "trigger_ref": "event-00000001",
+            "reason": "mandatory_followup",
+        }]
+        with self.assertRaises(ValidationError):
+            validate("runtime-command-state.schema.json", transition)
+
+        transition["direct_transition_segments"] = [committed_transition_segment()]
         validate("runtime-command-state.schema.json", transition)
 
 
