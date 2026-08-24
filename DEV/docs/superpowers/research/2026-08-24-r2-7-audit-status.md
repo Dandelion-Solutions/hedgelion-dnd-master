@@ -21,7 +21,8 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-01
 CURRENT_DOMAIN: WP-02
 CURRENT_DOMAIN_TOPIC: Global authority / duplicate-owner audit
-CURRENT_SLICE: canonical owner inventory + authority taxonomy
+CURRENT_SLICE: derived/helper/non-owner taxonomy + current machine reverse inventory
+LAST_COMPLETED_SLICE: canonical owner inventory + authority taxonomy
 NEXT_DOMAIN: WP-03
 OWNER_GATE: NONE
 FINAL_RECONCILIATION: NOT_STARTED
@@ -32,7 +33,7 @@ FINAL_RECONCILIATION: NOT_STARTED
 | Domain | Status | Mini-report |
 |---|---|---|
 | WP-01 | CLOSED | `2026-08-24-r2-7-WP-01-product-deployment-repository-boundary-mini-report.md` |
-| WP-02 | IN PROGRESS | pending |
+| WP-02 | IN PROGRESS | `2026-08-24-r2-7-WP-02-global-authority-duplicate-owner-mini-report.md` |
 | WP-03 | NOT STARTED | — |
 | WP-04 | NOT STARTED | — |
 | WP-05 | NOT STARTED | — |
@@ -70,6 +71,17 @@ FINAL_RECONCILIATION: NOT_STARTED
 | WP-01/F05 | WP-25 | verify missing/denied/failing Connector behavior is finite and never activates alternate transport probing | YES |
 | WP-01/F06 | WP-26 | repair public governance/document routing: general experiment->Lab rule in AGENTS and stale active `default/first` transport wording | YES |
 
+## Completed slices in active domain
+
+### WP-02 / Slice A
+
+```text
+SLICE: canonical owner inventory + authority taxonomy
+RESULT: COMPLETE / VERIFIED
+OWNER_LEVEL_CONFLICTS: 0
+ARTIFACT: 2026-08-24-r2-7-global-semantic-owner-matrix.md
+```
+
 ## Closed-domain summary
 
 ### WP-01
@@ -94,7 +106,7 @@ Main gaps: weak `default/first` Connector wording; Plus omitted from user-facing
 
 ```text
 CURRENT_DOMAIN: WP-02
-CURRENT_SLICE: canonical owner inventory + authority taxonomy
+CURRENT_SLICE: derived/helper/non-owner taxonomy + current machine reverse inventory
 ```
 
-Затем читать whole-project Source Manifest и только task-specific owning sources текущего slice. Conversation history не является checkpoint.
+Затем прочитать global semantic-owner matrix, WP-02 mini-report и whole-project Source Manifest; после этого инспектировать только task-specific current machine/runtime sources текущего slice. Conversation history не является checkpoint.
