@@ -48,6 +48,15 @@ Do not stop at this map, an executive summary, a roadmap heading or a derivative
 index. These are routing/compression surfaces. Correctness-sensitive conclusions
 must return to the actual owning artifacts and relevant evidence.
 
+**HARD CRITIC ROUTE:** both the Step-1 Task-Brief critic and the Step-6
+adversarial/candidate critic must start from this map, reconstruct the complete
+task-specific direct-and-indirect dependency subgraph, and inspect the actual
+owners, accepted/superseding decisions, schemas, tests and consumers that can
+change the conclusion. A module-local critique is incomplete. A discovered
+conflict must be resolved by conforming the current block to established
+architecture or, when a real material trade-off exists, by presenting an
+explicit superseding decision to the human architect.
+
 ### 1.2 Source-role legend
 
 When building a task-specific Source Manifest, distinguish these roles:
@@ -453,8 +462,12 @@ INSTALL bootstrap + Project Instructions
     -> GAME/CAMPAIGN template + GAME/SCHEMA
     -> PERSISTENCE
 
-engine update
+engine/ruleset update
     -> ENGINE_UPDATES
+    -> RULESET_PACKAGE_IDENTITY / CATALOG_RESOLUTION
+    -> ACCESS_CONTROL creator authority versus non-creator compatible use
+    -> runtime package provenance + embedded resolved ruleset lock
+    -> campaign MANIFEST engine.current + sibling ruleset.current
     -> DEV release/version policy
     -> GAME/MIGRATIONS if persistent format changes
 ```
@@ -531,7 +544,9 @@ For substantive repository work:
    relevant directory/tree and local indexes have also been checked;
 9. before a roadmap/specification/coverage claim, run the repository-evidence and
    synthesis completeness gate in the design process;
-10. update this map when a structural/responsibility change would make future
+10. for either architecture critic, record the direct and indirect owners/routes
+    checked and reject module-local review as incomplete;
+11. update this map when a structural/responsibility change would make future
     discovery materially misleading.
 
 A file move/addition/deletion does not automatically require a prose entry when

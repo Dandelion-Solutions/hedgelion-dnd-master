@@ -693,6 +693,36 @@ risk. Fundamental, cross-cutting, hard-to-reverse or poorly understood work
 requires substantially more attention to the research prompt than a narrow,
 well-bounded investigation.
 
+### 10.2 Mandatory whole-project Task-Brief Critic
+
+For deep-design work, the Task Brief quality gate SHALL include a distinct critic
+pass before Step 2. The critic is not allowed to evaluate only the proposed
+module or the files named by the draft brief.
+
+**MANDATORY WHOLE-PROJECT RULE:** use `DEV/PROJECT_MAP.md` to construct the
+task-specific dependency subgraph; locate and read the actual canonical owners,
+accepted/superseding decisions, neighboring modules, schemas, tests, runtime
+consumers and historical derivation that can change the framing. Follow direct
+and indirect dependencies until the evidence is sufficient to detect an
+incorrect boundary, an already-settled rule, a duplicate owner or a conflict
+with accepted architecture.
+
+The critic must ask:
+
+- Which existing owner already governs each claimed responsibility or authority?
+- Which upstream/downstream or sibling contracts can constrain the task?
+- Is the brief treating an existing project rule as an unanswered question?
+- Would the proposed scope optimize an isolated component while breaking an
+  established cross-system invariant?
+- If a conflict exists, is the task expected to change the current module, or
+  does it expose a material trade-off that requires an explicit proposal to
+  supersede accepted architecture?
+
+A zero-result keyword search, remembered topology or the brief's initial source
+list is insufficient. Blocking/significant omissions are repaired in the brief
+before Step 2. The critic record must identify the dependency routes and owners
+checked, not merely state that a whole-project review occurred.
+
 ---
 
 ## 11. Step 2 — Research & Architecture Draft
@@ -1060,6 +1090,20 @@ Use the stance:
 
 Where tools/process allow, prefer a reviewer that approaches the candidate with
 a fresh context rather than merely continuing the same line of reasoning.
+
+**MANDATORY WHOLE-PROJECT RULE:** the adversarial critic SHALL independently
+reconstruct the relevant dependency subgraph through `DEV/PROJECT_MAP.md`,
+then inspect the actual upstream, downstream and sibling owners/consumers whose
+contracts can constrain the candidate. It must search for already accepted
+rules, hidden cross-owner conflicts, duplicate authority and consequences
+outside the candidate's local module. Reviewing only the candidate artifact,
+its stated Source Manifest or its immediate directory is invalid.
+
+When a conflict is found, the critic must determine whether the candidate should
+conform to existing architecture or whether the evidence exposes a real material
+trade-off requiring an explicit superseding human decision. It must not silently
+overwrite accepted architecture, invent a new authority, or escalate a question
+that an existing canonical owner already answers.
 
 Review only categories relevant to the design, including as applicable:
 

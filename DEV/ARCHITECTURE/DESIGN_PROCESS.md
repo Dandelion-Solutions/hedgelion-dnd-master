@@ -100,6 +100,29 @@ tests and dated design artifacts may be covered by path/pattern rather than by a
 manual entry for every member; the goal is reliable navigation and dependency
 discovery, not a second copy of repository contents.
 
+### Mandatory whole-project scope for both critics
+
+**THIS IS A HARD HDM PROCESS GATE.** Both the Step-1 Task-Brief critic and the
+Step-6 adversarial/candidate critic must use the current `DEV/PROJECT_MAP.md`
+to reconstruct everything directly or indirectly relevant to the active block.
+They must locate actual canonical owners, accepted and superseding decisions,
+neighboring modules, schemas, tests, runtime consumers and cross-stage
+dependencies rather than reviewing the block as an isolated component.
+
+Each critic must explicitly test whether:
+
+- an existing owner already settles a purported open question;
+- the proposed block duplicates, contradicts or leaks another owner's authority;
+- indirect consumers or invariants change the conclusion;
+- a detected conflict should be repaired in the current block; or
+- changing accepted architecture is materially justified and therefore requires
+  a decision-ready superseding proposal to the human architect.
+
+A critic that reads only the brief/candidate and its explicitly listed files has
+not completed the gate. Blocking/significant dependency or owner omissions must
+be resolved before proceeding. Keeping `DEV/PROJECT_MAP.md` accurate enough
+for this discovery is part of the same process obligation.
+
 ## HDM repository-evidence and synthesis gate
 
 HDM architecture work must satisfy the generic repository-evidence completeness
