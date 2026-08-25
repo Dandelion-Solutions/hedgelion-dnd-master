@@ -214,17 +214,22 @@ Compatible additive package changes need not force per-record migration.
 Incompatible semantic changes are handled at package/campaign migration scope,
 consistent with HDM's coherent-snapshot model.
 
-## 11. Deferred package implementation
+## 11. S6D package-identity closure
 
-Step 6 owns:
+S6D-01 has closed the package/snapshot identity architecture in:
 
-- concrete ruleset-package manifest schema;
-- package namespace declarations;
-- package version/content identity fields;
-- ruleset fork/derivation or equivalent house-rule packaging if justified;
-- compatibility/migration tooling;
-- full SRD seed packaging and catalog-gap closure.
+- `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md`
 
-This deferral is safe only because this document fixes the minimum semantics now:
-plain IDs are stable inside one resolved context, duplicates do not shadow, and
-durable restoration must identify a compatible package/frontier set.
+That owner defines content-addressed `RulesetPackageSnapshot` values, exact
+dependency-closed `ResolvedRulesetSnapshotSet` identity, natural-owner
+campaign/execution projections, adoption boundaries and reconstruction laws.
+
+Remaining downstream ownership is explicit:
+
+- S6D-02 supplies actual ruleset package instances, namespace claims and seed content;
+- S6D-11 supplies manifest/lock schemas, builder/loader realization and RED→GREEN verification;
+- R2.7 WP-20 owns future incompatible released-campaign migration policy.
+
+A derived/profile package remains dormant unless a proven reusable same-ID
+replacement consumer requires it. House Rules `realization_refs` do not create
+such a package implicitly.

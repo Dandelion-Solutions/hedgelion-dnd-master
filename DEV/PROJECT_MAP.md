@@ -111,7 +111,7 @@ leak into one another merely for development convenience.
 | Host/platform feasibility / LLM orchestration | `DEV/docs/superpowers/research/2026-08-22-platform-feasibility-comparative-research.md` | Step-4 single-context amendment, Round-1 closure/rebaseline decision, role-context protocols, R2.4/R2.7 roadmap scope; former Step-6 feasibility notes are historical inputs only |
 | Role-context validation evidence | `DEV/docs/superpowers/research/2026-08-23-role-context-validation-protocol-1-sequential-containment.md`, `2026-08-23-role-context-validation-protocol-2-collapsed-multi-role.md`, `2026-08-23-role-context-validation-protocol-3-reasoning-budget.md` | Step-4 canonical spec + single-context amendment, Round-2 roadmap, `GAME/CORE/AI_REASONING.md`, `NPC.md`, `NARRATIVE.md`, `PREP.md`; former Step-6 isolation notes are derivation/provenance only |
 | Integrated canonical architecture lookup (Round 1) | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | owning canonical specs/model contracts, Step-4 single-context amendment, Round-1 closure/rebaseline decision, current `NEAR_TERM_ROADMAP.md` |
-| Catalog/class ownership | `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `CATALOG_INVENTORY.md`, `ENTITY_STRUCTURES.md`, `CATALOG_RESOLUTION.md`, `DEV/CATALOG/` | `DEV/SCHEMAS/`, Actor/Asset/Activity/Rule Element models, catalog tests |
+| Catalog/class ownership | `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `CATALOG_INVENTORY.md`, `ENTITY_STRUCTURES.md`, `CATALOG_RESOLUTION.md`, `RULESET_PACKAGE_IDENTITY.md`, `DEV/CATALOG/` | `DEV/SCHEMAS/`, runtime/release package provenance, campaign ruleset adoption, Resolution/Continuation, Actor/Asset/Activity/Rule Element models, catalog tests |
 | Deterministic mechanics/execution | `DEV/ARCHITECTURE/ACTIVITY_MODEL.md`, `RULE_ELEMENT_MODEL.md`, accepted Step-2/Step-3 specs | `GAME/CORE/RUNTIME.md`, `MECHANICS_INTEGRITY.md`, `RANDOMNESS.md`, runtime/value schemas/tests |
 | Campaign House Rules / rulings / policy adoption | `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`, `GAME/CAMPAIGN/RULES/HOUSE_RULES.md`, `GAME/CAMPAIGN/RULES/HOUSE_RULES.yaml` | `DEV/ARCHITECTURE/ACCESS_CONTROL.md`, `GAME/CORE/ADJUDICATION.md`, R2.3 Context Runtime, Step-5.6/5.7/5.8, `GAME/SCHEMA/house_rules_policy.schema.yaml`, `GAME/SCHEMA/player.schema.yaml`, adjudicated-input/player-policy tests |
 | Persistence / durability / recovery | `GAME/CORE/STORAGE.md`, `PERSISTENCE.md`, `DURABILITY_GUARD.md`, `SAVE_CONTRACT.md`, `SESSION.md`, `INTEGRITY.md` | `RUNTIME.md`, `RANDOMNESS.md`, `LIVE_SCENE.md`, `MULTIPLAYER.md`, checkpoint/current/session schemas, Step-5 specs, `MAINTENANCE_COMMANDS.md` |
@@ -171,6 +171,7 @@ Current durable architecture/navigation documents:
 - `CATALOG_CONTRACTS.md` — universal definition/world/runtime class-admission and record-envelope contracts.
 - `CATALOG_INVENTORY.md` — reviewed class inventory/classification; machine IDs live in `DEV/CATALOG/core-catalog.json`.
 - `CATALOG_RESOLUTION.md` — deterministic `ResolvedCatalogContext`, definition-ID uniqueness and catalog evolution/resolution rules.
+- `RULESET_PACKAGE_IDENTITY.md` — S6D-01 content-addressed ruleset package snapshots, exact resolved-set identity, campaign/execution projections and compatible reconstruction boundary.
 - `CRITICAL_ARCHITECTURE_AUDIT.md` — completed Step-1 audit history/findings and dispositions.
 - `ENTITY_STRUCTURES.md` — minimum/expected field structures and definition-binding inventory for catalog/world records.
 - `MAINTENANCE_COMMANDS.md` — internal, intentionally player-undocumented operator/support command contract proposal (`HDM_EXPORT_CURRENT_LOG`, `HDM_EXPORT_CHECKPOINT_LOG`, `HDM_RESET_LAST_CHECKPOINT`).
@@ -251,6 +252,7 @@ is the only consumer.
 - `specs/2026-08-23-round-1-step-6-closure-round-2-rebaseline-owner-decision.md` — owner-approved transition decision: former Step 6 is closed as a separate stage and useful unresolved scope is reallocated into Round 2 without claiming old Step-6 exit criteria were completed.
 - `specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md` — explicit human owner decision closing House-Rules responsibility/adoption authority gate.
 - `specs/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md` — repaired House-Rules eight-step closure record and stop-before-S6D handoff.
+- `specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-canonicalization.md` — S6D-01 eight-step closure record and stop-before-S6D-02 handoff.
 - `specs/` — other dated architecture/design, review, decision and canonicalization-chain artifacts. Prefer current roadmap/owner decisions and the actual owning canonical sources over filename recency alone.
 - `plans/` — implementation plans produced after approved designs. They are execution guidance, not architecture authority when a later canonical spec supersedes assumptions.
 

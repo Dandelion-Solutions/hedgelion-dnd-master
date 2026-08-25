@@ -1,10 +1,10 @@
-# HDM Canonical Architecture Index — Steps 1–5
+# HDM Canonical Architecture Index — Steps 1–5 and Later Canonical Additions
 
 Status: **DERIVATIVE / NON-NORMATIVE NAVIGATION AND INTEGRATION INDEX**
 
-Date: 2026-08-21
+Date: 2026-08-25
 
-Architecture state: **STEPS 1–5 CLOSED; STEP 6 NEXT / NOT STARTED**
+Architecture state: **STEPS 1–5 CLOSED; ROUND 2 ACTIVE; S6D-01 CLOSED; S6D-02 NEXT**
 
 ---
 
@@ -95,7 +95,8 @@ General repository discovery:
 | 5.12 | CLOSED | **VALIDATED EMISSION-COMMIT / SOFT OUTBOUND DISCLOSURE / NO BASELINE DELIVERY-ACK SUBSYSTEM / RECIPIENT-SCOPED** | Step-5.12 + owner decision |
 | 5.13 | CLOSED | **OWNER-GATED RETIREMENT / CLOSED BLOCKERS / COMPLETE TYPED PROTECTION / CURRENT-BASIS PROOF / SURVIVOR-BEFORE-REMOVAL** | Step-5.13 |
 | 5.14 | CLOSED | **FULL RECOVERY & CONCURRENCY ADVERSARIAL REVIEW — 0 UNRESOLVED STEP-5 BLOCKERS** | Step-5.14 canonical final |
-| 6 | NEXT / NOT STARTED | physical LLM/deployment feasibility, topology, migration/seed/final architecture closure | roadmap + Step-6 feasibility inputs |
+| Former Step 6 | CLOSED / REBASELINED | physical-host findings reallocated into Round 2; old stage is not active | Round-1 closure / Round-2 rebaseline owner decision |
+| S6D-01 | COMPLETE / ARCHITECTURE CLOSED | content-addressed ruleset package snapshots + exact resolved-set identity + owner-local context projections | `RULESET_PACKAGE_IDENTITY.md`; S6D-01 canonicalization |
 
 ---
 
