@@ -17,18 +17,61 @@
     "maximum": {"type": "number"},
     "allowed_values": {
       "type": "array",
+      "minItems": 1,
       "uniqueItems": true,
       "items": {"type": ["string", "number", "boolean"]}
     },
     "allowed_definition_kinds": {
       "type": "array",
+      "minItems": 1,
       "uniqueItems": true,
       "items": {"type": "string", "pattern": "^definition\\.[a-z][a-z0-9_]*$"}
     }
   },
-  "description": "Runtime validates ActionRequest parameter_bindings against the selected Activity declaration before command acceptance. INVOCATION_ADJUDICATED values are fixed causal inputs, not world state. ENGINE_BOUND values are supplied/revalidated by deterministic code rather than trusted from the LLM.",
+  "allOf": [
+    {
+      "if": {
+        "properties": {"source_class": {"const": "INVOCATION_ADJUDICATED"}},
+        "required": ["source_class"]
+      },
+      "then": {
+        "properties": {
+          "value_type": {"enum": ["boolean", "integer", "number", "machine_id"]},
+          "cardinality": {"const": "single"}
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {"value_type": {"enum": ["integer", "number"]}},
+              "required": ["value_type"]
+            },
+            "then": {
+              "anyOf": [
+                {"required": ["allowed_values"]},
+                {"required": ["minimum", "maximum"]}
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {"value_type": {"const": "machine_id"}},
+              "required": ["value_type"]
+            },
+            "then": {
+              "anyOf": [
+                {"required": ["allowed_values"]},
+                {"required": ["allowed_definition_kinds"]}
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "description": "Runtime validates ActionRequest parameter_bindings against the selected Activity declaration before command acceptance. INVOCATION_ADJUDICATED values are fixed causal inputs, not world state. Their initial richer contract is deliberately bounded: boolean; numeric with a finite allowed set or both lower and upper bounds; or machine_id selected from a finite allowed set or a deterministically admitted bounded candidate set of declared definition kinds. Free-form adjudicated strings and multi-valued adjudicated parameters are not admitted. ENGINE_BOUND values are supplied/revalidated by deterministic code rather than trusted from the LLM.",
   "examples": [
-    {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "minimum": 1},
+    {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "minimum": 1, "maximum": 30},
+    {"source_class": "INVOCATION_ADJUDICATED", "value_type": "machine_id", "allowed_values": ["approach.careful", "approach.fast"]},
     {"source_class": "PLAYER_CHOICE", "value_type": "machine_id", "allowed_values": ["approach.careful", "approach.fast"]}
   ]
 }

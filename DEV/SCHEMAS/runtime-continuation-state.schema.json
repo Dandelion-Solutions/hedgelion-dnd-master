@@ -26,7 +26,7 @@
     "parameter_bindings": {
       "type": "object",
       "propertyNames": {"$ref": "#/$defs/id"},
-      "additionalProperties": {"$ref": "#/$defs/bindingValue"}
+      "additionalProperties": {"$ref": "https://hedgelion.invalid/schemas/activity-parameter-binding.schema.json"}
     },
     "catalog_context_fingerprint": {"type": "string", "minLength": 1},
     "procedure_id": {"type": "string", "minLength": 1},
@@ -80,14 +80,9 @@
   },
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
-    "scalar": {"type": ["string", "number", "boolean"]},
-    "bindingValue": {
-      "oneOf": [
-        {"$ref": "#/$defs/scalar"},
-        {"type": "array", "items": {"$ref": "#/$defs/scalar"}}
-      ]
-    }
+    "scalar": {"type": ["string", "number", "boolean"]}
   },
+  "description": "A suspended Resolution preserves accepted parameter bindings exactly as causal inputs. INVOCATION_ADJUDICATED bindings therefore retain provenance, decision-eligibility basis, current rules-context basis and applicable policy references across suspension/resume; later policy publication does not rewrite this stored accepted binding.",
   "examples": [
     {
       "generation": 1,

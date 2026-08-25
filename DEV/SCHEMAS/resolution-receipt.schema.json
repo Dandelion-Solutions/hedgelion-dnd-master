@@ -70,7 +70,13 @@
         "failure.order_adjudication_required",
         "failure.execution_limit",
         "failure.invocation_fact_missing",
-        "failure.invocation_fact_unauthorized"
+        "failure.invocation_fact_unauthorized",
+        "failure.adjudication_input_missing",
+        "failure.adjudication_input_unauthorized",
+        "failure.adjudication_input_invalid",
+        "failure.adjudication_context_stale",
+        "failure.policy_conflict",
+        "failure.policy_realization_gap"
       ]
     }
   },

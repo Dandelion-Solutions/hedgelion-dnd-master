@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/activity-parameter-binding.schema.json",
+  "title": "HDM Activity invocation parameter binding",
+  "oneOf": [
+    {"$ref": "#/$defs/scalar"},
+    {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/scalar"}
+    },
+    {"$ref": "#/$defs/adjudicatedBinding"}
+  ],
+  "$defs": {
+    "scalar": {
+      "type": ["string", "number", "boolean"]
+    },
+    "adjudicatedBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_class",
+        "value",
+        "provenance_ref",
+        "eligibility_basis_fingerprint",
+        "rules_context_fingerprint",
+        "policy_basis_refs"
+      ],
+      "properties": {
+        "source_class": {"const": "INVOCATION_ADJUDICATED"},
+        "value": {"$ref": "#/$defs/scalar"},
+        "provenance_ref": {"type": "string", "minLength": 1},
+        "eligibility_basis_fingerprint": {"type": "string", "minLength": 1},
+        "rules_context_fingerprint": {"type": "string", "minLength": 1},
+        "policy_basis_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "candidate_set_fingerprint": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "description": "Raw scalar/array bindings remain available for non-adjudicated parameter classes. An INVOCATION_ADJUDICATED Activity parameter is accepted only as the enriched object form after deterministic validation against the selected Activity parameter declaration. The full accepted object participates in RuntimeCommand input identity and is preserved by Resolution/Continuation. This value object is causal execution evidence, not world state or policy authority.",
+  "examples": [
+    {
+      "source_class": "INVOCATION_ADJUDICATED",
+      "value": 15,
+      "provenance_ref": "interaction-000001:adjudication:dc",
+      "eligibility_basis_fingerprint": "sha256:eligibility-A",
+      "rules_context_fingerprint": "sha256:rules-A",
+      "policy_basis_refs": ["house-rule.social-leverage@rev-3"]
+    }
+  ]
+}

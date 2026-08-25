@@ -17,25 +17,33 @@
     "parameter_bindings": {
       "type": "object",
       "propertyNames": {"$ref": "#/$defs/id"},
-      "additionalProperties": {"$ref": "#/$defs/bindingValue"}
+      "additionalProperties": {"$ref": "https://hedgelion.invalid/schemas/activity-parameter-binding.schema.json"}
     }
   },
   "$defs": {
-    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
-    "scalar": {"type": ["string", "number", "boolean"]},
-    "bindingValue": {
-      "oneOf": [
-        {"$ref": "#/$defs/scalar"},
-        {"type": "array", "items": {"$ref": "#/$defs/scalar"}}
-      ]
-    }
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
   },
+  "description": "The deterministic binder validates each parameter binding against the selected Activity parameter declaration. INVOCATION_ADJUDICATED parameters require the enriched binding object from activity-parameter-binding.schema.json; raw scalars/arrays are not sufficient evidence for that source class. PLAYER_CHOICE and ENGINE_BOUND semantics remain declaration-owned and cannot be relabeled as adjudicated input by the request.",
   "examples": [
     {
       "activity_id": "srd.activity.longsword_attack",
       "actor_id": "actor-0001",
       "source_id": "asset-00001",
       "target_ids": ["actor-0014"]
+    },
+    {
+      "activity_id": "activity.test.generic",
+      "actor_id": "actor-0001",
+      "parameter_bindings": {
+        "dc": {
+          "source_class": "INVOCATION_ADJUDICATED",
+          "value": 15,
+          "provenance_ref": "interaction-000001:adjudication:dc",
+          "eligibility_basis_fingerprint": "sha256:eligibility-A",
+          "rules_context_fingerprint": "sha256:rules-A",
+          "policy_basis_refs": []
+        }
+      }
     }
   ]
 }
