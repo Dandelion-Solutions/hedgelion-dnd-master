@@ -6,6 +6,8 @@
 
 Структурный companion `RULES/HOUSE_RULES.yaml` хранит только machine-readable identity/currentness/adoption/routing evidence для записей этого файла. Он не дублирует нормативный текст и не является вторым rules engine. Точная revision конкретной policy определяется стабильным `policy_id` вместе с exact campaign revision/HEAD, который одновременно выбирает этот Markdown и companion sidecar.
 
+Каждая durable normative House Rule/Ruling, предназначенная быть current campaign policy, должна иметь **ровно одну** current sidecar entry с уникальным stable `policy_id` и resolvable `source_anchor` на соответствующий нормативный раздел. Unindexed normative prose не получает durable campaign-policy authority. Дублирующиеся IDs/anchors, sidecar без нормативного раздела или нормативный policy-раздел без sidecar admission — malformed policy/integrity defect на затронутой policy boundary.
+
 ## Назначение
 
 House Rules / Rulings — это persistent campaign-level gameplay policy для Master/LLM. Они могут определять:
@@ -18,6 +20,8 @@ House Rules / Rulings — это persistent campaign-level gameplay policy дл�
 Они **не** являются вторым механическим движком и сами не владеют RNG, HP/resources/effects/assets, canonical state mutation, Event commit, truth/knowledge/disclosure или repository transport.
 
 Механически значимый результат всегда проходит через существующий deterministic validation/execution path. Если требуемой механики нет, это catalog/policy-realization gap; prose не получает право напрямую менять состояние.
+
+Если формализуемая часть policy имеет typed realization, sidecar использует явные `realization_refs` на intended current capabilities. Эти refs задают проверяемую policy↔realization связь, но **не** дают capability execution authority по факту упоминания: catalog/currentness/validation остаются обязательными. Механически значимая policy без допустимой требуемой realization либо с missing/stale/incompatible `realization_refs` останавливается на finite `POLICY_REALIZATION_GAP`/mismatch boundary. Контекстная LLM-native policy может законно не иметь `realization_refs` бессрочно.
 
 Одноразовый локальный Master ruling не становится permanent campaign policy автоматически. Его принятый игровой результат при этом может стать обычным durable canonical state через соответствующих owners.
 
@@ -35,9 +39,11 @@ Unbound или inactive PLAYER этого права не имеет. Отдел
 
 В singleplayer действует существующая creator-only граница публикации gameplay campaign state.
 
+Interpretive policy может влиять на fiction-dependent adjudication — например на leverage, applicability или допустимый bounded DC input — не становясь mechanical override, пока она не меняет саму принятую baseline mechanical semantics.
+
 ### `MECHANICAL_OVERRIDE_POLICY`
 
-Campaign creator по умолчанию вправе принимать deliberate House Rule, меняющий baseline mechanical semantics — например action cost, threshold, activation или consequence policy.
+Campaign creator по умолчанию вправе принимать deliberate House Rule, меняющий baseline mechanical semantics — например action cost, threshold, activation, resource/capability или consequence policy.
 
 `creator` определяется существующим campaign ownership contract: это автор первого campaign-specific initialization commit. Creator identity не переносится в `MANIFEST` этим House-Rules contract.
 
@@ -49,11 +55,15 @@ AND
 PLAYER.policy_authority.mechanical_override_policy == true
 ```
 
-Grant выдаёт или отзывает только campaign creator. Отсутствующее/null значение означает `false` для non-creator.
+Grant выдаёт или отзывает только campaign creator. Отсутствующее/null значение означает `false` для non-creator. Grant/revoke — creator-only HARD access-control persistence boundary; revocation действует prospectively и stale prepared policy write обязан revalidate authorization.
+
+Authority class определяется фактическим semantic effect policy, а не ярлыком автора. Если правило изменяет adopted baseline mechanical semantics, требуется `MECHANICAL_OVERRIDE_POLICY`. Если одна неразделимая policy содержит и interpretive, и mechanical-override часть, применяется более сильная authority. Материальная неясность классификации не разрешается через более слабый класс.
 
 Ни creator authority, ни grant не позволяют обходить deterministic realization, information eligibility, RNG, state/native owners, currentness или publication/CAS.
 
 `RULES/HOUSE_RULES.yaml` записывает для policy её authority class, adoption basis и stable PLAYER attribution там, где PLAYER существует. Наличие текста или sidecar-записи само по себе не доказывает авторизацию: она проверяется существующим identity/access-control contract перед публикацией.
+
+Позднейшая деактивация adopter-а или отзыв mechanical grant не делает ранее корректно опубликованную policy ретроактивно невалидной. Они влияют на будущие adoption/revision writes; текущая policy меняется только через законную supersession/retirement/new revision.
 
 ## Information и instruction boundary
 
