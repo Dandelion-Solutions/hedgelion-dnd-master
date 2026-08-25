@@ -35,6 +35,8 @@ Track at minimum when relevant:
 
 Do not rely on prose memory for mechanical state.
 
+Procedure-local operational state — initiative order, round/turn position, active participant, action and movement budgets, and local procedure time — is owned by the active `runtime.procedure`. `world.encounter` owns durable encounter identity, participants and status and may reference that procedure; it is not a duplicate timing or action-budget owner.
+
 If a needed participant value is undefined, establish the minimum sufficient rules-consistent mechanic BEFORE the first result that depends on it. Once materially used, keep it stable unless a causal game effect changes it.
 
 Maintain the compact current combat resolution trace required by `MECHANICS_INTEGRITY.md` so recent rolls/calculations can be audited without reconstructing them after the fact.

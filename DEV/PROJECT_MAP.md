@@ -179,6 +179,7 @@ Current durable architecture/navigation documents:
 - `CANONICAL_ARCHITECTURE_INDEX.md` — non-normative Round-1 cross-stage canonical locator/ownership/invariant map. Where its sequencing/status text is stale, current roadmap and later owner decisions/amendments win.
 - `CATALOG_CONTRACTS.md` — universal definition/world/runtime class-admission and record-envelope contracts.
 - `CATALOG_INVENTORY.md` — reviewed class inventory/classification; machine IDs live in `DEV/CATALOG/core-catalog.json`.
+- `CATALOG_ADMISSION.md` — S6D-02 admission/realization laws, evidence hierarchy, package admission-plan boundary and downstream closure routing.
 - `CATALOG_RESOLUTION.md` — deterministic `ResolvedCatalogContext`, definition-ID uniqueness and catalog evolution/resolution rules.
 - `RULESET_PACKAGE_IDENTITY.md` — S6D-01 content-addressed ruleset package snapshots, exact resolved-set identity, campaign/execution projections and compatible reconstruction boundary.
 - `CRITICAL_ARCHITECTURE_AUDIT.md` — completed Step-1 audit history/findings and dispositions.
@@ -198,6 +199,7 @@ Historical/derivation/status surfaces that must not override newer accepted cont
 Machine-readable current catalog surfaces; coordinated versions move together:
 
 - `core-catalog.json` — closed class/capability/protocol vocabulary and IDs.
+- `catalog-admission-ledger.json` — exact bidirectional admission/realization trace for every core-catalog family/ID pair; not runtime authority.
 - `entity-structures.json` — machine field/definition-binding structure inventory.
 - `identifier-policies.json` — stable identity/allocation policies including campaign allocator rules.
 - `mechanical-surfaces.json` — registered deterministic mechanical selectors/operations/surfaces; its `INVOCATION_ADJUDICATED` context-fact channel remains boolean-only.
@@ -209,7 +211,7 @@ explain semantics; these JSON files are machine contracts, not prose summaries.
 
 Development-only JSON Schemas for machine contracts. Major families include:
 
-- catalog/envelope schemas (`catalog-definition`, `core-catalog`, `entity-structures`, identifier policies, world-record);
+- catalog/envelope schemas (`catalog-definition`, `core-catalog`, `catalog-admission-ledger`, `entity-structures`, identifier policies, world-record);
 - domain-definition/state schemas (Actor, Asset, Resource, Effect, Condition and related Step-2 structures);
 - execution/runtime schemas (command, intent plan, resolution, procedure, continuation and related Step-3 records);
 - embedded value/protocol schemas (duration, temporal binding, execution segment, pending child, invocation facts, receipts, boundary occurrences and similar values);
@@ -262,8 +264,10 @@ is the only consumer.
 - `specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md` — explicit human owner decision closing House-Rules responsibility/adoption authority gate.
 - `specs/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md` — repaired House-Rules eight-step closure record and stop-before-S6D handoff.
 - `specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-canonicalization.md` — S6D-01 eight-step closure record and stop-before-S6D-02 handoff.
-- `specs/2026-08-25-s6d-02-catalog-admission-gap-closure-task-brief.md` — current S6D-02 Step-1 framing: two-axis admission/realization ledger, registry strata, evidence hierarchy and stop-before-Step-2 boundary.
+- `specs/2026-08-25-s6d-02-catalog-admission-gap-closure-task-brief.md` — S6D-02 Step-1 framing: two-axis admission/realization ledger, registry strata, evidence hierarchy and stop-before-Step-2 boundary.
 - `specs/2026-08-25-s6d-02-catalog-admission-gap-closure-brief-critic.md` — mandatory whole-project Step-1 critique and repair record; zero unresolved blocking/significant findings.
+- `research/2026-08-25-s6d-02-catalog-admission-gap-closure-research-architecture-draft.md` and the matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-02 Steps 2–8 evidence chain.
+- `DEV/TESTS/test_s6d_02_catalog_admission_contract.py` — exact ledger/core equality, legal state and package-plan boundary checks.
 - `specs/` — other dated architecture/design, review, decision and canonicalization-chain artifacts. Prefer current roadmap/owner decisions and the actual owning canonical sources over filename recency alone.
 - `plans/` — implementation plans produced after approved designs. They are execution guidance, not architecture authority when a later canonical spec supersedes assumptions.
 

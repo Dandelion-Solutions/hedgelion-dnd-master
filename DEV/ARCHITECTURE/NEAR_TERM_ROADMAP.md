@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-02 STEP 1 COMPLETE / STEP 2 NEXT / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-02 COMPLETE / S6D-03 STEP 1 NEXT / R2.7 PAUSED**
 
 Date: 2026-08-25
 
@@ -93,7 +93,7 @@ Operating rules:
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **IN PROGRESS — S6D-01 COMPLETE / S6D-02 STEP 1 COMPLETE / STEP 2 NEXT** | residual rules/seed/catalog debt |
+| S6D | **IN PROGRESS — S6D-01 AND S6D-02 COMPLETE / S6D-03 STEP 1 NEXT** | residual rules/seed/catalog debt |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
 
 ---
@@ -106,8 +106,8 @@ R2.0..R2.6 COMPLETE
     -> R2.7 WP-06 PARTIAL / PAUSED
     -> HOUSE RULES STEPS 1-8 COMPLETE / REPAIRED CLOSURE
     -> S6D-01 Steps 1-8                            [COMPLETE / ARCHITECTURE CLOSED]
-    -> S6D-02 Step 1                               [COMPLETE / BRIEF + WHOLE-PROJECT CRITIC]
-    -> S6D-02 Step 2                               [NEXT / NOT STARTED]
+    -> S6D-02 Steps 1-8                            [COMPLETE / CANONICAL]
+    -> S6D-03 Step 1                               [NEXT / NOT STARTED]
     -> ... remaining S6D domains full eight-step loops ...
     -> S6D integrated closure
     -> R2.7 WP-06 RESUME
@@ -116,7 +116,7 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-02 Step 1 is complete after whole-project brief critique and repair. Do not execute Step 2 without an explicit continuation.
+**Current stop.** S6D-02 completed its full eight-step loop with whole-project adversarial review and canonicalization. S6D-03 Step 1 is next and has not started.
 
 ---
 
@@ -182,7 +182,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-02 Step 1 complete / Step 2 next
+## 7. S6D — S6D-02 complete / S6D-03 Step 1 next
 
 S6D decomposition/evidence inputs remain:
 
@@ -190,7 +190,7 @@ S6D decomposition/evidence inputs remain:
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
-The plan is a decomposition/coverage index only. S6D-01 completed its full eight-step loop and is canonically owned by `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md`. S6D-02 Step 1 is complete through its published Task Brief and whole-project brief critic; Step 2 research is next and not started.
+The plan is a decomposition/coverage index only. S6D-01 completed its full eight-step loop and is canonically owned by `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md`. S6D-02 also completed its full loop and is canonically owned by `DEV/ARCHITECTURE/CATALOG_ADMISSION.md`; its machine ledger classifies all 571 IDs. S6D-03 Step 1 is next and has not started.
 
 ---
 
@@ -216,12 +216,12 @@ R2.7 WP-06 resumes only after S6D integrated closure.
 HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
 S6D: IN PROGRESS
 S6D_COMPLETED_DOMAIN: S6D-01 / STEPS 1-8 / ARCHITECTURE CLOSED
-S6D_NEXT_DOMAIN: S6D-02
-S6D_ACTIVE_DOMAIN: S6D-02
+S6D_NEXT_DOMAIN: S6D-03
+S6D_ACTIVE_DOMAIN: NONE
 S6D_COMPLETED_STAGE: STEP 1 / TASK BRIEF + WHOLE-PROJECT CRITIC
 S6D_ACTIVE_STAGE: NONE
-S6D_NEXT_STAGE: STEP 2 / RESEARCH & ARCHITECTURE DRAFT
+S6D_NEXT_STAGE: STEP 1 / ARCHITECTURE TASK BRIEF
 R2_7_WP06: PAUSED
 ```
 
-Next action requires explicit owner continuation into **S6D-02 Step 2 — Research & Architecture Draft**. Do not execute Step 2 from this roadmap update alone.
+Next action requires explicit owner continuation into **S6D-03 Step 1 — Architecture Task Brief**. Do not start S6D-03 from this roadmap update alone.

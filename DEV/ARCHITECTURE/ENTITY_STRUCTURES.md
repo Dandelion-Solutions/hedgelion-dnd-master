@@ -154,11 +154,10 @@ The loader validates the relation; it is not inferred from names.
 | `world.connection` | `from_location_id`, `to_location_id` | `direction`, `traversal_activity_id`, `status`, `requirements` | forbidden |
 | `world.zone` | `location_id`, `name` | `participant_ids`, `effect_ids`, `geometry`, `status` | forbidden |
 | `world.organization` | `name` | `member_ids`, `leader_ids`, `location_ids`, `resources`, `status` | optional `definition.organization_archetype` |
-| `world.relationship` | `subject_id`, `object_id`, `relation` | `attitude`, `strength`, `status` | forbidden |
 | `world.contract` | `party_ids`, `terms`, `status` | `obligations`, `deadlines`, `collateral_asset_ids`, `breach_consequences` | optional `definition.contract_template` |
 | `world.mission` | `name`, `status` | `stages`, `participant_ids`, `location_ids`, `reward_ids`, `dependencies` | optional `definition.mission_template` |
 | `world.scene` | `name` | `location_id`, `participant_ids`, `focal_entity_ids`, `status` | forbidden |
-| `world.encounter` | `participant_ids`, `status` | `scene_id`, `initiative`, `round`, `active_participant_id`, `local_time` | forbidden |
+| `world.encounter` | `participant_ids`, `status` | `scene_id`, `active_procedure_id` | forbidden |
 | `world.hazard` | `status` | `location_id`, `zone_id`, `detected_by_actor_ids`, `effect_ids` | optional `definition.hazard` |
 | `world.effect` | `target_id`, `lifecycle` | `source_id`, `rules_origin_id`, `parameters`, `support_effect_id`, `temporal_binding`, `scheduled_trigger_state` | required `definition.effect` or `definition.condition` |
 | `world.lore_fact` | `statement`, `truth_status` | `subject_ids`, `chronology`, `importance` | forbidden |

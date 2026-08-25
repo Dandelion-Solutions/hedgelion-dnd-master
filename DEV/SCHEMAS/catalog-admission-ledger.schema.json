@@ -1,0 +1,697 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.com/schemas/catalog-admission-ledger.schema.json",
+  "title": "HDM Catalog Admission Ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_name",
+    "schema_version",
+    "catalog_generation",
+    "source_registry",
+    "decision_owner",
+    "laws",
+    "ruleset_package_admission",
+    "retired_reference_audit",
+    "registry_census",
+    "family_policies",
+    "entries"
+  ],
+  "properties": {
+    "schema_name": {
+      "const": "hdm_catalog_admission_ledger"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "catalog_generation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_registry": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "laws": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "admission_dispositions",
+        "realization_states",
+        "no_placeholder_state",
+        "integrated_complete_or_remove_scope",
+        "active_admitted_definition",
+        "embedded_nonowner_definition"
+      ],
+      "properties": {
+        "admission_dispositions": {
+          "type": "array",
+          "const": [
+            "ACTIVE_ADMITTED",
+            "EMBEDDED_NONOWNER",
+            "DORMANT_NONSELECTABLE",
+            "STALE_REMOVE"
+          ]
+        },
+        "realization_states": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "no_placeholder_state": {
+          "const": true
+        },
+        "integrated_complete_or_remove_scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "active_admitted_definition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "embedded_nonowner_definition": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "ruleset_package_admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_kind",
+        "package_id",
+        "status",
+        "selectable_now",
+        "activation_gate",
+        "compatibility_id",
+        "catalog_generation",
+        "namespace_claims",
+        "semantic_content_root",
+        "current_content_disposition",
+        "physical_realization_owner",
+        "failure_mapping"
+      ],
+      "properties": {
+        "package_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+        },
+        "status": {
+          "const": "RESERVED_TOPOLOGY_AND_NAMESPACES"
+        },
+        "selectable_now": {
+          "const": false
+        },
+        "activation_gate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "compatibility_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "catalog_generation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "namespace_claims": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*\\.\\*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "semantic_content_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_content_disposition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "failure_mapping": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "top_level_code",
+            "typed_reason_owner",
+            "required_reasons",
+            "unsupported_capability_surface"
+          ],
+          "properties": {
+            "top_level_code": {
+              "const": "failure.catalog_context_incompatible"
+            },
+            "typed_reason_owner": {
+              "const": "S6D-11"
+            },
+            "required_reasons": {
+              "const": [
+                "invalid_manifest",
+                "content_mismatch",
+                "missing_dependency",
+                "ambiguous_dependency",
+                "dependency_cycle",
+                "package_id_ambiguity",
+                "namespace_conflict",
+                "engine_incompatibility",
+                "catalog_incompatibility",
+                "resolved_set_mismatch",
+                "unreconstructable_context"
+              ]
+            },
+            "unsupported_capability_surface": {
+              "const": "runtime.catalog_gap_report"
+            }
+          }
+        },
+        "artifact_kind": {
+          "const": "NON_RUNTIME_ADMISSION_PLAN"
+        },
+        "physical_realization_owner": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "retired_reference_audit": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "disposition",
+          "remaining_allowed_mentions"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "disposition": {
+            "type": "string"
+          },
+          "remaining_allowed_mentions": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "registry_census": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "registry_family",
+          "count",
+          "scope_stratum",
+          "admitted",
+          "embedded_nonowner",
+          "dormant_nonselectable",
+          "stale_remove"
+        ],
+        "properties": {
+          "registry_family": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "scope_stratum": {
+            "enum": [
+              "S6D_PRIMARY",
+              "ENGINE_ENUM_CONSISTENCY",
+              "INHERITED_ROUND2",
+              "MIXED_S6D_PRIMARY_AND_INHERITED_ROUND2"
+            ]
+          },
+          "admitted": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "embedded_nonowner": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "dormant_nonselectable": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "stale_remove": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "family_policies": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/familyPolicy"
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    }
+  },
+  "$defs": {
+    "familyPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_stratum",
+        "admission_disposition",
+        "admission_evidence",
+        "semantic_owner",
+        "machine_destination_family",
+        "consumer_or_dependency",
+        "identity_namespace_owner",
+        "default_realization_state",
+        "default_downstream_owner",
+        "notes"
+      ],
+      "properties": {
+        "scope_stratum": {
+          "enum": [
+            "S6D_PRIMARY",
+            "ENGINE_ENUM_CONSISTENCY",
+            "INHERITED_ROUND2"
+          ]
+        },
+        "admission_disposition": {
+          "enum": [
+            "ACTIVE_ADMITTED",
+            "EMBEDDED_NONOWNER",
+            "DORMANT_NONSELECTABLE",
+            "STALE_REMOVE"
+          ]
+        },
+        "admission_evidence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "semantic_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "machine_destination_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "consumer_or_dependency": {
+          "type": "string",
+          "minLength": 1
+        },
+        "identity_namespace_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "default_realization_state": {
+          "enum": [
+            "COMPLETE",
+            "INHERITED_ACTIVE",
+            "DOWNSTREAM_S6D_03",
+            "DOWNSTREAM_S6D_04",
+            "DOWNSTREAM_S6D_05",
+            "DOWNSTREAM_S6D_06",
+            "DOWNSTREAM_S6D_07",
+            "DOWNSTREAM_S6D_08",
+            "DOWNSTREAM_S6D_09"
+          ]
+        },
+        "default_downstream_owner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_family",
+        "id",
+        "profile",
+        "scope_stratum",
+        "admission_disposition",
+        "evidence_class",
+        "evidence_citation",
+        "semantic_owner",
+        "consumer_or_dependency",
+        "realization_state",
+        "downstream_owner"
+      ],
+      "properties": {
+        "registry_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "profile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope_stratum": {
+          "enum": [
+            "S6D_PRIMARY",
+            "ENGINE_ENUM_CONSISTENCY",
+            "INHERITED_ROUND2"
+          ]
+        },
+        "realization_state": {
+          "enum": [
+            "COMPLETE",
+            "INHERITED_ACTIVE",
+            "DOWNSTREAM_S6D_03",
+            "DOWNSTREAM_S6D_04",
+            "DOWNSTREAM_S6D_05",
+            "DOWNSTREAM_S6D_06",
+            "DOWNSTREAM_S6D_07",
+            "DOWNSTREAM_S6D_08",
+            "DOWNSTREAM_S6D_09"
+          ]
+        },
+        "downstream_owner": {
+          "enum": [
+            null,
+            "S6D-09",
+            "S6D-08",
+            "S6D-07",
+            "S6D-05",
+            "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md",
+            "DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+            "DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-history-canonical-spec.md",
+            "S6D-06",
+            "S6D-03",
+            "S6D-04",
+            "DEV/ARCHITECTURE/CATALOG_INVENTORY.md + accepted Step-4/R2.3 information owners",
+            "DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-canonical-spec.md",
+            "DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-canonical-spec.md",
+            "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+            "DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-history-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md",
+            "DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-canonical-spec.md",
+            "DEV/docs/superpowers/specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-canonical-spec.md",
+            "DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-canonical-spec.md",
+            "DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md",
+            "DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md"
+          ]
+        },
+        "semantic_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        },
+        "admission_disposition": {
+          "enum": [
+            "ACTIVE_ADMITTED",
+            "EMBEDDED_NONOWNER",
+            "DORMANT_NONSELECTABLE",
+            "STALE_REMOVE"
+          ]
+        },
+        "evidence_class": {
+          "enum": [
+            "ACCEPTED_OWNER_REQUIREMENT",
+            "ACCEPTED_ENUM_CONSISTENCY"
+          ]
+        },
+        "evidence_citation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "consumer_or_dependency": {
+          "type": "string",
+          "minLength": 1
+        },
+        "containing_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "activation_trigger": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "admission_disposition": {
+                "const": "DORMANT_NONSELECTABLE"
+              }
+            },
+            "required": [
+              "admission_disposition"
+            ]
+          },
+          "then": {
+            "required": [
+              "activation_trigger"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "admission_disposition": {
+                "const": "EMBEDDED_NONOWNER"
+              }
+            },
+            "required": [
+              "admission_disposition"
+            ]
+          },
+          "then": {
+            "required": [
+              "containing_owner"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "scope_stratum": {
+                "const": "INHERITED_ROUND2"
+              }
+            },
+            "required": [
+              "scope_stratum"
+            ]
+          },
+          "then": {
+            "properties": {
+              "realization_state": {
+                "const": "INHERITED_ACTIVE"
+              },
+              "downstream_owner": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "scope_stratum": {
+                "const": "S6D_PRIMARY"
+              }
+            },
+            "required": [
+              "scope_stratum"
+            ]
+          },
+          "then": {
+            "properties": {
+              "realization_state": {
+                "not": {
+                  "const": "INHERITED_ACTIVE"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "realization_state": {
+                "const": "COMPLETE"
+              }
+            },
+            "required": [
+              "realization_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "downstream_owner": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "realization_state": {
+                "const": "DOWNSTREAM_S6D_03"
+              }
+            },
+            "required": [
+              "realization_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "downstream_owner": {
+                "const": "S6D-03"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "realization_state": {
+                "const": "DOWNSTREAM_S6D_04"
+              }
+            },
+            "required": [
+              "realization_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "downstream_owner": {
+                "const": "S6D-04"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "realization_state": {
+                "const": "DOWNSTREAM_S6D_05"
+              }
+            },
+            "required": [
+              "realization_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "downstream_owner": {
+                "const": "S6D-05"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "realization_state": {
+                "const": "DOWNSTREAM_S6D_06"
+              }
+            },
+            "required": [
+              "realization_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "downstream_owner": {
+                "const": "S6D-06"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "realization_state": {
+                "const": "DOWNSTREAM_S6D_07"
+              }
+            },
+            "required": [
+              "realization_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "downstream_owner": {
+                "const": "S6D-07"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "realization_state": {
+                "const": "DOWNSTREAM_S6D_08"
+              }
+            },
+            "required": [
+              "realization_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "downstream_owner": {
+                "const": "S6D-08"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "realization_state": {
+                "const": "DOWNSTREAM_S6D_09"
+              }
+            },
+            "required": [
+              "realization_state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "downstream_owner": {
+                "const": "S6D-09"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

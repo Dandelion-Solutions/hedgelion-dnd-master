@@ -17,7 +17,7 @@ Rewards may include money, items, information, access, favors, status, property,
 
 ## Treasure
 
-Use official treasure/magic-item guidance when exact mechanical balance or rarity matters. Significant magic items receive stable ITEM records, including objective properties and what each PC has identified.
+Use official treasure/magic-item guidance when exact mechanical balance or rarity matters. Significant magic items use stable `world.asset` records bound to reusable `definition.asset` mechanics. Per-PC identification or belief is subjective knowledge recorded through `world.knowledge`; it is not an objective asset property.
 
 ## No reward inflation
 

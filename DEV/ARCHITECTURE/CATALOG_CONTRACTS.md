@@ -7,6 +7,7 @@ Active unreleased catalog generation: `2.0.0`.
 Machine-readable contracts:
 
 - `DEV/CATALOG/core-catalog.json`
+- `DEV/CATALOG/catalog-admission-ledger.json` — admission disposition and realization-trace ledger; it is not an exact-ID, semantic, or runtime package owner.
 - `DEV/CATALOG/entity-structures.json`
 - `DEV/CATALOG/identifier-policies.json`
 - `DEV/CATALOG/mechanical-surfaces.json`
@@ -14,6 +15,7 @@ Machine-readable contracts:
 Machine-readable schemas:
 
 - `DEV/SCHEMAS/core-catalog.schema.json`
+- `DEV/SCHEMAS/catalog-admission-ledger.schema.json`
 - `DEV/SCHEMAS/catalog-definition.schema.json`
 - `DEV/SCHEMAS/world-record.schema.json`
 - `DEV/SCHEMAS/entity-structures.schema.json`
@@ -265,3 +267,7 @@ WP-03 fixes the universal classification and closed vocabulary. Later R2.7 domai
 - Story/planning projection schemas.
 
 Those later details may refine coordinated catalog 2.0 artifacts, but they may not violate the class-admission/authority rules above without reopening the applicable accepted architecture.
+
+## 12. Admission trace authority
+
+`CATALOG_ADMISSION.md` owns the admission/realization audit model. The ledger MUST be bidirectionally equal to `core-catalog.json`; it cannot admit an absent ID, override a domain owner, or act as a runtime catalog/package. Dormant entries require an activation trigger. `STALE_REMOVE` entries cannot survive in the active core catalog after canonical cleanup.

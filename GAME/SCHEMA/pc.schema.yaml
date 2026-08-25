@@ -49,7 +49,7 @@ invariants:
   - status active requires READY_PC under CORE/CHARACTER_READINESS.md; mechanically required current-level values may not remain null/empty placeholders
   - an active PC must contain sufficient class/level/species-or-origin/ability/proficiency/defense/HP/movement/resource/feature/equipment state to resolve ordinary play without inventing character mechanics later
   - spellcasting active PCs must contain the exact current spellcasting inputs and known/prepared spell state required by their current rules
-  - significant items use ITEM IDs; disposable mundane inventory may be embedded
+  - significant items reference `world.asset` IDs; disposable mundane inventory may be embedded. Legacy `knowledge`, `relationships`, flattened `mechanics`, and inventory shapes in this schema are non-authoritative projection/input surfaces pending S6D-07 and accepted Round-2 owner migration; they do not replace `world.knowledge`, source-Actor relationship state, definition/effect/resource mechanics, or world-asset ownership
   - exact mechanical values come from adopted rules/house rules, not narrative inference
   - canonical base mechanics plus persistent modifiers must be sufficient to deterministically derive any gameplay modifier needed for adjudication
   - derived values may be cached for convenience but must be recomputable from canonical dependencies and refreshed when those dependencies change

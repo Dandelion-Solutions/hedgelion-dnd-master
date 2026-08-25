@@ -6,7 +6,7 @@ Catalog generation: `2.0.0`
 
 `2.0.0` is the unreleased clean-slate R2.7 machine-contract generation. Later R2.7 domains may make coordinated changes inside this generation before the final architecture gate closes; no campaign or released runtime depends on the superseded `1.6.0` scaffold.
 
-The exact closed machine IDs are in `DEV/CATALOG/core-catalog.json`. This document is authoritative for classification and class-admission semantics. Exact persistent schemas, roots, sharding and HOT/SQLite realization are owned by later R2.7 domains.
+The exact closed machine IDs are in `DEV/CATALOG/core-catalog.json`. This document is authoritative for classification and class semantics. `CATALOG_ADMISSION.md` and `DEV/CATALOG/catalog-admission-ledger.json` own admission disposition and realization traceability without becoming a second ID or semantic owner. Exact persistent schemas, roots, sharding and HOT/SQLite realization are owned by later R2.7 domains.
 
 ---
 
