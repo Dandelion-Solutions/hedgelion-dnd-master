@@ -100,7 +100,7 @@
     {
       "family_id": "activity.test",
       "parameters": {
-        "dc": {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "minimum": 1}
+        "dc": {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "minimum": 1, "maximum": 30}
       },
       "steps": [{"op": "op.resolve_check", "args": {"dc_parameter": "dc"}}]
     }
