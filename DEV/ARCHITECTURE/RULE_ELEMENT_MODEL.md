@@ -90,6 +90,8 @@ A Rule Element can contribute only to a registered Calculation Selector. A
 predicate can read only registered facts/accessors allowed by its contract.
 Declarative content cannot contain or execute runtime domain-query syntax.
 
+The complete selector-metadata laws are owned by `CALCULATION_SELECTOR_METADATA.md`.
+
 The structured metadata is in:
 
 ```text
@@ -497,3 +499,7 @@ The larger rule-selector inventory is not yet fully described by structured
 selector metadata. Expansion is seed-driven and must be closed in Step 6;
 unstructured selectors must not be assumed state-safe merely because detailed
 metadata is absent.
+
+## S6D-03 selector metadata closure
+
+`CALCULATION_SELECTOR_METADATA.md` owns current selector selectability, selector/operation compatibility, contribution/result typing, subject/binding restrictions and deterministic combination-policy semantics. This document continues to own Rule Elements as pure embedded Contributions. Neither owner grants portable payload-member authority, generic queries, mutation, callbacks or author-controlled execution order.

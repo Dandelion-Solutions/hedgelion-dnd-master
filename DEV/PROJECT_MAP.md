@@ -187,6 +187,7 @@ Current durable architecture/navigation documents:
 - `MAINTENANCE_COMMANDS.md` — internal, intentionally player-undocumented operator/support command contract proposal (`HDM_EXPORT_CURRENT_LOG`, `HDM_EXPORT_CHECKPOINT_LOG`, `HDM_RESET_LAST_CHECKPOINT`).
 - `NEAR_TERM_ROADMAP.md` — sequencing/status authority for the active Round-2 architecture program.
 - `RULE_ELEMENT_MODEL.md` — pure embedded passive contribution model and bounded reactive binding boundary.
+- `CALCULATION_SELECTOR_METADATA.md` — S6D-03 selector selectability, selector/operation compatibility, result/subject/binding metadata and deterministic active resolver policies.
 
 Historical/derivation/status surfaces that must not override newer accepted contracts:
 
@@ -202,7 +203,7 @@ Machine-readable current catalog surfaces; coordinated versions move together:
 - `catalog-admission-ledger.json` — exact bidirectional admission/realization trace for every core-catalog family/ID pair; not runtime authority.
 - `entity-structures.json` — machine field/definition-binding structure inventory.
 - `identifier-policies.json` — stable identity/allocation policies including campaign allocator rules.
-- `mechanical-surfaces.json` — registered deterministic mechanical selectors/operations/surfaces; its `INVOCATION_ADJUDICATED` context-fact channel remains boolean-only.
+- `mechanical-surfaces.json` — registered deterministic mechanical selectors/operations/surfaces; selectable selector keys are governed by `CALCULATION_SELECTOR_METADATA.md`; its inherited `INVOCATION_ADJUDICATED` graph state is completed in S6D-04.
 
 Read their schemas/tests before changing them. Human-readable architecture docs
 explain semantics; these JSON files are machine contracts, not prose summaries.
@@ -268,6 +269,8 @@ is the only consumer.
 - `specs/2026-08-25-s6d-02-catalog-admission-gap-closure-brief-critic.md` — mandatory whole-project Step-1 critique and repair record; zero unresolved blocking/significant findings.
 - `specs/2026-08-25-s6d-03-complete-calculation-selector-metadata-task-brief.md` — S6D-03 Step-1 framing for item-level selector/operation evidence, metadata completeness and downstream boundaries.
 - `specs/2026-08-25-s6d-03-complete-calculation-selector-metadata-brief-critic.md` — mandatory whole-project Step-1 critique; both significant framing findings repaired, final PASS.
+- `research/2026-08-25-s6d-03-complete-calculation-selector-metadata-research-architecture-draft.md` and matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-03 Steps 2–8 evidence chain.
+- `DEV/TESTS/test_s6d_03_selector_metadata_contract.py` — exact 34/26 accounting, active/dormant equality, metadata/policy/input/dependency verification.
 - `research/2026-08-25-s6d-02-catalog-admission-gap-closure-research-architecture-draft.md` and the matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-02 Steps 2–8 evidence chain.
 - `DEV/TESTS/test_s6d_02_catalog_admission_contract.py` — exact ledger/core equality, legal state and package-plan boundary checks.
 - `specs/` — other dated architecture/design, review, decision and canonicalization-chain artifacts. Prefer current roadmap/owner decisions and the actual owning canonical sources over filename recency alone.

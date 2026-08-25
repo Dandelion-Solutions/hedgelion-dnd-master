@@ -4,74 +4,154 @@
   "title": "HDM definition.condition data",
   "type": "object",
   "additionalProperties": false,
-  "required": ["aggregation_policy_id"],
+  "required": [
+    "aggregation_policy_id"
+  ],
   "properties": {
-    "aggregation_policy_id": {"$ref": "#/$defs/machineId"},
-    "parameter_schema": {"$ref": "#/$defs/parameterDeclarations"},
-    "value_constraints": {"$ref": "#/$defs/valueConstraints"},
+    "aggregation_policy_id": {
+      "$ref": "#/$defs/machineId"
+    },
+    "parameter_schema": {
+      "$ref": "#/$defs/parameterDeclarations"
+    },
+    "value_constraints": {
+      "$ref": "#/$defs/valueConstraints"
+    },
     "intrinsic_mechanics": {
       "type": "array",
-      "items": {"$ref": "#/$defs/intrinsicMechanic"}
+      "items": {
+        "$ref": "#/$defs/intrinsicMechanic"
+      }
     },
     "automatic_boundary_responses": {
       "type": "array",
-      "items": {"$ref": "#/$defs/automaticBoundaryResponse"}
+      "items": {
+        "$ref": "#/$defs/automaticBoundaryResponse"
+      }
     },
-    "details": {"type": "object"}
+    "details": {
+      "type": "object"
+    }
   },
   "$defs": {
-    "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "machineId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
     "idSet": {
       "type": "array",
       "uniqueItems": true,
-      "items": {"$ref": "#/$defs/machineId"}
+      "items": {
+        "$ref": "#/$defs/machineId"
+      }
     },
     "parameterDeclarations": {
       "type": "object",
-      "propertyNames": {"$ref": "#/$defs/machineId"},
-      "additionalProperties": {"$ref": "#/$defs/parameterDeclaration"}
+      "propertyNames": {
+        "$ref": "#/$defs/machineId"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/parameterDeclaration"
+      }
     },
     "parameterDeclaration": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["type_id"],
+      "required": [
+        "type_id"
+      ],
       "properties": {
-        "type_id": {"enum": ["integer", "number", "boolean", "machine_id", "string"]},
-        "minimum": {"type": "number"},
-        "maximum": {"type": "number"},
-        "allowed_ids": {"$ref": "#/$defs/idSet"}
+        "type_id": {
+          "enum": [
+            "integer",
+            "number",
+            "boolean",
+            "machine_id",
+            "string"
+          ]
+        },
+        "minimum": {
+          "type": "number"
+        },
+        "maximum": {
+          "type": "number"
+        },
+        "allowed_ids": {
+          "$ref": "#/$defs/idSet"
+        }
       }
     },
     "valueConstraints": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "minimum": {"type": "integer"},
-        "maximum": {"type": "integer"}
+        "minimum": {
+          "type": "integer"
+        },
+        "maximum": {
+          "type": "integer"
+        }
       }
     },
     "intrinsicMechanic": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["scope_id"],
+      "required": [
+        "scope_id"
+      ],
       "properties": {
-        "scope_id": {"$ref": "#/$defs/machineId"},
-        "rule_element": {"$ref": "https://hedgelion.invalid/schemas/rule-element.schema.json"},
-        "trigger_binding": {"$ref": "https://hedgelion.invalid/schemas/trigger-binding.schema.json"}
+        "scope_id": {
+          "$ref": "#/$defs/machineId"
+        },
+        "rule_element": {
+          "$ref": "https://hedgelion.invalid/schemas/rule-element.schema.json"
+        },
+        "trigger_binding": {
+          "$ref": "https://hedgelion.invalid/schemas/trigger-binding.schema.json"
+        }
       },
       "oneOf": [
-        {"required": ["rule_element"], "not": {"required": ["trigger_binding"]}},
-        {"required": ["trigger_binding"], "not": {"required": ["rule_element"]}}
+        {
+          "required": [
+            "rule_element"
+          ],
+          "not": {
+            "required": [
+              "trigger_binding"
+            ]
+          }
+        },
+        {
+          "required": [
+            "trigger_binding"
+          ],
+          "not": {
+            "required": [
+              "rule_element"
+            ]
+          }
+        }
       ]
     },
     "automaticBoundaryResponse": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["boundary_id", "operation_id", "count"],
+      "required": [
+        "boundary_id",
+        "operation_id",
+        "count"
+      ],
       "properties": {
-        "boundary_id": {"$ref": "#/$defs/machineId"},
-        "operation_id": {"const": "condition_response.remove_count"},
-        "count": {"type": "integer", "minimum": 1}
+        "boundary_id": {
+          "$ref": "#/$defs/machineId"
+        },
+        "operation_id": {
+          "const": "condition_response.remove_count"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        }
       }
     }
   },
@@ -91,7 +171,10 @@
     },
     {
       "aggregation_policy_id": "condition_aggregation.cumulative_units",
-      "value_constraints": {"minimum": 0, "maximum": 6},
+      "value_constraints": {
+        "minimum": 0,
+        "maximum": 6
+      },
       "automatic_boundary_responses": [
         {
           "boundary_id": "boundary.long_rest_complete",
@@ -100,5 +183,6 @@
         }
       ]
     }
-  ]
+  ],
+  "$comment": "Examples in this schema validate structural shape only. Selector/operation selectability and pair legality require catalog-aware validation against the exact resolved mechanical surfaces."
 }

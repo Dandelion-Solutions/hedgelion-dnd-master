@@ -65,7 +65,7 @@ def test_item_level_evidence_disposition_and_realization():
             assert entry["downstream_owner"] is None
         assert entry["admission_disposition"] != "STALE_REMOVE"
     assert strata == {"S6D_PRIMARY": 192, "ENGINE_ENUM_CONSISTENCY": 276, "INHERITED_ROUND2": 103}
-    assert dispositions == {"ACTIVE_ADMITTED": 457, "EMBEDDED_NONOWNER": 35, "DORMANT_NONSELECTABLE": 79}
+    assert dispositions == {"ACTIVE_ADMITTED": 450, "EMBEDDED_NONOWNER": 35, "DORMANT_NONSELECTABLE": 86}
 
 def test_census_arithmetic_matches_entries():
     ledger = _load(LEDGER)

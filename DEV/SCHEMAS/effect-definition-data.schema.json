@@ -5,58 +5,107 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "duration": {"$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"},
-    "parameter_schema": {"$ref": "#/$defs/parameterDeclarations"},
+    "duration": {
+      "$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"
+    },
+    "parameter_schema": {
+      "$ref": "#/$defs/parameterDeclarations"
+    },
     "rule_elements": {
       "type": "array",
-      "items": {"$ref": "https://hedgelion.invalid/schemas/rule-element.schema.json"}
+      "items": {
+        "$ref": "https://hedgelion.invalid/schemas/rule-element.schema.json"
+      }
     },
     "trigger_bindings": {
       "type": "array",
-      "items": {"$ref": "https://hedgelion.invalid/schemas/trigger-binding.schema.json"}
+      "items": {
+        "$ref": "https://hedgelion.invalid/schemas/trigger-binding.schema.json"
+      }
     },
     "scheduled_triggers": {
       "type": "object",
       "minProperties": 1,
-      "propertyNames": {"$ref": "#/$defs/localTriggerKey"},
-      "additionalProperties": {"$ref": "#/$defs/scheduledTrigger"}
+      "propertyNames": {
+        "$ref": "#/$defs/localTriggerKey"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/scheduledTrigger"
+      }
     },
-    "activity_ids": {"$ref": "#/$defs/idSet"},
-    "reapplication": {"$ref": "#/$defs/reapplication"},
-    "arbitration_policy_id": {"$ref": "#/$defs/machineId"},
-    "details": {"type": "object"}
+    "activity_ids": {
+      "$ref": "#/$defs/idSet"
+    },
+    "reapplication": {
+      "$ref": "#/$defs/reapplication"
+    },
+    "arbitration_policy_id": {
+      "$ref": "#/$defs/machineId"
+    },
+    "details": {
+      "type": "object"
+    }
   },
   "$defs": {
-    "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
-    "localTriggerKey": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "machineId": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "localTriggerKey": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
     "idSet": {
       "type": "array",
       "uniqueItems": true,
-      "items": {"$ref": "#/$defs/machineId"}
+      "items": {
+        "$ref": "#/$defs/machineId"
+      }
     },
     "metricDelay": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind_id", "amount", "unit_id"],
+      "required": [
+        "kind_id",
+        "amount",
+        "unit_id"
+      ],
       "properties": {
-        "kind_id": {"const": "duration.metric"},
-        "amount": {"type": "integer", "minimum": 1},
-        "unit_id": {"$ref": "#/$defs/machineId"}
+        "kind_id": {
+          "const": "duration.metric"
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "unit_id": {
+          "$ref": "#/$defs/machineId"
+        }
       }
     },
     "scheduledTrigger": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["after", "activity_id"],
+      "required": [
+        "after",
+        "activity_id"
+      ],
       "properties": {
-        "after": {"$ref": "#/$defs/metricDelay"},
-        "activity_id": {"$ref": "#/$defs/machineId"}
+        "after": {
+          "$ref": "#/$defs/metricDelay"
+        },
+        "activity_id": {
+          "$ref": "#/$defs/machineId"
+        }
       }
     },
     "reapplication": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["match_policy_id", "action_id"],
+      "required": [
+        "match_policy_id",
+        "action_id"
+      ],
       "properties": {
         "match_policy_id": {
           "enum": [
@@ -74,26 +123,54 @@
     },
     "parameterDeclarations": {
       "type": "object",
-      "propertyNames": {"$ref": "#/$defs/machineId"},
-      "additionalProperties": {"$ref": "#/$defs/parameterDeclaration"}
+      "propertyNames": {
+        "$ref": "#/$defs/machineId"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/parameterDeclaration"
+      }
     },
     "parameterDeclaration": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["type_id"],
+      "required": [
+        "type_id"
+      ],
       "properties": {
-        "type_id": {"enum": ["integer", "number", "boolean", "machine_id", "string"]},
-        "minimum": {"type": "number"},
-        "maximum": {"type": "number"},
-        "allowed_ids": {"$ref": "#/$defs/idSet"}
+        "type_id": {
+          "enum": [
+            "integer",
+            "number",
+            "boolean",
+            "machine_id",
+            "string"
+          ]
+        },
+        "minimum": {
+          "type": "number"
+        },
+        "maximum": {
+          "type": "number"
+        },
+        "allowed_ids": {
+          "$ref": "#/$defs/idSet"
+        }
       }
     }
   },
   "examples": [
     {
-      "duration": {"kind_id": "duration.metric", "amount": 1, "unit_id": "unit.minute"},
+      "duration": {
+        "kind_id": "duration.metric",
+        "amount": 1,
+        "unit_id": "unit.minute"
+      },
       "rule_elements": [
-        {"operation_id": "rule.add_flat", "selector": "defense.armor_class", "value": 2}
+        {
+          "operation_id": "rule.add_flat",
+          "selector": "defense.armor_class",
+          "value": 2
+        }
       ]
     },
     {
@@ -105,10 +182,15 @@
     {
       "scheduled_triggers": {
         "daily_save": {
-          "after": {"kind_id": "duration.metric", "amount": 24, "unit_id": "unit.hour"},
+          "after": {
+            "kind_id": "duration.metric",
+            "amount": 24,
+            "unit_id": "unit.hour"
+          },
           "activity_id": "srd.activity.disease_save"
         }
       }
     }
-  ]
+  ],
+  "$comment": "Examples in this schema validate structural shape only. Selector/operation selectability and pair legality require catalog-aware validation against the exact resolved mechanical surfaces."
 }

@@ -209,7 +209,7 @@ The strict schema now admits explicit disposition, containing owner and dormant 
 
 ## Step-6 executable-capability quarantine correction
 
-Registration is not executable support. The final ledger therefore admits only the five selectors and seven `rule.*` operations materialized and consumed by `DEV/CATALOG/mechanical-surfaces.json`, plus all ten accessors materialized there. The remaining 29 selectors and 19 operations are `DORMANT_NONSELECTABLE` until S6D-03 proves complete metadata and supported-profile reachability. All 31 Activity primitives are `DORMANT_NONSELECTABLE` until S6D-06 provides an exact contract and a supported Activity consumer. Final admission totals are 457 `ACTIVE_ADMITTED`, 35 `EMBEDDED_NONOWNER`, 79 `DORMANT_NONSELECTABLE`, and 0 stale.
+Registration is not executable support. The final ledger therefore admits only three selectors and two `rule.*` operations with closed current semantics, plus all ten accessors materialized there. The remaining 31 selectors and 24 operations are `DORMANT_NONSELECTABLE`; structural examples and unresolved portable-shape requirements do not activate them. All 31 Activity primitives are `DORMANT_NONSELECTABLE` until S6D-06 provides an exact contract and a supported Activity consumer. Final post-S6D-03 admission totals are 450 `ACTIVE_ADMITTED`, 35 `EMBEDDED_NONOWNER`, 86 `DORMANT_NONSELECTABLE`, and 0 stale.
 
 Each embedded protocol value names its actual containing architecture/interface owner; generic “exact owner” placeholders are forbidden. Executable checks require profile/family equality, reject placeholder owner/evidence text, require inherited owners, and enforce every downstream realization-to-owner mapping.
 

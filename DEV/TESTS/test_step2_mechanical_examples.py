@@ -1,3 +1,5 @@
+"""Structural Step-2 schema examples. These tests do not grant selector/operation selectability; catalog-aware legality is owned by the resolved mechanical surfaces."""
+
 import json
 from pathlib import Path
 import unittest

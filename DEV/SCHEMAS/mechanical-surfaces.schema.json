@@ -4,7 +4,13 @@
   "title": "HDM reviewed mechanical selector/accessor/input metadata",
   "type": "object",
   "additionalProperties": false,
-  "required": ["catalog_version", "context_facts", "accessors", "selectors", "derived_nodes"],
+  "required": [
+    "catalog_version",
+    "context_facts",
+    "accessors",
+    "selectors",
+    "derived_nodes"
+  ],
   "properties": {
     "catalog_version": {
       "type": "string",
@@ -12,18 +18,30 @@
     },
     "context_facts": {
       "type": "object",
-      "propertyNames": {"$ref": "#/$defs/machineId"},
-      "additionalProperties": {"$ref": "#/$defs/contextFactMetadata"}
+      "propertyNames": {
+        "$ref": "#/$defs/machineId"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/contextFactMetadata"
+      }
     },
     "accessors": {
       "type": "object",
-      "propertyNames": {"$ref": "#/$defs/machineId"},
-      "additionalProperties": {"$ref": "#/$defs/accessorMetadata"}
+      "propertyNames": {
+        "$ref": "#/$defs/machineId"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/accessorMetadata"
+      }
     },
     "selectors": {
       "type": "object",
-      "propertyNames": {"$ref": "#/$defs/machineId"},
-      "additionalProperties": {"$ref": "#/$defs/selectorMetadata"}
+      "propertyNames": {
+        "$ref": "#/$defs/machineId"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/selectorMetadata"
+      }
     },
     "derived_nodes": {
       "type": "object",
@@ -36,7 +54,9 @@
           "condition_intrinsic"
         ]
       },
-      "additionalProperties": {"$ref": "#/$defs/derivedNodeMetadata"}
+      "additionalProperties": {
+        "$ref": "#/$defs/derivedNodeMetadata"
+      }
     }
   },
   "$defs": {
@@ -48,7 +68,9 @@
     "idSet": {
       "type": "array",
       "uniqueItems": true,
-      "items": {"$ref": "#/$defs/machineId"}
+      "items": {
+        "$ref": "#/$defs/machineId"
+      }
     },
     "dependencyRef": {
       "type": "string",
@@ -61,10 +83,7 @@
         "enum": [
           "selector",
           "accessor",
-          "effect_availability",
-          "effect_arbitration",
-          "condition_aggregation",
-          "condition_intrinsic"
+          "derived"
         ]
       }
     },
@@ -73,34 +92,62 @@
       "minItems": 1,
       "uniqueItems": true,
       "items": {
-        "enum": ["ENGINE_STATE", "INVOCATION_ADJUDICATED"]
+        "enum": [
+          "ENGINE_STATE",
+          "INVOCATION_ADJUDICATED"
+        ]
       }
     },
     "contextFactMetadata": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source_class", "value_type"],
+      "required": [
+        "source_class",
+        "value_type"
+      ],
       "properties": {
-        "source_class": {"const": "INVOCATION_ADJUDICATED"},
-        "value_type": {"const": "boolean"}
+        "source_class": {
+          "const": "INVOCATION_ADJUDICATED"
+        },
+        "value_type": {
+          "const": "boolean"
+        }
       }
     },
     "accessorMetadata": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source_class", "value_type", "subject_kinds", "dependencies"],
+      "required": [
+        "source_class",
+        "value_type",
+        "subject_kinds",
+        "dependencies"
+      ],
       "properties": {
         "source_class": {
-          "enum": ["DIRECT_AUTHORITY", "DERIVED_MECHANICAL"]
+          "enum": [
+            "DIRECT_AUTHORITY",
+            "DERIVED_MECHANICAL"
+          ]
         },
         "value_type": {
-          "enum": ["boolean", "integer", "number", "machine_id", "scalar"]
+          "enum": [
+            "boolean",
+            "integer",
+            "number",
+            "machine_id",
+            "scalar"
+          ]
         },
-        "subject_kinds": {"$ref": "#/$defs/idSet"},
+        "subject_kinds": {
+          "$ref": "#/$defs/idSet"
+        },
         "dependencies": {
           "type": "array",
           "uniqueItems": true,
-          "items": {"$ref": "#/$defs/dependencyRef"}
+          "items": {
+            "$ref": "#/$defs/dependencyRef"
+          }
         }
       }
     },
@@ -109,47 +156,168 @@
       "additionalProperties": false,
       "required": [
         "allowed_operations",
+        "operation_contracts",
         "contribution_type",
+        "result_type",
+        "result_constraints",
+        "subject_kinds",
+        "binding_kinds",
         "allowed_dependency_kinds",
-        "allowed_input_classes"
+        "allowed_input_classes",
+        "permitted_context_fact_ids",
+        "static_dependencies",
+        "combination_policy",
+        "resolution_owner",
+        "trace_policy"
       ],
       "properties": {
-        "allowed_operations": {"$ref": "#/$defs/idSet"},
+        "allowed_operations": {
+          "$ref": "#/$defs/idSet"
+        },
         "operation_contracts": {
           "type": "object",
-          "propertyNames": {"$ref": "#/$defs/machineId"},
-          "additionalProperties": {"$ref": "#/$defs/operationContract"}
+          "propertyNames": {
+            "$ref": "#/$defs/machineId"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/operationContract"
+          }
         },
         "contribution_type": {
-          "enum": ["numeric", "duration", "applicability", "recovery"]
+          "enum": [
+            "numeric",
+            "applicability"
+          ]
         },
-        "allowed_dependency_kinds": {"$ref": "#/$defs/dependencyKindSet"},
-        "allowed_input_classes": {"$ref": "#/$defs/inputClassSet"}
+        "result_type": {
+          "enum": [
+            "integer",
+            "boolean"
+          ]
+        },
+        "result_constraints": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "minimum": {
+              "type": "integer"
+            }
+          }
+        },
+        "subject_kinds": {
+          "$ref": "#/$defs/idSet"
+        },
+        "binding_kinds": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "subject",
+              "condition_definition",
+              "resource_definition"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "allowed_dependency_kinds": {
+          "$ref": "#/$defs/dependencyKindSet"
+        },
+        "allowed_input_classes": {
+          "$ref": "#/$defs/inputClassSet"
+        },
+        "permitted_context_fact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/machineId"
+          },
+          "uniqueItems": true
+        },
+        "static_dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dependencyRef"
+          },
+          "uniqueItems": true
+        },
+        "combination_policy": {
+          "enum": [
+            "integer_additive_v1",
+            "immunity_any_true_v1"
+          ]
+        },
+        "resolution_owner": {
+          "const": "SELECTOR_METADATA"
+        },
+        "trace_policy": {
+          "const": "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+        }
       }
     },
     "derivedNodeMetadata": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["allowed_dependency_kinds", "allowed_input_classes", "dependencies"],
+      "required": [
+        "allowed_dependency_kinds",
+        "allowed_input_classes",
+        "dependencies"
+      ],
       "properties": {
-        "allowed_dependency_kinds": {"$ref": "#/$defs/dependencyKindSet"},
-        "allowed_input_classes": {"$ref": "#/$defs/inputClassSet"},
+        "allowed_dependency_kinds": {
+          "$ref": "#/$defs/dependencyKindSet"
+        },
+        "allowed_input_classes": {
+          "$ref": "#/$defs/inputClassSet"
+        },
         "dependencies": {
           "type": "array",
           "uniqueItems": true,
-          "items": {"$ref": "#/$defs/dependencyRef"}
+          "items": {
+            "$ref": "#/$defs/dependencyRef"
+          }
         }
       }
     },
     "operationContract": {
       "type": "object",
       "additionalProperties": false,
+      "required": [
+        "value_kind",
+        "normalization",
+        "constraints"
+      ],
       "properties": {
+        "value_kind": {
+          "enum": [
+            "numeric_scalar",
+            "boolean_constant"
+          ]
+        },
+        "normalization": {
+          "enum": [
+            "SUM",
+            "ANY_TRUE"
+          ]
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "finite_integer",
+              "literal_true"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
         "fixed_value": {
-          "type": ["string", "number", "integer", "boolean"]
+          "type": [
+            "string",
+            "number",
+            "integer",
+            "boolean"
+          ]
         }
-      },
-      "minProperties": 1
+      }
     }
   }
 }

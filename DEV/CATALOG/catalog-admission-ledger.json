@@ -259,18 +259,18 @@
       "registry_family": "rule_operations",
       "count": 26,
       "scope_stratum": "S6D_PRIMARY",
-      "admitted": 7,
+      "admitted": 2,
       "embedded_nonowner": 0,
-      "dormant_nonselectable": 19,
+      "dormant_nonselectable": 24,
       "stale_remove": 0
     },
     {
       "registry_family": "rule_selectors",
       "count": 34,
       "scope_stratum": "S6D_PRIMARY",
-      "admitted": 5,
+      "admitted": 3,
       "embedded_nonowner": 0,
-      "dormant_nonselectable": 29,
+      "dormant_nonselectable": 31,
       "stale_remove": 0
     },
     {
@@ -5433,13 +5433,13 @@
       "id": "rule.add_flat",
       "profile": "rule_operations",
       "scope_stratum": "S6D_PRIMARY",
-      "realization_state": "DOWNSTREAM_S6D_03",
-      "downstream_owner": "S6D-03",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/mechanical-surfaces.json selector allowed_operations contains rule.add_flat",
-      "consumer_or_dependency": "currently consumed by at least one structured selector in mechanical-surfaces.json: rule.add_flat"
+      "evidence_citation": "accepted health.maximum/resource.capacity additive contribution model + current evaluation-input tests",
+      "consumer_or_dependency": "closed legal operation contract: rule.add_flat"
     },
     {
       "registry_family": "rule_operations",
@@ -5451,9 +5451,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.add_dice; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.add_dice; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.add_dice; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.add_dice; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5465,9 +5465,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.replace_dice; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.replace_dice; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.replace_dice; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.replace_dice; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5479,9 +5479,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_advantage; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.grant_advantage; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_advantage; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.grant_advantage; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5493,9 +5493,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_disadvantage; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.grant_disadvantage; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_disadvantage; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.grant_disadvantage; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5505,10 +5505,11 @@
       "realization_state": "DOWNSTREAM_S6D_03",
       "downstream_owner": "S6D-03",
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
-      "admission_disposition": "ACTIVE_ADMITTED",
+      "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/mechanical-surfaces.json selector allowed_operations contains rule.set_minimum",
-      "consumer_or_dependency": "currently consumed by at least one structured selector in mechanical-surfaces.json: rule.set_minimum"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.set_minimum; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.set_minimum; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5518,10 +5519,11 @@
       "realization_state": "DOWNSTREAM_S6D_03",
       "downstream_owner": "S6D-03",
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
-      "admission_disposition": "ACTIVE_ADMITTED",
+      "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/mechanical-surfaces.json selector allowed_operations contains rule.set_maximum",
-      "consumer_or_dependency": "currently consumed by at least one structured selector in mechanical-surfaces.json: rule.set_maximum"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.set_maximum; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.set_maximum; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5531,10 +5533,11 @@
       "realization_state": "DOWNSTREAM_S6D_03",
       "downstream_owner": "S6D-03",
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
-      "admission_disposition": "ACTIVE_ADMITTED",
+      "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/mechanical-surfaces.json selector allowed_operations contains rule.multiply",
-      "consumer_or_dependency": "currently consumed by at least one structured selector in mechanical-surfaces.json: rule.multiply"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.multiply; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.multiply; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5544,10 +5547,11 @@
       "realization_state": "DOWNSTREAM_S6D_03",
       "downstream_owner": "S6D-03",
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
-      "admission_disposition": "ACTIVE_ADMITTED",
+      "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/mechanical-surfaces.json selector allowed_operations contains rule.override",
-      "consumer_or_dependency": "currently consumed by at least one structured selector in mechanical-surfaces.json: rule.override"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.override; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.override; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5559,9 +5563,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.add_damage_component; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.add_damage_component; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.add_damage_component; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.add_damage_component; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5573,22 +5577,22 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.resistance; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.resistance; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.resistance; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.resistance; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
       "id": "rule.immunity",
       "profile": "rule_operations",
       "scope_stratum": "S6D_PRIMARY",
-      "realization_state": "DOWNSTREAM_S6D_03",
-      "downstream_owner": "S6D-03",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/mechanical-surfaces.json selector allowed_operations contains rule.immunity",
-      "consumer_or_dependency": "currently consumed by at least one structured selector in mechanical-surfaces.json: rule.immunity"
+      "evidence_citation": "accepted condition-applicability immunity gate + DEV/TESTS/test_step2_condition_applicability.py",
+      "consumer_or_dependency": "closed legal operation contract: rule.immunity"
     },
     {
       "registry_family": "rule_operations",
@@ -5600,9 +5604,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.vulnerability; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.vulnerability; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.vulnerability; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.vulnerability; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5614,9 +5618,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.adjust_cost; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.adjust_cost; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.adjust_cost; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.adjust_cost; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5628,9 +5632,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.adjust_dc; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.adjust_dc; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.adjust_dc; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.adjust_dc; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5642,9 +5646,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.adjust_critical; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.adjust_critical; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.adjust_critical; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.adjust_critical; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5656,9 +5660,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.adjust_target; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.adjust_target; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.adjust_target; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.adjust_target; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5670,9 +5674,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.adjust_range; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.adjust_range; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.adjust_range; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.adjust_range; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5682,10 +5686,11 @@
       "realization_state": "DOWNSTREAM_S6D_03",
       "downstream_owner": "S6D-03",
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
-      "admission_disposition": "ACTIVE_ADMITTED",
+      "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/mechanical-surfaces.json selector allowed_operations contains rule.adjust_duration",
-      "consumer_or_dependency": "currently consumed by at least one structured selector in mechanical-surfaces.json: rule.adjust_duration"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.adjust_duration; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.adjust_duration; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5697,9 +5702,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_activity; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.grant_activity; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_activity; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.grant_activity; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5711,9 +5716,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.restrict_activity; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.restrict_activity; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.restrict_activity; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.restrict_activity; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5725,9 +5730,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_movement; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.grant_movement; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_movement; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.grant_movement; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5739,9 +5744,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_sense; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.grant_sense; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_sense; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.grant_sense; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5753,9 +5758,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_proficiency; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.grant_proficiency; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_proficiency; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.grant_proficiency; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5767,9 +5772,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_trait; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.grant_trait; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.grant_trait; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.grant_trait; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_operations",
@@ -5781,9 +5786,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.usage_gate; no current structured selector consumer",
-      "consumer_or_dependency": "reserved Rule Element operation rule.usage_gate; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 selector legality proves supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for rule.usage_gate; no closed current selector-pair semantics",
+      "consumer_or_dependency": "reserved operation rule.usage_gate; not executable",
+      "activation_trigger": "Concrete canonical selector pair plus exact S6D-03 compatibility semantics and coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5795,9 +5800,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for ability.score; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector ability.score; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for ability.score; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector ability.score; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5809,9 +5814,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for ability.modifier; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector ability.modifier; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for ability.modifier; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector ability.modifier; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5823,9 +5828,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for test.roll; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector test.roll; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for test.roll; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector test.roll; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5837,9 +5842,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for check.roll; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector check.roll; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for check.roll; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector check.roll; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5851,9 +5856,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for contest.roll; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector contest.roll; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for contest.roll; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector contest.roll; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5865,9 +5870,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for save.roll; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector save.roll; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for save.roll; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector save.roll; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5879,9 +5884,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for initiative.roll; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector initiative.roll; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for initiative.roll; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector initiative.roll; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5893,9 +5898,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for check.dc; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector check.dc; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for check.dc; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector check.dc; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5907,9 +5912,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for save.dc; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector save.dc; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for save.dc; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector save.dc; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5921,9 +5926,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for spell.dc; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector spell.dc; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for spell.dc; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector spell.dc; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5935,9 +5940,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for attack.roll; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector attack.roll; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for attack.roll; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector attack.roll; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5949,9 +5954,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for attack.critical_threshold; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector attack.critical_threshold; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for attack.critical_threshold; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector attack.critical_threshold; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5963,9 +5968,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for defense.armor_class; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector defense.armor_class; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for defense.armor_class; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector defense.armor_class; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5977,9 +5982,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for damage.weapon; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector damage.weapon; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for damage.weapon; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector damage.weapon; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -5991,9 +5996,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for damage.spell; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector damage.spell; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for damage.spell; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector damage.spell; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6005,9 +6010,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for damage.dealt; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector damage.dealt; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for damage.dealt; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector damage.dealt; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6019,9 +6024,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for damage.received; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector damage.received; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for damage.received; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector damage.received; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6033,9 +6038,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for healing.done; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector healing.done; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for healing.done; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector healing.done; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6047,9 +6052,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for healing.received; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector healing.received; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for healing.received; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector healing.received; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6061,22 +6066,22 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for resource.cost; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector resource.cost; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for resource.cost; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector resource.cost; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
       "id": "resource.capacity",
       "profile": "rule_selectors",
       "scope_stratum": "S6D_PRIMARY",
-      "realization_state": "DOWNSTREAM_S6D_03",
-      "downstream_owner": "S6D-03",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/mechanical-surfaces.json#/selectors/resource.capacity",
-      "consumer_or_dependency": "current structured Calculation Selector metadata for resource.capacity"
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md accepted derived calculation + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
+      "consumer_or_dependency": "closed supported selector metadata: resource.capacity"
     },
     {
       "registry_family": "rule_selectors",
@@ -6086,10 +6091,11 @@
       "realization_state": "DOWNSTREAM_S6D_03",
       "downstream_owner": "S6D-03",
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
-      "admission_disposition": "ACTIVE_ADMITTED",
+      "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/mechanical-surfaces.json#/selectors/resource.recovery",
-      "consumer_or_dependency": "current structured Calculation Selector metadata for resource.recovery"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for resource.recovery; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector resource.recovery; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6101,9 +6107,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for activity.availability; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector activity.availability; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for activity.availability; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector activity.availability; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6115,9 +6121,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for activity.activation; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector activity.activation; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for activity.activation; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector activity.activation; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6129,9 +6135,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for target.count; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector target.count; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for target.count; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector target.count; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6143,9 +6149,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for target.range; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector target.range; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for target.range; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector target.range; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6157,9 +6163,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for target.area; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector target.area; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for target.area; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector target.area; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6169,36 +6175,37 @@
       "realization_state": "DOWNSTREAM_S6D_03",
       "downstream_owner": "S6D-03",
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
-      "admission_disposition": "ACTIVE_ADMITTED",
+      "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/mechanical-surfaces.json#/selectors/effect.duration",
-      "consumer_or_dependency": "current structured Calculation Selector metadata for effect.duration"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for effect.duration; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector effect.duration; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
       "id": "health.maximum",
       "profile": "rule_selectors",
       "scope_stratum": "S6D_PRIMARY",
-      "realization_state": "DOWNSTREAM_S6D_03",
-      "downstream_owner": "S6D-03",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/mechanical-surfaces.json#/selectors/health.maximum",
-      "consumer_or_dependency": "current structured Calculation Selector metadata for health.maximum"
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md accepted derived calculation + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
+      "consumer_or_dependency": "closed supported selector metadata: health.maximum"
     },
     {
       "registry_family": "rule_selectors",
       "id": "condition.applicability",
       "profile": "rule_selectors",
       "scope_stratum": "S6D_PRIMARY",
-      "realization_state": "DOWNSTREAM_S6D_03",
-      "downstream_owner": "S6D-03",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/mechanical-surfaces.json#/selectors/condition.applicability",
-      "consumer_or_dependency": "current structured Calculation Selector metadata for condition.applicability"
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md Condition application gate + DEV/TESTS/test_step2_condition_applicability.py",
+      "consumer_or_dependency": "closed supported selector metadata: condition.applicability"
     },
     {
       "registry_family": "rule_selectors",
@@ -6210,9 +6217,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for movement.speed; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector movement.speed; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for movement.speed; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector movement.speed; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6224,9 +6231,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for sense.range; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector sense.range; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for sense.range; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector sense.range; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6238,9 +6245,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for proficiency.rank; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector proficiency.rank; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for proficiency.rank; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector proficiency.rank; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "rule_selectors",
@@ -6252,9 +6259,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "DORMANT_NONSELECTABLE",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for actor.trait; no current structured selector entry",
-      "consumer_or_dependency": "reserved selector actor.trait; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-03 complete metadata plus supported-profile reachability and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for actor.trait; current references are historical, structural examples, or unresolved downstream requirements",
+      "consumer_or_dependency": "reserved selector actor.trait; not selectable",
+      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
     },
     {
       "registry_family": "mechanical_accessors",
