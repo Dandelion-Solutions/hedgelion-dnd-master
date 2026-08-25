@@ -15,10 +15,11 @@
 
 - `campaign_manifest.schema.yaml` — идентичность ветки, mode, engine и storage roots.
 - `campaign_config.schema.yaml` — premise, tone, boundaries, advancement и world mode.
+- `house_rules_policy.schema.yaml` — узкий machine-readable companion для identity/currentness/adoption/routing evidence House Rules/Rulings; нормативный текст остаётся в `RULES/HOUSE_RULES.md`.
 - `session.schema.yaml` — координационные данные отдельного игрового чата/сессии.
 - `current_state.schema.yaml` — компактный глобальный каталог активных сцен/процессов.
 - `scene.schema.yaml` — состояние отдельного активного окружения/сцены.
-- `player.schema.yaml` — binding пользователя к PC внутри кампании.
+- `player.schema.yaml` — binding пользователя к PC внутри кампании и узкие campaign authorization grants, не общий ACL.
 - `pc.schema.yaml` — player character.
 - `npc.schema.yaml` — NPC.
 - `location.schema.yaml` — локация.
