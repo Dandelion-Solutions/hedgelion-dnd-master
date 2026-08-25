@@ -16,12 +16,14 @@ fields:
       adoption_basis: enum[campaign_creator, active_player_interpretive, creator_delegated_mechanical_override]
       adopted_by_player_id: string|null
       supersedes_policy_ids: array[string]
-      capability_refs: array[string]
+      realization_refs: array[string]
 invariants:
   - this sidecar is narrow structured identity/currentness/adoption evidence; normative policy prose remains in source_path
   - source_path resolves from the campaign root and normally equals MANIFEST.rules.house_rules_path
   - policy_id is stable campaign policy identity; the exact campaign revision selecting this sidecar plus source_path is the policy revision/publication basis
   - campaign revision/current source is domain-native publication evidence and is not a global policy epoch or scalar policy frontier
+  - every durable normative House Rule/Ruling intended as current campaign policy has exactly one current sidecar entry with one resolvable source_anchor; unindexed normative prose is not admitted as durable campaign policy authority
+  - duplicate current policy_id/source_anchor mappings, unresolved normative anchors, or sidecar entries without a matching normative section are malformed policy/integrity defects at the affected policy boundary
   - source_anchor identifies the normative section within source_path and MUST NOT duplicate the full normative text in this sidecar
   - routing_keys are routing-only hints for bounded Context Runtime discovery and are not semantic authority
   - lifecycle active means eligible for current applicability subject to authority/currentness/conflict checks; superseded/retired entries are not current applicability authority
@@ -29,5 +31,7 @@ invariants:
   - MECHANICAL_OVERRIDE_POLICY adoption_basis campaign_creator requires current campaign creator authority; creator_delegated_mechanical_override requires a current active PLAYER with policy_authority.mechanical_override_policy true
   - adopted_by_player_id records stable campaign PLAYER attribution when one exists; null does not manufacture a PLAYER identity for creator actions before a PLAYER binding exists
   - supersession does not rewrite historical accepted Resolution inputs; later policy publication is forward-looking
-  - capability_refs are references/hints only; deterministic catalog/currentness/validation remains authoritative for executable capability admission
+  - realization_refs are explicit declared links to typed capabilities intended to realize the formalizable portion of policy; refs are never execution authority by mention and remain subject to current catalog/validation
+  - mechanically material policy requiring typed realization with no current admitted realization_refs produces POLICY_REALIZATION_GAP; missing/stale/incompatible refs produce finite mismatch/gap behavior rather than stale-baseline or prose execution
+  - contextual policy may legally have no realization_refs indefinitely
   - this schema does not admit executable expressions, arbitrary queries, JSON paths, code, state injection or a natural-language rule compiler
