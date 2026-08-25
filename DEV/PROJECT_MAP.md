@@ -266,6 +266,8 @@ is the only consumer.
 - `specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-canonicalization.md` — S6D-01 eight-step closure record and stop-before-S6D-02 handoff.
 - `specs/2026-08-25-s6d-02-catalog-admission-gap-closure-task-brief.md` — S6D-02 Step-1 framing: two-axis admission/realization ledger, registry strata, evidence hierarchy and stop-before-Step-2 boundary.
 - `specs/2026-08-25-s6d-02-catalog-admission-gap-closure-brief-critic.md` — mandatory whole-project Step-1 critique and repair record; zero unresolved blocking/significant findings.
+- `specs/2026-08-25-s6d-03-complete-calculation-selector-metadata-task-brief.md` — S6D-03 Step-1 framing for item-level selector/operation evidence, metadata completeness and downstream boundaries.
+- `specs/2026-08-25-s6d-03-complete-calculation-selector-metadata-brief-critic.md` — mandatory whole-project Step-1 critique; both significant framing findings repaired, final PASS.
 - `research/2026-08-25-s6d-02-catalog-admission-gap-closure-research-architecture-draft.md` and the matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-02 Steps 2–8 evidence chain.
 - `DEV/TESTS/test_s6d_02_catalog_admission_contract.py` — exact ledger/core equality, legal state and package-plan boundary checks.
 - `specs/` — other dated architecture/design, review, decision and canonicalization-chain artifacts. Prefer current roadmap/owner decisions and the actual owning canonical sources over filename recency alone.
