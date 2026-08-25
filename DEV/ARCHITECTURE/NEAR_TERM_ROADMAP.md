@@ -1,10 +1,10 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — R2.7 PAUSED / HOUSE RULES HOLD AT STEP 2–3 / S6D BLOCKED**
+Status: **ACTIVE PROGRAM ROADMAP — HOUSE RULES COMPLETE / S6D NEXT BUT NOT STARTED / R2.7 PAUSED**
 
 Date: 2026-08-25
 
-This file is the sequencing/status authority for Architecture Round 2 and the inserted pre-resume architecture workstreams. Detailed semantics remain in owning specifications.
+This file is the sequencing/status authority for Architecture Round 2 and inserted pre-resume architecture workstreams. Detailed semantics remain in owning specifications.
 
 Canonical process:
 
@@ -20,11 +20,11 @@ Primary program decisions:
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
 - `DEV/docs/superpowers/specs/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
 
-Current House-Rules gate authority:
+Current House-Rules authority:
 
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-senior-audit-reopen-hold.md`
-- `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md`
+- `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`
+- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md`
+- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`
 
 R2.7 durable cursor:
 
@@ -50,7 +50,7 @@ Single-context law remains:
 
 > Physical availability of information does not make it logically eligible for the active HDM role.
 
-Broad implementation remains blocked until final architecture closure and explicit implementation planning, except for owner-authorized clean-slate pre-release **data-structure/catalog/schema/machine-contract materialization required by an architecture decision**.
+Broad implementation remains blocked until final architecture closure and explicit implementation planning, except for owner-authorized clean-slate pre-release data-structure/catalog/schema/machine-contract materialization required by an architecture decision.
 
 Current pre-release structural rule:
 
@@ -67,14 +67,7 @@ Staleness must still be proven from current ownership/supersession/consumers, no
 
 ## 2. Preservation and operating rules
 
-A closed topic becomes active only when current work:
-
-1. materially extends the accepted contract;
-2. exposes a contradiction or invalid assumption;
-3. introduces a new consumer the accepted contract cannot satisfy; or
-4. makes the accepted decision insufficient for a current requirement.
-
-House Rules is currently reopened only because the Senior whole-project audit found a real human-decision-gate failure and an incomplete richer machine-consumer contract. The preserved directions enumerated in the reopen HOLD remain closed to casual relitigation.
+A closed topic becomes active only when current work materially extends/contradicts it, adds an unsatisfied consumer, or makes the accepted decision insufficient.
 
 Operating rules:
 
@@ -99,8 +92,8 @@ Operating rules:
 | R2.4 | **COMPLETE / ARCHITECTURE CLOSED** | single-context LLM execution/instructions |
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
-| House Rules | **HOLD / REOPENED AT STEP 2–3** | campaign semantic policy, rulings, typed adjudication boundary |
-| S6D | **PREPARED / BLOCKED / NOT STARTED** | residual rules/seed/catalog debt |
+| House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
+| S6D | **PREPARED / NEXT / NOT STARTED** | residual rules/seed/catalog debt |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
 
 ---
@@ -111,12 +104,8 @@ Operating rules:
 R2.0..R2.6 COMPLETE
     -> R2.7 WP-01..WP-05 CLOSED
     -> R2.7 WP-06 PARTIAL / PAUSED
-    -> HOUSE RULES STEP 1 PRESERVED
-    -> HOUSE RULES STEP 2 AUDIT REPAIR COMPLETE
-    -> HOUSE RULES STEP 3 HUMAN DECISION GATE      [CURRENT]
-    -> HOUSE RULES STEP 4..8 RERUN/RECONCILE ONLY AFTER HUMAN DECISION
-    -> HOUSE RULES CANONICALIZATION
-    -> S6D Task/Domain 1 Step 1                    [BLOCKED]
+    -> HOUSE RULES STEPS 1-8 COMPLETE / REPAIRED CLOSURE
+    -> S6D Task/Domain 1 Step 1                    [NEXT / NOT STARTED]
     -> ... each S6D domain full eight-step loop ...
     -> S6D integrated closure
     -> R2.7 WP-06 RESUME
@@ -125,42 +114,53 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**S6D may not start from the earlier attempted House-Rules Step-8 closure.** The current House-Rules human decision gate must first close and the downstream House-Rules steps must be rerun/reconciled through a valid Step 8.
+**Stop here.** S6D does not start automatically from House-Rules canonicalization. It begins only on the next explicit continuation with its first domain at Step 1 — Architecture Task Brief.
 
 ---
 
-## 5. House Rules current state
+## 5. House Rules closed state
 
-Step 1 remains valid and is not reopened:
+Primary canonical owner:
 
-- `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
+- `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`
 
-Current Step-2 evidence repair:
+Repaired closure chain:
 
-- `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`
+- Step 1 — `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
+- Step 2 repair — `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`
+- Step 3 amended decision brief — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md`
+- Step 3 owner decision — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md`
+- Step 4 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-4-collaborative-review-v2.md`
+- Step 5 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-5-candidate-spec-v2.md`
+- Step 6 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-6-adversarial-review-v2.md`
+- Step 7 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-7-resolution-gate-v2.md`
+- Step 8 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`
 
-Current Step-3 human gate:
+Settled responsibility/authority:
 
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md`
+```text
+runtime responsibility         existing owners + narrow structured sidecar
+INTERPRETIVE_POLICY            every active multiplayer PLAYER by default
+MECHANICAL_OVERRIDE_POLICY     creator by default; explicit creator-issued per-PLAYER grant
+creator source                 existing first campaign initialization commit provenance
+MANIFEST creator field         NONE / intentionally unchanged
+policy notification            normal refresh + changed paths + OOC notice in current output
+background push/outbox         NONE
+```
 
-The former Step-4..8 artifacts and `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md` are **attempted-closure/candidate material while the HOLD is active**. The hold status artifact controls that gate; preserved noncontroversial directions remain evidence inputs.
+Machine contracts materialized during architecture because clean-slate authorization applies:
 
-Machine-contract repair already materialized because it is derivable and independent of the unresolved policy-adoption authority decision:
+- richer frozen adjudicated Activity parameter binding contracts/tests;
+- `GAME/SCHEMA/player.schema.yaml` mechanical-override grant;
+- `GAME/SCHEMA/house_rules_policy.schema.yaml`;
+- `GAME/CAMPAIGN/RULES/HOUSE_RULES.yaml`;
+- matching runtime-facing policy/adjudication/access-control contracts and focused tests.
 
-- `DEV/SCHEMAS/activity-parameter-binding.schema.json`;
-- tightened `DEV/SCHEMAS/activity-parameter-spec.schema.json`;
-- updated ActionRequest/Resolution/Continuation/receipt schemas;
-- `DEV/TESTS/test_house_rules_adjudicated_input_contract.py`.
-
-The registered `mechanical-surfaces.json` context-fact channel remains boolean by design.
-
-Remaining human decisions are responsibility shape and campaign policy-adoption/delegation authority. Step 4 is blocked until those decisions are explicit.
+Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 6. Preserved House-Rules directions during HOLD
-
-Do not reopen these solely because the gate failed:
+## 6. Preserved House-Rules laws
 
 - LLM semantic judgment remains separate from deterministic execution;
 - LLM/prose does not own RNG or canonical state mutation;
@@ -174,11 +174,13 @@ Do not reopen these solely because the gate failed:
 - multiplayer propagation is publication/currentness + context assembly, not chat copying;
 - accepted policy-dependent causal inputs remain frozen across retry/recovery;
 - later policy publication is forward-looking;
-- structured promotion is optional and must not duplicate deterministic owners.
+- structured promotion is optional and must not duplicate deterministic owners;
+- unindexed normative prose is not admitted as durable policy authority;
+- explicit realization refs are linkage, not execution authority.
 
 ---
 
-## 7. S6D — blocked
+## 7. S6D — next but not started
 
 S6D decomposition/evidence inputs remain:
 
@@ -186,7 +188,7 @@ S6D decomposition/evidence inputs remain:
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
-The plan is a decomposition/coverage index only. When unblocked, the next S6D domain begins at **Step 1 — Architecture Task Brief**. No S6D task/domain is active now.
+The plan is a decomposition/coverage index only. The next S6D domain begins at **Step 1 — Architecture Task Brief**. No S6D domain is active now.
 
 ---
 
@@ -202,19 +204,17 @@ WP-06 IN PROGRESS / PAUSED
 WP-07..WP-27 NOT STARTED
 ```
 
-The immutable pre-pause R2.7 obligation checkpoint remains recorded in the durable audit status. R2.7 WP-06 resumes only after a valid House-Rules closure and S6D integrated closure.
+R2.7 WP-06 resumes only after S6D integrated closure.
 
 ---
 
 ## 9. Current continuation point
 
 ```text
-HOUSE_RULES_STEP_1: PRESERVED
-HOUSE_RULES_STEP_2: REPAIRED / EVIDENCE DELTA COMPLETE
-HOUSE_RULES_STEP_3: HUMAN DECISION REQUIRED
-HOUSE_RULES_STEP_4_PLUS: BLOCKED
-S6D: BLOCKED / NOT STARTED
+HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
+S6D: NEXT / NOT STARTED
+S6D_ACTIVE_STAGE: NONE
 R2_7_WP06: PAUSED
 ```
 
-Next action: obtain the explicit human decisions requested by the amended Step-3 Decision Brief. Do not infer them from prior GO language or conversation silence.
+Next action requires explicit owner continuation into S6D. Do not start it from this roadmap update alone.
