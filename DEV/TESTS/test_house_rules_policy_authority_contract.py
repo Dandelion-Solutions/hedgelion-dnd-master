@@ -31,6 +31,7 @@ class HouseRulesPolicyAuthorityContractTests(unittest.TestCase):
         self.assertIn("missing/null mechanical_override_policy means false", joined)
         self.assertIn("campaign creator", joined)
         self.assertIn("active PLAYER", joined)
+        self.assertIn("self-grant", joined)
 
     def test_structured_sidecar_is_narrow_identity_currentness_evidence(self):
         schema = load_yaml(SCHEMA / "house_rules_policy.schema.yaml")
@@ -66,19 +67,21 @@ class HouseRulesPolicyAuthorityContractTests(unittest.TestCase):
         self.assertEqual(manifest["rules"]["house_rules_path"], "RULES/HOUSE_RULES.md")
         self.assertNotIn("creator", manifest)
 
-    def test_runtime_policy_laws_distinguish_adoption_and_notification(self):
+    def test_runtime_policy_laws_distinguish_adoption_and_refresh_notification(self):
         access = (ROOT / "DEV" / "ARCHITECTURE" / "ACCESS_CONTROL.md").read_text(encoding="utf-8")
-        multiplayer = (GAME / "CORE" / "MULTIPLAYER.md").read_text(encoding="utf-8")
         house_rules = (CAMPAIGN / "RULES" / "HOUSE_RULES.md").read_text(encoding="utf-8")
+        session_schema = load_yaml(SCHEMA / "session.schema.yaml")
 
-        for text in (access, multiplayer, house_rules):
+        for text in (access, house_rules):
             self.assertIn("INTERPRETIVE_POLICY", text)
             self.assertIn("MECHANICAL_OVERRIDE_POLICY", text)
 
         self.assertIn("policy_authority.mechanical_override_policy", access)
-        self.assertIn("changed-path", multiplayer)
-        self.assertIn("policy", multiplayer.lower())
+        self.assertIn("changed-path", house_rules)
         self.assertIn("конец", house_rules.lower())
+        self.assertIn("background", house_rules.lower())
+        self.assertIn("base_head_sha", session_schema["fields"])
+        self.assertNotIn("policy_notification_cursor", session_schema["fields"])
 
 
 if __name__ == "__main__":
