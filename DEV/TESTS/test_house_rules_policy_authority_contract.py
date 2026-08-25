@@ -32,6 +32,7 @@ class HouseRulesPolicyAuthorityContractTests(unittest.TestCase):
         self.assertIn("campaign creator", joined)
         self.assertIn("active PLAYER", joined)
         self.assertIn("self-grant", joined)
+        self.assertIn("HARD access-control", joined)
 
     def test_structured_sidecar_is_narrow_identity_currentness_evidence(self):
         schema = load_yaml(SCHEMA / "house_rules_policy.schema.yaml")
@@ -51,11 +52,15 @@ class HouseRulesPolicyAuthorityContractTests(unittest.TestCase):
             "enum[campaign_creator, active_player_interpretive, creator_delegated_mechanical_override]",
         )
         self.assertEqual(item["adopted_by_player_id"], "string|null")
+        self.assertEqual(item["realization_refs"], "array[string]")
+        self.assertNotIn("capability_refs", item)
         self.assertNotIn("normative_text", item)
         joined = "\n".join(schema["invariants"])
         self.assertIn("campaign revision", joined)
         self.assertIn("not a global policy epoch", joined)
         self.assertIn("routing-only", joined)
+        self.assertIn("exactly one current sidecar entry", joined)
+        self.assertIn("unindexed normative prose", joined)
 
     def test_campaign_template_contains_empty_sidecar_without_manifest_rewrite(self):
         template = load_yaml(CAMPAIGN / "RULES" / "HOUSE_RULES.yaml")
@@ -78,6 +83,8 @@ class HouseRulesPolicyAuthorityContractTests(unittest.TestCase):
 
         self.assertIn("policy_authority.mechanical_override_policy", access)
         self.assertIn("changed-path", house_rules)
+        self.assertIn("realization_refs", house_rules)
+        self.assertIn("unindexed", house_rules.lower())
         self.assertIn("конец", house_rules.lower())
         self.assertIn("background", house_rules.lower())
         self.assertIn("base_head_sha", session_schema["fields"])
