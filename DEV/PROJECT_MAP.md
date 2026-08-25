@@ -262,6 +262,8 @@ is the only consumer.
 - `specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md` — explicit human owner decision closing House-Rules responsibility/adoption authority gate.
 - `specs/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md` — repaired House-Rules eight-step closure record and stop-before-S6D handoff.
 - `specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-canonicalization.md` — S6D-01 eight-step closure record and stop-before-S6D-02 handoff.
+- `specs/2026-08-25-s6d-02-catalog-admission-gap-closure-task-brief.md` — current S6D-02 Step-1 framing: two-axis admission/realization ledger, registry strata, evidence hierarchy and stop-before-Step-2 boundary.
+- `specs/2026-08-25-s6d-02-catalog-admission-gap-closure-brief-critic.md` — mandatory whole-project Step-1 critique and repair record; zero unresolved blocking/significant findings.
 - `specs/` — other dated architecture/design, review, decision and canonicalization-chain artifacts. Prefer current roadmap/owner decisions and the actual owning canonical sources over filename recency alone.
 - `plans/` — implementation plans produced after approved designs. They are execution guidance, not architecture authority when a later canonical spec supersedes assumptions.
 
