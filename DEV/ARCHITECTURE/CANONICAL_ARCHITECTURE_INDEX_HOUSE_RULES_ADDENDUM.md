@@ -1,83 +1,56 @@
 # Canonical Architecture Index — Campaign House Rules Addendum
 
-Status: **DERIVATIVE / NON-NORMATIVE NAVIGATION ADDENDUM**
+Status: **DERIVATIVE / NON-NORMATIVE / HOUSE RULES CURRENTLY ON STEP 2–3 HOLD**
 
 Date: 2026-08-25
 
-This addendum extends `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` for the House Rules design closure without rewriting the older Steps-1–5 navigation index.
+This addendum is navigation only. It creates no semantic authority and currently records a **reopened design gate**, not canonical House-Rules closure.
 
-It creates no semantic authority. Primary owning sources always win.
+Current gate/status owner:
 
----
+- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-senior-audit-reopen-hold.md`
 
-## Campaign House Rules / established Rulings
+Current design sources:
 
-**Architecture status:** CANONICAL / CLOSED.
+- Step 1 — `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md` — PRESERVED;
+- Step 2 audit delta — `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md` — COMPLETE;
+- Step 3 amended Decision Brief — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md` — HUMAN DECISION REQUIRED.
 
-Primary owner:
-
-- `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`
-
-Design-cycle evidence:
-
-- Step 1 — `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
-- Step 2 — `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-research-architecture-draft.md`
-- Step 3 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief.md`
-- Step 4 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-4-collaborative-review.md`
-- Step 5 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-5-candidate-spec.md`
-- Step 6 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-6-adversarial-review.md`
-- Step 7 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-7-resolution-gate.md`
-- Step 8 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-8-canonicalization.md`
+The earlier Step-4..8 artifacts and `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md` are attempted-closure/candidate material while the HOLD is active. Do not route from their old `CANONICAL/CLOSED` labels without first reading the current HOLD and amended Step-3 gate.
 
 Runtime-facing campaign policy surface:
 
-- `GAME/CAMPAIGN/RULES/HOUSE_RULES.md`
+- `GAME/CAMPAIGN/RULES/HOUSE_RULES.md` — retained only as the shipped purpose/limit projection; it does not establish adoption authority or implementation completeness.
 
-### Locator summary
+Current richer adjudication machine-contract surfaces:
 
-| Concern | Primary owner / inherited owner |
-|---|---|
-| Campaign semantic game-rule/adjudication policy | `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md` |
-| Truth/knowledge/disclosure + role context | Step-4 canonical spec + 2026-08-23 single-context containment amendment |
-| Bounded retrieval/currentness/eligibility | `2026-08-24-r2-3-context-runtime-canonical-spec.md` |
-| One-context role rebinding + instruction/data fencing | `2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md` |
-| Campaign publication/CAS | Step 5.6 canonical spec |
-| Recovery / accepted frozen inputs | Step 5.7 canonical spec |
-| Multiplayer live/currentness | Step 5.8 canonical spec + R2.5 canonical spec |
-| Deterministic mechanical execution | Activity / Rule Element / Step-3 execution owners |
+- `DEV/CATALOG/mechanical-surfaces.json` — boolean registered invocation facts remain unchanged;
+- `DEV/SCHEMAS/activity-parameter-spec.schema.json` — bounded richer adjudicated parameter declarations;
+- `DEV/SCHEMAS/activity-parameter-binding.schema.json` — accepted richer adjudication evidence;
+- `DEV/SCHEMAS/action-request.schema.json`;
+- `DEV/SCHEMAS/runtime-resolution-state.schema.json`;
+- `DEV/SCHEMAS/runtime-continuation-state.schema.json`;
+- `DEV/SCHEMAS/resolution-receipt.schema.json`;
+- `DEV/TESTS/test_house_rules_adjudicated_input_contract.py`.
 
-### Integrated invariant summary
+Preserved inherited owners still include:
+
+- Step-4 truth/knowledge/disclosure + role-context contracts;
+- R2.3 bounded Context Runtime;
+- R2.4 role rebinding/instruction-data fencing;
+- Step-5.6/5.7/5.8 publication/recovery/currentness;
+- R2.5 multiplayer collaboration/current-frontier rules;
+- Activity / Rule Element / Step-3 deterministic execution owners.
+
+Current program routing:
 
 ```text
-LLM semantic applicability
-    != deterministic execution authority
-
-current published campaign policy
-    != local file existence / remembered chat
-
-physical context presence
-    != role/consumer information eligibility
-
-policy prose
-    != system/engine instruction tier
-
-new affected Resolution
-    -> current policy basis required before acceptance
-
-accepted Resolution generation
-    -> frozen historical policy basis survives later publication
-
-multiplayer propagation
-    = authoritative publication/currentness + bounded context assembly
-    != copying Markdown among chats
+HOUSE RULES STEP 1  PRESERVED
+HOUSE RULES STEP 2  REPAIRED
+HOUSE RULES STEP 3  HUMAN DECISION GATE
+STEP 4..8           BLOCKED
+S6D                 BLOCKED / NOT STARTED
+R2.7 WP-06          PAUSED
 ```
 
-No House-Rules-specific global frontier/synchronization subsystem exists.
-
-### Residual navigation debt
-
-R2.3 canonical semantics are owned by:
-
-- `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md`.
-
-The convenience path `DEV/ARCHITECTURE/CONTEXT_RUNTIME.md` named in some planning material is absent at the House-Rules canonicalization HEAD. Treat this as nonblocking navigation/documentation debt, not as missing House-Rules semantics.
+Residual R2.3 navigation debt remains unchanged: the semantic owner exists at `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md`; the convenience path `DEV/ARCHITECTURE/CONTEXT_RUNTIME.md` is absent.
