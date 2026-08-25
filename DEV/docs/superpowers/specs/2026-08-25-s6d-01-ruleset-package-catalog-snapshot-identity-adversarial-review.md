@@ -62,9 +62,9 @@ Disposition: candidate laws explicitly keep campaign/session frontiers owner-loc
 
 Severity: **CHALLENGE / ACCEPTED CONSERVATIVE BOUNDARY**
 
-Attack: a compatible additive ruleset set requires creator adoption rather than silent non-creator refresh.
+Attack: the candidate incorrectly converted a compatible/additive ruleset-set change inside a proven forward same-version runtime into creator-gated adoption, contradicting the established silent-refresh contract.
 
-Disposition: this is required because campaign semantics and portability change. Engine-only maintenance with unchanged set digest remains silent. Accepted work keeps exact meaning. No owner trade-off remains.
+Disposition: corrected. The runtime may be used immediately without a player prompt; a non-creator cannot persist campaign engine/ruleset identity; the creator refreshes both sibling projections coherently at the next valid persistence boundary. Accepted work keeps exact meaning. Incompatible or ambiguous replacements still require explicit creator-authorized adoption/migration.
 
 ### AR-07 — Package-set retention could imply global refcount/GC
 
@@ -83,7 +83,7 @@ Disposition: canonical House Rules already supports typed realization refs witho
 | Scenario | Required outcome | Candidate result |
 |---|---|---|
 | same engine/source descendant, identical ruleset set | silent maintenance allowed | PASS |
-| same engine/source descendant, changed ruleset set | semantic adoption, creator only | PASS |
+| same engine/source descendant, compatible/additive changed ruleset set | silent use; creator-only identity persistence | PASS |
 | same ZIP content claim but rules file tampered | content/lock validation fails | PASS after AR-02/03 correction |
 | packages discovered in different order | same set digest | PASS after serialization correction |
 | dependency cycle or namespace collision | finite load failure | PASS |

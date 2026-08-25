@@ -87,7 +87,7 @@ A non-creator is never offered semantic-version migration authority for somebody
 
 A package with the same semantic `engine_version` and same logical `package_id` as `MANIFEST.engine.current` is not a semantic-version upgrade.
 
-Within one semantic version, a proven forward source revision is treated as a compatible cosmetic/maintenance **same-version refresh** under this contract and does not require a player prompt.
+Within one semantic version, a proven forward source revision is treated as a compatible cosmetic/maintenance **same-version refresh** under this contract and does not require a player prompt. This remains true when the candidate embeds a changed but compatible/additive `ruleset_set_sha256`: exact ruleset identity changes, but the already-authorized forward same-version maintenance flow does not become a semantic-version migration or a player decision. Incompatible, backward, diverged or ambiguous ruleset-set replacements are excluded from silent refresh.
 
 Candidate provenance MUST use `RUNTIME_PACKAGE.source_commit_sha` from the candidate ZIP itself. Do not infer the candidate's source SHA solely from the current position of a mutable tag.
 
@@ -127,11 +127,12 @@ If authenticated user is campaign creator, refresh these fields at the next othe
 MANIFEST.engine.current.source_commit_sha
 MANIFEST.engine.current.package_sha256
 MANIFEST.engine.current.adopted_at
+MANIFEST.ruleset.current.ruleset_set_sha256  # when the embedded set changed
 ```
 
-This provenance refresh MUST NOT create a standalone cosmetic commit merely to record the same-version package change.
+Engine provenance and the sibling ruleset projection refresh coherently when both changed. This provenance refresh MUST NOT create a standalone cosmetic commit merely to record the same-version package change.
 
-If current user is a **non-creator**, the compatible forward same-version runtime may still be used for play, but MANIFEST remains unchanged because that user lacks authority to persist campaign engine identity. A later creator session may refresh stale provenance at a normal coherent boundary.
+If current user is a **non-creator**, the compatible forward same-version runtime—including its exact compatible/additive embedded ruleset set—may still be used for play, but MANIFEST remains unchanged because that user lacks authority to persist campaign engine or ruleset identity. A later creator session may refresh stale provenance at a normal coherent boundary.
 
 ## Storage baseline same-version refresh
 

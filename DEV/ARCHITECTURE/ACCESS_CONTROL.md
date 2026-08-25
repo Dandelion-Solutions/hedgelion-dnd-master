@@ -32,7 +32,7 @@ Before an owner-only campaign operation, resolve creator login + current authent
 
 Creator identity is immutable for the campaign. Once authoritatively resolved for an applicable session/authority operation, it may be retained as session-local derived authorization evidence; ordinary gameplay does not reread Git history per turn merely to rediscover the same creator.
 
-Owner-only campaign operations include switching singleplayer/multiplayer, changing join policy, deactivating/reactivating another player's binding, campaign-wide engine update-policy changes, engine migration, explicit access/global maintenance, and granting/revoking another PLAYER's mechanical-override policy-adoption authority.
+Owner-only campaign operations include switching singleplayer/multiplayer, changing join policy, deactivating/reactivating another player's binding, campaign-wide engine update-policy changes, explicit engine or ruleset adoption/migration, persistence of campaign engine/ruleset identity changes, explicit access/global maintenance, and granting/revoking another PLAYER's mechanical-override policy-adoption authority. A non-creator's immediate use of a proven compatible forward same-version runtime under `GAME/CORE/ENGINE_UPDATES.md` is not adoption authority and does not authorize a MANIFEST write.
 
 In singleplayer the creator check applies to every gameplay-state write. Other collaborators may read/observe but not publish gameplay changes.
 

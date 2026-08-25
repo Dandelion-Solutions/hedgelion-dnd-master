@@ -171,15 +171,17 @@ Checkpoint/diagnostic evidence may repeat refs for routing, but campaign and acc
 
 Within one compatibility line, existing definition IDs cannot change incompatible kind/meaning and required definitions cannot disappear without an explicit migration boundary.
 
-A same-engine-version/package-ID/source-descendant candidate is a nonsemantic silent refresh only when `ruleset_set_sha256` is unchanged.
+A same-engine-version/package-ID/source-descendant candidate follows the silent forward-refresh contract in `GAME/CORE/ENGINE_UPDATES.md`. An unchanged `ruleset_set_sha256` is trivially nonsemantic maintenance. A changed set digest does not by itself turn that proven compatible same-version runtime refresh into a prompted migration.
 
-If the set digest changes—even compatibly or additively—the change is semantic ruleset adoption:
+For a proven forward same-version refresh whose embedded ruleset set changes compatibly or additively:
 
-- campaign creator authority is required;
-- prepared/unaccepted work revalidates;
+- the runtime may use the candidate immediately without a player prompt;
+- prepared/unaccepted work revalidates against the candidate set;
 - accepted work retains its exact prior set identity;
-- non-creator cannot silently advance campaign rules semantics;
-- campaign `ruleset.current` changes in the coherent adoption transaction.
+- a non-creator may use the refreshed runtime and its exact embedded set for play, but cannot persist either campaign engine identity or `ruleset.current`;
+- the campaign creator silently refreshes `engine.current` provenance and `ruleset.current` together at the next otherwise-valid coherent campaign persistence boundary; no standalone maintenance commit is created.
+
+An incompatible, backward, diverged or otherwise ambiguous ruleset-set replacement is not a silent refresh. It requires explicit creator-authorized adoption/migration under the applicable migration owner.
 
 Future migration across incompatible released compatibility lines remains owned by R2.7 WP-20.
 

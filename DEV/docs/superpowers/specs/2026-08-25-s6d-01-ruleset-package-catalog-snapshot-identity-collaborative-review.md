@@ -30,7 +30,7 @@ The candidate must preserve:
 
 - runtime ZIP/package isolation and generated provenance;
 - engine/catalog/ruleset/artifact identity non-equivalence;
-- campaign creator adoption authority and non-creator restrictions;
+- the established authority split: non-creator compatible same-version use versus creator-only identity persistence/adoption;
 - Step-3 accepted-generation pinning;
 - Step-5 owner-native recovery and checkpoint nonauthority;
 - Step-5.13 typed retention/protection;
@@ -44,7 +44,7 @@ The candidate must preserve:
 2. Content digest covers the semantic package file set, not the entire runtime ZIP.
 3. Resolved-set digest is order-independent but dependency validation is exact and cycle-free.
 4. Campaign/session definition frontiers are not coerced into release packages.
-5. Changed ruleset-set identity is semantic adoption even when engine version/source ancestry is unchanged.
+5. A proven forward same-version runtime remains silent when its embedded ruleset set changes compatibly/additively; non-creators may use it but only the creator may persist the changed campaign identities.
 6. S6D-01 defines contracts and downstream machine obligations; S6D-02 supplies actual seed package namespaces/content, and S6D-11 implements integrated TDD closure.
 
 ## 4. Gate

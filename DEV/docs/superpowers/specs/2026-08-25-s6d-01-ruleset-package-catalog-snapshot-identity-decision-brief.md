@@ -43,7 +43,7 @@ Required projections:
 
 1. Engine version, catalog generation, source SHA, ZIP digest, package version, compatibility line, ruleset content digest and context fingerprint remain distinct.
 2. A same-engine-version descendant build is a nonsemantic refresh only when its resolved ruleset-set digest is unchanged.
-3. A changed ruleset set is campaign semantic adoption, even if declared compatible/additive; creator authority and coherent publication apply.
+3. A proven forward same-engine-version runtime refresh remains silent when its ruleset set changes compatibly/additively. A non-creator may use it but cannot persist campaign engine/ruleset identity; the creator later refreshes both sibling projections coherently. Incompatible or ambiguous replacement requires explicit creator-authorized adoption/migration.
 4. Accepted work retains its exact set identity and is never reinterpreted from ambient newer rules.
 5. Exact required snapshots are retained while promised consumers depend on them.
 6. No global snapshot record, package manager, online resolver, per-record package versions or implicit package fork is introduced.

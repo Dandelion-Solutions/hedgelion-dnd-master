@@ -127,17 +127,19 @@ Checkpoint/diagnostic evidence may repeat package/context refs for routing, but 
 
 Within one compatibility line, an existing definition ID may not change kind or incompatible meaning and a required definition may not disappear without an explicit migration boundary. Release/S6D-11 validation must enforce what can be mechanically proven.
 
-### LAW S6D01-14 — SAME-VERSION REFRESH REQUIRES SAME RULESET SET
+### LAW S6D01-14 — SAME-VERSION REFRESH PRESERVES THE EXISTING AUTHORITY SPLIT
 
-Source ancestry is provenance only. A same-engine-version/package-ID candidate is a nonsemantic silent refresh only when `ruleset_set_sha256` equals the campaign's current value.
+Source ancestry is provenance only. Same-engine-version/package-ID candidates follow `GAME/CORE/ENGINE_UPDATES.md`.
 
-If the set digest differs, the change is semantic ruleset adoption even if additive or on the same compatibility line:
+A proven forward same-version runtime refresh remains silent when its embedded ruleset set is unchanged or changes compatibly/additively:
 
-- campaign creator authority is required;
+- the runtime may use the candidate immediately without a player prompt;
 - prepared/unaccepted work revalidates;
-- accepted work retains exact prior set identity;
-- non-creator use cannot advance campaign semantics;
-- coherent publication updates campaign current identity.
+- accepted work retains the exact former set;
+- a non-creator may use the candidate but cannot persist campaign engine or ruleset identity;
+- the creator silently refreshes `engine.current` and `ruleset.current` together at the next otherwise-valid coherent persistence boundary.
+
+Incompatible, backward, diverged or ambiguous ruleset-set replacement requires explicit creator-authorized adoption/migration.
 
 ### LAW S6D01-15 — INCOMPATIBLE LINE MIGRATION REMAINS WP-20
 
@@ -211,7 +213,7 @@ S6D-11 must cover:
 6. engine/catalog mismatch rejection;
 7. runtime package lock matches shipped files;
 8. campaign creation/adoption projections;
-9. same-version refresh: same set allowed, changed set requires creator adoption;
+9. same-version refresh: compatible forward use is silent; only the creator may persist changed campaign engine/ruleset identity;
 10. Resolution/Continuation preservation and mismatch blocking;
 11. checkpoint cannot override accepted identity;
 12. retained snapshot dependency blocks cleanup;
