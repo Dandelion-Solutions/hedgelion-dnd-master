@@ -274,6 +274,8 @@ is the only consumer.
 - `specs/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-task-brief.md` — S6D-04 Step-1 framing for the exact accessor/fact/derived-node census, input authority, missing semantics, scoped dependency graph and query exclusion.
 - `specs/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-brief-critic.md` — mandatory whole-project Step-1 critique; both significant framing findings repaired, final PASS.
 - `research/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-research-architecture-draft.md` and matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-04 Steps 2–8 evidence chain.
+- `specs/2026-08-25-s6d-05-activity-parameters-targeting-costs-portable-values-task-brief.md` — S6D-05 Step-1 framing for embedded Activity/protocol values, declaration-binding compatibility and execution/recovery equality.
+- `specs/2026-08-25-s6d-05-activity-parameters-targeting-costs-portable-values-brief-critic.md` — mandatory whole-project Step-1 critique; exact high-risk Source Manifest routes repaired, final PASS.
 - `DEV/TESTS/test_s6d_03_selector_metadata_contract.py` — exact 34/26 accounting, active/dormant equality, metadata/policy/input/dependency verification.
 - `research/2026-08-25-s6d-02-catalog-admission-gap-closure-research-architecture-draft.md` and the matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-02 Steps 2–8 evidence chain.
 - `DEV/TESTS/test_s6d_02_catalog_admission_contract.py` — exact ledger/core equality, legal state and package-plan boundary checks.
@@ -575,4 +577,5 @@ only be linked/summarized here.
 
 Do not treat this map's coverage as semantic coverage of the repository. Its job
 is to route the agent to the evidence needed to prove a task-specific conclusion.
+
 
