@@ -1,8 +1,8 @@
 # R2.7 — Audit Status / Durable Cursor
 
-Status: **PAUSED BY OWNER — HOUSE RULES STEP 1 COMPLETE / STEP 2 NEXT; S6D AFTER**
+Status: **PAUSED BY OWNER — HOUSE RULES ARCHITECTURE CLOSED / S6D NEXT BUT NOT STARTED**
 
-Date: 2026-08-24
+Date: 2026-08-25
 
 Execution protocol:
 
@@ -16,15 +16,22 @@ Current sequencing owner:
 
 - `DEV/docs/superpowers/specs/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
 
-House Rules design input:
+House Rules canonical owner:
 
-- `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md`
+- `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`
 
-House Rules Step-1 Task Brief:
+House Rules design-cycle closure:
 
-- `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
+- Step 1 — `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
+- Step 2 — `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-research-architecture-draft.md`
+- Step 3 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief.md`
+- Step 4 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-4-collaborative-review.md`
+- Step 5 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-5-candidate-spec.md`
+- Step 6 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-6-adversarial-review.md`
+- Step 7 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-7-resolution-gate.md`
+- Step 8 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-8-canonicalization.md`
 
-S6D decomposition/evidence inputs:
+S6D decomposition/evidence inputs remain:
 
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
@@ -32,13 +39,15 @@ S6D decomposition/evidence inputs:
 
 ## Immutable pre-pause checkpoint
 
-The complete R2.7 cursor, open forward obligations, closed-domain summaries and pre-pause recovery state are preserved in Git blob:
+The complete R2.7 cursor, open forward obligations, closed-domain summaries and pre-pause recovery state remain preserved in Git blob:
 
 ```text
 PRE_PAUSE_STATUS_BLOB_SHA: d486825dc5c9463b2e2159086e6c7102c3caf354
 ```
 
 Do not reconstruct those obligations from conversation history.
+
+---
 
 ## Durable cursor
 
@@ -52,19 +61,24 @@ NEXT_R2_7_DOMAIN_AFTER_RESUME: WP-07
 OWNER_GATE: PROGRAM PAUSE / HOUSE_RULES_THEN_S6D
 FINAL_RECONCILIATION: NOT_STARTED
 
-NEXT_WORKSTREAM: HOUSE_RULES_ARCHITECTURE
-HOUSE_RULES_STATUS: STEP 1 COMPLETE / STEP 2 RESEARCH NEXT
-HOUSE_RULES_TASK_BRIEF: DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md
-HOUSE_RULES_NEXT: Step 2 — Research & Architecture Draft
+HOUSE_RULES_WORKSTREAM: CLOSED / CANONICAL
+HOUSE_RULES_STATUS: STEPS 1-8 COMPLETE
+HOUSE_RULES_CANONICAL_OWNER: DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md
+HOUSE_RULES_ADVERSARIAL_RESULT: 0 BLOCKER / 0 SIGNIFICANT / 1 NONBLOCKING MINOR R2.3 NAVIGATION-DEBT FINDING
 
-FOLLOWING_WORKSTREAM: S6D — Step-6 Residual Rules/Seed Debt Closure
-S6D_STATUS: PREPARED / NOT STARTED
+NEXT_WORKSTREAM: S6D — Step-6 Residual Rules/Seed Debt Closure
+S6D_STATUS: NEXT / PREPARED / NOT STARTED
 S6D_EXECUTION_RULE: each numbered task/domain runs its own full 8-step deep-design loop
-S6D_START_TRIGGER: House Rules Step 8 canonicalization complete
+S6D_START_TRIGGER: SATISFIED BY HOUSE RULES STEP 8, BUT OWNER REQUESTED STOP BEFORE S6D
+S6D_ACTIVE_STAGE: NONE
+
+R2_7_STATUS: PAUSED AT WP-06
 R2_7_RESUME_TRIGGER: S6D integrated closure/resolution gate complete
 ```
 
-The roadmap still owns program sequencing. If its narrative continuation text still says that the next chat begins House Rules Step 1, this durable cursor is the later workstream-progress record: Step 1 is now complete and Step 2 is next. The sequencing itself is unchanged.
+**Stop point:** House Rules canonicalization is complete. Do not begin S6D until a subsequent explicit continuation instruction. Do not resume WP-06 before S6D integrated closure.
+
+---
 
 ## R2.7 progress at pause
 
@@ -89,9 +103,11 @@ Do not roll back the following merely because House Rules/S6D were inserted:
 - `world.encounter` no longer owns procedure-local initiative/round operational state in the current machine inventory;
 - WP-06 evidence proved that selector metadata and broader former-Step-6 rules/seed closure remain incomplete.
 
-Later House Rules/S6D evidence may revise insufficient machine details, but does not discard them by default.
+Later S6D evidence may revise insufficient machine details, but does not discard them by default.
 
-## Binding owner decisions
+---
+
+## Binding owner decisions preserved
 
 ### Clean-slate pre-release structural canonicalization
 
@@ -123,39 +139,42 @@ BROAD ORDINARY-TURN INTEGRITY/REPOSITORY SCAN: FORBIDDEN
 SLOW PATH: only for a concrete material trigger
 ```
 
-House Rules and S6D must not weaken this requirement.
+House Rules canonical architecture preserves this requirement. S6D must also preserve it.
 
-## House Rules design boundary — Step-1 challenge result
+---
 
-The design input proposed a two-channel direction:
+## House Rules closure result
+
+Canonical architecture now establishes:
+
+- campaign House Rules/Rulings as persistent LLM-interpreted **semantic gameplay-policy**, not mechanical authority;
+- deterministic/native-owner invariants as the constitutional upper bound;
+- typed deterministic execution as the lower mechanical boundary;
+- explicit distinction between one-off live adjudication and durable policy adoption;
+- lightweight stable policy identity/lifecycle/provenance/current revision semantics without an executable DSL;
+- deny-by-default role/consumer information eligibility through Step-4/R2.3;
+- R2.4 instruction/data fencing: admitted policy is scoped gameplay-policy data, not a privileged prompt tier;
+- R2.3 bounded retrieval/currentness with routing-only indexes/caches;
+- inherited Step-5.6/5.7/5.8 publication/recovery/multiplayer currentness and **no House-Rules-specific global frontier**;
+- current policy before new affected Resolution acceptance, but frozen historical policy basis for already accepted Resolution generations;
+- finite policy conflict and policy-realization/catalog-gap behavior;
+- optional promotion from semantic policy to structured mechanics without forced formalization or duplicate mechanical ownership.
+
+Step-6 House-Rules adversarial review closed with:
 
 ```text
-formalizable mechanic
-    -> typed HDM definitions/policies/Activities/Rule Elements
-    -> deterministic execution
-
-nonformalizable/open-ended fiction judgment
-    -> bounded LLM adjudication under campaign ruling/house-rule policy
-    -> authorized typed input/proposal
-    -> deterministic mechanics/RNG/state acceptance where applicable
+BLOCKER: 0
+SIGNIFICANT: 0
+MINOR: 1
 ```
 
-Step 1 did **not** accept that decomposition as canonical. The Task Brief classifies it as a useful hypothesis and requires Step 2 to test whether representation/execution form, lifecycle/durability and authority/ownership are better treated as independent axes.
+The MINOR is the pre-existing absence of convenience path `DEV/ARCHITECTURE/CONTEXT_RUNTIME.md`; the actual R2.3 semantic owner exists at `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md`. This is navigation/documentation debt only.
 
-Step 1 also established these framing corrections:
+---
 
-- the design brief's Section 13 allowance for early independent S6D work is stale and superseded by the sequencing owner decision;
-- `HOUSE_RULES.md` must not be assumed to own every durable campaign ruling because its current file contract is narrower than the ruling precedence/persistence language in `PLAY_POLICY.md`;
-- a new `GAME/CORE/RULINGS.md`, generic ruling record/DSL, stable ruling ID schema or specific typed receiving surface must be justified by evidence rather than embedded in the assignment;
-- examples such as `fiction.target_reachable` are illustrative and do not prove an existing canonical machine type;
-- retrieval/discoverability is part of correctness because durable precedent must remain applicable without introducing an ordinary-turn full-corpus/repository scan;
-- the intended LLM-readable campaign policy responsibility remains explicitly in scope and must not be silently eliminated by over-formalization.
+## Eight-step rule for S6D remains binding
 
-Full details and Step-2 Source Manifest/questions/alternatives are in the Step-1 Task Brief.
-
-## Eight-step rule
-
-For House Rules, then for every numbered S6D task/domain, use the canonical `DEV/DESIGN_PROCESS.md` loop:
+Every numbered S6D task/domain uses the full `DEV/DESIGN_PROCESS.md` loop:
 
 1. Architecture Task Brief
 2. Research & Architecture Draft
@@ -166,22 +185,23 @@ For House Rules, then for every numbered S6D task/domain, use the canonical `DEV
 7. Resolution Gate
 8. Canonicalization
 
-The existing S6D plan is a work decomposition/coverage index only; do not execute Tasks 1–12 directly as a checklist.
+The existing S6D plan remains a work decomposition/coverage index only.
+
+---
 
 ## Recovery instruction
 
-At the start of the next chat:
+At the start of the next development chat/continuation:
 
 1. perform normal repository bootstrap;
 2. read current roadmap;
 3. read this status file;
-4. read `2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`;
-5. read `2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md` as noncanonical design input;
-6. read `2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md` as the completed Step-1 framing and current research assignment;
-7. begin **House Rules Step 2 — Research & Architecture Draft** using its Source Manifest/evidence gates;
-8. do not resume WP-06;
-9. do not start S6D until House Rules Step 8 canonicalization closes;
-10. after House Rules closes, process each numbered S6D task/domain through its own full eight-step cycle;
-11. after S6D integrated closure, recover the full R2.7 pre-pause obligations from blob `d486825dc5c9463b2e2159086e6c7102c3caf354` plus House Rules/S6D closure artifacts and resume WP-06.
+4. read `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md` as the canonical House-Rules owner;
+5. read `2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`;
+6. confirm House Rules Steps 1–8 are closed;
+7. **do not reopen House Rules without a concrete contradiction/new unsatisfied consumer/insufficiency trigger**;
+8. if explicitly instructed to continue, begin S6D with its next Task/Domain **Step 1**, not by executing the existing plan directly;
+9. do not resume R2.7 WP-06 until S6D integrated closure;
+10. after S6D integrated closure, recover the full R2.7 pre-pause obligations from blob `d486825dc5c9463b2e2159086e6c7102c3caf354` plus House Rules/S6D closure artifacts and resume WP-06.
 
 Conversation history is not a checkpoint.
