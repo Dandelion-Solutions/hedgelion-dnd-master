@@ -2,7 +2,7 @@
 
 Status: **NON-NORMATIVE INTERNAL NAVIGATION INDEX**
 
-Last structural inventory: 2026-08-23
+Last structural inventory: 2026-08-25
 
 ## 1. Purpose
 
@@ -113,15 +113,16 @@ leak into one another merely for development convenience.
 | Integrated canonical architecture lookup (Round 1) | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | owning canonical specs/model contracts, Step-4 single-context amendment, Round-1 closure/rebaseline decision, current `NEAR_TERM_ROADMAP.md` |
 | Catalog/class ownership | `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `CATALOG_INVENTORY.md`, `ENTITY_STRUCTURES.md`, `CATALOG_RESOLUTION.md`, `DEV/CATALOG/` | `DEV/SCHEMAS/`, Actor/Asset/Activity/Rule Element models, catalog tests |
 | Deterministic mechanics/execution | `DEV/ARCHITECTURE/ACTIVITY_MODEL.md`, `RULE_ELEMENT_MODEL.md`, accepted Step-2/Step-3 specs | `GAME/CORE/RUNTIME.md`, `MECHANICS_INTEGRITY.md`, `RANDOMNESS.md`, runtime/value schemas/tests |
+| Campaign House Rules / rulings / policy adoption | `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`, `GAME/CAMPAIGN/RULES/HOUSE_RULES.md`, `GAME/CAMPAIGN/RULES/HOUSE_RULES.yaml` | `DEV/ARCHITECTURE/ACCESS_CONTROL.md`, `GAME/CORE/ADJUDICATION.md`, R2.3 Context Runtime, Step-5.6/5.7/5.8, `GAME/SCHEMA/house_rules_policy.schema.yaml`, `GAME/SCHEMA/player.schema.yaml`, adjudicated-input/player-policy tests |
 | Persistence / durability / recovery | `GAME/CORE/STORAGE.md`, `PERSISTENCE.md`, `DURABILITY_GUARD.md`, `SAVE_CONTRACT.md`, `SESSION.md`, `INTEGRITY.md` | `RUNTIME.md`, `RANDOMNESS.md`, `LIVE_SCENE.md`, `MULTIPLAYER.md`, checkpoint/current/session schemas, Step-5 specs, `MAINTENANCE_COMMANDS.md` |
-| Multiplayer / shared mutable state | `GAME/CORE/MULTIPLAYER.md`, `LIVE_SCENE.md` | `CHRONOLOGY.md`, `PERSISTENCE.md`, access control, live/session/player schemas, Step-5 specs, Round-2 R2.6 when collaboration/scene topology exceeds inherited Step-5 scope |
+| Multiplayer / shared mutable state | `GAME/CORE/MULTIPLAYER.md`, `LIVE_SCENE.md` | `CHRONOLOGY.md`, `PERSISTENCE.md`, access control, live/session/player schemas, Step-5 specs, Round-2 R2.5 when collaboration/scene topology exceeds inherited Step-5 scope |
 | Chronology / temporal continuity | `GAME/CORE/CHRONOLOGY.md`, accepted Step-2 temporal specs | `RUNTIME.md`, `RANDOMNESS.md`, `LIVE_SCENE.md`, `MULTIPLAYER.md`, Step-5.1+ specs, Round-2 continuity work where derived state/history alignment is involved |
 | Campaign bootstrap / creation | `GAME/INSTALL/00_DND_BOOTSTRAP.md`, `GAME/CORE/BOOTSTRAP_RUNTIME.md`, `NEW_CAMPAIGN_FAST_PATH.md`, `CAMPAIGN_SETUP.md`, `GAME/TOOLS/init_campaign.py` | `GAME/CAMPAIGN/`, campaign schemas, `BRANCH_MODEL.md`, `ACCESS_CONTROL.md` |
 | Runtime packaging / versioning / update | `DEV/TOOLS/release_builder.py`, `run_release_build.py`, `DEV/RELEASE/`, `.github/workflows/release-runtime.yml`, `GAME/ENGINE_VERSION.yaml`, `GAME/CORE/ENGINE_UPDATES.md` | `GAME/INSTALL/`, `GAME/MIGRATIONS/`, release tests |
-| Rules/source routing | `GAME/RULES/`, `GAME/CORE/SOURCES.md`, `PLAY_POLICY.md` | domain CORE modules, character readiness, prep/worldgen |
+| Rules/source routing | `GAME/RULES/`, `GAME/CORE/SOURCES.md`, `PLAY_POLICY.md` | domain CORE modules, character readiness, prep/worldgen, campaign House Rules owner when campaign-specific policy applies |
 | LLM/runtime reasoning and presentation | `GAME/CORE/AI_REASONING.md`, `GM_CRAFT.md`, `PREP.md`, `NARRATIVE.md`, `INFORMATION.md`, `LORE.md` | Step-4 canonical spec + single-context amendment, role-context protocols, Round-2 R2.1/R2.2/R2.3/R2.4 as relevant |
 | Support / diagnostics / maintenance | `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` | `GAME/CORE/SESSION.md`, `INTEGRITY.md`, `STORAGE.md`, `PERSISTENCE.md`, checkpoint/session schemas, Step-5 recovery design |
-| Access / repository/campaign ownership | `DEV/ARCHITECTURE/ACCESS_CONTROL.md`, `BRANCH_MODEL.md` | `GAME/CORE/MULTIPLAYER.md`, bootstrap, persistence, player/session schemas |
+| Access / repository/campaign ownership | `DEV/ARCHITECTURE/ACCESS_CONTROL.md`, `BRANCH_MODEL.md` | `GAME/CORE/MULTIPLAYER.md`, bootstrap, persistence, player/session schemas, House-Rules policy-adoption authority |
 | Consistency verification | `DEV/TOOLS/run_maintenance_audit`, `audit_engine.py`, `DEV/TESTS/`, `.github/workflows/validate.yml` | catalogs/schemas/contracts being changed |
 
 This table is a discovery aid. A deep task must still inspect the current tree and
@@ -134,7 +135,7 @@ follow references from the owning artifacts.
 - `AGENTS.md` — repository ownership boundaries, fresh-session bootstrap,
   documentation-evidence discipline, authoritative development/release workflow
   and placement rules.
-- `.github/workflows/validate.yml` — CI validation: maintenance audit plus DEV unit tests.
+- `.github/workflows/validate.yml` — CI validation: maintenance audit plus DEV unit tests; currently triggers on `main`, `feature/**`, version branches `v*/*`, and pull requests.
 - `.github/workflows/release-runtime.yml` — tagged/runtime release build and publication workflow.
 - `.gitignore` — repository-local generated/cache exclusions.
 - `README.md` — manually curated public repository overview; not an automatic development index.
@@ -160,11 +161,12 @@ follow references from the owning artifacts.
 
 Current durable architecture/navigation documents:
 
-- `ACCESS_CONTROL.md` — engine repository authority, campaign creator/player authority and write-routing authorization boundaries.
+- `ACCESS_CONTROL.md` — engine repository authority, campaign creator/player authority, House-Rules policy-adoption grants and write-routing authorization boundaries.
 - `ACTIVITY_MODEL.md` — executable declarative Activity definition and `runtime.resolution` invocation boundary.
 - `ACTOR_MODEL.md` — progressive `world.actor` materialization, archetype/instance split and actor mechanical-state ownership.
 - `ASSET_MODEL.md` — unified reusable/instance model for physical/conceptual assets and their placement/use/lifecycle boundary.
 - `BRANCH_MODEL.md` — engine repository vs runtime package vs campaign-storage topology; campaign/live branch roles and package boundaries.
+- `CAMPAIGN_HOUSE_RULES.md` — canonical campaign House Rules/Rulings semantic-policy boundary, adoption authority, structured sidecar, typed adjudication and realization/currentness contract.
 - `CANONICAL_ARCHITECTURE_INDEX.md` — non-normative Round-1 cross-stage canonical locator/ownership/invariant map. Where its sequencing/status text is stale, current roadmap and later owner decisions/amendments win.
 - `CATALOG_CONTRACTS.md` — universal definition/world/runtime class-admission and record-envelope contracts.
 - `CATALOG_INVENTORY.md` — reviewed class inventory/classification; machine IDs live in `DEV/CATALOG/core-catalog.json`.
@@ -188,7 +190,7 @@ Machine-readable current catalog surfaces; coordinated versions move together:
 - `core-catalog.json` — closed class/capability/protocol vocabulary and IDs.
 - `entity-structures.json` — machine field/definition-binding structure inventory.
 - `identifier-policies.json` — stable identity/allocation policies including campaign allocator rules.
-- `mechanical-surfaces.json` — registered deterministic mechanical selectors/operations/surfaces.
+- `mechanical-surfaces.json` — registered deterministic mechanical selectors/operations/surfaces; its `INVOCATION_ADJUDICATED` context-fact channel remains boolean-only.
 
 Read their schemas/tests before changing them. Human-readable architecture docs
 explain semantics; these JSON files are machine contracts, not prose summaries.
@@ -200,7 +202,8 @@ Development-only JSON Schemas for machine contracts. Major families include:
 - catalog/envelope schemas (`catalog-definition`, `core-catalog`, `entity-structures`, identifier policies, world-record);
 - domain-definition/state schemas (Actor, Asset, Resource, Effect, Condition and related Step-2 structures);
 - execution/runtime schemas (command, intent plan, resolution, procedure, continuation and related Step-3 records);
-- embedded value/protocol schemas (duration, temporal binding, execution segment, pending child, invocation facts, receipts, boundary occurrences and similar values).
+- embedded value/protocol schemas (duration, temporal binding, execution segment, pending child, invocation facts, receipts, boundary occurrences and similar values);
+- House-Rules richer adjudicated Activity parameter binding support (`activity-parameter-binding.schema.json` and related ActionRequest/Resolution/Continuation/receipt schemas).
 
 The directory is intentionally treated as a schema family in this map. For a
 specific contract, follow the owning architecture/spec references and then open
@@ -216,8 +219,11 @@ Two complementary test families:
 Tests cover repository/runtime boundaries, release/package behavior, bootstrap,
 storage/persistence, catalog contracts, Step-2 mechanics, Step-3 execution,
 Step-4 retirement, Step-5 contamination/frontier contracts and other current
-machine invariants. Search this directory whenever a contract is changed; do not
-assume a prose spec is the only consumer.
+machine invariants. House-Rules-specific current tests include
+`test_house_rules_adjudicated_input_contract.py` and
+`test_house_rules_policy_authority_contract.py`.
+Search this directory whenever a contract is changed; do not assume a prose spec
+is the only consumer.
 
 ## 6.6 `DEV/TOOLS/`
 
@@ -243,6 +249,8 @@ assume a prose spec is the only consumer.
 - `research/2026-08-23-role-context-validation-protocol-3-reasoning-budget.md` — completed matched reasoning-budget validation across 150 turns, including long-history secrets, multi-NPC dialogue, player-facing quality observations, creativity authority levels and the accepted high-reasoning working baseline.
 - `specs/2026-08-23-step-4-single-context-role-containment-canonical-amendment.md` — current canonical amendment replacing mandatory physical-role-isolation assumptions with logical role containment in one physical chat context while preserving Step-4 authority/knowledge boundaries.
 - `specs/2026-08-23-round-1-step-6-closure-round-2-rebaseline-owner-decision.md` — owner-approved transition decision: former Step 6 is closed as a separate stage and useful unresolved scope is reallocated into Round 2 without claiming old Step-6 exit criteria were completed.
+- `specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md` — explicit human owner decision closing House-Rules responsibility/adoption authority gate.
+- `specs/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md` — repaired House-Rules eight-step closure record and stop-before-S6D handoff.
 - `specs/` — other dated architecture/design, review, decision and canonicalization-chain artifacts. Prefer current roadmap/owner decisions and the actual owning canonical sources over filename recency alone.
 - `plans/` — implementation plans produced after approved designs. They are execution guidance, not architecture authority when a later canonical spec supersedes assumptions.
 
@@ -299,7 +307,7 @@ Bootstrap/campaign lifecycle:
 Gameplay/domain modules:
 
 - `CHARACTER.md` — PC creation/player-character guidance.
-- `ADJUDICATION.md` — uncertain actions, consequences and local rulings.
+- `ADJUDICATION.md` — uncertain actions, local rulings, frozen semantic inputs and the live-ruling versus durable House-Rules adoption boundary.
 - `RANDOMNESS.md` — authoritative RNG/dice integrity and fixed-randomness behavior.
 - `INFORMATION.md` — clues/perception/knowledge-boundary runtime guidance; review against Step-4 canonical model when changing information architecture.
 - `NPC.md` — NPC agency/knowledge/relationships/continuity.
@@ -332,14 +340,15 @@ Persistence/shared-world/source modules:
 ## 7.3 `GAME/SCHEMA/` — persistent campaign/runtime formats shipped to runtime
 
 - `README.md` — schema-layer principles and schema index.
-- `campaign_manifest.schema.yaml` — campaign branch identity/mode/engine/storage roots.
+- `campaign_manifest.schema.yaml` — campaign branch identity/mode/engine/storage roots; creator remains deliberately absent as authority duplication.
 - `campaign_config.schema.yaml` — premise/tone/boundaries/advancement/world mode.
 - `campaign_card.schema.yaml` — compact campaign discovery/menu projection.
 - `dnd_storage.schema.yaml` — campaign-storage repository marker/baseline format.
-- `session.schema.yaml` — per-chat/session coordination data.
+- `house_rules_policy.schema.yaml` — narrow House-Rules identity/currentness/adoption/routing/realization companion schema.
+- `session.schema.yaml` — per-chat/session coordination data; no House-Rules notification cursor.
 - `current_state.schema.yaml` — compact active-scene/global chronology routing state.
 - `scene.schema.yaml` — one active scene/environment state.
-- `player.schema.yaml`, `pc.schema.yaml`, `npc.schema.yaml` — player binding and character records.
+- `player.schema.yaml`, `pc.schema.yaml`, `npc.schema.yaml` — player binding/House-Rules mechanical-override grant and character records.
 - `location.schema.yaml`, `faction.schema.yaml`, `item.schema.yaml`, `lore.schema.yaml`, `thread.schema.yaml` — persistent world/domain records.
 - `event.schema.yaml` — compact semantic history event record.
 - `checkpoint.schema.yaml` — sparse recovery descriptor/boundary format.
@@ -368,7 +377,8 @@ Current template responsibilities:
 - `LOG/_TEMPLATE.yaml` — semantic history record template/root.
 - `CHECKPOINTS/_TEMPLATE.yaml` — checkpoint template/root.
 - `SESSIONS/_TEMPLATE.yaml` — runtime session record template/root.
-- `RULES/HOUSE_RULES.md` — campaign-local durable rulings/house rules.
+- `RULES/HOUSE_RULES.md` — normative campaign-local House Rules/Rulings business-policy surface.
+- `RULES/HOUSE_RULES.yaml` — empty narrow machine-readable identity/currentness/adoption/realization companion for those policies.
 
 ## 7.5 `GAME/INSTALL/`
 
@@ -457,7 +467,7 @@ Round-1 canonical ownership / Step-5 shared-state specs
     -> player/session/live schemas
     -> PERSISTENCE
     -> CHRONOLOGY
-    -> R2.6 only for collaboration/scene-topology questions not already solved
+    -> R2.5 collaboration/currentness when applicable
 ```
 
 ## 8.5 LLM information / continuity / Story / role-context architecture
@@ -469,7 +479,7 @@ Round-1 canonical locator
     -> Step-5.10 / 5.11 / 5.12 canonical specs as relevant
     -> role-context validation protocols 1-3
     -> current Round-2 roadmap
-    -> R2.1 continuity / R2.2 context runtime / R2.3 actor continuity / R2.4 turn machinery as relevant
+    -> R2.1 continuity / R2.2 Actor continuity / R2.3 Context Runtime / R2.4 turn machinery as relevant
     -> AI_REASONING / INFORMATION / LORE / NPC / NARRATIVE / PREP / GM_CRAFT
     -> current entity schemas/tests where machine realization is implicated
 ```
@@ -477,6 +487,25 @@ Round-1 canonical locator
 Former Step-6 physical-role-isolation notes are historical/derivation inputs. Do
 not route new work through them as an active stage; the Round-1 closure decision
 and Step-4 single-context amendment supersede that premise.
+
+## 8.6 Campaign House Rules / rulings
+
+```text
+CAMPAIGN_HOUSE_RULES canonical owner
+    -> Step-3 explicit owner decision
+    -> ACCESS_CONTROL creator/PLAYER policy adoption authority
+    -> GAME/CAMPAIGN/RULES/HOUSE_RULES.md normative policy
+    -> GAME/CAMPAIGN/RULES/HOUSE_RULES.yaml structured companion
+    -> GAME/SCHEMA/house_rules_policy.schema.yaml + player.schema.yaml
+    -> R2.3 Context Runtime eligibility/retrieval/currentness
+    -> Step-5.6 publication / Step-5.7 recovery / Step-5.8 multiplayer currentness
+    -> ADJUDICATION + Activity/Rule Element deterministic handoff
+    -> DEV richer adjudicated-input schemas/tests
+```
+
+Do not route House-Rules work through MANIFEST creator fields, a generic policy
+ACL/graph, a new global policy frontier or a universal rules DSL unless later
+owning evidence explicitly supersedes the current architecture.
 
 ---
 
