@@ -127,7 +127,7 @@ All selectable selectors admit only `ENGINE_STATE`.
 
 `permitted_context_fact_ids` is exactly empty. A provenance class is not treated as a fact allowlist.
 
-Dependency kinds are only `selector|accessor|derived`. Exact references retain their prefix. Current selectors allow `accessor|derived` and have no architecture-fixed static reference. Every inherited `derived_nodes[*].allowed_dependency_kinds` is normalized to the same closed kind enum; exact node identities occur only in prefixed `dependencies`. The existing `condition_intrinsic` invocation-adjudicated input remains an explicitly unresolved S6D-04-owned graph obligation, not an S6D-03 selector permission. S6D-04 owns exact accessor/fact graph closure and transitive binding checks.
+Dependency kinds are only `selector|accessor|derived`. Exact references retain their prefix. Current selectors allow `accessor|derived` and have no architecture-fixed static reference. Every inherited `derived_nodes[*].allowed_dependency_kinds` is normalized to the same closed kind enum; exact node identities occur only in prefixed `dependencies`. S6D-04 closed the inherited `condition_intrinsic` gap as ENGINE_STATE-only with no exact invocation-fact permissions. S6D-04 owns exact accessor/fact graph closure and transitive binding checks.
 
 No generic query, property path, callback, author phase/order, fixed-point semantics or ambient LLM fact access is introduced.
 
@@ -169,7 +169,7 @@ Prove:
 - allowed-operation union equals active operation ledger IDs;
 - contract keys equal allowed operations;
 - schema validation and closed fields;
-- 450/35/86 disposition totals;
+- current coordinated 449/35/87 disposition totals after S6D-04 placed `condition.value` into dormant downstream ownership;
 - every dormant entry has a trigger;
 - no active selector admits invocation facts;
 - exact fact allowlists are empty;
@@ -181,8 +181,9 @@ Prove:
 
 ## 12. Downstream
 
-S6D-04 Step 1 is next after canonicalization and is not started.
+S6D-04 is canonically closed by `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md`.
 
 ## Canonical authority
 
 This document owns selector selectability, selector/operation semantic compatibility, active combination policies, subject/binding restrictions and the selector-side dependency/input boundary. It does not own portable payload members, Activity primitives, seed content or the complete MechanicalContext graph.
+

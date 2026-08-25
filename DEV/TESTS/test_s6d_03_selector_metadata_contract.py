@@ -94,7 +94,8 @@ def test_no_invocation_fact_or_dependency_kind_laundering():
             for ref in meta["dependencies"] if section == "derived_nodes" else meta["static_dependencies"]:
                 assert ref.split(":", 1)[0] in legal_kinds
     assert surfaces["derived_nodes"]["condition_intrinsic"]["allowed_input_classes"] == [
-        "ENGINE_STATE", "INVOCATION_ADJUDICATED"]
+        "ENGINE_STATE"]
+    assert surfaces["derived_nodes"]["condition_intrinsic"]["permitted_context_fact_ids"] == []
 
 def test_integer_additive_policy_is_commutative_and_enforces_minimum():
     surfaces = _load(SURFACES)["selectors"]
@@ -135,7 +136,8 @@ def test_structural_examples_are_labeled_and_not_executable_consumers():
 def test_global_disposition_totals():
     totals = Counter(e["admission_disposition"] for e in _load(LEDGER)["entries"])
     assert totals == {
-        "ACTIVE_ADMITTED": 450,
+        "ACTIVE_ADMITTED": 449,
         "EMBEDDED_NONOWNER": 35,
-        "DORMANT_NONSELECTABLE": 86,
+        "DORMANT_NONSELECTABLE": 87,
     }
+

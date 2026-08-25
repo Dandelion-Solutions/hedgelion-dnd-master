@@ -180,6 +180,9 @@ Rule Elements. Runtime hydrates those records and rejects:
 Invocation facts are registered in `CATALOG/mechanical-surfaces.json`. The
 initial fact channel is boolean and `INVOCATION_ADJUDICATED` only. Engine-owned
 facts remain accessors/calculations resolved from the pinned MechanicalContext.
+S6D-04 classifies the initial two IDs as `DORMANT_RESERVED` until S6D-07–09
+provides an exact admitted compiled consumer. The examples in this document
+define the capability boundary but do not by themselves activate a fact ID.
 
 For a registered boolean invocation fact:
 
@@ -327,3 +330,4 @@ The remaining Activity work is deliberately narrow:
 
 These are design references. HDM does not copy their UI, command language,
 document model, recursive automation surface, or implementation code.
+

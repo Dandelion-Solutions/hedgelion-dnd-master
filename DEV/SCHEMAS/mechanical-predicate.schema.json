@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json",
   "title": "HDM closed mechanical predicate",
+  "$comment": "Structural shape only. Catalog-aware compilation owns fact/accessor disposition, exact consumer permission, occurrence and binding checks.",
   "$ref": "#/$defs/predicate",
   "$defs": {
     "machineId": {
@@ -95,3 +96,4 @@
     }
   ]
 }
+

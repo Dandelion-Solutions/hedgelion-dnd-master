@@ -350,9 +350,11 @@ per_effective_application
 
 The latter receives only the bound context of the current effective Condition
 application (source/provenance and declared parameters as permitted), not an
-arbitrary query capability. A relational intrinsic rule may admit a registered
-invocation fact such as fiction-dependent visibility when its eventual selector
-also allows that input class; state-sensitive selectors do not.
+arbitrary query capability. S6D-04 closes the current graph as ENGINE_STATE-only:
+no active intrinsic consumer or selectable selector has an exact invocation-fact
+permission. A future relational intrinsic rule may activate a registered fact
+only with an exact compiled consumer, binding and selector/input path; class-level
+permission alone is insufficient.
 
 ## 8. Limited use and Resource gates
 
@@ -503,3 +505,4 @@ metadata is absent.
 ## S6D-03 selector metadata closure
 
 `CALCULATION_SELECTOR_METADATA.md` owns current selector selectability, selector/operation compatibility, contribution/result typing, subject/binding restrictions and deterministic combination-policy semantics. This document continues to own Rule Elements as pure embedded Contributions. Neither owner grants portable payload-member authority, generic queries, mutation, callbacks or author-controlled execution order.
+

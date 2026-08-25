@@ -9,7 +9,9 @@
     "context_facts",
     "accessors",
     "selectors",
-    "derived_nodes"
+    "derived_nodes",
+    "dependency_graph_contract",
+    "consumer_permission_contract"
   ],
   "properties": {
     "catalog_version": {
@@ -57,6 +59,12 @@
       "additionalProperties": {
         "$ref": "#/$defs/derivedNodeMetadata"
       }
+    },
+    "dependency_graph_contract": {
+      "$ref": "#/$defs/dependencyGraphContract"
+    },
+    "consumer_permission_contract": {
+      "$ref": "#/$defs/consumerPermissionContract"
     }
   },
   "$defs": {
@@ -102,15 +110,67 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "disposition",
         "source_class",
-        "value_type"
+        "value_type",
+        "producer",
+        "acceptance_authority",
+        "occurrence_scope",
+        "provenance_policy",
+        "missing_policy",
+        "permitted_consumer_ids",
+        "retention_policy",
+        "portable_realization_owner",
+        "activation_trigger",
+        "binding_policy",
+        "optional_boundary_context"
       ],
       "properties": {
+        "disposition": {
+          "const": "DORMANT_RESERVED"
+        },
         "source_class": {
           "const": "INVOCATION_ADJUDICATED"
         },
         "value_type": {
           "const": "boolean"
+        },
+        "producer": {
+          "const": "HOST_LLM_BOUNDARY"
+        },
+        "acceptance_authority": {
+          "const": "ACTIVITY_INVOCATION_VALIDATOR"
+        },
+        "occurrence_scope": {
+          "const": "ACTIVITY_RESOLUTION_GENERATION"
+        },
+        "provenance_policy": {
+          "const": "STABLE_REF_AND_FINGERPRINT_REQUIRED"
+        },
+        "missing_policy": {
+          "const": "TYPED_MISSING_INPUT"
+        },
+        "permitted_consumer_ids": {
+          "type": "array",
+          "maxItems": 0,
+          "items": {
+            "$ref": "#/$defs/consumerRef"
+          }
+        },
+        "retention_policy": {
+          "const": "FIXED_CAUSAL_INPUT_WHILE_ACCEPTED_WORK_LIVE"
+        },
+        "portable_realization_owner": {
+          "const": "DEV/SCHEMAS/invocation-fact.schema.json"
+        },
+        "activation_trigger": {
+          "const": "S6D-07_TO_09_EXACT_COMPILED_CONSUMER"
+        },
+        "binding_policy": {
+          "const": "EXACT_COMPILED_CONSUMER_ROLES"
+        },
+        "optional_boundary_context": {
+          "const": "ONLY_WHEN_INVOCATION_ARISES_FROM_BOUNDARY"
         }
       }
     },
@@ -121,7 +181,16 @@
         "source_class",
         "value_type",
         "subject_kinds",
-        "dependencies"
+        "dependencies",
+        "disposition",
+        "input_class",
+        "argument_kinds",
+        "implicit_binding_kinds",
+        "missing_policy",
+        "permitted_consumer_kinds",
+        "state_view_policy",
+        "cache_policy",
+        "permitted_consumer_ids"
       ],
       "properties": {
         "source_class": {
@@ -147,6 +216,73 @@
           "uniqueItems": true,
           "items": {
             "$ref": "#/$defs/dependencyRef"
+          }
+        },
+        "disposition": {
+          "enum": [
+            "ACTIVE_ADMITTED",
+            "DORMANT_RESERVED"
+          ]
+        },
+        "input_class": {
+          "const": "ENGINE_STATE"
+        },
+        "argument_kinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "subject",
+              "condition_definition",
+              "resource_definition",
+              "parameter_definition"
+            ]
+          }
+        },
+        "implicit_binding_kinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "owner_effect_application"
+            ]
+          }
+        },
+        "missing_policy": {
+          "enum": [
+            "TYPED_HYDRATION_REQUIRED",
+            "FALSE_WHEN_NO_EFFECTIVE_APPLICATION",
+            "ABSENT_WHEN_NO_EFFECTIVE_VALUE",
+            "INVALID_OWNER_BINDING_OR_DECLARATION"
+          ]
+        },
+        "permitted_consumer_kinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "mechanical_predicate",
+              "accessor",
+              "derived"
+            ]
+          }
+        },
+        "state_view_policy": {
+          "const": "COMMITTED_OR_PROSPECTIVE_PINNED"
+        },
+        "cache_policy": {
+          "const": "VIEW_BINDING_CATALOG_REVISION_KEYED"
+        },
+        "activation_trigger": {
+          "const": "S6D-08_VALUED_CONDITION_AGGREGATION"
+        },
+        "permitted_consumer_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/consumerRef"
           }
         }
       }
@@ -259,7 +395,14 @@
       "required": [
         "allowed_dependency_kinds",
         "allowed_input_classes",
-        "dependencies"
+        "dependencies",
+        "disposition",
+        "result_role",
+        "permitted_consumer_ids",
+        "permitted_context_fact_ids",
+        "state_view_policy",
+        "missing_policy",
+        "cache_policy"
       ],
       "properties": {
         "allowed_dependency_kinds": {
@@ -274,6 +417,39 @@
           "items": {
             "$ref": "#/$defs/dependencyRef"
           }
+        },
+        "disposition": {
+          "const": "ACTIVE_INTERNAL"
+        },
+        "result_role": {
+          "enum": [
+            "effect_member_set",
+            "condition_aggregate",
+            "rule_element_set"
+          ]
+        },
+        "permitted_consumer_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/consumerRef"
+          }
+        },
+        "permitted_context_fact_ids": {
+          "type": "array",
+          "maxItems": 0,
+          "items": {
+            "$ref": "#/$defs/machineId"
+          }
+        },
+        "state_view_policy": {
+          "const": "COMMITTED_OR_PROSPECTIVE_PINNED"
+        },
+        "missing_policy": {
+          "const": "PROPAGATE_TYPED_INPUT_FAILURE"
+        },
+        "cache_policy": {
+          "const": "DISPOSABLE_VIEW_BINDING_CATALOG_REVISION_KEYED"
         }
       }
     },
@@ -318,6 +494,86 @@
           ]
         }
       }
+    },
+    "dependencyGraphContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "node_kinds",
+        "edge_sources",
+        "cycle_policy",
+        "input_permission_policy",
+        "state_view_policy",
+        "cache_restore_policy"
+      ],
+      "properties": {
+        "scope": {
+          "const": "HYDRATED_BOUND_INSTANCE_DAG"
+        },
+        "node_kinds": {
+          "type": "array",
+          "const": [
+            "selector",
+            "accessor",
+            "derived"
+          ]
+        },
+        "edge_sources": {
+          "type": "array",
+          "const": [
+            "registered_static",
+            "definition_bound",
+            "prospective_bound"
+          ]
+        },
+        "cycle_policy": {
+          "const": "REJECT_IF_ACYCLICITY_UNPROVEN"
+        },
+        "input_permission_policy": {
+          "const": "TRANSITIVE_EXACT"
+        },
+        "state_view_policy": {
+          "const": "ONE_PINNED_COMMITTED_OR_PROSPECTIVE_VIEW"
+        },
+        "cache_restore_policy": {
+          "const": "REBUILD_NEVER_AUTHORITY"
+        }
+      }
+    },
+    "consumerPermissionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy",
+        "dormant_policy",
+        "dynamic_consumer_policy",
+        "binding_policy",
+        "structural_schema_policy"
+      ],
+      "properties": {
+        "policy": {
+          "const": "EXACT_ID_AND_BINDING_REQUIRED"
+        },
+        "dormant_policy": {
+          "const": "REJECT_BEFORE_INPUT_CLASS_CHECK"
+        },
+        "dynamic_consumer_policy": {
+          "const": "COMPILED_ID_MUST_APPEAR_IN_ITEM_ALLOWLIST"
+        },
+        "binding_policy": {
+          "const": "SUBJECT_DEFINITION_OWNER_AND_VIEW_MUST_MATCH"
+        },
+        "structural_schema_policy": {
+          "const": "SHAPE_ONLY_NOT_EXECUTION_AUTHORITY"
+        }
+      }
+    },
+    "consumerRef": {
+      "type": "string",
+      "pattern": "^(?:selector|accessor|derived|activity|predicate):[A-Za-z][A-Za-z0-9_.:#-]*$"
     }
   }
 }
+
+

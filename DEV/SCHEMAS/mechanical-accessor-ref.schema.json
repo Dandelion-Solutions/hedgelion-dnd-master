@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/mechanical-accessor-ref.schema.json",
   "title": "HDM typed MechanicalContext accessor reference",
+  "$comment": "Structural shape only. Catalog-aware compilation must reject dormant IDs and enforce exact consumer, binding, owner and state-view permission.",
   "oneOf": [
     {"$ref": "#/$defs/healthCurrent"},
     {"$ref": "#/$defs/healthTemporary"},
@@ -133,3 +134,4 @@
     }
   ]
 }
+

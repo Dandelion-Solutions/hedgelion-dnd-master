@@ -188,6 +188,7 @@ Current durable architecture/navigation documents:
 - `NEAR_TERM_ROADMAP.md` — sequencing/status authority for the active Round-2 architecture program.
 - `RULE_ELEMENT_MODEL.md` — pure embedded passive contribution model and bounded reactive binding boundary.
 - `CALCULATION_SELECTOR_METADATA.md` — S6D-03 selector selectability, selector/operation compatibility, result/subject/binding metadata and deterministic active resolver policies.
+- `MECHANICAL_CONTEXT.md` — S6D-04 exact accessor/fact/derived-node dispositions, missing/input authority, exact consumer permissions, bound-instance DAG and recovery/query boundaries.
 
 Historical/derivation/status surfaces that must not override newer accepted contracts:
 
@@ -272,6 +273,7 @@ is the only consumer.
 - `research/2026-08-25-s6d-03-complete-calculation-selector-metadata-research-architecture-draft.md` and matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-03 Steps 2–8 evidence chain.
 - `specs/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-task-brief.md` — S6D-04 Step-1 framing for the exact accessor/fact/derived-node census, input authority, missing semantics, scoped dependency graph and query exclusion.
 - `specs/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-brief-critic.md` — mandatory whole-project Step-1 critique; both significant framing findings repaired, final PASS.
+- `research/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-research-architecture-draft.md` and matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-04 Steps 2–8 evidence chain.
 - `DEV/TESTS/test_s6d_03_selector_metadata_contract.py` — exact 34/26 accounting, active/dormant equality, metadata/policy/input/dependency verification.
 - `research/2026-08-25-s6d-02-catalog-admission-gap-closure-research-architecture-draft.md` and the matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-02 Steps 2–8 evidence chain.
 - `DEV/TESTS/test_s6d_02_catalog_admission_contract.py` — exact ledger/core equality, legal state and package-plan boundary checks.

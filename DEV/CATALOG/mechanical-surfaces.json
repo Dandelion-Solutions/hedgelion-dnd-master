@@ -2,12 +2,36 @@
   "catalog_version": "2.0.0",
   "context_facts": {
     "fiction.target_visible": {
+      "disposition": "DORMANT_RESERVED",
       "source_class": "INVOCATION_ADJUDICATED",
-      "value_type": "boolean"
+      "value_type": "boolean",
+      "producer": "HOST_LLM_BOUNDARY",
+      "acceptance_authority": "ACTIVITY_INVOCATION_VALIDATOR",
+      "occurrence_scope": "ACTIVITY_RESOLUTION_GENERATION",
+      "provenance_policy": "STABLE_REF_AND_FINGERPRINT_REQUIRED",
+      "missing_policy": "TYPED_MISSING_INPUT",
+      "permitted_consumer_ids": [],
+      "retention_policy": "FIXED_CAUSAL_INPUT_WHILE_ACCEPTED_WORK_LIVE",
+      "portable_realization_owner": "DEV/SCHEMAS/invocation-fact.schema.json",
+      "activation_trigger": "S6D-07_TO_09_EXACT_COMPILED_CONSUMER",
+      "binding_policy": "EXACT_COMPILED_CONSUMER_ROLES",
+      "optional_boundary_context": "ONLY_WHEN_INVOCATION_ARISES_FROM_BOUNDARY"
     },
     "fiction.target_reachable": {
+      "disposition": "DORMANT_RESERVED",
       "source_class": "INVOCATION_ADJUDICATED",
-      "value_type": "boolean"
+      "value_type": "boolean",
+      "producer": "HOST_LLM_BOUNDARY",
+      "acceptance_authority": "ACTIVITY_INVOCATION_VALIDATOR",
+      "occurrence_scope": "ACTIVITY_RESOLUTION_GENERATION",
+      "provenance_policy": "STABLE_REF_AND_FINGERPRINT_REQUIRED",
+      "missing_policy": "TYPED_MISSING_INPUT",
+      "permitted_consumer_ids": [],
+      "retention_policy": "FIXED_CAUSAL_INPUT_WHILE_ACCEPTED_WORK_LIVE",
+      "portable_realization_owner": "DEV/SCHEMAS/invocation-fact.schema.json",
+      "activation_trigger": "S6D-07_TO_09_EXACT_COMPILED_CONSUMER",
+      "binding_policy": "EXACT_COMPILED_CONSUMER_ROLES",
+      "optional_boundary_context": "ONLY_WHEN_INVOCATION_ARISES_FROM_BOUNDARY"
     }
   },
   "accessors": {
@@ -17,7 +41,24 @@
       "subject_kinds": [
         "world.actor"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "disposition": "ACTIVE_ADMITTED",
+      "input_class": "ENGINE_STATE",
+      "argument_kinds": [
+        "subject"
+      ],
+      "implicit_binding_kinds": [],
+      "missing_policy": "TYPED_HYDRATION_REQUIRED",
+      "permitted_consumer_kinds": [
+        "mechanical_predicate",
+        "accessor",
+        "derived"
+      ],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "cache_policy": "VIEW_BINDING_CATALOG_REVISION_KEYED",
+      "permitted_consumer_ids": [
+        "accessor:health.bloodied"
+      ]
     },
     "health.temporary": {
       "source_class": "DIRECT_AUTHORITY",
@@ -25,7 +66,22 @@
       "subject_kinds": [
         "world.actor"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "disposition": "ACTIVE_ADMITTED",
+      "input_class": "ENGINE_STATE",
+      "argument_kinds": [
+        "subject"
+      ],
+      "implicit_binding_kinds": [],
+      "missing_policy": "TYPED_HYDRATION_REQUIRED",
+      "permitted_consumer_kinds": [
+        "mechanical_predicate",
+        "accessor",
+        "derived"
+      ],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "cache_policy": "VIEW_BINDING_CATALOG_REVISION_KEYED",
+      "permitted_consumer_ids": []
     },
     "health.maximum": {
       "source_class": "DERIVED_MECHANICAL",
@@ -35,6 +91,23 @@
       ],
       "dependencies": [
         "selector:health.maximum"
+      ],
+      "disposition": "ACTIVE_ADMITTED",
+      "input_class": "ENGINE_STATE",
+      "argument_kinds": [
+        "subject"
+      ],
+      "implicit_binding_kinds": [],
+      "missing_policy": "TYPED_HYDRATION_REQUIRED",
+      "permitted_consumer_kinds": [
+        "mechanical_predicate",
+        "accessor",
+        "derived"
+      ],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "cache_policy": "VIEW_BINDING_CATALOG_REVISION_KEYED",
+      "permitted_consumer_ids": [
+        "accessor:health.bloodied"
       ]
     },
     "health.bloodied": {
@@ -46,7 +119,22 @@
       "dependencies": [
         "accessor:health.current",
         "accessor:health.maximum"
-      ]
+      ],
+      "disposition": "ACTIVE_ADMITTED",
+      "input_class": "ENGINE_STATE",
+      "argument_kinds": [
+        "subject"
+      ],
+      "implicit_binding_kinds": [],
+      "missing_policy": "TYPED_HYDRATION_REQUIRED",
+      "permitted_consumer_kinds": [
+        "mechanical_predicate",
+        "accessor",
+        "derived"
+      ],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "cache_policy": "VIEW_BINDING_CATALOG_REVISION_KEYED",
+      "permitted_consumer_ids": []
     },
     "life.state": {
       "source_class": "DIRECT_AUTHORITY",
@@ -54,7 +142,22 @@
       "subject_kinds": [
         "world.actor"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "disposition": "ACTIVE_ADMITTED",
+      "input_class": "ENGINE_STATE",
+      "argument_kinds": [
+        "subject"
+      ],
+      "implicit_binding_kinds": [],
+      "missing_policy": "TYPED_HYDRATION_REQUIRED",
+      "permitted_consumer_kinds": [
+        "mechanical_predicate",
+        "accessor",
+        "derived"
+      ],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "cache_policy": "VIEW_BINDING_CATALOG_REVISION_KEYED",
+      "permitted_consumer_ids": []
     },
     "condition.present": {
       "source_class": "DERIVED_MECHANICAL",
@@ -64,7 +167,23 @@
       ],
       "dependencies": [
         "derived:condition_aggregation"
-      ]
+      ],
+      "disposition": "ACTIVE_ADMITTED",
+      "input_class": "ENGINE_STATE",
+      "argument_kinds": [
+        "subject",
+        "condition_definition"
+      ],
+      "implicit_binding_kinds": [],
+      "missing_policy": "FALSE_WHEN_NO_EFFECTIVE_APPLICATION",
+      "permitted_consumer_kinds": [
+        "mechanical_predicate",
+        "accessor",
+        "derived"
+      ],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "cache_policy": "VIEW_BINDING_CATALOG_REVISION_KEYED",
+      "permitted_consumer_ids": []
     },
     "condition.value": {
       "source_class": "DERIVED_MECHANICAL",
@@ -74,35 +193,103 @@
       ],
       "dependencies": [
         "derived:condition_aggregation"
-      ]
+      ],
+      "disposition": "DORMANT_RESERVED",
+      "input_class": "ENGINE_STATE",
+      "argument_kinds": [
+        "subject",
+        "condition_definition"
+      ],
+      "implicit_binding_kinds": [],
+      "missing_policy": "ABSENT_WHEN_NO_EFFECTIVE_VALUE",
+      "permitted_consumer_kinds": [
+        "mechanical_predicate",
+        "accessor",
+        "derived"
+      ],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "cache_policy": "VIEW_BINDING_CATALOG_REVISION_KEYED",
+      "activation_trigger": "S6D-08_VALUED_CONDITION_AGGREGATION",
+      "permitted_consumer_ids": []
     },
     "resource.capacity": {
       "source_class": "DERIVED_MECHANICAL",
-      "value_type": "number",
+      "value_type": "integer",
       "subject_kinds": [
         "world.actor",
         "world.asset"
       ],
       "dependencies": [
         "selector:resource.capacity"
+      ],
+      "disposition": "ACTIVE_ADMITTED",
+      "input_class": "ENGINE_STATE",
+      "argument_kinds": [
+        "subject",
+        "resource_definition"
+      ],
+      "implicit_binding_kinds": [],
+      "missing_policy": "TYPED_HYDRATION_REQUIRED",
+      "permitted_consumer_kinds": [
+        "mechanical_predicate",
+        "accessor",
+        "derived"
+      ],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "cache_policy": "VIEW_BINDING_CATALOG_REVISION_KEYED",
+      "permitted_consumer_ids": [
+        "accessor:resource.available"
       ]
     },
     "resource.available": {
       "source_class": "DERIVED_MECHANICAL",
-      "value_type": "number",
+      "value_type": "integer",
       "subject_kinds": [
         "world.actor",
         "world.asset"
       ],
       "dependencies": [
         "accessor:resource.capacity"
-      ]
+      ],
+      "disposition": "ACTIVE_ADMITTED",
+      "input_class": "ENGINE_STATE",
+      "argument_kinds": [
+        "subject",
+        "resource_definition"
+      ],
+      "implicit_binding_kinds": [],
+      "missing_policy": "TYPED_HYDRATION_REQUIRED",
+      "permitted_consumer_kinds": [
+        "mechanical_predicate",
+        "accessor",
+        "derived"
+      ],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "cache_policy": "VIEW_BINDING_CATALOG_REVISION_KEYED",
+      "permitted_consumer_ids": []
     },
     "owner_effect.parameter": {
       "source_class": "DIRECT_AUTHORITY",
       "value_type": "scalar",
       "subject_kinds": [],
-      "dependencies": []
+      "dependencies": [],
+      "disposition": "ACTIVE_ADMITTED",
+      "input_class": "ENGINE_STATE",
+      "argument_kinds": [
+        "parameter_definition"
+      ],
+      "implicit_binding_kinds": [
+        "owner_effect_application"
+      ],
+      "missing_policy": "INVALID_OWNER_BINDING_OR_DECLARATION",
+      "permitted_consumer_kinds": [
+        "mechanical_predicate",
+        "accessor",
+        "derived"
+      ],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "cache_policy": "VIEW_BINDING_CATALOG_REVISION_KEYED",
+      "permitted_consumer_ids": []
     }
   },
   "selectors": {
@@ -229,7 +416,17 @@
       "allowed_input_classes": [
         "ENGINE_STATE"
       ],
-      "dependencies": []
+      "dependencies": [],
+      "disposition": "ACTIVE_INTERNAL",
+      "result_role": "effect_member_set",
+      "permitted_consumer_ids": [
+        "derived:effect_arbitration",
+        "derived:condition_aggregation"
+      ],
+      "permitted_context_fact_ids": [],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "missing_policy": "PROPAGATE_TYPED_INPUT_FAILURE",
+      "cache_policy": "DISPOSABLE_VIEW_BINDING_CATALOG_REVISION_KEYED"
     },
     "effect_arbitration": {
       "allowed_dependency_kinds": [
@@ -241,7 +438,14 @@
       ],
       "dependencies": [
         "derived:effect_availability"
-      ]
+      ],
+      "disposition": "ACTIVE_INTERNAL",
+      "result_role": "effect_member_set",
+      "permitted_consumer_ids": [],
+      "permitted_context_fact_ids": [],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "missing_policy": "PROPAGATE_TYPED_INPUT_FAILURE",
+      "cache_policy": "DISPOSABLE_VIEW_BINDING_CATALOG_REVISION_KEYED"
     },
     "condition_aggregation": {
       "allowed_dependency_kinds": [
@@ -255,7 +459,18 @@
       "dependencies": [
         "derived:effect_availability",
         "selector:condition.applicability"
-      ]
+      ],
+      "disposition": "ACTIVE_INTERNAL",
+      "result_role": "condition_aggregate",
+      "permitted_consumer_ids": [
+        "accessor:condition.present",
+        "accessor:condition.value",
+        "derived:condition_intrinsic"
+      ],
+      "permitted_context_fact_ids": [],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "missing_policy": "PROPAGATE_TYPED_INPUT_FAILURE",
+      "cache_policy": "DISPOSABLE_VIEW_BINDING_CATALOG_REVISION_KEYED"
     },
     "condition_intrinsic": {
       "allowed_dependency_kinds": [
@@ -263,12 +478,44 @@
         "derived"
       ],
       "allowed_input_classes": [
-        "ENGINE_STATE",
-        "INVOCATION_ADJUDICATED"
+        "ENGINE_STATE"
       ],
       "dependencies": [
         "derived:condition_aggregation"
-      ]
+      ],
+      "disposition": "ACTIVE_INTERNAL",
+      "result_role": "rule_element_set",
+      "permitted_consumer_ids": [],
+      "permitted_context_fact_ids": [],
+      "state_view_policy": "COMMITTED_OR_PROSPECTIVE_PINNED",
+      "missing_policy": "PROPAGATE_TYPED_INPUT_FAILURE",
+      "cache_policy": "DISPOSABLE_VIEW_BINDING_CATALOG_REVISION_KEYED"
     }
+  },
+  "dependency_graph_contract": {
+    "scope": "HYDRATED_BOUND_INSTANCE_DAG",
+    "node_kinds": [
+      "selector",
+      "accessor",
+      "derived"
+    ],
+    "edge_sources": [
+      "registered_static",
+      "definition_bound",
+      "prospective_bound"
+    ],
+    "cycle_policy": "REJECT_IF_ACYCLICITY_UNPROVEN",
+    "input_permission_policy": "TRANSITIVE_EXACT",
+    "state_view_policy": "ONE_PINNED_COMMITTED_OR_PROSPECTIVE_VIEW",
+    "cache_restore_policy": "REBUILD_NEVER_AUTHORITY"
+  },
+  "consumer_permission_contract": {
+    "policy": "EXACT_ID_AND_BINDING_REQUIRED",
+    "dormant_policy": "REJECT_BEFORE_INPUT_CLASS_CHECK",
+    "dynamic_consumer_policy": "COMPILED_ID_MUST_APPEAR_IN_ITEM_ALLOWLIST",
+    "binding_policy": "SUBJECT_DEFINITION_OWNER_AND_VIEW_MUST_MATCH",
+    "structural_schema_policy": "SHAPE_ONLY_NOT_EXECUTION_AUTHORITY"
   }
 }
+
+

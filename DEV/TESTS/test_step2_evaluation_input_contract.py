@@ -52,6 +52,12 @@ class Step2EvaluationInputContractTest(unittest.TestCase):
                 fact = self.surfaces["context_facts"][fact_id]
             except KeyError as exc:
                 raise ValueError(f"unregistered context fact: {fact_id}") from exc
+            if fact["disposition"] != "ACTIVE_ADMITTED":
+                raise ValueError(f"dormant context fact: {fact_id}")
+            if fact_id not in selector["permitted_context_fact_ids"]:
+                raise ValueError(
+                    f"selector {rule_element['selector']} forbids exact fact {fact_id}"
+                )
             if fact["source_class"] not in allowed_inputs:
                 raise ValueError(
                     f"selector {rule_element['selector']} forbids input class "
@@ -71,6 +77,7 @@ class Step2EvaluationInputContractTest(unittest.TestCase):
         for metadata in facts.values():
             self.assertEqual(metadata["source_class"], "INVOCATION_ADJUDICATED")
             self.assertEqual(metadata["value_type"], "boolean")
+            self.assertEqual(metadata["disposition"], "DORMANT_RESERVED")
 
     def test_unknown_context_fact_is_compile_error(self):
         with self.assertRaisesRegex(ValueError, "unregistered context fact"):
@@ -85,16 +92,14 @@ class Step2EvaluationInputContractTest(unittest.TestCase):
         for selector_id in (
             "health.maximum",
             "resource.capacity",
-            "resource.recovery",
             "condition.applicability",
-            "effect.duration",
         ):
             self.assertEqual(
                 self.surfaces["selectors"][selector_id]["allowed_input_classes"],
                 ["ENGINE_STATE"],
             )
 
-        with self.assertRaisesRegex(ValueError, "forbids input class"):
+        with self.assertRaisesRegex(ValueError, "dormant context fact"):
             self.compile_rule_element({
                 "selector": "resource.capacity",
                 "operation_id": "rule.add_flat",
@@ -123,7 +128,13 @@ class Step2EvaluationInputContractTest(unittest.TestCase):
             self.assertIn("allowed_dependency_kinds", metadata)
             self.assertIn("allowed_input_classes", metadata)
             self.assertIn("dependencies", metadata)
+            self.assertEqual(metadata["permitted_context_fact_ids"], [])
+        self.assertEqual(
+            nodes["condition_intrinsic"]["allowed_input_classes"],
+            ["ENGINE_STATE"],
+        )
 
 
 if __name__ == "__main__":
     unittest.main()
+
