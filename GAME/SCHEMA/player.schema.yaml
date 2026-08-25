@@ -37,6 +37,7 @@ invariants:
   - every active PLAYER may adopt INTERPRETIVE_POLICY by default; no stored interpretive-policy grant is required
   - campaign creator has MECHANICAL_OVERRIDE_POLICY authority by creator identity; a non-creator requires an active PLAYER binding plus mechanical_override_policy true
   - only the campaign creator may grant or revoke another PLAYER mechanical_override_policy; a PLAYER may not self-grant this authority
+  - grant/revoke of mechanical_override_policy is a creator-only HARD access-control persistence boundary; later revocation is prospective and stale prepared policy writes must revalidate authorization
   - mechanical_override_policy grants policy-adoption authority only; it never bypasses deterministic realization, information eligibility, RNG, native owner validation, currentness or publication/CAS
   - mechanics_detail and decision_support_detail are presentation values in range 0..10; null defaults are 3 and 6 respectively
   - mechanics presentation preferences never alter mechanics, randomness, DCs, NPC state, world truth or knowledge boundaries
