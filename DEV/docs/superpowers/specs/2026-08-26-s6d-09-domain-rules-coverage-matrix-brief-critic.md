@@ -74,4 +74,39 @@ The repaired brief closes S1–S3/M1 and preserves:
 
 No human product decision is required to approve the Step-1 framing. No Step-2 research, matrix construction or machine-contract change was performed during this critique.
 
+## Senior Auditor HOLD repair and renewed review
+
+Date: 2026-08-27
+
+The Senior Auditor accepted the Step-1 direction and requested two narrow repairs without reopening the framing:
+
+1. make mechanically resolved `NO_AUTHORITATIVE_WORLD_MUTATION` routes first-class, with exact execution/evidence/retry semantics and no fabricated StateDelta or world mutation;
+2. state that `PRODUCT_PROMISE_KEYS` enumerate reusable mechanic/capability/consequence contracts, not every player utterance, fictional maneuver, creative action or natural-language example.
+
+The brief was repaired against the whole-project dependency route, including the Step-3 ExecutionSegment/Continuation/receipt contracts and the current `PLAY_POLICY`, `COMBAT` and `ADJUDICATION` owners.
+
+### Renewed critic — first pass
+
+**FAIL — 0 BLOCKING, 1 SIGNIFICANT, 0 MINOR**
+
+#### S1 — Mechanical-Null evidence was assigned to the wrong owner
+
+The first repair correctly allowed an eventless, mutation-free route but said that a continuity-only ExecutionSegment may commit fixed RNG, accepted input, cursor, Continuation or idempotency evidence. The current ExecutionSegment contract owns execution/result state, event references, pending children, receipt exports, affected revisions and an optional continuation reference; fixed inputs/RNG, retry frontier and outcome evidence remain with their exact Resolution, Continuation and receipt owners.
+
+Required repair: retain an eventless/zero-affected-revision ExecutionSegment where applicable, but require every evidence item to cite and remain serialized by its exact canonical owner; never add foreign evidence fields to ExecutionSegment.
+
+The `PRODUCT_PROMISE_KEYS` boundary passed this review unchanged.
+
+### Repair applied
+
+- Reframed Mechanical-Null as a possibly eventless, zero-affected-revision ExecutionSegment plus exact evidence held by the applicable Resolution, Continuation, receipt or other canonical owner.
+- Required every matrix row to cite each evidence owner and forbade serializing fixed RNG, accepted inputs, cursor or idempotency evidence into ExecutionSegment unless its current contract actually owns the field.
+- Preserved the explicit no-fake-StateDelta/world-mutation rule and exact receipt/idempotency/retry and genuine event/export obligations.
+- Preserved open-ended natural-language play: absence of an action-specific primitive/schema/definition is not itself a supported gap; a new coverage key requires a genuinely distinct reusable mechanical consequence, authority boundary or supported mechanic that existing routes cannot express.
+
+### Renewed final re-review
+
+**PASS — 0 BLOCKING, 0 SIGNIFICANT, 0 MINOR**
+
+The repaired brief now aligns Mechanical-Null with the current ExecutionSegment, Resolution, Continuation and receipt contracts, preserves `PLAY_POLICY`/`COMBAT`/`ADJUDICATION`, introduces no new lifecycle or artificial mutation owner, and does not leak into Step 2. No human product decision is required.
 

@@ -1,6 +1,6 @@
 # S6D-09 — Domain Rules Coverage Matrix — Architecture Task Brief
 
-Status: **STEP 1 TASK BRIEF — READY FOR HUMAN REVIEW AFTER BRIEF-CRITIC PASS**
+Status: **STEP 1 TASK BRIEF — SENIOR-AUDIT REPAIR / WHOLE-PROJECT BRIEF-CRITIC PASS**
 
 Date: 2026-08-26
 
@@ -30,6 +30,17 @@ Step 2 must build a support-evidence ledger and reconcile these independent axes
 4. **verification state** — current tests/fixtures prove the claimed route and negative space.
 
 A mechanic is `IN_SUPPORTED_MVP` only when current owning evidence establishes the claim and the required axes reconcile. A machine registration without an admitted consumer remains dormant/quarantined; an SRD mechanic absent from the package is not implicitly promised; a shipped product claim without a closed machine route is `SUPPORTED_GAP`, not permission to relabel the mechanic out of scope. `OUT_OF_SUPPORTED_MVP_SEED` requires affirmative current product-owner scope evidence, not package absence. If evidence leaves a materially different product-scope choice, Step 3 must present it to the human architect.
+
+`PRODUCT_PROMISE_KEYS` enumerate explicit reusable mechanic, capability or consequence contracts. They do **not** enumerate every player utterance, fictional maneuver, creative action, improvised description or natural-language example. Open-ended play remains open-ended:
+
+```text
+player expression
+-> GM interpretation and fictional feasibility
+-> existing bounded adjudication where needed
+-> existing typed deterministic consequence
+```
+
+Absence of an action-specific primitive, schema, Activity or definition is not a `SUPPORTED_GAP` by itself. A new coverage key is required only when a scenario proves a genuinely distinct reusable mechanical consequence, authority boundary or supported mechanic whose existing interpretation/adjudication/consequence route is insufficient. This preserves current `PLAY_POLICY.md`, `COMBAT.md` and `ADJUDICATION.md` law: players need not know official action names, natural-language intent is translated where possible, and creativity is not rejected because no pre-enumerated button exists.
 
 Package presence, product scope and realization are separate required columns:
 
@@ -64,7 +75,8 @@ Public repository material must remain independently worded and legally conserva
 
 - One semantic owner per mutable fact; definitions own reusable rules, while Actor/Asset/Effect/procedure/runtime owners hold their admitted instance state.
 - LLM judgment may supply only explicitly authorized typed non-engine inputs. It does not own engine state, RNG, rule resolution or commit.
-- Every formalized or adjudicated mechanic ends at the same accepted deterministic ExecutionSegment → owner mutation → MechanicalEvent → receipt/trace path.
+- Every formalized or adjudicated mechanic uses the accepted deterministic Resolution/ExecutionSegment boundary. When an authoritative fact changes, the route continues through its owner mutation and applicable MechanicalEvent/receipt; when no authoritative world fact changes, the route records `NO_AUTHORITATIVE_WORLD_MUTATION` and may still commit an eventless, zero-affected-revision ExecutionSegment. Each fixed RNG result, accepted input, cursor/retry frontier, continuation reference, outcome/export and idempotency fact remains serialized only by its exact accepted Resolution, Continuation, receipt or other canonical owner.
+- A mechanically resolved route need not invent an authoritative world mutation. Its matrix row must cite the exact owner of every retained evidence item and must not serialize fixed RNG, accepted inputs, cursor or idempotency evidence into `ExecutionSegment`; MechanicalEvent/export presence follows the actual accepted contract rather than being fabricated.
 - Missing input is not false; an absent or unsupported route fails closed and cannot be completed by narration.
 - Coverage does not imply activation. Twenty S6D-06 primitives remain quarantined; the eleven replacements are active only for their reviewed exact consumers unless a new Primitive Necessity Challenge is separately passed.
 - S6D-07 remains a bounded architecture/machine-contract playable seed, not full SRD character content and not a completed production runtime.
@@ -72,6 +84,7 @@ Public repository material must remain independently worded and legally conserva
 - Signal, StateDelta, DurationSpec, occurrences, receipts and other embedded/protocol values gain no independent lifecycle merely because a matrix row mentions them.
 - House Rules/prose policy cannot execute code, queries or mutations. Reusable formalized mechanics require existing typed realization owners; one-off judgment must enter through authorized typed bindings.
 - Ordinary gameplay remains bounded/local: no campaign-wide scan, mandatory network lookup, extra LLM orchestration, background queue or development-only runtime dependency.
+- Open-ended natural-language player action remains interpreted through fiction, bounded adjudication and existing typed consequences; S6D-09 does not pre-enumerate possible player actions as product vocabulary.
 - No compatibility layer is required for nonexistent released campaigns.
 
 If a fresh current owner contradicts one of these statements, Step 2 must report exact precedence evidence and classify the conflict instead of silently reopening or overriding architecture.
@@ -100,7 +113,7 @@ Completeness must be finite and bidirectional, not inferred from family sampling
 ```text
 PACKAGE_CLOSURE_KEYS = every definition, Activity exact consumer and transitive dependency in the identity-bound selected package
 ACTIVE_MACHINE_CONSUMER_KEYS = every ACTIVE_ADMITTED/selectable selector, accessor, fact, value, operation and primitive plus every declared exact consumer edge
-PRODUCT_PROMISE_KEYS = every explicit current mechanic/capability promise extracted from owning GAME/architecture/product sources
+PRODUCT_PROMISE_KEYS = every explicit reusable current mechanic/capability/consequence contract extracted from owning GAME/architecture/product sources, excluding individual utterances, fictional maneuvers and natural-language examples
 
 REQUIRED_COVERAGE_KEYS = PACKAGE_CLOSURE_KEYS union ACTIVE_MACHINE_CONSUMER_KEYS union PRODUCT_PROMISE_KEYS
 COVERAGE_LEDGER_KEYS == REQUIRED_COVERAGE_KEYS
@@ -141,7 +154,7 @@ selector / operation / resolver policy
 accessors / invocation facts / dependency edges
 Activity / primitive / reaction or owner-policy route
 RNG owner and fixed-result/retry obligations
-mutable owner and exact prospective mutation
+authoritative_mutation = OWNER_AND_EXACT_CHANGE | NO_AUTHORITATIVE_WORLD_MUTATION, with rationale and owner/source evidence
 ExecutionSegment / event / receipt route
 typed failure IDs, failure disposition and suspension/cancellation route or explicit N/A reason
 idempotency key / retry identity / conflict or revision evidence
@@ -154,6 +167,8 @@ gap / downstream owner / decision trigger
 ```
 
 Split rows whenever variants have materially different input, RNG, mutation, reaction, temporal or recovery behavior. A family-level slogan is not coverage.
+
+For `NO_AUTHORITATIVE_WORLD_MUTATION`, the row must still specify every applicable Resolution/ExecutionSegment transition, fixed RNG and accepted-input evidence, receipt/idempotency/retry behavior, and genuine MechanicalEvent/export semantics. It must cite the exact canonical owner of each evidence item and prove that the item is not serialized into `ExecutionSegment` unless the current ExecutionSegment contract actually owns that field. If no MechanicalEvent or export exists, record that with the governing contract and an explicit N/A reason. The row must prove that no artificial StateDelta, Actor, Asset, Effect, Resource or other world mutation was introduced merely to make the matrix shape uniform.
 
 ### 5.3 Route classification proof
 
@@ -169,6 +184,8 @@ Split rows whenever variants have materially different input, RNG, mutation, rea
 - failure-closed handling for missing, stale or unauthorized input.
 
 `OUT_OF_SUPPORTED_MVP_SEED` requires affirmative current product-owner scope evidence or an explicit human decision when a current product claim would otherwise be reduced. Package absence or lack of implementation alone yields `SUPPORTED_GAP`, not scope evidence.
+
+Both executable-path classes admit either a real authoritative mutation or `NO_AUTHORITATIVE_WORLD_MUTATION`. A valid check/result that changes no durable world fact remains mechanically resolved when its execution continuity, fixed evidence and receipt/retry semantics satisfy Step 3; it is not a coverage gap and must not acquire a fake consequence mutation.
 
 ### 5.4 Gap and conflict handling
 
@@ -214,6 +231,7 @@ Before canonicalization, trace at least these representative routes end to end, 
 10. hazard/exploration consequence using typed judgment where needed and deterministic mechanical application;
 11. social/adjudicated check whose prose outcome remains distinct from mechanical state mutation;
 12. supported reward/ownership/economy transition, or affirmative evidence that the concrete mechanic is outside the bounded MVP.
+13. **Mechanical-Null:** a real admitted check/resolution produces a valid result and exact receipt/retry evidence but no durable world mutation; trace why no StateDelta/Actor/Effect mutation or synthetic MechanicalEvent is required.
 
 These are architecture and machine-contract walkthroughs, not production runtime tests. They must expose missing dependencies instead of filling them with procedural GM behavior.
 
@@ -226,6 +244,7 @@ These are architecture and machine-contract walkthroughs, not production runtime
 - a universal rules DSL, generic state mutation language, general query engine, scheduler, event queue or campaign-wide scan;
 - activating dormant definitions, selectors, facts, values or primitives because a matrix category exists;
 - treating narrative plausibility, schema existence or catalog registration as execution proof;
+- enumerating every possible player expression, fictional maneuver or creative action as coverage vocabulary, or treating absence of an action-specific contract as a gap when an existing bounded route is sufficient;
 - copying external rule text into public HDM artifacts;
 - S6D-10, S6D-11, S6D-12 or R2.7 execution.
 

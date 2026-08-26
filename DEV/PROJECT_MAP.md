@@ -2,7 +2,7 @@
 
 Status: **NON-NORMATIVE INTERNAL NAVIGATION INDEX**
 
-Last structural inventory: 2026-08-25
+Last structural inventory: 2026-08-27
 
 ## 1. Purpose
 
@@ -289,7 +289,7 @@ is the only consumer.
 - `DEV/ARCHITECTURE/HEALTH_EFFECTS_RECOVERY.md` — canonical S6D-08 integration owner for Actor HP/LifeState, bounded Resource/Effect/Condition/Duration/Recovery semantics and negative scheduler/authority space.
 - `research/2026-08-26-s6d-08-hp-lifestate-resource-effect-condition-duration-recovery-research-architecture-draft.md` and matching task/critic/decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-08 Steps 1–8 evidence chain; final whole-project senior-audit repair critic PASS at 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR.
 - `GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/health-effects-recovery-seed.json`, `DEV/SCHEMAS/health-effects-recovery-seed.schema.json`, validator and focused S6D-08 tests — identity-bound bounded machine contract and conformance proof for the accepted health/effects/recovery slice.
-- `specs/2026-08-26-s6d-09-domain-rules-coverage-matrix-task-brief.md` and matching `-brief-critic.md` — S6D-09 Step-1 framing for finite bidirectional package/machine/product coverage, atomic deterministic/adjudicated route proof and supported-gap handling; whole-project critic PASS.
+- `specs/2026-08-26-s6d-09-domain-rules-coverage-matrix-task-brief.md` and matching `-brief-critic.md` — S6D-09 Step-1 framing for finite bidirectional package/machine/product coverage, first-class Mechanical-Null routes, atomic deterministic/adjudicated route proof and supported-gap handling without enumerating open-ended player expressions; Senior-audit repair and renewed whole-project critic PASS.
 - `GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json` and `character-mvp-seed.json` — identity-bound bounded playable character capability source; unsupported character corpus is absent/nonselectable.
 - `DEV/TOOLS/validate_character_mvp_seed.py`, `DEV/TESTS/test_s6d_07_character_mvp_seed.py` and its fixtures — canonical-schema/$ref, Activity, READY_PC identity/provenance and advancement/effect retry conformance proof.
 - `DEV/TESTS/test_s6d_03_selector_metadata_contract.py` — exact 34/26 accounting, active/dormant equality, metadata/policy/input/dependency verification.
@@ -569,7 +569,7 @@ Route S6D-08 through `DEV/ARCHITECTURE/HEALTH_EFFECTS_RECOVERY.md`, then its com
 
 ## 8.9 Domain rules coverage
 
-Route S6D-09 through its Step-1 task brief, then the exact identity-bound package closure, active machine consumer edges, explicit current product promises, S6D-01…08 owners/tests, Step-3/5 execution and recovery, House Rules typed adjudication, and every implicated GAME domain owner. The matrix is non-normative audit evidence. Product scope, package presence and realization are separate axes; product-promised missing mechanics are supported gaps, not silently out of scope. Completeness requires exact bidirectional set equality and atomic route evidence, not thematic sampling.
+Route S6D-09 through its Step-1 task brief, then the exact identity-bound package closure, active machine consumer edges, explicit current product promises, S6D-01…08 owners/tests, Step-3/5 execution and recovery, House Rules typed adjudication, and every implicated GAME domain owner. The matrix is non-normative audit evidence. Product scope, package presence and realization are separate axes; product-promised missing mechanics are supported gaps, not silently out of scope. Completeness requires exact bidirectional set equality and atomic route evidence, not thematic sampling. Treat `NO_AUTHORITATIVE_WORLD_MUTATION` as a first-class Mechanical-Null route: keep each evidence item with its exact Resolution/Continuation/receipt owner and do not fabricate StateDelta, Actor, Effect or MechanicalEvent state. `PRODUCT_PROMISE_KEYS` cover reusable mechanic/capability/consequence contracts, not every utterance or fictional maneuver; novel expression continues through `PLAY_POLICY`/`COMBAT` interpretation, bounded adjudication and existing typed consequences.
 
 # 9. Research/discovery rule for this map
 
