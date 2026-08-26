@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-08 COMPLETE / S6D-09 STEP 1 SENIOR-AUDIT REPAIR PASS / STEP 2 NEXT / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-08 COMPLETE / S6D-09 STEP 3 HUMAN DECISION GATE / R2.7 PAUSED**
 
 Date: 2026-08-25
 
@@ -93,7 +93,7 @@ Operating rules:
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-08 COMPLETE / S6D-09 STEP 1 SENIOR-AUDIT REPAIR PASS / STEP 2 NEXT** | residual rules/seed/catalog debt |
+| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-08 COMPLETE / S6D-09 STEP 2 COMPLETE / STEP 3 HUMAN DECISION GATE** | residual rules/seed/catalog debt |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
 
 ---
@@ -114,7 +114,9 @@ R2.0..R2.6 COMPLETE
     -> S6D-07 Steps 1-8                            [COMPLETE / CRITIC PASS / CANONICAL]
     -> S6D-08 Steps 1-8                            [COMPLETE / SENIOR-AUDIT REPAIR PASS / CANONICAL]
     -> S6D-09 Step 1                               [COMPLETE / SENIOR-AUDIT REPAIR / BRIEF-CRITIC PASS]
-    -> S6D-09 Steps 2-8                            [NEXT / NOT STARTED]
+    -> S6D-09 Step 2                               [COMPLETE / PRODUCT-SCOPE CONFLICT FOUND]
+    -> S6D-09 Step 3                               [ACTIVE / HUMAN DECISION GATE]
+    -> S6D-09 Steps 4-8                            [BLOCKED BY STEP-3 DECISION]
     -> ... remaining S6D domains full eight-step loops ...
     -> S6D integrated closure
     -> R2.7 WP-06 RESUME
@@ -123,7 +125,7 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-09 Step 1 is complete after the Senior Auditor HOLD repair and renewed whole-project brief-critic PASS at 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR. Mechanical-Null routes are first-class without fabricated world mutation, and coverage keys do not enumerate open-ended player expressions. S6D-09 Step 2 is next and has not started.
+**Current stop.** S6D-09 Step 2 is complete. Exact set extraction found a material mismatch between the bounded executable seed and broader reusable GAME/CORE mechanic promises. Step 3 is at a human product-scope decision gate: exact-seed only, broad CORE surface, or the recommended minimal playable gameplay spine. Steps 4-8 have not started.
 
 ---
 
@@ -189,7 +191,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-08 complete / S6D-09 Step 1 senior-audit repair pass / Step 2 next
+## 7. S6D — S6D-08 complete / S6D-09 Step 3 human decision gate
 
 S6D decomposition/evidence inputs remain:
 
@@ -197,7 +199,7 @@ S6D decomposition/evidence inputs remain:
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
-The plan is a decomposition/coverage index only. S6D-01 through S6D-08 are canonically closed by their named architecture owners. S6D-06 established the fail-closed activation law; S6D-07 replaced eleven exact rows with reviewed `COMPLETE / ACTIVE_ADMITTED` contracts and leaves twenty quarantined. S6D-08 closes Actor HP/LifeState, bounded Resource/Effect/Condition/Duration/Recovery contracts and the exact identity-bound health/effects/recovery seed without adding a scheduler or activating further primitives. Production runtime execution and behavioral fast-start proof remain deferred. S6D-09 Step 1 is complete after Senior Auditor repair and renewed whole-project brief-critic PASS; Step 2 is next and has not started.
+The plan is a decomposition/coverage index only. S6D-01 through S6D-08 are canonically closed by their named architecture owners. S6D-06 established the fail-closed activation law; S6D-07 replaced eleven exact rows with reviewed `COMPLETE / ACTIVE_ADMITTED` contracts and leaves twenty quarantined. S6D-08 closes Actor HP/LifeState, bounded Resource/Effect/Condition/Duration/Recovery contracts and the exact identity-bound health/effects/recovery seed without adding a scheduler or activating further primitives. Production runtime execution and behavioral fast-start proof remain deferred. S6D-09 Step 2 is complete with a finite package/machine/product ledger and preliminary atomic matrix. Step 3 requires a human decision on the supported built-in MVP surface before Steps 4-8 can proceed.
 
 ---
 
@@ -225,11 +227,11 @@ S6D: IN PROGRESS
 S6D_COMPLETED_DOMAIN: S6D-08 / STEPS 1-8 / ARCHITECTURE CLOSED
 S6D_NEXT_DOMAIN: S6D-09
 S6D_ACTIVE_DOMAIN: S6D-09
-S6D_COMPLETED_STAGE: S6D-09 STEP 1 / ARCHITECTURE TASK BRIEF / SENIOR-AUDIT REPAIR / BRIEF-CRITIC PASS
-S6D_ACTIVE_STAGE: NONE
-S6D_NEXT_STAGE: S6D-09 STEP 2 / RESEARCH & ARCHITECTURE DRAFT
+S6D_COMPLETED_STAGE: S6D-09 STEP 2 / RESEARCH & ARCHITECTURE DRAFT
+S6D_ACTIVE_STAGE: S6D-09 STEP 3 / HUMAN PRODUCT-SCOPE DECISION GATE
+S6D_NEXT_STAGE: S6D-09 STEP 4 / COLLABORATIVE ARCHITECTURE REVIEW AFTER DECISION
 R2_7_WP06: PAUSED
 ```
 
-Next action is S6D-09 Step 2 after human review of the published Step-1 brief. Do not begin Step 2 as part of Step-1 publication.
+Next action is the human S6D-09 Step-3 supported-surface decision. Do not begin Step 4 or activate any dormant primitive before that decision.
 
