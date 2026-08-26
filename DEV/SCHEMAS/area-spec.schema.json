@@ -6,8 +6,8 @@
   "additionalProperties": false,
   "required": ["shape_id", "unit_id", "dimensions"],
   "properties": {
-    "shape_id": {"$ref": "#/$defs/id"},
-    "unit_id": {"$ref": "#/$defs/id"},
+    "shape_id": {"enum": ["area.cone", "area.cube", "area.cylinder", "area.emanation", "area.line", "area.sphere"]},
+    "unit_id": {"enum": ["unit.foot"]},
     "dimensions": {
       "type": "object",
       "additionalProperties": false,

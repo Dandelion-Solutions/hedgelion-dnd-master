@@ -4,17 +4,50 @@
   "title": "HDM RollRequest value",
   "type": "object",
   "additionalProperties": false,
-  "required": ["roll_id", "expression", "purpose_id"],
+  "required": [
+    "roll_id",
+    "expression",
+    "purpose_id",
+    "roller_role"
+  ],
   "properties": {
-    "roll_id": {"$ref": "#/$defs/id"},
-    "expression": {"type": "string", "minLength": 1},
-    "purpose_id": {"$ref": "#/$defs/id"}
+    "roll_id": {
+      "$ref": "#/$defs/id"
+    },
+    "expression": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose_id": {
+      "$ref": "#/$defs/id"
+    },
+    "roller_role": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "subject_role": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "target_role": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    }
   },
   "$defs": {
-    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    }
   },
   "description": "Transient deterministic RNG request. It is not durable authority. Once generated and accepted, the corresponding typed RollResult becomes fixed execution history under Resolution/Continuation when continuity requires it.",
   "examples": [
-    {"roll_id": "roll.attack.1", "expression": "1d20", "purpose_id": "roll.attack"}
+    {
+      "roll_id": "roll.attack.1",
+      "expression": "1d20",
+      "purpose_id": "roll.attack",
+      "roller_role": "actor"
+    }
   ]
 }
+

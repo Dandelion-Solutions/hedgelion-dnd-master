@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/signal.schema.json",
+  "title": "HDM transient Signal value",
+  "$comment": "Embedded pre-commit context only. It has no lifecycle, disposition, durable identity, handler, callback, query or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "not": {},
+  "required": ["kind_id"],
+  "properties": {
+    "kind_id": {"type": "string", "pattern": "^signal\\.[a-z][a-z0-9_.]*$"}
+  }
+  ,"description": "Structural nonselectable root. An exact admitted Signal consumer must replace the rejecting root with a kind-specific binding contract."
+}

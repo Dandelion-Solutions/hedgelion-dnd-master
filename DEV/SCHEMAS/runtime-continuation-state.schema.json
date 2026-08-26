@@ -96,7 +96,7 @@
       "safe_recompute_phase": "determine",
       "invocation_facts": [],
       "fixed_rng_results": [
-        {"roll_id": "roll.attack.1", "expression": "1d20", "raw_values": [17], "source_kind": "rng.system"}
+        {"roll_id": "roll.attack.1", "request_id": "roll.attack.1", "expression": "1d20", "raw_values": [17], "source_kind": "rng.system", "provenance_ref": "rng:42:1"}
       ],
       "prior_step_exports": {"attack_roll": 17},
       "committed_segment_refs": ["resolution-0000001:segment:1"],

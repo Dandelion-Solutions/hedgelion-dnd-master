@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/state-delta.schema.json",
+  "title": "HDM prospective StateDelta value",
+  "$comment": "Embedded parent-relative prospective instruction only. No lifecycle/disposition or trusted Continuation retention. Exact active transition payload is validated by its S6D-06 primitive contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "not": {},
+  "required": ["transition_kind", "owner_role"],
+  "properties": {
+    "transition_kind": {"type": "string", "pattern": "^transition\\.[a-z][a-z0-9_.]*$"},
+    "owner_role": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}
+  }
+  ,"description": "Structural nonselectable root. S6D-06 must replace the rejecting root with exact transition-specific payload contracts before serialized use."
+}

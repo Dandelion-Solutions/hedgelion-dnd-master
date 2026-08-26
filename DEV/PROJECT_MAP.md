@@ -276,6 +276,10 @@ is the only consumer.
 - `research/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-research-architecture-draft.md` and matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-04 Steps 2–8 evidence chain.
 - `specs/2026-08-25-s6d-05-activity-parameters-targeting-costs-portable-values-task-brief.md` — S6D-05 Step-1 framing for embedded Activity/protocol values, declaration-binding compatibility and execution/recovery equality.
 - `specs/2026-08-25-s6d-05-activity-parameters-targeting-costs-portable-values-brief-critic.md` — mandatory whole-project Step-1 critique; exact high-risk Source Manifest routes repaired, final PASS.
+- `DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md` — canonical S6D-05 owner for Activity declarations/bindings, targeting/area/cost/duration and embedded roll/offer/Signal/StateDelta authority and recovery equality.
+- `research/2026-08-25-s6d-05-activity-parameters-targeting-costs-portable-values-research-architecture-draft.md` and matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-05 Steps 2–8 evidence chain; final whole-project critic PASS.
+- `DEV/CATALOG/portable-value-routes.json` and `portable-value-contracts.json` — exact 19-value embedding/disposition routing and catalog-aware portable-value vocabularies.
+- `DEV/TESTS/test_s6d_05_portable_value_contract.py` — transitive schema closure, binding compatibility, targeting/cost/duration, retry/currentness and no-lifecycle verification.
 - `DEV/TESTS/test_s6d_03_selector_metadata_contract.py` — exact 34/26 accounting, active/dormant equality, metadata/policy/input/dependency verification.
 - `research/2026-08-25-s6d-02-catalog-admission-gap-closure-research-architecture-draft.md` and the matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-02 Steps 2–8 evidence chain.
 - `DEV/TESTS/test_s6d_02_catalog_admission_contract.py` — exact ledger/core equality, legal state and package-plan boundary checks.
@@ -577,5 +581,3 @@ only be linked/summarized here.
 
 Do not treat this map's coverage as semantic coverage of the repository. Its job
 is to route the agent to the evidence needed to prove a task-specific conclusion.
-
-

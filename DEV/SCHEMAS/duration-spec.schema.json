@@ -31,7 +31,7 @@
       "properties": {
         "kind_id": {"const": "duration.metric"},
         "amount": {"type": "integer", "minimum": 1},
-        "unit_id": {"$ref": "#/$defs/machineId"}
+        "unit_id": {"enum": ["unit.second", "unit.minute", "unit.hour", "unit.day"]}
       }
     },
     "boundary": {

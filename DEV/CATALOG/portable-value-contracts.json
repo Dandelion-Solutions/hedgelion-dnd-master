@@ -1,0 +1,49 @@
+{
+  "schema_name": "s6d_05_portable_value_contracts",
+  "schema_version": 1,
+  "owner": "DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md",
+  "parameter_source_classes": ["ENGINE_BOUND", "PLAYER_CHOICE", "INVOCATION_ADJUDICATED"],
+  "parameter_cardinalities": ["single", "many"],
+  "parameter_value_types": ["boolean", "integer", "number", "string", "machine_id"],
+  "target_kind_contracts": {
+    "target.none": {"area_allowed": false, "minimum": 0, "maximum": 0},
+    "target.self": {"area_allowed": false, "minimum": 1, "maximum": 1},
+    "target.entity": {"area_allowed": false},
+    "target.entities": {"area_allowed": false},
+    "target.asset": {"area_allowed": false},
+    "target.location": {"area_allowed": false},
+    "target.zone": {"area_allowed": true},
+    "target.point": {"area_allowed": true}
+  },
+  "range_contracts": {
+    "range.distance": {"required": ["distance", "unit_id"], "forbidden": []},
+    "range.self": {"required": [], "forbidden": ["distance", "unit_id"]},
+    "range.touch": {"required": [], "forbidden": ["distance", "unit_id"]},
+    "range.sight": {"required": [], "forbidden": ["distance", "unit_id"]},
+    "range.unlimited": {"required": [], "forbidden": ["distance", "unit_id"]},
+    "range.same_location": {"required": [], "forbidden": ["distance", "unit_id"]},
+    "range.near": {"required": [], "forbidden": ["distance", "unit_id"]},
+    "range.reachable": {"required": [], "forbidden": ["distance", "unit_id"]}
+  },
+  "area_dimension_contracts": {
+    "area.sphere": ["radius"],
+    "area.emanation": ["radius"],
+    "area.cube": ["size"],
+    "area.cone": ["length"],
+    "area.line": ["length", "width"],
+    "area.cylinder": ["height", "radius"]
+  },
+  "area_eligible_target_kinds": ["target.point", "target.zone"],
+  "spatial_units": ["unit.foot"],
+  "duration_units": ["unit.second", "unit.minute", "unit.hour", "unit.day"],
+  "duration_contracts": {
+    "duration.instant": {"required": [], "forbidden": ["amount", "unit_id", "boundary_id"]},
+    "duration.metric": {"required": ["amount", "unit_id"], "forbidden": ["boundary_id"]},
+    "duration.boundary": {"required": ["boundary_id"], "forbidden": ["amount", "unit_id"]},
+    "duration.permanent": {"required": [], "forbidden": ["amount", "unit_id", "boundary_id"]}
+  },
+  "structural_nonselectable_values": ["value.signal", "value.state_delta"]
+  ,"cost_commitment_routes": {
+    "cost_commit.on_accept": {"owner": "S6D-06", "disposition": "DORMANT_UNTIL_PRIMITIVE_CONTRACT"}
+  }
+}

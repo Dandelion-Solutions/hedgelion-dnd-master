@@ -1,0 +1,140 @@
+{
+  "schema_name": "s6d_05_portable_value_routes",
+  "schema_version": 1,
+  "owner": "DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md",
+  "routes": [
+    {
+      "value_id": "value.runtime_command",
+      "schema_file": "runtime-command-state.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": []
+    },
+    {
+      "value_id": "value.action_request",
+      "schema_file": "action-request.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["runtime-command-state.schema.json"]
+    },
+    {
+      "value_id": "value.transition_request",
+      "schema_file": "transition-request.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["runtime-command-state.schema.json"]
+    },
+    {
+      "value_id": "value.intent_clause",
+      "schema_file": "intent-clause.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": []
+    },
+    {
+      "value_id": "value.target_spec",
+      "schema_file": "target-spec.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["activity-definition-data.schema.json"]
+    },
+    {
+      "value_id": "value.area_spec",
+      "schema_file": "area-spec.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["target-spec.schema.json"]
+    },
+    {
+      "value_id": "value.duration_spec",
+      "schema_file": "duration-spec.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["activity-definition-data.schema.json"]
+    },
+    {
+      "value_id": "value.cost_spec",
+      "schema_file": "cost-spec.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["activity-definition-data.schema.json"]
+    },
+    {
+      "value_id": "value.signal",
+      "schema_file": "signal.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "DORMANT_NONSELECTABLE",
+      "embedding_consumers": []
+    },
+    {
+      "value_id": "value.state_delta",
+      "schema_file": "state-delta.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "DORMANT_NONSELECTABLE",
+      "embedding_consumers": []
+    },
+    {
+      "value_id": "value.roll_request",
+      "schema_file": "roll-request.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": []
+    },
+    {
+      "value_id": "value.roll_result",
+      "schema_file": "roll-result.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["runtime-continuation-state.schema.json"]
+    },
+    {
+      "value_id": "value.choice_request",
+      "schema_file": "choice-request.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["runtime-continuation-state.schema.json"]
+    },
+    {
+      "value_id": "value.reaction_offer",
+      "schema_file": "reaction-offer.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["runtime-continuation-state.schema.json"]
+    },
+    {
+      "value_id": "value.resolution_receipt",
+      "schema_file": "resolution-receipt.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["runtime-command-state.schema.json"]
+    },
+    {
+      "value_id": "value.execution_segment",
+      "schema_file": "execution-segment.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["runtime-command-state.schema.json"]
+    },
+    {
+      "value_id": "value.pending_child_invocation",
+      "schema_file": "pending-child-invocation.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["execution-segment.schema.json", "runtime-command-state.schema.json"]
+    },
+    {
+      "value_id": "value.invocation_fact",
+      "schema_file": "invocation-fact.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": ["runtime-command-state.schema.json", "runtime-continuation-state.schema.json"]
+    },
+    {
+      "value_id": "value.boundary_occurrence",
+      "schema_file": "boundary-occurrence.schema.json",
+      "authority": "EMBEDDED_NONOWNER",
+      "disposition": "ACTIVE_STRUCTURAL",
+      "embedding_consumers": []
+    }
+  ]
+}
