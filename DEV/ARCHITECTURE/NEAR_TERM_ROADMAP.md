@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-06 COMPLETE / S6D-07 STEP 1 COMPLETE / STEP 2 NEXT / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-06 COMPLETE / S6D-07 STEP 3 HUMAN DECISION REQUIRED / R2.7 PAUSED**
 
 Date: 2026-08-25
 
@@ -112,7 +112,8 @@ R2.0..R2.6 COMPLETE
     -> S6D-05 Steps 1-8                            [COMPLETE / CANONICAL]
     -> S6D-06 Steps 1-8                            [COMPLETE / CRITIC PASS]
     -> S6D-07 Step 1                               [COMPLETE / BRIEF + CRITIC PASS]
-    -> S6D-07 Step 2                               [NEXT / NOT STARTED]
+    -> S6D-07 Step 2                               [COMPLETE / RESEARCH]
+    -> S6D-07 Step 3                               [ACTIVE / HUMAN SCOPE DECISION]
     -> ... remaining S6D domains full eight-step loops ...
     -> S6D integrated closure
     -> R2.7 WP-06 RESUME
@@ -121,7 +122,7 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-07 Step 1 is complete with whole-project brief-critic PASS. S6D-07 Step 2 is next and has not started.
+**Current stop.** S6D-07 Step 2 evidence is complete. Step 3 is stopped at the human decision for built-in character-seed breadth; Steps 4–8 are not started.
 
 ---
 
@@ -187,7 +188,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-07 Step 1 complete / Step 2 next
+## 7. S6D — S6D-07 Step 3 human decision
 
 S6D decomposition/evidence inputs remain:
 
@@ -195,7 +196,7 @@ S6D decomposition/evidence inputs remain:
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
-The plan is a decomposition/coverage index only. S6D-01 through S6D-06 are canonically closed by their named architecture owners. S6D-06 grants zero primitive execution authority: all 31 registered names are quarantined. S6D-07 Step 1 is complete with whole-project brief-critic PASS; Step 2 is next and has not started.
+The plan is a decomposition/coverage index only. S6D-01 through S6D-06 are canonically closed by their named architecture owners. S6D-06 grants zero primitive execution authority: all 31 registered names are quarantined. S6D-07 Step 2 research is complete. Step 3 awaits the explicit built-in character-seed scope decision recorded in the S6D-07 Decision Brief.
 
 ---
 
@@ -223,11 +224,11 @@ S6D: IN PROGRESS
 S6D_COMPLETED_DOMAIN: S6D-06 / STEPS 1-8 / ARCHITECTURE CLOSED
 S6D_NEXT_DOMAIN: S6D-07
 S6D_ACTIVE_DOMAIN: S6D-07
-S6D_COMPLETED_STAGE: S6D-07 STEP 1 / TASK BRIEF + WHOLE-PROJECT CRITIC
-S6D_ACTIVE_STAGE: NONE
-S6D_NEXT_STAGE: S6D-07 STEP 2 / RESEARCH & ARCHITECTURE DRAFT
+S6D_COMPLETED_STAGE: S6D-07 STEP 2 / RESEARCH & ARCHITECTURE DRAFT
+S6D_ACTIVE_STAGE: S6D-07 STEP 3 / HUMAN DECISION
+S6D_NEXT_STAGE: S6D-07 STEP 4 / COLLABORATIVE REVIEW AFTER DECISION
 R2_7_WP06: PAUSED
 ```
 
-Next action requires explicit owner approval to continue into **S6D-07 Step 2 — Research & Architecture Draft**. Do not start Step 2 from this roadmap update alone.
+Next action requires the explicit human choice recorded in **S6D-07 Step 3 — Supported Character Seed Scope Decision Brief**. Do not start Step 4 before that decision.
 
