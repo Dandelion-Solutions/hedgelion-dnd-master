@@ -121,6 +121,10 @@ class CanonicalSchemaValidator:
             if isinstance(value, dict):
                 missing = set(schema.get("required", [])) - set(value)
                 if missing: raise SchemaViolation(f"{path}: missing {sorted(missing)}")
+                for trigger, dependencies in schema.get("dependentRequired", {}).items():
+                    if trigger in value:
+                        dependency_missing = set(dependencies) - set(value)
+                        if dependency_missing: raise SchemaViolation(f"{path}: {trigger} requires {sorted(dependency_missing)}")
                 props = schema.get("properties", {})
                 if schema.get("additionalProperties") is False:
                     extra = set(value) - set(props)
@@ -288,7 +292,7 @@ def evaluate_ready_pc(actor, resolved_package, evidence=None):
     required_provenance = {"assets": "ASSET_STATE", "proficiencies": "RESOLVED_DEFINITION_GRANTS", "selectors": "MECHANICAL_CONTEXT", "activities": "CATALOG_ADMISSION_LEDGER"}
     if evidence.get("actor_id") != actor.get("id") or evidence.get("actor_state_revision") != actor.get("state_revision"):
         blockers.append("readiness_actor_identity_or_revision")
-    if evidence.get("catalog_generation") != capability["catalog_generation"] or evidence.get("package_content_sha256") != capability["content_sha256"]:
+    if evidence.get("catalog_generation") != capability["catalog_generation"] or evidence.get("package_content_set_sha256") != capability["content_set_sha256"]:
         blockers.append("readiness_catalog_identity")
     if evidence.get("provenance") != required_provenance:
         blockers.append("readiness_evidence_provenance")
@@ -358,3 +362,4 @@ def advance_fighter_to_level_2(actor, command_id, idempotency_key, existing_rece
     }
     existing_receipts[idempotency_key] = receipt
     return receipt
+

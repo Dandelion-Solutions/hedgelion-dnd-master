@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/health-effects-recovery-seed.schema.json",
+  "title": "HDM S6D-08 bounded health/effects/recovery seed",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile_id", "scope", "authority", "health_operations", "life_state_policy", "mechanical_recovery", "procedure_state", "effect_cases", "condition_cases", "boundary_execution", "maximum_hp", "resource_invariants", "durability_recovery", "negative_space", "forbidden_authorities"],
+  "properties": {
+    "profile_id": {"const": "mechanical_state.mvp_vertical_slice.v1"},
+    "scope": {"const": "S6D_07_EXACT_CONSUMERS_PLUS_MINIMAL_ARCHITECTURE_CASES"},
+    "authority": {"$ref": "#/$defs/nonemptyClosedObject"},
+    "health_operations": {"$ref": "#/$defs/nonemptyClosedObject"},
+    "life_state_policy": {"type": "object", "additionalProperties": false, "required": ["policy_id", "transitions", "stored_death_save_counter_maximum", "third_result_is_transition_not_stored_counter", "stable_recovery", "unconscious_condition_source"], "properties": {"policy_id": {"const": "life_policy.dnd2024.character_like"}, "transitions": {"type": "array", "minItems": 8, "items": {"type": "object"}}, "stored_death_save_counter_maximum": {"const": 2}, "third_result_is_transition_not_stored_counter": {"const": true}, "stable_recovery": {"type": "object"}, "unconscious_condition_source": {"type": "object"}}},
+    "mechanical_recovery": {"$ref": "#/$defs/nonemptyClosedObject"},
+    "procedure_state": {"$ref": "#/$defs/nonemptyClosedObject"},
+    "effect_cases": {"$ref": "#/$defs/nonemptyClosedObject"},
+    "condition_cases": {"$ref": "#/$defs/nonemptyClosedObject"},
+    "boundary_execution": {"$ref": "#/$defs/nonemptyClosedObject"},
+    "maximum_hp": {"$ref": "#/$defs/nonemptyClosedObject"},
+    "resource_invariants": {"$ref": "#/$defs/nonemptyClosedObject"},
+    "durability_recovery": {"$ref": "#/$defs/nonemptyClosedObject"},
+    "negative_space": {"$ref": "#/$defs/nonemptyClosedObject"},
+    "forbidden_authorities": {"type": "array", "uniqueItems": true, "minItems": 6, "items": {"type": "string"}}
+  },
+  "$defs": {
+    "nonemptyClosedObject": {"type": "object", "minProperties": 1}
+  }
+}
+

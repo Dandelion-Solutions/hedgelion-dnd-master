@@ -1,0 +1,151 @@
+{
+  "profile_id": "mechanical_state.mvp_vertical_slice.v1",
+  "scope": "S6D_07_EXACT_CONSUMERS_PLUS_MINIMAL_ARCHITECTURE_CASES",
+  "authority": {
+    "hp": "ACTOR_STATE_HP",
+    "life_state": "ACTOR_STATE_LIFE_STATE_POLICY",
+    "resource": "DEFINITION_SELECTED_LIFETIME_OWNER_STATE",
+    "effect": "WORLD_EFFECT",
+    "condition_aggregate": "DERIVED_FROM_APPLICABLE_EFFECTS",
+    "duration": "DEFINITION_DURATION_SPEC_AND_OWNER_TEMPORAL_BINDING"
+  },
+  "health_operations": {
+    "damage": {
+      "order": ["hp.temporary", "hp.current"],
+      "floor": 0,
+      "lifestate": "POLICY_IN_SAME_EXECUTION_SEGMENT"
+    },
+    "healing": {
+      "target": "hp.current",
+      "ceiling": "DERIVED_HEALTH_MAXIMUM",
+      "lifestate": "POLICY_IN_SAME_EXECUTION_SEGMENT"
+    }
+  },
+  "life_state_policy": {
+    "policy_id": "life_policy.dnd2024.character_like",
+    "transitions": [
+      {"transition_id": "damage_to_zero", "from": "life.active", "to": "life.dying", "progress": "INITIALIZE_DEATH_SAVES"},
+      {"transition_id": "instant_death_massive_damage", "from": "life.active_or_dying", "to": "life.dead", "progress": "CLEAR", "precondition": "DAMAGE_REMAINDER_AT_ZERO_GTE_DERIVED_MAXIMUM_HP"},
+      {"transition_id": "damage_at_zero", "from": "life.dying", "to": "life.dying_or_dead", "progress": "ADD_ONE_FAILURE_OR_TWO_IF_CRITICAL_THEN_TRANSITION_AT_THREE"},
+      {"transition_id": "healing_from_zero", "from": "life.dying_or_stable", "to": "life.active", "progress": "CLEAR"},
+      {"transition_id": "death_save_natural_1", "from": "life.dying", "to": "life.dying_or_dead", "progress": "ADD_TWO_FAILURES_THEN_TRANSITION_AT_THREE"},
+      {"transition_id": "death_save_natural_20", "from": "life.dying", "to": "life.active", "progress": "CLEAR_AND_REGAIN_ONE_HP"},
+      {"transition_id": "third_death_save_success", "from": "life.dying", "to": "life.stable", "progress": "STABLE_RECOVERY_BINDING"},
+      {"transition_id": "third_death_save_failure", "from": "life.dying", "to": "life.dead", "progress": "CLEAR"}
+    ],
+    "stored_death_save_counter_maximum": 2,
+    "third_result_is_transition_not_stored_counter": true
+    ,"stable_recovery": {
+      "rng": "FIXED_1D4_HOURS",
+      "binding": "METRIC_DEADLINE_ON_LOCAL_CHRONOLOGY",
+      "due_transition": "REGAIN_ONE_HP_ENTER_ACTIVE_CLEAR_PROGRESS",
+      "retry": "REUSE_FIXED_ROLL_AND_OCCURRENCE_RECEIPT"
+    },
+    "unconscious_condition_source": {
+      "definition_id": "condition.unconscious",
+      "application_owner": "WORLD_EFFECT",
+      "rules_origin": "BOUND_LIFE_STATE_POLICY",
+      "create_when": ["life.dying", "life.stable"],
+      "remove_when": ["life.active", "life.dead"],
+      "atomic_with_life_state_transition": true
+    }
+  },
+  "mechanical_recovery": {
+    "rest_policy_authority": "QUALIFY_AND_EMIT_COMPLETION_BOUNDARY_ONLY",
+    "resource_responders": [
+      {"resource_id": "resource.second_wind", "boundary_id": "boundary.short_rest_complete", "operation_id": "resource_recovery.restore_amount", "amount": 1, "owner": "ACTOR_RESOURCE_STATE"},
+      {"resource_id": "resource.second_wind", "boundary_id": "boundary.long_rest_complete", "operation_id": "resource_recovery.restore_to_capacity", "owner": "ACTOR_RESOURCE_STATE"},
+      {"resource_id": "resource.action_surge", "boundary_id": "boundary.short_rest_complete", "operation_id": "resource_recovery.restore_to_capacity", "owner": "ACTOR_RESOURCE_STATE"},
+      {"resource_id": "resource.innate_sorcery", "boundary_id": "boundary.long_rest_complete", "operation_id": "resource_recovery.restore_to_capacity", "owner": "ACTOR_RESOURCE_STATE"},
+      {"resource_id": "resource.spell_slot.level_1", "boundary_id": "boundary.long_rest_complete", "operation_id": "resource_recovery.restore_to_capacity", "owner": "ACTOR_RESOURCE_STATE"}
+    ],
+    "condition_responders": []
+  },
+  "procedure_state": {
+    "action_surge_entitlement": {
+      "owner": "RUNTIME_PROCEDURE_PARTICIPANT_RESOURCE",
+      "expiry": "boundary.turn_end",
+      "persist_on_actor": false,
+      "retry": "IDEMPOTENCY_KEY_REUSES_COMMITTED_GRANT"
+    }
+  },
+  "effect_cases": {
+    "effect.innate_sorcery": {
+      "selection_state": "ACTIVE_EXACT_CONSUMER_ONLY",
+      "instance_owner": "WORLD_EFFECT",
+      "instance_key": ["target_id", "source_id", "definition_id"],
+      "duration_owner": "WORLD_EFFECT_TEMPORAL_BINDING",
+      "duration": {"kind_id": "duration.metric", "amount": 1, "unit_id": "unit.minute"},
+      "due_index": "DERIVED_DISPOSABLE_TEMPORAL_AGENDA",
+      "reapplication": "REPLACE_SAME_TARGET_SOURCE_DEFINITION_KEY",
+      "expiry": "IDEMPOTENT_EFFECT_LIFECYCLE_TRANSITION"
+    },
+    "concentration_support_case": {
+      "selection_state": "CONFORMANCE_ONLY_NONSELECTABLE",
+      "root_owner": "WORLD_EFFECT",
+      "child_owner": "WORLD_EFFECT",
+      "relation": "IMMUTABLE_CHILD_SUPPORT_EFFECT_ID",
+      "root_terminal_consequence": "DESCENDANTS_END_WITH_EFFECT_END_SUPPORT_LOST",
+      "child_terminal_consequence": "NO_AUTOMATIC_PARENT_CHANGE",
+      "cycle_policy": "COMPILE_OR_PROSPECTIVE_ACTIVATION_REJECT"
+    }
+  },
+  "condition_cases": {
+    "condition.unconscious": {
+      "aggregation": "PRESENCE",
+      "storage": "NO_ACTOR_CONDITION_LIST",
+      "source": "APPLICABLE_NONTERMINAL_EFFECT_APPLICATIONS"
+    },
+    "condition.exhaustion": {
+      "selection_state": "CONFORMANCE_ONLY_NONSELECTABLE",
+      "aggregation": "CUMULATIVE_UNITS",
+      "storage": "EFFECT_APPLICATIONS_WITH_PER_UNIT_PROVENANCE",
+      "minimum": 0,
+      "maximum": 6
+    }
+  },
+  "boundary_execution": {
+    "phase_order": ["DISCOVER", "PROSPECTIVE_CLOSURE", "ATOMIC_COMMIT", "EVENT_AND_RECEIPT"],
+    "idempotency_key": ["occurrence_key", "responder_owner_id"],
+    "scope": "ONLY_QUALIFYING_OR_INDEXED_OWNERS",
+    "same_coordinate": "STEP_3_BOUNDED_DETERMINISTIC_CLOSURE"
+  },
+  "maximum_hp": {
+    "formula": "MAXIMUM_BASE_PLUS_MAXIMUM_ADJUSTMENT",
+    "minimum": 0,
+    "decrease_normalization": "CURRENT_MIN_NEW_MAXIMUM_IN_SAME_SEGMENT",
+    "zero_maximum_lifestate": "LIFE_DEAD",
+    "temporary_hp_on_maximum_change": "UNCHANGED"
+  },
+  "resource_invariants": {
+    "supported_state_numeric_kind": "NONNEGATIVE_INTEGER",
+    "definition_binding": "RESOURCE_MAP_KEY_RESOLVES_DEFINITION_RESOURCE",
+    "lifetime_owner_match": "ACTOR_STATE_ACCEPTS_ACTOR_OWNER_ONLY",
+    "capacity": "CURRENT_LTE_PINNED_ENGINE_STATE_CAPACITY",
+    "capacity_decrease": "NORMALIZE_CURRENT_TO_CAPACITY_IN_SAME_SEGMENT"
+  },
+  "durability_recovery": {
+    "actor_effect_procedure_state": "RESTORE_CURRENT_AUTHORITATIVE_STATE",
+    "agenda": "REBUILD_FROM_OWNER_BINDINGS",
+    "condition_aggregate": "RECOMPUTE",
+    "dependency_dag": "REBUILD_FOR_HYDRATED_SCOPE",
+    "fixed_rng_and_accepted_inputs": "PRESERVE_WHILE_RETRYABLE",
+    "missing_required_evidence": "FAIL_CLOSED"
+  },
+  "negative_space": {
+    "periodic_effect_content": "ABSENT_NONSELECTABLE",
+    "generic_concentration_content": "CONFORMANCE_ONLY_NONSELECTABLE",
+    "exhaustion_content": "CONFORMANCE_ONLY_NONSELECTABLE",
+    "new_primitive_activation": "NONE",
+    "full_srd_mechanical_state_corpus": false
+  },
+  "forbidden_authorities": [
+    "BACKGROUND_SCHEDULER",
+    "GLOBAL_EVENT_QUEUE",
+    "CAMPAIGN_WIDE_BOUNDARY_SCAN",
+    "REST_POLICY_CROSS_DOMAIN_MUTATION",
+    "GENERIC_STATE_DELTA_OWNER",
+    "MUTABLE_CONDITION_AGGREGATE"
+  ]
+}
+

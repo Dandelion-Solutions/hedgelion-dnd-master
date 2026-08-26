@@ -4,7 +4,7 @@
   "title": "HDM world.actor state",
   "type": "object",
   "additionalProperties": false,
-  "dependentRequired": {"hp": ["life_state_id"], "life_state_progress": ["life_state_id"]},
+  "dependentRequired": {"hp": ["life_state_id", "life_state_policy_id"], "life_state_id": ["life_state_policy_id"], "life_state_progress": ["life_state_id", "life_state_policy_id"]},
   "properties": {
     "name": {"$ref": "#/$defs/localizedText"},
     "concept": {"type": "string", "minLength": 1},
@@ -58,12 +58,12 @@
       "properties": {"species_id": {"$ref": "#/$defs/id"}, "background_id": {"$ref": "#/$defs/id"}, "class_progression": {"$ref": "#/$defs/classProgression"}, "choice_bindings": {"$ref": "#/$defs/choiceBindings"}, "spellcasting": {"$ref": "#/$defs/spellcastingState"}}
     },
     "abilityComponents": {"type": "object", "additionalProperties": false, "minProperties": 1, "properties": {"base": {"type": "integer", "minimum": 0}, "adjustment": {"type": "integer"}}},
-    "hp": {"type": "object", "additionalProperties": false, "minProperties": 1, "properties": {"current": {"type": "integer", "minimum": 0}, "maximum_base": {"type": "integer", "minimum": 0}, "maximum_adjustment": {"type": "integer"}, "temporary": {"type": "integer", "minimum": 0}}},
+    "hp": {"type": "object", "additionalProperties": false, "required": ["current", "maximum_base"], "properties": {"current": {"type": "integer", "minimum": 0}, "maximum_base": {"type": "integer", "minimum": 0}, "maximum_adjustment": {"type": "integer"}, "temporary": {"type": "integer", "minimum": 0}}},
     "deathSaves": {"type": "object", "additionalProperties": false, "required": ["successes", "failures"], "properties": {"successes": {"type": "integer", "minimum": 0, "maximum": 2}, "failures": {"type": "integer", "minimum": 0, "maximum": 2}}},
     "dyingProgress": {"type": "object", "additionalProperties": false, "required": ["death_saves"], "properties": {"death_saves": {"$ref": "#/$defs/deathSaves"}}},
     "stableProgress": {"type": "object", "additionalProperties": false, "required": ["recovery_binding"], "properties": {"recovery_binding": {"$ref": "https://hedgelion.invalid/schemas/temporal-binding.schema.json"}}},
     "lifeStateProgress": {"oneOf": [{"$ref": "#/$defs/dyingProgress"}, {"$ref": "#/$defs/stableProgress"}]},
-    "resourceState": {"type": "object", "additionalProperties": false, "required": ["current"], "properties": {"current": {"type": "number", "minimum": 0}, "recovery_binding": {"$ref": "https://hedgelion.invalid/schemas/temporal-binding.schema.json"}}},
+    "resourceState": {"type": "object", "additionalProperties": false, "required": ["current"], "properties": {"current": {"type": "integer", "minimum": 0}, "recovery_binding": {"$ref": "https://hedgelion.invalid/schemas/temporal-binding.schema.json"}}},
     "continuityStatement": {"type": "object", "additionalProperties": false, "required": ["statement"], "properties": {"statement": {"type": "string", "minLength": 1}, "source_refs": {"$ref": "#/$defs/idSet"}}},
     "continuityStatementSet": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/continuityStatement"}},
     "foundationContinuity": {"type": "object", "additionalProperties": false, "minProperties": 1, "properties": {"values": {"$ref": "#/$defs/continuityStatementSet"}, "temperament": {"$ref": "#/$defs/continuityStatementSet"}, "identity": {"$ref": "#/$defs/continuityStatementSet"}}},
@@ -105,3 +105,4 @@
     }
   ]
 }
+

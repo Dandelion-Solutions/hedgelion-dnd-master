@@ -3,7 +3,12 @@
   "package_version": "0.1.0-mvp",
   "catalog_generation": "2.0.0",
   "content_file": "character-mvp-seed.json",
-  "content_sha256": "ca4703a3ebca56105b8d6c117e851b04aa7cc2dcfe6e4d40dc1ba3ce8e63c42e",
+  "content_sha256": "992fec66fe7a71cfd43546d8c8a95c393b037deed30ed67d8209218b248a15cb",
+  "content_files": [
+    {"path": "character-mvp-seed.json", "sha256": "992fec66fe7a71cfd43546d8c8a95c393b037deed30ed67d8209218b248a15cb"},
+    {"path": "health-effects-recovery-seed.json", "sha256": "75d615c15d6b0e9db59a4d1e30c3ac27f8edc58a5c5d8df0df8216ba72a19fec"}
+  ],
+  "content_set_sha256": "746609c91ef070b55058d1c8c635a36cd57c488a494747bf63dfa1865b162755",
   "profile_id": "character.mvp_vertical_slice.v1",
   "content_basis": "SRD_5_2_1_BASED_MVP_SUBSET",
   "full_srd_character_corpus": false,
@@ -17,3 +22,4 @@
   "onboarding_policy": "PROGRESSIVE_INFER_DEFAULT_DELEGATE_ASK_ONLY_MATERIAL",
   "notice": "NOTICE.md"
 }
+

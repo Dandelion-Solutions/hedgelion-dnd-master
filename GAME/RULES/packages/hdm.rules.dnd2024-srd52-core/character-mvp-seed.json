@@ -36,7 +36,6 @@
     "proficiency.weapon.martial",
     "proficiency.weapon.simple",
     "resource.action_surge",
-    "resource.hit_points",
     "resource.innate_sorcery",
     "resource.second_wind",
     "resource.spell_slot.level_1",
@@ -417,8 +416,7 @@
     {"id": "asset.shortbow", "kind": "definition.asset", "data": {"details": {"asset_family_id": "asset_family.weapon"}}},
     {"id": "asset.thieves_tools", "kind": "definition.asset", "data": {"details": {"asset_family_id": "asset_family.tool"}}},
     {"id": "effect.innate_sorcery", "kind": "definition.effect", "data": {"duration": {"kind_id": "duration.metric", "amount": 1, "unit_id": "unit.minute"}, "rule_elements": [{"selector": "spell.dc", "operation_id": "rule.add_flat", "value": 1}, {"selector": "attack.roll", "operation_id": "rule.grant_advantage", "value": true}], "reapplication": {"match_policy_id": "effect_reapplication_match.target_family_source", "action_id": "effect_reapplication.replace"}, "details": {"instance_identity_owner": "EFFECT_STATE", "instance_key": ["target_actor_id", "source_actor_id", "effect_definition_id"], "start_boundary": "CAUSING_EXECUTION_SEGMENT_COMMIT_WORLD_TIME", "expiry_boundary": "START_PLUS_DURATION_IN_SAME_LOCAL_CHRONOLOGY", "recovery": "RECONSTRUCT_FROM_COMMITTED_EFFECT_EVENT_AND_PINNED_TEMPORAL_BINDING", "cleanup": "TEMPORAL_AGENDA_EMITS_IDEMPOTENT_EXPIRY_TRANSITION", "s6d08_boundary": "NARROW_SEED_CONTRACT_ONLY_NO_GENERIC_EFFECT_LIFECYCLE_AUTHORITY"}}},
-    {"id": "resource.hit_points", "kind": "definition.resource", "data": {"mechanic_id": "resource.bounded_pool", "lifetime_owner": "actor", "state_model": "current", "recovery": [], "details": {"capacity_owner": "ACTOR_DERIVED_MAX_HP"}}},
-    {"id": "resource.second_wind", "kind": "definition.resource", "data": {"mechanic_id": "resource.bounded_pool", "lifetime_owner": "actor", "state_model": "current", "capacity": 1, "recovery": [{"boundary_id": "boundary.short_rest_complete", "operation_id": "resource_recovery.restore_to_capacity"}]}},
+    {"id": "resource.second_wind", "kind": "definition.resource", "data": {"mechanic_id": "resource.bounded_pool", "lifetime_owner": "actor", "state_model": "current", "capacity": 2, "recovery": [{"boundary_id": "boundary.short_rest_complete", "operation_id": "resource_recovery.restore_amount", "amount": 1}, {"boundary_id": "boundary.long_rest_complete", "operation_id": "resource_recovery.restore_to_capacity"}]}},
     {"id": "resource.action_surge", "kind": "definition.resource", "data": {"mechanic_id": "resource.bounded_pool", "lifetime_owner": "actor", "state_model": "current", "capacity": 1, "recovery": [{"boundary_id": "boundary.short_rest_complete", "operation_id": "resource_recovery.restore_to_capacity"}]}},
     {"id": "resource.innate_sorcery", "kind": "definition.resource", "data": {"mechanic_id": "resource.bounded_pool", "lifetime_owner": "actor", "state_model": "current", "capacity": 2, "recovery": [{"boundary_id": "boundary.long_rest_complete", "operation_id": "resource_recovery.restore_to_capacity"}]}},
     {"id": "resource.spell_slot.level_1", "kind": "definition.resource", "data": {"mechanic_id": "resource.bounded_pool", "lifetime_owner": "actor", "state_model": "current", "capacity": 2, "recovery": [{"boundary_id": "boundary.long_rest_complete", "operation_id": "resource_recovery.restore_to_capacity"}]}}
@@ -747,3 +745,4 @@
     ]
   }
 }
+
