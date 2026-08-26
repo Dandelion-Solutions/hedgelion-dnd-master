@@ -147,6 +147,24 @@ Result: **36 tests run, 36 passed**.
 
 No new whole-project conflict, authority leak, activation leak, package-identity gap or unresolved human product decision was found in the repaired candidate.
 
+---
+
+## Senior-auditor HOLD repair re-review
+
+Status: **PASS — 0 BLOCKING, 0 SIGNIFICANT, 0 MINOR**
+
+The narrow Step-6→8 repair was reviewed without reopening Steps 2–3 or changing product semantics. The review checked the complete dependency route through `DEV/PROJECT_MAP.md`, canonical world-record/Effect schemas, the accepted LifeState owner, Step-3 execution, Step-5 recovery/GC and the S6D-07 narrow consumer boundary.
+
+Resolved evidence:
+
+- apply/replacement/expiry/support-loss/reconstruction now consume and return canonical `world.effect` records; envelope `id` owns stable episode identity, envelope `definition_id` remains outside state, and the Innate Sorcery match key is derived from canonical target/source/definition fields;
+- every reference Effect collection is validated through `world-record.schema.json` and transitive `world-effect-state`/TemporalBinding schemas before and after mutation; the former flat representation is rejected;
+- canonical prose and the exact transition inventory both include ordinary, critical and massive damage while stable at zero;
+- the seed structural schema plus mandatory canonical-instance SHA-256 validation fail closed for every nested machine-owned value; negative mutations cover authority, transition, recovery, Effect and responder owners;
+- Actor and Effect schema examples are executable conformance inputs, and package/readiness digests are synchronized.
+
+Fresh independent combined verification: **38 tests run / 38 passed**. No scheduler, queue, primitive activation, mutable Condition aggregate or new lifecycle/authority was introduced.
+
 ## Final verdict
 
 **PASS — 0 BLOCKING, 0 SIGNIFICANT.** The candidate may proceed to the Step-7 Resolution Gate; this review does not itself approve or publish it.

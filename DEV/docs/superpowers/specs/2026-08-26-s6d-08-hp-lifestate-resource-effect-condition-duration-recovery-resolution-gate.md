@@ -24,7 +24,9 @@ The independent whole-project review initially found four blocking and two signi
 8. reference execution covers Effect replacement, expiry, support loss, boundary dedupe and durability derivative reconstruction;
 9. canonical prose and machine contracts agree.
 
-Final independent critic verdict: **PASS — 0 BLOCKING / 0 SIGNIFICANT**.
+The later senior-auditor HOLD identified two blocking realization mismatches, one significant nested-contract overclaim and one minor invalid example. The narrow repair preserves the accepted semantics while making Effect reference execution canonical, synchronizing stable-at-zero inventory, enforcing an exact nested contract and validating schema examples.
+
+Final independent repair critic verdict: **PASS — 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR**.
 
 ## Verification evidence
 
@@ -34,7 +36,7 @@ Fresh combined focused regression:
 
     python -m unittest DEV.TESTS.test_s6d_08_health_effects_recovery_contract DEV.TESTS.test_s6d_07_character_mvp_seed -v
 
-Result: **36 tests run / 36 passed / 0 failed / 0 errors**.
+Result: **38 tests run / 38 passed / 0 failed / 0 errors**.
 
 Package character seed, health/effects/recovery seed and capability JSON parse successfully; exact digests are verified by the test.
 
@@ -45,11 +47,12 @@ Package character seed, health/effects/recovery seed and capability JSON parse s
 - S6D-07 playable dependencies remain closed and package-identity-bound.
 - HP/LifeState/death/stable recovery contracts are exact for the supported character-like profile.
 - Resource/rest owner-local recovery is exact for the supported paths.
-- Effects/Conditions/durations/support and retry/recovery boundaries are machine-testable.
+- Effects/Conditions/durations/support and retry/recovery boundaries use canonical world records and are machine-testable.
+- The structural seed schema and mandatory exact canonical-instance digest reject nested machine-owned drift.
+- Canonical Actor/Effect schema examples validate as executable conformance inputs.
 - No new primitive activation, periodic content or broad SRD claim.
 - No background scheduler, queue, global scan or RestPolicy mutation coordinator.
 - No human decision remains.
 
 Step 8 canonicalization is authorized. S6D-09 remains out of scope.
-
 

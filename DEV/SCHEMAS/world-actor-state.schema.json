@@ -92,6 +92,7 @@
       },
       "hp": {"current": 0, "maximum_base": 18},
       "life_state_id": "life.dying",
+      "life_state_policy_id": "life_policy.dnd2024.character_like",
       "life_state_progress": {"death_saves": {"successes": 1, "failures": 0}}
     },
     {

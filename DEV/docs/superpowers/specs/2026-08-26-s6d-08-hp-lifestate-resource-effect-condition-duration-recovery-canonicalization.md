@@ -1,6 +1,6 @@
 # S6D-08 Step 8 — Canonicalization
 
-Status: **CANONICAL / AUTHORITATIVE PUBLICATION**
+Status: **CANONICAL / SENIOR-AUDIT REPAIR AUTHORITATIVE PUBLICATION**
 
 Date: 2026-08-26
 
@@ -15,6 +15,9 @@ Published deltas:
 - Second Wind/Tactical Mind shared-pool and recovery semantics are corrected;
 - package identity expands to the exact character + health/effects/recovery content set;
 - reference validator and focused tests close health/LifeState, Resource/boundary, Effect/Condition/Duration and durability-recovery behavior;
+- reference Effect execution uses canonical `world.effect` envelopes, with stable envelope identity and no definition/key pseudo-state;
+- stable-at-zero damage is explicit in both the canonical owner and exact transition inventory;
+- the structural seed schema is paired with mandatory exact canonical-instance digest validation, nested negative mutations and executable Actor/Effect schema examples;
 - S6D-07 readiness evidence pins the aggregate package content-set identity;
 - PROJECT_MAP and roadmap route the new owner and mark S6D-08 closed.
 

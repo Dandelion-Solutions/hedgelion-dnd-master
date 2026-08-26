@@ -2,6 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/health-effects-recovery-seed.schema.json",
   "title": "HDM S6D-08 bounded health/effects/recovery seed",
+  "description": "Structural contract for the bounded seed. The fail-closed reference validator MUST also enforce x-hdm-exact-instance-sha256 over canonical JSON, so every machine-owned nested member is exact rather than an open extension point.",
+  "x-hdm-exact-instance-sha256": "38928e4155d63b835afaa92a3eca6a68f2f134a0169a7312e832c7c3009ef987",
   "type": "object",
   "additionalProperties": false,
   "required": ["profile_id", "scope", "authority", "health_operations", "life_state_policy", "mechanical_recovery", "procedure_state", "effect_cases", "condition_cases", "boundary_execution", "maximum_hp", "resource_invariants", "durability_recovery", "negative_space", "forbidden_authorities"],

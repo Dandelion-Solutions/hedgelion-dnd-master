@@ -112,7 +112,7 @@ R2.0..R2.6 COMPLETE
     -> S6D-05 Steps 1-8                            [COMPLETE / CANONICAL]
     -> S6D-06 Steps 1-8                            [COMPLETE / CRITIC PASS]
     -> S6D-07 Steps 1-8                            [COMPLETE / CRITIC PASS / CANONICAL]
-    -> S6D-08 Steps 1-8                            [COMPLETE / CRITIC PASS / CANONICAL]
+    -> S6D-08 Steps 1-8                            [COMPLETE / SENIOR-AUDIT REPAIR PASS / CANONICAL]
     -> S6D-09 Step 1                               [NEXT / NOT STARTED]
     -> ... remaining S6D domains full eight-step loops ...
     -> S6D integrated closure
@@ -122,7 +122,7 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-08 Steps 1–8 are complete with whole-project critic PASS and canonical publication. S6D-09 Step 1 is next and has not started.
+**Current stop.** S6D-08 Steps 1–8 are complete; the senior-audit HOLD repair passed independent whole-project re-review at 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR and is canonical. S6D-09 Step 1 is next and has not started.
 
 ---
 
@@ -224,7 +224,7 @@ S6D: IN PROGRESS
 S6D_COMPLETED_DOMAIN: S6D-08 / STEPS 1-8 / ARCHITECTURE CLOSED
 S6D_NEXT_DOMAIN: S6D-09
 S6D_ACTIVE_DOMAIN: NONE
-S6D_COMPLETED_STAGE: S6D-08 STEP 8 / CANONICALIZATION / CRITIC PASS
+S6D_COMPLETED_STAGE: S6D-08 STEP 8 / SENIOR-AUDIT REPAIR CANONICALIZATION / CRITIC PASS
 S6D_ACTIVE_STAGE: NONE
 S6D_NEXT_STAGE: S6D-09 STEP 1 / ARCHITECTURE TASK BRIEF
 R2_7_WP06: PAUSED

@@ -31,7 +31,7 @@ The bound LifeStatePolicy owns transition semantics. HP arithmetic does not deri
 
 - active reaching zero enters dying and initializes death-save progress;
 - remaining damage at zero at least equal to derived maximum HP causes immediate death;
-- damage while dying adds one death-save failure, or two for a critical hit, and transitions to dead at three;
+- damage while dying or stable adds one death-save failure, or two for a critical hit, enters/remains dying when below three, and transitions to dead at three; massive damage at zero kills from either state;
 - a natural 1 death save adds two failures; a natural 20 restores one HP, enters active and clears progress;
 - healing a dying or stable Actor above zero enters active and clears progress;
 - a third death-save success transitions to stable;
@@ -61,7 +61,7 @@ The Action Surge extra-action entitlement is procedure participant state for the
 
 ## Effects, Conditions and support
 
-Each application is one world.effect with one target, optional source, rules origin, immutable structural support parent, parameters, causal application order, temporal bindings and active/terminal lifecycle.
+Each application is one canonical `world.effect` record. Its envelope owns stable application identity (`id`), `kind` and `definition_id`; its `state` owns target, optional source, rules origin, immutable structural support parent, parameters, causal application order, temporal bindings and active/terminal lifecycle. `definition_id` and any derived reapplication key are forbidden as pseudo-fields inside Effect state. Reapplication matching is derived from the definition-owned key over canonical envelope/state fields; for the admitted Innate Sorcery case this is `(state.target_id, state.source_id, envelope.definition_id)`. Replacement terminates the prior envelope-owned episode and creates a new envelope-owned episode in the same segment.
 
 Reapplication matching and action are definition-owned. Prospective activation validates exact references, parameter declarations, applicability and the scoped dependency/support DAG before commit. A support parent ending terminates descendants with effect_end.support_lost; a child ending does not mutate its parent. No detach or generic reverse-lifecycle policy exists.
 

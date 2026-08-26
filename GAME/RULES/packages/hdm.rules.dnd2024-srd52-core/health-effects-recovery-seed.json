@@ -25,8 +25,8 @@
     "policy_id": "life_policy.dnd2024.character_like",
     "transitions": [
       {"transition_id": "damage_to_zero", "from": "life.active", "to": "life.dying", "progress": "INITIALIZE_DEATH_SAVES"},
-      {"transition_id": "instant_death_massive_damage", "from": "life.active_or_dying", "to": "life.dead", "progress": "CLEAR", "precondition": "DAMAGE_REMAINDER_AT_ZERO_GTE_DERIVED_MAXIMUM_HP"},
-      {"transition_id": "damage_at_zero", "from": "life.dying", "to": "life.dying_or_dead", "progress": "ADD_ONE_FAILURE_OR_TWO_IF_CRITICAL_THEN_TRANSITION_AT_THREE"},
+      {"transition_id": "instant_death_massive_damage", "from": "life.active_or_dying_or_stable", "to": "life.dead", "progress": "CLEAR", "precondition": "DAMAGE_REMAINDER_AT_ZERO_GTE_DERIVED_MAXIMUM_HP"},
+      {"transition_id": "damage_at_zero", "from": "life.dying_or_stable", "to": "life.dying_or_dead", "progress": "ADD_ONE_FAILURE_OR_TWO_IF_CRITICAL_THEN_TRANSITION_AT_THREE"},
       {"transition_id": "healing_from_zero", "from": "life.dying_or_stable", "to": "life.active", "progress": "CLEAR"},
       {"transition_id": "death_save_natural_1", "from": "life.dying", "to": "life.dying_or_dead", "progress": "ADD_TWO_FAILURES_THEN_TRANSITION_AT_THREE"},
       {"transition_id": "death_save_natural_20", "from": "life.dying", "to": "life.active", "progress": "CLEAR_AND_REGAIN_ONE_HP"},

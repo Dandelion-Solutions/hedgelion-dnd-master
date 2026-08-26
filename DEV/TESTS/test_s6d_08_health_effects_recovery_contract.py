@@ -3,6 +3,8 @@ import unittest
 from pathlib import Path
 import hashlib
 
+from DEV.TOOLS.validate_character_mvp_seed import CanonicalSchemaValidator, SchemaViolation
+
 from DEV.TOOLS.validate_health_effects_recovery_seed import (
     apply_damage,
     apply_healing,
@@ -129,6 +131,31 @@ class S6D08HealthEffectsRecoveryContractTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_seed_schema(invalid, self.contract_schema)
 
+        mutations = []
+        for path, replacement in (
+            (("authority", "effect"), "ACTOR_STATE_EFFECTS"),
+            (("life_state_policy", "transitions", 1, "from"), "life.active_or_dying"),
+            (("life_state_policy", "stable_recovery", "rng"), "REROLL_1D4_HOURS"),
+            (("effect_cases", "effect.innate_sorcery", "instance_owner"), "ACTOR_STATE"),
+            (("mechanical_recovery", "resource_responders", 0, "owner"), "REST_POLICY"),
+        ):
+            value = json.loads(json.dumps(self.contract))
+            cursor = value
+            for token in path[:-1]:
+                cursor = cursor[token]
+            cursor[path[-1]] = replacement
+            mutations.append(value)
+        for invalid in mutations:
+            with self.assertRaises(ValueError):
+                validate_seed_schema(invalid, self.contract_schema)
+
+    def test_canonical_schema_examples_are_valid(self):
+        validator = CanonicalSchemaValidator(ROOT / "DEV" / "SCHEMAS")
+        for schema_name in ("world-actor-state.schema.json", "world-effect-state.schema.json"):
+            schema = load(ROOT / "DEV" / "SCHEMAS" / schema_name)
+            for example in schema.get("examples", []):
+                validator.validate(example, schema)
+
     def test_package_identity_binds_exact_closed_content_set(self):
         validate_package_content_set(PACKAGE, self.capabilities)
         self.assertEqual(
@@ -247,33 +274,55 @@ class S6D08HealthEffectsRecoveryContractTest(unittest.TestCase):
         first = apply_effect(effects, "effect.innate_sorcery", "actor.a", "actor.a", "effect.1", receipts)
         self.assertIs(first, apply_effect(effects, "effect.innate_sorcery", "actor.a", "actor.a", "effect.1", receipts))
         replaced = apply_effect(first["effects"], "effect.innate_sorcery", "actor.a", "actor.a", "effect.2", receipts)
-        self.assertEqual(len(replaced["effects"]), 1)
-        effect_id = next(iter(replaced["effects"]))
-        expired = expire_effect(replaced["effects"], effect_id, "expiry.1", receipts)
-        self.assertEqual(expired["effects"][effect_id]["lifecycle"]["terminal_reason_id"], "effect_end.expired")
+        self.assertEqual(set(replaced["effects"]), {"effect.1", "effect.2"})
+        self.assertEqual(replaced["effects"]["effect.1"]["state"]["lifecycle"]["terminal_reason_id"], "effect_end.replaced")
+        self.assertEqual(replaced["effects"]["effect.2"]["definition_id"], "effect.innate_sorcery")
+        self.assertNotIn("definition_id", replaced["effects"]["effect.2"]["state"])
+        self.assertNotIn("instance_key", replaced["effects"]["effect.2"]["state"])
+        expired = expire_effect(replaced["effects"], "effect.2", "expiry.1", receipts)
+        self.assertEqual(expired["effects"]["effect.2"]["state"]["lifecycle"]["terminal_reason_id"], "effect_end.expired")
         support = {
-            "root": {"lifecycle": {"state_id": "effect_lifecycle.active"}},
-            "child": {"support_effect_id": "root", "lifecycle": {"state_id": "effect_lifecycle.active"}},
+            "effect.root": {"id": "effect.root", "kind": "world.effect", "definition_id": "condition.unconscious", "state": {"target_id": "actor.a", "lifecycle": {"state_id": "effect_lifecycle.active"}}},
+            "effect.child": {"id": "effect.child", "kind": "world.effect", "definition_id": "condition.unconscious", "state": {"target_id": "actor.a", "support_effect_id": "effect.root", "lifecycle": {"state_id": "effect_lifecycle.active"}}},
         }
-        ended = terminate_support_tree(support, "root", "support.1", {})
-        self.assertEqual(ended["effects"]["child"]["lifecycle"]["terminal_reason_id"], "effect_end.support_lost")
+        ended = terminate_support_tree(support, "effect.root", "support.1", {})
+        self.assertEqual(ended["effects"]["effect.child"]["state"]["lifecycle"]["terminal_reason_id"], "effect_end.support_lost")
+
+        validator = CanonicalSchemaValidator(ROOT / "DEV" / "SCHEMAS")
+        world_schema = validator.schemas["https://hedgelion.invalid/schemas/world-record.schema.json"]
+        for result in (first, replaced, expired, ended):
+            for effect_id, record in result["effects"].items():
+                self.assertEqual(record["id"], effect_id)
+                validator.validate(record, world_schema)
+        legacy_flat = {"definition_id": "effect.innate_sorcery", "instance_key": ["actor.a", "actor.a", "effect.innate_sorcery"], "target_id": "actor.a", "lifecycle": {"state_id": "effect_lifecycle.active"}}
+        with self.assertRaises(SchemaViolation):
+            validator.validate(legacy_flat, world_schema)
 
     def test_recovery_rebuilds_derivatives_and_fails_on_missing_binding(self):
         effects = {
             "effect.1": {
+                "id": "effect.1",
+                "kind": "world.effect",
                 "definition_id": "effect.innate_sorcery",
-                "target_id": "actor.a",
-                "temporal_binding": {"basis_id": "temporal.metric_deadline", "context_id": "scene.a", "anchor_value": 0, "deadline_value": 60, "unit_id": "unit.second"},
-                "lifecycle": {"state_id": "effect_lifecycle.active"},
+                "state": {
+                    "target_id": "actor.a",
+                    "temporal_binding": {"basis_id": "temporal.metric_deadline", "context_id": "scene.a", "anchor_value": 0, "deadline_value": 60, "unit_id": "unit.second"},
+                    "lifecycle": {"state_id": "effect_lifecycle.active"},
+                },
             }
         }
         rebuilt = reconstruct_derived_state(effects)
         self.assertEqual(rebuilt["agenda"], [("effect.1", 60)])
         self.assertEqual(rebuilt["conditions"], {})
         invalid = json.loads(json.dumps(effects))
-        del invalid["effect.1"]["temporal_binding"]
+        del invalid["effect.1"]["state"]["temporal_binding"]
         with self.assertRaises(ValueError):
             reconstruct_derived_state(invalid, required_timed_definition_ids={"effect.innate_sorcery"})
+
+    def test_exact_life_state_inventory_includes_stable_at_zero(self):
+        transitions = {row["transition_id"]: row for row in self.contract["life_state_policy"]["transitions"]}
+        self.assertEqual(transitions["damage_at_zero"]["from"], "life.dying_or_stable")
+        self.assertEqual(transitions["instant_death_massive_damage"]["from"], "life.active_or_dying_or_stable")
 
 
 if __name__ == "__main__":

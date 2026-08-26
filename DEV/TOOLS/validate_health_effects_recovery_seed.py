@@ -266,43 +266,15 @@ def validate_package_content_set(package_dir, capability):
 
 
 def validate_seed_schema(value, schema):
-    def resolve(ref):
-        node = schema
-        for token in ref[2:].split("/"):
-            node = node[token]
-        return node
-    def walk(item, rule, path="$"):
-        if "$ref" in rule:
-            walk(item, resolve(rule["$ref"]), path)
-            return
-        kind = rule.get("type")
-        if kind == "object":
-            if not isinstance(item, dict):
-                raise ValueError(f"{path}: object required")
-            missing = set(rule.get("required", [])) - set(item)
-            if missing:
-                raise ValueError(f"{path}: missing {sorted(missing)}")
-            properties = rule.get("properties", {})
-            if rule.get("additionalProperties") is False and set(item) - set(properties):
-                raise ValueError(f"{path}: unknown members {sorted(set(item)-set(properties))}")
-            if len(item) < rule.get("minProperties", 0):
-                raise ValueError(f"{path}: too few properties")
-            for name, child in item.items():
-                if name in properties:
-                    walk(child, properties[name], f"{path}.{name}")
-        elif kind == "array":
-            if not isinstance(item, list) or len(item) < rule.get("minItems", 0):
-                raise ValueError(f"{path}: invalid array")
-            if rule.get("uniqueItems") and len({json.dumps(x, sort_keys=True) for x in item}) != len(item):
-                raise ValueError(f"{path}: duplicate array item")
-            if "items" in rule:
-                for index, child in enumerate(item):
-                    walk(child, rule["items"], f"{path}[{index}]")
-        elif kind == "string" and not isinstance(item, str):
-            raise ValueError(f"{path}: string required")
-        if "const" in rule and item != rule["const"]:
-            raise ValueError(f"{path}: const mismatch")
-    walk(value, schema)
+    validator = CanonicalSchemaValidator(Path(__file__).resolve().parents[1] / "SCHEMAS")
+    try:
+        validator.validate(value, schema)
+    except SchemaViolation as error:
+        raise ValueError("health/effects/recovery seed schema violation") from error
+    exact_digest = schema.get("x-hdm-exact-instance-sha256")
+    actual_digest = hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+    if not exact_digest or actual_digest != exact_digest:
+        raise ValueError("health/effects/recovery exact machine contract mismatch")
     transition_ids = {row["transition_id"] for row in value["life_state_policy"]["transitions"]}
     expected = {"damage_to_zero", "instant_death_massive_damage", "damage_at_zero", "healing_from_zero", "death_save_natural_1", "death_save_natural_20", "third_death_save_success", "third_death_save_failure"}
     if transition_ids != expected:
@@ -335,69 +307,102 @@ def validate_actor_and_effect_outputs(output, schema_dir):
 def apply_effect(effects, definition_id, target_id, source_id, key, receipts):
     def produce():
         result = deepcopy(effects)
-        instance_key = (target_id, source_id, definition_id)
-        for effect_id, effect in list(result.items()):
-            if tuple(effect.get("instance_key", ())) == instance_key and effect["lifecycle"]["state_id"] == "effect_lifecycle.active":
-                effect["lifecycle"] = {"state_id": "effect_lifecycle.terminal", "terminal_reason_id": "effect_end.replaced"}
-                del result[effect_id]
-        effect_id = "effect:" + ":".join(instance_key)
-        result[effect_id] = {
+        validate_world_effect_records(result)
+        if key in result:
+            raise ValueError("new Effect envelope identity already exists")
+        for record in result.values():
+            state = record["state"]
+            if (
+                record["definition_id"] == definition_id
+                and state["target_id"] == target_id
+                and state.get("source_id") == source_id
+                and state["lifecycle"]["state_id"] == "effect_lifecycle.active"
+            ):
+                state["lifecycle"] = {"state_id": "effect_lifecycle.terminal", "terminal_reason_id": "effect_end.replaced"}
+                state.pop("temporal_binding", None)
+        result[key] = {
+            "id": key,
+            "kind": "world.effect",
             "definition_id": definition_id,
-            "instance_key": list(instance_key),
-            "target_id": target_id,
-            "source_id": source_id,
-            "temporal_binding": {"basis_id": "temporal.metric_deadline", "context_id": "chronology.local", "anchor_value": 0, "deadline_value": 60, "unit_id": "unit.second"},
-            "lifecycle": {"state_id": "effect_lifecycle.active"},
+            "state": {
+                "target_id": target_id,
+                "source_id": source_id,
+                "temporal_binding": {"basis_id": "temporal.metric_deadline", "context_id": "chronology.local", "anchor_value": 0, "deadline_value": 60, "unit_id": "unit.second"},
+                "lifecycle": {"state_id": "effect_lifecycle.active"},
+            },
         }
+        validate_world_effect_records(result)
         return {"effects": result, "mechanical_event": {"kind": "event.effect.applied"}, "receipt": {"outcome": "COMPLETED", "idempotency_key": key}}
     return _dedupe(key, receipts, produce)
 
 
 def expire_effect(effects, effect_id, key, receipts):
     def produce():
+        validate_world_effect_records(effects)
         if effect_id not in effects:
             raise ValueError("unknown Effect owner")
         result = deepcopy(effects)
-        if result[effect_id]["lifecycle"]["state_id"] != "effect_lifecycle.active":
+        state = result[effect_id]["state"]
+        if state["lifecycle"]["state_id"] != "effect_lifecycle.active":
             raise ValueError("Effect is not active")
-        result[effect_id]["lifecycle"] = {"state_id": "effect_lifecycle.terminal", "terminal_reason_id": "effect_end.expired"}
-        result[effect_id].pop("temporal_binding", None)
+        state["lifecycle"] = {"state_id": "effect_lifecycle.terminal", "terminal_reason_id": "effect_end.expired"}
+        state.pop("temporal_binding", None)
+        validate_world_effect_records(result)
         return {"effects": result, "mechanical_event": {"kind": "event.effect.expired"}, "receipt": {"outcome": "COMPLETED", "idempotency_key": key}}
     return _dedupe(key, receipts, produce)
 
 
 def terminate_support_tree(effects, root_id, key, receipts):
     def produce():
+        validate_world_effect_records(effects)
         if root_id not in effects:
             raise ValueError("unknown support root")
         result = deepcopy(effects)
-        result[root_id]["lifecycle"] = {"state_id": "effect_lifecycle.terminal", "terminal_reason_id": "effect_end.removed"}
+        result[root_id]["state"]["lifecycle"] = {"state_id": "effect_lifecycle.terminal", "terminal_reason_id": "effect_end.removed"}
         changed = {root_id}
         while True:
-            next_ids = [effect_id for effect_id, effect in result.items() if effect.get("support_effect_id") in changed and effect["lifecycle"]["state_id"] == "effect_lifecycle.active"]
+            next_ids = [effect_id for effect_id, effect in result.items() if effect["state"].get("support_effect_id") in changed and effect["state"]["lifecycle"]["state_id"] == "effect_lifecycle.active"]
             if not next_ids:
                 break
             changed = set(next_ids)
             for effect_id in next_ids:
-                result[effect_id]["lifecycle"] = {"state_id": "effect_lifecycle.terminal", "terminal_reason_id": "effect_end.support_lost"}
+                result[effect_id]["state"]["lifecycle"] = {"state_id": "effect_lifecycle.terminal", "terminal_reason_id": "effect_end.support_lost"}
+        validate_world_effect_records(result)
         return {"effects": result, "mechanical_event": {"kind": "event.effect.support_tree_ended"}, "receipt": {"outcome": "COMPLETED", "idempotency_key": key}}
     return _dedupe(key, receipts, produce)
 
 
 def reconstruct_derived_state(effects, required_timed_definition_ids=None):
+    validate_world_effect_records(effects)
     required = set(required_timed_definition_ids or ())
     agenda = []
     condition_sources = {}
-    for effect_id, effect in effects.items():
+    for effect_id, record in effects.items():
+        effect = record["state"]
         if effect["lifecycle"]["state_id"] != "effect_lifecycle.active":
             continue
         binding = effect.get("temporal_binding")
-        if effect.get("definition_id") in required and not binding:
+        if record["definition_id"] in required and not binding:
             raise ValueError("required active temporal binding missing")
         if binding and binding.get("basis_id") == "temporal.metric_deadline":
             agenda.append((effect_id, binding["deadline_value"]))
-        definition_id = effect.get("definition_id", "")
+        definition_id = record["definition_id"]
         if definition_id.startswith("condition."):
             condition_sources.setdefault(definition_id, []).append(effect_id)
     return {"agenda": sorted(agenda), "conditions": {key: sorted(value) for key, value in condition_sources.items()}}
+
+
+def validate_world_effect_records(effects, schema_dir=None):
+    validator = CanonicalSchemaValidator(Path(schema_dir or Path(__file__).resolve().parents[1] / "SCHEMAS"))
+    world_schema = validator.schemas.get("https://hedgelion.invalid/schemas/world-record.schema.json")
+    if world_schema is None:
+        raise ValueError("canonical world-record schema unavailable")
+    try:
+        for effect_id, record in effects.items():
+            if record.get("id") != effect_id or record.get("kind") != "world.effect":
+                raise ValueError("Effect collection key/envelope identity mismatch")
+            validator.validate(record, world_schema)
+    except SchemaViolation as error:
+        raise ValueError("canonical world.effect record validation failed") from error
+    return True
 

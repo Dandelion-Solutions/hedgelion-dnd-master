@@ -6,9 +6,9 @@
   "content_sha256": "992fec66fe7a71cfd43546d8c8a95c393b037deed30ed67d8209218b248a15cb",
   "content_files": [
     {"path": "character-mvp-seed.json", "sha256": "992fec66fe7a71cfd43546d8c8a95c393b037deed30ed67d8209218b248a15cb"},
-    {"path": "health-effects-recovery-seed.json", "sha256": "75d615c15d6b0e9db59a4d1e30c3ac27f8edc58a5c5d8df0df8216ba72a19fec"}
+    {"path": "health-effects-recovery-seed.json", "sha256": "a4125499be85566d049cf6596d9d9a79a001894b613c04f12f6c15dad86cc750"}
   ],
-  "content_set_sha256": "746609c91ef070b55058d1c8c635a36cd57c488a494747bf63dfa1865b162755",
+  "content_set_sha256": "a28dbfcb99aa817d63c0bc1d0d443cf7a345d2173f11de260464d47a515c14ea",
   "profile_id": "character.mvp_vertical_slice.v1",
   "content_basis": "SRD_5_2_1_BASED_MVP_SUBSET",
   "full_srd_character_corpus": false,
