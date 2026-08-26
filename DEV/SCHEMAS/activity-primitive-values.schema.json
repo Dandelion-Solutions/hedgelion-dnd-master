@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/activity-primitive-values.schema.json",
+  "title": "HDM closed Activity primitive value fragments",
+  "$defs": {
+    "machineId": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "role": {"type": "string", "minLength": 1, "pattern": "^[a-z][a-z0-9_]*$"},
+    "entityRef": {"$ref": "#/$defs/machineId"},
+    "damageComponents": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["amount", "damage_type_ref"],
+        "properties": {
+          "amount": {"type": "integer", "minimum": 0},
+          "damage_type_ref": {"$ref": "#/$defs/machineId"},
+          "source_ref": {"$ref": "#/$defs/machineId"}
+        }
+      }
+    },
+    "parameterBindings": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/machineId"},
+      "additionalProperties": {"$ref": "https://hedgelion.invalid/schemas/activity-parameter-binding.schema.json"}
+    },
+    "effectUpdate": {
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["kind", "duration"],
+          "properties": {"kind": {"const": "refresh_duration"}, "duration": {"$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"}}
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["kind", "bindings"],
+          "properties": {"kind": {"const": "replace_bindings"}, "bindings": {"$ref": "#/$defs/parameterBindings"}}
+        }
+      ]
+    },
+    "zoneUpdate": {
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["kind", "area"],
+          "properties": {"kind": {"const": "replace_area"}, "area": {"$ref": "https://hedgelion.invalid/schemas/area-spec.schema.json"}}
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["kind", "duration"],
+          "properties": {"kind": {"const": "refresh_duration"}, "duration": {"$ref": "https://hedgelion.invalid/schemas/duration-spec.schema.json"}}
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["kind", "origin_role"],
+          "properties": {"kind": {"const": "move_origin"}, "origin_role": {"$ref": "#/$defs/role"}}
+        }
+      ]
+    }
+  }
+}
+

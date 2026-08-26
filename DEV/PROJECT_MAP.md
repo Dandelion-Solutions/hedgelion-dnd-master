@@ -547,6 +547,10 @@ owning evidence explicitly supersedes the current architecture.
 
 ---
 
+## 8.7 Registered Activity primitives
+
+Route `op.*` work through `DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md`, then Activity, execution/recovery, chronology, portable-value and catalog-admission owners. S6D-06 grants zero execution authority: all 31 names are quarantined until individually replaced and re-reviewed with an exact seed consumer and active dependencies.
+
 # 9. Research/discovery rule for this map
 
 For substantive repository work:
@@ -583,3 +587,4 @@ only be linked/summarized here.
 
 Do not treat this map's coverage as semantic coverage of the repository. Its job
 is to route the agent to the evidence needed to prove a task-specific conclusion.
+
