@@ -1,6 +1,6 @@
 # S6D-07 Step 3 — Supported Character Seed Scope — Decision Brief
 
-Status: **HUMAN DECISION REQUIRED — STEPS 4–8 NOT STARTED**
+Status: **HUMAN DECISION ACCEPTED — A / BOUNDED PLAYABLE MVP VERTICAL SLICE**
 
 Pinned evidence ref: `f8cfcdd3166f4bc5306f47c37c9da5730d01929e`
 
@@ -54,3 +54,19 @@ After selecting A, the agent will derive and present the exact minimal item list
 
 Which scope is authoritative for the current built-in package: **A — bounded playable MVP vertical slice**, **B — full SRD 5.2.1 character corpus**, or **C — nonplayable conformance fixtures only**?
 
+## Human decision
+
+Accepted: **A**, constrained as follows:
+
+- minimize content and transitive deterministic dependency surface; do not design a broad character-builder UX;
+- preserve progressive/diegetic onboarding, inference, defaults and delegated bookkeeping with only unavoidable material player questions;
+- prove one closed martial path, one closed spellcasting path, initial READY_PC, one material player choice, one deterministic/default/delegated choice and one later advancement boundary;
+- unsupported SRD character content remains explicitly absent/nonselectable and package capabilities must not imply full SRD coverage;
+- every needed S6D-06 primitive must pass an individual necessity challenge; a seed reference is not activation evidence;
+- Step 4 must include martial and spellcaster onboarding acceptance walkthroughs and treat questionnaire-like onboarding as an architecture failure.
+
+### Implementation-boundary clarification
+
+Accepted after Step-6 review exposed a scope ambiguity: S6D-07 closes an **architecture and machine-contract executable contract for a real playable seed**, not a working production/runtime vertical slice. It must use real canonical definitions and prove the complete definition → binding → Actor reconstruction → READY_PC → mechanical dependency → Activity/primitive → advancement → durability/recovery contract path with conformance and negative fixtures. It must not implement the resolver/package builder, Activity runtime, Step-3/Step-5 durability runtime, or S6D-08/09/11 out of sequence merely to execute gameplay now.
+
+This does not reduce A to synthetic fixtures. Implementation Planning must be able to implement the slice without reopening product or architecture questions. After runtime realization, a mandatory behavioral fast-start/playability acceptance test must verify that both onboarding walkthroughs occur without procedural GM behavior, excessive questioning or hidden implementation gaps.

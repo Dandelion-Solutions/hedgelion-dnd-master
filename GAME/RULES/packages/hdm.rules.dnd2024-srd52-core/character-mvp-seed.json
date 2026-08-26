@@ -1,0 +1,749 @@
+{
+  "schema_name": "hdm_character_mvp_seed",
+  "schema_version": 1,
+  "profile_id": "character.mvp_vertical_slice.v1",
+  "external_dependency_ids": [
+    "ability.charisma",
+    "ability.constitution",
+    "ability.dexterity",
+    "ability.intelligence",
+    "ability.strength",
+    "ability.wisdom",
+    "asset.arcane_focus",
+    "asset.shortbow",
+    "asset.thieves_tools",
+    "effect.innate_sorcery",
+    "activity.attack.ranged_weapon",
+    "activity.feature.action_surge",
+    "activity.feature.innate_sorcery",
+    "activity.feature.resourceful",
+    "activity.feature.second_wind",
+    "activity.feature.tactical_mind",
+    "activity.spell.burning_hands",
+    "activity.spell.fire_bolt",
+    "activity.spell.poison_spray",
+    "activity.spell.magic_missile",
+    "activity.spell.thunderclap",
+    "activity.spell.acid_splash",
+    "proficiency.armor.light",
+    "proficiency.armor.medium",
+    "proficiency.save.charisma",
+    "proficiency.save.constitution",
+    "proficiency.save.strength",
+    "proficiency.skill.sleight_of_hand",
+    "proficiency.skill.stealth",
+    "proficiency.tool.thieves_tools",
+    "proficiency.weapon.martial",
+    "proficiency.weapon.simple",
+    "resource.action_surge",
+    "resource.hit_points",
+    "resource.innate_sorcery",
+    "resource.second_wind",
+    "resource.spell_slot.level_1",
+    "school.conjuration",
+    "school.evocation",
+    "school.necromancy",
+    "size.medium",
+    "size.small"
+  ],
+  "definitions": [
+    {
+      "id": "species.human",
+      "kind": "definition.species",
+      "data": {"size_options": ["size.small", "size.medium"], "speed": 30, "feature_ids": ["feature.human.resourceful", "feature.human.skillful"]},
+      "references": [
+        "size.medium",
+        "size.small",
+        "feature.human.resourceful",
+        "feature.human.skillful"
+      ],
+      "choice_slots": [
+        {
+          "choice_id": "species.human.size",
+          "minimum": 1,
+          "maximum": 1,
+          "decision_policy": "choice.deterministic_default",
+          "default_option_ids": [
+            "option.size.medium"
+          ],
+          "options": [
+            {
+              "option_id": "option.size.medium",
+              "build_parameters": {"size_id": "size.medium"}
+            },
+            {
+              "option_id": "option.size.small",
+              "build_parameters": {"size_id": "size.small"}
+            }
+          ]
+        },
+        {
+          "choice_id": "species.human.origin_feat",
+          "minimum": 1,
+          "maximum": 1,
+          "decision_policy": "choice.deterministic_default",
+          "default_option_ids": [
+            "option.feat.skilled"
+          ],
+          "options": [
+            {
+              "option_id": "option.feat.skilled",
+              "grant_definition_ids": [
+                "feat.origin.skilled"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "background.criminal",
+      "kind": "definition.background",
+      "data": {"feat_ids": ["feat.origin.alert"], "proficiency_ids": ["proficiency.skill.sleight_of_hand", "proficiency.skill.stealth", "proficiency.tool.thieves_tools"], "starting_asset_definition_ids": ["asset.thieves_tools"]},
+      "references": [
+        "feat.origin.alert",
+        "proficiency.skill.sleight_of_hand",
+        "proficiency.skill.stealth",
+        "proficiency.tool.thieves_tools",
+        "asset.thieves_tools"
+      ]
+    },
+    {
+      "id": "class.fighter",
+      "kind": "definition.class",
+      "data": {"hit_die": "d10", "primary_ability_ids": ["ability.strength", "ability.dexterity"], "advancement_id": "advancement.fighter.mvp_1_2"},
+      "references": [
+        "ability.strength",
+        "ability.dexterity",
+        "advancement.fighter.mvp_1_2",
+        "proficiency.save.strength",
+        "proficiency.save.constitution",
+        "proficiency.weapon.simple",
+        "proficiency.weapon.martial"
+      ]
+    },
+    {
+      "id": "class.sorcerer",
+      "kind": "definition.class",
+      "data": {"hit_die": "d6", "primary_ability_ids": ["ability.charisma"], "advancement_id": "advancement.sorcerer.mvp_1"},
+      "references": [
+        "ability.charisma",
+        "advancement.sorcerer.mvp_1",
+        "proficiency.save.constitution",
+        "proficiency.save.charisma"
+      ]
+    },
+    {
+      "id": "advancement.fighter.mvp_1_2",
+      "kind": "definition.advancement",
+      "data": {"levels": [{"level": 1, "automatic_grant_definition_ids": ["feature.fighter.second_wind", "feature.fighter.weapon_mastery"]}, {"level": 2, "automatic_grant_definition_ids": ["feature.fighter.action_surge", "feature.fighter.tactical_mind"]}]},
+      "references": [
+        "feature.fighter.second_wind",
+        "feature.fighter.weapon_mastery",
+        "feature.fighter.action_surge",
+        "feature.fighter.tactical_mind",
+        "asset.shortbow"
+      ],
+      "choice_slots": [
+        {
+          "choice_id": "advancement.fighter.level_1.style",
+          "minimum": 1,
+          "maximum": 1,
+          "decision_policy": "choice.player_or_delegated",
+          "options": [
+            {
+              "option_id": "option.style.archery",
+              "grant_definition_ids": [
+                "feat.fighting_style.archery"
+              ],
+              "starting_assets": [{"definition_id": "asset.shortbow", "quantity": 1}]
+            },
+            {
+              "option_id": "option.style.defense",
+              "grant_definition_ids": [
+                "feat.fighting_style.defense"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "advancement.sorcerer.mvp_1",
+      "kind": "definition.advancement",
+      "data": {"levels": [{"level": 1, "automatic_grant_definition_ids": ["feature.sorcerer.spellcasting", "feature.sorcerer.innate_sorcery"]}]},
+      "references": [
+        "feature.sorcerer.spellcasting",
+        "feature.sorcerer.innate_sorcery",
+        "asset.arcane_focus",
+        "spell.fire_bolt",
+        "spell.poison_spray",
+        "spell.thunderclap",
+        "spell.acid_splash",
+        "spell.magic_missile",
+        "spell.burning_hands"
+      ],
+      "choice_slots": [
+        {
+          "choice_id": "advancement.sorcerer.level_1.spells",
+          "minimum": 1,
+          "maximum": 1,
+          "decision_policy": "choice.player_or_delegated",
+          "default_option_ids": [
+            "option.spells.mvp_default"
+          ],
+          "options": [
+            {
+              "option_id": "option.spells.mvp_default",
+              "grant_definition_ids": [
+                "spell.fire_bolt",
+                "spell.poison_spray",
+                "spell.thunderclap",
+                "spell.acid_splash",
+                "spell.magic_missile",
+                "spell.burning_hands"
+              ],
+              "starting_assets": [{"definition_id": "asset.arcane_focus", "quantity": 1}],
+              "spell_bindings": {"known_spell_ids": ["spell.fire_bolt", "spell.poison_spray", "spell.thunderclap", "spell.acid_splash", "spell.magic_missile", "spell.burning_hands"]}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "feat.origin.alert",
+      "kind": "definition.feat", "data": {}
+    },
+    {
+      "id": "feat.origin.skilled",
+      "kind": "definition.feat", "data": {}
+    },
+    {
+      "id": "feat.fighting_style.archery",
+      "kind": "definition.feat",
+      "data": {},
+      "references": [
+        "activity.attack.ranged_weapon"
+      ]
+    },
+    {
+      "id": "feat.fighting_style.defense",
+      "kind": "definition.feat", "data": {}
+    },
+    {
+      "id": "feature.human.resourceful",
+      "kind": "definition.feature",
+      "data": {"activity_ids": ["activity.feature.resourceful"]},
+      "references": [
+        "activity.feature.resourceful"
+      ],
+      "primitive_dependencies": [
+        "op.roll"
+      ]
+    },
+    {
+      "id": "feature.human.skillful",
+      "kind": "definition.feature", "data": {}
+    },
+    {
+      "id": "feature.fighter.second_wind",
+      "kind": "definition.feature",
+      "data": {"activity_ids": ["activity.feature.second_wind"], "resource_ids": ["resource.second_wind"]},
+      "references": [
+        "activity.feature.second_wind",
+        "resource.second_wind"
+      ],
+      "primitive_dependencies": [
+        "op.roll",
+        "op.consume_resource",
+        "op.apply_healing"
+      ]
+    },
+    {
+      "id": "feature.fighter.weapon_mastery",
+      "kind": "definition.feature",
+      "data": {"activity_ids": ["activity.attack.ranged_weapon"]},
+      "references": [
+        "activity.attack.ranged_weapon"
+      ],
+      "primitive_dependencies": [
+        "op.select_targets",
+        "op.roll",
+        "op.resolve_attack",
+        "op.apply_damage"
+      ]
+    },
+    {
+      "id": "feature.fighter.action_surge",
+      "kind": "definition.feature",
+      "data": {"activity_ids": ["activity.feature.action_surge"], "resource_ids": ["resource.action_surge"]},
+      "references": [
+        "activity.feature.action_surge",
+        "resource.action_surge"
+      ],
+      "primitive_dependencies": [
+        "op.consume_resource",
+        "op.emit_fact"
+      ]
+    },
+    {
+      "id": "feature.fighter.tactical_mind",
+      "kind": "definition.feature",
+      "data": {"activity_ids": ["activity.feature.tactical_mind"], "resource_ids": ["resource.second_wind"]},
+      "references": [
+        "activity.feature.tactical_mind",
+        "resource.second_wind"
+      ],
+      "primitive_dependencies": [
+        "op.roll",
+        "op.resolve_check",
+        "op.consume_resource"
+      ]
+    },
+    {
+      "id": "feature.sorcerer.spellcasting",
+      "kind": "definition.feature",
+      "data": {"resource_ids": ["resource.spell_slot.level_1"]},
+      "references": [
+        "resource.spell_slot.level_1",
+        "asset.arcane_focus"
+      ]
+    },
+    {
+      "id": "feature.sorcerer.innate_sorcery",
+      "kind": "definition.feature",
+      "data": {"activity_ids": ["activity.feature.innate_sorcery"], "resource_ids": ["resource.innate_sorcery"], "effect_ids": ["effect.innate_sorcery"]},
+      "references": [
+        "activity.feature.innate_sorcery",
+        "resource.innate_sorcery",
+        "effect.innate_sorcery"
+      ],
+      "primitive_dependencies": [
+        "op.consume_resource",
+        "op.create_effect"
+      ]
+    },
+    {
+      "id": "spell.fire_bolt",
+      "kind": "definition.spell",
+      "data": {"level": 0, "school_id": "school.evocation", "activity_ids": ["activity.spell.fire_bolt"]},
+      "references": [
+        "activity.spell.fire_bolt"
+      ],
+      "primitive_dependencies": [
+        "op.select_targets",
+        "op.roll",
+        "op.resolve_attack",
+        "op.apply_damage"
+      ]
+    },
+    {
+      "id": "spell.poison_spray",
+      "kind": "definition.spell",
+      "data": {"level": 0, "school_id": "school.necromancy", "activity_ids": ["activity.spell.poison_spray"]},
+      "references": [
+        "activity.spell.poison_spray"
+      ],
+      "primitive_dependencies": [
+        "op.select_targets",
+        "op.roll",
+        "op.resolve_save",
+        "op.apply_damage"
+      ]
+    },
+    {
+      "id": "spell.thunderclap",
+      "kind": "definition.spell",
+      "data": {"level": 0, "school_id": "school.evocation", "activity_ids": ["activity.spell.thunderclap"]},
+      "references": [
+        "activity.spell.thunderclap"
+      ],
+      "primitive_dependencies": [
+        "op.select_targets",
+        "op.roll",
+        "op.resolve_save",
+        "op.for_each_target",
+        "op.apply_damage"
+      ]
+    },
+    {
+      "id": "spell.acid_splash",
+      "kind": "definition.spell",
+      "data": {"level": 0, "school_id": "school.conjuration", "activity_ids": ["activity.spell.acid_splash"]},
+      "references": [
+        "activity.spell.acid_splash"
+      ],
+      "primitive_dependencies": [
+        "op.select_targets",
+        "op.roll",
+        "op.resolve_save",
+        "op.for_each_target",
+        "op.apply_damage"
+      ]
+    },
+    {
+      "id": "spell.magic_missile",
+      "kind": "definition.spell",
+      "data": {"level": 1, "school_id": "school.evocation", "activity_ids": ["activity.spell.magic_missile"]},
+      "references": [
+        "activity.spell.magic_missile"
+      ],
+      "primitive_dependencies": [
+        "op.consume_resource",
+        "op.select_targets",
+        "op.for_each_target",
+        "op.apply_damage"
+      ]
+    },
+    {
+      "id": "spell.burning_hands",
+      "kind": "definition.spell",
+      "data": {"level": 1, "school_id": "school.evocation", "activity_ids": ["activity.spell.burning_hands"]},
+      "references": [
+        "activity.spell.burning_hands"
+      ],
+      "primitive_dependencies": [
+        "op.consume_resource",
+        "op.select_targets",
+        "op.roll",
+        "op.resolve_save",
+        "op.for_each_target",
+        "op.apply_damage"
+      ]
+    }
+  ],
+  "support_definitions": [
+    {"id": "asset.arcane_focus", "kind": "definition.asset", "data": {"details": {"asset_family_id": "asset_family.focus"}}},
+    {"id": "asset.shortbow", "kind": "definition.asset", "data": {"details": {"asset_family_id": "asset_family.weapon"}}},
+    {"id": "asset.thieves_tools", "kind": "definition.asset", "data": {"details": {"asset_family_id": "asset_family.tool"}}},
+    {"id": "effect.innate_sorcery", "kind": "definition.effect", "data": {"duration": {"kind_id": "duration.metric", "amount": 1, "unit_id": "unit.minute"}, "rule_elements": [{"selector": "spell.dc", "operation_id": "rule.add_flat", "value": 1}, {"selector": "attack.roll", "operation_id": "rule.grant_advantage", "value": true}], "reapplication": {"match_policy_id": "effect_reapplication_match.target_family_source", "action_id": "effect_reapplication.replace"}, "details": {"instance_identity_owner": "EFFECT_STATE", "instance_key": ["target_actor_id", "source_actor_id", "effect_definition_id"], "start_boundary": "CAUSING_EXECUTION_SEGMENT_COMMIT_WORLD_TIME", "expiry_boundary": "START_PLUS_DURATION_IN_SAME_LOCAL_CHRONOLOGY", "recovery": "RECONSTRUCT_FROM_COMMITTED_EFFECT_EVENT_AND_PINNED_TEMPORAL_BINDING", "cleanup": "TEMPORAL_AGENDA_EMITS_IDEMPOTENT_EXPIRY_TRANSITION", "s6d08_boundary": "NARROW_SEED_CONTRACT_ONLY_NO_GENERIC_EFFECT_LIFECYCLE_AUTHORITY"}}},
+    {"id": "resource.hit_points", "kind": "definition.resource", "data": {"mechanic_id": "resource.bounded_pool", "lifetime_owner": "actor", "state_model": "current", "recovery": [], "details": {"capacity_owner": "ACTOR_DERIVED_MAX_HP"}}},
+    {"id": "resource.second_wind", "kind": "definition.resource", "data": {"mechanic_id": "resource.bounded_pool", "lifetime_owner": "actor", "state_model": "current", "capacity": 1, "recovery": [{"boundary_id": "boundary.short_rest_complete", "operation_id": "resource_recovery.restore_to_capacity"}]}},
+    {"id": "resource.action_surge", "kind": "definition.resource", "data": {"mechanic_id": "resource.bounded_pool", "lifetime_owner": "actor", "state_model": "current", "capacity": 1, "recovery": [{"boundary_id": "boundary.short_rest_complete", "operation_id": "resource_recovery.restore_to_capacity"}]}},
+    {"id": "resource.innate_sorcery", "kind": "definition.resource", "data": {"mechanic_id": "resource.bounded_pool", "lifetime_owner": "actor", "state_model": "current", "capacity": 2, "recovery": [{"boundary_id": "boundary.long_rest_complete", "operation_id": "resource_recovery.restore_to_capacity"}]}},
+    {"id": "resource.spell_slot.level_1", "kind": "definition.resource", "data": {"mechanic_id": "resource.bounded_pool", "lifetime_owner": "actor", "state_model": "current", "capacity": 2, "recovery": [{"boundary_id": "boundary.long_rest_complete", "operation_id": "resource_recovery.restore_to_capacity"}]}}
+  ],
+  "value_registrations": [
+    "ability.charisma", "ability.constitution", "ability.dexterity", "ability.intelligence", "ability.strength", "ability.wisdom",
+    "proficiency.armor.light", "proficiency.armor.medium", "proficiency.save.charisma", "proficiency.save.constitution",
+    "proficiency.save.strength", "proficiency.skill.sleight_of_hand", "proficiency.skill.stealth",
+    "proficiency.tool.thieves_tools", "proficiency.weapon.martial", "proficiency.weapon.simple",
+    "school.conjuration", "school.evocation", "school.necromancy", "size.medium", "size.small"
+  ],
+  "activity_definitions": [
+    {
+      "id": "activity.attack.ranged_weapon",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.attack",
+        "steps": [
+          {
+            "op": "op.select_targets",
+            "args": {
+              "target_spec": "parameter.targets"
+            }
+          },
+          {
+            "op": "op.roll",
+            "args": {
+              "request": "compiled.attack_roll"
+            }
+          },
+          {
+            "op": "op.resolve_attack",
+            "args": {
+              "roll": "result.result",
+              "threshold": "selector.defense.armor_class"
+            }
+          },
+          {
+            "op": "op.apply_damage",
+            "args": {
+              "target_role": "target",
+              "components": "compiled.weapon_damage"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "activity.feature.resourceful",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.reroll",
+        "steps": [
+          {
+            "op": "op.roll",
+            "args": {
+              "request": "compiled.reroll_request"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "activity.feature.second_wind",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.healing",
+        "steps": [
+          {
+            "op": "op.consume_resource",
+            "args": {
+              "owner_role": "actor",
+              "resource_ref": "resource.second_wind",
+              "amount": 1
+            }
+          },
+          {
+            "op": "op.roll",
+            "args": {
+              "request": "compiled.second_wind_roll"
+            }
+          },
+          {
+            "op": "op.apply_healing",
+            "args": {
+              "target_role": "actor",
+              "amount": "compiled.second_wind_amount"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "activity.feature.action_surge",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.action_entitlement",
+        "steps": [
+          {
+            "op": "op.consume_resource",
+            "args": {
+              "owner_role": "actor",
+              "resource_ref": "resource.action_surge",
+              "amount": 1
+            }
+          },
+          {
+            "op": "op.emit_fact",
+            "args": {
+              "fact_kind": "fact.action_entitlement",
+              "owner_role": "actor",
+              "economy_id": "resource.action",
+              "amount": 1,
+              "scope": "CURRENT_TURN",
+              "excluded_activity_family_ids": ["activity.magic"],
+              "consumption": "NEXT_ELIGIBLE_ACTIVATION",
+              "retry": "IDEMPOTENCY_KEY_REUSES_COMMITTED_GRANT"
+            },
+            "export": "action_entitlement"
+          }
+        ]
+      }
+    },
+    {
+      "id": "activity.feature.tactical_mind",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.check_modifier",
+        "details": {"invocation_gate": "PRIOR_ABILITY_CHECK_FAILED", "request_binding": "D10_WITH_PRIOR_CHECK_TOTAL_AS_FIXED_MODIFIER", "consume_policy": "ONLY_IF_AUGMENTED_RESULT_SUCCEEDS", "failed_augmented_result": "NO_RESOURCE_CONSUMPTION_AND_ORIGINAL_FAILURE_STANDS"},
+        "steps": [
+          {
+            "op": "op.roll",
+            "args": {
+              "request": "compiled.d10_plus_prior_check_total"
+            },
+            "export": "augmented_roll"
+          },
+          {
+            "op": "op.resolve_check",
+            "args": {
+              "roll": "augmented_roll.result",
+              "threshold": "invocation.prior_check_dc"
+            },
+            "export": "augmented_check"
+          },
+          {
+            "op": "op.consume_resource",
+            "args": {"owner_role": "actor", "resource_ref": "resource.second_wind", "amount": 1},
+            "when": {"result": "augmented_check.outcome", "in": ["success"]}
+          }
+        ]
+      }
+    },
+    {
+      "id": "activity.feature.innate_sorcery",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.effect_activation",
+        "steps": [
+          {
+            "op": "op.consume_resource",
+            "args": {
+              "owner_role": "actor",
+              "resource_ref": "resource.innate_sorcery",
+              "amount": 1
+            }
+          },
+          {
+            "op": "op.create_effect",
+            "args": {"effect_definition_ref": "effect.innate_sorcery", "target_role": "actor", "source_role": "actor", "duration": {"kind_id": "duration.metric", "amount": 1, "unit_id": "unit.minute"}},
+            "export": "effect"
+          }
+        ]
+      }
+    },
+    {
+      "id": "activity.spell.fire_bolt",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.spell_attack",
+        "steps": [
+          {
+            "op": "op.select_targets",
+            "args": {
+              "target_spec": "compiled.target"
+            }
+          },
+          {
+            "op": "op.roll",
+            "args": {
+              "request": "compiled.spell_attack"
+            }
+          },
+          {
+            "op": "op.resolve_attack",
+            "args": {
+              "roll": "result.result",
+              "threshold": "selector.defense.armor_class"
+            }
+          },
+          {
+            "op": "op.apply_damage",
+            "args": {
+              "target_role": "target",
+              "components": "compiled.fire_damage"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "activity.spell.poison_spray",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.spell_save",
+        "steps": [
+          {"op": "op.select_targets", "args": {"target_spec": "compiled.target"}, "export": "targets"},
+          {"op": "op.roll", "args": {"request": "compiled.constitution_save"}, "export": "save_roll"},
+          {"op": "op.resolve_save", "args": {"roll": "save_roll.result", "threshold": "selector.spell.dc"}, "export": "save"},
+          {"op": "op.apply_damage", "args": {"target_role": "target", "components": "compiled.poison_damage"}, "when": {"result": "save.outcome", "in": ["failure"]}}
+        ]
+      }
+    },
+    {
+      "id": "activity.spell.thunderclap",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.spell_save",
+        "details": {"target_iteration": "ORDERED_BOUNDED_PER_TARGET", "save_damage_policy": "NONE_ON_SUCCESS"},
+        "steps": [
+          {"op": "op.select_targets", "args": {"target_spec": "compiled.emanation_targets"}, "export": "targets"},
+          {"op": "op.for_each_target", "args": {"targets": "targets", "steps": [
+            {"op": "op.roll", "args": {"request": "compiled.constitution_save:$target"}, "export": "save_roll"},
+            {"op": "op.resolve_save", "args": {"roll": "save_roll.result", "threshold": "selector.spell.dc"}, "export": "save"},
+            {"op": "op.apply_damage", "args": {"target_role": "$target", "components": "compiled.thunder_damage"}, "when": {"result": "save.outcome", "in": ["failure"]}}
+          ]}, "export": "per_target"}
+        ]
+      }
+    },
+    {
+      "id": "activity.spell.acid_splash",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.spell_save",
+        "details": {"target_iteration": "ORDERED_BOUNDED_PER_TARGET", "save_damage_policy": "NONE_ON_SUCCESS"},
+        "steps": [
+          {"op": "op.select_targets", "args": {"target_spec": "compiled.target"}, "export": "targets"},
+          {"op": "op.for_each_target", "args": {"targets": "targets", "steps": [
+            {"op": "op.roll", "args": {"request": "compiled.dexterity_save:$target"}, "export": "save_roll"},
+            {"op": "op.resolve_save", "args": {"roll": "save_roll.result", "threshold": "selector.spell.dc"}, "export": "save"},
+            {"op": "op.apply_damage", "args": {"target_role": "$target", "components": "compiled.acid_damage"}, "when": {"result": "save.outcome", "in": ["failure"]}}
+          ]}, "export": "per_target"}
+        ]
+      }
+    },
+    {
+      "id": "activity.spell.magic_missile",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.spell_damage",
+        "details": {"target_iteration": "ORDERED_BOUNDED_DART_BINDINGS", "hit_policy": "AUTOMATIC", "duplicate_target_roles": "ALLOWED_PER_DART"},
+        "steps": [
+          {
+            "op": "op.consume_resource",
+            "args": {
+              "owner_role": "actor",
+              "resource_ref": "resource.spell_slot.level_1",
+              "amount": 1
+            }
+          },
+          {"op": "op.select_targets", "args": {"target_spec": "compiled.dart_target_bindings"}, "export": "dart_targets"},
+          {"op": "op.for_each_target", "args": {"targets": "dart_targets", "steps": [
+            {"op": "op.apply_damage", "args": {"target_role": "$target", "components": "compiled.one_dart_force_damage"}}
+          ]}, "export": "dart_results"}
+        ]
+      }
+    },
+    {
+      "id": "activity.spell.burning_hands",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.spell_save",
+        "details": {"target_iteration": "ORDERED_BOUNDED_PER_TARGET", "save_damage_policy": "HALF_ON_SUCCESS_FLOOR_MIN_ZERO"},
+        "steps": [
+          {
+            "op": "op.consume_resource",
+            "args": {
+              "owner_role": "actor",
+              "resource_ref": "resource.spell_slot.level_1",
+              "amount": 1
+            }
+          },
+          {"op": "op.select_targets", "args": {"target_spec": "compiled.cone"}, "export": "targets"},
+          {"op": "op.for_each_target", "args": {"targets": "targets", "steps": [
+            {"op": "op.roll", "args": {"request": "compiled.dexterity_save:$target"}, "export": "save_roll"},
+            {"op": "op.resolve_save", "args": {"roll": "save_roll.result", "threshold": "selector.spell.dc"}, "export": "save"},
+            {"op": "op.apply_damage", "args": {"target_role": "$target", "components": "compiled.full_fire_damage"}, "when": {"result": "save.outcome", "in": ["failure"]}},
+            {"op": "op.apply_damage", "args": {"target_role": "$target", "components": "compiled.half_fire_damage_floor"}, "when": {"result": "save.outcome", "in": ["success"]}}
+          ]}, "export": "per_target"}
+        ]
+      }
+    }
+  ],
+  "ready_pc": {
+    "provisional_gameplay_before_ready_pc": true,
+    "open_material_initial_choice": "BLOCKING",
+    "future_advancement_choice": "NONBLOCKING_UNTIL_BOUNDARY",
+    "required_evidence": [
+      "accepted_catalog_context",
+      "actor_build_anchors",
+      "closed_initial_choice_bindings",
+      "derived_health_and_defense",
+      "admitted_activity_dependencies",
+      "reconstructable_spell_state"
+    ]
+  },
+  "advancement_proof": {
+    "class_id": "class.fighter",
+    "from_level": 1,
+    "to_level": 2,
+    "publication": "ATOMIC_IDEMPOTENT_ACTOR_RECONSTRUCTION",
+    "reopens_initial_choices": false,
+    "automatic_grants": [
+      "feature.fighter.action_surge",
+      "feature.fighter.tactical_mind"
+    ]
+  }
+}

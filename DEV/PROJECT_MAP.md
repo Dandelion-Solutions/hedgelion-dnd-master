@@ -189,6 +189,9 @@ Current durable architecture/navigation documents:
 - `RULE_ELEMENT_MODEL.md` — pure embedded passive contribution model and bounded reactive binding boundary.
 - `CALCULATION_SELECTOR_METADATA.md` — S6D-03 selector selectability, selector/operation compatibility, result/subject/binding metadata and deterministic active resolver policies.
 - `MECHANICAL_CONTEXT.md` — S6D-04 exact accessor/fact/derived-node dispositions, missing/input authority, exact consumer permissions, bound-instance DAG and recovery/query boundaries.
+- `PORTABLE_ACTIVITY_VALUES.md` — S6D-05 portable Activity/value contracts and the no-independent-lifecycle Signal/StateDelta result.
+- `ACTIVITY_PRIMITIVE_CONTRACTS.md` — current primitive execution/activation owner: eleven S6D-07 exact active replacements and twenty fail-closed quarantines.
+- `CHARACTER_PROGRESSION_READY_PC_SEED.md` — S6D-07 canonical character grants/choices, sparse Actor bindings, progressive READY_PC, bounded playable package seed and advancement/deferred playability boundary.
 
 Historical/derivation/status surfaces that must not override newer accepted contracts:
 
@@ -282,6 +285,9 @@ is the only consumer.
 - `DEV/TESTS/test_s6d_05_portable_value_contract.py` — transitive schema closure, binding compatibility, targeting/cost/duration, retry/currentness and no-lifecycle verification.
 - `specs/2026-08-26-s6d-06-registered-activity-primitive-contracts-task-brief.md` — S6D-06 Step-1 framing for exact per-`op.*` arguments/results/reads/mutations/RNG/bindings/exports/atomicity/failure/suspension contracts and active/dormant/removal accounting.
 - `specs/2026-08-26-s6d-06-registered-activity-primitive-contracts-brief-critic.md` — mandatory whole-project Step-1 critique; exact S6D/domain/Step-3/5/House-Rules/test/readiness routes repaired, final PASS.
+- `research/2026-08-26-s6d-07-character-progression-ready-pc-seed-research-architecture-draft.md` and matching task/critic/decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-07 Steps 1–8 evidence chain; seven-pass whole-project solution review ends at 0 BLOCKING / 0 SIGNIFICANT.
+- `GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json` and `character-mvp-seed.json` — identity-bound bounded playable character capability source; unsupported character corpus is absent/nonselectable.
+- `DEV/TOOLS/validate_character_mvp_seed.py`, `DEV/TESTS/test_s6d_07_character_mvp_seed.py` and its fixtures — canonical-schema/$ref, Activity, READY_PC identity/provenance and advancement/effect retry conformance proof.
 - `DEV/TESTS/test_s6d_03_selector_metadata_contract.py` — exact 34/26 accounting, active/dormant equality, metadata/policy/input/dependency verification.
 - `research/2026-08-25-s6d-02-catalog-admission-gap-closure-research-architecture-draft.md` and the matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-02 Steps 2–8 evidence chain.
 - `DEV/TESTS/test_s6d_02_catalog_admission_contract.py` — exact ledger/core equality, legal state and package-plan boundary checks.
@@ -549,11 +555,11 @@ owning evidence explicitly supersedes the current architecture.
 
 ## 8.7 Registered Activity primitives
 
-Route `op.*` work through `DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md`, then Activity, execution/recovery, chronology, portable-value and catalog-admission owners. S6D-06 grants zero execution authority: all 31 names are quarantined until individually replaced and re-reviewed with an exact seed consumer and active dependencies.
+Route `op.*` work through `DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md`, then Activity, execution/recovery, chronology, portable-value and catalog-admission owners. S6D-06 established fail-closed quarantine; S6D-07 has since replaced exactly eleven rows after consumer/dependency challenges and whole-project review. The remaining twenty names have zero execution authority until individually replaced and re-reviewed.
 
 ## 8.8 Character progression and READY_PC seed
 
-Route S6D-07 through `GAME/CORE/CHARACTER_READINESS.md`, `CHARACTER.md`, `DIEGETIC_ONBOARDING.md` and `ADVANCEMENT.md`, then Actor/Asset/Effect, definition/catalog, GAME PC/player projection, execution/recovery and House-Rules owners. `DEV/TESTS/CHARACTER_READINESS_CASES.md` is regression evidence, not semantic authority. S6D-06 primitives remain quarantined unless individually replaced and re-reviewed.
+Route S6D-07 through `DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md`, then `GAME/CORE/CHARACTER_READINESS.md`, `CHARACTER.md`, `DIEGETIC_ONBOARDING.md` and `ADVANCEMENT.md`, Actor/Asset/Effect, definition/catalog, GAME PC/player projection, execution/recovery and House-Rules owners. `DEV/TESTS/CHARACTER_READINESS_CASES.md` is regression evidence, not semantic authority. Eleven exact S6D-07 primitive replacements are active; the other twenty remain quarantined.
 
 # 9. Research/discovery rule for this map
 
@@ -591,4 +597,5 @@ only be linked/summarized here.
 
 Do not treat this map's coverage as semantic coverage of the repository. Its job
 is to route the agent to the evidence needed to prove a task-specific conclusion.
+
 

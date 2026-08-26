@@ -405,6 +405,208 @@
       "combination_policy": "integer_additive_v1",
       "resolution_owner": "SELECTOR_METADATA",
       "trace_policy": "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+    },
+    "check.roll": {
+      "allowed_operations": ["rule.add_flat"],
+      "operation_contracts": {"rule.add_flat": {"value_kind": "numeric_scalar", "normalization": "SUM", "constraints": ["finite_integer"]}},
+      "contribution_type": "numeric", "result_type": "integer", "result_constraints": {},
+      "subject_kinds": ["world.actor"], "binding_kinds": ["subject", "ability_definition"],
+      "allowed_dependency_kinds": ["accessor", "derived"], "allowed_input_classes": ["ENGINE_STATE"],
+      "permitted_context_fact_ids": [], "static_dependencies": [], "combination_policy": "integer_additive_v1",
+      "resolution_owner": "SELECTOR_METADATA", "trace_policy": "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+    },
+    "attack.roll": {
+      "allowed_operations": ["rule.add_flat", "rule.grant_advantage", "rule.grant_disadvantage"],
+      "operation_contracts": {
+        "rule.add_flat": {
+          "value_kind": "numeric_scalar",
+          "normalization": "SUM",
+          "constraints": [
+            "finite_integer"
+          ]
+        },
+        "rule.grant_advantage": {"value_kind": "boolean_constant", "fixed_value": true, "normalization": "ANY_TRUE", "constraints": ["literal_true", "effect.innate_sorcery_source_only", "bound_activity_family.activity.spell_attack_only"]},
+        "rule.grant_disadvantage": {"value_kind": "boolean_constant", "fixed_value": true, "normalization": "ANY_TRUE", "constraints": ["literal_true"]}
+      },
+      "contribution_type": "roll_modifier",
+      "result_type": "roll_modifier_set",
+      "result_constraints": {},
+      "subject_kinds": [
+        "world.actor"
+      ],
+      "binding_kinds": [
+        "subject",
+        "activity_definition"
+      ],
+      "allowed_dependency_kinds": [
+        "accessor",
+        "derived"
+      ],
+      "allowed_input_classes": [
+        "ENGINE_STATE"
+      ],
+      "permitted_context_fact_ids": [],
+      "static_dependencies": [],
+      "combination_policy": "roll_advantage_cancellation_v1",
+      "resolution_owner": "SELECTOR_METADATA",
+      "trace_policy": "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+    },
+    "save.roll": {
+      "allowed_operations": [
+        "rule.add_flat"
+      ],
+      "operation_contracts": {
+        "rule.add_flat": {
+          "value_kind": "numeric_scalar",
+          "normalization": "SUM",
+          "constraints": [
+            "finite_integer"
+          ]
+        }
+      },
+      "contribution_type": "numeric",
+      "result_type": "integer",
+      "result_constraints": {},
+      "subject_kinds": [
+        "world.actor"
+      ],
+      "binding_kinds": [
+        "subject",
+        "ability_definition"
+      ],
+      "allowed_dependency_kinds": [
+        "accessor",
+        "derived"
+      ],
+      "allowed_input_classes": [
+        "ENGINE_STATE"
+      ],
+      "permitted_context_fact_ids": [],
+      "static_dependencies": [],
+      "combination_policy": "integer_additive_v1",
+      "resolution_owner": "SELECTOR_METADATA",
+      "trace_policy": "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+    },
+    "spell.dc": {
+      "allowed_operations": ["rule.add_flat"],
+      "operation_contracts": {"rule.add_flat": {"value_kind": "numeric_scalar", "normalization": "SUM", "constraints": ["finite_integer"]}},
+      "contribution_type": "numeric", "result_type": "integer", "result_constraints": {"minimum": 1},
+      "subject_kinds": ["world.actor"], "binding_kinds": ["subject", "spellcasting_definition"],
+      "allowed_dependency_kinds": ["accessor", "derived"], "allowed_input_classes": ["ENGINE_STATE"],
+      "permitted_context_fact_ids": [], "static_dependencies": [], "combination_policy": "integer_additive_v1",
+      "resolution_owner": "SELECTOR_METADATA", "trace_policy": "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+    },
+    "defense.armor_class": {
+      "allowed_operations": [
+        "rule.add_flat"
+      ],
+      "operation_contracts": {
+        "rule.add_flat": {
+          "value_kind": "numeric_scalar",
+          "normalization": "SUM",
+          "constraints": [
+            "finite_integer"
+          ]
+        }
+      },
+      "contribution_type": "numeric",
+      "result_type": "integer",
+      "result_constraints": {
+        "minimum": 0
+      },
+      "subject_kinds": [
+        "world.actor"
+      ],
+      "binding_kinds": [
+        "subject"
+      ],
+      "allowed_dependency_kinds": [
+        "accessor",
+        "derived"
+      ],
+      "allowed_input_classes": [
+        "ENGINE_STATE"
+      ],
+      "permitted_context_fact_ids": [],
+      "static_dependencies": [],
+      "combination_policy": "integer_additive_v1",
+      "resolution_owner": "SELECTOR_METADATA",
+      "trace_policy": "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+    },
+    "damage.received": {
+      "allowed_operations": [
+        "rule.add_flat"
+      ],
+      "operation_contracts": {
+        "rule.add_flat": {
+          "value_kind": "numeric_scalar",
+          "normalization": "SUM",
+          "constraints": [
+            "finite_integer"
+          ]
+        }
+      },
+      "contribution_type": "numeric",
+      "result_type": "integer",
+      "result_constraints": {
+        "minimum": 0
+      },
+      "subject_kinds": [
+        "world.actor"
+      ],
+      "binding_kinds": [
+        "subject",
+        "damage_definition"
+      ],
+      "allowed_dependency_kinds": [
+        "accessor",
+        "derived"
+      ],
+      "allowed_input_classes": [
+        "ENGINE_STATE"
+      ],
+      "permitted_context_fact_ids": [],
+      "static_dependencies": [],
+      "combination_policy": "integer_additive_v1",
+      "resolution_owner": "SELECTOR_METADATA",
+      "trace_policy": "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+    },
+    "healing.received": {
+      "allowed_operations": [
+        "rule.add_flat"
+      ],
+      "operation_contracts": {
+        "rule.add_flat": {
+          "value_kind": "numeric_scalar",
+          "normalization": "SUM",
+          "constraints": [
+            "finite_integer"
+          ]
+        }
+      },
+      "contribution_type": "numeric",
+      "result_type": "integer",
+      "result_constraints": {
+        "minimum": 0
+      },
+      "subject_kinds": [
+        "world.actor"
+      ],
+      "binding_kinds": [
+        "subject"
+      ],
+      "allowed_dependency_kinds": [
+        "accessor",
+        "derived"
+      ],
+      "allowed_input_classes": [
+        "ENGINE_STATE"
+      ],
+      "permitted_context_fact_ids": [],
+      "static_dependencies": [],
+      "combination_policy": "integer_additive_v1",
+      "resolution_owner": "SELECTOR_METADATA",
+      "trace_policy": "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
     }
   },
   "derived_nodes": {
@@ -517,5 +719,3 @@
     "structural_schema_policy": "SHAPE_ONLY_NOT_EXECUTION_AUTHORITY"
   }
 }
-
-

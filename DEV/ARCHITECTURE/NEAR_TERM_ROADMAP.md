@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-06 COMPLETE / S6D-07 STEP 3 HUMAN DECISION REQUIRED / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-07 COMPLETE / S6D-08 STEP 1 NEXT / R2.7 PAUSED**
 
 Date: 2026-08-25
 
@@ -93,7 +93,7 @@ Operating rules:
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-06 COMPLETE / S6D-07 STEP 1 COMPLETE / STEP 2 NEXT** | residual rules/seed/catalog debt |
+| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-07 COMPLETE / S6D-08 STEP 1 NEXT** | residual rules/seed/catalog debt |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
 
 ---
@@ -111,9 +111,8 @@ R2.0..R2.6 COMPLETE
     -> S6D-04 Steps 1-8                            [COMPLETE / CANONICAL]
     -> S6D-05 Steps 1-8                            [COMPLETE / CANONICAL]
     -> S6D-06 Steps 1-8                            [COMPLETE / CRITIC PASS]
-    -> S6D-07 Step 1                               [COMPLETE / BRIEF + CRITIC PASS]
-    -> S6D-07 Step 2                               [COMPLETE / RESEARCH]
-    -> S6D-07 Step 3                               [ACTIVE / HUMAN SCOPE DECISION]
+    -> S6D-07 Steps 1-8                            [COMPLETE / CRITIC PASS / CANONICAL]
+    -> S6D-08 Step 1                               [NEXT / NOT STARTED]
     -> ... remaining S6D domains full eight-step loops ...
     -> S6D integrated closure
     -> R2.7 WP-06 RESUME
@@ -122,7 +121,7 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-07 Step 2 evidence is complete. Step 3 is stopped at the human decision for built-in character-seed breadth; Steps 4–8 are not started.
+**Current stop.** S6D-07 Steps 1–8 are complete with whole-project solution-critic PASS. S6D-08 Step 1 is next and has not started.
 
 ---
 
@@ -188,7 +187,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-07 Step 3 human decision
+## 7. S6D — S6D-07 complete / S6D-08 Step 1 next
 
 S6D decomposition/evidence inputs remain:
 
@@ -196,7 +195,7 @@ S6D decomposition/evidence inputs remain:
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
-The plan is a decomposition/coverage index only. S6D-01 through S6D-06 are canonically closed by their named architecture owners. S6D-06 grants zero primitive execution authority: all 31 registered names are quarantined. S6D-07 Step 2 research is complete. Step 3 awaits the explicit built-in character-seed scope decision recorded in the S6D-07 Decision Brief.
+The plan is a decomposition/coverage index only. S6D-01 through S6D-07 are canonically closed by their named architecture owners. S6D-06 established the fail-closed activation law; S6D-07 subsequently replaced eleven exact rows with reviewed `COMPLETE / ACTIVE_ADMITTED` contracts and leaves twenty quarantined. The real Human/Criminal/Fighter 1–2/Sorcerer 1 seed is architecture- and machine-contract closed, while production runtime execution and behavioral fast-start proof remain deferred. S6D-08 Step 1 is next and has not started.
 
 ---
 
@@ -221,14 +220,14 @@ R2.7 WP-06 resumes only after S6D integrated closure.
 ```text
 HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
 S6D: IN PROGRESS
-S6D_COMPLETED_DOMAIN: S6D-06 / STEPS 1-8 / ARCHITECTURE CLOSED
-S6D_NEXT_DOMAIN: S6D-07
-S6D_ACTIVE_DOMAIN: S6D-07
-S6D_COMPLETED_STAGE: S6D-07 STEP 2 / RESEARCH & ARCHITECTURE DRAFT
-S6D_ACTIVE_STAGE: S6D-07 STEP 3 / HUMAN DECISION
-S6D_NEXT_STAGE: S6D-07 STEP 4 / COLLABORATIVE REVIEW AFTER DECISION
+S6D_COMPLETED_DOMAIN: S6D-07 / STEPS 1-8 / ARCHITECTURE CLOSED
+S6D_NEXT_DOMAIN: S6D-08
+S6D_ACTIVE_DOMAIN: NONE
+S6D_COMPLETED_STAGE: S6D-07 STEP 8 / CANONICALIZATION
+S6D_ACTIVE_STAGE: NONE
+S6D_NEXT_STAGE: S6D-08 STEP 1 / TASK BRIEF
 R2_7_WP06: PAUSED
 ```
 
-Next action requires the explicit human choice recorded in **S6D-07 Step 3 — Supported Character Seed Scope Decision Brief**. Do not start Step 4 before that decision.
+Next action is S6D-08 Step 1. Do not start it as part of S6D-07 closure.
 

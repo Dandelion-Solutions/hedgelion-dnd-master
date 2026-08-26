@@ -19,6 +19,13 @@ EXPECTED = {
     "op.advance_local_time",
 }
 
+S6D07_ACTIVE = {
+    "op.select_targets", "op.roll", "op.resolve_save",
+    "op.resolve_attack", "op.apply_damage", "op.apply_healing",
+    "op.consume_resource", "op.for_each_target",
+    "op.resolve_check", "op.create_effect", "op.emit_fact",
+}
+
 
 def load(path):
     return json.loads(path.read_text(encoding="utf-8"))
@@ -33,10 +40,11 @@ def test_registry_contract_equality_and_dormant_selection_boundary():
     rows = {row["primitive_id"]: row for row in contracts()["contracts"]}
     assert set(core["activity_primitives"]) == EXPECTED == set(rows)
     for primitive_id, row in rows.items():
-        assert row["realization_state"] == "QUARANTINED"
-        if primitive_id == "op.emit_fact":
-            assert row["selection_state"] == "QUARANTINED_NO_EXACT_CLOSED_VARIANT"
+        if primitive_id in S6D07_ACTIVE:
+            assert row["realization_state"] == "COMPLETE"
+            assert row["selection_state"] == "ACTIVE_ADMITTED"
         else:
+            assert row["realization_state"] == "QUARANTINED"
             assert row["selection_state"] == "DORMANT_NONSELECTABLE"
 
 
@@ -49,7 +57,12 @@ def test_each_contract_is_closed_item_specific_and_has_execution_ownership():
     }
     argument_keys = {"value_kind", "cardinality", "required", "source"}
     for row in contracts()["contracts"]:
-        assert set(row) == expected_keys
+        if row["primitive_id"] in S6D07_ACTIVE:
+            assert set(row) == expected_keys | {"exact_seed_consumer_ids", "authority_denied"}
+            assert row["exact_seed_consumer_ids"]
+            assert row["authority_denied"]
+        else:
+            assert set(row) == expected_keys
         assert set(row["arguments"]) == set(dict.fromkeys(row["arguments"]))
         assert set(row["results"]) == set(dict.fromkeys(row["results"]))
         for spec in (*row["arguments"].values(), *row["results"].values()):
@@ -122,7 +135,7 @@ def test_every_named_value_kind_has_a_concrete_validation_shape():
 def compile_step(step, catalog, allow_dormant=False):
     rows = {row["primitive_id"]: row for row in catalog["contracts"]}
     row = rows[step["op"]]
-    if row["realization_state"] == "QUARANTINED":
+    if row["realization_state"] != "COMPLETE":
         raise ValueError("primitive is quarantined")
     if row["selection_state"] != "ACTIVE_ADMITTED" and not allow_dormant:
         raise ValueError("primitive is nonselectable")
@@ -143,20 +156,20 @@ def test_compiler_rejects_unknown_missing_and_dormant_operations():
     except KeyError:
         pass
     try:
-        compile_step({"op": "op.apply_damage", "args": {}}, catalog, allow_dormant=True)
+        compile_step({"op": "op.restore_resource", "args": {}}, catalog, allow_dormant=True)
         assert False
     except ValueError as exc:
         assert str(exc) == "primitive is quarantined"
     try:
-        compile_step({"op": "op.apply_damage", "args": {"target_role": "target", "components": [], "payload": {}}}, catalog, allow_dormant=True)
+        compile_step({"op": "op.restore_resource", "args": {"owner_role": "actor", "resource_id": "x", "amount": 1, "payload": {}}}, catalog, allow_dormant=True)
         assert False
     except ValueError as exc:
         assert str(exc) == "primitive is quarantined"
     try:
-        compile_step({"op": "op.apply_damage", "args": {"target_role": "target", "components": []}}, catalog)
+        compile_step({"op": "op.apply_damage", "args": {"target_role": "target"}}, catalog)
         assert False
     except ValueError as exc:
-        assert str(exc) == "primitive is quarantined"
+        assert str(exc) == "missing argument"
 
 
 def test_schema_root_and_activity_embedding_route_are_explicit():
@@ -224,24 +237,27 @@ def test_activation_dependency_traversal_is_closed_and_blocks_missing_dependency
         dependencies = matrices[primitive_id]["activation_dependencies"]
         assert set(dependencies["required_active_primitive_ids"]) <= set(rows)
         assert set(dependencies["required_active_value_kinds"]) <= all_values
-        assert not is_activatable(
+        result = is_activatable(
             primitive_id,
             set(dependencies["required_active_primitive_ids"]),
             set(dependencies["required_active_value_kinds"]),
             {primitive_id},
         )
+        assert result is (primitive_id in S6D07_ACTIVE)
         assert not is_activatable(primitive_id, set(), set(), set())
 
 
-def test_emit_fact_is_quarantined_without_generic_event_authority():
+def test_emit_fact_is_exact_action_surge_variant_without_generic_event_authority():
     row = {row["primitive_id"]: row for row in contracts()["contracts"]}["op.emit_fact"]
     matrix = contracts()["primitive_validation_matrix"]["op.emit_fact"]
-    assert row["selection_state"] == "QUARANTINED_NO_EXACT_CLOSED_VARIANT"
-    assert row["realization_state"] == "QUARANTINED"
-    assert "event_kind" not in row["arguments"]
-    assert not row["results"]
-    assert not row["prospective_outputs"]["event_kinds"]
-    assert matrix["segment_semantics"] == "QUARANTINED_NO_EXECUTION"
+    assert row["selection_state"] == "ACTIVE_ADMITTED"
+    assert row["realization_state"] == "COMPLETE"
+    assert row["exact_seed_consumer_ids"] == ["activity.feature.action_surge"]
+    assert row["arguments"]["fact_kind"]["value_kind"] == "action_entitlement_fact_kind"
+    assert row["prospective_outputs"]["event_kinds"] == ["event.action_entitlement.granted"]
+    assert matrix["subject_policy"] == "BOUND_ACTOR_CURRENT_TURN_ONLY"
+    assert matrix["storage_policy"] == "TURN_ACTION_ECONOMY_PROCEDURE_STATE_ONLY"
+    assert matrix["segment_semantics"] == "ONE_SEGMENT"
 
 
 def test_followup_and_time_have_exact_causal_recovery_and_chronology_barriers():
@@ -274,4 +290,3 @@ def test_compiler_forms_propagate_only_closed_child_steps_and_enclosing_segment_
         assert matrices[primitive_id]["compiler_form_propagation"] == "CHILD_STEPS_ONLY_WITH_ENCLOSING_SEGMENT_INHERITANCE"
         assert matrices[primitive_id]["segment_semantics"] == "CHILD_STEPS_DEFINE_SEGMENTS"
         assert rows[primitive_id]["atomicity"]["policy"] == "CHILD_STEPS_DEFINE_SEGMENTS"
-

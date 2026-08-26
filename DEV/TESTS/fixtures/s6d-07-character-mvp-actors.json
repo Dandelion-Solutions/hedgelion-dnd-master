@@ -1,0 +1,101 @@
+{
+  "catalog_context": {
+    "ruleset_package_id": "hdm.rules.dnd2024-srd52-core",
+    "profile_id": "character.mvp_vertical_slice.v1",
+    "catalog_generation": "2.0.0"
+  },
+  "readiness_evidence": {
+    "fighter": {
+      "actor_id": "actor.mvp-archer",
+      "actor_state_revision": 1,
+      "catalog_generation": "2.0.0",
+      "package_content_sha256": "ca4703a3ebca56105b8d6c117e851b04aa7cc2dcfe6e4d40dc1ba3ce8e63c42e",
+      "provenance": {"assets": "ASSET_STATE", "proficiencies": "RESOLVED_DEFINITION_GRANTS", "selectors": "MECHANICAL_CONTEXT", "activities": "CATALOG_ADMISSION_LEDGER"},
+      "owned_asset_definition_ids": ["asset.shortbow", "asset.thieves_tools"],
+      "derived_proficiency_ids": ["proficiency.weapon.simple", "proficiency.weapon.martial", "proficiency.save.strength", "proficiency.save.constitution", "proficiency.skill.sleight_of_hand", "proficiency.skill.stealth", "proficiency.tool.thieves_tools"],
+      "selector_results": {"defense.armor_class": 13},
+      "admitted_activity_ids": ["activity.attack.ranged_weapon", "activity.feature.resourceful", "activity.feature.second_wind"]
+    },
+    "sorcerer": {
+      "actor_id": "actor.mvp-innate-mage",
+      "actor_state_revision": 1,
+      "catalog_generation": "2.0.0",
+      "package_content_sha256": "ca4703a3ebca56105b8d6c117e851b04aa7cc2dcfe6e4d40dc1ba3ce8e63c42e",
+      "provenance": {"assets": "ASSET_STATE", "proficiencies": "RESOLVED_DEFINITION_GRANTS", "selectors": "MECHANICAL_CONTEXT", "activities": "CATALOG_ADMISSION_LEDGER"},
+      "owned_asset_definition_ids": ["asset.arcane_focus", "asset.thieves_tools"],
+      "derived_proficiency_ids": ["proficiency.save.constitution", "proficiency.save.charisma", "proficiency.skill.sleight_of_hand", "proficiency.skill.stealth", "proficiency.tool.thieves_tools"],
+      "selector_results": {"defense.armor_class": 12, "spell.dc": 13},
+      "admitted_activity_ids": ["activity.feature.innate_sorcery", "activity.spell.fire_bolt", "activity.spell.poison_spray", "activity.spell.thunderclap", "activity.spell.acid_splash", "activity.spell.magic_missile", "activity.spell.burning_hands"]
+    }
+  },
+  "fighter_ready": {
+    "id": "actor.mvp-archer",
+    "state_revision": 1,
+    "name": {"en": "MVP Archer"},
+    "concept": "A trained practical archer",
+    "roles": ["actor.player_character"],
+    "build": {
+      "species_id": "species.human",
+      "background_id": "background.criminal",
+      "class_progression": [{"class_id": "class.fighter", "level": 1}],
+      "choice_bindings": {
+        "species.human.size": {"selected_option_ids": ["option.size.medium"], "selection_basis": "choice_basis.campaign_default"},
+        "species.human.origin_feat": {"selected_option_ids": ["option.feat.skilled"], "selection_basis": "choice_basis.delegated_default"},
+        "advancement.fighter.level_1.style": {"selected_option_ids": ["option.style.archery"], "selection_basis": "choice_basis.concept_inference", "basis_ref": "concept:trained_archer"}
+      }
+    },
+    "abilities": {"ability.strength": {"base": 10}, "ability.dexterity": {"base": 16}, "ability.constitution": {"base": 14}, "ability.intelligence": {"base": 12}, "ability.wisdom": {"base": 10}, "ability.charisma": {"base": 8}},
+    "hp": {"current": 12, "maximum_base": 12},
+    "life_state_id": "life.active",
+    "life_state_policy_id": "life_policy.dnd2024.character_like",
+    "resources": {"resource.second_wind": {"current": 1}}
+  },
+  "fighter_unresolved_style": {
+    "id": "actor.mvp-provisional-fighter",
+    "state_revision": 1,
+    "name": {"en": "Provisional Fighter"},
+    "concept": "A versatile combatant",
+    "roles": ["actor.player_character"],
+    "build": {"species_id": "species.human", "background_id": "background.criminal", "class_progression": [{"class_id": "class.fighter", "level": 1}]},
+    "abilities": {"ability.strength": {"base": 16}, "ability.dexterity": {"base": 14}, "ability.constitution": {"base": 14}},
+    "hp": {"current": 12, "maximum_base": 12},
+    "life_state_id": "life.active"
+  },
+  "sorcerer_ready": {
+    "id": "actor.mvp-innate-mage",
+    "state_revision": 1,
+    "name": {"en": "MVP Innate Mage"},
+    "concept": "An innate fire mage",
+    "roles": ["actor.player_character"],
+    "build": {
+      "species_id": "species.human", "background_id": "background.criminal",
+      "class_progression": [{"class_id": "class.sorcerer", "level": 1}],
+      "choice_bindings": {
+        "species.human.size": {"selected_option_ids": ["option.size.medium"], "selection_basis": "choice_basis.campaign_default"},
+        "species.human.origin_feat": {"selected_option_ids": ["option.feat.skilled"], "selection_basis": "choice_basis.delegated_default"},
+        "advancement.sorcerer.level_1.spells": {"selected_option_ids": ["option.spells.mvp_default"], "selection_basis": "choice_basis.delegated_default"}
+      },
+      "spellcasting": {"known_spell_ids": ["spell.fire_bolt", "spell.poison_spray", "spell.thunderclap", "spell.acid_splash", "spell.magic_missile", "spell.burning_hands"]}
+    },
+    "abilities": {"ability.dexterity": {"base": 14}, "ability.constitution": {"base": 14}, "ability.charisma": {"base": 16}},
+    "hp": {"current": 8, "maximum_base": 8},
+    "life_state_id": "life.active",
+    "life_state_policy_id": "life_policy.dnd2024.character_like",
+    "resources": {"resource.spell_slot.level_1": {"current": 2}, "resource.innate_sorcery": {"current": 2}}
+  },
+  "fighter_level_2": {
+    "command_id": "command.advance.mvp-archer.level-2",
+    "idempotency_key": "actor.mvp-archer:class.fighter:1:2",
+    "before_level": 1,
+    "after_actor": {
+      "name": {"en": "MVP Archer"}, "concept": "A trained practical archer", "roles": ["actor.player_character"],
+      "build": {"species_id": "species.human", "background_id": "background.criminal", "class_progression": [{"class_id": "class.fighter", "level": 2}], "choice_bindings": {"advancement.fighter.level_1.style": {"selected_option_ids": ["option.style.archery"], "selection_basis": "choice_basis.concept_inference"}}},
+      "hp": {"current": 20, "maximum_base": 20}, "life_state_id": "life.active",
+      "resources": {"resource.second_wind": {"current": 1}, "resource.action_surge": {"current": 1}}
+    },
+    "execution_segment": {"disposition": "COMMITTED", "transition_kind": "transition.actor_state"},
+    "mechanical_event": {"kind": "event.character.advanced"},
+    "receipt": {"outcome": "COMPLETED", "evidence": ["feature.fighter.action_surge", "feature.fighter.tactical_mind"]},
+    "recovery": {"same_idempotency_key_returns_same_receipt": true, "no_pending_continuation": true}
+  }
+}

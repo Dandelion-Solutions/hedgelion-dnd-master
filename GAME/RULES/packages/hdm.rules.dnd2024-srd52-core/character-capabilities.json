@@ -1,0 +1,19 @@
+{
+  "package_id": "hdm.rules.dnd2024-srd52-core",
+  "package_version": "0.1.0-mvp",
+  "catalog_generation": "2.0.0",
+  "content_file": "character-mvp-seed.json",
+  "content_sha256": "ca4703a3ebca56105b8d6c117e851b04aa7cc2dcfe6e4d40dc1ba3ce8e63c42e",
+  "profile_id": "character.mvp_vertical_slice.v1",
+  "content_basis": "SRD_5_2_1_BASED_MVP_SUBSET",
+  "full_srd_character_corpus": false,
+  "unsupported_content_policy": "ABSENT_NONSELECTABLE",
+  "supported_species": ["species.human"],
+  "supported_backgrounds": ["background.criminal"],
+  "supported_class_levels": {
+    "class.fighter": [1, 2],
+    "class.sorcerer": [1]
+  },
+  "onboarding_policy": "PROGRESSIVE_INFER_DEFAULT_DELEGATE_ASK_ONLY_MATERIAL",
+  "notice": "NOTICE.md"
+}

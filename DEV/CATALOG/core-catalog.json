@@ -104,7 +104,7 @@
     ],
     "transition_kinds": [
       "transition.entity_create", "transition.entity_promote",
-      "transition.entity_retire", "transition.actor_state",
+      "transition.entity_retire", "transition.actor_state", "transition.effect_state",
       "transition.asset_transfer", "transition.asset_status",
       "transition.currency_transfer", "transition.location_change",
       "transition.connection_state", "transition.zone_state",
@@ -126,7 +126,7 @@
       "event.actor.state_changed", "event.asset.transferred",
       "event.asset.status_changed", "event.currency.transferred",
       "event.entity.moved", "event.entity.teleported",
-      "event.entity.transformed", "event.effect.created",
+      "event.entity.transformed", "event.effect.created", "event.action_entitlement.granted",
       "event.effect.updated", "event.effect.expired", "event.effect.removed",
       "event.zone.created", "event.zone.updated", "event.zone.removed",
       "event.connection.changed", "event.organization.changed",
@@ -272,7 +272,9 @@
       "failure.continuation_conflict", "failure.continuation_stale",
       "failure.dependency_cycle", "failure.transition_requires_procedure",
       "failure.order_adjudication_required", "failure.execution_limit",
-      "failure.invocation_fact_missing", "failure.invocation_fact_unauthorized"
+      "failure.invocation_fact_missing", "failure.invocation_fact_unauthorized",
+      "failure.action_economy_scope_invalid", "failure.effect_identity_mismatch",
+      "failure.effect_duration_mismatch"
     ],
     "intent_execution_states": [
       "intent.pending", "intent.ready", "intent.executed",

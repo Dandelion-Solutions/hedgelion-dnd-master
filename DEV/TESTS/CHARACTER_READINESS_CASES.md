@@ -30,9 +30,9 @@ Pass: readiness fails. Schema shape alone is not mechanical readiness.
 A spellcasting PC is about to become active.
 Pass: spellcasting ability/attack/save DC inputs, slots/resources and exact current known/prepared spells required by the adopted rules exist before play.
 
-## C08 — No first scene before READY_PC
-Scaffold exists and opening fiction is ready, but PC mechanics are incomplete.
-Pass: do not narrate the first true live scene yet. Finish the compact mechanical build, establish semantic acceptance, publish the character/PLAY_READY batch, then narrate.
+## C08 — Provisional gameplay uses local sufficiency before READY_PC
+Scaffold exists and opening fiction is ready, but some PC mechanics are incomplete.
+Pass: gameplay may begin with the provisional PC. Resolve only dialogue, movement and mechanics whose committed local dependencies are sufficient; close remaining material choices progressively. Mechanics that depend on unresolved state remain blocked, and READY_PC + PLAY_READY is still required before the campaign enters fully active mechanics-capable state.
 
 ## C09 — Character may share PLAY_READY commit
 Complete character + initial location + opening situation are all resolved before returning control to the player.
@@ -66,6 +66,7 @@ Pass: do not create stats now specifically to make old narrated outcomes look co
 READY_PC is built and saved.
 Pass: ordinary later turns use stored mechanics locally; no repeated official-source lookup or GitHub read merely because mechanics are hidden from the player.
 
-## C17 — Pre-live onboarding is not a READY_PC bypass
-PC mechanics are incomplete but DIEGETIC_ONBOARDING frames harmless dialogue where an NPC asks the name.
-Pass: this pre-live setup vignette is allowed without mechanics-dependent resolution; true live play still waits for READY_PC + PLAY_READY.
+## C17 — Progressive onboarding is not a dependency bypass
+PC mechanics are incomplete but DIEGETIC_ONBOARDING frames dialogue or another locally sufficient scene.
+Pass: provisional play is allowed and may contain real player agency, but each attempted mechanic must prove its own committed dependencies. The Master cannot invent missing modifiers or silently treat provisional state as READY_PC; close READY_PC within the first meaningful interactions without a questionnaire.
+

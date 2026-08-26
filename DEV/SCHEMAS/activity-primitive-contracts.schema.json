@@ -127,13 +127,15 @@
         "primitive_id": {"type": "string", "pattern": "^op\\.[a-z][a-z0-9_]*$"},
         "family": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
         "execution_kind": {"enum": ["CALCULATION", "MUTATION", "COMPILER_FORM", "SUSPENSION", "FOLLOWUP", "TEMPORAL"]},
-        "realization_state": {"const": "QUARANTINED"},
-        "selection_state": {"enum": ["DORMANT_NONSELECTABLE", "QUARANTINED_NO_EXACT_CLOSED_VARIANT"]},
+        "realization_state": {"enum": ["QUARANTINED", "COMPLETE"]},
+        "selection_state": {"enum": ["DORMANT_NONSELECTABLE", "QUARANTINED_NO_EXACT_CLOSED_VARIANT", "ACTIVE_ADMITTED"]},
         "activation_trigger": {"enum": ["S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES", "EXACT_CLOSED_EVENT_VARIANT_AND_ACTIVE_DEPENDENCIES"]},
+        "exact_seed_consumer_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^activity\\."}},
+        "authority_denied": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "arguments": {"type": "object", "additionalProperties": {"$ref": "#/$defs/typedValue"}},
         "results": {"type": "object", "additionalProperties": {"$ref": "#/$defs/typedValue"}},
         "reads": {"type": "array", "items": {"$ref": "#/$defs/read"}},
-        "rng": {"type": "object", "additionalProperties": false, "required": ["policy"], "properties": {"policy": {"enum": ["NONE", "ONE_FIXED_RESULT_PER_REQUEST_AND_GENERATION"]}}},
+        "rng": {"type": "object", "additionalProperties": false, "required": ["policy"], "properties": {"policy": {"enum": ["NONE", "ONE_FIXED_RESULT_PER_REQUEST_AND_GENERATION"]}, "request_owner": {"type": "string", "minLength": 1}, "result_owner": {"type": "string", "minLength": 1}, "authority": {"type": "string", "minLength": 1}}},
         "prospective_outputs": {
           "type": "object",
           "additionalProperties": false,
@@ -147,10 +149,9 @@
         "atomicity": {"type": "object", "additionalProperties": false, "required": ["owner", "policy"], "properties": {"owner": {"const": "EXECUTION_SEGMENT"}, "policy": {"type": "string", "minLength": 1}}},
         "suspension": {"type": "object", "additionalProperties": false, "required": ["kind", "retention"], "properties": {"kind": {"enum": ["NONE", "CHOICE", "REACTION"]}, "retention": {"type": "string", "minLength": 1}}},
         "failures": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^failure\\."}},
-        "bounds": {"type": "array", "uniqueItems": true, "items": {"enum": ["target_count", "step_count", "branch_depth", "trigger_chain_depth", "boundary_occurrence_count"]}},
+        "bounds": {"type": "array", "uniqueItems": true, "items": {"enum": ["target_count", "step_count", "branch_depth", "trigger_chain_depth", "boundary_occurrence_count", "one_entitlement", "current_turn_only", "next_eligible_activation_once", "one_effect_instance", "one_minute_duration", "same_source_target_definition_replacement"]}},
         "evidence": {"type": "object", "additionalProperties": false, "required": ["commit_disposition_owner", "committed_fact_owner", "outcome_owner", "trace_policy"], "properties": {"commit_disposition_owner": {"const": "EXECUTION_SEGMENT"}, "committed_fact_owner": {"const": "MECHANICAL_EVENT"}, "outcome_owner": {"const": "RESOLUTION_RECEIPT"}, "trace_policy": {"type": "string", "minLength": 1}}}
       }
     }
   }
 }
-

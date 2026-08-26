@@ -15,6 +15,16 @@
     "continuation_policy": "NO_TRUSTED_PROSPECTIVE_DELTA; RETAIN_ONLY_ACCEPTED_CAUSAL_INPUT_AND_PENDING_WORK"
   },
   "value_contracts": {
+    "action_economy_id": {"owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md", "validation": "EXACT_NAMED_CONTRACT", "enum": ["resource.action"]},
+    "action_entitlement_consumption": {"owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md", "validation": "EXACT_NAMED_CONTRACT", "enum": ["NEXT_ELIGIBLE_ACTIVATION"]},
+    "action_entitlement_fact_kind": {"owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md", "validation": "EXACT_NAMED_CONTRACT", "enum": ["fact.action_entitlement"]},
+    "action_entitlement_retry": {"owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md", "validation": "EXACT_NAMED_CONTRACT", "enum": ["IDEMPOTENCY_KEY_REUSES_COMMITTED_GRANT"]},
+    "action_entitlement_scope": {"owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md", "validation": "EXACT_NAMED_CONTRACT", "enum": ["CURRENT_TURN"]},
+    "activity_family_ref": {"owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md", "validation": "EXACT_NAMED_CONTRACT", "catalog_ref": "activity_families"},
+    "effect_instance_key": {"owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md", "validation": "EXACT_NAMED_CONTRACT", "compiler_ref": "stable_target_source_definition_tuple"},
+    "innate_sorcery_duration_spec": {"owner": "DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md", "validation": "EXACT_NAMED_CONTRACT", "enum": [{"kind_id":"duration.metric","amount":1,"unit_id":"unit.minute"}]},
+    "innate_sorcery_effect_definition_ref": {"owner": "DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md", "validation": "EXACT_NAMED_CONTRACT", "enum": ["effect.innate_sorcery"]},
+    "self_actor_role": {"owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md", "validation": "EXACT_NAMED_CONTRACT", "enum": ["actor"]},
     "activity_definition_ref": {
       "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
       "validation": "EXACT_NAMED_CONTRACT",
@@ -225,7 +235,7 @@
     "op.transfer_currency": {"subject_policy":"SOURCE_AND_DESTINATION_ROLES_ONLY","storage_policy":"WORLD_ASSET_OWNER_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"ONE_SEGMENT","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["number","currency_definition_ref","role"]},"causal_recovery":"NOT_APPLICABLE","chronology_barrier":"NOT_APPLICABLE"},
     "op.create_entity": {"subject_policy":"ENCLOSING_COMPILED_BINDINGS_ONLY","storage_policy":"WORLD_ENTITY_OWNER_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"ONE_SEGMENT","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["entity_definition_ref","parameter_bindings","entity_ref"]},"causal_recovery":"NOT_APPLICABLE","chronology_barrier":"NOT_APPLICABLE"},
     "op.retire_entity": {"subject_policy":"ENTITY_ROLE_ONLY","storage_policy":"WORLD_ENTITY_OWNER_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"ONE_SEGMENT","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["role","machine_id","entity_ref"]},"causal_recovery":"NOT_APPLICABLE","chronology_barrier":"NOT_APPLICABLE"},
-    "op.create_effect": {"subject_policy":"SOURCE_AND_TARGET_ROLES_ONLY","storage_policy":"WORLD_EFFECT_OWNER_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"ONE_SEGMENT","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["effect_definition_ref","duration_spec","parameter_bindings","role","entity_ref"]},"causal_recovery":"NOT_APPLICABLE","chronology_barrier":"NOT_APPLICABLE"},
+    "op.create_effect": {"subject_policy":"BOUND_ACTOR_IS_BOTH_SOURCE_AND_TARGET","storage_policy":"WORLD_EFFECT_OWNER_STABLE_TARGET_SOURCE_DEFINITION_KEY_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"ONE_SEGMENT","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["innate_sorcery_effect_definition_ref","innate_sorcery_duration_spec","self_actor_role","effect_instance_key","entity_ref","temporal_binding"]},"causal_recovery":{"causal_key":"EFFECT_INSTANCE_KEY_AND_CAUSING_SEGMENT_IDEMPOTENCY_KEY","recovery_owner":"WORLD_EFFECT_AND_TEMPORAL_AGENDA","retention":"COMMITTED_EFFECT_EVENT_AND_PINNED_TEMPORAL_BINDING_UNTIL_EXPIRY"},"chronology_barrier":"START_AT_CAUSING_COMMIT; EXPIRY_AFTER_ONE_MINUTE_IN_SAME_LOCAL_CHRONOLOGY; IDEMPOTENT_EXPIRY_TRANSITION"},
     "op.update_effect": {"subject_policy":"EFFECT_ROLE_ONLY","storage_policy":"WORLD_EFFECT_OWNER_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"ONE_SEGMENT","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["role","effect_update_spec","entity_ref"]},"causal_recovery":"NOT_APPLICABLE","chronology_barrier":"NOT_APPLICABLE"},
     "op.remove_effect": {"subject_policy":"EFFECT_ROLE_ONLY","storage_policy":"WORLD_EFFECT_OWNER_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"ONE_SEGMENT","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["role","machine_id","entity_ref"]},"causal_recovery":"NOT_APPLICABLE","chronology_barrier":"NOT_APPLICABLE"},
     "op.transform_entity": {"subject_policy":"ENTITY_ROLE_ONLY","storage_policy":"WORLD_ENTITY_OWNER_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"ONE_SEGMENT","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["role","duration_spec","entity_definition_ref","entity_ref"]},"causal_recovery":"NOT_APPLICABLE","chronology_barrier":"NOT_APPLICABLE"},
@@ -236,7 +246,7 @@
     "op.branch": {"subject_policy":"ENCLOSING_COMPILED_BINDINGS_ONLY","storage_policy":"ENCLOSING_CHILD_STEPS_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"CHILD_STEPS_DEFINE_SEGMENTS","compiler_form_propagation":"CHILD_STEPS_ONLY_WITH_ENCLOSING_SEGMENT_INHERITANCE","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["compiled_step_list","mechanical_predicate","machine_id"]},"causal_recovery":"NOT_APPLICABLE","chronology_barrier":"NOT_APPLICABLE"},
     "op.request_choice": {"subject_policy":"CONTINUATION_RESPONDER_ONLY","storage_policy":"CONTINUATION_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"SUSPENSION_STATE_ONLY","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["choice_request","machine_id"]},"causal_recovery":"NOT_APPLICABLE","chronology_barrier":"NOT_APPLICABLE"},
     "op.open_reaction_window": {"subject_policy":"CONTINUATION_RESPONDER_ONLY","storage_policy":"CONTINUATION_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"SUSPENSION_STATE_ONLY","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["reaction_offer","machine_id"]},"causal_recovery":"NOT_APPLICABLE","chronology_barrier":"NOT_APPLICABLE"},
-    "op.emit_fact": {"subject_policy":"NO_SUBJECT_OR_EVENT_AUTHORITY","storage_policy":"NO_STORAGE_OR_EVENT_AUTHORITY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"QUARANTINED_NO_EXECUTION","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":[]},"causal_recovery":"NOT_APPLICABLE","chronology_barrier":"NOT_APPLICABLE"},
+    "op.emit_fact": {"subject_policy":"BOUND_ACTOR_CURRENT_TURN_ONLY","storage_policy":"TURN_ACTION_ECONOMY_PROCEDURE_STATE_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"ONE_SEGMENT","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":["op.consume_resource"],"required_active_value_kinds":["action_entitlement_fact_kind","role","action_economy_id","integer","action_entitlement_scope","activity_family_ref","action_entitlement_consumption","action_entitlement_retry","machine_id"]},"causal_recovery":{"causal_key":"RESOLUTION_IDEMPOTENCY_KEY_AND_TURN_ID","recovery_owner":"TURN_ACTION_ECONOMY","retention":"UNTIL_CONSUMED_OR_CURRENT_TURN_BOUNDARY"},"chronology_barrier":"CURRENT_TURN_BOUNDARY_EXPIRES_UNUSED_ENTITLEMENT"},
     "op.schedule_followup": {"subject_policy":"ENCLOSING_OWNER_BOUND_SUBJECT_ONLY","storage_policy":"PENDING_CHILD_INVOCATION_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"PENDING_CHILD_IDENTITY_ATOMIC_WITH_TRIGGERING_COMMIT","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["activity_definition_ref","parameter_bindings","temporal_binding","machine_id"]},"causal_recovery":{"causal_key":"TRIGGERING_SEGMENT_AND_TEMPORAL_BINDING","recovery_owner":"PENDING_CHILD_INVOCATION","retention":"UNTIL_SETTLED_OR_PROVEN_UNREACHABLE"},"chronology_barrier":"DUE_DISCOVERY_AFTER_TRIGGERING_SEGMENT_COMMIT"},
     "op.advance_local_time": {"subject_policy":"CHRONOLOGY_CONTEXT_BOUND_SUBJECT_ONLY","storage_policy":"CHRONOLOGY_OWNER_AND_COMMITTED_EVENT_ONLY","failure_policy":"EXACT_CONTRACT_FAILURE_CODES","validation_policy":"EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS","segment_semantics":"ONE_SEGMENT","compiler_form_propagation":"NOT_COMPILER_FORM","activation_dependencies":{"requires_exact_seed_consumer":true,"required_active_primitive_ids":[],"required_active_value_kinds":["duration_spec","machine_id","boundary_occurrence"]},"causal_recovery":{"causal_key":"CONTEXT_AND_SEGMENT_TIME_ADVANCEMENT","recovery_owner":"CHRONOLOGY_OWNER","retention":"COMMITTED_EVENT_AND_BOUNDARY_OCCURRENCES"},"chronology_barrier":"COMMIT_TIME_BEFORE_DUE_CHILD_DISCOVERY_OR_PUBLICATION"}
   },
@@ -245,9 +255,11 @@
       "primitive_id": "op.select_targets",
       "family": "SELECTION",
       "execution_kind": "CALCULATION",
-      "realization_state": "QUARANTINED",
-      "selection_state": "DORMANT_NONSELECTABLE",
+      "realization_state": "COMPLETE",
+      "selection_state": "ACTIVE_ADMITTED",
       "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+      "exact_seed_consumer_ids": ["activity.attack.ranged_weapon","activity.spell.fire_bolt","activity.spell.poison_spray","activity.spell.thunderclap","activity.spell.acid_splash","activity.spell.magic_missile","activity.spell.burning_hands"],
+      "authority_denied": ["world_search","arbitrary_entity_discovery","mutation","persistence"],
       "arguments": {
         "target_spec": {
           "value_kind": "target_spec",
@@ -318,9 +330,11 @@
       "primitive_id": "op.roll",
       "family": "RNG",
       "execution_kind": "CALCULATION",
-      "realization_state": "QUARANTINED",
-      "selection_state": "DORMANT_NONSELECTABLE",
+      "realization_state": "COMPLETE",
+      "selection_state": "ACTIVE_ADMITTED",
       "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+      "exact_seed_consumer_ids": ["activity.attack.ranged_weapon","activity.feature.resourceful","activity.feature.second_wind","activity.feature.tactical_mind","activity.spell.fire_bolt","activity.spell.poison_spray","activity.spell.thunderclap","activity.spell.acid_splash","activity.spell.burning_hands"],
+      "authority_denied": ["semantic_threshold_authority","mutation","llm_rng"],
       "arguments": {
         "request": {
           "value_kind": "roll_request",
@@ -375,9 +389,11 @@
       "primitive_id": "op.resolve_check",
       "family": "RESOLUTION",
       "execution_kind": "CALCULATION",
-      "realization_state": "QUARANTINED",
-      "selection_state": "DORMANT_NONSELECTABLE",
+      "realization_state": "COMPLETE",
+      "selection_state": "ACTIVE_ADMITTED",
       "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+      "exact_seed_consumer_ids": ["activity.feature.tactical_mind"],
+      "authority_denied": ["rng_generation", "threshold_authorship", "resource_mutation", "check_replacement"],
       "arguments": {
         "roll": {
           "value_kind": "prior_roll_result",
@@ -511,9 +527,11 @@
       "primitive_id": "op.resolve_save",
       "family": "RESOLUTION",
       "execution_kind": "CALCULATION",
-      "realization_state": "QUARANTINED",
-      "selection_state": "DORMANT_NONSELECTABLE",
+      "realization_state": "COMPLETE",
+      "selection_state": "ACTIVE_ADMITTED",
       "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+      "exact_seed_consumer_ids": ["activity.spell.poison_spray","activity.spell.thunderclap","activity.spell.acid_splash","activity.spell.burning_hands"],
+      "authority_denied": ["rng_generation","target_discovery","damage_application","mutation"],
       "arguments": {
         "roll": {
           "value_kind": "prior_roll_result",
@@ -579,9 +597,11 @@
       "primitive_id": "op.resolve_attack",
       "family": "RESOLUTION",
       "execution_kind": "CALCULATION",
-      "realization_state": "QUARANTINED",
-      "selection_state": "DORMANT_NONSELECTABLE",
+      "realization_state": "COMPLETE",
+      "selection_state": "ACTIVE_ADMITTED",
       "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+      "exact_seed_consumer_ids": ["activity.attack.ranged_weapon","activity.spell.fire_bolt"],
+      "authority_denied": ["rng_generation","target_mutation","damage_application"],
       "arguments": {
         "roll": {
           "value_kind": "prior_roll_result",
@@ -654,9 +674,11 @@
       "primitive_id": "op.apply_damage",
       "family": "HEALTH",
       "execution_kind": "MUTATION",
-      "realization_state": "QUARANTINED",
-      "selection_state": "DORMANT_NONSELECTABLE",
+      "realization_state": "COMPLETE",
+      "selection_state": "ACTIVE_ADMITTED",
       "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+      "exact_seed_consumer_ids": ["activity.attack.ranged_weapon","activity.spell.fire_bolt","activity.spell.poison_spray","activity.spell.thunderclap","activity.spell.acid_splash","activity.spell.magic_missile","activity.spell.burning_hands"],
+      "authority_denied": ["target_discovery","hit_or_save_decision","arbitrary_state_path","direct_commit"],
       "arguments": {
         "target_role": {
           "value_kind": "role",
@@ -740,9 +762,11 @@
       "primitive_id": "op.apply_healing",
       "family": "HEALTH",
       "execution_kind": "MUTATION",
-      "realization_state": "QUARANTINED",
-      "selection_state": "DORMANT_NONSELECTABLE",
+      "realization_state": "COMPLETE",
+      "selection_state": "ACTIVE_ADMITTED",
       "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+      "exact_seed_consumer_ids": ["activity.feature.second_wind"],
+      "authority_denied": ["target_discovery","maximum_hp_change","arbitrary_state_path","direct_commit"],
       "arguments": {
         "target_role": {
           "value_kind": "role",
@@ -902,9 +926,11 @@
       "primitive_id": "op.consume_resource",
       "family": "RESOURCE",
       "execution_kind": "MUTATION",
-      "realization_state": "QUARANTINED",
-      "selection_state": "DORMANT_NONSELECTABLE",
+      "realization_state": "COMPLETE",
+      "selection_state": "ACTIVE_ADMITTED",
       "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+      "exact_seed_consumer_ids": ["activity.feature.second_wind","activity.feature.action_surge","activity.feature.tactical_mind","activity.feature.innate_sorcery","activity.spell.magic_missile","activity.spell.burning_hands"],
+      "authority_denied": ["resource_creation","capacity_change","arbitrary_owner_or_path","direct_commit"],
       "arguments": {
         "owner_role": {
           "value_kind": "role",
@@ -1536,38 +1562,34 @@
       "primitive_id": "op.create_effect",
       "family": "EFFECT",
       "execution_kind": "MUTATION",
-      "realization_state": "QUARANTINED",
-      "selection_state": "DORMANT_NONSELECTABLE",
+      "realization_state": "COMPLETE",
+      "selection_state": "ACTIVE_ADMITTED",
       "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+      "exact_seed_consumer_ids": ["activity.feature.innate_sorcery"],
+      "authority_denied": ["arbitrary_effect_authorship", "target_discovery", "direct_commit", "duration_owner_bypass"],
       "arguments": {
         "effect_definition_ref": {
-          "value_kind": "effect_definition_ref",
+          "value_kind": "innate_sorcery_effect_definition_ref",
           "cardinality": "single",
           "required": true,
           "source": "ACTIVITY_ARGUMENT"
         },
         "target_role": {
-          "value_kind": "role",
+          "value_kind": "self_actor_role",
           "cardinality": "single",
           "required": true,
           "source": "BOUND_ROLE"
         },
         "source_role": {
-          "value_kind": "role",
+          "value_kind": "self_actor_role",
           "cardinality": "single",
-          "required": false,
+          "required": true,
           "source": "BOUND_ROLE"
         },
         "duration": {
-          "value_kind": "duration_spec",
+          "value_kind": "innate_sorcery_duration_spec",
           "cardinality": "single",
-          "required": false,
-          "source": "ACTIVITY_ARGUMENT"
-        },
-        "bindings": {
-          "value_kind": "parameter_bindings",
-          "cardinality": "single",
-          "required": false,
+          "required": true,
           "source": "ACTIVITY_ARGUMENT"
         }
       },
@@ -1577,17 +1599,29 @@
           "cardinality": "single",
           "required": true,
           "source": "PRIMITIVE_RESULT"
+        },
+        "instance_key": {
+          "value_kind": "effect_instance_key",
+          "cardinality": "single",
+          "required": true,
+          "source": "PRIMITIVE_RESULT"
+        },
+        "temporal_binding": {
+          "value_kind": "temporal_binding",
+          "cardinality": "single",
+          "required": true,
+          "source": "PRIMITIVE_RESULT"
         }
       },
       "reads": [
         {
-          "kind": "SELECTOR",
-          "id": "condition.applicability",
+          "kind": "DOMAIN_OWNER",
+          "id": "effect_definition",
           "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
         },
         {
           "kind": "DOMAIN_OWNER",
-          "id": "effect_definition",
+          "id": "temporal_owner",
           "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
         }
       ],
@@ -1596,7 +1630,7 @@
       },
       "prospective_outputs": {
         "transition_kinds": [
-          "transition.actor_state"
+          "transition.effect_state"
         ],
         "event_kinds": [
           "event.effect.created"
@@ -1605,7 +1639,7 @@
       },
       "atomicity": {
         "owner": "EXECUTION_SEGMENT",
-        "policy": "ONE_EXECUTION_SEGMENT"
+        "policy": "ATOMIC_CREATE_OR_REPLACE_SAME_INSTANCE_WITH_TEMPORAL_BINDING"
       },
       "suspension": {
         "kind": "NONE",
@@ -1615,9 +1649,11 @@
         "failure.hydration_required",
         "failure.missing_reference",
         "failure.catalog_context_incompatible",
-        "failure.execution_limit"
+        "failure.execution_limit",
+        "failure.effect_identity_mismatch",
+        "failure.effect_duration_mismatch"
       ],
-      "bounds": [],
+      "bounds": ["one_effect_instance", "one_minute_duration", "same_source_target_definition_replacement"],
       "evidence": {
         "commit_disposition_owner": "EXECUTION_SEGMENT",
         "committed_fact_owner": "MECHANICAL_EVENT",
@@ -2067,9 +2103,11 @@
       "primitive_id": "op.for_each_target",
       "family": "CONTROL",
       "execution_kind": "COMPILER_FORM",
-      "realization_state": "QUARANTINED",
-      "selection_state": "DORMANT_NONSELECTABLE",
+      "realization_state": "COMPLETE",
+      "selection_state": "ACTIVE_ADMITTED",
       "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+      "exact_seed_consumer_ids": ["activity.spell.acid_splash", "activity.spell.thunderclap", "activity.spell.magic_missile", "activity.spell.burning_hands"],
+      "authority_denied": ["dynamic_query", "unbounded_iteration", "child_authority_expansion", "independent_commit"],
       "arguments": {
         "targets": {
           "value_kind": "prior_export_ref",
@@ -2332,27 +2370,40 @@
       "primitive_id": "op.emit_fact",
       "family": "EVENT",
       "execution_kind": "FOLLOWUP",
-      "realization_state": "QUARANTINED",
-      "selection_state": "QUARANTINED_NO_EXACT_CLOSED_VARIANT",
+      "realization_state": "COMPLETE",
+      "selection_state": "ACTIVE_ADMITTED",
       "activation_trigger": "EXACT_CLOSED_EVENT_VARIANT_AND_ACTIVE_DEPENDENCIES",
-      "arguments": {},
-      "results": {},
-      "reads": [],
+      "exact_seed_consumer_ids": ["activity.feature.action_surge"],
+      "authority_denied": ["arbitrary_fact_authorship", "persistent_actor_state", "additional_entitlement_reuse", "turn_boundary_authorship", "direct_commit"],
+      "arguments": {
+        "fact_kind": {"value_kind": "action_entitlement_fact_kind", "cardinality": "single", "required": true, "source": "ACTIVITY_ARGUMENT"},
+        "owner_role": {"value_kind": "role", "cardinality": "single", "required": true, "source": "BOUND_ROLE"},
+        "economy_id": {"value_kind": "action_economy_id", "cardinality": "single", "required": true, "source": "ACTIVITY_ARGUMENT"},
+        "amount": {"value_kind": "integer", "cardinality": "single", "required": true, "source": "ACTIVITY_ARGUMENT"},
+        "scope": {"value_kind": "action_entitlement_scope", "cardinality": "single", "required": true, "source": "ACTIVITY_ARGUMENT"},
+        "excluded_activity_family_ids": {"value_kind": "activity_family_ref", "cardinality": "many", "required": true, "source": "ACTIVITY_ARGUMENT"},
+        "consumption": {"value_kind": "action_entitlement_consumption", "cardinality": "single", "required": true, "source": "ACTIVITY_ARGUMENT"},
+        "retry": {"value_kind": "action_entitlement_retry", "cardinality": "single", "required": true, "source": "ACTIVITY_ARGUMENT"}
+      },
+      "results": {
+        "entitlement_ref": {"value_kind": "machine_id", "cardinality": "single", "required": true, "source": "PRIMITIVE_RESULT"}
+      },
+      "reads": [{"kind": "DOMAIN_OWNER", "id": "turn_action_economy", "view": "PINNED_COMMITTED_OR_PROSPECTIVE"}],
       "rng": {
         "policy": "NONE"
       },
       "prospective_outputs": {
         "transition_kinds": [],
-        "event_kinds": [],
+        "event_kinds": ["event.action_entitlement.granted"],
         "state_delta_policy": "PRIMITIVE_LOCAL_TYPED_PROSPECTIVE_ONLY"
       },
-      "atomicity": {"owner": "EXECUTION_SEGMENT", "policy": "QUARANTINED_NO_EXECUTION"},
+      "atomicity": {"owner": "EXECUTION_SEGMENT", "policy": "ATOMIC_WITH_RESOURCE_CONSUMPTION_AND_ONE_USE_CURRENT_TURN_PROCEDURE_STATE"},
       "suspension": {
         "kind": "NONE",
         "retention": "NONE"
       },
-      "failures": [],
-      "bounds": [],
+      "failures": ["failure.hydration_required", "failure.missing_reference", "failure.catalog_context_incompatible", "failure.execution_limit", "failure.action_economy_scope_invalid"],
+      "bounds": ["one_entitlement", "current_turn_only", "next_eligible_activation_once"],
       "evidence": {
         "commit_disposition_owner": "EXECUTION_SEGMENT",
         "committed_fact_owner": "MECHANICAL_EVENT",
@@ -2562,6 +2613,7 @@
       "definition",
       "effect_definition",
       "temporal_owner",
+      "turn_action_economy",
       "world.actor",
       "world.asset",
       "world.effect",
@@ -2574,4 +2626,3 @@
     ]
   }
 }
-

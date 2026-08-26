@@ -6,7 +6,7 @@ Status: **CANONICAL S6D-06 OWNER**
 
 This document owns the exact compile-time and execution contract of every registered `op.*` Activity primitive. The machine companion is `DEV/CATALOG/activity-primitive-contracts.json`; its schema and primitive-local value shapes are in `DEV/SCHEMAS/activity-primitive-contracts.schema.json` and `DEV/SCHEMAS/activity-primitive-values.schema.json`.
 
-The registry contains exactly 31 closed quarantine dispositions. Current seed and admission evidence establish no executable consumer, so S6D-06 grants no primitive execution authority. The detailed rows are non-authoritative activation drafts until a later seed domain proves the exact consumer, owner-local semantics, failure closure, dependency admission and recovery contract.
+At S6D-06 closure the registry contained exactly 31 quarantine dispositions and granted no execution authority. S6D-07 replaces eleven of those dispositions after exact MVP seed consumers, owner-local semantics, failure closure, dependency admission and recovery boundaries are proven: `op.select_targets`, `op.roll`, `op.resolve_check`, `op.resolve_attack`, `op.resolve_save`, `op.apply_damage`, `op.apply_healing`, `op.consume_resource`, exact `op.create_effect`, exact action-entitlement `op.emit_fact`, and bounded compiler form `op.for_each_target`. Their catalog rows are now `COMPLETE / ACTIVE_ADMITTED`; the remaining 20 rows retain their S6D-06 quarantine.
 
 ## 2. Core laws
 
@@ -41,9 +41,12 @@ This does not give `StateDelta` a lifecycle. Candidate presence means proposed; 
 
 ## 6. Activation and admission
 
-S6D-06 closes the registered vocabulary by explicit quarantine; it activates no seed mechanics and certifies no executable contract as complete. `QUARANTINED` means the registered name has no execution authority and must be rejected. Later activation requires an exact S6D-07–09 seed consumer, owner-local subject/storage/failure semantics, active dependency closure, recovery fixtures and catalog admission evidence. The admission ledger's dormant disposition therefore remains authoritative.
+S6D-06 originally closed the registered vocabulary by explicit quarantine. `QUARANTINED` still means the registered name has no execution authority and must be rejected. A later domain may replace that row only with an exact seed consumer, owner-local subject/storage/failure semantics, active dependency closure, recovery fixtures, catalog admission evidence and whole-project review. S6D-07 is the first such replacement and is limited to the eleven `COMPLETE / ACTIVE_ADMITTED` rows named above; registration or a separate overlay cannot activate any other row.
+
+The `op.emit_fact` replacement is not a generic event/fact escape hatch. Its sole accepted variant emits one typed Action Surge entitlement into the current turn's procedure-state owner. The grant is atomic with the named resource decrement, is usable by the next eligible non-`activity.magic` activation exactly once, expires at that turn boundary, and is replay-safe by the enclosing Resolution idempotency key. The committed event is evidence; it does not become persistent Actor state or grant arbitrary turn-boundary authority.
+
+The `op.create_effect` replacement is equally narrow. It accepts only `effect.innate_sorcery` for the bound actor/source pair and its definition-owned one-minute `DurationSpec`. Effect state owns the stable `(target, source, definition)` instance key; reapplication atomically replaces that same instance; the causing commit pins the start and concrete temporal binding; the Temporal Agenda emits an idempotent expiry transition; recovery reconstructs from committed Effect evidence plus that binding. S6D-08 retains all generic Effect/Duration/recovery design authority.
 
 ## 7. Verification
 
 Focused tests prove registry equality, closed row shape, exact value routing, read allowlists, RNG exclusivity, suspension forms, compiler bounds, core transition/event/failure membership, execution ownership and rejection of dormant/unknown/ill-shaped steps. Whole-project review must additionally check Activity, Resolution, execution, persistence, chronology, catalog-admission and portable-value owners.
-
