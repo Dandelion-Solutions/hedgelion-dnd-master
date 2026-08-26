@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-08 COMPLETE / S6D-09 STEP 1 NEXT / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-08 COMPLETE / S6D-09 STEP 1 COMPLETE / STEP 2 NEXT / R2.7 PAUSED**
 
 Date: 2026-08-25
 
@@ -93,7 +93,7 @@ Operating rules:
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-08 COMPLETE / S6D-09 STEP 1 NEXT** | residual rules/seed/catalog debt |
+| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-08 COMPLETE / S6D-09 STEP 1 COMPLETE / STEP 2 NEXT** | residual rules/seed/catalog debt |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
 
 ---
@@ -113,7 +113,8 @@ R2.0..R2.6 COMPLETE
     -> S6D-06 Steps 1-8                            [COMPLETE / CRITIC PASS]
     -> S6D-07 Steps 1-8                            [COMPLETE / CRITIC PASS / CANONICAL]
     -> S6D-08 Steps 1-8                            [COMPLETE / SENIOR-AUDIT REPAIR PASS / CANONICAL]
-    -> S6D-09 Step 1                               [NEXT / NOT STARTED]
+    -> S6D-09 Step 1                               [COMPLETE / BRIEF-CRITIC PASS]
+    -> S6D-09 Steps 2-8                            [NEXT / NOT STARTED]
     -> ... remaining S6D domains full eight-step loops ...
     -> S6D integrated closure
     -> R2.7 WP-06 RESUME
@@ -122,7 +123,7 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-08 Steps 1–8 are complete; the senior-audit HOLD repair passed independent whole-project re-review at 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR and is canonical. S6D-09 Step 1 is next and has not started.
+**Current stop.** S6D-09 Step 1 is complete with whole-project brief-critic PASS at 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR. S6D-09 Step 2 is next and has not started.
 
 ---
 
@@ -188,7 +189,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-08 complete / S6D-09 Step 1 next
+## 7. S6D — S6D-08 complete / S6D-09 Step 1 complete / Step 2 next
 
 S6D decomposition/evidence inputs remain:
 
@@ -196,7 +197,7 @@ S6D decomposition/evidence inputs remain:
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
-The plan is a decomposition/coverage index only. S6D-01 through S6D-08 are canonically closed by their named architecture owners. S6D-06 established the fail-closed activation law; S6D-07 replaced eleven exact rows with reviewed `COMPLETE / ACTIVE_ADMITTED` contracts and leaves twenty quarantined. S6D-08 closes Actor HP/LifeState, bounded Resource/Effect/Condition/Duration/Recovery contracts and the exact identity-bound health/effects/recovery seed without adding a scheduler or activating further primitives. Production runtime execution and behavioral fast-start proof remain deferred. S6D-09 Step 1 is next and has not started.
+The plan is a decomposition/coverage index only. S6D-01 through S6D-08 are canonically closed by their named architecture owners. S6D-06 established the fail-closed activation law; S6D-07 replaced eleven exact rows with reviewed `COMPLETE / ACTIVE_ADMITTED` contracts and leaves twenty quarantined. S6D-08 closes Actor HP/LifeState, bounded Resource/Effect/Condition/Duration/Recovery contracts and the exact identity-bound health/effects/recovery seed without adding a scheduler or activating further primitives. Production runtime execution and behavioral fast-start proof remain deferred. S6D-09 Step 1 is complete with brief-critic PASS; Step 2 is next and has not started.
 
 ---
 
@@ -223,12 +224,12 @@ HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
 S6D: IN PROGRESS
 S6D_COMPLETED_DOMAIN: S6D-08 / STEPS 1-8 / ARCHITECTURE CLOSED
 S6D_NEXT_DOMAIN: S6D-09
-S6D_ACTIVE_DOMAIN: NONE
-S6D_COMPLETED_STAGE: S6D-08 STEP 8 / SENIOR-AUDIT REPAIR CANONICALIZATION / CRITIC PASS
+S6D_ACTIVE_DOMAIN: S6D-09
+S6D_COMPLETED_STAGE: S6D-09 STEP 1 / ARCHITECTURE TASK BRIEF / BRIEF-CRITIC PASS
 S6D_ACTIVE_STAGE: NONE
-S6D_NEXT_STAGE: S6D-09 STEP 1 / ARCHITECTURE TASK BRIEF
+S6D_NEXT_STAGE: S6D-09 STEP 2 / RESEARCH & ARCHITECTURE DRAFT
 R2_7_WP06: PAUSED
 ```
 
-Next action is S6D-09 Step 1. Do not begin S6D-09 as part of S6D-08 closure.
+Next action is S6D-09 Step 2 after human review of the published Step-1 brief. Do not begin Step 2 as part of Step-1 publication.
 
