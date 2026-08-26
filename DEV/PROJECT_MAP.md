@@ -280,6 +280,8 @@ is the only consumer.
 - `research/2026-08-25-s6d-05-activity-parameters-targeting-costs-portable-values-research-architecture-draft.md` and matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-05 Steps 2–8 evidence chain; final whole-project critic PASS.
 - `DEV/CATALOG/portable-value-routes.json` and `portable-value-contracts.json` — exact 19-value embedding/disposition routing and catalog-aware portable-value vocabularies.
 - `DEV/TESTS/test_s6d_05_portable_value_contract.py` — transitive schema closure, binding compatibility, targeting/cost/duration, retry/currentness and no-lifecycle verification.
+- `specs/2026-08-26-s6d-06-registered-activity-primitive-contracts-task-brief.md` — S6D-06 Step-1 framing for exact per-`op.*` arguments/results/reads/mutations/RNG/bindings/exports/atomicity/failure/suspension contracts and active/dormant/removal accounting.
+- `specs/2026-08-26-s6d-06-registered-activity-primitive-contracts-brief-critic.md` — mandatory whole-project Step-1 critique; exact S6D/domain/Step-3/5/House-Rules/test/readiness routes repaired, final PASS.
 - `DEV/TESTS/test_s6d_03_selector_metadata_contract.py` — exact 34/26 accounting, active/dormant equality, metadata/policy/input/dependency verification.
 - `research/2026-08-25-s6d-02-catalog-admission-gap-closure-research-architecture-draft.md` and the matching decision/collaborative/candidate/adversarial/resolution/canonicalization specs — S6D-02 Steps 2–8 evidence chain.
 - `DEV/TESTS/test_s6d_02_catalog_admission_contract.py` — exact ledger/core equality, legal state and package-plan boundary checks.
