@@ -14,23 +14,23 @@
     },
     "procedureMovement": {
       "type": "object", "additionalProperties": false,
-      "required": ["transition_kind", "profile_id", "idempotency_key", "catalog_generation", "procedure_id", "procedure_revision", "actor_id", "actor_revision", "destination_location_id", "movement_cost"],
+      "required": ["transition_kind", "profile_id", "idempotency_key", "catalog_generation", "procedure_id", "procedure_revision", "actor_id", "actor_revision", "destination_location_id", "destination_location_revision", "movement_cost"],
       "properties": {
         "transition_kind": {"const": "transition.location_change"}, "profile_id": {"const": "location_change.procedure_movement"},
         "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"},
         "procedure_id": {"$ref": "#/$defs/id"}, "procedure_revision": {"$ref": "#/$defs/revision"},
         "actor_id": {"$ref": "#/$defs/id"}, "actor_revision": {"$ref": "#/$defs/revision"},
-        "destination_location_id": {"$ref": "#/$defs/id"}, "movement_cost": {"type": "integer", "minimum": 0}
+        "destination_location_id": {"$ref": "#/$defs/id"}, "destination_location_revision": {"$ref": "#/$defs/revision"}, "movement_cost": {"type": "integer", "minimum": 0}
       }
     },
     "outsideProcedureMovement": {
       "type": "object", "additionalProperties": false,
-      "required": ["transition_kind", "profile_id", "idempotency_key", "catalog_generation", "actor_id", "actor_revision", "destination_location_id", "movement_cost"],
+      "required": ["transition_kind", "profile_id", "idempotency_key", "catalog_generation", "actor_id", "actor_revision", "destination_location_id", "destination_location_revision", "movement_cost"],
       "properties": {
         "transition_kind": {"const": "transition.location_change"}, "profile_id": {"const": "location_change.outside_procedure"},
         "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"},
         "actor_id": {"$ref": "#/$defs/id"}, "actor_revision": {"$ref": "#/$defs/revision"},
-        "destination_location_id": {"$ref": "#/$defs/id"}, "movement_cost": {"const": "NOT_APPLICABLE_OUTSIDE_PROCEDURE"}
+        "destination_location_id": {"$ref": "#/$defs/id"}, "destination_location_revision": {"$ref": "#/$defs/revision"}, "movement_cost": {"const": "NOT_APPLICABLE_OUTSIDE_PROCEDURE"}
       }
     },
     "placement": {
@@ -70,3 +70,4 @@
     }
   }
 }
+
