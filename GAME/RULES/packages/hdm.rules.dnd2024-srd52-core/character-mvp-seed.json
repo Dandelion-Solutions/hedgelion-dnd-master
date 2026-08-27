@@ -434,11 +434,15 @@
       "kind": "definition.activity",
       "data": {
         "family_id": "activity.attack",
+        "targeting": {"kind_id": "target.entity", "minimum": 1, "maximum": 1, "range": {"mode_id": "range.distance", "distance": 80, "unit_id": "unit.foot"}},
         "steps": [
           {
             "op": "op.select_targets",
             "args": {
-              "target_spec": "parameter.targets"
+              "target_spec": "activity.targeting",
+              "source_role": "actor",
+              "candidate_roles": "invocation.candidate_roles",
+              "applicability_facts": "invocation.fiction.target_reachable"
             }
           },
           {
@@ -597,11 +601,15 @@
       "kind": "definition.activity",
       "data": {
         "family_id": "activity.spell_attack",
+        "targeting": {"kind_id": "target.entity", "minimum": 1, "maximum": 1, "range": {"mode_id": "range.distance", "distance": 120, "unit_id": "unit.foot"}},
         "steps": [
           {
             "op": "op.select_targets",
             "args": {
-              "target_spec": "compiled.target"
+              "target_spec": "activity.targeting",
+              "source_role": "actor",
+              "candidate_roles": "invocation.candidate_roles",
+              "applicability_facts": "invocation.fiction.target_reachable"
             }
           },
           {
@@ -632,8 +640,9 @@
       "kind": "definition.activity",
       "data": {
         "family_id": "activity.spell_save",
+        "targeting": {"kind_id": "target.entity", "minimum": 1, "maximum": 1, "range": {"mode_id": "range.distance", "distance": 30, "unit_id": "unit.foot"}},
         "steps": [
-          {"op": "op.select_targets", "args": {"target_spec": "compiled.target"}, "export": "targets"},
+          {"op": "op.select_targets", "args": {"target_spec": "activity.targeting", "source_role": "actor", "candidate_roles": "invocation.candidate_roles", "applicability_facts": "invocation.fiction.target_reachable"}, "export": "targets"},
           {"op": "op.roll", "args": {"request": "compiled.constitution_save"}, "export": "save_roll"},
           {"op": "op.resolve_save", "args": {"roll": "save_roll.result", "threshold": "selector.spell.dc"}, "export": "save"},
           {"op": "op.apply_damage", "args": {"target_role": "target", "components": "compiled.poison_damage"}, "when": {"result": "save.outcome", "in": ["failure"]}}
@@ -645,9 +654,10 @@
       "kind": "definition.activity",
       "data": {
         "family_id": "activity.spell_save",
+        "targeting": {"kind_id": "target.entities", "minimum": 0, "maximum": 16, "range": {"mode_id": "range.self"}, "area": {"shape_id": "area.emanation", "unit_id": "unit.foot", "dimensions": {"radius": 5}}},
         "details": {"target_iteration": "ORDERED_BOUNDED_PER_TARGET", "save_damage_policy": "NONE_ON_SUCCESS"},
         "steps": [
-          {"op": "op.select_targets", "args": {"target_spec": "compiled.emanation_targets"}, "export": "targets"},
+          {"op": "op.select_targets", "args": {"target_spec": "activity.targeting", "source_role": "actor", "candidate_roles": "invocation.candidate_roles", "applicability_facts": "invocation.fiction.target_reachable"}, "export": "targets"},
           {"op": "op.for_each_target", "args": {"targets": "targets", "steps": [
             {"op": "op.roll", "args": {"request": "compiled.constitution_save:$target"}, "export": "save_roll"},
             {"op": "op.resolve_save", "args": {"roll": "save_roll.result", "threshold": "selector.spell.dc"}, "export": "save"},
@@ -661,9 +671,10 @@
       "kind": "definition.activity",
       "data": {
         "family_id": "activity.spell_save",
+        "targeting": {"kind_id": "target.entities", "minimum": 0, "maximum": 16, "range": {"mode_id": "range.distance", "distance": 60, "unit_id": "unit.foot"}, "area": {"shape_id": "area.sphere", "unit_id": "unit.foot", "dimensions": {"radius": 5}}},
         "details": {"target_iteration": "ORDERED_BOUNDED_PER_TARGET", "save_damage_policy": "NONE_ON_SUCCESS"},
         "steps": [
-          {"op": "op.select_targets", "args": {"target_spec": "compiled.target"}, "export": "targets"},
+          {"op": "op.select_targets", "args": {"target_spec": "activity.targeting", "source_role": "actor", "candidate_roles": "invocation.candidate_roles", "applicability_facts": "invocation.fiction.target_reachable"}, "export": "targets"},
           {"op": "op.for_each_target", "args": {"targets": "targets", "steps": [
             {"op": "op.roll", "args": {"request": "compiled.dexterity_save:$target"}, "export": "save_roll"},
             {"op": "op.resolve_save", "args": {"roll": "save_roll.result", "threshold": "selector.spell.dc"}, "export": "save"},
@@ -677,6 +688,7 @@
       "kind": "definition.activity",
       "data": {
         "family_id": "activity.spell_damage",
+        "targeting": {"kind_id": "target.entities", "minimum": 3, "maximum": 3, "range": {"mode_id": "range.distance", "distance": 120, "unit_id": "unit.foot"}},
         "details": {"target_iteration": "ORDERED_BOUNDED_DART_BINDINGS", "hit_policy": "AUTOMATIC", "duplicate_target_roles": "ALLOWED_PER_DART"},
         "steps": [
           {
@@ -687,7 +699,7 @@
               "amount": 1
             }
           },
-          {"op": "op.select_targets", "args": {"target_spec": "compiled.dart_target_bindings"}, "export": "dart_targets"},
+          {"op": "op.select_targets", "args": {"target_spec": "activity.targeting", "source_role": "actor", "candidate_roles": "invocation.candidate_roles", "applicability_facts": "invocation.fiction.target_reachable"}, "export": "dart_targets"},
           {"op": "op.for_each_target", "args": {"targets": "dart_targets", "steps": [
             {"op": "op.apply_damage", "args": {"target_role": "$target", "components": "compiled.one_dart_force_damage"}}
           ]}, "export": "dart_results"}
@@ -699,6 +711,7 @@
       "kind": "definition.activity",
       "data": {
         "family_id": "activity.spell_save",
+        "targeting": {"kind_id": "target.entities", "minimum": 0, "maximum": 16, "range": {"mode_id": "range.self"}, "area": {"shape_id": "area.cone", "unit_id": "unit.foot", "dimensions": {"length": 15}}},
         "details": {"target_iteration": "ORDERED_BOUNDED_PER_TARGET", "save_damage_policy": "HALF_ON_SUCCESS_FLOOR_MIN_ZERO"},
         "steps": [
           {
@@ -709,7 +722,7 @@
               "amount": 1
             }
           },
-          {"op": "op.select_targets", "args": {"target_spec": "compiled.cone"}, "export": "targets"},
+          {"op": "op.select_targets", "args": {"target_spec": "activity.targeting", "source_role": "actor", "candidate_roles": "invocation.candidate_roles", "applicability_facts": "invocation.fiction.target_reachable"}, "export": "targets"},
           {"op": "op.for_each_target", "args": {"targets": "targets", "steps": [
             {"op": "op.roll", "args": {"request": "compiled.dexterity_save:$target"}, "export": "save_roll"},
             {"op": "op.resolve_save", "args": {"roll": "save_roll.result", "threshold": "selector.spell.dc"}, "export": "save"},
