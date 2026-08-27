@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-09 COMPLETE / S6D-10 STEP 1 NEXT / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-09 COMPLETE / S6D-09 SENIOR-AUDIT SPATIAL REPAIR PASS / S6D-10 STEP 1 NEXT / R2.7 PAUSED**
 
 Date: 2026-08-25
 
@@ -116,7 +116,7 @@ R2.0..R2.6 COMPLETE
     -> S6D-09 Step 1                               [COMPLETE / SENIOR-AUDIT REPAIR / BRIEF-CRITIC PASS]
     -> S6D-09 Step 2                               [COMPLETE / PRODUCT-SCOPE CONFLICT FOUND]
     -> S6D-09 Step 3                               [COMPLETE / DECISION C — MINIMAL PLAYABLE GAMEPLAY SPINE]
-    -> S6D-09 Steps 4-8                            [COMPLETE / CRITIC PASS / CANONICAL]
+    -> S6D-09 Steps 4-8                            [COMPLETE / SENIOR-AUDIT SPATIAL REPAIR PASS / CANONICAL]
     -> S6D-10 Step 1                               [NEXT / NOT STARTED]
     -> ... remaining S6D domains full eight-step loops ...
     -> S6D integrated closure
@@ -126,7 +126,7 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-09 Steps 1–8 are complete and canonical after Decision C and whole-project critic PASS. The bounded package now has a minimal playable gameplay spine with exact product/package/machine coverage, without broad-corpus promises or dormant primitive activation. S6D-10 Step 1 is next and has not started.
+**Current stop.** S6D-09 Steps 1–8 are complete and canonical after Decision C and whole-project critic PASS. The bounded package now has a minimal playable gameplay spine with exact product/package/machine coverage. Senior-audit spatial repair separates Procedure movement from target applicability, validates current canonical destination locations and activates only seven exact `fiction.target_reachable` consumers, without broad-corpus promises or dormant primitive activation. S6D-10 Step 1 is next and has not started.
 
 ---
 
@@ -200,7 +200,7 @@ S6D decomposition/evidence inputs remain:
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
-The plan is a decomposition/coverage index only. S6D-01 through S6D-09 are canonically closed by their named architecture owners. S6D-09 reconciles exact package closure, active machine consumers and atomic product promises through Decision C: generic check/save, minimal Procedure and movement, bounded spatial inputs, significant Asset transitions, domain lowering and the exact S6D-07/08 routes. No dormant primitive was activated. Production runtime execution and behavioral playability proof remain deferred to implementation acceptance.
+The plan is a decomposition/coverage index only. S6D-01 through S6D-09 are canonically closed by their named architecture owners. S6D-09 reconciles exact package closure, active machine consumers and atomic product promises through Decision C and its Senior-audit spatial repair: generic check/save, minimal Procedure and movement, exact bounded spatial applicability, current canonical durable-location transitions, significant Asset transitions, domain lowering and the exact S6D-07/08 routes. No dormant primitive was activated. Production runtime execution and behavioral playability proof remain deferred to implementation acceptance.
 
 ---
 
@@ -228,7 +228,7 @@ S6D: IN PROGRESS
 S6D_COMPLETED_DOMAIN: S6D-09 / STEPS 1-8 / ARCHITECTURE CLOSED
 S6D_NEXT_DOMAIN: S6D-10
 S6D_ACTIVE_DOMAIN: NONE
-S6D_COMPLETED_STAGE: S6D-09 STEP 8 / CANONICALIZATION
+S6D_COMPLETED_STAGE: S6D-09 STEP 8 / SENIOR-AUDIT SPATIAL REPAIR CANONICALIZATION
 S6D_ACTIVE_STAGE: NONE
 S6D_NEXT_STAGE: S6D-10 STEP 1 / ARCHITECTURE TASK BRIEF
 R2_7_WP06: PAUSED
