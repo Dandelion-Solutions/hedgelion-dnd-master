@@ -151,6 +151,8 @@ The loader validates the relation; it is not inferred from names.
 | `world.actor_group` | `name` | `member_ids`, `leader_id`, `location_id`, `purpose` | forbidden |
 | `world.asset` | — | `owner_actor_id`, `container_asset_id`, `location_id`, `quantity`, `equipment`, `attuned_actor_id`, `resources`, `durability`, `access` | optional `definition.asset` |
 | `world.location` | `name` | `parent_location_id`, `organization_id`, `environment_ids`, `status` | optional `definition.location_archetype` |
+
+`world.actor.state.location_id` names a durable canonical `world.location`, not a tactical micro-position. A durable location transition must validate the destination record's ID, `world.location` kind, canonical minimum state and pinned current revision before changing the Actor reference. Within-location relations such as behind a pillar, near a door or beside a table remain fiction (plus any owning Procedure budget spend); they do not require or authorize fake location records. When one exact supported Activity needs a fiction-dependent spatial applicability judgment, it consumes the S6D-04 invocation-fact boundary rather than overloading entity state.
 | `world.connection` | `from_location_id`, `to_location_id` | `direction`, `traversal_activity_id`, `status`, `requirements` | forbidden |
 | `world.zone` | `location_id`, `name` | `participant_ids`, `effect_ids`, `geometry`, `status` | forbidden |
 | `world.organization` | `name` | `member_ids`, `leader_ids`, `location_ids`, `resources`, `status` | optional `definition.organization_archetype` |
