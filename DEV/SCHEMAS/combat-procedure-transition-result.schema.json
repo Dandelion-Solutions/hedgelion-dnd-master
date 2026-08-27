@@ -13,7 +13,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["profile_id", "idempotency_key", "status", "prospective_mutations", "execution_segment", "event_ids", "receipt_ref"],
       "properties": {
-        "profile_id": {"enum": ["procedure.initialize", "procedure.start_turn", "procedure.spend_action", "procedure.end_turn", "procedure.advance_round", "procedure.terminate"]}, "idempotency_key": {"$ref": "#/$defs/id"}, "status": {"const": "COMPLETED"},
+        "profile_id": {"enum": ["procedure.initialize", "procedure.start_turn", "procedure.spend_action", "procedure.spend_movement", "procedure.end_turn", "procedure.advance_round", "procedure.terminate"]}, "idempotency_key": {"$ref": "#/$defs/id"}, "status": {"const": "COMPLETED"},
         "prospective_mutations": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/mutation"}},
         "execution_segment": {"type": "object", "additionalProperties": false, "required": ["segment_sequence", "commit_state", "resulting_execution_state", "affected_revision_refs", "event_ids"], "properties": {"segment_sequence": {"const": 1}, "commit_state": {"const": "committed"}, "resulting_execution_state": {"const": "COMPLETED"}, "affected_revision_refs": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/id"}}, "event_ids": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/id"}}}},
         "event_ids": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/id"}}, "receipt_ref": {"$ref": "#/$defs/id"}
@@ -26,3 +26,4 @@
     }
   }
 }
+
