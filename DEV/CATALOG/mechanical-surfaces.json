@@ -18,7 +18,7 @@
       "optional_boundary_context": "ONLY_WHEN_INVOCATION_ARISES_FROM_BOUNDARY"
     },
     "fiction.target_reachable": {
-      "disposition": "DORMANT_RESERVED",
+      "disposition": "ACTIVE_ADMITTED",
       "source_class": "INVOCATION_ADJUDICATED",
       "value_type": "boolean",
       "producer": "HOST_LLM_BOUNDARY",
@@ -26,10 +26,18 @@
       "occurrence_scope": "ACTIVITY_RESOLUTION_GENERATION",
       "provenance_policy": "STABLE_REF_AND_FINGERPRINT_REQUIRED",
       "missing_policy": "TYPED_MISSING_INPUT",
-      "permitted_consumer_ids": [],
+      "permitted_consumer_ids": [
+        "activity.attack.ranged_weapon",
+        "activity.spell.fire_bolt",
+        "activity.spell.poison_spray",
+        "activity.spell.thunderclap",
+        "activity.spell.acid_splash",
+        "activity.spell.magic_missile",
+        "activity.spell.burning_hands"
+      ],
       "retention_policy": "FIXED_CAUSAL_INPUT_WHILE_ACCEPTED_WORK_LIVE",
       "portable_realization_owner": "DEV/SCHEMAS/invocation-fact.schema.json",
-      "activation_trigger": "S6D-07_TO_09_EXACT_COMPILED_CONSUMER",
+      "activation_trigger": "SATISFIED_BY_S6D_09_EXACT_SPATIAL_CONSUMERS",
       "binding_policy": "EXACT_COMPILED_CONSUMER_ROLES",
       "optional_boundary_context": "ONLY_WHEN_INVOCATION_ARISES_FROM_BOUNDARY"
     }
@@ -719,3 +727,4 @@
     "structural_schema_policy": "SHAPE_ONLY_NOT_EXECUTION_AUTHORITY"
   }
 }
+
