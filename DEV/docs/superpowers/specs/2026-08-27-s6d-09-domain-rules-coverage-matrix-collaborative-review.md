@@ -26,6 +26,8 @@ Ordinary movement lowers to a typed direct TransitionRequest validated against t
 
 Existing TargetSpec/AreaSpec and Activity parameter bindings are sufficient for exact supported Activities. Engine-known Actor/Scene/Zone/location/target state remains engine-owned. The current MVP spatial profile is deliberately engine-bound only. It does not consume or activate dormant `fiction.target_visible`, `fiction.target_reachable` or equivalent adjudicated spatial facts. A future exact consumer must first amend the S6D-04 owner; S6D-09 cannot create that authority indirectly.
 
+**Superseded spatial detail after Senior audit.** The engine-bound-only/dormant-reachability conclusion above is replaced by the narrow S6D-09 repair: `fiction.target_reachable` is active only for seven named existing `op.select_targets` consumers and is fixed per consumer/source/TargetSpec/AreaSpec/candidate/provenance/pinned-rules-context binding. It is not world truth and has no lifecycle. `fiction.target_visible` remains dormant. Durable Actor location changes require a current canonical `world.location`; within-location repositioning spends Procedure movement without an Actor-location mutation or fake location. The repair creates neither a geometry/query engine nor new primitive authority.
+
 ### Asset ownership/equip/use/transfer
 
 `world.asset` already owns `owner_actor_id`, exclusive location/container placement and equipment mode. Basic reward transfer, equip/unequip and use lower to closed typed direct transitions against that owner. No inventory aggregate, currency ledger or generic economy service is created.
@@ -100,3 +102,4 @@ This walkthrough uses one small spine across social, exploration/hazard, movemen
 - Outside-scope families remain absent/nonselectable with explicit revisit triggers.
 
 No further human decision is required for the candidate.
+
