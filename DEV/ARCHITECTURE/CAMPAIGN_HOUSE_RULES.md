@@ -1,6 +1,6 @@
 # Campaign House Rules and Rulings
 
-Status: **CANONICAL ARCHITECTURE — REOPENED HOUSE-RULES DESIGN CLOSED / S6D NOT STARTED**
+Status: **CANONICAL ARCHITECTURE — HOUSE-RULES DESIGN CLOSED / S6D-10 INTEGRATION COMPLETE**
 
 Date: 2026-08-25
 
@@ -392,4 +392,10 @@ The repaired House-Rules architecture closes the Senior-audit blockers:
 
 House Rules is therefore architecturally closed.
 
-**S6D is next in the owner-approved sequence but is NOT started by this canonicalization. R2.7 WP-06 remains paused.**
+**S6D-10 integration is complete. R2.7 WP-06 remains paused.**
+
+# 19. S6D-10 exact mechanical integration
+
+Durable policy materially used by an accepted richer binding or invocation fact is retained as a unique lexicographically sorted `policy_id@exact_campaign_revision` reference. Locator shape alone proves nothing: before Resolution construction the existing campaign publication/history resolver must prove the exact revision, paired sidecar/normative anchor, authority and applicability. One-off adjudication uses an empty array.
+
+The exact integration owner is `HOUSE_RULES_MECHANICAL_BOUNDARY.md`. The built-in package remains an identity-bound candidate blocked until S6D-11. The current built-in realization set is empty; conformance fixtures are nonselectable and never execute their targets.
