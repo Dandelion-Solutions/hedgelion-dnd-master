@@ -4,7 +4,7 @@ from pathlib import Path
 
 POLICY_BASIS_REF=re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*@[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 MACHINE_ID=re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
-TOP_KEYS={"schema_version","selected_package_capabilities_path","selected_package_identity","active_adjudicated_consumers","current_supported_policy_realizations","conformance_only_policy_realizations"}
+TOP_KEYS={"schema_version","identity_bound_package_capabilities_path","identity_bound_package_candidate","route_profiles","active_adjudicated_consumers","current_supported_policy_realizations","conformance_only_policy_realizations"}
 COMMON={"edge_key","input_kind","consumer_id","input_id","value_type","source_class","policy_basis_mode"}
 PARAM_KEYS=COMMON|{"cardinality","required","minimum","maximum"}
 FACT_KEYS=COMMON|{"disposition"}
@@ -25,11 +25,22 @@ def validate_policy_basis_resolution(ref,evidence):
     if evidence["authority_validated"] is not True or evidence["applicable"] is not True: raise ValueError("policy revision is not accepted and applicable")
     return True
 
+def validate_policy_basis_refs(refs):
+    if not isinstance(refs,list) or len(refs)!=len(set(refs)) or refs!=sorted(refs): raise ValueError("policy_basis_refs must be unique lexicographically sorted refs")
+    for ref in refs:
+        if not POLICY_BASIS_REF.fullmatch(ref): raise ValueError("invalid exact policy basis ref")
+    return True
+
 def validate_shape(c):
     if set(c)!=TOP_KEYS: raise ValueError(f"unknown contract members or missing required members: {sorted(set(c)^TOP_KEYS)}")
     if c["schema_version"]!=1: raise ValueError("unsupported contract schema_version")
-    identity=c["selected_package_identity"]; ik={"package_id","package_version","catalog_generation","content_set_sha256"}
-    if not isinstance(identity,dict) or set(identity)!=ik or not all(isinstance(identity[k],str) and identity[k] for k in ik) or not re.fullmatch(r"[a-f0-9]{64}",identity["content_set_sha256"]): raise ValueError("invalid selected package identity")
+    if c["identity_bound_package_capabilities_path"]!="GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json": raise ValueError("invalid identity-bound package capabilities path")
+    identity=c["identity_bound_package_candidate"]; ik={"package_id","package_version","catalog_generation","content_set_sha256","runtime_selection_state"}
+    if not isinstance(identity,dict) or set(identity)!=ik or not all(isinstance(identity[k],str) and identity[k] for k in ik) or not re.fullmatch(r"[a-f0-9]{64}",identity["content_set_sha256"]) or identity["runtime_selection_state"]!="BLOCKED_UNTIL_S6D_11": raise ValueError("invalid identity-bound package candidate")
+    if (identity["package_id"],identity["package_version"],identity["catalog_generation"]) != ("hdm.rules.dnd2024-srd52-core","0.1.0-mvp","2.0.0"): raise ValueError("unexpected identity-bound package candidate")
+    route_keys={"policy_revision_and_lifecycle","authority_and_eligibility","consumer_and_value_contract","provenance_and_freeze","catalog_and_native_validation","rng_and_mutation","execution_and_failure","retry_recovery_and_publication","proof_ids","revisit_trigger"}
+    profiles=c["route_profiles"]
+    if not isinstance(profiles,dict) or set(profiles)!={"route.adjudicated_parameter_to_mechanics","route.invocation_fact_to_mechanics","route.policy_realization_link_conformance"} or any(set(v)!=route_keys for v in profiles.values()): raise ValueError("invalid route profile matrix")
     rows=c["active_adjudicated_consumers"]
     if not isinstance(rows,list) or not rows: raise ValueError("active adjudicated consumer rows required")
     for row in rows:
@@ -46,18 +57,22 @@ def validate_shape(c):
     if not isinstance(fixtures,list) or not fixtures: raise ValueError("conformance fixtures required")
     for f in fixtures:
         keys={"fixture_id","policy_basis_ref","target_class","realization_refs","expected"}
-        if not isinstance(f,dict) or set(f)!=keys: raise ValueError("invalid conformance fixture shape")
+        if not isinstance(f,dict) or set(f)!=keys or not MACHINE_ID.fullmatch(f.get("fixture_id","")) or not all(MACHINE_ID.fullmatch(x) for x in f.get("realization_refs",[])): raise ValueError("invalid conformance fixture shape")
         if f["target_class"] not in {"PACKAGE_DEFINITION","PRIMITIVE"} or f["expected"] not in {"CONFORMANCE_VALID_LINK_ONLY","failure.policy_realization_gap"}: raise ValueError("invalid conformance fixture enum")
         if not POLICY_BASIS_REF.fullmatch(f["policy_basis_ref"]): raise ValueError(f"invalid exact policy basis ref: {f['fixture_id']}")
         if not f["realization_refs"] or len(set(f["realization_refs"]))!=len(f["realization_refs"]): raise ValueError("invalid realization reference collection")
+    parameter_edges={r["edge_key"] for r in rows if r["input_kind"]=="ACTIVITY_PARAMETER"}; fact_edges={r["edge_key"] for r in rows if r["input_kind"]=="INVOCATION_FACT"}
+    if set(profiles["route.adjudicated_parameter_to_mechanics"]["proof_ids"])!=parameter_edges or set(profiles["route.invocation_fact_to_mechanics"]["proof_ids"])!=fact_edges or set(profiles["route.policy_realization_link_conformance"]["proof_ids"])!={f["fixture_id"] for f in fixtures}: raise ValueError("route profile proof coverage mismatch")
 
 def parse_empty_template(root):
     lines=[x for x in (root/"GAME/CAMPAIGN/RULES/HOUSE_RULES.yaml").read_text(encoding="utf-8").splitlines() if x.strip().startswith("policies:")]
     if len(lines)!=1 or not re.fullmatch(r"\s*policies:\s*\[\s*\]\s*",lines[0]): raise ValueError("engine campaign template must contain exactly one empty policies collection")
 
 def package_rows(root,c):
-    cap=load(root,c["selected_package_capabilities_path"]); package_dir=(root/c["selected_package_capabilities_path"]).parent
-    for k,v in c["selected_package_identity"].items():
+    cap_path=c["identity_bound_package_capabilities_path"]
+    cap=load(root,cap_path); package_dir=(root/cap_path).parent
+    for k,v in c["identity_bound_package_candidate"].items():
+        if k=="runtime_selection_state": continue
         if cap.get(k)!=v: raise ValueError(f"selected package identity mismatch: {k}")
     definitions={}; rows=[]; paths=set()
     for member in cap["content_files"]:
