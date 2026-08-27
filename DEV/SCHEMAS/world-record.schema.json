@@ -28,6 +28,10 @@
       "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-asset-state.schema.json"}}}
     },
     {
+      "if": {"required": ["kind"], "properties": {"kind": {"const": "world.location"}}},
+      "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-location-state.schema.json"}}}
+    },
+    {
       "if": {"required": ["kind"], "properties": {"kind": {"const": "world.effect"}}},
       "then": {
         "required": ["definition_id"],
@@ -43,3 +47,4 @@
     }
   }
 }
+
