@@ -1,8 +1,8 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-10 COMPLETE / S6D-11 STEP 1 NEXT / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-10 COMPLETE / S6D-11 STEP 1 COMPLETE / STEP 2 NEXT / R2.7 PAUSED**
 
-Date: 2026-08-25
+Date: 2026-08-28
 
 This file is the sequencing/status authority for Architecture Round 2 and inserted pre-resume architecture workstreams. Detailed semantics remain in owning specifications.
 
@@ -93,7 +93,7 @@ Operating rules:
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-10 COMPLETE / S6D-11 STEP 1 NEXT** | residual rules/seed/catalog debt |
+| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-10 COMPLETE / S6D-11 STEP 1 COMPLETE / STEP 2 NEXT** | residual rules/seed/catalog debt |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
 
 ---
@@ -119,7 +119,8 @@ R2.0..R2.6 COMPLETE
     -> S6D-09 Steps 4-8                            [COMPLETE / SENIOR-AUDIT SPATIAL REPAIR PASS / CANONICAL]
     -> S6D-10 Step 1                               [COMPLETE / BRIEF-CRITIC PASS]
     -> S6D-10 Steps 2-8                            [COMPLETE / WHOLE-PROJECT CRITIC PASS / CANONICAL]
-    -> S6D-11 Step 1                               [NEXT / NOT STARTED]
+    -> S6D-11 Step 1                               [COMPLETE / BRIEF-CRITIC PASS]
+    -> S6D-11 Step 2                               [NEXT / NOT STARTED]
     -> ... remaining S6D domains full eight-step loops ...
     -> S6D integrated closure
     -> R2.7 WP-06 RESUME
@@ -128,7 +129,7 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-01 through S6D-10 are complete. S6D-10 canonically integrates one-off and durable-policy-guided adjudication through exactly two parameter and seven fact edges, with exact historical policy refs, zero current built-in realizations, three nonselectable conformance fixtures and final whole-project critic PASS at 0/0/0. The identity-bound built-in package remains blocked until S6D-11. S6D-11 Step 1 is next and has not started.
+**Current stop.** S6D-01 through S6D-10 are complete. S6D-11 Step 1 is complete with whole-project brief-critic PASS at 0/0/0. The brief frames exact non-self-referential manifest/lock/builder/loader realization, ResolvedCatalogContext reconstruction, finite S6D-01…10 machine/test equality, closed typed load failures and honest package activation. The identity-bound built-in package remains blocked: S6D-11 Step 2 is next and has not started.
 
 ---
 
@@ -194,7 +195,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-10 complete / S6D-11 Step 1 next
+## 7. S6D — S6D-11 Step 1 complete / Step 2 next
 
 S6D decomposition/evidence inputs remain:
 
@@ -202,9 +203,11 @@ S6D decomposition/evidence inputs remain:
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
-The plan is a decomposition/coverage index only. S6D-01 through S6D-09 are canonically closed by their named architecture owners. S6D-09 reconciles exact package closure, active machine consumers and atomic product promises through Decision C and its Senior-audit spatial repair: generic check/save, minimal Procedure and movement, exact bounded spatial applicability, current canonical durable-location transitions, significant Asset transitions, domain lowering and the exact S6D-07/08 routes. No dormant primitive was activated. Production runtime execution and behavioral playability proof remain deferred to implementation acceptance.
+The plan is a decomposition/coverage index only. S6D-01 through S6D-10 are canonically closed by their named architecture owners. S6D-09 reconciles exact package closure, active machine consumers and atomic product promises through Decision C and its Senior-audit spatial repair: generic check/save, minimal Procedure and movement, exact bounded spatial applicability, current canonical durable-location transitions, significant Asset transitions, domain lowering and the exact S6D-07/08 routes. No dormant primitive was activated. Production runtime execution and behavioral playability proof remain deferred to implementation acceptance.
 
-S6D-10 Step 1 is closed by `DEV/docs/superpowers/specs/2026-08-27-s6d-10-campaign-rulings-house-rule-boundary-integration-task-brief.md` and its matching brief-critic. The brief requires a finite bidirectional proof for active typed adjudication and current supported policy-realization edges, separates conformance-only fixtures, follows the later S6D-09 spatial supersession chain, and stops before Step 2.
+S6D-10 Steps 1–8 are closed by `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md` and the complete task/critic/research/decision/collaborative/candidate/adversarial/resolution/canonicalization chain. The canonical result proves the finite active adjudication/policy-basis integration, preserves conformance-only nonselectable fixtures and follows the later S6D-09 spatial supersession chain.
+
+S6D-11 Step 1 is closed by `DEV/docs/superpowers/specs/2026-08-28-s6d-11-tests-machine-contract-closure-task-brief.md` and its matching whole-project brief critic at 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR. The brief requires exact non-self-referential manifest/lock/builder/loader realization, ResolvedCatalogContext reconstruction, bidirectional S6D-01…10 machine/test equality, closed typed package-load failures and honest activation while preserving the accepted same-version compatible-refresh versus creator-adoption split. Step 2 has not started.
 
 ---
 
@@ -231,14 +234,14 @@ HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
 S6D: IN PROGRESS
 S6D_COMPLETED_DOMAIN: S6D-10 / STEPS 1-8 / ARCHITECTURE CLOSED
 S6D_NEXT_DOMAIN: S6D-11
-S6D_ACTIVE_DOMAIN: NONE
-S6D_COMPLETED_STAGE: S6D-10 STEP 8 / CANONICALIZATION / WHOLE-PROJECT CRITIC PASS
+S6D_ACTIVE_DOMAIN: S6D-11
+S6D_COMPLETED_STAGE: S6D-11 STEP 1 / ARCHITECTURE TASK BRIEF / WHOLE-PROJECT BRIEF-CRITIC PASS
 S6D_ACTIVE_STAGE: NONE
-S6D_NEXT_STAGE: S6D-11 STEP 1 / ARCHITECTURE TASK BRIEF
+S6D_NEXT_STAGE: S6D-11 STEP 2 / RESEARCH + ARCHITECTURE DRAFT
 R2_7_WP06: PAUSED
 ```
 
-Next action is S6D-11 Step 1. S6D-11 has not started.
+Next action is S6D-11 Step 2. S6D-11 Step 1 is complete; Step 2 has not started.
 
 
 
