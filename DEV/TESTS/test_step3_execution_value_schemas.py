@@ -34,6 +34,10 @@ class Step3ExecutionValueSchemasTest(unittest.TestCase):
             "value": False,
             "provenance_class": "INVOCATION_ADJUDICATED",
             "provenance_ref": "interaction-000001:fact:1",
+            "consumer_id": "activity.spell.fire_bolt",
+            "binding_fingerprint": "a" * 64,
+            "rules_context_fingerprint": "b" * 64,
+            "policy_basis_refs": [],
         }
         validate("invocation-fact.schema.json", valid)
         for invalid in (
