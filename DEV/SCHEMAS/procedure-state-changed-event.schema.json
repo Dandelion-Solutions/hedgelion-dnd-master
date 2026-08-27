@@ -15,7 +15,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["profile_id", "field_path", "before_revision", "after_revision", "after_state_sha256"],
       "properties": {
-        "profile_id": {"enum": ["procedure.initialize", "procedure.start_turn", "procedure.spend_action", "procedure.end_turn", "procedure.advance_round", "procedure.terminate"]},
+        "profile_id": {"enum": ["procedure.initialize", "procedure.start_turn", "procedure.spend_action", "procedure.spend_movement", "procedure.end_turn", "procedure.advance_round", "procedure.terminate"]},
         "field_path": {"const": "state"},
         "before_revision": {"type": "integer", "minimum": 0},
         "after_revision": {"type": "integer", "minimum": 1},
@@ -24,3 +24,4 @@
     }
   }
 }
+
