@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/policy-basis-ref.schema.json",
+  "title": "HDM exact accepted House-Rule policy basis reference",
+  "type": "string",
+  "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*@[a-f0-9]{40}(?:[a-f0-9]{24})?$",
+  "description": "Stable campaign policy_id plus the exact 40- or 64-hex campaign revision selecting normative House-Rules Markdown and its sidecar. This is causal linkage only; it copies no policy text, adoption authority, catalog authority or execution authority.",
+  "examples": [
+    "policy.social_leverage@0123456789abcdef0123456789abcdef01234567"
+  ]
+}
+
