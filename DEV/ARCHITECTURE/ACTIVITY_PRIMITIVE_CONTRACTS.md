@@ -8,6 +8,8 @@ This document owns the exact compile-time and execution contract of every regist
 
 At S6D-06 closure the registry contained exactly 31 quarantine dispositions and granted no execution authority. S6D-07 replaces eleven of those dispositions after exact MVP seed consumers, owner-local semantics, failure closure, dependency admission and recovery boundaries are proven: `op.select_targets`, `op.roll`, `op.resolve_check`, `op.resolve_attack`, `op.resolve_save`, `op.apply_damage`, `op.apply_healing`, `op.consume_resource`, exact `op.create_effect`, exact action-entitlement `op.emit_fact`, and bounded compiler form `op.for_each_target`. Their catalog rows are now `COMPLETE / ACTIVE_ADMITTED`; the remaining 20 rows retain their S6D-06 quarantine.
 
+The S6D-09 senior-audit spatial repair does not activate another primitive. It narrows the already active `op.select_targets`: all seven existing exact consumers must supply a compiled source role, strict TargetSpec/AreaSpec, a finite invocation-bound candidate-role list and fixed accepted `fiction.target_reachable` facts. The primitive reads those bindings and facts; it no longer claims a generic `geometry_and_reachability` infrastructure read and never discovers candidates, queries the world, mutates state or persists spatial truth.
+
 ## 2. Core laws
 
 1. An Activity step selects one registered primitive and is validated against that primitive's exact arguments, results, reads, RNG, mutation, atomicity, suspension, failure, bound and evidence contract. Unknown primitive IDs, fields, arguments, results and dependencies fail compilation.
@@ -64,3 +66,4 @@ op.resolve_save  <- activity.save.generic
 Both definitions compile through the same closed argument/result contracts already admitted above. Ability/proficiency basis is selected from the finite package declaration; the threshold is one bounded `INVOCATION_ADJUDICATED` integer whose accepted binding/provenance/currentness is frozen by the Activity invocation owner; `op.roll` remains the sole RNG owner; resolution exports only `check_outcome` or `save_outcome`. Neither primitive receives consequence selection, arbitrary transition, mutation, Asset, spatial, query or product-policy authority. Any downstream world consequence is a separately admitted exact owner transition. A successful or failed check/save may therefore be Mechanical-Null.
 
 The amended exact-consumer lists are content-identity-bound through `GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/gameplay-spine-seed.json` and its entry in `character-capabilities.json`. Removing that file, changing its digest, or failing package compilation makes both consumers nonselectable; it does not fall back to a descriptive overlay.
+
