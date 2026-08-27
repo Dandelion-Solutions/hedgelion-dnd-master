@@ -86,6 +86,8 @@ Inside a combat Procedure, movement commits as exactly one ExecutionSegment over
 
 The contract expresses bounded destination/relative placement needed by current play. It provides no path search, collision simulation, universal coordinates, line-of-sight engine, global geometry query or campaign-wide scan.
 
+**Senior-audit spatial repair supersession.** The preceding Step-5 statements that map every movement spend to the two-owner location transition, accept engine-bound spatial references only, or keep `fiction.target_reachable` dormant are superseded. `procedure.spend_movement` now spends only Procedure budget and supports fictional within-location repositioning without changing `Actor.location_id`. A durable room-to-corridor transition separately validates pinned Procedure/Actor revisions plus the ID, kind, canonical minimum state and revision of the destination `world.location`. Target/range/area applicability is a distinct Mechanical-Null route: seven exact existing `op.select_targets` Activities declare strict TargetSpec/AreaSpec values and consume fixed `fiction.target_reachable` facts bound to consumer, source role, spec, candidate, spatial provenance and pinned rules context. `fiction.target_visible` remains dormant. No primitive is newly activated and no geometry/query engine is introduced. The repaired canonical owner and Step-6→8 repair artifacts control where this original candidate text differs.
+
 ## 6. Asset transitions
 
 The existing `world.asset` owner is used. Closed direct transition profiles are:
@@ -178,3 +180,4 @@ Owns: supported-surface classification and coverage evidence only.
 May mutate: nothing by itself; cited owner transitions retain authority.
 
 No migration is required because no released campaign uses catalog generation 2.0.0.
+
