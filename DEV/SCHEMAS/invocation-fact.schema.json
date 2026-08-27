@@ -4,22 +4,30 @@
   "title": "HDM registered invocation-adjudicated fact",
   "type": "object",
   "additionalProperties": false,
-  "required": ["fact_id", "value", "provenance_class", "provenance_ref"],
+  "required": ["fact_id", "value", "provenance_class", "provenance_ref", "consumer_id", "binding_fingerprint", "rules_context_fingerprint"],
   "properties": {
     "fact_id": {"$ref": "#/$defs/machineId"},
     "value": {"type": "boolean"},
     "provenance_class": {"const": "INVOCATION_ADJUDICATED"},
-    "provenance_ref": {"type": "string", "minLength": 1}
+    "provenance_ref": {"type": "string", "minLength": 1},
+    "consumer_id": {"$ref": "#/$defs/machineId"},
+    "binding_fingerprint": {"$ref": "#/$defs/sha256"},
+    "rules_context_fingerprint": {"$ref": "#/$defs/sha256"}
   },
   "$defs": {
-    "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+    "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
   },
   "examples": [
     {
-      "fact_id": "fiction.target_visible",
+      "fact_id": "fiction.target_reachable",
       "value": true,
       "provenance_class": "INVOCATION_ADJUDICATED",
-      "provenance_ref": "turn-000042:fact:1"
+      "provenance_ref": "turn-000042:fact:1",
+      "consumer_id": "activity.spell.fire_bolt",
+      "binding_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "rules_context_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
     }
   ]
 }
+
