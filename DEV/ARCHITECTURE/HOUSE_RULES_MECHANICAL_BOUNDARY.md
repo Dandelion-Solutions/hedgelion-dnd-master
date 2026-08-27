@@ -1,6 +1,6 @@
 # House-Rules Mechanical Boundary Integration
 
-Status: **CANDIDATE S6D-10 OWNER — STEP 6 REPAIR / RE-REVIEW PENDING**
+Status: **CANONICAL S6D-10 OWNER — STEPS 1–8 COMPLETE / WHOLE-PROJECT REVIEW PASS**
 
 ## 1. Authority
 
@@ -44,4 +44,8 @@ Resolution/Continuation retain accepted binding/fact evidence and exact policy r
 ## 7. Forbidden authority
 
 No policy engine, prose compiler, generic homebrew subsystem, arbitrary query/payload/path/patch, persistent realization status, global policy frontier, background worker, Signal/StateDelta lifecycle or dormant activation is admitted.
+
+## 8. Verification and deferred trigger
+
+The machine proof must remain exactly equal to the identity-bound candidate parameter contracts and active fact-consumer edges, with route-profile proof coverage and zero current built-in realizations. S6D-11 owns runtime package selection/loader verification. Implementation Planning owns production RuntimeCommand/idempotency realization; acceptance must reproduce the exact-consumer retry/recovery fixtures without rereading HEAD, rerolling or mutating before validation.
 
