@@ -1,5 +1,6 @@
 import copy, json, unittest
 from pathlib import Path
+import DEV.TOOLS.validate_domain_rules_coverage as coverage
 from DEV.TOOLS.validate_character_mvp_seed import CanonicalSchemaValidator
 from DEV.TOOLS.validate_domain_rules_coverage import advance_combat_turn, build_expected_source_sets, execute_asset_equip, execute_asset_transfer, execute_combat_procedure_transition, execute_outside_procedure_movement, execute_procedure_movement, initialize_combat_procedure, resolve_asset_use, validate_combat_procedure_state, validate_contract, validate_gameplay_seed
 
@@ -22,13 +23,16 @@ class CoverageTests(unittest.TestCase):
  def test_every_machine_edge_resolves_to_package_activity_and_primitive_owner(self):
   prim=json.loads((ROOT/"DEV/CATALOG/activity-primitive-contracts.json").read_text())
   rows={r["primitive_id"]:r for r in prim["contracts"]}
+  facts=json.loads((ROOT/"DEV/CATALOG/mechanical-surfaces.json").read_text())["context_facts"]
   activities=set()
   for name in ("character-mvp-seed.json","gameplay-spine-seed.json"):
    activities|={r["id"] for r in json.loads((PKG/name).read_text())["activity_definitions"]}
   for key in self.value["source_sets"]["ACTIVE_MACHINE_CONSUMER_KEYS"]:
    if key.startswith("MACHINE:edge:"):
-    op,consumer=key.removeprefix("MACHINE:edge:").split("->",1)
-    self.assertIn(consumer,activities);self.assertIn(consumer,rows[op]["exact_seed_consumer_ids"])
+    source,consumer=key.removeprefix("MACHINE:edge:").split("->",1)
+    self.assertIn(consumer,activities)
+    if source in rows:self.assertIn(consumer,rows[source]["exact_seed_consumer_ids"])
+    else:self.assertIn(consumer,facts[source]["permitted_consumer_ids"])
  def test_generic_activities_are_identity_bound_and_exact_consumers(self):
   spine=json.loads((PKG/"gameplay-spine-seed.json").read_text())
   self.assertEqual({x["id"] for x in spine["activity_definitions"]},{"activity.check.generic","activity.save.generic"})
@@ -50,9 +54,42 @@ class CoverageTests(unittest.TestCase):
   self.assertEqual(spine["procedure_profile"]["resource_ids"],["resource.action_budget","resource.movement_budget"])
   self.assertIn("failure.state_revision_conflict",core["execution_failure_codes"])
   self.assertNotIn("failure.execution_conflict",json.dumps(spine))
- def test_spatial_scope_is_engine_bound_only(self):
+ def test_spatial_claim_has_a_dedicated_fact_backed_route(self):
   spatial=json.loads((PKG/"gameplay-spine-seed.json").read_text())["spatial_profile"]
-  self.assertEqual(spatial["input_class"],"ENGINE_BOUND");self.assertEqual(spatial["adjudicated_fact_ids"],[])
+  product=next(x for x in json.loads((ROOT/"DEV/CATALOG/product-promise-evidence.json").read_text())["rows"] if x["key"]=="product.spatial.target_range_area_bounded")
+  self.assertEqual(product["route_id"],"route.spatial_target_applicability")
+  self.assertIn("route.spatial_target_applicability",{x["route_id"] for x in self.value["atomic_routes"]})
+  self.assertEqual(spatial["input_class"],"ENGINE_BOUND_OR_INVOCATION_ADJUDICATED")
+  self.assertEqual(spatial["adjudicated_fact_ids"],["fiction.target_reachable"])
+  facts=json.loads((ROOT/"DEV/CATALOG/mechanical-surfaces.json").read_text())["context_facts"]
+  exact={"activity.attack.ranged_weapon","activity.spell.fire_bolt","activity.spell.poison_spray","activity.spell.thunderclap","activity.spell.acid_splash","activity.spell.magic_missile","activity.spell.burning_hands"}
+  self.assertEqual(facts["fiction.target_reachable"]["disposition"],"ACTIVE_ADMITTED")
+  self.assertEqual(set(facts["fiction.target_reachable"]["permitted_consumer_ids"]),exact)
+  self.assertEqual(facts["fiction.target_visible"]["disposition"],"DORMANT_RESERVED")
+
+ def test_supported_spatial_consumers_declare_exact_target_specs_and_fixed_facts(self):
+  character=json.loads((PKG/"character-mvp-seed.json").read_text())
+  consumers={"activity.attack.ranged_weapon","activity.spell.fire_bolt","activity.spell.poison_spray","activity.spell.thunderclap","activity.spell.acid_splash","activity.spell.magic_missile","activity.spell.burning_hands"}
+  rows={x["id"]:x for x in character["activity_definitions"]}
+  validator=CanonicalSchemaValidator(ROOT/"DEV/SCHEMAS")
+  target_schema=json.loads((ROOT/"DEV/SCHEMAS/target-spec.schema.json").read_text())
+  for consumer in consumers:
+   spec=rows[consumer]["data"]["targeting"];validator.validate(spec,target_schema)
+   select=next(x for x in rows[consumer]["data"]["steps"] if x["op"]=="op.select_targets")
+   self.assertEqual(select["args"],{"target_spec":"activity.targeting","source_role":"actor","candidate_roles":"invocation.candidate_roles","applicability_facts":"invocation.fiction.target_reachable"})
+  spec=rows["activity.spell.fire_bolt"]["data"]["targeting"]
+  fact={"fact_id":"fiction.target_reachable","value":True,"provenance_class":"INVOCATION_ADJUDICATED","provenance_ref":"gm:scene-1","consumer_id":"activity.spell.fire_bolt","binding_fingerprint":coverage.spatial_binding_fingerprint("activity.spell.fire_bolt",spec,"target-1","gm:scene-1","a"*64),"rules_context_fingerprint":"a"*64}
+  first=coverage.select_spatial_targets("activity.spell.fire_bolt",spec,["target-1"],[fact],"a"*64)
+  retry=coverage.select_spatial_targets("activity.spell.fire_bolt",spec,["target-1"],[fact],"a"*64)
+  self.assertEqual(first,retry);self.assertEqual(first,["target-1"])
+  with self.assertRaises(ValueError): coverage.select_spatial_targets("activity.spell.fire_bolt",spec,["target-1"],[],"a"*64)
+  wrong=copy.deepcopy(fact);wrong["binding_fingerprint"]="b"*64
+  with self.assertRaises(ValueError): coverage.select_spatial_targets("activity.spell.fire_bolt",spec,["target-1"],[wrong],"a"*64)
+  denied=copy.deepcopy(fact);denied["value"]=False
+  with self.assertRaises(ValueError): coverage.select_spatial_targets("activity.spell.fire_bolt",spec,["target-1"],[denied],"a"*64)
+  with self.assertRaises(ValueError): coverage.select_spatial_targets("activity.spell.fire_bolt",spec,["target-1"],[fact],"b"*64)
+  extra=copy.deepcopy(fact);extra["lifecycle"]="pending"
+  with self.assertRaises(Exception): validator.validate(extra,json.loads((ROOT/"DEV/SCHEMAS/invocation-fact.schema.json").read_text()))
  def test_procedure_semantic_invariants_and_advance(self):
   state=initialize_combat_procedure(["a","b"],["b","a"]);self.assertTrue(validate_combat_procedure_state(state));advanced=advance_combat_turn(state);self.assertEqual(advanced["active_turn_index"],1);advanced=advance_combat_turn(advanced);self.assertEqual((advanced["active_turn_index"],advanced["round_number"]),(0,2))
   for mutate in (lambda x:x["initiative_order"].append("c"),lambda x:x["participant_resources"].pop("a"),lambda x:x.update(active_turn_index=2),lambda x:x["participant_resources"]["a"]["resource.action_budget"].update(spent=2)):
@@ -87,8 +124,9 @@ class CoverageTests(unittest.TestCase):
  def test_movement_commits_two_owners_in_one_segment_and_retries(self):
   procedure={"id":"procedure-1","revision":4,"state":initialize_combat_procedure(["actor-1"],["actor-1"])};procedure["state"]["participant_resources"]["actor-1"]["resource.movement_budget"]["spent"]=5
   actor={"record":{"id":"actor-1","kind":"world.actor","state":{"location_id":"location-a"}},"revision":7}
-  request={"transition_kind":"transition.location_change","profile_id":"location_change.procedure_movement","idempotency_key":"move-1","catalog_generation":"2.0.0","procedure_id":"procedure-1","procedure_revision":4,"actor_id":"actor-1","actor_revision":7,"destination_location_id":"location-b","movement_cost":10}
-  receipts={};first=execute_procedure_movement(request,procedure,actor,receipts);retry=execute_procedure_movement(request,procedure,actor,receipts)
+  destination={"record":{"id":"location-b","kind":"world.location","state":{"name":"Corridor"}},"revision":3}
+  request={"transition_kind":"transition.location_change","profile_id":"location_change.procedure_movement","idempotency_key":"move-1","catalog_generation":"2.0.0","procedure_id":"procedure-1","procedure_revision":4,"actor_id":"actor-1","actor_revision":7,"destination_location_id":"location-b","destination_location_revision":3,"movement_cost":10}
+  receipts={};first=execute_procedure_movement(request,procedure,actor,destination,receipts);retry=execute_procedure_movement(request,procedure,actor,destination,receipts)
   self.assertIs(first,retry);wire,after=first;self.assertEqual(wire["status"],"COMPLETED");self.assertEqual(len(wire["prospective_mutations"]),2);self.assertEqual(len(wire["execution_segment"]["affected_revision_refs"]),2)
   self.assertEqual(after["procedure"]["state"]["participant_resources"]["actor-1"]["resource.movement_budget"]["spent"],15);self.assertEqual(after["actor"]["record"]["state"]["location_id"],"location-b")
   schemas=ROOT/"DEV/SCHEMAS";validator=CanonicalSchemaValidator(schemas)
@@ -96,13 +134,33 @@ class CoverageTests(unittest.TestCase):
   self.validate_transition(wire)
  def test_movement_conflict_or_budget_failure_has_no_partial_commit(self):
   p={"id":"p","revision":2,"state":initialize_combat_procedure(["a"],["a"],movement_capacity=5)};a={"record":{"id":"a","kind":"world.actor","state":{"location_id":"x"}},"revision":3}
-  req={"profile_id":"location_change.procedure_movement","idempotency_key":"k","procedure_id":"p","procedure_revision":1,"actor_revision":3,"actor_id":"a","destination_location_id":"y","movement_cost":1}
-  out,_=execute_procedure_movement(req,p,a,{});self.assertEqual(out["failure_code"],"failure.state_revision_conflict");self.assertEqual(out["prospective_mutations"],[]);self.assertEqual(a["record"]["state"]["location_id"],"x");self.validate_transition(out)
-  req.update({"procedure_revision":2,"movement_cost":6});out,_=execute_procedure_movement(req,p,a,{});self.assertEqual(out["failure_code"],"failure.action_economy_scope_invalid");self.assertEqual(out["prospective_mutations"],[]);self.validate_transition(out)
+  destination={"record":{"id":"y","kind":"world.location","state":{"name":"Corridor"}},"revision":1};req={"profile_id":"location_change.procedure_movement","idempotency_key":"k","procedure_id":"p","procedure_revision":1,"actor_revision":3,"actor_id":"a","destination_location_id":"y","destination_location_revision":1,"movement_cost":1}
+  out,_=execute_procedure_movement(req,p,a,destination,{});self.assertEqual(out["failure_code"],"failure.state_revision_conflict");self.assertEqual(out["prospective_mutations"],[]);self.assertEqual(a["record"]["state"]["location_id"],"x");self.validate_transition(out)
+  req.update({"procedure_revision":2,"movement_cost":6});out,_=execute_procedure_movement(req,p,a,destination,{});self.assertEqual(out["failure_code"],"failure.action_economy_scope_invalid");self.assertEqual(out["prospective_mutations"],[]);self.validate_transition(out)
+  req.update({"movement_cost":1,"destination_location_revision":2});out,_=execute_procedure_movement(req,p,a,destination,{});self.assertEqual(out["failure_code"],"failure.state_revision_conflict")
+  fake={"record":{"id":"y","kind":"world.actor","state":{"location_id":"x"}},"revision":2}
+  out,_=execute_procedure_movement(req,p,a,fake,{});self.assertEqual(out["failure_code"],"failure.missing_reference")
  def test_outside_procedure_movement_changes_only_canonical_actor(self):
-  actor={"record":{"id":"actor-1","kind":"world.actor","state":{"location_id":"location-a"}},"revision":7};request={"transition_kind":"transition.location_change","profile_id":"location_change.outside_procedure","idempotency_key":"move-out-1","catalog_generation":"2.0.0","actor_id":"actor-1","actor_revision":7,"destination_location_id":"location-b","movement_cost":"NOT_APPLICABLE_OUTSIDE_PROCEDURE"}
+  actor={"record":{"id":"actor-1","kind":"world.actor","state":{"location_id":"location-a"}},"revision":7};destination={"record":{"id":"location-b","kind":"world.location","state":{"name":"Corridor"}},"revision":3};request={"transition_kind":"transition.location_change","profile_id":"location_change.outside_procedure","idempotency_key":"move-out-1","catalog_generation":"2.0.0","actor_id":"actor-1","actor_revision":7,"destination_location_id":"location-b","destination_location_revision":3,"movement_cost":"NOT_APPLICABLE_OUTSIDE_PROCEDURE"}
   schemas=ROOT/"DEV/SCHEMAS";CanonicalSchemaValidator(schemas).validate(request,json.loads((schemas/"gameplay-spine-transition-request.schema.json").read_text()))
-  wire,after=execute_outside_procedure_movement(request,actor,{});self.assertEqual(after["actor"]["record"]["state"]["location_id"],"location-b");self.assertEqual({x["owner_kind"] for x in wire["prospective_mutations"]},{"world.actor"});self.validate_transition(wire)
+  wire,after=execute_outside_procedure_movement(request,actor,destination,{});self.assertEqual(after["actor"]["record"]["state"]["location_id"],"location-b");self.assertEqual({x["owner_kind"] for x in wire["prospective_mutations"]},{"world.actor"});self.validate_transition(wire)
+  invalid=copy.deepcopy(destination);invalid["record"]["state"]={"environment_ids":[]}
+  with self.assertRaises(Exception):CanonicalSchemaValidator(schemas).validate(invalid["record"],json.loads((schemas/"world-record.schema.json").read_text()))
+  missing_revision=copy.deepcopy(request);missing_revision.pop("destination_location_revision")
+  with self.assertRaises(Exception):CanonicalSchemaValidator(schemas).validate(missing_revision,json.loads((schemas/"gameplay-spine-transition-request.schema.json").read_text()))
+
+ def test_within_location_reposition_spends_budget_without_fake_location(self):
+  procedure={"id":"procedure-1","revision":2,"state":initialize_combat_procedure(["actor-1"],["actor-1"])}
+  start={"profile_id":"procedure.start_turn","idempotency_key":"start-move","catalog_generation":"2.0.0","procedure_id":"procedure-1","procedure_revision":2,"actor_id":"actor-1"};_,after=execute_combat_procedure_transition(start,procedure,{});procedure=after["procedure"]
+  req={"profile_id":"procedure.spend_movement","idempotency_key":"reposition-1","catalog_generation":"2.0.0","procedure_id":"procedure-1","procedure_revision":procedure["revision"],"actor_id":"actor-1","amount":10}
+  schemas=ROOT/"DEV/SCHEMAS";validator=CanonicalSchemaValidator(schemas);validator.validate(req,json.loads((schemas/"combat-procedure-transition-request.schema.json").read_text()))
+  wire,after=execute_combat_procedure_transition(req,procedure,{})
+  validator.validate(wire,json.loads((schemas/"combat-procedure-transition-result.schema.json").read_text()));validator.validate(after["mechanical_event"],json.loads((schemas/"procedure-state-changed-event.schema.json").read_text()))
+  self.assertEqual({x["owner_kind"] for x in wire["prospective_mutations"]},{"runtime.procedure"})
+  self.assertEqual(after["procedure"]["state"]["participant_resources"]["actor-1"]["resource.movement_budget"]["spent"],10)
+  spine=json.loads((PKG/"gameplay-spine-seed.json").read_text())
+  self.assertEqual(spine["procedure_profile"]["transition_profiles"]["spend_movement"],"procedure.spend_movement")
+  self.assertEqual(spine["spatial_profile"]["within_location_reposition"],"FICTIONAL_POSITION_PLUS_PROCEDURE_BUDGET; NO_WORLD_LOCATION_MUTATION")
  def test_asset_transfer_is_exclusive_atomic_and_retry_safe(self):
   asset={"record":{"id":"asset-1","kind":"world.asset","state":{"owner_actor_id":"actor-a","equipment":{"mode":"held"}}},"revision":2};req={"transition_kind":"transition.asset_transfer","profile_id":"asset.transfer","idempotency_key":"transfer-1","catalog_generation":"2.0.0","asset_id":"asset-1","asset_revision":2,"from_placement":{"owner_actor_id":"actor-a"},"to_placement":{"owner_actor_id":"actor-b"}}
   receipts={};transaction=execute_asset_transfer(req,asset,receipts);self.assertIs(transaction,execute_asset_transfer(req,asset,receipts));wire,after=transaction;self.assertEqual(after["asset"]["record"]["state"]["owner_actor_id"],"actor-b");self.assertNotIn("location_id",after["asset"]["record"]["state"]);self.assertEqual(len(wire["prospective_mutations"]),3);self.validate_transition(wire)
@@ -132,3 +190,4 @@ class CoverageTests(unittest.TestCase):
   with self.assertRaises(Exception):validate_contract(bad,ROOT)
 
 if __name__=="__main__": unittest.main()
+
