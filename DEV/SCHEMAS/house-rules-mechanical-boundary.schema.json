@@ -1,0 +1,26 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://hedgelion.invalid/schemas/house-rules-mechanical-boundary.schema.json",
+  "title":"HDM House-Rules mechanical-boundary integration proof",
+  "type":"object","additionalProperties":false,
+  "required":["schema_version","selected_package_capabilities_path","selected_package_identity","active_adjudicated_consumers","current_supported_policy_realizations","conformance_only_policy_realizations"],
+  "properties":{
+    "schema_version":{"const":1},
+    "selected_package_capabilities_path":{"const":"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json"},
+    "selected_package_identity":{"$ref":"#/$defs/packageIdentity"},
+    "active_adjudicated_consumers":{"type":"array","minItems":1,"uniqueItems":true,"items":{"oneOf":[{"$ref":"#/$defs/parameterEdge"},{"$ref":"#/$defs/factEdge"}]}},
+    "current_supported_policy_realizations":{"type":"array","maxItems":0,"items":{"$ref":"#/$defs/currentRealization"}},
+    "conformance_only_policy_realizations":{"type":"array","minItems":3,"uniqueItems":true,"items":{"$ref":"#/$defs/conformanceFixture"}}
+  },
+  "$defs":{
+    "machineId":{"type":"string","pattern":"^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "packageIdentity":{"type":"object","additionalProperties":false,"required":["package_id","package_version","catalog_generation","content_set_sha256"],"properties":{"package_id":{"const":"hdm.rules.dnd2024-srd52-core"},"package_version":{"const":"0.1.0-mvp"},"catalog_generation":{"const":"2.0.0"},"content_set_sha256":{"$ref":"#/$defs/sha256"}}},
+    "parameterEdge":{"type":"object","additionalProperties":false,"required":["edge_key","input_kind","consumer_id","input_id","value_type","source_class","cardinality","required","minimum","maximum","policy_basis_mode"],"properties":{"edge_key":{"type":"string","pattern":"^parameter:"},"input_kind":{"const":"ACTIVITY_PARAMETER"},"consumer_id":{"$ref":"#/$defs/machineId"},"input_id":{"$ref":"#/$defs/machineId"},"value_type":{"const":"integer"},"source_class":{"const":"INVOCATION_ADJUDICATED"},"cardinality":{"const":"single"},"required":{"const":true},"minimum":{"const":1},"maximum":{"const":30},"policy_basis_mode":{"const":"REQUIRED_ARRAY_MAY_BE_EMPTY"}}},
+    "factEdge":{"type":"object","additionalProperties":false,"required":["edge_key","input_kind","consumer_id","input_id","value_type","source_class","disposition","policy_basis_mode"],"properties":{"edge_key":{"type":"string","pattern":"^fact:"},"input_kind":{"const":"INVOCATION_FACT"},"consumer_id":{"$ref":"#/$defs/machineId"},"input_id":{"$ref":"#/$defs/machineId"},"value_type":{"const":"boolean"},"source_class":{"const":"INVOCATION_ADJUDICATED"},"disposition":{"const":"ACTIVE_ADMITTED"},"policy_basis_mode":{"const":"REQUIRED_ARRAY_MAY_BE_EMPTY"}}},
+    "currentRealization":{"type":"object","additionalProperties":false,"required":["policy_basis_ref","realization_refs"],"properties":{"policy_basis_ref":{"$ref":"https://hedgelion.invalid/schemas/policy-basis-ref.schema.json"},"realization_refs":{"type":"array","minItems":1,"uniqueItems":true,"items":{"$ref":"#/$defs/machineId"}}}},
+    "conformanceFixture":{"type":"object","additionalProperties":false,"required":["fixture_id","policy_basis_ref","target_class","realization_refs","expected"],"properties":{"fixture_id":{"$ref":"#/$defs/machineId"},"policy_basis_ref":{"$ref":"https://hedgelion.invalid/schemas/policy-basis-ref.schema.json"},"target_class":{"enum":["PACKAGE_DEFINITION","PRIMITIVE"]},"realization_refs":{"type":"array","minItems":1,"uniqueItems":true,"items":{"$ref":"#/$defs/machineId"}},"expected":{"enum":["CONFORMANCE_VALID_LINK_ONLY","failure.policy_realization_gap"]}}}
+  },
+  "description":"Verification-only proof. Complete normalized consumer rows are derived from identity-checked package bytes and active fact metadata. Current engine-template realizations are exactly empty; fixtures are nonselectable and never invoke their targets."
+}
+
