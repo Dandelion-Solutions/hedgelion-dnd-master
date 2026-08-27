@@ -37,10 +37,11 @@
     "read_contracts": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["SELECTOR", "ACCESSOR", "DOMAIN_OWNER", "INFRASTRUCTURE"],
+      "required": ["SELECTOR", "ACCESSOR", "INVOCATION_FACT", "DOMAIN_OWNER", "INFRASTRUCTURE"],
       "properties": {
         "SELECTOR": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "ACCESSOR": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "INVOCATION_FACT": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "DOMAIN_OWNER": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "INFRASTRUCTURE": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
       }
@@ -65,7 +66,7 @@
         "value_kind": {"type": "string", "minLength": 1},
         "cardinality": {"enum": ["single", "many"]},
         "required": {"type": "boolean"},
-        "source": {"enum": ["ACTIVITY_ARGUMENT", "BOUND_ROLE", "PRIMITIVE_RESULT"]}
+        "source": {"enum": ["ACTIVITY_ARGUMENT", "BOUND_ROLE", "ACCEPTED_INVOCATION_FACT", "PRIMITIVE_RESULT"]}
       }
     },
     "read": {
@@ -75,7 +76,7 @@
       "properties": {
         "kind": {"enum": ["BINDING", "ACCESSOR", "SELECTOR", "INVOCATION_FACT", "DOMAIN_OWNER", "INFRASTRUCTURE"]},
         "id": {"type": "string", "minLength": 1},
-        "view": {"const": "PINNED_COMMITTED_OR_PROSPECTIVE"}
+        "view": {"enum": ["PINNED_COMMITTED_OR_PROSPECTIVE", "FIXED_ACCEPTED_INVOCATION"]}
       }
     },
     "activationDependencies": {
@@ -155,3 +156,4 @@
     }
   }
 }
+
