@@ -23,7 +23,7 @@
     "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
     "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
   },
-  "description": "The fact remains a boolean embedded causal input. policy_basis_refs is empty for a one-off judgment with no durable policy basis and otherwise preserves every materially applied policy at its exact campaign revision. The references do not make policy executable, do not create persistent spatial truth and gain no lifecycle/disposition.",
+  "description": "The fact remains a boolean embedded causal input. policy_basis_refs is empty for a one-off judgment with no durable policy basis and otherwise preserves every materially applied policy at its exact campaign revision. The binder MUST emit unique refs in ascending Unicode code-point order and reject noncanonical permutations. The references do not make policy executable, do not create persistent spatial truth and gain no lifecycle/disposition.",
   "examples": [
     {
       "fact_id": "fiction.target_reachable",
