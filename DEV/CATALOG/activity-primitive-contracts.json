@@ -95,6 +95,11 @@
             "validation": "EXACT_NAMED_CONTRACT",
             "schema_ref": "DEV/SCHEMAS/area-spec.schema.json"
         },
+        "invocation_fact": {
+            "owner": "DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md",
+            "validation": "EXACT_NAMED_CONTRACT",
+            "schema_ref": "DEV/SCHEMAS/invocation-fact.schema.json"
+        },
         "attack_outcome": {
             "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
             "validation": "EXACT_NAMED_CONTRACT",
@@ -920,11 +925,23 @@
                     "required": true,
                     "source": "ACTIVITY_ARGUMENT"
                 },
+                "source_role": {
+                    "value_kind": "role",
+                    "cardinality": "single",
+                    "required": true,
+                    "source": "BOUND_ROLE"
+                },
                 "candidate_roles": {
                     "value_kind": "role",
                     "cardinality": "many",
-                    "required": false,
+                    "required": true,
                     "source": "BOUND_ROLE"
+                },
+                "applicability_facts": {
+                    "value_kind": "invocation_fact",
+                    "cardinality": "many",
+                    "required": true,
+                    "source": "ACCEPTED_INVOCATION_FACT"
                 }
             },
             "results": {
@@ -938,13 +955,18 @@
             "reads": [
                 {
                     "kind": "BINDING",
+                    "id": "source_role",
+                    "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
+                },
+                {
+                    "kind": "BINDING",
                     "id": "candidate_roles",
                     "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
                 },
                 {
-                    "kind": "INFRASTRUCTURE",
-                    "id": "geometry_and_reachability",
-                    "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
+                    "kind": "INVOCATION_FACT",
+                    "id": "fiction.target_reachable",
+                    "view": "FIXED_ACCEPTED_INVOCATION"
                 }
             ],
             "rng": {
@@ -3429,6 +3451,9 @@
             "resource.available",
             "owner_effect.parameter"
         ],
+        "INVOCATION_FACT": [
+            "fiction.target_reachable"
+        ],
         "DOMAIN_OWNER": [
             "chronology_context",
             "currency_balance",
@@ -3448,3 +3473,4 @@
         ]
     }
 }
+
