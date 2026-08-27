@@ -51,7 +51,7 @@
       "initialize": "procedure.initialize",
       "start_turn": "procedure.start_turn",
       "spend_action": "procedure.spend_action",
-      "spend_movement": "location_change.procedure_movement",
+      "spend_movement": "procedure.spend_movement",
       "end_turn": "procedure.end_turn",
       "advance_round": "procedure.advance_round",
       "terminate": "procedure.terminate"
@@ -60,9 +60,10 @@
     "encounter_authority": "REFERENCE_ONLY"
   },
   "spatial_profile": {
-    "input_class": "ENGINE_BOUND",
-    "allowed_refs": ["world.actor.state.location_id", "world.scene.state.location_id", "world.zone.id", "value.target_spec", "value.area_spec"],
-    "adjudicated_fact_ids": [],
+    "input_class": "ENGINE_BOUND_OR_INVOCATION_ADJUDICATED",
+    "allowed_refs": ["world.actor.state.location_id", "world.location.id", "value.target_spec", "value.area_spec"],
+    "adjudicated_fact_ids": ["fiction.target_reachable"],
+    "within_location_reposition": "FICTIONAL_POSITION_PLUS_PROCEDURE_BUDGET; NO_WORLD_LOCATION_MUTATION",
     "forbidden_capabilities": ["PATHFINDING", "GLOBAL_GEOMETRY_QUERY", "UNIVERSAL_COORDINATES", "CAMPAIGN_SCAN"]
   },
   "transition_profiles": [
@@ -73,7 +74,7 @@
       "result_schema": "DEV/SCHEMAS/gameplay-spine-transition-result.schema.json#/$defs/procedureMovementCommitted",
       "mutation_owners": ["runtime.procedure", "world.actor"],
       "mutable_fields": ["runtime.procedure.state.participant_resources[actor_id].resource.movement_budget.spent", "world.actor.state.location_id"],
-      "required_revisions": ["procedure_revision", "actor_revision"],
+      "required_revisions": ["procedure_revision", "actor_revision", "destination_location_revision"],
       "atomicity": "ONE_EXECUTION_SEGMENT",
       "partial_commit": "FORBIDDEN",
       "event_kinds": ["event.entity.moved"],
@@ -86,7 +87,7 @@
       "result_schema": "DEV/SCHEMAS/gameplay-spine-transition-result.schema.json#/$defs/outsideProcedureMovementCommitted",
       "mutation_owners": ["world.actor"],
       "mutable_fields": ["world.actor.state.location_id"],
-      "required_revisions": ["actor_revision"],
+      "required_revisions": ["actor_revision", "destination_location_revision"],
       "atomicity": "ONE_EXECUTION_SEGMENT",
       "partial_commit": "FORBIDDEN",
       "event_kinds": ["event.entity.moved"],
@@ -135,3 +136,4 @@
   "downstream_consequence_profiles": ["NONE", "EXACT_DAMAGE", "EXACT_LOCATION_CHANGE", "EXACT_ASSET_TRANSFER"],
   "unsupported_policy": "ABSENT_NONSELECTABLE"
 }
+
