@@ -35,13 +35,13 @@
         "policy_basis_refs": {
           "type": "array",
           "uniqueItems": true,
-          "items": {"type": "string", "minLength": 1}
+          "items": {"$ref": "https://hedgelion.invalid/schemas/policy-basis-ref.schema.json"}
         },
         "candidate_set_fingerprint": {"type": "string", "minLength": 1}
       }
     }
   },
-  "description": "Raw scalar/array bindings remain available for non-adjudicated parameter classes. An INVOCATION_ADJUDICATED Activity parameter is accepted only as the enriched object form after deterministic validation against the selected Activity parameter declaration. The full accepted object participates in RuntimeCommand input identity and is preserved by Resolution/Continuation. This value object is causal execution evidence, not world state or policy authority.",
+  "description": "Raw scalar/array bindings remain available for non-adjudicated parameter classes. An INVOCATION_ADJUDICATED Activity parameter is accepted only as the enriched object form after deterministic validation against the selected Activity parameter declaration. The full accepted object participates in RuntimeCommand input identity and is preserved by Resolution/Continuation. policy_basis_refs is empty for a one-off ruling with no durable policy basis and otherwise identifies every materially applied policy at its exact campaign revision. This value object is causal execution evidence, not world state or policy authority.",
   "examples": [
     {
       "source_class": "INVOCATION_ADJUDICATED",
@@ -49,7 +49,7 @@
       "provenance_ref": "interaction-000001:adjudication:dc",
       "eligibility_basis_fingerprint": "sha256:eligibility-A",
       "rules_context_fingerprint": "sha256:rules-A",
-      "policy_basis_refs": ["house-rule.social-leverage@rev-3"]
+      "policy_basis_refs": ["policy.social_leverage@0123456789abcdef0123456789abcdef01234567"]
     }
   ]
 }
