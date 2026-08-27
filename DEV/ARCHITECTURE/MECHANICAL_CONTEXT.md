@@ -309,3 +309,8 @@ Machine verification must prove:
 
 Activation of any dormant item requires its named downstream owner, exact consumer evidence, synchronized metadata/schema/tests and the same whole-project review discipline.
 
+
+
+## 13. S6D-10 policy-basis retention
+
+Accepted invocation facts retain unique lexicographically sorted exact policy-basis refs when durable policy materially contributed, or an empty array for one-off adjudication. The Activity invocation validator checks this canonical form, exact consumer, binding and rules context before Resolution construction. Resolution/Continuation retain it across retry/recovery; MechanicalContext and its caches remain disposable nonowners.
