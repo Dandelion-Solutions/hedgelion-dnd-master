@@ -71,8 +71,9 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
         ]
         self.write_json(root, "DEV/CATALOG/house-rules-mechanical-boundary.json", {
             "schema_version": 1,
-            "selected_package_capabilities_path": package_root + "character-capabilities.json",
-            "selected_package_identity": {"package_id": "hdm.rules.dnd2024-srd52-core", "package_version": "0.1.0-mvp", "catalog_generation": "2.0.0", "content_set_sha256": "c" * 64},
+            "identity_bound_package_capabilities_path": package_root + "character-capabilities.json",
+            "identity_bound_package_candidate": {"package_id": "hdm.rules.dnd2024-srd52-core", "package_version": "0.1.0-mvp", "catalog_generation": "2.0.0", "content_set_sha256": "c" * 64, "runtime_selection_state": "BLOCKED_UNTIL_S6D_11"},
+            "route_profiles": {key: {"policy_revision_and_lifecycle":"x","authority_and_eligibility":"x","consumer_and_value_contract":"x","provenance_and_freeze":"x","catalog_and_native_validation":"x","rng_and_mutation":"x","execution_and_failure":"x","retry_recovery_and_publication":"x","proof_ids": ([row["edge_key"] for row in rows if row["input_kind"]=="ACTIVITY_PARAMETER"] if key.endswith("parameter_to_mechanics") else [row["edge_key"] for row in rows if row["input_kind"]=="INVOCATION_FACT"] if key.endswith("fact_to_mechanics") else ["valid-link","missing-link","quarantined-link"]),"revisit_trigger":"x"} for key in ("route.adjudicated_parameter_to_mechanics","route.invocation_fact_to_mechanics","route.policy_realization_link_conformance")},
             "active_adjudicated_consumers": rows,
             "current_supported_policy_realizations": [],
             "conformance_only_policy_realizations": [
@@ -166,6 +167,12 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
         later = dict(evidence, campaign_revision="e" * 40)
         with self.assertRaisesRegex(ValueError, "identity mismatch"):
             VALIDATOR.validate_policy_basis_resolution(ref, later)
+
+    def test_policy_basis_refs_have_one_canonical_order(self):
+        refs = ["policy.a@" + "a" * 40, "policy.b@" + "b" * 40]
+        self.assertTrue(VALIDATOR.validate_policy_basis_refs(refs))
+        with self.assertRaisesRegex(ValueError, "lexicographically sorted"):
+            VALIDATOR.validate_policy_basis_refs(list(reversed(refs)))
 
     def test_resolution_continuation_and_cold_recovery_preserve_frozen_policy_basis(self):
         policy_ref = "policy.test@" + "d" * 40
