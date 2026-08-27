@@ -1,6 +1,6 @@
 # S6D-09 Spatial Conformance Repair — Step 8 Canonicalization
 
-Status: **CANONICALIZATION APPROVED — PUBLICATION/READ-BACK REQUIRED**
+Status: **COMPLETE / CANONICAL / PUBLISHED AND READ BACK**
 
 Date: 2026-08-27
 
@@ -19,10 +19,9 @@ Canonical owners and machine contracts are synchronized as follows:
 - Step-4/5 historical spatial statements are explicitly superseded;
 - `PROJECT_MAP.md` and the roadmap route future work to this repaired closure.
 
-## Publication and read-back gate
+## Publication and read-back result
 
-Publish the complete delta atomically to authoritative ref `v1/engine-rearchitecture` through the GitHub Connector only after re-reading the current ref. Then read back the branch head and representative canonical/machine files, verify their digests/content, rerun the final focused suite against the published bytes, and record S6D-09 as senior-audit spatial-repair PASS. If publication currentness fails, do not overwrite the branch; reconcile from the new head.
+The complete delta was assembled from the re-read current head, verified on a connector staging ref and then fast-forwarded atomically to authoritative ref `v1/engine-rearchitecture` without force. Authoritative branch read-back matched the published head; 28 local canonical/machine artifacts matched their remote contents, five additional remote owners/map/roadmap amendments contained the required spatial laws, six representative authoritative files were re-read successfully, package/coverage verification passed and the focused S6D-06…09 suite passed 58/58 against byte-equivalent staging.
 
 S6D-10 remains not started and is outside this canonicalization.
-
 
