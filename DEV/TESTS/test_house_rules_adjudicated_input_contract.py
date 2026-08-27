@@ -64,7 +64,7 @@ class HouseRulesAdjudicatedInputContractTests(unittest.TestCase):
             "provenance_ref": "interaction-000001:adjudication:dc",
             "eligibility_basis_fingerprint": "sha256:eligibility-A",
             "rules_context_fingerprint": "sha256:rules-A",
-            "policy_basis_refs": ["house-rule.social-leverage@rev-3"],
+            "policy_basis_refs": ["house-rule.social-leverage@0123456789abcdef0123456789abcdef01234567"],
         }
 
     def test_action_request_accepts_provenanced_adjudicated_binding(self):
