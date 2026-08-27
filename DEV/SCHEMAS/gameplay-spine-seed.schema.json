@@ -33,16 +33,17 @@
         "event_kind": {"const": "event.procedure.state_changed"},
         "resource_ids": {"const": ["resource.action_budget", "resource.movement_budget"]},
         "transitions": {"type": "array", "minItems": 7, "maxItems": 7, "uniqueItems": true, "items": {"enum": ["initialize", "start_turn", "spend_action", "spend_movement", "end_turn", "advance_round", "terminate"]}},
-        "transition_profiles": {"const": {"initialize": "procedure.initialize", "start_turn": "procedure.start_turn", "spend_action": "procedure.spend_action", "spend_movement": "location_change.procedure_movement", "end_turn": "procedure.end_turn", "advance_round": "procedure.advance_round", "terminate": "procedure.terminate"}},
+        "transition_profiles": {"const": {"initialize": "procedure.initialize", "start_turn": "procedure.start_turn", "spend_action": "procedure.spend_action", "spend_movement": "procedure.spend_movement", "end_turn": "procedure.end_turn", "advance_round": "procedure.advance_round", "terminate": "procedure.terminate"}},
         "initiative_retry": {"const": "REUSE_FIXED_ORDER_AND_TIE_RESOLUTION"}, "encounter_authority": {"const": "REFERENCE_ONLY"}
       }
     },
     "spatial": {
-      "type": "object", "additionalProperties": false, "required": ["input_class", "allowed_refs", "adjudicated_fact_ids", "forbidden_capabilities"],
+      "type": "object", "additionalProperties": false, "required": ["input_class", "allowed_refs", "adjudicated_fact_ids", "within_location_reposition", "forbidden_capabilities"],
       "properties": {
-        "input_class": {"const": "ENGINE_BOUND"},
-        "allowed_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["world.actor.state.location_id", "world.scene.state.location_id", "world.zone.id", "value.target_spec", "value.area_spec"]}},
-        "adjudicated_fact_ids": {"const": []},
+        "input_class": {"const": "ENGINE_BOUND_OR_INVOCATION_ADJUDICATED"},
+        "allowed_refs": {"const": ["world.actor.state.location_id", "world.location.id", "value.target_spec", "value.area_spec"]},
+        "adjudicated_fact_ids": {"const": ["fiction.target_reachable"]},
+        "within_location_reposition": {"const": "FICTIONAL_POSITION_PLUS_PROCEDURE_BUDGET; NO_WORLD_LOCATION_MUTATION"},
         "forbidden_capabilities": {"const": ["PATHFINDING", "GLOBAL_GEOMETRY_QUERY", "UNIVERSAL_COORDINATES", "CAMPAIGN_SCAN"]}
       }
     },
@@ -56,7 +57,7 @@
         "result_schema": {"type": "string", "pattern": "^DEV/SCHEMAS/gameplay-spine-transition-result\\.schema\\.json#/.+$"},
         "mutation_owners": {"type": "array", "uniqueItems": true, "items": {"enum": ["runtime.procedure", "world.actor", "world.asset"]}},
         "mutable_fields": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-        "required_revisions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["procedure_revision", "actor_revision", "asset_revision"]}},
+        "required_revisions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["procedure_revision", "actor_revision", "destination_location_revision", "asset_revision"]}},
         "atomicity": {"const": "ONE_EXECUTION_SEGMENT"}, "partial_commit": {"const": "FORBIDDEN"},
         "event_kinds": {"type": "array", "uniqueItems": true, "items": {"enum": ["event.entity.moved", "event.asset.transferred", "event.asset.status_changed"]}},
         "failure_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["failure.idempotency_conflict", "failure.state_revision_conflict", "failure.action_economy_scope_invalid", "failure.hydration_required", "failure.missing_reference", "failure.catalog_context_incompatible", "failure.transition_requires_procedure", "failure.execution_limit"]}}
@@ -64,3 +65,4 @@
     }
   }
 }
+
