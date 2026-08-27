@@ -199,13 +199,16 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
             ("activity.spell.fire_bolt", {}, [fact]),
         ]
         for index, (activity_id, parameter_bindings, invocation_facts) in enumerate(fixtures, 1):
+            self.assertTrue(VALIDATOR.validate_accepted_policy_basis_collections(parameter_bindings, invocation_facts))
             declaration = activities[activity_id]["data"].get("parameters", {})
             self.assertTrue(set(parameter_bindings) <= set(declaration))
             for parameter_id, accepted_binding in parameter_bindings.items():
+                self.assertTrue(VALIDATOR.validate_policy_basis_refs(accepted_binding["policy_basis_refs"]))
                 self.assertEqual(declaration[parameter_id]["source_class"], accepted_binding["source_class"])
                 self.assertLessEqual(declaration[parameter_id]["minimum"], accepted_binding["value"])
                 self.assertLessEqual(accepted_binding["value"], declaration[parameter_id]["maximum"])
             for accepted_fact in invocation_facts:
+                self.assertTrue(VALIDATOR.validate_policy_basis_refs(accepted_fact["policy_basis_refs"]))
                 self.assertEqual(facts[accepted_fact["fact_id"]]["disposition"], "ACTIVE_ADMITTED")
                 self.assertIn(activity_id, facts[accepted_fact["fact_id"]]["permitted_consumer_ids"])
 
@@ -240,6 +243,11 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
             self.assertNotEqual(VALIDATOR.fingerprint(accepted), VALIDATOR.fingerprint(changed))
             self.assertEqual(resolution["fixed_rng_results"], [])
             self.assertEqual(resolution["segments"], [])
+        reversed_refs = ["policy.b@" + "b" * 40, "policy.a@" + "a" * 40]
+        noncanonical = json.loads(json.dumps(binding))
+        noncanonical["policy_basis_refs"] = reversed_refs
+        with self.assertRaisesRegex(ValueError, "lexicographically sorted"):
+            VALIDATOR.validate_accepted_policy_basis_collections({"dc": noncanonical}, [])
         core = json.loads((ROOT / "DEV/CATALOG/core-catalog.json").read_text(encoding="utf-8"))
         self.assertIn("failure.idempotency_conflict", core["registries"]["execution_failure_codes"])
 
