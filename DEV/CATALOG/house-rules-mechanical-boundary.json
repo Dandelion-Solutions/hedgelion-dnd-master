@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "selected_package_capabilities_path": "GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json",
+  "selected_package_identity": {
+    "package_id": "hdm.rules.dnd2024-srd52-core",
+    "package_version": "0.1.0-mvp",
+    "catalog_generation": "2.0.0",
+    "content_set_sha256": "d2a4dfcf79a342a5aaf1c1dd1d1f93db107c6f7a8141c7abb82e8a1dcd977410"
+  },
+  "active_adjudicated_consumers": [
+    {"edge_key":"parameter:activity.check.generic:dc","input_kind":"ACTIVITY_PARAMETER","consumer_id":"activity.check.generic","input_id":"dc","value_type":"integer","source_class":"INVOCATION_ADJUDICATED","cardinality":"single","required":true,"minimum":1,"maximum":30,"policy_basis_mode":"REQUIRED_ARRAY_MAY_BE_EMPTY"},
+    {"edge_key":"parameter:activity.save.generic:dc","input_kind":"ACTIVITY_PARAMETER","consumer_id":"activity.save.generic","input_id":"dc","value_type":"integer","source_class":"INVOCATION_ADJUDICATED","cardinality":"single","required":true,"minimum":1,"maximum":30,"policy_basis_mode":"REQUIRED_ARRAY_MAY_BE_EMPTY"},
+    {"edge_key":"fact:activity.attack.ranged_weapon:fiction.target_reachable","input_kind":"INVOCATION_FACT","consumer_id":"activity.attack.ranged_weapon","input_id":"fiction.target_reachable","value_type":"boolean","source_class":"INVOCATION_ADJUDICATED","disposition":"ACTIVE_ADMITTED","policy_basis_mode":"REQUIRED_ARRAY_MAY_BE_EMPTY"},
+    {"edge_key":"fact:activity.spell.fire_bolt:fiction.target_reachable","input_kind":"INVOCATION_FACT","consumer_id":"activity.spell.fire_bolt","input_id":"fiction.target_reachable","value_type":"boolean","source_class":"INVOCATION_ADJUDICATED","disposition":"ACTIVE_ADMITTED","policy_basis_mode":"REQUIRED_ARRAY_MAY_BE_EMPTY"},
+    {"edge_key":"fact:activity.spell.poison_spray:fiction.target_reachable","input_kind":"INVOCATION_FACT","consumer_id":"activity.spell.poison_spray","input_id":"fiction.target_reachable","value_type":"boolean","source_class":"INVOCATION_ADJUDICATED","disposition":"ACTIVE_ADMITTED","policy_basis_mode":"REQUIRED_ARRAY_MAY_BE_EMPTY"},
+    {"edge_key":"fact:activity.spell.thunderclap:fiction.target_reachable","input_kind":"INVOCATION_FACT","consumer_id":"activity.spell.thunderclap","input_id":"fiction.target_reachable","value_type":"boolean","source_class":"INVOCATION_ADJUDICATED","disposition":"ACTIVE_ADMITTED","policy_basis_mode":"REQUIRED_ARRAY_MAY_BE_EMPTY"},
+    {"edge_key":"fact:activity.spell.acid_splash:fiction.target_reachable","input_kind":"INVOCATION_FACT","consumer_id":"activity.spell.acid_splash","input_id":"fiction.target_reachable","value_type":"boolean","source_class":"INVOCATION_ADJUDICATED","disposition":"ACTIVE_ADMITTED","policy_basis_mode":"REQUIRED_ARRAY_MAY_BE_EMPTY"},
+    {"edge_key":"fact:activity.spell.magic_missile:fiction.target_reachable","input_kind":"INVOCATION_FACT","consumer_id":"activity.spell.magic_missile","input_id":"fiction.target_reachable","value_type":"boolean","source_class":"INVOCATION_ADJUDICATED","disposition":"ACTIVE_ADMITTED","policy_basis_mode":"REQUIRED_ARRAY_MAY_BE_EMPTY"},
+    {"edge_key":"fact:activity.spell.burning_hands:fiction.target_reachable","input_kind":"INVOCATION_FACT","consumer_id":"activity.spell.burning_hands","input_id":"fiction.target_reachable","value_type":"boolean","source_class":"INVOCATION_ADJUDICATED","disposition":"ACTIVE_ADMITTED","policy_basis_mode":"REQUIRED_ARRAY_MAY_BE_EMPTY"}
+  ],
+  "current_supported_policy_realizations": [],
+  "conformance_only_policy_realizations": [
+    {"fixture_id":"policy-realization-valid-package-activity","policy_basis_ref":"policy.conformance.valid@0123456789abcdef0123456789abcdef01234567","target_class":"PACKAGE_DEFINITION","realization_refs":["activity.check.generic"],"expected":"CONFORMANCE_VALID_LINK_ONLY"},
+    {"fixture_id":"policy-realization-missing-definition","policy_basis_ref":"policy.conformance.missing@0123456789abcdef0123456789abcdef01234567","target_class":"PACKAGE_DEFINITION","realization_refs":["activity.missing"],"expected":"failure.policy_realization_gap"},
+    {"fixture_id":"policy-realization-quarantined-primitive","policy_basis_ref":"policy.conformance.quarantined@0123456789abcdef0123456789abcdef01234567","target_class":"PRIMITIVE","realization_refs":["op.request_choice"],"expected":"failure.policy_realization_gap"}
+  ]
+}
+
