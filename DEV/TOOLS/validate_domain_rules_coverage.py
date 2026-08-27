@@ -39,6 +39,10 @@ def build_expected_source_sets(root):
  machine += [f"accessor:{k}" for k,v in mech["accessors"].items() if v["disposition"]=="ACTIVE_ADMITTED"]
  machine += [f"selector:{k}" for k in mech["selectors"]]
  machine += [f"derived:{k}" for k,v in mech["derived_nodes"].items() if v["disposition"].startswith("ACTIVE_")]
+ for fact_id,metadata in mech["context_facts"].items():
+  if metadata["disposition"]=="ACTIVE_ADMITTED":
+   machine.append(f"fact:{fact_id}")
+   machine += [f"edge:{fact_id}->{c}" for c in metadata["permitted_consumer_ids"]]
  machine += [f"value:{v['value_id']}" for v in portable["routes"] if v["disposition"]=="ACTIVE_STRUCTURAL"]
  for row in prim["contracts"]:
   if row["selection_state"]=="ACTIVE_ADMITTED":
@@ -51,6 +55,7 @@ def route_for(key):
  if key.startswith("PRODUCT:"): raise ValueError("product route requires evidence row")
  if any(x in v for x in ("activity.check.generic","selector:check.roll","op.resolve_check")):return "route.generic_check"
  if any(x in v for x in ("activity.save.generic","selector:save.roll","op.resolve_save")):return "route.generic_save"
+ if "fiction.target_reachable" in v:return "route.spatial_target_applicability"
  if "procedure." in v or any(x in v for x in ("procedure.combat_minimal","resource.action_budget","resource.movement_budget","transition.location_change")):return "route.procedure_movement"
  if any(x in v for x in ("asset.transfer","transition.asset_transfer","event.asset.transferred")):return "route.asset_transfer"
  if any(x in v for x in ("asset.equip","transition.asset_status","event.asset.status_changed")):return "route.asset_equip"
@@ -66,7 +71,8 @@ def expected_routes():
  return [
  route("route.generic_check","check","bounded ability/skill uncertainty",["activity.check.generic"],["activity.check.generic"],"ENGINE_BOUND basis + bounded INVOCATION_ADJUDICATED dc","NO_AUTHORITATIVE_WORLD_MUTATION","event.check.resolved","BOUNDED_LLM_ADJUDICATED_INPUT_TO_DETERMINISTIC_EXECUTION_PATH","package Activity and exact primitive consumers","no DSL; separate exact consequence"),
  route("route.generic_save","save","bounded saving throw",["activity.save.generic"],["activity.save.generic"],"ENGINE_BOUND basis + bounded INVOCATION_ADJUDICATED dc","NO_AUTHORITATIVE_WORLD_MUTATION","event.save.resolved","BOUNDED_LLM_ADJUDICATED_INPUT_TO_DETERMINISTIC_EXECUTION_PATH","package Activity and exact primitive consumers","no arbitrary basis/threshold/consequence"),
- route("route.procedure_movement","procedure/movement","initiative, turn/action control and budgeted movement",["transition.location_change"],["procedure.combat_minimal"],"ENGINE_BOUND actor/procedure/destination/revisions + fixed initiative RNG evidence","runtime.procedure exact state change; movement also world.actor location","event.procedure.state_changed or event.entity.moved by exact profile","FORMALIZED_DETERMINISTIC_PATH","closed control/movement request, result, event and Procedure schemas","no pathfinding, dormant fiction fact or eventless authoritative mutation"),
+ route("route.procedure_movement","procedure/movement","initiative, turn/action control, within-location budget spend and durable location transition",["transition.location_change"],["procedure.combat_minimal"],"ENGINE_BOUND actor/procedure/current canonical destination/revisions + fixed initiative RNG evidence","runtime.procedure exact state change; durable transition also world.actor location","event.procedure.state_changed or event.entity.moved by exact profile","FORMALIZED_DETERMINISTIC_PATH","closed control/movement request plus canonical world.location snapshot validation","no pathfinding; no fake location for within-location repositioning"),
+ route("route.spatial_target_applicability","spatial applicability","seven exact TargetSpec/AreaSpec consumers",["activity.attack.ranged_weapon","activity.spell.fire_bolt","activity.spell.poison_spray","activity.spell.thunderclap","activity.spell.acid_splash","activity.spell.magic_missile","activity.spell.burning_hands"],[],"ENGINE_BOUND exact TargetSpec/candidate roles + fixed accepted fiction.target_reachable per candidate binding","NO_AUTHORITATIVE_WORLD_MUTATION","NONE; target selection is pre-commit calculation evidence","BOUNDED_LLM_ADJUDICATED_INPUT_TO_DETERMINISTIC_EXECUTION_PATH","exact consumer permission, strict fact envelope and binding fingerprint","no geometry/pathfinding/query; missing is typed failure; fact is not world truth"),
  route("route.asset_transfer","asset","exclusive significant Asset transfer",["transition.asset_transfer"],[],"ENGINE_BOUND Asset/placement/revision","world.asset exclusive placement","event.asset.transferred","FORMALIZED_DETERMINISTIC_PATH","closed Asset transfer request/result","no inventory/currency/economy"),
  route("route.asset_equip","asset","owned Asset held or worn",["transition.asset_status"],[],"ENGINE_BOUND Asset/owner/revision + closed mode","world.asset equipment.mode","event.asset.status_changed","FORMALIZED_DETERMINISTIC_PATH","closed Asset equip request/result","no undeclared capability"),
  route("route.asset_use","asset","validate significant Asset use",[],[],"ENGINE_BOUND Asset/owner/revision + admitted Activity","NO_AUTHORITATIVE_WORLD_MUTATION","NONE unless invoked Activity owns event","FORMALIZED_DETERMINISTIC_PATH","NONE|EXACT_ADMITTED_ACTIVITY","no generic consequence payload"),
@@ -113,8 +119,11 @@ def validate_contract(value,root=None):
  for name in ("character-mvp-seed.json","gameplay-spine-seed.json"): activities|={x["id"] for x in load(root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core"/name)["activity_definitions"]}
  for key in value["source_sets"]["ACTIVE_MACHINE_CONSUMER_KEYS"]:
   if key.startswith("MACHINE:edge:"):
-   op,consumer=key.removeprefix("MACHINE:edge:").split("->",1)
-   if op not in rows or consumer not in rows[op]["exact_seed_consumer_ids"] or consumer not in activities: raise ValueError("orphan machine edge")
+   source,consumer=key.removeprefix("MACHINE:edge:").split("->",1)
+   primitive_ok=source in rows and consumer in rows[source]["exact_seed_consumer_ids"]
+   fact=load(root/"DEV/CATALOG/mechanical-surfaces.json")["context_facts"].get(source)
+   fact_ok=fact is not None and fact["disposition"]=="ACTIVE_ADMITTED" and consumer in fact["permitted_consumer_ids"]
+   if not (primitive_ok or fact_ok) or consumer not in activities: raise ValueError("orphan machine edge")
  manifest=load(root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json"); members={x["path"]:x["sha256"] for x in manifest["content_files"]}; spine=root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/gameplay-spine-seed.json"
  if members.get("gameplay-spine-seed.json")!=hashlib.sha256(spine.read_bytes()).hexdigest(): raise ValueError("detached package member")
  return True
@@ -172,7 +181,7 @@ def execute_combat_procedure_transition(req,procedure=None,receipts=None):
   state=deepcopy(procedure["state"]);before_revision=procedure["revision"]
   if state["lifecycle_state"]=="terminated":return _procedure_failure(req,"failure.transition_requires_procedure")
   active=state["initiative_order"][state["active_turn_index"]]
-  if profile in {"procedure.start_turn","procedure.spend_action","procedure.end_turn"} and req["actor_id"]!=active:return _procedure_failure(req,"failure.missing_reference")
+  if profile in {"procedure.start_turn","procedure.spend_action","procedure.spend_movement","procedure.end_turn"} and req["actor_id"]!=active:return _procedure_failure(req,"failure.missing_reference")
   if profile=="procedure.start_turn":
    if state["lifecycle_state"]!="between_turns" or state["round_advance_pending"]:return _procedure_failure(req,"failure.transition_requires_procedure")
    state["lifecycle_state"]="turn_active"
@@ -180,6 +189,11 @@ def execute_combat_procedure_transition(req,procedure=None,receipts=None):
   elif profile=="procedure.spend_action":
    if state["lifecycle_state"]!="turn_active":return _procedure_failure(req,"failure.transition_requires_procedure")
    budget=state["participant_resources"][active]["resource.action_budget"]
+   if budget["spent"]+req["amount"]>budget["capacity"]:return _procedure_failure(req,"failure.action_economy_scope_invalid")
+   budget["spent"]+=req["amount"]
+  elif profile=="procedure.spend_movement":
+   if state["lifecycle_state"]!="turn_active":return _procedure_failure(req,"failure.transition_requires_procedure")
+   budget=state["participant_resources"][active]["resource.movement_budget"]
    if budget["spent"]+req["amount"]>budget["capacity"]:return _procedure_failure(req,"failure.action_economy_scope_invalid")
    budget["spent"]+=req["amount"]
   elif profile=="procedure.end_turn":
@@ -199,29 +213,63 @@ def execute_combat_procedure_transition(req,procedure=None,receipts=None):
   exports["initiative_order_fingerprint"]=hashlib.sha256(json.dumps(after["state"]["initiative_order"],separators=(",",":")).encode()).hexdigest();exports["fixed_rng_evidence_fingerprint"]=hashlib.sha256(json.dumps(req["initiative_entries"],sort_keys=True,separators=(",",":")).encode()).hexdigest()
  state_sha=hashlib.sha256(json.dumps(after["state"],sort_keys=True,separators=(",",":")).encode()).hexdigest();event={"segment_id":f"resolution:{key}:segment:1","event_ordinal":1,"event_kind":"event.procedure.state_changed","root_command_id":key,"causal_ref":f"resolution:{key}","procedure_id":after["id"],"payload":{"profile_id":profile,"field_path":"state","before_revision":before_revision,"after_revision":after["revision"],"after_state_sha256":state_sha}}
  transaction=(wire,{"procedure":after,"mechanical_event":event,"receipt":_receipt_fixture(wire,exports)});receipts[key]={"fingerprint":fp,"transaction":transaction};return transaction
-def execute_procedure_movement(req,procedure,actor,receipts=None):
+def execute_procedure_movement(req,procedure,actor,destination,receipts=None):
  receipts={} if receipts is None else receipts;key=req["idempotency_key"];fp=_fingerprint(req)
  if key in receipts:return receipts[key]["transaction"] if receipts[key]["fingerprint"]==fp else (_failure(req,"failure.idempotency_conflict"),{})
  schemas=Path(__file__).resolve().parents[1]/"SCHEMAS";actor_record=_world_record(actor,"world.actor",schemas)
+ try: destination_record=_world_record(destination,"world.location",schemas)
+ except (ValueError,KeyError):return (_failure(req,"failure.missing_reference"),{})
  validate_combat_procedure_state(procedure["state"])
- if req["procedure_revision"]!=procedure["revision"] or req["actor_revision"]!=actor["revision"]:return (_failure(req,"failure.state_revision_conflict"),{})
+ if req["procedure_revision"]!=procedure["revision"] or req["actor_revision"]!=actor["revision"] or req["destination_location_revision"]!=destination["revision"]:return (_failure(req,"failure.state_revision_conflict"),{})
  aid=req["actor_id"]
- if req["procedure_id"]!=procedure["id"] or aid!=actor_record["id"] or aid not in procedure["state"]["participant_resources"]:return (_failure(req,"failure.missing_reference"),{})
+ if req["procedure_id"]!=procedure["id"] or aid!=actor_record["id"] or aid not in procedure["state"]["participant_resources"] or req["destination_location_id"]!=destination_record["id"]:return (_failure(req,"failure.missing_reference"),{})
  budget=procedure["state"]["participant_resources"][aid]["resource.movement_budget"]
  if budget["spent"]+req["movement_cost"]>budget["capacity"]:return (_failure(req,"failure.action_economy_scope_invalid"),{})
  p=deepcopy(procedure);a=deepcopy(actor);p["state"]["participant_resources"][aid]["resource.movement_budget"]["spent"]+=req["movement_cost"];a["record"]["state"]["location_id"]=req["destination_location_id"];p["revision"]+=1;a["revision"]+=1;event=f"{key}:event:entity-moved"
  mutations=[{"owner_kind":"runtime.procedure","owner_id":p["id"],"field_path":f"state.participant_resources[{aid}].resource.movement_budget.spent","before_revision":procedure["revision"],"after_revision":p["revision"],"new_value":p["state"]["participant_resources"][aid]["resource.movement_budget"]["spent"]},{"owner_kind":"world.actor","owner_id":a["record"]["id"],"field_path":"state.location_id","before_revision":actor["revision"],"after_revision":a["revision"],"new_value":req["destination_location_id"]}]
  transaction=(_committed("location_change.procedure_movement",key,mutations,[event]),{"procedure":p,"actor":a});receipts[key]={"fingerprint":fp,"transaction":transaction};return transaction
 
-def execute_outside_procedure_movement(req,actor,receipts=None):
+def execute_outside_procedure_movement(req,actor,destination,receipts=None):
  receipts={} if receipts is None else receipts;key=req["idempotency_key"];fp=_fingerprint(req)
  if key in receipts:return receipts[key]["transaction"] if receipts[key]["fingerprint"]==fp else (_failure(req,"failure.idempotency_conflict"),{})
  schemas=Path(__file__).resolve().parents[1]/"SCHEMAS";record=_world_record(actor,"world.actor",schemas)
- if req["actor_id"]!=record["id"]:return (_failure(req,"failure.missing_reference"),{})
- if req["actor_revision"]!=actor["revision"]:return (_failure(req,"failure.state_revision_conflict"),{})
+ try: destination_record=_world_record(destination,"world.location",schemas)
+ except (ValueError,KeyError):return (_failure(req,"failure.missing_reference"),{})
+ if req["actor_id"]!=record["id"] or req["destination_location_id"]!=destination_record["id"]:return (_failure(req,"failure.missing_reference"),{})
+ if req["actor_revision"]!=actor["revision"] or req["destination_location_revision"]!=destination["revision"]:return (_failure(req,"failure.state_revision_conflict"),{})
  after=deepcopy(actor);after["record"]["state"]["location_id"]=req["destination_location_id"];after["revision"]+=1;event=f"{key}:event:entity-moved"
  mutation={"owner_kind":"world.actor","owner_id":record["id"],"field_path":"state.location_id","before_revision":actor["revision"],"after_revision":after["revision"],"new_value":req["destination_location_id"]}
  transaction=(_committed("location_change.outside_procedure",key,[mutation],[event]),{"actor":after});receipts[key]={"fingerprint":fp,"transaction":transaction};return transaction
+
+def spatial_binding_fingerprint(consumer_id,target_spec,candidate_role,provenance_ref,rules_context_fingerprint,source_role="actor"):
+ value={"consumer_id":consumer_id,"source_role":source_role,"target_spec":target_spec,"candidate_role":candidate_role,"spatial_provenance_ref":provenance_ref,"rules_context_fingerprint":rules_context_fingerprint}
+ return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+
+def select_spatial_targets(consumer_id,target_spec,candidate_roles,applicability_facts,rules_context_fingerprint):
+ root=Path(__file__).resolve().parents[2];schemas=root/"DEV/SCHEMAS";validator=CanonicalSchemaValidator(schemas)
+ validator.validate(target_spec,load(schemas/"target-spec.schema.json"))
+ registry=load(root/"DEV/CATALOG/mechanical-surfaces.json")["context_facts"]["fiction.target_reachable"]
+ if registry["disposition"]!="ACTIVE_ADMITTED" or consumer_id not in registry["permitted_consumer_ids"]:raise ValueError("spatial fact consumer is not admitted")
+ if len(candidate_roles)>target_spec["maximum"]:raise ValueError("candidate set exceeds TargetSpec bound")
+ by_binding={}
+ for fact in applicability_facts:
+  validator.validate(fact,load(schemas/"invocation-fact.schema.json"))
+  if fact["fact_id"]!="fiction.target_reachable" or fact["consumer_id"]!=consumer_id:raise ValueError("wrong spatial fact binding")
+  if fact["rules_context_fingerprint"]!=rules_context_fingerprint:raise ValueError("stale spatial fact rules context")
+  if fact["binding_fingerprint"] in by_binding:raise ValueError("duplicate spatial fact binding")
+  by_binding[fact["binding_fingerprint"]]=fact
+ selected=[];used=set()
+ for role in candidate_roles:
+  candidates=[f for f in applicability_facts if f.get("consumer_id")==consumer_id and f.get("fact_id")=="fiction.target_reachable"]
+  keys=[spatial_binding_fingerprint(consumer_id,target_spec,role,f["provenance_ref"],rules_context_fingerprint) for f in candidates]
+  matches=[key for key in keys if key in by_binding]
+  if len(matches)!=1:raise ValueError("missing or ambiguous fixed spatial applicability fact")
+  key=matches[0]
+  used.add(key)
+  if by_binding[key]["value"]:selected.append(role)
+ if used!=set(by_binding):raise ValueError("unbound spatial applicability fact")
+ if len(selected)<target_spec["minimum"]:raise ValueError("too few spatially applicable targets")
+ return selected
 
 def execute_asset_transfer(req,asset,receipts=None):
  receipts={} if receipts is None else receipts;key=req["idempotency_key"];fp=_fingerprint(req)
@@ -256,3 +304,4 @@ def resolve_asset_use(req,asset,admitted_activity_ids,receipts=None):
  wire=_committed("asset.use",key,[],[]);wire["activity_binding"]={"binding_kind":req["consequence_profile"]}
  if req["consequence_profile"]=="EXACT_ADMITTED_ACTIVITY":wire["activity_binding"]["activity_id"]=req["activity_id"]
  transaction=(wire,{});receipts[key]={"fingerprint":fp,"transaction":transaction};return transaction
+
