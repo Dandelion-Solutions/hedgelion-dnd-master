@@ -6,7 +6,7 @@
     "package_id": "hdm.rules.dnd2024-srd52-core",
     "package_version": "0.1.0-mvp",
     "catalog_generation": "2.0.0",
-    "content_set_sha256": "654982181883199320ba21d58be8cfd9090d66e9b30d3f44f8eff6a318b9f194",
+    "content_set_sha256": "d2a4dfcf79a342a5aaf1c1dd1d1f93db107c6f7a8141c7abb82e8a1dcd977410",
     "gameplay_spine_member": "gameplay-spine-seed.json"
   },
   "source_manifest": {
@@ -71,10 +71,14 @@
       "PACKAGE:activity.spell_attack",
       "PACKAGE:activity.spell_damage",
       "PACKAGE:activity.spell_save",
+      "PACKAGE:activity.targeting",
       "PACKAGE:advancement.fighter.level_1.style",
       "PACKAGE:advancement.fighter.mvp_1_2",
       "PACKAGE:advancement.sorcerer.level_1.spells",
       "PACKAGE:advancement.sorcerer.mvp_1",
+      "PACKAGE:area.cone",
+      "PACKAGE:area.emanation",
+      "PACKAGE:area.sphere",
       "PACKAGE:asset.arcane_focus",
       "PACKAGE:asset.equip",
       "PACKAGE:asset.shortbow",
@@ -99,11 +103,8 @@
       "PACKAGE:class.sorcerer",
       "PACKAGE:compiled.acid_damage",
       "PACKAGE:compiled.attack_roll",
-      "PACKAGE:compiled.cone",
       "PACKAGE:compiled.constitution_save",
       "PACKAGE:compiled.d10_plus_prior_check_total",
-      "PACKAGE:compiled.dart_target_bindings",
-      "PACKAGE:compiled.emanation_targets",
       "PACKAGE:compiled.fire_damage",
       "PACKAGE:compiled.full_fire_damage",
       "PACKAGE:compiled.generic_check_roll",
@@ -115,7 +116,6 @@
       "PACKAGE:compiled.second_wind_amount",
       "PACKAGE:compiled.second_wind_roll",
       "PACKAGE:compiled.spell_attack",
-      "PACKAGE:compiled.target",
       "PACKAGE:compiled.thunder_damage",
       "PACKAGE:compiled.weapon_damage",
       "PACKAGE:condition.unconscious",
@@ -159,10 +159,13 @@
       "PACKAGE:feature.human.skillful",
       "PACKAGE:feature.sorcerer.innate_sorcery",
       "PACKAGE:feature.sorcerer.spellcasting",
+      "PACKAGE:fiction.target_reachable",
       "PACKAGE:gameplay_spine.mvp.v1",
       "PACKAGE:hp.current",
       "PACKAGE:hp.temporary",
+      "PACKAGE:invocation.candidate_roles",
       "PACKAGE:invocation.dc",
+      "PACKAGE:invocation.fiction.target_reachable",
       "PACKAGE:invocation.prior_check_dc",
       "PACKAGE:life.active",
       "PACKAGE:life.active_or_dying_or_stable",
@@ -192,12 +195,12 @@
       "PACKAGE:option.spells.mvp_default",
       "PACKAGE:option.style.archery",
       "PACKAGE:option.style.defense",
-      "PACKAGE:parameter.targets",
       "PACKAGE:procedure.advance_round",
       "PACKAGE:procedure.combat_minimal",
       "PACKAGE:procedure.end_turn",
       "PACKAGE:procedure.initialize",
       "PACKAGE:procedure.spend_action",
+      "PACKAGE:procedure.spend_movement",
       "PACKAGE:procedure.start_turn",
       "PACKAGE:procedure.terminate",
       "PACKAGE:proficiency.armor.light",
@@ -210,6 +213,8 @@
       "PACKAGE:proficiency.tool.thieves_tools",
       "PACKAGE:proficiency.weapon.martial",
       "PACKAGE:proficiency.weapon.simple",
+      "PACKAGE:range.distance",
+      "PACKAGE:range.self",
       "PACKAGE:resource.action",
       "PACKAGE:resource.action_budget",
       "PACKAGE:resource.action_surge",
@@ -243,9 +248,12 @@
       "PACKAGE:spell.magic_missile",
       "PACKAGE:spell.poison_spray",
       "PACKAGE:spell.thunderclap",
+      "PACKAGE:target.entities",
+      "PACKAGE:target.entity",
       "PACKAGE:transition.asset_status",
       "PACKAGE:transition.asset_transfer",
       "PACKAGE:transition.location_change",
+      "PACKAGE:unit.foot",
       "PACKAGE:unit.minute",
       "PACKAGE:value.area_spec",
       "PACKAGE:value.target_spec",
@@ -256,8 +264,7 @@
       "PACKAGE:world.asset.state.equipment.mode",
       "PACKAGE:world.asset.state.location_id",
       "PACKAGE:world.asset.state.owner_actor_id",
-      "PACKAGE:world.scene.state.location_id",
-      "PACKAGE:world.zone.id"
+      "PACKAGE:world.location.id"
     ],
     "ACTIVE_MACHINE_CONSUMER_KEYS": [
       "MACHINE:accessor:condition.present",
@@ -273,6 +280,13 @@
       "MACHINE:derived:condition_intrinsic",
       "MACHINE:derived:effect_arbitration",
       "MACHINE:derived:effect_availability",
+      "MACHINE:edge:fiction.target_reachable->activity.attack.ranged_weapon",
+      "MACHINE:edge:fiction.target_reachable->activity.spell.acid_splash",
+      "MACHINE:edge:fiction.target_reachable->activity.spell.burning_hands",
+      "MACHINE:edge:fiction.target_reachable->activity.spell.fire_bolt",
+      "MACHINE:edge:fiction.target_reachable->activity.spell.magic_missile",
+      "MACHINE:edge:fiction.target_reachable->activity.spell.poison_spray",
+      "MACHINE:edge:fiction.target_reachable->activity.spell.thunderclap",
       "MACHINE:edge:op.apply_damage->activity.attack.ranged_weapon",
       "MACHINE:edge:op.apply_damage->activity.spell.acid_splash",
       "MACHINE:edge:op.apply_damage->activity.spell.burning_hands",
@@ -320,6 +334,7 @@
       "MACHINE:edge:op.select_targets->activity.spell.magic_missile",
       "MACHINE:edge:op.select_targets->activity.spell.poison_spray",
       "MACHINE:edge:op.select_targets->activity.spell.thunderclap",
+      "MACHINE:fact:fiction.target_reachable",
       "MACHINE:primitive:op.apply_damage",
       "MACHINE:primitive:op.apply_healing",
       "MACHINE:primitive:op.consume_resource",
@@ -402,6 +417,13 @@
     "MACHINE:derived:condition_intrinsic",
     "MACHINE:derived:effect_arbitration",
     "MACHINE:derived:effect_availability",
+    "MACHINE:edge:fiction.target_reachable->activity.attack.ranged_weapon",
+    "MACHINE:edge:fiction.target_reachable->activity.spell.acid_splash",
+    "MACHINE:edge:fiction.target_reachable->activity.spell.burning_hands",
+    "MACHINE:edge:fiction.target_reachable->activity.spell.fire_bolt",
+    "MACHINE:edge:fiction.target_reachable->activity.spell.magic_missile",
+    "MACHINE:edge:fiction.target_reachable->activity.spell.poison_spray",
+    "MACHINE:edge:fiction.target_reachable->activity.spell.thunderclap",
     "MACHINE:edge:op.apply_damage->activity.attack.ranged_weapon",
     "MACHINE:edge:op.apply_damage->activity.spell.acid_splash",
     "MACHINE:edge:op.apply_damage->activity.spell.burning_hands",
@@ -449,6 +471,7 @@
     "MACHINE:edge:op.select_targets->activity.spell.magic_missile",
     "MACHINE:edge:op.select_targets->activity.spell.poison_spray",
     "MACHINE:edge:op.select_targets->activity.spell.thunderclap",
+    "MACHINE:fact:fiction.target_reachable",
     "MACHINE:primitive:op.apply_damage",
     "MACHINE:primitive:op.apply_healing",
     "MACHINE:primitive:op.consume_resource",
@@ -519,10 +542,14 @@
     "PACKAGE:activity.spell_attack",
     "PACKAGE:activity.spell_damage",
     "PACKAGE:activity.spell_save",
+    "PACKAGE:activity.targeting",
     "PACKAGE:advancement.fighter.level_1.style",
     "PACKAGE:advancement.fighter.mvp_1_2",
     "PACKAGE:advancement.sorcerer.level_1.spells",
     "PACKAGE:advancement.sorcerer.mvp_1",
+    "PACKAGE:area.cone",
+    "PACKAGE:area.emanation",
+    "PACKAGE:area.sphere",
     "PACKAGE:asset.arcane_focus",
     "PACKAGE:asset.equip",
     "PACKAGE:asset.shortbow",
@@ -547,11 +574,8 @@
     "PACKAGE:class.sorcerer",
     "PACKAGE:compiled.acid_damage",
     "PACKAGE:compiled.attack_roll",
-    "PACKAGE:compiled.cone",
     "PACKAGE:compiled.constitution_save",
     "PACKAGE:compiled.d10_plus_prior_check_total",
-    "PACKAGE:compiled.dart_target_bindings",
-    "PACKAGE:compiled.emanation_targets",
     "PACKAGE:compiled.fire_damage",
     "PACKAGE:compiled.full_fire_damage",
     "PACKAGE:compiled.generic_check_roll",
@@ -563,7 +587,6 @@
     "PACKAGE:compiled.second_wind_amount",
     "PACKAGE:compiled.second_wind_roll",
     "PACKAGE:compiled.spell_attack",
-    "PACKAGE:compiled.target",
     "PACKAGE:compiled.thunder_damage",
     "PACKAGE:compiled.weapon_damage",
     "PACKAGE:condition.unconscious",
@@ -607,10 +630,13 @@
     "PACKAGE:feature.human.skillful",
     "PACKAGE:feature.sorcerer.innate_sorcery",
     "PACKAGE:feature.sorcerer.spellcasting",
+    "PACKAGE:fiction.target_reachable",
     "PACKAGE:gameplay_spine.mvp.v1",
     "PACKAGE:hp.current",
     "PACKAGE:hp.temporary",
+    "PACKAGE:invocation.candidate_roles",
     "PACKAGE:invocation.dc",
+    "PACKAGE:invocation.fiction.target_reachable",
     "PACKAGE:invocation.prior_check_dc",
     "PACKAGE:life.active",
     "PACKAGE:life.active_or_dying_or_stable",
@@ -640,12 +666,12 @@
     "PACKAGE:option.spells.mvp_default",
     "PACKAGE:option.style.archery",
     "PACKAGE:option.style.defense",
-    "PACKAGE:parameter.targets",
     "PACKAGE:procedure.advance_round",
     "PACKAGE:procedure.combat_minimal",
     "PACKAGE:procedure.end_turn",
     "PACKAGE:procedure.initialize",
     "PACKAGE:procedure.spend_action",
+    "PACKAGE:procedure.spend_movement",
     "PACKAGE:procedure.start_turn",
     "PACKAGE:procedure.terminate",
     "PACKAGE:proficiency.armor.light",
@@ -658,6 +684,8 @@
     "PACKAGE:proficiency.tool.thieves_tools",
     "PACKAGE:proficiency.weapon.martial",
     "PACKAGE:proficiency.weapon.simple",
+    "PACKAGE:range.distance",
+    "PACKAGE:range.self",
     "PACKAGE:resource.action",
     "PACKAGE:resource.action_budget",
     "PACKAGE:resource.action_surge",
@@ -691,9 +719,12 @@
     "PACKAGE:spell.magic_missile",
     "PACKAGE:spell.poison_spray",
     "PACKAGE:spell.thunderclap",
+    "PACKAGE:target.entities",
+    "PACKAGE:target.entity",
     "PACKAGE:transition.asset_status",
     "PACKAGE:transition.asset_transfer",
     "PACKAGE:transition.location_change",
+    "PACKAGE:unit.foot",
     "PACKAGE:unit.minute",
     "PACKAGE:value.area_spec",
     "PACKAGE:value.target_spec",
@@ -704,8 +735,7 @@
     "PACKAGE:world.asset.state.equipment.mode",
     "PACKAGE:world.asset.state.location_id",
     "PACKAGE:world.asset.state.owner_actor_id",
-    "PACKAGE:world.scene.state.location_id",
-    "PACKAGE:world.zone.id",
+    "PACKAGE:world.location.id",
     "PRODUCT:product.advancement.exact",
     "PRODUCT:product.asset.ownership_equip_use_transfer",
     "PRODUCT:product.check.generic",
@@ -961,6 +991,132 @@
       "realization": "COMPLETE",
       "disposition": "IN_SUPPORTED_MVP",
       "route_id": "route.inherited_s6d07",
+      "source_citations": [
+        "DEV/CATALOG/mechanical-surfaces.json",
+        "DEV/CATALOG/portable-value-routes.json",
+        "DEV/CATALOG/activity-primitive-contracts.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "MACHINE:edge:fiction.target_reachable->activity.attack.ranged_weapon",
+      "source_memberships": [
+        "ACTIVE_MACHINE_CONSUMER_KEYS"
+      ],
+      "coverage_id": "coverage.dc77ae0820ce126f",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.spatial_target_applicability",
+      "source_citations": [
+        "DEV/CATALOG/mechanical-surfaces.json",
+        "DEV/CATALOG/portable-value-routes.json",
+        "DEV/CATALOG/activity-primitive-contracts.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "MACHINE:edge:fiction.target_reachable->activity.spell.acid_splash",
+      "source_memberships": [
+        "ACTIVE_MACHINE_CONSUMER_KEYS"
+      ],
+      "coverage_id": "coverage.ff5e021a132567ac",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.spatial_target_applicability",
+      "source_citations": [
+        "DEV/CATALOG/mechanical-surfaces.json",
+        "DEV/CATALOG/portable-value-routes.json",
+        "DEV/CATALOG/activity-primitive-contracts.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "MACHINE:edge:fiction.target_reachable->activity.spell.burning_hands",
+      "source_memberships": [
+        "ACTIVE_MACHINE_CONSUMER_KEYS"
+      ],
+      "coverage_id": "coverage.a0db6ddc89141433",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.spatial_target_applicability",
+      "source_citations": [
+        "DEV/CATALOG/mechanical-surfaces.json",
+        "DEV/CATALOG/portable-value-routes.json",
+        "DEV/CATALOG/activity-primitive-contracts.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "MACHINE:edge:fiction.target_reachable->activity.spell.fire_bolt",
+      "source_memberships": [
+        "ACTIVE_MACHINE_CONSUMER_KEYS"
+      ],
+      "coverage_id": "coverage.b9734232c8ec8061",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.spatial_target_applicability",
+      "source_citations": [
+        "DEV/CATALOG/mechanical-surfaces.json",
+        "DEV/CATALOG/portable-value-routes.json",
+        "DEV/CATALOG/activity-primitive-contracts.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "MACHINE:edge:fiction.target_reachable->activity.spell.magic_missile",
+      "source_memberships": [
+        "ACTIVE_MACHINE_CONSUMER_KEYS"
+      ],
+      "coverage_id": "coverage.128d4467b8bc4239",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.spatial_target_applicability",
+      "source_citations": [
+        "DEV/CATALOG/mechanical-surfaces.json",
+        "DEV/CATALOG/portable-value-routes.json",
+        "DEV/CATALOG/activity-primitive-contracts.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "MACHINE:edge:fiction.target_reachable->activity.spell.poison_spray",
+      "source_memberships": [
+        "ACTIVE_MACHINE_CONSUMER_KEYS"
+      ],
+      "coverage_id": "coverage.15d2d635f660f517",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.spatial_target_applicability",
+      "source_citations": [
+        "DEV/CATALOG/mechanical-surfaces.json",
+        "DEV/CATALOG/portable-value-routes.json",
+        "DEV/CATALOG/activity-primitive-contracts.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "MACHINE:edge:fiction.target_reachable->activity.spell.thunderclap",
+      "source_memberships": [
+        "ACTIVE_MACHINE_CONSUMER_KEYS"
+      ],
+      "coverage_id": "coverage.7f2d5083baaad901",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.spatial_target_applicability",
       "source_citations": [
         "DEV/CATALOG/mechanical-surfaces.json",
         "DEV/CATALOG/portable-value-routes.json",
@@ -1807,6 +1963,24 @@
       "realization": "COMPLETE",
       "disposition": "IN_SUPPORTED_MVP",
       "route_id": "route.inherited_s6d07",
+      "source_citations": [
+        "DEV/CATALOG/mechanical-surfaces.json",
+        "DEV/CATALOG/portable-value-routes.json",
+        "DEV/CATALOG/activity-primitive-contracts.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "MACHINE:fact:fiction.target_reachable",
+      "source_memberships": [
+        "ACTIVE_MACHINE_CONSUMER_KEYS"
+      ],
+      "coverage_id": "coverage.ab1c42106dda4f83",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.spatial_target_applicability",
       "source_citations": [
         "DEV/CATALOG/mechanical-surfaces.json",
         "DEV/CATALOG/portable-value-routes.json",
@@ -3107,6 +3281,25 @@
       "negative_space": "No utterance enumeration or authority beyond cited owner"
     },
     {
+      "source_key": "PACKAGE:activity.targeting",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.0559e2207f5bf9e5",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.inherited_s6d07",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
       "source_key": "PACKAGE:advancement.fighter.level_1.style",
       "source_memberships": [
         "PACKAGE_CLOSURE_KEYS"
@@ -3169,6 +3362,63 @@
         "PACKAGE_CLOSURE_KEYS"
       ],
       "coverage_id": "coverage.d25c73e2f414e4c7",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.inherited_s6d07",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "PACKAGE:area.cone",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.dbe84de95f2e237f",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.inherited_s6d07",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "PACKAGE:area.emanation",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.59a65d4748897ea7",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.inherited_s6d07",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "PACKAGE:area.sphere",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.43713ca2c421a469",
       "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
       "product_scope": "SUPPORTED",
       "realization": "COMPLETE",
@@ -3639,25 +3889,6 @@
       "negative_space": "No utterance enumeration or authority beyond cited owner"
     },
     {
-      "source_key": "PACKAGE:compiled.cone",
-      "source_memberships": [
-        "PACKAGE_CLOSURE_KEYS"
-      ],
-      "coverage_id": "coverage.8ee4849d740afafe",
-      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
-      "product_scope": "SUPPORTED",
-      "realization": "COMPLETE",
-      "disposition": "IN_SUPPORTED_MVP",
-      "route_id": "route.inherited_s6d07",
-      "source_citations": [
-        "character-capabilities.json",
-        "character-mvp-seed.json",
-        "health-effects-recovery-seed.json",
-        "gameplay-spine-seed.json"
-      ],
-      "negative_space": "No utterance enumeration or authority beyond cited owner"
-    },
-    {
       "source_key": "PACKAGE:compiled.constitution_save",
       "source_memberships": [
         "PACKAGE_CLOSURE_KEYS"
@@ -3682,44 +3913,6 @@
         "PACKAGE_CLOSURE_KEYS"
       ],
       "coverage_id": "coverage.1d307273cbaef1d3",
-      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
-      "product_scope": "SUPPORTED",
-      "realization": "COMPLETE",
-      "disposition": "IN_SUPPORTED_MVP",
-      "route_id": "route.inherited_s6d07",
-      "source_citations": [
-        "character-capabilities.json",
-        "character-mvp-seed.json",
-        "health-effects-recovery-seed.json",
-        "gameplay-spine-seed.json"
-      ],
-      "negative_space": "No utterance enumeration or authority beyond cited owner"
-    },
-    {
-      "source_key": "PACKAGE:compiled.dart_target_bindings",
-      "source_memberships": [
-        "PACKAGE_CLOSURE_KEYS"
-      ],
-      "coverage_id": "coverage.2b9f44b5000a07cb",
-      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
-      "product_scope": "SUPPORTED",
-      "realization": "COMPLETE",
-      "disposition": "IN_SUPPORTED_MVP",
-      "route_id": "route.inherited_s6d07",
-      "source_citations": [
-        "character-capabilities.json",
-        "character-mvp-seed.json",
-        "health-effects-recovery-seed.json",
-        "gameplay-spine-seed.json"
-      ],
-      "negative_space": "No utterance enumeration or authority beyond cited owner"
-    },
-    {
-      "source_key": "PACKAGE:compiled.emanation_targets",
-      "source_memberships": [
-        "PACKAGE_CLOSURE_KEYS"
-      ],
-      "coverage_id": "coverage.1838dbe5b8fe28f2",
       "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
       "product_scope": "SUPPORTED",
       "realization": "COMPLETE",
@@ -3929,25 +4122,6 @@
         "PACKAGE_CLOSURE_KEYS"
       ],
       "coverage_id": "coverage.99d9d121699e4399",
-      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
-      "product_scope": "SUPPORTED",
-      "realization": "COMPLETE",
-      "disposition": "IN_SUPPORTED_MVP",
-      "route_id": "route.inherited_s6d07",
-      "source_citations": [
-        "character-capabilities.json",
-        "character-mvp-seed.json",
-        "health-effects-recovery-seed.json",
-        "gameplay-spine-seed.json"
-      ],
-      "negative_space": "No utterance enumeration or authority beyond cited owner"
-    },
-    {
-      "source_key": "PACKAGE:compiled.target",
-      "source_memberships": [
-        "PACKAGE_CLOSURE_KEYS"
-      ],
-      "coverage_id": "coverage.c80206616556e4cc",
       "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
       "product_scope": "SUPPORTED",
       "realization": "COMPLETE",
@@ -4779,6 +4953,25 @@
       "negative_space": "No utterance enumeration or authority beyond cited owner"
     },
     {
+      "source_key": "PACKAGE:fiction.target_reachable",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.a1daae94dbb078b8",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.spatial_target_applicability",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
       "source_key": "PACKAGE:gameplay_spine.mvp.v1",
       "source_memberships": [
         "PACKAGE_CLOSURE_KEYS"
@@ -4836,6 +5029,25 @@
       "negative_space": "No utterance enumeration or authority beyond cited owner"
     },
     {
+      "source_key": "PACKAGE:invocation.candidate_roles",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.4f6095e1575382a1",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.inherited_s6d07",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
       "source_key": "PACKAGE:invocation.dc",
       "source_memberships": [
         "PACKAGE_CLOSURE_KEYS"
@@ -4846,6 +5058,25 @@
       "realization": "COMPLETE",
       "disposition": "IN_SUPPORTED_MVP",
       "route_id": "route.inherited_s6d07",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "PACKAGE:invocation.fiction.target_reachable",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.6352955f2272ed58",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.spatial_target_applicability",
       "source_citations": [
         "character-capabilities.json",
         "character-mvp-seed.json",
@@ -5406,25 +5637,6 @@
       "negative_space": "No utterance enumeration or authority beyond cited owner"
     },
     {
-      "source_key": "PACKAGE:parameter.targets",
-      "source_memberships": [
-        "PACKAGE_CLOSURE_KEYS"
-      ],
-      "coverage_id": "coverage.889d56044c71fc4e",
-      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
-      "product_scope": "SUPPORTED",
-      "realization": "COMPLETE",
-      "disposition": "IN_SUPPORTED_MVP",
-      "route_id": "route.inherited_s6d07",
-      "source_citations": [
-        "character-capabilities.json",
-        "character-mvp-seed.json",
-        "health-effects-recovery-seed.json",
-        "gameplay-spine-seed.json"
-      ],
-      "negative_space": "No utterance enumeration or authority beyond cited owner"
-    },
-    {
       "source_key": "PACKAGE:procedure.advance_round",
       "source_memberships": [
         "PACKAGE_CLOSURE_KEYS"
@@ -5506,6 +5718,25 @@
         "PACKAGE_CLOSURE_KEYS"
       ],
       "coverage_id": "coverage.47390948cab53958",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.procedure_movement",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "PACKAGE:procedure.spend_movement",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.e0bd49fb6b51feed",
       "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
       "product_scope": "SUPPORTED",
       "realization": "COMPLETE",
@@ -5734,6 +5965,44 @@
         "PACKAGE_CLOSURE_KEYS"
       ],
       "coverage_id": "coverage.64f8126ea8caf4ac",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.inherited_s6d07",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "PACKAGE:range.distance",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.ebaaeb193c570010",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.inherited_s6d07",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "PACKAGE:range.self",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.17b7b92ae4237632",
       "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
       "product_scope": "SUPPORTED",
       "realization": "COMPLETE",
@@ -6375,6 +6644,44 @@
       "negative_space": "No utterance enumeration or authority beyond cited owner"
     },
     {
+      "source_key": "PACKAGE:target.entities",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.66d5962b2ad5c00c",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.inherited_s6d07",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "PACKAGE:target.entity",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.bbfc0239448a2910",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.inherited_s6d07",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
       "source_key": "PACKAGE:transition.asset_status",
       "source_memberships": [
         "PACKAGE_CLOSURE_KEYS"
@@ -6423,6 +6730,25 @@
       "realization": "COMPLETE",
       "disposition": "IN_SUPPORTED_MVP",
       "route_id": "route.procedure_movement",
+      "source_citations": [
+        "character-capabilities.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json"
+      ],
+      "negative_space": "No utterance enumeration or authority beyond cited owner"
+    },
+    {
+      "source_key": "PACKAGE:unit.foot",
+      "source_memberships": [
+        "PACKAGE_CLOSURE_KEYS"
+      ],
+      "coverage_id": "coverage.58c8b6ef8315eb40",
+      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
+      "product_scope": "SUPPORTED",
+      "realization": "COMPLETE",
+      "disposition": "IN_SUPPORTED_MVP",
+      "route_id": "route.inherited_s6d07",
       "source_citations": [
         "character-capabilities.json",
         "character-mvp-seed.json",
@@ -6622,30 +6948,11 @@
       "negative_space": "No utterance enumeration or authority beyond cited owner"
     },
     {
-      "source_key": "PACKAGE:world.scene.state.location_id",
+      "source_key": "PACKAGE:world.location.id",
       "source_memberships": [
         "PACKAGE_CLOSURE_KEYS"
       ],
-      "coverage_id": "coverage.ada67cffd6781921",
-      "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
-      "product_scope": "SUPPORTED",
-      "realization": "COMPLETE",
-      "disposition": "IN_SUPPORTED_MVP",
-      "route_id": "route.inherited_s6d07",
-      "source_citations": [
-        "character-capabilities.json",
-        "character-mvp-seed.json",
-        "health-effects-recovery-seed.json",
-        "gameplay-spine-seed.json"
-      ],
-      "negative_space": "No utterance enumeration or authority beyond cited owner"
-    },
-    {
-      "source_key": "PACKAGE:world.zone.id",
-      "source_memberships": [
-        "PACKAGE_CLOSURE_KEYS"
-      ],
-      "coverage_id": "coverage.35d78e46ca289cdb",
+      "coverage_id": "coverage.c8de0af47bfbaaea",
       "package_presence": "PRESENT_ACTIVE_OR_TRANSITIVE",
       "product_scope": "SUPPORTED",
       "realization": "COMPLETE",
@@ -7053,11 +7360,11 @@
       "product_scope": "SUPPORTED",
       "realization": "COMPLETE",
       "disposition": "IN_SUPPORTED_MVP",
-      "route_id": "route.procedure_movement",
+      "route_id": "route.spatial_target_applicability",
       "source_citations": [
-        "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: bounded engine-owned spatial inputs"
+        "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: bounded spatial applicability from exact TargetSpec/AreaSpec constraints plus accepted invocation-adjudicated facts"
       ],
-      "negative_space": "closed engine-bound refs only"
+      "negative_space": "seven exact consumers; no geometry engine or spatial truth lifecycle"
     },
     {
       "source_key": "PRODUCT:product.spatial.visibility_cover_generic",
@@ -7073,7 +7380,7 @@
       "source_citations": [
         "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: does not promise generic visibility/cover calculation"
       ],
-      "negative_space": "dormant facts remain dormant"
+      "negative_space": "fiction.target_visible remains dormant"
     }
   ],
   "atomic_routes": [
@@ -7162,7 +7469,7 @@
     {
       "route_id": "route.procedure_movement",
       "family": "procedure/movement",
-      "scenario": "initiative, turn/action control and budgeted movement",
+      "scenario": "initiative, turn/action control, within-location budget spend and durable location transition",
       "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
       "consumer_ids": [
         "transition.location_change"
@@ -7170,7 +7477,7 @@
       "definition_ids": [
         "procedure.combat_minimal"
       ],
-      "input_provenance": "ENGINE_BOUND actor/procedure/destination/revisions + fixed initiative RNG evidence",
+      "input_provenance": "ENGINE_BOUND actor/procedure/current canonical destination/revisions + fixed initiative RNG evidence",
       "missing_input_behavior": "TYPED_FAILURE_NO_MUTATION_NO_EVENT",
       "binding_identity": "REQUEST_ACTIVITY_ACCEPTED_PARAMETER_FINGERPRINT",
       "frozen_inputs": "ACCEPTED_BINDINGS_AND_FIXED_RNG_REUSED",
@@ -7179,7 +7486,7 @@
       "dependencies": "CLOSED_CATALOG_REFERENCES_AND_OWNER_READS",
       "execution_route": "RESOLUTION_TO_ONE_EXECUTION_SEGMENT_OR_EXPLICIT_OUT_OF_SCOPE",
       "rng_retry": "NOT_APPLICABLE_NO_RNG",
-      "authoritative_mutation": "runtime.procedure exact state change; movement also world.actor location",
+      "authoritative_mutation": "runtime.procedure exact state change; durable transition also world.actor location",
       "mutation_rationale": "Exact owner fields commit atomically",
       "execution_segment": "ONE_ATOMIC_SEGMENT_PARTIAL_COMMIT_FORBIDDEN",
       "event_route": "event.procedure.state_changed or event.entity.moved by exact profile",
@@ -7196,8 +7503,53 @@
       "multiplayer_currentness": "pinned revisions fail closed; no global lock",
       "suspension_chronology_recovery": "existing Step-3/5 owner or N/A; no new suspension",
       "classification": "FORMALIZED_DETERMINISTIC_PATH",
-      "positive_evidence": "closed control/movement request, result, event and Procedure schemas",
-      "negative_space": "no pathfinding, dormant fiction fact or eventless authoritative mutation",
+      "positive_evidence": "closed control/movement request plus canonical world.location snapshot validation",
+      "negative_space": "no pathfinding; no fake location for within-location repositioning",
+      "downstream_gap": "NONE"
+    },
+    {
+      "route_id": "route.spatial_target_applicability",
+      "family": "spatial applicability",
+      "scenario": "seven exact TargetSpec/AreaSpec consumers",
+      "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
+      "consumer_ids": [
+        "activity.attack.ranged_weapon",
+        "activity.spell.fire_bolt",
+        "activity.spell.poison_spray",
+        "activity.spell.thunderclap",
+        "activity.spell.acid_splash",
+        "activity.spell.magic_missile",
+        "activity.spell.burning_hands"
+      ],
+      "definition_ids": [],
+      "input_provenance": "ENGINE_BOUND exact TargetSpec/candidate roles + fixed accepted fiction.target_reachable per candidate binding",
+      "missing_input_behavior": "TYPED_FAILURE_NO_MUTATION_NO_EVENT",
+      "binding_identity": "REQUEST_ACTIVITY_ACCEPTED_PARAMETER_FINGERPRINT",
+      "frozen_inputs": "ACCEPTED_BINDINGS_AND_FIXED_RNG_REUSED",
+      "currentness": "CATALOG_GENERATION_PLUS_PINNED_REVISIONS_OR_NA",
+      "selector_operation_resolver": "EXACT_NAMED_ROUTE_ONLY",
+      "dependencies": "CLOSED_CATALOG_REFERENCES_AND_OWNER_READS",
+      "execution_route": "RESOLUTION_TO_ONE_EXECUTION_SEGMENT_OR_EXPLICIT_OUT_OF_SCOPE",
+      "rng_retry": "NOT_APPLICABLE_NO_RNG",
+      "authoritative_mutation": "NO_AUTHORITATIVE_WORLD_MUTATION",
+      "mutation_rationale": "No artificial world change",
+      "execution_segment": "EVENTLESS_ZERO_REVISION_ALLOWED",
+      "event_route": "NONE; target selection is pre-commit calculation evidence",
+      "receipt_route": "value.resolution_receipt linked to segment/events/exports",
+      "failures": [
+        "failure.idempotency_conflict",
+        "failure.state_revision_conflict",
+        "failure.hydration_required",
+        "failure.missing_reference",
+        "failure.catalog_context_incompatible",
+        "failure.execution_limit"
+      ],
+      "idempotency_conflict": "same key+fingerprint reuses; differing fingerprint rejects",
+      "multiplayer_currentness": "pinned revisions fail closed; no global lock",
+      "suspension_chronology_recovery": "existing Step-3/5 owner or N/A; no new suspension",
+      "classification": "BOUNDED_LLM_ADJUDICATED_INPUT_TO_DETERMINISTIC_EXECUTION_PATH",
+      "positive_evidence": "exact consumer permission, strict fact envelope and binding fingerprint",
+      "negative_space": "no geometry/pathfinding/query; missing is typed failure; fact is not world truth",
       "downstream_gap": "NONE"
     },
     {
@@ -7489,3 +7841,4 @@
     "supported_gaps": []
   }
 }
+
