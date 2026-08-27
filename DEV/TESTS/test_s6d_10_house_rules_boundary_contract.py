@@ -180,36 +180,61 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
             "consumer_id": "activity.spell.fire_bolt", "binding_fingerprint": "a" * 64,
             "rules_context_fingerprint": "b" * 64, "policy_basis_refs": [policy_ref],
         }
-        resolution = {
-            "root_command_id": "cmd-1", "initiating_command_id": "cmd-1",
-            "activity_id": "activity.spell.fire_bolt", "actor_id": "actor-1",
-            "parameter_bindings": {"dc": binding}, "catalog_context_fingerprint": "catalog-A",
-            "status": "RUNNING", "next_segment_sequence": 1, "invocation_facts": [fact],
-            "fixed_rng_results": [], "prior_step_exports": {}, "child_resolution_ids": [], "segments": [],
-        }
-        continuation = {
-            "generation": 1, "root_command_id": "cmd-1", "resolution_id": "resolution-1",
-            "activity_id": "activity.spell.fire_bolt", "actor_id": "actor-1",
-            "parameter_bindings": {"dc": binding}, "catalog_context_fingerprint": "catalog-A",
-            "execution_cursor": "step.select-targets", "safe_recompute_phase": "determine",
-            "invocation_facts": [fact], "fixed_rng_results": [], "prior_step_exports": {},
-            "committed_segment_refs": [], "dependency_frontier_refs": [],
-            "expected_child_resolution_ids": [], "future_rng_frontier": "rng:1",
-        }
-        self.validate_schema("runtime-resolution-state.schema.json", resolution)
-        self.validate_schema("runtime-continuation-state.schema.json", continuation)
-        accepted = {"parameter_bindings": resolution["parameter_bindings"], "invocation_facts": resolution["invocation_facts"]}
-        checkpoint = json.loads(json.dumps(continuation))
-        recovered = {"parameter_bindings": checkpoint["parameter_bindings"], "invocation_facts": checkpoint["invocation_facts"]}
-        self.assertEqual(accepted, recovered)
-        self.assertEqual(VALIDATOR.fingerprint(accepted), VALIDATOR.fingerprint(recovered))
-        changed = json.loads(json.dumps(recovered))
-        changed["parameter_bindings"]["dc"]["policy_basis_refs"] = ["policy.test@" + "e" * 40]
-        self.assertNotEqual(VALIDATOR.fingerprint(accepted), VALIDATOR.fingerprint(changed))
+        package = ROOT / "GAME/RULES/packages/hdm.rules.dnd2024-srd52-core"
+        activities = {}
+        for member in ("character-mvp-seed.json", "gameplay-spine-seed.json"):
+            payload = json.loads((package / member).read_text(encoding="utf-8"))
+            activities.update({row["id"]: row for row in payload.get("activity_definitions", [])})
+        facts = json.loads((ROOT / "DEV/CATALOG/mechanical-surfaces.json").read_text(encoding="utf-8"))["context_facts"]
+
+        fixtures = [
+            ("activity.check.generic", {"dc": binding}, []),
+            ("activity.spell.fire_bolt", {}, [fact]),
+        ]
+        for index, (activity_id, parameter_bindings, invocation_facts) in enumerate(fixtures, 1):
+            declaration = activities[activity_id]["data"].get("parameters", {})
+            self.assertTrue(set(parameter_bindings) <= set(declaration))
+            for parameter_id, accepted_binding in parameter_bindings.items():
+                self.assertEqual(declaration[parameter_id]["source_class"], accepted_binding["source_class"])
+                self.assertLessEqual(declaration[parameter_id]["minimum"], accepted_binding["value"])
+                self.assertLessEqual(accepted_binding["value"], declaration[parameter_id]["maximum"])
+            for accepted_fact in invocation_facts:
+                self.assertEqual(facts[accepted_fact["fact_id"]]["disposition"], "ACTIVE_ADMITTED")
+                self.assertIn(activity_id, facts[accepted_fact["fact_id"]]["permitted_consumer_ids"])
+
+            resolution = {
+                "root_command_id": f"cmd-{index}", "initiating_command_id": f"cmd-{index}",
+                "activity_id": activity_id, "actor_id": "actor-1",
+                "parameter_bindings": parameter_bindings, "catalog_context_fingerprint": "catalog-A",
+                "status": "RUNNING", "next_segment_sequence": 1, "invocation_facts": invocation_facts,
+                "fixed_rng_results": [], "prior_step_exports": {}, "child_resolution_ids": [], "segments": [],
+            }
+            continuation = {
+                "generation": 1, "root_command_id": f"cmd-{index}", "resolution_id": f"resolution-{index}",
+                "activity_id": activity_id, "actor_id": "actor-1",
+                "parameter_bindings": parameter_bindings, "catalog_context_fingerprint": "catalog-A",
+                "execution_cursor": "step.accepted-inputs", "safe_recompute_phase": "determine",
+                "invocation_facts": invocation_facts, "fixed_rng_results": [], "prior_step_exports": {},
+                "committed_segment_refs": [], "dependency_frontier_refs": [],
+                "expected_child_resolution_ids": [], "future_rng_frontier": f"rng:{index}",
+            }
+            self.validate_schema("runtime-resolution-state.schema.json", resolution)
+            self.validate_schema("runtime-continuation-state.schema.json", continuation)
+            accepted = {"parameter_bindings": parameter_bindings, "invocation_facts": invocation_facts}
+            checkpoint = json.loads(json.dumps(continuation))
+            recovered = {"parameter_bindings": checkpoint["parameter_bindings"], "invocation_facts": checkpoint["invocation_facts"]}
+            self.assertEqual(accepted, recovered)
+            self.assertEqual(VALIDATOR.fingerprint(accepted), VALIDATOR.fingerprint(recovered))
+            changed = json.loads(json.dumps(recovered))
+            if changed["parameter_bindings"]:
+                changed["parameter_bindings"]["dc"]["policy_basis_refs"] = ["policy.test@" + "e" * 40]
+            else:
+                changed["invocation_facts"][0]["policy_basis_refs"] = ["policy.test@" + "e" * 40]
+            self.assertNotEqual(VALIDATOR.fingerprint(accepted), VALIDATOR.fingerprint(changed))
+            self.assertEqual(resolution["fixed_rng_results"], [])
+            self.assertEqual(resolution["segments"], [])
         core = json.loads((ROOT / "DEV/CATALOG/core-catalog.json").read_text(encoding="utf-8"))
         self.assertIn("failure.idempotency_conflict", core["registries"]["execution_failure_codes"])
-        self.assertEqual(resolution["fixed_rng_results"], [])
-        self.assertEqual(resolution["segments"], [])
 
     def test_integration_schema_is_fail_closed(self):
         schema = json.loads((ROOT / "DEV/SCHEMAS/house-rules-mechanical-boundary.schema.json").read_text(encoding="utf-8"))
