@@ -31,6 +31,13 @@ def validate_policy_basis_refs(refs):
         if not POLICY_BASIS_REF.fullmatch(ref): raise ValueError("invalid exact policy basis ref")
     return True
 
+def validate_accepted_policy_basis_collections(parameter_bindings,invocation_facts):
+    """Required pre-Resolution gate for every enriched accepted input."""
+    for value in parameter_bindings.values():
+        if isinstance(value,dict) and value.get("source_class")=="INVOCATION_ADJUDICATED": validate_policy_basis_refs(value.get("policy_basis_refs"))
+    for fact in invocation_facts: validate_policy_basis_refs(fact.get("policy_basis_refs"))
+    return True
+
 def validate_shape(c):
     if set(c)!=TOP_KEYS: raise ValueError(f"unknown contract members or missing required members: {sorted(set(c)^TOP_KEYS)}")
     if c["schema_version"]!=1: raise ValueError("unsupported contract schema_version")
