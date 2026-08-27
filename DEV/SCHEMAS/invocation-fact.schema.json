@@ -4,7 +4,7 @@
   "title": "HDM registered invocation-adjudicated fact",
   "type": "object",
   "additionalProperties": false,
-  "required": ["fact_id", "value", "provenance_class", "provenance_ref", "consumer_id", "binding_fingerprint", "rules_context_fingerprint"],
+  "required": ["fact_id", "value", "provenance_class", "provenance_ref", "consumer_id", "binding_fingerprint", "rules_context_fingerprint", "policy_basis_refs"],
   "properties": {
     "fact_id": {"$ref": "#/$defs/machineId"},
     "value": {"type": "boolean"},
@@ -12,12 +12,18 @@
     "provenance_ref": {"type": "string", "minLength": 1},
     "consumer_id": {"$ref": "#/$defs/machineId"},
     "binding_fingerprint": {"$ref": "#/$defs/sha256"},
-    "rules_context_fingerprint": {"$ref": "#/$defs/sha256"}
+    "rules_context_fingerprint": {"$ref": "#/$defs/sha256"},
+    "policy_basis_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "https://hedgelion.invalid/schemas/policy-basis-ref.schema.json"}
+    }
   },
   "$defs": {
     "machineId": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
     "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
   },
+  "description": "The fact remains a boolean embedded causal input. policy_basis_refs is empty for a one-off judgment with no durable policy basis and otherwise preserves every materially applied policy at its exact campaign revision. The references do not make policy executable, do not create persistent spatial truth and gain no lifecycle/disposition.",
   "examples": [
     {
       "fact_id": "fiction.target_reachable",
@@ -26,7 +32,8 @@
       "provenance_ref": "turn-000042:fact:1",
       "consumer_id": "activity.spell.fire_bolt",
       "binding_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "rules_context_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      "rules_context_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "policy_basis_refs": []
     }
   ]
 }
