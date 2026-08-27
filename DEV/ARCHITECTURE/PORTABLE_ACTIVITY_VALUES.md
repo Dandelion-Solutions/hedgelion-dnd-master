@@ -102,3 +102,8 @@ Tests must prove canonical-root/reference equality, declaration-binding compatib
 ## S6D-09 exact spatial-fact realization amendment
 
 The S6D-09 senior-audit repair uses TargetSpec/AreaSpec only as bounded constraints; they are not spatial truth. Seven exact existing `op.select_targets` consumers receive a finite candidate-role set and one accepted `fiction.target_reachable` boolean for each applicable source/consumer/spec/candidate/spatial-provenance binding. `invocation-fact.schema.json` now requires `consumer_id`, `binding_fingerprint` and `rules_context_fingerprint` in addition to value/provenance, and accepted work freezes those values across retry. Missing is not false; stale or cross-context facts reject. The embedded fact remains a nonowner with no disposition/lifecycle or persistence, and no geometry/query engine follows from this realization. `fiction.target_visible` remains dormant.
+
+
+## 12. S6D-10 policy-basis integration
+
+Every accepted `INVOCATION_ADJUDICATED` parameter binding and invocation fact carries required `policy_basis_refs`. The array is empty for a one-off judgment with no durable policy basis; otherwise it contains every materially applied durable policy as an exact historical reference. Binders reject duplicates and non-ascending Unicode code-point order before Resolution construction. The array is causal evidence only and creates no policy/value lifecycle or execution authority.
