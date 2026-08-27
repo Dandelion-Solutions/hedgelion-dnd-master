@@ -1,6 +1,6 @@
 # Domain Rules Coverage and Minimal Gameplay Spine
 
-Status: **CANONICAL — S6D-09 STEPS 1–8 COMPLETE**
+Status: **CANONICAL — S6D-09 STEPS 1–8 COMPLETE / SPATIAL CONFORMANCE REPAIRED**
 
 Date: 2026-08-27
 
@@ -8,7 +8,7 @@ Date: 2026-08-27
 
 This owner defines the supported reusable mechanic boundary of the built-in bounded MVP and the proof that product promises, identity-bound package content and active machine consumers reconcile. It does not own RNG, world state, Procedure persistence, Asset state, Activity execution, adjudication policy or primitive semantics; those remain with their cited owners.
 
-The supported spine is generic typed check/save, minimal initiative/turn/action/movement Procedure, engine-bound spatial references, significant Asset transfer/equip/use, domain lowering for social/hazard/reward fiction, and the exact S6D-07/08 routes. Natural-language player actions are not enumerated.
+The supported spine is generic typed check/save, minimal initiative/turn/action/movement Procedure, bounded target/range/area applicability for exact seed consumers, significant Asset transfer/equip/use, domain lowering for social/hazard/reward fiction, and the exact S6D-07/08 routes. Natural-language player actions are not enumerated.
 
 ## 2. Completeness law
 
@@ -35,11 +35,13 @@ The Activities end at typed outcome. They contain no consequence payload, rule e
 
 `procedure.combat_minimal` owns lifecycle (`between_turns|turn_active|terminated`), participants, fixed initiative order/tie resolution, round/turn cursor, explicit round-advance-pending state and per-participant `resource.action_budget` / `resource.movement_budget`. Encounter may reference but never duplicate these fields. Initialization consumes one fixed RNG-result reference, roll total and unique tie rank per participant; retry reuses that accepted evidence and cannot respin order.
 
-The seven declared transitions are exact: initialize, start turn, spend action, spend movement, end turn, advance round and terminate. Six use the closed Procedure request/result schemas and replace exactly the pinned `runtime.procedure.state` in one segment with `event.procedure.state_changed` plus a receipt; spend movement is the existing two-owner movement profile. The event payload binds profile, field path, before/after revision and exact after-state digest. Start/end phase, active participant, action capacity, last-turn round gate, revision and idempotency are fail-closed.
+The seven declared transitions are exact: initialize, start turn, spend action, spend movement, end turn, advance round and terminate. All seven use the closed Procedure request/result schemas and replace exactly the pinned `runtime.procedure.state` in one segment with `event.procedure.state_changed` plus a receipt. `procedure.spend_movement` spends budget without asserting a durable location transition. The event payload binds profile, field path, before/after revision and exact after-state digest. Start/end phase, active participant, action/movement capacity, last-turn round gate, revision and idempotency are fail-closed.
 
-Budgeted movement validates Procedure and Actor revisions and commits exactly one ExecutionSegment containing both movement-spent and Actor-location changes. Partial commit is forbidden. Outside-Procedure location change is a separate one-owner profile with movement cost explicitly N/A.
+Durable budgeted movement is a separate `location_change.procedure_movement` route. It validates pinned Procedure and Actor revisions plus the identity, kind, canonical minimum state and current revision of a destination `world.location`, then commits exactly one ExecutionSegment containing both movement-spent and Actor-location changes. Partial commit is forbidden. Outside-Procedure durable location change is a separate one-owner profile with movement cost explicitly N/A and the same destination validation. `Actor.location_id` names a durable world location; it is not a tactical micro-position.
 
-Spatial inputs are engine-bound Actor/Scene/Zone/TargetSpec/AreaSpec references only. Dormant visibility/reachability facts remain dormant. There is no pathfinding, collision simulation, universal coordinate model, global geometry query or campaign scan.
+Target/range/area applicability is a separate Mechanical-Null calculation route, never an alias for Procedure/movement. Seven exact `op.select_targets` consumers declare a strict `TargetSpec` (and `AreaSpec` where needed), receive a finite invocation-bound candidate-role list, and require one accepted `fiction.target_reachable` boolean per source/consumer/spec/candidate/spatial-provenance binding. Missing is a typed failure; false is distinct from missing. Accepted fact values and their provenance/binding/rules-context fingerprints remain fixed with accepted work, but create no independent lifecycle or persistent spatial truth. `fiction.target_visible` remains dormant and generic visibility/cover remains out of scope.
+
+Within-location repositioning such as “behind the pillar”, “near the door” or “beside the table” remains fiction plus `procedure.spend_movement`; it creates no fake `world.location` and does not mutate `Actor.location_id`. If one of the seven exact supported Activities needs the relation for applicability, the accepted fact boundary carries that exact current invocation judgment. There is no pathfinding, collision simulation, universal coordinate model, global geometry query or campaign scan.
 
 ## 5. Significant Assets
 
@@ -71,7 +73,7 @@ Contest-specific resolution, generic reaction, broad damage-defense, generic con
 
 ## 9. Architecture acceptance walkthrough
 
-A player tries to persuade a guard. Fiction determines feasibility and supplies a bounded DC; `activity.check.generic` produces a fixed, retry-safe outcome, which may be Mechanical-Null. The party then crosses a falling-stone hazard; `activity.save.generic` reuses the same resolution spine and failure may lower to the existing exact damage route. The PC moves to an engine-identified pillar location; one segment atomically spends Procedure movement and changes Actor location. Hostility starts the minimal Procedure and existing S6D-07/08 attack/spell/health routes run without a generic reaction engine. The guard later grants a significant item; the same Asset transfer used for gift or loot changes exclusive ownership without a reward engine.
+A player tries to persuade a guard. Fiction determines feasibility and supplies a bounded DC; `activity.check.generic` produces a fixed, retry-safe outcome, which may be Mechanical-Null. The party then crosses a falling-stone hazard; `activity.save.generic` reuses the same resolution spine and failure may lower to the existing exact damage route. The PC walks from a canonical room to a canonical corridor: one segment validates the pinned destination, spends Procedure movement and changes Actor location. Moving behind a pillar within the room instead spends only Procedure movement and stays fictional unless an exact Activity consumes a fixed invocation-adjudicated applicability fact; no pillar location is created. Hostility starts the minimal Procedure and existing S6D-07/08 attack/spell/health routes run without a generic reaction engine. The guard later grants a significant item; the same Asset transfer used for gift or loot changes exclusive ownership without a reward engine.
 
 ## 10. Machine and package companions
 
@@ -90,3 +92,4 @@ A player tries to persuade a guard. Fiction determines feasibility and supplies 
 - `DEV/TESTS/test_s6d_09_domain_rules_coverage_contract.py`
 
 Production execution remains Implementation Planning work. S6D-11 performs integrated package/catalog verification, not deferred product or architecture design.
+
