@@ -62,9 +62,9 @@ Nine accessors are `ACTIVE_ADMITTED`:
 
 ### 3.2 Invocation facts
 
-`fiction.target_visible` and `fiction.target_reachable` are `DORMANT_RESERVED`.
+`fiction.target_visible` remains `DORMANT_RESERVED`. `fiction.target_reachable` is `ACTIVE_ADMITTED` only for the seven exact existing `op.select_targets` consumers named by the S6D-09 spatial conformance repair: ranged weapon attack, Fire Bolt, Poison Spray, Thunderclap, Acid Splash, Magic Missile and Burning Hands.
 
-Accepted architecture proves the bounded boolean capability, but current repository evidence contains structural examples rather than an exact admitted compiled consumer. They remain nonselectable until S6D-07–09 names such a consumer and its exact binding/permission. This does not remove the capability or decide seed mechanics.
+Reachability admission is per exact consumer and compiled source/candidate binding; it does not activate generic visibility, geometry, pathfinding or world-query authority. Registration never turns the accepted boolean into durable spatial truth.
 
 ### 3.3 Derived nodes
 
@@ -128,7 +128,8 @@ fixed matrix is:
 | `health.maximum` | `accessor:health.bloodied` |
 | `resource.capacity` | `accessor:resource.available` |
 | every other accessor | none until an exact compiled consumer is admitted |
-| both dormant facts | none |
+| `fiction.target_visible` | none; dormant |
+| `fiction.target_reachable` | the seven exact S6D-09 Activity IDs in `mechanical-surfaces.json` |
 | derived nodes | the fixed consumers in §7 |
 
 Every concrete predicate/definition occurrence has a stable compiled consumer
@@ -143,7 +144,7 @@ Dormant IDs fail compiled-content validation even if their JSON shape is syntact
 
 ## 6. Invocation fact contract
 
-For both reserved facts:
+For both registered facts:
 
 ```text
 producer                 HOST_LLM_BOUNDARY
@@ -177,7 +178,7 @@ Acceptance requires all of:
 4. accepted provenance;
 5. compatible pinned `ResolvedCatalogContext`.
 
-The current two IDs fail item 1 because they are dormant. S6D-04 defines their semantics but does not activate or redesign their portable envelope.
+`fiction.target_reachable` passes item 1 only for its seven exact S6D-09 consumers; `fiction.target_visible` still fails item 1 because it is dormant. The active reachability binding fingerprint covers consumer, compiled source role, TargetSpec/AreaSpec, candidate, stable spatial-provenance reference and the pinned rules-context fingerprint. Missing, false and stale/cross-context remain distinct. This is an activation of the existing S6D-04 boundary, not a redesign or independent fact lifecycle.
 
 Facts never become world truth merely through use. Step 3 retains accepted values and provenance across continuation/retry; Step-5.13 may collect them after no live retry/resume/idempotency edge requires them.
 
@@ -296,7 +297,7 @@ Machine verification must prove:
 - exact 10-ID equality among core registry, accessor metadata and accessor-ref branches;
 - exact two-fact/four-node registry sets;
 - item metadata/schema validation;
-- `condition.value` and both facts remain dormant/nonselectable;
+- `condition.value` and `fiction.target_visible` remain dormant/nonselectable, while `fiction.target_reachable` has exactly seven admitted consumers;
 - all derived nodes are ENGINE_STATE-only with empty exact fact permissions;
 - accessor dependency targets resolve;
 - `resource.capacity/available` integer alignment;
