@@ -41,7 +41,7 @@
       }
     }
   },
-  "description": "Raw scalar/array bindings remain available for non-adjudicated parameter classes. An INVOCATION_ADJUDICATED Activity parameter is accepted only as the enriched object form after deterministic validation against the selected Activity parameter declaration. The full accepted object participates in RuntimeCommand input identity and is preserved by Resolution/Continuation. policy_basis_refs is empty for a one-off ruling with no durable policy basis and otherwise identifies every materially applied policy at its exact campaign revision. This value object is causal execution evidence, not world state or policy authority.",
+  "description": "Raw scalar/array bindings remain available for non-adjudicated parameter classes. An INVOCATION_ADJUDICATED Activity parameter is accepted only as the enriched object form after deterministic validation against the selected Activity parameter declaration. The full accepted object participates in RuntimeCommand input identity and is preserved by Resolution/Continuation. policy_basis_refs is empty for a one-off ruling with no durable policy basis and otherwise identifies every materially applied policy at its exact campaign revision; the binder MUST emit unique refs in ascending Unicode code-point order and reject noncanonical permutations. This value object is causal execution evidence, not world state or policy authority.",
   "examples": [
     {
       "source_class": "INVOCATION_ADJUDICATED",
