@@ -1,25 +1,44 @@
 {
-  "package_id": "hdm.rules.dnd2024-srd52-core",
-  "package_version": "0.1.0-mvp",
-  "catalog_generation": "2.0.0",
-  "content_file": "character-mvp-seed.json",
-  "content_sha256": "992fec66fe7a71cfd43546d8c8a95c393b037deed30ed67d8209218b248a15cb",
-  "content_files": [
-    {"path": "character-mvp-seed.json", "sha256": "992fec66fe7a71cfd43546d8c8a95c393b037deed30ed67d8209218b248a15cb"},
-    {"path": "health-effects-recovery-seed.json", "sha256": "a4125499be85566d049cf6596d9d9a79a001894b613c04f12f6c15dad86cc750"}
-  ],
-  "content_set_sha256": "a28dbfcb99aa817d63c0bc1d0d443cf7a345d2173f11de260464d47a515c14ea",
-  "profile_id": "character.mvp_vertical_slice.v1",
-  "content_basis": "SRD_5_2_1_BASED_MVP_SUBSET",
-  "full_srd_character_corpus": false,
-  "unsupported_content_policy": "ABSENT_NONSELECTABLE",
-  "supported_species": ["species.human"],
-  "supported_backgrounds": ["background.criminal"],
-  "supported_class_levels": {
-    "class.fighter": [1, 2],
-    "class.sorcerer": [1]
-  },
-  "onboarding_policy": "PROGRESSIVE_INFER_DEFAULT_DELEGATE_ASK_ONLY_MATERIAL",
-  "notice": "NOTICE.md"
+    "package_id": "hdm.rules.dnd2024-srd52-core",
+    "package_version": "0.1.0-mvp",
+    "catalog_generation": "2.0.0",
+    "content_file": "character-mvp-seed.json",
+    "content_sha256": "992fec66fe7a71cfd43546d8c8a95c393b037deed30ed67d8209218b248a15cb",
+    "content_files": [
+        {
+            "path": "character-mvp-seed.json",
+            "sha256": "992fec66fe7a71cfd43546d8c8a95c393b037deed30ed67d8209218b248a15cb"
+        },
+        {
+            "path": "health-effects-recovery-seed.json",
+            "sha256": "a4125499be85566d049cf6596d9d9a79a001894b613c04f12f6c15dad86cc750"
+        },
+        {
+            "path": "gameplay-spine-seed.json",
+            "sha256": "f8a7397c226cfbec926e5a6fbcbcb50f8c1eca42863aaab460aebd5b5cd304be"
+        }
+    ],
+    "content_set_sha256": "654982181883199320ba21d58be8cfd9090d66e9b30d3f44f8eff6a318b9f194",
+    "profile_id": "character.mvp_vertical_slice.v1",
+    "gameplay_profile_id": "gameplay_spine.mvp.v1",
+    "content_basis": "SRD_5_2_1_BASED_MVP_SUBSET",
+    "full_srd_character_corpus": false,
+    "unsupported_content_policy": "ABSENT_NONSELECTABLE",
+    "supported_species": [
+        "species.human"
+    ],
+    "supported_backgrounds": [
+        "background.criminal"
+    ],
+    "supported_class_levels": {
+        "class.fighter": [
+            1,
+            2
+        ],
+        "class.sorcerer": [
+            1
+        ]
+    },
+    "onboarding_policy": "PROGRESSIVE_INFER_DEFAULT_DELEGATE_ASK_ONLY_MATERIAL",
+    "notice": "NOTICE.md"
 }
-

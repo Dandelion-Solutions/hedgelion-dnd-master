@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/product-promise-evidence.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_name", "schema_version", "laws", "rows"],
+  "properties": {
+    "schema_name": {"const": "hdm_product_promise_evidence"},
+    "schema_version": {"const": 1},
+    "laws": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["atomic_rows", "utterances_are_not_keys", "missing_evidence_fails"],
+      "properties": {
+        "atomic_rows": {"const": true},
+        "utterances_are_not_keys": {"const": true},
+        "missing_evidence_fails": {"const": true}
+      }
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "owner_path", "evidence_pattern", "qualifier", "product_scope", "route_id"],
+        "properties": {
+          "key": {"type": "string", "pattern": "^product\\.[a-z][a-z0-9_.]*$"},
+          "owner_path": {"type": "string", "minLength": 1},
+          "evidence_pattern": {"type": "string", "minLength": 1},
+          "qualifier": {"type": "string", "minLength": 1},
+          "product_scope": {"enum": ["SUPPORTED", "EXPLICITLY_OUT_OF_SCOPE"]},
+          "route_id": {"type": "string", "pattern": "^route\\.[a-z][a-z0-9_.]*$"}
+        }
+      }
+    }
+  }
+}

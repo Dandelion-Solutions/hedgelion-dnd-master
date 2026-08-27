@@ -9,7 +9,7 @@
       "actor_id": "actor.mvp-archer",
       "actor_state_revision": 1,
       "catalog_generation": "2.0.0",
-      "package_content_set_sha256": "a28dbfcb99aa817d63c0bc1d0d443cf7a345d2173f11de260464d47a515c14ea",
+      "package_content_set_sha256": "654982181883199320ba21d58be8cfd9090d66e9b30d3f44f8eff6a318b9f194",
       "provenance": {"assets": "ASSET_STATE", "proficiencies": "RESOLVED_DEFINITION_GRANTS", "selectors": "MECHANICAL_CONTEXT", "activities": "CATALOG_ADMISSION_LEDGER"},
       "owned_asset_definition_ids": ["asset.shortbow", "asset.thieves_tools"],
       "derived_proficiency_ids": ["proficiency.weapon.simple", "proficiency.weapon.martial", "proficiency.save.strength", "proficiency.save.constitution", "proficiency.skill.sleight_of_hand", "proficiency.skill.stealth", "proficiency.tool.thieves_tools"],
@@ -20,7 +20,7 @@
       "actor_id": "actor.mvp-innate-mage",
       "actor_state_revision": 1,
       "catalog_generation": "2.0.0",
-      "package_content_set_sha256": "a28dbfcb99aa817d63c0bc1d0d443cf7a345d2173f11de260464d47a515c14ea",
+      "package_content_set_sha256": "654982181883199320ba21d58be8cfd9090d66e9b30d3f44f8eff6a318b9f194",
       "provenance": {"assets": "ASSET_STATE", "proficiencies": "RESOLVED_DEFINITION_GRANTS", "selectors": "MECHANICAL_CONTEXT", "activities": "CATALOG_ADMISSION_LEDGER"},
       "owned_asset_definition_ids": ["asset.arcane_focus", "asset.thieves_tools"],
       "derived_proficiency_ids": ["proficiency.save.constitution", "proficiency.save.charisma", "proficiency.skill.sleight_of_hand", "proficiency.skill.stealth", "proficiency.tool.thieves_tools"],
@@ -100,4 +100,3 @@
     "recovery": {"same_idempotency_key_returns_same_receipt": true, "no_pending_continuation": true}
   }
 }
-

@@ -50,3 +50,17 @@ The `op.create_effect` replacement is equally narrow. It accepts only `effect.in
 ## 7. Verification
 
 Focused tests prove registry equality, closed row shape, exact value routing, read allowlists, RNG exclusivity, suspension forms, compiler bounds, core transition/event/failure membership, execution ownership and rejection of dormant/unknown/ill-shaped steps. Whole-project review must additionally check Activity, Resolution, execution, persistence, chronology, catalog-admission and portable-value owners.
+
+## 8. S6D-09 exact-consumer amendment
+
+S6D-09 adds two identity-bound `definition.activity` consumers in the selected package: `activity.check.generic` and `activity.save.generic`. They add no primitive and change no primitive authority. The exact consumer amendments are limited to:
+
+```text
+op.roll          <- activity.check.generic, activity.save.generic
+op.resolve_check <- activity.check.generic
+op.resolve_save  <- activity.save.generic
+```
+
+Both definitions compile through the same closed argument/result contracts already admitted above. Ability/proficiency basis is selected from the finite package declaration; the threshold is one bounded `INVOCATION_ADJUDICATED` integer whose accepted binding/provenance/currentness is frozen by the Activity invocation owner; `op.roll` remains the sole RNG owner; resolution exports only `check_outcome` or `save_outcome`. Neither primitive receives consequence selection, arbitrary transition, mutation, Asset, spatial, query or product-policy authority. Any downstream world consequence is a separately admitted exact owner transition. A successful or failed check/save may therefore be Mechanical-Null.
+
+The amended exact-consumer lists are content-identity-bound through `GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/gameplay-spine-seed.json` and its entry in `character-capabilities.json`. Removing that file, changing its digest, or failing package compilation makes both consumers nonselectable; it does not fall back to a descriptive overlay.

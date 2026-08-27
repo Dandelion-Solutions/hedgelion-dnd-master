@@ -1,388 +1,718 @@
 {
-  "catalog_version": "2.0.0",
-  "schema_version": 1,
-  "registries": {
-    "content_definition_kinds": [
-      "definition.ability", "definition.skill", "definition.proficiency",
-      "definition.size_category", "definition.creature_type",
-      "definition.movement_mode", "definition.sense", "definition.language",
-      "definition.damage_type", "definition.currency",
-      "definition.equipment_property", "definition.weapon_mastery",
-      "definition.spell_school", "definition.rest_policy",
-      "definition.actor_archetype", "definition.species",
-      "definition.background", "definition.class", "definition.subclass",
-      "definition.advancement", "definition.feat", "definition.feature",
-      "definition.spell", "definition.asset", "definition.activity",
-      "definition.resource", "definition.effect", "definition.condition",
-      "definition.recipe", "definition.hazard", "definition.terrain",
-      "definition.environment", "definition.location_archetype",
-      "definition.organization_archetype", "definition.mission_template",
-      "definition.contract_template", "definition.mode_profile"
-    ],
-    "world_record_kinds": [
-      "world.actor", "world.actor_group", "world.asset", "world.location",
-      "world.connection", "world.zone", "world.organization",
-      "world.contract", "world.mission", "world.scene",
-      "world.encounter", "world.hazard", "world.effect", "world.lore_fact",
-      "world.knowledge"
-    ],
-    "runtime_record_kinds": [
-      "runtime.session", "runtime.message", "runtime.interaction",
-      "runtime.procedure", "runtime.intent_plan", "runtime.command",
-      "runtime.resolution", "runtime.continuation", "runtime.mechanical_event",
-      "runtime.semantic_event", "runtime.resolution_trace",
-      "runtime.disclosure", "runtime.collaboration_obligation",
-      "runtime.checkpoint", "runtime.id_allocator",
-      "runtime.maintenance_audit", "runtime.catalog_gap_report"
-    ],
-    "protocol_value_kinds": [
-      "value.runtime_command", "value.action_request",
-      "value.transition_request", "value.intent_clause", "value.target_spec",
-      "value.area_spec", "value.duration_spec", "value.cost_spec",
-      "value.signal", "value.contribution", "value.state_delta",
-      "value.roll_request", "value.roll_result", "value.choice_request",
-      "value.reaction_offer", "value.resolution_receipt",
-      "value.publication_manifest", "value.validation_issue",
-      "value.execution_segment", "value.pending_child_invocation",
-      "value.invocation_fact", "value.boundary_occurrence",
-      "value.epistemic_delta", "value.role_context_request",
-      "value.context_need_profile", "value.role_context_bundle",
-      "value.context_trace", "value.context_budget_envelope",
-      "value.turn_envelope", "value.interpreter_result",
-      "value.preparation_draft", "value.actor_proposal",
-      "value.story_projection_draft", "value.narration_result",
-      "value.story_service_decision"
-    ],
-    "actor_facets": [
-      "actor.player_character", "actor.nonplayer_character",
-      "actor.companion", "actor.summon", "actor.swarm", "actor.mount",
-      "actor.hireling", "actor.temporary"
-    ],
-    "asset_facets": [
-      "asset.weapon", "asset.armor", "asset.shield", "asset.ammunition",
-      "asset.consumable", "asset.tool", "asset.spellcasting_focus",
-      "asset.container", "asset.wearable", "asset.currency", "asset.key",
-      "asset.document", "asset.quest_item", "asset.magic", "asset.artifact",
-      "asset.vehicle", "asset.mount_gear", "asset.crafting_material",
-      "asset.food_drink", "asset.poison", "asset.trade_good",
-      "asset.treasure", "asset.decoration"
-    ],
-    "location_facets": [
-      "location.plane", "location.world", "location.region",
-      "location.settlement", "location.district", "location.site",
-      "location.structure", "location.room", "location.wilderness",
-      "location.dungeon", "location.battlefield", "location.abstract"
-    ],
-    "organization_facets": [
-      "organization.faction", "organization.government", "organization.guild",
-      "organization.religious", "organization.military",
-      "organization.business", "organization.criminal",
-      "organization.family", "organization.community"
-    ],
-    "activity_families": [
-      "activity.perceive", "activity.search", "activity.communicate",
-      "activity.influence", "activity.perform", "activity.move",
-      "activity.manipulate", "activity.use_asset", "activity.transfer",
-      "activity.attack", "activity.defend", "activity.control",
-      "activity.cast", "activity.activate_feature", "activity.test",
-      "activity.assist", "activity.conceal", "activity.prepare",
-      "activity.rest", "activity.craft", "activity.downtime",
-      "activity.wait", "activity.command", "activity.composite"
-    ],
-    "activity_primitives": [
-      "op.select_targets", "op.roll", "op.resolve_check",
-      "op.resolve_contest", "op.resolve_save", "op.resolve_attack",
-      "op.apply_damage", "op.apply_healing", "op.set_temporary_hp",
-      "op.consume_resource", "op.restore_resource", "op.move_entity",
-      "op.teleport_entity", "op.transfer_asset", "op.transfer_currency",
-      "op.create_entity", "op.retire_entity", "op.create_effect",
-      "op.update_effect", "op.remove_effect", "op.transform_entity",
-      "op.create_zone", "op.update_zone", "op.remove_zone",
-      "op.for_each_target", "op.branch", "op.request_choice",
-      "op.open_reaction_window", "op.emit_fact", "op.schedule_followup",
-      "op.advance_local_time"
-    ],
-    "transition_kinds": [
-      "transition.entity_create", "transition.entity_promote",
-      "transition.entity_retire", "transition.actor_state", "transition.effect_state",
-      "transition.asset_transfer", "transition.asset_status",
-      "transition.currency_transfer", "transition.location_change",
-      "transition.connection_state", "transition.zone_state",
-      "transition.organization_state", "transition.membership_change",
-      "transition.contract_state", "transition.mission_state",
-      "transition.scene_state", "transition.encounter_state",
-      "transition.hazard_state", "transition.lore_commit",
-      "transition.knowledge_change", "transition.event_time_advance"
-    ],
-    "event_kinds": [
-      "event.activity.completed", "event.activity.rejected",
-      "event.activity.aborted", "event.check.resolved",
-      "event.contest.resolved", "event.save.resolved", "event.attack.hit",
-      "event.attack.missed", "event.attack.critical",
-      "event.damage.applied", "event.healing.applied",
-      "event.temporary_hp.changed", "event.resource.consumed",
-      "event.resource.restored", "event.entity.created",
-      "event.entity.promoted", "event.entity.retired",
-      "event.actor.state_changed", "event.asset.transferred",
-      "event.asset.status_changed", "event.currency.transferred",
-      "event.entity.moved", "event.entity.teleported",
-      "event.entity.transformed", "event.effect.created", "event.action_entitlement.granted",
-      "event.effect.updated", "event.effect.expired", "event.effect.removed",
-      "event.zone.created", "event.zone.updated", "event.zone.removed",
-      "event.connection.changed", "event.organization.changed",
-      "event.membership.changed", "event.contract.changed",
-      "event.mission.changed", "event.scene.changed",
-      "event.encounter.changed", "event.hazard.changed",
-      "event.lore.committed", "event.knowledge.changed",
-      "event.event_time.advanced"
-    ],
-    "resource_mechanics": [
-      "resource.die_pool", "resource.tiered_pool", "resource.bounded_pool",
-      "resource.binary", "resource.cooldown", "resource.action_budget",
-      "resource.movement_budget", "resource.currency_balance"
-    ],
-    "effect_facets": [
-      "effect.condition", "effect.modifier", "effect.periodic_damage",
-      "effect.periodic_healing", "effect.transformation", "effect.zone",
-      "effect.aura", "effect.concentration", "effect.equipment_passive",
-      "effect.environment", "effect.narrative"
-    ],
-    "rule_operations": [
-      "rule.add_flat", "rule.add_dice", "rule.replace_dice",
-      "rule.grant_advantage", "rule.grant_disadvantage",
-      "rule.set_minimum", "rule.set_maximum", "rule.multiply",
-      "rule.override", "rule.add_damage_component", "rule.resistance",
-      "rule.immunity", "rule.vulnerability", "rule.adjust_cost",
-      "rule.adjust_dc", "rule.adjust_critical", "rule.adjust_target",
-      "rule.adjust_range", "rule.adjust_duration", "rule.grant_activity",
-      "rule.restrict_activity", "rule.grant_movement", "rule.grant_sense",
-      "rule.grant_proficiency", "rule.grant_trait", "rule.usage_gate"
-    ],
-    "rule_selectors": [
-      "ability.score", "ability.modifier", "test.roll", "check.roll",
-      "contest.roll", "save.roll", "initiative.roll", "check.dc",
-      "save.dc", "spell.dc", "attack.roll", "attack.critical_threshold",
-      "defense.armor_class", "damage.weapon", "damage.spell",
-      "damage.dealt", "damage.received", "healing.done",
-      "healing.received", "resource.cost", "resource.capacity",
-      "resource.recovery", "activity.availability", "activity.activation",
-      "target.count", "target.range", "target.area", "effect.duration",
-      "health.maximum", "condition.applicability", "movement.speed",
-      "sense.range", "proficiency.rank", "actor.trait"
-    ],
-    "mechanical_accessors": [
-      "health.current", "health.temporary", "health.maximum",
-      "health.bloodied", "life.state", "condition.present",
-      "condition.value", "resource.capacity", "resource.available",
-      "owner_effect.parameter"
-    ],
-    "life_states": [
-      "life.active", "life.dying", "life.stable", "life.dead"
-    ],
-    "life_state_policies": [
-      "life_policy.dnd2024.character_like",
-      "life_policy.dnd2024.monster_default"
-    ],
-    "condition_aggregation_policies": [
-      "condition_aggregation.presence",
-      "condition_aggregation.cumulative_units"
-    ],
-    "condition_rule_scopes": [
-      "condition_rule_scope.aggregate_once",
-      "condition_rule_scope.per_effective_application"
-    ],
-    "condition_boundary_response_operations": [
-      "condition_response.remove_count"
-    ],
-    "effect_reapplication_match_policies": [
-      "effect_reapplication_match.target_family",
-      "effect_reapplication_match.target_family_source"
-    ],
-    "effect_reapplication_actions": [
-      "effect_reapplication.refresh", "effect_reapplication.replace"
-    ],
-    "effect_arbitration_policies": [
-      "effect_arbitration.potency_then_recency"
-    ],
-    "effect_lifecycle_states": [
-      "effect_lifecycle.active", "effect_lifecycle.terminal"
-    ],
-    "effect_terminal_reasons": [
-      "effect_end.expired", "effect_end.removed", "effect_end.replaced",
-      "effect_end.support_lost"
-    ],
-    "boundary_kinds": [
-      "boundary.turn_start", "boundary.turn_end",
-      "boundary.round_start", "boundary.round_end",
-      "boundary.short_rest_complete", "boundary.long_rest_complete",
-      "boundary.dawn"
-    ],
-    "temporal_binding_kinds": [
-      "temporal.metric_deadline", "temporal.procedure_boundary",
-      "temporal.semantic_boundary"
-    ],
-    "resource_recovery_operations": [
-      "resource_recovery.reset_spent",
-      "resource_recovery.restore_to_capacity",
-      "resource_recovery.restore_amount"
-    ],
-    "target_kinds": [
-      "target.none", "target.self", "target.entity", "target.entities",
-      "target.asset", "target.location", "target.zone", "target.point"
-    ],
-    "area_shapes": [
-      "area.cone", "area.cube", "area.cylinder", "area.emanation",
-      "area.line", "area.sphere"
-    ],
-    "range_modes": [
-      "range.self", "range.touch", "range.distance", "range.sight",
-      "range.unlimited", "range.same_location", "range.near",
-      "range.reachable"
-    ],
-    "signal_kinds": [
-      "signal.resolution.prepared", "signal.roll.pending",
-      "signal.roll.resolved", "signal.attack.hit.pending",
-      "signal.spell.cast.pending", "signal.damage.pending",
-      "signal.healing.pending", "signal.resource.consumption.pending",
-      "signal.effect.application.pending", "signal.entity.move.pending",
-      "signal.entity.leave_reach.pending", "signal.entity.enter_zone.pending",
-      "signal.entity.leave_zone.pending", "signal.turn.start",
-      "signal.turn.end", "signal.round.start", "signal.round.end",
-      "signal.effect.start", "signal.effect.end",
-      "signal.resource.threshold.pending"
-    ],
-    "duration_modes": [
-      "duration.instant", "duration.metric", "duration.boundary",
-      "duration.permanent"
-    ],
-    "duration_units": [
-      "unit.second", "unit.minute", "unit.hour", "unit.day"
-    ],
-    "resolution_states": [
-      "PENDING", "RUNNING", "AWAITING_CHOICE", "AWAITING_REACTION",
-      "HYDRATION_REQUIRED", "PUBLISH_REQUIRED", "COMPLETED", "REJECTED",
-      "ABORTED", "FAILED"
-    ],
-    "command_dispositions": [
-      "command.accepted", "command.settled"
-    ],
-    "execution_failure_codes": [
-      "failure.idempotency_conflict", "failure.hydration_required",
-      "failure.missing_reference", "failure.catalog_context_incompatible",
-      "failure.continuation_conflict", "failure.continuation_stale",
-      "failure.dependency_cycle", "failure.transition_requires_procedure",
-      "failure.order_adjudication_required", "failure.execution_limit",
-      "failure.invocation_fact_missing", "failure.invocation_fact_unauthorized",
-      "failure.action_economy_scope_invalid", "failure.effect_identity_mismatch",
-      "failure.effect_duration_mismatch"
-    ],
-    "intent_execution_states": [
-      "intent.pending", "intent.ready", "intent.executed",
-      "intent.skipped_due_to_prior_result", "intent.failed"
-    ],
-    "mapping_outcomes": [
-      "exact", "composed", "narrative_only", "clarification_required",
-      "unsupported"
-    ],
-    "truth_statuses": [
-      "truth.undetermined", "truth.established", "truth.disproven"
-    ],
-    "lore_record_statuses": [
-      "lore_record.active", "lore_record.superseded"
-    ],
-    "epistemic_stances": [
-      "epistemic.aware", "epistemic.known", "epistemic.believed",
-      "epistemic.suspected", "epistemic.rejected"
-    ],
-    "disclosure_aspects": [
-      "disclosure.statement", "disclosure.objective_status"
-    ],
-    "semantic_survival_states": [
-      "survival.ephemeral", "survival.established"
-    ],
-    "current_durability_states": [
-      "durability.durable", "durability.volatile_dirty"
-    ],
-    "durability_obligation_kinds": [
-      "durability.may_defer", "durability.must_be_durable_before"
-    ],
-    "repository_ref_outcomes": [
-      "repository_ref.confirmed_accepted",
-      "repository_ref.confirmed_rejected",
-      "repository_ref.indeterminate"
-    ],
-    "actor_continuity_lifetimes": [
-      "actor_continuity.foundation", "actor_continuity.durable_evolving",
-      "actor_continuity.transient_private"
-    ],
-    "actor_cognition_purposes": [
-      "cognition.react", "cognition.reflect", "cognition.plan",
-      "cognition.reconsider", "cognition.relationship_update"
-    ],
-    "actor_relationship_facets": [
-      "relationship.trust", "relationship.affinity", "relationship.fear",
-      "relationship.respect", "relationship.hostility",
-      "relationship.felt_obligation"
-    ],
-    "logical_roles": [
-      "role.interpreter", "role.dramaturg", "role.actor",
-      "role.narrator", "role.chronicler", "role.commentator"
-    ],
-    "context_discovery_channels": [
-      "context.current_scope", "context.scene_manifest",
-      "context.explicit_ref", "context.active_dependency",
-      "context.live_current", "context.index_lookup", "context.history_hint"
-    ],
-    "context_representation_classes": [
-      "context.exact", "context.full_structured",
-      "context.compact_structured", "context.summary",
-      "context.reference_only"
-    ],
-    "context_assembly_outcomes": [
-      "context.assembled", "context.assembled_degraded",
-      "context.unsatisfiable"
-    ],
-    "story_service_outcomes": [
-      "story_service.no_backlog", "story_service.service",
-      "story_service.defer"
-    ],
-    "collaboration_coordination_families": [
-      "collaboration.independent_immediate",
-      "collaboration.agency_dependent_collective",
-      "collaboration.rule_owned_ordered"
-    ],
-    "input_semantic_classes": [
-      "input.ooc_coordination", "input.diegetic_communication",
-      "input.actionable_intent", "input.control_signal"
-    ],
-    "collaboration_states": [
-      "collaboration.open", "collaboration.closed",
-      "collaboration.resolved", "collaboration.obsolete"
-    ],
-    "collaboration_nonaction_results": [
-      "collaboration.pass", "collaboration.ready",
-      "collaboration.no_further_input"
-    ],
-    "planning_entry_classes": [
-      "planning.source_anchored_constraint",
-      "planning.provisional_dramaturgic_direction"
-    ],
-    "chronology_relation_kinds": [
-      "chronology.causes", "chronology.precedes",
-      "chronology.same_coordinate", "chronology.elapsed"
-    ],
-    "recovery_outcomes": [
-      "recovery.ready", "recovery.retry", "recovery.blocked"
-    ],
-    "story_layers": [
-      "story.transcript", "story.events", "story.mechanics",
-      "story.narrative"
-    ],
-    "story_candidate_dispositions": [
-      "story.must_materialize", "story.may_omit"
-    ],
-    "message_payload_states": [
-      "message.exact_retained", "message.compacted"
-    ]
-  }
+    "catalog_version": "2.0.0",
+    "schema_version": 1,
+    "registries": {
+        "content_definition_kinds": [
+            "definition.ability",
+            "definition.skill",
+            "definition.proficiency",
+            "definition.size_category",
+            "definition.creature_type",
+            "definition.movement_mode",
+            "definition.sense",
+            "definition.language",
+            "definition.damage_type",
+            "definition.currency",
+            "definition.equipment_property",
+            "definition.weapon_mastery",
+            "definition.spell_school",
+            "definition.rest_policy",
+            "definition.actor_archetype",
+            "definition.species",
+            "definition.background",
+            "definition.class",
+            "definition.subclass",
+            "definition.advancement",
+            "definition.feat",
+            "definition.feature",
+            "definition.spell",
+            "definition.asset",
+            "definition.activity",
+            "definition.resource",
+            "definition.effect",
+            "definition.condition",
+            "definition.recipe",
+            "definition.hazard",
+            "definition.terrain",
+            "definition.environment",
+            "definition.location_archetype",
+            "definition.organization_archetype",
+            "definition.mission_template",
+            "definition.contract_template",
+            "definition.mode_profile"
+        ],
+        "world_record_kinds": [
+            "world.actor",
+            "world.actor_group",
+            "world.asset",
+            "world.location",
+            "world.connection",
+            "world.zone",
+            "world.organization",
+            "world.contract",
+            "world.mission",
+            "world.scene",
+            "world.encounter",
+            "world.hazard",
+            "world.effect",
+            "world.lore_fact",
+            "world.knowledge"
+        ],
+        "runtime_record_kinds": [
+            "runtime.session",
+            "runtime.message",
+            "runtime.interaction",
+            "runtime.procedure",
+            "runtime.intent_plan",
+            "runtime.command",
+            "runtime.resolution",
+            "runtime.continuation",
+            "runtime.mechanical_event",
+            "runtime.semantic_event",
+            "runtime.resolution_trace",
+            "runtime.disclosure",
+            "runtime.collaboration_obligation",
+            "runtime.checkpoint",
+            "runtime.id_allocator",
+            "runtime.maintenance_audit",
+            "runtime.catalog_gap_report"
+        ],
+        "protocol_value_kinds": [
+            "value.runtime_command",
+            "value.action_request",
+            "value.transition_request",
+            "value.intent_clause",
+            "value.target_spec",
+            "value.area_spec",
+            "value.duration_spec",
+            "value.cost_spec",
+            "value.signal",
+            "value.contribution",
+            "value.state_delta",
+            "value.roll_request",
+            "value.roll_result",
+            "value.choice_request",
+            "value.reaction_offer",
+            "value.resolution_receipt",
+            "value.publication_manifest",
+            "value.validation_issue",
+            "value.execution_segment",
+            "value.pending_child_invocation",
+            "value.invocation_fact",
+            "value.boundary_occurrence",
+            "value.epistemic_delta",
+            "value.role_context_request",
+            "value.context_need_profile",
+            "value.role_context_bundle",
+            "value.context_trace",
+            "value.context_budget_envelope",
+            "value.turn_envelope",
+            "value.interpreter_result",
+            "value.preparation_draft",
+            "value.actor_proposal",
+            "value.story_projection_draft",
+            "value.narration_result",
+            "value.story_service_decision"
+        ],
+        "actor_facets": [
+            "actor.player_character",
+            "actor.nonplayer_character",
+            "actor.companion",
+            "actor.summon",
+            "actor.swarm",
+            "actor.mount",
+            "actor.hireling",
+            "actor.temporary"
+        ],
+        "asset_facets": [
+            "asset.weapon",
+            "asset.armor",
+            "asset.shield",
+            "asset.ammunition",
+            "asset.consumable",
+            "asset.tool",
+            "asset.spellcasting_focus",
+            "asset.container",
+            "asset.wearable",
+            "asset.currency",
+            "asset.key",
+            "asset.document",
+            "asset.quest_item",
+            "asset.magic",
+            "asset.artifact",
+            "asset.vehicle",
+            "asset.mount_gear",
+            "asset.crafting_material",
+            "asset.food_drink",
+            "asset.poison",
+            "asset.trade_good",
+            "asset.treasure",
+            "asset.decoration"
+        ],
+        "location_facets": [
+            "location.plane",
+            "location.world",
+            "location.region",
+            "location.settlement",
+            "location.district",
+            "location.site",
+            "location.structure",
+            "location.room",
+            "location.wilderness",
+            "location.dungeon",
+            "location.battlefield",
+            "location.abstract"
+        ],
+        "organization_facets": [
+            "organization.faction",
+            "organization.government",
+            "organization.guild",
+            "organization.religious",
+            "organization.military",
+            "organization.business",
+            "organization.criminal",
+            "organization.family",
+            "organization.community"
+        ],
+        "activity_families": [
+            "activity.perceive",
+            "activity.search",
+            "activity.communicate",
+            "activity.influence",
+            "activity.perform",
+            "activity.move",
+            "activity.manipulate",
+            "activity.use_asset",
+            "activity.transfer",
+            "activity.attack",
+            "activity.defend",
+            "activity.control",
+            "activity.cast",
+            "activity.activate_feature",
+            "activity.test",
+            "activity.assist",
+            "activity.conceal",
+            "activity.prepare",
+            "activity.rest",
+            "activity.craft",
+            "activity.downtime",
+            "activity.wait",
+            "activity.command",
+            "activity.composite"
+        ],
+        "activity_primitives": [
+            "op.select_targets",
+            "op.roll",
+            "op.resolve_check",
+            "op.resolve_contest",
+            "op.resolve_save",
+            "op.resolve_attack",
+            "op.apply_damage",
+            "op.apply_healing",
+            "op.set_temporary_hp",
+            "op.consume_resource",
+            "op.restore_resource",
+            "op.move_entity",
+            "op.teleport_entity",
+            "op.transfer_asset",
+            "op.transfer_currency",
+            "op.create_entity",
+            "op.retire_entity",
+            "op.create_effect",
+            "op.update_effect",
+            "op.remove_effect",
+            "op.transform_entity",
+            "op.create_zone",
+            "op.update_zone",
+            "op.remove_zone",
+            "op.for_each_target",
+            "op.branch",
+            "op.request_choice",
+            "op.open_reaction_window",
+            "op.emit_fact",
+            "op.schedule_followup",
+            "op.advance_local_time"
+        ],
+        "transition_kinds": [
+            "transition.entity_create",
+            "transition.entity_promote",
+            "transition.entity_retire",
+            "transition.actor_state",
+            "transition.effect_state",
+            "transition.asset_transfer",
+            "transition.asset_status",
+            "transition.currency_transfer",
+            "transition.location_change",
+            "transition.connection_state",
+            "transition.zone_state",
+            "transition.organization_state",
+            "transition.membership_change",
+            "transition.contract_state",
+            "transition.mission_state",
+            "transition.scene_state",
+            "transition.encounter_state",
+            "transition.hazard_state",
+            "transition.lore_commit",
+            "transition.knowledge_change",
+            "transition.event_time_advance"
+        ],
+        "event_kinds": [
+            "event.activity.completed",
+            "event.activity.rejected",
+            "event.activity.aborted",
+            "event.check.resolved",
+            "event.contest.resolved",
+            "event.save.resolved",
+            "event.attack.hit",
+            "event.attack.missed",
+            "event.attack.critical",
+            "event.damage.applied",
+            "event.healing.applied",
+            "event.temporary_hp.changed",
+            "event.resource.consumed",
+            "event.resource.restored",
+            "event.entity.created",
+            "event.entity.promoted",
+            "event.entity.retired",
+            "event.actor.state_changed",
+            "event.asset.transferred",
+            "event.asset.status_changed",
+            "event.currency.transferred",
+            "event.entity.moved",
+            "event.procedure.state_changed",
+            "event.entity.teleported",
+            "event.entity.transformed",
+            "event.effect.created",
+            "event.action_entitlement.granted",
+            "event.effect.updated",
+            "event.effect.expired",
+            "event.effect.removed",
+            "event.zone.created",
+            "event.zone.updated",
+            "event.zone.removed",
+            "event.connection.changed",
+            "event.organization.changed",
+            "event.membership.changed",
+            "event.contract.changed",
+            "event.mission.changed",
+            "event.scene.changed",
+            "event.encounter.changed",
+            "event.hazard.changed",
+            "event.lore.committed",
+            "event.knowledge.changed",
+            "event.event_time.advanced"
+        ],
+        "resource_mechanics": [
+            "resource.die_pool",
+            "resource.tiered_pool",
+            "resource.bounded_pool",
+            "resource.binary",
+            "resource.cooldown",
+            "resource.action_budget",
+            "resource.movement_budget",
+            "resource.currency_balance"
+        ],
+        "effect_facets": [
+            "effect.condition",
+            "effect.modifier",
+            "effect.periodic_damage",
+            "effect.periodic_healing",
+            "effect.transformation",
+            "effect.zone",
+            "effect.aura",
+            "effect.concentration",
+            "effect.equipment_passive",
+            "effect.environment",
+            "effect.narrative"
+        ],
+        "rule_operations": [
+            "rule.add_flat",
+            "rule.add_dice",
+            "rule.replace_dice",
+            "rule.grant_advantage",
+            "rule.grant_disadvantage",
+            "rule.set_minimum",
+            "rule.set_maximum",
+            "rule.multiply",
+            "rule.override",
+            "rule.add_damage_component",
+            "rule.resistance",
+            "rule.immunity",
+            "rule.vulnerability",
+            "rule.adjust_cost",
+            "rule.adjust_dc",
+            "rule.adjust_critical",
+            "rule.adjust_target",
+            "rule.adjust_range",
+            "rule.adjust_duration",
+            "rule.grant_activity",
+            "rule.restrict_activity",
+            "rule.grant_movement",
+            "rule.grant_sense",
+            "rule.grant_proficiency",
+            "rule.grant_trait",
+            "rule.usage_gate"
+        ],
+        "rule_selectors": [
+            "ability.score",
+            "ability.modifier",
+            "test.roll",
+            "check.roll",
+            "contest.roll",
+            "save.roll",
+            "initiative.roll",
+            "check.dc",
+            "save.dc",
+            "spell.dc",
+            "attack.roll",
+            "attack.critical_threshold",
+            "defense.armor_class",
+            "damage.weapon",
+            "damage.spell",
+            "damage.dealt",
+            "damage.received",
+            "healing.done",
+            "healing.received",
+            "resource.cost",
+            "resource.capacity",
+            "resource.recovery",
+            "activity.availability",
+            "activity.activation",
+            "target.count",
+            "target.range",
+            "target.area",
+            "effect.duration",
+            "health.maximum",
+            "condition.applicability",
+            "movement.speed",
+            "sense.range",
+            "proficiency.rank",
+            "actor.trait"
+        ],
+        "mechanical_accessors": [
+            "health.current",
+            "health.temporary",
+            "health.maximum",
+            "health.bloodied",
+            "life.state",
+            "condition.present",
+            "condition.value",
+            "resource.capacity",
+            "resource.available",
+            "owner_effect.parameter"
+        ],
+        "life_states": [
+            "life.active",
+            "life.dying",
+            "life.stable",
+            "life.dead"
+        ],
+        "life_state_policies": [
+            "life_policy.dnd2024.character_like",
+            "life_policy.dnd2024.monster_default"
+        ],
+        "condition_aggregation_policies": [
+            "condition_aggregation.presence",
+            "condition_aggregation.cumulative_units"
+        ],
+        "condition_rule_scopes": [
+            "condition_rule_scope.aggregate_once",
+            "condition_rule_scope.per_effective_application"
+        ],
+        "condition_boundary_response_operations": [
+            "condition_response.remove_count"
+        ],
+        "effect_reapplication_match_policies": [
+            "effect_reapplication_match.target_family",
+            "effect_reapplication_match.target_family_source"
+        ],
+        "effect_reapplication_actions": [
+            "effect_reapplication.refresh",
+            "effect_reapplication.replace"
+        ],
+        "effect_arbitration_policies": [
+            "effect_arbitration.potency_then_recency"
+        ],
+        "effect_lifecycle_states": [
+            "effect_lifecycle.active",
+            "effect_lifecycle.terminal"
+        ],
+        "effect_terminal_reasons": [
+            "effect_end.expired",
+            "effect_end.removed",
+            "effect_end.replaced",
+            "effect_end.support_lost"
+        ],
+        "boundary_kinds": [
+            "boundary.turn_start",
+            "boundary.turn_end",
+            "boundary.round_start",
+            "boundary.round_end",
+            "boundary.short_rest_complete",
+            "boundary.long_rest_complete",
+            "boundary.dawn"
+        ],
+        "temporal_binding_kinds": [
+            "temporal.metric_deadline",
+            "temporal.procedure_boundary",
+            "temporal.semantic_boundary"
+        ],
+        "resource_recovery_operations": [
+            "resource_recovery.reset_spent",
+            "resource_recovery.restore_to_capacity",
+            "resource_recovery.restore_amount"
+        ],
+        "target_kinds": [
+            "target.none",
+            "target.self",
+            "target.entity",
+            "target.entities",
+            "target.asset",
+            "target.location",
+            "target.zone",
+            "target.point"
+        ],
+        "area_shapes": [
+            "area.cone",
+            "area.cube",
+            "area.cylinder",
+            "area.emanation",
+            "area.line",
+            "area.sphere"
+        ],
+        "range_modes": [
+            "range.self",
+            "range.touch",
+            "range.distance",
+            "range.sight",
+            "range.unlimited",
+            "range.same_location",
+            "range.near",
+            "range.reachable"
+        ],
+        "signal_kinds": [
+            "signal.resolution.prepared",
+            "signal.roll.pending",
+            "signal.roll.resolved",
+            "signal.attack.hit.pending",
+            "signal.spell.cast.pending",
+            "signal.damage.pending",
+            "signal.healing.pending",
+            "signal.resource.consumption.pending",
+            "signal.effect.application.pending",
+            "signal.entity.move.pending",
+            "signal.entity.leave_reach.pending",
+            "signal.entity.enter_zone.pending",
+            "signal.entity.leave_zone.pending",
+            "signal.turn.start",
+            "signal.turn.end",
+            "signal.round.start",
+            "signal.round.end",
+            "signal.effect.start",
+            "signal.effect.end",
+            "signal.resource.threshold.pending"
+        ],
+        "duration_modes": [
+            "duration.instant",
+            "duration.metric",
+            "duration.boundary",
+            "duration.permanent"
+        ],
+        "duration_units": [
+            "unit.second",
+            "unit.minute",
+            "unit.hour",
+            "unit.day"
+        ],
+        "resolution_states": [
+            "PENDING",
+            "RUNNING",
+            "AWAITING_CHOICE",
+            "AWAITING_REACTION",
+            "HYDRATION_REQUIRED",
+            "PUBLISH_REQUIRED",
+            "COMPLETED",
+            "REJECTED",
+            "ABORTED",
+            "FAILED"
+        ],
+        "command_dispositions": [
+            "command.accepted",
+            "command.settled"
+        ],
+        "execution_failure_codes": [
+            "failure.idempotency_conflict",
+            "failure.hydration_required",
+            "failure.missing_reference",
+            "failure.catalog_context_incompatible",
+            "failure.continuation_conflict",
+            "failure.continuation_stale",
+            "failure.dependency_cycle",
+            "failure.transition_requires_procedure",
+            "failure.order_adjudication_required",
+            "failure.execution_limit",
+            "failure.state_revision_conflict",
+            "failure.invocation_fact_missing",
+            "failure.invocation_fact_unauthorized",
+            "failure.action_economy_scope_invalid",
+            "failure.effect_identity_mismatch",
+            "failure.effect_duration_mismatch"
+        ],
+        "intent_execution_states": [
+            "intent.pending",
+            "intent.ready",
+            "intent.executed",
+            "intent.skipped_due_to_prior_result",
+            "intent.failed"
+        ],
+        "mapping_outcomes": [
+            "exact",
+            "composed",
+            "narrative_only",
+            "clarification_required",
+            "unsupported"
+        ],
+        "truth_statuses": [
+            "truth.undetermined",
+            "truth.established",
+            "truth.disproven"
+        ],
+        "lore_record_statuses": [
+            "lore_record.active",
+            "lore_record.superseded"
+        ],
+        "epistemic_stances": [
+            "epistemic.aware",
+            "epistemic.known",
+            "epistemic.believed",
+            "epistemic.suspected",
+            "epistemic.rejected"
+        ],
+        "disclosure_aspects": [
+            "disclosure.statement",
+            "disclosure.objective_status"
+        ],
+        "semantic_survival_states": [
+            "survival.ephemeral",
+            "survival.established"
+        ],
+        "current_durability_states": [
+            "durability.durable",
+            "durability.volatile_dirty"
+        ],
+        "durability_obligation_kinds": [
+            "durability.may_defer",
+            "durability.must_be_durable_before"
+        ],
+        "repository_ref_outcomes": [
+            "repository_ref.confirmed_accepted",
+            "repository_ref.confirmed_rejected",
+            "repository_ref.indeterminate"
+        ],
+        "actor_continuity_lifetimes": [
+            "actor_continuity.foundation",
+            "actor_continuity.durable_evolving",
+            "actor_continuity.transient_private"
+        ],
+        "actor_cognition_purposes": [
+            "cognition.react",
+            "cognition.reflect",
+            "cognition.plan",
+            "cognition.reconsider",
+            "cognition.relationship_update"
+        ],
+        "actor_relationship_facets": [
+            "relationship.trust",
+            "relationship.affinity",
+            "relationship.fear",
+            "relationship.respect",
+            "relationship.hostility",
+            "relationship.felt_obligation"
+        ],
+        "logical_roles": [
+            "role.interpreter",
+            "role.dramaturg",
+            "role.actor",
+            "role.narrator",
+            "role.chronicler",
+            "role.commentator"
+        ],
+        "context_discovery_channels": [
+            "context.current_scope",
+            "context.scene_manifest",
+            "context.explicit_ref",
+            "context.active_dependency",
+            "context.live_current",
+            "context.index_lookup",
+            "context.history_hint"
+        ],
+        "context_representation_classes": [
+            "context.exact",
+            "context.full_structured",
+            "context.compact_structured",
+            "context.summary",
+            "context.reference_only"
+        ],
+        "context_assembly_outcomes": [
+            "context.assembled",
+            "context.assembled_degraded",
+            "context.unsatisfiable"
+        ],
+        "story_service_outcomes": [
+            "story_service.no_backlog",
+            "story_service.service",
+            "story_service.defer"
+        ],
+        "collaboration_coordination_families": [
+            "collaboration.independent_immediate",
+            "collaboration.agency_dependent_collective",
+            "collaboration.rule_owned_ordered"
+        ],
+        "input_semantic_classes": [
+            "input.ooc_coordination",
+            "input.diegetic_communication",
+            "input.actionable_intent",
+            "input.control_signal"
+        ],
+        "collaboration_states": [
+            "collaboration.open",
+            "collaboration.closed",
+            "collaboration.resolved",
+            "collaboration.obsolete"
+        ],
+        "collaboration_nonaction_results": [
+            "collaboration.pass",
+            "collaboration.ready",
+            "collaboration.no_further_input"
+        ],
+        "planning_entry_classes": [
+            "planning.source_anchored_constraint",
+            "planning.provisional_dramaturgic_direction"
+        ],
+        "chronology_relation_kinds": [
+            "chronology.causes",
+            "chronology.precedes",
+            "chronology.same_coordinate",
+            "chronology.elapsed"
+        ],
+        "recovery_outcomes": [
+            "recovery.ready",
+            "recovery.retry",
+            "recovery.blocked"
+        ],
+        "story_layers": [
+            "story.transcript",
+            "story.events",
+            "story.mechanics",
+            "story.narrative"
+        ],
+        "story_candidate_dispositions": [
+            "story.must_materialize",
+            "story.may_omit"
+        ],
+        "message_payload_states": [
+            "message.exact_retained",
+            "message.compacted"
+        ]
+    }
 }

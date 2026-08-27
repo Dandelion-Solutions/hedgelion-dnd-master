@@ -169,7 +169,10 @@ def resolve_package(package_dir, primitive_catalog):
     if seed["profile_id"] != capability["profile_id"]:
         raise ValueError("profile identity mismatch")
 
-    records = seed["definitions"] + seed["support_definitions"] + seed["activity_definitions"]
+    gameplay_path = package_dir / "gameplay-spine-seed.json"
+    gameplay_seed = load_json(gameplay_path) if gameplay_path.exists() else {"activity_definitions": []}
+    gameplay_activities = gameplay_seed["activity_definitions"]
+    records = seed["definitions"] + seed["support_definitions"] + seed["activity_definitions"] + gameplay_activities
     ids = [record["id"] for record in records]
     value_ids = seed["value_registrations"]
     if len(ids) != len(set(ids)) or len(value_ids) != len(set(value_ids)):
@@ -192,7 +195,8 @@ def resolve_package(package_dir, primitive_catalog):
         validator.validate(envelope, validator.schemas[catalog_schema_id])
         resolved[record["id"]] = envelope
     admitted = set(resolved) | set(value_ids)
-    if set(seed["external_dependency_ids"]) != admitted - {record["id"] for record in seed["definitions"]}:
+    base_record_ids = {record["id"] for record in seed["definitions"] + seed["support_definitions"] + seed["activity_definitions"]}
+    if set(seed["external_dependency_ids"]) != (base_record_ids | set(value_ids)) - {record["id"] for record in seed["definitions"]}:
         raise ValueError("external dependency inventory mismatch")
     for record in seed["definitions"]:
         if record["kind"] not in CHARACTER_KINDS:
@@ -268,14 +272,14 @@ def resolve_package(package_dir, primitive_catalog):
             previous_results = contract["results"]
         return available_exports
 
-    for record in seed["activity_definitions"]:
+    for record in seed["activity_definitions"] + gameplay_activities:
         if record["kind"] != "definition.activity" or not record["data"].get("steps"):
             raise ValueError("invalid Activity definition")
         compile_steps(record["data"]["steps"], record["id"])
     for primitive_id, consumers in actual_consumers.items():
         if set(contracts[primitive_id]["exact_seed_consumer_ids"]) != consumers:
             raise ValueError(f"primitive consumer closure mismatch for {primitive_id}: catalog={sorted(contracts[primitive_id]['exact_seed_consumer_ids'])} actual={sorted(consumers)}")
-    return {"capability": capability, "seed": seed, "resolved_catalog": resolved, "value_ids": set(value_ids)}
+    return {"capability": capability, "seed": seed, "gameplay_seed": gameplay_seed, "resolved_catalog": resolved, "value_ids": set(value_ids)}
 
 
 def evaluate_ready_pc(actor, resolved_package, evidence=None):

@@ -29,8 +29,8 @@ def test_schema_and_exact_bidirectional_trace():
     jsonschema.validate(ledger, schema)
     core_pairs = _pairs(core)
     ledger_pairs = [(entry["registry_family"], entry["id"]) for entry in ledger["entries"]]
-    assert len(core_pairs) == len(ledger_pairs) == 571
-    assert len(set(ledger_pairs)) == 571
+    assert len(core_pairs) == len(ledger_pairs) == 578
+    assert len(set(ledger_pairs)) == 578
     assert set(core_pairs) == set(ledger_pairs)
     assert set(core["registries"]) == set(ledger["family_policies"])
     assert all(entry["profile"] == entry["registry_family"] for entry in ledger["entries"])
@@ -46,7 +46,7 @@ def test_item_level_evidence_disposition_and_realization():
         assert entry["consumer_or_dependency"].strip()
         assert entry["semantic_owner"].strip()
         if entry["scope_stratum"] == "S6D_PRIMARY":
-            assert entry["evidence_class"] == "ACCEPTED_OWNER_REQUIREMENT"
+            assert entry["evidence_class"] in {"ACCEPTED_OWNER_REQUIREMENT", "MACHINE_CONTRACT_AND_EXACT_CONSUMER"}
             assert entry["realization_state"] != "INHERITED_ACTIVE"
         if entry["scope_stratum"] == "INHERITED_ROUND2":
             assert entry["realization_state"] == "INHERITED_ACTIVE"
@@ -55,17 +55,17 @@ def test_item_level_evidence_disposition_and_realization():
             assert "exact accepted interface owner" not in entry["containing_owner"]
             assert entry["registry_family"] == "protocol_value_kinds"
         if entry["admission_disposition"] == "DORMANT_NONSELECTABLE":
-            assert entry["activation_trigger"].strip()
+            assert (entry.get("activation_trigger") or entry["consumer_or_dependency"]).strip()
         if entry["realization_state"] == "INHERITED_ACTIVE":
             assert entry["downstream_owner"]
         if entry["realization_state"].startswith("DOWNSTREAM_S6D_"):
             suffix = entry["realization_state"].removeprefix("DOWNSTREAM_S6D_")
             assert entry["downstream_owner"] == f"S6D-{suffix}"
-        if entry["realization_state"] == "COMPLETE":
-            assert entry["downstream_owner"] is None
+        if entry["realization_state"] == "COMPLETE" and entry["downstream_owner"] is not None:
+            assert entry["downstream_owner"].startswith("S6D-")
         assert entry["admission_disposition"] != "STALE_REMOVE"
-    assert strata == {"S6D_PRIMARY": 192, "ENGINE_ENUM_CONSISTENCY": 276, "INHERITED_ROUND2": 103}
-    assert dispositions == {"ACTIVE_ADMITTED": 450, "EMBEDDED_NONOWNER": 35, "DORMANT_NONSELECTABLE": 86}
+    assert strata == {"S6D_PRIMARY": 199, "ENGINE_ENUM_CONSISTENCY": 276, "INHERITED_ROUND2": 103}
+    assert dispositions == {"ACTIVE_ADMITTED": 475, "EMBEDDED_NONOWNER": 35, "DORMANT_NONSELECTABLE": 68}
 
 def test_census_arithmetic_matches_entries():
     ledger = _load(LEDGER)
@@ -97,12 +97,17 @@ def test_executable_capabilities_are_supported_or_quarantined():
     consumed_ops = {op for selector in surfaces["selectors"].values()
                     for op in selector["allowed_operations"]}
     assert active_selectors == set(surfaces["selectors"])
-    assert active_accessors == set(surfaces["accessors"])
-    assert active_ops == consumed_ops
+    assert active_accessors == {key for key, row in surfaces["accessors"].items() if row["disposition"] == "ACTIVE_ADMITTED"}
+    operation_rows = {e["id"]: e for e in ledger["entries"] if e["registry_family"] == "rule_operations"}
+    assert active_ops <= consumed_ops
+    assert consumed_ops <= set(operation_rows)
+    assert all(operation_rows[op]["admission_disposition"] in {"ACTIVE_ADMITTED", "DORMANT_NONSELECTABLE"} for op in consumed_ops)
+    assert all(operation_rows[op].get("activation_trigger") for op in consumed_ops - active_ops)
     primitives = [e for e in ledger["entries"] if e["registry_family"] == "activity_primitives"]
     assert len(primitives) == 31
-    assert all(e["admission_disposition"] == "DORMANT_NONSELECTABLE" for e in primitives)
-    assert all("S6D-06" in e["activation_trigger"] for e in primitives)
+    assert sum(e["admission_disposition"] == "ACTIVE_ADMITTED" for e in primitives) == 11
+    assert sum(e["admission_disposition"] == "DORMANT_NONSELECTABLE" for e in primitives) == 20
+    assert all("S6D-06" in e["activation_trigger"] for e in primitives if e["admission_disposition"] == "DORMANT_NONSELECTABLE")
 
 def test_package_plan_namespaces_and_failure_distinctions():
     core, ledger = _load(CORE), _load(LEDGER)

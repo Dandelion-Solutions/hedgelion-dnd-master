@@ -80,13 +80,15 @@ class CharacterMvpSeedTests(unittest.TestCase):
 
     def test_every_referenced_activity_is_real_and_compiles_against_base_contract(self):
         activities = {item["id"]: item for item in self.seed["activity_definitions"]}
+        all_activities = dict(activities)
+        all_activities.update({item["id"]: item for item in self.resolved["gameplay_seed"]["activity_definitions"]})
         referenced = {
             ref for item in self.seed["definitions"]
             for ref in item.get("references", []) if ref.startswith("activity.")
         }
         self.assertEqual(set(activities), referenced)
         contracts = {row["primitive_id"]: row for row in self.primitive_catalog["contracts"]}
-        for activity in activities.values():
+        for activity in all_activities.values():
             self.assertEqual(activity["kind"], "definition.activity")
             self.assertTrue(activity["data"]["family_id"].startswith("activity."))
             self.assertTrue(activity["data"]["steps"])
@@ -104,7 +106,7 @@ class CharacterMvpSeedTests(unittest.TestCase):
                 if step["op"] == "op.for_each_target":
                     self.assertTrue(step["args"]["steps"])
                     walk(step["args"]["steps"], activity_id)
-        for activity_id, activity in activities.items():
+        for activity_id, activity in all_activities.items():
             walk(activity["data"]["steps"], activity_id)
         for primitive_id, consumer_ids in actual_consumers.items():
             self.assertEqual(set(contracts[primitive_id]["exact_seed_consumer_ids"]), consumer_ids)

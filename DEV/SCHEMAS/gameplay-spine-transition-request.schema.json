@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/gameplay-spine-transition-request.schema.json",
+  "oneOf": [
+    {"$ref": "#/$defs/procedureMovement"}, {"$ref": "#/$defs/outsideProcedureMovement"},
+    {"$ref": "#/$defs/assetTransfer"}, {"$ref": "#/$defs/assetEquip"}, {"$ref": "#/$defs/assetUse"}
+  ],
+  "$defs": {
+    "id": {"type": "string", "minLength": 1},
+    "revision": {"type": "integer", "minimum": 0},
+    "base": {
+      "type": "object",
+      "properties": {"idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"}}
+    },
+    "procedureMovement": {
+      "type": "object", "additionalProperties": false,
+      "required": ["transition_kind", "profile_id", "idempotency_key", "catalog_generation", "procedure_id", "procedure_revision", "actor_id", "actor_revision", "destination_location_id", "movement_cost"],
+      "properties": {
+        "transition_kind": {"const": "transition.location_change"}, "profile_id": {"const": "location_change.procedure_movement"},
+        "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"},
+        "procedure_id": {"$ref": "#/$defs/id"}, "procedure_revision": {"$ref": "#/$defs/revision"},
+        "actor_id": {"$ref": "#/$defs/id"}, "actor_revision": {"$ref": "#/$defs/revision"},
+        "destination_location_id": {"$ref": "#/$defs/id"}, "movement_cost": {"type": "integer", "minimum": 0}
+      }
+    },
+    "outsideProcedureMovement": {
+      "type": "object", "additionalProperties": false,
+      "required": ["transition_kind", "profile_id", "idempotency_key", "catalog_generation", "actor_id", "actor_revision", "destination_location_id", "movement_cost"],
+      "properties": {
+        "transition_kind": {"const": "transition.location_change"}, "profile_id": {"const": "location_change.outside_procedure"},
+        "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"},
+        "actor_id": {"$ref": "#/$defs/id"}, "actor_revision": {"$ref": "#/$defs/revision"},
+        "destination_location_id": {"$ref": "#/$defs/id"}, "movement_cost": {"const": "NOT_APPLICABLE_OUTSIDE_PROCEDURE"}
+      }
+    },
+    "placement": {
+      "type": "object", "additionalProperties": false, "minProperties": 1, "maxProperties": 1,
+      "properties": {"owner_actor_id": {"$ref": "#/$defs/id"}, "container_asset_id": {"$ref": "#/$defs/id"}, "location_id": {"$ref": "#/$defs/id"}}
+    },
+    "assetTransfer": {
+      "type": "object", "additionalProperties": false,
+      "required": ["transition_kind", "profile_id", "idempotency_key", "catalog_generation", "asset_id", "asset_revision", "from_placement", "to_placement"],
+      "properties": {
+        "transition_kind": {"const": "transition.asset_transfer"}, "profile_id": {"const": "asset.transfer"},
+        "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"},
+        "asset_id": {"$ref": "#/$defs/id"}, "asset_revision": {"$ref": "#/$defs/revision"},
+        "from_placement": {"$ref": "#/$defs/placement"}, "to_placement": {"$ref": "#/$defs/placement"}
+      }
+    },
+    "assetEquip": {
+      "type": "object", "additionalProperties": false,
+      "required": ["transition_kind", "profile_id", "idempotency_key", "catalog_generation", "asset_id", "asset_revision", "owner_actor_id", "mode"],
+      "properties": {
+        "transition_kind": {"const": "transition.asset_status"}, "profile_id": {"const": "asset.equip"},
+        "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"},
+        "asset_id": {"$ref": "#/$defs/id"}, "asset_revision": {"$ref": "#/$defs/revision"},
+        "owner_actor_id": {"$ref": "#/$defs/id"}, "mode": {"enum": ["held", "worn"]}
+      }
+    },
+    "assetUse": {
+      "type": "object", "additionalProperties": false,
+      "required": ["profile_id", "idempotency_key", "catalog_generation", "asset_id", "asset_revision", "owner_actor_id", "consequence_profile"],
+      "properties": {
+        "profile_id": {"const": "asset.use"}, "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"},
+        "asset_id": {"$ref": "#/$defs/id"}, "asset_revision": {"$ref": "#/$defs/revision"},
+        "owner_actor_id": {"$ref": "#/$defs/id"}, "consequence_profile": {"enum": ["NONE", "EXACT_ADMITTED_ACTIVITY"]},
+        "activity_id": {"type": "string", "pattern": "^activity\\.[a-z][a-z0-9_.]*$"}
+      },
+      "allOf": [{"if": {"properties": {"consequence_profile": {"const": "EXACT_ADMITTED_ACTIVITY"}}, "required": ["consequence_profile"]}, "then": {"required": ["activity_id"]}, "else": {"not": {"required": ["activity_id"]}}}]
+    }
+  }
+}

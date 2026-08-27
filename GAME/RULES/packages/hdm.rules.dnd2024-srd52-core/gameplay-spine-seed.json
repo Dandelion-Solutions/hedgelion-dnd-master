@@ -1,0 +1,137 @@
+{
+  "schema_name": "hdm_gameplay_spine_seed",
+  "schema_version": 1,
+  "profile_id": "gameplay_spine.mvp.v1",
+  "package_id": "hdm.rules.dnd2024-srd52-core",
+  "package_version": "0.1.0-mvp",
+  "catalog_generation": "2.0.0",
+  "activity_definitions": [
+    {
+      "id": "activity.check.generic",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.check",
+        "parameters": {
+          "ability_id": {"source_class": "ENGINE_BOUND", "value_type": "machine_id", "cardinality": "single", "required": true, "allowed_values": ["ability.charisma", "ability.constitution", "ability.dexterity", "ability.intelligence", "ability.strength", "ability.wisdom"]},
+          "proficiency_id": {"source_class": "ENGINE_BOUND", "value_type": "machine_id", "cardinality": "single", "required": false, "allowed_values": ["proficiency.skill.sleight_of_hand", "proficiency.skill.stealth"]},
+          "dc": {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "cardinality": "single", "required": true, "minimum": 1, "maximum": 30}
+        },
+        "steps": [
+          {"op": "op.roll", "args": {"request": "compiled.generic_check_roll"}, "export": "check_roll"},
+          {"op": "op.resolve_check", "args": {"roll": "check_roll.result", "threshold": "invocation.dc"}, "export": "check"}
+        ]
+      }
+    },
+    {
+      "id": "activity.save.generic",
+      "kind": "definition.activity",
+      "data": {
+        "family_id": "activity.save",
+        "parameters": {
+          "ability_id": {"source_class": "ENGINE_BOUND", "value_type": "machine_id", "cardinality": "single", "required": true, "allowed_values": ["ability.charisma", "ability.constitution", "ability.dexterity", "ability.intelligence", "ability.strength", "ability.wisdom"]},
+          "dc": {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "cardinality": "single", "required": true, "minimum": 1, "maximum": 30}
+        },
+        "steps": [
+          {"op": "op.roll", "args": {"request": "compiled.generic_save_roll"}, "export": "save_roll"},
+          {"op": "op.resolve_save", "args": {"roll": "save_roll.result", "threshold": "invocation.dc"}, "export": "save"}
+        ]
+      }
+    }
+  ],
+  "procedure_profile": {
+    "procedure_kind": "procedure.combat_minimal",
+    "state_schema": "DEV/SCHEMAS/combat-minimal-procedure-state.schema.json",
+    "request_schema": "DEV/SCHEMAS/combat-procedure-transition-request.schema.json",
+    "result_schema": "DEV/SCHEMAS/combat-procedure-transition-result.schema.json",
+    "event_schema": "DEV/SCHEMAS/procedure-state-changed-event.schema.json",
+    "event_kind": "event.procedure.state_changed",
+    "resource_ids": ["resource.action_budget", "resource.movement_budget"],
+    "transitions": ["initialize", "start_turn", "spend_action", "spend_movement", "end_turn", "advance_round", "terminate"],
+    "transition_profiles": {
+      "initialize": "procedure.initialize",
+      "start_turn": "procedure.start_turn",
+      "spend_action": "procedure.spend_action",
+      "spend_movement": "location_change.procedure_movement",
+      "end_turn": "procedure.end_turn",
+      "advance_round": "procedure.advance_round",
+      "terminate": "procedure.terminate"
+    },
+    "initiative_retry": "REUSE_FIXED_ORDER_AND_TIE_RESOLUTION",
+    "encounter_authority": "REFERENCE_ONLY"
+  },
+  "spatial_profile": {
+    "input_class": "ENGINE_BOUND",
+    "allowed_refs": ["world.actor.state.location_id", "world.scene.state.location_id", "world.zone.id", "value.target_spec", "value.area_spec"],
+    "adjudicated_fact_ids": [],
+    "forbidden_capabilities": ["PATHFINDING", "GLOBAL_GEOMETRY_QUERY", "UNIVERSAL_COORDINATES", "CAMPAIGN_SCAN"]
+  },
+  "transition_profiles": [
+    {
+      "profile_id": "location_change.procedure_movement",
+      "transition_kind": "transition.location_change",
+      "request_schema": "DEV/SCHEMAS/gameplay-spine-transition-request.schema.json#/$defs/procedureMovement",
+      "result_schema": "DEV/SCHEMAS/gameplay-spine-transition-result.schema.json#/$defs/procedureMovementCommitted",
+      "mutation_owners": ["runtime.procedure", "world.actor"],
+      "mutable_fields": ["runtime.procedure.state.participant_resources[actor_id].resource.movement_budget.spent", "world.actor.state.location_id"],
+      "required_revisions": ["procedure_revision", "actor_revision"],
+      "atomicity": "ONE_EXECUTION_SEGMENT",
+      "partial_commit": "FORBIDDEN",
+      "event_kinds": ["event.entity.moved"],
+      "failure_codes": ["failure.idempotency_conflict", "failure.state_revision_conflict", "failure.action_economy_scope_invalid", "failure.hydration_required", "failure.missing_reference", "failure.catalog_context_incompatible", "failure.transition_requires_procedure", "failure.execution_limit"]
+    },
+    {
+      "profile_id": "location_change.outside_procedure",
+      "transition_kind": "transition.location_change",
+      "request_schema": "DEV/SCHEMAS/gameplay-spine-transition-request.schema.json#/$defs/outsideProcedureMovement",
+      "result_schema": "DEV/SCHEMAS/gameplay-spine-transition-result.schema.json#/$defs/outsideProcedureMovementCommitted",
+      "mutation_owners": ["world.actor"],
+      "mutable_fields": ["world.actor.state.location_id"],
+      "required_revisions": ["actor_revision"],
+      "atomicity": "ONE_EXECUTION_SEGMENT",
+      "partial_commit": "FORBIDDEN",
+      "event_kinds": ["event.entity.moved"],
+      "failure_codes": ["failure.idempotency_conflict", "failure.state_revision_conflict", "failure.hydration_required", "failure.missing_reference", "failure.catalog_context_incompatible", "failure.execution_limit"]
+    },
+    {
+      "profile_id": "asset.transfer",
+      "transition_kind": "transition.asset_transfer",
+      "request_schema": "DEV/SCHEMAS/gameplay-spine-transition-request.schema.json#/$defs/assetTransfer",
+      "result_schema": "DEV/SCHEMAS/gameplay-spine-transition-result.schema.json#/$defs/assetTransferCommitted",
+      "mutation_owners": ["world.asset"],
+      "mutable_fields": ["world.asset.state.owner_actor_id", "world.asset.state.container_asset_id", "world.asset.state.location_id"],
+      "required_revisions": ["asset_revision"],
+      "atomicity": "ONE_EXECUTION_SEGMENT",
+      "partial_commit": "FORBIDDEN",
+      "event_kinds": ["event.asset.transferred"],
+      "failure_codes": ["failure.idempotency_conflict", "failure.state_revision_conflict", "failure.hydration_required", "failure.missing_reference", "failure.catalog_context_incompatible", "failure.execution_limit"]
+    },
+    {
+      "profile_id": "asset.equip",
+      "transition_kind": "transition.asset_status",
+      "request_schema": "DEV/SCHEMAS/gameplay-spine-transition-request.schema.json#/$defs/assetEquip",
+      "result_schema": "DEV/SCHEMAS/gameplay-spine-transition-result.schema.json#/$defs/assetEquipCommitted",
+      "mutation_owners": ["world.asset"],
+      "mutable_fields": ["world.asset.state.equipment.mode"],
+      "required_revisions": ["asset_revision"],
+      "atomicity": "ONE_EXECUTION_SEGMENT",
+      "partial_commit": "FORBIDDEN",
+      "event_kinds": ["event.asset.status_changed"],
+      "failure_codes": ["failure.idempotency_conflict", "failure.state_revision_conflict", "failure.hydration_required", "failure.missing_reference", "failure.catalog_context_incompatible", "failure.execution_limit"]
+    },
+    {
+      "profile_id": "asset.use",
+      "transition_kind": "NO_TRANSITION_ACTIVITY_BINDING",
+      "request_schema": "DEV/SCHEMAS/gameplay-spine-transition-request.schema.json#/$defs/assetUse",
+      "result_schema": "DEV/SCHEMAS/gameplay-spine-transition-result.schema.json#/$defs/assetUseResolved",
+      "mutation_owners": [],
+      "mutable_fields": [],
+      "required_revisions": ["asset_revision"],
+      "atomicity": "ONE_EXECUTION_SEGMENT",
+      "partial_commit": "FORBIDDEN",
+      "event_kinds": [],
+      "failure_codes": ["failure.idempotency_conflict", "failure.state_revision_conflict", "failure.hydration_required", "failure.missing_reference", "failure.catalog_context_incompatible", "failure.execution_limit"]
+    }
+  ],
+  "downstream_consequence_profiles": ["NONE", "EXACT_DAMAGE", "EXACT_LOCATION_CHANGE", "EXACT_ASSET_TRANSFER"],
+  "unsupported_policy": "ABSENT_NONSELECTABLE"
+}

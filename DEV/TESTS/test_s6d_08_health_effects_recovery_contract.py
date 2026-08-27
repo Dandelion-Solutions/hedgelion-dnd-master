@@ -160,7 +160,7 @@ class S6D08HealthEffectsRecoveryContractTest(unittest.TestCase):
         validate_package_content_set(PACKAGE, self.capabilities)
         self.assertEqual(
             [row["path"] for row in self.capabilities["content_files"]],
-            ["character-mvp-seed.json", "health-effects-recovery-seed.json"],
+            ["character-mvp-seed.json", "health-effects-recovery-seed.json", "gameplay-spine-seed.json"],
         )
         missing = json.loads(json.dumps(self.capabilities))
         missing["content_files"] = missing["content_files"][:1]

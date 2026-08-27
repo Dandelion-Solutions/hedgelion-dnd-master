@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/combat-procedure-transition-result.schema.json",
+  "oneOf": [{"$ref": "#/$defs/committed"}, {"$ref": "#/$defs/failed"}],
+  "$defs": {
+    "id": {"type": "string", "minLength": 1},
+    "mutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["owner_kind", "owner_id", "field_path", "before_revision", "after_revision", "new_value"],
+      "properties": {"owner_kind": {"const": "runtime.procedure"}, "owner_id": {"$ref": "#/$defs/id"}, "field_path": {"const": "state"}, "before_revision": {"type": "integer", "minimum": 0}, "after_revision": {"type": "integer", "minimum": 1}, "new_value": {"$ref": "https://hedgelion.invalid/schemas/combat-minimal-procedure-state.schema.json"}}
+    },
+    "committed": {
+      "type": "object", "additionalProperties": false,
+      "required": ["profile_id", "idempotency_key", "status", "prospective_mutations", "execution_segment", "event_ids", "receipt_ref"],
+      "properties": {
+        "profile_id": {"enum": ["procedure.initialize", "procedure.start_turn", "procedure.spend_action", "procedure.end_turn", "procedure.advance_round", "procedure.terminate"]}, "idempotency_key": {"$ref": "#/$defs/id"}, "status": {"const": "COMPLETED"},
+        "prospective_mutations": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/mutation"}},
+        "execution_segment": {"type": "object", "additionalProperties": false, "required": ["segment_sequence", "commit_state", "resulting_execution_state", "affected_revision_refs", "event_ids"], "properties": {"segment_sequence": {"const": 1}, "commit_state": {"const": "committed"}, "resulting_execution_state": {"const": "COMPLETED"}, "affected_revision_refs": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/id"}}, "event_ids": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/id"}}}},
+        "event_ids": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/id"}}, "receipt_ref": {"$ref": "#/$defs/id"}
+      }
+    },
+    "failed": {
+      "type": "object", "additionalProperties": false,
+      "required": ["profile_id", "idempotency_key", "status", "failure_code", "prospective_mutations", "event_ids"],
+      "properties": {"profile_id": {"type": "string", "minLength": 1}, "idempotency_key": {"$ref": "#/$defs/id"}, "status": {"const": "REJECTED"}, "failure_code": {"enum": ["failure.idempotency_conflict", "failure.state_revision_conflict", "failure.action_economy_scope_invalid", "failure.missing_reference", "failure.transition_requires_procedure", "failure.execution_limit"]}, "prospective_mutations": {"const": []}, "event_ids": {"const": []}}
+    }
+  }
+}

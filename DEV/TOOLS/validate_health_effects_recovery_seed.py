@@ -248,7 +248,7 @@ def apply_boundary(resources, capacities, boundary_id, occurrence_key, owner_id,
 
 
 def validate_package_content_set(package_dir, capability):
-    expected_paths = ["character-mvp-seed.json", "health-effects-recovery-seed.json"]
+    expected_paths = ["character-mvp-seed.json", "health-effects-recovery-seed.json", "gameplay-spine-seed.json"]
     rows = capability.get("content_files")
     if not isinstance(rows, list) or [row.get("path") for row in rows] != expected_paths:
         raise ValueError("package content file set mismatch")

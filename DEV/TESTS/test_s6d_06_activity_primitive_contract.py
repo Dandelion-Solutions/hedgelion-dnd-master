@@ -290,3 +290,4 @@ def test_compiler_forms_propagate_only_closed_child_steps_and_enclosing_segment_
         assert matrices[primitive_id]["compiler_form_propagation"] == "CHILD_STEPS_ONLY_WITH_ENCLOSING_SEGMENT_INHERITANCE"
         assert matrices[primitive_id]["segment_semantics"] == "CHILD_STEPS_DEFINE_SEGMENTS"
         assert rows[primitive_id]["atomicity"]["policy"] == "CHILD_STEPS_DEFINE_SEGMENTS"
+

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/procedure-state-changed-event.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["segment_id", "event_ordinal", "event_kind", "root_command_id", "causal_ref", "procedure_id", "payload"],
+  "properties": {
+    "segment_id": {"type": "string", "minLength": 1},
+    "event_ordinal": {"const": 1},
+    "event_kind": {"const": "event.procedure.state_changed"},
+    "root_command_id": {"type": "string", "minLength": 1},
+    "causal_ref": {"type": "string", "minLength": 1},
+    "procedure_id": {"type": "string", "minLength": 1},
+    "payload": {
+      "type": "object", "additionalProperties": false,
+      "required": ["profile_id", "field_path", "before_revision", "after_revision", "after_state_sha256"],
+      "properties": {
+        "profile_id": {"enum": ["procedure.initialize", "procedure.start_turn", "procedure.spend_action", "procedure.end_turn", "procedure.advance_round", "procedure.terminate"]},
+        "field_path": {"const": "state"},
+        "before_revision": {"type": "integer", "minimum": 0},
+        "after_revision": {"type": "integer", "minimum": 1},
+        "after_state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

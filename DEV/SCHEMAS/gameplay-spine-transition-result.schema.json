@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/gameplay-spine-transition-result.schema.json",
+  "oneOf": [
+    {"$ref": "#/$defs/procedureMovementCommitted"}, {"$ref": "#/$defs/outsideProcedureMovementCommitted"},
+    {"$ref": "#/$defs/assetTransferCommitted"}, {"$ref": "#/$defs/assetEquipCommitted"},
+    {"$ref": "#/$defs/assetUseResolved"}, {"$ref": "#/$defs/failed"}
+  ],
+  "$defs": {
+    "id": {"type": "string", "minLength": 1},
+    "mutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["owner_kind", "owner_id", "field_path", "before_revision", "after_revision", "new_value"],
+      "properties": {
+        "owner_kind": {"enum": ["runtime.procedure", "world.actor", "world.asset"]},
+        "owner_id": {"$ref": "#/$defs/id"}, "field_path": {"type": "string", "minLength": 1},
+        "before_revision": {"type": "integer", "minimum": 0}, "after_revision": {"type": "integer", "minimum": 1},
+        "new_value": {"type": ["string", "integer", "object", "null"]}
+      }
+    },
+    "committedBase": {
+      "type": "object", "additionalProperties": false,
+      "required": ["profile_id", "idempotency_key", "status", "execution_segment", "prospective_mutations", "event_ids", "receipt_ref"],
+      "properties": {
+        "profile_id": {"type": "string", "minLength": 1}, "idempotency_key": {"$ref": "#/$defs/id"}, "status": {"const": "COMPLETED"},
+        "execution_segment": {
+          "type": "object", "additionalProperties": false,
+          "required": ["segment_sequence", "commit_state", "resulting_execution_state", "affected_revision_refs", "event_ids"],
+          "properties": {
+            "segment_sequence": {"const": 1}, "commit_state": {"const": "committed"}, "resulting_execution_state": {"const": "COMPLETED"},
+            "affected_revision_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+            "event_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+          }
+        },
+        "prospective_mutations": {"type": "array", "items": {"$ref": "#/$defs/mutation"}},
+        "event_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "receipt_ref": {"$ref": "#/$defs/id"},
+        "activity_binding": {
+          "type": "object", "additionalProperties": false, "required": ["binding_kind"],
+          "properties": {"binding_kind": {"enum": ["NONE", "EXACT_ADMITTED_ACTIVITY"]}, "activity_id": {"type": "string", "pattern": "^activity\\.[a-z][a-z0-9_.]*$"}},
+          "allOf": [{"if": {"properties": {"binding_kind": {"const": "EXACT_ADMITTED_ACTIVITY"}}, "required": ["binding_kind"]}, "then": {"required": ["activity_id"]}, "else": {"not": {"required": ["activity_id"]}}}]
+        }
+      }
+    },
+    "procedureMovementCommitted": {
+      "allOf": [{"$ref": "#/$defs/committedBase"}, {"properties": {"profile_id": {"const": "location_change.procedure_movement"}, "prospective_mutations": {"type": "array", "minItems": 2, "maxItems": 2}, "event_ids": {"type": "array", "minItems": 1, "maxItems": 1}}, "required": ["profile_id", "prospective_mutations", "event_ids"]}]
+    },
+    "outsideProcedureMovementCommitted": {
+      "allOf": [{"$ref": "#/$defs/committedBase"}, {"properties": {"profile_id": {"const": "location_change.outside_procedure"}, "prospective_mutations": {"type": "array", "minItems": 1, "maxItems": 1}, "event_ids": {"type": "array", "minItems": 1, "maxItems": 1}}, "required": ["profile_id", "prospective_mutations", "event_ids"]}]
+    },
+    "assetTransferCommitted": {
+      "allOf": [{"$ref": "#/$defs/committedBase"}, {"properties": {"profile_id": {"const": "asset.transfer"}, "prospective_mutations": {"type": "array", "minItems": 3, "maxItems": 3}, "event_ids": {"type": "array", "minItems": 1, "maxItems": 1}}, "required": ["profile_id", "prospective_mutations", "event_ids"]}]
+    },
+    "assetEquipCommitted": {
+      "allOf": [{"$ref": "#/$defs/committedBase"}, {"properties": {"profile_id": {"const": "asset.equip"}, "prospective_mutations": {"type": "array", "minItems": 1, "maxItems": 1}, "event_ids": {"type": "array", "minItems": 1, "maxItems": 1}}, "required": ["profile_id", "prospective_mutations", "event_ids"]}]
+    },
+    "assetUseResolved": {
+      "allOf": [{"$ref": "#/$defs/committedBase"}, {"properties": {"profile_id": {"const": "asset.use"}, "prospective_mutations": {"const": []}, "event_ids": {"const": []}}, "required": ["profile_id", "prospective_mutations", "event_ids", "activity_binding"]}]
+    },
+    "failed": {
+      "type": "object", "additionalProperties": false,
+      "required": ["profile_id", "idempotency_key", "status", "failure_code", "prospective_mutations", "event_ids"],
+      "properties": {
+        "profile_id": {"type": "string", "minLength": 1}, "idempotency_key": {"$ref": "#/$defs/id"}, "status": {"enum": ["REJECTED", "HYDRATION_REQUIRED", "FAILED"]},
+        "failure_code": {"enum": ["failure.idempotency_conflict", "failure.state_revision_conflict", "failure.action_economy_scope_invalid", "failure.hydration_required", "failure.missing_reference", "failure.catalog_context_incompatible", "failure.transition_requires_procedure", "failure.execution_limit"]},
+        "prospective_mutations": {"const": []}, "event_ids": {"const": []}
+      }
+    }
+  }
+}

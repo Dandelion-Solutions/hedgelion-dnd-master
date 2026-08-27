@@ -54,3 +54,7 @@ The package's capability file is the breadth authority. `full_srd_character_corp
 S6D-07 proves the real seed's complete implementable contract. Its compiler/readiness/advancement conformance tool and fixtures validate identities, closure and owner transitions; they do not replace the future accepted resolver, Activity executor, publisher or durable repository.
 
 After those runtime components implement this slice, behavioral acceptance must replay the martial and spellcaster fast-start walkthroughs. It must confirm that provisional play begins from locally sufficient state, READY_PC closes within the first meaningful interactions, only materially unavoidable player-owned choices are asked, and no procedural GM behavior, excessive questioning, post-exposure selection or hidden dependency appears. A failure is architecture/implementation evidence requiring reconciliation before broader content expansion.
+
+## S6D-09 package-content amendment
+
+S6D-09 adds `gameplay-spine-seed.json` to the same identity-bound package content set. That member adds generic check/save and bounded gameplay-spine contracts but does not change this owner's character definitions, READY_PC predicate, progression choices, representative paths or deferred behavioral fast-start proof. `character-capabilities.json` binds all three members through their member digests and aggregate `content_set_sha256`; readiness evidence uses the amended aggregate identity.
