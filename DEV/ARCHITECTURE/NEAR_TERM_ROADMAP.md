@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-09 COMPLETE / S6D-10 STEP 1 COMPLETE / BRIEF-CRITIC PASS / STEP 2 NEXT / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-10 COMPLETE / S6D-11 STEP 1 NEXT / R2.7 PAUSED**
 
 Date: 2026-08-25
 
@@ -93,7 +93,7 @@ Operating rules:
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-09 COMPLETE / S6D-10 STEP 1 COMPLETE / STEP 2 NEXT** | residual rules/seed/catalog debt |
+| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-10 COMPLETE / S6D-11 STEP 1 NEXT** | residual rules/seed/catalog debt |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
 
 ---
@@ -118,7 +118,8 @@ R2.0..R2.6 COMPLETE
     -> S6D-09 Step 3                               [COMPLETE / DECISION C — MINIMAL PLAYABLE GAMEPLAY SPINE]
     -> S6D-09 Steps 4-8                            [COMPLETE / SENIOR-AUDIT SPATIAL REPAIR PASS / CANONICAL]
     -> S6D-10 Step 1                               [COMPLETE / BRIEF-CRITIC PASS]
-    -> S6D-10 Step 2                               [NEXT / NOT STARTED]
+    -> S6D-10 Steps 2-8                            [COMPLETE / WHOLE-PROJECT CRITIC PASS / CANONICAL]
+    -> S6D-11 Step 1                               [NEXT / NOT STARTED]
     -> ... remaining S6D domains full eight-step loops ...
     -> S6D integrated closure
     -> R2.7 WP-06 RESUME
@@ -127,7 +128,7 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-09 Steps 1–8 remain complete and canonical after Decision C and the Senior-audit spatial repair. S6D-10 Step 1 is complete with a whole-project brief-critic PASS. The approved framing consumes the existing House-Rules/adjudication architecture, separates one-off typed adjudication from durable typed policy realization, preserves exact consumer/currentness/recovery/native-owner authority, and forbids prose execution, fixture activation and generic policy/homebrew subsystems. S6D-10 Step 2 is next and has not started.
+**Current stop.** S6D-01 through S6D-10 are complete. S6D-10 canonically integrates one-off and durable-policy-guided adjudication through exactly two parameter and seven fact edges, with exact historical policy refs, zero current built-in realizations, three nonselectable conformance fixtures and final whole-project critic PASS at 0/0/0. The identity-bound built-in package remains blocked until S6D-11. S6D-11 Step 1 is next and has not started.
 
 ---
 
@@ -193,7 +194,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-10 Step 1 complete / Step 2 next
+## 7. S6D — S6D-10 complete / S6D-11 Step 1 next
 
 S6D decomposition/evidence inputs remain:
 
@@ -228,14 +229,17 @@ R2.7 WP-06 resumes only after S6D integrated closure.
 ```text
 HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
 S6D: IN PROGRESS
-S6D_COMPLETED_DOMAIN: S6D-09 / STEPS 1-8 / ARCHITECTURE CLOSED
-S6D_NEXT_DOMAIN: S6D-10
-S6D_ACTIVE_DOMAIN: S6D-10
-S6D_COMPLETED_STAGE: S6D-10 STEP 1 / WHOLE-PROJECT BRIEF-CRITIC PASS
+S6D_COMPLETED_DOMAIN: S6D-10 / STEPS 1-8 / ARCHITECTURE CLOSED
+S6D_NEXT_DOMAIN: S6D-11
+S6D_ACTIVE_DOMAIN: NONE
+S6D_COMPLETED_STAGE: S6D-10 STEP 8 / CANONICALIZATION / WHOLE-PROJECT CRITIC PASS
 S6D_ACTIVE_STAGE: NONE
-S6D_NEXT_STAGE: S6D-10 STEP 2 / RESEARCH & ARCHITECTURE DRAFT
+S6D_NEXT_STAGE: S6D-11 STEP 1 / ARCHITECTURE TASK BRIEF
 R2_7_WP06: PAUSED
 ```
 
-Next action, after human approval of the published Step-1 brief, is S6D-10 Step 2. Step 2 has not started.
+Next action is S6D-11 Step 1. S6D-11 has not started.
 
+
+
+S6D-10 closure owner: `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md`. Machine proof: exactly 9 adjudicated-consumer edges / 0 current built-in policy realizations / 3 nonselectable conformance fixtures. Final Step-6 review: 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR.
