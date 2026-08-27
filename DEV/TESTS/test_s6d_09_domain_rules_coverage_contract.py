@@ -78,7 +78,7 @@ class CoverageTests(unittest.TestCase):
    select=next(x for x in rows[consumer]["data"]["steps"] if x["op"]=="op.select_targets")
    self.assertEqual(select["args"],{"target_spec":"activity.targeting","source_role":"actor","candidate_roles":"invocation.candidate_roles","applicability_facts":"invocation.fiction.target_reachable"})
   spec=rows["activity.spell.fire_bolt"]["data"]["targeting"]
-  fact={"fact_id":"fiction.target_reachable","value":True,"provenance_class":"INVOCATION_ADJUDICATED","provenance_ref":"gm:scene-1","consumer_id":"activity.spell.fire_bolt","binding_fingerprint":coverage.spatial_binding_fingerprint("activity.spell.fire_bolt",spec,"target-1","gm:scene-1","a"*64),"rules_context_fingerprint":"a"*64}
+  fact={"fact_id":"fiction.target_reachable","value":True,"provenance_class":"INVOCATION_ADJUDICATED","provenance_ref":"gm:scene-1","consumer_id":"activity.spell.fire_bolt","binding_fingerprint":coverage.spatial_binding_fingerprint("activity.spell.fire_bolt",spec,"target-1","gm:scene-1","a"*64),"rules_context_fingerprint":"a"*64,"policy_basis_refs":[]}
   first=coverage.select_spatial_targets("activity.spell.fire_bolt",spec,["target-1"],[fact],"a"*64)
   retry=coverage.select_spatial_targets("activity.spell.fire_bolt",spec,["target-1"],[fact],"a"*64)
   self.assertEqual(first,retry);self.assertEqual(first,["target-1"])
