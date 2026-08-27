@@ -556,7 +556,13 @@
             "failure.invocation_fact_unauthorized",
             "failure.action_economy_scope_invalid",
             "failure.effect_identity_mismatch",
-            "failure.effect_duration_mismatch"
+            "failure.effect_duration_mismatch",
+            "failure.adjudication_input_missing",
+            "failure.adjudication_input_unauthorized",
+            "failure.adjudication_input_invalid",
+            "failure.adjudication_context_stale",
+            "failure.policy_conflict",
+            "failure.policy_realization_gap"
         ],
         "intent_execution_states": [
             "intent.pending",
