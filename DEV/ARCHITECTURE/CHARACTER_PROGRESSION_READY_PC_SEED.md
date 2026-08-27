@@ -57,4 +57,5 @@ After those runtime components implement this slice, behavioral acceptance must 
 
 ## S6D-09 package-content amendment
 
-S6D-09 adds `gameplay-spine-seed.json` to the same identity-bound package content set. That member adds generic check/save and bounded gameplay-spine contracts but does not change this owner's character definitions, READY_PC predicate, progression choices, representative paths or deferred behavioral fast-start proof. `character-capabilities.json` binds all three members through their member digests and aggregate `content_set_sha256`; readiness evidence uses the amended aggregate identity.
+S6D-09 adds `gameplay-spine-seed.json` to the same identity-bound package content set. That member adds generic check/save and bounded gameplay-spine contracts but does not change this owner's character definitions, READY_PC predicate, progression choices, representative paths or deferred behavioral fast-start proof. The senior-audit spatial repair adds exact TargetSpec/AreaSpec values and accepted `fiction.target_reachable` argument bindings to the seven existing `op.select_targets` Activity consumers; it does not add character content, Activities or primitive authority. `character-capabilities.json` binds all three members through their member digests and aggregate `content_set_sha256`; readiness evidence uses the amended aggregate identity.
+
