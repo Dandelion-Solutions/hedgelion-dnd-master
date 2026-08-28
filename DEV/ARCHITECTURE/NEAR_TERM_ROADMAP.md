@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-11 COMPLETE / S6D-12 STEP 3 IN PROGRESS / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-11 COMPLETE / S6D-12 STEP 4 IN PROGRESS / R2.7 PAUSED**
 
 Date: 2026-08-28
 
@@ -93,7 +93,7 @@ Operating rules:
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **IN PROGRESS — S6D-12 STEP 3 / DECISION BRIEF** | residual rules/seed/catalog debt |
+| S6D | **IN PROGRESS — S6D-12 STEP 4 / COLLABORATIVE REVIEW** | residual rules/seed/catalog debt |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
 
 ---
@@ -113,17 +113,14 @@ R2.0..R2.6 COMPLETE
     -> S6D-06 Steps 1-8                            [COMPLETE / CRITIC PASS]
     -> S6D-07 Steps 1-8                            [COMPLETE / CRITIC PASS / CANONICAL]
     -> S6D-08 Steps 1-8                            [COMPLETE / SENIOR-AUDIT REPAIR PASS / CANONICAL]
-    -> S6D-09 Step 1                               [COMPLETE / SENIOR-AUDIT REPAIR / BRIEF-CRITIC PASS]
-    -> S6D-09 Step 2                               [COMPLETE / PRODUCT-SCOPE CONFLICT FOUND]
-    -> S6D-09 Step 3                               [COMPLETE / DECISION C — MINIMAL PLAYABLE GAMEPLAY SPINE]
-    -> S6D-09 Steps 4-8                            [COMPLETE / SENIOR-AUDIT SPATIAL REPAIR PASS / CANONICAL]
-    -> S6D-10 Step 1                               [COMPLETE / BRIEF-CRITIC PASS]
-    -> S6D-10 Steps 2-8                            [COMPLETE / WHOLE-PROJECT CRITIC PASS / CANONICAL]
+    -> S6D-09 Steps 1-8                            [COMPLETE / CANONICAL]
+    -> S6D-10 Steps 1-8                            [COMPLETE / WHOLE-PROJECT CRITIC PASS / CANONICAL]
     -> S6D-11 Steps 1-8                            [COMPLETE / WHOLE-PROJECT CRITIC PASS / CANONICAL]
     -> S6D-12 Step 1                               [COMPLETE / WHOLE-PROJECT BRIEF-CRITIC PASS]
     -> S6D-12 Step 2                               [COMPLETE / ITEM-LEVEL EVIDENCE EXTRACTION]
-    -> S6D-12 Step 3                               [IN PROGRESS / DECISION BRIEF]
-    -> S6D-12 Steps 4-8
+    -> S6D-12 Step 3                               [COMPLETE / HUMAN DECISION NOT REQUIRED]
+    -> S6D-12 Step 4                               [IN PROGRESS / COLLABORATIVE CROSS-OWNER REVIEW]
+    -> S6D-12 Steps 5-8
     -> S6D integrated closure
     -> R2.7 WP-06 RESUME
     -> R2.7 WP-07..WP-27
@@ -131,9 +128,9 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-12 Step 2 is complete. Its evidence extraction dispositioned the full current Source Manifest, twenty-five integrated obligation classes and all eighteen adversarial attack categories. No new semantic architecture contradiction or material product/authority decision was found. The remaining current closure work is one coherent machine-realization blocker family (derived package/set projections including B′) plus narrow stale/superseded evidence reconciliation and later implementation acceptance.
+**Current stop.** S6D-12 Steps 1–3 are complete. Step 2 found no new semantic contradiction and Step 3 determined `HUMAN_DECISION_REQUIRED: NO`: the final-closure direction follows mechanically from accepted owners and the already-approved B′ decision.
 
-The approved B′ supported-domain coverage derived-binding realization remains `BLOCKED_BY_EXECUTION_CAPABILITY`. Its architecture semantics are settled; it does not reopen S6D-11 and MUST be coherently materialized and verified, or receive a later explicit human owner disposition, before S6D final closure may authorize R2.7 resume.
+The remaining current closure work is one coherent machine-realization blocker family (derived package/set projections including B′) plus narrow stale/superseded evidence reconciliation and later implementation acceptance. B′ remains `BLOCKED_BY_EXECUTION_CAPABILITY`; this does not block Steps 4–7 architecture review but does block final S6D closure/R2.7 resume.
 
 ---
 
@@ -199,7 +196,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-12 Step 3 in progress
+## 7. S6D — S6D-12 Step 4 in progress
 
 S6D decomposition/evidence inputs remain:
 
@@ -207,19 +204,21 @@ S6D decomposition/evidence inputs remain:
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
-The plan is a decomposition/coverage index only. S6D-01 through S6D-11 are closed by their named current architecture owners and later accepted amendments.
+The plan is a decomposition/coverage index only. Current owning architecture and later accepted amendments control semantics.
 
-S6D-12 Step 1 is complete through:
+S6D-12 Step 1 authority:
 
 - `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-task-brief.md`;
 - `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-task-brief-amendment.md`;
 - `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-brief-critic.md`.
 
-S6D-12 Step 2 evidence authority:
+S6D-12 Step 2 evidence:
 
 - `DEV/docs/superpowers/research/2026-08-28-s6d-12-adversarial-final-closure-evidence.md`.
 
-Step 2 found no new semantic architecture contradiction and no material human product/authority choice. Step 3 must therefore determine whether a human decision is genuinely required rather than manufacture one from stale machine evidence.
+S6D-12 Step 3 decision:
+
+- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-decision-brief.md` — `HUMAN_DECISION_REQUIRED: NO`.
 
 B′ carry-in authority remains:
 
@@ -252,13 +251,13 @@ HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
 S6D: IN PROGRESS
 S6D_COMPLETED_DOMAIN: S6D-11 / STEPS 1-8 / ARCHITECTURE CLOSED
 S6D_ACTIVE_DOMAIN: S6D-12
-S6D_COMPLETED_STAGE: S6D-12 STEP 2 / ITEM-LEVEL EVIDENCE EXTRACTION
-S6D_ACTIVE_STAGE: S6D-12 STEP 3 / DECISION BRIEF
-S6D_NEXT_STAGE: S6D-12 STEP 4 / COLLABORATIVE REVIEW
+S6D_COMPLETED_STAGE: S6D-12 STEP 3 / HUMAN DECISION NOT REQUIRED
+S6D_ACTIVE_STAGE: S6D-12 STEP 4 / COLLABORATIVE CROSS-OWNER REVIEW
+S6D_NEXT_STAGE: S6D-12 STEP 5 / CANDIDATE FINAL-CLOSURE SPEC
 S6D_FINAL_CLOSURE_BLOCKER: B′ + CURRENT DERIVED IDENTITY PROJECTIONS / MACHINE REALIZATION
 R2_7_WP06: PAUSED
 ```
 
-Next action is S6D-12 Step 3. R2.7 remains paused.
+Next action is S6D-12 Step 4. R2.7 remains paused.
 
 S6D-10 closure owner: `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md`. Machine proof: exactly 9 adjudicated-consumer edges / 0 current built-in policy realizations / 3 nonselectable conformance fixtures. Final Step-6 review: 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR.
