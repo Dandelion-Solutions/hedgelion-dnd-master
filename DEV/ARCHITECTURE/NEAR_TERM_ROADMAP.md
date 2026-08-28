@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-11 COMPLETE / S6D-12 STEP 8 IN PROGRESS / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-12 STEPS 1-8 COMPLETE / S6D INTEGRATED CLOSURE BLOCKED / R2.7 PAUSED**
 
 Date: 2026-08-28
 
@@ -93,7 +93,7 @@ Operating rules:
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **IN PROGRESS — S6D-12 STEP 8 / CANONICALIZATION + FINAL DISPOSITION** | residual rules/seed/catalog debt |
+| S6D | **BLOCKED AT INTEGRATED CLOSURE — S6D-12 STEPS 1-8 COMPLETE / SEMANTIC ARCHITECTURE CANONICAL** | residual rules/seed/catalog debt |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
 
 ---
@@ -123,15 +123,15 @@ R2.0..R2.6 COMPLETE
     -> S6D-12 Step 5                               [COMPLETE / CANDIDATE FINAL-CLOSURE SPEC]
     -> S6D-12 Step 6                               [COMPLETE / WHOLE-PROJECT ADVERSARIAL CRITIC PASS]
     -> S6D-12 Step 7                               [COMPLETE / SEMANTIC TRUE / MACHINE FALSE]
-    -> S6D-12 Step 8                               [IN PROGRESS / CANONICALIZATION + FINAL DISPOSITION]
-    -> S6D integrated closure                      [BLOCKED UNTIL MACHINE REALIZATION VERIFIED]
+    -> S6D-12 Step 8                               [COMPLETE / CANONICAL BLOCKED DISPOSITION]
+    -> S6D integrated closure                      [BLOCKED / MACHINE REALIZATION MRC-01..04 REQUIRED]
     -> R2.7 WP-06 RESUME                           [NOT ALLOWED YET]
     -> R2.7 WP-07..WP-27
     -> R2.7 final reconciliation
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-12 Steps 1–7 are complete. Step 7 resolved `SEMANTIC_ARCHITECTURE_RECONCILED == TRUE` and `MACHINE_REALIZATION_VERIFIED == FALSE`; therefore `S6D_FINAL_CLOSURE_AUTHORIZED == FALSE`. Step 8 may canonicalize this blocked disposition but may not claim integrated S6D closure.
+**Current stop.** S6D-12's complete eight-step architecture review is canonical. `SEMANTIC_ARCHITECTURE_RECONCILED == TRUE`; `MACHINE_REALIZATION_VERIFIED == FALSE`; therefore `S6D_FINAL_CLOSURE_AUTHORIZED == FALSE`. There is no active numbered S6D design step. The active prerequisite is finite machine realization MRC-01…04, after which S6D integrated closure must be reevaluated.
 
 Current machine-realization blockers remain: coherent B′ coverage migration, synchronization of every current derived package/set projection to fresh canonical reconstruction, executable Mechanical-Null conformance using existing Step-3 MechanicalEvent/ExecutionSegment/receipt owners, and focused integrated S6D-07/08/09/10/11 verification on the same realized state. R2.7 stays paused.
 
@@ -199,7 +199,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-12 Step 8 in progress
+## 7. S6D — S6D-12 complete / integrated closure blocked
 
 S6D decomposition/evidence inputs remain:
 
@@ -239,6 +239,10 @@ S6D-12 Step 7 resolution gate:
 
 - `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-7-resolution-gate.md` — semantic architecture reconciled; machine realization not verified; final closure and R2.7 resume not authorized.
 
+S6D-12 Step 8 canonicalization:
+
+- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-8-canonicalization.md` — canonical semantic reconciliation plus exact blocked final disposition and finite MRC-01…04 continuation sequence.
+
 S6D-08 stale identity prose reconciliation:
 
 - `DEV/ARCHITECTURE/HEALTH_EFFECTS_RECOVERY.md` now routes package/set identity exclusively through the canonical S6D-11 manifest -> package snapshot -> resolved lock -> `ruleset_set_sha256` chain and owns no aggregate content-set identity.
@@ -248,6 +252,15 @@ B′ carry-in authority remains:
 - `DEV/docs/superpowers/specs/2026-08-28-domain-rules-coverage-derived-binding-owner-decision.md`;
 - `DEV/ARCHITECTURE/DOMAIN_RULES_COVERAGE.md`;
 - `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md`.
+
+Current closure predicates:
+
+```text
+SEMANTIC_ARCHITECTURE_RECONCILED: TRUE
+MACHINE_REALIZATION_VERIFIED: FALSE
+S6D_FINAL_CLOSURE_AUTHORIZED: FALSE
+S6D_FINAL_CLOSURE: BLOCKED_BY_KNOWN_REALIZATION_OBLIGATION
+```
 
 ---
 
@@ -271,12 +284,12 @@ R2.7 WP-06 resumes only after S6D integrated closure. B′ machine realization a
 
 ```text
 HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
-S6D: IN PROGRESS
-S6D_COMPLETED_DOMAIN: S6D-11 / STEPS 1-8 / ARCHITECTURE CLOSED
-S6D_ACTIVE_DOMAIN: S6D-12
-S6D_COMPLETED_STAGE: S6D-12 STEP 7 / RESOLUTION GATE / SEMANTIC TRUE / MACHINE FALSE
-S6D_ACTIVE_STAGE: S6D-12 STEP 8 / CANONICALIZATION + FINAL DISPOSITION
-S6D_NEXT_STAGE: S6D INTEGRATED CLOSURE RE-EVALUATION AFTER MACHINE REALIZATION
-S6D_FINAL_CLOSURE_BLOCKER: B′ + CURRENT DERIVED IDENTITY PROJECTIONS + MECHANICAL-NULL EXECUTION PROOF / MACHINE REALIZATION
+S6D: INTEGRATED CLOSURE BLOCKED
+S6D_COMPLETED_DOMAIN: S6D-12 / STEPS 1-8 / SEMANTIC ARCHITECTURE CANONICAL
+S6D_ACTIVE_DOMAIN: INTEGRATED CLOSURE BLOCKED
+S6D_COMPLETED_STAGE: S6D-12 STEP 8 / CANONICAL BLOCKED DISPOSITION
+S6D_ACTIVE_STAGE: MACHINE REALIZATION PREREQUISITE MRC-01..04
+S6D_NEXT_STAGE: S6D INTEGRATED CLOSURE RE-EVALUATION AFTER MRC-01..04 PASS
+S6D_FINAL_CLOSURE_BLOCKER: B′ + CURRENT DERIVED IDENTITY PROJECTIONS + MECHANICAL-NULL EXECUTION PROOF + FOCUSED INTEGRATED VERIFICATION / MACHINE REALIZATION
 R2_7_WP06: PAUSED
 ```
