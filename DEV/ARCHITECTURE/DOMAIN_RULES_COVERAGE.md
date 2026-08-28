@@ -1,8 +1,8 @@
 # Domain Rules Coverage and Minimal Gameplay Spine
 
-Status: **CANONICAL — S6D-09 STEPS 1–8 COMPLETE / SPATIAL CONFORMANCE REPAIRED**
+Status: **CANONICAL — S6D-09 STEPS 1–8 COMPLETE / SPATIAL CONFORMANCE REPAIRED / B′ REALIZATION AMENDMENT APPROVED**
 
-Date: 2026-08-27
+Date: 2026-08-28
 
 ## 1. Authority and scope
 
@@ -79,8 +79,10 @@ A player tries to persuade a guard. Fiction determines feasibility and supplies 
 
 - `GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/gameplay-spine-seed.json`
 - `DEV/CATALOG/domain-rules-coverage.json`
+- `DEV/CATALOG/domain-rules-coverage-binding.json` — approved B′ strictly-derived package-identity companion; not yet materialized while the recorded execution-capability blocker remains open
 - `DEV/CATALOG/activity-primitive-contracts.json`
 - `DEV/SCHEMAS/domain-rules-coverage.schema.json`
+- `DEV/SCHEMAS/domain-rules-coverage-binding.schema.json` — approved B′ closed binding schema; not yet materialized while the same blocker remains open
 - `DEV/SCHEMAS/gameplay-spine-seed.schema.json`
 - `DEV/SCHEMAS/combat-minimal-procedure-state.schema.json`
 - `DEV/SCHEMAS/combat-procedure-transition-request.schema.json`
@@ -93,7 +95,39 @@ A player tries to persuade a guard. Fiction determines feasibility and supplies 
 
 Production execution remains Implementation Planning work. S6D-11 performs integrated package/catalog verification, not deferred product or architecture design.
 
-## 11. S6D-11 package identity
+## 11. S6D-11 package identity — B′ physical realization amendment
 
-The coverage ledger's package_binding is the canonical resolved `ruleset_set_sha256`, derived from the self-including manifest and exact package bytes. It is not an independently authored aggregate digest. Validation must reconstruct the exact lock, confirm the gameplay member belongs to that lock, and then prove bidirectional product/package/active-consumer equality. The legacy `content_set_sha256` binding is rejected.
-+
+The S6D-09 semantic coverage contract remains one monolithic ledger. Its completeness semantics are unchanged and are validated by exact equality between the checked-in semantic artifact and the fresh deterministic semantic producer.
+
+The approved post-canonical physical realization removes the entire volatile package binding from `DEV/CATALOG/domain-rules-coverage.json` and places it in `DEV/CATALOG/domain-rules-coverage-binding.json`. The binding contains exactly:
+
+```text
+profile_id
+package_id
+package_version
+catalog_generation
+gameplay_spine_member
+package_content_sha256
+ruleset_set_sha256
+```
+
+No `coverage_semantic_sha256` or equivalent digest is introduced. Validation must independently prove both:
+
+1. the semantic coverage artifact exactly equals the fresh deterministic semantic producer; and
+2. the small binding exactly equals the current reconstructed package snapshot/resolved lock plus the exact expected profile/package/version/catalog/member context.
+
+The binding is strictly derived verification evidence. It is not an independently authored aggregate identity and cannot select or repair package identity. Canonical authority remains the S6D-11 chain:
+
+```text
+manifest -> package snapshot -> resolved lock -> ruleset_set_sha256
+```
+
+The gameplay spine member must belong to the reconstructed package snapshot. Missing, stale, detached or mismatched binding evidence fails closed. The legacy `content_set_sha256` binding remains rejected.
+
+This amendment does not reopen S6D-11 semantic architecture, change the identity algorithm, shard the coverage ledger, alter supported mechanics or introduce another identity owner.
+
+## 12. Realization checkpoint
+
+B′ architecture semantics are settled, but the coherent machine-contract migration is currently `BLOCKED_BY_EXECUTION_CAPABILITY`: the supported development surface lacks an operation that executes the deterministic repository producer on a verified ref and returns the generated artifact bytes required for the one-time v2 -> v3 migration.
+
+Do not partially migrate schemas, producer/validator code, the large generated coverage artifact or the remaining identity projections while that capability is absent. This realization obligation is an explicit carry-in to S6D-12 and must be closed before S6D final closure / R2.7 WP-06 resume. The durable owner decision is `DEV/docs/superpowers/specs/2026-08-28-domain-rules-coverage-derived-binding-owner-decision.md`.
