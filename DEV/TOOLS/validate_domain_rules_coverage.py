@@ -6,7 +6,8 @@ from DEV.TOOLS.validate_character_mvp_seed import CanonicalSchemaValidator
 from DEV.TOOLS.validate_ruleset_package_closure import build_resolved_lock
 
 MACHINE_ID=re.compile(r"^[a-z][a-z0-9_]*(?:\.[a-z0-9_]+)+$")
-TOP={"schema_name","schema_version","profile_id","package_binding","source_manifest","source_sets","required_coverage_keys","coverage_ledger","atomic_routes","scope_exclusions","completeness_proof"}
+TOP={"schema_name","schema_version","profile_id","source_manifest","source_sets","required_coverage_keys","coverage_ledger","atomic_routes","scope_exclusions","completeness_proof"}
+BINDING={"profile_id","package_id","package_version","catalog_generation","gameplay_spine_member","package_content_sha256","ruleset_set_sha256"}
 LEDGER={"source_key","source_memberships","coverage_id","package_presence","product_scope","realization","disposition","route_id","source_citations","negative_space"}
 ROUTE={"route_id","family","scenario","applicability","consumer_ids","definition_ids","input_provenance","missing_input_behavior","binding_identity","frozen_inputs","currentness","selector_operation_resolver","dependencies","execution_route","rng_retry","authoritative_mutation","mutation_rationale","execution_segment","event_route","receipt_route","failures","idempotency_conflict","multiplayer_currentness","suspension_chronology_recovery","classification","positive_evidence","negative_space","downstream_gap"}
 
@@ -83,13 +84,30 @@ def expected_routes():
  route("route.out_of_scope","excluded","explicit decision-C exclusion",[],[],"NOT_APPLICABLE","NO_AUTHORITATIVE_WORLD_MUTATION","NONE","OUT_OF_SUPPORTED_MVP_SEED","2026-08-27 human decision C","absent/nonselectable pending exact consumer")]
 
 def build_contract(root):
- root=Path(root); sets=build_expected_source_sets(root); required=sorted(set().union(*map(set,sets.values()))); pkg=root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core"; manifest=load(pkg/"ruleset-package-manifest.json");lock,_=build_resolved_lock([pkg],root_package_ids=[manifest["package_id"]],engine_version=manifest["engine_requirement"]["engine_version"],catalog_generation=manifest["catalog_generation"]);products={f"PRODUCT:{r['key']}":r for r in product_rows(root)}
+ root=Path(root); sets=build_expected_source_sets(root); required=sorted(set().union(*map(set,sets.values())));products={f"PRODUCT:{r['key']}":r for r in product_rows(root)}
  citations={"PACKAGE_CLOSURE_KEYS":["character-capabilities.json","character-mvp-seed.json","health-effects-recovery-seed.json","gameplay-spine-seed.json"],"ACTIVE_MACHINE_CONSUMER_KEYS":["DEV/CATALOG/mechanical-surfaces.json","DEV/CATALOG/portable-value-routes.json","DEV/CATALOG/activity-primitive-contracts.json"],"PRODUCT_PROMISE_KEYS":sorted({r["owner_path"] for r in products.values()})}
  ledger=[]
  for key in required:
   membership=[n for n,v in sets.items() if key in v];product=products.get(key);rid=product["route_id"] if product else route_for(key);out=(product and product["product_scope"]=="EXPLICITLY_OUT_OF_SCOPE") or rid=="route.out_of_scope";row_citations=[product["owner_path"]+" :: "+product["evidence_pattern"]] if product else citations[membership[0]]
   ledger.append({"source_key":key,"source_memberships":membership,"coverage_id":"coverage."+hashlib.sha256(key.encode()).hexdigest()[:16],"package_presence":"ABSENT" if out and key.startswith("PRODUCT:") else "PRESENT_ACTIVE_OR_TRANSITIVE","product_scope":"EXPLICITLY_OUT_OF_SCOPE" if out else "SUPPORTED","realization":"NOT_APPLICABLE" if out else "COMPLETE","disposition":"OUT_OF_SUPPORTED_MVP_SEED" if out else "IN_SUPPORTED_MVP","route_id":rid,"source_citations":row_citations,"negative_space":product["qualifier"] if product else "No utterance enumeration or authority beyond cited owner"})
- return {"schema_name":"hdm_domain_rules_coverage","schema_version":2,"profile_id":"gameplay_spine.mvp.v1","package_binding":{"package_id":manifest["package_id"],"package_version":manifest["package_version"],"catalog_generation":manifest["catalog_generation"],"ruleset_set_sha256":lock["ruleset_set_sha256"],"gameplay_spine_member":"gameplay-spine-seed.json"},"source_manifest":citations,"source_sets":sets,"required_coverage_keys":required,"coverage_ledger":ledger,"atomic_routes":expected_routes(),"scope_exclusions":["contest.generic","reaction.generic","damage_defense.broad","concentration.generic","currency.economy","crafting","downtime","teleportation","zone_entity_creation","equipment_corpus.broad","spell_hazard_corpus.broad"],"completeness_proof":{"coverage_minus_required":[],"required_minus_coverage":[],"orphan_machine_consumer_edges":[],"unresolved_matrix_references":[],"duplicate_source_keys":[],"supported_gaps":[]}}
+ return {"schema_name":"hdm_domain_rules_coverage","schema_version":3,"profile_id":"gameplay_spine.mvp.v1","source_manifest":citations,"source_sets":sets,"required_coverage_keys":required,"coverage_ledger":ledger,"atomic_routes":expected_routes(),"scope_exclusions":["contest.generic","reaction.generic","damage_defense.broad","concentration.generic","currency.economy","crafting","downtime","teleportation","zone_entity_creation","equipment_corpus.broad","spell_hazard_corpus.broad"],"completeness_proof":{"coverage_minus_required":[],"required_minus_coverage":[],"orphan_machine_consumer_edges":[],"unresolved_matrix_references":[],"duplicate_source_keys":[],"supported_gaps":[]}}
+
+def _package_identity(root):
+ root=Path(root);package=root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core";manifest=load(package/"ruleset-package-manifest.json")
+ lock,snapshots=build_resolved_lock([package],root_package_ids=[manifest["package_id"]],engine_version=manifest["engine_requirement"]["engine_version"],catalog_generation=manifest["catalog_generation"])
+ return manifest,lock,snapshots[manifest["package_id"]]
+
+def build_binding(root):
+ manifest,lock,snapshot=_package_identity(root)
+ member="gameplay-spine-seed.json"
+ if member not in {row["path"] for row in snapshot.members}: raise ValueError("detached gameplay spine member")
+ return {"profile_id":"gameplay_spine.mvp.v1","package_id":manifest["package_id"],"package_version":manifest["package_version"],"catalog_generation":manifest["catalog_generation"],"gameplay_spine_member":member,"package_content_sha256":snapshot.content_sha256,"ruleset_set_sha256":lock["ruleset_set_sha256"]}
+
+def validate_binding(value,root=None):
+ root=Path(root or Path(__file__).resolve().parents[2]);exact(value,BINDING,"coverage binding")
+ CanonicalSchemaValidator(root/"DEV/SCHEMAS").validate(value,load(root/"DEV/SCHEMAS/domain-rules-coverage-binding.schema.json"))
+ if value!=build_binding(root): raise ValueError("coverage binding differs from reconstructed package snapshot/resolved lock")
+ return True
 
 def validate_gameplay_seed(spine,schemas):
  validator=CanonicalSchemaValidator(schemas);validator.validate(spine,load(Path(schemas)/"gameplay-spine-seed.schema.json"))
@@ -105,10 +123,11 @@ def validate_gameplay_seed(spine,schemas):
 
 def validate_contract(value,root=None):
  root=Path(root or Path(__file__).resolve().parents[2]); exact(value,TOP,"contract")
- if (value["schema_name"],value["schema_version"],value["profile_id"]) != ("hdm_domain_rules_coverage",2,"gameplay_spine.mvp.v1"): raise ValueError("identity mismatch")
+ if (value["schema_name"],value["schema_version"],value["profile_id"]) != ("hdm_domain_rules_coverage",3,"gameplay_spine.mvp.v1"): raise ValueError("identity mismatch")
  schemas=root/"DEV/SCHEMAS"; validator=CanonicalSchemaValidator(schemas); validator.validate(value,load(schemas/"domain-rules-coverage.schema.json")); validate_gameplay_seed(load(root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/gameplay-spine-seed.json"),schemas)
  expected=build_contract(root)
- for key in ("package_binding","source_manifest","source_sets","required_coverage_keys","atomic_routes","scope_exclusions","completeness_proof"):
+ if value!=expected: raise ValueError("semantic coverage differs from deterministic producer")
+ for key in ("source_manifest","source_sets","required_coverage_keys","atomic_routes","scope_exclusions","completeness_proof"):
   if value[key]!=expected[key]: raise ValueError(f"{key} differs from current owners")
  if len(value["coverage_ledger"])!=len(expected["coverage_ledger"]): raise ValueError("ledger cardinality")
  bykey={r.get("source_key"):r for r in value["coverage_ledger"]}
@@ -125,8 +144,7 @@ def validate_contract(value,root=None):
    fact=load(root/"DEV/CATALOG/mechanical-surfaces.json")["context_facts"].get(source)
    fact_ok=fact is not None and fact["disposition"]=="ACTIVE_ADMITTED" and consumer in fact["permitted_consumer_ids"]
    if not (primitive_ok or fact_ok) or consumer not in activities: raise ValueError("orphan machine edge")
- package=root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core"; manifest=load(package/"ruleset-package-manifest.json"); lock,_=build_resolved_lock([package],root_package_ids=[manifest["package_id"]],engine_version=manifest["engine_requirement"]["engine_version"],catalog_generation=manifest["catalog_generation"])
- if contract["package_binding"]["ruleset_set_sha256"]!=lock["ruleset_set_sha256"] or "gameplay-spine-seed.json" not in {row["path"] for row in lock["packages"][0]["members"]}: raise ValueError("detached package member or ruleset set")
+ validate_binding(load(root/"DEV/CATALOG/domain-rules-coverage-binding.json"),root)
  return True
 
 def _fingerprint(request):
@@ -138,6 +156,28 @@ def _committed(profile,key,mutations,event_ids):
  return {"profile_id":profile,"idempotency_key":key,"status":"COMPLETED","prospective_mutations":mutations,"execution_segment":{"segment_sequence":1,"commit_state":"committed","resulting_execution_state":"COMPLETED","affected_revision_refs":revisions,"event_ids":event_ids},"event_ids":event_ids,"receipt_ref":f"{key}:receipt"}
 def _receipt_fixture(wire,exports=None):
  return {"execution_owner_id":f"resolution:{wire['idempotency_key']}","segment_refs":[f"resolution:{wire['idempotency_key']}:segment:1"],"status":wire["status"],"event_ids":wire["event_ids"],"exports":exports or {},"pending_child_refs":[]}
+def execute_mechanical_null_resolution(req,receipts=None):
+ receipts={} if receipts is None else receipts
+ if not isinstance(req,dict):return (_failure({},"failure.missing_reference"),{})
+ key=req.get("idempotency_key")
+ if not isinstance(key,str) or not key:return (_failure(req,"failure.missing_reference"),{})
+ fp=_fingerprint(req)
+ if key in receipts:
+  return receipts[key]["transaction"] if receipts[key]["fingerprint"]==fp else (_failure(req,"failure.idempotency_conflict"),{})
+ exact_keys={"profile_id","idempotency_key","activity_id","ability_id","dc","roll"}
+ family={"resolution.check":"check","resolution.save":"save"}.get(req.get("profile_id"))
+ expected_activity=f"activity.{family}.generic" if family else None
+ roll=req.get("roll")
+ roll_ok=isinstance(roll,dict) and set(roll)=={"rng_result_ref","d20","basis_modifier","proficiency_bonus"} and isinstance(roll.get("rng_result_ref"),str) and bool(roll.get("rng_result_ref")) and isinstance(roll.get("d20"),int) and 1<=roll["d20"]<=20 and all(isinstance(roll.get(k),int) for k in ("basis_modifier","proficiency_bonus"))
+ request_ok=set(req)==exact_keys and req.get("activity_id")==expected_activity and isinstance(req.get("ability_id"),str) and req["ability_id"].startswith("ability.") and isinstance(req.get("dc"),int) and req["dc"]>=1 and roll_ok
+ if not request_ok:return (_failure(req,"failure.missing_reference"),{})
+ total=roll["d20"]+roll["basis_modifier"]+roll["proficiency_bonus"];result="SUCCESS" if total>=req["dc"] else "FAILURE"
+ owner_id=f"resolution:{key}";segment_id=f"{owner_id}:segment:1";event_id=f"{segment_id}:event:1"
+ segment={"segment_sequence":1,"commit_state":"committed","resulting_execution_state":"COMPLETED","event_ids":[event_id],"pending_child_invocations":[],"receipt_exports":{"result":result,"roll_total":total,"rng_result_ref":roll["rng_result_ref"]},"affected_revision_refs":[]}
+ wire={"profile_id":req["profile_id"],"idempotency_key":key,"status":"COMPLETED","result":result,"prospective_mutations":[],"execution_segment":segment,"event_ids":[event_id],"receipt_ref":f"{owner_id}:receipt"}
+ event={"segment_id":segment_id,"event_ordinal":1,"event_kind":f"event.{family}.resolved","root_command_id":key,"causal_ref":owner_id,"payload":{"activity_id":req["activity_id"],"ability_id":req["ability_id"],"dc":req["dc"],"roll":deepcopy(roll),"roll_total":total,"result":result}}
+ receipt={"execution_owner_id":owner_id,"segment_refs":[segment_id],"status":"COMPLETED","event_ids":[event_id],"exports":{"result":result,"roll_total":total,"rng_result_ref":roll["rng_result_ref"]},"pending_child_refs":[]}
+ transaction=(wire,{"segment_id":segment_id,"event_id":event_id,"mechanical_event":event,"receipt":receipt});receipts[key]={"fingerprint":fp,"transaction":transaction};return transaction
 def _world_record(snapshot,kind,schemas):
  if set(snapshot)!={"record","revision"} or not isinstance(snapshot["revision"],int) or snapshot["revision"]<0:raise ValueError("owner snapshot is not exact")
  record=snapshot["record"]
@@ -305,4 +345,3 @@ def resolve_asset_use(req,asset,admitted_activity_ids,receipts=None):
  wire=_committed("asset.use",key,[],[]);wire["activity_binding"]={"binding_kind":req["consequence_profile"]}
  if req["consequence_profile"]=="EXACT_ADMITTED_ACTIVITY":wire["activity_binding"]["activity_id"]=req["activity_id"]
  transaction=(wire,{});receipts[key]={"fingerprint":fp,"transaction":transaction};return transaction
-

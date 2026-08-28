@@ -17,8 +17,10 @@ from validate_ruleset_package_closure import (
     compile_conformance_attestation, validate_compatibility_result,
     validate_runtime_conformance_evidence, validate_transitional_identity_census,
     canonical_json, derive_engine_contract_inventory, sha256,
+    current_identity_projection_mismatches,
 )
 import validate_ruleset_package_closure as closure_tool
+from validate_domain_rules_coverage import build_binding, build_contract, validate_binding, validate_contract
 
 PACKAGE_ID = "hdm.rules.dnd2024-srd52-core"
 PACKAGE = ROOT / "GAME" / "RULES" / "packages" / PACKAGE_ID
@@ -50,10 +52,22 @@ class RulesetPackageClosureTests(unittest.TestCase):
 
     def test_current_package_builds_exact_reconstructive_lock(self):
         lock, snapshots = self.build()
-        self.assertEqual(lock["ruleset_set_sha256"], "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca")
-        self.assertEqual(lock["packages"][0]["content_sha256"], "c18fa240cc1756e079cb7f80c1d88eb8db64f2334a0265337fadd670ece813e9")
+        self.assertEqual(lock["ruleset_set_sha256"], "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143")
+        self.assertEqual(lock["packages"][0]["content_sha256"], "0ad0e9368f30d5aaa0f22392a83f7e19b6bff8ac4d6e6a19f5aa5f4ad3932d6f")
         self.assertIn("ruleset-package-manifest.json", {row["path"] for row in lock["packages"][0]["members"]})
         self.assertGreaterEqual(len(combined_semantic_entries(snapshots)), 90)
+
+    def test_s6d09_semantic_and_binding_producers_are_separate_and_current(self):
+        semantic = json.loads((ROOT / "DEV/CATALOG/domain-rules-coverage.json").read_text(encoding="utf-8"))
+        binding = json.loads((ROOT / "DEV/CATALOG/domain-rules-coverage-binding.json").read_text(encoding="utf-8"))
+        self.assertEqual(semantic, build_contract(ROOT))
+        self.assertEqual(binding, build_binding(ROOT))
+        self.assertNotIn("package_binding", semantic)
+        self.assertTrue(validate_contract(semantic, ROOT))
+        self.assertTrue(validate_binding(binding, ROOT))
+
+    def test_current_identity_projection_census_has_zero_mismatches(self):
+        self.assertEqual(current_identity_projection_mismatches(ROOT), [])
 
     def test_shipped_game_contract_loads_and_hashes_without_dev_tree(self):
         with tempfile.TemporaryDirectory() as td:
@@ -68,7 +82,7 @@ class RulesetPackageClosureTests(unittest.TestCase):
                 "from GAME.TOOLS.ruleset_package import build_resolved_lock;"
                 f"p=Path(r'{package}');"
                 f"lock,_=build_resolved_lock([p],root_package_ids=['{PACKAGE_ID}'],engine_version='1.0-alpha',catalog_generation='2.0.0');"
-                f"assert lock['ruleset_set_sha256']=='4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca'"
+                f"assert lock['ruleset_set_sha256']=='fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143'"
             )
             completed = subprocess.run([sys.executable, "-c", script], cwd=root, capture_output=True, text=True)
             self.assertEqual(completed.returncode, 0, completed.stderr)
@@ -281,6 +295,7 @@ class RulesetPackageClosureTests(unittest.TestCase):
         carriers = [
             PACKAGE / "character-capabilities.json",
             ROOT / "DEV" / "CATALOG" / "domain-rules-coverage.json",
+            ROOT / "DEV" / "CATALOG" / "domain-rules-coverage-binding.json",
             ROOT / "DEV" / "CATALOG" / "house-rules-mechanical-boundary.json",
             ROOT / "DEV" / "TESTS" / "fixtures" / "s6d-07-character-mvp-actors.json",
             ROOT / "DEV" / "TOOLS" / "validate_character_mvp_seed.py",

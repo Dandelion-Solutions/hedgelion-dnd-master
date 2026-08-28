@@ -157,7 +157,7 @@ class S6D08HealthEffectsRecoveryContractTest(unittest.TestCase):
 
     def test_package_identity_binds_exact_closed_content_set(self):
         lock, _ = build_resolved_lock([PACKAGE], root_package_ids=["hdm.rules.dnd2024-srd52-core"], engine_version="1.0-alpha", catalog_generation="2.0.0")
-        self.assertEqual(lock["ruleset_set_sha256"], "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca")
+        self.assertEqual(lock["ruleset_set_sha256"], "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143")
         self.assertIn("health-effects-recovery-seed.json", {row["path"] for row in lock["packages"][0]["members"]})
         self.assertFalse({"content_files", "content_set_sha256"}.intersection(self.capabilities))
 

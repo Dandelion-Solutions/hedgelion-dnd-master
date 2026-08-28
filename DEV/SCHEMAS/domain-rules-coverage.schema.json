@@ -2,17 +2,16 @@
   "$schema":"https://json-schema.org/draft/2020-12/schema",
   "$id":"https://hedgelion.invalid/schemas/domain-rules-coverage.schema.json",
   "type":"object","additionalProperties":false,
-  "required":["schema_name","schema_version","profile_id","package_binding","source_manifest","source_sets","required_coverage_keys","coverage_ledger","atomic_routes","scope_exclusions","completeness_proof"],
+  "required":["schema_name","schema_version","profile_id","source_manifest","source_sets","required_coverage_keys","coverage_ledger","atomic_routes","scope_exclusions","completeness_proof"],
   "properties":{
-    "schema_name":{"const":"hdm_domain_rules_coverage"},"schema_version":{"const":2},"profile_id":{"const":"gameplay_spine.mvp.v1"},
-    "package_binding":{"$ref":"#/$defs/packageBinding"},"source_manifest":{"$ref":"#/$defs/sourceManifest"},"source_sets":{"$ref":"#/$defs/sourceSets"},
+    "schema_name":{"const":"hdm_domain_rules_coverage"},"schema_version":{"const":3},"profile_id":{"const":"gameplay_spine.mvp.v1"},
+    "source_manifest":{"$ref":"#/$defs/sourceManifest"},"source_sets":{"$ref":"#/$defs/sourceSets"},
     "required_coverage_keys":{"$ref":"#/$defs/uniqueStrings"},"coverage_ledger":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/ledger"}},
     "atomic_routes":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/route"}},"scope_exclusions":{"$ref":"#/$defs/uniqueStrings"},
     "completeness_proof":{"$ref":"#/$defs/proof"}
   },
   "$defs":{
     "uniqueStrings":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},
-    "packageBinding":{"type":"object","additionalProperties":false,"required":["package_id","package_version","catalog_generation","ruleset_set_sha256","gameplay_spine_member"],"properties":{"package_id":{"const":"hdm.rules.dnd2024-srd52-core"},"package_version":{"const":"0.1.0-mvp"},"catalog_generation":{"const":"2.0.0"},"ruleset_set_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"gameplay_spine_member":{"const":"gameplay-spine-seed.json"}}},
     "sourceManifest":{"type":"object","additionalProperties":false,"required":["PACKAGE_CLOSURE_KEYS","ACTIVE_MACHINE_CONSUMER_KEYS","PRODUCT_PROMISE_KEYS"],"properties":{"PACKAGE_CLOSURE_KEYS":{"$ref":"#/$defs/uniqueStrings"},"ACTIVE_MACHINE_CONSUMER_KEYS":{"$ref":"#/$defs/uniqueStrings"},"PRODUCT_PROMISE_KEYS":{"$ref":"#/$defs/uniqueStrings"}}},
     "sourceSets":{"type":"object","additionalProperties":false,"required":["PACKAGE_CLOSURE_KEYS","ACTIVE_MACHINE_CONSUMER_KEYS","PRODUCT_PROMISE_KEYS"],"properties":{"PACKAGE_CLOSURE_KEYS":{"$ref":"#/$defs/uniqueStrings"},"ACTIVE_MACHINE_CONSUMER_KEYS":{"$ref":"#/$defs/uniqueStrings"},"PRODUCT_PROMISE_KEYS":{"$ref":"#/$defs/uniqueStrings"}}},
     "ledger":{"type":"object","additionalProperties":false,"required":["source_key","source_memberships","coverage_id","package_presence","product_scope","realization","disposition","route_id","source_citations","negative_space"],"properties":{"source_key":{"type":"string","pattern":"^(PACKAGE|MACHINE|PRODUCT):"},"source_memberships":{"type":"array","minItems":1,"maxItems":3,"uniqueItems":true,"items":{"enum":["PACKAGE_CLOSURE_KEYS","ACTIVE_MACHINE_CONSUMER_KEYS","PRODUCT_PROMISE_KEYS"]}},"coverage_id":{"type":"string","pattern":"^coverage\\.[0-9a-f]{16}$"},"package_presence":{"enum":["PRESENT_ACTIVE_OR_TRANSITIVE","ABSENT"]},"product_scope":{"enum":["SUPPORTED","EXPLICITLY_OUT_OF_SCOPE"]},"realization":{"enum":["COMPLETE","NOT_APPLICABLE"]},"disposition":{"enum":["IN_SUPPORTED_MVP","OUT_OF_SUPPORTED_MVP_SEED"]},"route_id":{"type":"string","pattern":"^route\\."},"source_citations":{"$ref":"#/$defs/uniqueStrings"},"negative_space":{"type":"string","minLength":1}}},

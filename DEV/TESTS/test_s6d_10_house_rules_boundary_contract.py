@@ -121,7 +121,7 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
             root = Path(tmp)
             self.make_fixture(root)
             self.mutate_contract(root, lambda value: value["active_adjudicated_consumers"].pop())
-            with self.assertRaisesRegex(ValueError, "active adjudicated consumer mismatch"):
+            with self.assertRaisesRegex(ValueError, "route profile proof coverage mismatch"):
                 VALIDATOR.validate(root)
 
     def test_complete_row_semantics_and_package_bytes_are_identity_bound(self):
@@ -136,7 +136,7 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
             self.make_fixture(root)
             package_member = root / "GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/gameplay.json"
             package_member.write_text(package_member.read_text(encoding="utf-8") + " ", encoding="utf-8")
-            with self.assertRaisesRegex(ValueError, "package content identity mismatch"):
+            with self.assertRaisesRegex(ValueError, "resolved ruleset identity mismatch"):
                 VALIDATOR.validate(root)
 
     def test_missing_or_quarantined_definition_cannot_claim_valid_link(self):
@@ -220,6 +220,7 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
                 "root_command_id": f"cmd-{index}", "initiating_command_id": f"cmd-{index}",
                 "activity_id": activity_id, "actor_id": "actor-1",
                 "parameter_bindings": parameter_bindings, "catalog_context_fingerprint": "catalog-A",
+                "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
                 "status": "RUNNING", "next_segment_sequence": 1, "invocation_facts": invocation_facts,
                 "fixed_rng_results": [], "prior_step_exports": {}, "child_resolution_ids": [], "segments": [],
             }
@@ -227,6 +228,7 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
                 "generation": 1, "root_command_id": f"cmd-{index}", "resolution_id": f"resolution-{index}",
                 "activity_id": activity_id, "actor_id": "actor-1",
                 "parameter_bindings": parameter_bindings, "catalog_context_fingerprint": "catalog-A",
+                "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
                 "execution_cursor": "step.accepted-inputs", "safe_recompute_phase": "determine",
                 "invocation_facts": invocation_facts, "fixed_rng_results": [], "prior_step_exports": {},
                 "committed_segment_refs": [], "dependency_frontier_refs": [],
@@ -268,4 +270,3 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

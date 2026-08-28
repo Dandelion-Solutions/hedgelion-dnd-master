@@ -1,14 +1,7 @@
 {
   "schema_name": "hdm_domain_rules_coverage",
-  "schema_version": 2,
+  "schema_version": 3,
   "profile_id": "gameplay_spine.mvp.v1",
-  "package_binding": {
-    "package_id": "hdm.rules.dnd2024-srd52-core",
-    "package_version": "0.1.0-mvp",
-    "catalog_generation": "2.0.0",
-    "ruleset_set_sha256": "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca",
-    "gameplay_spine_member": "gameplay-spine-seed.json"
-  },
   "source_manifest": {
     "PACKAGE_CLOSURE_KEYS": [
       "character-capabilities.json",

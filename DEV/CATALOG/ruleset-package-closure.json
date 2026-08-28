@@ -4,8 +4,8 @@
   "package_root": "GAME/RULES/packages/hdm.rules.dnd2024-srd52-core",
   "derived_current_identity": {
     "authority": "DERIVED_NONAUTHORITATIVE_VERIFICATION_EVIDENCE",
-    "package_content_sha256": "c18fa240cc1756e079cb7f80c1d88eb8db64f2334a0265337fadd670ece813e9",
-    "ruleset_set_sha256": "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca"
+    "package_content_sha256": "0ad0e9368f30d5aaa0f22392a83f7e19b6bff8ac4d6e6a19f5aa5f4ad3932d6f",
+    "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143"
   },
   "transitional_package_identity": [
     {
@@ -82,15 +82,15 @@
     },
     {
       "key":"s6d09.package_binding.content_set_sha256",
-      "carrier_paths":["DEV/CATALOG/domain-rules-coverage.json"],
-      "field_paths":["$.package_binding.content_set_sha256"],
-      "producer_derivation":"S6D-09 coverage-ledger package binding",
-      "current_authority_use":"MIGRATED to resolved-set identity",
-      "consumer_paths":["DEV/TOOLS/validate_domain_rules_coverage.py","DEV/TESTS/test_s6d_09_domain_rules_coverage_contract.py","DEV/SCHEMAS/domain-rules-coverage.schema.json"],
+      "carrier_paths":["DEV/CATALOG/domain-rules-coverage-binding.json"],
+      "field_paths":["$.package_content_sha256","$.ruleset_set_sha256"],
+      "producer_derivation":"strictly derived S6D-09 coverage companion from package snapshot and resolved lock",
+      "current_authority_use":"DERIVED_NONAUTHORITATIVE verification evidence; semantic coverage v3 carries no package binding",
+      "consumer_paths":["DEV/TOOLS/validate_domain_rules_coverage.py","DEV/TESTS/test_s6d_09_domain_rules_coverage_contract.py","DEV/SCHEMAS/domain-rules-coverage-binding.schema.json","DEV/SCHEMAS/domain-rules-coverage.schema.json"],
       "disposition":"MIGRATE_TO_CANONICAL_RULESET_SET_IDENTITY",
-      "canonical_replacement":"$.package_binding.ruleset_set_sha256",
-      "positive_proof":"coverage validator reconstructs lock and checks the gameplay member",
-      "negative_proof":"strict schema and transitional census reject legacy key"
+      "canonical_replacement":"manifest -> package snapshot -> resolved lock; exact seven-field derived companion",
+      "positive_proof":"coverage validator separately proves exact semantic producer equality and exact derived binding equality including attached gameplay member",
+      "negative_proof":"v3 semantic schema rejects embedded binding and binding schema/validator reject missing, extra, stale, wrong-context or detached-member evidence"
     },
     {
       "key":"s6d10.identity_bound_package_candidate.content_set_sha256",

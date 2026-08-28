@@ -2,10 +2,11 @@ import copy, json, unittest
 from pathlib import Path
 import DEV.TOOLS.validate_domain_rules_coverage as coverage
 from DEV.TOOLS.validate_character_mvp_seed import CanonicalSchemaValidator
-from DEV.TOOLS.validate_domain_rules_coverage import advance_combat_turn, build_expected_source_sets, execute_asset_equip, execute_asset_transfer, execute_combat_procedure_transition, execute_outside_procedure_movement, execute_procedure_movement, initialize_combat_procedure, resolve_asset_use, validate_combat_procedure_state, validate_contract, validate_gameplay_seed
+from DEV.TOOLS.validate_domain_rules_coverage import advance_combat_turn, build_binding, build_contract, build_expected_source_sets, execute_asset_equip, execute_asset_transfer, execute_combat_procedure_transition, execute_mechanical_null_resolution, execute_outside_procedure_movement, execute_procedure_movement, initialize_combat_procedure, resolve_asset_use, validate_binding, validate_combat_procedure_state, validate_contract, validate_gameplay_seed
 
 ROOT=Path(__file__).resolve().parents[2]
 CAT=ROOT/"DEV/CATALOG/domain-rules-coverage.json"
+BINDING=ROOT/"DEV/CATALOG/domain-rules-coverage-binding.json"
 PKG=ROOT/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core"
 
 class CoverageTests(unittest.TestCase):
@@ -13,7 +14,27 @@ class CoverageTests(unittest.TestCase):
  def setUpClass(cls): cls.value=json.loads(CAT.read_text(encoding="utf-8"))
  def validate_transition(self,value):
   schemas=ROOT/"DEV/SCHEMAS";CanonicalSchemaValidator(schemas).validate(value,json.loads((schemas/"gameplay-spine-transition-result.schema.json").read_text()))
- def test_contract_schema_and_semantics_are_green(self): self.assertTrue(validate_contract(self.value,ROOT))
+ def test_contract_schema_and_semantics_are_green(self):
+  self.assertTrue(validate_contract(self.value,ROOT))
+  self.assertEqual(self.value,build_contract(ROOT))
+  self.assertEqual(self.value["schema_version"],3)
+  self.assertNotIn("package_binding",self.value)
+  embedded=copy.deepcopy(self.value);embedded["package_binding"]=build_binding(ROOT)
+  with self.assertRaises(Exception): validate_contract(embedded,ROOT)
+ def test_derived_binding_is_exact_current_and_member_attached(self):
+  binding=json.loads(BINDING.read_text(encoding="utf-8"))
+  self.assertTrue(validate_binding(binding,ROOT))
+  self.assertEqual(binding,build_binding(ROOT))
+  self.assertEqual(set(binding),{"profile_id","package_id","package_version","catalog_generation","gameplay_spine_member","package_content_sha256","ruleset_set_sha256"})
+ def test_binding_rejects_missing_extra_stale_wrong_context_and_detached_member(self):
+  binding=build_binding(ROOT)
+  mutations=[]
+  missing=copy.deepcopy(binding);missing.pop("package_id");mutations.append(missing)
+  extra=copy.deepcopy(binding);extra["coverage_semantic_sha256"]="0"*64;mutations.append(extra)
+  for key,value in (("package_content_sha256","0"*64),("ruleset_set_sha256","0"*64),("package_id","wrong.package"),("package_version","9.9.9"),("catalog_generation","9.9.9"),("profile_id","wrong.profile"),("gameplay_spine_member","detached.json")):
+   changed=copy.deepcopy(binding);changed[key]=value;mutations.append(changed)
+  for changed in mutations:
+   with self.subTest(changed=changed),self.assertRaises(Exception): validate_binding(changed,ROOT)
  def test_three_exact_sets_and_bidirectional_union(self):
   self.assertEqual(self.value["source_sets"],build_expected_source_sets(ROOT))
   union=set().union(*(set(v) for v in self.value["source_sets"].values()))
@@ -179,6 +200,32 @@ class CoverageTests(unittest.TestCase):
  def test_mechanical_null_has_no_fake_delta_or_event(self):
   route=next(x for x in self.value["atomic_routes"] if x["route_id"]=="route.mechanical_null")
   self.assertEqual(route["authoritative_mutation"],"NO_AUTHORITATIVE_WORLD_MUTATION");self.assertIn("event.check.resolved",route["event_route"]);self.assertIn("event.save.resolved",route["event_route"]);self.assertNotIn("StateDelta",route["positive_evidence"])
+ def test_mechanical_null_check_and_save_commit_real_event_segment_and_receipt(self):
+  schemas=ROOT/"DEV/SCHEMAS";validator=CanonicalSchemaValidator(schemas)
+  for family in ("check","save"):
+   request={"profile_id":f"resolution.{family}","idempotency_key":f"null-{family}","activity_id":f"activity.{family}.generic","ability_id":"ability.dexterity","dc":13,"roll":{"rng_result_ref":f"rng-{family}","d20":11,"basis_modifier":2,"proficiency_bonus":1}}
+   receipts={};first=execute_mechanical_null_resolution(request,receipts);retry=execute_mechanical_null_resolution(request,receipts)
+   self.assertIs(first,retry);wire,evidence=first
+   self.assertEqual(wire["status"],"COMPLETED");self.assertEqual(wire["prospective_mutations"],[])
+   self.assertEqual(wire["execution_segment"]["affected_revision_refs"],[])
+   self.assertEqual(wire["execution_segment"]["event_ids"],[evidence["event_id"]])
+   self.assertEqual(evidence["mechanical_event"]["event_kind"],f"event.{family}.resolved")
+   self.assertEqual(evidence["receipt"]["event_ids"],[evidence["event_id"]])
+   self.assertEqual(evidence["receipt"]["segment_refs"],[evidence["segment_id"]])
+   self.assertEqual(evidence["receipt"]["exports"]["result"],wire["result"])
+   validator.validate(wire["execution_segment"],json.loads((schemas/"execution-segment.schema.json").read_text()))
+   validator.validate(evidence["mechanical_event"],json.loads((schemas/"runtime-mechanical-event-state.schema.json").read_text()))
+   validator.validate(evidence["receipt"],json.loads((schemas/"resolution-receipt.schema.json").read_text()))
+ def test_mechanical_null_conflict_and_invalid_input_have_no_effects(self):
+  request={"profile_id":"resolution.check","idempotency_key":"null-check","activity_id":"activity.check.generic","ability_id":"ability.dexterity","dc":13,"roll":{"rng_result_ref":"rng-check","d20":11,"basis_modifier":2,"proficiency_bonus":1}}
+  receipts={};first=execute_mechanical_null_resolution(request,receipts)
+  changed=copy.deepcopy(request);changed["dc"]=14
+  conflict,evidence=execute_mechanical_null_resolution(changed,receipts)
+  self.assertEqual(conflict["failure_code"],"failure.idempotency_conflict");self.assertEqual(conflict["prospective_mutations"],[]);self.assertEqual(conflict["event_ids"],[]);self.assertEqual(evidence,{})
+  self.assertEqual(first[1]["mechanical_event"]["payload"]["roll"]["rng_result_ref"],"rng-check")
+  for mutate in (lambda x:x.pop("dc"),lambda x:x["roll"].update(d20=0),lambda x:x.update(activity_id="activity.attack.ranged_weapon"),lambda x:x["roll"].pop("rng_result_ref")):
+   bad=copy.deepcopy(request);bad["idempotency_key"]+="-bad";mutate(bad);rejected,evidence=execute_mechanical_null_resolution(bad,{})
+   self.assertNotEqual(rejected["status"],"COMPLETED");self.assertEqual(rejected["prospective_mutations"],[]);self.assertEqual(rejected["event_ids"],[]);self.assertEqual(evidence,{})
  def test_negative_source_difference_or_orphan_fails(self):
   for mutate in (lambda x:x["source_sets"]["PACKAGE_CLOSURE_KEYS"].pop(),lambda x:x["coverage_ledger"].append(copy.deepcopy(x["coverage_ledger"][0])),lambda x:x["source_sets"]["ACTIVE_MACHINE_CONSUMER_KEYS"].append("MACHINE:edge:op.roll->activity.missing")):
    bad=copy.deepcopy(self.value);mutate(bad)
@@ -190,4 +237,3 @@ class CoverageTests(unittest.TestCase):
   with self.assertRaises(Exception):validate_contract(bad,ROOT)
 
 if __name__=="__main__": unittest.main()
-

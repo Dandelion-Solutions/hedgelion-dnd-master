@@ -55,6 +55,53 @@ TRANSITIONAL_KEYS = frozenset({
     "runtime-package.missing-resolved-lock",
     "campaign-and-execution.missing-ruleset-set-projection",
 })
+CURRENT_IDENTITY_LITERAL_CARRIERS = (
+    "DEV/TESTS/test_s6d_08_health_effects_recovery_contract.py",
+    "DEV/TESTS/test_s6d_11_ruleset_package_closure.py",
+)
+
+
+def current_identity_projection_mismatches(repo_root: Path) -> list[str]:
+    """Compare current identity projections with one fresh canonical reconstruction."""
+    repo_root = Path(repo_root).resolve()
+    package = repo_root / "GAME/RULES/packages/hdm.rules.dnd2024-srd52-core"
+    manifest = load_json_bytes((package / "ruleset-package-manifest.json").read_bytes())
+    lock, snapshots = build_resolved_lock(
+        [package], root_package_ids=[manifest["package_id"]],
+        engine_version=manifest["engine_requirement"]["engine_version"],
+        catalog_generation=manifest["catalog_generation"],
+    )
+    snapshot = snapshots[manifest["package_id"]]
+    package_hash = snapshot.content_sha256
+    set_hash = lock["ruleset_set_sha256"]
+    mismatches: list[str] = []
+    closure = load_json_bytes((repo_root / "DEV/CATALOG/ruleset-package-closure.json").read_bytes())
+    if closure.get("derived_current_identity") != {
+        "authority": "DERIVED_NONAUTHORITATIVE_VERIFICATION_EVIDENCE",
+        "package_content_sha256": package_hash, "ruleset_set_sha256": set_hash,
+    }:
+        mismatches.append("DEV/CATALOG/ruleset-package-closure.json")
+    binding = load_json_bytes((repo_root / "DEV/CATALOG/domain-rules-coverage-binding.json").read_bytes())
+    expected_binding = {
+        "profile_id": "gameplay_spine.mvp.v1", "package_id": manifest["package_id"],
+        "package_version": manifest["package_version"], "catalog_generation": manifest["catalog_generation"],
+        "gameplay_spine_member": "gameplay-spine-seed.json", "package_content_sha256": package_hash,
+        "ruleset_set_sha256": set_hash,
+    }
+    if binding != expected_binding or "gameplay-spine-seed.json" not in {row["path"] for row in snapshot.members}:
+        mismatches.append("DEV/CATALOG/domain-rules-coverage-binding.json")
+    actors = load_json_bytes((repo_root / "DEV/TESTS/fixtures/s6d-07-character-mvp-actors.json").read_bytes())
+    if any(row.get("ruleset_set_sha256") != set_hash for row in actors.get("readiness_evidence", {}).values()):
+        mismatches.append("DEV/TESTS/fixtures/s6d-07-character-mvp-actors.json")
+    boundary = load_json_bytes((repo_root / "DEV/CATALOG/house-rules-mechanical-boundary.json").read_bytes())
+    identity = boundary.get("resolved_ruleset_identity", {})
+    if (identity.get("package_id"), identity.get("package_version"), identity.get("catalog_generation"), identity.get("ruleset_set_sha256")) != (manifest["package_id"], manifest["package_version"], manifest["catalog_generation"], set_hash):
+        mismatches.append("DEV/CATALOG/house-rules-mechanical-boundary.json")
+    for rel in CURRENT_IDENTITY_LITERAL_CARRIERS:
+        text = (repo_root / rel).read_text(encoding="utf-8")
+        if set_hash not in text or package_hash not in text and rel.endswith("test_s6d_11_ruleset_package_closure.py"):
+            mismatches.append(rel)
+    return sorted(mismatches)
 
 
 def derive_engine_contract_inventory(
