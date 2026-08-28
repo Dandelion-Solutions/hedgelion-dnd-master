@@ -95,5 +95,4 @@ Retry reuses fixed RNG and accepted causal inputs. It does not reapply an alread
 
 GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/health-effects-recovery-seed.json is the exact bounded machine seed. It is constrained by current schemas/catalogs and focused S6D-08 tests. It does not promise full SRD mechanical-state coverage.
 
-The package capability record binds an exact closed two-file content set with per-file SHA-256 values and an aggregate content-set digest. Missing, extra or modified S6D-08 content fails reconstruction.
-
+The bounded seed is an explicit member declared by the ruleset package manifest. Current package/set identity and reconstruction follow the canonical S6D-11 chain `manifest -> package snapshot -> resolved lock -> ruleset_set_sha256`. Missing, extra or modified S6D-08 member bytes therefore fail canonical package reconstruction and the registered package-closure validation path; S6D-08 owns no aggregate `content_set` digest or parallel package identity.
