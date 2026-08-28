@@ -1,6 +1,6 @@
 # HDM Ruleset Package Machine Closure
 
-Status: **CANONICAL S6D-11 ARCHITECTURE**
+Status: **CANONICAL S6D-11 ARCHITECTURE / POST-CANONICAL B′ REALIZATION AMENDMENT**
 
 Date: 2026-08-28
 
@@ -9,6 +9,8 @@ Date: 2026-08-28
 S6D-11 activates the built-in bounded ruleset package only through the single identity chain defined by RULESET_PACKAGE_IDENTITY.md: strict self-including manifest, exact semantic bytes, builder-derived package snapshot, exact resolved lock and ruleset_set_sha256.
 
 No transitional aggregate digest is an authority. DEV/CATALOG/ruleset-package-closure.json is the item-level migration and activation ledger; its displayed digests are derived verification evidence.
+
+The later B′ owner decision changes only the physical placement of supported-domain coverage identity evidence. It does not reopen S6D-11 semantic architecture or alter this identity chain.
 
 ## Builder and loader
 
@@ -26,7 +28,13 @@ Only COMPATIBLE_ADDITIVE satisfies the changed-set precondition of the existing 
 
 ## Projections and durability
 
-The generated runtime provenance embeds the exact resolved lock/set digest plus a path-neutral runtime-owned conformance inventory. Build-time DEV paths/results compile into stable family/validator IDs, semantic hashes and a digest-bound attestation; literal DEV topology never crosses the package boundary and cannot become runtime authority. Campaign MANIFEST owns sibling ruleset.created_with/current; Resolution and Continuation pin the accepted set digest; checkpoint evidence is projection only. READY_PC, supported-domain coverage and House-Rules realization evidence bind to the set digest. Runtime never reads DEV/.
+The generated runtime provenance embeds the exact resolved lock/set digest plus a path-neutral runtime-owned conformance inventory. Build-time DEV paths/results compile into stable family/validator IDs, semantic hashes and a digest-bound attestation; literal DEV topology never crosses the package boundary and cannot become runtime authority. Campaign MANIFEST owns sibling ruleset.created_with/current; Resolution and Continuation pin the accepted set digest; checkpoint evidence is projection only. READY_PC and House-Rules realization evidence bind to the set digest through their natural projections. Runtime never reads DEV/.
+
+Supported-domain coverage follows the approved B′ physical realization: `DEV/CATALOG/domain-rules-coverage.json` remains one semantic coverage ledger and carries no package binding after migration; `DEV/CATALOG/domain-rules-coverage-binding.json` is the small strictly-derived verification companion containing only `profile_id`, `package_id`, `package_version`, `catalog_generation`, `gameplay_spine_member`, `package_content_sha256` and `ruleset_set_sha256`. No coverage-semantic digest is introduced. The S6D-09 validator must prove exact semantic equality to its deterministic producer separately from exact binding equality to the reconstructed package snapshot/resolved lock and fixed profile/package/catalog/member context.
+
+The coverage binding is not an identity owner and cannot choose or repair a set. Canonical authority remains `manifest -> package snapshot -> resolved lock -> ruleset_set_sha256`. Missing or mismatched derived binding evidence fails closed.
+
+The B′ machine migration is currently blocked only by the recorded execution-capability limitation and must be completed before S6D final closure / R2.7 resume. The durable decision and blocker disposition are recorded in `DEV/docs/superpowers/specs/2026-08-28-domain-rules-coverage-derived-binding-owner-decision.md`.
 
 ## Activation boundary
 
