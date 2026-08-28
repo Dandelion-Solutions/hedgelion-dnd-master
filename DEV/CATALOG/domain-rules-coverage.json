@@ -6,7 +6,7 @@
     "package_id": "hdm.rules.dnd2024-srd52-core",
     "package_version": "0.1.0-mvp",
     "catalog_generation": "2.0.0",
-    "content_set_sha256": "d2a4dfcf79a342a5aaf1c1dd1d1f93db107c6f7a8141c7abb82e8a1dcd977410",
+    "ruleset_set_sha256": "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca",
     "gameplay_spine_member": "gameplay-spine-seed.json"
   },
   "source_manifest": {
@@ -7841,4 +7841,3 @@
     "supported_gaps": []
   }
 }
-

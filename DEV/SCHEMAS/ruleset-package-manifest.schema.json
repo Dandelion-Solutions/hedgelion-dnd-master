@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/ruleset-package-manifest.schema.json",
+  "title": "HDM RulesetPackageManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest_schema_version", "package_id", "package_version", "compatibility_id", "engine_requirement", "catalog_generation", "owned_namespaces", "dependencies", "content_files"],
+  "properties": {
+    "manifest_schema_version": {"const": 1},
+    "package_id": {"$ref": "#/$defs/id"},
+    "package_version": {"type": "string", "minLength": 1},
+    "compatibility_id": {"$ref": "#/$defs/id"},
+    "engine_requirement": {
+      "type": "object", "additionalProperties": false, "required": ["engine_version"],
+      "properties": {"engine_version": {"type": "string", "minLength": 1}}
+    },
+    "catalog_generation": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "owned_namespaces": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*\\.\\*$"}},
+    "dependencies": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/dependency"}},
+    "content_files": {"type": "array", "minItems": 1, "uniqueItems": true, "contains": {"const": "ruleset-package-manifest.json"}, "items": {"$ref": "#/$defs/path"}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*$"},
+    "dependency": {
+      "type": "object", "additionalProperties": false,
+      "required": ["package_id", "content_sha256"],
+      "properties": {"package_id": {"$ref": "#/$defs/id"}, "content_sha256": {"$ref": "#/$defs/sha256"}}
+    }
+  }
+}

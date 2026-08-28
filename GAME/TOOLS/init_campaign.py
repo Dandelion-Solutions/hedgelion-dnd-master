@@ -38,6 +38,7 @@ def main() -> int:
     parser.add_argument("--package-id", required=True)
     parser.add_argument("--source-commit-sha", required=False)
     parser.add_argument("--package-sha256", required=True)
+    parser.add_argument("--ruleset-set-sha256", required=True)
     parser.add_argument("--created-at", required=True)
     parser.add_argument("--creator-github-login", required=True)
     parser.add_argument("--mode", choices=("singleplayer", "multiplayer"), default="singleplayer")
@@ -58,6 +59,8 @@ def main() -> int:
         raise RuntimeError(f"Output already exists: {output}")
     if len(args.package_sha256) != 64 or any(ch not in "0123456789abcdefABCDEF" for ch in args.package_sha256):
         raise RuntimeError("--package-sha256 must be a 64-character hexadecimal SHA-256")
+    if len(args.ruleset_set_sha256) != 64 or any(ch not in "0123456789abcdefABCDEF" for ch in args.ruleset_set_sha256):
+        raise RuntimeError("--ruleset-set-sha256 must be a 64-character hexadecimal SHA-256")
 
     # copytree copies CONTENTS into output. `output` itself is the future branch root.
     shutil.copytree(source_campaign, output)
@@ -78,6 +81,12 @@ def main() -> int:
         "    package_sha256: null\n"
         "    adopted_at: null\n"
         "  update_policy: ask"
+        "\nruleset:\n"
+        "  created_with:\n"
+        "    ruleset_set_sha256: null\n"
+        "  current:\n"
+        "    ruleset_set_sha256: null\n"
+        "    adopted_at: null"
     )
     new_engine = (
         "engine:\n"
@@ -92,6 +101,12 @@ def main() -> int:
         f"    package_sha256: {yaml_string(args.package_sha256.lower())}\n"
         f"    adopted_at: {yaml_string(args.created_at)}\n"
         "  update_policy: ask"
+        "\nruleset:\n"
+        "  created_with:\n"
+        f"    ruleset_set_sha256: {yaml_string(args.ruleset_set_sha256.lower())}\n"
+        "  current:\n"
+        f"    ruleset_set_sha256: {yaml_string(args.ruleset_set_sha256.lower())}\n"
+        f"    adopted_at: {yaml_string(args.created_at)}"
     )
     manifest = replace_once(manifest, old_engine, new_engine, manifest_path)
     replacements = [

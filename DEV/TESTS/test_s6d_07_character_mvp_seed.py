@@ -1,5 +1,4 @@
 import json
-import hashlib
 import unittest
 from pathlib import Path
 from DEV.TOOLS.validate_character_mvp_seed import advance_fighter_to_level_2, create_innate_sorcery_effect_candidate, evaluate_ready_pc, resolve_package, validate_primitive_argument
@@ -12,7 +11,8 @@ PACKAGE = ROOT / "GAME" / "RULES" / "packages" / "hdm.rules.dnd2024-srd52-core"
 class CharacterMvpSeedTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = json.loads((PACKAGE / "character-capabilities.json").read_text(encoding="utf-8"))
+        cls.capability = json.loads((PACKAGE / "character-capabilities.json").read_text(encoding="utf-8"))
+        cls.manifest = json.loads((PACKAGE / "ruleset-package-manifest.json").read_text(encoding="utf-8"))
         cls.seed = json.loads((PACKAGE / "character-mvp-seed.json").read_text(encoding="utf-8"))
         cls.primitive_catalog = json.loads(
             (ROOT / "DEV" / "CATALOG" / "activity-primitive-contracts.json").read_text(encoding="utf-8")
@@ -24,12 +24,11 @@ class CharacterMvpSeedTests(unittest.TestCase):
 
     def test_capability_claim_is_bounded_and_honest(self):
         self.assertEqual(self.manifest["package_id"], "hdm.rules.dnd2024-srd52-core")
-        content = (PACKAGE / self.manifest["content_file"]).read_bytes()
-        self.assertEqual(hashlib.sha256(content).hexdigest(), self.manifest["content_sha256"])
-        self.assertEqual(self.manifest["profile_id"], "character.mvp_vertical_slice.v1")
-        self.assertFalse(self.manifest["full_srd_character_corpus"])
-        self.assertEqual(self.manifest["unsupported_content_policy"], "ABSENT_NONSELECTABLE")
-        self.assertEqual(self.manifest["supported_class_levels"], {"class.fighter": [1, 2], "class.sorcerer": [1]})
+        self.assertIn("ruleset-package-manifest.json", self.manifest["content_files"])
+        self.assertEqual(self.capability["profile_id"], "character.mvp_vertical_slice.v1")
+        self.assertFalse(self.capability["full_srd_character_corpus"])
+        self.assertEqual(self.capability["unsupported_content_policy"], "ABSENT_NONSELECTABLE")
+        self.assertEqual(self.capability["supported_class_levels"], {"class.fighter": [1, 2], "class.sorcerer": [1]})
 
     def test_exact_definition_inventory_and_reference_closure(self):
         definitions = self.seed["definitions"]

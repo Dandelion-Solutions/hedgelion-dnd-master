@@ -93,3 +93,7 @@ A player tries to persuade a guard. Fiction determines feasibility and supplies 
 
 Production execution remains Implementation Planning work. S6D-11 performs integrated package/catalog verification, not deferred product or architecture design.
 
+## 11. S6D-11 package identity
+
+The coverage ledger's package_binding is the canonical resolved `ruleset_set_sha256`, derived from the self-including manifest and exact package bytes. It is not an independently authored aggregate digest. Validation must reconstruct the exact lock, confirm the gameplay member belongs to that lock, and then prove bidirectional product/package/active-consumer equality. The legacy `content_set_sha256` binding is rejected.
++

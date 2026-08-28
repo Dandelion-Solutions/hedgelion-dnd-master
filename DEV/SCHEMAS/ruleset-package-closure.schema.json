@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/ruleset-package-closure.schema.json",
+  "title": "HDM S6D-11 integrated closure evidence",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "owner", "package_root", "derived_current_identity", "transitional_package_identity", "load_failure_reasons", "compatibility_contract", "registered_package_validators", "activation"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "owner": {"const": "DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md"},
+    "package_root": {"const": "GAME/RULES/packages/hdm.rules.dnd2024-srd52-core"},
+    "derived_current_identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["authority", "package_content_sha256", "ruleset_set_sha256"],
+      "properties": {
+        "authority": {"const": "DERIVED_NONAUTHORITATIVE_VERIFICATION_EVIDENCE"},
+        "package_content_sha256": {"$ref": "#/$defs/sha256"},
+        "ruleset_set_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "transitional_package_identity": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/transition"}},
+    "load_failure_reasons": {"type": "array", "minItems": 11, "uniqueItems": true, "items": {"enum": ["invalid_manifest", "content_mismatch", "missing_dependency", "ambiguous_dependency", "dependency_cycle", "package_id_ambiguity", "namespace_conflict", "engine_incompatibility", "catalog_incompatibility", "resolved_set_mismatch", "unreconstructable_context"]}},
+    "compatibility_contract": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithm", "insufficient_evidence", "silent_use_result"],
+      "properties": {
+        "algorithm": {"const": "MONOTONIC_CANONICAL_SEMANTIC_ENTRY_SUPERSET_V1"},
+        "insufficient_evidence": {"const": "BLOCKED_INSUFFICIENT_EVIDENCE"},
+        "silent_use_result": {"const": "COMPATIBLE_ADDITIVE"}
+      }
+    },
+    "registered_package_validators": {
+      "type": "array", "minItems": 4, "uniqueItems": true,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["validator_id", "path", "test_path", "scope", "stage"],
+        "properties": {
+          "validator_id": {"enum": ["character_seed_closure","health_effect_recovery_closure","domain_rules_coverage_closure","house_rules_boundary_closure"]},
+          "path": {"type": "string", "pattern": "^DEV/TOOLS/validate_[a-z0-9_]+\\.py$"},
+          "test_path": {"type": "string", "pattern": "^DEV/TESTS/test_[a-z0-9_]+\\.py$"},
+          "scope": {"type": "string", "minLength": 1},
+          "stage": {"const": "BUILD_AND_CONFORMANCE"}
+        }
+      }
+    },
+    "activation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["package_selection_state", "requires_no_transitional_authority", "requires_current_lock_validation", "requires_compatibility_proof_for_changed_set"],
+      "properties": {
+        "package_selection_state": {"const": "ACTIVE_VERIFIED_MACHINE_CONTRACT"},
+        "requires_no_transitional_authority": {"const": true},
+        "requires_current_lock_validation": {"const": true},
+        "requires_compatibility_proof_for_changed_set": {"const": true}
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "transition": {
+      "type": "object", "additionalProperties": false,
+      "required": ["key", "carrier_paths", "field_paths", "producer_derivation", "current_authority_use", "consumer_paths", "disposition", "canonical_replacement", "positive_proof", "negative_proof"],
+      "properties": {
+        "key": {"type": "string", "minLength": 1},
+        "carrier_paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "field_paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "producer_derivation": {"type": "string", "minLength": 1},
+        "current_authority_use": {"type": "string", "minLength": 1},
+        "consumer_paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "disposition": {"enum": ["REMOVE", "DERIVED_NONAUTHORITATIVE", "MIGRATE_TO_CANONICAL_PACKAGE_IDENTITY", "MIGRATE_TO_CANONICAL_RULESET_SET_IDENTITY"]},
+        "canonical_replacement": {"type": "string", "minLength": 1},
+        "positive_proof": {"type": "string", "minLength": 1},
+        "negative_proof": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

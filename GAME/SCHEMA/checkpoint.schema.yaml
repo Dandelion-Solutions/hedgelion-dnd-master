@@ -21,10 +21,13 @@ fields:
     source_commit_sha: string|null
     package_sha256: string
     adopted_at: string
+  ruleset:
+    ruleset_set_sha256: string
   schema_data_version: integer
 invariants:
   - checkpoint is compact recovery metadata, not a snapshot copy of all WORLD records
   - checkpoint engine is a recovery projection of MANIFEST.engine.current at checkpoint creation; it stores portable runtime identity, never current_runtime_root
+  - checkpoint ruleset is a nonauthoritative recovery projection of MANIFEST.ruleset.current and never selects a replacement set
   - current_state_path is resolved inside the current campaign root layout and normally uses STATE/CURRENT.yaml
   - expected_commit_sha may be filled after commit identity is known; recovery must also be possible via event frontier
   - latest pointer references a canonical checkpoint ID/path

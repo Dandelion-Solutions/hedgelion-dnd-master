@@ -1,0 +1,26 @@
+{
+  "manifest_schema_version": 1,
+  "package_id": "hdm.rules.dnd2024-srd52-core",
+  "package_version": "0.1.0-mvp",
+  "compatibility_id": "hdm.rules.dnd2024-srd52.v1",
+  "engine_requirement": {"engine_version": "1.0-alpha"},
+  "catalog_generation": "2.0.0",
+  "owned_namespaces": [
+    "ability.*", "skill.*", "proficiency.*", "size_category.*", "creature_type.*",
+    "movement_mode.*", "sense.*", "language.*", "damage_type.*", "currency.*",
+    "equipment_property.*", "weapon_mastery.*", "spell_school.*", "rest_policy.*",
+    "actor_archetype.*", "species.*", "background.*", "class.*", "subclass.*",
+    "advancement.*", "feat.*", "feature.*", "spell.*", "asset.*", "activity.*",
+    "resource.*", "effect.*", "condition.*", "recipe.*", "hazard.*", "terrain.*",
+    "environment.*", "location_archetype.*", "organization_archetype.*",
+    "mission_template.*", "contract_template.*", "mode_profile.*"
+  ],
+  "dependencies": [],
+  "content_files": [
+    "ruleset-package-manifest.json",
+    "character-capabilities.json",
+    "character-mvp-seed.json",
+    "health-effects-recovery-seed.json",
+    "gameplay-spine-seed.json"
+  ]
+}

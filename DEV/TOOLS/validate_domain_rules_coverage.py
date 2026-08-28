@@ -3,6 +3,7 @@ from copy import deepcopy
 import hashlib, json, re
 from pathlib import Path
 from DEV.TOOLS.validate_character_mvp_seed import CanonicalSchemaValidator
+from DEV.TOOLS.validate_ruleset_package_closure import build_resolved_lock
 
 MACHINE_ID=re.compile(r"^[a-z][a-z0-9_]*(?:\.[a-z0-9_]+)+$")
 TOP={"schema_name","schema_version","profile_id","package_binding","source_manifest","source_sets","required_coverage_keys","coverage_ledger","atomic_routes","scope_exclusions","completeness_proof"}
@@ -82,13 +83,13 @@ def expected_routes():
  route("route.out_of_scope","excluded","explicit decision-C exclusion",[],[],"NOT_APPLICABLE","NO_AUTHORITATIVE_WORLD_MUTATION","NONE","OUT_OF_SUPPORTED_MVP_SEED","2026-08-27 human decision C","absent/nonselectable pending exact consumer")]
 
 def build_contract(root):
- root=Path(root); sets=build_expected_source_sets(root); required=sorted(set().union(*map(set,sets.values()))); pkg=root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core"; manifest=load(pkg/"character-capabilities.json");products={f"PRODUCT:{r['key']}":r for r in product_rows(root)}
+ root=Path(root); sets=build_expected_source_sets(root); required=sorted(set().union(*map(set,sets.values()))); pkg=root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core"; manifest=load(pkg/"ruleset-package-manifest.json");lock,_=build_resolved_lock([pkg],root_package_ids=[manifest["package_id"]],engine_version=manifest["engine_requirement"]["engine_version"],catalog_generation=manifest["catalog_generation"]);products={f"PRODUCT:{r['key']}":r for r in product_rows(root)}
  citations={"PACKAGE_CLOSURE_KEYS":["character-capabilities.json","character-mvp-seed.json","health-effects-recovery-seed.json","gameplay-spine-seed.json"],"ACTIVE_MACHINE_CONSUMER_KEYS":["DEV/CATALOG/mechanical-surfaces.json","DEV/CATALOG/portable-value-routes.json","DEV/CATALOG/activity-primitive-contracts.json"],"PRODUCT_PROMISE_KEYS":sorted({r["owner_path"] for r in products.values()})}
  ledger=[]
  for key in required:
   membership=[n for n,v in sets.items() if key in v];product=products.get(key);rid=product["route_id"] if product else route_for(key);out=(product and product["product_scope"]=="EXPLICITLY_OUT_OF_SCOPE") or rid=="route.out_of_scope";row_citations=[product["owner_path"]+" :: "+product["evidence_pattern"]] if product else citations[membership[0]]
   ledger.append({"source_key":key,"source_memberships":membership,"coverage_id":"coverage."+hashlib.sha256(key.encode()).hexdigest()[:16],"package_presence":"ABSENT" if out and key.startswith("PRODUCT:") else "PRESENT_ACTIVE_OR_TRANSITIVE","product_scope":"EXPLICITLY_OUT_OF_SCOPE" if out else "SUPPORTED","realization":"NOT_APPLICABLE" if out else "COMPLETE","disposition":"OUT_OF_SUPPORTED_MVP_SEED" if out else "IN_SUPPORTED_MVP","route_id":rid,"source_citations":row_citations,"negative_space":product["qualifier"] if product else "No utterance enumeration or authority beyond cited owner"})
- return {"schema_name":"hdm_domain_rules_coverage","schema_version":2,"profile_id":"gameplay_spine.mvp.v1","package_binding":{"package_id":manifest["package_id"],"package_version":manifest["package_version"],"catalog_generation":manifest["catalog_generation"],"content_set_sha256":manifest["content_set_sha256"],"gameplay_spine_member":"gameplay-spine-seed.json"},"source_manifest":citations,"source_sets":sets,"required_coverage_keys":required,"coverage_ledger":ledger,"atomic_routes":expected_routes(),"scope_exclusions":["contest.generic","reaction.generic","damage_defense.broad","concentration.generic","currency.economy","crafting","downtime","teleportation","zone_entity_creation","equipment_corpus.broad","spell_hazard_corpus.broad"],"completeness_proof":{"coverage_minus_required":[],"required_minus_coverage":[],"orphan_machine_consumer_edges":[],"unresolved_matrix_references":[],"duplicate_source_keys":[],"supported_gaps":[]}}
+ return {"schema_name":"hdm_domain_rules_coverage","schema_version":2,"profile_id":"gameplay_spine.mvp.v1","package_binding":{"package_id":manifest["package_id"],"package_version":manifest["package_version"],"catalog_generation":manifest["catalog_generation"],"ruleset_set_sha256":lock["ruleset_set_sha256"],"gameplay_spine_member":"gameplay-spine-seed.json"},"source_manifest":citations,"source_sets":sets,"required_coverage_keys":required,"coverage_ledger":ledger,"atomic_routes":expected_routes(),"scope_exclusions":["contest.generic","reaction.generic","damage_defense.broad","concentration.generic","currency.economy","crafting","downtime","teleportation","zone_entity_creation","equipment_corpus.broad","spell_hazard_corpus.broad"],"completeness_proof":{"coverage_minus_required":[],"required_minus_coverage":[],"orphan_machine_consumer_edges":[],"unresolved_matrix_references":[],"duplicate_source_keys":[],"supported_gaps":[]}}
 
 def validate_gameplay_seed(spine,schemas):
  validator=CanonicalSchemaValidator(schemas);validator.validate(spine,load(Path(schemas)/"gameplay-spine-seed.schema.json"))
@@ -124,8 +125,8 @@ def validate_contract(value,root=None):
    fact=load(root/"DEV/CATALOG/mechanical-surfaces.json")["context_facts"].get(source)
    fact_ok=fact is not None and fact["disposition"]=="ACTIVE_ADMITTED" and consumer in fact["permitted_consumer_ids"]
    if not (primitive_ok or fact_ok) or consumer not in activities: raise ValueError("orphan machine edge")
- manifest=load(root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json"); members={x["path"]:x["sha256"] for x in manifest["content_files"]}; spine=root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/gameplay-spine-seed.json"
- if members.get("gameplay-spine-seed.json")!=hashlib.sha256(spine.read_bytes()).hexdigest(): raise ValueError("detached package member")
+ package=root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core"; manifest=load(package/"ruleset-package-manifest.json"); lock,_=build_resolved_lock([package],root_package_ids=[manifest["package_id"]],engine_version=manifest["engine_requirement"]["engine_version"],catalog_generation=manifest["catalog_generation"])
+ if contract["package_binding"]["ruleset_set_sha256"]!=lock["ruleset_set_sha256"] or "gameplay-spine-seed.json" not in {row["path"] for row in lock["packages"][0]["members"]}: raise ValueError("detached package member or ruleset set")
  return True
 
 def _fingerprint(request):

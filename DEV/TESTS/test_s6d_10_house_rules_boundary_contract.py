@@ -1,5 +1,4 @@
 import importlib.util
-import hashlib
 import json
 from pathlib import Path
 import tempfile
@@ -43,12 +42,17 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
                 {"id": "activity.save.generic", "kind": "definition.activity", "data": {"parameters": {"dc": {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "cardinality": "single", "required": True, "minimum": 1, "maximum": 30}}}},
             ]
         })
-        digest = hashlib.sha256((root / (package_root + "gameplay.json")).read_bytes()).hexdigest()
         self.write_json(root, package_root + "character-capabilities.json", {
-            "package_id": "hdm.rules.dnd2024-srd52-core", "package_version": "0.1.0-mvp",
-            "catalog_generation": "2.0.0", "content_set_sha256": "c" * 64,
-            "content_files": [{"path": "gameplay.json", "sha256": digest}],
+            "identity_source": "ruleset-package-manifest.json", "profile_id": "test.profile",
         })
+        self.write_json(root, package_root + "ruleset-package-manifest.json", {
+            "manifest_schema_version": 1, "package_id": "hdm.rules.dnd2024-srd52-core", "package_version": "0.1.0-mvp",
+            "compatibility_id": "hdm.rules.dnd2024-srd52.v1", "engine_requirement": {"engine_version": "1.0-alpha"},
+            "catalog_generation": "2.0.0", "owned_namespaces": ["activity.*"], "dependencies": [],
+            "content_files": ["ruleset-package-manifest.json", "character-capabilities.json", "gameplay.json"],
+        })
+        package_dir = root / package_root
+        lock, _ = VALIDATOR.build_resolved_lock([package_dir], root_package_ids=["hdm.rules.dnd2024-srd52-core"], engine_version="1.0-alpha", catalog_generation="2.0.0")
         consumers = [
             "activity.attack.ranged_weapon",
             "activity.spell.fire_bolt",
@@ -72,7 +76,7 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
         self.write_json(root, "DEV/CATALOG/house-rules-mechanical-boundary.json", {
             "schema_version": 1,
             "identity_bound_package_capabilities_path": package_root + "character-capabilities.json",
-            "identity_bound_package_candidate": {"package_id": "hdm.rules.dnd2024-srd52-core", "package_version": "0.1.0-mvp", "catalog_generation": "2.0.0", "content_set_sha256": "c" * 64, "runtime_selection_state": "BLOCKED_UNTIL_S6D_11"},
+            "resolved_ruleset_identity": {"package_id": "hdm.rules.dnd2024-srd52-core", "package_version": "0.1.0-mvp", "catalog_generation": "2.0.0", "ruleset_set_sha256": lock["ruleset_set_sha256"], "runtime_selection_state": "ACTIVE_VERIFIED_MACHINE_CONTRACT"},
             "route_profiles": {key: {"policy_revision_and_lifecycle":"x","authority_and_eligibility":"x","consumer_and_value_contract":"x","provenance_and_freeze":"x","catalog_and_native_validation":"x","rng_and_mutation":"x","execution_and_failure":"x","retry_recovery_and_publication":"x","proof_ids": ([row["edge_key"] for row in rows if row["input_kind"]=="ACTIVITY_PARAMETER"] if key.endswith("parameter_to_mechanics") else [row["edge_key"] for row in rows if row["input_kind"]=="INVOCATION_FACT"] if key.endswith("fact_to_mechanics") else ["valid-link","missing-link","quarantined-link"]),"revisit_trigger":"x"} for key in ("route.adjudicated_parameter_to_mechanics","route.invocation_fact_to_mechanics","route.policy_realization_link_conformance")},
             "active_adjudicated_consumers": rows,
             "current_supported_policy_realizations": [],

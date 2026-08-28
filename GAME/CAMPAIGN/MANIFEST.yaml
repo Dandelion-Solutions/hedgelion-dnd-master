@@ -17,6 +17,12 @@ engine:
     package_sha256: null
     adopted_at: null
   update_policy: ask
+ruleset:
+  created_with:
+    ruleset_set_sha256: null
+  current:
+    ruleset_set_sha256: null
+    adopted_at: null
 rules:
   baseline: "D&D 2024 / SRD 5.2.1"
   house_rules_path: "RULES/HOUSE_RULES.md"

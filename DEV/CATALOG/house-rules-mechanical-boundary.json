@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "identity_bound_package_capabilities_path": "GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json",
-  "identity_bound_package_candidate": {
+  "resolved_ruleset_identity": {
     "package_id": "hdm.rules.dnd2024-srd52-core",
     "package_version": "0.1.0-mvp",
     "catalog_generation": "2.0.0",
-    "content_set_sha256": "d2a4dfcf79a342a5aaf1c1dd1d1f93db107c6f7a8141c7abb82e8a1dcd977410",
-    "runtime_selection_state": "BLOCKED_UNTIL_S6D_11"
+    "ruleset_set_sha256": "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca",
+    "runtime_selection_state": "ACTIVE_VERIFIED_MACHINE_CONTRACT"
   },
   "route_profiles": {
     "route.adjudicated_parameter_to_mechanics": {"policy_revision_and_lifecycle":"one-off empty basis or exact active durable policy revision resolved by campaign owner","authority_and_eligibility":"CAMPAIGN_HOUSE_RULES + ACCESS_CONTROL + Context Runtime","consumer_and_value_contract":"exact Activity parameter declaration and bounded accepted value","provenance_and_freeze":"required provenance/eligibility/rules fingerprints; Resolution/Continuation freeze","catalog_and_native_validation":"identity-bound candidate definition now; runtime selection/current catalog remains S6D-11 gated","rng_and_mutation":"no authority; owning Activity route decides RNG and exact mutation or Mechanical-Null","execution_and_failure":"Resolution/ExecutionSegment plus registered typed failure","retry_recovery_and_publication":"accepted input identity retained; historical revision resolver; publication owner unchanged","proof_ids":["parameter:activity.check.generic:dc","parameter:activity.save.generic:dc"],"revisit_trigger":"new active INVOCATION_ADJUDICATED parameter consumer"},
@@ -31,4 +31,3 @@
     {"fixture_id":"policy-realization-quarantined-primitive","policy_basis_ref":"policy.conformance.quarantined@0123456789abcdef0123456789abcdef01234567","target_class":"PRIMITIVE","realization_refs":["op.request_choice"],"expected":"failure.policy_realization_gap"}
   ]
 }
-

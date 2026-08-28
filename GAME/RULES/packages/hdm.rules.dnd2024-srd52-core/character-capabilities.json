@@ -1,24 +1,5 @@
 {
-    "package_id": "hdm.rules.dnd2024-srd52-core",
-    "package_version": "0.1.0-mvp",
-    "catalog_generation": "2.0.0",
-    "content_file": "character-mvp-seed.json",
-    "content_sha256": "f13fa6f3ec9e4514461a97bfd353cc99737b015ded1580e5f4ef3aa61cd33aab",
-    "content_files": [
-        {
-            "path": "character-mvp-seed.json",
-            "sha256": "f13fa6f3ec9e4514461a97bfd353cc99737b015ded1580e5f4ef3aa61cd33aab"
-        },
-        {
-            "path": "health-effects-recovery-seed.json",
-            "sha256": "a4125499be85566d049cf6596d9d9a79a001894b613c04f12f6c15dad86cc750"
-        },
-        {
-            "path": "gameplay-spine-seed.json",
-            "sha256": "2bc47b4a6f82206159387410f9f8411317b68f36b517654459e5216e1e45366f"
-        }
-    ],
-    "content_set_sha256": "d2a4dfcf79a342a5aaf1c1dd1d1f93db107c6f7a8141c7abb82e8a1dcd977410",
+    "identity_source": "ruleset-package-manifest.json",
     "profile_id": "character.mvp_vertical_slice.v1",
     "gameplay_profile_id": "gameplay_spine.mvp.v1",
     "content_basis": "SRD_5_2_1_BASED_MVP_SUBSET",

@@ -223,3 +223,9 @@ When the selected exact package changes:
 After semantic-version adoption, update `CAMPAIGN_CARD.engine_version` in the same campaign transaction as authoritative engine-version change.
 
 Never claim update success before required GitHub publication succeeds. Technical maintenance must not fabricate fictional elapsed time/events.
+
+## S6D-11 changed-ruleset-set proof
+
+The forward same-version authority above is unchanged, but a changed embedded ruleset_set_sha256 is usable only after shipped TOOLS/ruleset_package.py returns COMPATIBLE_ADDITIVE for the currently adopted and candidate exact sets. Inputs are derived from both exact package snapshots, both path-neutral builder-closed engine-contract inventories and the current campaign-owned durable-state/accepted-work dependency frontier; the caller cannot assert completeness. The comparison must preserve every adopted package line, namespace claim, exact dependency and owner-qualified semantic/active-contract entry with identical kind and canonical semantic hash; candidate-only additions must independently validate and avoid collision.
+
+Matching compatibility_id/catalog_generation, source ancestry and standalone candidate load are necessary context, not semantic proof. BLOCKED_INCOMPATIBLE or BLOCKED_INSUFFICIENT_EVIDENCE blocks silent use before catalog context binding. A non-creator still cannot persist engine/ruleset identity. The creator may coherently refresh the sibling current projections at the next normal persistence boundary after compatible use; other changes route to creator adoption/migration.

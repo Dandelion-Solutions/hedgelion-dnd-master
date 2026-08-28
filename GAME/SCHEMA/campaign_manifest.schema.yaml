@@ -7,6 +7,7 @@ required:
   - status
   - mode
   - engine
+  - ruleset
   - storage
 fields:
   schema_version: integer
@@ -28,6 +29,12 @@ fields:
       package_sha256: string
       adopted_at: string
     update_policy: enum[ask, auto]
+  ruleset:
+    created_with:
+      ruleset_set_sha256: string
+    current:
+      ruleset_set_sha256: string
+      adopted_at: string
   rules:
     baseline: string
     house_rules_path: string|null
@@ -60,6 +67,9 @@ invariants:
   - engine.current identifies the portable runtime identity currently required by the campaign
   - engine.current.package_sha256 identifies the exact last accepted ZIP but MUST NOT permanently lock the campaign to obsolete same-version bytes
   - engine.current.source_commit_sha is source provenance and is not tied to a branch named main
+  - ruleset.created_with is immutable and identifies the exact set selected at campaign creation
+  - ruleset.current is a sibling authority to engine.current and changes only under the accepted coherent refresh/adoption flow
+  - a non-creator compatible forward same-version session may use a proven candidate set without persisting ruleset.current
   - current_runtime_root is environment-specific and MUST NOT be persisted in MANIFEST
   - engine files MUST NOT be copied into campaign repository
   - update_policy defaults to ask

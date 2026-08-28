@@ -35,6 +35,7 @@ def base_continuation():
         "actor_id": "actor-1",
         "target_ids": ["actor-2"],
         "catalog_context_fingerprint": "ctx",
+        "ruleset_set_sha256": "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca",
         "execution_cursor": "step.attack.resolve",
         "safe_recompute_phase": "determine",
         "invocation_facts": [],

@@ -5,7 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "root_command_id", "activity_id", "actor_id", "catalog_context_fingerprint", "status",
+    "root_command_id", "activity_id", "actor_id", "ruleset_set_sha256", "catalog_context_fingerprint", "status",
     "next_segment_sequence", "invocation_facts", "fixed_rng_results",
     "prior_step_exports", "child_resolution_ids", "segments"
   ],
@@ -27,6 +27,7 @@
       "additionalProperties": {"$ref": "https://hedgelion.invalid/schemas/activity-parameter-binding.schema.json"}
     },
     "catalog_context_fingerprint": {"type": "string", "minLength": 1},
+    "ruleset_set_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "procedure_id": {"type": "string", "minLength": 1},
     "status": {
       "enum": [
@@ -123,6 +124,7 @@
       "actor_id": "actor-0001",
       "target_ids": ["actor-0002"],
       "catalog_context_fingerprint": "ctx",
+      "ruleset_set_sha256": "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca",
       "status": "RUNNING",
       "next_segment_sequence": 1,
       "invocation_facts": [],

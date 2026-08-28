@@ -1,10 +1,11 @@
 """Fail-closed S6D-10 House-Rules/mechanics integration proof."""
 import hashlib, json, re, sys
 from pathlib import Path
+from DEV.TOOLS.validate_ruleset_package_closure import build_resolved_lock
 
 POLICY_BASIS_REF=re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*@[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 MACHINE_ID=re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
-TOP_KEYS={"schema_version","identity_bound_package_capabilities_path","identity_bound_package_candidate","route_profiles","active_adjudicated_consumers","current_supported_policy_realizations","conformance_only_policy_realizations"}
+TOP_KEYS={"schema_version","identity_bound_package_capabilities_path","resolved_ruleset_identity","route_profiles","active_adjudicated_consumers","current_supported_policy_realizations","conformance_only_policy_realizations"}
 COMMON={"edge_key","input_kind","consumer_id","input_id","value_type","source_class","policy_basis_mode"}
 PARAM_KEYS=COMMON|{"cardinality","required","minimum","maximum"}
 FACT_KEYS=COMMON|{"disposition"}
@@ -42,8 +43,8 @@ def validate_shape(c):
     if set(c)!=TOP_KEYS: raise ValueError(f"unknown contract members or missing required members: {sorted(set(c)^TOP_KEYS)}")
     if c["schema_version"]!=1: raise ValueError("unsupported contract schema_version")
     if c["identity_bound_package_capabilities_path"]!="GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json": raise ValueError("invalid identity-bound package capabilities path")
-    identity=c["identity_bound_package_candidate"]; ik={"package_id","package_version","catalog_generation","content_set_sha256","runtime_selection_state"}
-    if not isinstance(identity,dict) or set(identity)!=ik or not all(isinstance(identity[k],str) and identity[k] for k in ik) or not re.fullmatch(r"[a-f0-9]{64}",identity["content_set_sha256"]) or identity["runtime_selection_state"]!="BLOCKED_UNTIL_S6D_11": raise ValueError("invalid identity-bound package candidate")
+    identity=c["resolved_ruleset_identity"]; ik={"package_id","package_version","catalog_generation","ruleset_set_sha256","runtime_selection_state"}
+    if not isinstance(identity,dict) or set(identity)!=ik or not all(isinstance(identity[k],str) and identity[k] for k in ik) or not re.fullmatch(r"[a-f0-9]{64}",identity["ruleset_set_sha256"]) or identity["runtime_selection_state"]!="ACTIVE_VERIFIED_MACHINE_CONTRACT": raise ValueError("invalid resolved ruleset identity")
     if (identity["package_id"],identity["package_version"],identity["catalog_generation"]) != ("hdm.rules.dnd2024-srd52-core","0.1.0-mvp","2.0.0"): raise ValueError("unexpected identity-bound package candidate")
     route_keys={"policy_revision_and_lifecycle","authority_and_eligibility","consumer_and_value_contract","provenance_and_freeze","catalog_and_native_validation","rng_and_mutation","execution_and_failure","retry_recovery_and_publication","proof_ids","revisit_trigger"}
     profiles=c["route_profiles"]
@@ -78,15 +79,15 @@ def parse_empty_template(root):
 def package_rows(root,c):
     cap_path=c["identity_bound_package_capabilities_path"]
     cap=load(root,cap_path); package_dir=(root/cap_path).parent
-    for k,v in c["identity_bound_package_candidate"].items():
-        if k=="runtime_selection_state": continue
-        if cap.get(k)!=v: raise ValueError(f"selected package identity mismatch: {k}")
+    manifest=json.loads((package_dir/"ruleset-package-manifest.json").read_text(encoding="utf-8"))
+    lock,_=build_resolved_lock([package_dir],root_package_ids=[manifest["package_id"]],engine_version=manifest["engine_requirement"]["engine_version"],catalog_generation=manifest["catalog_generation"])
+    identity=c["resolved_ruleset_identity"]
+    if (identity["package_id"],identity["package_version"],identity["catalog_generation"],identity["ruleset_set_sha256"]) != (manifest["package_id"],manifest["package_version"],manifest["catalog_generation"],lock["ruleset_set_sha256"]): raise ValueError("resolved ruleset identity mismatch")
     definitions={}; rows=[]; paths=set()
-    for member in cap["content_files"]:
-        p=member["path"]
+    for p in manifest["content_files"]:
+        if p=="ruleset-package-manifest.json" or not p.endswith(".json"): continue
         if p in paths or Path(p).is_absolute() or ".." in Path(p).parts: raise ValueError("invalid package content member path")
         paths.add(p); raw=(package_dir/p).read_bytes()
-        if hashlib.sha256(raw).hexdigest()!=member["sha256"]: raise ValueError(f"package content identity mismatch: {p}")
         payload=json.loads(raw)
         for collection in payload.values():
             if not isinstance(collection,list): continue
@@ -134,4 +135,3 @@ def main(argv):
     except (KeyError,OSError,TypeError,ValueError,json.JSONDecodeError) as exc: print(str(exc),file=sys.stderr); return 1
     print(json.dumps(result,sort_keys=True)); return 0
 if __name__=="__main__": raise SystemExit(main(sys.argv))
-

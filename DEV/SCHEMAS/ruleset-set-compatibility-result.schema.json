@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/ruleset-set-compatibility-result.schema.json",
+  "title": "HDM ruleset-set compatibility comparison result",
+  "type": "object", "additionalProperties": false,
+  "required": ["comparison_schema_version", "adopted_ruleset_set_sha256", "candidate_ruleset_set_sha256", "evidence_inventory_sha256", "result", "reasons"],
+  "properties": {
+    "comparison_schema_version": {"const": 1},
+    "adopted_ruleset_set_sha256": {"$ref": "#/$defs/sha256"},
+    "candidate_ruleset_set_sha256": {"$ref": "#/$defs/sha256"},
+    "evidence_inventory_sha256": {"$ref": "#/$defs/sha256"},
+    "result": {"enum": ["COMPATIBLE_ADDITIVE", "BLOCKED_INCOMPATIBLE", "BLOCKED_INSUFFICIENT_EVIDENCE"]},
+    "reasons": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/reason"}}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "reason": {
+      "type": "object", "additionalProperties": false,
+      "required": ["code", "key", "detail"],
+      "properties": {
+        "code": {"enum": ["PACKAGE_REMOVED", "DEPENDENCY_CHANGED", "NAMESPACE_OWNERSHIP_CHANGED", "ENTRY_REMOVED", "ENTRY_KIND_CHANGED", "ENTRY_SEMANTICS_CHANGED", "EVIDENCE_MISSING", "ACCEPTED_DEPENDENCY_INVALIDATED"]},
+        "key": {"type": "string", "minLength": 1}, "detail": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "allOf": [
+    {"if":{"properties":{"result":{"const":"COMPATIBLE_ADDITIVE"}}},"then":{"properties":{"reasons":{"maxItems":0}}}},
+    {"if":{"properties":{"result":{"const":"BLOCKED_INSUFFICIENT_EVIDENCE"}}},"then":{"properties":{"reasons":{"minItems":1,"items":{"properties":{"code":{"const":"EVIDENCE_MISSING"}}}}}}},
+    {"if":{"properties":{"result":{"const":"BLOCKED_INCOMPATIBLE"}}},"then":{"properties":{"reasons":{"minItems":1}}}}
+  ]
+}

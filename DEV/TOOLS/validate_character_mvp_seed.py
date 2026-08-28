@@ -1,10 +1,11 @@
 """Fail-closed S6D-07 package compiler/readiness/advancement conformance tool."""
 
 from copy import deepcopy
-import hashlib
 import json
 from pathlib import Path
 import re
+
+from validate_ruleset_package_closure import build_resolved_lock
 
 
 CHARACTER_KINDS = {
@@ -161,11 +162,13 @@ class CanonicalSchemaValidator:
 def resolve_package(package_dir, primitive_catalog):
     package_dir = Path(package_dir)
     capability = load_json(package_dir / "character-capabilities.json")
-    content_path = package_dir / capability["content_file"]
-    content_bytes = content_path.read_bytes()
-    if hashlib.sha256(content_bytes).hexdigest() != capability["content_sha256"]:
-        raise ValueError("package content identity mismatch")
-    seed = json.loads(content_bytes)
+    manifest = load_json(package_dir / "ruleset-package-manifest.json")
+    lock, _ = build_resolved_lock(
+        [package_dir], root_package_ids=[manifest["package_id"]],
+        engine_version=manifest["engine_requirement"]["engine_version"],
+        catalog_generation=manifest["catalog_generation"],
+    )
+    seed = load_json(package_dir / "character-mvp-seed.json")
     if seed["profile_id"] != capability["profile_id"]:
         raise ValueError("profile identity mismatch")
 
@@ -279,7 +282,7 @@ def resolve_package(package_dir, primitive_catalog):
     for primitive_id, consumers in actual_consumers.items():
         if set(contracts[primitive_id]["exact_seed_consumer_ids"]) != consumers:
             raise ValueError(f"primitive consumer closure mismatch for {primitive_id}: catalog={sorted(contracts[primitive_id]['exact_seed_consumer_ids'])} actual={sorted(consumers)}")
-    return {"capability": capability, "seed": seed, "gameplay_seed": gameplay_seed, "resolved_catalog": resolved, "value_ids": set(value_ids)}
+    return {"capability": capability, "manifest": manifest, "ruleset_set_sha256": lock["ruleset_set_sha256"], "seed": seed, "gameplay_seed": gameplay_seed, "resolved_catalog": resolved, "value_ids": set(value_ids)}
 
 
 def evaluate_ready_pc(actor, resolved_package, evidence=None):
@@ -292,11 +295,11 @@ def evaluate_ready_pc(actor, resolved_package, evidence=None):
         return {"ready": False, "blockers": blockers, "provisional_gameplay_allowed": True}
     class_id = progression[0]["class_id"]
     evidence = evidence or {}
-    capability = resolved_package["capability"]
+    manifest = resolved_package["manifest"]
     required_provenance = {"assets": "ASSET_STATE", "proficiencies": "RESOLVED_DEFINITION_GRANTS", "selectors": "MECHANICAL_CONTEXT", "activities": "CATALOG_ADMISSION_LEDGER"}
     if evidence.get("actor_id") != actor.get("id") or evidence.get("actor_state_revision") != actor.get("state_revision"):
         blockers.append("readiness_actor_identity_or_revision")
-    if evidence.get("catalog_generation") != capability["catalog_generation"] or evidence.get("package_content_set_sha256") != capability["content_set_sha256"]:
+    if evidence.get("catalog_generation") != manifest["catalog_generation"] or evidence.get("ruleset_set_sha256") != resolved_package["ruleset_set_sha256"]:
         blockers.append("readiness_catalog_identity")
     if evidence.get("provenance") != required_provenance:
         blockers.append("readiness_evidence_provenance")

@@ -249,4 +249,12 @@ At minimum:
 14. absence of per-record package-version proliferation;
 15. identical-owner reconstruction and incomplete-evidence rejection.
 
+## 13. S6D-11 machine realization
 
+S6D-11 closes this owner through RULESET_PACKAGE_MACHINE_CLOSURE.md, the strict package manifest/lock/result schemas and validate_ruleset_package_closure.py.
+
+The resolved lock additionally carries exact owned namespace claims and builder-derived member evidence. The manifest is self-including but contains no package/member digest authority. Every transitional content_set_sha256 carrier is removed or migrated; displayed package/set hashes outside generated runtime provenance are derived verification evidence only.
+
+A changed same-engine-version set is eligible for silent forward use only after independent adopted/candidate loading and a COMPLETE monotonic canonical semantic-entry comparison returns COMPATIBLE_ADDITIVE. Every adopted package line, namespace, exact dependency and definition/capability/active primitive/selector/accessor/fact/value/schema entry must remain present with identical kind and semantic hash. Candidate-only entries must independently validate and avoid collisions. BLOCKED_INCOMPATIBLE or BLOCKED_INSUFFICIENT_EVIDENCE prevents context use. Ancestry, labels and standalone load success are not this proof.
+
++

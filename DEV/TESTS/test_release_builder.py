@@ -1,8 +1,12 @@
 import importlib.util
+import json
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
+import yaml
+from GAME.TOOLS.ruleset_package import INVENTORY_DOMAIN, canonical_json, sha256, compile_conformance_attestation
 
 ROOT = Path(__file__).resolve().parents[2]
 MOD = ROOT / 'DEV' / 'TOOLS' / 'release_builder.py'
@@ -15,6 +19,44 @@ def load_module():
     sys.modules['release_builder'] = module
     spec.loader.exec_module(module)
     return module
+
+
+def write_ruleset_package(root: Path, engine_version: str, *, flattened: bool = False):
+    package = root / ("RULES" if flattened else "GAME/RULES") / "packages" / "hdm.rules.dnd2024-srd52-core"
+    package.mkdir(parents=True, exist_ok=True)
+    (package / "character-capabilities.json").write_text('{"identity_source":"ruleset-package-manifest.json","profile_id":"test.profile"}\n', encoding="utf-8")
+    (package / "gameplay.json").write_text('{"activity_definitions":[]}\n', encoding="utf-8")
+    manifest = {
+        "manifest_schema_version": 1, "package_id": "hdm.rules.dnd2024-srd52-core", "package_version": "0.1.0-mvp",
+        "compatibility_id": "hdm.rules.dnd2024-srd52.v1", "engine_requirement": {"engine_version": engine_version},
+        "catalog_generation": "2.0.0", "owned_namespaces": ["activity.*"], "dependencies": [],
+        "content_files": ["ruleset-package-manifest.json", "character-capabilities.json", "gameplay.json"],
+    }
+    (package / "ruleset-package-manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    return package
+
+
+def engine_inventory(m, engine_version, ruleset_set_sha256):
+    core = {
+        "inventory_schema_version":1,
+        "engine_version":engine_version,
+        "ruleset_set_sha256":ruleset_set_sha256,
+        "items":[
+            {"family":family,"contract_id":f"engine_contract.{family}.v1","semantic_sha256":"a"*64}
+            for family in sorted(m.REQUIRED_ENGINE_CONTRACT_FAMILIES)
+        ],
+    }
+    return {**core, "inventory_sha256":sha256(INVENTORY_DOMAIN + canonical_json(core))}
+
+
+def validator_results():
+    return [
+        {"validator_id":validator_id,"result":"PASS"}
+        for validator_id in sorted({
+            "character_seed_closure","health_effect_recovery_closure",
+            "domain_rules_coverage_closure","house_rules_boundary_closure",
+        })
+    ]
 
 
 class ReleaseBuilderContractTests(unittest.TestCase):
@@ -69,16 +111,17 @@ class ReleaseBuilderContractTests(unittest.TestCase):
             for d in ('CORE', 'INSTALL', 'RULES', 'SCHEMA', 'CAMPAIGN', 'TEMPLATE', 'MIGRATIONS', 'TOOLS'):
                 (root / d).mkdir()
             (root / 'ENGINE_VERSION.yaml').write_text('engine_version: 0.8\n')
-            (root / 'RUNTIME_PACKAGE.yaml').write_text(
-                'schema_version: 1\n'
-                'engine_version: "0.8"\n'
-                'package_id: dev-v0.8\n'
-                'source_state: non_git\n'
-                'source_ref: null\n'
-                'source_commit_sha: null\n',
-                encoding='utf-8',
-            )
+            package = write_ruleset_package(root, "0.8", flattened=True)
+            lock, _ = m.build_resolved_lock([package], root_package_ids=["hdm.rules.dnd2024-srd52-core"], engine_version="0.8", catalog_generation="2.0.0")
+            inventory = engine_inventory(m,'0.8',lock['ruleset_set_sha256'])
+            attestation = compile_conformance_attestation(inventory,validator_results(),lock=lock,engine_version='0.8')
+            metadata = {'schema_version':2,'engine_version':'0.8','package_id':'dev-v0.8','source_state':'non_git','source_ref':None,'source_commit_sha':None,'ruleset_set_sha256':lock['ruleset_set_sha256'],'resolved_ruleset_lock':lock,'ruleset_engine_contract_inventory':inventory,'ruleset_conformance_attestation':attestation}
+            (root / 'RUNTIME_PACKAGE.yaml').write_text(yaml.safe_dump(metadata, sort_keys=False), encoding='utf-8')
             self.assertEqual(m.validate_extracted_package_root(root), root)
+            self.assertFalse((root / 'DEV').exists())
+            (package / 'gameplay.json').write_text('{"activity_definitions":[{"id":"activity.tampered"}]}\n', encoding='utf-8')
+            with self.assertRaises(m.BuildError):
+                m.validate_extracted_package_root(root)
 
 
 class ReleaseBuilderZipTests(unittest.TestCase):
@@ -101,6 +144,7 @@ class ReleaseBuilderZipTests(unittest.TestCase):
         (dev / 'ENGINE_DEVELOPMENT.yaml').write_text(shared + 'runtime_scope_revision: 3\n', encoding='utf-8')
         for d in ('CORE','INSTALL','RULES','SCHEMA','CAMPAIGN','TOOLS','TEMPLATE','MIGRATIONS'):
             (game / d).mkdir()
+        write_ruleset_package(root, "0.8")
         (game / 'CORE' / 'x.md').write_text('x\n', encoding='utf-8')
         (game / 'INSTALL' / 'PROJECT_INSTRUCTIONS.txt').write_text('hello\n', encoding='utf-8')
         (game / 'INSTALL' / 'README.md').write_text('```text\nhello\n```\n', encoding='utf-8')
@@ -142,10 +186,16 @@ class ReleaseBuilderZipTests(unittest.TestCase):
             root = Path(td)
             self._write_manifest_pair(root)
             out = root / '.hdm-release'
-            a = m.build_runtime_zip(root, out, 'v0.8')
+            package = root / 'GAME/RULES/packages/hdm.rules.dnd2024-srd52-core'
+            lock, snapshots = m.build_resolved_lock([package], root_package_ids=['hdm.rules.dnd2024-srd52-core'], engine_version='0.8', catalog_generation='2.0.0')
+            inventory = engine_inventory(m,'0.8',lock['ruleset_set_sha256'])
+            integrated = (lock, snapshots, inventory, validator_results())
+            with mock.patch.object(m, 'validate_integrated_ruleset_package', return_value=integrated):
+                a = m.build_runtime_zip(root, out, 'v0.8')
             first = a.read_bytes()
             a.unlink()
-            b = m.build_runtime_zip(root, out, 'v0.8')
+            with mock.patch.object(m, 'validate_integrated_ruleset_package', return_value=integrated):
+                b = m.build_runtime_zip(root, out, 'v0.8')
             second = b.read_bytes()
             self.assertEqual(hashlib.sha256(first).hexdigest(), hashlib.sha256(second).hexdigest())
             with zipfile.ZipFile(b) as zf:

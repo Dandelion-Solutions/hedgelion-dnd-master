@@ -327,3 +327,9 @@ Project Instructions -> selected local runtime launcher -> this Runtime Bootstra
 `CAMPAIGN_CARD.yaml` is intentionally NOT inserted into canon priority; it is only a menu projection.
 
 Never repair missing canon through plausible invention.
+
+## Resolved ruleset lock
+
+RUNTIME_PACKAGE.yaml carries the builder-generated exact resolved_ruleset_lock and matching ruleset_set_sha256, a path-neutral runtime-owned engine-contract inventory and its digest-bound conformance attestation. Stable contract/validator IDs and hashes cross the package boundary; DEV filenames, test topology and raw PASS declarations do not. Before binding current_runtime_root, use shipped TOOLS/ruleset_package.py to recompute the lock from the shipped RULES package manifests and exact declared bytes and reject any mismatch, missing dependency, collision or incompatibility. Runtime uses only shipped GAME content and generated package provenance; it never reads DEV validation sources.
+
+For an existing campaign, exact adopted-set reuse is immediate after validation. A changed set uses the same shipped tool against both exact runtime packages, both closed engine-contract inventories and the campaign-owned durable/accepted-work dependency frontier; it also requires the fail-closed compatibility result governed by ENGINE_UPDATES.md before catalog context use. Do not bind a partially validated or mixed ruleset context.

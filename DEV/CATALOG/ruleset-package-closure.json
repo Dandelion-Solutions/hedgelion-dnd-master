@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "owner": "DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md",
+  "package_root": "GAME/RULES/packages/hdm.rules.dnd2024-srd52-core",
+  "derived_current_identity": {
+    "authority": "DERIVED_NONAUTHORITATIVE_VERIFICATION_EVIDENCE",
+    "package_content_sha256": "c18fa240cc1756e079cb7f80c1d88eb8db64f2334a0265337fadd670ece813e9",
+    "ruleset_set_sha256": "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca"
+  },
+  "transitional_package_identity": [
+    {
+      "key":"character-capabilities.content_file",
+      "carrier_paths":["GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json"],
+      "field_paths":["$.content_file"],
+      "producer_derivation":"previous hand-authored pointer to one seed member",
+      "current_authority_use":"REMOVED; capability metadata has no package identity authority",
+      "consumer_paths":["DEV/TOOLS/validate_character_mvp_seed.py","DEV/TESTS/test_s6d_07_character_mvp_seed.py"],
+      "disposition":"REMOVE",
+      "canonical_replacement":"ruleset-package-manifest.json content_files plus profile_id semantic linkage",
+      "positive_proof":"current capability file has identity_source only and canonical manifest lists exact members",
+      "negative_proof":"S6D-11 transitional census test rejects the legacy field"
+    },
+    {
+      "key":"character-capabilities.content_sha256",
+      "carrier_paths":["GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json"],
+      "field_paths":["$.content_sha256"],
+      "producer_derivation":"previous hand-authored member digest",
+      "current_authority_use":"REMOVED; member hashes are builder-derived evidence",
+      "consumer_paths":["DEV/TOOLS/validate_character_mvp_seed.py","DEV/TESTS/test_s6d_07_character_mvp_seed.py"],
+      "disposition":"REMOVE",
+      "canonical_replacement":"ResolvedRulesetLock.packages[].members[]",
+      "positive_proof":"builder recomputes member digest from exact bytes",
+      "negative_proof":"strict capability/manifest tests reject embedded digest authority"
+    },
+    {
+      "key":"character-capabilities.content_files[].sha256",
+      "carrier_paths":["GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json"],
+      "field_paths":["$.content_files[*].path","$.content_files[*].sha256"],
+      "producer_derivation":"previous hand-authored member table",
+      "current_authority_use":"REMOVED; no parallel package snapshot carrier",
+      "consumer_paths":["DEV/TOOLS/validate_health_effects_recovery_seed.py","DEV/TESTS/test_s6d_08_health_effects_recovery_contract.py","DEV/TOOLS/validate_domain_rules_coverage.py","DEV/TOOLS/validate_house_rules_mechanical_boundary.py"],
+      "disposition":"MIGRATE_TO_CANONICAL_PACKAGE_IDENTITY",
+      "canonical_replacement":"self-including manifest paths plus builder-derived snapshot/member evidence",
+      "positive_proof":"all four registered package validators resolve the canonical lock",
+      "negative_proof":"old member table is absent and not accepted as manifest shape"
+    },
+    {
+      "key":"character-capabilities.content_set_sha256",
+      "carrier_paths":["GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json"],
+      "field_paths":["$.content_set_sha256"],
+      "producer_derivation":"previous aggregate over three selected members",
+      "current_authority_use":"REMOVED; it is neither package nor resolved-set identity",
+      "consumer_paths":["DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md","DEV/TOOLS/validate_character_mvp_seed.py","DEV/TOOLS/validate_health_effects_recovery_seed.py","DEV/TOOLS/validate_domain_rules_coverage.py","DEV/CATALOG/house-rules-mechanical-boundary.json"],
+      "disposition":"REMOVE",
+      "canonical_replacement":"resolved lock ruleset_set_sha256",
+      "positive_proof":"all current consumers reconstruct or receive canonical set identity",
+      "negative_proof":"repository-wide transitional census rejects current authoritative occurrences"
+    },
+    {
+      "key":"ready-pc.package_content_set_sha256",
+      "carrier_paths":["DEV/TESTS/fixtures/s6d-07-character-mvp-actors.json"],
+      "field_paths":["$[*].actor.readiness_evidence.package_content_set_sha256"],
+      "producer_derivation":"READY_PC conformance derivation evidence",
+      "current_authority_use":"MIGRATED to exact selected set identity",
+      "consumer_paths":["DEV/TOOLS/validate_character_mvp_seed.py","DEV/TESTS/test_s6d_07_character_mvp_seed.py"],
+      "disposition":"MIGRATE_TO_CANONICAL_RULESET_SET_IDENTITY",
+      "canonical_replacement":"$.actor.readiness_evidence.ruleset_set_sha256",
+      "positive_proof":"validator and fixtures agree with reconstructed lock digest",
+      "negative_proof":"legacy readiness field is forbidden"
+    },
+    {
+      "key":"s6d08.aggregate-content-set-test",
+      "carrier_paths":["DEV/TESTS/test_s6d_08_health_effects_recovery_contract.py","DEV/TOOLS/validate_health_effects_recovery_seed.py"],
+      "field_paths":["legacy validate_package_content_set","legacy aggregate assertion"],
+      "producer_derivation":"S6D-08 package conformance helper",
+      "current_authority_use":"MIGRATED to canonical snapshot/lock reconstruction",
+      "consumer_paths":["DEV/TESTS/test_s6d_08_health_effects_recovery_contract.py"],
+      "disposition":"MIGRATE_TO_CANONICAL_PACKAGE_IDENTITY",
+      "canonical_replacement":"validate_package_snapshot plus build_resolved_lock",
+      "positive_proof":"health/recovery validator requires manifest membership and exact lock",
+      "negative_proof":"old helper/name/aggregate key is absent"
+    },
+    {
+      "key":"s6d09.package_binding.content_set_sha256",
+      "carrier_paths":["DEV/CATALOG/domain-rules-coverage.json"],
+      "field_paths":["$.package_binding.content_set_sha256"],
+      "producer_derivation":"S6D-09 coverage-ledger package binding",
+      "current_authority_use":"MIGRATED to resolved-set identity",
+      "consumer_paths":["DEV/TOOLS/validate_domain_rules_coverage.py","DEV/TESTS/test_s6d_09_domain_rules_coverage_contract.py","DEV/SCHEMAS/domain-rules-coverage.schema.json"],
+      "disposition":"MIGRATE_TO_CANONICAL_RULESET_SET_IDENTITY",
+      "canonical_replacement":"$.package_binding.ruleset_set_sha256",
+      "positive_proof":"coverage validator reconstructs lock and checks the gameplay member",
+      "negative_proof":"strict schema and transitional census reject legacy key"
+    },
+    {
+      "key":"s6d10.identity_bound_package_candidate.content_set_sha256",
+      "carrier_paths":["DEV/CATALOG/house-rules-mechanical-boundary.json"],
+      "field_paths":["$.identity_bound_package_candidate.content_set_sha256"],
+      "producer_derivation":"S6D-10 pre-activation candidate binding",
+      "current_authority_use":"MIGRATED to active verified resolved-set identity without realization authority",
+      "consumer_paths":["DEV/SCHEMAS/house-rules-mechanical-boundary.schema.json","DEV/TOOLS/validate_house_rules_mechanical_boundary.py","DEV/TESTS/test_s6d_10_house_rules_boundary_contract.py"],
+      "disposition":"MIGRATE_TO_CANONICAL_RULESET_SET_IDENTITY",
+      "canonical_replacement":"$.resolved_ruleset_identity.ruleset_set_sha256",
+      "positive_proof":"boundary validator reconstructs the canonical lock before exact-consumer equality",
+      "negative_proof":"legacy object/key and pre-S6D-11 state are rejected"
+    },
+    {
+      "key":"runtime-package.missing-resolved-lock",
+      "carrier_paths":["DEV/TOOLS/release_builder.py","GAME/TOOLS/ruleset_package.py"],
+      "field_paths":["RUNTIME_PACKAGE.ruleset_set_sha256","RUNTIME_PACKAGE.resolved_ruleset_lock","RUNTIME_PACKAGE.ruleset_engine_contract_inventory","RUNTIME_PACKAGE.ruleset_conformance_attestation"],
+      "producer_derivation":"release builder integrated package validator gate",
+      "current_authority_use":"MIGRATED to exact shipped runtime provenance and owner-derived compatibility evidence",
+      "consumer_paths":["DEV/TOOLS/release_builder.py","DEV/TESTS/test_release_builder.py","GAME/CORE/BOOTSTRAP_RUNTIME.md","GAME/CORE/ENGINE_UPDATES.md"],
+      "disposition":"MIGRATE_TO_CANONICAL_RULESET_SET_IDENTITY",
+      "canonical_replacement":"builder-generated exact lock/set plus path-neutral engine-contract inventory and digest-bound conformance attestation",
+      "positive_proof":"flattened runtime validates with no DEV tree and recomputes lock from shipped bytes",
+      "negative_proof":"missing evidence or shipped-byte tampering fails extracted-root validation"
+    },
+    {
+      "key":"campaign-and-execution.missing-ruleset-set-projection",
+      "carrier_paths":["GAME/SCHEMA/campaign_manifest.schema.yaml","GAME/CAMPAIGN/MANIFEST.yaml","GAME/TOOLS/init_campaign.py","GAME/SCHEMA/checkpoint.schema.yaml","DEV/SCHEMAS/runtime-resolution-state.schema.json","DEV/SCHEMAS/runtime-continuation-state.schema.json"],
+      "field_paths":["$.ruleset.created_with.ruleset_set_sha256","$.ruleset.current.ruleset_set_sha256","$.ruleset_set_sha256"],
+      "producer_derivation":"campaign bootstrap, accepted-work creation and checkpoint projection",
+      "current_authority_use":"MIGRATED to sibling campaign authority, accepted-work pin and nonauthoritative checkpoint projection",
+      "consumer_paths":["GAME/CORE/BOOTSTRAP_RUNTIME.md","GAME/CORE/ENGINE_UPDATES.md","DEV/TESTS/test_step3_execution_owner_contract.py","DEV/TESTS/test_step3_resume_ordering_contract.py"],
+      "disposition":"MIGRATE_TO_CANONICAL_RULESET_SET_IDENTITY",
+      "canonical_replacement":"required exact set identity at each accepted owner boundary",
+      "positive_proof":"new campaign and execution examples carry one coherent exact set digest",
+      "negative_proof":"strict schemas reject missing set identity"
+    }
+  ],
+  "load_failure_reasons": ["invalid_manifest","content_mismatch","missing_dependency","ambiguous_dependency","dependency_cycle","package_id_ambiguity","namespace_conflict","engine_incompatibility","catalog_incompatibility","resolved_set_mismatch","unreconstructable_context"],
+  "compatibility_contract": {"algorithm":"MONOTONIC_CANONICAL_SEMANTIC_ENTRY_SUPERSET_V1","insufficient_evidence":"BLOCKED_INSUFFICIENT_EVIDENCE","silent_use_result":"COMPATIBLE_ADDITIVE"},
+  "registered_package_validators": [
+    {"validator_id":"character_seed_closure","path":"DEV/TOOLS/validate_character_mvp_seed.py","test_path":"DEV/TESTS/test_s6d_07_character_mvp_seed.py","scope":"character definitions, READY_PC, progression and package-reference closure","stage":"BUILD_AND_CONFORMANCE"},
+    {"validator_id":"health_effect_recovery_closure","path":"DEV/TOOLS/validate_health_effects_recovery_seed.py","test_path":"DEV/TESTS/test_s6d_08_health_effects_recovery_contract.py","scope":"health, effect, recovery and canonical world-record closure","stage":"BUILD_AND_CONFORMANCE"},
+    {"validator_id":"domain_rules_coverage_closure","path":"DEV/TOOLS/validate_domain_rules_coverage.py","test_path":"DEV/TESTS/test_s6d_09_domain_rules_coverage_contract.py","scope":"product/package/active-consumer bidirectional closure","stage":"BUILD_AND_CONFORMANCE"},
+    {"validator_id":"house_rules_boundary_closure","path":"DEV/TOOLS/validate_house_rules_mechanical_boundary.py","test_path":"DEV/TESTS/test_s6d_10_house_rules_boundary_contract.py","scope":"typed policy parameters and exact admitted fact-consumer closure","stage":"BUILD_AND_CONFORMANCE"}
+  ],
+  "activation": {"package_selection_state":"ACTIVE_VERIFIED_MACHINE_CONTRACT","requires_no_transitional_authority":true,"requires_current_lock_validation":true,"requires_compatibility_proof_for_changed_set":true}
+}

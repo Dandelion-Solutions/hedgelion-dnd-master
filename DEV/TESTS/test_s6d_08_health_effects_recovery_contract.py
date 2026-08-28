@@ -1,7 +1,6 @@
 import json
 import unittest
 from pathlib import Path
-import hashlib
 
 from DEV.TOOLS.validate_character_mvp_seed import CanonicalSchemaValidator, SchemaViolation
 
@@ -14,7 +13,6 @@ from DEV.TOOLS.validate_health_effects_recovery_seed import (
     apply_boundary,
     validate_actor_health,
     validate_resource_instances,
-    validate_package_content_set,
     validate_seed_schema,
     validate_actor_and_effect_outputs,
     apply_effect,
@@ -22,6 +20,7 @@ from DEV.TOOLS.validate_health_effects_recovery_seed import (
     terminate_support_tree,
     reconstruct_derived_state,
 )
+from DEV.TOOLS.validate_ruleset_package_closure import build_resolved_lock
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -157,19 +156,10 @@ class S6D08HealthEffectsRecoveryContractTest(unittest.TestCase):
                 validator.validate(example, schema)
 
     def test_package_identity_binds_exact_closed_content_set(self):
-        validate_package_content_set(PACKAGE, self.capabilities)
-        self.assertEqual(
-            [row["path"] for row in self.capabilities["content_files"]],
-            ["character-mvp-seed.json", "health-effects-recovery-seed.json", "gameplay-spine-seed.json"],
-        )
-        missing = json.loads(json.dumps(self.capabilities))
-        missing["content_files"] = missing["content_files"][:1]
-        with self.assertRaises(ValueError):
-            validate_package_content_set(PACKAGE, missing)
-        modified = json.loads(json.dumps(self.capabilities))
-        modified["content_files"][1]["sha256"] = "0" * 64
-        with self.assertRaises(ValueError):
-            validate_package_content_set(PACKAGE, modified)
+        lock, _ = build_resolved_lock([PACKAGE], root_package_ids=["hdm.rules.dnd2024-srd52-core"], engine_version="1.0-alpha", catalog_generation="2.0.0")
+        self.assertEqual(lock["ruleset_set_sha256"], "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca")
+        self.assertIn("health-effects-recovery-seed.json", {row["path"] for row in lock["packages"][0]["members"]})
+        self.assertFalse({"content_files", "content_set_sha256"}.intersection(self.capabilities))
 
     def test_policy_validator_rejects_missing_or_contradictory_health(self):
         valid = {"hp": {"current": 6, "maximum_base": 6, "temporary": 0}, "life_state_id": "life.active", "life_state_policy_id": "life_policy.dnd2024.character_like"}
@@ -327,4 +317,3 @@ class S6D08HealthEffectsRecoveryContractTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

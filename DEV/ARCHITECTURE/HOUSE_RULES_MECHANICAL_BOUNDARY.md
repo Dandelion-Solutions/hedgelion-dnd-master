@@ -49,3 +49,7 @@ No policy engine, prose compiler, generic homebrew subsystem, arbitrary query/pa
 
 The machine proof must remain exactly equal to the identity-bound candidate parameter contracts and active fact-consumer edges, with route-profile proof coverage and zero current built-in realizations. S6D-11 owns runtime package selection/loader verification. Implementation Planning owns production RuntimeCommand/idempotency realization; acceptance must reproduce the exact-consumer retry/recovery fixtures without rereading HEAD, rerolling or mutating before validation.
 
+## 9. S6D-11 activation
+
+The prior identity-bound package candidate is now a resolved_ruleset_identity bound to canonical `ruleset_set_sha256`. ACTIVE_VERIFIED_MACHINE_CONTRACT means only that the exact built-in package/lock and this boundary's complete source-derived rows passed S6D-11 validation. It does not grant realization, primitive or execution authority. The former candidate `content_set_sha256` and blocked-until-S6D-11 carrier are invalid.
++

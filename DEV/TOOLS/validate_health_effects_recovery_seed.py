@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from DEV.TOOLS.validate_character_mvp_seed import CanonicalSchemaValidator, SchemaViolation
+from DEV.TOOLS.validate_ruleset_package_closure import build_resolved_lock
 
 
 def _effective_maximum(actor):
@@ -247,22 +248,24 @@ def apply_boundary(resources, capacities, boundary_id, occurrence_key, owner_id,
     return _dedupe(key, receipts, produce)
 
 
-def validate_package_content_set(package_dir, capability):
-    expected_paths = ["character-mvp-seed.json", "health-effects-recovery-seed.json", "gameplay-spine-seed.json"]
-    rows = capability.get("content_files")
-    if not isinstance(rows, list) or [row.get("path") for row in rows] != expected_paths:
-        raise ValueError("package content file set mismatch")
-    digest_lines = []
-    for row in rows:
-        path = package_dir / row["path"]
-        actual = hashlib.sha256(path.read_bytes()).hexdigest()
-        if actual != row.get("sha256"):
-            raise ValueError("package member digest mismatch")
-        digest_lines.append(f"{row['path']}\0{actual}\n")
-    aggregate = hashlib.sha256("".join(digest_lines).encode("utf-8")).hexdigest()
-    if aggregate != capability.get("content_set_sha256"):
-        raise ValueError("package aggregate content identity mismatch")
-    return True
+def validate_package_snapshot(package_dir):
+    package_id = "hdm.rules.dnd2024-srd52-core"
+    lock, _snapshots = build_resolved_lock(
+        [package_dir],
+        root_package_ids=[package_id],
+        engine_version="1.0-alpha",
+        catalog_generation="2.0.0",
+    )
+    members = {row["path"] for row in lock["packages"][0]["members"]}
+    required = {
+        "ruleset-package-manifest.json",
+        "character-mvp-seed.json",
+        "health-effects-recovery-seed.json",
+        "gameplay-spine-seed.json",
+    }
+    if not required <= members:
+        raise ValueError("canonical package snapshot omits required health/recovery members")
+    return lock
 
 
 def validate_seed_schema(value, schema):

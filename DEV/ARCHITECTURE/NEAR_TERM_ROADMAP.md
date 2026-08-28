@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-10 COMPLETE / S6D-11 STEP 1 SENIOR-AUDIT REPAIR PASS / STEP 2 NEXT / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-11 COMPLETE / S6D-12 NEXT / R2.7 PAUSED**
 
 Date: 2026-08-28
 
@@ -93,7 +93,7 @@ Operating rules:
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-10 COMPLETE / S6D-11 STEP 1 SENIOR-AUDIT REPAIR PASS / STEP 2 NEXT** | residual rules/seed/catalog debt |
+| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-11 COMPLETE / S6D-12 NEXT** | residual rules/seed/catalog debt |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
 
 ---
@@ -119,9 +119,8 @@ R2.0..R2.6 COMPLETE
     -> S6D-09 Steps 4-8                            [COMPLETE / SENIOR-AUDIT SPATIAL REPAIR PASS / CANONICAL]
     -> S6D-10 Step 1                               [COMPLETE / BRIEF-CRITIC PASS]
     -> S6D-10 Steps 2-8                            [COMPLETE / WHOLE-PROJECT CRITIC PASS / CANONICAL]
-    -> S6D-11 Step 1                               [COMPLETE / SENIOR-AUDIT REPAIR / RENEWED BRIEF-CRITIC PASS]
-    -> S6D-11 Step 2                               [NEXT / NOT STARTED]
-    -> ... remaining S6D domains full eight-step loops ...
+    -> S6D-11 Steps 1-8                            [COMPLETE / WHOLE-PROJECT CRITIC PASS / CANONICAL]
+    -> S6D-12 Step 1                               [NEXT / NOT STARTED]
     -> S6D integrated closure
     -> R2.7 WP-06 RESUME
     -> R2.7 WP-07..WP-27
@@ -129,7 +128,7 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-01 through S6D-10 are complete. S6D-11 Step 1 is complete after Senior-audit repair and renewed whole-project brief-critic PASS at 0/0/0. The repaired brief adds item-level disposition of every transitional aggregate package-identity carrier/consumer and a fail-closed machine comparison of the adopted versus candidate set before changed same-version silent use; missing compatibility evidence blocks use. Non-self-referential manifest/lock/builder/loader, ResolvedCatalogContext reconstruction, finite S6D-01…10 machine/test equality, closed typed load failures and honest activation remain required. The built-in package remains blocked: S6D-11 Step 2 is next and has not started.
+**Current stop.** S6D-01 through S6D-11 are complete. S6D-11 canonically closes the single manifest/snapshot/lock/set identity chain, item-level transitional identity migration, integrated S6D-07…10 validator gate, path-neutral runtime conformance evidence, exact projections and fail-closed compatible/additive comparison. The built-in bounded package is ACTIVE_VERIFIED_MACHINE_CONTRACT without activating dormant/quarantined content. S6D-12 Step 1 is next and has not started.
 
 ---
 
@@ -195,7 +194,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-11 Step 1 Senior-audit repair complete / Step 2 next
+## 7. S6D — S6D-11 complete / S6D-12 next
 
 S6D decomposition/evidence inputs remain:
 
@@ -207,7 +206,7 @@ The plan is a decomposition/coverage index only. S6D-01 through S6D-10 are canon
 
 S6D-10 Steps 1–8 are closed by `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md` and the complete task/critic/research/decision/collaborative/candidate/adversarial/resolution/canonicalization chain. The canonical result proves the finite active adjudication/policy-basis integration, preserves conformance-only nonselectable fixtures and follows the later S6D-09 spatial supersession chain.
 
-S6D-11 Step 1 is closed by `DEV/docs/superpowers/specs/2026-08-28-s6d-11-tests-machine-contract-closure-task-brief.md` and its matching critic after Senior-audit repair and renewed whole-project PASS at 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR. The repaired brief requires exact non-self-referential manifest/lock/builder/loader realization; item-level removal, strict demotion or migration of every transitional aggregate package-identity carrier/consumer so only the canonical manifest -> package snapshot -> exact lock -> ruleset-set chain remains authoritative; a fail-closed adopted-set/candidate-set machine comparison before changed same-version silent use; ResolvedCatalogContext reconstruction; bidirectional S6D-01…10 machine/test equality; closed typed package-load failures; and honest activation. The accepted non-creator authority law remains unchanged, but ancestry, labels and standalone load success cannot prove compatibility. Step 2 has not started.
+S6D-11 Steps 1–8 are closed by `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md` and the complete task/critic/research/decision/collaborative/candidate/adversarial/resolution/canonicalization chain. The canonical result realizes the exact non-self-referential manifest/lock chain, removes the transitional aggregate identity authority, executes the registered S6D-07…10 validators before activation, ships a bounded GAME loader/comparator, compiles DEV evidence into stable path-neutral runtime contract IDs/hashes, and blocks changed-set use unless exact snapshots, engine inventories and durable dependency frontier prove a compatible additive superset. Final Step-6 review: 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR. S6D-12 has not started.
 
 ---
 
@@ -232,16 +231,16 @@ R2.7 WP-06 resumes only after S6D integrated closure.
 ```text
 HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
 S6D: IN PROGRESS
-S6D_COMPLETED_DOMAIN: S6D-10 / STEPS 1-8 / ARCHITECTURE CLOSED
-S6D_NEXT_DOMAIN: S6D-11
-S6D_ACTIVE_DOMAIN: S6D-11
-S6D_COMPLETED_STAGE: S6D-11 STEP 1 / SENIOR-AUDIT REPAIR / RENEWED WHOLE-PROJECT BRIEF-CRITIC PASS
+S6D_COMPLETED_DOMAIN: S6D-11 / STEPS 1-8 / ARCHITECTURE CLOSED
+S6D_NEXT_DOMAIN: S6D-12
+S6D_ACTIVE_DOMAIN: NONE
+S6D_COMPLETED_STAGE: S6D-11 STEP 8 / CANONICAL
 S6D_ACTIVE_STAGE: NONE
-S6D_NEXT_STAGE: S6D-11 STEP 2 / RESEARCH + ARCHITECTURE DRAFT
+S6D_NEXT_STAGE: S6D-12 STEP 1 / TASK BRIEF
 R2_7_WP06: PAUSED
 ```
 
-Next action is S6D-11 Step 2. S6D-11 Step 1 is complete; Step 2 has not started.
+Next action is S6D-12 Step 1. S6D-11 is complete; S6D-12 has not started.
 
 
 
