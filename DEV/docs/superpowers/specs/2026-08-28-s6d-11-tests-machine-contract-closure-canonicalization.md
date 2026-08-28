@@ -1,6 +1,6 @@
 # S6D-11 — Tests and Machine-Contract Closure — Step 8 Canonicalization Record
 
-Status: **CANONICALIZATION CANDIDATE — PUBLICATION/READ-BACK REQUIRED**
+Status: **CANONICAL — PUBLISHED AND READ-BACK VERIFIED**
 
 Date: 2026-08-28
 
@@ -18,4 +18,5 @@ Canonical machine closure:
 - DEV/SCHEMAS/ruleset-package-closure.schema.json
 - DEV/TESTS/test_s6d_11_ruleset_package_closure.py
 
-The authoritative publication must include all migrated owners, schemas, validators, fixtures, execution projections, campaign/bootstrap/update/release artifacts, PROJECT_MAP and roadmap in one coherent commit. After publication, read back the branch/ref and key artifacts and confirm checks. S6D-12 must remain not started.
+The complete migrated owner/schema/validator/fixture/projection/bootstrap/update/release/map/roadmap set was published atomically in commit `dc76ba939fa11b89e926c2b5a8dc58e13d6256f8`. Connector read-back confirmed the branch and key canonical artifacts. S6D-12 remains not started.
+
