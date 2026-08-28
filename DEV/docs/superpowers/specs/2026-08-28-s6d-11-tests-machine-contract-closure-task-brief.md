@@ -1,6 +1,6 @@
 # S6D-11 — Tests and Machine-Contract Closure — Architecture Task Brief
 
-Status: **STEP 1 TASK BRIEF — WHOLE-PROJECT BRIEF-CRITIC PASS**
+Status: **STEP 1 TASK BRIEF — SENIOR-AUDIT REPAIR / RENEWED WHOLE-PROJECT CRITIC PASS**
 
 Date: 2026-08-28
 
@@ -41,6 +41,8 @@ Treat these as settled inputs unless fresh owning evidence proves contradiction,
 10. Ruleset adoption authority and same-version maintenance behavior remain owned by current access/update/package-identity contracts. Builder/loader compatibility evidence must not silently change who may adopt a changed ruleset set.
 11. S6D-11 owns physical manifest/lock/builder/loader realization and the closed typed package-load failure-reason distinction required by S6D-02. The top-level execution code remains `failure.catalog_context_incompatible`; unsupported mechanics use the existing catalog-gap surface instead.
 12. Broad implementation remains blocked until final architecture closure and Implementation Planning, except for owner-authorized clean-slate schemas/catalogs/machine contracts/reference validators/tests required by an accepted architecture decision.
+13. Existing `character-capabilities.json` aggregate content hashes and every copied `content_set_sha256` are transitional S6D-07…10 evidence, not a second package-snapshot identity that may survive S6D-11 activation. S6D-11 must find every carrier and consumer and either remove it, demote it to explicitly derived nonauthoritative evidence, or migrate the consumer to canonical package-snapshot/resolved-set identity.
+14. A changed same-version ruleset set is silent-use eligible only after machine-verifiable compatibility comparison between the currently adopted set and the candidate forward set. Ancestry proves order/provenance; matching `compatibility_id`, matching `catalog_generation` and standalone candidate-load success are inputs at most, never sufficient compatibility proof. If current owners and machine contracts cannot prove compatibility, silent changed-set use remains blocked.
 
 ## 3. Exact S6D-11 question
 
@@ -144,6 +146,7 @@ CURRENT_SUPPORTED_PACKAGE_DEFINITION_KEYS
 CURRENT_SUPPORTED_CONSUMER_KEYS
 CURRENT_PRODUCT_PROMISE_KEYS
 CURRENT_TEST_PROOF_KEYS
+TRANSITIONAL_PACKAGE_IDENTITY_KEYS
 DORMANT_OR_QUARANTINED_KEYS
 CONFORMANCE_ONLY_NONSELECTABLE_KEYS
 ```
@@ -159,6 +162,46 @@ current product promises = exact supported routes + proof rows
 ```
 
 An equality may use typed partitions rather than one flattened set where kinds differ, but no broad slogan substitutes for item-level accounting. Every exclusion requires an owner, rationale and preserved activation/revisit trigger.
+
+### 5.1A Transitional package-identity census and retirement
+
+Build `TRANSITIONAL_PACKAGE_IDENTITY_KEYS` from concrete fields, attestations, copied values and validators/tests—not only from filenames. For every carrier and every consumer record:
+
+```text
+transitional_key
+carrier path + exact field/evidence
+producer/derivation
+every current consumer
+current claimed authority/use
+canonical replacement identity
+final_disposition = REMOVE
+                  | DERIVED_NONAUTHORITATIVE
+                  | MIGRATE_TO_CANONICAL_PACKAGE_IDENTITY
+                  | MIGRATE_TO_CANONICAL_RULESET_SET_IDENTITY
+positive migration/derivation proof
+negative duplicate-authority/stale-value proof
+```
+
+The mandatory starting points are:
+
+- `GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json`: `content_file`, `content_sha256`, `content_files[].sha256` and aggregate `content_set_sha256`;
+- `DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md`, READY_PC derivation attestations and S6D-07 validators/tests that bind readiness to the aggregate identity;
+- S6D-07/S6D-09 package capability metadata, seed validators, product-promise/coverage attestations and focused tests;
+- `DEV/CATALOG/house-rules-mechanical-boundary.json` `identity_bound_package_candidate.content_set_sha256`, its schema, validator and S6D-10 tests;
+- any copied digest or package-candidate assertion found in schemas, fixtures, generated/reference outputs, release validation or runtime-facing projections.
+
+`DERIVED_NONAUTHORITATIVE` is legal only when the value is mechanically derived from canonical manifest/lock bytes, is labelled as comparison/diagnostic evidence, cannot select or reconstruct a package by itself, cannot override computed canonical identity, and has no consumer treating it as authority. Merely renaming `content_set_sha256` or retaining the same aggregate calculation under a compatibility alias does not satisfy demotion.
+
+S6D-11 cannot pass its activation gate while an undispositioned transitional carrier/consumer remains. After activation there must be exactly one authoritative package-snapshot chain:
+
+```text
+RulesetPackageManifest + exact declared semantic bytes
+-> computed RulesetPackageSnapshot.content_sha256
+-> exact resolved lock
+-> ruleset_set_sha256
+```
+
+READY_PC, package capability, product-promise and House-Rules boundary evidence must bind to the correct canonical package snapshot or resolved-set identity according to what each proof actually depends on; none may keep the old aggregate as parallel authority.
 
 ### 5.2 Manifest and lock contract
 
@@ -195,6 +238,39 @@ emit bounded success evidence or closed failure reason
 ```
 
 No network discovery, mutable tag resolution, ambient recursive scan, LLM repair, last-write-wins shadowing, arbitrary code execution or prose fallback is permitted. Any development/reference builder must be clearly separated from the shipped runtime contract and cannot become a hidden second semantic owner.
+
+### 5.3A Same-version ruleset-set compatibility comparison contract
+
+Step 2 must determine, and Step 5 must materialize as an exact machine contract, how a fully validated currently adopted resolved set is compared with a fully validated candidate forward same-engine-version resolved set before any changed-set silent use.
+
+The contract must define:
+
+```text
+exact comparison inputs
+semantic authority for each compared surface
+deterministic comparator/validator owner
+closed machine-readable result and reason evidence
+earliest valid comparison/detection point
+required retained evidence for use/retry/recovery/audit
+positive and negative fixtures
+```
+
+Minimum exact inputs include both resolved locks and snapshot identities; exact manifests and semantic bytes; package dependency and namespace closures; current catalog/schema/selector/accessor/fact/primitive/value contracts; current supported definition/Activity/consumer/product-promise closure; exact definition kinds and dependency references; and the bounded dependency frontier required by current durable state, accepted work and already-accepted embedded mechanical content. The investigation must identify the natural owner of each semantic assertion. The comparator validates evidence supplied by those owners; it does not become a universal semantic owner or infer equivalence from prose.
+
+The machine-readable result must distinguish proven compatible/additive from blocked/incompatible and carry exact reason/evidence rows tied to both input set identities. A declaration made only by the candidate package is not proof against the adopted set. The earliest successful comparison point is after both sets independently pass manifest/lock/load validation and before the candidate set can supply a `ResolvedCatalogContext` for silent gameplay use. Failure or insufficient evidence is fail-closed.
+
+At minimum, compatibility proof must reject or block:
+
+- incompatible kind or contract change for an existing definition/capability ID;
+- semantic repurposing of an existing ID without current-owner machine-verifiable equivalence evidence;
+- removal of a definition/capability required by current durable state, accepted work or a current supported consumer;
+- incompatible schema, value or machine-contract change;
+- invalidation of already-accepted embedded mechanical content or its frozen dependency basis;
+- namespace or definition-ID collision;
+- missing/incompatible primitive, selector, accessor, invocation fact or active realization;
+- a comparison based only on ancestry, equal `compatibility_id`, equal `catalog_generation` or standalone candidate load success.
+
+Step 5 negative tests must mutate each family separately and prove that silent use stays blocked. If exact semantic compatibility for any changed existing ID cannot be established from current owners/machine contracts, the comparator MUST return blocked/incompatible for that candidate; it must not accept a package assertion or LLM judgment as substitute evidence.
 
 ### 5.4 Closed failure taxonomy
 
@@ -257,6 +333,9 @@ At minimum test rejection of:
 - old flat/pseudo-state or duplicate-owner representations already rejected by S6D-03…10;
 - loader dependence on ambient files, mutable remote state, search order or LLM substitution;
 - package activation when any mandatory proof is missing.
+- retained transitional `content_set_sha256`/member-digest authority, a stale transitional attestation, or two package-snapshot identity chains that can disagree;
+- same-version changed-set silent use based only on ancestry, declaration, matching compatibility/catalog labels or candidate-load PASS;
+- each incompatible/removal/repurposing/schema/embedded-content/namespace/primitive-selector-accessor-fact mutation required by §5.3A.
 
 Schema examples implicated by the proof should themselves be validated, so stale invalid examples cannot support a PASS claim.
 
@@ -273,6 +352,8 @@ Architecture acceptance must include at least:
 7. valid context but unsupported mechanic -> honest catalog-gap behavior rather than package-incompatibility misclassification.
 
 The conformance matrix must test every classification above and its non-creator boundary. Digest inequality alone MUST NOT be treated as a creator-adoption prompt; ancestry/currentness plus the accepted engine/package/catalog compatibility evidence determine which existing path applies.
+
+For walkthrough 3, “compatible or additive” means a successful result from the exact §5.3A comparison contract. Until that proof exists, a changed set is not eligible for silent use even when ancestry, `compatibility_id`, `catalog_generation` and standalone loading all pass. This preserves the existing non-creator authority law while making its changed-set entry condition machine-verifiable.
 
 These are architecture/machine-contract acceptance scenarios, not permission to implement a broad production updater or gameplay runtime.
 
@@ -332,7 +413,9 @@ The Task Brief is ready only when the whole-project brief critic confirms that i
 6. requires exact reconstruction and the complete minimum typed failure distinctions;
 7. makes executable evidence honesty and activation blocking explicit;
 8. avoids implementation, product-scope and S6D-12 scope creep;
-9. leaves no blocking/significant whole-project dependency omission.
+9. requires item-level retirement/demotion/migration of every transitional package-identity carrier and consumer, leaving no parallel authoritative snapshot chain;
+10. requires a fail-closed machine-verifiable adopted-set/candidate-set compatibility comparison before changed-set silent use and treats insufficient evidence as blocked;
+11. leaves no blocking/significant whole-project dependency omission.
 
 ## 10. Step-1 stop
 
