@@ -127,7 +127,10 @@
       ],
       "properties": {
         "disposition": {
-          "const": "DORMANT_RESERVED"
+          "enum": [
+            "ACTIVE_ADMITTED",
+            "DORMANT_RESERVED"
+          ]
         },
         "source_class": {
           "const": "INVOCATION_ADJUDICATED"
@@ -152,9 +155,9 @@
         },
         "permitted_consumer_ids": {
           "type": "array",
-          "maxItems": 0,
+          "uniqueItems": true,
           "items": {
-            "$ref": "#/$defs/consumerRef"
+            "$ref": "#/$defs/contextFactConsumerId"
           }
         },
         "retention_policy": {
@@ -164,7 +167,10 @@
           "const": "DEV/SCHEMAS/invocation-fact.schema.json"
         },
         "activation_trigger": {
-          "const": "S6D-07_TO_09_EXACT_COMPILED_CONSUMER"
+          "enum": [
+            "S6D-07_TO_09_EXACT_COMPILED_CONSUMER",
+            "SATISFIED_BY_S6D_09_EXACT_SPATIAL_CONSUMERS"
+          ]
         },
         "binding_policy": {
           "const": "EXACT_COMPILED_CONSUMER_ROLES"
@@ -172,7 +178,38 @@
         "optional_boundary_context": {
           "const": "ONLY_WHEN_INVOCATION_ARISES_FROM_BOUNDARY"
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "ACTIVE_ADMITTED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "permitted_consumer_ids": {
+                "minItems": 1
+              },
+              "activation_trigger": {
+                "const": "SATISFIED_BY_S6D_09_EXACT_SPATIAL_CONSUMERS"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "permitted_consumer_ids": {
+                "maxItems": 0
+              },
+              "activation_trigger": {
+                "const": "S6D-07_TO_09_EXACT_COMPILED_CONSUMER"
+              }
+            }
+          }
+        }
+      ]
     },
     "accessorMetadata": {
       "type": "object",
@@ -322,13 +359,15 @@
         "contribution_type": {
           "enum": [
             "numeric",
-            "applicability"
+            "applicability",
+            "roll_modifier"
           ]
         },
         "result_type": {
           "enum": [
             "integer",
-            "boolean"
+            "boolean",
+            "roll_modifier_set"
           ]
         },
         "result_constraints": {
@@ -348,8 +387,12 @@
           "items": {
             "enum": [
               "subject",
+              "ability_definition",
+              "activity_definition",
               "condition_definition",
-              "resource_definition"
+              "damage_definition",
+              "resource_definition",
+              "spellcasting_definition"
             ]
           },
           "minItems": 1,
@@ -378,7 +421,8 @@
         "combination_policy": {
           "enum": [
             "integer_additive_v1",
-            "immunity_any_true_v1"
+            "immunity_any_true_v1",
+            "roll_advantage_cancellation_v1"
           ]
         },
         "resolution_owner": {
@@ -479,7 +523,9 @@
           "items": {
             "enum": [
               "finite_integer",
-              "literal_true"
+              "literal_true",
+              "effect.innate_sorcery_source_only",
+              "bound_activity_family.activity.spell_attack_only"
             ]
           },
           "minItems": 1,
@@ -569,11 +615,13 @@
         }
       }
     },
+    "contextFactConsumerId": {
+      "type": "string",
+      "pattern": "^activity\\.[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
     "consumerRef": {
       "type": "string",
       "pattern": "^(?:selector|accessor|derived|activity|predicate):[A-Za-z][A-Za-z0-9_.:#-]*$"
     }
   }
 }
-
-

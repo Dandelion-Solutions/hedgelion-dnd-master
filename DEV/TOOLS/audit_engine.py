@@ -88,8 +88,9 @@ def audit_layout_and_version() -> None:
     require(set(game or {}) == expected_game_fields, f"GAME version fields mismatch: {sorted(set(game or {}))}")
     for key in expected_game_fields:
         require(dev.get(key) == game.get(key), f"DEV/GAME version field differs: {key}")
-    require(str(game.get("engine_version")) == "0.8", "engine_version must be 0.8")
-    require(game.get("recommended_tag") == "v0.8", "recommended_tag must be v0.8")
+    engine_version = str(game.get("engine_version") or "")
+    require(bool(engine_version), "engine_version must be non-empty")
+    require(game.get("recommended_tag") == f"v{engine_version}", "recommended_tag must exactly project engine_version")
     revision_fields = [key for key in game if key.endswith("_revision")]
     require(not revision_fields, f"GAME manifest leaked DEV revisions: {revision_fields}")
 
@@ -208,10 +209,10 @@ def audit_onboarding_and_identity() -> None:
     require("PROVISIONAL_IDENTITY" in onboarding and "`initializing`" in onboarding, "diegetic onboarding must define provisional identity")
     require("PROVISIONAL_IDENTITY" in fast, "new-campaign fast path must acknowledge provisional identity exception")
     require("semantic" in setup.lower() and "PROVISIONAL_IDENTITY" in setup, "campaign setup must use semantic acceptance")
-    require("pre-live" in ready and "true" in ready, "character readiness must distinguish pre-live onboarding")
+    require("READY_PC is not a gate" in ready and "provisional PC" in ready, "character readiness must preserve gameplay-first provisional onboarding")
     require("Эмо-вампир в мире розовых пони и радужных единорогов" in ident, "campaign identity should preserve early title example")
     require("exact projection" in ident and "MANIFEST.campaign_name" in ident, "campaign identity must define exact card projection")
-    require("DM-seeded" in char and "player_defined_traits" in onboarding, "character authority must distinguish seeded vs player-authored facts")
+    require("player retains final authority" in char and "player-authored identity fields" in onboarding, "character authority must distinguish seeded vs player-authored facts")
     require("paused" in card and "unfinished" in card, "card lifecycle must distinguish unfinished setup from paused play")
 
 
@@ -340,7 +341,8 @@ def audit_release_contracts() -> None:
     sys.path.insert(0, str(DEV_ROOT / "TOOLS"))
     import release_builder
     try:
-        release_builder.load_and_validate_manifests(REPO_ROOT)
+        _dev_manifest, game_manifest = release_builder.load_and_validate_manifests(REPO_ROOT)
+        recommended_tag = game_manifest["recommended_tag"]
         release_builder.validate_project_instructions_parity(GAME_ROOT / "INSTALL")
         for root_name in ("LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md"):
             require((REPO_ROOT / root_name).read_bytes() == (GAME_ROOT / root_name).read_bytes(), f"GAME/{root_name} differs from root canonical copy")
@@ -360,10 +362,10 @@ def audit_release_contracts() -> None:
                 )
         with tempfile.TemporaryDirectory(prefix="hdm-release-audit-") as td:
             out = Path(td)
-            z1 = release_builder.build_runtime_zip(REPO_ROOT, out, "v0.8")
+            z1 = release_builder.build_runtime_zip(REPO_ROOT, out, recommended_tag)
             h1 = z1.read_bytes()
             z1.unlink()
-            z2 = release_builder.build_runtime_zip(REPO_ROOT, out, "v0.8")
+            z2 = release_builder.build_runtime_zip(REPO_ROOT, out, recommended_tag)
             require(h1 == z2.read_bytes(), "runtime ZIP is not byte-reproducible")
             with zipfile.ZipFile(z2) as zf:
                 names = zf.namelist()
@@ -389,6 +391,7 @@ def smoke_generator() -> None:
             "--campaign-id", "camp-audit", "--branch", "campaign/20990101",
             "--engine-version", str(game_version), "--package-id", f"dev-v{game_version}",
             "--package-sha256", "0" * 64,
+            "--ruleset-set-sha256", "1" * 64,
             "--created-at", "2099-01-01T00:00:00+00:00",
             "--creator-github-login", "audit-user", "--mode", "singleplayer",
             "--source-root", str(GAME_ROOT),
