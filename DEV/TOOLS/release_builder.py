@@ -8,18 +8,19 @@ import re
 import stat
 import struct
 import subprocess
+import sys
 import zipfile
 from datetime import datetime
 from pathlib import Path
 
 import yaml
 
-try:
-    from DEV.TOOLS.validate_ruleset_package_closure import validate_integrated_ruleset_package
-    from GAME.TOOLS.ruleset_package import build_resolved_lock, compile_conformance_attestation, validate_runtime_conformance_evidence, REQUIRED_ENGINE_CONTRACT_FAMILIES
-except ModuleNotFoundError:
-    from validate_ruleset_package_closure import validate_integrated_ruleset_package
-    from ruleset_package import build_resolved_lock, compile_conformance_attestation, validate_runtime_conformance_evidence, REQUIRED_ENGINE_CONTRACT_FAMILIES
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+if str(REPOSITORY_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPOSITORY_ROOT))
+
+from DEV.TOOLS.validate_ruleset_package_closure import validate_integrated_ruleset_package
+from GAME.TOOLS.ruleset_package import build_resolved_lock, compile_conformance_attestation, validate_runtime_conformance_evidence, REQUIRED_ENGINE_CONTRACT_FAMILIES
 
 
 class BuildError(RuntimeError):

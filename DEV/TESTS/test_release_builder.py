@@ -1,5 +1,7 @@
 import importlib.util
 import json
+import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -59,7 +61,31 @@ def validator_results():
     ]
 
 
+def integrated_result(m, root: Path):
+    package = write_ruleset_package(root, "0.8")
+    lock, snapshots = m.build_resolved_lock(
+        [package],
+        root_package_ids=['hdm.rules.dnd2024-srd52-core'],
+        engine_version='0.8',
+        catalog_generation='2.0.0',
+    )
+    return lock, snapshots, engine_inventory(m, '0.8', lock['ruleset_set_sha256']), validator_results()
+
+
 class ReleaseBuilderContractTests(unittest.TestCase):
+    def test_module_imports_when_only_dev_tools_is_on_sys_path(self):
+        env = os.environ.copy()
+        env['PYTHONPATH'] = str(ROOT / 'DEV' / 'TOOLS')
+        result = subprocess.run(
+            [sys.executable, '-c', 'import release_builder'],
+            cwd=tempfile.gettempdir(),
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_output_inside_game_is_rejected(self):
         m = load_module()
         with tempfile.TemporaryDirectory() as td:
@@ -235,8 +261,10 @@ class ReleaseBuilderSafetyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root = self._root(td)
             (root/'GAME'/'old.zip').write_bytes(b'x')
-            with self.assertRaises(m.BuildError):
-                m.build_runtime_zip(root, root/'.hdm-release', 'v0.8')
+            integrated = integrated_result(m, root)
+            with mock.patch.object(m, 'validate_integrated_ruleset_package', return_value=integrated):
+                with self.assertRaises(m.BuildError):
+                    m.build_runtime_zip(root, root/'.hdm-release', 'v0.8')
 
     def test_destination_readme_must_not_reference_game_prefix(self):
         m = load_module()
@@ -283,8 +311,10 @@ class ReleaseBuilderCliTests(unittest.TestCase):
             (game/'TEMPLATE'/'STORAGE_README.md').write_text('storage\n')
             out = root/'.hdm-release'
             buf=io.StringIO()
-            with contextlib.redirect_stdout(buf):
-                rc=m.main(['--repo-root',str(root),'--tag','v0.8','--output',str(out)])
+            integrated = integrated_result(m, root)
+            with mock.patch.object(m, 'validate_integrated_ruleset_package', return_value=integrated):
+                with contextlib.redirect_stdout(buf):
+                    rc=m.main(['--repo-root',str(root),'--tag','v0.8','--output',str(out)])
             self.assertEqual(rc,0)
             payload=__import__('json').loads(buf.getvalue())
             self.assertEqual(payload['asset_name'],'hedgelion-dnd-master-runtime-v0.8.zip')
