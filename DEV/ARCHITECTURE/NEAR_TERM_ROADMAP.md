@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-11 COMPLETE / S6D-12 STEP 7 IN PROGRESS / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-11 COMPLETE / S6D-12 STEP 8 IN PROGRESS / R2.7 PAUSED**
 
 Date: 2026-08-28
 
@@ -93,7 +93,7 @@ Operating rules:
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **IN PROGRESS — S6D-12 STEP 7 / RESOLUTION GATE** | residual rules/seed/catalog debt |
+| S6D | **IN PROGRESS — S6D-12 STEP 8 / CANONICALIZATION + FINAL DISPOSITION** | residual rules/seed/catalog debt |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
 
 ---
@@ -122,16 +122,16 @@ R2.0..R2.6 COMPLETE
     -> S6D-12 Step 4                               [COMPLETE / COLLABORATIVE CROSS-OWNER REVIEW]
     -> S6D-12 Step 5                               [COMPLETE / CANDIDATE FINAL-CLOSURE SPEC]
     -> S6D-12 Step 6                               [COMPLETE / WHOLE-PROJECT ADVERSARIAL CRITIC PASS]
-    -> S6D-12 Step 7                               [IN PROGRESS / RESOLUTION GATE]
-    -> S6D-12 Step 8
-    -> S6D integrated closure
-    -> R2.7 WP-06 RESUME
+    -> S6D-12 Step 7                               [COMPLETE / SEMANTIC TRUE / MACHINE FALSE]
+    -> S6D-12 Step 8                               [IN PROGRESS / CANONICALIZATION + FINAL DISPOSITION]
+    -> S6D integrated closure                      [BLOCKED UNTIL MACHINE REALIZATION VERIFIED]
+    -> R2.7 WP-06 RESUME                           [NOT ALLOWED YET]
     -> R2.7 WP-07..WP-27
     -> R2.7 final reconciliation
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-12 Steps 1–6 are complete. The mandatory whole-project critic passed after an owner-conforming Mechanical-Null clarification, and the stale S6D-08 aggregate identity wording has been narrowly reconciled to the controlling S6D-11 package identity law. Step 7 now evaluates the three closure predicates without inferring machine PASS from semantic reconciliation.
+**Current stop.** S6D-12 Steps 1–7 are complete. Step 7 resolved `SEMANTIC_ARCHITECTURE_RECONCILED == TRUE` and `MACHINE_REALIZATION_VERIFIED == FALSE`; therefore `S6D_FINAL_CLOSURE_AUTHORIZED == FALSE`. Step 8 may canonicalize this blocked disposition but may not claim integrated S6D closure.
 
 Current machine-realization blockers remain: coherent B′ coverage migration, synchronization of every current derived package/set projection to fresh canonical reconstruction, executable Mechanical-Null conformance using existing Step-3 MechanicalEvent/ExecutionSegment/receipt owners, and focused integrated S6D-07/08/09/10/11 verification on the same realized state. R2.7 stays paused.
 
@@ -199,7 +199,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-12 Step 7 in progress
+## 7. S6D — S6D-12 Step 8 in progress
 
 S6D decomposition/evidence inputs remain:
 
@@ -233,7 +233,11 @@ S6D-12 Step 5 candidate:
 
 S6D-12 Step 6 critic:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-6-whole-project-critic.md` — whole-project critic pass after owner-conforming clarification that Mechanical-Null proof uses the existing Step-3 MechanicalEvent, committed `ExecutionSegment.affected_revision_refs == []`, existing receipt linkage and existing retry/idempotency semantics; no new event owner or wire encoding is introduced.
+- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-6-whole-project-critic.md` — whole-project critic pass after owner-conforming Mechanical-Null clarification.
+
+S6D-12 Step 7 resolution gate:
+
+- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-7-resolution-gate.md` — semantic architecture reconciled; machine realization not verified; final closure and R2.7 resume not authorized.
 
 S6D-08 stale identity prose reconciliation:
 
@@ -270,9 +274,9 @@ HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
 S6D: IN PROGRESS
 S6D_COMPLETED_DOMAIN: S6D-11 / STEPS 1-8 / ARCHITECTURE CLOSED
 S6D_ACTIVE_DOMAIN: S6D-12
-S6D_COMPLETED_STAGE: S6D-12 STEP 6 / WHOLE-PROJECT ADVERSARIAL CRITIC PASS
-S6D_ACTIVE_STAGE: S6D-12 STEP 7 / RESOLUTION GATE
-S6D_NEXT_STAGE: S6D-12 STEP 8 / CANONICALIZATION + FINAL DISPOSITION
+S6D_COMPLETED_STAGE: S6D-12 STEP 7 / RESOLUTION GATE / SEMANTIC TRUE / MACHINE FALSE
+S6D_ACTIVE_STAGE: S6D-12 STEP 8 / CANONICALIZATION + FINAL DISPOSITION
+S6D_NEXT_STAGE: S6D INTEGRATED CLOSURE RE-EVALUATION AFTER MACHINE REALIZATION
 S6D_FINAL_CLOSURE_BLOCKER: B′ + CURRENT DERIVED IDENTITY PROJECTIONS + MECHANICAL-NULL EXECUTION PROOF / MACHINE REALIZATION
 R2_7_WP06: PAUSED
 ```
