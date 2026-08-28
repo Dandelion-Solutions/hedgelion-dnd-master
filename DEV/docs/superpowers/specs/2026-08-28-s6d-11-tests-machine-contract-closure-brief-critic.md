@@ -1,6 +1,6 @@
 # S6D-11 — Tests and Machine-Contract Closure — Whole-Project Brief Critic
 
-Status: **PASS — 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR**
+Status: **SENIOR-AUDIT REPAIR PASS — 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR**
 
 Date: 2026-08-28
 
@@ -69,4 +69,47 @@ The re-review confirmed:
 ## 4. Gate result
 
 The S6D-11 Architecture Task Brief satisfies the mandatory whole-project Step-1 critic gate. It is ready for authoritative publication and human review. S6D-11 Step 2 remains not started.
+
+## 5. Senior Auditor HOLD and narrow Step-1 repair
+
+Senior Auditor subsequently held Step 1 at **0 BLOCKING / 2 SIGNIFICANT** without reopening product scope or Step 2.
+
+### SA-S1 — transitional package identity
+
+Verified current transitional carriers include the per-file and aggregate identity fields in `GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json`, READY_PC/readiness evidence that consumes the aggregate identity, and `DEV/CATALOG/house-rules-mechanical-boundary.json` `identity_bound_package_candidate.content_set_sha256`. Other S6D-07/09 capability/product attestations, validators, schemas, tests, fixtures and projections may also consume the old aggregate and require census rather than assumption.
+
+Repair: the brief now creates `TRANSITIONAL_PACKAGE_IDENTITY_KEYS` and requires field/attestation-level accounting of every carrier and consumer with one final disposition:
+
+```text
+REMOVE
+DERIVED_NONAUTHORITATIVE
+MIGRATE_TO_CANONICAL_PACKAGE_IDENTITY
+MIGRATE_TO_CANONICAL_RULESET_SET_IDENTITY
+```
+
+Demotion is constrained so the old aggregate cannot survive under an alias or retain selection/reconstruction/override authority. Activation remains blocked on any undispositioned item. The only authoritative chain allowed after S6D-11 is manifest plus exact semantic bytes -> computed package snapshot -> exact lock -> `ruleset_set_sha256`.
+
+### SA-S2 — machine-verifiable changed-set compatibility
+
+The earlier brief preserved the correct same-version authority paths but did not fully specify how `compatible/additive` becomes proven rather than declared.
+
+Repair: §5.3A now requires an exact fail-closed comparison contract between the fully validated currently adopted set and candidate forward set. It must identify exact set/manifest/content/catalog/schema/mechanical/consumer/durable-dependency inputs, semantic owner per assertion, deterministic validator owner, a closed machine-readable result/reason evidence bound to both set identities, the pre-use detection point, retained retry/recovery/audit evidence and per-family negative mutations. Ancestry, matching `compatibility_id`, matching `catalog_generation`, candidate declaration and standalone candidate-load PASS are explicitly insufficient. Missing semantic equivalence evidence blocks changed-set silent use.
+
+The existing non-creator law is preserved: immediate same-version changed-set use remains available only after this comparator proves compatible/additive; coherent pointer persistence and incompatible/ambiguous adoption authority remain unchanged.
+
+## 6. Renewed whole-project critic
+
+Renewed verdict: **PASS — 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR**.
+
+The renewed critic confirmed:
+
+- mandatory transitional seeds cover character capabilities, READY_PC/readiness, S6D-07/09 package/product evidence, S6D-10 candidate identity and all discovered schemas/validators/tests/fixtures/projections;
+- every transitional carrier and consumer receives item-level authority/use/replacement/disposition and positive/negative proof;
+- one canonical package-snapshot chain is an explicit activation exit condition;
+- the compatibility comparator is exact, owner-grounded and fail-closed before candidate silent use;
+- declarations/labels/ancestry/load success cannot substitute for semantic comparison;
+- unprovable changed-set compatibility remains blocked;
+- manifest self-hash prohibition, Mechanical-Null, dormant/quarantine/conformance-only nonactivation, DEV/runtime separation, bounded MVP scope and S6D-12/R2.7 sequencing remain unchanged.
+
+Final gate result: the repaired S6D-11 Step-1 brief satisfies the Senior-Auditor repair and mandatory renewed whole-project critic. S6D-11 Step 2 remains not started pending Senior Auditor acceptance.
 
