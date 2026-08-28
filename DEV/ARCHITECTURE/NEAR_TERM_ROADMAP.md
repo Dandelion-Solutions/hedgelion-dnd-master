@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-11 COMPLETE / S6D-12 NEXT / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D-01 THROUGH S6D-11 COMPLETE / S6D-12 STEP 2 IN PROGRESS / R2.7 PAUSED**
 
 Date: 2026-08-28
 
@@ -93,7 +93,7 @@ Operating rules:
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **IN PROGRESS — S6D-01 THROUGH S6D-11 COMPLETE / S6D-12 NEXT** | residual rules/seed/catalog debt |
+| S6D | **IN PROGRESS — S6D-12 STEP 2 / ITEM-LEVEL EVIDENCE EXTRACTION** | residual rules/seed/catalog debt |
 | R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
 
 ---
@@ -120,7 +120,9 @@ R2.0..R2.6 COMPLETE
     -> S6D-10 Step 1                               [COMPLETE / BRIEF-CRITIC PASS]
     -> S6D-10 Steps 2-8                            [COMPLETE / WHOLE-PROJECT CRITIC PASS / CANONICAL]
     -> S6D-11 Steps 1-8                            [COMPLETE / WHOLE-PROJECT CRITIC PASS / CANONICAL]
-    -> S6D-12 Step 1                               [NEXT / NOT STARTED]
+    -> S6D-12 Step 1                               [COMPLETE / WHOLE-PROJECT BRIEF-CRITIC PASS]
+    -> S6D-12 Step 2                               [IN PROGRESS / ITEM-LEVEL EVIDENCE EXTRACTION]
+    -> S6D-12 Steps 3-8
     -> S6D integrated closure
     -> R2.7 WP-06 RESUME
     -> R2.7 WP-07..WP-27
@@ -128,7 +130,9 @@ R2.0..R2.6 COMPLETE
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-01 through S6D-11 are complete. S6D-11 canonically closes the single manifest/snapshot/lock/set identity chain, item-level transitional identity migration, integrated S6D-07…10 validator gate, path-neutral runtime conformance evidence, exact projections and fail-closed compatible/additive comparison. The built-in bounded package is ACTIVE_VERIFIED_MACHINE_CONTRACT without activating dormant/quarantined content. S6D-12 Step 1 is next and has not started.
+**Current stop.** S6D-12 Step 1 is complete: its Task Brief plus Source-Manifest amendment passed the mandatory whole-project critic with 0 blocking / 0 significant / 0 minor unresolved findings. Step 2 is active and must produce the finite integrated-obligation table and all eighteen attack-matrix dispositions from current owning evidence.
+
+The approved B′ supported-domain coverage derived-binding realization remains an explicit `BLOCKED_BY_EXECUTION_CAPABILITY` machine-realization carry-in. Its architecture semantics are settled; it does not reopen S6D-11 and does not block S6D-12 Steps 1–6 research/design. It MUST be coherently materialized and verified, or receive a later explicit human owner disposition, before S6D final closure may authorize R2.7 resume.
 
 ---
 
@@ -194,7 +198,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-11 complete / S6D-12 next
+## 7. S6D — S6D-12 Step 2 in progress
 
 S6D decomposition/evidence inputs remain:
 
@@ -206,7 +210,23 @@ The plan is a decomposition/coverage index only. S6D-01 through S6D-10 are canon
 
 S6D-10 Steps 1–8 are closed by `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md` and the complete task/critic/research/decision/collaborative/candidate/adversarial/resolution/canonicalization chain. The canonical result proves the finite active adjudication/policy-basis integration, preserves conformance-only nonselectable fixtures and follows the later S6D-09 spatial supersession chain.
 
-S6D-11 Steps 1–8 are closed by `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md` and the complete task/critic/research/decision/collaborative/candidate/adversarial/resolution/canonicalization chain. The canonical result realizes the exact non-self-referential manifest/lock chain, removes the transitional aggregate identity authority, executes the registered S6D-07…10 validators before activation, ships a bounded GAME loader/comparator, compiles DEV evidence into stable path-neutral runtime contract IDs/hashes, and blocks changed-set use unless exact snapshots, engine inventories and durable dependency frontier prove a compatible additive superset. Final Step-6 review: 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR. S6D-12 has not started.
+S6D-11 Steps 1–8 are closed by `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md` and the complete task/critic/research/decision/collaborative/candidate/adversarial/resolution/canonicalization chain. The canonical result realizes the exact non-self-referential manifest/lock chain, removes the transitional aggregate identity authority, executes the registered S6D-07…10 validators before activation, ships a bounded GAME loader/comparator, compiles DEV evidence into stable path-neutral runtime contract IDs/hashes, and blocks changed-set use unless exact snapshots, engine inventories and durable dependency frontier prove a compatible additive superset. Final Step-6 review: 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR.
+
+S6D-12 Step 1 is complete through:
+
+- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-task-brief.md`;
+- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-task-brief-amendment.md`;
+- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-brief-critic.md`.
+
+The critic found one source-discovery completeness omission during review; it was repaired by the amendment before PASS. Final Step-1 critic disposition: 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR unresolved findings. Step 2 is now the sole active S6D stage.
+
+B′ carry-in authority:
+
+- `DEV/docs/superpowers/specs/2026-08-28-domain-rules-coverage-derived-binding-owner-decision.md`;
+- `DEV/ARCHITECTURE/DOMAIN_RULES_COVERAGE.md`;
+- `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md`.
+
+B′ remains a known machine-realization closure blocker, not an open semantic architecture choice. S6D-12 must carry it without repeated root-cause diagnosis.
 
 ---
 
@@ -222,7 +242,7 @@ WP-06 IN PROGRESS / PAUSED
 WP-07..WP-27 NOT STARTED
 ```
 
-R2.7 WP-06 resumes only after S6D integrated closure.
+R2.7 WP-06 resumes only after S6D integrated closure. B′ machine realization is currently one explicit prerequisite of that closure.
 
 ---
 
@@ -232,15 +252,15 @@ R2.7 WP-06 resumes only after S6D integrated closure.
 HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
 S6D: IN PROGRESS
 S6D_COMPLETED_DOMAIN: S6D-11 / STEPS 1-8 / ARCHITECTURE CLOSED
-S6D_NEXT_DOMAIN: S6D-12
-S6D_ACTIVE_DOMAIN: NONE
-S6D_COMPLETED_STAGE: S6D-11 STEP 8 / CANONICAL
-S6D_ACTIVE_STAGE: NONE
-S6D_NEXT_STAGE: S6D-12 STEP 1 / TASK BRIEF
+S6D_ACTIVE_DOMAIN: S6D-12
+S6D_COMPLETED_STAGE: S6D-12 STEP 1 / WHOLE-PROJECT BRIEF-CRITIC PASS
+S6D_ACTIVE_STAGE: S6D-12 STEP 2 / ITEM-LEVEL RESEARCH AND EVIDENCE EXTRACTION
+S6D_NEXT_STAGE: S6D-12 STEP 3 / DECISION BRIEF
+S6D_FINAL_CLOSURE_BLOCKER: B′ MACHINE REALIZATION / BLOCKED_BY_EXECUTION_CAPABILITY
 R2_7_WP06: PAUSED
 ```
 
-Next action is S6D-12 Step 1. S6D-11 is complete; S6D-12 has not started.
+Next action is S6D-12 Step 2. R2.7 remains paused.
 
 
 
