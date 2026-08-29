@@ -277,6 +277,34 @@ OWNER_TRIAGE_REQUIRED
 - **NAMED RESOLUTION STAGE:** R2.7 machine/instruction/test realization and later implementation/MVP acceptance under R2.6; physical host/profile details remain governed by the accepted host-assurance contract.
 - **REFRACTOR RULE:** preserve visibility only; do not implement or redesign these obligations during the documentation corpus refactor.
 
+### DCR-019 — Step-5.13 cleanup contract is canonical but its machine/protection/ref-cleanup realization is not yet closed
+
+- **TYPE:** `MISSING_REALIZATION` / `DEFERRED_MACHINE_REALIZATION` / `DEFERRED_HOST_CAPABILITY`.
+- **STATUS:** `OPEN`.
+- **OWNER_TRIAGE:** PENDING.
+- **CURRENT OWNER:** `DEV/docs/superpowers/specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md`.
+- **ALREADY TRACKED ELSEWHERE:** Step-5.11 message-envelope compaction/GC integration remains visible in `DCR-015`; this item preserves the broader Step-5.13 cleanup contract without duplicating that message-specific debt.
+- **RESIDUAL OBLIGATIONS (preserve item-level):**
+  1. target-kind cleanup-contract admission and contract-generation/runtime compatibility semantics, including retain-only handling for unknown/incompatible legacy targets;
+  2. deterministic ephemeral current-basis `SafeRetirementAssessment`/equivalent implementing native terminality/replacement, blocker closure, survivor closure, reference-survival validation and resulting-state validation;
+  3. explicit distinction between best-effort candidate discovery and correctness-complete typed protection routing whose absence may participate in irreversible negative proof;
+  4. protection-routing enrollment/removal/currentness coherence with consuming native owners, plus safe retirement of old protection-routing generations after a compatible successor is current;
+  5. blocker-creation source classification and bounded cross-source protection registration/self-contained-consumer/source-fence protocol; campaign CAS alone is insufficient where an independent writable source can create a blocker;
+  6. machine reference-survival semantics equivalent to `REQUIRES_CURRENT_TARGET`, `OPAQUE_STABLE_PROVENANCE`, and `SURVIVOR_BACKED`, with unknown legacy references conservative by default;
+  7. survivor-before-removal ordering and coherent same-domain replace+delete versus cross-domain survivor-first publication behavior;
+  8. minimum long-lived execution/idempotency/result survivors after detailed command/resolution/trace retirement, without invented time-based expiry;
+  9. checkpoint retirement including coherent `last_checkpoint_id` replacement/clear semantics and pinned-revision bounded support reads;
+  10. message-envelope retirement only after Interaction/raw-link/idempotency/reference contracts are discharged or migrated; verified-exact Story certification/source-enumeration continuity must survive where promised;
+  11. chronology and Story cleanup must consume their owner-specific protected-consumer/coverage/reference contracts rather than introduce a global graph/frontier;
+  12. valid sparse `runtime.disclosure` rows remain outside generic age/progression-based GC absent an explicit owner-preserving migration contract;
+  13. live-ref cleanup classes and nonreused epoch/source identity: ACTIVE and CLOSED_UNABSORBED cannot be removed, absorbed/proven orphan refs are optional cleanup, unclassified noncurrent refs retain/report rather than gain or lose authority by branch existence;
+  14. RepositoryPort/host ref-delete capability plus accepted/rejected/indeterminate delete-result verification; the current Connector surface does not itself prove an available delete-ref operation for runtime use;
+  15. semantic retention/current-tree retirement/Git-history reachability remain distinct; ordinary runtime must not mine transport history to silently restore semantically compacted exact text and must not claim secure erasure without a separate explicit protocol;
+  16. bounded maintenance candidate enumeration, integrity/repair diagnostics, concurrency/currentness retry behavior, and focused regression/performance coverage without a mandatory background worker or all-campaign ordinary-path scan.
+- **WHY IT MATTERS:** moving Step-5.13 derivation out of `specs/` is correct only if the final canonical owner plus durable debt routing still expose every implementation obligation required to prevent false-positive irreversible cleanup.
+- **NAMED RESOLUTION STAGE:** R2.7 machine realization / later implementation planning and maintenance tooling; transport-specific ref deletion remains capability-gated.
+- **REFRACTOR RULE:** preserve and route these obligations; do not implement cleanup architecture or change retention semantics during the documentation corpus refactor.
+
 ## 3. Global tracking notes
 
 - The five unresolved early supersession cases are currently exactly `DCR-002` through `DCR-006`.
