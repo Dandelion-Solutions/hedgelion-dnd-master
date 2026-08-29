@@ -123,6 +123,79 @@ not completed the gate. Blocking/significant dependency or owner omissions must
 be resolved before proceeding. Keeping `DEV/PROJECT_MAP.md` accurate enough
 for this discovery is part of the same process obligation.
 
+### Mandatory Senior review stops in the eight-step loop
+
+For HDM architecture/deep-work blocks, the generic eight-step loop has exactly
+two **mandatory Senior review stops** independent of ordinary evidence work.
+These stops exist so an independent Senior Auditor/project-owner review can
+inspect the framing and the final result before the worker crosses the next major
+boundary.
+
+#### Review stop 1 — completed Step 1, after the Task-Brief critic
+
+A draft or partially researched Task Brief is **not** a review checkpoint. Do not
+bring a raw brief to the Senior Auditor/project owner merely to ask whether the
+agent should finish framing it.
+
+Before this mandatory stop, the worker must complete Step 1 as a whole:
+
+1. construct the task-specific Source Manifest/discovery route deeply enough to
+   frame the block correctly;
+2. produce the complete Architecture Task Brief;
+3. run the mandatory whole-project Step-1 Task-Brief critic;
+4. inspect the actual owners/dependencies exposed by that critic;
+5. repair all mechanically resolvable `BLOCKING`/`SIGNIFICANT` framing defects,
+   omissions and stale assumptions;
+6. record any genuine material human decision that remains rather than hiding it
+   inside an unfinished brief;
+7. leave a coherent, review-ready Step-1 artifact/checkpoint.
+
+Only then stop and return the completed Step-1 package for Senior review and
+possible intervention. **Step 2 must not begin until this review stop receives a
+GO.**
+
+The intent is explicit: the Senior review judges a finished, criticised framing;
+it is not a substitute for the worker completing the framing or critic itself.
+
+#### Review stop 2 — completed Step 8
+
+After the Step-1 review gives GO, the worker may proceed through the remaining
+cycle without artificial Senior pauses, subject to the material human-decision
+rule below.
+
+At Step 8, finish the complete canonicalization before stopping. This includes,
+as applicable:
+
+- candidate/spec critic findings resolved through Step 7;
+- final Step-8 self-review complete;
+- canonical artifacts and accepted decision summary synchronized;
+- roadmap/status/traceability/deferred/debt state synchronized;
+- required verification complete;
+- coherent publication/checkpoint complete;
+- remote read-back/currentness evidence obtained where repository process
+  requires it.
+
+Then **stop for the second mandatory Senior review**. Do not automatically begin
+the next architecture block or implementation-planning work until that review
+receives a GO.
+
+#### Additional stops only for genuine human decisions
+
+The two stops above are mandatory process checkpoints; they do not remove the
+human/agent decision-rights contract in `DEV/DESIGN_PROCESS.md`.
+
+Between them, do not manufacture approval pauses for mechanically derivable
+work. Continue automatically when the current evidence and accepted decisions
+settle the next action. In particular, Step 3/4 does not require an extra stop
+when its Decision Brief concludes `Human decision required: NO`.
+
+If Step 2–7 exposes a genuine unresolved matter involving product semantics,
+material architecture trade-offs, canonical authority/ownership, meaningful
+compatibility policy, explicit risk acceptance, hard-to-reverse scope, or another
+human-owned judgment under the generic process, stop at that actual decision
+gate with a decision-ready brief and recommendation. Such a stop is substantive,
+not a routine process checkpoint.
+
 ## HDM repository-evidence and synthesis gate
 
 HDM architecture work must satisfy the generic repository-evidence completeness
