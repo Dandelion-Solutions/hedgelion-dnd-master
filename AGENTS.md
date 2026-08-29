@@ -239,3 +239,73 @@ Release assets for an immutable tag are immutable: never silently overwrite diff
 ## Development versus gameplay
 
 Development instructions, tests, release policy, catalogs under DEV and maintenance tooling must never be copied into gameplay prompts or runtime CORE context. GAME runtime behavior is defined only by the installed package and campaign storage contracts.
+
+## Delegated-task prompt discipline
+
+Standing project rules belong in repository instructions and process owners, not in every delegated task prompt.
+
+When one development agent delegates work to another agent/chat/session:
+
+- assume the worker will perform the required fresh-session bootstrap and read the current `AGENTS.md` plus applicable process files;
+- do **not** repeatedly paste transport policy, branch-creation rules, evidence/completeness rules, decision-rights rules, repository ownership geometry, Superpowers requirements, or the generic checkpoint protocol when the repository already owns them;
+- make the delegated message carry the **task-specific delta**: exact goal, expected current ref/cursor when useful, task-specific owning artifacts, concrete task-local constraints, material stop conditions, and required return evidence;
+- restate a standing rule only when the current task introduces an exception, a narrower task-specific interpretation, or a known failure mode that makes the generic rule insufficiently precise;
+- use concrete public repository terminology. Do not depend on private audit shorthand, metaphors, or labels that the worker cannot recover from the public repository sources.
+
+A delegated prompt must remain sufficient to identify the requested work, but it should not become a second copy of `AGENTS.md` or the design-process documents. Repository-owned standing instructions are the durable/canonical place for recurring agent behavior.
+
+## Coherent checkpoint commit discipline
+
+For any large or interruption-prone development/implementation task, **do not wait until the entire assignment is finished before publishing progress** when a coherent verified slice is already complete.
+
+The required pattern is:
+
+```text
+fresh current remote state
+-> complete one coherent slice
+-> run the focused verification that proves that slice
+-> inspect the delta for partial migration / scope creep
+-> commit
+-> publish on the active ref without force
+-> remote read-back
+-> continue from the published HEAD
+```
+
+A slice is checkpoint-ready only when:
+
+1. it is internally coherent and follows current owners;
+2. its relevant focused tests/validation pass, or any unavailable verification is explicitly recorded rather than silently treated as PASS;
+3. the published repository is not intentionally left in a broken or half-migrated contract state;
+4. the checkpoint does not leave parallel old/new authority, partially synchronized identity carriers, producer/generated-artifact disagreement, or another state that necessarily requires hidden uncommitted work to be valid;
+5. another agent could safely continue from that published HEAD without reconstructing hidden conversation-local work.
+
+Good checkpoint boundaries include a complete schema+producer+test change, one fully synchronized migration, one independently complete implementation-plan task, one reconciled failure class, one coherent machine-contract realization, one completed evidence slice, or one status/canonicalization synchronization.
+
+Do **not** create artificial micro-commits after arbitrary file counts or time intervals. Coherence and recoverability define the boundary.
+
+### Interruption / exhaustion behavior
+
+If context, message, credit, execution-time, or other practical limits are approaching:
+
+```text
+finish the nearest safe coherent slice
+-> verify
+-> publish
+-> remote read-back
+-> record exact continuation state
+```
+
+The continuation state should identify at least:
+
+```text
+LAST_PUBLISHED_SHA
+COMPLETED_SLICES
+CURRENT_VERIFICATION_STATE
+NEXT_EXACT_TASK_OR_SLICE
+KNOWN_BLOCKERS
+UNPUBLISHED_WORK: NONE | exact description
+```
+
+If unfinished local work is in an unsafe midpoint and cannot be published coherently, explicitly identify the last safe published SHA and the unpublished state. Do not imply that uncommitted/chat-local work is durable project state.
+
+Durability of completed work is part of execution quality. A long task may therefore produce several good commits before its final task-level completion claim.
