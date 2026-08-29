@@ -10,19 +10,19 @@ This file is an operational continuation surface, not semantic authority. Item-l
 
 ```text
 PRE_REFACTOR_SPECS_BASELINE: 375
-SPECS_FULL_CONTENT_REVIEWED: 348
-SPECS_REMAINING_UNREVIEWED: 27
-UNAMBIGUOUS_DESIGN_DESTINATIONS: 303
+SPECS_FULL_CONTENT_REVIEWED: 356
+SPECS_REMAINING_UNREVIEWED: 19
+UNAMBIGUOUS_DESIGN_DESTINATIONS: 311
 SPECS_TO_RESEARCH_DESTINATIONS: 1
 CONFIRMED_CURRENT_SPEC_OR_OWNER_DESTINATIONS: 39
 PENDING_FINAL_SUPERSESSION_CHECK: 5
 PHYSICAL_MOVES_PERFORMED: 0
 REFERENCE_AUDIT_GATE: NOT SATISFIED / DCR-016 OPEN
-CURRENT_DURABLE_SEMANTIC_CHECKPOINT: Specs Census Part 51
-PART_51_PUBLICATION_SHA: de815f204e00fe3e7b0f9a99dff666835ca9b85d
+CURRENT_DURABLE_SEMANTIC_CHECKPOINT: Specs Census Part 53
+PART_53_PUBLICATION_SHA: 7421eaf5308d8c05825ba93ffd504621a4b433a0
 ```
 
-Part 51 remote read-back is verified.
+Part 53 remote read-back is verified.
 
 Unique-source correction remains in force: S-118 is the Step-5.14 canonical final; S-200 is `2026-08-21-step-6-pre-design-framing-working-notes.md`; 2026-08-21 is 45/45 unique reviewed. For 2026-08-24, early-reviewed S-149/S-150/S-169 were not recounted; that date is 57/57 complete.
 
@@ -32,7 +32,7 @@ Current date progress:
 2026-08-24: 57 / 57 COMPLETE
 2026-08-25: 55 / 55 COMPLETE
 2026-08-26: 26 / 26 COMPLETE
-2026-08-27: 10 / 18 CLASSIFIED
+2026-08-27: 18 / 18 COMPLETE
 ```
 
 ## Migration gate
@@ -56,17 +56,18 @@ Earlier batches M-001..M-018 retain their census-defined dispositions and remain
 | M-025 | Parts 44-45 S-321..S-328 | move complete S6D-07 chain to design; owner `DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md`; preserve accepted human-decision provenance | BLOCKED_REFERENCE_AUDIT |
 | M-026 | Parts 46-47 S-329..S-336 | move complete S6D-08 chain to design; owner `DEV/ARCHITECTURE/HEALTH_EFFECTS_RECOVERY.md`; preserve multi-pass/Senior-HOLD repair provenance | BLOCKED_REFERENCE_AUDIT |
 | M-027 | Parts 48-51 S-337..S-348 | move complete S6D-09 chain to design; owner `DEV/ARCHITECTURE/DOMAIN_RULES_COVERAGE.md`; preserve Decision-C and Senior spatial-repair provenance | BLOCKED_REFERENCE_AUDIT |
+| M-028 | Parts 52-53 S-349..S-356 | move complete S6D-10 chain to design; owner `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md` | BLOCKED_REFERENCE_AUDIT |
 
 Known later WP26 debt in the current domain-rules owner remains separately tracked and is not repaired by corpus classification.
 
 ## Next exact task
 
 ```text
-NEXT_BASELINE_DATE: 2026-08-27
-NEXT_BASELINE_ID: S-349
-NEXT_BASELINE_FAMILY: S6D-10 campaign rulings / house-rule boundary integration
-REQUIRED_METHOD: full-read all eight frozen family sources plus current House Rules/domain-rule/health-effect later authority before classifying any item
-CHECKPOINT_STYLE: two four-source census commits, then separate journal checkpoint
+NEXT_BASELINE_DATE: 2026-08-28
+NEXT_BASELINE_ID: S-357
+NEXT_BASELINE_SOURCE: 2026-08-28-domain-rules-coverage-derived-binding-owner-decision.md
+REQUIRED_METHOD: full-read source plus later S6D-11/S6D-12/integrated-closure/current-owner authority sweep before deciding whether accepted law remains implementation-facing or is fully consolidated elsewhere
+CHECKPOINT_STYLE: small coherent census commit, then continue through S6D-11 in similarly small batches
 PHYSICAL_MIGRATION_STATUS: DEFERRED / DCR-016 OPEN
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```
