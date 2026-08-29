@@ -10,9 +10,9 @@ This file is an operational continuation surface, not semantic authority. Item-l
 
 ```text
 PRE_REFACTOR_SPECS_BASELINE: 375
-SPECS_FULL_CONTENT_REVIEWED: 280
-SPECS_REMAINING_UNREVIEWED: 95
-UNAMBIGUOUS_DESIGN_DESTINATIONS: 235
+SPECS_FULL_CONTENT_REVIEWED: 288
+SPECS_REMAINING_UNREVIEWED: 87
+UNAMBIGUOUS_DESIGN_DESTINATIONS: 243
 SPECS_TO_RESEARCH_DESTINATIONS: 1
 CONFIRMED_CURRENT_SPEC_OR_OWNER_DESTINATIONS: 39
 PENDING_FINAL_SUPERSESSION_CHECK: 5
@@ -20,9 +20,9 @@ PHYSICAL_MOVES_PERFORMED: 0
 REFERENCE_AUDIT_GATE: NOT SATISFIED / DCR-016 OPEN
 ```
 
-Current durable semantic checkpoint: **Specs Census Part 33**.
+Current durable semantic checkpoint: **Specs Census Part 35**.
 
-Part 33 publication SHA: `bf5efc209096ffe61b8c5a881f07f504721dd378`; remote read-back verified.
+Part 35 publication SHA: `62d6c6d4a8fa2d7d41f697f46775678aaec08337`; remote read-back verified.
 
 Unique-source correction remains in force:
 
@@ -42,7 +42,7 @@ Current date-group progress:
 
 ```text
 2026-08-24: 57 / 57 COMPLETE
-2026-08-25: 23 / 55
+2026-08-25: 31 / 55
 ```
 
 ## Migration gate
@@ -80,14 +80,15 @@ Safety invariants:
 | M-017 | Part 26 S-257..S-263 | R2.6 derivation/owner clarifications to design after consolidation; keep S-262 canonical | BLOCKED_REFERENCE_AUDIT |
 | M-018 | Parts 27-31 S-264..S-272 | move S-264..266, S-268, S-271/S-272 to design; keep S-267, S-269, S-270 | BLOCKED_REFERENCE_AUDIT |
 | M-019 | Parts 32-33 S-273..S-280 | move complete S6D-01 eight-step specs chain to design; semantic owner remains `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` | BLOCKED_REFERENCE_AUDIT |
+| M-020 | Parts 34-35 S-281..S-288 | move complete S6D-02 eight-step specs chain to design; semantic owner remains `DEV/ARCHITECTURE/CATALOG_ADMISSION.md` | BLOCKED_REFERENCE_AUDIT |
 
 Parts 07–15 retain their authoritative item-level census dispositions even where compact rows are not repeated here.
 
 ## Next exact task
 
 ```text
-NEXT_FAMILY: 2026-08-25 S6D-02 — Catalog Admission and Gap Closure
-NEXT_EXPECTED_CENSUS_IDS: S-281..S-288
+NEXT_FAMILY: 2026-08-25 S6D-03 — Complete Calculation Selector Metadata
+NEXT_EXPECTED_CENSUS_IDS: S-289..S-296
 REQUIRED_METHOD: full-read all 8 family sources + current primary-owner/later-authority sweep before disposition
 CHECKPOINT_STYLE: two small four-source commits after family authority is proven
 PHYSICAL_MIGRATION_STATUS: DEFERRED / DCR-016 OPEN
