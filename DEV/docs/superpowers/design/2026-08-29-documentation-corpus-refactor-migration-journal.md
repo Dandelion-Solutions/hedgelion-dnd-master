@@ -20,16 +20,16 @@ The journal records only migration readiness, batching, path-repair obligations 
 
 ## 1. Current baseline
 
-Current durable semantic checkpoint is Specs Census Part 16.
+Current durable semantic checkpoint is Specs Census Part 17.
 
 ```text
 PRE_REFACTOR_SPECS_BASELINE:               375
-SPECS_FULL_CONTENT_REVIEWED:               188
-UNAMBIGUOUS_DESIGN_DESTINATIONS:           154
+SPECS_FULL_CONTENT_REVIEWED:               195
+UNAMBIGUOUS_DESIGN_DESTINATIONS:           160
 SPECS_TO_RESEARCH_DESTINATIONS:              1
-CONFIRMED_CURRENT_SPEC/AMENDMENT_OWNERS:     28
+CONFIRMED_CURRENT_SPEC/AMENDMENT_OWNERS:     29
 PENDING_FINAL_SUPERSESSION_CHECK:             5
-SPECS_REMAINING_UNREVIEWED:                 187
+SPECS_REMAINING_UNREVIEWED:                 180
 
 PHYSICAL_MOVES_PERFORMED:                    0
 MIGRATED_VERIFIED:                            0
@@ -38,7 +38,7 @@ REFERENCE_AUDIT_GATE:           NOT SATISFIED
 
 These semantic move candidates are **not** migration-ready files. Every candidate is currently blocked by the same repository-wide path/reference gate unless a later batch proves otherwise.
 
-Specs Census Part 16 was published at `f74cf2d8cc7252e3e8c3387abb72f72930c79230` and read back from the remote branch. Its residual Step-5.12 realization debt was subsequently recorded as `DCR-018`.
+Specs Census Part 17 was published at `2443b6a81fa34a540f0ffaf0b8b46703dc907ff9` and read back from the remote branch. Its residual Step-5.13 realization debt was subsequently recorded as `DCR-019`.
 
 ## 2. Stable migration dispositions
 
@@ -185,6 +185,15 @@ The census IDs are the durable join key. Do not duplicate full semantic analyses
 - **Status:** `SEMANTIC_READY / BLOCKED_REFERENCE_AUDIT`.
 - **Deferred debt:** `DCR-018` preserves Step-5.12-specific machine/host-profile realization obligations; this does not activate them during the refactor.
 
+### M-008 — Step-5.13 Garbage Collection / Orphan Cleanup
+
+- **Source of truth:** S-189..S-195 in Specs Census Part 17.
+- **Move candidates:** S-189..S-194 -> corresponding `design/` paths.
+- **Keep/current owner:** S-195 `2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md` in `specs/`.
+- **Later-authority result:** Step 5.14 explicitly supplements earlier detailed owners rather than replacing them and preserves Step-5.13 cleanup semantics; no later supersession found.
+- **Status:** `SEMANTIC_READY / BLOCKED_REFERENCE_AUDIT`.
+- **Deferred debt:** `DCR-019` preserves cleanup-contract/protection-routing/reference-survival/cross-source/ref-delete and Git-retention realization obligations; this does not activate them during the refactor.
+
 The queue still does not duplicate every reviewed family from Parts 07–15. Those census parts remain authoritative for their semantic destinations; append their coherent migration batches before physical execution. Do not infer that an omitted queue batch means the corresponding reviewed files remain in `specs/`.
 
 ## 8. Queue extension rule
@@ -215,16 +224,16 @@ This method solves baseline family inventory for census work only. It does **not
 
 ```text
 CORPUS_REFACTOR_STATUS: IN_PROGRESS
-DURABLE_SPECS_CENSUS_CURSOR: 188 / 375
-DURABLE_LAST_CHECKPOINT: Specs Census Part 16
-LAST_CLOSED_SEMANTIC_FAMILY: Step 5.12 — Host Delivery / Disclosure Boundary
-PART16_PUBLICATION_SHA: f74cf2d8cc7252e3e8c3387abb72f72930c79230
-PART16_REMOTE_READBACK: VERIFIED
-STEP5_12_DEBT_EXTRACTION: COMPLETE / DCR-018
-NEXT_DURABLE_SEMANTIC_FAMILY: Step 5.13 — Garbage Collection / Orphan Cleanup
+DURABLE_SPECS_CENSUS_CURSOR: 195 / 375
+DURABLE_LAST_CHECKPOINT: Specs Census Part 17
+LAST_CLOSED_SEMANTIC_FAMILY: Step 5.13 — Garbage Collection / Orphan Cleanup
+PART17_PUBLICATION_SHA: 2443b6a81fa34a540f0ffaf0b8b46703dc907ff9
+PART17_REMOTE_READBACK: VERIFIED
+STEP5_13_DEBT_EXTRACTION: COMPLETE / DCR-019
+NEXT_DURABLE_SEMANTIC_FAMILY: Step 5.14 — Full Recovery / Concurrency Adversarial Review
 PHYSICAL_MIGRATION_STATUS: DEFERRED
 CENSUS_ENUMERATION_METHOD: TARGET BASELINE TREE VERIFIED
 REFERENCE_AUDIT_STATUS: BRANCH-COMPLETE INBOUND-REFERENCE METHOD NOT YET PROVEN
-NEXT_ACTION: full-content Step-5.13 family census -> later-authority/supersession sweep -> publish/read back Part 17 -> append Step-5.13 migration batch -> continue semantic census
+NEXT_ACTION: full-content Step-5.14 family census -> later-authority/supersession sweep -> publish/read back Part 18 -> append Step-5.14 migration batch -> continue semantic census
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```
