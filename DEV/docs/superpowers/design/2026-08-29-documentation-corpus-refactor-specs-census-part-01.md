@@ -338,15 +338,14 @@ REVIEWED_DATE_GROUPS:
   2026-08-18: 10 / 10
   2026-08-19: 50 / 50
 
-UNAMBIGUOUS_DESIGN_DESTINATIONS_IN_THIS_PART: 44
+UNAMBIGUOUS_DESIGN_DESTINATIONS_IN_THIS_PART: 45
 UNCHANGED_FINAL_SPEC_DESTINATIONS_CONFIRMED: 10
-PENDING_FINAL_SUPERSESSION_CHECK: 6
+PENDING_FINAL_SUPERSESSION_CHECK: 5
   - S-010 Step-2 mechanical-state ownership design
   - S-015 Step-1/2 retrospective architecture assurance final
   - S-035 Step-2 Slice-C temporal/recovery resolution
   - S-041 Step-2 Condition intrinsic-rule-scope resolution
   - S-043 Step-2 final critical review
-  - plus any later-owner consolidation discovered during continuation may refine these counts without changing the 60/375 review count
 
 FIRST_SAFE_PHYSICAL_MOVE_SLICE:
   Step-3 noncanonical chain S-054, S-055, S-057, S-058, S-059, S-060
