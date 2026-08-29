@@ -305,6 +305,18 @@ OWNER_TRIAGE_REQUIRED
 - **NAMED RESOLUTION STAGE:** R2.7 machine realization / later implementation planning and maintenance tooling; transport-specific ref deletion remains capability-gated.
 - **REFRACTOR RULE:** preserve and route these obligations; do not implement cleanup architecture or change retention semantics during the documentation corpus refactor.
 
+### DCR-020 — Step-5.14 canonical retains stale physical role-isolation/reset feasibility wording after single-context amendment
+
+- **TYPE:** `CONTRADICTORY_OR_STALE_WORDING` / `EXPLICIT_SUPERSESSION_BUT_OLD_NORMATIVE_COPY_REMAINS`.
+- **STATUS:** `RESOLVED_BY_CURRENT_OWNER_BUT_STALE_SURFACE_REMAINS`.
+- **OWNER_TRIAGE:** PENDING.
+- **STALE SURFACE:** `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md`, specifically the Law 5.14-5 example list and Step-6 feasibility ledger SD-5 that treat genuine role-context isolation/reset as a blocking baseline physical requirement.
+- **CURRENT AUTHORITY:** `DEV/docs/superpowers/specs/2026-08-23-step-4-single-context-role-containment-canonical-amendment.md` plus `2026-08-23-round-1-step-6-closure-round-2-rebaseline-owner-decision.md` for physical role-containment/topology sequencing. They explicitly supersede mandatory physical role isolation/reset for baseline gameplay and adopt one LLM / one physical chat context with logical role rebinding/eligibility boundaries.
+- **PRESERVED STEP-5.14 AUTHORITY:** Step-5.14 remains current for its Step-5 closure, Laws 5.14-1..4 and the general Law 5.14-5 principle that deployment infeasibility must not silently weaken accepted semantics. Only the conflicting physical role-isolation/reset implication is stale.
+- **WHY IT MATTERS:** an implementation planner reading only the current Step-5.14 canonical final could incorrectly resurrect a retired baseline topology requirement and reopen solved physical-role-isolation work.
+- **CURRENT DISPOSITION:** keep Step-5.14 canonical final in `specs/`; do not demote/split it. During final routing/consolidation repair, make the later single-context amendment/program owner route unambiguous and ensure SD-5 is not treated as a current baseline obligation.
+- **REFRACTOR RULE:** documentation/routing repair only; do not redesign role containment.
+
 ## 3. Global tracking notes
 
 - The five unresolved early supersession cases are currently exactly `DCR-002` through `DCR-006`.
