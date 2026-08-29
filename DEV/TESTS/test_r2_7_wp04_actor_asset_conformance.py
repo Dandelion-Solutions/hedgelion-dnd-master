@@ -42,7 +42,7 @@ class R27WP04ActorAssetConformanceTests(unittest.TestCase):
     def test_directed_relationships_are_source_actor_local_sparse_views(self):
         actor = self.load_json("DEV/SCHEMAS/world-actor-state.schema.json")
         view = actor["$defs"]["relationshipView"]
-        facets = view["properties"]["facets"]
+        facets = actor["$defs"]["relationshipFacets"]
         self.assertEqual(
             set(facets["properties"]),
             {"trust", "affinity", "fear", "respect", "hostility", "felt_obligation"},

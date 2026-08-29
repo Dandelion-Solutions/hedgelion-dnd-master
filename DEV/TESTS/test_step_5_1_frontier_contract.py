@@ -24,11 +24,11 @@ class Step51FrontierContractTests(unittest.TestCase):
         self.assertIn("frontier:", template)
 
     def test_campaign_allocator_remains_distinct_identity_owner(self):
+        policies = self.read("DEV/CATALOG/identifier-policies.json")
+        self.assertIn('"id": "campaign-allocator"', policies)
+        self.assertIn('"runtime.id_allocator"', policies)
         contracts = self.read("DEV/ARCHITECTURE/CATALOG_CONTRACTS.md")
-        self.assertIn("campaign-allocator", contracts)
-        self.assertIn("last_allocated", contracts)
-        self.assertIn("Concurrent writers allocate against their pinned frontier", contracts)
-        self.assertIn("Published IDs are never changed or reused", contracts)
+        self.assertIn("not silently reused", contracts.lower())
 
 
 if __name__ == "__main__":

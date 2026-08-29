@@ -241,12 +241,14 @@ class Step2MechanicalExamplesTest(unittest.TestCase):
         validator.validate({
             "name": {"en": "Aria"},
             "hp": {"current": 0, "maximum_base": 18},
+            "life_state_policy_id": "life_policy.dnd2024.character_like",
             "life_state_id": "life.dying",
             "life_state_progress": {"death_saves": {"successes": 2, "failures": 1}},
         })
         validator.validate({
             "name": {"en": "Aria"},
             "hp": {"current": 0, "maximum_base": 18},
+            "life_state_policy_id": "life_policy.dnd2024.character_like",
             "life_state_id": "life.stable",
             "life_state_progress": {
                 "recovery_binding": {

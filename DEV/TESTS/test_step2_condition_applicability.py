@@ -16,10 +16,9 @@ class Step2ConditionApplicabilityTest(unittest.TestCase):
     def test_condition_applicability_has_only_proven_immunity_operation(self):
         selector = self.surfaces["selectors"]["condition.applicability"]
         self.assertEqual(selector["allowed_operations"], ["rule.immunity"])
-        self.assertEqual(
-            selector["operation_contracts"],
-            {"rule.immunity": {"fixed_value": True}},
-        )
+        contract = selector["operation_contracts"]["rule.immunity"]
+        self.assertTrue(contract["fixed_value"])
+        self.assertEqual(contract["value_kind"], "boolean_constant")
 
 
 if __name__ == "__main__":

@@ -61,6 +61,8 @@ class RuntimeIdentitySchemaTests(unittest.TestCase):
                     "a" * 40,
                     "--package-sha256",
                     "b" * 64,
+                    "--ruleset-set-sha256",
+                    "c" * 64,
                     "--created-at",
                     "2099-01-02T00:00:00+00:00",
                     "--creator-github-login",

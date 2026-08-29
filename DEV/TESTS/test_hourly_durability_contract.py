@@ -20,7 +20,7 @@ class HourlyDurabilityContractTests(unittest.TestCase):
     def test_clean_state_never_creates_hourly_heartbeat_commit(self):
         src = (CORE / "DURABILITY_GUARD.md").read_text(encoding="utf-8")
         self.assertIn("no heartbeat commits", src.lower())
-        self.assertIn("no dirty canonical state", src.lower())
+        self.assertIn("no dirty canonical/current state", src.lower())
         self.assertIn("MUST NOT create an empty/no-op commit", src)
 
     def test_inactive_chat_rechecks_on_next_interaction_not_in_background(self):

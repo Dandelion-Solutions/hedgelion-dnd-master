@@ -32,6 +32,8 @@ def roll(value=17):
         "expression": "1d20",
         "raw_values": [value],
         "source_kind": "rng.system",
+        "request_id": "roll.attack.1",
+        "provenance_ref": "rng:fixture",
     }
 
 
@@ -43,7 +45,7 @@ def resolution():
         "actor_id": "actor-0001",
         "target_ids": ["actor-0002"],
         "catalog_context_fingerprint": "ctx",
-        "ruleset_set_sha256": "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca",
+        "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
         "procedure_id": "procedure-000001",
         "status": "AWAITING_REACTION",
         "next_segment_sequence": 2,
@@ -72,7 +74,7 @@ def continuation():
         "actor_id": "actor-0001",
         "target_ids": ["actor-0002"],
         "catalog_context_fingerprint": "ctx",
-        "ruleset_set_sha256": "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca",
+        "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
         "procedure_id": "procedure-000001",
         "execution_cursor": "step.attack.resolve",
         "safe_recompute_phase": "determine",
@@ -145,7 +147,7 @@ class Step3ExecutionOwnerContractTest(unittest.TestCase):
             "activity_id": "activity.followup",
             "actor_id": "actor-0001",
             "catalog_context_fingerprint": "ctx",
-            "ruleset_set_sha256": "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca",
+            "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
             "status": "PENDING",
             "next_segment_sequence": 1,
             "invocation_facts": [],

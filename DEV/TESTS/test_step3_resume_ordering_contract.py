@@ -35,7 +35,7 @@ def base_continuation():
         "actor_id": "actor-1",
         "target_ids": ["actor-2"],
         "catalog_context_fingerprint": "ctx",
-        "ruleset_set_sha256": "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca",
+            "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
         "execution_cursor": "step.attack.resolve",
         "safe_recompute_phase": "determine",
         "invocation_facts": [],
@@ -44,6 +44,8 @@ def base_continuation():
             "expression": "1d20",
             "raw_values": [17],
             "source_kind": "rng.system",
+            "request_id": "roll.attack.1",
+            "provenance_ref": "rng:fixture",
         }],
         "prior_step_exports": {},
         "committed_segment_refs": ["resolution-1:segment:1"],
@@ -59,6 +61,7 @@ class Step3ResumeOrderingContractTest(unittest.TestCase):
         value["pending_response"] = {
             "kind": "reaction",
             "offer_id": "offer-7",
+            "parent_resolution_id": "resolution-1", "continuation_generation": 1,
             "responder_id": "actor-2",
             "candidate_activity_ids": ["activity.shield"],
         }
@@ -74,7 +77,7 @@ class Step3ResumeOrderingContractTest(unittest.TestCase):
     def test_choice_offer_is_bounded(self):
         value = base_continuation()
         value["pending_response"] = {
-            "kind": "choice", "offer_id": "choice-1", "responder_id": "actor-1",
+            "kind": "choice", "offer_id": "choice-1", "parent_resolution_id": "resolution-1", "continuation_generation": 1, "responder_id": "actor-1",
             "option_ids": ["option.a", "option.b"],
         }
         validate("runtime-continuation-state.schema.json", value)

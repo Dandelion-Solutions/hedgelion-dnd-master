@@ -37,20 +37,20 @@ class HouseRulesAdjudicatedInputContractTests(unittest.TestCase):
 
     def test_adjudicated_activity_parameter_declarations_are_bounded(self):
         valid = (
-            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "boolean"},
-            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "minimum": 1, "maximum": 30},
-            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "number", "allowed_values": [0.5, 1, 2]},
-            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "machine_id", "allowed_values": ["approach.careful", "approach.fast"]},
-            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "machine_id", "allowed_definition_kinds": ["definition.activity"]},
+            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "boolean", "cardinality": "single", "required": True},
+            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "minimum": 1, "maximum": 30, "cardinality": "single", "required": True},
+            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "number", "allowed_values": [0.5, 1, 2], "cardinality": "single", "required": True},
+            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "machine_id", "allowed_values": ["approach.careful", "approach.fast"], "cardinality": "single", "required": True},
+            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "machine_id", "allowed_definition_kinds": ["definition.activity"], "cardinality": "single", "required": True},
         )
         for value in valid:
             validate("activity-parameter-spec.schema.json", value)
 
         invalid = (
-            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "string"},
-            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "minimum": 1},
-            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "number"},
-            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "machine_id"},
+            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "string", "cardinality": "single", "required": True},
+            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "integer", "minimum": 1, "cardinality": "single", "required": True},
+            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "number", "cardinality": "single", "required": True},
+            {"source_class": "INVOCATION_ADJUDICATED", "value_type": "machine_id", "cardinality": "single", "required": True},
             {"source_class": "INVOCATION_ADJUDICATED", "value_type": "boolean", "cardinality": "many"},
         )
         for value in invalid:
@@ -86,6 +86,7 @@ class HouseRulesAdjudicatedInputContractTests(unittest.TestCase):
             "actor_id": "actor-0001",
             "parameter_bindings": {"dc": binding},
             "catalog_context_fingerprint": "ctx",
+            "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
             "status": "RUNNING",
             "next_segment_sequence": 1,
             "invocation_facts": [],
@@ -104,6 +105,7 @@ class HouseRulesAdjudicatedInputContractTests(unittest.TestCase):
             "actor_id": "actor-0001",
             "parameter_bindings": {"dc": binding},
             "catalog_context_fingerprint": "ctx",
+            "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
             "execution_cursor": "step.test.resolve",
             "safe_recompute_phase": "determine",
             "invocation_facts": [],

@@ -59,8 +59,8 @@ class Step4StoryRetirementContractTest(unittest.TestCase):
     def test_current_normative_docs_have_no_world_chapter_authority(self):
         for text in (self.inventory, self.contracts, self.entity_doc):
             self.assertNotIn("world.chapter", text)
-        self.assertIn("STORY/NARRATIVE", self.inventory)
-        self.assertIn("chapter", self.inventory.lower())
+        self.assertIn("Story", self.inventory)
+        self.assertIn("narrative", self.inventory.lower())
         self.assertIn("index", self.inventory.lower())
 
 

@@ -33,6 +33,8 @@ def roll(value=17):
         "expression": "1d20",
         "raw_values": [value],
         "source_kind": "rng.system",
+        "request_id": "roll.attack.1",
+        "provenance_ref": "rng:fixture",
     }
 
 
@@ -64,6 +66,7 @@ def resolution(status="COMPLETED"):
         "actor_id": "actor-1",
         "target_ids": ["actor-2"],
         "catalog_context_fingerprint": "ctx",
+        "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
         "status": status,
         "next_segment_sequence": 2,
         "invocation_facts": [],
@@ -91,6 +94,7 @@ def continuation():
         "actor_id": "actor-1",
         "target_ids": ["actor-2"],
         "catalog_context_fingerprint": "ctx",
+        "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
         "procedure_id": "procedure-1",
         "execution_cursor": "step.attack.resolve",
         "safe_recompute_phase": "determine",
@@ -114,6 +118,8 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
         value["pending_response"] = {
             "kind": "reaction",
             "offer_id": "offer-1",
+            "parent_resolution_id": "resolution-1",
+            "continuation_generation": 1,
             "responder_id": "actor-2",
             "candidate_activity_ids": ["activity.shield"],
         }
@@ -237,6 +243,7 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
             "activity_id": "activity.shield",
             "actor_id": "actor-2",
             "catalog_context_fingerprint": "ctx",
+            "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
             "procedure_id": "procedure-1",
             "status": "COMPLETED",
             "next_segment_sequence": 2,

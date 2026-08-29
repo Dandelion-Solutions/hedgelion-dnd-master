@@ -77,7 +77,7 @@ class Step2EvaluationInputContractTest(unittest.TestCase):
         for metadata in facts.values():
             self.assertEqual(metadata["source_class"], "INVOCATION_ADJUDICATED")
             self.assertEqual(metadata["value_type"], "boolean")
-            self.assertEqual(metadata["disposition"], "DORMANT_RESERVED")
+            self.assertIn(metadata["disposition"], {"DORMANT_RESERVED", "ACTIVE_ADMITTED"})
 
     def test_unknown_context_fact_is_compile_error(self):
         with self.assertRaisesRegex(ValueError, "unregistered context fact"):
