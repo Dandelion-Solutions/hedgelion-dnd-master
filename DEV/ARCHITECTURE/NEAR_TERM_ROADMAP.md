@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D-12 STEPS 1-8 COMPLETE / S6D INTEGRATED CLOSURE BLOCKED / R2.7 PAUSED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D COMPLETE / INTEGRATED CLOSURE PASS / R2.7 WP-06 NEXT / RESUMABLE**
 
 Date: 2026-08-28
 
@@ -93,8 +93,8 @@ Operating rules:
 | R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **BLOCKED AT INTEGRATED CLOSURE — S6D-12 STEPS 1-8 COMPLETE / SEMANTIC ARCHITECTURE CANONICAL** | residual rules/seed/catalog debt |
-| R2.7 | **PAUSED AT WP-06** | whole-project final architecture & machine-realization audit |
+| S6D | **COMPLETE / INTEGRATED CLOSURE PASS — S6D-12 STEPS 1-8 + MRC-01…04 VERIFIED** | residual rules/seed/catalog debt closed |
+| R2.7 | **WP-06 NEXT / RESUMABLE** | whole-project final architecture & machine-realization audit |
 
 ---
 
@@ -103,7 +103,7 @@ Operating rules:
 ```text
 R2.0..R2.6 COMPLETE
     -> R2.7 WP-01..WP-05 CLOSED
-    -> R2.7 WP-06 PARTIAL / PAUSED
+    -> R2.7 WP-06 NEXT / RESUMABLE
     -> HOUSE RULES STEPS 1-8 COMPLETE / REPAIRED CLOSURE
     -> S6D-01 Steps 1-8                            [COMPLETE / ARCHITECTURE CLOSED]
     -> S6D-02 Steps 1-8                            [COMPLETE / CANONICAL]
@@ -123,7 +123,7 @@ R2.0..R2.6 COMPLETE
     -> S6D-12 Step 5                               [COMPLETE / CANDIDATE FINAL-CLOSURE SPEC]
     -> S6D-12 Step 6                               [COMPLETE / WHOLE-PROJECT ADVERSARIAL CRITIC PASS]
     -> S6D-12 Step 7                               [COMPLETE / SEMANTIC TRUE / MACHINE FALSE]
-    -> S6D-12 Step 8                               [COMPLETE / CANONICAL BLOCKED DISPOSITION]
+    -> S6D-12 Step 8                               [COMPLETE / HISTORICAL PRE-REALIZATION BLOCKED DISPOSITION]
     -> S6D integrated closure                      [PASS / MACHINE REALIZATION VERIFIED]
     -> R2.7 WP-06 RESUME                           [ALLOWED / NEXT]
     -> R2.7 WP-07..WP-27
@@ -199,7 +199,7 @@ Registered boolean invocation context facts remain boolean.
 
 ---
 
-## 7. S6D — S6D-12 complete / integrated closure blocked
+## 7. S6D — complete / integrated closure PASS
 
 S6D decomposition/evidence inputs remain:
 
@@ -237,11 +237,15 @@ S6D-12 Step 6 critic:
 
 S6D-12 Step 7 resolution gate:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-7-resolution-gate.md` — semantic architecture reconciled; machine realization not verified; final closure and R2.7 resume not authorized.
+- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-7-resolution-gate.md` — historical pre-realization gate: semantic architecture reconciled; machine realization then not verified; final closure then not authorized.
 
 S6D-12 Step 8 canonicalization:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-8-canonicalization.md` — canonical semantic reconciliation plus exact blocked final disposition and finite MRC-01…04 continuation sequence.
+- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-8-canonicalization.md` — historical canonical semantic reconciliation and pre-realization blocked disposition; its current closure evaluation is superseded by the post-realization record below.
+
+Post-realization closure record:
+
+- `DEV/docs/superpowers/specs/2026-08-29-s6d-integrated-machine-realization-closure.md` — current final closure authority/status: MRC-01…04 verified, S6D integrated closure PASS, and R2.7 WP-06 next/resumable.
 
 S6D-08 stale identity prose reconciliation:
 
@@ -260,11 +264,13 @@ SEMANTIC_ARCHITECTURE_RECONCILED: TRUE
 MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
+R2_7_WP06_RESUME_ALLOWED: TRUE
+R2_7_WP06: NEXT / RESUMABLE
 ```
 
 ---
 
-## 8. R2.7 pause
+## 8. R2.7 resume status
 
 ```text
 WP-01 CLOSED
@@ -287,7 +293,7 @@ HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
 S6D: INTEGRATED CLOSURE PASS
 S6D_COMPLETED_DOMAIN: S6D-12 / STEPS 1-8 / SEMANTIC ARCHITECTURE CANONICAL
 S6D_ACTIVE_DOMAIN: NONE / INTEGRATED CLOSURE PASS
-S6D_COMPLETED_STAGE: S6D-12 STEP 8 / CANONICAL BLOCKED DISPOSITION
+S6D_COMPLETED_STAGE: S6D INTEGRATED CLOSURE / POST-REALIZATION PASS
 S6D_ACTIVE_STAGE: NONE / FINAL CLOSURE PASS
 S6D_NEXT_STAGE: R2.7 WP-06 RESUME
 S6D_FINAL_CLOSURE_BLOCKER: NONE

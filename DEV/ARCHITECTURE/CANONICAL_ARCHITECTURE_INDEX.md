@@ -4,7 +4,7 @@ Status: **DERIVATIVE / NON-NORMATIVE NAVIGATION AND INTEGRATION INDEX**
 
 Date: 2026-08-25
 
-Architecture state: **STEPS 1–5 CLOSED; ROUND 2 ACTIVE; S6D-01 CLOSED; S6D-02 NEXT**
+Architecture state: **STEPS 1–5 CLOSED; S6D COMPLETE / INTEGRATED CLOSURE PASS; R2.7 WP-06 NEXT / RESUMABLE**
 
 ---
 
@@ -97,6 +97,8 @@ General repository discovery:
 | 5.14 | CLOSED | **FULL RECOVERY & CONCURRENCY ADVERSARIAL REVIEW — 0 UNRESOLVED STEP-5 BLOCKERS** | Step-5.14 canonical final |
 | Former Step 6 | CLOSED / REBASELINED | physical-host findings reallocated into Round 2; old stage is not active | Round-1 closure / Round-2 rebaseline owner decision |
 | S6D-01 | COMPLETE / ARCHITECTURE CLOSED | content-addressed ruleset package snapshots + exact resolved-set identity + owner-local context projections | `RULESET_PACKAGE_IDENTITY.md`; S6D-01 canonicalization |
+| S6D | COMPLETE / INTEGRATED CLOSURE PASS | S6D-01…12 semantic closure plus MRC-01…04 realization verified; Step-8 blocked disposition is historical only | `2026-08-29-s6d-integrated-machine-realization-closure.md`; roadmap |
+| R2.7 | WP-06 NEXT / RESUMABLE | next authorized continuation; not started by S6D closure | roadmap |
 
 ---
 
