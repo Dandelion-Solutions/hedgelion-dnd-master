@@ -1,6 +1,6 @@
 # R2.7 — WP-06 — Rules / adjudication / domain-module compatibility — мини-отчёт
 
-Статус: **CLOSURE CANDIDATE — FINAL HOSTED VERIFICATION PENDING**
+Статус: **COMPLETE — FINAL HOSTED VERIFICATION PASS**
 
 Дата: 2026-08-29
 
@@ -126,3 +126,13 @@ The only current structural correction is mechanically implied by the accepted l
 ## Verification to complete closure
 
 Before the audit cursor advances, publish this candidate, perform remote read-back, and require the applicable hosted workflow to pass. Then record WP-06 as closed and stop at the mandatory Senior review checkpoint before WP-07.
+
+
+## Final verification record
+
+- focused structural/documentation checks: PASS;
+- hosted workflow for the closure candidate: [Validate engine source #33229790196](https://github.com/Dandelion-Solutions/hedgelion-dnd-master/actions/runs/33229790196) — **success**;
+- executed suite includes the now-discovered S6D-03 selector metadata TestCase, full maintenance audit and all DEV `unittest` tests;
+- remote read-back confirms the candidate commit was the workflow head.
+
+WP-06 is therefore technically closed. Per the current architecture process, the next state is a mandatory Senior review stop; WP-07 has not been substantively analysed.

@@ -1,6 +1,6 @@
 # R2.7 — Audit Status / Durable Cursor
 
-Status: **IN PROGRESS — WP-06 CURRENT / RESUMABLE**
+Status: **IN PROGRESS — WP-07 NOT STARTED / SENIOR REVIEW GO REQUIRED**
 
 Date: 2026-08-29
 
@@ -43,12 +43,12 @@ That blob records the real R2.7 state before the House-Rules/S6D pause. It is hi
 
 ```text
 AUDIT_STATUS: IN_PROGRESS
-LAST_CLOSED_DOMAIN: WP-05
-CURRENT_DOMAIN: WP-06
-CURRENT_DOMAIN_TOPIC: Rules / adjudication / domain-module compatibility
-CURRENT_SLICE: owning rule-domain graph + CORE/domain reverse audit
-NEXT_DOMAIN: WP-07
-OWNER_GATE: NONE
+LAST_CLOSED_DOMAIN: WP-06
+CURRENT_DOMAIN: WP-07
+CURRENT_DOMAIN_TOPIC: Truth, knowledge, disclosure and communication evidence
+CURRENT_SLICE: NOT STARTED — mandatory Senior review GO required after WP-06 Step 8
+NEXT_DOMAIN: WP-08
+OWNER_GATE: SENIOR_REVIEW_GO_REQUIRED
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -58,10 +58,11 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: IN_PROGRESS AT WP-06
+R2_7_STATUS: IN_PROGRESS AT WP-07
 R2_7_RESUME_TRIGGER: SATISFIED
 R2_7_WP06_RESUME_ALLOWED: TRUE
-R2_7_WP06: CURRENT / RESUMABLE
+R2_7_WP06: COMPLETE / SENIOR REVIEW PENDING
+R2_7_WP07: NOT STARTED / SENIOR_REVIEW_GO_REQUIRED
 ```
 
 This cursor synchronization does not execute WP-06 analysis, reconcile its forward obligations, begin WP-07, or alter current architecture.
@@ -77,8 +78,9 @@ This cursor synchronization does not execute WP-06 analysis, reconcile its forwa
 | WP-03 | CLOSED |
 | WP-04 | CLOSED |
 | WP-05 | CLOSED |
-| WP-06 | CURRENT / RESUMABLE |
-| WP-07..WP-27 | NOT STARTED |
+| WP-06 | CLOSED / SENIOR REVIEW PENDING |
+| WP-07 | NOT STARTED / SENIOR REVIEW GO REQUIRED |
+| WP-08..WP-27 | NOT STARTED |
 
 ---
 
@@ -91,7 +93,9 @@ The following pre-pause inputs and obligations from WP-01…WP-05 remain preserv
 - stable character choice-slot direction and strict character definition schemas introduced during WP-06 remain inputs;
 - typed Activity parameter/target/area/cost/roll protocol work remains valid input;
 - `world.encounter` does not own procedure-local initiative/round operational state;
-- the former residual rules/seed closure that was routed through S6D is historical pre-resume evidence; S6D is now complete, while any remaining WP-06 reconciliation stays in this R2.7 workstream.
+- the former residual rules/seed closure that was routed through S6D is historical pre-resume evidence; S6D is complete and WP-06 is now closed.
+- **WP-06/F02**: WP-26 must remove stale pre-realization B′ “not materialized / blocked” wording from `DEV/ARCHITECTURE/DOMAIN_RULES_COVERAGE.md`; the current machine binding and S6D closure authority already control.
+- **WP-06/F03**: WP-26 must align `GAME/CORE/EXPLORATION.md` spatial-record/map guidance with the bounded location/procedure/applicability contract, without adding a generalized spatial engine.
 
 ---
 
@@ -136,6 +140,11 @@ Normative policy is `RULES/HOUSE_RULES.md`; structured companion is `RULES/HOUSE
 
 ## Current handoff
 
-S6D integrated closure has passed. Resume R2.7 at WP-06 from the current slice above.
+WP-06 is closed after the post-S6D reconciliation, bidirectional audit and hosted verification. Stop for the mandatory Senior review checkpoint before beginning WP-07.
 
-Do not treat this cursor update as execution of the WP-06 analysis or reconciliation of its preserved forward obligations.
+LAST_PUBLISHED_SHA before this cursor synchronization: `1017dd36aa91a0b06c091e0ac429ab007e1632ca`
+COMPLETED_SLICES: incoming WP-04/F01 and WP-05/F01 reconciliation; domain route/CORE reverse audit; selector-contract correction; WP-06 closure candidate verification
+CURRENT_VERIFICATION_STATE: hosted workflow #33229790196 success
+NEXT_EXACT_TASK_OR_SLICE: Senior review of completed WP-06; do not begin WP-07 without GO
+KNOWN_BLOCKERS: NONE
+UNPUBLISHED_WORK: NONE
