@@ -50,7 +50,7 @@ Single-context law remains:
 
 > Physical availability of information does not make it logically eligible for the active HDM role.
 
-Broad implementation remains blocked until final architecture closure and explicit implementation planning, except for owner-authorized clean-slate pre-release data-structure/catalog/schema/machine-contract materialization required by an architecture decision.
+Broad implementation requires explicit implementation planning. Owner-authorized clean-slate pre-release data-structure/catalog/schema/machine-contract materialization remains governed by its accepted architecture decision.
 
 Current pre-release structural rule:
 
