@@ -8,6 +8,7 @@ sys.path.insert(0, str(TOOLS))
 
 from verify_documentation_corpus_migration_candidate import (
     _append_derived_path_repairs,
+    _assert_no_stale_full_or_short_references,
     _is_historical_exception,
 )
 
@@ -66,6 +67,65 @@ class DocumentationCorpusCandidateVerifierTests(unittest.TestCase):
             fixture.write_text("# no derived owner target\n", encoding="utf-8")
             with self.assertRaises(RuntimeError):
                 _append_derived_path_repairs(root, [])
+
+    def test_r015_extraction_split_from_old_path_is_frozen_provenance_exception(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source_path = "DEV/docs/superpowers/research/2026-08-24-chatgpt-plus-host-evidence.md"
+            old_path = "DEV/docs/superpowers/research/2026-08-24-r2-6-chatgpt-plus-assurance-evidence-ledger.md"
+            source = root / source_path
+            source.parent.mkdir(parents=True)
+            source.write_text(f"SPLIT_FROM: `{old_path}`\n", encoding="utf-8")
+            migration = {
+                "rows": [
+                    {
+                        "old_path": old_path,
+                        "destination_path": "DEV/docs/superpowers/design/2026-08-24-r2-6-chatgpt-plus-assurance-evidence-ledger.md",
+                        "action": "MOVE",
+                    }
+                ]
+            }
+            report = {
+                "references": [
+                    {
+                        "source_path": source_path,
+                        "line": 1,
+                        "target_path": old_path,
+                        "matched_basename": Path(old_path).name,
+                    }
+                ]
+            }
+            _assert_no_stale_full_or_short_references(root, migration, report)
+
+    def test_other_old_full_path_still_fails_frozen_replay(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            source_path = "DEV/ARCHITECTURE/example.md"
+            old_path = "DEV/docs/superpowers/specs/example-owner.md"
+            source = root / source_path
+            source.parent.mkdir(parents=True)
+            source.write_text(f"live route: {old_path}\n", encoding="utf-8")
+            migration = {
+                "rows": [
+                    {
+                        "old_path": old_path,
+                        "destination_path": "DEV/docs/superpowers/design/example-owner.md",
+                        "action": "MOVE",
+                    }
+                ]
+            }
+            report = {
+                "references": [
+                    {
+                        "source_path": source_path,
+                        "line": 1,
+                        "target_path": old_path,
+                        "matched_basename": Path(old_path).name,
+                    }
+                ]
+            }
+            with self.assertRaises(RuntimeError):
+                _assert_no_stale_full_or_short_references(root, migration, report)
 
 
 if __name__ == "__main__":
