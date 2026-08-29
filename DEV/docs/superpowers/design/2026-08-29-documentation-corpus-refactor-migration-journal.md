@@ -10,19 +10,19 @@ This file is an operational continuation surface, not semantic authority. Item-l
 
 ```text
 PRE_REFACTOR_SPECS_BASELINE: 375
-SPECS_FULL_CONTENT_REVIEWED: 312
-SPECS_REMAINING_UNREVIEWED: 63
-UNAMBIGUOUS_DESIGN_DESTINATIONS: 267
+SPECS_FULL_CONTENT_REVIEWED: 320
+SPECS_REMAINING_UNREVIEWED: 55
+UNAMBIGUOUS_DESIGN_DESTINATIONS: 275
 SPECS_TO_RESEARCH_DESTINATIONS: 1
 CONFIRMED_CURRENT_SPEC_OR_OWNER_DESTINATIONS: 39
 PENDING_FINAL_SUPERSESSION_CHECK: 5
 PHYSICAL_MOVES_PERFORMED: 0
 REFERENCE_AUDIT_GATE: NOT SATISFIED / DCR-016 OPEN
-CURRENT_DURABLE_SEMANTIC_CHECKPOINT: Specs Census Part 41
-PART_41_PUBLICATION_SHA: 8e2116e4245a1ec2c4ebaae3fe3a88903e6796d1
+CURRENT_DURABLE_SEMANTIC_CHECKPOINT: Specs Census Part 43
+PART_43_PUBLICATION_SHA: da09240b52450478cadf1c9b24ab10a05bdd7e11
 ```
 
-Part 41 remote read-back is verified.
+Part 43 remote read-back is verified.
 
 Unique-source correction remains in force: S-118 is the Step-5.14 canonical final; S-200 is `2026-08-21-step-6-pre-design-framing-working-notes.md`; 2026-08-21 is 45/45 unique reviewed. For 2026-08-24, early-reviewed S-149/S-150/S-169 were not recounted; that date is 57/57 complete.
 
@@ -31,6 +31,7 @@ Current date progress:
 ```text
 2026-08-24: 57 / 57 COMPLETE
 2026-08-25: 55 / 55 COMPLETE
+2026-08-26: 8 / 26 CLASSIFIED
 ```
 
 ## Migration gate
@@ -50,6 +51,7 @@ Earlier batches M-001..M-018 retain their census-defined dispositions and remain
 | M-021 | Parts 36-37 S-289..S-296 | move complete S6D-03 chain to design; owner `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md` | BLOCKED_REFERENCE_AUDIT |
 | M-022 | Parts 38-39 S-297..S-304 | move complete S6D-04 chain to design; owner `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md` | BLOCKED_REFERENCE_AUDIT |
 | M-023 | Parts 40-41 S-305..S-312 | move complete S6D-05 chain to design; owner `DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md` | BLOCKED_REFERENCE_AUDIT |
+| M-024 | Parts 42-43 S-313..S-320 | move complete S6D-06 chain to design; owner `DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md` | BLOCKED_REFERENCE_AUDIT |
 
 Parts 07–15 and all earlier census parts remain authoritative item-level records even when rows are not duplicated here.
 
@@ -57,9 +59,10 @@ Parts 07–15 and all earlier census parts remain authoritative item-level recor
 
 ```text
 NEXT_BASELINE_DATE: 2026-08-26
-NEXT_BASELINE_ID: S-313
-REQUIRED_METHOD: exact frozen-tree enumeration before assigning family IDs; then full-read each family plus current primary-owner/later-authority sweep
-CHECKPOINT_STYLE: small coherent census commits after each family authority is proven
+NEXT_BASELINE_ID: S-321
+NEXT_BASELINE_FAMILY: S6D-07 character progression / READY_PC seed
+REQUIRED_METHOD: full-read all eight frozen family sources plus current primary-owner/later-authority sweep before classifying any item
+CHECKPOINT_STYLE: small coherent census commits, then separate journal checkpoint
 PHYSICAL_MIGRATION_STATUS: DEFERRED / DCR-016 OPEN
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```
