@@ -1,4 +1,5 @@
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -10,6 +11,7 @@ from verify_documentation_corpus_migration_candidate import (
     _append_derived_path_repairs,
     _assert_no_stale_full_or_short_references,
     _is_historical_exception,
+    _tracked_files,
 )
 
 
@@ -67,6 +69,38 @@ class DocumentationCorpusCandidateVerifierTests(unittest.TestCase):
             fixture.write_text("# no derived owner target\n", encoding="utf-8")
             with self.assertRaises(RuntimeError):
                 _append_derived_path_repairs(root, [])
+
+    def test_tracked_files_excludes_temporary_dcr_orchestration(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            subprocess.run(
+                ["git", "init", "-q"],
+                cwd=root,
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            paths = [
+                ".github/workflows/dcr-migration-candidate.yml",
+                ".github/workflows/dcr-reference-audit.yml",
+                "DEV/TOOLS/verify_documentation_corpus_migration_candidate.py",
+                "DEV/TESTS/test_documentation_corpus_candidate_verifier.py",
+                "DEV/ARCHITECTURE/keep.md",
+            ]
+            for relative in paths:
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(relative + "\n", encoding="utf-8")
+            subprocess.run(
+                ["git", "add", "."],
+                cwd=root,
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+            observed = [path.relative_to(root).as_posix() for path in _tracked_files(root)]
+            self.assertEqual(observed, ["DEV/ARCHITECTURE/keep.md"])
 
     def test_r015_extraction_split_from_old_path_is_frozen_provenance_exception(self):
         with tempfile.TemporaryDirectory() as td:
