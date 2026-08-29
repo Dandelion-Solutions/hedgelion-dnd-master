@@ -138,17 +138,43 @@ Use only:
 
 ```text
 DEV/docs/superpowers/research/
+DEV/docs/superpowers/design/
 DEV/docs/superpowers/specs/
 DEV/docs/superpowers/plans/
 ```
 
 Placement semantics:
 
-- `research/` — non-normative research, reconnaissance, evidence gathering and feasibility-study artifacts that have not entered an approved design/specification chain;
-- `specs/` — architecture/design, review, decision and canonicalization-chain artifacts;
+- `research/` — durable research findings, experiment results, measurements, feasibility/comparative investigations, exploratory ideas/dossiers and other standalone evidence whose value is primarily **what was learned, measured or discovered**. Research remains evidence, not architecture authority merely because it is retained here.
+- `design/` — design-process and provenance history: Task Briefs, scope discovery, Source Manifests and evidence-working artifacts, pre-acceptance Decision Briefs, critics, collaborative reviews, candidate specs, resolution gates, intermediate Step-1…8 artifacts, process-history closure/canonicalization evidence, audit mini-reports/status/cursors, rejected or superseded proposals, and other records whose value is primarily **how the accepted result was reached**.
+- `specs/` — the compact final implementation-facing corpus: final approved specifications, accepted canonical amendments, final accepted owner decisions and other final documents actually needed by downstream planning/implementation to know what is accepted, required, forbidden, deferred or excluded. `specs/` is not an archive of the whole design workflow.
 - `plans/` — implementation plans produced after approved designs.
 
-Do **not** create repository-root `docs/superpowers/` or repository-root `docs/` for Superpowers work. Historical research/specs/plans that are moved into DEV remain historical records; do not mechanically rewrite old path references when they describe the historical state accurately.
+Eight-step design output routing follows the semantic role of the artifact, not its filename or Step number:
+
+```text
+standalone research / experiment result
+    -> research/
+
+Task Brief / Source Manifest / working evidence / pre-acceptance Decision Brief /
+critic / collaborative review / candidate / resolution / process-history closure
+    -> design/
+
+final accepted implementation-facing specification / canonical amendment /
+final accepted owner decision
+    -> specs/
+
+implementation plan
+    -> plans/
+```
+
+One source file need not remain one destination file. If an artifact mixes reusable research findings, design provenance and final accepted law, split it when that materially improves taxonomy or downstream discoverability. Before demoting an intermediate/research artifact that is the only current carrier of accepted implementation-relevant semantics, promote/consolidate those exact semantics into the appropriate final spec or durable architecture owner. Do not leave hidden current authority stranded only in `design/` or `research/`, and do not create duplicate normative copies.
+
+Implementation planning should normally begin from current durable architecture owners plus `DEV/docs/superpowers/specs/`. Read `design/` or `research/` when provenance, reopening, unresolved evidence, applicability or audit requires it; do not bulk-read those histories merely to reconstruct already accepted architecture.
+
+`DEV/docs/superpowers/README.md` is the short non-authoritative navigation entry point for this taxonomy.
+
+Do **not** create repository-root `docs/superpowers/` or repository-root `docs/` for Superpowers work. Historical paths that are accurate parts of a historical statement need not be mechanically rewritten, but every current live routing/reference must point to the current location.
 
 ## Transient development branches in documentation
 
