@@ -17,7 +17,7 @@ class DocumentationCorpusMigrationMapTests(unittest.TestCase):
             design.mkdir(parents=True)
 
             (design / "2026-08-29-documentation-corpus-refactor-census.md").write_text(
-                """### R-001 — `keep.md`\n"
+                "### R-001 — `keep.md`\n"
                 "- **FINAL_DESTINATION_FILES:** same research artifact.\n\n"
                 "### R-002 — `move.md`\n"
                 "- **FINAL_DESTINATION_FILES:** corresponding `design/` path.\n\n"
@@ -26,7 +26,7 @@ class DocumentationCorpusMigrationMapTests(unittest.TestCase):
                 encoding="utf-8",
             )
             (design / "2026-08-29-documentation-corpus-refactor-specs-census-part-01.md").write_text(
-                """## S-001 — `pending.md`\n"
+                "## S-001 — `pending.md`\n"
                 "- **FINAL_DESTINATION_FILES:** `PENDING_FINAL_SUPERSESSION_CHECK`; remain in `specs/` meanwhile.\n\n"
                 "## S-002 — `evidence.md`\n"
                 "- **FINAL_DESTINATION_FILES:** `DEV/docs/superpowers/research/evidence.md`.\n\n"
@@ -35,7 +35,7 @@ class DocumentationCorpusMigrationMapTests(unittest.TestCase):
                 encoding="utf-8",
             )
             (design / "2026-08-29-documentation-corpus-refactor-specs-census-part-61.md").write_text(
-                """## S-001 — `pending.md`\n"
+                "## S-001 — `pending.md`\n"
                 "- **FINAL DESTINATION:** `DEV/docs/superpowers/design/pending.md`.\n",
                 encoding="utf-8",
             )
