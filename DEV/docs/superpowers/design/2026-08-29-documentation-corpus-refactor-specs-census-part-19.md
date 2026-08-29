@@ -1,6 +1,6 @@
 # Documentation Corpus Refactor — Specs Census Part 19
 
-Status: **DURABLE CENSUS CHECKPOINT — 203 / 375 PRE-REFACTOR SPECS SOURCES FULLY REVIEWED**
+Status: **DURABLE CENSUS CHECKPOINT — 203 / 375 UNIQUE PRE-REFACTOR SPECS SOURCES FULLY REVIEWED**
 Date: 2026-08-29
 Baseline ref: `v1/engine-rearchitecture`
 Baseline corpus SHA: `0ebe6c384c88b8d998ce9e385ab0758a6f25e3f6`
@@ -8,6 +8,8 @@ Baseline `specs/` tree SHA: `0fb176ec4cee7af3d6765a34174964679c99819d`
 Previous specs census: `DEV/docs/superpowers/design/2026-08-29-documentation-corpus-refactor-specs-census-part-18.md`
 
 This checkpoint records full-content review of all three frozen-baseline 2026-08-23 specs sources.
+
+Part 18's corrected unique-source accounting is the basis for the cumulative totals here: S-118 remains the already-counted Step-5.14 canonical owner and S-200 is the 2026-08-21 Step-6 pre-design working note. No Part-19 IDs change.
 
 Common defaults unless overridden:
 - `FULL_CONTENT_REVIEWED: YES`
@@ -79,9 +81,9 @@ PART_19_RESEARCH_DESTINATIONS: 0
 PART_19_UNCHANGED_FINAL_SPEC_DESTINATIONS: 2
 PART_19_PENDING_SEMANTIC_DISPOSITIONS: 0
 
-CUMULATIVE_UNAMBIGUOUS_DESIGN_DESTINATIONS_REVIEWED: 165
+CUMULATIVE_UNAMBIGUOUS_DESIGN_DESTINATIONS_REVIEWED: 166
 CUMULATIVE_SPECS_TO_RESEARCH_DESTINATIONS_REVIEWED: 1
-CUMULATIVE_UNCHANGED_FINAL_SPEC_DESTINATIONS_CONFIRMED: 32
+CUMULATIVE_UNCHANGED_FINAL_SPEC_DESTINATIONS_CONFIRMED: 31
 CUMULATIVE_PENDING_FINAL_SUPERSESSION_CHECK: 5
 
 PHYSICAL_MOVE_STATUS: NOT STARTED / DCR-016 OPEN
