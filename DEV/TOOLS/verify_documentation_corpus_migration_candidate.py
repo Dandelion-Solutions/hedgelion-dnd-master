@@ -128,7 +128,12 @@ def _append_derived_path_repairs(root: Path, repairs: list[dict[str, object]]) -
 
 def _tracked_files(root: Path) -> list[Path]:
     raw = _run(["git", "ls-files", "-z"], root=root, capture=True).stdout.decode("utf-8")
-    return [root / path for path in raw.split("\0") if path and (root / path).is_file()]
+    temporary = set(TEMPORARY_PATHS)
+    return [
+        root / path
+        for path in raw.split("\0")
+        if path and path not in temporary and (root / path).is_file()
+    ]
 
 
 def _build_inputs(root: Path, out: Path) -> tuple[dict[str, object], dict[str, object]]:
