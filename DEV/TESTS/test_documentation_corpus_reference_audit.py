@@ -1,4 +1,5 @@
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -96,6 +97,35 @@ class DocumentationCorpusReferenceAuditTests(unittest.TestCase):
             self.assertEqual(
                 [(row["source_path"], row["line"]) for row in report["references"]],
                 [("a.txt", 1), ("b.txt", 1)],
+            )
+
+    def test_git_worktree_scans_only_tracked_branch_files(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+
+            specs = root / "DEV/docs/superpowers/specs"
+            specs.mkdir(parents=True)
+            target = specs / "tracked-spec.md"
+            target.write_text("target\n", encoding="utf-8")
+            tracked = root / "tracked-consumer.md"
+            tracked.write_text("tracked-spec.md\n", encoding="utf-8")
+            subprocess.run(
+                ["git", "add", "DEV/docs/superpowers/specs/tracked-spec.md", "tracked-consumer.md"],
+                cwd=root,
+                check=True,
+            )
+
+            untracked = root / "untracked-consumer.md"
+            untracked.write_text("tracked-spec.md\n", encoding="utf-8")
+
+            report = build_reference_report(root)
+
+            self.assertEqual(report["scan_source"], "git_ls_files")
+            self.assertEqual(report["tracked_file_count"], 2)
+            self.assertEqual(
+                [(row["source_path"], row["line"]) for row in report["references"]],
+                [("tracked-consumer.md", 1)],
             )
 
 
