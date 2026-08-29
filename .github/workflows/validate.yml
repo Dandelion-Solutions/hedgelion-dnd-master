@@ -29,4 +29,6 @@ jobs:
         run: DEV/TOOLS/run_maintenance_audit
 
       - name: Run DEV unit tests
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
         run: .hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v

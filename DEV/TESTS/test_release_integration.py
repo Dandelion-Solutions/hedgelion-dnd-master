@@ -13,7 +13,7 @@ import yaml
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-ASSET_NAME = "hedgelion-dnd-master-runtime-v0.8.zip"
+ASSET_NAME = "hedgelion-dnd-master-runtime-v1.0-alpha.zip"
 
 
 def git_commit_datetime(revision: str) -> datetime:
@@ -128,6 +128,8 @@ class ReleaseIntegrationTests(unittest.TestCase):
                 str(package_meta["package_id"]),
                 "--package-sha256",
                 package_sha256,
+                "--ruleset-set-sha256",
+                str(package_meta["ruleset_set_sha256"]),
                 "--created-at",
                 "2099-01-01T00:00:00+00:00",
                 "--creator-github-login",

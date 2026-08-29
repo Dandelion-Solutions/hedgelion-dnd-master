@@ -1,4 +1,5 @@
 import importlib.util
+import shutil
 import sys
 import tempfile
 import unittest
@@ -21,28 +22,35 @@ def load_builder():
 def write_fixture(root: Path) -> None:
     game = root / 'GAME'
     dev = root / 'DEV'
-    game.mkdir()
-    dev.mkdir()
-    manifest = (
-        'engine_version: 0.8\n'
-        'release_status: development\n'
-        'repository: Dandelion-Solutions/hedgelion-dnd-master\n'
-        'engine_owner_login: dkolyada\n'
-        'rules_baseline: D&D 2024 / SRD 5.2.1\n'
-        'schema_version: 2\n'
-        'campaign_update:\n  compatibility: maintenance_required\n'
-        'recommended_tag: v0.8\n'
-    )
-    (game / 'ENGINE_VERSION.yaml').write_text(manifest, encoding='utf-8')
-    (dev / 'ENGINE_DEVELOPMENT.yaml').write_text(
-        manifest + 'runtime_scope_revision: 3\n', encoding='utf-8'
-    )
-    for dirname in ('CORE', 'INSTALL', 'RULES', 'SCHEMA', 'CAMPAIGN', 'TEMPLATE', 'MIGRATIONS', 'TOOLS'):
-        (game / dirname).mkdir()
-    (game / 'INSTALL' / 'PROJECT_INSTRUCTIONS.txt').write_text('hello\n', encoding='utf-8')
-    (game / 'INSTALL' / 'README.md').write_text('```text\nhello\n```\n', encoding='utf-8')
-    (game / 'CAMPAIGN' / 'README.md').write_text('campaign\n', encoding='utf-8')
-    (game / 'TEMPLATE' / 'STORAGE_README.md').write_text('storage\n', encoding='utf-8')
+    shutil.copytree(ROOT / 'GAME', game)
+    shutil.copytree(ROOT / 'DEV' / 'CATALOG', dev / 'CATALOG')
+    shutil.copytree(ROOT / 'DEV' / 'SCHEMAS', dev / 'SCHEMAS')
+    shutil.copytree(ROOT / 'DEV' / 'TOOLS', dev / 'TOOLS')
+    shutil.copytree(ROOT / 'DEV' / 'ARCHITECTURE', dev / 'ARCHITECTURE')
+    owner = ROOT / 'DEV' / 'docs' / 'superpowers' / 'specs' / '2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md'
+    owner_target = dev / 'docs' / 'superpowers' / 'specs' / owner.name
+    owner_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(owner, owner_target)
+    for relative in (
+        'DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md',
+        'DEV/ARCHITECTURE/HEALTH_EFFECTS_RECOVERY.md',
+        'DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md',
+        'DEV/TESTS/fixtures/s6d-07-character-mvp-actors.json',
+        'DEV/TESTS/test_release_builder.py',
+        'DEV/TESTS/test_s6d_07_character_mvp_seed.py',
+        'DEV/TESTS/test_s6d_08_health_effects_recovery_contract.py',
+        'DEV/TESTS/test_s6d_09_domain_rules_coverage_contract.py',
+        'DEV/TESTS/test_s6d_10_house_rules_boundary_contract.py',
+        'DEV/TESTS/test_step3_execution_owner_contract.py',
+        'DEV/TESTS/test_step3_resume_ordering_contract.py',
+    ):
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / relative, target)
+    shutil.copy2(ROOT / 'DEV' / 'ENGINE_DEVELOPMENT.yaml', dev / 'ENGINE_DEVELOPMENT.yaml')
+    for name in ('LICENSE', 'NOTICE', 'THIRD_PARTY_NOTICES.md'):
+        shutil.copy2(ROOT / name, root / name)
+    shutil.copytree(ROOT / 'LICENSES', root / 'LICENSES')
 
 
 class ReleaseGamePassthroughTests(unittest.TestCase):
@@ -56,7 +64,7 @@ class ReleaseGamePassthroughTests(unittest.TestCase):
             (game / 'FUTURE_AREA').mkdir()
             (game / 'FUTURE_AREA' / 'nested.txt').write_text('nested\n', encoding='utf-8')
 
-            runtime_zip = module.build_runtime_zip(root, root / 'builds', 'v0.8')
+            runtime_zip = module.build_runtime_zip(root, root / 'builds', 'v1.0-alpha')
             with zipfile.ZipFile(runtime_zip) as zf:
                 names = set(zf.namelist())
 
