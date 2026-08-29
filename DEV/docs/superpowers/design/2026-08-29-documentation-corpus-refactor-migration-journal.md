@@ -20,16 +20,16 @@ The journal records only migration readiness, batching, path-repair obligations 
 
 ## 1. Current baseline
 
-Current durable semantic checkpoint is Specs Census Part 17.
+Current durable semantic checkpoint is Specs Census Part 18.
 
 ```text
 PRE_REFACTOR_SPECS_BASELINE:               375
-SPECS_FULL_CONTENT_REVIEWED:               195
-UNAMBIGUOUS_DESIGN_DESTINATIONS:           160
+SPECS_FULL_CONTENT_REVIEWED:               200
+UNAMBIGUOUS_DESIGN_DESTINATIONS:           164
 SPECS_TO_RESEARCH_DESTINATIONS:              1
-CONFIRMED_CURRENT_SPEC/AMENDMENT_OWNERS:     29
+CONFIRMED_CURRENT_SPEC/AMENDMENT_OWNERS:     30
 PENDING_FINAL_SUPERSESSION_CHECK:             5
-SPECS_REMAINING_UNREVIEWED:                 180
+SPECS_REMAINING_UNREVIEWED:                 175
 
 PHYSICAL_MOVES_PERFORMED:                    0
 MIGRATED_VERIFIED:                            0
@@ -38,7 +38,7 @@ REFERENCE_AUDIT_GATE:           NOT SATISFIED
 
 These semantic move candidates are **not** migration-ready files. Every candidate is currently blocked by the same repository-wide path/reference gate unless a later batch proves otherwise.
 
-Specs Census Part 17 was published at `2443b6a81fa34a540f0ffaf0b8b46703dc907ff9` and read back from the remote branch. Its residual Step-5.13 realization debt was subsequently recorded as `DCR-019`.
+Specs Census Part 18 was published at `86f421fe7b25f322ef429043d3cc8f2733f461d6` and read back from the remote branch. Its stale Step-5.14 physical role-isolation/reset wording was subsequently recorded as `DCR-020`.
 
 ## 2. Stable migration dispositions
 
@@ -194,6 +194,15 @@ The census IDs are the durable join key. Do not duplicate full semantic analyses
 - **Status:** `SEMANTIC_READY / BLOCKED_REFERENCE_AUDIT`.
 - **Deferred debt:** `DCR-019` preserves cleanup-contract/protection-routing/reference-survival/cross-source/ref-delete and Git-retention realization obligations; this does not activate them during the refactor.
 
+### M-009 — Step-5.14 Full Recovery / Concurrency Adversarial Review
+
+- **Source of truth:** S-196..S-200 in Specs Census Part 18.
+- **Move candidates:** S-196..S-199 -> corresponding `design/` paths.
+- **Keep/current owner:** S-200 `2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md` in `specs/`.
+- **Later-authority qualification:** 2026-08-23 Step-4 single-context amendment + Round-1 Step-6 closure supersede only the physical role-isolation/reset baseline implication embedded in the Step-5.14 forward-looking feasibility ledger; Step-5.14 integration laws and Step-5 closure remain current.
+- **Status:** `SEMANTIC_READY / BLOCKED_REFERENCE_AUDIT`.
+- **Documentation debt:** `DCR-020` preserves the stale SD-5/role-isolation wording so future planning does not resurrect the retired topology requirement.
+
 The queue still does not duplicate every reviewed family from Parts 07–15. Those census parts remain authoritative for their semantic destinations; append their coherent migration batches before physical execution. Do not infer that an omitted queue batch means the corresponding reviewed files remain in `specs/`.
 
 ## 8. Queue extension rule
@@ -224,16 +233,16 @@ This method solves baseline family inventory for census work only. It does **not
 
 ```text
 CORPUS_REFACTOR_STATUS: IN_PROGRESS
-DURABLE_SPECS_CENSUS_CURSOR: 195 / 375
-DURABLE_LAST_CHECKPOINT: Specs Census Part 17
-LAST_CLOSED_SEMANTIC_FAMILY: Step 5.13 — Garbage Collection / Orphan Cleanup
-PART17_PUBLICATION_SHA: 2443b6a81fa34a540f0ffaf0b8b46703dc907ff9
-PART17_REMOTE_READBACK: VERIFIED
-STEP5_13_DEBT_EXTRACTION: COMPLETE / DCR-019
-NEXT_DURABLE_SEMANTIC_FAMILY: Step 5.14 — Full Recovery / Concurrency Adversarial Review
+DURABLE_SPECS_CENSUS_CURSOR: 200 / 375
+DURABLE_LAST_CHECKPOINT: Specs Census Part 18
+LAST_CLOSED_SEMANTIC_FAMILY: Step 5.14 — Full Recovery / Concurrency Adversarial Review
+PART18_PUBLICATION_SHA: 86f421fe7b25f322ef429043d3cc8f2733f461d6
+PART18_REMOTE_READBACK: VERIFIED
+STEP5_14_DEBT_EXTRACTION: COMPLETE / DCR-020
+NEXT_DURABLE_SEMANTIC_FAMILY: 2026-08-23 Round-1 closure / Step-4 single-context amendment / Step-6 working-note group
 PHYSICAL_MIGRATION_STATUS: DEFERRED
 CENSUS_ENUMERATION_METHOD: TARGET BASELINE TREE VERIFIED
 REFERENCE_AUDIT_STATUS: BRANCH-COMPLETE INBOUND-REFERENCE METHOD NOT YET PROVEN
-NEXT_ACTION: full-content Step-5.14 family census -> later-authority/supersession sweep -> publish/read back Part 18 -> append Step-5.14 migration batch -> continue semantic census
+NEXT_ACTION: full-content 2026-08-23 specs census -> later-authority/supersession sweep -> publish/read back Part 19 -> continue semantic census
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```
