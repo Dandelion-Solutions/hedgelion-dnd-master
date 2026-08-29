@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -27,13 +28,21 @@ EXPECTED_COUNTS = {
     "extraction_count": 1,
 }
 EXPECTED_MECHANICAL_REPAIRS = 365
-EXPECTED_TOTAL_REPAIRS = 503
+EXPECTED_PLANNER_REPAIRS = 503
+EXPECTED_TOTAL_REPAIRS = 504
 EXPECTED_HISTORICAL_EXCEPTIONS = 2
 PART13 = (
     "DEV/docs/superpowers/design/"
     "2026-08-29-documentation-corpus-refactor-specs-census-part-13.md"
 )
 RESEARCH_DIR = "DEV/docs/superpowers/research"
+RELEASE_FIXTURE = "DEV/TESTS/test_release_game_passthrough.py"
+DERIVED_FIXTURE_OLD = (
+    "owner_target = dev / 'docs' / 'superpowers' / 'specs' / owner.name"
+)
+DERIVED_FIXTURE_NEW = (
+    "owner_target = dev / 'docs' / 'superpowers' / 'design' / owner.name"
+)
 TEMPORARY_PATHS = (
     ".github/workflows/dcr-reference-audit.yml",
     ".github/workflows/dcr-migration-candidate.yml",
@@ -43,12 +52,15 @@ TEMPORARY_PATHS = (
 
 
 def _run(args: list[str], *, root: Path, capture: bool = False) -> subprocess.CompletedProcess[bytes]:
+    env = dict(os.environ)
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
     return subprocess.run(
         args,
         cwd=root,
         check=True,
         stdout=subprocess.PIPE if capture else None,
         stderr=None,
+        env=env,
     )
 
 
@@ -64,9 +76,41 @@ def _is_historical_exception(source_path: str, target_final: str) -> bool:
     )
 
 
+def _append_derived_path_repairs(root: Path, repairs: list[dict[str, object]]) -> None:
+    """Add the one path construction that cannot contain a target basename.
+
+    The release fixture reconstructs the destination directory using ``owner.name``.
+    Filename-oriented inbound-reference scans therefore cannot discover this path.
+    Post-move candidate verification exposed it; keep it explicit and fail closed.
+    """
+
+    fixture = Path(root) / RELEASE_FIXTURE
+    if not fixture.is_file():
+        raise RuntimeError("release fixture required for derived DCR repair is missing")
+    lines = fixture.read_text(encoding="utf-8").splitlines()
+    matches = [
+        line_number
+        for line_number, line in enumerate(lines, start=1)
+        if DERIVED_FIXTURE_OLD in line
+    ]
+    if len(matches) != 1:
+        raise RuntimeError(
+            "derived release-fixture DCR path must occur exactly once; "
+            f"observed={len(matches)}"
+        )
+    repairs.append(
+        {
+            "source_path": RELEASE_FIXTURE,
+            "line": matches[0],
+            "old_literal": DERIVED_FIXTURE_OLD,
+            "new_literal": DERIVED_FIXTURE_NEW,
+        }
+    )
+
+
 def _tracked_files(root: Path) -> list[Path]:
     raw = _run(["git", "ls-files", "-z"], root=root, capture=True).stdout.decode("utf-8")
-    return [root / path for path in raw.split("\0") if path]
+    return [root / path for path in raw.split("\0") if path and (root / path).is_file()]
 
 
 def _build_inputs(root: Path, out: Path) -> tuple[dict[str, object], dict[str, object]]:
@@ -158,7 +202,7 @@ def _review_repairs(
             )
             continue
 
-        if source == "DEV/TESTS/test_release_game_passthrough.py":
+        if source == RELEASE_FIXTURE:
             repairs.append(
                 {
                     "source_path": source,
@@ -178,8 +222,8 @@ def _review_repairs(
         raise RuntimeError(
             f"mechanical repair count drifted: {len(plan['mechanical_repairs'])}"
         )
-    if len(repairs) != EXPECTED_TOTAL_REPAIRS:
-        raise RuntimeError(f"reviewed total repair count drifted: {len(repairs)}")
+    if len(repairs) != EXPECTED_PLANNER_REPAIRS:
+        raise RuntimeError(f"reviewed planner repair count drifted: {len(repairs)}")
     if len(exceptions) != EXPECTED_HISTORICAL_EXCEPTIONS:
         raise RuntimeError(f"historical exception count drifted: {len(exceptions)}")
     return repairs, exceptions
@@ -226,6 +270,9 @@ def _verify_physical_result(
 
 def _run_repository_verification(root: Path) -> None:
     shutil.rmtree(root / ".hdm-devtools", ignore_errors=True)
+    for cache in root.rglob("__pycache__"):
+        if cache.is_dir():
+            shutil.rmtree(cache, ignore_errors=True)
     _run([str(root / "DEV/TOOLS/run_maintenance_audit")], root=root)
     _run(
         [
@@ -271,7 +318,7 @@ def _head_bytes(root: Path, path: str) -> bytes | None:
     return completed.stdout if completed.returncode == 0 else None
 
 
-def _build_candidate_metadata(root: Path, out: Path, head_sha: str) -> None:
+def _build_candidate_metadata(root: Path, out: Path, head_sha: str) -> dict[str, object]:
     _run(["git", "diff", "--check"], root=root)
     _run(["git", "add", "-A"], root=root)
 
@@ -376,6 +423,79 @@ def _build_candidate_metadata(root: Path, out: Path, head_sha: str) -> None:
         _run(["git", "diff", "--cached", "--binary"], root=root, capture=True).stdout
     )
     print(json.dumps(summary, indent=2, sort_keys=True))
+    return summary
+
+
+def _assert_no_stale_full_or_short_references(
+    root: Path,
+    migration: dict[str, object],
+    report: dict[str, object],
+) -> None:
+    by_target = {row["old_path"]: row for row in migration["rows"] if row["action"] == "MOVE"}
+    stale: list[dict[str, object]] = []
+    marker = "DEV/docs/superpowers/"
+    for reference in report["references"]:
+        target = reference["target_path"]
+        if target not in by_target:
+            continue
+        source = root / reference["source_path"]
+        if not source.is_file():
+            continue
+        lines = source.read_text(encoding="utf-8").splitlines()
+        line_number = int(reference["line"])
+        if line_number < 1 or line_number > len(lines):
+            continue
+        line = lines[line_number - 1]
+        old_short = target[len(marker) :] if target.startswith(marker) else target
+        if target in line or old_short in line:
+            stale.append(reference)
+    if stale:
+        raise RuntimeError(
+            "post-move frozen replay found stale full/short paths: "
+            + json.dumps(stale[:20], sort_keys=True)
+        )
+
+
+def _commit_candidate_locally(root: Path, expected_tree_sha: str, source_head: str) -> str:
+    observed_source = _run(["git", "rev-parse", "HEAD"], root=root, capture=True).stdout.decode().strip()
+    if observed_source != source_head:
+        raise RuntimeError(
+            f"candidate source HEAD drifted: expected={source_head} observed={observed_source}"
+        )
+    _run(
+        [
+            "git",
+            "-c",
+            "user.name=HDM DCR Candidate",
+            "-c",
+            "user.email=hdm-dcr-candidate@invalid",
+            "commit",
+            "--no-gpg-sign",
+            "-m",
+            "DCR candidate verification",
+        ],
+        root=root,
+    )
+    candidate_commit = _run(["git", "rev-parse", "HEAD"], root=root, capture=True).stdout.decode().strip()
+    observed_tree = _run(["git", "rev-parse", "HEAD^{tree}"], root=root, capture=True).stdout.decode().strip()
+    if observed_tree != expected_tree_sha:
+        raise RuntimeError(
+            f"candidate local commit tree mismatch: expected={expected_tree_sha} observed={observed_tree}"
+        )
+    parent = _run(["git", "rev-parse", "HEAD^"], root=root, capture=True).stdout.decode().strip()
+    if parent != source_head:
+        raise RuntimeError(f"candidate local commit parent mismatch: {parent}")
+    return candidate_commit
+
+
+def _assert_clean_candidate(root: Path) -> None:
+    status = _run(
+        ["git", "status", "--porcelain", "--untracked-files=no"],
+        root=root,
+        capture=True,
+    ).stdout.decode().strip()
+    if status:
+        raise RuntimeError("candidate verification dirtied tracked tree: " + status)
 
 
 def main() -> int:
@@ -385,19 +505,28 @@ def main() -> int:
     args = parser.parse_args()
 
     root = args.root.resolve()
+    observed_head = _run(["git", "rev-parse", "HEAD"], root=root, capture=True).stdout.decode().strip()
+    if observed_head != args.head_sha:
+        raise RuntimeError(
+            f"workflow checkout is not exact source HEAD: expected={args.head_sha} observed={observed_head}"
+        )
+
     out = root / ".hdm-maintenance" / "dcr-migration-candidate"
     shutil.rmtree(out, ignore_errors=True)
     out.mkdir(parents=True, exist_ok=True)
 
     migration, plan = _build_inputs(root, out)
     repairs, exceptions = _review_repairs(migration, plan)
+    _append_derived_path_repairs(root, repairs)
+    if len(repairs) != EXPECTED_TOTAL_REPAIRS:
+        raise RuntimeError(f"total repair count drifted: {len(repairs)}")
     _write_json(out / "repairs.json", repairs)
     _write_json(out / "historical-exceptions.json", exceptions)
 
     result = apply_migration(root, migration=migration, repairs=repairs)
     expected_result = {
         "move_count": 370,
-        "repair_count": 503,
+        "repair_count": EXPECTED_TOTAL_REPAIRS,
         "extraction_count": 1,
     }
     if result != expected_result:
@@ -406,6 +535,18 @@ def main() -> int:
         )
 
     _verify_physical_result(root, migration, repairs, exceptions)
+
+    # DCR-only orchestration is deliberately absent from the durable post-refactor tree.
+    _remove_temporary_paths(root)
+    for cache in root.rglob("__pycache__"):
+        if cache.is_dir():
+            shutil.rmtree(cache, ignore_errors=True)
+
+    # Freeze the exact final tree while the source HEAD still identifies the pre-migration parent.
+    summary = _build_candidate_metadata(root, out, args.head_sha)
+
+    # Replay the frozen target manifest against the staged final tree.  Basenames may remain
+    # in valid new relative links/provenance, but no full or old-root path may survive.
     _run(
         [
             sys.executable,
@@ -417,16 +558,26 @@ def main() -> int:
         ],
         root=root,
     )
+    post_report = json.loads(
+        (out / "post-migration-frozen-reference-report.json").read_text(encoding="utf-8")
+    )
+    if post_report["binary_or_non_utf8_files"]:
+        raise RuntimeError("post-move frozen replay encountered non-UTF8 tracked files")
+    _assert_no_stale_full_or_short_references(root, migration, post_report)
 
-    # First pass verifies the migrated corpus while the verifier contract itself is still present.
+    # Release/provenance tests intentionally require clean HEAD.  Create a local-only commit
+    # in this disposable Actions checkout, prove it has the exact frozen candidate tree, then
+    # run the complete repository verification on that clean tree.  No remote ref is mutated.
+    candidate_commit = _commit_candidate_locally(
+        root,
+        str(summary["candidate_tree_sha_local"]),
+        args.head_sha,
+    )
+    summary["candidate_local_verification_commit"] = candidate_commit
+    _write_json(out / "candidate-summary.json", summary)
+
     _run_repository_verification(root)
-
-    # DCR-only orchestration is deliberately absent from the durable post-refactor tree.
-    _remove_temporary_paths(root)
-
-    # Second pass verifies the exact final candidate tree after temporary orchestration removal.
-    _run_repository_verification(root)
-    _build_candidate_metadata(root, out, args.head_sha)
+    _assert_clean_candidate(root)
     return 0
 
 
