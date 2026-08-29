@@ -6,20 +6,23 @@ Date: 2026-08-25
 
 ## 1. Decision
 
-Exactly three Calculation Selectors are selectable:
+S6D-03 initially admitted three Calculation Selectors and two `rule.*` operations. S6D-07 then admitted a deliberately finite extension; it did not reopen the selectability law.
 
-- `health.maximum`;
-- `resource.capacity`;
-- `condition.applicability`.
+The current exact executable roster is ten selectors:
 
-Exactly two `rule.*` operations are executable through those selectors:
+- `health.maximum`, `resource.capacity`, `condition.applicability`;
+- `check.roll`, `attack.roll`, `save.roll`, `spell.dc`;
+- `defense.armor_class`, `damage.received`, `healing.received`.
+
+The current exact executable operation roster is:
 
 - `rule.add_flat`;
+- `rule.grant_advantage`;
 - `rule.immunity`.
 
-All other 31 registered selectors and 24 operations remain `DORMANT_NONSELECTABLE`. No core ID is added or removed.
+The active roster is closed by the coordinated current `mechanical-surfaces.json` and admission ledger: 10 of 34 selectors and 3 of 26 operations are `ACTIVE_ADMITTED`; the remaining 24 selectors and 23 operations remain `DORMANT_NONSELECTABLE`. No core ID is added or removed.
 
-Canonical semantic owner after acceptance: `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md`.
+Canonical semantic owner after acceptance: `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md`. The S6D-07 extension is admitted only where the current ledger names its exact completed downstream owner and the current machine metadata supplies the complete contract.
 
 ## 2. Selectability law
 
@@ -54,7 +57,7 @@ Every selectable selector has:
 
 Unknown members fail.
 
-## 4. Active contracts
+## 4. Active contracts and S6D-07 extension
 
 ### 4.1 Health maximum
 
@@ -104,6 +107,12 @@ facts: []
 dependencies: accessor | derived; static []
 ```
 
+### 4.4 S6D-07 exact extension
+
+The seven added selectors are limited to the current character-MVP consumers: `check.roll`, `attack.roll`, `save.roll`, `spell.dc`, `defense.armor_class`, `damage.received` and `healing.received`. Their exact subject/binding shapes, allowed operation pairs, result constraints and closed combination policies are the current machine metadata. They do not authorize any extra selector, arbitrary fact input, query path or operation.
+
+`attack.roll` admits only `rule.add_flat` and `rule.grant_advantage`; `rule.grant_disadvantage` remains dormant/nonselectable and is not a legal executable pair.
+
 ## 5. Policy semantics
 
 ### `integer_additive_v1`
@@ -150,7 +159,7 @@ The Resolution trace retains selector, operation, source, predicate/gate result,
 ## 10. Coordinated change set
 
 - add `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md`;
-- complete `mechanical-surfaces.json` for three selectors;
+- complete `mechanical-surfaces.json` for the current ten selectors;
 - tighten `mechanical-surfaces.schema.json`;
 - update admission ledger and `CATALOG_ADMISSION.md`;
 - route `RULE_ELEMENT_MODEL.md` to the new owner;
@@ -164,12 +173,12 @@ The Resolution trace retains selector, operation, source, predicate/gate result,
 Prove:
 
 - 34/26 ledger equality;
-- active sets exactly 3/2;
+- active sets exactly 10/3;
 - metadata keys equal active selector ledger IDs;
 - allowed-operation union equals active operation ledger IDs;
 - contract keys equal allowed operations;
 - schema validation and closed fields;
-- current coordinated 449/35/87 disposition totals after S6D-04 placed `condition.value` into dormant downstream ownership;
+- current coordinated 481/35/68 disposition totals after the admitted S6D-07 extension;
 - every dormant entry has a trigger;
 - no active selector admits invocation facts;
 - exact fact allowlists are empty;
