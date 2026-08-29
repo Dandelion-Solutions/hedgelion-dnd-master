@@ -1,6 +1,6 @@
 # R2.7 — WP-06 — Rules / adjudication / domain-module compatibility — мини-отчёт
 
-Статус: **IN PROGRESS — SOURCE/GAP DISCOVERY SLICE CHECKPOINT**
+Статус: **IN PROGRESS — POST-S6D INCOMING-OBLIGATION RECONCILIATION CHECKPOINT**
 
 Дата: 2026-08-24
 
@@ -206,6 +206,82 @@ CURRENT_DOMAIN: WP-06
 CURRENT_SLICE: advancement/build-choice contract + Activity parameter/target/cost contract
 AFTER_THAT: full mechanical selector metadata + activity operation-contract closure
 THEN: domain CORE reverse-conformance closure + Russian final mini-report
+NEXT_DOMAIN: WP-07
+OWNER_GATE: NONE
+```
+
+
+---
+
+## Post-S6D reconciliation — incoming WP-04/F01 and WP-05/F01
+
+**Evidence status:** COMPLETE for the two incoming obligations. The earlier source/gap-discovery material above is retained as **historical pre-S6D evidence**; it is not the current status of the machine contracts named below.
+
+### Source Manifest delta for this reconciliation
+
+| Source family | Role / inspected scope |
+|---|---|
+| `CHARACTER_PROGRESSION_READY_PC_SEED.md`, `CHARACTER_READINESS.md` | CANONICAL: definition-owned grants/slots, sparse Actor bindings, provisional play, READY_PC and anti-retrofit law. |
+| advancement/build/Actor schemas; MVP seed; S6D-07 fixture/test | MACHINE/TEST: stable slots, strict binding shape, seed closure and readiness/advancement rejection cases. |
+| Step-3 spec and WP-05 mini-report; `ACTIVITY_MODEL.md`, `RULE_ELEMENT_MODEL.md` | CANONICAL: accepted execution kernel and owner boundary. |
+| `PORTABLE_ACTIVITY_VALUES.md`, portable-value catalogs/schemas and S6D-05 test | CANONICAL/MACHINE/TEST: seven embedded typed values, exact schema roots and recovery/equality dispositions. |
+| `ACTIVITY_PRIMITIVE_CONTRACTS.md`, `CALCULATION_SELECTOR_METADATA.md`, `MECHANICAL_CONTEXT.md` | CANONICAL: closed primitive/selector/read/input authority; no arbitrary payload/query/state access. |
+| `DOMAIN_RULES_COVERAGE.md` and S6D-09 package/coverage companions | CANONICAL/MACHINE: finite supported gameplay spine and Mechanical-Null disposition. |
+| `HOUSE_RULES_MECHANICAL_BOUNDARY.md`, its ledger/schema/test, `ADJUDICATION.md` | CANONICAL/MACHINE/RUNTIME: one-off typed inputs only; policy prose has no execution, RNG or mutation authority. |
+| `RULESET_PACKAGE_MACHINE_CLOSURE.md` and package closure chain | CANONICAL/MACHINE: identity-bound admitted package/lock closure; package text/identity does not itself execute mechanics. |
+
+### WP-04/F01 — item reconciliation
+
+| Required item | Disposition | Exact current evidence |
+|---|---|---|
+| advancement schema | **SATISFIED** | `advancement-definition-data.schema.json` requires `levels` and delegates every level choice to `build-choice-slot.schema.json`; S6D-07 seed/test compile its bounded Fighter 1→2 proof. |
+| stable choice IDs | **SATISFIED** | Canonical S6D-07 law: each choice ID is stable in its owner definition revision and accepted catalog context; slot schema requires `choice_id` and option IDs; compiler test rejects duplicate slot/binding/option and illegal cardinality/default. |
+| Actor `choice_bindings` | **SATISFIED** | `world-actor-state.schema.json` owns sparse `build.choice_bindings` with selected option IDs and a closed `selection_basis`; S6D-07 tests reject flattened-sheet substitution and verify sparse owner-relative bindings. |
+| progressive character materialization | **EXTENDED** | Current owner permits provisional gameplay before READY_PC only under local committed-dependency sufficiency; same stable Actor may persist from PROVISIONAL_IDENTITY through readiness. This is more precise than the pre-pause obligation. |
+| READY_PC initial commitment frontier | **SATISFIED** | S6D-07 law + `CHARACTER_READINESS.md`: uniquely reconstructable legal initial build, all material initial choices closed and admitted dependencies; not questionnaire completion. Tests distinguish unresolved Fighter style from valid READY_PC. |
+| reconstructable Actor build | **SATISFIED** | Defined reconstruction chain is resolved catalog → anchors/levels → grants/slots → accepted sparse bindings/spells → admitted dependencies → derived capabilities/readiness evidence; attestation is actor/revision/ruleset/catalog-bound and forgery fails. |
+| no situation-aware retrofit | **SATISFIED** | S6D-07 initial selections are fixed before relevant exposure. `CHARACTER_READINESS.md` forbids delaying proficiency/spell/stat/defense choices until an advantageous scene; post-READY gaps are integrity defects, not convenient selection. |
+
+**WP-04/F01 verdict: SATISFIED / EXTENDED BY S6D-07.** No new advancement/Actor surface is authorized or needed in WP-06.
+
+### WP-05/F01 — item reconciliation
+
+| Typed value / requirement | Disposition | Exact current owner, realization and qualifier |
+|---|---|---|
+| `target_spec` | **SATISFIED** | S6D-05 canonical embedded nonowner; `target-spec.schema.json` via Activity `targeting`; portable route catalog marks `ACTIVE_STRUCTURAL`. Target IDs/state are excluded. |
+| `area_spec` | **SATISFIED** | S6D-05 embedded under TargetSpec; exact shape/unit/dimension catalog contract; geometry is bounded runtime infrastructure, not content query authority. |
+| `duration_spec` | **SATISFIED** | S6D-05 embedded definition intent with exact modes/units; concrete scheduled identity remains the separate TemporalBinding owner. |
+| `cost_spec` | **SATISFIED** | S6D-05 embedded declared resource/payer/amount/commit point; S6D-06 owns reservation/mutation/refund/atomicity. `cost_commit.on_accept` remains explicitly dormant until an exact primitive contract—no inferred generic cost capability. |
+| `roll_request` | **SATISFIED** | S6D-05 typed transient request; only S6D-06 `op.roll` consumes RNG; typed RollResult is fixed causal evidence reused over retry/recovery. |
+| `signal` | **SATISFIED** | Explicit `EMBEDDED_NONOWNER / DORMANT_NONSELECTABLE`: root rejects every instance without an exact consumer; no lifecycle/event-bus authority. |
+| `state_delta` | **SATISFIED** | Explicit `EMBEDDED_NONOWNER / DORMANT_NONSELECTABLE`: no generic patch/mutation or trusted continuation retention; a future exact variant needs an S6D-06 primitive/transition contract. |
+| every material domain mechanic uses deterministic Step-3 boundary | **EXTENDED** | WP-05 kernel remains authoritative. S6D-09 derives finite package/active-consumer/product coverage, routes generic check/save through admitted Activities/primitives and permits Mechanical-Null only with its real Event/receipt. S6D-10 permits one-off adjudication only as declared typed accepted input to an existing consumer; it cannot execute RNG, mutate state, create a second authority or force a reusable primitive. The full per-domain/CORE reverse audit remains the next WP-06 slice. |
+
+**WP-05/F01 verdict: SATISFIED / EXTENDED BY S6D-05, S6D-06, S6D-09 and S6D-10.** Dormant values remain intentionally nonselectable; their explicit negative disposition is closure, not unfinished activation work.
+
+### Reconciled pre-S6D findings
+
+1. broad selector vocabulary versus partial metadata — **SUPERSEDED** by S6D-03 finite active/dormant selectability ledger;
+2. generic advancement/build data and unvalidated slots — **SUPERSEDED** by S6D-07 schemas, bounded package seed/compiler and readiness conformance;
+3. undeclared Activity parameter source contract — **SUPERSEDED** by S6D-05 parameter declaration/binding schemas and S6D-10 policy-basis freeze;
+4. uneven portable values — **SUPERSEDED** by S6D-05 exact 19-value route catalog, with Signal/StateDelta deliberately dormant;
+5. House-Rule Markdown as potential mechanic path — **SUPERSEDED** by S6D-10 accepted-input boundary;
+6. stale CORE wording candidates — **STILL OPEN AS DOCUMENT-CONFORMANCE INPUT** for WP-06 only where it misstates current rules/adjudication routing; otherwise preserve a typed WP-26 obligation.
+
+### Remaining WP-06 work — not yet discharged
+
+1. complete the current Source Manifest across every admitted rules/domain package, execution catalog/schema and runtime consumer;
+2. assign an architecture→machine route or explicit negative disposition to each supported domain path, including Procedure/event/receipt/segment and mutation/no-mutation consequences;
+3. perform the machine→architecture reverse pass for current catalogs, schemas, package members and implicated CORE/domain modules;
+4. identify only proven stale/duplicate/no-consumer surfaces, preserve later-documentation issues as typed forward obligations, and run the required adversarial/reconciliation checks.
+
+No WP-07 substantive analysis has begun. No new primitive, selector, catalog member, schema protocol, runtime behavior or House-Rule capability was added by this checkpoint.
+
+## Current continuation after checkpoint
+
+```text
+CURRENT_DOMAIN: WP-06
+CURRENT_SLICE: supported domain-route inventory + CORE/domain reverse audit
 NEXT_DOMAIN: WP-07
 OWNER_GATE: NONE
 ```
