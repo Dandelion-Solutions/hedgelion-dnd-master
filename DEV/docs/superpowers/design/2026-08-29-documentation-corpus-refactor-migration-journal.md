@@ -20,16 +20,16 @@ The journal records only migration readiness, batching, path-repair obligations 
 
 ## 1. Current baseline
 
-Current durable semantic checkpoint is Specs Census Part 15.
+Current durable semantic checkpoint is Specs Census Part 16.
 
 ```text
 PRE_REFACTOR_SPECS_BASELINE:               375
-SPECS_FULL_CONTENT_REVIEWED:               178
-UNAMBIGUOUS_DESIGN_DESTINATIONS:           145
+SPECS_FULL_CONTENT_REVIEWED:               188
+UNAMBIGUOUS_DESIGN_DESTINATIONS:           154
 SPECS_TO_RESEARCH_DESTINATIONS:              1
-CONFIRMED_CURRENT_SPEC/AMENDMENT_OWNERS:     27
+CONFIRMED_CURRENT_SPEC/AMENDMENT_OWNERS:     28
 PENDING_FINAL_SUPERSESSION_CHECK:             5
-SPECS_REMAINING_UNREVIEWED:                 197
+SPECS_REMAINING_UNREVIEWED:                 187
 
 PHYSICAL_MOVES_PERFORMED:                    0
 MIGRATED_VERIFIED:                            0
@@ -38,7 +38,7 @@ REFERENCE_AUDIT_GATE:           NOT SATISFIED
 
 These semantic move candidates are **not** migration-ready files. Every candidate is currently blocked by the same repository-wide path/reference gate unless a later batch proves otherwise.
 
-The in-session full read of Step 5.12 does **not** advance the durable cursor until Specs Census Part 16 is published and read back.
+Specs Census Part 16 was published at `f74cf2d8cc7252e3e8c3387abb72f72930c79230` and read back from the remote branch. Its residual Step-5.12 realization debt was subsequently recorded as `DCR-018`.
 
 ## 2. Stable migration dispositions
 
@@ -128,7 +128,7 @@ NOTES / DEFERRED FOLLOWUPS
 
 The census IDs are the durable join key. Do not duplicate full semantic analyses here.
 
-## 7. Initial migration queue
+## 7. Migration queue
 
 ### M-001 — Research corpus realization
 
@@ -175,7 +175,17 @@ The census IDs are the durable join key. Do not duplicate full semantic analyses
 - **Relationship:** S-109 supplements, and does not supersede, S-108 and Step-5.9 canonical authority.
 - **Status:** `SEMANTIC_READY / BLOCKED_REFERENCE_AUDIT`.
 
-The queue above predates later census parts and is not itself a complete semantic-move inventory. Parts 07–15 remain authoritative for later reviewed families; append their coherent migration batches before physical execution. Do not infer that an omitted queue batch means the corresponding reviewed files remain in `specs/`.
+### M-007 — Step-5.12 Host Delivery / Disclosure Boundary
+
+- **Source of truth:** S-179..S-188 in Specs Census Part 16.
+- **Move candidates:** S-179..S-187 -> corresponding `design/` paths.
+- **Important supersession chain:** S-182 confirmation-only candidate is superseded by S-185 after S-183 review + S-184 owner scope decision; S-184 is an accepted historical owner decision fully consolidated into S-188 rather than reversed.
+- **Keep/current owner:** S-188 `2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md` in `specs/`.
+- **Later-authority result:** Step 5.13 consumes/preserves the contract; Step 5.14 supplements without replacing detailed owners; R2.5/R2.6 preserve/realize the boundary; no later supersession found.
+- **Status:** `SEMANTIC_READY / BLOCKED_REFERENCE_AUDIT`.
+- **Deferred debt:** `DCR-018` preserves Step-5.12-specific machine/host-profile realization obligations; this does not activate them during the refactor.
+
+The queue still does not duplicate every reviewed family from Parts 07–15. Those census parts remain authoritative for their semantic destinations; append their coherent migration batches before physical execution. Do not infer that an omitted queue batch means the corresponding reviewed files remain in `specs/`.
 
 ## 8. Queue extension rule
 
@@ -197,7 +207,7 @@ require: truncated == false
 
 Then fetch every exact family path with `GitHub.fetch_file` for full semantic review.
 
-Full failure mode, exact Step-5.12 path set, and fresh-chat continuation procedure are recorded in `2026-08-29-documentation-corpus-refactor-connector-operations-note.md`.
+Full failure mode and continuation procedure are recorded in `2026-08-29-documentation-corpus-refactor-connector-operations-note.md`.
 
 This method solves baseline family inventory for census work only. It does **not** satisfy the branch-complete inbound-reference requirement for physical migration; DCR-016 remains open.
 
@@ -205,17 +215,16 @@ This method solves baseline family inventory for census work only. It does **not
 
 ```text
 CORPUS_REFACTOR_STATUS: IN_PROGRESS
-DURABLE_SPECS_CENSUS_CURSOR: 178 / 375
-DURABLE_LAST_CHECKPOINT: Specs Census Part 15
-NEXT_DURABLE_SEMANTIC_FAMILY: Step 5.12 — Host Delivery / Disclosure Boundary
-STEP5_12_EXACT_BASELINE_SOURCES: 10
-STEP5_12_FULL_CONTENT_READ_IN_CURRENT_SESSION: 10 / 10
-STEP5_12_PART_16_STATUS: NOT PUBLISHED
-PREPUBLICATION_STEP5_12_RESULT: 9 design provenance + 1 canonical owner; REVALIDATE BEFORE PART 16
-NEXT_DURABLE_CURSOR_AFTER_VERIFIED_PART16: 188 / 375
+DURABLE_SPECS_CENSUS_CURSOR: 188 / 375
+DURABLE_LAST_CHECKPOINT: Specs Census Part 16
+LAST_CLOSED_SEMANTIC_FAMILY: Step 5.12 — Host Delivery / Disclosure Boundary
+PART16_PUBLICATION_SHA: f74cf2d8cc7252e3e8c3387abb72f72930c79230
+PART16_REMOTE_READBACK: VERIFIED
+STEP5_12_DEBT_EXTRACTION: COMPLETE / DCR-018
+NEXT_DURABLE_SEMANTIC_FAMILY: Step 5.13 — Garbage Collection / Orphan Cleanup
 PHYSICAL_MIGRATION_STATUS: DEFERRED
 CENSUS_ENUMERATION_METHOD: TARGET BASELINE TREE VERIFIED
 REFERENCE_AUDIT_STATUS: BRANCH-COMPLETE INBOUND-REFERENCE METHOD NOT YET PROVEN
-NEXT_ACTION: finish Step-5.12 later-authority/supersession sweep -> publish/read back Part 16 -> append Step-5.12 migration batch -> continue semantic census
+NEXT_ACTION: full-content Step-5.13 family census -> later-authority/supersession sweep -> publish/read back Part 17 -> append Step-5.13 migration batch -> continue semantic census
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```
