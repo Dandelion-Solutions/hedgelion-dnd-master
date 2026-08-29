@@ -15,6 +15,7 @@ CORPUS_DIRS = (
     Path("DEV/docs/superpowers/research"),
 )
 EXCLUDED_DIR_NAMES = {".git", ".hdm-devtools", "__pycache__", ".pytest_cache"}
+TARGET_MANIFEST_VERSION = 1
 
 
 def _relative(root: Path, path: Path) -> str:
@@ -75,18 +76,56 @@ def _corpus_targets(root: Path, repository_files: list[Path]) -> list[dict[str, 
     for path in repository_files:
         relative = _relative(root, path)
         if relative.startswith(prefixes):
-            targets.append({"path": relative, "basename": path.name})
-    return sorted(targets, key=lambda row: row["path"])
+            targets.append({"target_path": relative, "basename": path.name})
+    return sorted(targets, key=lambda row: row["target_path"])
 
 
-def build_reference_report(root: Path | str) -> dict[str, object]:
+def _normalize_targets(targets: list[dict[str, str]]) -> list[dict[str, str]]:
+    normalized: list[dict[str, str]] = []
+    seen_paths: set[str] = set()
+    for row in targets:
+        target_path = str(row["target_path"])
+        basename = str(row["basename"])
+        if not target_path or not basename:
+            raise ValueError("target rows require non-empty target_path and basename")
+        if Path(target_path).name != basename:
+            raise ValueError(f"target basename mismatch: {target_path} != {basename}")
+        if target_path in seen_paths:
+            raise ValueError(f"duplicate target path: {target_path}")
+        seen_paths.add(target_path)
+        normalized.append({"target_path": target_path, "basename": basename})
+    return sorted(normalized, key=lambda row: row["target_path"])
+
+
+def build_target_manifest(root: Path | str) -> dict[str, object]:
     root = Path(root).resolve()
     scan_source, repository_files = _repository_files(root)
     targets = _corpus_targets(root, repository_files)
+    return {
+        "manifest_version": TARGET_MANIFEST_VERSION,
+        "scan_source": scan_source,
+        "tracked_file_count": len(repository_files) if scan_source == "git_ls_files" else None,
+        "target_count": len(targets),
+        "targets": targets,
+    }
+
+
+def build_reference_report(
+    root: Path | str,
+    *,
+    targets: list[dict[str, str]] | None = None,
+) -> dict[str, object]:
+    root = Path(root).resolve()
+    scan_source, repository_files = _repository_files(root)
+    effective_targets = (
+        _corpus_targets(root, repository_files)
+        if targets is None
+        else _normalize_targets(targets)
+    )
 
     by_basename: dict[str, list[str]] = defaultdict(list)
-    for row in targets:
-        by_basename[row["basename"]].append(row["path"])
+    for row in effective_targets:
+        by_basename[row["basename"]].append(row["target_path"])
 
     ambiguous = {
         basename: sorted(paths)
@@ -146,11 +185,9 @@ def build_reference_report(root: Path | str) -> dict[str, object]:
     return {
         "scan_source": scan_source,
         "tracked_file_count": len(repository_files) if scan_source == "git_ls_files" else None,
-        "target_count": len(targets),
-        "targets": [
-            {"target_path": row["path"], "basename": row["basename"]}
-            for row in targets
-        ],
+        "target_source": "current_corpus" if targets is None else "frozen_manifest",
+        "target_count": len(effective_targets),
+        "targets": effective_targets,
         "ambiguous_target_basenames": ambiguous,
         "binary_or_non_utf8_files": sorted(binary_or_non_utf8_files),
         "reference_count": len(references),
@@ -158,13 +195,34 @@ def build_reference_report(root: Path | str) -> dict[str, object]:
     }
 
 
+def _write_json(path: Path, payload: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _load_target_manifest(path: Path) -> list[dict[str, str]]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("manifest_version") != TARGET_MANIFEST_VERSION:
+        raise ValueError("unsupported target manifest version")
+    return _normalize_targets(payload["targets"])
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[2])
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--targets-manifest", type=Path)
+    parser.add_argument("--write-targets-manifest", type=Path)
     args = parser.parse_args()
 
-    report = build_reference_report(args.root)
+    frozen_targets = None
+    if args.targets_manifest:
+        frozen_targets = _load_target_manifest(args.targets_manifest)
+
+    if args.write_targets_manifest:
+        _write_json(args.write_targets_manifest, build_target_manifest(args.root))
+
+    report = build_reference_report(args.root, targets=frozen_targets)
     payload = json.dumps(report, indent=2, sort_keys=True) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
