@@ -36,6 +36,10 @@ PART13 = (
     "2026-08-29-documentation-corpus-refactor-specs-census-part-13.md"
 )
 RESEARCH_DIR = "DEV/docs/superpowers/research"
+R015_EXTRACTION = RESEARCH_DIR + "/2026-08-24-chatgpt-plus-host-evidence.md"
+R015_OLD_PATH = (
+    RESEARCH_DIR + "/2026-08-24-r2-6-chatgpt-plus-assurance-evidence-ledger.md"
+)
 RELEASE_FIXTURE = "DEV/TESTS/test_release_game_passthrough.py"
 DERIVED_FIXTURE_OLD = (
     "owner_target = dev / 'docs' / 'superpowers' / 'specs' / owner.name"
@@ -73,6 +77,20 @@ def _is_historical_exception(source_path: str, target_final: str) -> bool:
     return (
         source_path == PART13
         and PurePosixPath(target_final).parent.as_posix() == RESEARCH_DIR
+    )
+
+
+def _is_frozen_replay_provenance_exception(
+    source_path: str,
+    target_path: str,
+    line: str,
+) -> bool:
+    """Allow only the generated R-015 SPLIT_FROM provenance to keep its old path."""
+
+    return (
+        source_path == R015_EXTRACTION
+        and target_path == R015_OLD_PATH
+        and line.strip() == f"SPLIT_FROM: `{R015_OLD_PATH}`"
     )
 
 
@@ -448,6 +466,12 @@ def _assert_no_stale_full_or_short_references(
         line = lines[line_number - 1]
         old_short = target[len(marker) :] if target.startswith(marker) else target
         if target in line or old_short in line:
+            if _is_frozen_replay_provenance_exception(
+                reference["source_path"],
+                target,
+                line,
+            ):
+                continue
             stale.append(reference)
     if stale:
         raise RuntimeError(
