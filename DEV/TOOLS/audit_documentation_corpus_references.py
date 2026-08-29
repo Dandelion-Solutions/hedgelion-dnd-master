@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 from collections import defaultdict
 from pathlib import Path
 
@@ -20,19 +21,33 @@ def _relative(root: Path, path: Path) -> str:
     return path.relative_to(root).as_posix()
 
 
-def _corpus_targets(root: Path) -> list[dict[str, str]]:
-    targets: list[dict[str, str]] = []
-    for rel_dir in CORPUS_DIRS:
-        directory = root / rel_dir
-        if not directory.exists():
+def _git_tracked_files(root: Path) -> list[Path] | None:
+    try:
+        completed = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "-z"],
+            capture_output=True,
+            check=False,
+        )
+    except OSError:
+        return None
+    if completed.returncode != 0:
+        return None
+
+    files: list[Path] = []
+    for raw in completed.stdout.split(b"\0"):
+        if not raw:
             continue
-        for path in directory.rglob("*"):
-            if path.is_file():
-                targets.append({"path": _relative(root, path), "basename": path.name})
-    return sorted(targets, key=lambda row: row["path"])
+        try:
+            relative = raw.decode("utf-8")
+        except UnicodeDecodeError:
+            continue
+        path = root / relative
+        if path.is_file():
+            files.append(path)
+    return sorted(files, key=lambda path: _relative(root, path))
 
 
-def _repository_files(root: Path) -> list[Path]:
+def _walk_repository_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for path in root.rglob("*"):
         if not path.is_file():
@@ -47,9 +62,27 @@ def _repository_files(root: Path) -> list[Path]:
     return sorted(files, key=lambda path: _relative(root, path))
 
 
+def _repository_files(root: Path) -> tuple[str, list[Path]]:
+    tracked = _git_tracked_files(root)
+    if tracked is not None:
+        return "git_ls_files", tracked
+    return "filesystem_walk", _walk_repository_files(root)
+
+
+def _corpus_targets(root: Path, repository_files: list[Path]) -> list[dict[str, str]]:
+    prefixes = tuple(f"{path.as_posix()}/" for path in CORPUS_DIRS)
+    targets: list[dict[str, str]] = []
+    for path in repository_files:
+        relative = _relative(root, path)
+        if relative.startswith(prefixes):
+            targets.append({"path": relative, "basename": path.name})
+    return sorted(targets, key=lambda row: row["path"])
+
+
 def build_reference_report(root: Path | str) -> dict[str, object]:
     root = Path(root).resolve()
-    targets = _corpus_targets(root)
+    scan_source, repository_files = _repository_files(root)
+    targets = _corpus_targets(root, repository_files)
 
     by_basename: dict[str, list[str]] = defaultdict(list)
     for row in targets:
@@ -76,7 +109,7 @@ def build_reference_report(root: Path | str) -> dict[str, object]:
     references: list[dict[str, object]] = []
     binary_or_non_utf8_files: list[str] = []
 
-    for path in _repository_files(root):
+    for path in repository_files:
         source_path = _relative(root, path)
         try:
             text = path.read_text(encoding="utf-8")
@@ -111,6 +144,8 @@ def build_reference_report(root: Path | str) -> dict[str, object]:
     )
 
     return {
+        "scan_source": scan_source,
+        "tracked_file_count": len(repository_files) if scan_source == "git_ls_files" else None,
         "target_count": len(targets),
         "targets": [
             {"target_path": row["path"], "basename": row["basename"]}
