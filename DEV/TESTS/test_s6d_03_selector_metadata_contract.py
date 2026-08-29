@@ -14,13 +14,20 @@ SCHEMA = ROOT / "DEV/SCHEMAS/mechanical-surfaces.schema.json"
 
 EXPECTED_SELECTORS = {"condition.applicability", "health.maximum", "resource.capacity", "check.roll", "attack.roll", "save.roll", "spell.dc", "defense.armor_class", "damage.received", "healing.received"}
 EXPECTED_OPERATIONS = {"rule.add_flat", "rule.grant_advantage", "rule.immunity"}
+EXPECTED_ACTIVE_OWNERS = {
+    "check.roll": "S6D-07", "attack.roll": "S6D-07", "save.roll": "S6D-07",
+    "spell.dc": "S6D-07", "defense.armor_class": "S6D-07",
+    "damage.received": "S6D-07", "healing.received": "S6D-07",
+    "rule.grant_advantage": "S6D-07",
+    "condition.applicability": None, "health.maximum": None,
+    "resource.capacity": None, "rule.add_flat": None, "rule.immunity": None,
+}
 STRUCTURAL_ONLY_PAIRS = {
     ("attack.roll", "rule.grant_disadvantage"),
     ("activity.availability", "rule.restrict_activity"),
     ("movement.speed", "rule.override"),
     ("movement.speed", "rule.add_flat"),
     ("test.roll", "rule.add_flat"),
-    ("defense.armor_class", "rule.add_flat"),
     ("damage.weapon", "rule.add_damage_component"),
 }
 
@@ -57,7 +64,7 @@ class SelectorMetadataContractTests(unittest.TestCase):
         for entry in selectors + operations:
             if entry["admission_disposition"] == "ACTIVE_ADMITTED":
                 assert entry["realization_state"] == "COMPLETE"
-                assert entry["downstream_owner"] is None
+                assert entry["downstream_owner"] == EXPECTED_ACTIVE_OWNERS[entry["id"]]
             else:
                 assert entry["activation_trigger"]
                 assert entry["realization_state"] == "DOWNSTREAM_S6D_03"
