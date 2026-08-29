@@ -23,9 +23,9 @@ The journal intentionally does not duplicate item-level census semantics. Census
 ```text
 PRE_REFACTOR_SPECS_BASELINE:               375
 SPECS_FULL_CONTENT_REVIEWED:               203
-UNAMBIGUOUS_DESIGN_DESTINATIONS:           165
+UNAMBIGUOUS_DESIGN_DESTINATIONS:           166
 SPECS_TO_RESEARCH_DESTINATIONS:              1
-CONFIRMED_CURRENT_SPEC/AMENDMENT_OWNERS:     32
+CONFIRMED_CURRENT_SPEC/AMENDMENT_OWNERS:     31
 PENDING_FINAL_SUPERSESSION_CHECK:             5
 SPECS_REMAINING_UNREVIEWED:                 172
 
@@ -36,7 +36,26 @@ REFERENCE_AUDIT_GATE:           NOT SATISFIED / DCR-016 OPEN
 
 Current durable semantic checkpoint: **Specs Census Part 19**.
 
-Part 19 was published at `e2f627c6f884efd2af4b3c35d924cd053fbf99d2` and read back from the remote branch.
+Unique-source correction applied before continuing 2026-08-24:
+
+```text
+STEP5_14_CANONICAL_FINAL_CENSUS_ID: S-118  # counted in Part 07
+S-200: 2026-08-21-step-6-pre-design-framing-working-notes.md
+PART18_UNIQUE_CURSOR: 200 / 375
+PART19_UNIQUE_CURSOR: 203 / 375
+2026-08-21 UNIQUE REVIEW: 45 / 45
+```
+
+Part 18 correction commit: `21c3462fc720feefcbdd12376d2fffc59e0d3cb7`.
+Part 19 cumulative-count correction commit: `5cc22f32befcf3be514c1faf9b82714bab4ee2b1`.
+
+The 2026-08-24 exact baseline inventory is independently cross-checked by branch compare and contains exactly **57** `specs/2026-08-24-*` sources. Three were already reviewed early and must not be counted again:
+
+- S-149 `2026-08-24-r2-5-collaboration-multiplayer-canonical-spec.md`;
+- S-150 `2026-08-24-r2-5-collaboration-multiplayer-resolution-gate.md`;
+- S-169 `2026-08-24-r2-1-continuity-history-canonical-spec.md`.
+
+Therefore **54 unique 2026-08-24 baseline specs sources remain unreviewed** at the Part-19 cursor.
 
 ## 2. Stable migration dispositions
 
@@ -112,7 +131,7 @@ NOTES / DEFERRED FOLLOWUPS
 | M-006 | Part 06, S-100..S-109 | S-100..S-107 -> `design/`; keep S-108 + canonical amendment S-109 | `BLOCKED_REFERENCE_AUDIT` |
 | M-007 | Part 16, S-179..S-188 | S-179..S-187 -> `design/`; keep S-188 Step-5.12 canonical | `BLOCKED_REFERENCE_AUDIT` |
 | M-008 | Part 17, S-189..S-195 | S-189..S-194 -> `design/`; keep S-195 Step-5.13 canonical | `BLOCKED_REFERENCE_AUDIT` |
-| M-009 | Part 18, S-196..S-200 | S-196..S-199 -> `design/`; keep S-200 Step-5.14 canonical, qualified by later single-context owner; DCR-020 tracks stale SD-5 wording | `BLOCKED_REFERENCE_AUDIT` |
+| M-009 | Corrected Part 18 + Part 07 owner | S-196..S-200 -> `design/`; keep existing S-118 Step-5.14 canonical; DCR-020 tracks stale SD-5 wording | `BLOCKED_REFERENCE_AUDIT` |
 | M-010 | Part 19, S-201..S-203 | keep S-201 Round-1 rebaseline owner + S-202 Step-4 single-context amendment; S-203 working note -> `design/` | `BLOCKED_REFERENCE_AUDIT` |
 
 Parts 07–15 already contain authoritative semantic dispositions for their reviewed families. Their compact queue rows may be backfilled before physical execution; omission from this table does not change their census destination.
@@ -128,20 +147,23 @@ PRE_REFACTOR_SPECS_TREE_SHA: 0fb176ec4cee7af3d6765a34174964679c99819d
 require: truncated == false
 ```
 
+Day-scoped branch compares may be used as an independent exact-path inventory cross-check when their source count reconciles exactly with the frozen-tree census count; semantic classification still requires exact full-content `fetch_file` review.
+
 This solves census-family inventory only. It does not solve the branch-complete inbound-reference gate.
 
 ## 8. Current execution cursor
 
 ```text
 CORPUS_REFACTOR_STATUS: IN_PROGRESS
-DURABLE_SPECS_CENSUS_CURSOR: 203 / 375
-DURABLE_LAST_CHECKPOINT: Specs Census Part 19
+DURABLE_SPECS_CENSUS_CURSOR: 203 / 375 UNIQUE SOURCES
+DURABLE_LAST_CHECKPOINT: Specs Census Part 19 (corrected cumulative counts)
 LAST_CLOSED_SEMANTIC_GROUP: all frozen-baseline 2026-08-23 specs sources
-PART19_PUBLICATION_SHA: e2f627c6f884efd2af4b3c35d924cd053fbf99d2
-PART19_REMOTE_READBACK: VERIFIED
 NEXT_DURABLE_SEMANTIC_FAMILY: 2026-08-24 campaign rulings / House Rules architecture family
+2026_08_24_BASELINE_SOURCES: 57
+2026_08_24_ALREADY_REVIEWED_EARLY: 3
+2026_08_24_REMAINING_UNREVIEWED: 54
 PHYSICAL_MIGRATION_STATUS: DEFERRED
 REFERENCE_AUDIT_STATUS: BRANCH-COMPLETE INBOUND-REFERENCE METHOD NOT YET PROVEN / DCR-016 OPEN
-NEXT_ACTION: continue full-content 2026-08-24 specs census from campaign-rulings House-Rules task brief
+NEXT_ACTION: continue full-content 2026-08-24 specs census from campaign-rulings House-Rules task brief; skip S-149/S-150/S-169 when their chronological families are reached
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```
