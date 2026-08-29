@@ -55,7 +55,7 @@ OWNER_TRIAGE_REQUIRED
 
 `EXPECTED_DEFERRED` does **not** mean harmless or complete. It means an explicit later owner/stage currently exists and the obligation must remain visible until that stage actually discharges it.
 
-## 2. Issues known before continuing Step 5.12
+## 2. Accumulated issues
 
 ### DCR-001 — Step 5.2 canonical v1 and v2 both remain in `specs/`
 
@@ -258,6 +258,24 @@ OWNER_TRIAGE_REQUIRED
 - **FILE:** `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md`.
 - **CURRENT TAXONOMY:** audit mini-reports/status/cursors are `design/` provenance/operational process artifacts, not research results.
 - **SPECIAL REQUIREMENT:** this is the active operational cursor, so migration must be a true move with all live references repaired; no duplicate temporary owner.
+
+### DCR-018 — Step-5.12 host delivery/disclosure contract has residual machine and host-profile realization obligations
+
+- **TYPE:** `MISSING_REALIZATION` / `DEFERRED_MACHINE_REALIZATION` / `DEFERRED_HOST_CAPABILITY`.
+- **STATUS:** `OPEN`.
+- **OWNER_TRIAGE:** PENDING.
+- **CURRENT OWNER:** `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md`.
+- **ALREADY TRACKED ELSEWHERE:** message ID conflict (`DCR-009`), live knowledge/disclosure duplicate-owner risk (`DCR-010`), host invocation/retry identity (`DCR-011`), missing `runtime.disclosure` kind/schema (`DCR-012`), incomplete message/interaction record realization (`DCR-013`). These are not duplicated here.
+- **RESIDUAL OBLIGATIONS (preserve item-level):**
+  1. typed `NarrationResult` material `disclosure_refs` plus deterministic completeness/eligibility validation before player-visible admission;
+  2. coherent HOT `OutboundEmissionClosure` joining admitted outbound `runtime.message` evidence with recipient-scoped `runtime.disclosure` transitions and required provenance/index updates;
+  3. Step-5.5/5.6 dirty publication plus SAVE/controlled-handoff integration without introducing a generic second per-response repository write;
+  4. authenticated player/session recipient or audience binding sufficient for the supported per-player disclosure profile;
+  5. physical host realization of the pre-player-visible admission/staging boundary and inventory/fencing of auxiliary player-visible surfaces under the R2.6 behavioral-containment contract;
+  6. player-facing interruption/Retry/edit/branch guidance that accurately documents the owner-accepted presentation-risk boundary.
+- **WHY IT MATTERS:** these obligations are part of current accepted Step-5.12 semantics but are not discharged merely by the existing catalog identifiers or host-assurance architecture candidate. Losing them during later planning would weaken the information/disclosure boundary or accidentally reintroduce a delivery subsystem the owner rejected.
+- **NAMED RESOLUTION STAGE:** R2.7 machine/instruction/test realization and later implementation/MVP acceptance under R2.6; physical host/profile details remain governed by the accepted host-assurance contract.
+- **REFRACTOR RULE:** preserve visibility only; do not implement or redesign these obligations during the documentation corpus refactor.
 
 ## 3. Global tracking notes
 
