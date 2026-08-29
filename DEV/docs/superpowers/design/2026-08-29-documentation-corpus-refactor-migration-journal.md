@@ -10,19 +10,19 @@ This file is an operational continuation surface, not semantic authority. Item-l
 
 ```text
 PRE_REFACTOR_SPECS_BASELINE: 375
-SPECS_FULL_CONTENT_REVIEWED: 296
-SPECS_REMAINING_UNREVIEWED: 79
-UNAMBIGUOUS_DESIGN_DESTINATIONS: 251
+SPECS_FULL_CONTENT_REVIEWED: 304
+SPECS_REMAINING_UNREVIEWED: 71
+UNAMBIGUOUS_DESIGN_DESTINATIONS: 259
 SPECS_TO_RESEARCH_DESTINATIONS: 1
 CONFIRMED_CURRENT_SPEC_OR_OWNER_DESTINATIONS: 39
 PENDING_FINAL_SUPERSESSION_CHECK: 5
 PHYSICAL_MOVES_PERFORMED: 0
 REFERENCE_AUDIT_GATE: NOT SATISFIED / DCR-016 OPEN
-CURRENT_DURABLE_SEMANTIC_CHECKPOINT: Specs Census Part 37
-PART_37_PUBLICATION_SHA: 41329cd86b0a6a2aacdf58a2224f282c13386199
+CURRENT_DURABLE_SEMANTIC_CHECKPOINT: Specs Census Part 39
+PART_39_PUBLICATION_SHA: c83dbccc2625918d1700fdc5f305945faf9b525a
 ```
 
-Part 37 remote read-back is verified.
+Part 39 remote read-back is verified.
 
 Unique-source correction remains in force: S-118 is the Step-5.14 canonical final; S-200 is `2026-08-21-step-6-pre-design-framing-working-notes.md`; 2026-08-21 is 45/45 unique reviewed. For 2026-08-24, early-reviewed S-149/S-150/S-169 were not recounted; that date is 57/57 complete.
 
@@ -30,7 +30,7 @@ Current date progress:
 
 ```text
 2026-08-24: 57 / 57 COMPLETE
-2026-08-25: 39 / 55
+2026-08-25: 47 / 55
 ```
 
 ## Migration gate
@@ -48,14 +48,15 @@ Earlier batches M-001..M-018 retain their census-defined dispositions and remain
 | M-019 | Parts 32-33 S-273..S-280 | move complete S6D-01 chain to design; owner `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` | BLOCKED_REFERENCE_AUDIT |
 | M-020 | Parts 34-35 S-281..S-288 | move complete S6D-02 chain to design; owner `DEV/ARCHITECTURE/CATALOG_ADMISSION.md` | BLOCKED_REFERENCE_AUDIT |
 | M-021 | Parts 36-37 S-289..S-296 | move complete S6D-03 chain to design; owner `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md` | BLOCKED_REFERENCE_AUDIT |
+| M-022 | Parts 38-39 S-297..S-304 | move complete S6D-04 chain to design; owner `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md` | BLOCKED_REFERENCE_AUDIT |
 
 Parts 07–15 and all earlier census parts remain authoritative item-level records even when rows are not duplicated here.
 
 ## Next exact task
 
 ```text
-NEXT_FAMILY: 2026-08-25 S6D-04 — Mechanical Accessors / Invocation Facts / Dependency Graph
-NEXT_EXPECTED_CENSUS_IDS: S-297..S-304
+NEXT_FAMILY: 2026-08-25 S6D-05 — Activity Parameters / Targeting / Costs / Portable Values
+NEXT_EXPECTED_CENSUS_IDS: S-305..S-312
 REQUIRED_METHOD: full-read all 8 family sources + current primary-owner/later-authority sweep before disposition
 CHECKPOINT_STYLE: two small four-source commits after family authority is proven
 PHYSICAL_MIGRATION_STATUS: DEFERRED / DCR-016 OPEN
