@@ -28,7 +28,7 @@ def _load(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 class SelectorMetadataContractTests(unittest.TestCase):
-    def test_schema_and_active_sets_are_exact():
+    def test_schema_and_active_sets_are_exact(self):
         core, surfaces, ledger, schema = map(_load, (CORE, SURFACES, LEDGER, SCHEMA))
         jsonschema.Draft202012Validator.check_schema(schema)
         jsonschema.validate(surfaces, schema)
@@ -44,7 +44,7 @@ class SelectorMetadataContractTests(unittest.TestCase):
         assert active_selectors <= set(core["registries"]["rule_selectors"])
         assert active_operations <= set(core["registries"]["rule_operations"])
     
-    def test_all_registered_ids_have_active_or_dormant_outcome():
+    def test_all_registered_ids_have_active_or_dormant_outcome(self):
         core, ledger = _load(CORE), _load(LEDGER)
         selectors = [e for e in ledger["entries"] if e["registry_family"] == "rule_selectors"]
         operations = [e for e in ledger["entries"] if e["registry_family"] == "rule_operations"]
@@ -63,7 +63,7 @@ class SelectorMetadataContractTests(unittest.TestCase):
                 assert entry["realization_state"] == "DOWNSTREAM_S6D_03"
                 assert entry["downstream_owner"] == "S6D-03"
     
-    def test_metadata_is_complete_and_pair_keys_are_exact():
+    def test_metadata_is_complete_and_pair_keys_are_exact(self):
         surfaces = _load(SURFACES)
         required = {
             "allowed_operations", "operation_contracts", "contribution_type",
@@ -79,7 +79,7 @@ class SelectorMetadataContractTests(unittest.TestCase):
             assert meta["resolution_owner"] == "SELECTOR_METADATA"
             assert meta["trace_policy"] == "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
     
-    def test_no_invocation_fact_or_dependency_kind_laundering():
+    def test_no_invocation_fact_or_dependency_kind_laundering(self):
         surfaces = _load(SURFACES)
         for meta in surfaces["selectors"].values():
             assert meta["allowed_input_classes"] == ["ENGINE_STATE"]
@@ -99,7 +99,7 @@ class SelectorMetadataContractTests(unittest.TestCase):
             "ENGINE_STATE"]
         assert surfaces["derived_nodes"]["condition_intrinsic"]["permitted_context_fact_ids"] == []
     
-    def test_integer_additive_policy_is_commutative_and_enforces_minimum():
+    def test_integer_additive_policy_is_commutative_and_enforces_minimum(self):
         surfaces = _load(SURFACES)["selectors"]
         for selector, base, contributions, expected in (
             ("health.maximum", 10, [3, -2, 1], 12),
@@ -117,7 +117,7 @@ class SelectorMetadataContractTests(unittest.TestCase):
             assert resolve(contributions) == expected
             assert resolve(list(reversed(contributions))) == expected
     
-    def test_immunity_policy_is_monotone_and_literal():
+    def test_immunity_policy_is_monotone_and_literal(self):
         meta = _load(SURFACES)["selectors"]["condition.applicability"]
         assert meta["combination_policy"] == "immunity_any_true_v1"
         assert meta["operation_contracts"]["rule.immunity"] == {
@@ -128,19 +128,17 @@ class SelectorMetadataContractTests(unittest.TestCase):
         }
         assert any([False, True, True]) is True
     
-    def test_structural_examples_are_labeled_and_not_executable_consumers():
+    def test_structural_examples_are_labeled_and_not_executable_consumers(self):
         for name in ("condition-definition-data.schema.json", "effect-definition-data.schema.json", "rule-element.schema.json"):
             assert "structural shape only" in _load(ROOT / "DEV/SCHEMAS" / name)["$comment"]
         surfaces = _load(SURFACES)["selectors"]
         for selector, operation in STRUCTURAL_ONLY_PAIRS:
             assert selector not in surfaces or operation not in surfaces[selector]["allowed_operations"]
     
-    def test_global_disposition_totals():
+    def test_global_disposition_totals(self):
         totals = Counter(e["admission_disposition"] for e in _load(LEDGER)["entries"])
         assert totals == {
             "ACTIVE_ADMITTED": 481,
             "EMBEDDED_NONOWNER": 35,
             "DORMANT_NONSELECTABLE": 68,
         }
-    
-    
