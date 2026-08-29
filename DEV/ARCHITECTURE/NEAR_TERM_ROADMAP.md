@@ -124,16 +124,16 @@ R2.0..R2.6 COMPLETE
     -> S6D-12 Step 6                               [COMPLETE / WHOLE-PROJECT ADVERSARIAL CRITIC PASS]
     -> S6D-12 Step 7                               [COMPLETE / SEMANTIC TRUE / MACHINE FALSE]
     -> S6D-12 Step 8                               [COMPLETE / CANONICAL BLOCKED DISPOSITION]
-    -> S6D integrated closure                      [BLOCKED / MACHINE REALIZATION MRC-01..04 REQUIRED]
-    -> R2.7 WP-06 RESUME                           [NOT ALLOWED YET]
+    -> S6D integrated closure                      [PASS / MACHINE REALIZATION VERIFIED]
+    -> R2.7 WP-06 RESUME                           [ALLOWED / NEXT]
     -> R2.7 WP-07..WP-27
     -> R2.7 final reconciliation
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-12's complete eight-step architecture review is canonical. `SEMANTIC_ARCHITECTURE_RECONCILED == TRUE`; `MACHINE_REALIZATION_VERIFIED == FALSE`; therefore `S6D_FINAL_CLOSURE_AUTHORIZED == FALSE`. There is no active numbered S6D design step. The active prerequisite is finite machine realization MRC-01…04, after which S6D integrated closure must be reevaluated.
+**Current stop.** S6D-12's complete eight-step architecture review and MRC-01…04 machine realization are canonical. `SEMANTIC_ARCHITECTURE_RECONCILED == TRUE`; `MACHINE_REALIZATION_VERIFIED == TRUE`; therefore `S6D_FINAL_CLOSURE_AUTHORIZED == TRUE` and the integrated closure is PASS. No S6D design step is active; R2.7 WP-06 is next/resumable.
 
-Current machine-realization blockers remain: coherent B′ coverage migration, synchronization of every current derived package/set projection to fresh canonical reconstruction, executable Mechanical-Null conformance using existing Step-3 MechanicalEvent/ExecutionSegment/receipt owners, and focused integrated S6D-07/08/09/10/11 verification on the same realized state. R2.7 stays paused.
+Machine realization MRC-01…04 passed on hosted CI; current derived identity projections, Mechanical-Null conformance, and focused integrated S6D-07/08/09/10/11 verification are green on the same realized state. R2.7 WP-06 is resumable.
 
 ---
 
@@ -257,9 +257,9 @@ Current closure predicates:
 
 ```text
 SEMANTIC_ARCHITECTURE_RECONCILED: TRUE
-MACHINE_REALIZATION_VERIFIED: FALSE
-S6D_FINAL_CLOSURE_AUTHORIZED: FALSE
-S6D_FINAL_CLOSURE: BLOCKED_BY_KNOWN_REALIZATION_OBLIGATION
+MACHINE_REALIZATION_VERIFIED: TRUE
+S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
+S6D_FINAL_CLOSURE: PASS
 ```
 
 ---
@@ -272,11 +272,11 @@ WP-02 CLOSED
 WP-03 CLOSED
 WP-04 CLOSED
 WP-05 CLOSED
-WP-06 IN PROGRESS / PAUSED
+WP-06 NEXT / RESUMABLE
 WP-07..WP-27 NOT STARTED
 ```
 
-R2.7 WP-06 resumes only after S6D integrated closure. B′ machine realization and all other current S6D-12 machine blockers are explicit prerequisites of that closure.
+R2.7 WP-06 may resume after S6D integrated closure PASS. No S6D machine-realization blocker remains.
 
 ---
 
@@ -284,12 +284,12 @@ R2.7 WP-06 resumes only after S6D integrated closure. B′ machine realization a
 
 ```text
 HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
-S6D: INTEGRATED CLOSURE BLOCKED
+S6D: INTEGRATED CLOSURE PASS
 S6D_COMPLETED_DOMAIN: S6D-12 / STEPS 1-8 / SEMANTIC ARCHITECTURE CANONICAL
-S6D_ACTIVE_DOMAIN: INTEGRATED CLOSURE BLOCKED
+S6D_ACTIVE_DOMAIN: NONE / INTEGRATED CLOSURE PASS
 S6D_COMPLETED_STAGE: S6D-12 STEP 8 / CANONICAL BLOCKED DISPOSITION
-S6D_ACTIVE_STAGE: MACHINE REALIZATION PREREQUISITE MRC-01..04
-S6D_NEXT_STAGE: S6D INTEGRATED CLOSURE RE-EVALUATION AFTER MRC-01..04 PASS
-S6D_FINAL_CLOSURE_BLOCKER: B′ + CURRENT DERIVED IDENTITY PROJECTIONS + MECHANICAL-NULL EXECUTION PROOF + FOCUSED INTEGRATED VERIFICATION / MACHINE REALIZATION
-R2_7_WP06: PAUSED
+S6D_ACTIVE_STAGE: NONE / FINAL CLOSURE PASS
+S6D_NEXT_STAGE: R2.7 WP-06 RESUME
+S6D_FINAL_CLOSURE_BLOCKER: NONE
+R2_7_WP06: NEXT / RESUMABLE
 ```
