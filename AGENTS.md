@@ -44,6 +44,24 @@ Before architecture, system design, deep technical research, or other developmen
 
 Do not rely on remembered versions of these rules. Read the current files on the active branch before substantive architecture/deep-work activity.
 
+## Implementation execution process
+
+For implementation after an approved architecture/specification or approved bounded design, read and follow `DEV/DEVELOPMENT_EXECUTION_PROCESS.md` before production-code changes.
+
+That file is the canonical HDM implementation-execution process. It owns the additional project rules for:
+
+- `superpowers:writing-plans`-based implementation planning for substantial work;
+- the Implementation Impact Envelope and its Senior plan-review gate;
+- autonomous TDD/task execution after GO;
+- task/code-review automation when subagents are available;
+- coherent checkpoint publication and durable execution cursors;
+- the System-Impact Gate and its exact escalation triggers;
+- final verification and Senior integration audit.
+
+Do not paste this entire process into delegated worker prompts. Workers are expected to bootstrap from the repository and read the current process owner. Delegated prompts should contain only the task-specific delta, expected current ref/cursor when useful, task-local constraints that are not already owned by repository process, and required return evidence.
+
+A normal test failure, local bug or mechanically resolvable implementation detail is not a reason to stop for Senior approval. A worker stops during approved execution when `DEV/DEVELOPMENT_EXECUTION_PROCESS.md` identifies a real system-impact escalation, when another existing mandatory human/safety gate fires, or when the approved plan/spec no longer provides a trustworthy path forward.
+
 ## Documentation evidence and synthesis discipline
 
 Repository documentation volume is an **agent workload problem**, not a human proofreading obligation.
@@ -247,12 +265,12 @@ Standing project rules belong in repository instructions and process owners, not
 When one development agent delegates work to another agent/chat/session:
 
 - assume the worker will perform the required fresh-session bootstrap and read the current `AGENTS.md` plus applicable process files;
-- do **not** repeatedly paste transport policy, branch-creation rules, evidence/completeness rules, decision-rights rules, repository ownership geometry, Superpowers requirements, or the generic checkpoint protocol when the repository already owns them;
+- do **not** repeatedly paste transport policy, branch-creation rules, evidence/completeness rules, decision-rights rules, repository ownership geometry, Superpowers requirements, the generic checkpoint protocol, or `DEV/DEVELOPMENT_EXECUTION_PROCESS.md` when the repository already owns them;
 - make the delegated message carry the **task-specific delta**: exact goal, expected current ref/cursor when useful, task-specific owning artifacts, concrete task-local constraints, material stop conditions, and required return evidence;
 - restate a standing rule only when the current task introduces an exception, a narrower task-specific interpretation, or a known failure mode that makes the generic rule insufficiently precise;
 - use concrete public repository terminology. Do not depend on private audit shorthand, metaphors, or labels that the worker cannot recover from the public repository sources.
 
-A delegated prompt must remain sufficient to identify the requested work, but it should not become a second copy of `AGENTS.md` or the design-process documents. Repository-owned standing instructions are the durable/canonical place for recurring agent behavior.
+A delegated prompt must remain sufficient to identify the requested work, but it should not become a second copy of `AGENTS.md`, the design-process documents, or the implementation-execution process. Repository-owned standing instructions are the durable/canonical place for recurring agent behavior.
 
 ## Coherent checkpoint commit discipline
 
