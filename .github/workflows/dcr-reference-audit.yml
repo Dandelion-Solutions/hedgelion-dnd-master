@@ -1,0 +1,63 @@
+name: DCR reference audit
+
+on:
+  push:
+    branches:
+      - v1/engine-rearchitecture
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reference-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source tree
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build tracked-tree corpus reference inventory
+        run: |
+          mkdir -p dcr-reference-audit
+          python DEV/TOOLS/audit_documentation_corpus_references.py \
+            --write-targets-manifest dcr-reference-audit/pre-migration-targets.json \
+            --output dcr-reference-audit/pre-migration-reference-report.json
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+
+          path = Path('dcr-reference-audit/pre-migration-reference-report.json')
+          report = json.loads(path.read_text(encoding='utf-8'))
+          source_counts = Counter(row['source_path'] for row in report['references'])
+          target_counts = Counter(row['target_path'] for row in report['references'])
+          summary = {
+              'head_sha': '${{ github.sha }}',
+              'scan_source': report['scan_source'],
+              'tracked_file_count': report['tracked_file_count'],
+              'target_count': report['target_count'],
+              'reference_count': report['reference_count'],
+              'ambiguous_target_basenames': report['ambiguous_target_basenames'],
+              'binary_or_non_utf8_file_count': len(report['binary_or_non_utf8_files']),
+              'source_file_count_with_references': len(source_counts),
+              'target_file_count_with_references': len(target_counts),
+          }
+          Path('dcr-reference-audit/summary.json').write_text(
+              json.dumps(summary, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          print(json.dumps(summary, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload DCR reference inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: dcr-reference-audit
+          path: dcr-reference-audit/
+          if-no-files-found: error
+          retention-days: 7
