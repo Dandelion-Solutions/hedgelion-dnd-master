@@ -1,6 +1,6 @@
 # R2.7 — Audit Status / Durable Cursor
 
-Status: **IN PROGRESS — WP-07 NOT STARTED / SENIOR REVIEW GO REQUIRED**
+Status: **IN PROGRESS — DOCUMENTATION CORPUS REFACTOR ACTIVE / WP-07 NOT STARTED**
 
 Date: 2026-08-29
 
@@ -46,10 +46,14 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-06
 CURRENT_DOMAIN: WP-07
 CURRENT_DOMAIN_TOPIC: Truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: NOT STARTED — mandatory Senior review GO required after WP-06 Step 8
+CURRENT_SLICE: NOT STARTED — Documentation Corpus Refactor must close before substantive WP-07
 NEXT_DOMAIN: WP-08
-OWNER_GATE: SENIOR_REVIEW_GO_REQUIRED
+OWNER_GATE: NONE
 FINAL_RECONCILIATION: NOT_STARTED
+
+INSERTED_WORKSTREAM: DOCUMENTATION_CORPUS_REFACTOR
+INSERTED_WORKSTREAM_STATUS: ACTIVE / REQUIRED_BEFORE_WP07
+INSERTED_WORKSTREAM_IS_NUMBERED_WP: FALSE
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
 S6D_STATUS: COMPLETE / INTEGRATED CLOSURE PASS
@@ -58,14 +62,14 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: IN_PROGRESS AT WP-07
+R2_7_STATUS: IN_PROGRESS AT WP-07 / SUBSTANTIVE ANALYSIS NOT STARTED
 R2_7_RESUME_TRIGGER: SATISFIED
 R2_7_WP06_RESUME_ALLOWED: TRUE
-R2_7_WP06: COMPLETE / SENIOR REVIEW PENDING
-R2_7_WP07: NOT STARTED / SENIOR_REVIEW_GO_REQUIRED
+R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
+R2_7_WP07: NOT STARTED / BLOCKED_BY_DOCUMENTATION_CORPUS_REFACTOR
 ```
 
-This cursor synchronization does not execute WP-06 analysis, reconcile its forward obligations, begin WP-07, or alter current architecture.
+This synchronization records the completed Senior review and the inserted documentation refactor. It does not execute WP-07 analysis or alter WP-06 findings.
 
 ---
 
@@ -78,22 +82,24 @@ This cursor synchronization does not execute WP-06 analysis, reconcile its forwa
 | WP-03 | CLOSED |
 | WP-04 | CLOSED |
 | WP-05 | CLOSED |
-| WP-06 | CLOSED / SENIOR REVIEW PENDING |
-| WP-07 | NOT STARTED / SENIOR REVIEW GO REQUIRED |
+| WP-06 | CLOSED / SENIOR REVIEW PASS |
+| WP-07 | NOT STARTED / INSERTED DOCUMENTATION CORPUS REFACTOR REQUIRED BEFORE START |
 | WP-08..WP-27 | NOT STARTED |
+
+The Documentation Corpus Refactor is an inserted workstream and is explicitly **not** a numbered R2.7 domain.
 
 ---
 
 ## Preserved pre-resume forward obligations
 
-The following pre-pause inputs and obligations from WP-01…WP-05 remain preserved for later reconciliation. Their retention does not itself reopen their closed domains or start WP-06.
+The following pre-pause inputs and obligations from WP-01…WP-05 remain preserved for later reconciliation. Their retention does not itself reopen their closed domains or start WP-07.
 
 - catalog generation `2.0.0` is an identity, not a compatibility freeze;
 - engine prerelease identity remains `v1.0-alpha` / `engine_version: 1.0-alpha`;
 - stable character choice-slot direction and strict character definition schemas introduced during WP-06 remain inputs;
 - typed Activity parameter/target/area/cost/roll protocol work remains valid input;
 - `world.encounter` does not own procedure-local initiative/round operational state;
-- the former residual rules/seed closure that was routed through S6D is historical pre-resume evidence; S6D is complete and WP-06 is now closed.
+- the former residual rules/seed closure that was routed through S6D is historical pre-resume evidence; S6D is complete and WP-06 is closed.
 - **WP-06/F02**: WP-26 must remove stale pre-realization B′ “not materialized / blocked” wording from `DEV/ARCHITECTURE/DOMAIN_RULES_COVERAGE.md`; the current machine binding and S6D closure authority already control.
 - **WP-06/F03**: WP-26 must align `GAME/CORE/EXPLORATION.md` spatial-record/map guidance with the bounded location/procedure/applicability contract, without adding a generalized spatial engine.
 
@@ -138,13 +144,25 @@ Normative policy is `RULES/HOUSE_RULES.md`; structured companion is `RULES/HOUSE
 
 ---
 
+## Senior review and inserted-work activation
+
+WP-06 has passed Senior semantic/technical review without reopening its findings.
+
+```text
+FINAL_WP06_SHA: 06f70919d52739f72515a5d315bb0998d7c34c6e
+FINAL_WP06_HOSTED_VERIFICATION: Validate engine source #33238159180
+FINAL_WP06_HOSTED_VERIFICATION_RESULT: SUCCESS
+```
+
+The inserted Documentation Corpus Refactor is active. It must reach verified closure and its own Senior review checkpoint before WP-07 substantive analysis may begin.
+
+---
+
 ## Current handoff
 
-WP-06 is closed after the post-S6D reconciliation, bidirectional audit and hosted verification. Stop for the mandatory Senior review checkpoint before beginning WP-07.
-
-LAST_PUBLISHED_SHA before this cursor synchronization: `1017dd36aa91a0b06c091e0ac429ab007e1632ca`
-COMPLETED_SLICES: incoming WP-04/F01 and WP-05/F01 reconciliation; domain route/CORE reverse audit; selector-contract correction; WP-06 closure candidate verification
-CURRENT_VERIFICATION_STATE: hosted workflow #33229790196 success
-NEXT_EXACT_TASK_OR_SLICE: Senior review of completed WP-06; do not begin WP-07 without GO
+LAST_PUBLISHED_SHA before this synchronization: `06f70919d52739f72515a5d315bb0998d7c34c6e`
+COMPLETED_SLICES: WP-06 closed; Senior semantic/technical review PASS
+CURRENT_VERIFICATION_STATE: exact WP-06 SHA `06f70919d52739f72515a5d315bb0998d7c34c6e`; hosted workflow #33238159180 success
+NEXT_EXACT_TASK_OR_SLICE: Documentation Corpus Refactor — activate four-directory public taxonomy, then complete semantic census/migration; do not begin WP-07
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE

@@ -2,9 +2,9 @@
 
 Status: **DERIVATIVE / NON-NORMATIVE NAVIGATION AND INTEGRATION INDEX**
 
-Date: 2026-08-25
+Date: 2026-08-29
 
-Architecture state: **STEPS 1–5 CLOSED; S6D COMPLETE / INTEGRATED CLOSURE PASS; R2.7 WP-06 NEXT / RESUMABLE**
+Architecture state: **STEPS 1–5 CLOSED; S6D COMPLETE / INTEGRATED CLOSURE PASS; R2.7 WP-06 CLOSED / SENIOR REVIEW PASS; DOCUMENTATION CORPUS REFACTOR ACTIVE; WP-07 NOT STARTED**
 
 ---
 
@@ -98,7 +98,7 @@ General repository discovery:
 | Former Step 6 | CLOSED / REBASELINED | physical-host findings reallocated into Round 2; old stage is not active | Round-1 closure / Round-2 rebaseline owner decision |
 | S6D-01 | COMPLETE / ARCHITECTURE CLOSED | content-addressed ruleset package snapshots + exact resolved-set identity + owner-local context projections | `RULESET_PACKAGE_IDENTITY.md`; S6D-01 canonicalization |
 | S6D | COMPLETE / INTEGRATED CLOSURE PASS | S6D-01…12 semantic closure plus MRC-01…04 realization verified; Step-8 blocked disposition is historical only | `2026-08-29-s6d-integrated-machine-realization-closure.md`; roadmap |
-| R2.7 | WP-06 NEXT / RESUMABLE | next authorized continuation; not started by S6D closure | roadmap |
+| R2.7 | WP-06 CLOSED / SENIOR REVIEW PASS; DOCUMENTATION CORPUS REFACTOR ACTIVE; WP-07 NOT STARTED | inserted refactor is required before substantive WP-07 and is not a numbered WP | roadmap + R2.7 durable cursor |
 
 ---
 
@@ -594,7 +594,7 @@ Open the listed primary source after locating a concern here.
 
 # 13. Step-6 boundary / feasibility gates
 
-Step 5 is closed. Step 6 is the next architecture stage and owns physical deployment/context feasibility plus final architecture closure.
+Step 5 is closed. The former Step 6 has been rebaselined; its physical-host findings were allocated into Round 2. Current sequencing is owned by `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`.
 
 Material gates identified by Step 5.14:
 
@@ -810,7 +810,7 @@ Update this index when:
 - owner decision is added/revised;
 - canonical amendment changes a cross-slice seam;
 - historical/current authority status changes;
-- Step 6 establishes physical realizations that materially change navigation/supersession;
+- a later stage establishes physical realizations that materially change navigation/supersession;
 - later implementation review exposes a real Step-5 reopen condition.
 
 Do not copy every schema field/implementation detail here. The index is valuable as a compact **semantic locator + integration map + adversarial router**, not as a parallel specification corpus.
