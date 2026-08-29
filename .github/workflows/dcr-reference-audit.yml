@@ -27,15 +27,40 @@ jobs:
           python DEV/TOOLS/audit_documentation_corpus_references.py \
             --write-targets-manifest dcr-reference-audit/pre-migration-targets.json \
             --output dcr-reference-audit/pre-migration-reference-report.json
+          python DEV/TOOLS/build_documentation_corpus_migration_map.py \
+            --targets-manifest dcr-reference-audit/pre-migration-targets.json \
+            --output dcr-reference-audit/migration-map.json
           python - <<'PY'
           import json
           from collections import Counter
           from pathlib import Path
 
-          path = Path('dcr-reference-audit/pre-migration-reference-report.json')
-          report = json.loads(path.read_text(encoding='utf-8'))
+          report = json.loads(Path('dcr-reference-audit/pre-migration-reference-report.json').read_text(encoding='utf-8'))
+          migration = json.loads(Path('dcr-reference-audit/migration-map.json').read_text(encoding='utf-8'))
           source_counts = Counter(row['source_path'] for row in report['references'])
           target_counts = Counter(row['target_path'] for row in report['references'])
+
+          expected_migration_counts = {
+              'target_count': 419,
+              'resolved_target_count': 419,
+              'unresolved_target_count': 0,
+              'move_count': 370,
+              'retain_count': 49,
+              'specs_to_design': 333,
+              'specs_to_research': 1,
+              'retained_specs': 41,
+              'research_to_design': 36,
+              'retained_research': 8,
+              'extraction_count': 1,
+          }
+          if migration['counts'] != expected_migration_counts:
+              raise SystemExit(
+                  'DCR migration-map accounting mismatch:\n'
+                  + json.dumps({'expected': expected_migration_counts, 'actual': migration['counts']}, indent=2, sort_keys=True)
+              )
+          if migration['unresolved_targets']:
+              raise SystemExit('DCR migration map contains unresolved targets')
+
           summary = {
               'head_sha': '${{ github.sha }}',
               'scan_source': report['scan_source'],
@@ -46,6 +71,8 @@ jobs:
               'binary_or_non_utf8_file_count': len(report['binary_or_non_utf8_files']),
               'source_file_count_with_references': len(source_counts),
               'target_file_count_with_references': len(target_counts),
+              'migration_counts': migration['counts'],
+              'extractions': migration['extractions'],
           }
           Path('dcr-reference-audit/summary.json').write_text(
               json.dumps(summary, indent=2, sort_keys=True) + '\n',
