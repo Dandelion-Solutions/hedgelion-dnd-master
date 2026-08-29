@@ -10,9 +10,9 @@ This file is an operational continuation surface, not semantic authority. Item-l
 
 ```text
 PRE_REFACTOR_SPECS_BASELINE: 375
-SPECS_FULL_CONTENT_REVIEWED: 272
-SPECS_REMAINING_UNREVIEWED: 103
-UNAMBIGUOUS_DESIGN_DESTINATIONS: 227
+SPECS_FULL_CONTENT_REVIEWED: 280
+SPECS_REMAINING_UNREVIEWED: 95
+UNAMBIGUOUS_DESIGN_DESTINATIONS: 235
 SPECS_TO_RESEARCH_DESTINATIONS: 1
 CONFIRMED_CURRENT_SPEC_OR_OWNER_DESTINATIONS: 39
 PENDING_FINAL_SUPERSESSION_CHECK: 5
@@ -20,9 +20,9 @@ PHYSICAL_MOVES_PERFORMED: 0
 REFERENCE_AUDIT_GATE: NOT SATISFIED / DCR-016 OPEN
 ```
 
-Current durable semantic checkpoint: **Specs Census Part 31**.
+Current durable semantic checkpoint: **Specs Census Part 33**.
 
-Part 31 publication SHA: `075aca8a51cdaec280f3ccb41569707cbf037b72`; remote read-back verified.
+Part 33 publication SHA: `bf5efc209096ffe61b8c5a881f07f504721dd378`; remote read-back verified.
 
 Unique-source correction remains in force:
 
@@ -42,7 +42,7 @@ Current date-group progress:
 
 ```text
 2026-08-24: 57 / 57 COMPLETE
-2026-08-25: 15 / 55
+2026-08-25: 23 / 55
 ```
 
 ## Migration gate
@@ -79,16 +79,17 @@ Safety invariants:
 | M-016 | Part 25 S-251..S-256 + prior S-149/S-150 | R2.5 derivation/gate to design; keep S-149 canonical | BLOCKED_REFERENCE_AUDIT |
 | M-017 | Part 26 S-257..S-263 | R2.6 derivation/owner clarifications to design after consolidation; keep S-262 canonical | BLOCKED_REFERENCE_AUDIT |
 | M-018 | Parts 27-31 S-264..S-272 | move S-264..266, S-268, S-271/S-272 to design; keep S-267, S-269, S-270 | BLOCKED_REFERENCE_AUDIT |
+| M-019 | Parts 32-33 S-273..S-280 | move complete S6D-01 eight-step specs chain to design; semantic owner remains `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` | BLOCKED_REFERENCE_AUDIT |
 
 Parts 07–15 retain their authoritative item-level census dispositions even where compact rows are not repeated here.
 
 ## Next exact task
 
 ```text
-NEXT_FAMILY: 2026-08-25 S6D-01 — Ruleset / Package / Catalog Snapshot Identity
-NEXT_EXPECTED_CENSUS_IDS: S-273..S-280
-REQUIRED_METHOD: full-read all 8 family sources + later-authority sweep before disposition
-CHECKPOINT_STYLE: small commits after family authority is proven
+NEXT_FAMILY: 2026-08-25 S6D-02 — Catalog Admission and Gap Closure
+NEXT_EXPECTED_CENSUS_IDS: S-281..S-288
+REQUIRED_METHOD: full-read all 8 family sources + current primary-owner/later-authority sweep before disposition
+CHECKPOINT_STYLE: two small four-source commits after family authority is proven
 PHYSICAL_MIGRATION_STATUS: DEFERRED / DCR-016 OPEN
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```
