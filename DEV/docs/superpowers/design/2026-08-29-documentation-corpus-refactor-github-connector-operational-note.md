@@ -81,7 +81,7 @@ Tree SHAs are checkpoint evidence only. A continuation session MUST fresh-read t
 
 ## 3. Step-5.12 exact family recovered by the reliable route
 
-The pre-refactor specs tree contains exactly these nine Step-5.12 family sources:
+The pre-refactor specs tree contains exactly these ten Step-5.12 family sources:
 
 1. `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-task-brief.md`
 2. `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-research-draft.md`
@@ -93,8 +93,6 @@ The pre-refactor specs tree contains exactly these nine Step-5.12 family sources
 8. `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-adversarial-review-addendum-v2.md`
 9. `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-resolution-gate.md`
 10. `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md`
-
-**Correction:** the exact family is **10 files**, not 9. The initial mental count omitted the canonical file; the branch tree is authoritative.
 
 Do not infer family cardinality from filenames remembered in chat. Re-read the tree.
 
