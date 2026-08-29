@@ -223,7 +223,7 @@ class CoverageTests(unittest.TestCase):
   conflict,evidence=execute_mechanical_null_resolution(changed,receipts)
   self.assertEqual(conflict["failure_code"],"failure.idempotency_conflict");self.assertEqual(conflict["prospective_mutations"],[]);self.assertEqual(conflict["event_ids"],[]);self.assertEqual(evidence,{})
   self.assertEqual(first[1]["mechanical_event"]["payload"]["roll"]["rng_result_ref"],"rng-check")
-  for mutate in (lambda x:x.pop("dc"),lambda x:x["roll"].update(d20=0),lambda x:x.update(activity_id="activity.attack.ranged_weapon"),lambda x:x["roll"].pop("rng_result_ref")):
+  for mutate in (lambda x:x.pop("dc"),lambda x:x.update(ability_id="ability.invalid"),lambda x:x.update(dc=0),lambda x:x.update(dc=31),lambda x:x["roll"].update(d20=0),lambda x:x.update(activity_id="activity.attack.ranged_weapon"),lambda x:x["roll"].pop("rng_result_ref")):
    bad=copy.deepcopy(request);bad["idempotency_key"]+="-bad";mutate(bad);rejected,evidence=execute_mechanical_null_resolution(bad,{})
    self.assertNotEqual(rejected["status"],"COMPLETED");self.assertEqual(rejected["prospective_mutations"],[]);self.assertEqual(rejected["event_ids"],[]);self.assertEqual(evidence,{})
  def test_negative_source_difference_or_orphan_fails(self):

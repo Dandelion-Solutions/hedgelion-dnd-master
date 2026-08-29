@@ -156,6 +156,14 @@ def _committed(profile,key,mutations,event_ids):
  return {"profile_id":profile,"idempotency_key":key,"status":"COMPLETED","prospective_mutations":mutations,"execution_segment":{"segment_sequence":1,"commit_state":"committed","resulting_execution_state":"COMPLETED","affected_revision_refs":revisions,"event_ids":event_ids},"event_ids":event_ids,"receipt_ref":f"{key}:receipt"}
 def _receipt_fixture(wire,exports=None):
  return {"execution_owner_id":f"resolution:{wire['idempotency_key']}","segment_refs":[f"resolution:{wire['idempotency_key']}:segment:1"],"status":wire["status"],"event_ids":wire["event_ids"],"exports":exports or {},"pending_child_refs":[]}
+def _generic_activity_contract(activity_id):
+ root=Path(__file__).resolve().parents[2]
+ spine=load(root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/gameplay-spine-seed.json")
+ rows={row["id"]:row for row in spine["activity_definitions"]}
+ activity=rows.get(activity_id)
+ if activity is None:return None
+ parameters=activity["data"]["parameters"]
+ return {"ability_ids":set(parameters["ability_id"]["allowed_values"]),"dc_minimum":parameters["dc"]["minimum"],"dc_maximum":parameters["dc"]["maximum"]}
 def execute_mechanical_null_resolution(req,receipts=None):
  receipts={} if receipts is None else receipts
  if not isinstance(req,dict):return (_failure({},"failure.missing_reference"),{})
@@ -167,9 +175,10 @@ def execute_mechanical_null_resolution(req,receipts=None):
  exact_keys={"profile_id","idempotency_key","activity_id","ability_id","dc","roll"}
  family={"resolution.check":"check","resolution.save":"save"}.get(req.get("profile_id"))
  expected_activity=f"activity.{family}.generic" if family else None
+ contract=_generic_activity_contract(expected_activity) if expected_activity else None
  roll=req.get("roll")
  roll_ok=isinstance(roll,dict) and set(roll)=={"rng_result_ref","d20","basis_modifier","proficiency_bonus"} and isinstance(roll.get("rng_result_ref"),str) and bool(roll.get("rng_result_ref")) and isinstance(roll.get("d20"),int) and 1<=roll["d20"]<=20 and all(isinstance(roll.get(k),int) for k in ("basis_modifier","proficiency_bonus"))
- request_ok=set(req)==exact_keys and req.get("activity_id")==expected_activity and isinstance(req.get("ability_id"),str) and req["ability_id"].startswith("ability.") and isinstance(req.get("dc"),int) and req["dc"]>=1 and roll_ok
+ request_ok=set(req)==exact_keys and req.get("activity_id")==expected_activity and contract is not None and req.get("ability_id") in contract["ability_ids"] and isinstance(req.get("dc"),int) and contract["dc_minimum"]<=req["dc"]<=contract["dc_maximum"] and roll_ok
  if not request_ok:return (_failure(req,"failure.missing_reference"),{})
  total=roll["d20"]+roll["basis_modifier"]+roll["proficiency_bonus"];result="SUCCESS" if total>=req["dc"] else "FAILURE"
  owner_id=f"resolution:{key}";segment_id=f"{owner_id}:segment:1";event_id=f"{segment_id}:event:1"

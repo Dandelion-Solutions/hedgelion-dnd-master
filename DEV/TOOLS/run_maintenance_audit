@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import os
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -17,7 +18,11 @@ def main() -> int:
     except PreparationError as exc:
         print(f"ERROR: DEV tool environment preparation failed: {exc}", file=sys.stderr)
         return exc.exit_code
-    return subprocess.run([str(py), str(TOOLS / "audit_engine.py")], cwd=REPO_ROOT).returncode
+    env = os.environ.copy()
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    return subprocess.run(
+        [str(py), str(TOOLS / "audit_engine.py")], cwd=REPO_ROOT, env=env
+    ).returncode
 
 
 if __name__ == "__main__":
