@@ -1,10 +1,10 @@
 # Documentation Corpus Refactor — Migration Journal
 
-Status: **ACTIVE OPERATIONAL JOURNAL — SEMANTIC BASELINE CENSUS COMPLETE / PHYSICAL MIGRATION DEFERRED**
+Status: **ACTIVE OPERATIONAL JOURNAL — SEMANTIC CENSUS/SUPERSESSION COMPLETE / REFERENCE AUDIT NEXT**
 Date: 2026-08-29
 Branch: `v1/engine-rearchitecture`
 
-This file is an operational continuation surface, not semantic authority. Item-level dispositions are owned by the research census and the durable `DEV/docs/superpowers/design/2026-08-29-documentation-corpus-refactor-specs-census-part-*.md` series.
+This file is an operational continuation surface, not semantic authority. Item-level dispositions are owned by the research census and the durable `DEV/docs/superpowers/design/2026-08-29-documentation-corpus-refactor-specs-census-part-*.md` series. Conflict/debt status is the base register plus its current amendments.
 
 ## Current cursor
 
@@ -12,23 +12,24 @@ This file is an operational continuation surface, not semantic authority. Item-l
 PRE_REFACTOR_SPECS_BASELINE: 375
 SPECS_FULL_CONTENT_REVIEWED: 375
 SPECS_REMAINING_UNREVIEWED: 0
-UNAMBIGUOUS_DESIGN_DESTINATIONS: 329
+FINAL_DESIGN_DESTINATIONS: 333
 SPECS_TO_RESEARCH_DESTINATIONS: 1
-CONFIRMED_CURRENT_SPEC_OR_OWNER_DESTINATIONS: 40
-PENDING_FINAL_SUPERSESSION_CHECK: 5
+FINAL_CURRENT_SPEC_OR_OWNER_DESTINATIONS: 41
+PENDING_FINAL_SUPERSESSION_CHECK: 0
 PHYSICAL_MOVES_PERFORMED: 0
 REFERENCE_AUDIT_GATE: NOT SATISFIED / DCR-016 OPEN
-CURRENT_DURABLE_SEMANTIC_CHECKPOINT: Specs Census Part 60
-PART_60_PUBLICATION_SHA: 41448329a7cb2d0d16cb7f76b0957d8d0373b096
+CURRENT_DURABLE_SEMANTIC_CHECKPOINT: Specs Census Part 61
+PART_61_PUBLICATION_SHA: 78731e310cd9eae3d7870c2f5c4743ca17d459ad
+CONFLICT_STATUS_AMENDMENT_01_SHA: a6531e9bf9477dc4bcd9b624119d3fbfe09e0690
 ```
 
-Part 60 remote read-back is verified.
+Part 61 and conflict-register Amendment 01 remote read-back are verified.
 
 Frozen baseline date closure:
 
 ```text
 2026-08-18: COMPLETE
-2026-08-19: COMPLETE SUBJECT TO FIVE EXPLICIT FINAL SUPERSESSION CHECKS
+2026-08-19: COMPLETE / FINAL SUPERSESSION CHECKS RESOLVED
 2026-08-20: COMPLETE
 2026-08-21: 45 / 45 COMPLETE
 2026-08-23: 3 / 3 COMPLETE
@@ -43,19 +44,17 @@ TOTAL: 375 / 375 FULL-CONTENT REVIEWED
 
 Unique-source correction remains in force: S-118 is the Step-5.14 canonical final; S-200 is `2026-08-21-step-6-pre-design-framing-working-notes.md`; early-reviewed S-149/S-150/S-169 were not recounted.
 
-## Remaining semantic gate
-
-The initial census intentionally left five early accepted artifacts pending final later-owner proof:
+## Final pending-case result
 
 ```text
-S-010  2026-08-18-step-2-mechanical-state-ownership-design.md
-S-015  2026-08-19-step-1-2-retrospective-architecture-assurance-final.md
-S-035  2026-08-19-step-2-assurance-slice-c-temporal-recovery-resolution.md
-S-041  2026-08-19-step-2-condition-intrinsic-rule-scope-resolution.md
-S-043  2026-08-19-step-2-final-critical-review.md
+S-010 -> design / current owners consolidate accepted sub-decisions
+S-015 -> design / retrospective assurance provenance
+S-035 -> specs / retained current accepted scheduled-trigger amendment
+S-041 -> design / two-axis Condition decision consolidated in current owners
+S-043 -> design / final review/closure evidence consolidated in current owners
 ```
 
-Do not finalize migration counts until these five are classified against current owning authority.
+No accepted implementation-facing law is stranded by these dispositions. No split or promotion is required for the five-case set.
 
 ## Migration gate
 
@@ -83,15 +82,17 @@ Earlier batches M-001..M-018 retain their census-defined dispositions and remain
 | M-030 | Parts 55-56 S-358..S-365 | move complete S6D-11 chain to design; owner `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md` | BLOCKED_REFERENCE_AUDIT |
 | M-031 | Parts 57-59 S-366..S-374 | move complete S6D-12 design/review/closure chain to design; retain current semantics in existing S6D owners | BLOCKED_REFERENCE_AUDIT |
 | M-032 | Part 60 S-375 | move current integrated S6D closure status/evidence record to design; roadmap remains sequencing/status authority | BLOCKED_REFERENCE_AUDIT |
+| M-033 | Part 61 S-010/S-015/S-041/S-043 | move final four resolved pending artifacts to design | BLOCKED_REFERENCE_AUDIT |
+| M-034 | Part 61 S-035 | retain current accepted temporal/recovery amendment in specs | NO_MOVE / CURRENT_OWNER |
 
 Known post-realization stale blocker wording in current domain-rules/package-machine owners remains separately tracked status-maintenance debt and is not repaired by corpus classification.
 
 ## Next exact task
 
 ```text
-NEXT_SEMANTIC_TASK: resolve S-010 / S-015 / S-035 / S-041 / S-043 against current owning authority
-THEN: finalize semantic destination counts and migration queue
-THEN: solve DCR-016 branch-complete inbound-reference/path-repair proof
+SEMANTIC_CENSUS: COMPLETE
+SUPERSESSION_GATE: COMPLETE
+NEXT: prove DCR-016 branch-complete inbound-reference/path-repair inventory using a branch-local deterministic repository audit, then record REFERENCE_SET_PROVEN before any move
 PHYSICAL_MIGRATION_STATUS: DEFERRED / DCR-016 OPEN
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```
