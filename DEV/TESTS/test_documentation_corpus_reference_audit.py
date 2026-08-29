@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "DEV" / "TOOLS"))
 
-from audit_documentation_corpus_references import build_reference_report
+from audit_documentation_corpus_references import build_reference_report, build_target_manifest
 
 
 class DocumentationCorpusReferenceAuditTests(unittest.TestCase):
@@ -126,6 +126,43 @@ class DocumentationCorpusReferenceAuditTests(unittest.TestCase):
             self.assertEqual(
                 [(row["source_path"], row["line"]) for row in report["references"]],
                 [("tracked-consumer.md", 1)],
+            )
+
+    def test_frozen_target_manifest_still_finds_old_references_after_target_moves(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+
+            specs = root / "DEV/docs/superpowers/specs"
+            specs.mkdir(parents=True)
+            target = specs / "old-spec.md"
+            target.write_text("target\n", encoding="utf-8")
+            consumer = root / "consumer.md"
+            consumer.write_text("DEV/docs/superpowers/specs/old-spec.md\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+
+            manifest = build_target_manifest(root)
+            self.assertEqual(manifest["target_count"], 1)
+
+            design = root / "DEV/docs/superpowers/design"
+            design.mkdir(parents=True)
+            subprocess.run(
+                [
+                    "git",
+                    "mv",
+                    "DEV/docs/superpowers/specs/old-spec.md",
+                    "DEV/docs/superpowers/design/old-spec.md",
+                ],
+                cwd=root,
+                check=True,
+            )
+
+            report = build_reference_report(root, targets=manifest["targets"])
+
+            self.assertEqual(report["target_count"], 1)
+            self.assertEqual(
+                [(row["source_path"], row["target_path"]) for row in report["references"]],
+                [("consumer.md", "DEV/docs/superpowers/specs/old-spec.md")],
             )
 
 
