@@ -1,8 +1,8 @@
 # R2.7 — Audit Status / Durable Cursor
 
-Status: **PAUSED BY OWNER — HOUSE RULES COMPLETE / S6D NEXT NOT STARTED / WP-06 PAUSED**
+Status: **IN PROGRESS — WP-06 CURRENT / RESUMABLE**
 
-Date: 2026-08-25
+Date: 2026-08-29
 
 Execution protocol:
 
@@ -12,10 +12,13 @@ R2.7 task brief:
 
 - `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`
 
-Program sequencing:
+Program sequencing authority:
 
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
-- `DEV/docs/superpowers/specs/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
+
+Current S6D closure authority:
+
+- `DEV/docs/superpowers/specs/2026-08-29-s6d-integrated-machine-realization-closure.md`
 
 Current House-Rules canonical authority:
 
@@ -24,49 +27,48 @@ Current House-Rules canonical authority:
 
 ---
 
-## Immutable pre-pause R2.7 checkpoint
+## Immutable pre-pause R2.7 evidence
 
-The complete R2.7 cursor, open forward obligations, closed-domain summaries and pre-pause recovery state remain preserved in Git blob:
+The complete R2.7 cursor, open forward obligations, closed-domain summaries and pre-pause recovery state remain preserved in the immutable Git blob:
 
 ```text
 PRE_PAUSE_STATUS_BLOB_SHA: d486825dc5c9463b2e2159086e6c7102c3caf354
 ```
 
-Do not reconstruct those obligations from conversation history.
+That blob records the real R2.7 state before the House-Rules/S6D pause. It is historical/pre-resume evidence only and must not be reconstructed from conversation history or used as the current sequencing cursor.
 
 ---
 
-## Durable cursor
+## Current durable cursor
 
 ```text
-AUDIT_STATUS: PAUSED
+AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-05
-PAUSED_DOMAIN: WP-06
-PAUSED_DOMAIN_TOPIC: Rules / adjudication / domain-module compatibility
-NEXT_R2_7_DOMAIN_AFTER_RESUME: WP-07
+CURRENT_DOMAIN: WP-06
+CURRENT_DOMAIN_TOPIC: Rules / adjudication / domain-module compatibility
+CURRENT_SLICE: owning rule-domain graph + CORE/domain reverse audit
+NEXT_DOMAIN: WP-07
+OWNER_GATE: NONE
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
-HOUSE_RULES_STEP_1: CLOSED / PRESERVED
-HOUSE_RULES_STEP_2: REPAIRED / COMPLETE
-HOUSE_RULES_STEP_3: HUMAN DECISION COMPLETE
-HOUSE_RULES_STEP_4: COMPLETE V2
-HOUSE_RULES_STEP_5: COMPLETE V2
-HOUSE_RULES_STEP_6: COMPLETE V2 / 0 BLOCKER / 0 SIGNIFICANT OPEN AFTER RESOLUTION
-HOUSE_RULES_STEP_7: PASS V2
-HOUSE_RULES_STEP_8: COMPLETE V2
+S6D_STATUS: COMPLETE / INTEGRATED CLOSURE PASS
+SEMANTIC_ARCHITECTURE_RECONCILED: TRUE
+MACHINE_REALIZATION_VERIFIED: TRUE
+S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
+S6D_FINAL_CLOSURE: PASS
 
-S6D_STATUS: NEXT / PREPARED / NOT STARTED
-S6D_ACTIVE_STAGE: NONE
-S6D_START_TRIGGER: EXPLICIT OWNER CONTINUATION AFTER THIS STOP
-
-R2_7_STATUS: PAUSED AT WP-06
-R2_7_RESUME_TRIGGER: S6D INTEGRATED CLOSURE
+R2_7_STATUS: IN_PROGRESS AT WP-06
+R2_7_RESUME_TRIGGER: SATISFIED
+R2_7_WP06_RESUME_ALLOWED: TRUE
+R2_7_WP06: CURRENT / RESUMABLE
 ```
+
+This cursor synchronization does not execute WP-06 analysis, reconcile its forward obligations, begin WP-07, or alter current architecture.
 
 ---
 
-## R2.7 progress at pause
+## R2.7 progress
 
 | Domain | Status |
 |---|---|
@@ -75,17 +77,21 @@ R2_7_RESUME_TRIGGER: S6D INTEGRATED CLOSURE
 | WP-03 | CLOSED |
 | WP-04 | CLOSED |
 | WP-05 | CLOSED |
-| WP-06 | PAUSED / IN PROGRESS |
+| WP-06 | CURRENT / RESUMABLE |
 | WP-07..WP-27 | NOT STARTED |
 
-Important pre-pause facts remain valid unless later owning evidence supersedes them:
+---
+
+## Preserved pre-resume forward obligations
+
+The following pre-pause inputs and obligations from WP-01…WP-05 remain preserved for later reconciliation. Their retention does not itself reopen their closed domains or start WP-06.
 
 - catalog generation `2.0.0` is an identity, not a compatibility freeze;
 - engine prerelease identity remains `v1.0-alpha` / `engine_version: 1.0-alpha`;
 - stable character choice-slot direction and strict character definition schemas introduced during WP-06 remain inputs;
 - typed Activity parameter/target/area/cost/roll protocol work remains valid input;
 - `world.encounter` does not own procedure-local initiative/round operational state;
-- selector metadata and broader residual rules/seed closure remain incomplete and belong to S6D where still applicable.
+- the former residual rules/seed closure that was routed through S6D is historical pre-resume evidence; S6D is now complete, while any remaining WP-06 reconciliation stays in this R2.7 workstream.
 
 ---
 
@@ -102,7 +108,7 @@ OLD/STALE PRE-RELEASE STRUCTURES:
 
 This does not automatically authorize arbitrary shipped GAME semantics, packaging, deployment or unrelated user-facing behavior.
 
-House-Rules materialization under this authorization is now part of the closed architecture:
+House-Rules materialization under this authorization is part of the closed architecture:
 
 - richer frozen adjudicated Activity-parameter bindings;
 - narrow per-PLAYER mechanical-override policy grant;
@@ -128,14 +134,8 @@ Normative policy is `RULES/HOUSE_RULES.md`; structured companion is `RULES/HOUSE
 
 ---
 
-## Validation note
-
-`.github/workflows/validate.yml` now triggers on `main`, `feature/**`, `v*/*` and pull requests. The first observed `v1/engine-rearchitecture` run reached the maintenance audit and failed on pre-existing release/readiness inconsistencies before DEV unit tests. House-Rules closure therefore relies on focused contract verification and does not claim repository-wide CI green.
-
----
-
 ## Current handoff
 
-**STOP BEFORE S6D.**
+S6D integrated closure has passed. Resume R2.7 at WP-06 from the current slice above.
 
-The next explicit owner continuation begins S6D at its first numbered domain/task **Step 1 — Architecture Task Brief**. Do not resume R2.7 WP-06 before S6D integrated closure.
+Do not treat this cursor update as execution of the WP-06 analysis or reconciliation of its preserved forward obligations.
