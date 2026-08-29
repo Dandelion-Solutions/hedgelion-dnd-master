@@ -12,24 +12,33 @@ Semantic classification remains owned by:
 - `DEV/docs/superpowers/design/2026-08-29-documentation-corpus-refactor-census.md`
 - `DEV/docs/superpowers/design/2026-08-29-documentation-corpus-refactor-specs-census-part-*.md`
 
+Connector/path-enumeration operational guidance is preserved separately in:
+
+- `DEV/docs/superpowers/design/2026-08-29-documentation-corpus-refactor-connector-operations-note.md`
+
 The journal records only migration readiness, batching, path-repair obligations and verification state. Individual source semantics must not be re-derived from this journal when a census entry or current canonical owner is available.
 
 ## 1. Current baseline
 
+Current durable semantic checkpoint is Specs Census Part 15.
+
 ```text
 PRE_REFACTOR_SPECS_BASELINE:               375
-SPECS_FULL_CONTENT_REVIEWED:               109
-UNAMBIGUOUS_DESIGN_DESTINATIONS:            88
-CONFIRMED_CURRENT_SPEC/AMENDMENT_OWNERS:     16
+SPECS_FULL_CONTENT_REVIEWED:               178
+UNAMBIGUOUS_DESIGN_DESTINATIONS:           145
+SPECS_TO_RESEARCH_DESTINATIONS:              1
+CONFIRMED_CURRENT_SPEC/AMENDMENT_OWNERS:     27
 PENDING_FINAL_SUPERSESSION_CHECK:             5
-SPECS_REMAINING_UNREVIEWED:                 266
+SPECS_REMAINING_UNREVIEWED:                 197
 
 PHYSICAL_MOVES_PERFORMED:                    0
 MIGRATED_VERIFIED:                            0
 REFERENCE_AUDIT_GATE:           NOT SATISFIED
 ```
 
-The 88 semantic move candidates are **not** 88 migration-ready files. Every candidate is currently blocked by the same repository-wide path/reference gate unless a later batch proves otherwise.
+These semantic move candidates are **not** migration-ready files. Every candidate is currently blocked by the same repository-wide path/reference gate unless a later batch proves otherwise.
+
+The in-session full read of Step 5.12 does **not** advance the durable cursor until Specs Census Part 16 is published and read back.
 
 ## 2. Stable migration dispositions
 
@@ -166,20 +175,47 @@ The census IDs are the durable join key. Do not duplicate full semantic analyses
 - **Relationship:** S-109 supplements, and does not supersede, S-108 and Step-5.9 canonical authority.
 - **Status:** `SEMANTIC_READY / BLOCKED_REFERENCE_AUDIT`.
 
+The queue above predates later census parts and is not itself a complete semantic-move inventory. Parts 07–15 remain authoritative for later reviewed families; append their coherent migration batches before physical execution. Do not infer that an omitted queue batch means the corresponding reviewed files remain in `specs/`.
+
 ## 8. Queue extension rule
 
 Each later census checkpoint appends or updates a migration batch only after its semantic family is closed. Do not create a physical-move batch from partially read filenames.
 
 If later review changes a previously recorded supersession relationship, update this journal by census ID and current owner before any migration write. The semantic census/current owner remains authoritative over the journal.
 
+### 8.1 Connector census-enumeration rule
+
+Do not rediscover baseline families by repeatedly fetching the full repository recursive tree and text-searching the resulting giant one-line JSON payload.
+
+For semantic census enumeration use the frozen pre-refactor `specs/` tree directly:
+
+```text
+PRE_REFACTOR_SPECS_TREE_SHA: 0fb176ec4cee7af3d6765a34174964679c99819d
+GET /repos/Dandelion-Solutions/hedgelion-dnd-master/git/trees/0fb176ec4cee7af3d6765a34174964679c99819d
+require: truncated == false
+```
+
+Then fetch every exact family path with `GitHub.fetch_file` for full semantic review.
+
+Full failure mode, exact Step-5.12 path set, and fresh-chat continuation procedure are recorded in `2026-08-29-documentation-corpus-refactor-connector-operations-note.md`.
+
+This method solves baseline family inventory for census work only. It does **not** satisfy the branch-complete inbound-reference requirement for physical migration; DCR-016 remains open.
+
 ## 9. Current execution cursor
 
 ```text
 CORPUS_REFACTOR_STATUS: IN_PROGRESS
-SPECS_CENSUS_CURSOR: 109 / 375
-NEXT_SEMANTIC_FAMILY: Step 5.4 — Host Lifecycle & Session Handoff
+DURABLE_SPECS_CENSUS_CURSOR: 178 / 375
+DURABLE_LAST_CHECKPOINT: Specs Census Part 15
+NEXT_DURABLE_SEMANTIC_FAMILY: Step 5.12 — Host Delivery / Disclosure Boundary
+STEP5_12_EXACT_BASELINE_SOURCES: 10
+STEP5_12_FULL_CONTENT_READ_IN_CURRENT_SESSION: 10 / 10
+STEP5_12_PART_16_STATUS: NOT PUBLISHED
+PREPUBLICATION_STEP5_12_RESULT: 9 design provenance + 1 canonical owner; REVALIDATE BEFORE PART 16
+NEXT_DURABLE_CURSOR_AFTER_VERIFIED_PART16: 188 / 375
 PHYSICAL_MIGRATION_STATUS: DEFERRED
-REFERENCE_AUDIT_STATUS: BRANCH-COMPLETE METHOD NOT YET PROVEN
-NEXT_MIGRATION_ACTION: NONE — CONTINUE SEMANTIC CENSUS
+CENSUS_ENUMERATION_METHOD: TARGET BASELINE TREE VERIFIED
+REFERENCE_AUDIT_STATUS: BRANCH-COMPLETE INBOUND-REFERENCE METHOD NOT YET PROVEN
+NEXT_ACTION: finish Step-5.12 later-authority/supersession sweep -> publish/read back Part 16 -> append Step-5.12 migration batch -> continue semantic census
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```
