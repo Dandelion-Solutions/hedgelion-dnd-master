@@ -62,7 +62,7 @@ OWNER_TRIAGE_REQUIRED
 - **TYPE:** `EXPLICIT_SUPERSESSION_BUT_OLD_NORMATIVE_COPY_REMAINS` / discovery-level `DUAL_SOURCE_OF_TRUTH` hazard.
 - **STATUS:** `RESOLVED_BY_CURRENT_OWNER_BUT_STALE_SURFACE_REMAINS`.
 - **OWNER_TRIAGE:** PENDING.
-- **OLD SURFACE:** `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec.md`.
+- **OLD SURFACE:** `DEV/docs/superpowers/design/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec.md`.
 - **CURRENT OWNER:** `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md`.
 - **CONDITION:** both files advertise `CANONICAL ARCHITECTURE — STEP 5.2 CLOSED`, but v2 explicitly says it supersedes the original for current Step-5.2 authority. The original is historical derivation only.
 - **WHY IT MATTERS:** a fresh reader can select the wrong canonical file from `specs/`, and the original contains a weaker temporal-enrollment rule later replaced by v2.

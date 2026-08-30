@@ -8,7 +8,7 @@ Classification: **Architectural**
 
 Pre-research framing authority:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-pre-research-charter.md`
+- `DEV/docs/superpowers/design/2026-08-20-step-5-2-resumable-runtime-closure-pre-research-charter.md`
 
 Current prerequisite:
 

@@ -108,7 +108,7 @@ CURRENT_STEP5_2_OWNER:
   specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md
 
 SUPERSEDED_FORMER_CANONICAL:
-  specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec.md
+  design/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec.md
   -> design/ after branch-complete reference repair
 
 PHYSICAL_MOVE_STATUS:

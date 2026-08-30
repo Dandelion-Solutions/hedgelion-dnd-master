@@ -6,13 +6,13 @@ Date: 2026-08-20
 
 Supersedes for current Step-5.2 authority:
 
-- `2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec.md`
+- `../design/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec.md`
 
 The superseded file remains historical derivation. This v2 incorporates the post-canonical adversarial and resolution addenda without changing the accepted native-owner model.
 
 Derivation chain:
 
-- `2026-08-20-step-5-2-resumable-runtime-closure-pre-research-charter.md`
+- `../design/2026-08-20-step-5-2-resumable-runtime-closure-pre-research-charter.md`
 - `../design/2026-08-20-step-5-2-resumable-runtime-closure-task-brief.md`
 - `../design/2026-08-20-step-5-2-resumable-runtime-closure-research-draft.md`
 - `../design/2026-08-20-step-5-2-resumable-runtime-closure-analytical-challenge.md`
