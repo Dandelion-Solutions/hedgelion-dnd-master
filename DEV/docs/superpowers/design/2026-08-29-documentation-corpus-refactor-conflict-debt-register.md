@@ -73,7 +73,7 @@ OWNER_TRIAGE_REQUIRED
 - **TYPE:** `UNRESOLVED_SUPERSESSION`.
 - **STATUS:** `OPEN`.
 - **OWNER_TRIAGE:** PENDING.
-- **FILE:** `DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md` (`S-010`).
+- **FILE:** `DEV/docs/superpowers/design/2026-08-18-step-2-mechanical-state-ownership-design.md` (`S-010`).
 - **CONDITION:** document is mostly design provenance but contains preliminary accepted sub-blocks. Later Step-2/current owners are expected to control, but item-level survival has not yet been proven.
 - **RISK:** moving/demoting it before proof could strand accepted implementation-relevant law; keeping it in `specs/` risks duplicate authority.
 - **CURRENT DISPOSITION:** remain in `specs/` pending final supersession proof.
@@ -83,7 +83,7 @@ OWNER_TRIAGE_REQUIRED
 - **TYPE:** `UNRESOLVED_SUPERSESSION`.
 - **STATUS:** `OPEN`.
 - **OWNER_TRIAGE:** PENDING.
-- **FILE:** `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md` (`S-015`).
+- **FILE:** `DEV/docs/superpowers/design/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md` (`S-015`).
 - **CONDITION:** integrated accepted assurance/amendment surface is potentially superseded in parts by later architecture, but item-level supersession remains unproven.
 - **CURRENT DISPOSITION:** remain in `specs/` until later-owner comparison closes.
 
@@ -101,7 +101,7 @@ OWNER_TRIAGE_REQUIRED
 - **TYPE:** `UNRESOLVED_SUPERSESSION`.
 - **STATUS:** `OPEN`.
 - **OWNER_TRIAGE:** PENDING.
-- **FILE:** `DEV/docs/superpowers/specs/2026-08-19-step-2-condition-intrinsic-rule-scope-resolution.md` (`S-041`).
+- **FILE:** `DEV/docs/superpowers/design/2026-08-19-step-2-condition-intrinsic-rule-scope-resolution.md` (`S-041`).
 - **CONDITION:** human-approved orthogonal `ConditionAggregationPolicy × IntrinsicRuleScope` decision is accepted law at that checkpoint; later complete owner has not yet been proven to fully consolidate it.
 - **CURRENT DISPOSITION:** remain in `specs/` pending proof.
 
@@ -110,7 +110,7 @@ OWNER_TRIAGE_REQUIRED
 - **TYPE:** `UNRESOLVED_SUPERSESSION`.
 - **STATUS:** `OPEN`.
 - **OWNER_TRIAGE:** PENDING.
-- **FILE:** `DEV/docs/superpowers/specs/2026-08-19-step-2-final-critical-review.md` (`S-043`).
+- **FILE:** `DEV/docs/superpowers/design/2026-08-19-step-2-final-critical-review.md` (`S-043`).
 - **CONDITION:** integrated Step-2 final review contains authoritative corrections; later retrospective/current architecture likely supersedes or extends it, but the complete mapping is still pending.
 - **CURRENT DISPOSITION:** remain in `specs/` pending proof.
 

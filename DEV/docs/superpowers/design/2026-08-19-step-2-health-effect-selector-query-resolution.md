@@ -4,11 +4,11 @@ Status: **PRELIMINARILY ACCEPTED — REVIEW FINDINGS RESOLVED**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
-Candidate design: `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md`
+Candidate design: `DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md`
 
-Adversarial review: `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-adversarial-review.md`
+Adversarial review: `DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-adversarial-review.md`
 
-Parent design: `DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`
+Parent design: `DEV/docs/superpowers/design/2026-08-18-step-2-mechanical-state-ownership-design.md`
 
 This resolution records the human-architect decision on the one material blocker from the adversarial review and mechanically resolves the remaining findings. Where this document conflicts with the candidate design, this document is authoritative for the remainder of Step 2.
 

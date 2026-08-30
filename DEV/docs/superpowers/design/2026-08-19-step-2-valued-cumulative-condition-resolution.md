@@ -6,11 +6,11 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Candidate design:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-valued-cumulative-condition-design.md`
 
 Adversarial review:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-adversarial-review.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-valued-cumulative-condition-adversarial-review.md`
 
 This document resolves the independent review findings. Where it conflicts with the candidate design, this resolution is authoritative for the remainder of Step 2.
 

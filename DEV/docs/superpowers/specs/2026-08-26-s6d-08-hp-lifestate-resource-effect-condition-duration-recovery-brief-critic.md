@@ -30,7 +30,7 @@ The brief correctly identifies the subject areas, but “accepted Step-2 mechani
 
 **Required repair:** add exact mandatory anchors, at minimum:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`, followed to every exact Resource/HP/LifeState/Effect/Condition owner and assurance resolution it routes;
+- `DEV/docs/superpowers/design/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`, followed to every exact Resource/HP/LifeState/Effect/Condition owner and assurance resolution it routes;
 - `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md` and its actual execution/resume/event/receipt tests;
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md`;
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-3-temporal-pending-continuity-canonical-spec.md`;

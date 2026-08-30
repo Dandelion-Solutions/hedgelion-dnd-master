@@ -4,10 +4,10 @@ Status: **BLOCKING FOLLOW-UP FOUND — PRELIMINARY ACCEPTANCE SUSPENDED**
 
 Reviewed artifacts:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-resolution.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-valued-cumulative-condition-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-valued-cumulative-condition-adversarial-review.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-valued-cumulative-condition-resolution.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-effect-application-design.md`
 
 Purpose: run a focused attack pass against the resolved Condition model before allowing schema/catalog alignment.
 

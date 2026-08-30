@@ -6,9 +6,9 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Parent designs:
 
-- `DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-resolution.md`
+- `DEV/docs/superpowers/design/2026-08-18-step-2-mechanical-state-ownership-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-effect-application-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-resolution.md`
 
 Roadmap owner: Step 2 of `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`.
 

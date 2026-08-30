@@ -6,15 +6,15 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Task Brief:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-3-execution-boundary-task-brief.md`
 
 Research Draft:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-research-draft.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-3-execution-boundary-research-draft.md`
 
 Retrospective assurance entering this gate:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
 
 This brief asks for the material ownership decision required before a Step-3 Candidate Specification can be written. It incorporates all Steps 1–2 assurance amendments and does not reopen them.
 

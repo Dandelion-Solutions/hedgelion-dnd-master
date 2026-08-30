@@ -681,7 +681,7 @@ Detailed outcomes: Step-5.14 integrated review + analytical challenge + canonica
 
 Final assurance:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
 
 Primary anchors:
 
@@ -702,7 +702,7 @@ For a concrete Step-2 mechanic, follow owning model/schema references; do not tr
 ## 15.2 Step 3
 
 - `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-final-critical-review.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-3-final-critical-review.md`
 
 ## 15.3 Step 4
 

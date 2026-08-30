@@ -2,14 +2,14 @@
 
 Status: **REVIEW COMPLETE — RESOLUTION PENDING**
 
-Reviewed candidate: `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md`
+Reviewed candidate: `DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md`
 
 Related architecture:
 
-- `DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-lifestate-policy-transition-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`
+- `DEV/docs/superpowers/design/2026-08-18-step-2-mechanical-state-ownership-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-effect-application-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-lifestate-policy-transition-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-recovery-boundary-b2-design.md`
 - `DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md`
 - `DEV/ARCHITECTURE/ACTIVITY_MODEL.md`
 - current Step 2 catalog/schema baseline

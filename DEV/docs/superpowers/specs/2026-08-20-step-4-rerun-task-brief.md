@@ -108,7 +108,7 @@ The owner confirmed that old `world.chapter` was the early seed for the literary
 
 The role set is approved in principle and recorded in:
 
-- `DEV/docs/superpowers/specs/2026-08-20-llm-logical-roles-draft.md`
+- `DEV/docs/superpowers/design/2026-08-20-llm-logical-roles-draft.md`
 
 Step 4 owns the information/authority implications of these roles. Step 6 owns physical model/call topology, budget, model selection, and compatible role co-location.
 

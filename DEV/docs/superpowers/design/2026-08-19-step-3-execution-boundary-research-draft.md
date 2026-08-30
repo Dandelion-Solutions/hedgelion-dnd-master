@@ -4,7 +4,7 @@ Status: **RESEARCH / ARCHITECTURE DRAFT — HUMAN DECISION REQUIRED BEFORE CANDI
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
-Task Brief: `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-task-brief.md`
+Task Brief: `DEV/docs/superpowers/design/2026-08-19-step-3-execution-boundary-task-brief.md`
 
 This draft explores the authority/lifetime model for Step 3. It is not yet a
 canonical specification and does not authorize implementation.

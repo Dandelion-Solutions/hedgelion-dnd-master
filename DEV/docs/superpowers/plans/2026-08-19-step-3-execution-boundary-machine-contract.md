@@ -729,7 +729,7 @@ git commit -m "test: cover integrated step 3 execution contracts"
 **Files:**
 - Modify: `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 - Modify: `DEV/ARCHITECTURE/CATALOG_DESIGN_STATUS.md`
-- Create: `DEV/docs/superpowers/specs/2026-08-19-step-3-final-critical-review.md`
+- Create: `DEV/docs/superpowers/design/2026-08-19-step-3-final-critical-review.md`
 
 **Interfaces:**
 - Consumes: canonical spec, adversarial review, Tasks 1–8 machine evidence.
@@ -790,7 +790,7 @@ Then require GitHub Actions `Validate engine source` on the same final commit to
 - [ ] **Step 5: Commit**
 
 ```bash
-git add DEV/ARCHITECTURE DEV/docs/superpowers/specs/2026-08-19-step-3-final-critical-review.md DEV/CATALOG DEV/SCHEMAS DEV/TESTS DEV/TOOLS/audit_engine.py
+git add DEV/ARCHITECTURE DEV/docs/superpowers/design/2026-08-19-step-3-final-critical-review.md DEV/CATALOG DEV/SCHEMAS DEV/TESTS DEV/TOOLS/audit_engine.py
 git commit -m "docs: close step 3 execution architecture"
 ```
 

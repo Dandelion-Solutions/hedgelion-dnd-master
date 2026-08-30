@@ -363,7 +363,7 @@ No arbitrary future callback language is introduced. A reached temporal boundary
 
 The detailed B2 design is recorded in:
 
-`DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`
+`DEV/docs/superpowers/design/2026-08-19-step-2-recovery-boundary-b2-design.md`
 
 This section fixes the ownership boundary needed for Step 2 sequencing; the detailed companion records the full dependency analysis, failure modes, performance implications, rejected alternatives, and later holistic-review questions.
 
@@ -470,7 +470,7 @@ Those are forward dependencies, not permission for Step 2 to create substitute R
 
 The detailed design is recorded in:
 
-`DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`
+`DEV/docs/superpowers/design/2026-08-19-step-2-effect-application-design.md`
 
 The accepted-for-sequencing core is:
 
@@ -504,7 +504,7 @@ The current provisional `target_ids`, `world.effect.stacks`, `effect.stacks`, an
 
 The detailed LifeState design is recorded in:
 
-`DEV/docs/superpowers/specs/2026-08-19-step-2-lifestate-policy-transition-design.md`
+`DEV/docs/superpowers/design/2026-08-19-step-2-lifestate-policy-transition-design.md`
 
 The minimum D&D baseline is:
 

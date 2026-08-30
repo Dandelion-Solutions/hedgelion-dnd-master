@@ -4,7 +4,7 @@ Status: **PRELIMINARILY ACCEPTED — REOPEN DURING FINAL ARCHITECTURE REVIEW**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
-Parent design: `DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`
+Parent design: `DEV/docs/superpowers/design/2026-08-18-step-2-mechanical-state-ownership-design.md`
 
 Roadmap owner: Step 2 of `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 

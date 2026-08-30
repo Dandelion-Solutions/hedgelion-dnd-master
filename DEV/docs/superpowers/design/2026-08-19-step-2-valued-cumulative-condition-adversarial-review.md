@@ -4,14 +4,14 @@ Status: **REVIEW COMPLETE — CORRECTIONS REQUIRED**
 
 Reviewed candidate:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-valued-cumulative-condition-design.md`
 
 Related architecture:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-lifestate-policy-transition-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-resolution.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-effect-application-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-recovery-boundary-b2-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-lifestate-policy-transition-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-resolution.md`
 
 Selected primary rules evidence:
 

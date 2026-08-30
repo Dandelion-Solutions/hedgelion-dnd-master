@@ -243,8 +243,8 @@ Step 3 remains the single numbered `IN PROGRESS` roadmap stage but is temporaril
 
 Preserved checkpoint:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-task-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-research-draft.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-3-execution-boundary-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-3-execution-boundary-research-draft.md`
 
 No Step-3 design decision is lost or implicitly accepted/rejected by this assurance pass.
 

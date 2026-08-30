@@ -6,10 +6,10 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Parent artifacts:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-resolution.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-condition-second-critical-pass.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-resolution.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-valued-cumulative-condition-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-valued-cumulative-condition-resolution.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-valued-condition-second-critical-pass.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-resolution.md`
 
 This document records the human-architect resolution of the blocker found by the second critical pass. Where this document conflicts with earlier valued-Condition wording, this document is authoritative for the remainder of Step 2.
 

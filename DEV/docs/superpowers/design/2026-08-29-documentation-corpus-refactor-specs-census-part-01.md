@@ -352,7 +352,7 @@ FIRST_SAFE_PHYSICAL_MOVE_SLICE:
   Preconditions: repository-wide inbound-reference census and same-commit path repair; S-056 remains in specs.
 
 NEXT_UNREVIEWED_SOURCE:
-  specs/2026-08-20-llm-logical-roles-draft.md
+  design/2026-08-20-llm-logical-roles-draft.md
 
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```

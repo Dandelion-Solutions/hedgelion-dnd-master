@@ -6,13 +6,13 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Primary decision bases:
 
-- `DEV/docs/superpowers/specs/2026-08-18-step-2-mechanical-state-ownership-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-recovery-boundary-b2-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-effect-application-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-lifestate-policy-transition-design.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-resolution.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-valued-cumulative-condition-resolution.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-2-condition-intrinsic-rule-scope-resolution.md`
+- `DEV/docs/superpowers/design/2026-08-18-step-2-mechanical-state-ownership-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-recovery-boundary-b2-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-effect-application-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-lifestate-policy-transition-design.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-resolution.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-valued-cumulative-condition-resolution.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-2-condition-intrinsic-rule-scope-resolution.md`
 
 This document translates already accepted architecture into machine catalog/schema consequences. It does not introduce new product semantics. Exact Step-3 execution ordering, event/receipt identity, prospective-overlay representation, and multiplayer publication behavior remain owned by later roadmap stages.
 

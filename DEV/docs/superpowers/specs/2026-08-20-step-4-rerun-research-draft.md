@@ -10,7 +10,7 @@ Task Brief:
 
 Related accepted-role draft:
 
-- `DEV/docs/superpowers/specs/2026-08-20-llm-logical-roles-draft.md`
+- `DEV/docs/superpowers/design/2026-08-20-llm-logical-roles-draft.md`
 
 ## 1. Executive finding
 
