@@ -112,11 +112,11 @@ NEXT_CHRONOLOGICAL_DATE_GROUP:
 
 ALREADY_REVIEWED_2026_08_21_SOURCES_TO_SKIP_WITHOUT_DOUBLE_COUNTING:
   specs/2026-08-21-step-5-3-5-9-temporal-agenda-chronology-integration-canonical-amendment.md
-  specs/2026-08-21-step-5-9-forward-extensible-time-boundary-owner-decision.md
-  specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-adversarial-review.md
-  specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-candidate-spec.md
+  design/2026-08-21-step-5-9-forward-extensible-time-boundary-owner-decision.md
+  design/2026-08-21-step-5-9-chronology-persistence-reconciliation-adversarial-review.md
+  design/2026-08-21-step-5-9-chronology-persistence-reconciliation-candidate-spec.md
   specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-canonical-spec.md
-  specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-resolution-gate.md
+  design/2026-08-21-step-5-9-chronology-persistence-reconciliation-resolution-gate.md
   specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md
 
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
