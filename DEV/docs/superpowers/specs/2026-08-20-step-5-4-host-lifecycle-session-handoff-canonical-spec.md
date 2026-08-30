@@ -14,13 +14,13 @@ Owner-approved scope refinement:
 
 Derivation chain:
 
-- `2026-08-20-step-5-4-host-lifecycle-session-handoff-task-brief.md`
-- `2026-08-20-step-5-4-host-lifecycle-session-handoff-research-draft.md`
-- `2026-08-20-step-5-4-host-lifecycle-session-handoff-analytical-challenge.md`
-- `2026-08-20-step-5-4-host-lifecycle-session-handoff-decision-brief.md`
-- `2026-08-20-step-5-4-host-lifecycle-session-handoff-candidate-spec.md`
-- `2026-08-20-step-5-4-host-lifecycle-session-handoff-adversarial-review.md`
-- `2026-08-20-step-5-4-host-lifecycle-session-handoff-resolution-gate.md`
+- `../design/2026-08-20-step-5-4-host-lifecycle-session-handoff-task-brief.md`
+- `../design/2026-08-20-step-5-4-host-lifecycle-session-handoff-research-draft.md`
+- `../design/2026-08-20-step-5-4-host-lifecycle-session-handoff-analytical-challenge.md`
+- `../design/2026-08-20-step-5-4-host-lifecycle-session-handoff-decision-brief.md`
+- `../design/2026-08-20-step-5-4-host-lifecycle-session-handoff-candidate-spec.md`
+- `../design/2026-08-20-step-5-4-host-lifecycle-session-handoff-adversarial-review.md`
+- `../design/2026-08-20-step-5-4-host-lifecycle-session-handoff-resolution-gate.md`
 
 Prerequisites:
 

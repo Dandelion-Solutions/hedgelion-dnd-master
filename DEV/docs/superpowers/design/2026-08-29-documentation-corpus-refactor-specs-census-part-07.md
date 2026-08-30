@@ -17,7 +17,7 @@ Part 06 named a nonexistent next source:
 
 The authoritative 375-file baseline tree contains no such file. Step 5.4 contains exactly eight files, all under the `host-lifecycle-session-handoff` family, beginning with:
 
-`specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-task-brief.md`
+`design/2026-08-20-step-5-4-host-lifecycle-session-handoff-task-brief.md`
 
 This is a cursor/inventory correction only. No Part-06 semantic disposition changes.
 
