@@ -26,8 +26,8 @@ Primary inherited sources to reopen during formal Step-6 work:
 
 - `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`
 - `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-6-llm-role-isolation-feasibility-spike-notes.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-6-repository-port-transport-feasibility-spike.md`
+- `DEV/docs/superpowers/design/2026-08-20-step-6-llm-role-isolation-feasibility-spike-notes.md`
+- `DEV/docs/superpowers/research/2026-08-20-step-6-repository-port-transport-feasibility-spike.md`
 - Step-4 canonical role/context/information architecture
 - owning Steps 3–5 canonical specifications for execution, persistence, recovery, delivery and cleanup.
 

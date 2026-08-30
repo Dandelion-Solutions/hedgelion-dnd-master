@@ -8,7 +8,7 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Full-cycle basis:
 
-- `2026-08-20-step-5-expanded-architecture-agenda.md`
+- `../design/2026-08-20-step-5-expanded-architecture-agenda.md`
 - `../design/2026-08-20-step-5-0-authority-contamination-task-brief.md`
 - `../design/2026-08-20-step-5-0-authority-contamination-research-draft.md`
 - `../design/2026-08-20-step-5-0-authority-contamination-decision-brief.md`

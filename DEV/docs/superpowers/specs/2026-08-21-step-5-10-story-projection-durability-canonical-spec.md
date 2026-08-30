@@ -8,12 +8,12 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Canonicalization basis:
 
-- `2026-08-21-step-5-10-story-projection-durability-task-brief.md`
-- `2026-08-21-step-5-10-story-projection-durability-research-draft.md`
-- `2026-08-21-step-5-10-story-projection-durability-analytical-challenge.md`
-- `2026-08-21-step-5-10-story-projection-durability-candidate-spec.md`
-- `2026-08-21-step-5-10-story-projection-durability-adversarial-review.md`
-- `2026-08-21-step-5-10-story-projection-durability-resolution-gate.md`
+- `../design/2026-08-21-step-5-10-story-projection-durability-task-brief.md`
+- `../design/2026-08-21-step-5-10-story-projection-durability-research-draft.md`
+- `../design/2026-08-21-step-5-10-story-projection-durability-analytical-challenge.md`
+- `../design/2026-08-21-step-5-10-story-projection-durability-candidate-spec.md`
+- `../design/2026-08-21-step-5-10-story-projection-durability-adversarial-review.md`
+- `../design/2026-08-21-step-5-10-story-projection-durability-resolution-gate.md`
 
 Canonical architecture direction:
 

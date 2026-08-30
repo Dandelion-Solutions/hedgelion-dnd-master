@@ -8,7 +8,7 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Governing task brief:
 
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-21-step-5-11-transcript-history-retention-compaction-task-brief.md`
 
 This artifact is research input for Step 5.11. It does not authorize implementation, does not settle the product-level historical-fidelity promise, and does not pre-decide Step 5.12 host delivery or Step 5.13 physical GC.
 

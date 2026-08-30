@@ -724,7 +724,7 @@ For a concrete Step-2 mechanic, follow owning model/schema references; do not tr
 - 5.9 decision: `DEV/docs/superpowers/design/2026-08-21-step-5-9-forward-extensible-time-boundary-owner-decision.md`
 - 5.10: `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md`
 - 5.11: `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md`
-- 5.11 decision: `DEV/docs/superpowers/specs/2026-08-21-step-5-11-selective-exact-semantic-continuity-owner-decision.md`
+- 5.11 decision: `DEV/docs/superpowers/design/2026-08-21-step-5-11-selective-exact-semantic-continuity-owner-decision.md`
 - 5.12: `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md`
 - 5.12 decision: `DEV/docs/superpowers/specs/2026-08-21-step-5-12-minimal-host-delivery-owner-scope-decision.md`
 - 5.13: `DEV/docs/superpowers/specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md`
@@ -736,7 +736,7 @@ For a concrete Step-2 mechanic, follow owning model/schema references; do not tr
 
 Historical Step-5 agenda:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-expanded-architecture-agenda.md`
+- `DEV/docs/superpowers/design/2026-08-20-step-5-expanded-architecture-agenda.md`
 
 Per-slice canon + Step-5.14 integration clarifications supersede older agenda wording where they differ.
 
