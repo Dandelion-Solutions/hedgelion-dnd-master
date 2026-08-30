@@ -8,7 +8,7 @@ Date: 2026-08-24
 
 - `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 
 Этот документ определяет **как исполняется** R2.7. Он не меняет семантическую архитектуру и не разрешает broad implementation.
@@ -38,7 +38,7 @@ R2.7 состоит из 27 обязательных audit domains `WP-01` … `
 R2.7 использует следующие долговечные артефакты:
 
 1. этот execution protocol — стабильный алгоритм исполнения;
-2. `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md` — компактный cursor/status authority внутри R2.7;
+2. `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md` — компактный cursor/status authority внутри R2.7;
 3. whole-project Source Manifest и глобальные ledgers — накопительное evidence/conformance accounting;
 4. отдельный русскоязычный mini-report для каждого `WP-XX`;
 5. Decision Brief только если реально требуется human architecture/product-owner judgment.

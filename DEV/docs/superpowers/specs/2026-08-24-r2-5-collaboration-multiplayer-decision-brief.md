@@ -10,7 +10,7 @@ Task brief:
 
 Evidence ledger:
 
-- `../research/2026-08-24-r2-5-collaboration-multiplayer-evidence-ledger.md`
+- `../design/2026-08-24-r2-5-collaboration-multiplayer-evidence-ledger.md`
 
 ---
 

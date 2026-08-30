@@ -7,7 +7,7 @@ Date: 2026-08-25
 Inputs:
 
 - Step-1 Task Brief: `2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
-- Step-2 research: `../research/2026-08-25-campaign-house-rules-step-2-research-architecture-draft.md`
+- Step-2 research: `../design/2026-08-25-campaign-house-rules-step-2-research-architecture-draft.md`
 - owner authorization: senior architecture audit verdict **GO FOR STEP 2–8** and explicit instruction to complete the cycle before S6D.
 
 ---

@@ -8,7 +8,7 @@ Decision basis:
 
 - `2026-08-25-campaign-house-rules-step-3-decision-brief.md`
 - `2026-08-25-campaign-house-rules-step-4-collaborative-review.md`
-- `../research/2026-08-25-campaign-house-rules-step-2-research-architecture-draft.md`
+- `../design/2026-08-25-campaign-house-rules-step-2-research-architecture-draft.md`
 
 ---
 

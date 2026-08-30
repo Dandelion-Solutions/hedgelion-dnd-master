@@ -170,7 +170,7 @@ Step 2 and both critics must use the current remote ref and `DEV/PROJECT_MAP.md`
 - `DEV/PROJECT_MAP.md`;
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`;
 - S6D umbrella owner decision/task brief/decomposition plan;
-- `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md` only as the durable pre-pause R2.7 cursor where current roadmap does not supersede its sequencing text;
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md` only as the durable pre-pause R2.7 cursor where current roadmap does not supersede its sequencing text;
 - the B′ owner decision above.
 
 ### 5.2 Canonical S6D owners

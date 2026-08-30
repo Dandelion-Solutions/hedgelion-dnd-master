@@ -8,7 +8,7 @@ Purpose: durable source-selection and inspection ledger for the whole-project fi
 
 Execution protocol:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-7-audit-execution-protocol.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-execution-protocol.md`
 
 ---
 
@@ -22,9 +22,9 @@ Execution protocol:
 | `DEV/PROJECT_MAP.md` | DERIVATIVE LOCATOR | dependency routing across GAME/DEV/runtime/test/release | INSPECTED CURRENT FOR ROUTING | Never substitutes for owners |
 | `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | SEQUENCING / STATUS AUTHORITY | R2.7 stage state and implementation gate | INSPECTED CURRENT | R2.7 is sole active whole-project final audit; implementation blocked |
 | `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md` | OWNER DECISION | whole-project scope and bidirectional proof | INSPECTED CURRENT | Outer scope is not Round-2-only |
-| `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md` | ACTIVE TASK BRIEF | 27 domains + exit criteria | INSPECTED CURRENT | Governing final-audit brief |
-| `DEV/docs/superpowers/research/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md` | RESEARCH / SCOPE INVENTORY | WP-01..WP-27 question inventory | INSPECTED FOR CURRENT DOMAIN + GLOBAL ROUTING | Minimum audit horizon |
-| `DEV/docs/superpowers/specs/2026-08-24-r2-7-audit-execution-protocol.md` | OWNER-APPROVED EXECUTION PROTOCOL | durable cursor, domain loop, stop conditions | INSPECTED CURRENT | Conversation state is not checkpoint |
+| `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md` | ACTIVE TASK BRIEF | 27 domains + exit criteria | INSPECTED CURRENT | Governing final-audit brief |
+| `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md` | RESEARCH / SCOPE INVENTORY | WP-01..WP-27 question inventory | INSPECTED FOR CURRENT DOMAIN + GLOBAL ROUTING | Minimum audit horizon |
+| `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-execution-protocol.md` | OWNER-APPROVED EXECUTION PROTOCOL | durable cursor, domain loop, stop conditions | INSPECTED CURRENT | Conversation state is not checkpoint |
 
 ---
 
@@ -35,7 +35,7 @@ Execution protocol:
 | Source | Authority role | Required scope | Inspection status | Material evidence |
 |---|---|---|---|---|
 | `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md` | CANONICAL / OWNING | supported MVP host/deployment profile; Lab boundary; host vs acceptance classification | INSPECTED | ChatGPT Plus; Project-capable ordinary chat; one human per own chat; High recommended; exact model equality not required; fixed Connector; experiments/prototypes/raw fixtures -> Lab; integrated Protocol 4 -> post-implementation acceptance |
-| `DEV/docs/superpowers/specs/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md` | OWNER DECISION / SUPERSEDING | fixed repository path + forbidden fallbacks | INSPECTED | Python/core prepares; Connector performs remote GitHub transport; no `gh`, remote git, direct HTTP/API, MCP/backend alternatives, improvised Actions bridge, or transport probing |
+| `DEV/docs/superpowers/design/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md` | OWNER DECISION / SUPERSEDING | fixed repository path + forbidden fallbacks | INSPECTED | Python/core prepares; Connector performs remote GitHub transport; no `gh`, remote git, direct HTTP/API, MCP/backend alternatives, improvised Actions bridge, or transport probing |
 | `DEV/docs/superpowers/specs/2026-08-18-game-dev-release-boundary-design.md` | APPROVED DESIGN DIRECTION | GAME/DEV package boundary and runtime self-containment | INSPECTED | GAME contents are exact package source; DEV is development-only; installed package paths are package-root relative |
 | `DEV/docs/superpowers/specs/2026-08-18-game-dev-boundary-audit-amendment.md` | DESIGN AMENDMENT / BOUNDARY REVIEW | non-obvious GAME/DEV risks, runtime firewall, release validation | INSPECTED | GAME runtime must not depend on DEV; structural absence stronger than runtime denylist; Project Instructions parity; GitHub Actions separate execution surface |
 

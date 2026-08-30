@@ -209,7 +209,7 @@
 - Create: `DEV/docs/superpowers/specs/2026-08-24-s6d-canonical-closure.md`
 - Create: `DEV/docs/superpowers/specs/2026-08-24-s6d-resolution-gate.md`
 - Update: `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
-- Update: `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md`
+- Update: `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md`
 
 **Produces:** explicit permission to resume R2.7 WP-06.
 

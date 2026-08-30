@@ -7,7 +7,7 @@ Date: 2026-08-28
 Evidence authority:
 
 - corrected S6D-12 Step-1 Task Brief and whole-project critic;
-- `DEV/docs/superpowers/research/2026-08-28-s6d-12-adversarial-final-closure-evidence.md`;
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-evidence.md`;
 - current canonical S6D-01…11 owners and inherited execution/retention/source/adoption owners;
 - approved B′ owner decision.
 

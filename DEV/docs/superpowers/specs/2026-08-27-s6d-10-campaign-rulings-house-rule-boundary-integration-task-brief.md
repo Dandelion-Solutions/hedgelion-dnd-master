@@ -90,7 +90,7 @@ The Step-2 investigation and both critics must fresh-read the authoritative remo
 ### 4.2 Current House-Rules owners and accepted decision chain
 
 - **canonical owner:** `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`;
-- **research/assurance, non-owner:** `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`;
+- **research/assurance, non-owner:** `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`;
 - **decision framing:** `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md`;
 - **explicit human owner decision:** `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md`;
 - **collaborative/candidate/adversarial/resolution assurance:** `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-4-collaborative-review-v2.md`, `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-5-candidate-spec-v2.md`, `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-6-adversarial-review-v2.md` and `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-7-resolution-gate-v2.md`;

@@ -90,7 +90,7 @@ After House Rules and S6D canonical closure, resume WP-06 from that repository c
 After normal repository bootstrap, read in order:
 
 1. `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`;
-2. `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md`;
+2. `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md`;
 3. this owner decision;
 4. `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md`;
 5. canonical design-process owners.

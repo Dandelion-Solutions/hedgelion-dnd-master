@@ -22,7 +22,7 @@ R2_7_WP06: REMAINS PAUSED
 
 Current Step-2 delta:
 
-- `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`
 
 Current Step-3 gate:
 

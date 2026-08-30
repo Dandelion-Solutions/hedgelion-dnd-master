@@ -6,7 +6,7 @@ Date: 2026-08-24
 
 Task brief:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-cognition-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-2-actor-continuity-cognition-task-brief.md`
 
 This ledger records source-derived constraints, research qualifiers and current architectural deltas. It is not an accepted design.
 

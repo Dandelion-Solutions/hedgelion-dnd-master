@@ -6,11 +6,11 @@ Date: 2026-08-25
 
 Governing task brief:
 
-- `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
 
 Earlier Step-2 draft:
 
-- `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-research-architecture-draft.md`
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-2-research-architecture-draft.md`
 
 Senior whole-project audit disposition:
 

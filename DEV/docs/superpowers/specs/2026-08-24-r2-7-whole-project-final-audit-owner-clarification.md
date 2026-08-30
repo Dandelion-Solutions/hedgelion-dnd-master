@@ -99,7 +99,7 @@ This Round-2 review is nested inside the broader whole-project audit rather than
 
 The required question inventory is established in:
 
-- `DEV/docs/superpowers/research/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`
 
 That inventory defines the initial whole-project audit horizon. During the actual Source Manifest/evidence pass, newly discovered owning/consumer dependencies may add audit questions; the inventory is a minimum, not a closed excuse to ignore newly found dependencies.
 

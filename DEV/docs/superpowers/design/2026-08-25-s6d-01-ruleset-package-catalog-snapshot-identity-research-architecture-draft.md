@@ -53,7 +53,7 @@ No product-semantic or material-risk decision remains. The recommendation follow
 | `DEV/PROJECT_MAP.md` | DERIVATIVE LOCATOR | Used to route catalog, release, campaign, execution, recovery, House Rules and tests; never used as semantic authority |
 | `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | STATUS AUTHORITY | S6D-01 sole active domain; Step 1 complete; R2.7 WP-06 paused |
 | S6D owner decision, workstream brief and sequencing decision | OWNER / DECOMPOSITION AUTHORITIES | Read item-level; obligations 1 and 10 are S6D-01, no legacy-campaign compatibility, each domain gets full loop |
-| `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md` | DURABLE PAUSE AUTHORITY | Read current; catalog generation 2.0.0 and engine 1.0-alpha are distinct; no frozen pre-release compatibility |
+| `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md` | DURABLE PAUSE AUTHORITY | Read current; catalog generation 2.0.0 and engine 1.0-alpha are distinct; no frozen pre-release compatibility |
 
 ### Catalog identity owners and assurance
 

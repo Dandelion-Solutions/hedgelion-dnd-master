@@ -99,7 +99,7 @@ Exact model ID, exact cross-player reasoning equality, hidden cognitive isolatio
 
 Полный WP-01 source set и inspection statuses записаны в:
 
-- `DEV/docs/superpowers/research/2026-08-24-r2-7-whole-project-source-manifest.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-source-manifest.md`
 
 Ключевые owning/consumer sources:
 

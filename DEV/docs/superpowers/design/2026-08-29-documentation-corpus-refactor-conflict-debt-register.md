@@ -255,7 +255,7 @@ OWNER_TRIAGE_REQUIRED
 - **TYPE:** `REFACTOR_OPERATIONAL_DEBT` / taxonomy misplacement.
 - **STATUS:** `OPEN`.
 - **OWNER_TRIAGE:** PENDING.
-- **FILE:** `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md`.
+- **FILE:** `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md`.
 - **CURRENT TAXONOMY:** audit mini-reports/status/cursors are `design/` provenance/operational process artifacts, not research results.
 - **SPECIAL REQUIREMENT:** this is the active operational cursor, so migration must be a true move with all live references repaired; no duplicate temporary owner.
 

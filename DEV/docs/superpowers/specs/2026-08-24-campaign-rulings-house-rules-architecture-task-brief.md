@@ -672,7 +672,7 @@ Owning sources beat this Task Brief when a factual statement about current archi
 - `DEV/ARCHITECTURE/DESIGN_PROCESS.md` — HDM adapter, source-role/completeness requirements.
 - `DEV/PROJECT_MAP.md` — derivative routing aid only.
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` — current program sequencing/status authority.
-- `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md` at the pre-invalid-Step-1 checkpoint — durable pause/recovery state.
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md` at the pre-invalid-Step-1 checkpoint — durable pause/recovery state.
 - `DEV/docs/superpowers/specs/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md` — current owner-approved sequencing and minimum House Rules closure topics.
 - `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md` — noncanonical design input; proposals must be challenged.
 

@@ -14,7 +14,7 @@ Owner decision:
 
 Evidence ledger:
 
-- `DEV/docs/superpowers/research/2026-08-24-r2-1-continuity-evidence-ledger.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-1-continuity-evidence-ledger.md`
 
 ---
 

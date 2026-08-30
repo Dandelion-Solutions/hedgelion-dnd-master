@@ -12,7 +12,7 @@ Process authority:
 
 Current R2.7 execution state:
 
-- `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md`
 
 Current catalog semantics/classification:
 

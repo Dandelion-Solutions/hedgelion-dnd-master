@@ -6,7 +6,7 @@ Date: 2026-08-24
 
 Task brief:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-memory-history-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-1-continuity-memory-history-task-brief.md`
 
 This artifact records source-derived claims, qualifiers and architectural deltas for R2.1. It is not a canonical design.
 

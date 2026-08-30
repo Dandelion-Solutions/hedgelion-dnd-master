@@ -10,7 +10,7 @@ Task brief:
 
 Evidence ledger:
 
-- `../research/2026-08-24-r2-4-single-context-llm-execution-evidence-ledger.md`
+- `../design/2026-08-24-r2-4-single-context-llm-execution-evidence-ledger.md`
 
 ## 1. Decision to make
 

@@ -6,7 +6,7 @@ Date: 2026-08-25
 
 Task Brief:
 
-- `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
 
 Owner authorization:
 
@@ -113,8 +113,8 @@ They establish that mechanically material consequences pass through typed valida
 - `DEV/PROJECT_MAP.md`
 - `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md`
-- `DEV/docs/superpowers/specs/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md`
+- `DEV/docs/superpowers/design/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
 
 These route/status the work; they do not replace owning semantic specifications.
 

@@ -11,7 +11,7 @@ Supersedes for decision purposes:
 Additional owner/evidence inputs:
 
 - `2026-08-24-r2-4-chronicler-service-owner-clarification.md`
-- `../research/2026-08-24-r2-4-chronicler-service-evidence-addendum.md`
+- `../design/2026-08-24-r2-4-chronicler-service-evidence-addendum.md`
 
 The original R2.4 task brief/evidence ledger remain valid except where they described Chronicler as merely opportunistic/non-hot-path without a first-safe-opportunity anti-starvation obligation.
 

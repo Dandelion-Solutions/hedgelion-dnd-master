@@ -7,7 +7,7 @@ Date: 2026-08-24
 Decision basis:
 
 - `2026-08-24-r2-3-context-runtime-lazy-discovery-task-brief.md`
-- `../research/2026-08-24-r2-3-context-runtime-evidence-ledger.md`
+- `../design/2026-08-24-r2-3-context-runtime-evidence-ledger.md`
 - `2026-08-24-r2-3-context-runtime-decision-brief.md`
 
 ## Decision

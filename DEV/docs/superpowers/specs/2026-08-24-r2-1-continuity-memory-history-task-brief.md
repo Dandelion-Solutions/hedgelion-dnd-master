@@ -14,7 +14,7 @@ Program decision:
 
 Evidence disposition:
 
-- `DEV/docs/superpowers/research/2026-08-24-round-2-evidence-disposition-ledger.md`
+- `DEV/docs/superpowers/design/2026-08-24-round-2-evidence-disposition-ledger.md`
 
 ---
 

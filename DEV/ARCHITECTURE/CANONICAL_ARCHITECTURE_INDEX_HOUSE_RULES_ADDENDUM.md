@@ -13,7 +13,7 @@ Current gate/status owner:
 Current design sources:
 
 - Step 1 — `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md` — PRESERVED;
-- Step 2 audit delta — `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md` — COMPLETE;
+- Step 2 audit delta — `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md` — COMPLETE;
 - Step 3 amended Decision Brief — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md` — HUMAN DECISION REQUIRED.
 
 The earlier Step-4..8 artifacts and `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md` are attempted-closure/candidate material while the HOLD is active. Do not route from their old `CANONICAL/CLOSED` labels without first reading the current HOLD and amended Step-3 gate.

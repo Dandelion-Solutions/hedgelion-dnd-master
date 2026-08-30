@@ -28,7 +28,7 @@ Current House-Rules authority:
 
 R2.7 durable cursor:
 
-- `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md`
 
 ---
 
@@ -129,7 +129,7 @@ Primary canonical owner:
 Repaired closure chain:
 
 - Step 1 — `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
-- Step 2 repair — `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`
+- Step 2 repair — `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`
 - Step 3 amended decision brief — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md`
 - Step 3 owner decision — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md`
 - Step 4 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-4-collaborative-review-v2.md`
@@ -200,7 +200,7 @@ S6D-12 Step 1 authority:
 
 S6D-12 Step 2 evidence:
 
-- `DEV/docs/superpowers/research/2026-08-28-s6d-12-adversarial-final-closure-evidence.md`.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-evidence.md`.
 
 S6D-12 Step 3 decision:
 

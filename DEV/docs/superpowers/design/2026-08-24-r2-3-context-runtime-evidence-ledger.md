@@ -6,7 +6,7 @@ Date: 2026-08-24
 
 Task brief:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-lazy-discovery-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-3-context-runtime-lazy-discovery-task-brief.md`
 
 Upstream canonical architecture:
 

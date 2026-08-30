@@ -6,11 +6,11 @@ Date: 2026-08-29
 
 Execution protocol:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-7-audit-execution-protocol.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-execution-protocol.md`
 
 R2.7 task brief:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`
 
 Program sequencing authority:
 
@@ -18,12 +18,12 @@ Program sequencing authority:
 
 Current S6D closure authority:
 
-- `DEV/docs/superpowers/specs/2026-08-29-s6d-integrated-machine-realization-closure.md`
+- `DEV/docs/superpowers/design/2026-08-29-s6d-integrated-machine-realization-closure.md`
 
 Current House-Rules canonical authority:
 
 - `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`
 
 ---
 

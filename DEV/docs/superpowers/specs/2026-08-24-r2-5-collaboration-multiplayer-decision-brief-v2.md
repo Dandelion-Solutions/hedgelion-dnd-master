@@ -10,8 +10,8 @@ Supersedes for owner decision:
 
 Evidence basis:
 
-- `../research/2026-08-24-r2-5-collaboration-multiplayer-evidence-ledger.md`
-- `../research/2026-08-24-r2-5-agency-dramaturg-coordination-evidence-addendum.md`
+- `../design/2026-08-24-r2-5-collaboration-multiplayer-evidence-ledger.md`
+- `../design/2026-08-24-r2-5-agency-dramaturg-coordination-evidence-addendum.md`
 
 ---
 

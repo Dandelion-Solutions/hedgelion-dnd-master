@@ -6,7 +6,7 @@ Date: 2026-08-24
 
 Task brief:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-5-collaboration-multiplayer-task-brief.md`
 
 This ledger preserves the current ownership subgraph, active/inherited research candidates, qualifiers and synthesis before any R2.5 owner decision.
 

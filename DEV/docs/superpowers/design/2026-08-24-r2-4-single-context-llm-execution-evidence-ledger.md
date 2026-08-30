@@ -6,7 +6,7 @@ Date: 2026-08-24
 
 Task brief:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-4-single-context-llm-execution-task-brief.md`
 
 This ledger preserves owning constraints, empirical evidence, research-candidate qualifiers and current synthesis before an owner decision.
 

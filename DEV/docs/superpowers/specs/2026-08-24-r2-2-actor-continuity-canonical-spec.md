@@ -11,7 +11,7 @@ Owner decision:
 Derivation:
 
 - `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-cognition-task-brief.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-2-actor-continuity-evidence-ledger.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-2-actor-continuity-evidence-ledger.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-decision-brief.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-candidate-spec.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-adversarial-review.md`

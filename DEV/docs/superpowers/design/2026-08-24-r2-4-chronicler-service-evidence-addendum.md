@@ -6,7 +6,7 @@ Date: 2026-08-24
 
 Owner clarification:
 
-- `../specs/2026-08-24-r2-4-chronicler-service-owner-clarification.md`
+- `../design/2026-08-24-r2-4-chronicler-service-owner-clarification.md`
 
 ## 1. Why this addendum exists
 

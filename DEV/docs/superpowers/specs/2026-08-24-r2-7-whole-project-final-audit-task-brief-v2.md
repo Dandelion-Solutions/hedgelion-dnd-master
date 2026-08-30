@@ -14,7 +14,7 @@ Owner scope clarification:
 
 Scope-discovery inventory:
 
-- `../research/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`
+- `../design/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`
 
 Roadmap owner:
 

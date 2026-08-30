@@ -12,7 +12,7 @@ Evidence basis:
 
 - Step-1 Task Brief;
 - original Step-2 research;
-- `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`;
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`;
 - current machine contracts/tests inspected and materialized there.
 
 Governance correction:

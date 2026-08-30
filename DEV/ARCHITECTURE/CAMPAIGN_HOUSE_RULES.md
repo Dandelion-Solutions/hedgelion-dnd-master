@@ -7,7 +7,7 @@ Date: 2026-08-25
 Current canonicalization basis:
 
 - `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`;
-- `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`;
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`;
 - `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md`;
 - `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md`;
 - `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-4-collaborative-review-v2.md`;

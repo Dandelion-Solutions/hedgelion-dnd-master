@@ -11,7 +11,7 @@ Owner decision:
 Derivation:
 
 - `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-memory-history-task-brief.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-1-continuity-evidence-ledger.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-1-continuity-evidence-ledger.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-projection-decision-brief.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-history-candidate-spec.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-adversarial-review.md`

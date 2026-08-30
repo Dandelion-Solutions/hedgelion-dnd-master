@@ -16,7 +16,7 @@ Owner direction:
 | Step | Artifact | Result |
 |---|---|---|
 | 1 — Architecture Task Brief | `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md` | COMPLETE / owner-amended / critic pass |
-| 2 — Research & Architecture Draft | `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-research-architecture-draft.md` | COMPLETE / Source Manifest complete |
+| 2 — Research & Architecture Draft | `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-2-research-architecture-draft.md` | COMPLETE / Source Manifest complete |
 | 3 — Decision Brief | `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief.md` | Alternative C accepted under explicit owner GO |
 | 4 — Collaborative Architecture Review | `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-4-collaborative-review.md` | PASS / no new owner decision |
 | 5 — Candidate Specification | `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-5-candidate-spec.md` | COMPLETE |
@@ -135,7 +135,7 @@ Program status/sequencing authority:
 
 Durable R2.7 pause cursor:
 
-- `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md`
 
 These now route the program to the explicit boundary:
 
