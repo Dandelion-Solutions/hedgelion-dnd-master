@@ -10,10 +10,10 @@ Full-cycle basis:
 
 - `2026-08-20-step-5-expanded-architecture-agenda.md`
 - `2026-08-20-step-5-0-authority-contamination-task-brief.md`
-- `2026-08-20-step-5-0-authority-contamination-research-draft.md`
-- `2026-08-20-step-5-0-authority-contamination-decision-brief.md`
-- `2026-08-20-step-5-0-authority-contamination-candidate-spec.md`
-- `2026-08-20-step-5-0-authority-contamination-adversarial-review.md`
+- `../design/2026-08-20-step-5-0-authority-contamination-research-draft.md`
+- `../design/2026-08-20-step-5-0-authority-contamination-decision-brief.md`
+- `../design/2026-08-20-step-5-0-authority-contamination-candidate-spec.md`
+- `../design/2026-08-20-step-5-0-authority-contamination-adversarial-review.md`
 
 This document closes Step 5.0 only. It does not begin or pre-decide Step 5.1.
 
