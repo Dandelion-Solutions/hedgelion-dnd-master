@@ -6,7 +6,7 @@ Date: 2026-08-20
 
 Reviewed candidate:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-candidate-spec.md`
+- `DEV/docs/superpowers/design/2026-08-20-step-4-rerun-candidate-spec.md`
 
 Review objective: attempt to falsify the Candidate rather than confirm it, with special attention to duplicate authority, hidden context inheritance, PC agency, partial chronology, Story spoiler behavior, migration and physical role co-location.
 

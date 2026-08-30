@@ -8,7 +8,7 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Pre-research charter:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-pre-research-charter.md`
+- `DEV/docs/superpowers/design/2026-08-20-step-5-1-frontier-model-pre-research-charter.md`
 
 This Task Brief operationalizes that charter. The charter is controlling where this brief is less specific.
 
@@ -185,7 +185,7 @@ For every scenario identify semantic authority, current state, durable evidence,
 
 Create:
 
-`DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-research-draft.md`
+`DEV/docs/superpowers/design/2026-08-20-step-5-1-frontier-model-research-draft.md`
 
 It must include:
 

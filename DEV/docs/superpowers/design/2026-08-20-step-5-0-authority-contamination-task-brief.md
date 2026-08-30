@@ -8,7 +8,7 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Parent agenda:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-expanded-architecture-agenda.md`
+- `DEV/docs/superpowers/design/2026-08-20-step-5-expanded-architecture-agenda.md`
 
 Process:
 

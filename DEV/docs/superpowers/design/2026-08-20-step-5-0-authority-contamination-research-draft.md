@@ -9,7 +9,7 @@ Target branch: `feature/mechanical-runtime-hot-state`
 Parent artifacts:
 
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-expanded-architecture-agenda.md`
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-0-authority-contamination-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-20-step-5-0-authority-contamination-task-brief.md`
 
 This draft records verified repository state, authority classifications, contamination findings, analytical challenge, and recommendations. It intentionally does not design Step 5.1 frontier representation or later Step-5 wire formats.
 

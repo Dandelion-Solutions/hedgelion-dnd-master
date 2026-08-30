@@ -6,7 +6,7 @@ Date: 2026-08-20
 
 Task Brief:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-rerun-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-20-step-4-rerun-task-brief.md`
 
 Related accepted-role draft:
 

@@ -8,9 +8,9 @@ Owner decision: **B-NARROW approved**
 
 Derivation chain:
 
-- `2026-08-20-step-5-1-frontier-model-pre-research-charter.md`
-- `2026-08-20-step-5-1-frontier-model-task-brief.md`
-- `2026-08-20-step-5-1-frontier-model-research-draft.md`
+- `../design/2026-08-20-step-5-1-frontier-model-pre-research-charter.md`
+- `../design/2026-08-20-step-5-1-frontier-model-task-brief.md`
+- `../design/2026-08-20-step-5-1-frontier-model-research-draft.md`
 - `../design/2026-08-20-step-5-1-frontier-model-analytical-challenge.md`
 - `../design/2026-08-20-step-5-1-frontier-model-decision-brief.md`
 - `../design/2026-08-20-step-5-1-frontier-model-candidate-spec.md`

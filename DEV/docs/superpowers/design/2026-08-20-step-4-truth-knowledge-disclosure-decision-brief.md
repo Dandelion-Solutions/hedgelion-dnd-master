@@ -4,7 +4,7 @@ Status: **HUMAN ARCHITECT DECISION REQUIRED**
 
 Research:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-lore-knowledge-story-research-draft.md`
+- `DEV/docs/superpowers/design/2026-08-20-step-4-lore-knowledge-story-research-draft.md`
 
 ## 1. What is being decided
 

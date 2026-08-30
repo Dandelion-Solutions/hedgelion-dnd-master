@@ -4,7 +4,7 @@ Status: **RESEARCH / ARCHITECTURE DRAFT — HUMAN DECISION REQUIRED BEFORE CANDI
 
 Task Brief:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-4-lore-knowledge-story-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-20-step-4-lore-knowledge-story-task-brief.md`
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
