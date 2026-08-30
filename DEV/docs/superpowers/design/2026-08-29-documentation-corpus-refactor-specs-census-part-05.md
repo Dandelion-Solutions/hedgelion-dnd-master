@@ -116,7 +116,7 @@ PHYSICAL_MOVE_STATUS:
   Semantic move set continues to grow, but branch-complete inbound-reference/path-repair evidence remains unavailable from non-default-branch code search.
 
 NEXT_UNREVIEWED_SOURCE:
-  specs/2026-08-20-step-5-3-temporal-pending-continuity-pre-research-charter.md
+  design/2026-08-20-step-5-3-temporal-pending-continuity-pre-research-charter.md
 
 2026_08_20_REMAINING: 53
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
