@@ -6,7 +6,7 @@ Date: 2026-08-25
 
 Reviewed candidate:
 
-- `DEV/docs/superpowers/specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-candidate-spec.md`
+- `DEV/docs/superpowers/design/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-candidate-spec.md`
 
 ## 1. Attack surface
 
@@ -98,5 +98,4 @@ Disposition: canonical House Rules already supports typed realization refs witho
 ## 4. Review conclusion
 
 No new owner decision is required. Resolve AR-01 through AR-04, recheck the candidate, then proceed to Step 7.
-
 
