@@ -6,7 +6,7 @@ Date: 2026-08-24
 
 Owner decision:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-2-actor-continuity-owner-decision.md`
 
 Evidence:
 

@@ -104,8 +104,8 @@ The Step-2 investigation and both critics must fresh-read the authoritative remo
 
 - **base truth/knowledge/role-context canonical owner:** `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`;
 - **current one-physical-chat amendment:** `DEV/docs/superpowers/specs/2026-08-23-step-4-single-context-role-containment-canonical-amendment.md`;
-- **Context Runtime canonical owner and human decision:** `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md` and `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-owner-decision.md`;
-- **single-context LLM/instruction canonical owner and human decision:** `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md` and `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-owner-decision.md`;
+- **Context Runtime canonical owner and human decision:** `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md` and `DEV/docs/superpowers/design/2026-08-24-r2-3-context-runtime-owner-decision.md`;
+- **single-context LLM/instruction canonical owner and human decision:** `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md` and `DEV/docs/superpowers/design/2026-08-24-r2-4-single-context-llm-execution-owner-decision.md`;
 - **campaign publication canonical owner:** `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-canonical-spec.md`;
 - **recovery canonical owner:** `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-canonical-spec.md`;
 - **multiplayer currentness/live ownership canonical owner:** `DEV/docs/superpowers/specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-canonical-spec.md`;

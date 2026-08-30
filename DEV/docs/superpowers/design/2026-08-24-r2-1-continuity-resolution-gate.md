@@ -10,11 +10,11 @@ Canonical specification:
 
 Owner decision:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-projection-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-1-continuity-projection-owner-decision.md`
 
 Adversarial review:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-adversarial-review.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-1-continuity-adversarial-review.md`
 
 ---
 

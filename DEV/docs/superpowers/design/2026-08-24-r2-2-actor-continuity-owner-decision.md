@@ -6,7 +6,7 @@ Date: 2026-08-24
 
 Decision brief:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-decision-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-2-actor-continuity-decision-brief.md`
 
 Evidence ledger:
 

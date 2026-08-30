@@ -6,11 +6,11 @@ Date: 2026-08-24
 
 Candidate specification:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-candidate-spec.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-2-actor-continuity-candidate-spec.md`
 
 Owner decision:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-2-actor-continuity-owner-decision.md`
 
 This review tests the owner-approved A architecture and the added lazy-loading/downstream-discovery constraint. It does not redesign R2.3 retrieval policy.
 

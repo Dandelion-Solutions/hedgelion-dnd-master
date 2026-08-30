@@ -6,11 +6,11 @@ Date: 2026-08-24
 
 Candidate under review:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-history-candidate-spec.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-1-continuity-history-candidate-spec.md`
 
 Owner decision:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-projection-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-1-continuity-projection-owner-decision.md`
 
 Evidence ledger:
 
