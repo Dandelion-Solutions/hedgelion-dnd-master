@@ -13,15 +13,15 @@ The superseded file remains historical derivation. This v2 incorporates the post
 Derivation chain:
 
 - `2026-08-20-step-5-2-resumable-runtime-closure-pre-research-charter.md`
-- `2026-08-20-step-5-2-resumable-runtime-closure-task-brief.md`
-- `2026-08-20-step-5-2-resumable-runtime-closure-research-draft.md`
-- `2026-08-20-step-5-2-resumable-runtime-closure-analytical-challenge.md`
-- `2026-08-20-step-5-2-resumable-runtime-closure-decision-brief.md`
-- `2026-08-20-step-5-2-resumable-runtime-closure-candidate-spec.md`
-- `2026-08-20-step-5-2-resumable-runtime-closure-adversarial-review.md`
-- `2026-08-20-step-5-2-resumable-runtime-closure-resolution-gate.md`
-- `2026-08-20-step-5-2-resumable-runtime-closure-adversarial-review-addendum.md`
-- `2026-08-20-step-5-2-resumable-runtime-closure-resolution-gate-addendum.md`
+- `../design/2026-08-20-step-5-2-resumable-runtime-closure-task-brief.md`
+- `../design/2026-08-20-step-5-2-resumable-runtime-closure-research-draft.md`
+- `../design/2026-08-20-step-5-2-resumable-runtime-closure-analytical-challenge.md`
+- `../design/2026-08-20-step-5-2-resumable-runtime-closure-decision-brief.md`
+- `../design/2026-08-20-step-5-2-resumable-runtime-closure-candidate-spec.md`
+- `../design/2026-08-20-step-5-2-resumable-runtime-closure-adversarial-review.md`
+- `../design/2026-08-20-step-5-2-resumable-runtime-closure-resolution-gate.md`
+- `../design/2026-08-20-step-5-2-resumable-runtime-closure-adversarial-review-addendum.md`
+- `../design/2026-08-20-step-5-2-resumable-runtime-closure-resolution-gate-addendum.md`
 
 Prerequisites:
 
