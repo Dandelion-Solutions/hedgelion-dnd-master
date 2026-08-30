@@ -1,6 +1,6 @@
 # Documentation Corpus Refactor — Migration Journal
 
-Status: **ACTIVE OPERATIONAL JOURNAL — SEMANTIC CENSUS COMPLETE / REFERENCE_SET_PROVEN / PHYSICAL MIGRATION COMPLETE / CLOSURE VERIFICATION IN PROGRESS**
+Status: **ACTIVE OPERATIONAL JOURNAL — SEMANTIC CENSUS COMPLETE / REFERENCE_SET_PROVEN / DCR CLOSURE VERIFIED / CLEANUP COMPLETE / WP-07 NOT STARTED**
 Date: 2026-08-29
 Proof/source branch: `v1/engine-rearchitecture`
 Execution branch: `v1/documentation-refactor`
@@ -270,7 +270,7 @@ PHYSICAL_MIGRATION: COMPLETE / CLOSURE VERIFICATION IN PROGRESS
 COMPLETED_MOVES: 370 / 370
 COMPLETED_REQUIRED_PATH_REPAIRS: 503 / 503
 EXTRACTION: 1 / 1 COMPLETE
-NEXT: complete frozen closure replay, candidate verification, maintenance audit and repository tests before cleanup
+NEXT: stop after verified DCR closure, cleanup and final status publication; await further user command
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```
 
@@ -286,4 +286,22 @@ X_REPAIR_ADDED: 0
 CUMULATIVE_MOVES: 370 / 370
 CUMULATIVE_FROZEN_REPAIRS: 503 / 503
 UNPUBLISHED_WORK: NONE
+```
+
+
+## DCR closure verification and cleanup
+
+```text
+CLOSURE_VERIFICATION_BASE_HEAD: 6d997ca2024492551c670f5462242793b4a5e387
+FROZEN_REPLAY: PASS / 419 targets / 370 MOVE / 49 RETAIN / 504 actionable repairs (503 frozen + X) / 0 outstanding
+MOVE_AND_RETAIN_INVARIANTS: PASS / all MOVE old paths absent and final paths present; all RETAIN paths present with preserved blobs
+EXTRACTION: PASS / R-015 extracted research evidence present with SPLIT_FROM provenance
+HISTORICAL_EXCEPTIONS: PASS / E23 lines 48 and 59 preserved unchanged
+LIVE_OLD_PATH_SCAN: PASS / branch-complete scan; only allowed R-015 SPLIT_FROM provenance remained
+AGGREGATE_DCR_DIFF: PASS / 404 expected changed paths / 0 unexpected / 0 missing from the initial execution baseline
+POST_CLEANUP_RECONCILIATION: PASS / 863 remaining blobs unchanged; exactly four temporary artifacts absent
+CANDIDATE_REPLAY_VERIFICATION: PASS / Connector exact-diff and frozen replay verification
+MAINTENANCE_AND_DEV_TESTS: PASS / applicable Validate workflow completed maintenance audit and DEV unit tests
+CLEANUP_COMMIT: 6d997ca2024492551c670f5462242793b4a5e387
+WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```
