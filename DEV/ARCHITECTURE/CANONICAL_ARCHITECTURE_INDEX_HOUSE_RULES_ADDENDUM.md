@@ -8,7 +8,7 @@ This addendum is navigation only. It creates no semantic authority and currently
 
 Current gate/status owner:
 
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-senior-audit-reopen-hold.md`
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-senior-audit-reopen-hold.md`
 
 Current design sources:
 
