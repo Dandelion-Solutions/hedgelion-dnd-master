@@ -4,7 +4,7 @@ Status: **DERIVATIVE / NON-NORMATIVE NAVIGATION AND INTEGRATION INDEX**
 
 Date: 2026-08-29
 
-Architecture state: **STEPS 1–5 CLOSED; S6D COMPLETE / INTEGRATED CLOSURE PASS; R2.7 WP-06 CLOSED / SENIOR REVIEW PASS; DOCUMENTATION CORPUS REFACTOR COMPLETE / VERIFIED; WP-07 NOT STARTED**
+Architecture state: **STEPS 1–5 CLOSED; S6D COMPLETE / INTEGRATED CLOSURE PASS; R2.7 WP-06 CLOSED / SENIOR REVIEW PASS; WP-07 NOT STARTED**
 
 ---
 
@@ -98,7 +98,7 @@ General repository discovery:
 | Former Step 6 | CLOSED / REBASELINED | physical-host findings reallocated into Round 2; old stage is not active | Round-1 closure / Round-2 rebaseline owner decision |
 | S6D-01 | COMPLETE / ARCHITECTURE CLOSED | content-addressed ruleset package snapshots + exact resolved-set identity + owner-local context projections | `RULESET_PACKAGE_IDENTITY.md`; S6D-01 canonicalization |
 | S6D | COMPLETE / INTEGRATED CLOSURE PASS | S6D-01…12 semantic closure plus MRC-01…04 realization verified; Step-8 blocked disposition is historical only | `DEV/docs/superpowers/design/2026-08-29-s6d-integrated-machine-realization-closure.md`; roadmap |
-| R2.7 | WP-06 CLOSED / SENIOR REVIEW PASS; DOCUMENTATION CORPUS REFACTOR COMPLETE / VERIFIED; WP-07 NOT STARTED | inserted refactor is complete; stop before substantive WP-07 and it is not a numbered WP | roadmap + R2.7 durable cursor |
+| R2.7 | WP-06 CLOSED / SENIOR REVIEW PASS; WP-07 NOT STARTED | WP-07 remains pending after the WP-06 review; roadmap owns sequencing/status | roadmap + R2.7 durable cursor |
 
 ---
 

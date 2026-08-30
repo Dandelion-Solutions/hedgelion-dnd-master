@@ -1,6 +1,6 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D COMPLETE / R2.7 WP-06 CLOSED / SENIOR REVIEW PASS / DOCUMENTATION CORPUS REFACTOR COMPLETE / WP-07 NOT STARTED**
+Status: **ACTIVE PROGRAM ROADMAP — S6D COMPLETE / R2.7 WP-06 CLOSED / SENIOR REVIEW PASS / WP-07 NOT STARTED**
 
 Date: 2026-08-29
 
@@ -79,8 +79,6 @@ Operating rules:
 - ordinary-turn correctness remains local/bounded and must not gain unnecessary network/repository/extra-LLM round trips;
 - every numbered S6D task/domain uses its own full eight-step deep-design loop.
 
-The owner-approved **Documentation Corpus Refactor** is an inserted workstream, **not a numbered R2.7 WP**. It must close before substantive WP-07 analysis begins.
-
 ---
 
 ## 3. Stage registry
@@ -96,7 +94,7 @@ The owner-approved **Documentation Corpus Refactor** is an inserted workstream, 
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
 | S6D | **COMPLETE / INTEGRATED CLOSURE PASS — S6D-12 STEPS 1-8 + MRC-01…04 VERIFIED** | residual rules/seed/catalog debt closed |
-| R2.7 | **WP-06 CLOSED / SENIOR REVIEW PASS; DOCUMENTATION CORPUS REFACTOR COMPLETE / VERIFIED; WP-07 NOT STARTED** | whole-project final architecture & machine-realization audit, paused before WP-07 for inserted documentation refactor |
+| R2.7 | **WP-06 CLOSED / SENIOR REVIEW PASS; WP-07 NOT STARTED** | whole-project final architecture & machine-realization audit; WP-07 remains pending after the WP-06 review |
 
 ---
 
@@ -108,13 +106,12 @@ R2.0..R2.6 COMPLETE
     -> S6D-01..S6D-12 COMPLETE / INTEGRATED CLOSURE PASS
     -> R2.7 WP-01..WP-06 CLOSED
     -> WP-06 SENIOR SEMANTIC/TECHNICAL REVIEW PASS
-    -> DOCUMENTATION CORPUS REFACTOR                  [COMPLETE / VERIFIED / STOP BEFORE WP-07 / NOT A NUMBERED WP]
     -> R2.7 WP-07..WP-27
     -> R2.7 final reconciliation
     -> Implementation Planning
 ```
 
-**Current stop.** WP-06 is closed and has passed Senior semantic/technical review. Its final public SHA is `06f70919d52739f72515a5d315bb0998d7c34c6e`; `Validate engine source #33238159180` completed successfully on that exact SHA. WP-07 remains not started. The inserted Documentation Corpus Refactor is complete and verified; WP-07 remains not started and this roadmap is now at the required stop.
+**Current stop.** WP-06 is closed and has passed Senior semantic/technical review. Its final public SHA is `06f70919d52739f72515a5d315bb0998d7c34c6e`; `Validate engine source #33238159180` completed successfully on that exact SHA. WP-07 remains not started. This roadmap is now at the required stop; WP-07 remains not started pending Senior review and explicit continuation.
 
 S6D remains complete: `SEMANTIC_ARCHITECTURE_RECONCILED == TRUE`, `MACHINE_REALIZATION_VERIFIED == TRUE`, `S6D_FINAL_CLOSURE_AUTHORIZED == TRUE`, integrated closure PASS. No S6D blocker remains.
 
@@ -262,12 +259,11 @@ WP-03 CLOSED
 WP-04 CLOSED
 WP-05 CLOSED
 WP-06 CLOSED / SENIOR REVIEW PASS
-DOCUMENTATION CORPUS REFACTOR COMPLETE / VERIFIED / NOT A NUMBERED WP
 WP-07 NOT STARTED
 WP-08..WP-27 NOT STARTED
 ```
 
-The Documentation Corpus Refactor has reached verified closure. WP-07 substantive analysis remains intentionally not started; stop here pending an explicit continuation command.
+WP-07 substantive analysis remains intentionally not started; stop here pending Senior review and an explicit continuation command.
 
 ---
 
@@ -283,8 +279,6 @@ S6D_ACTIVE_STAGE: NONE / FINAL CLOSURE PASS
 S6D_NEXT_STAGE: NONE
 S6D_FINAL_CLOSURE_BLOCKER: NONE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
-INSERTED_WORKSTREAM: DOCUMENTATION CORPUS REFACTOR
-INSERTED_WORKSTREAM_STATUS: COMPLETE / VERIFIED / STOP BEFORE WP-07
 R2_7_WP07: NOT STARTED
-NEXT_EXACT_TASK: Await further user command; do not start WP-07
+NEXT_EXACT_TASK: Senior review / explicit continuation; do not start WP-07
 ```

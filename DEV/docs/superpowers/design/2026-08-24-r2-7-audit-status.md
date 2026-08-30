@@ -1,6 +1,6 @@
 # R2.7 — Audit Status / Durable Cursor
 
-Status: **IN PROGRESS — DOCUMENTATION CORPUS REFACTOR ACTIVE / WP-07 NOT STARTED**
+Status: **PAUSED FOR SENIOR REVIEW — WP-07 NOT STARTED**
 
 Date: 2026-08-29
 
@@ -46,14 +46,10 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-06
 CURRENT_DOMAIN: WP-07
 CURRENT_DOMAIN_TOPIC: Truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: NOT STARTED — Documentation Corpus Refactor must close before substantive WP-07
+CURRENT_SLICE: NOT STARTED — pending Senior review and explicit continuation
 NEXT_DOMAIN: WP-08
 OWNER_GATE: NONE
 FINAL_RECONCILIATION: NOT_STARTED
-
-INSERTED_WORKSTREAM: DOCUMENTATION_CORPUS_REFACTOR
-INSERTED_WORKSTREAM_STATUS: ACTIVE / REQUIRED_BEFORE_WP07
-INSERTED_WORKSTREAM_IS_NUMBERED_WP: FALSE
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
 S6D_STATUS: COMPLETE / INTEGRATED CLOSURE PASS
@@ -62,14 +58,14 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: IN_PROGRESS AT WP-07 / SUBSTANTIVE ANALYSIS NOT STARTED
-R2_7_RESUME_TRIGGER: SATISFIED
+R2_7_STATUS: PAUSED BEFORE WP-07 / SUBSTANTIVE ANALYSIS NOT STARTED
+R2_7_RESUME_TRIGGER: PENDING EXPLICIT CONTINUATION
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
-R2_7_WP07: NOT STARTED / BLOCKED_BY_DOCUMENTATION_CORPUS_REFACTOR
+R2_7_WP07: NOT STARTED / PAUSED FOR SENIOR REVIEW
 ```
 
-This synchronization records the completed Senior review and the inserted documentation refactor. It does not execute WP-07 analysis or alter WP-06 findings.
+This synchronization records the completed Senior review and current R2.7 pause. It does not execute WP-07 analysis or alter WP-06 findings.
 
 ---
 
@@ -83,10 +79,9 @@ This synchronization records the completed Senior review and the inserted docume
 | WP-04 | CLOSED |
 | WP-05 | CLOSED |
 | WP-06 | CLOSED / SENIOR REVIEW PASS |
-| WP-07 | NOT STARTED / INSERTED DOCUMENTATION CORPUS REFACTOR REQUIRED BEFORE START |
+| WP-07 | NOT STARTED / PAUSED BEFORE START |
 | WP-08..WP-27 | NOT STARTED |
 
-The Documentation Corpus Refactor is an inserted workstream and is explicitly **not** a numbered R2.7 domain.
 
 ---
 
@@ -144,7 +139,7 @@ Normative policy is `RULES/HOUSE_RULES.md`; structured companion is `RULES/HOUSE
 
 ---
 
-## Senior review and inserted-work activation
+## Senior review and current pause
 
 WP-06 has passed Senior semantic/technical review without reopening its findings.
 
@@ -154,7 +149,7 @@ FINAL_WP06_HOSTED_VERIFICATION: Validate engine source #33238159180
 FINAL_WP06_HOSTED_VERIFICATION_RESULT: SUCCESS
 ```
 
-The inserted Documentation Corpus Refactor is active. It must reach verified closure and its own Senior review checkpoint before WP-07 substantive analysis may begin.
+WP-07 remains not started; any substantive analysis requires Senior review and an explicit continuation command.
 
 ---
 
@@ -163,6 +158,6 @@ The inserted Documentation Corpus Refactor is active. It must reach verified clo
 LAST_PUBLISHED_SHA before this synchronization: `06f70919d52739f72515a5d315bb0998d7c34c6e`
 COMPLETED_SLICES: WP-06 closed; Senior semantic/technical review PASS
 CURRENT_VERIFICATION_STATE: exact WP-06 SHA `06f70919d52739f72515a5d315bb0998d7c34c6e`; hosted workflow #33238159180 success
-NEXT_EXACT_TASK_OR_SLICE: Documentation Corpus Refactor — activate four-directory public taxonomy, then complete semantic census/migration; do not begin WP-07
+NEXT_EXACT_TASK_OR_SLICE: Senior review / explicit continuation; do not begin WP-07
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE

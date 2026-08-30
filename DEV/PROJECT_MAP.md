@@ -73,7 +73,7 @@ current roadmap/status
 
 `design/` and `research/` are read when provenance, reopening, evidence applicability or audit requires them. They are not bulk-read by default to reconstruct already accepted architecture.
 
-The completed **Documentation Corpus Refactor** migrated the historical `research/` + `specs/` corpus into this taxonomy. Exact physical placement of an old artifact is not evidence of its semantic class; the durable semantic census controls migration completeness, and the roadmap/journal own final status.
+The repository taxonomy is `research / design / specs / plans`. Exact physical placement of an artifact is not evidence of its semantic class; current ownership and routing control.
 
 ---
 
@@ -196,7 +196,7 @@ specs/      final accepted implementation-facing specs/amendments/owner decision
 plans/      implementation plans/execution status
 ```
 
-Do not infer semantic role solely from an old filename/path in the historical corpus. The migration census reviewed the historical `research/` + `specs/` content and governed the completed move/promote decisions. Final accepted law must not remain hidden only in `research/` or `design/.
+Do not infer semantic role solely from an old filename/path. Final accepted law must not remain hidden only in `research/` or `design/.
 
 ---
 
