@@ -4,7 +4,7 @@ Status: **STEP 3 COMPLETE — NO HUMAN DECISION REQUIRED**
 
 Date: 2026-08-25
 
-Research: `DEV/docs/superpowers/research/2026-08-25-s6d-02-catalog-admission-gap-closure-research-architecture-draft.md`
+Research: `DEV/docs/superpowers/design/2026-08-25-s6d-02-catalog-admission-gap-closure-research-architecture-draft.md`
 
 ## Established facts
 
