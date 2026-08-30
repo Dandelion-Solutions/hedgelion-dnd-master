@@ -196,7 +196,7 @@ specs/      final accepted implementation-facing specs/amendments/owner decision
 plans/      implementation plans/execution status
 ```
 
-Do not infer semantic role solely from an old filename/path. Final accepted law must not remain hidden only in `research/` or `design/.
+Do not infer semantic role solely from an old filename/path. Final accepted law must not remain hidden only in `research/` or `design/`.
 
 ---
 
