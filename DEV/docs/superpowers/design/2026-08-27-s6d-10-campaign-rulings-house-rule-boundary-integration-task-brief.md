@@ -127,9 +127,9 @@ The investigation must verify that policy text is both eligible data for the exa
 
 For S6D-09 in particular, the Source Manifest must read supersession in the correct order before deriving active adjudicated consumers:
 
-1. **Decision C human owner:** `DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md`;
-2. **earlier derivation:** `DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-collaborative-review.md` and `DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-candidate-spec.md`;
-3. **later narrow spatial repair:** `DEV/docs/superpowers/specs/2026-08-27-s6d-09-spatial-conformance-repair-step-6-review.md`, `DEV/docs/superpowers/specs/2026-08-27-s6d-09-spatial-conformance-repair-step-7-resolution-gate.md` and `DEV/docs/superpowers/specs/2026-08-27-s6d-09-spatial-conformance-repair-step-8-canonicalization.md`;
+1. **Decision C human owner:** `DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md`;
+2. **earlier derivation:** `DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-collaborative-review.md` and `DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-candidate-spec.md`;
+3. **later narrow spatial repair:** `DEV/docs/superpowers/design/2026-08-27-s6d-09-spatial-conformance-repair-step-6-review.md`, `DEV/docs/superpowers/design/2026-08-27-s6d-09-spatial-conformance-repair-step-7-resolution-gate.md` and `DEV/docs/superpowers/design/2026-08-27-s6d-09-spatial-conformance-repair-step-8-canonicalization.md`;
 4. **current canonical owner:** `DEV/ARCHITECTURE/DOMAIN_RULES_COVERAGE.md`.
 
 Where the earlier collaborative/candidate artifacts say a spatial fact remains dormant, the later repair and current canonical owner supersede that derivation for the seven exact admitted consumers.

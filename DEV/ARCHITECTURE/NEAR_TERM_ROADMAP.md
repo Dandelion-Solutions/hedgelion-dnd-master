@@ -194,9 +194,9 @@ The plan is a decomposition/coverage index only. Current owning architecture and
 
 S6D-12 Step 1 authority:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-task-brief.md`;
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-task-brief-amendment.md`;
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-brief-critic.md`.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-task-brief.md`;
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-task-brief-amendment.md`;
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-brief-critic.md`.
 
 S6D-12 Step 2 evidence:
 
@@ -204,31 +204,31 @@ S6D-12 Step 2 evidence:
 
 S6D-12 Step 3 decision:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-decision-brief.md` — `HUMAN_DECISION_REQUIRED: NO`.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-decision-brief.md` — `HUMAN_DECISION_REQUIRED: NO`.
 
 S6D-12 Step 4 review:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-4-collaborative-review.md` — no semantic contradiction; B′/identity plus Mechanical-Null execution proof remain machine-realization obligations.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-step-4-collaborative-review.md` — no semantic contradiction; B′/identity plus Mechanical-Null execution proof remain machine-realization obligations.
 
 S6D-12 Step 5 candidate:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-5-candidate-spec.md` — exact final closure predicates, finite machine closure conditions and deferred acceptance boundaries.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-step-5-candidate-spec.md` — exact final closure predicates, finite machine closure conditions and deferred acceptance boundaries.
 
 S6D-12 Step 6 critic:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-6-whole-project-critic.md` — whole-project critic pass after owner-conforming Mechanical-Null clarification.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-step-6-whole-project-critic.md` — whole-project critic pass after owner-conforming Mechanical-Null clarification.
 
 S6D-12 Step 7 resolution gate:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-7-resolution-gate.md` — historical pre-realization gate: semantic architecture reconciled; machine realization then not verified; final closure then not authorized.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-step-7-resolution-gate.md` — historical pre-realization gate: semantic architecture reconciled; machine realization then not verified; final closure then not authorized.
 
 S6D-12 Step 8 canonicalization:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-8-canonicalization.md` — historical canonical semantic reconciliation and pre-realization blocked disposition; its current closure evaluation is superseded by the post-realization record below.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-step-8-canonicalization.md` — historical canonical semantic reconciliation and pre-realization blocked disposition; its current closure evaluation is superseded by the post-realization record below.
 
 Post-realization closure record:
 
-- `DEV/docs/superpowers/specs/2026-08-29-s6d-integrated-machine-realization-closure.md` — current S6D final closure authority/status. Its historical continuation statement authorized WP-06 resume; WP-06 is now closed and Senior-reviewed.
+- `DEV/docs/superpowers/design/2026-08-29-s6d-integrated-machine-realization-closure.md` — current S6D final closure authority/status. Its historical continuation statement authorized WP-06 resume; WP-06 is now closed and Senior-reviewed.
 
 S6D-08 stale identity prose reconciliation:
 

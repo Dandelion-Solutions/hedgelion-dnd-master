@@ -6,7 +6,7 @@ Date: 2026-08-28
 
 Reviewed artifact:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-11-tests-machine-contract-closure-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-28-s6d-11-tests-machine-contract-closure-task-brief.md`
 
 Authoritative review baseline:
 

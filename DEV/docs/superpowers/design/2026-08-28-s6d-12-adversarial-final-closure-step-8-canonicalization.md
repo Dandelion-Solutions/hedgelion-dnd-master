@@ -10,7 +10,7 @@ Canonicalization input ref: `1dceafe17861a44905a9b9a051ac5d28a4db4c32`
 
 This Step-8 artifact remains the canonical historical record of the S6D-12 architecture review **before** MRC-01…04 realization. Its semantic conclusions, owner boundaries, finite MRC prerequisites, and the then-current `MACHINE_REALIZATION_VERIFIED: FALSE` / blocked disposition remain historically accurate.
 
-The current closure evaluation is superseded by `DEV/docs/superpowers/specs/2026-08-29-s6d-integrated-machine-realization-closure.md`, which records the completed MRC realization and hosted verification. That later record changes no S6D semantic owner or Step-8 conclusion; it only evaluates the already-defined closure predicates on the realized state.
+The current closure evaluation is superseded by `DEV/docs/superpowers/design/2026-08-29-s6d-integrated-machine-realization-closure.md`, which records the completed MRC realization and hosted verification. That later record changes no S6D semantic owner or Step-8 conclusion; it only evaluates the already-defined closure predicates on the realized state.
 
 ## 1. Canonicalization scope
 

@@ -27,8 +27,8 @@ def write_fixture(root: Path) -> None:
     shutil.copytree(ROOT / 'DEV' / 'SCHEMAS', dev / 'SCHEMAS')
     shutil.copytree(ROOT / 'DEV' / 'TOOLS', dev / 'TOOLS')
     shutil.copytree(ROOT / 'DEV' / 'ARCHITECTURE', dev / 'ARCHITECTURE')
-    owner = ROOT / 'DEV' / 'docs' / 'superpowers' / 'specs' / '2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md'
-    owner_target = dev / 'docs' / 'superpowers' / 'specs' / owner.name
+    owner = ROOT / 'DEV' / 'docs' / 'superpowers' / 'design' / '2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md'
+    owner_target = dev / 'docs' / 'superpowers' / 'design' / owner.name
     owner_target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(owner, owner_target)
     for relative in (

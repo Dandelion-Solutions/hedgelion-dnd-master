@@ -97,7 +97,7 @@ General repository discovery:
 | 5.14 | CLOSED | **FULL RECOVERY & CONCURRENCY ADVERSARIAL REVIEW — 0 UNRESOLVED STEP-5 BLOCKERS** | Step-5.14 canonical final |
 | Former Step 6 | CLOSED / REBASELINED | physical-host findings reallocated into Round 2; old stage is not active | Round-1 closure / Round-2 rebaseline owner decision |
 | S6D-01 | COMPLETE / ARCHITECTURE CLOSED | content-addressed ruleset package snapshots + exact resolved-set identity + owner-local context projections | `RULESET_PACKAGE_IDENTITY.md`; S6D-01 canonicalization |
-| S6D | COMPLETE / INTEGRATED CLOSURE PASS | S6D-01…12 semantic closure plus MRC-01…04 realization verified; Step-8 blocked disposition is historical only | `2026-08-29-s6d-integrated-machine-realization-closure.md`; roadmap |
+| S6D | COMPLETE / INTEGRATED CLOSURE PASS | S6D-01…12 semantic closure plus MRC-01…04 realization verified; Step-8 blocked disposition is historical only | `DEV/docs/superpowers/design/2026-08-29-s6d-integrated-machine-realization-closure.md`; roadmap |
 | R2.7 | WP-06 CLOSED / SENIOR REVIEW PASS; DOCUMENTATION CORPUS REFACTOR ACTIVE; WP-07 NOT STARTED | inserted refactor is required before substantive WP-07 and is not a numbered WP | roadmap + R2.7 durable cursor |
 
 ---

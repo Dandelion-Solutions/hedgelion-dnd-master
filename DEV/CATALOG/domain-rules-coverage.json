@@ -17,7 +17,7 @@
     "PRODUCT_PROMISE_KEYS": [
       "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
       "DEV/ARCHITECTURE/HEALTH_EFFECTS_RECOVERY.md",
-      "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md",
+      "DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md",
       "GAME/CORE/ADJUDICATION.md",
       "GAME/CORE/ADVANCEMENT.md",
       "GAME/CORE/CHARACTER_READINESS.md",
@@ -7035,7 +7035,7 @@
       "disposition": "OUT_OF_SUPPORTED_MVP_SEED",
       "route_id": "route.out_of_scope",
       "source_citations": [
-        "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: concentration content"
+        "DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: concentration content"
       ],
       "negative_space": "until exact consumer"
     },
@@ -7051,7 +7051,7 @@
       "disposition": "OUT_OF_SUPPORTED_MVP_SEED",
       "route_id": "route.out_of_scope",
       "source_citations": [
-        "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: Contest-specific resolution"
+        "DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: Contest-specific resolution"
       ],
       "negative_space": "until exact consumer"
     },
@@ -7067,7 +7067,7 @@
       "disposition": "OUT_OF_SUPPORTED_MVP_SEED",
       "route_id": "route.out_of_scope",
       "source_citations": [
-        "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: currency economy"
+        "DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: currency economy"
       ],
       "negative_space": "reward Asset route does not imply economy"
     },
@@ -7083,7 +7083,7 @@
       "disposition": "OUT_OF_SUPPORTED_MVP_SEED",
       "route_id": "route.out_of_scope",
       "source_citations": [
-        "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: broad damage-defense"
+        "DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: broad damage-defense"
       ],
       "negative_space": "exact existing routes unaffected"
     },
@@ -7115,7 +7115,7 @@
       "disposition": "OUT_OF_SUPPORTED_MVP_SEED",
       "route_id": "route.out_of_scope",
       "source_citations": [
-        "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: does not promise a generic hazard time/resource engine"
+        "DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: does not promise a generic hazard time/resource engine"
       ],
       "negative_space": "exact separately admitted consequence only"
     },
@@ -7227,7 +7227,7 @@
       "disposition": "OUT_OF_SUPPORTED_MVP_SEED",
       "route_id": "route.out_of_scope",
       "source_citations": [
-        "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: generic reaction"
+        "DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: generic reaction"
       ],
       "negative_space": "until exact consumer"
     },
@@ -7355,7 +7355,7 @@
       "disposition": "IN_SUPPORTED_MVP",
       "route_id": "route.spatial_target_applicability",
       "source_citations": [
-        "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: bounded spatial applicability from exact TargetSpec/AreaSpec constraints plus accepted invocation-adjudicated facts"
+        "DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: bounded spatial applicability from exact TargetSpec/AreaSpec constraints plus accepted invocation-adjudicated facts"
       ],
       "negative_space": "seven exact consumers; no geometry engine or spatial truth lifecycle"
     },
@@ -7371,7 +7371,7 @@
       "disposition": "OUT_OF_SUPPORTED_MVP_SEED",
       "route_id": "route.out_of_scope",
       "source_citations": [
-        "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: does not promise generic visibility/cover calculation"
+        "DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md :: does not promise generic visibility/cover calculation"
       ],
       "negative_space": "fiction.target_visible remains dormant"
     }

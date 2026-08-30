@@ -6,7 +6,7 @@ Date: 2026-08-26
 
 Reviewed artifact:
 
-- `DEV/docs/superpowers/specs/2026-08-26-s6d-09-domain-rules-coverage-matrix-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-26-s6d-09-domain-rules-coverage-matrix-task-brief.md`
 
 Authoritative review basis:
 

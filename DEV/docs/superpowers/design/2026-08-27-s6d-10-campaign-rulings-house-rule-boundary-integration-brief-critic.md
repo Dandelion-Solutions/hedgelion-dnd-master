@@ -6,7 +6,7 @@ Date: 2026-08-27
 
 Reviewed artifact:
 
-- `DEV/docs/superpowers/specs/2026-08-27-s6d-10-campaign-rulings-house-rule-boundary-integration-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-27-s6d-10-campaign-rulings-house-rule-boundary-integration-task-brief.md`
 
 Authoritative review basis:
 

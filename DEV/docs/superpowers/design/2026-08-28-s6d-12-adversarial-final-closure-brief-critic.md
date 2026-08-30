@@ -6,8 +6,8 @@ Date: 2026-08-28
 
 Reviewed together:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-task-brief.md`;
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-task-brief-amendment.md`.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-task-brief.md`;
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-task-brief-amendment.md`.
 
 ## 1. Critic method
 

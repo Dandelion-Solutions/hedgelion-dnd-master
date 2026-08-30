@@ -23,7 +23,7 @@ R2_7_WP06: NEXT / RESUMABLE
 
 ## Evidence basis
 
-- S6D-12 Step-8 semantic canonicalization: `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-8-canonicalization.md`;
+- S6D-12 Step-8 semantic canonicalization: `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-step-8-canonicalization.md`;
 - MRC-01…04 realization and cleanup: `e6d979533829c79265c4c9a29747c6d1688b4b54`;
 - hosted cleanup verification: GitHub Actions run `33226692663` — GREEN on `e6d979533829c79265c4c9a29747c6d1688b4b54`;
 - post-realization roadmap closure publication: `72a009f0947cfa9b378dd00f0a0ba2285c26560b`;

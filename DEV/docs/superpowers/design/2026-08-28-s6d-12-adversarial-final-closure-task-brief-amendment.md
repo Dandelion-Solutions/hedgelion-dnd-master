@@ -6,7 +6,7 @@ Date: 2026-08-28
 
 Applies with:
 
-`DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-task-brief.md`
+`DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-task-brief.md`
 
 Together, the original brief and this amendment are the corrected S6D-12 Step-1 Task Brief presented to the mandatory whole-project critic.
 
