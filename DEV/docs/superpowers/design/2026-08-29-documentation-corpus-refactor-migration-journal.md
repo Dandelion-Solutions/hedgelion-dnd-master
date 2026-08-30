@@ -19,8 +19,8 @@ FINAL_CURRENT_SPEC_OR_OWNER_DESTINATIONS: 41
 PENDING_FINAL_SUPERSESSION_CHECK: 0
 PHYSICAL_MOVES_PERFORMED: 190 / 370
 PHYSICAL_MOVES_REMAINING: 180
-PATH_REPAIRS_APPLIED: 423 / 503 occurrences
-PATH_REPAIRS_REMAINING: 80 occurrences
+PATH_REPAIRS_APPLIED: 427 / 503 occurrences
+PATH_REPAIRS_REMAINING: 76 occurrences
 EXTRACTIONS_PUBLISHED: 1 / 1
 REFERENCE_AUDIT_GATE: SATISFIED / REFERENCE_SET_PROVEN
 CURRENT_DURABLE_SEMANTIC_CHECKPOINT: Specs Census Part 61
@@ -28,7 +28,7 @@ PART_61_PUBLICATION_SHA: 78731e310cd9eae3d7870c2f5c4743ca17d459ad
 CONFLICT_STATUS_AMENDMENT_01_SHA: a6531e9bf9477dc4bcd9b624119d3fbfe09e0690
 REFERENCE_SET_PROOF: DEV/docs/superpowers/design/2026-08-29-documentation-corpus-refactor-reference-set-proof.md
 REFERENCE_SET_PROOF_SHA: 694ca8e203ea813cb5b27033b5570db4d6a82bbb
-LAST_PHYSICAL_MIGRATION_CHECKPOINT: 3dddc5c689601098e57eadff47cd61bf43bab982
+LAST_PHYSICAL_MIGRATION_CHECKPOINT: 928b5234528f2cc2c6160ad1da3cec5624bfc870
 ZERO_REPAIR_CLASS: 102 / 102 COMPLETE
 R015_SPLIT_CHECKPOINT: 65c66fdd17e75e83357e540b7ba4d0228c48cf3a
 ```
@@ -121,6 +121,7 @@ STEP5_9_STEP6_EARLY_DESIGN_HISTORY: 9af5a18b73ca0bc028166ec0ee44debc77b025c7
 STEP5_11_STEP5_13_STEP5_14_STEP6_DESIGN_HISTORY: b8dd067c47d886d444e7a280020925a643ebdeba
 HOUSE_RULES_DESIGN_HISTORY: ad9ba43bda0ee7c30e7a1763c1b5fa1f4322b992
 R2_1_R2_5_DESIGN_HISTORY: 3dddc5c689601098e57eadff47cd61bf43bab982
+R2_5_R2_7_DESIGN_HISTORY: 928b5234528f2cc2c6160ad1da3cec5624bfc870
 ```
 
 `S6D01_PACKAGE_IDENTITY_PARTIAL` is a validated frozen-corpus checkpoint. It moves six frozen MOVE rows (`R-032`, `S-273`, `S-275`, `S-277`, `S-278`, `S-279`) to `design/` and applies seven frozen path repairs. `S-274`, `S-276` and `S-280` remain for the rest of the S6D-01 family. The commit also contains only benign EOF/line-ending representation churn beyond the intended placement/link changes.
@@ -149,6 +150,18 @@ Earlier batches M-001..M-018 retain their census-defined dispositions; individua
 | M-034 | Part 61 S-035 | retain current accepted temporal/recovery amendment in specs | NO_MOVE / CURRENT_OWNER |
 
 Known post-realization stale blocker wording in current domain-rules/package-machine owners remains separately tracked status-maintenance debt and is not repaired by corpus classification.
+
+## Latest physical checkpoint
+
+```text
+CHECKPOINT: R2_5_R2_7_DESIGN_HISTORY
+COMMIT: 928b5234528f2cc2c6160ad1da3cec5624bfc870
+MOVES_ADDED: 6
+FROZEN_REPAIRS_ADDED: 4
+CUMULATIVE_MOVES: 327 / 370
+CUMULATIVE_FROZEN_REPAIRS: 427 / 503
+UNPUBLISHED_WORK: NONE
+```
 
 ## Latest physical checkpoint
 
@@ -241,8 +254,8 @@ SEMANTIC_CENSUS: COMPLETE
 SUPERSESSION_GATE: COMPLETE
 REFERENCE_SET: PROVEN
 PHYSICAL_MIGRATION: IN PROGRESS
-COMPLETED_MOVES: 321 / 370
-COMPLETED_REQUIRED_PATH_REPAIRS: 423 / 503
+COMPLETED_MOVES: 327 / 370
+COMPLETED_REQUIRED_PATH_REPAIRS: 427 / 503
 EXTRACTION: 1 / 1 COMPLETE
 NEXT: continue small coherent move+repair checkpoints from the frozen migration-map.json and path-repair-plan.json; replay and closure verification only after all 370 moves and 503 repairs are complete
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
