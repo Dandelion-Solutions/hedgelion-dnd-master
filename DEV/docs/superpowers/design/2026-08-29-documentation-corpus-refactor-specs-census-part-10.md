@@ -151,7 +151,7 @@ PHYSICAL_MOVE_STATUS:
   Reason unchanged: branch-complete inbound-reference/path-repair evidence is not reliably available from GitHub code search for this non-default branch.
 
 NEXT_UNREVIEWED_SOURCE:
-  specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-task-brief.md
+  design/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-task-brief.md
 
 2026_08_20_REMAINING: 13
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
