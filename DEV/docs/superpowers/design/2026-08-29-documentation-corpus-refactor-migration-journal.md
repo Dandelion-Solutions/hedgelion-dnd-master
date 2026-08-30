@@ -17,10 +17,10 @@ FINAL_DESIGN_DESTINATIONS: 333
 SPECS_TO_RESEARCH_DESTINATIONS: 1
 FINAL_CURRENT_SPEC_OR_OWNER_DESTINATIONS: 41
 PENDING_FINAL_SUPERSESSION_CHECK: 0
-PHYSICAL_MOVES_PERFORMED: 144 / 370
-PHYSICAL_MOVES_REMAINING: 226
-PATH_REPAIRS_APPLIED: 47 / 503 occurrences
-PATH_REPAIRS_REMAINING: 456 occurrences
+PHYSICAL_MOVES_PERFORMED: 190 / 370
+PHYSICAL_MOVES_REMAINING: 180
+PATH_REPAIRS_APPLIED: 107 / 503 occurrences
+PATH_REPAIRS_REMAINING: 396 occurrences
 EXTRACTIONS_PUBLISHED: 1 / 1
 REFERENCE_AUDIT_GATE: SATISFIED / REFERENCE_SET_PROVEN
 CURRENT_DURABLE_SEMANTIC_CHECKPOINT: Specs Census Part 61
@@ -28,7 +28,7 @@ PART_61_PUBLICATION_SHA: 78731e310cd9eae3d7870c2f5c4743ca17d459ad
 CONFLICT_STATUS_AMENDMENT_01_SHA: a6531e9bf9477dc4bcd9b624119d3fbfe09e0690
 REFERENCE_SET_PROOF: DEV/docs/superpowers/design/2026-08-29-documentation-corpus-refactor-reference-set-proof.md
 REFERENCE_SET_PROOF_SHA: 694ca8e203ea813cb5b27033b5570db4d6a82bbb
-LAST_PHYSICAL_MIGRATION_CHECKPOINT: c80a6cc1fd26ef16426d6780674b9da31e9fa1e7
+LAST_PHYSICAL_MIGRATION_CHECKPOINT: 198bc6197e6fb07e198928928675f4de3b543297
 ZERO_REPAIR_CLASS: 102 / 102 COMPLETE
 R015_SPLIT_CHECKPOINT: 65c66fdd17e75e83357e540b7ba4d0228c48cf3a
 ```
@@ -104,13 +104,19 @@ HOUSE_RULES_S207_HOLD: f0cc926968228ea3acf0f8ac9175d3dd41af66fa
 STEP2_TEMPORAL_RECOVERY_S033_S034_S036: 24bb808336ca7267393725df192534e808e2b2b2
 STEP5_0_S074_S077: 9d58c7eed501e6b5466fae7a1d3b05e220f49f71
 STEP5_1_S082_S086: 269bbf46aa73090c2aea181b7a60421fcbc13531
-AUX_S6D01_PACKAGE_IDENTITY_PROVENANCE: 3fc223210c34c269b3c12ac17424d9022356cc90
+S6D01_PACKAGE_IDENTITY_PARTIAL: 3fc223210c34c269b3c12ac17424d9022356cc90
 STEP5_2_PHASE_A_S089_S098_EXCEPT_S096: a22f85dcd147975298388dea2e881b55be5be9e3
 STEP5_2_PHASE_B_S088_S096: d04403c39644cfcfda0a346b66f11cab2f30063e
 STEP5_3_S100_S107: c80a6cc1fd26ef16426d6780674b9da31e9fa1e7
+STEP5_4_S110_S116: c2b061411f868b02556062eb21fd39414dbbd712
+STEP5_5_S119_S126: 47521d48e3a8594c8a8adeea128fa9db58cd8621
+STEP5_6_S128_S133: ff843bfc3d1729276a939936b6cf93cdff962bd2
+STEP5_7_S135_S140: fd00fd0d44b473cf9d38542d7858f52122eaba5c
+STEP5_8_S142_S147: dbeff310cb7ae49b3e26539c048b3ca11b1abdda
+STEP5_9_S151_S157_EXCEPT_S158: 198bc6197e6fb07e198928928675f4de3b543297
 ```
 
-`AUX_S6D01_PACKAGE_IDENTITY_PROVENANCE` is a validated placement checkpoint outside the frozen 419-target corpus: it moves three `DEV/ARCHITECTURE/v1/decisions/working/` provenance artifacts to `design/` and repairs four links. Those source identities and repairs are absent from the frozen migration map/path-repair plan, so this auxiliary checkpoint does not increment the 370-move or 503-repair counters. Its moved status Markdown includes only benign EOF/line-ending representation churn beyond the intended placement/link changes.
+`S6D01_PACKAGE_IDENTITY_PARTIAL` is a validated frozen-corpus checkpoint. It moves six frozen MOVE rows (`R-032`, `S-273`, `S-275`, `S-277`, `S-278`, `S-279`) to `design/` and applies seven frozen path repairs. `S-274`, `S-276` and `S-280` remain for the rest of the S6D-01 family. The commit also contains only benign EOF/line-ending representation churn beyond the intended placement/link changes.
 
 ## Migration queue tail
 
@@ -118,7 +124,7 @@ Earlier batches M-001..M-018 retain their census-defined dispositions; individua
 
 | Batch | Census | Disposition | Status |
 |---|---|---|---|
-| M-019 | Parts 32-33 S-273..S-280 | move complete S6D-01 chain to design; owner `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` | REMAINING |
+| M-019 | Parts 32-33 S-273..S-280 | move complete S6D-01 chain to design; owner `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` | PARTIAL — R-032/S-273/S-275/S-277/S-278/S-279 MOVED; S-274/S-276/S-280 REMAIN |
 | M-020 | Parts 34-35 S-281..S-288 | move complete S6D-02 chain to design; owner `DEV/ARCHITECTURE/CATALOG_ADMISSION.md` | PARTIAL — R-033 RESEARCH COMPANION MOVED; S-281..S-288 REMAIN |
 | M-021 | Parts 36-37 S-289..S-296 | move complete S6D-03 chain to design; owner `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md` | REMAINING |
 | M-022 | Parts 38-39 S-297..S-304 | move complete S6D-04 chain to design; owner `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md` | REMAINING |
@@ -144,8 +150,8 @@ SEMANTIC_CENSUS: COMPLETE
 SUPERSESSION_GATE: COMPLETE
 REFERENCE_SET: PROVEN
 PHYSICAL_MIGRATION: IN PROGRESS
-COMPLETED_MOVES: 144 / 370
-COMPLETED_REQUIRED_PATH_REPAIRS: 47 / 503
+COMPLETED_MOVES: 190 / 370
+COMPLETED_REQUIRED_PATH_REPAIRS: 107 / 503
 EXTRACTION: 1 / 1 COMPLETE
 NEXT: continue small coherent move+repair checkpoints from the frozen migration-map.json and path-repair-plan.json; replay and closure verification only after all 370 moves and 503 repairs are complete
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
