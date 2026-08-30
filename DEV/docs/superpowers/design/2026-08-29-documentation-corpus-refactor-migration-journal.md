@@ -1,8 +1,9 @@
 # Documentation Corpus Refactor — Migration Journal
 
-Status: **ACTIVE OPERATIONAL JOURNAL — SEMANTIC CENSUS COMPLETE / REFERENCE_SET_PROVEN / PHYSICAL MIGRATION NEXT**
+Status: **ACTIVE OPERATIONAL JOURNAL — SEMANTIC CENSUS COMPLETE / REFERENCE_SET_PROVEN / PHYSICAL MIGRATION IN PROGRESS**
 Date: 2026-08-29
-Branch: `v1/engine-rearchitecture`
+Proof/source branch: `v1/engine-rearchitecture`
+Execution branch: `v1/documentation-refactor`
 
 This file is an operational continuation surface, not semantic authority. Item-level dispositions are owned by the research census and the durable `DEV/docs/superpowers/design/2026-08-29-documentation-corpus-refactor-specs-census-part-*.md` series. Conflict/debt status is the base register plus its current amendments.
 
@@ -16,16 +17,23 @@ FINAL_DESIGN_DESTINATIONS: 333
 SPECS_TO_RESEARCH_DESTINATIONS: 1
 FINAL_CURRENT_SPEC_OR_OWNER_DESTINATIONS: 41
 PENDING_FINAL_SUPERSESSION_CHECK: 0
-PHYSICAL_MOVES_PERFORMED: 0
+PHYSICAL_MOVES_PERFORMED: 113 / 370
+PHYSICAL_MOVES_REMAINING: 257
+PATH_REPAIRS_APPLIED: 11 / 503 occurrences
+PATH_REPAIRS_REMAINING: 492 occurrences
+EXTRACTIONS_PUBLISHED: 1 / 1
 REFERENCE_AUDIT_GATE: SATISFIED / REFERENCE_SET_PROVEN
 CURRENT_DURABLE_SEMANTIC_CHECKPOINT: Specs Census Part 61
 PART_61_PUBLICATION_SHA: 78731e310cd9eae3d7870c2f5c4743ca17d459ad
 CONFLICT_STATUS_AMENDMENT_01_SHA: a6531e9bf9477dc4bcd9b624119d3fbfe09e0690
 REFERENCE_SET_PROOF: DEV/docs/superpowers/design/2026-08-29-documentation-corpus-refactor-reference-set-proof.md
 REFERENCE_SET_PROOF_SHA: 694ca8e203ea813cb5b27033b5570db4d6a82bbb
+LAST_PHYSICAL_MIGRATION_CHECKPOINT: f0cc926968228ea3acf0f8ac9175d3dd41af66fa
+ZERO_REPAIR_CLASS: 102 / 102 COMPLETE
+R015_SPLIT_CHECKPOINT: 65c66fdd17e75e83357e540b7ba4d0228c48cf3a
 ```
 
-Part 61, conflict-register Amendment 01 and the branch-complete reference-set proof have remote publication evidence. Physical movement has not started.
+Part 61, conflict-register Amendment 01 and the branch-complete reference-set proof have remote publication evidence. Physical migration is now in progress on `v1/documentation-refactor`; the frozen semantic census and reference proof remain the execution authority for the move/repair set.
 
 Frozen baseline date closure:
 
@@ -81,31 +89,41 @@ The two reviewed exceptions are the Part-13 census mentions of the pre-migration
 
 ## Migration gate
 
-Physical relocation is now authorized by the DCR process gate, subject to exact execution from the proven migration map and path-repair set. Every publication still requires fresh remote HEAD, coherent move+repair publication, applicable verification and fresh remote read-back.
+Physical relocation is authorized by the DCR process gate and is being executed in small coherent checkpoints from the proven migration map and path-repair set. Every publication requires fresh remote HEAD, coherent move+repair publication, applicable verification and fresh remote read-back.
 
 Safety invariants: preserve provenance/rejected/superseded reasoning; strand no accepted law in `design/` or `research/`; do not modernize semantics opportunistically; authority is semantic rather than directory-derived; historical path text may remain only when genuinely historical while live routing must resolve current locations.
 
+Published physical checkpoints through the current cursor:
+
+```text
+ZERO_REPAIR_BATCHES: 102 moves complete; final zero-repair SHA 995d68decd4d142dc19c19f853ccc166b9710a72
+S6D02_RESEARCH_R033: aa5f15b1968a8fc9fc11f3293acd500102dce900
+R2_6_HOST_ASSURANCE_CHAIN_8: 2dd06c09688f990f4b1da8876b24f475937f76cb
+R015_MOVE_PLUS_H1_H8_EXTRACTION: 65c66fdd17e75e83357e540b7ba4d0228c48cf3a
+HOUSE_RULES_S207_HOLD: f0cc926968228ea3acf0f8ac9175d3dd41af66fa
+```
+
 ## Migration queue tail
 
-Earlier batches M-001..M-018 retain their census-defined dispositions and are now `READY_TO_MOVE` where their source disposition is MOVE.
+Earlier batches M-001..M-018 retain their census-defined dispositions; individual source identities may already have moved through the checkpoint sequence above. Remaining MOVE rows continue from the frozen map rather than from this summary table.
 
 | Batch | Census | Disposition | Status |
 |---|---|---|---|
-| M-019 | Parts 32-33 S-273..S-280 | move complete S6D-01 chain to design; owner `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` | READY_TO_MOVE |
-| M-020 | Parts 34-35 S-281..S-288 | move complete S6D-02 chain to design; owner `DEV/ARCHITECTURE/CATALOG_ADMISSION.md` | READY_TO_MOVE |
-| M-021 | Parts 36-37 S-289..S-296 | move complete S6D-03 chain to design; owner `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md` | READY_TO_MOVE |
-| M-022 | Parts 38-39 S-297..S-304 | move complete S6D-04 chain to design; owner `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md` | READY_TO_MOVE |
-| M-023 | Parts 40-41 S-305..S-312 | move complete S6D-05 chain to design; owner `DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md` | READY_TO_MOVE |
-| M-024 | Parts 42-43 S-313..S-320 | move complete S6D-06 chain to design; owner `DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md` | READY_TO_MOVE |
-| M-025 | Parts 44-45 S-321..S-328 | move complete S6D-07 chain to design; owner `DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md`; preserve accepted human-decision provenance | READY_TO_MOVE |
-| M-026 | Parts 46-47 S-329..S-336 | move complete S6D-08 chain to design; owner `DEV/ARCHITECTURE/HEALTH_EFFECTS_RECOVERY.md`; preserve multi-pass/Senior-HOLD repair provenance | READY_TO_MOVE |
-| M-027 | Parts 48-51 S-337..S-348 | move complete S6D-09 chain to design; owner `DEV/ARCHITECTURE/DOMAIN_RULES_COVERAGE.md`; preserve Decision-C and Senior spatial-repair provenance | READY_TO_MOVE |
-| M-028 | Parts 52-53 S-349..S-356 | move complete S6D-10 chain to design; owner `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md` | READY_TO_MOVE |
+| M-019 | Parts 32-33 S-273..S-280 | move complete S6D-01 chain to design; owner `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` | REMAINING |
+| M-020 | Parts 34-35 S-281..S-288 | move complete S6D-02 chain to design; owner `DEV/ARCHITECTURE/CATALOG_ADMISSION.md` | PARTIAL — R-033 RESEARCH COMPANION MOVED; S-281..S-288 REMAIN |
+| M-021 | Parts 36-37 S-289..S-296 | move complete S6D-03 chain to design; owner `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md` | REMAINING |
+| M-022 | Parts 38-39 S-297..S-304 | move complete S6D-04 chain to design; owner `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md` | REMAINING |
+| M-023 | Parts 40-41 S-305..S-312 | move complete S6D-05 chain to design; owner `DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md` | REMAINING |
+| M-024 | Parts 42-43 S-313..S-320 | move complete S6D-06 chain to design; owner `DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md` | REMAINING |
+| M-025 | Parts 44-45 S-321..S-328 | move complete S6D-07 chain to design; owner `DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md`; preserve accepted human-decision provenance | REMAINING |
+| M-026 | Parts 46-47 S-329..S-336 | move complete S6D-08 chain to design; owner `DEV/ARCHITECTURE/HEALTH_EFFECTS_RECOVERY.md`; preserve multi-pass/Senior-HOLD repair provenance | REMAINING |
+| M-027 | Parts 48-51 S-337..S-348 | move complete S6D-09 chain to design; owner `DEV/ARCHITECTURE/DOMAIN_RULES_COVERAGE.md`; preserve Decision-C and Senior spatial-repair provenance | REMAINING |
+| M-028 | Parts 52-53 S-349..S-356 | move complete S6D-10 chain to design; owner `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md` | REMAINING |
 | M-029 | Part 54 S-357 | retain accepted B′ owner decision in specs; only pre-realization blocked status is superseded by integrated closure | NO_MOVE / CURRENT_OWNER |
-| M-030 | Parts 55-56 S-358..S-365 | move complete S6D-11 chain to design; owner `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md` | READY_TO_MOVE |
-| M-031 | Parts 57-59 S-366..S-374 | move complete S6D-12 design/review/closure chain to design; retain current semantics in existing S6D owners | READY_TO_MOVE |
-| M-032 | Part 60 S-375 | move current integrated S6D closure status/evidence record to design; roadmap remains sequencing/status authority | READY_TO_MOVE |
-| M-033 | Part 61 S-010/S-015/S-041/S-043 | move final four resolved pending artifacts to design | READY_TO_MOVE |
+| M-030 | Parts 55-56 S-358..S-365 | move complete S6D-11 chain to design; owner `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md` | REMAINING |
+| M-031 | Parts 57-59 S-366..S-374 | move complete S6D-12 design/review/closure chain to design; retain current semantics in existing S6D owners | REMAINING |
+| M-032 | Part 60 S-375 | move current integrated S6D closure status/evidence record to design; roadmap remains sequencing/status authority | REMAINING |
+| M-033 | Part 61 S-010/S-015/S-041/S-043 | move final four resolved pending artifacts to design | REMAINING UNLESS ALREADY INCLUDED BY EARLIER CHECKPOINT |
 | M-034 | Part 61 S-035 | retain current accepted temporal/recovery amendment in specs | NO_MOVE / CURRENT_OWNER |
 
 Known post-realization stale blocker wording in current domain-rules/package-machine owners remains separately tracked status-maintenance debt and is not repaired by corpus classification.
@@ -116,7 +134,10 @@ Known post-realization stale blocker wording in current domain-rules/package-mac
 SEMANTIC_CENSUS: COMPLETE
 SUPERSESSION_GATE: COMPLETE
 REFERENCE_SET: PROVEN
-NEXT: prepare and verify one coherent physical migration candidate containing 370 true moves, 503 required path-repair occurrences and the bounded R-015 H1-H8 research extraction; then publish through the GitHub Connector with a non-force ref transition
-PHYSICAL_MIGRATION_STATUS: READY_TO_MOVE
+PHYSICAL_MIGRATION: IN PROGRESS
+COMPLETED_MOVES: 113 / 370
+COMPLETED_REQUIRED_PATH_REPAIRS: 11 / 503
+EXTRACTION: 1 / 1 COMPLETE
+NEXT: continue small coherent move+repair checkpoints from the frozen migration-map.json and path-repair-plan.json; replay and closure verification only after all 370 moves and 503 repairs are complete
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```
