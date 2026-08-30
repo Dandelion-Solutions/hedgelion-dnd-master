@@ -8,7 +8,7 @@ Canonicalization basis:
 
 - `../design/2026-08-24-r2-6-chatgpt-plus-assurance-task-brief.md` — task scope, refined by later owner clarifications;
 - `../design/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md`;
-- `2026-08-24-r2-6-chatgpt-plus-assurance-evidence-ledger.md`;
+- `../design/2026-08-24-r2-6-chatgpt-plus-assurance-evidence-ledger.md`;
 - `../design/2026-08-24-r2-6-current-host-assurance-synthesis.md`;
 - `../design/2026-08-24-r2-6-production-like-assurance-protocol.md`;
 - `../design/2026-08-24-r2-6-protocol-4-frozen-fixture-contract.md`;
