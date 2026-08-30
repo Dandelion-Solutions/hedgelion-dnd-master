@@ -16,12 +16,12 @@ Canonical architecture direction:
 
 Canonicalization basis:
 
-- `2026-08-20-step-5-6-campaign-publication-crash-consistency-task-brief.md`
-- `2026-08-20-step-5-6-campaign-publication-crash-consistency-research-draft.md`
-- `2026-08-20-step-5-6-campaign-publication-crash-consistency-analytical-challenge.md`
-- `2026-08-20-step-5-6-campaign-publication-crash-consistency-candidate-spec.md`
-- `2026-08-20-step-5-6-campaign-publication-crash-consistency-adversarial-review.md`
-- `2026-08-20-step-5-6-campaign-publication-crash-consistency-resolution-gate.md`
+- `../design/2026-08-20-step-5-6-campaign-publication-crash-consistency-task-brief.md`
+- `../design/2026-08-20-step-5-6-campaign-publication-crash-consistency-research-draft.md`
+- `../design/2026-08-20-step-5-6-campaign-publication-crash-consistency-analytical-challenge.md`
+- `../design/2026-08-20-step-5-6-campaign-publication-crash-consistency-candidate-spec.md`
+- `../design/2026-08-20-step-5-6-campaign-publication-crash-consistency-adversarial-review.md`
+- `../design/2026-08-20-step-5-6-campaign-publication-crash-consistency-resolution-gate.md`
 
 Step 5.6 defines physical campaign publication/crash-consistency semantics. It does not redefine Step-5.5 SOFT/HARD/SAVE meaning, Step-5.7 checkpoint/recovery selection, Step-5.8 live/campaign authority-transfer order, Step-5.9 fictional chronology, or later Story/transcript/delivery policy.
 
