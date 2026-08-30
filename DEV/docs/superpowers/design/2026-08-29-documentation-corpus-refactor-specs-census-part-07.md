@@ -193,7 +193,7 @@ PART_06_CURSOR_CORRECTION:
   actual `step-5-4-host-lifecycle-session-handoff-task-brief.md` family start.
 
 NEXT_UNREVIEWED_SOURCE:
-  specs/2026-08-20-step-5-5-soft-hard-save-durability-task-brief.md
+  design/2026-08-20-step-5-5-soft-hard-save-durability-task-brief.md
 
 2026_08_20_REMAINING: 36
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
