@@ -89,7 +89,7 @@ CUMULATIVE_PENDING_FINAL_SUPERSESSION_CHECK: 5
 PHYSICAL_MOVE_STATUS: NOT STARTED / DCR-016 OPEN
 
 NEXT_UNREVIEWED_SOURCE:
-  specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md
+  design/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md
 
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```

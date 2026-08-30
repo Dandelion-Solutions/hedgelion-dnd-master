@@ -167,7 +167,7 @@ Step 2 must start from a fresh remote ref and record for every source: authority
 - `DEV/docs/superpowers/specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-canonical-spec.md` and `DEV/docs/superpowers/design/2026-08-21-step-5-9-forward-extensible-time-boundary-owner-decision.md`;
 - `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`;
 - `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md`;
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`.
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`.
 
 For each, extract exact ownership of validation, state view, mutation, commit, failure, suspension, idempotency, retention and evidence.
 

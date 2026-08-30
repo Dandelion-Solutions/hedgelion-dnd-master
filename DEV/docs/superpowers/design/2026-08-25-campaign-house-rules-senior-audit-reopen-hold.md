@@ -26,15 +26,15 @@ Current Step-2 delta:
 
 Current Step-3 gate:
 
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md`
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md`
 
 The earlier artifacts:
 
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-4-collaborative-review.md`;
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-5-candidate-spec.md`;
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-6-adversarial-review.md`;
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-7-resolution-gate.md`;
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-8-canonicalization.md`;
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-4-collaborative-review.md`;
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-5-candidate-spec.md`;
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-6-adversarial-review.md`;
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-7-resolution-gate.md`;
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-8-canonicalization.md`;
 - `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md` as previously marked canonical;
 
 are **historical candidate/attempted-closure material while this HOLD is active**. They may be reused only where consistent with Step 1, the Senior Auditor's preserved directions, the amended Step-2 evidence and the future human Step-3 decision. Their prior `CANONICAL/CLOSED` status does not control the current gate.

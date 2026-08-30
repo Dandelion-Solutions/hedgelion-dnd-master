@@ -6,7 +6,7 @@ Date: 2026-08-25
 
 Reviewed candidate:
 
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-5-candidate-spec-v2.md`
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-5-candidate-spec-v2.md`
 
 Mandate: attack authority bypass, creator/delegation currentness, prose/sidecar coherence, policy-realization linkage, stale-session behavior, notification semantics, information leakage, retry/recovery and second-rules-engine drift.
 

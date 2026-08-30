@@ -6,7 +6,7 @@ Date: 2026-08-25
 
 Supersedes for the current decision gate:
 
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief.md`
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-3-decision-brief.md`
 
 Evidence basis:
 

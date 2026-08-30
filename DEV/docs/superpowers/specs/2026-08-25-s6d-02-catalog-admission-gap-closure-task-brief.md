@@ -10,7 +10,7 @@ Program owner inputs:
 
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 
 Predecessor: **S6D-01 architecture closed** by `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md`.

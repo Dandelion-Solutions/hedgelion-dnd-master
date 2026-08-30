@@ -6,7 +6,7 @@ Date: 2026-08-25
 
 Reviewed artifact:
 
-- `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
 
 Critic mandate:
 

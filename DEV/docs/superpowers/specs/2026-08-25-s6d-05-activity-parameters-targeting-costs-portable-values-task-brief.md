@@ -170,7 +170,7 @@ Step 2 begins from a fresh remote ref and records authority role, applicability 
 - `DEV/CATALOG/entity-structures.json`, `DEV/SCHEMAS/condition-definition-data.schema.json` and `DEV/SCHEMAS/effect-definition-data.schema.json` as the current exact Resource/Effect/Condition/LifeState structural routes;
 - `DEV/SCHEMAS/duration-spec.schema.json` and `DEV/SCHEMAS/temporal-binding.schema.json` as the definition-duration/concrete-time boundary;
 - `GAME/CORE/RUNTIME.md`, `GAME/CORE/MECHANICS_INTEGRITY.md`, `GAME/CORE/RANDOMNESS.md`, `GAME/CORE/ADJUDICATION.md`, `GAME/CORE/COMBAT.md`, `GAME/CORE/MAGIC.md`, `GAME/CORE/EXPLORATION.md` and `GAME/CORE/CHARACTER_READINESS.md`;
-- `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`, `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md` and `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`.
+- `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`, `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md` and `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`.
 
 ### 8.3 Execution and recovery owners
 

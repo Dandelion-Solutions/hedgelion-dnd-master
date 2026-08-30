@@ -8,7 +8,7 @@ Program authority:
 
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
 - `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
 
 This artifact is only Step 1 of the dedicated eight-step S6D-01 design loop. It defines and challenges the assignment. It does not select an architecture, create a package manifest, change a schema, begin research synthesis, or authorize S6D-02.
 

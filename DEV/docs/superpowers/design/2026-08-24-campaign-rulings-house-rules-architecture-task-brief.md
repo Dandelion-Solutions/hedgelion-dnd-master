@@ -673,8 +673,8 @@ Owning sources beat this Task Brief when a factual statement about current archi
 - `DEV/PROJECT_MAP.md` — derivative routing aid only.
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` — current program sequencing/status authority.
 - `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md` at the pre-invalid-Step-1 checkpoint — durable pause/recovery state.
-- `DEV/docs/superpowers/specs/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md` — current owner-approved sequencing and minimum House Rules closure topics.
-- `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md` — noncanonical design input; proposals must be challenged.
+- `DEV/docs/superpowers/design/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md` — current owner-approved sequencing and minimum House Rules closure topics.
+- `DEV/docs/superpowers/design/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md` — noncanonical design input; proposals must be challenged.
 
 ## 18.2 Current shipped gameplay policy / adjudication
 
@@ -870,7 +870,7 @@ This Task Brief MUST be passed through a dedicated framing critic before Step 2.
 
 Critic artifact:
 
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-1-task-brief-critic.md`
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-1-task-brief-critic.md`
 
 Expanded critic mandate after owner amendment:
 

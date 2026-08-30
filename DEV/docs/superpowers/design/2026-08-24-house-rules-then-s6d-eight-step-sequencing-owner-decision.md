@@ -45,7 +45,7 @@ The Source Manifest/evidence-extraction/synthesis-completeness gates remain mand
 
 Start from:
 
-- `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md`
 
 That file is a **design-brief input**, not a canonical result. The next chat must begin by reviewing/challenging the brief under Step 1 rather than treating its proposed two-channel model, lifecycle, `RULINGS.md`, or `HOUSE_RULES.md` shape as already settled.
 
@@ -69,8 +69,8 @@ S6D does not start until this House Rules design completes Step 8 canonicalizati
 
 Existing S6D artifacts remain useful decomposition/evidence inputs:
 
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
 However, the plan is now a **workstream decomposition and coverage index**, not permission to execute Tasks 1–12 directly.
@@ -92,7 +92,7 @@ After normal repository bootstrap, read in order:
 1. `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`;
 2. `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md`;
 3. this owner decision;
-4. `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md`;
+4. `DEV/docs/superpowers/design/2026-08-24-campaign-rulings-house-rules-architecture-design-brief.md`;
 5. canonical design-process owners.
 
 Then begin **House Rules Step 1 — Architecture Task Brief review/challenge**. Do not resume WP-06 and do not start S6D first.
