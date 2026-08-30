@@ -8,7 +8,7 @@
 
 **Tech Stack:** Markdown architecture/specs, JSON catalogs, JSON Schema Draft 2020-12, Python `unittest`/`jsonschema`, existing HDM validation/audit tooling, GitHub Connector for remote state/writes.
 
-**Spec:** `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
+**Spec:** `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 
 ## Global Constraints
 

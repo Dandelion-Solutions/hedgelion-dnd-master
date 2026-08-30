@@ -17,7 +17,7 @@ Primary program decisions:
 - `DEV/docs/superpowers/specs/2026-08-23-step-4-single-context-role-containment-canonical-amendment.md`
 - `DEV/docs/superpowers/specs/2026-08-24-round-2-roadmap-owner-decision.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md`
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
 - `DEV/docs/superpowers/design/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
 
 Current House-Rules authority:
@@ -186,8 +186,8 @@ Registered boolean invocation context facts remain boolean.
 
 S6D decomposition/evidence inputs remain:
 
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
 The plan is a decomposition/coverage index only. Current owning architecture and later accepted amendments control semantics.

@@ -156,10 +156,10 @@ Step 2 begins from a fresh remote ref and records authority role, applicability 
 - `DEV/PROJECT_MAP.md`;
 - current roadmap;
 - S6D owner decision, parent Task Brief and plan;
-- `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` and `DEV/docs/superpowers/specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-canonicalization.md`;
-- `DEV/ARCHITECTURE/CATALOG_ADMISSION.md` and `DEV/docs/superpowers/specs/2026-08-25-s6d-02-catalog-admission-gap-closure-canonicalization.md`;
-- `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md` and `DEV/docs/superpowers/specs/2026-08-25-s6d-03-complete-calculation-selector-metadata-canonicalization.md`;
-- `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md` and `DEV/docs/superpowers/specs/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-canonicalization.md`.
+- `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` and `DEV/docs/superpowers/design/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-canonicalization.md`;
+- `DEV/ARCHITECTURE/CATALOG_ADMISSION.md` and `DEV/docs/superpowers/design/2026-08-25-s6d-02-catalog-admission-gap-closure-canonicalization.md`;
+- `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md` and `DEV/docs/superpowers/design/2026-08-25-s6d-03-complete-calculation-selector-metadata-canonicalization.md`;
+- `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md` and `DEV/docs/superpowers/design/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-canonicalization.md`.
 
 ### 8.2 Semantic owners
 

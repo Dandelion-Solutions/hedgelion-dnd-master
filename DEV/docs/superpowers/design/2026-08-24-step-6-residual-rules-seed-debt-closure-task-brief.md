@@ -6,7 +6,7 @@ Date: 2026-08-24
 
 Owner decision:
 
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
 
 R2.7 remains paused until S6D closes.
 

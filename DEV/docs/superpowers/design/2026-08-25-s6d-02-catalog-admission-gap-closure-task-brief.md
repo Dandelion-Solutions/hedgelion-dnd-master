@@ -8,14 +8,14 @@ Authoritative preparation ref: `v1/engine-rearchitecture@eee4683b2b270a555105c19
 
 Program owner inputs:
 
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/design/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 
 Predecessor: **S6D-01 architecture closed** by `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md`.
 
-Whole-project brief critique: `DEV/docs/superpowers/specs/2026-08-25-s6d-02-catalog-admission-gap-closure-brief-critic.md`.
+Whole-project brief critique: `DEV/docs/superpowers/design/2026-08-25-s6d-02-catalog-admission-gap-closure-brief-critic.md`.
 
 This brief completes only S6D-02 Step 1. It does not execute Step 2 research, alter catalog/schema/runtime contracts, begin S6D-03, or resume R2.7 WP-06.
 

@@ -14,7 +14,7 @@ Program inputs:
 
 Predecessor: S6D-03 is closed by `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md`.
 
-Whole-project critic: `DEV/docs/superpowers/specs/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-brief-critic.md`.
+Whole-project critic: `DEV/docs/superpowers/design/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-brief-critic.md`.
 
 This artifact frames only Step 1. It does not decide item metadata, alter catalogs/schemas/runtime/tests, begin S6D-05, or resume R2.7.
 

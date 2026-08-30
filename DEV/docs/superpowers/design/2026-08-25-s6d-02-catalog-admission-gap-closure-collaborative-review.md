@@ -4,7 +4,7 @@ Status: **STEP 4 COMPLETE — TECHNICAL CONSEQUENCES OF ACCEPTED OWNERS**
 
 Date: 2026-08-25
 
-Decision Brief: `DEV/docs/superpowers/specs/2026-08-25-s6d-02-catalog-admission-gap-closure-decision-brief.md`
+Decision Brief: `DEV/docs/superpowers/design/2026-08-25-s6d-02-catalog-admission-gap-closure-decision-brief.md`
 
 ## Review result
 

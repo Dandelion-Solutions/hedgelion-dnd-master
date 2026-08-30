@@ -141,14 +141,14 @@ Step 2 must start from a fresh remote ref and record for every source: authority
 - `DEV/ARCHITECTURE/DESIGN_PROCESS.md`;
 - `DEV/PROJECT_MAP.md`;
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`;
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`;
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`;
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`;
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`;
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`;
-- `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` and `DEV/docs/superpowers/specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-canonicalization.md`;
-- `DEV/ARCHITECTURE/CATALOG_ADMISSION.md` and `DEV/docs/superpowers/specs/2026-08-25-s6d-02-catalog-admission-gap-closure-canonicalization.md`;
-- `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md` and `DEV/docs/superpowers/specs/2026-08-25-s6d-03-complete-calculation-selector-metadata-canonicalization.md`;
-- `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md` and `DEV/docs/superpowers/specs/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-canonicalization.md`;
-- `DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md` and `DEV/docs/superpowers/specs/2026-08-25-s6d-05-activity-parameters-targeting-costs-portable-values-canonicalization.md`.
+- `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` and `DEV/docs/superpowers/design/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-canonicalization.md`;
+- `DEV/ARCHITECTURE/CATALOG_ADMISSION.md` and `DEV/docs/superpowers/design/2026-08-25-s6d-02-catalog-admission-gap-closure-canonicalization.md`;
+- `DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md` and `DEV/docs/superpowers/design/2026-08-25-s6d-03-complete-calculation-selector-metadata-canonicalization.md`;
+- `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md` and `DEV/docs/superpowers/design/2026-08-25-s6d-04-mechanical-accessors-invocation-facts-dependency-graph-canonicalization.md`;
+- `DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md` and `DEV/docs/superpowers/design/2026-08-25-s6d-05-activity-parameters-targeting-costs-portable-values-canonicalization.md`.
 
 ### 7.2 Activity, rule and execution owners
 

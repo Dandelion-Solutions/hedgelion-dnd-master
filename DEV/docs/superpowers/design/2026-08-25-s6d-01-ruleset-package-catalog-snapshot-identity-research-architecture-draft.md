@@ -6,7 +6,7 @@ Date: 2026-08-25
 
 Task brief:
 
-- `DEV/docs/superpowers/specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-task-brief.md`
 
 This artifact completes Step 2 only. It does not canonicalize the recommendation, begin S6D-02, or implement package/schema/runtime changes.
 

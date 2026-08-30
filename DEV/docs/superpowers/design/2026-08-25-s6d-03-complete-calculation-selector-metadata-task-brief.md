@@ -8,8 +8,8 @@ Authoritative preparation ref: `v1/engine-rearchitecture@f01e30e5560e790449153ad
 
 Program inputs:
 
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 
@@ -18,7 +18,7 @@ Predecessors:
 - S6D-01 closed exact ruleset/package/catalog identity;
 - S6D-02 closed catalog admission and routed selector/operation realization to S6D-03.
 
-Whole-project brief critic: `DEV/docs/superpowers/specs/2026-08-25-s6d-03-complete-calculation-selector-metadata-brief-critic.md`.
+Whole-project brief critic: `DEV/docs/superpowers/design/2026-08-25-s6d-03-complete-calculation-selector-metadata-brief-critic.md`.
 
 This artifact frames only S6D-03 Step 1. It does not perform selector-by-selector activation decisions, change catalog/schema/test/runtime files, begin S6D-04, or resume R2.7.
 

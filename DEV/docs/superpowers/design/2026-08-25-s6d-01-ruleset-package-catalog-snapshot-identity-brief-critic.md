@@ -6,7 +6,7 @@ Date: 2026-08-25
 
 Reviewed artifact:
 
-- `DEV/docs/superpowers/specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-task-brief.md`
 
 Review boundary: Step 1 framing only. No S6D-01 Step 2 research or S6D-02 work was performed.
 

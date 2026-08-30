@@ -6,7 +6,7 @@ Date: 2026-08-25
 
 Preparation ref: `v1/engine-rearchitecture@6cd408cc321a2c8745496215a29abb8d495da511`
 
-Task Brief: `DEV/docs/superpowers/specs/2026-08-25-s6d-02-catalog-admission-gap-closure-task-brief.md`
+Task Brief: `DEV/docs/superpowers/design/2026-08-25-s6d-02-catalog-admission-gap-closure-task-brief.md`
 
 ## 1. Result
 
