@@ -158,7 +158,7 @@ Step 2 must start from a fresh remote ref and record for every source: authority
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md`;
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-canonical-spec.md`;
 - `DEV/docs/superpowers/specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md`;
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-resolution-gate.md`;
+- `DEV/docs/superpowers/design/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-resolution-gate.md`;
 - `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `DEV/ARCHITECTURE/CATALOG_RESOLUTION.md` and `DEV/ARCHITECTURE/ENTITY_STRUCTURES.md`;
 - `DEV/ARCHITECTURE/ACTOR_MODEL.md` and `DEV/ARCHITECTURE/ASSET_MODEL.md` for Actor/Asset identity and mutable-state ownership;
 - `DEV/docs/superpowers/design/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md` as the Step-1/2 assurance locator, followed to the exact Resource, HP/LifeState, Effect, Condition, location/zone and identifier model/schema owners rather than used as their detailed semantic owner;

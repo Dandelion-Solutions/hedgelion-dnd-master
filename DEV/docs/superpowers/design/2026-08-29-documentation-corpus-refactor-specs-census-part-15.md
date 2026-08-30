@@ -139,7 +139,7 @@ PHYSICAL_MOVE_STATUS:
   Reason unchanged: branch-complete inbound-reference/path-repair evidence is not reliably available from GitHub code search for this non-default branch.
 
 NEXT_UNREVIEWED_SOURCE:
-  specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-task-brief.md
+  design/2026-08-21-step-5-12-host-delivery-disclosure-boundary-task-brief.md
 
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```

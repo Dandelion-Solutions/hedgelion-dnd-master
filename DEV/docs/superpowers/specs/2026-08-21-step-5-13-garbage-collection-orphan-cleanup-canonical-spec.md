@@ -8,12 +8,12 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Canonicalization basis:
 
-- `2026-08-21-step-5-13-garbage-collection-orphan-cleanup-task-brief.md`
-- `2026-08-21-step-5-13-garbage-collection-orphan-cleanup-research-draft.md`
-- `2026-08-21-step-5-13-garbage-collection-orphan-cleanup-analytical-challenge.md`
-- `2026-08-21-step-5-13-garbage-collection-orphan-cleanup-candidate-spec.md`
-- `2026-08-21-step-5-13-garbage-collection-orphan-cleanup-adversarial-review.md`
-- `2026-08-21-step-5-13-garbage-collection-orphan-cleanup-resolution-gate.md`
+- `../design/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-task-brief.md`
+- `../design/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-research-draft.md`
+- `../design/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-analytical-challenge.md`
+- `../design/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-candidate-spec.md`
+- `../design/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-adversarial-review.md`
+- `../design/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-resolution-gate.md`
 
 Canonical architecture direction:
 

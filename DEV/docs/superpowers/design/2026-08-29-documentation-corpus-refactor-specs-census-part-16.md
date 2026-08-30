@@ -175,7 +175,7 @@ PHYSICAL_MOVE_STATUS:
   Reason unchanged: branch-complete inbound-reference/path-repair evidence is not yet proven; DCR-016 remains open.
 
 NEXT_UNREVIEWED_SOURCE:
-  specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-task-brief.md
+  design/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-task-brief.md
 
 WP07_SUBSTANTIVE_ANALYSIS: NOT STARTED
 ```

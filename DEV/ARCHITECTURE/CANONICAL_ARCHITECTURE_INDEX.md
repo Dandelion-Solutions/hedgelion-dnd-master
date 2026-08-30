@@ -726,12 +726,12 @@ For a concrete Step-2 mechanic, follow owning model/schema references; do not tr
 - 5.11: `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md`
 - 5.11 decision: `DEV/docs/superpowers/design/2026-08-21-step-5-11-selective-exact-semantic-continuity-owner-decision.md`
 - 5.12: `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md`
-- 5.12 decision: `DEV/docs/superpowers/specs/2026-08-21-step-5-12-minimal-host-delivery-owner-scope-decision.md`
+- 5.12 decision: `DEV/docs/superpowers/design/2026-08-21-step-5-12-minimal-host-delivery-owner-scope-decision.md`
 - 5.13: `DEV/docs/superpowers/specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md`
-- 5.14 task: `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-task-brief.md`
-- 5.14 integrated review: `DEV/docs/superpowers/specs/2026-08-21-step-5-14-integrated-adversarial-review-draft.md`
-- 5.14 challenge: `DEV/docs/superpowers/specs/2026-08-21-step-5-14-analytical-challenge.md`
-- 5.14 gate: `DEV/docs/superpowers/specs/2026-08-21-step-5-14-resolution-gate.md`
+- 5.14 task: `DEV/docs/superpowers/design/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-task-brief.md`
+- 5.14 integrated review: `DEV/docs/superpowers/design/2026-08-21-step-5-14-integrated-adversarial-review-draft.md`
+- 5.14 challenge: `DEV/docs/superpowers/design/2026-08-21-step-5-14-analytical-challenge.md`
+- 5.14 gate: `DEV/docs/superpowers/design/2026-08-21-step-5-14-resolution-gate.md`
 - **5.14 canonical final / Step-5 closure:** `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md`
 
 Historical Step-5 agenda:

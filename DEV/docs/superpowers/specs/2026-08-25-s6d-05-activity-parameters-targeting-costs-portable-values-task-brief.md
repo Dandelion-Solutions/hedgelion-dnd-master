@@ -177,7 +177,7 @@ Step 2 begins from a fresh remote ref and records authority role, applicability 
 - `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md`;
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md`;
 - `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-canonical-spec.md`;
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md` and `DEV/docs/superpowers/specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-resolution-gate.md`;
+- `DEV/docs/superpowers/specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md` and `DEV/docs/superpowers/design/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-resolution-gate.md`;
 - `DEV/SCHEMAS/runtime-resolution-state.schema.json`, `runtime-continuation-state.schema.json`, `execution-segment.schema.json`, `pending-child-invocation.schema.json`, `invocation-fact.schema.json`, `resolution-receipt.schema.json` and `boundary-occurrence.schema.json`;
 - `DEV/TESTS/test_step3_execution_owner_contract.py`, `test_step3_resume_ordering_contract.py`, `test_step3_execution_value_schemas.py`, `test_step3_execution_examples.py`, `test_step3_event_followup_contract.py` and `test_step3_execution_catalog_contract.py`.
 

@@ -8,7 +8,7 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Task brief:
 
-- `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-task-brief.md`
 
 Primary navigation aid:
 
