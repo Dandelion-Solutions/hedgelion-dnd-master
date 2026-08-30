@@ -6,7 +6,7 @@ Date: 2026-08-24
 
 Связанные владельцы:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md`
 - `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`

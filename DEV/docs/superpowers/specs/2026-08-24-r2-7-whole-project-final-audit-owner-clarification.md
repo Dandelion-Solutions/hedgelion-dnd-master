@@ -109,7 +109,7 @@ That inventory defines the initial whole-project audit horizon. During the actua
 
 The existing:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-7-machine-realization-holistic-closure-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-machine-realization-holistic-closure-task-brief.md`
 
 is superseded as the active task brief because its exit/mapping language is too strongly centered on R2.1-R2.6.
 
