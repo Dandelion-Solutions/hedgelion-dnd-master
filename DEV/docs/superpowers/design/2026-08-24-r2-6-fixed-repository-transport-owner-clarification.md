@@ -6,7 +6,7 @@ Date: 2026-08-24
 
 Applies to:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-6-chatgpt-plus-assurance-task-brief.md`;
+- `DEV/docs/superpowers/design/2026-08-24-r2-6-chatgpt-plus-assurance-task-brief.md`;
 - prior repository-transport feasibility research where it is broader than the current product decision;
 - later R2.6 evidence, probes, Decision Briefs and assurance classification;
 - R2.7 runtime/instruction/test mapping.

@@ -10,7 +10,7 @@ Roadmap owner:
 
 Owner clarification:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md`
 
 Depends on:
 
