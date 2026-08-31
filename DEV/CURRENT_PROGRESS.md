@@ -11,11 +11,11 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 WP-07 / STEP-1 FRAMING IN PROGRESS
 
 CURRENT_WORKSTREAM: R2.7 WP-07 — truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: Step 1 — Task Brief, Source Manifest and whole-project critic
+CURRENT_SLICE: Step 2 — evidence extraction and bidirectional conformance mapping
 
 LAST_CLOSED_UNIT: Current-Progress Authority Refactor / Senior closure
-NEXT_AUTHORIZED_UNIT: R2.7 WP-07 / Step 1 framing
-REQUIRED_GATE: complete Step-1 Task Brief, Source Manifest and whole-project critic; Step 2 requires Senior GO
+NEXT_AUTHORIZED_UNIT: R2.7 WP-07 / Step 2 evidence extraction
+REQUIRED_GATE: Step 8 canonicalization requires Senior review; stop earlier only for a genuine owner decision
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE

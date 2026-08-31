@@ -50,9 +50,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-06
 CURRENT_DOMAIN: WP-07
 CURRENT_DOMAIN_TOPIC: Truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: Step 1 framing — Task Brief, Source Manifest and whole-project critic
+CURRENT_SLICE: Step 2 — evidence extraction and bidirectional conformance mapping
 NEXT_DOMAIN: WP-08
-OWNER_GATE: mandatory Senior review after completed Step 1; Step 2 requires GO
+OWNER_GATE: NONE; mandatory Senior review remains after completed Step 8
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -62,11 +62,11 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-07 STEP-1 FRAMING IN PROGRESS
+R2_7_STATUS: WP-07 STEP-2 EVIDENCE EXTRACTION IN PROGRESS
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
-R2_7_WP07: STEP-1 FRAMING IN PROGRESS
+R2_7_WP07: STEP-2 EVIDENCE EXTRACTION IN PROGRESS
 ```
 
 This task-local cursor records the R2.7 audit checkpoint. It does not own global
