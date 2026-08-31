@@ -7,7 +7,7 @@ This file applies to local-agent sessions that work from a real checkout and hav
 The configured repository remote is the remote transport authority in this runtime. Before a correctness-sensitive write:
 
 1. inspect the configured remote and target branch; do not guess either;
-2. successfully refresh the target remote-tracking ref with native Git;
+2. run \`git fetch --prune <remote>\` successfully before treating any remote-tracking ref as current. An alternative is permitted only if it demonstrably updates and prunes the relevant remote-tracking refs; describe that equivalent command in the work record;
 3. read the refreshed remote-tracking commit and compare it with the intended base;
 4. if the refresh cannot be completed, report the evidence as local-only and do not claim a fresh remote HEAD.
 
