@@ -8,14 +8,14 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-07 / STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW
+GLOBAL_STATE: R2.7 WP-08 / STEP 1 BRIEFING AUTHORIZED
 
-CURRENT_WORKSTREAM: R2.7 WP-07 — truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: Mandatory Senior review of completed WP-07 Step 8 closure
+CURRENT_WORKSTREAM: R2.7 WP-08 — next whole-project audit domain
+CURRENT_SLICE: Step 1 Architecture Task Brief
 
-LAST_CLOSED_UNIT: Current-Progress Authority Refactor / Senior closure
-NEXT_AUTHORIZED_UNIT: Senior review of R2.7 WP-07; WP-08 remains unauthorized pending GO
-REQUIRED_GATE: Step 8 canonicalization requires Senior review; stop earlier only for a genuine owner decision
+LAST_CLOSED_UNIT: R2.7 WP-07 / Senior review GO
+NEXT_AUTHORIZED_UNIT: R2.7 WP-08 Step 1 Architecture Task Brief
+REQUIRED_GATE: After completed Step 1 brief, local critic and repair, stop for mandatory Senior review; do not begin Step 2 or later without GO
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
