@@ -2,7 +2,7 @@
 
 ## Статус
 
-**STEP 5 COMPLETE — CANDIDATE UNDER ADVERSARIAL REVIEW**
+**STEP 6 COMPLETE — REPAIRED CANDIDATE READY FOR RESOLUTION**
 
 Глобальная авторизация и gate принадлежат `DEV/CURRENT_PROGRESS.md`. Этот
 mini-report — task-local evidence/cursor WP-09, а не global current-progress
@@ -10,14 +10,13 @@ authority.
 
 ## Краткий вывод
 
-Candidate не меняет accepted architecture. Он делает enforceable allocation:
-CORE cache ≠ role context; routing hints ≠ authority; profile-owned packet
-control/central estimator/outcome handling остаются runtime-local; history и
-cross-role boundaries остаются finite/typed; conformance доказывается поведением,
-не catalog vocabulary.
+Adversarial review нашёл один SIGNIFICANT ambiguity: candidate должен запрещать
+цепочку fallback после terminal `UNSATISFIABLE`. Repair требует exactly one
+registered caller alternative и termination текущей assembly attempt. Другие
+authority, telemetry, scan, shared-context и physical-scope probes passed.
 
-Candidate:
-`2026-08-31-r2-7-WP-09-step-5-candidate-context-runtime-realization-mapping.md`.
+Review:
+`2026-08-31-r2-7-WP-09-step-6-adversarial-review.md`.
 
 ## Human decision
 
@@ -25,5 +24,5 @@ Candidate:
 
 ## Точка продолжения
 
-Step 6: adversarial review of cache/index/source/telemetry/failure-loop and
-cross-domain boundary probes.
+Step 7: resolve canonicalization need and synchronize precise forward/verification
+obligations.

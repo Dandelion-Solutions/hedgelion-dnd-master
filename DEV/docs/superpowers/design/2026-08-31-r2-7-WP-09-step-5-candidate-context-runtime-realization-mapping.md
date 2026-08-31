@@ -1,6 +1,6 @@
 # R2.7 WP-09 Step 5 — Candidate Context-Runtime Realization Mapping
 
-Status: **CANDIDATE — ADVERSARIAL REVIEW REQUIRED**
+Status: **CANDIDATE REPAIRED BY STEP-6 ADVERSARIAL REVIEW — RESOLUTION REQUIRED**
 
 ## Purpose
 
@@ -45,9 +45,10 @@ The runtime first assembles all required members at legal floors. Only then may 
 rank already legal optional/supporting candidates. One central conservative
 estimator is the resource control point; it must not assume exact remaining
 provider token/context telemetry or use a fixed provider percentage. If required
-floors cannot be satisfied, it returns terminal `UNSATISFIABLE`; it neither
-silently drops a required dependency nor loops/reprofiles/guesses. The registered
-caller selects one finite R2.4 alternative.
+floors cannot be satisfied, it returns terminal `UNSATISFIABLE`. For that failed
+assembly attempt the registered caller selects **exactly one** finite R2.4
+alternative and terminates the attempt; it may not chain alternatives, loop,
+silently drop a required dependency, guess, invent a new profile or reprofile.
 
 ### C-WP09-5 — Preserve finite history and role boundaries
 
@@ -87,7 +88,8 @@ evidence, never sole conformance proof.
 2. A relevant entity omitted from a scene/index remains discoverable through an
    admitted alternate route; a stale/index-only body is not semantically used.
 3. A required exact/structured floor remains intact while optional material is
-   reduced; an infeasible required set terminates with a registered caller path.
+   reduced; an infeasible required set yields terminal `UNSATISFIABLE`, exactly
+   one registered caller alternative and termination of that assembly attempt.
 4. The same profile result does not rely on exact remaining host-token telemetry.
 5. An ordinary turn neither scans campaign directories/history nor reuses a
    MechanicalContext/trace/continuation as role context.
@@ -98,6 +100,6 @@ evidence, never sole conformance proof.
 
 ## Decision gate
 
-No human decision is exposed. Step 6 must adversarially challenge this candidate
-for duplicate authority, unbounded reads, invisible telemetry, stale currentness,
-failure loops and cross-domain physical commitments.
+No human decision is exposed. Step 7 must resolve whether this repaired,
+implementation-facing allocation needs a concise canonical specification rather
+than leaving accepted law only in candidate/review artifacts.
