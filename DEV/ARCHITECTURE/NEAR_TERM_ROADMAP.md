@@ -1,10 +1,10 @@
-# HDM Architecture Round 2 — Active Roadmap
+# HDM Architecture Round 2 — Program Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D COMPLETE / R2.7 WP-06 CLOSED / SENIOR REVIEW PASS / WP-07 NOT STARTED**
+Status: **SEQUENCING / SCOPE — NOT CURRENT-PROGRESS AUTHORITY**
 
-Date: 2026-08-29
+Date: 2026-08-31
 
-This file is the sequencing/status authority for Architecture Round 2 and inserted pre-resume architecture workstreams. Detailed semantics remain in owning specifications.
+This file owns intended sequencing, stage scope and dependencies for Architecture Round 2 and inserted workstreams. Global current state, active work and gates are owned only by `DEV/CURRENT_PROGRESS.md`. Detailed semantics remain in owning specifications.
 
 Canonical process:
 
@@ -20,15 +20,12 @@ Primary program decisions:
 - `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
 - `DEV/docs/superpowers/design/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
 
-Current House-Rules authority:
+House-Rules owner references:
 
 - `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`
 - `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md`
 - `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`
 
-R2.7 durable cursor:
-
-- `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md`
 
 ---
 
@@ -83,37 +80,34 @@ Operating rules:
 
 ## 3. Stage registry
 
-| Stage | Status | Scope |
-|---|---|---|
-| R2.0 | **COMPLETE / EVIDENCE-REBASELINED** | evidence rebaseline / dependency graph |
-| R2.1 | **COMPLETE / ARCHITECTURE CLOSED** | continuity/history-aligned derived state |
-| R2.2 | **COMPLETE / ARCHITECTURE CLOSED** | Actor continuity/cognition/relationships |
-| R2.3 | **COMPLETE / ARCHITECTURE CLOSED** | Context Runtime/retrieval/allocation |
-| R2.4 | **COMPLETE / ARCHITECTURE CLOSED** | single-context LLM execution/instructions |
-| R2.5 | **COMPLETE / ARCHITECTURE CLOSED** | collaboration/multiplayer |
-| R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
-| House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
-| S6D | **COMPLETE / INTEGRATED CLOSURE PASS — S6D-12 STEPS 1-8 + MRC-01…04 VERIFIED** | residual rules/seed/catalog debt closed |
-| R2.7 | **WP-06 CLOSED / SENIOR REVIEW PASS; WP-07 NOT STARTED** | whole-project final architecture & machine-realization audit; WP-07 remains pending after the WP-06 review |
+| Stage | Scope |
+|---|---|
+| R2.0 | evidence rebaseline / dependency graph |
+| R2.1 | continuity/history-aligned derived state |
+| R2.2 | Actor continuity/cognition/relationships |
+| R2.3 | Context Runtime/retrieval/allocation |
+| R2.4 | single-context LLM execution/instructions |
+| R2.5 | collaboration/multiplayer |
+| R2.6 | ChatGPT-Plus assurance/security/degradation |
+| House Rules | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
+| S6D | residual rules/seed/catalog closure |
+| R2.7 | whole-project final architecture & machine-realization audit; WP-01 through WP-27 and final reconciliation |
 
 ---
 
-## 4. Current dependency graph
+## 4. Dependency graph
 
 ```text
-R2.0..R2.6 COMPLETE
-    -> HOUSE RULES STEPS 1-8 COMPLETE / REPAIRED CLOSURE
-    -> S6D-01..S6D-12 COMPLETE / INTEGRATED CLOSURE PASS
-    -> R2.7 WP-01..WP-06 CLOSED
-    -> WP-06 SENIOR SEMANTIC/TECHNICAL REVIEW PASS
-    -> R2.7 WP-07..WP-27
+R2.0..R2.6
+    -> House Rules
+    -> S6D
+    -> R2.7 WP-01..WP-27
     -> R2.7 final reconciliation
     -> Implementation Planning
 ```
 
-**Current stop.** WP-06 is closed and has passed Senior semantic/technical review. Its final public SHA is `06f70919d52739f72515a5d315bb0998d7c34c6e`; `Validate engine source #33238159180` completed successfully on that exact SHA. WP-07 remains not started. This roadmap is now at the required stop; WP-07 remains not started pending Senior review and explicit continuation.
-
-S6D remains complete: `SEMANTIC_ARCHITECTURE_RECONCILED == TRUE`, `MACHINE_REALIZATION_VERIFIED == TRUE`, `S6D_FINAL_CLOSURE_AUTHORIZED == TRUE`, integrated closure PASS. No S6D blocker remains.
+For the actual current position, next authorized unit and gate, read
+`DEV/CURRENT_PROGRESS.md`. Closure evidence remains in its owning records.
 
 ---
 
@@ -237,48 +231,13 @@ B′ carry-in authority remains:
 - `DEV/ARCHITECTURE/DOMAIN_RULES_COVERAGE.md`;
 - `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md`.
 
-Current closure predicates:
+Recorded S6D closure predicates:
 
 ```text
 SEMANTIC_ARCHITECTURE_RECONCILED: TRUE
 MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
-R2_7_WP06_RESUME_ALLOWED: TRUE
-R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
 ```
 
 ---
-
-## 8. R2.7 current status
-
-```text
-WP-01 CLOSED
-WP-02 CLOSED
-WP-03 CLOSED
-WP-04 CLOSED
-WP-05 CLOSED
-WP-06 CLOSED / SENIOR REVIEW PASS
-WP-07 NOT STARTED
-WP-08..WP-27 NOT STARTED
-```
-
-WP-07 substantive analysis remains intentionally not started; stop here pending Senior review and an explicit continuation command.
-
----
-
-## 9. Current continuation point
-
-```text
-HOUSE_RULES: STEPS 1-8 COMPLETE / CANONICAL
-S6D: INTEGRATED CLOSURE PASS
-S6D_COMPLETED_DOMAIN: S6D-12 / STEPS 1-8 / SEMANTIC ARCHITECTURE CANONICAL
-S6D_ACTIVE_DOMAIN: NONE / INTEGRATED CLOSURE PASS
-S6D_COMPLETED_STAGE: S6D INTEGRATED CLOSURE / POST-REALIZATION PASS
-S6D_ACTIVE_STAGE: NONE / FINAL CLOSURE PASS
-S6D_NEXT_STAGE: NONE
-S6D_FINAL_CLOSURE_BLOCKER: NONE
-R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
-R2_7_WP07: NOT STARTED
-NEXT_EXACT_TASK: Senior review / explicit continuation; do not start WP-07
-```

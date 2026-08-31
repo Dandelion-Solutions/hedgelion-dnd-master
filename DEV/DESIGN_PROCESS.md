@@ -1240,7 +1240,7 @@ Check:
 10. Decision Log / ADR is updated;
 11. Risk Register is updated;
 12. Deferred / Debt / Backlog is updated;
-13. roadmap status and next continuation point are updated;
+13. the global current-progress authority is updated, and the roadmap is updated only when sequencing or scope changed;
 14. traceability is sufficient for material requirements/decisions;
 15. Source Manifest coverage is sufficient for the claims made;
 16. material enumerated source items and qualifiers were accounted for where

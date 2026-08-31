@@ -4,7 +4,8 @@ Status: **DERIVATIVE / NON-NORMATIVE NAVIGATION AND INTEGRATION INDEX**
 
 Date: 2026-08-29
 
-Architecture state: **STEPS 1–5 CLOSED; S6D COMPLETE / INTEGRATED CLOSURE PASS; R2.7 WP-06 CLOSED / SENIOR REVIEW PASS; WP-07 NOT STARTED**
+Global current progress is owned only by `DEV/CURRENT_PROGRESS.md`. This index
+does not state the active stage, current slice, next unit or current gate.
 
 ---
 
@@ -50,15 +51,17 @@ Practical precedence:
 2. canonical specification/amendment governing the concrete semantic boundary;
 3. accepted architecture/model contract or machine contract delegated by that spec;
 4. canonical final integrated review / assurance confirming closure and known residual debt;
-5. current roadmap for sequencing/status only;
-6. this index and `DEV/PROJECT_MAP.md` for navigation only;
-7. research drafts/candidates/historical proposals/status snapshots for derivation only.
+5. `DEV/CURRENT_PROGRESS.md` for global current state and authorized next work;
+6. current roadmap for sequencing/scope only;
+7. this index and `DEV/PROJECT_MAP.md` for navigation only;
+8. research drafts/candidates/historical proposals/status snapshots for derivation only.
 
 Filename recency alone never establishes supersession.
 
-Sequencing authority:
+Project progress and sequencing route:
 
-- `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
+- `DEV/CURRENT_PROGRESS.md` — global current state and next authorized unit;
+- `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` — sequence, scope and dependencies.
 
 Architecture process:
 
@@ -98,7 +101,7 @@ General repository discovery:
 | Former Step 6 | CLOSED / REBASELINED | physical-host findings reallocated into Round 2; old stage is not active | Round-1 closure / Round-2 rebaseline owner decision |
 | S6D-01 | COMPLETE / ARCHITECTURE CLOSED | content-addressed ruleset package snapshots + exact resolved-set identity + owner-local context projections | `RULESET_PACKAGE_IDENTITY.md`; S6D-01 canonicalization |
 | S6D | COMPLETE / INTEGRATED CLOSURE PASS | S6D-01…12 semantic closure plus MRC-01…04 realization verified; Step-8 blocked disposition is historical only | `DEV/docs/superpowers/design/2026-08-29-s6d-integrated-machine-realization-closure.md`; roadmap |
-| R2.7 | WP-06 CLOSED / SENIOR REVIEW PASS; WP-07 NOT STARTED | WP-07 remains pending after the WP-06 review; roadmap owns sequencing/status | roadmap + R2.7 durable cursor |
+| R2.7 | task-local audit cursor and global current-progress authority control completion/active state | whole-project final architecture & machine-realization audit | `DEV/CURRENT_PROGRESS.md`; roadmap + R2.7 task-local cursor |
 
 ---
 
@@ -594,7 +597,7 @@ Open the listed primary source after locating a concern here.
 
 # 13. Step-6 boundary / feasibility gates
 
-Step 5 is closed. The former Step 6 has been rebaselined; its physical-host findings were allocated into Round 2. Current sequencing is owned by `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`.
+Step 5 is closed. The former Step 6 has been rebaselined; its physical-host findings were allocated into Round 2. Global project progress is owned by `DEV/CURRENT_PROGRESS.md`; the roadmap owns only sequencing.
 
 Material gates identified by Step 5.14:
 

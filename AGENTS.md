@@ -29,7 +29,8 @@ current remote ref/state
 -> DEV/DESIGN_PROCESS.md
 -> DEV/ARCHITECTURE/DESIGN_PROCESS.md
 -> DEV/PROJECT_MAP.md
--> current roadmap/status authority
+-> DEV/CURRENT_PROGRESS.md
+-> DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md when sequencing/scope detail is needed
 -> task-specific owning artifacts and relevant evidence
 ```
 
@@ -39,8 +40,9 @@ At minimum:
 2. read the current `AGENTS.md` and applicable runtime overlay on that state;
 3. read the current applicable design-process files rather than relying on remembered versions;
 4. read `DEV/PROJECT_MAP.md` and use it to identify the task-specific ownership/dependency route;
-5. read the current roadmap/status authority for architecture sequencing when the task is architectural;
-6. inspect the actual owning artifacts and relevant neighboring consumers before making correctness-sensitive claims.
+5. read `DEV/CURRENT_PROGRESS.md` for global current state and the next authorized unit when the task is architectural;
+6. read `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` when sequencing, scope or dependencies need detail;
+7. inspect the actual owning artifacts and relevant neighboring consumers before making correctness-sensitive claims.
 
 Conversation history, model memory, handoff summaries, prior-agent summaries, search snippets and derivative indexes may accelerate orientation, but they are not substitutes for current repository evidence when the owning source is available.
 

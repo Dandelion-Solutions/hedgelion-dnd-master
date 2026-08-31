@@ -28,11 +28,12 @@ Follow the repository bootstrap in `AGENTS.md`, then establish at least:
 1. the current remote ref and repository state;
 2. the current versions of `AGENTS.md`, `DEV/DESIGN_PROCESS.md`, this file and
    `DEV/PROJECT_MAP.md`;
-3. the current architecture sequencing/status authority in
-   `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`;
-4. the current canonical/derivative locator state needed for the task, including
+3. the global current-progress authority in `DEV/CURRENT_PROGRESS.md`;
+4. the roadmap in `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` when sequencing,
+   scope or dependencies need detail;
+5. the current canonical/derivative locator state needed for the task, including
    `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` where applicable;
-5. the task-specific owning artifacts, neighboring schemas/tests/runtime
+6. the task-specific owning artifacts, neighboring schemas/tests/runtime
    contracts and research inputs identified through the project map.
 
 Conversation summaries, previous-chat handoffs, model memory and remembered
@@ -345,25 +346,27 @@ the owner to reconstruct evidence that exists in repository sources.
 
 ## HDM architecture sequencing gate
 
-The active mechanical-architecture sequence is maintained in
-`DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`.
+Global current progress and the next authorized unit are owned only by
+`DEV/CURRENT_PROGRESS.md`. `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` owns
+the mechanical-architecture sequence, scope and dependencies; it is not a
+second progress cursor.
 
-For that roadmap:
+Architecture work must:
 
-- exactly one numbered stage may be `IN PROGRESS`;
-- a later stage may be examined when it exposes a dependency or contradiction
-  relevant to the active stage, but it may not silently replace the active
-  stage;
-- a stage is complete only when its required artifacts exist, its exit checks
-  pass, and unresolved work is explicitly owned, deferred, dormant with a
-  meaningful trigger, or recorded in the appropriate backlog/debt mechanism;
-- architecture is reviewed before implementation;
-- accepted decisions must remain compatible with existing canonical HDM
-  architecture unless an explicit superseding decision is made;
-- the roadmap and related architecture status must identify the exact next
-  continuation point;
-- a roadmap rebaseline that claims to derive a problem horizon from a research
-  corpus must pass the repository-evidence and synthesis gate above before that
+- consult the global current-progress authority before choosing a stage;
+- examine a later stage only when it exposes a dependency or contradiction
+  relevant to the authorized work, without silently replacing that work;
+- treat a stage as complete only when its required artifacts exist, its exit
+  checks pass, and unresolved work is explicitly owned, deferred, dormant with
+  a meaningful trigger, or recorded in the appropriate backlog/debt mechanism;
+- review architecture before implementation;
+- keep accepted decisions compatible with existing canonical HDM architecture
+  unless an explicit superseding decision is made;
+- update `DEV/CURRENT_PROGRESS.md` when global state or the next authorized
+  unit changes, and update the roadmap only when sequence, scope or dependency
+  content changes;
+- require any roadmap rebaseline that derives a problem horizon from a research
+  corpus to pass the repository-evidence and synthesis gate above before that
   coverage claim is treated as assured.
 
 ## HDM-specific analytical emphasis

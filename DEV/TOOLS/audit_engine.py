@@ -58,6 +58,48 @@ def parse_header_activation(src: str) -> tuple[str | None, str | None]:
     return (lp.group(1).strip() if lp else None, lw.group(1).strip() if lw else None)
 
 
+def audit_current_progress_authority() -> None:
+    progress = dev_text('CURRENT_PROGRESS.md')
+    required_progress = (
+        'Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**',
+        'GLOBAL_PROGRAM:',
+        'GLOBAL_STATE:',
+        'CURRENT_WORKSTREAM:',
+        'CURRENT_SLICE:',
+        'LAST_CLOSED_UNIT:',
+        'NEXT_AUTHORIZED_UNIT:',
+        'REQUIRED_GATE:',
+        'TASK_LOCAL_CURSOR:',
+        'KNOWN_BLOCKERS:',
+    )
+    for marker in required_progress:
+        require(marker in progress, f'CURRENT_PROGRESS.md missing required marker: {marker}')
+
+    agents = repo_text('AGENTS.md')
+    project_map = dev_text('PROJECT_MAP.md')
+    design_process = dev_text('DESIGN_PROCESS.md')
+    architecture_process = dev_text('ARCHITECTURE/DESIGN_PROCESS.md')
+    roadmap = dev_text('ARCHITECTURE/NEAR_TERM_ROADMAP.md')
+    canonical_index = dev_text('ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md')
+    r27_cursor = dev_text('docs/superpowers/design/2026-08-24-r2-7-audit-status.md')
+
+    for where, content in {
+        'AGENTS.md': agents,
+        'DEV/PROJECT_MAP.md': project_map,
+        'DEV/DESIGN_PROCESS.md': design_process,
+        'DEV/ARCHITECTURE/DESIGN_PROCESS.md': architecture_process,
+        'DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md': canonical_index,
+        'R2.7 task-local cursor': r27_cursor,
+    }.items():
+        require('DEV/CURRENT_PROGRESS.md' in content, f'{where} must route global progress through DEV/CURRENT_PROGRESS.md')
+
+    require('NOT CURRENT-PROGRESS AUTHORITY' in roadmap, 'roadmap must disclaim global current-progress authority')
+    require('This file is the sequencing/status authority' not in roadmap, 'roadmap must not claim sequencing/status authority')
+    require('## 8. R2.7 current status' not in roadmap, 'roadmap must not retain a global R2.7 current-status section')
+    require('## 9. Current continuation point' not in roadmap, 'roadmap must not retain a global continuation cursor')
+    require('Architecture state:' not in canonical_index, 'canonical index must not retain a global architecture-state summary')
+    require('TASK-LOCAL R2.7 AUDIT CURSOR — NOT GLOBAL CURRENT-PROGRESS AUTHORITY' in r27_cursor, 'R2.7 cursor must declare task-local scope')
+
 def audit_layout_and_version() -> None:
     forbidden_root = {
         "CORE", "RULES", "SCHEMA", "CAMPAIGN", "TEMPLATE", "MIGRATIONS", "INSTALL",
@@ -418,6 +460,7 @@ def smoke_generator() -> None:
 def main() -> int:
     argparse.ArgumentParser(description=__doc__).parse_args()
     audit_layout_and_version()
+    audit_current_progress_authority()
     audit_core_activation()
     audit_runtime_scope()
     audit_gm_guidance()

@@ -13,7 +13,7 @@ This file is a service map for development work. It answers:
 - which neighboring surfaces are likely dependencies;
 - which artifact families are authority, evidence, provenance or implementation support.
 
-It is **not** a semantic source of truth. It intentionally does not restate full contracts, schemas, decisions or gameplay rules. If this map conflicts with an owning source, current roadmap/status or the repository tree, the owner/tree wins and this map is stale.
+It is **not** a semantic source of truth. It intentionally does not restate full contracts, schemas, decisions or gameplay rules. If this map conflicts with an owning source, current-progress authority, roadmap or the repository tree, the owner/tree wins and this map is stale.
 
 ### 1.1 Fresh-session research route
 
@@ -23,7 +23,8 @@ current remote ref/state
 -> DEV/DESIGN_PROCESS.md
 -> DEV/ARCHITECTURE/DESIGN_PROCESS.md
 -> DEV/PROJECT_MAP.md
--> DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md when sequencing matters
+-> DEV/CURRENT_PROGRESS.md
+-> DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md when sequencing/scope detail matters
 -> concern route below
 -> task-specific Source Manifest
 -> actual owning artifacts
@@ -65,7 +66,8 @@ Large homogeneous families are grouped by path/pattern rather than manually enum
 Default implementation-planning discovery is:
 
 ```text
-current roadmap/status
+DEV/CURRENT_PROGRESS.md
+-> DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md when sequencing/scope detail matters
 -> current durable DEV/ARCHITECTURE owners
 -> final accepted DEV/docs/superpowers/specs/
 -> implicated machine contracts/tests/runtime consumers
@@ -95,7 +97,7 @@ repository root
 
 | Concern | Primary surfaces | Frequent neighbors |
 |---|---|---|
-| Architecture process / current stage | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | `CANONICAL_ARCHITECTURE_INDEX.md`, final accepted `specs/`, task-specific design/research only when required |
+| Architecture process / current stage | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, `DEV/CURRENT_PROGRESS.md` | `NEAR_TERM_ROADMAP.md` for sequencing/scope, `CANONICAL_ARCHITECTURE_INDEX.md`, final accepted `specs/`, task-specific design/research only when required |
 | Implementation execution | `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`, approved spec + implementation plan | affected architecture owners, tests, machine contracts, execution-status file |
 | Integrated accepted architecture lookup | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | actual owning architecture documents + final accepted `specs/` + current roadmap |
 | Architecture research / Round-2 idea pool | `DEV/docs/superpowers/research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` | current roadmap, accepted owners/decisions, applicable runtime/schema/test owners |
@@ -143,8 +145,9 @@ The table is a discovery aid. Correctness-sensitive work follows actual owners a
 - `DEV/AGENT_RUNTIMES/` — environment-specific transport and verification overlays; read the applicable one with `AGENTS.md`.
 - `DEV/ENGINE_DEVELOPMENT.yaml` — development/release metadata.
 - `DEV/PROJECT_MAP.md` — this navigation/dependency map.
-- `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` — current Round-2 sequencing/status authority.
-- `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` — derivative integrated semantic locator; never overrides owners/current roadmap.
+- `DEV/CURRENT_PROGRESS.md` — sole global current-progress authority and first recovery surface for current state/gates.
+- `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` — Round-2 sequencing, scope and dependencies; not a current-progress authority.
+- `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` — derivative integrated semantic locator; never overrides owners/current-progress authority.
 
 ### 6.2 `DEV/ARCHITECTURE/` durable owners
 
@@ -342,7 +345,7 @@ For substantive repository work:
 
 1. inspect current remote ref/tree;
 2. use this map to identify likely owners and neighboring dependency surfaces;
-3. read current roadmap/status when sequencing matters;
+3. read `DEV/CURRENT_PROGRESS.md`; read the roadmap only when sequencing/scope detail matters;
 4. build the task-specific Source Manifest;
 5. use derivative indexes only to locate owning accepted sources;
 6. read actual owners/contracts/schemas/tests and, where needed, research/design provenance to the depth required by the claim;

@@ -1,6 +1,6 @@
 # R2.7 — Audit Status / Durable Cursor
 
-Status: **PAUSED FOR SENIOR REVIEW — WP-07 NOT STARTED**
+Status: **TASK-LOCAL R2.7 AUDIT CURSOR — NOT GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 Date: 2026-08-29
 
@@ -12,7 +12,11 @@ R2.7 task brief:
 
 - `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`
 
-Program sequencing authority:
+Global current-progress authority:
+
+- `DEV/CURRENT_PROGRESS.md`
+
+R2.7 sequencing/scope roadmap:
 
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`
 
@@ -39,7 +43,7 @@ That blob records the real R2.7 state before the House-Rules/S6D pause. It is hi
 
 ---
 
-## Current durable cursor
+## Task-local R2.7 cursor
 
 ```text
 AUDIT_STATUS: IN_PROGRESS
@@ -65,7 +69,9 @@ R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
 R2_7_WP07: NOT STARTED / PAUSED FOR SENIOR REVIEW
 ```
 
-This synchronization records the completed Senior review and current R2.7 pause. It does not execute WP-07 analysis or alter WP-06 findings.
+This task-local cursor records the R2.7 audit checkpoint. It does not own global
+project state, does not authorize WP-07, and does not alter WP-06 findings. Read
+`DEV/CURRENT_PROGRESS.md` before resuming any work.
 
 ---
 
@@ -139,7 +145,7 @@ Normative policy is `RULES/HOUSE_RULES.md`; structured companion is `RULES/HOUSE
 
 ---
 
-## Senior review and current pause
+## Senior review / recorded R2.7 pause
 
 WP-06 has passed Senior semantic/technical review without reopening its findings.
 
@@ -153,7 +159,7 @@ WP-07 remains not started; any substantive analysis requires Senior review and a
 
 ---
 
-## Current handoff
+## Task-local handoff
 
 LAST_PUBLISHED_SHA before this synchronization: `06f70919d52739f72515a5d315bb0998d7c34c6e`
 COMPLETED_SLICES: WP-06 closed; Senior semantic/technical review PASS
