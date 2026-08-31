@@ -2,7 +2,7 @@
 
 ## Статус
 
-**STEP 2 COMPLETE — READY FOR STEP 3 DECISION BRIEF**
+**STEP 5 CANDIDATE SPECIFICATION COMPLETE — READY FOR STEP 6 ADVERSARIAL REVIEW**
 
 Глобальная авторизация и точный gate: `DEV/CURRENT_PROGRESS.md`.
 Этот mini-report является task-local evidence/cursor artifact WP-08 и не заменяет
@@ -14,8 +14,9 @@ global current-progress authority.
 физического LLM context, persistent role memory или новой canonical specification.
 Первичные canonical owners совместимы с текущими CORE/package instruction surfaces,
 но текущая evidence выборка ещё не доказывает machine realization R2.3/R2.4/R2.6.
-Главная остающаяся работа Step 2 — полный reverse audit actual runtime/catalog/test
-consumer graph и точное mapping WP-07/F06.
+Step-2 evidence, Step-3 decision and Step-4 review now support a bounded candidate
+realization allocation. Step 6 must still challenge that allocation before any
+canonicalization.
 
 ## Покрытые вопросы
 
@@ -113,8 +114,8 @@ derivation document was used as a substitute for its current primary owner.
 
 ## Forward obligations
 
-None is created yet. Candidate findings remain inside WP-08 until exact current
-machine consumers are reconciled.
+None is created. The candidate allocation remains inside WP-08 until Step-6
+adversarial review and later resolution/canonicalization.
 
 ## Human decision
 
@@ -142,12 +143,27 @@ R2.3/R2.4/R2.6 realization remains a bounded obligation under current owners.
 
 `DEV/docs/superpowers/design/2026-08-31-r2-7-WP-08-step-4-collaborative-review.md` retains the Step-3 direction and carries R01–R03 into Step 5; no owner decision or semantic change is introduced.
 
+## Step-5 candidate specification
+
+`DEV/docs/superpowers/design/2026-08-31-r2-7-WP-08-step-5-candidate-spec.md`
+allocates the existing R2.6 behavioural instruction to the always-active
+`GAME/CORE/AI_REASONING.md` owner, keeps `PLAY_POLICY.md` as activation-only,
+and records explicit runtime-local/no-durable-record decisions for R2.3/R2.4
+control objects. It preserves R2.1 source escalation/exclusions, R2.2 Actor
+purpose and Actor-private versus `world.knowledge` separation, typed handoff
+minimum transport, fresh Narrator rebind and no same-envelope Story feedback.
+
+The candidate introduces no new semantic architecture, owner, runtime/schema/
+catalog/CORE change or implementation plan. It carries F01–F04 and V01 into
+Step 6 for adversarial challenge.
+
 ## Closure verdict
 
-**STEP 2 COMPLETE.** Proceed to Step 3 Decision Brief.
+**STEP 5 COMPLETE.** Proceed to Step 6 adversarial review.
 
 ## Точка продолжения
 
-Prepare the Step-3 Decision Brief from the completed evidence set. State whether
-human decision is required; preserve the closed WP-07/F06 carry-in and do not
-start implementation planning.
+Challenge the Step-5 candidate for duplicate instruction authority, accidental
+durable role/context state, source-escalation or Actor/knowledge boundary loss,
+raw handoff/Story feedback leakage, and finite degradation/output behaviour.
+Do not begin implementation planning.
