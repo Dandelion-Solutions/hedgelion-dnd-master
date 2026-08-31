@@ -140,6 +140,7 @@ The table is a discovery aid. Correctness-sensitive work follows actual owners a
 - `DEV/DESIGN_PROCESS.md` — canonical generic architecture/deep-work process.
 - `DEV/ARCHITECTURE/DESIGN_PROCESS.md` — HDM-specific adapter/review gates.
 - `DEV/DEVELOPMENT_EXECUTION_PROCESS.md` — canonical implementation-execution process after approved design.
+- `DEV/AGENT_RUNTIMES/` — environment-specific transport and verification overlays; read the applicable one with `AGENTS.md`.
 - `DEV/ENGINE_DEVELOPMENT.yaml` — development/release metadata.
 - `DEV/PROJECT_MAP.md` — this navigation/dependency map.
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` — current Round-2 sequencing/status authority.

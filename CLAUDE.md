@@ -1,0 +1,5 @@
+# HDM Claude Code project entrypoint
+
+@AGENTS.md
+@DEV/AGENT_RUNTIMES/LOCAL_MACHINE.md
+@DEV/AGENT_RUNTIMES/CLAUDE_CODE.md

@@ -4,6 +4,19 @@
 
 This file governs **development work on the HDM engine repository**. It is not part of gameplay/runtime instructions and is never shipped in the runtime release asset.
 
+## Runtime instruction overlays
+
+This repository supports more than one agent runtime. The core rules in this file apply everywhere; a runtime overlay supplies the transport, tool and verification mechanics that are actually available.
+
+Before external repository communication or execution work, identify the current runtime and load its overlay:
+
+- **ChatGPT Work / Codex with GitHub Connector:** `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md`;
+- **OpenCode:** `DEV/AGENT_RUNTIMES/OPENCODE.md` and `DEV/AGENT_RUNTIMES/LOCAL_MACHINE.md`;
+- **Claude Code:** `DEV/AGENT_RUNTIMES/CLAUDE_CODE.md` and `DEV/AGENT_RUNTIMES/LOCAL_MACHINE.md`;
+- **another runtime:** stop before remote writes or verification claims unless an equivalent runtime policy has been explicitly supplied.
+
+An overlay adapts process to its environment. It may not weaken the HDM authority hierarchy, source/evidence requirements, branch guardrails, public-material rules, approval gates, or prohibition on force-pushing live refs.
+
 ## Fresh development-session bootstrap
 
 A fresh development chat/session must recover current project state from the repository before doing substantive analysis, proposing architecture, or asking the repository owner to restate information that is already recoverable from project sources.
@@ -22,8 +35,8 @@ current remote ref/state
 
 At minimum:
 
-1. determine the active remote ref and read current repository state through the connected GitHub transport;
-2. read the current `AGENTS.md` on that ref;
+1. determine the active branch/ref and current repository state using the applicable runtime overlay;
+2. read the current `AGENTS.md` and applicable runtime overlay on that state;
 3. read the current applicable design-process files rather than relying on remembered versions;
 4. read `DEV/PROJECT_MAP.md` and use it to identify the task-specific ownership/dependency route;
 5. read the current roadmap/status authority for architecture sequencing when the task is architectural;
@@ -204,47 +217,14 @@ When an active development branch/ref is already specified, all ordinary reads a
 
 For the current HDM rearchitecture program, the active development target is `v1/engine-rearchitecture`. Do not create another branch unless the repository owner explicitly requests or approves it under the rule above.
 
-## GitHub transport policy
+## Runtime-specific remote transport and verification
 
-For HDM development in ChatGPT Work / Codex environments with connected GitHub Connector access:
+The required outcome is environment-independent: a correctness-sensitive repository write starts from verified current remote state, publishes without force, and is followed by an independent read-back. The applicable runtime overlay owns the exact transport commands/tools.
 
-```text
-NATIVE_GIT_REMOTE = NATIVE_GIT_UNAVAILABLE
-GITHUB_REMOTE_TRANSPORT = CONNECTOR_REQUIRED
-```
-
-Use the connected GitHub Connector for all remote repository communication: refs, commits, trees, blobs, files, comparisons, branch updates, pull requests and issues.
-
-Do not use native Git/GitHub CLI/direct HTTP as a fallback for remote transport in this environment. In particular, do not run `git clone`, `git fetch`, `git pull`, `git push`, `git ls-remote`, `gh ...`, curl/Python HTTP credential workarounds or SSH/token bypasses.
-
-If the Connector lacks a required capability, report that specific capability gap rather than bypassing it.
-
-## Local Git is allowed
-
-When a valid local checkout is already available, local-only Git operations are allowed, including status/diff/log/show/rev-parse/merge-base/merge/rebase/cherry-pick/add/restore/checkout/commit, provided they do not contact a remote.
-
-A local commit is not proof that GitHub changed.
-
-## Remote state is authoritative
-
-Before a correctness-sensitive remote write, read the current target ref through the Connector. Construct the intended commit from that verified parent, update the ref without force unless explicitly required, then verify the remote ref again.
-
-For multi-file/structural changes prefer Connector Git-data publication:
-
-```text
-read current ref
--> create UTF-8 blobs / reuse existing blob+tree SHAs
--> create tree from verified parent tree
--> create commit with expected parent
--> non-force update ref
--> verify ref/tree
-```
-
-## Text-file transport policy
-
-For repository text files, use Connector UTF-8 text interfaces directly. Do not manually Base64-encode/decode Markdown, JSON, YAML, Python, configuration or other semantic text for transport, chunking, staging, reconstruction or verification.
-
-Connector-internal Base64 required by GitHub APIs is allowed; agents must not add a redundant manual text→Base64→text layer. Explicit Base64 is reserved for genuinely binary content or a Connector operation with no usable text mode.
+- A local tracking ref, stale checkout, cached API response or unrefreshed branch is not evidence of current remote state.
+- A local commit is not evidence of remote publication.
+- A verification result is valid only for the execution surface that actually ran it. Do not claim a hosted-CI, local-test or remote-read-back result that the current runtime could not obtain.
+- When a required transport or execution surface is unavailable, report that as unavailable evidence; do not silently substitute a weaker source or fabricate PASS.
 
 ## Version metadata
 
@@ -274,11 +254,9 @@ Both own/reuse the isolated repository-local `.hdm-devtools/` environment declar
 
 The supported install artifact is `hedgelion-dnd-master-runtime-v<version>.zip`. GitHub-generated source archives are repository snapshots and are not gameplay packages.
 
-## GitHub Actions execution surface
+## Execution and verification surfaces
 
-GitHub-hosted Actions is a different execution surface from connector-backed ChatGPT/Codex. A release workflow may use its scoped `GITHUB_TOKEN` and GitHub-provided tooling/API to create a Release and upload the builder-produced assets. This does not relax Connector-only remote transport for interactive development sessions.
-
-Release assets for an immutable tag are immutable: never silently overwrite different bytes under the same tag/asset name.
+Runtime overlays define the available local tools, remote transport and hosted-CI visibility. Use the strongest verification available in the current runtime and record the actual surface. Hosted CI is an additional acceptance surface when it is available; it is not an excuse to skip required local validation, and unavailable hosted CI is not a passing result.
 
 ## Development versus gameplay
 
