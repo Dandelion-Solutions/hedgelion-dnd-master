@@ -46,13 +46,13 @@ That blob records the real R2.7 state before the House-Rules/S6D pause. It is hi
 ## Task-local R2.7 cursor
 
 ```text
-AUDIT_STATUS: IN_PROGRESS
+AUDIT_STATUS: WAITING_SENIOR_REVIEW
 LAST_CLOSED_DOMAIN: WP-06
 CURRENT_DOMAIN: WP-07
 CURRENT_DOMAIN_TOPIC: Truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: Step 3 — Decision Brief from completed WP-07 evidence
+CURRENT_SLICE: Mandatory Senior review of completed WP-07 Step 8 closure
 NEXT_DOMAIN: WP-08
-OWNER_GATE: NONE; mandatory Senior review remains after completed Step 8
+OWNER_GATE: REQUIRED — WP-07 Step 8 completed; await Senior GO before WP-08
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -62,11 +62,11 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-07 STEP 2 COMPLETE — evidence slices 1-3 complete; Step 3 next
+R2_7_STATUS: WP-07 STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
-R2_7_WP07: STEP 2 COMPLETE — Step 3 Decision Brief next
+R2_7_WP07: STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW
 ```
 
 This task-local cursor records the R2.7 audit checkpoint. It does not own global
@@ -85,7 +85,7 @@ project state, does not authorize WP-07, and does not alter WP-06 findings. Read
 | WP-04 | CLOSED |
 | WP-05 | CLOSED |
 | WP-06 | CLOSED / SENIOR REVIEW PASS |
-| WP-07 | STEP 2 COMPLETE — Step 3 Decision Brief next |
+| WP-07 | STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW |
 | WP-08..WP-27 | NOT STARTED |
 
 
@@ -155,19 +155,20 @@ FINAL_WP06_HOSTED_VERIFICATION: Validate engine source #33238159180
 FINAL_WP06_HOSTED_VERIFICATION_RESULT: SUCCESS
 ```
 
-WP-07 Step-2 evidence extraction is complete. Slices 1-3 classified F01-F06
-and completed the required adversarial mapping. F06 records the verified absence
-of R2.6's explicit active-role/RoleContextBundle/lawful typed-handoff instruction
-in the inspected shipped instruction corpus as an existing R2.6/R2.7
-implementation obligation; no Slice 4 or owner decision is required before Step 3.
+WP-07 Steps 1-8 are complete. Slices 1-3 classified F01-F06 and completed the
+required adversarial mapping; Steps 3-7 preserved all existing owner routes and
+Step 8 canonicalized the audit closure without adding new semantic authority.
+F06 remains the R2.6/R2.7 implementation obligation for an explicit active-role/
+RoleContextBundle/lawful typed-handoff instruction. The mandatory Senior review
+is now required before WP-08.
 
 ---
 
 ## Task-local handoff
 
-LAST_PUBLISHED_SHA: `27e5ec0cd5858b6c6ae8bc72f7aba8ba198036c7`
-COMPLETED_SLICES: WP-06 closed / Senior review PASS; WP-07 Step-1 framing and critic complete; WP-07 Step-2 evidence slices 1-3 complete (F01-F06 plus adversarial mapping)
-CURRENT_VERIFICATION_STATE: `python3 -m unittest DEV.TESTS.test_r2_7_wp03_catalog_conformance DEV.TESTS.test_step4_story_retirement_contract DEV.TESTS.test_step_5_0_contamination` PASS (21 tests); `python3 DEV/TOOLS/run_maintenance_audit.py` PASS. Slice 3 reconciled shipped instruction consumers with Step-4, R2.3, R2.4, R2.6 and Step-5 retention/recovery owners; F06 records the absent explicit R2.6 instruction equivalent as an existing implementation obligation, with no new owner decision.
-NEXT_EXACT_TASK_OR_SLICE: Step 3 — produce the compact WP-07 Decision Brief from F01-F06 and N02; then continue through Steps 4-8 unless a genuine owner gate arises
+LAST_PUBLISHED_SHA: `a2adae98a259ea6aa91a4ce4f4ee2272087cc75f`
+COMPLETED_SLICES: WP-06 closed / Senior review PASS; WP-07 Steps 1-8 complete (F01-F06 plus N02 adversarial mapping)
+CURRENT_VERIFICATION_STATE: Slice-3 focused tests (21) and maintenance audit passed before Step-3 entry. Steps 3-8 are documentation-only closure records; final fresh local verification, publication and remote read-back remain required for this checkpoint.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of the completed WP-07 Step-8 closure; do not begin WP-08 or implementation planning before GO
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE

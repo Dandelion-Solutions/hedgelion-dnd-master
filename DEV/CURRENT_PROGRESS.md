@@ -8,13 +8,13 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-07 / STEP 2 COMPLETE — Step 3 Decision Brief next
+GLOBAL_STATE: R2.7 WP-07 / STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW
 
 CURRENT_WORKSTREAM: R2.7 WP-07 — truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: Step 3 — Decision Brief from completed WP-07 evidence
+CURRENT_SLICE: Mandatory Senior review of completed WP-07 Step 8 closure
 
 LAST_CLOSED_UNIT: Current-Progress Authority Refactor / Senior closure
-NEXT_AUTHORIZED_UNIT: R2.7 WP-07 / Step 3 Decision Brief
+NEXT_AUTHORIZED_UNIT: Senior review of R2.7 WP-07; WP-08 remains unauthorized pending GO
 REQUIRED_GATE: Step 8 canonicalization requires Senior review; stop earlier only for a genuine owner decision
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md

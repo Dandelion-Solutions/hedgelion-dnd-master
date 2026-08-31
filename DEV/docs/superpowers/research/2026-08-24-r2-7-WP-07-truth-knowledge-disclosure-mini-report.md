@@ -1,6 +1,6 @@
 # R2.7 WP-07 — Truth, Knowledge, Disclosure and Communication Evidence — Mini-Report
 
-Статус: **STEP 2 COMPLETE — evidence slices 1-3 complete; Step 3 next**
+Статус: **STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW**
 
 ## Краткий вывод
 
@@ -411,18 +411,19 @@ risk-acceptance decision.
 
 ## Closure verdict
 
-**STEP 2 COMPLETE — SLICE 4 NOT REQUIRED.** The three evidence slices account
+**STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW.** The three evidence slices account
 for F01-F06 and the required adversarial mapping: semantic owner separation,
 durable/machine representation or explicit absence, lawful transfer boundaries,
 pre-emission validation plus the Step-5.12 post-emission interruption limitation,
 Transcript and compaction limits, PC/live normalization, and instruction/role
 eligibility. F06 is already an R2.6/R2.7 implementation obligation and does not
-require a new owner decision or evidence slice. Continue with Step 3; do not
-start new machine work.
+require a new owner decision or evidence slice. Steps 3-8 preserved those
+dispositions without adding architecture or machine work. Senior review is now
+mandatory before WP-08.
 
 ## Точка продолжения
 
-Step 3 — produce a compact Decision Brief from the completed evidence ledger.
-It must preserve F01-F06 and N02 dispositions, state that no human decision is
-required, and avoid proposing a replacement information subsystem or
-implementation path.
+Mandatory Senior review of the completed WP-07 Step-8 closure. The review package
+is `2026-08-31-r2-7-WP-07-step-3-decision-brief.md` through
+`2026-08-31-r2-7-WP-07-step-8-canonicalization.md`; do not begin WP-08 or
+implementation planning before a Senior GO.
