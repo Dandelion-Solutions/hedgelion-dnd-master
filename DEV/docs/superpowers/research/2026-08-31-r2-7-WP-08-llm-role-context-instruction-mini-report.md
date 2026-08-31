@@ -134,6 +134,10 @@ owner/disposition route. The evidence does not expose a product, authority,
 compatibility, risk or scope decision. Existing R2.2 data alignment is retained;
 R2.3/R2.4/R2.6 realization remains a bounded obligation under current owners.
 
+## Step-3 decision
+
+`DEV/docs/superpowers/design/2026-08-31-r2-7-WP-08-step-3-decision-brief.md` records **Human decision required: NO**. F01–F04 and V01 remain the existing-owner mapping/verification package.
+
 ## Closure verdict
 
 **STEP 2 COMPLETE.** Proceed to Step 3 Decision Brief.
