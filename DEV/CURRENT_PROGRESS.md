@@ -8,13 +8,13 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-08 / STEP 7 RESOLUTION AUTHORIZED
+GLOBAL_STATE: R2.7 WP-08 / STEP 8 CANONICALIZATION AUTHORIZED
 
 CURRENT_WORKSTREAM: R2.7 WP-08 — next whole-project audit domain
-CURRENT_SLICE: Step 7 resolution
+CURRENT_SLICE: Step 8 canonicalization
 
-LAST_CLOSED_UNIT: R2.7 WP-08 Step 6 adversarial review / repairs applied / no owner decision
-NEXT_AUTHORIZED_UNIT: R2.7 WP-08 Step 7 resolution
+LAST_CLOSED_UNIT: R2.7 WP-08 Step 7 resolution / canonicalization required / no owner decision
+NEXT_AUTHORIZED_UNIT: R2.7 WP-08 Step 8 canonicalization
 REQUIRED_GATE: Publish coherent verified checkpoints for completed Step-2 evidence slices and each completed Step 3–8 artifact. After completed Step 8 canonicalization, required verification/read-back and state synchronization, stop for mandatory Senior review; do not begin WP-09 or implementation planning without GO
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md

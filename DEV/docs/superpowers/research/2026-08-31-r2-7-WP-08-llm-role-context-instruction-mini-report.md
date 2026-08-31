@@ -2,7 +2,7 @@
 
 ## Статус
 
-**STEP 6 ADVERSARIAL REVIEW COMPLETE — READY FOR STEP 7 RESOLUTION**
+**STEP 7 RESOLUTION COMPLETE — READY FOR STEP 8 CANONICALIZATION**
 
 Глобальная авторизация и точный gate: `DEV/CURRENT_PROGRESS.md`.
 Этот mini-report является task-local evidence/cursor artifact WP-08 и не заменяет
@@ -166,12 +166,21 @@ Actor purpose is transient rather than persisted, and lawful handoff is an
 accepted registered R2.4 result-family instance rather than vague vocabulary.
 AR-04 through AR-07 pass. No owner decision is required.
 
+## Step-7 resolution
+
+`DEV/docs/superpowers/design/2026-08-31-r2-7-WP-08-step-7-resolution.md`
+resolves F01–F04/V01 against the repaired candidate and records no owner or
+product decision. It concludes that one narrow canonical implementation-facing
+realization specification is necessary: otherwise the accepted allocation of the
+R2.6 instruction route and the runtime-local/no-durable-record contract would
+remain only in audit/design material.
+
 ## Closure verdict
 
-**STEP 6 COMPLETE.** Proceed to Step 7 resolution.
+**STEP 7 COMPLETE.** Proceed to Step 8 canonicalization.
 
 ## Точка продолжения
 
-Resolve whether the repaired candidate preserves every primary-owner constraint,
-closes F01–F04/V01 as a canonicalizable mapping package, and requires any new
-canonical implementation-facing law. Do not begin implementation planning.
+Canonicalize only the resolved realization mapping in `specs`, record traceability
+and synchronize current status. Verify exact source/target readability and remote
+read-back. Do not begin WP-09 or implementation planning.
