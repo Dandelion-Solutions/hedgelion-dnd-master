@@ -8,14 +8,14 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: CURRENT-PROGRESS AUTHORITY REFACTOR / INDEPENDENT LOCAL VERIFICATION PENDING
+GLOBAL_STATE: R2.7 WP-07 / STEP-1 FRAMING IN PROGRESS
 
-CURRENT_WORKSTREAM: Current-Progress Authority Refactor
-CURRENT_SLICE: independent local audit on the VPS
+CURRENT_WORKSTREAM: R2.7 WP-07 — truth, knowledge, disclosure and communication evidence
+CURRENT_SLICE: Step 1 — Task Brief, Source Manifest and whole-project critic
 
-LAST_CLOSED_UNIT: R2.7 WP-06 / Senior semantic-technical review PASS
-NEXT_AUTHORIZED_UNIT: R2.7 WP-07 substantive analysis
-REQUIRED_GATE: independent local audit of this refactor, then Senior closure; after closure WP-07 still requires explicit owner continuation
+LAST_CLOSED_UNIT: Current-Progress Authority Refactor / Senior closure
+NEXT_AUTHORIZED_UNIT: R2.7 WP-07 / Step 1 framing
+REQUIRED_GATE: complete Step-1 Task Brief, Source Manifest and whole-project critic; Step 2 requires Senior GO
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
