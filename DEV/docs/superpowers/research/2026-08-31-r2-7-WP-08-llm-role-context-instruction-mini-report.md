@@ -2,7 +2,7 @@
 
 ## Статус
 
-**STEP 5 CANDIDATE SPECIFICATION COMPLETE — READY FOR STEP 6 ADVERSARIAL REVIEW**
+**STEP 6 ADVERSARIAL REVIEW COMPLETE — READY FOR STEP 7 RESOLUTION**
 
 Глобальная авторизация и точный gate: `DEV/CURRENT_PROGRESS.md`.
 Этот mini-report является task-local evidence/cursor artifact WP-08 и не заменяет
@@ -157,13 +157,21 @@ The candidate introduces no new semantic architecture, owner, runtime/schema/
 catalog/CORE change or implementation plan. It carries F01–F04 and V01 into
 Step 6 for adversarial challenge.
 
+## Step-6 adversarial review
+
+`DEV/docs/superpowers/design/2026-08-31-r2-7-WP-08-step-6-adversarial-review.md`
+records AR-01–AR-07. AR-01 through AR-03 were mechanically repaired in the
+candidate: sole **text** ownership is distinguished from activation/invocation,
+Actor purpose is transient rather than persisted, and lawful handoff is an
+accepted registered R2.4 result-family instance rather than vague vocabulary.
+AR-04 through AR-07 pass. No owner decision is required.
+
 ## Closure verdict
 
-**STEP 5 COMPLETE.** Proceed to Step 6 adversarial review.
+**STEP 6 COMPLETE.** Proceed to Step 7 resolution.
 
 ## Точка продолжения
 
-Challenge the Step-5 candidate for duplicate instruction authority, accidental
-durable role/context state, source-escalation or Actor/knowledge boundary loss,
-raw handoff/Story feedback leakage, and finite degradation/output behaviour.
-Do not begin implementation planning.
+Resolve whether the repaired candidate preserves every primary-owner constraint,
+closes F01–F04/V01 as a canonicalizable mapping package, and requires any new
+canonical implementation-facing law. Do not begin implementation planning.

@@ -28,7 +28,7 @@ The candidate preserves all of the following:
 - R2.1 continuity may orient an eligible role but must escalate to the proper
   current/exact/source class for a material claim; hidden reasoning, prompts,
   abandoned generations and unaccepted candidates are not continuity evidence;
-- an Actor assessment has an explicit R2.2 purpose and bounded eligible
+- an Actor assessment has an explicit transient R2.2 purpose and bounded eligible
   evidence/current state. Source-Actor-private continuity never becomes a
   duplicate writable proposition stance; `world.knowledge` remains that owner;
 - typed handoffs carry only accepted minimum semantic results. Raw private
@@ -54,7 +54,7 @@ Physical presence elsewhere in the conversation does not make information eligib
 When information later becomes lawfully eligible, use it normally; prior ineligibility is not permanent forgetting.
 ```
 
-This is the sole ordinary-gameplay instruction owner for this rule.
+This is the sole primary ordinary-gameplay **text** owner for this rule. Activation and invocation owners may refer to this rule without restating it.
 
 `GAME/CORE/PLAY_POLICY.md` remains the owner of immutable CORE cache and
 header-driven activation: it makes `AI_REASONING.md` active, but must not
@@ -93,8 +93,9 @@ Before each material Interpreter, Dramaturg, Actor, Chronicler or Narrator phase
 the runtime boundary must establish the R2.4 rebind tuple: role, applicable
 subject/recipient, purpose, registered profile, bundle/basis, allowed typed prior
 results, accepted deterministic references, authority limits and result/output
-contract. An Actor phase additionally records its R2.2 assessment purpose and
-uses only bounded eligible evidence/current state. This does not make Actor
+contract. An Actor phase binds an explicit, transient R2.2 assessment purpose and
+uses only bounded eligible evidence/current state. The purpose binding is not a
+durable Actor-continuity, knowledge or session write. This does not make Actor
 continuity ambient or turn it into `world.knowledge`.
 
 ### 3.3 Source and handoff discipline
@@ -113,9 +114,9 @@ contract:
    typed handoffs.
 
 A handoff is purpose-, subject-, recipient- and generation-scoped. It exposes
-only a registered accepted semantic result (for example the existing role/result
-vocabulary where applicable), never the full upstream bundle, raw private
-deliberation or a generic role-result bus. A recipient/catch-up or planning input
+only an accepted instance of a registered R2.4 phase/result family, never the
+full upstream bundle, raw private deliberation or a generic role-result bus.
+This candidate does not create or admit new catalog vocabulary. A recipient/catch-up or planning input
 must therefore be assembled against its own eligibility contract; co-presence in
 the shared chat does not merge it.
 
