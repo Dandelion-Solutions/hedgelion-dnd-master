@@ -8,14 +8,14 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-09 / STEP 4 COLLABORATIVE REVIEW AUTHORIZED
+GLOBAL_STATE: R2.7 WP-09 / STEP 5 CANDIDATE REALIZATION MAPPING AUTHORIZED
 
 CURRENT_WORKSTREAM: R2.7 WP-09 — Context loading, retrieval and resource-bounded operation
-CURRENT_SLICE: Step 3 complete — review owner/obligation mapping for false authority and scope bleed
+CURRENT_SLICE: Step 4 complete — formulate narrow candidate mapping and run adversarial review
 
-LAST_CLOSED_UNIT: R2.7 WP-09 Step 3 owner-and-obligation mapping
-NEXT_AUTHORIZED_UNIT: R2.7 WP-09 Step 4 collaborative review
-REQUIRED_GATE: Publish coherent verified checkpoints for each completed Step 4–8 artifact. After completed Step 8 canonicalization, required verification/read-back and state synchronization, stop for mandatory Senior review; do not begin WP-10 or implementation planning without explicit Senior GO
+LAST_CLOSED_UNIT: R2.7 WP-09 Step 4 collaborative review / repairs applied
+NEXT_AUTHORIZED_UNIT: R2.7 WP-09 Step 5 candidate realization mapping
+REQUIRED_GATE: Publish coherent verified checkpoints for each completed Step 5–8 artifact. After completed Step 8 canonicalization, required verification/read-back and state synchronization, stop for mandatory Senior review; do not begin WP-10 or implementation planning without explicit Senior GO
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
