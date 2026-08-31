@@ -50,7 +50,7 @@ AUDIT_STATUS: WAITING_SENIOR_REVIEW
 LAST_CLOSED_DOMAIN: WP-06
 CURRENT_DOMAIN: WP-07
 CURRENT_DOMAIN_TOPIC: Truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: Mandatory Senior review of completed WP-07 Step 8 closure
+CURRENT_SLICE: Mandatory Senior review of corrected WP-07 Step 8 closure
 NEXT_DOMAIN: WP-08
 OWNER_GATE: REQUIRED — WP-07 Step 8 completed; await Senior GO before WP-08
 FINAL_RECONCILIATION: NOT_STARTED
@@ -62,7 +62,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-07 STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW
+R2_7_STATUS: WP-07 CORRECTIVE STEPS 6-8 COMPLETE — WAITING SENIOR REVIEW
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
@@ -85,7 +85,7 @@ project state, does not authorize WP-07, and does not alter WP-06 findings. Read
 | WP-04 | CLOSED |
 | WP-05 | CLOSED |
 | WP-06 | CLOSED / SENIOR REVIEW PASS |
-| WP-07 | STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW |
+| WP-07 | CORRECTIVE STEPS 6-8 COMPLETE — WAITING SENIOR REVIEW |
 | WP-08..WP-27 | NOT STARTED |
 
 
@@ -155,20 +155,20 @@ FINAL_WP06_HOSTED_VERIFICATION: Validate engine source #33238159180
 FINAL_WP06_HOSTED_VERIFICATION_RESULT: SUCCESS
 ```
 
-WP-07 Steps 1-8 are complete. Slices 1-3 classified F01-F06 and completed the
-required adversarial mapping; Steps 3-7 preserved all existing owner routes and
-Step 8 canonicalized the audit closure without adding new semantic authority.
-F06 remains the R2.6/R2.7 implementation obligation for an explicit active-role/
-RoleContextBundle/lawful typed-handoff instruction. The mandatory Senior review
-is now required before WP-08.
+WP-07 corrective Steps 6-8 are complete. The replacement Step-6 review gives
+F01-F06 and N02 item-level adversarial attack evidence; Step 7 preserved all
+existing owner routes and Step 8 canonicalized the corrected audit closure
+without adding semantic authority. F06 remains the R2.6/R2.7 implementation
+obligation for an explicit active-role/RoleContextBundle/lawful typed-handoff
+instruction. The mandatory Senior review is now required before WP-08.
 
 ---
 
 ## Task-local handoff
 
-LAST_PUBLISHED_SHA: `a2adae98a259ea6aa91a4ce4f4ee2272087cc75f`
-COMPLETED_SLICES: WP-06 closed / Senior review PASS; WP-07 Steps 1-8 complete (F01-F06 plus N02 adversarial mapping)
-CURRENT_VERIFICATION_STATE: Slice-3 focused tests (21) and maintenance audit passed before Step-3 entry. Steps 3-8 are documentation-only closure records; final fresh local verification, publication and remote read-back remain required for this checkpoint.
-NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of the completed WP-07 Step-8 closure; do not begin WP-08 or implementation planning before GO
+PRE_STEP8_PUBLISHED_SHA: `3c1693c841fa16656981b7e1500eeb9e0e085b24`
+COMPLETED_SLICES: WP-06 closed / Senior review PASS; WP-07 corrective Steps 6-8 complete (F01-F06 plus N02 item-level adversarial mapping)
+CURRENT_VERIFICATION_STATE: Corrective Step-8 focused tests (21), maintenance audit, and `git diff --check` passed locally before publication. Hosted CI was unavailable/uninspected. This checkpoint must be published and independently read back before Senior review.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of corrected WP-07 Step-8 closure after its required publication/read-back; do not begin WP-08 or implementation planning before GO
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE
