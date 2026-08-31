@@ -209,7 +209,7 @@ At minimum the dependency graph includes:
 - `GAME/INSTALL/*` including Project Instructions;
 - `GAME/CORE/ENGINE_UPDATES.md`;
 - `DEV/RELEASE/*`;
-- `DEV/TOOLS/run_maintenance_audit`, `audit_engine.py`, release builder;
+- `DEV/TOOLS/run_maintenance_audit.py`, `audit_engine.py`, release builder;
 - `.github/workflows/validate.yml`, `release-runtime.yml`;
 - relevant `DEV/TESTS/test_*.py` and `*_CASES.md`;
 - root/runtime version/legal parity obligations.

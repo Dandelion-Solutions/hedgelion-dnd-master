@@ -151,7 +151,7 @@ Teach `core-catalog.schema.json` to require/validate the two new registries with
 
 ```bash
 .hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_step3_execution_catalog_contract -v
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 ```
 
 Expected: both PASS.
@@ -286,7 +286,7 @@ Do not put mutable Procedure ResourceState or full world records into `execution
 
 ```bash
 .hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_step3_execution_value_schemas -v
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 ```
 
 Expected: PASS; maintenance audit validates examples from the new schemas.
@@ -501,7 +501,7 @@ Update `execution-segment.schema.json` / `pending-child-invocation.schema.json` 
 
 ```bash
 .hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_step3_event_followup_contract -v
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 ```
 
 - [ ] **Step 5: Commit**
@@ -709,7 +709,7 @@ Also extend catalog cross-validation so the four machine catalog versions are ch
 - [ ] **Step 4: Run all local verification**
 
 ```bash
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 .hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v
 ```
 
@@ -781,7 +781,7 @@ If a blocker remains, keep Step 3 IN PROGRESS and name the exact repair instead.
 - [ ] **Step 4: Run fresh full verification on the final docs+machine HEAD**
 
 ```bash
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 .hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v
 ```
 

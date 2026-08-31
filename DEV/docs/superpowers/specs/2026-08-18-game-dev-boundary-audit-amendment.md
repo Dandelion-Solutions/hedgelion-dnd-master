@@ -62,7 +62,7 @@ DEV_ROOT = REPO_ROOT / "DEV"
 GAME_ROOT = REPO_ROOT / "GAME"
 ```
 
-`DEV/TOOLS/run_maintenance_audit`, `DEV/TOOLS/audit_engine.py`, their Python tests, and the release builder must use the correct root for each operation instead of overloading one `ROOT` variable.
+`DEV/TOOLS/run_maintenance_audit.py`, `DEV/TOOLS/audit_engine.py`, their Python tests, and the release builder must use the correct root for each operation instead of overloading one `ROOT` variable.
 
 The repository-local maintenance cache may remain at `REPO_ROOT/.hdm-maintenance/`.
 

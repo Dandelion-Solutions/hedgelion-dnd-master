@@ -33,7 +33,7 @@ Recommended source layout:
 
 ```text
 DEV/TOOLS/
-  run_maintenance_audit
+  run_maintenance_audit.py
   run_release_build
   audit_engine.py
   release_builder.py
@@ -44,7 +44,7 @@ DEV/TOOLS/
 Exact internal filenames may vary during the implementation plan, but the public entry-point contracts are:
 
 ```text
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 DEV/TOOLS/run_release_build
 ```
 

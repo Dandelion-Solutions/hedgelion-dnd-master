@@ -26,5 +26,5 @@ During implementation:
 No other implementation-plan behavior changes. The canonical user/agent command remains:
 
 ```text
-TOOLS/run_maintenance_audit
+TOOLS/run_maintenance_audit.py
 ```

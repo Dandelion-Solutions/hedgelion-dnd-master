@@ -46,12 +46,12 @@ This change will not:
 The project-native maintenance command will be:
 
 ```text
-TOOLS/run_maintenance_audit
+TOOLS/run_maintenance_audit.py
 ```
 
 The launcher will be an executable Python script that uses only the Python standard library until the isolated maintenance environment has been prepared.
 
-Calling `python TOOLS/audit_engine.py` directly remains technically possible, but project documentation and agent instructions will treat `TOOLS/run_maintenance_audit` as the canonical audit entry point.
+Calling `python TOOLS/audit_engine.py` directly remains technically possible, but project documentation and agent instructions will treat `TOOLS/run_maintenance_audit.py` as the canonical audit entry point.
 
 ## Maintenance dependency location
 
@@ -83,7 +83,7 @@ This directory is a rebuildable cache, not authoritative project state. Its disa
 
 ## Bootstrap interpreter
 
-The launcher will execute under the Python that starts `TOOLS/run_maintenance_audit` and use that interpreter only to:
+The launcher will execute under the Python that starts `TOOLS/run_maintenance_audit.py` and use that interpreter only to:
 
 1. inspect its own major/minor version;
 2. create the virtual environment using the standard-library `venv` module;
@@ -147,7 +147,7 @@ If environment preparation succeeds but `TOOLS/audit_engine.py` fails, the launc
 
 The implementation is expected to touch only development-maintenance surfaces:
 
-- create `TOOLS/run_maintenance_audit`;
+- create `TOOLS/run_maintenance_audit.py`;
 - move root `requirements-maintenance.txt` to `TOOLS/requirements-maintenance.txt` without changing the pinned dependency content;
 - create or extend root `.gitignore` to ignore `.hdm-maintenance/`;
 - update the maintenance guidance in `TOOLS/audit_engine.py` so missing-dependency diagnostics direct users to the canonical launcher rather than a manual install command;
@@ -161,7 +161,7 @@ No gameplay Project Instructions, gameplay bootstrap, CORE runtime files, campai
 Both a human developer and an agent run exactly:
 
 ```text
-TOOLS/run_maintenance_audit
+TOOLS/run_maintenance_audit.py
 ```
 
 The caller does not need to know the virtual-environment path and must not need to remember whether the current Work/Codex environment was previously prepared.

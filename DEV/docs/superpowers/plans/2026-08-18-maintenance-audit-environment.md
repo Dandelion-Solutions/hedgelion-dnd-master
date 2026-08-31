@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add one repository-native `TOOLS/run_maintenance_audit` command that self-bootstraps and reuses an isolated maintenance virtual environment before running `TOOLS/audit_engine.py`.
+**Goal:** Add one repository-native `TOOLS/run_maintenance_audit.py` command that self-bootstraps and reuses an isolated maintenance virtual environment before running `TOOLS/audit_engine.py`.
 
 **Architecture:** The launcher is a standard-library-only executable Python script. It owns `.hdm-maintenance/venv`, fingerprints the exact `requirements-maintenance.txt` bytes plus bootstrap Python major/minor, rebuilds only when that fingerprint is invalid, and delegates the real consistency audit to the venv Python. Automated tests use only `unittest`/`unittest.mock`; remote repository reads/writes continue to use the GitHub Connector, while local Git is permitted only for local inspection/conflict/status work under root `AGENTS.md`.
 
@@ -11,7 +11,7 @@
 ## Global Constraints
 
 - This is development-maintenance infrastructure only; do not alter gameplay architecture, gameplay Project Instructions, `INSTALL/00_DND_BOOTSTRAP.md`, CORE runtime policy, campaign schemas, or campaign behavior.
-- Canonical command: `TOOLS/run_maintenance_audit`.
+- Canonical command: `TOOLS/run_maintenance_audit.py`.
 - Do not install maintenance dependencies globally.
 - Do not introduce Docker, Poetry, `uv`, `pipx`, a service, or a general task runner.
 - `.hdm-maintenance/` is an ignored rebuildable cache, never authoritative project state.
@@ -26,7 +26,7 @@
 
 ## File Structure
 
-- Create `TOOLS/run_maintenance_audit` — canonical executable launcher and environment lifecycle owner.
+- Create `TOOLS/run_maintenance_audit.py` — canonical executable launcher and environment lifecycle owner.
 - Create `TESTS/test_run_maintenance_audit.py` — stdlib automated tests for fingerprinting, cold/warm behavior, invalidation, failure semantics, and audit exit propagation.
 - Create `.gitignore` — ignore `.hdm-maintenance/`.
 - Modify `TOOLS/audit_engine.py` — point missing-dependency diagnostics to the canonical launcher.
@@ -36,7 +36,7 @@
 ## Task 1: Build the deterministic launcher core with fingerprint/cache tests
 
 **Files:**
-- Create: `TOOLS/run_maintenance_audit`
+- Create: `TOOLS/run_maintenance_audit.py`
 - Create: `TESTS/test_run_maintenance_audit.py`
 - Create: `.gitignore`
 
@@ -64,7 +64,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-LAUNCHER = ROOT / "TOOLS" / "run_maintenance_audit"
+LAUNCHER = ROOT / "TOOLS" / "run_maintenance_audit.py"
 
 
 def load_launcher():
@@ -114,11 +114,11 @@ Run:
 python3 -m unittest TESTS.test_run_maintenance_audit -v
 ```
 
-Expected: import/load failure because `TOOLS/run_maintenance_audit` does not yet exist.
+Expected: import/load failure because `TOOLS/run_maintenance_audit.py` does not yet exist.
 
 - [ ] **Step 3: Implement the minimal launcher core**
 
-Create executable `TOOLS/run_maintenance_audit` beginning with:
+Create executable `TOOLS/run_maintenance_audit.py` beginning with:
 
 ```python
 #!/usr/bin/env python3
@@ -203,7 +203,7 @@ Expected: `.hdm-maintenance/probe` is ignored and does not appear in `git status
 
 - [ ] **Step 6: Publish Task 1 through the GitHub Connector**
 
-Before publication, re-read the target branch HEAD through the Connector. Publish `TOOLS/run_maintenance_audit`, `TESTS/test_run_maintenance_audit.py`, and `.gitignore` as one commit based on the verified parent. Do not use native Git as remote transport. Verify the resulting branch ref through the Connector.
+Before publication, re-read the target branch HEAD through the Connector. Publish `TOOLS/run_maintenance_audit.py`, `TESTS/test_run_maintenance_audit.py`, and `.gitignore` as one commit based on the verified parent. Do not use native Git as remote transport. Verify the resulting branch ref through the Connector.
 
 Suggested commit message:
 
@@ -214,7 +214,7 @@ Add maintenance audit environment launcher core
 ## Task 2: Add cold bootstrap, warm reuse, invalidation, and failure semantics
 
 **Files:**
-- Modify: `TOOLS/run_maintenance_audit`
+- Modify: `TOOLS/run_maintenance_audit.py`
 - Modify: `TESTS/test_run_maintenance_audit.py`
 
 **Interfaces:**
@@ -407,7 +407,7 @@ Expected: all launcher tests pass.
 From a disposable copy or with `.hdm-maintenance/` removed, run:
 
 ```bash
-PIP_INDEX_URL=http://127.0.0.1:9/simple PIP_RETRIES=0 TOOLS/run_maintenance_audit
+PIP_INDEX_URL=http://127.0.0.1:9/simple PIP_RETRIES=0 TOOLS/run_maintenance_audit.py
 ```
 
 Expected:
@@ -442,7 +442,7 @@ Complete maintenance audit environment lifecycle
 - Test: `TESTS/test_run_maintenance_audit.py`
 
 **Interfaces:**
-- Human/agent canonical entry point remains exactly `TOOLS/run_maintenance_audit`.
+- Human/agent canonical entry point remains exactly `TOOLS/run_maintenance_audit.py`.
 - Direct `python TOOLS/audit_engine.py` remains executable but is no longer the documented normal workflow.
 
 - [ ] **Step 1: Add failing documentation-contract tests**
@@ -454,9 +454,9 @@ def test_repository_guidance_uses_canonical_launcher(self):
     audit = (ROOT / "TOOLS" / "audit_engine.py").read_text(encoding="utf-8")
     release = (ROOT / "RELEASE" / "CHECKLIST.md").read_text(encoding="utf-8")
     agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
-    self.assertIn("TOOLS/run_maintenance_audit", audit)
-    self.assertIn("TOOLS/run_maintenance_audit", release)
-    self.assertIn("TOOLS/run_maintenance_audit", agents)
+    self.assertIn("TOOLS/run_maintenance_audit.py", audit)
+    self.assertIn("TOOLS/run_maintenance_audit.py", release)
+    self.assertIn("TOOLS/run_maintenance_audit.py", agents)
     self.assertNotIn("Maintenance dependencies installed with `python -m pip install -r requirements-maintenance.txt`", release)
 ```
 
@@ -475,7 +475,7 @@ Expected: failure because current guidance still points to manual pip/direct aud
 Change its module docstring from the manual install instruction to wording equivalent to:
 
 ```text
-Run this audit through `TOOLS/run_maintenance_audit`, which prepares the isolated
+Run this audit through `TOOLS/run_maintenance_audit.py`, which prepares the isolated
 maintenance environment and then executes this script. Exits non-zero on
 normative contradictions, invalid JSON Schema/catalog data, or scaffold smoke
 failure.
@@ -486,7 +486,7 @@ Change the `ImportError` diagnostic to:
 ```python
 print(
     "ERROR: missing maintenance dependency 'jsonschema'; "
-    "run: TOOLS/run_maintenance_audit",
+    "run: TOOLS/run_maintenance_audit.py",
     file=sys.stderr,
 )
 ```
@@ -505,7 +505,7 @@ Replace the two current regression checklist entries:
 with one canonical entry:
 
 ```text
-- [ ] In explicit engine-maintenance/release mode, `TOOLS/run_maintenance_audit` prepares/reuses the isolated maintenance environment and passes on the exact release tree.
+- [ ] In explicit engine-maintenance/release mode, `TOOLS/run_maintenance_audit.py` prepares/reuses the isolated maintenance environment and passes on the exact release tree.
 ```
 
 - [ ] **Step 5: Update development agent instructions**
@@ -518,7 +518,7 @@ Add a development-only section to root `AGENTS.md`, near other development opera
 For the HDM engine maintenance consistency audit, use exactly:
 
 ```text
-TOOLS/run_maintenance_audit
+TOOLS/run_maintenance_audit.py
 ```
 
 Do not invoke `python TOOLS/audit_engine.py` as the normal audit workflow and do
@@ -549,7 +549,7 @@ Cold run:
 
 ```bash
 rm -rf .hdm-maintenance
-TOOLS/run_maintenance_audit
+TOOLS/run_maintenance_audit.py
 ```
 
 Expected:
@@ -569,7 +569,7 @@ Expected: `4.26.0` (or use `importlib.metadata.version("jsonschema")` if the pac
 Warm run:
 
 ```bash
-TOOLS/run_maintenance_audit
+TOOLS/run_maintenance_audit.py
 ```
 
 Expected: successful audit without pip-install output and without rebuilding the venv.
@@ -583,7 +583,7 @@ In a disposable local copy, save the original requirements, append a harmless co
 ```bash
 cp requirements-maintenance.txt /tmp/requirements-maintenance.txt.hdm-backup
 printf '\n# fingerprint-invalidation-test\n' >> requirements-maintenance.txt
-TOOLS/run_maintenance_audit
+TOOLS/run_maintenance_audit.py
 mv /tmp/requirements-maintenance.txt.hdm-backup requirements-maintenance.txt
 rm -rf .hdm-maintenance
 ```
@@ -617,7 +617,7 @@ Before claiming completion, invoke `superpowers:verification-before-completion` 
 
 ```bash
 python3 -m unittest TESTS.test_run_maintenance_audit -v
-TOOLS/run_maintenance_audit
+TOOLS/run_maintenance_audit.py
 git status --short
 git check-ignore -v .hdm-maintenance/venv
 ```

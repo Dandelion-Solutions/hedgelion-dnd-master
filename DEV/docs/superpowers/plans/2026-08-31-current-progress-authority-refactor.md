@@ -12,7 +12,6 @@
 
 ## Global Constraints
 
-- No public HDM file may mention the private audit workspace.
 - Global progress must have one authority; task-local cursors remain subordinate.
 - Branch/ref identity is not durable progress semantics.
 - Local VPS verification is required before the refactor can be closed.
@@ -30,7 +29,7 @@
 - [ ] Define the closed global-progress record and its authority boundary.
 - [ ] Add a focused test that requires the owner, required fields, bootstrap routes and non-authority disclaimers.
 - [ ] Add the same targeted assertions to the maintenance audit.
-- [ ] Run locally on the VPS: `python -m unittest discover -s DEV/TESTS -p 'test_current_progress_authority.py' -v` and `DEV/TOOLS/run_maintenance_audit`.
+- [ ] Run locally on the VPS: `python -m unittest discover -s DEV/TESTS -p 'test_current_progress_authority.py' -v` and `DEV/TOOLS/run_maintenance_audit.py`.
 
 ### Task 2: Migrate competing current claims and bootstrap routes
 

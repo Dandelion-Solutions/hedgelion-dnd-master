@@ -19,7 +19,7 @@ class MaintenanceAuditBytecodeCleanTests(unittest.TestCase):
             game_tools = root / "GAME/TOOLS"
             tools.mkdir(parents=True)
             game_tools.mkdir(parents=True)
-            shutil.copy2(ROOT / "DEV/TOOLS/run_maintenance_audit", tools / "run_maintenance_audit")
+            shutil.copy2(ROOT / "DEV/TOOLS/run_maintenance_audit.py", tools / "run_maintenance_audit.py")
             (tools / "dev_tool_environment.py").write_text(
                 "import sys\nfrom pathlib import Path\n"
                 "class PreparationError(Exception):\n    exit_code = 1\n"
@@ -39,7 +39,7 @@ class MaintenanceAuditBytecodeCleanTests(unittest.TestCase):
             env = os.environ.copy()
             env.pop("PYTHONDONTWRITEBYTECODE", None)
             completed = subprocess.run(
-                [sys.executable, str(tools / "run_maintenance_audit")],
+                [sys.executable, str(tools / "run_maintenance_audit.py")],
                 cwd=root, env=env, text=True, capture_output=True, check=False,
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)

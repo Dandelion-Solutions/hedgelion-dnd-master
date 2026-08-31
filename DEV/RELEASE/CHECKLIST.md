@@ -66,7 +66,7 @@
 - [ ] If unpublished HOT/SOFT state itself was lost with the environment/context, recover only from durable canon and never invent the missing unpublished changes.
 
 ## Maintenance regression
-- [ ] `DEV/TOOLS/run_maintenance_audit` passes.
+- [ ] `DEV/TOOLS/run_maintenance_audit.py` passes.
 - [ ] `.hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v` passes.
 - [ ] Audit/tests validate GAME/DEV geometry, semantic version projection, catalogs/schemas, Project Instructions parity, legal copies, generated artifact provenance, portable v3 storage/campaign identity and an actual built runtime ZIP.
 - [ ] Full-check integration builds the runtime ZIP twice from a real checkout and verifies identical bytes for unchanged source state.

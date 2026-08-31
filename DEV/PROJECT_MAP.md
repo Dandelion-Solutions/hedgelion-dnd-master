@@ -116,9 +116,9 @@ repository root
 | Runtime packaging / versioning / update | `DEV/TOOLS/release_builder.py`, `run_release_build.py`, `DEV/RELEASE/`, `.github/workflows/release-runtime.yml`, `GAME/ENGINE_VERSION.yaml`, `ENGINE_UPDATES.md` | install, migrations, release/version tests |
 | Rules/source routing | `GAME/RULES/`, `GAME/CORE/SOURCES.md`, `PLAY_POLICY.md` | domain CORE modules, character readiness, prep/worldgen, campaign House Rules |
 | LLM reasoning / information / presentation | `AI_REASONING.md`, `GM_CRAFT.md`, `PREP.md`, `NARRATIVE.md`, `INFORMATION.md`, `LORE.md`, `NPC.md` | Step-4 final spec/amendment, role-context research evidence, R2.1–R2.4 final specs |
-| Support / diagnostics / maintenance | `MAINTENANCE_COMMANDS.md`, `DEV/TOOLS/run_maintenance_audit`, `audit_engine.py` | session/integrity/storage/persistence/checkpoint schemas/tests |
+| Support / diagnostics / maintenance | `MAINTENANCE_COMMANDS.md`, `DEV/TOOLS/run_maintenance_audit.py`, `audit_engine.py` | session/integrity/storage/persistence/checkpoint schemas/tests |
 | Access / repository/campaign ownership | `ACCESS_CONTROL.md`, `BRANCH_MODEL.md` | multiplayer, bootstrap, persistence, player/session schemas, House-Rules adoption |
-| Consistency verification | `DEV/TOOLS/run_maintenance_audit`, `DEV/TESTS/`, `.github/workflows/validate.yml` | every catalog/schema/contract/path family being changed |
+| Consistency verification | `DEV/TOOLS/run_maintenance_audit.py`, `DEV/TESTS/`, `.github/workflows/validate.yml` | every catalog/schema/contract/path family being changed |
 
 The table is a discovery aid. Correctness-sensitive work follows actual owners and consumers.
 
@@ -181,7 +181,7 @@ Search tests whenever a contract or path changes. Existing tests receive no pres
 
 ### 6.6 `DEV/TOOLS/`
 
-- `run_maintenance_audit` / `audit_engine.py` — consistency/audit entry point and implementation.
+- `run_maintenance_audit.py` / `audit_engine.py` — consistency/audit entry point and implementation.
 - `dev_tool_environment.py` / `requirements-dev-tools.txt` — isolated dev-tool environment.
 - `run_release_build.py` / `release_builder.py` — release validation/composition.
 - focused validators/builders/loaders for current S6D package/machine contracts.

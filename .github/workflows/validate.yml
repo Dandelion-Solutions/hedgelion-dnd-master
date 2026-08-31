@@ -26,7 +26,7 @@ jobs:
           python-version: '3.13'
 
       - name: Run full maintenance audit
-        run: DEV/TOOLS/run_maintenance_audit
+        run: DEV/TOOLS/run_maintenance_audit.py
 
       - name: Run DEV unit tests
         env:

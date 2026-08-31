@@ -67,7 +67,7 @@ Expected: failures because the migration helpers/builder and migrated layout do 
 - Create: `DEV/TOOLS/requirements-dev-tools.txt`
 - Create: `DEV/TOOLS/release_builder.py`
 - Create executable: `DEV/TOOLS/run_release_build`
-- Later move/update: `TOOLS/run_maintenance_audit`, `TOOLS/audit_engine.py`
+- Later move/update: `TOOLS/run_maintenance_audit.py`, `TOOLS/audit_engine.py`
 - Modify: `.gitignore`
 
 **Interfaces:**
@@ -189,7 +189,7 @@ Root legal files remain repository-canonical; GAME copies are standalone distrib
 
 - [ ] **Step 1: Update root AGENTS development geometry**
 
-Change maintenance command to `DEV/TOOLS/run_maintenance_audit`; document REPO/GAME/DEV roots; preserve Connector-only/no-manual-Base64 policy; explicitly scope GitHub Actions as a separate token-backed execution surface; require Superpowers artifacts under DEV.
+Change maintenance command to `DEV/TOOLS/run_maintenance_audit.py`; document REPO/GAME/DEV roots; preserve Connector-only/no-manual-Base64 policy; explicitly scope GitHub Actions as a separate token-backed execution surface; require Superpowers artifacts under DEV.
 
 - [ ] **Step 2: Update root README source-browser links and installation wording**
 
@@ -209,7 +209,7 @@ On `v*` tag push: checkout exact tag; set up Python; invoke `DEV/TOOLS/run_relea
 
 **Files:**
 - Move/modify: `DEV/TOOLS/audit_engine.py`
-- Move/modify: `DEV/TOOLS/run_maintenance_audit`
+- Move/modify: `DEV/TOOLS/run_maintenance_audit.py`
 - Move/modify: `DEV/TESTS/test_run_maintenance_audit.py`
 - Modify active DEV regression documents where paths/contracts changed
 - Preserve historical documents without rewriting their historical meaning
@@ -239,7 +239,7 @@ Audit manifest projection/coherence, Project Instructions parity, GAME build-jun
 Run:
 ```bash
 python -m unittest discover -s DEV/TESTS -v
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 ```
 Expected: all unit tests pass; maintenance audit exits 0.
 

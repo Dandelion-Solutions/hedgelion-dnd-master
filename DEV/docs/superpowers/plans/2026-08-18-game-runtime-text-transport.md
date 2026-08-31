@@ -261,7 +261,7 @@ new-campaign scaffold transaction shape unchanged
 If a complete local checkout of the exact branch is available, run only the canonical maintenance command:
 
 ```bash
-TOOLS/run_maintenance_audit
+TOOLS/run_maintenance_audit.py
 ```
 
 Expected: exit 0 and `OK: engine consistency audit passed`.

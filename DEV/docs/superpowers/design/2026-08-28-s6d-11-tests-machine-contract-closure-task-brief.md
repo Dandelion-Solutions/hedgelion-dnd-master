@@ -124,7 +124,7 @@ The integrated census must be derived from current machine sources, not copied f
 - `GAME/CORE/BOOTSTRAP_RUNTIME.md`, `ENGINE_UPDATES.md`, `NEW_CAMPAIGN_FAST_PATH.md` and `CAMPAIGN_SETUP.md`;
 - `DEV/ARCHITECTURE/ACCESS_CONTROL.md` and `BRANCH_MODEL.md`;
 - current campaign manifest/config/current-state/checkpoint/session schemas that project engine/ruleset identity;
-- `DEV/TOOLS/release_builder.py`, `run_release_build.py`, `audit_engine.py`, `run_maintenance_audit` and current release/package tests;
+- `DEV/TOOLS/release_builder.py`, `run_release_build.py`, `audit_engine.py`, `run_maintenance_audit.py` and current release/package tests;
 - `DEV/RELEASE/CHECKLIST.md`, `DEV/RELEASE/VERSIONING.md`, `.github/workflows/validate.yml` and `.github/workflows/release-runtime.yml`;
 - `GAME/ENGINE_VERSION.yaml`, `GAME/RULES/README.md`, package/source-routing documentation and current release provenance artifacts;
 - `GAME/MIGRATIONS/` only to verify the accepted boundary; do not invent migration obligations for nonexistent current campaigns.

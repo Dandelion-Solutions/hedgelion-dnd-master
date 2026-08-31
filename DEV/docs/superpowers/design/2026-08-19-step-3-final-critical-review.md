@@ -365,7 +365,7 @@ No unresolved Step-3 blocker remains.
 After this review plus roadmap/status updates are on the branch, run fresh verification on that exact final HEAD:
 
 ```text
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 full DEV unit suite
 GitHub Actions: Validate engine source
 ```

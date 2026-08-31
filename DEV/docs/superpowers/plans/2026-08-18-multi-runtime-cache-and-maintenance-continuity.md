@@ -499,7 +499,7 @@ Use the extracted package's exact `TOOLS/init_campaign.py`; verify emitted campa
 Run:
 
 ```text
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 .hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v
 ```
 

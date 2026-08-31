@@ -242,7 +242,7 @@ Runtime GAME files read package metadata only from package-root `ENGINE_VERSION.
 Canonical DEV entry points:
 
 ```text
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 DEV/TOOLS/run_release_build.py
 ```
 

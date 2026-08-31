@@ -47,7 +47,7 @@ The repository becomes two explicit application areas plus repository metadata:
 │   ├── TOOLS/
 │   │   ├── build_release.py
 │   │   ├── audit_engine.py
-│   │   ├── run_maintenance_audit
+│   │   ├── run_maintenance_audit.py
 │   │   └── requirements-maintenance.txt
 │   └── docs/
 │       └── superpowers/
@@ -95,7 +95,7 @@ The following existing trees are development-only at the current implementation 
 - current `CATALOG/`;
 - current plural `SCHEMAS/` containing mechanical-runtime development schemas;
 - `TOOLS/audit_engine.py`;
-- `TOOLS/run_maintenance_audit`;
+- `TOOLS/run_maintenance_audit.py`;
 - `TOOLS/requirements-maintenance.txt`;
 - `docs/superpowers/`.
 
@@ -219,7 +219,7 @@ Contains development, audit, test-support and release-build tools. Initially:
 
 ```text
 DEV/TOOLS/audit_engine.py
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 DEV/TOOLS/requirements-maintenance.txt
 DEV/TOOLS/build_release.py
 ```
@@ -341,7 +341,7 @@ Expected examples after migration:
 
 ```text
 AGENTS.md maintenance command:
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 
 Development architecture reference:
 GAME/CORE/PERSISTENCE.md
@@ -361,7 +361,7 @@ TOOLS/init_campaign.py
 The canonical engine-maintenance audit remains development-only and moves to:
 
 ```text
-DEV/TOOLS/run_maintenance_audit
+DEV/TOOLS/run_maintenance_audit.py
 ```
 
 Its isolated cache may remain repository-local (for example `.hdm-maintenance/`) but the launcher must derive repository root correctly from its new location.
