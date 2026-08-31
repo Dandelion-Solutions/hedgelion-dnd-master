@@ -11,7 +11,7 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 WP-08 / STEP 2 EVIDENCE EXTRACTION AUTHORIZED
 
 CURRENT_WORKSTREAM: R2.7 WP-08 — next whole-project audit domain
-CURRENT_SLICE: Step 2 evidence extraction — canonical-owner and current-surface slices published; runtime/catalog/test reconciliation next
+CURRENT_SLICE: Step 2 evidence extraction — mini-report and two evidence slices published; runtime/catalog/test reverse reconciliation next
 
 LAST_CLOSED_UNIT: R2.7 WP-08 Step 1 repaired framing / Senior review GO
 NEXT_AUTHORIZED_UNIT: R2.7 WP-08 Step 2 evidence extraction
