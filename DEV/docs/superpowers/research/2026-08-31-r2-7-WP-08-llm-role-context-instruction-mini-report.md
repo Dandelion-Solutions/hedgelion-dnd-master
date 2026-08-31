@@ -138,6 +138,10 @@ R2.3/R2.4/R2.6 realization remains a bounded obligation under current owners.
 
 `DEV/docs/superpowers/design/2026-08-31-r2-7-WP-08-step-3-decision-brief.md` records **Human decision required: NO**. F01–F04 and V01 remain the existing-owner mapping/verification package.
 
+## Step-4 collaborative review
+
+`DEV/docs/superpowers/design/2026-08-31-r2-7-WP-08-step-4-collaborative-review.md` retains the Step-3 direction and carries R01–R03 into Step 5; no owner decision or semantic change is introduced.
+
 ## Closure verdict
 
 **STEP 2 COMPLETE.** Proceed to Step 3 Decision Brief.
