@@ -8,13 +8,13 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-07 / STEP-2 EVIDENCE EXTRACTION IN PROGRESS — SLICE 2 COMPLETE; SLICE 3 REQUIRED
+GLOBAL_STATE: R2.7 WP-07 / STEP 2 COMPLETE — Step 3 Decision Brief next
 
 CURRENT_WORKSTREAM: R2.7 WP-07 — truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: Step 2, evidence slice 3 — instruction/role-context and adversarial mappings
+CURRENT_SLICE: Step 3 — Decision Brief from completed WP-07 evidence
 
 LAST_CLOSED_UNIT: Current-Progress Authority Refactor / Senior closure
-NEXT_AUTHORIZED_UNIT: R2.7 WP-07 / Step 2 evidence extraction
+NEXT_AUTHORIZED_UNIT: R2.7 WP-07 / Step 3 Decision Brief
 REQUIRED_GATE: Step 8 canonicalization requires Senior review; stop earlier only for a genuine owner decision
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md

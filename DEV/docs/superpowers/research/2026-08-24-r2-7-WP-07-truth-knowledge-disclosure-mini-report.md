@@ -1,15 +1,26 @@
 # R2.7 WP-07 — Truth, Knowledge, Disclosure and Communication Evidence — Mini-Report
 
-Статус: **IN PROGRESS — Step 2, evidence slice 2 complete; evidence slice 3 required**
+Статус: **STEP 2 COMPLETE — evidence slices 1-3 complete; Step 3 next**
 
 ## Краткий вывод
 
 WP-07 подтвердил, что canonical corpus задаёт пять разных семантических
-ответственностей. Slice 2 классифицировал все заведённые в Slice 1 candidates:
-две текущие prose/schema поверхности являются stale debt, а отсутствие Story и
+ответственностей. Slices 1-3 классифицировали F01-F06: две текущие prose/schema
+поверхности являются stale debt, отсутствие Story и
 truth/knowledge/message/disclosure machine realization остаётся уже названной
-implementation obligation. PC/live surfaces не создают вторую authority, но их
-будущая machine normalization требует отдельной verification obligation.
+implementation obligation, а в inspected shipped instruction corpus отсутствует
+явный R2.6 instruction equivalent для active role/RoleContextBundle/lawful typed
+handoffs. PC/live surfaces не создают вторую authority, но их будущая machine
+normalization требует отдельной verification obligation.
+
+Slice 3 подтвердил, что shipped instruction layer и R2.3/R2.4 logical-role
+gateways являются consumer/containment route, а не шестой информационной
+authority. Instruction surfaces не обнаружили нового дублирующего owner,
+небезопасного раскрытия, неограниченного retrieval или конфликта
+recovery/compaction, но не содержат явного R2.6 instruction equivalent. F06
+фиксирует это как уже существующую R2.6/R2.7 implementation obligation без
+изобретения machine path или owner. Step 2 полностью покрывает required proof
+Task Brief; для него не требуется evidence slice 4.
 
 ## Покрытые вопросы
 
@@ -21,6 +32,12 @@ implementation obligation. PC/live surfaces не создают вторую aut
 - первичная проверка existing regression/audit coverage.
 - независимая классификация WP-07/F01..F05 через canonical owners и machine
   consumers; без вывода о product/architecture decision.
+- shipped instruction-layer role/information consumers;
+- R2.3 eligibility/bounded-discovery/trace contract и R2.4 rebinding/typed
+  handoff/visible-output fence, а также отсутствие их явного R2.6 instruction
+  equivalent в inspected shipped instruction corpus;
+- adversarial mapping duplicate authority, unsafe visibility, unbounded
+  retrieval и recovery/compaction interaction.
 
 ## Source Manifest delta
 
@@ -39,6 +56,10 @@ implementation obligation. PC/live surfaces не создают вторую aut
 - current `campaign_manifest`, PC, live-scene, event and session schemas,
   `LIVE_SCENE.md`, `STORAGE.md`, `SAVE_CONTRACT.md`, relevant catalog tests and
   maintenance audit.
+- `GAME/CORE/AI_REASONING.md`, `INFORMATION.md`, `LORE.md`, `NARRATIVE.md`,
+  `NPC.md`, `PREP.md` и `GM_CRAFT.md` как shipped instruction consumers;
+- R2.3 Context Runtime, R2.4 single-context execution, R2.6 MVP host
+  assurance и Step-5.11/5.13/5.14 recovery/retention owners.
 
 Финальный Source Manifest и Task-Brief critic находятся в:
 
@@ -62,6 +83,26 @@ The canonical contracts also establish:
 - Story availability does not create disclosure;
 - live-epoch knowledge/disclosure evidence must normalize into native durable owners at the appropriate handoff, not persist as a second global authority;
 - exact message payload retention/compaction is constrained by surviving semantic, Transcript, disclosure and idempotency obligations.
+
+Slice 3 additionally establishes:
+
+- shipped CORE instructions preserve the distinction between objective truth,
+  subject-local fictional knowledge, player disclosure, provisional preparation
+  and player-facing projection; they do not define a new persistent owner;
+- the later single-context amendment controls physical co-presence: Context
+  Assembler still decides logical eligibility and bounded source selection, and
+  raw role frames remain ineligible to downstream roles;
+- R2.4 requires rebind before each logical phase, fresh Narrator rebind after
+  Chronicler, minimal typed handoffs and the Narrator-only visible-output path;
+- R2.3 forbids generic world/history graph walks and makes failed assembly
+  terminal for that attempt; `ContextTrace` is restricted diagnostic evidence,
+  not prompt content or authority;
+- instruction advice to retain hard facts/causal obligations and not promise a
+  complete transcript agrees with Step-5.11 selective exact retention and
+  Step-5.13 survivor-before-removal, rather than weakening recovery semantics.
+- Step-5.12 requires structural validation of material disclosure refs before
+  `EMISSION_COMMIT`; after that boundary, an interrupted response may
+  over-confirm the full committed disclosure although only a prefix was visible.
 
 ## Architecture -> machine
 
@@ -239,11 +280,76 @@ Current physical representation: PC embedded arrays and epoch-local live
 Architecture -> machine: current documentation establishes owner-bound
   compaction intent, but does not supply executable normalizer/record schemas.
 Machine -> architecture: no current field grants a parallel global writable
-  authority; the surface remains legacy/epoch-local evidence.
+authority; the surface remains legacy/epoch-local evidence.
 Conflict / disposition: VERIFICATION_OBLIGATION.
 Rationale: no duplicate-owner conformance defect is established. Later machine
-  realization must test normalization, recipient isolation and no second live
-  disclosure owner; this slice creates neither a new test nor a new path.
+realization must test normalization, recipient isolation and no second live
+disclosure owner; this slice creates neither a new test nor a new path.
+```
+
+### WP-07/F06 — explicit R2.6 active-role instruction equivalent absent
+
+```text
+Source/item: GAME/INSTALL/PROJECT_INSTRUCTIONS.txt; GAME/CORE/AI_REASONING.md,
+  INFORMATION.md, LORE.md, NARRATIVE.md, NPC.md, PREP.md, GM_CRAFT.md and
+  CORE_INDEX.md; R2.6 section 3; Step-4 amendment sections 4-7; R2.3 sections
+  3-18; R2.4 sections 6-12.
+Actual claim: R2.6 requires R2.7 to map an explicit shipped instruction/CORE
+  behavior equivalent: use only information eligible to the active role under
+  the current RoleContextBundle and lawful typed handoffs; physical presence does
+  not make it eligible; lawful later eligibility restores normal use. The
+  inspected PROJECT_INSTRUCTIONS and CORE corpus contain no explicit active-role,
+  RoleContextBundle or lawful typed-handoff instruction.
+Authority/classification: R2.6 is the canonical obligation owner; R2.7 and
+  implementation/TDD own the exact wording, module activation and tests. The
+  inspected GAME files are shipped runtime instruction consumers.
+Qualifiers/applicability: shared physical context is permitted by the later
+  amendment, but physical presence never makes information eligible. Existing
+  CORE guidance distinguishes truth, fictional stance, disclosure and
+  preparation, but that non-conflict is not the R2.6-required explicit
+  behavior-equivalent instruction.
+Current physical representation: PROJECT_INSTRUCTIONS plus the inspected CORE
+  Markdown corpus; no explicit required instruction equivalent is present.
+Architecture -> machine: this is the existing R2.6/R2.7 implementation
+  obligation. This audit does not select a machine path, physical file owner or
+  test beyond the owners R2.6 already assigns.
+Machine -> architecture: no inspected consumer creates a competing information
+  owner, raw/transitive role inheritance, unrestricted retrieval or a
+  player-visible bypass of Narrator/disclosure admission; its omission cannot
+  satisfy the explicit R2.6 instruction requirement.
+Conflict / disposition: IMPLEMENTATION_OBLIGATION.
+Rationale: the required instruction behavior is absent, while the canonical
+  owner already classifies its exact realization as R2.7/implementation work; no
+  new architecture decision, owner or path follows from this finding.
+```
+
+### WP-07/N02 — Slice-3 adversarial mapping
+
+```text
+Source/item: Step-4 amendment sections 5-9; R2.3 laws 6-7, 11-12 and 18-20;
+  R2.4 laws 14-19 and 28-30; R2.6 laws 1-6; Steps 5.11, 5.13 and 5.14.
+Actual claim: the current contracts prohibit duplicate information authority,
+  require role/recipient eligibility and pre-emission material-disclosure
+  validation before semantic use, bound discovery and escalation, and retain
+  native-owner/recovery/survivor obligations independently from volatile model
+  context or lawful prose compaction. After `EMISSION_COMMIT`, interruption may
+  over-confirm full disclosure although only a prefix was visible.
+Authority/classification: canonical cross-owner adversarial constraints.
+Qualifiers/applicability: behavioral containment is a correctness contract, not
+  a claim of physical/cognitive isolation; exact wording may be compacted only
+  after protected semantic and survivor obligations are discharged. `UNSATISFIABLE`
+  requires a finite registered fallback, not repeated unbounded assembly.
+Current physical representation: instruction consumers and current architecture
+  contracts exist; the task does not claim implemented end-to-end runtime proof.
+Architecture -> machine: no new path, owner or migration follows. Existing
+  realization obligations remain responsible for deterministic eligibility,
+  typed handoffs, recipient admission, retention and cleanup enforcement.
+Machine -> architecture: no inspected instruction consumer contradicts these
+  constraints or turns host context, Story, trace, cache or prose into authority.
+Conflict / disposition: SATISFIED.
+Rationale: duplicate authority, unsafe visibility, unbounded retrieval and
+  recovery/compaction interaction each have an accepted current owner and no
+  additional WP-07 finding was observed.
 ```
 
 ## Автоматически принятые технические решения
@@ -255,28 +361,44 @@ Rationale: no duplicate-owner conformance defect is established. Later machine
   supersession/current-consumer analysis establishes a narrower classification.
 - Do not create a new information registry, transcript subsystem or migration
   design while auditing existing authority.
+- Treat the R2.6 behavioral-containment rule as a current observable correctness
+  requirement while preserving its explicit non-claim of physical/cognitive
+  isolation; do not restate the superseded physical-separation interpretation.
+- Treat the inspected instruction corpus's generic containment language as
+  non-conflicting consumer evidence, not as fulfillment of R2.6's explicit
+  active-role/RoleContextBundle/lawful typed-handoff instruction requirement.
 
 ## Implementation obligations
 
 No new implementation work is accepted in this slice. Existing owner-routed
-obligations: F03 and F04 remain implementation obligations. F01 and F02 are
+obligations: F03, F04 and F06 remain implementation obligations. F01 and F02 are
 stale debt requiring later narrow repair; F05 remains a verification obligation.
+
+F06 records, rather than creates, the existing R2.6/R2.7 obligation. The existing
+R2.3/R2.4/R2.6 and Step-5 realization clusters remain the only route for
+executable role eligibility, typed handoff, recipient admission, retention and
+cleanup behavior.
 
 ## Verification / MVP acceptance obligations
 
 Slice 2 used current executable evidence only for its present scope:
 `test_r2_7_wp03_catalog_conformance.py` verifies the catalog's Step-4
-vocabulary/fields/identifiers, while the existing maintenance audit validates
-catalog JSON/schema consistency but does not claim the missing owner record
-paths or live normalization. Fresh local verification is required for this
-documentation checkpoint; future physical realization must add the owner tests
-required by Steps 5.10-5.13 and R2.6.
+vocabulary/fields/identifiers, while the maintenance audit validates catalog
+JSON/schema consistency but does not claim the missing owner record paths or live
+normalization. Both passed locally for this documentation checkpoint; future
+physical realization must add the owner tests required by Steps 5.10-5.13 and
+R2.6.
+
+The instruction mapping is prose/contract evidence, not an execution claim for
+behavioral containment. A supported MVP must still receive the downstream R2.6
+synthetic-canary and role/recipient/compaction acceptance coverage when the
+machine route exists.
 
 ## Forward obligations
 
-No cross-domain forward obligation is created. F01-F05 remain accounted current
-WP-07 evidence: their operational disposition is final for Slice 2, while their
-later repair/realization/verification route stays with the established owner.
+No cross-domain forward obligation is created. F01-F06 and the adversarial
+mapping remain accounted current WP-07 evidence; their later
+repair/realization/verification route stays with the established owner.
 
 ## Round-2 Diamond/Strong delta
 
@@ -284,23 +406,23 @@ No new DIAMOND/STRONG disposition is asserted in this slice.
 
 ## Human decision
 
-**NONE.** Slice 2 exposes no residual product, authority, compatibility or
+**NONE.** Step 2 exposes no residual product, authority, compatibility or
 risk-acceptance decision.
 
 ## Closure verdict
 
-**SLICE 3 REQUIRED.** Step 2 cannot close: the Task Brief still requires
-instruction/role-context eligibility, raw/transitive-leakage and adversarial
-mapping evidence. Slice 2 closes only the schema/catalog/template conformance
-candidate classification.
+**STEP 2 COMPLETE — SLICE 4 NOT REQUIRED.** The three evidence slices account
+for F01-F06 and the required adversarial mapping: semantic owner separation,
+durable/machine representation or explicit absence, lawful transfer boundaries,
+pre-emission validation plus the Step-5.12 post-emission interruption limitation,
+Transcript and compaction limits, PC/live normalization, and instruction/role
+eligibility. F06 is already an R2.6/R2.7 implementation obligation and does not
+require a new owner decision or evidence slice. Continue with Step 3; do not
+start new machine work.
 
 ## Точка продолжения
 
-Step 2, evidence slice 3:
-
-1. map shipped instruction-layer consumers and R2.3/R2.4 role gateways against
-   current eligibility and no-transitive-leakage owners;
-2. perform the remaining adversarial check for duplicate authority, unsafe
-   visibility, unbounded retrieval and recovery/compaction interaction;
-3. determine from the complete Step-2 evidence ledger whether Step 2 may close
-   or requires another evidence slice, without beginning synthesis or Step 3.
+Step 3 — produce a compact Decision Brief from the completed evidence ledger.
+It must preserve F01-F06 and N02 dispositions, state that no human decision is
+required, and avoid proposing a replacement information subsystem or
+implementation path.
