@@ -12,12 +12,12 @@ Canonical architecture direction:
 
 Canonicalization basis:
 
-- `2026-08-20-step-5-7-checkpoint-recovery-protocol-task-brief.md`
-- `2026-08-20-step-5-7-checkpoint-recovery-protocol-research-draft.md`
-- `2026-08-20-step-5-7-checkpoint-recovery-protocol-analytical-challenge.md`
-- `2026-08-20-step-5-7-checkpoint-recovery-protocol-candidate-spec.md`
-- `2026-08-20-step-5-7-checkpoint-recovery-protocol-adversarial-review.md`
-- `2026-08-20-step-5-7-checkpoint-recovery-protocol-resolution-gate.md`
+- `../design/2026-08-20-step-5-7-checkpoint-recovery-protocol-task-brief.md`
+- `../design/2026-08-20-step-5-7-checkpoint-recovery-protocol-research-draft.md`
+- `../design/2026-08-20-step-5-7-checkpoint-recovery-protocol-analytical-challenge.md`
+- `../design/2026-08-20-step-5-7-checkpoint-recovery-protocol-candidate-spec.md`
+- `../design/2026-08-20-step-5-7-checkpoint-recovery-protocol-adversarial-review.md`
+- `../design/2026-08-20-step-5-7-checkpoint-recovery-protocol-resolution-gate.md`
 
 This specification defines ordinary cold recovery and checkpoint semantics on top of canonical Steps 5.1–5.6. It does not implement runtime/schema changes and does not finalize live epoch fencing/authority transfer, chronology, Story/transcript retention, physical GC, or deployment transport.
 

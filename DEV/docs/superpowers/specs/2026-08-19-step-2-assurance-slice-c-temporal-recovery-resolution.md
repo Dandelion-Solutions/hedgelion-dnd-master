@@ -4,11 +4,11 @@ Status: **ASSURED / AMENDED / STEP 2 REMAINS CLOSED**
 
 Target branch: `feature/mechanical-runtime-hot-state`
 
-Task Charter: `2026-08-19-step-2-assurance-slice-c-temporal-recovery-task-charter.md`
+Task Charter: `../design/2026-08-19-step-2-assurance-slice-c-temporal-recovery-task-charter.md`
 
-Coverage/research: `2026-08-19-step-2-assurance-slice-c-temporal-recovery-coverage-research.md`
+Coverage/research: `../design/2026-08-19-step-2-assurance-slice-c-temporal-recovery-coverage-research.md`
 
-Adversarial review: `2026-08-19-step-2-assurance-slice-c-temporal-recovery-adversarial-review.md`
+Adversarial review: `../design/2026-08-19-step-2-assurance-slice-c-temporal-recovery-adversarial-review.md`
 
 This resolution records the human architect's approval of the material temporal amendment found by the retrospective assurance pass. Where earlier Step-2 temporal wording conflicts with this document, this resolution is authoritative for subsequent architecture work.
 

@@ -8,14 +8,14 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Canonicalization basis:
 
-- `2026-08-21-step-5-11-transcript-history-retention-compaction-task-brief.md`
-- `2026-08-21-step-5-11-transcript-history-retention-compaction-research-draft.md`
-- `2026-08-21-step-5-11-transcript-history-retention-compaction-analytical-challenge.md`
-- `2026-08-21-step-5-11-transcript-history-retention-compaction-decision-brief.md`
-- `2026-08-21-step-5-11-selective-exact-semantic-continuity-owner-decision.md`
-- `2026-08-21-step-5-11-transcript-history-retention-compaction-candidate-spec.md`
-- `2026-08-21-step-5-11-transcript-history-retention-compaction-adversarial-review.md`
-- `2026-08-21-step-5-11-transcript-history-retention-compaction-resolution-gate.md`
+- `../design/2026-08-21-step-5-11-transcript-history-retention-compaction-task-brief.md`
+- `../design/2026-08-21-step-5-11-transcript-history-retention-compaction-research-draft.md`
+- `../design/2026-08-21-step-5-11-transcript-history-retention-compaction-analytical-challenge.md`
+- `../design/2026-08-21-step-5-11-transcript-history-retention-compaction-decision-brief.md`
+- `../design/2026-08-21-step-5-11-selective-exact-semantic-continuity-owner-decision.md`
+- `../design/2026-08-21-step-5-11-transcript-history-retention-compaction-candidate-spec.md`
+- `../design/2026-08-21-step-5-11-transcript-history-retention-compaction-adversarial-review.md`
+- `../design/2026-08-21-step-5-11-transcript-history-retention-compaction-resolution-gate.md`
 
 Owner-approved product direction:
 

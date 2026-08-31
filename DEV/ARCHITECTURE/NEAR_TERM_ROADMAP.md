@@ -1,8 +1,8 @@
 # HDM Architecture Round 2 — Active Roadmap
 
-Status: **ACTIVE PROGRAM ROADMAP — S6D COMPLETE / INTEGRATED CLOSURE PASS / R2.7 WP-06 NEXT / RESUMABLE**
+Status: **ACTIVE PROGRAM ROADMAP — S6D COMPLETE / R2.7 WP-06 CLOSED / SENIOR REVIEW PASS / WP-07 NOT STARTED**
 
-Date: 2026-08-28
+Date: 2026-08-29
 
 This file is the sequencing/status authority for Architecture Round 2 and inserted pre-resume architecture workstreams. Detailed semantics remain in owning specifications.
 
@@ -17,18 +17,18 @@ Primary program decisions:
 - `DEV/docs/superpowers/specs/2026-08-23-step-4-single-context-role-containment-canonical-amendment.md`
 - `DEV/docs/superpowers/specs/2026-08-24-round-2-roadmap-owner-decision.md`
 - `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md`
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
-- `DEV/docs/superpowers/specs/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-house-rules-then-s6d-eight-step-sequencing-owner-decision.md`
 
 Current House-Rules authority:
 
 - `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`
 - `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md`
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`
 
 R2.7 durable cursor:
 
-- `DEV/docs/superpowers/research/2026-08-24-r2-7-audit-status.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md`
 
 ---
 
@@ -72,7 +72,7 @@ A closed topic becomes active only when current work materially extends/contradi
 Operating rules:
 
 - at most one numbered Round-2 stage may be `IN PROGRESS`;
-- inserted owner-approved architecture work may pause that stage when recorded here;
+- inserted owner-approved architecture/development work may pause the next numbered stage when recorded here;
 - Source Manifest/evidence/synthesis gates precede Decision Brief/candidate/closure claims;
 - current owning sources beat roadmap/index/summary/history;
 - YAGNI applies to new owners, registries, schedulers, generic graphs and policy subsystems;
@@ -94,7 +94,7 @@ Operating rules:
 | R2.6 | **COMPLETE / ARCHITECTURE CLOSED** | ChatGPT-Plus assurance/security/degradation |
 | House Rules | **COMPLETE / ARCHITECTURE CLOSED** | campaign semantic policy, rulings, typed adjudication boundary, adoption authority |
 | S6D | **COMPLETE / INTEGRATED CLOSURE PASS — S6D-12 STEPS 1-8 + MRC-01…04 VERIFIED** | residual rules/seed/catalog debt closed |
-| R2.7 | **WP-06 NEXT / RESUMABLE** | whole-project final architecture & machine-realization audit |
+| R2.7 | **WP-06 CLOSED / SENIOR REVIEW PASS; WP-07 NOT STARTED** | whole-project final architecture & machine-realization audit; WP-07 remains pending after the WP-06 review |
 
 ---
 
@@ -102,38 +102,18 @@ Operating rules:
 
 ```text
 R2.0..R2.6 COMPLETE
-    -> R2.7 WP-01..WP-05 CLOSED
-    -> R2.7 WP-06 NEXT / RESUMABLE
     -> HOUSE RULES STEPS 1-8 COMPLETE / REPAIRED CLOSURE
-    -> S6D-01 Steps 1-8                            [COMPLETE / ARCHITECTURE CLOSED]
-    -> S6D-02 Steps 1-8                            [COMPLETE / CANONICAL]
-    -> S6D-03 Steps 1-8                            [COMPLETE / CANONICAL]
-    -> S6D-04 Steps 1-8                            [COMPLETE / CANONICAL]
-    -> S6D-05 Steps 1-8                            [COMPLETE / CANONICAL]
-    -> S6D-06 Steps 1-8                            [COMPLETE / CRITIC PASS]
-    -> S6D-07 Steps 1-8                            [COMPLETE / CRITIC PASS / CANONICAL]
-    -> S6D-08 Steps 1-8                            [COMPLETE / SENIOR-AUDIT REPAIR PASS / CANONICAL]
-    -> S6D-09 Steps 1-8                            [COMPLETE / CANONICAL]
-    -> S6D-10 Steps 1-8                            [COMPLETE / WHOLE-PROJECT CRITIC PASS / CANONICAL]
-    -> S6D-11 Steps 1-8                            [COMPLETE / WHOLE-PROJECT CRITIC PASS / CANONICAL]
-    -> S6D-12 Step 1                               [COMPLETE / WHOLE-PROJECT BRIEF-CRITIC PASS]
-    -> S6D-12 Step 2                               [COMPLETE / ITEM-LEVEL EVIDENCE EXTRACTION]
-    -> S6D-12 Step 3                               [COMPLETE / HUMAN DECISION NOT REQUIRED]
-    -> S6D-12 Step 4                               [COMPLETE / COLLABORATIVE CROSS-OWNER REVIEW]
-    -> S6D-12 Step 5                               [COMPLETE / CANDIDATE FINAL-CLOSURE SPEC]
-    -> S6D-12 Step 6                               [COMPLETE / WHOLE-PROJECT ADVERSARIAL CRITIC PASS]
-    -> S6D-12 Step 7                               [COMPLETE / SEMANTIC TRUE / MACHINE FALSE]
-    -> S6D-12 Step 8                               [COMPLETE / HISTORICAL PRE-REALIZATION BLOCKED DISPOSITION]
-    -> S6D integrated closure                      [PASS / MACHINE REALIZATION VERIFIED]
-    -> R2.7 WP-06 RESUME                           [ALLOWED / NEXT]
+    -> S6D-01..S6D-12 COMPLETE / INTEGRATED CLOSURE PASS
+    -> R2.7 WP-01..WP-06 CLOSED
+    -> WP-06 SENIOR SEMANTIC/TECHNICAL REVIEW PASS
     -> R2.7 WP-07..WP-27
     -> R2.7 final reconciliation
     -> Implementation Planning
 ```
 
-**Current stop.** S6D-12's complete eight-step architecture review and MRC-01…04 machine realization are canonical. `SEMANTIC_ARCHITECTURE_RECONCILED == TRUE`; `MACHINE_REALIZATION_VERIFIED == TRUE`; therefore `S6D_FINAL_CLOSURE_AUTHORIZED == TRUE` and the integrated closure is PASS. No S6D design step is active; R2.7 WP-06 is next/resumable.
+**Current stop.** WP-06 is closed and has passed Senior semantic/technical review. Its final public SHA is `06f70919d52739f72515a5d315bb0998d7c34c6e`; `Validate engine source #33238159180` completed successfully on that exact SHA. WP-07 remains not started. This roadmap is now at the required stop; WP-07 remains not started pending Senior review and explicit continuation.
 
-Machine realization MRC-01…04 passed on hosted CI; current derived identity projections, Mechanical-Null conformance, and focused integrated S6D-07/08/09/10/11 verification are green on the same realized state. R2.7 WP-06 is resumable.
+S6D remains complete: `SEMANTIC_ARCHITECTURE_RECONCILED == TRUE`, `MACHINE_REALIZATION_VERIFIED == TRUE`, `S6D_FINAL_CLOSURE_AUTHORIZED == TRUE`, integrated closure PASS. No S6D blocker remains.
 
 ---
 
@@ -145,15 +125,15 @@ Primary canonical owner:
 
 Repaired closure chain:
 
-- Step 1 — `DEV/docs/superpowers/specs/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
-- Step 2 repair — `DEV/docs/superpowers/research/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`
-- Step 3 amended decision brief — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md`
+- Step 1 — `DEV/docs/superpowers/design/2026-08-24-campaign-rulings-house-rules-architecture-task-brief.md`
+- Step 2 repair — `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-2-auditor-reopen-evidence-delta.md`
+- Step 3 amended decision brief — `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md`
 - Step 3 owner decision — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-owner-decision.md`
-- Step 4 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-4-collaborative-review-v2.md`
-- Step 5 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-5-candidate-spec-v2.md`
-- Step 6 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-6-adversarial-review-v2.md`
-- Step 7 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-7-resolution-gate-v2.md`
-- Step 8 — `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`
+- Step 4 — `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-4-collaborative-review-v2.md`
+- Step 5 — `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-5-candidate-spec-v2.md`
+- Step 6 — `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-6-adversarial-review-v2.md`
+- Step 7 — `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-7-resolution-gate-v2.md`
+- Step 8 — `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-8-canonicalization-v2.md`
 
 Settled responsibility/authority:
 
@@ -203,49 +183,49 @@ Registered boolean invocation context facts remain boolean.
 
 S6D decomposition/evidence inputs remain:
 
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
-- `DEV/docs/superpowers/specs/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-step-6-residual-rules-seed-debt-closure-task-brief.md`
 - `DEV/docs/superpowers/plans/2026-08-24-step-6-residual-rules-seed-debt-closure-plan.md`
 
 The plan is a decomposition/coverage index only. Current owning architecture and later accepted amendments control semantics.
 
 S6D-12 Step 1 authority:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-task-brief.md`;
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-task-brief-amendment.md`;
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-brief-critic.md`.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-task-brief.md`;
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-task-brief-amendment.md`;
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-brief-critic.md`.
 
 S6D-12 Step 2 evidence:
 
-- `DEV/docs/superpowers/research/2026-08-28-s6d-12-adversarial-final-closure-evidence.md`.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-evidence.md`.
 
 S6D-12 Step 3 decision:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-decision-brief.md` — `HUMAN_DECISION_REQUIRED: NO`.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-decision-brief.md` — `HUMAN_DECISION_REQUIRED: NO`.
 
 S6D-12 Step 4 review:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-4-collaborative-review.md` — no semantic contradiction; B′/identity plus Mechanical-Null execution proof remain machine-realization obligations.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-step-4-collaborative-review.md` — no semantic contradiction; B′/identity plus Mechanical-Null execution proof remain machine-realization obligations.
 
 S6D-12 Step 5 candidate:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-5-candidate-spec.md` — exact final closure predicates, finite machine closure conditions and deferred acceptance boundaries.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-step-5-candidate-spec.md` — exact final closure predicates, finite machine closure conditions and deferred acceptance boundaries.
 
 S6D-12 Step 6 critic:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-6-whole-project-critic.md` — whole-project critic pass after owner-conforming Mechanical-Null clarification.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-step-6-whole-project-critic.md` — whole-project critic pass after owner-conforming Mechanical-Null clarification.
 
 S6D-12 Step 7 resolution gate:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-7-resolution-gate.md` — historical pre-realization gate: semantic architecture reconciled; machine realization then not verified; final closure then not authorized.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-step-7-resolution-gate.md` — historical pre-realization gate: semantic architecture reconciled; machine realization then not verified; final closure then not authorized.
 
 S6D-12 Step 8 canonicalization:
 
-- `DEV/docs/superpowers/specs/2026-08-28-s6d-12-adversarial-final-closure-step-8-canonicalization.md` — historical canonical semantic reconciliation and pre-realization blocked disposition; its current closure evaluation is superseded by the post-realization record below.
+- `DEV/docs/superpowers/design/2026-08-28-s6d-12-adversarial-final-closure-step-8-canonicalization.md` — historical canonical semantic reconciliation and pre-realization blocked disposition; its current closure evaluation is superseded by the post-realization record below.
 
 Post-realization closure record:
 
-- `DEV/docs/superpowers/specs/2026-08-29-s6d-integrated-machine-realization-closure.md` — current final closure authority/status: MRC-01…04 verified, S6D integrated closure PASS, and R2.7 WP-06 next/resumable.
+- `DEV/docs/superpowers/design/2026-08-29-s6d-integrated-machine-realization-closure.md` — current S6D final closure authority/status. Its historical continuation statement authorized WP-06 resume; WP-06 is now closed and Senior-reviewed.
 
 S6D-08 stale identity prose reconciliation:
 
@@ -265,12 +245,12 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 R2_7_WP06_RESUME_ALLOWED: TRUE
-R2_7_WP06: NEXT / RESUMABLE
+R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
 ```
 
 ---
 
-## 8. R2.7 resume status
+## 8. R2.7 current status
 
 ```text
 WP-01 CLOSED
@@ -278,11 +258,12 @@ WP-02 CLOSED
 WP-03 CLOSED
 WP-04 CLOSED
 WP-05 CLOSED
-WP-06 NEXT / RESUMABLE
-WP-07..WP-27 NOT STARTED
+WP-06 CLOSED / SENIOR REVIEW PASS
+WP-07 NOT STARTED
+WP-08..WP-27 NOT STARTED
 ```
 
-R2.7 WP-06 may resume after S6D integrated closure PASS. No S6D machine-realization blocker remains.
+WP-07 substantive analysis remains intentionally not started; stop here pending Senior review and an explicit continuation command.
 
 ---
 
@@ -295,7 +276,9 @@ S6D_COMPLETED_DOMAIN: S6D-12 / STEPS 1-8 / SEMANTIC ARCHITECTURE CANONICAL
 S6D_ACTIVE_DOMAIN: NONE / INTEGRATED CLOSURE PASS
 S6D_COMPLETED_STAGE: S6D INTEGRATED CLOSURE / POST-REALIZATION PASS
 S6D_ACTIVE_STAGE: NONE / FINAL CLOSURE PASS
-S6D_NEXT_STAGE: R2.7 WP-06 RESUME
+S6D_NEXT_STAGE: NONE
 S6D_FINAL_CLOSURE_BLOCKER: NONE
-R2_7_WP06: NEXT / RESUMABLE
+R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
+R2_7_WP07: NOT STARTED
+NEXT_EXACT_TASK: Senior review / explicit continuation; do not start WP-07
 ```

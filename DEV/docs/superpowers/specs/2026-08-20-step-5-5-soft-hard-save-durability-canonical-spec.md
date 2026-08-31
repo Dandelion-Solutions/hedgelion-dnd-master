@@ -12,14 +12,14 @@ Owner-approved architecture:
 
 Canonicalization basis:
 
-- `2026-08-20-step-5-5-soft-hard-save-durability-task-brief.md`
-- `2026-08-20-step-5-5-soft-hard-save-durability-research-draft.md`
-- `2026-08-20-step-5-5-soft-hard-save-durability-analytical-challenge.md`
-- `2026-08-20-step-5-5-soft-hard-save-durability-owner-clarification-addendum.md`
-- `2026-08-20-step-5-5-soft-hard-save-durability-decision-brief.md`
-- `2026-08-20-step-5-5-soft-hard-save-durability-candidate-spec.md`
-- `2026-08-20-step-5-5-soft-hard-save-durability-adversarial-review.md`
-- `2026-08-20-step-5-5-soft-hard-save-durability-resolution-gate.md`
+- `../design/2026-08-20-step-5-5-soft-hard-save-durability-task-brief.md`
+- `../design/2026-08-20-step-5-5-soft-hard-save-durability-research-draft.md`
+- `../design/2026-08-20-step-5-5-soft-hard-save-durability-analytical-challenge.md`
+- `../design/2026-08-20-step-5-5-soft-hard-save-durability-owner-clarification-addendum.md`
+- `../design/2026-08-20-step-5-5-soft-hard-save-durability-decision-brief.md`
+- `../design/2026-08-20-step-5-5-soft-hard-save-durability-candidate-spec.md`
+- `../design/2026-08-20-step-5-5-soft-hard-save-durability-adversarial-review.md`
+- `../design/2026-08-20-step-5-5-soft-hard-save-durability-resolution-gate.md`
 
 This specification is the current Step-5.5 authority. It defines logical durability semantics only. Physical Git publication/crash consistency remains Step 5.6; checkpoint/source-selection representation remains 5.7; concrete multiplayer/live authority and publication bindings remain 5.8.
 

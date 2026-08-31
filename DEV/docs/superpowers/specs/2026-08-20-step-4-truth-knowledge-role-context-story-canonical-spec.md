@@ -8,13 +8,13 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Canonicalization basis:
 
-- `2026-08-20-step-4-rerun-task-brief.md`
-- `2026-08-20-step-4-rerun-research-draft.md`
-- `2026-08-20-step-4-rerun-decision-resolution.md`
-- `2026-08-20-step-4-rerun-candidate-spec.md`
-- `2026-08-20-step-4-rerun-adversarial-review.md`
-- `2026-08-20-step-4-rerun-resolution-gate.md`
-- `2026-08-20-llm-logical-roles-draft.md`
+- `../design/2026-08-20-step-4-rerun-task-brief.md`
+- `../design/2026-08-20-step-4-rerun-research-draft.md`
+- `../design/2026-08-20-step-4-rerun-decision-resolution.md`
+- `../design/2026-08-20-step-4-rerun-candidate-spec.md`
+- `../design/2026-08-20-step-4-rerun-adversarial-review.md`
+- `../design/2026-08-20-step-4-rerun-resolution-gate.md`
+- `../design/2026-08-20-llm-logical-roles-draft.md`
 - owner-approved Step-4 Alternative C;
 - owner-approved six logical LLM roles;
 - Step-3 canonical deterministic execution boundary.

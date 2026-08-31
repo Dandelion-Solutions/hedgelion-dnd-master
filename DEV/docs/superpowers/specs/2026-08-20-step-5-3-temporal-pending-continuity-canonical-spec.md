@@ -12,14 +12,14 @@ Owner decision:
 
 Canonicalization basis:
 
-- `2026-08-20-step-5-3-temporal-pending-continuity-pre-research-charter.md`
-- `2026-08-20-step-5-3-temporal-pending-continuity-task-brief.md`
-- `2026-08-20-step-5-3-temporal-pending-continuity-research-draft.md`
-- `2026-08-20-step-5-3-temporal-pending-continuity-analytical-challenge.md`
-- `2026-08-20-step-5-3-temporal-pending-continuity-decision-brief.md`
-- `2026-08-20-step-5-3-temporal-pending-continuity-candidate-spec.md`
-- `2026-08-20-step-5-3-temporal-pending-continuity-adversarial-review.md`
-- `2026-08-20-step-5-3-temporal-pending-continuity-resolution-gate.md`
+- `../design/2026-08-20-step-5-3-temporal-pending-continuity-pre-research-charter.md`
+- `../design/2026-08-20-step-5-3-temporal-pending-continuity-task-brief.md`
+- `../design/2026-08-20-step-5-3-temporal-pending-continuity-research-draft.md`
+- `../design/2026-08-20-step-5-3-temporal-pending-continuity-analytical-challenge.md`
+- `../design/2026-08-20-step-5-3-temporal-pending-continuity-decision-brief.md`
+- `../design/2026-08-20-step-5-3-temporal-pending-continuity-candidate-spec.md`
+- `../design/2026-08-20-step-5-3-temporal-pending-continuity-adversarial-review.md`
+- `../design/2026-08-20-step-5-3-temporal-pending-continuity-resolution-gate.md`
 
 This document is the current Step-5.3 authority and supersedes candidate/research wording where they differ.
 

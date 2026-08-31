@@ -6,15 +6,15 @@ Date: 2026-08-24
 
 Owner decision:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-owner-decision.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-2-actor-continuity-owner-decision.md`
 
 Derivation:
 
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-cognition-task-brief.md`
-- `DEV/docs/superpowers/research/2026-08-24-r2-2-actor-continuity-evidence-ledger.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-decision-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-adversarial-review.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-2-actor-continuity-cognition-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-2-actor-continuity-evidence-ledger.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-2-actor-continuity-decision-brief.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-2-actor-continuity-candidate-spec.md`
+- `DEV/docs/superpowers/design/2026-08-24-r2-2-actor-continuity-adversarial-review.md`
 
 This specification incorporates adversarial clarifications AR-1 through AR-6. It defines architecture only; implementation remains deferred.
 

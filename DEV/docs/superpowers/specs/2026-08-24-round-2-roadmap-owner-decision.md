@@ -12,7 +12,7 @@ Applies to:
 
 Evidence accounting:
 
-- `DEV/docs/superpowers/research/2026-08-24-round-2-evidence-disposition-ledger.md`
+- `DEV/docs/superpowers/design/2026-08-24-round-2-evidence-disposition-ledger.md`
 
 This decision supersedes the previous Round-2 stage decomposition in the roadmap. It does not supersede accepted Round-1 semantic architecture and does not authorize broad implementation.
 

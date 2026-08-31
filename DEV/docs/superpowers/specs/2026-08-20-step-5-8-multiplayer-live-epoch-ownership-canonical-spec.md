@@ -12,12 +12,12 @@ Canonical architecture direction:
 
 Canonicalization basis:
 
-- `2026-08-20-step-5-8-multiplayer-live-epoch-ownership-task-brief.md`
-- `2026-08-20-step-5-8-multiplayer-live-epoch-ownership-research-draft.md`
-- `2026-08-20-step-5-8-multiplayer-live-epoch-ownership-analytical-challenge.md`
-- `2026-08-20-step-5-8-multiplayer-live-epoch-ownership-candidate-spec.md`
-- `2026-08-20-step-5-8-multiplayer-live-epoch-ownership-adversarial-review.md`
-- `2026-08-20-step-5-8-multiplayer-live-epoch-ownership-resolution-gate.md`
+- `../design/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-task-brief.md`
+- `../design/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-research-draft.md`
+- `../design/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-analytical-challenge.md`
+- `../design/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-candidate-spec.md`
+- `../design/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-adversarial-review.md`
+- `../design/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-resolution-gate.md`
 
 This specification defines temporary multiplayer/live mutable-authority ownership, fencing, close/absorption and recovery semantics on top of canonical Steps 3, 4 and 5.1–5.7.
 

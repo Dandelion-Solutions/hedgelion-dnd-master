@@ -6,13 +6,13 @@ Canonicalized: 2026-08-25
 
 Design chain:
 
-- `DEV/docs/superpowers/specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-task-brief.md`
-- `DEV/docs/superpowers/research/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-research-architecture-draft.md`
-- `DEV/docs/superpowers/specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-decision-brief.md`
-- `DEV/docs/superpowers/specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-collaborative-review.md`
-- `DEV/docs/superpowers/specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-candidate-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-adversarial-review.md`
-- `DEV/docs/superpowers/specs/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-resolution-gate.md`
+- `DEV/docs/superpowers/design/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-task-brief.md`
+- `DEV/docs/superpowers/design/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-research-architecture-draft.md`
+- `DEV/docs/superpowers/design/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-decision-brief.md`
+- `DEV/docs/superpowers/design/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-collaborative-review.md`
+- `DEV/docs/superpowers/design/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-candidate-spec.md`
+- `DEV/docs/superpowers/design/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-adversarial-review.md`
+- `DEV/docs/superpowers/design/2026-08-25-s6d-01-ruleset-package-catalog-snapshot-identity-resolution-gate.md`
 
 ## 1. Decision
 
@@ -257,4 +257,3 @@ The resolved lock additionally carries exact owned namespace claims and builder-
 
 A changed same-engine-version set is eligible for silent forward use only after independent adopted/candidate loading and a COMPLETE monotonic canonical semantic-entry comparison returns COMPATIBLE_ADDITIVE. Every adopted package line, namespace, exact dependency and definition/capability/active primitive/selector/accessor/fact/value/schema entry must remain present with identical kind and semantic hash. Candidate-only entries must independently validate and avoid collisions. BLOCKED_INCOMPATIBLE or BLOCKED_INSUFFICIENT_EVIDENCE prevents context use. Ancestry, labels and standalone load success are not this proof.
 
-+

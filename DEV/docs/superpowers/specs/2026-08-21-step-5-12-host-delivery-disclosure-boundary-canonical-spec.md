@@ -8,15 +8,15 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Canonicalization basis:
 
-- `2026-08-21-step-5-12-host-delivery-disclosure-boundary-task-brief.md`
-- `2026-08-21-step-5-12-host-delivery-disclosure-boundary-research-draft.md`
-- `2026-08-21-step-5-12-host-delivery-disclosure-boundary-analytical-challenge.md`
-- `2026-08-21-step-5-12-host-delivery-disclosure-boundary-candidate-spec.md` — superseded candidate derivation
-- `2026-08-21-step-5-12-host-delivery-disclosure-boundary-adversarial-review.md` — derivation/review
-- `2026-08-21-step-5-12-minimal-host-delivery-owner-scope-decision.md`
-- `2026-08-21-step-5-12-host-delivery-disclosure-boundary-candidate-spec-v2.md`
-- `2026-08-21-step-5-12-host-delivery-disclosure-boundary-adversarial-review-addendum-v2.md`
-- `2026-08-21-step-5-12-host-delivery-disclosure-boundary-resolution-gate.md`
+- `../design/2026-08-21-step-5-12-host-delivery-disclosure-boundary-task-brief.md`
+- `../design/2026-08-21-step-5-12-host-delivery-disclosure-boundary-research-draft.md`
+- `../design/2026-08-21-step-5-12-host-delivery-disclosure-boundary-analytical-challenge.md`
+- `../design/2026-08-21-step-5-12-host-delivery-disclosure-boundary-candidate-spec.md` — superseded candidate derivation
+- `../design/2026-08-21-step-5-12-host-delivery-disclosure-boundary-adversarial-review.md` — derivation/review
+- `../design/2026-08-21-step-5-12-minimal-host-delivery-owner-scope-decision.md`
+- `../design/2026-08-21-step-5-12-host-delivery-disclosure-boundary-candidate-spec-v2.md`
+- `../design/2026-08-21-step-5-12-host-delivery-disclosure-boundary-adversarial-review-addendum-v2.md`
+- `../design/2026-08-21-step-5-12-host-delivery-disclosure-boundary-resolution-gate.md`
 
 Owner-approved scope/product decision:
 

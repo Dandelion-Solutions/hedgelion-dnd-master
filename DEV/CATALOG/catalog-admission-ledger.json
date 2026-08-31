@@ -2531,9 +2531,9 @@
             "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
             "admission_disposition": "EMBEDDED_NONOWNER",
             "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-            "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md Р вЂ™Р’В§5 embedded-value classification + DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md",
-            "consumer_or_dependency": "embedded typed payload owned by DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md; exact kind value.duration_spec",
-            "containing_owner": "DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md"
+            "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md Р вЂ™Р’В§5 embedded-value classification + DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md",
+            "consumer_or_dependency": "embedded typed payload owned by DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md; exact kind value.duration_spec",
+            "containing_owner": "DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md"
         },
         {
             "registry_family": "protocol_value_kinds",
@@ -2727,9 +2727,9 @@
             "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
             "admission_disposition": "EMBEDDED_NONOWNER",
             "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-            "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md Р вЂ™Р’В§5 embedded-value classification + DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md",
-            "consumer_or_dependency": "embedded typed payload owned by DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md; exact kind value.invocation_fact",
-            "containing_owner": "DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md"
+            "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md Р вЂ™Р’В§5 embedded-value classification + DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md",
+            "consumer_or_dependency": "embedded typed payload owned by DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md; exact kind value.invocation_fact",
+            "containing_owner": "DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md"
         },
         {
             "registry_family": "protocol_value_kinds",
@@ -2741,9 +2741,9 @@
             "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
             "admission_disposition": "EMBEDDED_NONOWNER",
             "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-            "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md Р вЂ™Р’В§5 embedded-value classification + DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md",
-            "consumer_or_dependency": "embedded typed payload owned by DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md; exact kind value.boundary_occurrence",
-            "containing_owner": "DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md"
+            "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md Р вЂ™Р’В§5 embedded-value classification + DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md",
+            "consumer_or_dependency": "embedded typed payload owned by DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md; exact kind value.boundary_occurrence",
+            "containing_owner": "DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md"
         },
         {
             "registry_family": "protocol_value_kinds",
@@ -6080,7 +6080,7 @@
             "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
             "admission_disposition": "ACTIVE_ADMITTED",
             "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-            "evidence_citation": "DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md accepted derived calculation + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
+            "evidence_citation": "DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md accepted derived calculation + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
             "consumer_or_dependency": "closed supported selector metadata: resource.capacity"
         },
         {
@@ -6191,7 +6191,7 @@
             "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
             "admission_disposition": "ACTIVE_ADMITTED",
             "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-            "evidence_citation": "DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md accepted derived calculation + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
+            "evidence_citation": "DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md accepted derived calculation + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
             "consumer_or_dependency": "closed supported selector metadata: health.maximum"
         },
         {
@@ -6204,7 +6204,7 @@
             "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
             "admission_disposition": "ACTIVE_ADMITTED",
             "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-            "evidence_citation": "DEV/docs/superpowers/specs/2026-08-19-step-2-health-effect-selector-query-boundary-design.md Condition application gate + DEV/TESTS/test_step2_condition_applicability.py",
+            "evidence_citation": "DEV/docs/superpowers/design/2026-08-19-step-2-health-effect-selector-query-boundary-design.md Condition application gate + DEV/TESTS/test_step2_condition_applicability.py",
             "consumer_or_dependency": "closed supported selector metadata: condition.applicability"
         },
         {

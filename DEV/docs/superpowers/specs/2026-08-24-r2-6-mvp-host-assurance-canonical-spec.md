@@ -6,15 +6,15 @@ Date: 2026-08-24
 
 Canonicalization basis:
 
-- `2026-08-24-r2-6-chatgpt-plus-assurance-task-brief.md` — task scope, refined by later owner clarifications;
-- `2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md`;
-- `2026-08-24-r2-6-chatgpt-plus-assurance-evidence-ledger.md`;
-- `2026-08-24-r2-6-current-host-assurance-synthesis.md`;
-- `2026-08-24-r2-6-production-like-assurance-protocol.md`;
-- `2026-08-24-r2-6-protocol-4-frozen-fixture-contract.md`;
-- `2026-08-24-r2-6-mvp-behavioral-assurance-owner-clarification.md`;
-- `2026-08-24-r2-6-mvp-host-assurance-candidate-spec.md`;
-- `2026-08-24-r2-6-mvp-host-assurance-adversarial-review.md`;
+- `../design/2026-08-24-r2-6-chatgpt-plus-assurance-task-brief.md` — task scope, refined by later owner clarifications;
+- `../design/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md`;
+- `../design/2026-08-24-r2-6-chatgpt-plus-assurance-evidence-ledger.md`;
+- `../design/2026-08-24-r2-6-current-host-assurance-synthesis.md`;
+- `../design/2026-08-24-r2-6-production-like-assurance-protocol.md`;
+- `../design/2026-08-24-r2-6-protocol-4-frozen-fixture-contract.md`;
+- `../design/2026-08-24-r2-6-mvp-behavioral-assurance-owner-clarification.md`;
+- `../design/2026-08-24-r2-6-mvp-host-assurance-candidate-spec.md`;
+- `../design/2026-08-24-r2-6-mvp-host-assurance-adversarial-review.md`;
 - retained Protocols 1-3 role-containment evidence.
 
 Owner-approved direction:

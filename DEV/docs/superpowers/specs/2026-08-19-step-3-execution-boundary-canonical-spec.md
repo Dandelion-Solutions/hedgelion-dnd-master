@@ -8,12 +8,12 @@ Owner decision: **Alternative C approved**.
 
 Canonicalization basis:
 
-- `2026-08-19-step-3-execution-boundary-task-brief.md`
-- `2026-08-19-step-3-execution-boundary-research-draft.md`
-- `2026-08-19-step-3-execution-boundary-decision-brief.md`
-- `2026-08-19-step-3-execution-boundary-candidate-spec.md`
-- `2026-08-19-step-3-execution-boundary-adversarial-review.md`
-- `2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
+- `../design/2026-08-19-step-3-execution-boundary-task-brief.md`
+- `../design/2026-08-19-step-3-execution-boundary-research-draft.md`
+- `../design/2026-08-19-step-3-execution-boundary-decision-brief.md`
+- `../design/2026-08-19-step-3-execution-boundary-candidate-spec.md`
+- `../design/2026-08-19-step-3-execution-boundary-adversarial-review.md`
+- `../design/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
 
 This file is the consolidated normative Step-3 architecture after the owner-approved decision and adversarial-review resolution. Conflicting provisional wording in the earlier Step-3 draft/candidate is superseded by this specification.
 

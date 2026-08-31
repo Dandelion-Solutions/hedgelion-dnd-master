@@ -54,7 +54,7 @@ def init_fixture_repo(root: Path, release_status: str) -> str:
     shutil.copytree(ROOT / "DEV" / "ARCHITECTURE", dev / "ARCHITECTURE", dirs_exist_ok=True)
     for relative in (
         "DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md",
-        "DEV/docs/superpowers/specs/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md",
+        "DEV/docs/superpowers/design/2026-08-27-s6d-09-domain-rules-coverage-matrix-owner-decision.md",
         "DEV/TESTS/fixtures/s6d-07-character-mvp-actors.json",
         "DEV/TESTS/test_release_builder.py",
         "DEV/TESTS/test_s6d_07_character_mvp_seed.py",

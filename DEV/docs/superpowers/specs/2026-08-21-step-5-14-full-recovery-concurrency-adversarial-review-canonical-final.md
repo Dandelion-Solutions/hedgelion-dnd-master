@@ -8,10 +8,10 @@ Target branch: `feature/mechanical-runtime-hot-state`
 
 Canonicalization basis:
 
-- `2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-task-brief.md`
-- `2026-08-21-step-5-14-integrated-adversarial-review-draft.md`
-- `2026-08-21-step-5-14-analytical-challenge.md`
-- `2026-08-21-step-5-14-resolution-gate.md`
+- `../design/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-task-brief.md`
+- `../design/2026-08-21-step-5-14-integrated-adversarial-review-draft.md`
+- `../design/2026-08-21-step-5-14-analytical-challenge.md`
+- `../design/2026-08-21-step-5-14-resolution-gate.md`
 - the owning canonical Steps 3–5.13 / owner decisions referenced by those artifacts.
 
 This document is the canonical Step-5.14 closure and cross-slice integration authority. It supplements earlier Step-5 slices only where it states an explicit integration clarification below. It does not replace their detailed owner contracts.

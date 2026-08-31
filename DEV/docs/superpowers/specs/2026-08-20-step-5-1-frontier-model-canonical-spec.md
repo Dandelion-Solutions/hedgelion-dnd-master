@@ -8,14 +8,14 @@ Owner decision: **B-NARROW approved**
 
 Derivation chain:
 
-- `2026-08-20-step-5-1-frontier-model-pre-research-charter.md`
-- `2026-08-20-step-5-1-frontier-model-task-brief.md`
-- `2026-08-20-step-5-1-frontier-model-research-draft.md`
-- `2026-08-20-step-5-1-frontier-model-analytical-challenge.md`
-- `2026-08-20-step-5-1-frontier-model-decision-brief.md`
-- `2026-08-20-step-5-1-frontier-model-candidate-spec.md`
-- `2026-08-20-step-5-1-frontier-model-adversarial-review.md`
-- `2026-08-20-step-5-1-frontier-model-resolution-gate.md`
+- `../design/2026-08-20-step-5-1-frontier-model-pre-research-charter.md`
+- `../design/2026-08-20-step-5-1-frontier-model-task-brief.md`
+- `../design/2026-08-20-step-5-1-frontier-model-research-draft.md`
+- `../design/2026-08-20-step-5-1-frontier-model-analytical-challenge.md`
+- `../design/2026-08-20-step-5-1-frontier-model-decision-brief.md`
+- `../design/2026-08-20-step-5-1-frontier-model-candidate-spec.md`
+- `../design/2026-08-20-step-5-1-frontier-model-adversarial-review.md`
+- `../design/2026-08-20-step-5-1-frontier-model-resolution-gate.md`
 
 This specification owns the Step-5.1 semantic discipline only. Concrete serialization and protocols remain with later Step-5 slices.
 

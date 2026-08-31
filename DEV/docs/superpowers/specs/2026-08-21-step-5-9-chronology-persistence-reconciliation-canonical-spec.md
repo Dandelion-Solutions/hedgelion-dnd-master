@@ -12,13 +12,13 @@ Canonical architecture direction:
 
 Canonicalization basis:
 
-- `2026-08-20-step-5-9-chronology-persistence-reconciliation-task-brief.md`
-- `2026-08-20-step-5-9-chronology-persistence-reconciliation-research-draft.md`
-- `2026-08-20-step-5-9-chronology-persistence-reconciliation-analytical-challenge.md`
-- `2026-08-21-step-5-9-forward-extensible-time-boundary-owner-decision.md`
-- `2026-08-21-step-5-9-chronology-persistence-reconciliation-candidate-spec.md`
-- `2026-08-21-step-5-9-chronology-persistence-reconciliation-adversarial-review.md`
-- `2026-08-21-step-5-9-chronology-persistence-reconciliation-resolution-gate.md`
+- `../design/2026-08-20-step-5-9-chronology-persistence-reconciliation-task-brief.md`
+- `../design/2026-08-20-step-5-9-chronology-persistence-reconciliation-research-draft.md`
+- `../design/2026-08-20-step-5-9-chronology-persistence-reconciliation-analytical-challenge.md`
+- `../design/2026-08-21-step-5-9-forward-extensible-time-boundary-owner-decision.md`
+- `../design/2026-08-21-step-5-9-chronology-persistence-reconciliation-candidate-spec.md`
+- `../design/2026-08-21-step-5-9-chronology-persistence-reconciliation-adversarial-review.md`
+- `../design/2026-08-21-step-5-9-chronology-persistence-reconciliation-resolution-gate.md`
 
 This document is the Step-5.9 semantic authority. Candidate/research wording is historical derivation where it differs.
 

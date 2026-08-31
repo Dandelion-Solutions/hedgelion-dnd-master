@@ -6,7 +6,7 @@ Date: 2026-08-25
 
 Governing amended Decision Brief:
 
-- `DEV/docs/superpowers/specs/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md`
+- `DEV/docs/superpowers/design/2026-08-25-campaign-house-rules-step-3-decision-brief-amended.md`
 
 This decision closes only the material human choices reopened by the Senior whole-project audit. Step 1 remains closed. Preserved House-Rules directions remain unchanged.
 

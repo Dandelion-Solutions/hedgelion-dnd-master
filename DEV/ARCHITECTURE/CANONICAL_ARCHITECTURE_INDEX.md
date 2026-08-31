@@ -2,9 +2,9 @@
 
 Status: **DERIVATIVE / NON-NORMATIVE NAVIGATION AND INTEGRATION INDEX**
 
-Date: 2026-08-25
+Date: 2026-08-29
 
-Architecture state: **STEPS 1–5 CLOSED; S6D COMPLETE / INTEGRATED CLOSURE PASS; R2.7 WP-06 NEXT / RESUMABLE**
+Architecture state: **STEPS 1–5 CLOSED; S6D COMPLETE / INTEGRATED CLOSURE PASS; R2.7 WP-06 CLOSED / SENIOR REVIEW PASS; WP-07 NOT STARTED**
 
 ---
 
@@ -97,8 +97,8 @@ General repository discovery:
 | 5.14 | CLOSED | **FULL RECOVERY & CONCURRENCY ADVERSARIAL REVIEW — 0 UNRESOLVED STEP-5 BLOCKERS** | Step-5.14 canonical final |
 | Former Step 6 | CLOSED / REBASELINED | physical-host findings reallocated into Round 2; old stage is not active | Round-1 closure / Round-2 rebaseline owner decision |
 | S6D-01 | COMPLETE / ARCHITECTURE CLOSED | content-addressed ruleset package snapshots + exact resolved-set identity + owner-local context projections | `RULESET_PACKAGE_IDENTITY.md`; S6D-01 canonicalization |
-| S6D | COMPLETE / INTEGRATED CLOSURE PASS | S6D-01…12 semantic closure plus MRC-01…04 realization verified; Step-8 blocked disposition is historical only | `2026-08-29-s6d-integrated-machine-realization-closure.md`; roadmap |
-| R2.7 | WP-06 NEXT / RESUMABLE | next authorized continuation; not started by S6D closure | roadmap |
+| S6D | COMPLETE / INTEGRATED CLOSURE PASS | S6D-01…12 semantic closure plus MRC-01…04 realization verified; Step-8 blocked disposition is historical only | `DEV/docs/superpowers/design/2026-08-29-s6d-integrated-machine-realization-closure.md`; roadmap |
+| R2.7 | WP-06 CLOSED / SENIOR REVIEW PASS; WP-07 NOT STARTED | WP-07 remains pending after the WP-06 review; roadmap owns sequencing/status | roadmap + R2.7 durable cursor |
 
 ---
 
@@ -594,7 +594,7 @@ Open the listed primary source after locating a concern here.
 
 # 13. Step-6 boundary / feasibility gates
 
-Step 5 is closed. Step 6 is the next architecture stage and owns physical deployment/context feasibility plus final architecture closure.
+Step 5 is closed. The former Step 6 has been rebaselined; its physical-host findings were allocated into Round 2. Current sequencing is owned by `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`.
 
 Material gates identified by Step 5.14:
 
@@ -681,7 +681,7 @@ Detailed outcomes: Step-5.14 integrated review + analytical challenge + canonica
 
 Final assurance:
 
-- `DEV/docs/superpowers/specs/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-1-2-retrospective-architecture-assurance-final.md`
 
 Primary anchors:
 
@@ -702,7 +702,7 @@ For a concrete Step-2 mechanic, follow owning model/schema references; do not tr
 ## 15.2 Step 3
 
 - `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md`
-- `DEV/docs/superpowers/specs/2026-08-19-step-3-final-critical-review.md`
+- `DEV/docs/superpowers/design/2026-08-19-step-3-final-critical-review.md`
 
 ## 15.3 Step 4
 
@@ -721,22 +721,22 @@ For a concrete Step-2 mechanic, follow owning model/schema references; do not tr
 - 5.7: `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-canonical-spec.md`
 - 5.8: `DEV/docs/superpowers/specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-canonical-spec.md`
 - 5.9: `DEV/docs/superpowers/specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-canonical-spec.md`
-- 5.9 decision: `DEV/docs/superpowers/specs/2026-08-21-step-5-9-forward-extensible-time-boundary-owner-decision.md`
+- 5.9 decision: `DEV/docs/superpowers/design/2026-08-21-step-5-9-forward-extensible-time-boundary-owner-decision.md`
 - 5.10: `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md`
 - 5.11: `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md`
-- 5.11 decision: `DEV/docs/superpowers/specs/2026-08-21-step-5-11-selective-exact-semantic-continuity-owner-decision.md`
+- 5.11 decision: `DEV/docs/superpowers/design/2026-08-21-step-5-11-selective-exact-semantic-continuity-owner-decision.md`
 - 5.12: `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md`
-- 5.12 decision: `DEV/docs/superpowers/specs/2026-08-21-step-5-12-minimal-host-delivery-owner-scope-decision.md`
+- 5.12 decision: `DEV/docs/superpowers/design/2026-08-21-step-5-12-minimal-host-delivery-owner-scope-decision.md`
 - 5.13: `DEV/docs/superpowers/specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md`
-- 5.14 task: `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-task-brief.md`
-- 5.14 integrated review: `DEV/docs/superpowers/specs/2026-08-21-step-5-14-integrated-adversarial-review-draft.md`
-- 5.14 challenge: `DEV/docs/superpowers/specs/2026-08-21-step-5-14-analytical-challenge.md`
-- 5.14 gate: `DEV/docs/superpowers/specs/2026-08-21-step-5-14-resolution-gate.md`
+- 5.14 task: `DEV/docs/superpowers/design/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-task-brief.md`
+- 5.14 integrated review: `DEV/docs/superpowers/design/2026-08-21-step-5-14-integrated-adversarial-review-draft.md`
+- 5.14 challenge: `DEV/docs/superpowers/design/2026-08-21-step-5-14-analytical-challenge.md`
+- 5.14 gate: `DEV/docs/superpowers/design/2026-08-21-step-5-14-resolution-gate.md`
 - **5.14 canonical final / Step-5 closure:** `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md`
 
 Historical Step-5 agenda:
 
-- `DEV/docs/superpowers/specs/2026-08-20-step-5-expanded-architecture-agenda.md`
+- `DEV/docs/superpowers/design/2026-08-20-step-5-expanded-architecture-agenda.md`
 
 Per-slice canon + Step-5.14 integration clarifications supersede older agenda wording where they differ.
 
@@ -810,7 +810,7 @@ Update this index when:
 - owner decision is added/revised;
 - canonical amendment changes a cross-slice seam;
 - historical/current authority status changes;
-- Step 6 establishes physical realizations that materially change navigation/supersession;
+- a later stage establishes physical realizations that materially change navigation/supersession;
 - later implementation review exposes a real Step-5 reopen condition.
 
 Do not copy every schema field/implementation detail here. The index is valuable as a compact **semantic locator + integration map + adversarial router**, not as a parallel specification corpus.
