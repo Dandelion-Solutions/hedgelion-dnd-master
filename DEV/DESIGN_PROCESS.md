@@ -36,7 +36,10 @@ Before substantive work:
    behavior changes, use `superpowers:brainstorming`;
 3. read the current versions of the applicable skills rather than relying on
    remembered behavior;
-4. inspect the current project state before proposing changes;
+4. inspect the current project state before proposing changes, including
+   `DEV/CURRENT_PROGRESS.md` for the sole global current-progress state and
+   next authorized unit; consult the roadmap only for sequence, scope and
+   dependency detail;
 5. complete and review architecture before implementation;
 6. after an approved canonical specification exists, use
    `superpowers:writing-plans` for implementation planning.
