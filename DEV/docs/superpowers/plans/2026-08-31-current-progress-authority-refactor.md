@@ -30,7 +30,7 @@
 - [ ] Define the closed global-progress record and its authority boundary.
 - [ ] Add a focused test that requires the owner, required fields, bootstrap routes and non-authority disclaimers.
 - [ ] Add the same targeted assertions to the maintenance audit.
-- [ ] Run locally on the VPS: `python -m unittest DEV.TESTS.test_current_progress_authority -v` and `DEV/TOOLS/run_maintenance_audit`.
+- [ ] Run locally on the VPS: `python -m unittest discover -s DEV/TESTS -p 'test_current_progress_authority.py' -v` and `DEV/TOOLS/run_maintenance_audit`.
 
 ### Task 2: Migrate competing current claims and bootstrap routes
 
