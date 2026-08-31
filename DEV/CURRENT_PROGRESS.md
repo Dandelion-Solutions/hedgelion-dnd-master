@@ -11,7 +11,7 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 WP-07 / STEP-1 FRAMING IN PROGRESS
 
 CURRENT_WORKSTREAM: R2.7 WP-07 — truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: Step 2 — evidence extraction and bidirectional conformance mapping
+CURRENT_SLICE: Step 2, evidence slice 2 — classify schema/catalog/template conformance candidates
 
 LAST_CLOSED_UNIT: Current-Progress Authority Refactor / Senior closure
 NEXT_AUTHORIZED_UNIT: R2.7 WP-07 / Step 2 evidence extraction

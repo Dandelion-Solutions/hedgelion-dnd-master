@@ -50,7 +50,7 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-06
 CURRENT_DOMAIN: WP-07
 CURRENT_DOMAIN_TOPIC: Truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: Step 2 — evidence extraction and bidirectional conformance mapping
+CURRENT_SLICE: Step 2, evidence slice 2 — classify schema/catalog/template conformance candidates
 NEXT_DOMAIN: WP-08
 OWNER_GATE: NONE; mandatory Senior review remains after completed Step 8
 FINAL_RECONCILIATION: NOT_STARTED
