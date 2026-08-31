@@ -8,7 +8,7 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-07 / STEP-1 FRAMING IN PROGRESS
+GLOBAL_STATE: R2.7 WP-07 / STEP-2 EVIDENCE EXTRACTION IN PROGRESS
 
 CURRENT_WORKSTREAM: R2.7 WP-07 — truth, knowledge, disclosure and communication evidence
 CURRENT_SLICE: Step 2, evidence slice 2 — classify schema/catalog/template conformance candidates

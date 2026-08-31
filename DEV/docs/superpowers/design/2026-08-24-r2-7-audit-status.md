@@ -85,7 +85,7 @@ project state, does not authorize WP-07, and does not alter WP-06 findings. Read
 | WP-04 | CLOSED |
 | WP-05 | CLOSED |
 | WP-06 | CLOSED / SENIOR REVIEW PASS |
-| WP-07 | NOT STARTED / PAUSED BEFORE START |
+| WP-07 | STEP-2 EVIDENCE EXTRACTION IN PROGRESS — SLICE 2 NOT COMPLETE |
 | WP-08..WP-27 | NOT STARTED |
 
 
@@ -155,15 +155,15 @@ FINAL_WP06_HOSTED_VERIFICATION: Validate engine source #33238159180
 FINAL_WP06_HOSTED_VERIFICATION_RESULT: SUCCESS
 ```
 
-WP-07 remains not started; any substantive analysis requires Senior review and an explicit continuation command.
+WP-07 Step-2 evidence extraction is in progress. Evidence slice 2 is not complete: determine whether further evidence slices are required and complete the remaining Step-2 evidence before advancing to synthesis or decision material.
 
 ---
 
 ## Task-local handoff
 
-LAST_PUBLISHED_SHA before this synchronization: `06f70919d52739f72515a5d315bb0998d7c34c6e`
-COMPLETED_SLICES: WP-06 closed; Senior semantic/technical review PASS
-CURRENT_VERIFICATION_STATE: exact WP-06 SHA `06f70919d52739f72515a5d315bb0998d7c34c6e`; hosted workflow #33238159180 success
-NEXT_EXACT_TASK_OR_SLICE: Senior review / explicit continuation; do not begin WP-07
+LAST_PUBLISHED_SHA: `9c4c139969f1f061b29466abcbbda53670fdda64`
+COMPLETED_SLICES: WP-06 closed / Senior review PASS; WP-07 Step-1 framing and critic complete; WP-07 Step-2 evidence slice 1 checkpointed
+CURRENT_VERIFICATION_STATE: current published WP-07 evidence checkpoint `9c4c139969f1f061b29466abcbbda53670fdda64`; Step-2 evidence slice 2 remains incomplete
+NEXT_EXACT_TASK_OR_SLICE: determine whether additional Step-2 evidence slices are required; complete the remaining Step-2 evidence and classify its open findings before synthesis or decision material
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE
