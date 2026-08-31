@@ -8,14 +8,14 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-08 / STEP 8 CANONICALIZATION AUTHORIZED
+GLOBAL_STATE: R2.7 WP-08 / STEP 8 COMPLETE — MANDATORY SENIOR AUDIT
 
 CURRENT_WORKSTREAM: R2.7 WP-08 — next whole-project audit domain
-CURRENT_SLICE: Step 8 canonicalization
+CURRENT_SLICE: Mandatory Senior audit of completed WP-08 Step-8 package
 
-LAST_CLOSED_UNIT: R2.7 WP-08 Step 7 resolution / canonicalization required / no owner decision
-NEXT_AUTHORIZED_UNIT: R2.7 WP-08 Step 8 canonicalization
-REQUIRED_GATE: Publish coherent verified checkpoints for completed Step-2 evidence slices and each completed Step 3–8 artifact. After completed Step 8 canonicalization, required verification/read-back and state synchronization, stop for mandatory Senior review; do not begin WP-09 or implementation planning without GO
+LAST_CLOSED_UNIT: R2.7 WP-08 Step 8 canonicalization / implementation-facing realization law recorded
+NEXT_AUTHORIZED_UNIT: Mandatory Senior audit of WP-08 completed Step-8 package
+REQUIRED_GATE: Publish coherent verified checkpoints for completed Step-2 evidence slices and each completed Step 3–8 artifact. Step 8 canonicalization is published; required verification/read-back and state synchronization must be evidenced for the Senior audit. Do not begin WP-09 or implementation planning without explicit Senior GO
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE

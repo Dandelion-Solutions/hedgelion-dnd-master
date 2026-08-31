@@ -2,7 +2,7 @@
 
 ## Статус
 
-**STEP 7 RESOLUTION COMPLETE — READY FOR STEP 8 CANONICALIZATION**
+**STEP 8 CANONICALIZATION COMPLETE — MANDATORY SENIOR AUDIT**
 
 Глобальная авторизация и точный gate: `DEV/CURRENT_PROGRESS.md`.
 Этот mini-report является task-local evidence/cursor artifact WP-08 и не заменяет
@@ -175,12 +175,24 @@ realization specification is necessary: otherwise the accepted allocation of the
 R2.6 instruction route and the runtime-local/no-durable-record contract would
 remain only in audit/design material.
 
+## Step-8 canonicalization
+
+`DEV/docs/superpowers/specs/2026-08-31-r2-7-WP-08-llm-role-context-instruction-realization-canonical-spec.md`
+now holds the narrow accepted implementation-facing realization law. It preserves
+rather than supersedes R2.1–R2.6 and Step-4/5 owners, records the F01–F04/V01
+allocation, and makes clear that implementation and MVP proof remain deferred.
+
+`DEV/docs/superpowers/design/2026-08-31-r2-7-WP-08-step-8-canonicalization.md`
+records the traceability/dispositions and why the historical WP-07 cursor remains
+unchanged.
+
 ## Closure verdict
 
-**STEP 7 COMPLETE.** Proceed to Step 8 canonicalization.
+**WP-08 STEPS 2–8 COMPLETE.** Mandatory Senior audit is required before any
+WP-09 or implementation-planning authorization.
 
 ## Точка продолжения
 
-Canonicalize only the resolved realization mapping in `specs`, record traceability
-and synchronize current status. Verify exact source/target readability and remote
-read-back. Do not begin WP-09 or implementation planning.
+STOPPED FOR SENIOR AUDIT. The Senior audit must review the published Step-8
+canonical specification, canonicalization record, current-progress state and
+remote verification evidence. No next domain is started.
