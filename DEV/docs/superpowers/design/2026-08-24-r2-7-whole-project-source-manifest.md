@@ -84,3 +84,24 @@ owner decision required: NO
 ```
 
 Detailed findings/dispositions live in the WP-01 mini-report and global forward-obligation accounting.
+
+---
+
+## 4. WP-09 — Context loading, retrieval and resource-bounded operation
+
+| Source | Authority role | Required scope | Inspection status | Material evidence |
+|---|---|---|---|---|
+| `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md`; `2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md`; `2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md` | CANONICAL / OWNING | bounded discovery/closure/currentness/eligibility/floors/outcomes; phase fallback; no hidden telemetry | INSPECTED FOR WP-09 | Existing semantic owners retained; no new product or provider policy |
+| `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-history-canonical-spec.md`; Step-4 amendment; Step-5.14 final | CANONICAL NEIGHBOR | material source escalation, role eligibility, source basis/currentness | INSPECTED FOR WP-09 | continuity/history orientation remains finite and cannot preload |
+| `DEV/docs/superpowers/specs/2026-08-31-r2-7-WP-08-llm-role-context-instruction-realization-canonical-spec.md` | CLOSED UPSTREAM INPUT | runtime-local role context and MechanicalContext boundary | INSPECTED FOR WP-09 | WP-08 not reopened |
+| `GAME/CORE/PLAY_POLICY.md`; `GAME/CORE/RUNTIME.md`; `GAME/CORE/STORAGE.md` | SHIPPED RUNTIME CONSUMER | CORE cache versus lazy campaign working set; targeted hot-path retrieval | INSPECTED FOR WP-09 | compatible support, not context authority |
+| CURRENT/scene/location/index schemas and template index files | SHIPPED SCHEMA/TEMPLATE CONSUMER | compact routing/discovery support | INSPECTED FOR WP-09 | no closed-world/completeness inference |
+| `DEV/CATALOG/core-catalog.json`; focused runtime/latency/performance and MechanicalContext tests | DEV MACHINE/VERIFICATION CONSUMER | vocabulary and partial current regression coverage | INSPECTED FOR WP-09 | behavioral realization proof remains forward obligation |
+| `DEV/docs/superpowers/specs/2026-08-31-r2-7-WP-09-context-loading-resource-bounds-realization-canonical-spec.md` | WP-09 CANONICAL REALIZATION ALLOCATION | cache/routing/profile/allocation/fallback/verification boundaries | PUBLISHED — PENDING SENIOR AUDIT | no implementation, schema, catalog or physical topology change |
+
+```text
+WP-09 source discovery/evidence: COMPLETE
+WP-09 owner decision required: NONE
+WP-09 forward obligations: F01–F06 recorded in WP-09 canonical spec and mini-report
+WP-09 gate: MANDATORY SENIOR AUDIT
+```

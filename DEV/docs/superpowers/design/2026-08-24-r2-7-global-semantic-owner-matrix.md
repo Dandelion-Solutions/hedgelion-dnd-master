@@ -1,6 +1,6 @@
 # R2.7 — Global Semantic Owner Matrix
 
-Status: **IN PROGRESS — WP-02 EVIDENCE ARTIFACT**
+Status: **IN PROGRESS — GLOBAL EVIDENCE; WP-02 INITIALIZED, WP-09 SYNCHRONIZED**
 
 Date: 2026-08-24
 
@@ -91,11 +91,11 @@ Persistence/physical storage alone never promotes C/D into A.
 | Story layer projection progress | StoryLayerProjectionState for that layer | layer-local allocator high-water, typed source-domain coverage, required projection-local indexes/order metadata | campaign frontier, gameplay RRC, chronology, source truth | Step 5.10 |
 | Chronicler | no durable semantic owner; logical generative/editorial role | proposal/draft transformation only | final Story IDs, coverage, publication, canon | Step 5.10; R2.4 |
 | Continuity projection | Story or transient derived continuity under source contract | orientation/routing/prose continuity only | truth/currentness/knowledge/disclosure/exactness/mechanics | R2.1 |
-| Context request/need profile | registered consumer/task contract | requiredness, allowed channels, representation floors, finite bounds | campaign truth; LLM cannot enlarge eligibility | R2.3 |
-| RoleContextBundle | ephemeral Context Runtime projection | exact bounded role-local execution input for one purpose/basis | durable memory/current truth; omission != absence | R2.3 |
-| ContextTrace/dry-run trace | deterministic diagnostic evidence | assembly diagnostics/inclusion/currentness/eligibility reasons | prompt evidence by default; semantic authority | R2.3 |
-| Context indexes/caches | derived routing/query structures | bounded discovery/lookup acceleration | presence/absence/current state unless explicit exhaustive owner contract | R2.2/R2.3 |
-| HOT/SQLite owner-state working copy | same underlying semantic owner, physically hydrated/current local representation | current ESTABLISHED owner state may be newer than durable Git | SQLite format itself; cache/index/projection tables | R2.3 |
+| Context request/need profile | registered consumer/task contract | requiredness, allowed channels, representation floors, finite bounds | campaign truth; LLM cannot enlarge eligibility | R2.3; WP-09 realization canonical spec |
+| RoleContextBundle | ephemeral Context Runtime projection | exact bounded role-local execution input for one purpose/basis | durable memory/current truth; omission != absence | R2.3; WP-09 realization canonical spec |
+| ContextTrace/dry-run trace | deterministic diagnostic evidence | assembly diagnostics/inclusion/currentness/eligibility reasons | prompt evidence by default; semantic authority | R2.3; WP-09 realization canonical spec |
+| Context indexes/caches | derived routing/query structures | bounded discovery/lookup acceleration | presence/absence/current state unless explicit exhaustive owner contract | R2.2/R2.3; WP-09 realization canonical spec |
+| HOT/SQLite owner-state working copy | same underlying semantic owner, physically hydrated/current local representation | current ESTABLISHED owner state may be newer than durable Git | SQLite format itself; cache/index/projection tables | R2.3; WP-09 realization canonical spec |
 | TurnEnvelope | transient registered control state | legal phase/control binding for one assistant turn | world truth, cognition, Story coverage, disclosure, mechanics | R2.4 |
 | InterpreterResult / ActorProposal / PreparationDraft / StoryProjectionDraft / NarrationResult | phase-local typed proposal/result contract until accepted by native deterministic owner | bounded proposed/handoff semantics | canon/state merely by model generation | R2.4 + owning downstream contracts |
 | Narrator visible output commitment | deterministic NarrationResult validation + logical EMISSION_COMMIT | commitment of validated player-visible representation to supported host path | truth/mechanics; exact host read receipt | Step 5.12; R2.4/R2.6 |
