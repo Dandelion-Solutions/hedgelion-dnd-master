@@ -20,7 +20,7 @@ Execution protocol:
 | `DEV/DESIGN_PROCESS.md` | CANONICAL PROCESS | evidence completeness, decision rights, Source Manifest, deep-work gates | INSPECTED CURRENT | Agent owns evidence/completeness; human owns residual product/material trade-offs |
 | `DEV/ARCHITECTURE/DESIGN_PROCESS.md` | CANONICAL HDM PROCESS ADAPTER | HDM evidence roles, item-level accounting, sequencing gate | INSPECTED CURRENT | Whole-project audit must use owner sources, qualifiers and reverse consumers |
 | `DEV/PROJECT_MAP.md` | DERIVATIVE LOCATOR | dependency routing across GAME/DEV/runtime/test/release | INSPECTED CURRENT FOR ROUTING | Never substitutes for owners |
-| `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | SEQUENCING / STATUS AUTHORITY | R2.7 stage state and implementation gate | INSPECTED CURRENT | R2.7 is sole active whole-project final audit; implementation blocked |
+| `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | SEQUENCING / SCOPE AUTHORITY | intended R2.7 sequence, scope and dependencies | INSPECTED CURRENT | Global current status/gates belong only to `DEV/CURRENT_PROGRESS.md`; implementation remains blocked |
 | `DEV/docs/superpowers/specs/2026-08-24-r2-7-whole-project-final-audit-owner-clarification.md` | OWNER DECISION | whole-project scope and bidirectional proof | INSPECTED CURRENT | Outer scope is not Round-2-only |
 | `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md` | ACTIVE TASK BRIEF | 27 domains + exit criteria | INSPECTED CURRENT | Governing final-audit brief |
 | `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md` | RESEARCH / SCOPE INVENTORY | WP-01..WP-27 question inventory | INSPECTED FOR CURRENT DOMAIN + GLOBAL ROUTING | Minimum audit horizon |
