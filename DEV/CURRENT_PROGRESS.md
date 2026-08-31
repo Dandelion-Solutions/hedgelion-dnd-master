@@ -8,10 +8,10 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-07 / STEP-2 EVIDENCE EXTRACTION IN PROGRESS
+GLOBAL_STATE: R2.7 WP-07 / STEP-2 EVIDENCE EXTRACTION IN PROGRESS — SLICE 2 COMPLETE; SLICE 3 REQUIRED
 
 CURRENT_WORKSTREAM: R2.7 WP-07 — truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: Step 2, evidence slice 2 — classify schema/catalog/template conformance candidates
+CURRENT_SLICE: Step 2, evidence slice 3 — instruction/role-context and adversarial mappings
 
 LAST_CLOSED_UNIT: Current-Progress Authority Refactor / Senior closure
 NEXT_AUTHORIZED_UNIT: R2.7 WP-07 / Step 2 evidence extraction

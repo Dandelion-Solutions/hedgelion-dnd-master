@@ -50,7 +50,7 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-06
 CURRENT_DOMAIN: WP-07
 CURRENT_DOMAIN_TOPIC: Truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: Step 2, evidence slice 2 — classify schema/catalog/template conformance candidates
+CURRENT_SLICE: Step 2, evidence slice 3 — instruction/role-context and adversarial mappings
 NEXT_DOMAIN: WP-08
 OWNER_GATE: NONE; mandatory Senior review remains after completed Step 8
 FINAL_RECONCILIATION: NOT_STARTED
@@ -62,7 +62,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-07 STEP-2 EVIDENCE EXTRACTION IN PROGRESS
+R2_7_STATUS: WP-07 STEP-2 EVIDENCE EXTRACTION IN PROGRESS — SLICE 2 COMPLETE; SLICE 3 REQUIRED
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
@@ -85,7 +85,7 @@ project state, does not authorize WP-07, and does not alter WP-06 findings. Read
 | WP-04 | CLOSED |
 | WP-05 | CLOSED |
 | WP-06 | CLOSED / SENIOR REVIEW PASS |
-| WP-07 | STEP-2 EVIDENCE EXTRACTION IN PROGRESS — SLICE 2 NOT COMPLETE |
+| WP-07 | STEP-2 EVIDENCE EXTRACTION IN PROGRESS — SLICE 2 COMPLETE; SLICE 3 REQUIRED |
 | WP-08..WP-27 | NOT STARTED |
 
 
@@ -155,15 +155,17 @@ FINAL_WP06_HOSTED_VERIFICATION: Validate engine source #33238159180
 FINAL_WP06_HOSTED_VERIFICATION_RESULT: SUCCESS
 ```
 
-WP-07 Step-2 evidence extraction is in progress. Evidence slice 2 is not complete: determine whether further evidence slices are required and complete the remaining Step-2 evidence before advancing to synthesis or decision material.
+WP-07 Step-2 evidence extraction is in progress. Slice 2 classified F01-F05;
+Slice 3 is required for instruction/role-context and adversarial mappings before
+advancing to synthesis or decision material.
 
 ---
 
 ## Task-local handoff
 
-LAST_PUBLISHED_SHA: `9c4c139969f1f061b29466abcbbda53670fdda64`
-COMPLETED_SLICES: WP-06 closed / Senior review PASS; WP-07 Step-1 framing and critic complete; WP-07 Step-2 evidence slice 1 checkpointed
-CURRENT_VERIFICATION_STATE: current published WP-07 evidence checkpoint `9c4c139969f1f061b29466abcbbda53670fdda64`; Step-2 evidence slice 2 remains incomplete
-NEXT_EXACT_TASK_OR_SLICE: determine whether additional Step-2 evidence slices are required; complete the remaining Step-2 evidence and classify its open findings before synthesis or decision material
+LAST_PUBLISHED_SHA: `085327f5deac1f4763ac006e2ab5d8d11c8ccea2`
+COMPLETED_SLICES: WP-06 closed / Senior review PASS; WP-07 Step-1 framing and critic complete; WP-07 Step-2 evidence slices 1 and 2 checkpointed
+CURRENT_VERIFICATION_STATE: Slice 2 classified WP-07/F01..F05 from current canonical owners, catalog/schema/template/runtime consumers and existing tests/audit; `python -m unittest DEV.TESTS.test_r2_7_wp03_catalog_conformance DEV.TESTS.test_step4_story_retirement_contract DEV.TESTS.test_step_5_0_contamination` passed (21 tests); `python DEV/TOOLS/run_maintenance_audit.py` passed
+NEXT_EXACT_TASK_OR_SLICE: Step 2 evidence slice 3 — map shipped instruction-layer consumers and R2.3/R2.4 role gateways; complete adversarial mapping for duplicate authority, visibility, bounded retrieval and recovery/compaction; then determine whether Step 2 can close
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE

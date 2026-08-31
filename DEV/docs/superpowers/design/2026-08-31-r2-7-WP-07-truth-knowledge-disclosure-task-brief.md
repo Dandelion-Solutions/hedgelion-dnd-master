@@ -1,6 +1,6 @@
 # R2.7 WP-07 — Truth, Knowledge, Disclosure and Communication Evidence — Task Brief
 
-Status: **STEP-1 TASK BRIEF — WHOLE-PROJECT CRITIC PENDING**
+Status: **STEP-1 TASK BRIEF / WHOLE-PROJECT CRITIC COMPLETE — STEP-2 EVIDENCE EXTRACTION IN PROGRESS**
 
 ## 1. Mandate
 
