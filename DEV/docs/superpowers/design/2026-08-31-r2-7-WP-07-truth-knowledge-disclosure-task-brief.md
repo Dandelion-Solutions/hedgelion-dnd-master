@@ -55,6 +55,7 @@ whole-project critic are complete. Step 2 requires Senior GO.
 | `2026-08-21-step-5-10-story-projection-durability-canonical-spec.md` | Story authority, typed source coverage, availability and Transcript admission boundary |
 | `2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md` | `runtime.message`, exactness, retention and compaction |
 | `2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md` | emission/disclosure closure, recipient scope and delivery limitations |
+| `2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md` | message-envelope retirement, survivor obligations and safe compaction |
 | `2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md` | integrated currentness, disclosure merge and physical-feasibility constraints |
 | `2026-08-24-r2-1-continuity-history-canonical-spec.md` | continuity/history/Story non-authority and exact-evidence boundary |
 | `2026-08-24-r2-2-actor-continuity-canonical-spec.md` | Actor cognition boundary; Actor state must not duplicate `world.knowledge` |
@@ -70,9 +71,10 @@ whole-project critic are complete. Step 2 requires Senior GO.
 | `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `DEV/ARCHITECTURE/ENTITY_STRUCTURES.md` | accepted catalog and entity-shape route |
 | `DEV/CATALOG/core-catalog.json`, `entity-structures.json`, `identifier-policies.json`, `catalog-admission-ledger.json` | admitted owner kinds, fields, identifiers and realization claims |
 | `DEV/SCHEMAS/` relevant catalog and identifier schemas | machine validation for the catalog contracts |
-| `GAME/SCHEMA/README.md`, `lore.schema.yaml`, `pc.schema.yaml`, `live_scene.schema.yaml`, `event.schema.yaml`, manifest/index/storage schemas | installed campaign representation and declared semantic boundaries |
+| `GAME/SCHEMA/README.md`, `lore.schema.yaml`, `pc.schema.yaml`, `player.schema.yaml`, `session.schema.yaml`, `live_scene.schema.yaml`, `event.schema.yaml`, manifest/index/storage schemas | installed campaign representation, recipient binding and declared semantic boundaries |
 | `GAME/CAMPAIGN/` template roots and indexes | actual template topology / whether a claimed owner has a durable location |
-| `GAME/CORE/STORAGE.md`, `PERSISTENCE.md`, `RUNTIME.md`, `DIALOGUE.md`, `CHRONOLOGY.md`, `LIVE_SCENE.md`, `MULTIPLAYER.md` | runtime write, communication, live and recovery consumers |
+| `GAME/CORE/STORAGE.md`, `PERSISTENCE.md`, `RUNTIME.md`, `DIALOGUE.md`, `CHRONOLOGY.md`, `LIVE_SCENE.md`, `MULTIPLAYER.md`, `SAVE_CONTRACT.md`, `DURABILITY_GUARD.md` | runtime write, communication, live, recovery and retention consumers |
+| `DEV/SCHEMAS/runtime-interaction-state.schema.json` and related runtime interaction/continuation/trace schemas | accepted message identity, authenticated player binding and persistence handoffs |
 | `GAME/CORE/AI_REASONING.md`, `INFORMATION.md`, `LORE.md`, `NARRATIVE.md`, `NPC.md`, `PREP.md`, `GM_CRAFT.md` | shipped instruction-layer consumers and leak/authority boundaries |
 | `DEV/TESTS/test_step4_story_retirement_contract.py`, `REGRESSION_CASES.md`, relevant runtime/durability cases and maintenance audit | existing mechanical/regression evidence and missing-test discovery |
 
