@@ -1,6 +1,6 @@
 # R2.7 WP-08 — LLM Role, Context and Instruction Architecture — Task Brief
 
-Status: **STEP-1 TASK BRIEF / WHOLE-PROJECT CRITIC COMPLETE — PENDING SENIOR REVIEW**
+Status: **STEP-1 TASK BRIEF / WHOLE-PROJECT CRITIC REPAIRED AFTER SENIOR HOLD — PENDING SENIOR REVIEW**
 
 ## 1. Mandate
 
@@ -35,9 +35,9 @@ machine mapping is incomplete.
 
 - Global current work and gate: `DEV/CURRENT_PROGRESS.md`.
 - R2.7 scope and execution method:
-  `2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`,
-  `2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md` and
-  `2026-08-24-r2-7-audit-execution-protocol.md`.
+  `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`,
+  `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md` and
+  `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-execution-protocol.md`.
 - General and HDM architecture process: `DEV/DESIGN_PROCESS.md` and
   `DEV/ARCHITECTURE/DESIGN_PROCESS.md`.
 - `DEV/PROJECT_MAP.md` is the discovery route; it is not a semantic owner.
@@ -106,6 +106,12 @@ Step 2 must map and reverse-audit:
 - `RoleContextRequest`, registered `ContextNeedProfile`, bounded discovery,
   routing/currentness/eligibility checks, packet closure, representation floors,
   `RoleContextBundle`, `ContextTrace` and terminal assembly results;
+- R2.1 continuity/history use: eligibility-preserving Story/history orientation,
+  broad-to-episodic/current/exact source escalation, and exclusion of hidden reasoning,
+  prompts, abandoned generations and unaccepted candidates from continuity evidence;
+- R2.2 Actor continuity/cognition use: one explicit Actor assessment purpose and bounded
+  eligible evidence/current state per assessment; source-Actor-private continuity must
+  remain distinct from current proposition stance under `world.knowledge`;
 - purpose-, subject-, recipient- and generation-scoped typed handoffs, including
   boundaries where R2.5 collaboration, catch-up or Dramaturg planning enters a
   participant TurnEnvelope;
@@ -161,6 +167,12 @@ The critic and Step 2 must challenge at least these failures:
 - full CORE preload is misread as permission for every active role to use every
   physically present source;
 - a raw Dramaturg/Actor/private adjudication bundle reaches Narrator or player catch-up;
+- Story/history or current-chat visibility is treated as universal eligibility, avoids
+  proper-source escalation for a material claim, or admits hidden reasoning, prompts,
+  abandoned generations or unaccepted candidates as continuity evidence;
+- Actor cognition runs as an ambient role with no explicit purpose, uses unbounded
+  context, or duplicates/rewrites `world.knowledge` rather than bounded source-Actor
+  private continuity;
 - a role phase, prompt fragment, cache, trace, session field or schema becomes a second
   truth/knowledge/disclosure/Story/currentness authority;
 - model-facing text creates a new phase, need profile, eligibility rule or executable
@@ -182,39 +194,41 @@ authority.
 | `AGENTS.md`; `DEV/DESIGN_PROCESS.md`; `DEV/ARCHITECTURE/DESIGN_PROCESS.md`; `DEV/DEVELOPMENT_EXECUTION_PROCESS.md` | process / guardrail | framing, Step-1 critic, publication and later implementation boundary |
 | `DEV/CURRENT_PROGRESS.md` | canonical global current-progress authority | current stage, authorized unit and mandatory Senior gate |
 | `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | sequencing/scope | R2.7 position and accepted operating constraints |
-| `2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`; `...scope-discovery.md`; `...audit-execution-protocol.md` | active R2.7 scope/method | exact WP-08 questions, proof direction, artifact and disposition rules |
-| `DEV/PROJECT_MAP.md`; `2026-08-24-r2-7-global-semantic-owner-matrix.md` | derivative locator/evidence | dependency discovery and false-authority checks; owners above win |
-| `2026-08-24-r2-7-audit-status.md` | task-local historical cursor | recover pre-GO state only; do not override current progress |
-| WP-07 Step-8 canonicalization and its mini-report | closed upstream audit input | preserve F06 handoff and verify no material contradiction before relying on it |
+| `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`; `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`; `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-execution-protocol.md` | active R2.7 scope/method | exact WP-08 questions, proof direction, artifact and disposition rules |
+| `DEV/PROJECT_MAP.md`; `DEV/docs/superpowers/design/2026-08-24-r2-7-global-semantic-owner-matrix.md` | derivative locator/evidence | dependency discovery and false-authority checks; owners above win |
+| `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md` | task-local historical cursor | recover pre-GO state only; do not override current progress |
+| `DEV/docs/superpowers/design/2026-08-31-r2-7-WP-07-step-8-canonicalization.md`; `DEV/docs/superpowers/research/2026-08-24-r2-7-WP-07-truth-knowledge-disclosure-mini-report.md` | closed upstream audit input | preserve F06 handoff and verify no material contradiction before relying on it |
 
 ### 6.2 Canonical role, context and output owners
 
 | Source | Authority role | Step-2 inspection scope |
 |---|---|---|
-| `2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md` | canonical owner | six role contracts, Context Assembler request/bundle, typed handoffs, Narrator and Chronicler boundaries |
-| `2026-08-23-step-4-single-context-role-containment-canonical-amendment.md` | canonical amendment | superseding one-context logical eligibility and lawful handoff rule |
-| `2026-08-24-r2-3-context-runtime-canonical-spec.md` | canonical owner | request/profile, discovery, packet closure, eligibility, allocation, outcomes and trace |
-| `2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md` | canonical owner | TurnEnvelope, rebinding, typed gateways, role phase/order, output fencing and `UNSATISFIABLE` caller behavior |
-| `2026-08-24-r2-5-collaboration-multiplayer-canonical-spec.md` | canonical downstream constraint | participant envelopes, recipient/catch-up, planning containment and cross-chat non-merge |
-| `2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md` | canonical assurance/amendment | observable containment, lawful uptake, instruction realization and supported host/profile limits |
-| `2026-08-21-step-5-10-story-projection-durability-canonical-spec.md` | canonical neighbor | Chronicler non-authority, first-safe service inputs and Story publication boundary |
-| `2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md` | canonical neighbor | Narrator/`EMISSION_COMMIT`, recipient-scoped output and auxiliary-surface limits |
+| `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-history-canonical-spec.md` | direct canonical constraint | source escalation, role/subject/recipient eligibility, Story/history orientation, no hidden reasoning as durable continuity, and bounded current/exact evidence acquisition |
+| `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-canonical-spec.md` | direct canonical constraint | explicit Actor assessment purpose, source-Actor-private continuity, bounded eligible evidence, and separation from Step-4 `world.knowledge` epistemics |
+| `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md` | canonical owner | six role contracts, Context Assembler request/bundle, typed handoffs, Narrator and Chronicler boundaries |
+| `DEV/docs/superpowers/specs/2026-08-23-step-4-single-context-role-containment-canonical-amendment.md` | canonical amendment | superseding one-context logical eligibility and lawful handoff rule |
+| `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md` | canonical owner | request/profile, discovery, packet closure, eligibility, allocation, outcomes and trace |
+| `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md` | canonical owner | TurnEnvelope, rebinding, typed gateways, role phase/order, output fencing and `UNSATISFIABLE` caller behavior |
+| `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-canonical-spec.md` | canonical downstream constraint | participant envelopes, recipient/catch-up, planning containment and cross-chat non-merge |
+| `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md` | canonical assurance/amendment | observable containment, lawful uptake, instruction realization and supported host/profile limits |
+| `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md` | canonical neighbor | Chronicler non-authority, first-safe service inputs and Story publication boundary |
+| `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md` | canonical neighbor | Narrator/`EMISSION_COMMIT`, recipient-scoped output and auxiliary-surface limits |
 
 ### 6.3 Current shipped instruction and runtime consumers
 
 | Surface | Why it is in scope |
 |---|---|
 | `GAME/INSTALL/PROJECT_INSTRUCTIONS.txt`, `GAME/INSTALL/00_DND_BOOTSTRAP.md` | package/bootstrap instruction boundary versus ordinary role instruction |
-| `GAME/CORE/PLAY_POLICY.md`, `CORE_INDEX.md` | full-CORE cache, header-driven activation and source-routing boundary |
-| `GAME/CORE/RUNTIME.md`, `AI_REASONING.md`, `MECHANICS_INTEGRITY.md` | current turn order, authority and context/eligibility guards |
-| `GAME/CORE/INFORMATION.md`, `NPC.md`, `NARRATIVE.md`, `PREP.md`, `GM_CRAFT.md`, plus implicated `LORE.md` and `SOURCES.md` | current role-facing information, cognition, preparation, narration and source consumers |
-| `GAME/CORE/MULTIPLAYER.md`, `LIVE_SCENE.md`, `SESSION.md`, `STORAGE.md`, `PERSISTENCE.md` when reached through a concrete role/context edge | recipient/currentness/recovery consumers; do not preload as independent WP-08 owners |
+| `GAME/CORE/PLAY_POLICY.md`, `GAME/CORE/CORE_INDEX.md` | full-CORE cache, header-driven activation and source-routing boundary |
+| `GAME/CORE/RUNTIME.md`, `GAME/CORE/AI_REASONING.md`, `GAME/CORE/MECHANICS_INTEGRITY.md` | current turn order, authority and context/eligibility guards |
+| `GAME/CORE/INFORMATION.md`, `GAME/CORE/NPC.md`, `GAME/CORE/NARRATIVE.md`, `GAME/CORE/PREP.md`, `GAME/CORE/GM_CRAFT.md`, plus implicated `GAME/CORE/LORE.md` and `GAME/CORE/SOURCES.md` | current role-facing information, cognition, preparation, narration and source consumers |
+| `GAME/CORE/MULTIPLAYER.md`, `GAME/CORE/LIVE_SCENE.md`, `GAME/CORE/SESSION.md`, `GAME/CORE/STORAGE.md`, `GAME/CORE/PERSISTENCE.md` when reached through a concrete role/context edge | recipient/currentness/recovery consumers; do not preload as independent WP-08 owners |
 
 ### 6.4 Current machine/test surfaces
 
 | Surface | Why it is in scope |
 |---|---|
-| `GAME/SCHEMA/current_state.schema.yaml`, `session.schema.yaml`, `player.schema.yaml`, `event.schema.yaml`, `checkpoint.schema.yaml`, `live_scene.schema.yaml` and matching campaign templates | prove whether they are native owners, coordination-only data, or unrelated to transient role control |
+| `GAME/SCHEMA/current_state.schema.yaml`, `GAME/SCHEMA/session.schema.yaml`, `GAME/SCHEMA/player.schema.yaml`, `GAME/SCHEMA/event.schema.yaml`, `GAME/SCHEMA/checkpoint.schema.yaml`, `GAME/SCHEMA/live_scene.schema.yaml`; `GAME/CAMPAIGN/CHECKPOINTS/_TEMPLATE.yaml`, `GAME/CAMPAIGN/LOG/_TEMPLATE.yaml`, `GAME/CAMPAIGN/SESSIONS/_TEMPLATE.yaml` | prove whether they are native owners, coordination-only data, or unrelated to transient role control |
 | `DEV/SCHEMAS/runtime-*.schema.json` and relevant catalog/entity/identifier contracts | inspect only admitted runtime/result representation and detect false authority or missing contract mapping |
 | `DEV/TESTS/RUNTIME_CONTEXT_RESEARCH_CASES.md`, `test_step_5_0_contamination.py`, relevant Step-4/5, R2.3/R2.4/R2.6 and R2.7 tests | current regression evidence, missing negative/positive containment coverage and no-stale-test check |
 | `DEV/TOOLS/run_maintenance_audit.py`, `DEV/TESTS/`, `.github/workflows/validate.yml` | validation/CI ownership; no implementation is authorized in this domain |
@@ -232,6 +246,8 @@ For every material role/context/instruction surface, record:
 source/item
 actual claim and authority class
 eligibility / authority / currentness qualifiers
+continuity source class and required broad/episodic/current/exact escalation; explicit exclusion of hidden reasoning and other unaccepted material
+Actor phase purpose, source-Actor-private continuity boundary and `world.knowledge` non-duplication disposition
 ephemeral, operational, durable, derived or explicit NO-DURABLE-RECORD disposition
 architecture -> machine mapping
 machine -> architecture mapping
@@ -244,6 +260,12 @@ Step 2 must establish whether the current repository has:
 - one coherent instruction/activation/rebinding route rather than a competing prompt
   architecture;
 - explicit lawful typed-handoff boundaries for all material role transitions;
+- continuity/history inputs that preserve role/subject/recipient eligibility, escalate to
+  proper current or exact evidence when material, and never make hidden reasoning or
+  unaccepted generation material durable continuity evidence;
+- Actor assessments whose purpose and bounded eligible evidence are explicit, whose
+  Actor-private continuity stays source-owned, and whose epistemic propositions remain
+  on the `world.knowledge` path;
 - a deterministic realization path for context request/profile/bundle/trace/outcome
   responsibilities, including intentional non-persistence;
 - a correct explicit instruction realization of the R2.6 containment/later-uptake law;
