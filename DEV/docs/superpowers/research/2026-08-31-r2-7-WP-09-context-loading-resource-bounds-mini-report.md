@@ -2,7 +2,7 @@
 
 ## Статус
 
-**STEP 4 COMPLETE — CANDIDATE ARCHITECTURE MAPPING NEXT**
+**STEP 5 COMPLETE — CANDIDATE UNDER ADVERSARIAL REVIEW**
 
 Глобальная авторизация и gate принадлежат `DEV/CURRENT_PROGRESS.md`. Этот
 mini-report — task-local evidence/cursor WP-09, а не global current-progress
@@ -10,22 +10,14 @@ authority.
 
 ## Краткий вывод
 
-Collaborative review прошёл без unresolved BLOCKING/SIGNIFICANT defect. Два
-значимых wording defect автоматически исправлены: MechanicalContext не получил
-неподтверждённый Actor-private owner claim, а F03 явно остался allocation of
-future behavioral evidence rather than implementation design.
+Candidate не меняет accepted architecture. Он делает enforceable allocation:
+CORE cache ≠ role context; routing hints ≠ authority; profile-owned packet
+control/central estimator/outcome handling остаются runtime-local; history и
+cross-role boundaries остаются finite/typed; conformance доказывается поведением,
+не catalog vocabulary.
 
-## Findings / dispositions
-
-- R01 SIGNIFICANT — AUTO_RESOLVED: corrected indirect role-private continuity
-  wording to the closed WP-08 constraint.
-- R02 SIGNIFICANT — AUTO_RESOLVED: no runtime module/schema/catalog/storage or
-  implementation plan is selected by F03.
-- R03–R07 — SATISFIED: currentness, estimator, cache, downstream and test
-  probes pass under existing owners.
-
-Review record:
-`2026-08-31-r2-7-WP-09-step-4-collaborative-review.md`.
+Candidate:
+`2026-08-31-r2-7-WP-09-step-5-candidate-context-runtime-realization-mapping.md`.
 
 ## Human decision
 
@@ -33,5 +25,5 @@ Review record:
 
 ## Точка продолжения
 
-Step 5: formulate the narrow candidate realization mapping, then adversarially
-challenge it; no implementation plan or runtime change.
+Step 6: adversarial review of cache/index/source/telemetry/failure-loop and
+cross-domain boundary probes.
