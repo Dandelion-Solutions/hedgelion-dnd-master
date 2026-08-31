@@ -2,7 +2,7 @@
 
 ## Статус
 
-**IN_PROGRESS — STEP 2 EVIDENCE EXTRACTION**
+**STEP 2 COMPLETE — READY FOR STEP 3 DECISION BRIEF**
 
 Глобальная авторизация и точный gate: `DEV/CURRENT_PROGRESS.md`.
 Этот mini-report является task-local evidence/cursor artifact WP-08 и не заменяет
@@ -121,14 +121,25 @@ machine consumers are reconciled.
 **NONE.** No product semantics, authority change, compatibility policy, risk
 acceptance or scope choice is currently exposed.
 
+## Step-2 closure evidence
+
+The completed evidence set is:
+
+- `2026-08-31-r2-7-WP-08-step-2-canonical-owner-evidence.md`;
+- `2026-08-31-r2-7-WP-08-step-2-current-surfaces-evidence.md`;
+- `2026-08-31-r2-7-WP-08-step-2-runtime-catalog-test-evidence.md`.
+
+All material sources reached by the repaired Source Manifest have an
+owner/disposition route. The evidence does not expose a product, authority,
+compatibility, risk or scope decision. Existing R2.2 data alignment is retained;
+R2.3/R2.4/R2.6 realization remains a bounded obligation under current owners.
+
 ## Closure verdict
 
-**NOT READY FOR STEP 3.** Step 2 is incomplete.
+**STEP 2 COMPLETE.** Proceed to Step 3 Decision Brief.
 
 ## Точка продолжения
 
-Read the actual runtime/catalog/test consumer graph at the current published ref.
-Classify every material surface against `WP-08/F01`–`F04` as satisfied,
-implementation obligation, verification obligation, stale debt, no-delta or
-contradiction. Then publish the completed Step-2 reconciliation and proceed to
-Step 3 without reopening WP-07.
+Prepare the Step-3 Decision Brief from the completed evidence set. State whether
+human decision is required; preserve the closed WP-07/F06 carry-in and do not
+start implementation planning.
