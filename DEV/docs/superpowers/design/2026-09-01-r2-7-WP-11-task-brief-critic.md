@@ -23,6 +23,7 @@ It treated the proposed brief as a framing artifact, not as authority.
 | C07 | index API/directory constraints → monolithic indexes → potential large families | The first draft named indexing but did not demand a bounded composition path for every lookup. | SIGNIFICANT | AUTO_RESOLVED: made bounded lookup, deterministic routing and no-directory-enumeration explicit Step-2 proof and exit criteria. |
 | C08 | WP-10 Alternative-A vocabulary → current campaign families and DEV machine contracts | The initial whole-project Source Manifest claim lacked direct current routes for Faction, Item, Location, Lore, Player and Thread, lacked direct Campaign Card/CONFIG/CHECKPOINT/SESSION/LOG campaign routes, and did not cross-check all material WP-10 members against their current machine consumers. | BLOCKING | SENIOR-HOLD REPAIR: added exact six-family index/schema/root routes, direct card/config/checkpoint/session/log schema and template routes, the missing runtime/evidence machine schemas and a complete item-level WP-10 vocabulary cross-check. |
 | C09 | Repaired current-family routes → Step-2 accounting | Merely adding paths could still leave the new families outside the future evidence disposition. | SIGNIFICANT | AUTO_RESOLVED: Task Brief now requires an item-level topology/index disposition for every WP-10 logical member and each added Faction/Item/Location/Lore/Player/Thread plus Campaign Card/CONFIG/CHECKPOINT/SESSION/LOG route, including explicit no-native-family or machine-consumer qualification. |
+| C10 | `STATE/SCENES/.gitkeep` + `SCENE_INDEX.yaml` → canonical Scene schema → live-scene contract | The initial Source Manifest exposed a Scene root and index but omitted `GAME/SCHEMA/scene.schema.yaml`, leaving canonical Scene identity, chronology frontier and live-epoch linkage without a direct schema route and allowing `live_scene.schema.yaml` to be mistaken for the Scene family. | BLOCKING | SENIOR-HOLD REPAIR: added the exact `GAME/SCHEMA/scene.schema.yaml` route and an explicit Step-2 requirement for a separate Scene record-family topology/index disposition. The critic records that Scene is durable campaign state with `scene_id`, chronology frontier, live-epoch pointer and absorption state, while live-scene is the epoch-scoped operational overlay with its own branch/revision/overlay lifecycle. |
 
 ## Actual-owner and consumer check
 
@@ -36,8 +37,13 @@ routes for `FACTION_INDEX`, `ITEM_INDEX`, `LOCATION_INDEX`, `LORE_INDEX`,
 contracts; the six `GAME/CAMPAIGN/WORLD/*/.gitkeep` roots; direct
 `CAMPAIGN_CARD.yaml`, `CONFIG.yaml`, `CHECKPOINTS/_TEMPLATE.yaml`,
 `SESSIONS/_TEMPLATE.yaml` and `LOG/_TEMPLATE.yaml`; their current schemas; and
-the missing DEV runtime/evidence schemas and machine catalogs. No repaired
-Source Manifest path was unreadable.
+the missing DEV runtime/evidence schemas and machine catalogs. The additional
+Scene-route repair opened `GAME/SCHEMA/scene.schema.yaml` beside
+`GAME/SCHEMA/live_scene.schema.yaml`: Scene is the durable canonical campaign
+record with its own identity, chronology frontier, live-epoch pointer and
+absorption state; live-scene is the temporary epoch-scoped operational overlay
+with separate branch/revision/overlay state that is compacted back into Scene.
+No repaired Source Manifest path was unreadable.
 
 ## Conclusion
 

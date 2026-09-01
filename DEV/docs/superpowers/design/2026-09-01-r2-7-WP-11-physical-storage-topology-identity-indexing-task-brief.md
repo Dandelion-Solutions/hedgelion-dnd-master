@@ -109,6 +109,12 @@ six named world/player families and the Campaign Card, CONFIG, CHECKPOINT,
 SESSION and LOG surfaces, including an explicit no-native-family or
 machine-consumer qualification where the current tree has no shipped family.
 
+Canonical Scene state is a separate record-family item for Step 2. Its own
+`scene_id` identity, chronology frontier, live-epoch linkage and topology/index
+disposition must be recorded independently. `GAME/SCHEMA/live_scene.schema.yaml`
+describes the temporary live-epoch operational overlay and does not replace
+`GAME/SCHEMA/scene.schema.yaml` as the canonical Scene contract.
+
 Step 2 is complete only when all potentially high-cardinality families and
 lookup routes have an item-level topology/index disposition; all index contents
 have authority/eligibility/rebuild qualifications; and no route relies on
@@ -188,6 +194,7 @@ sources before claiming coverage.
 - `GAME/SCHEMA/event.schema.yaml`
 - `GAME/SCHEMA/item.schema.yaml`
 - `GAME/SCHEMA/live_scene.schema.yaml`
+- `GAME/SCHEMA/scene.schema.yaml`
 - `GAME/SCHEMA/location.schema.yaml`
 - `GAME/SCHEMA/lore.schema.yaml`
 - `GAME/SCHEMA/pc.schema.yaml`
