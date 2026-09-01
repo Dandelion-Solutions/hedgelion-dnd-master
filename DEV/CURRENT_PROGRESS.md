@@ -8,13 +8,13 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-11 / STEP 3 DECISION BRIEF COMPLETE — STEP 4 REVIEW NEXT
+GLOBAL_STATE: R2.7 WP-11 / STEP 4 REVIEW COMPLETE — STEP 5 CANDIDATE NEXT
 
 CURRENT_WORKSTREAM: R2.7 WP-11 — Storage topology, identity and indexing
-CURRENT_SLICE: Step-3 topology decision brief complete with no human decision required; Step-4 collaborative review next
+CURRENT_SLICE: Step-4 review retained the topology recommendation; Step-5 candidate specification next
 
-LAST_CLOSED_UNIT: R2.7 WP-11 Step 3 / topology decision brief complete
-NEXT_AUTHORIZED_UNIT: R2.7 WP-11 Step 4 / collaborative architecture review
+LAST_CLOSED_UNIT: R2.7 WP-11 Step 4 / topology review complete with no additional owner decision
+NEXT_AUTHORIZED_UNIT: R2.7 WP-11 Step 5 / candidate specification
 REQUIRED_GATE: Step-1 Senior GO received. Do not begin WP-12 or implementation planning; stop immediately for a genuine WP-11 human decision under the design process.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
