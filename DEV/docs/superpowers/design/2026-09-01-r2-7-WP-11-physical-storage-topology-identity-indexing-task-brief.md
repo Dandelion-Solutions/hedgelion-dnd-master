@@ -1,6 +1,6 @@
 # R2.7 WP-11 — Physical Storage Topology, Identity and Indexing — Architecture Task Brief
 
-Status: **STEP-1 TASK BRIEF / WHOLE-PROJECT CRITIC REPAIRED — READY FOR MANDATORY SENIOR REVIEW**
+Status: **STEP-1 TASK BRIEF / WHOLE-PROJECT CRITIC REPAIRED — CURRENT CAMPAIGN ROUTES ADDED — READY FOR MANDATORY SENIOR REVIEW**
 
 ## 1. Mandate
 
@@ -80,8 +80,11 @@ be rewritten to mirror global state.
 
 ## 4. Step-2 evidence plan and exit criteria
 
-Step 2 will account for every WP-10 logical family and all current campaign
-families that can be large or participate in lookup/routing. For each, record:
+Step 2 will account, item by item, for every WP-10 logical family and all current
+campaign families that can be large or participate in lookup/routing. The
+repaired Step-1 manifest explicitly anchors Faction, Item, Location, Lore,
+Player and Thread routes, plus the direct Campaign Card, CONFIG, CHECKPOINT,
+SESSION and LOG routes. For each material member/family, record:
 
 ```text
 semantic owner and primary source
@@ -99,6 +102,12 @@ cross-domain forward obligation without implementation leakage
 The evidence must distinguish native record route from derived index, cache,
 card, Story, event/log, checkpoint and local working set. It must also account
 for template/generator shape separately from authoritative topology law.
+
+The Step-2 matrix must give an item-level topology/index disposition to every
+WP-10 logical member and to each added current family route. This includes the
+six named world/player families and the Campaign Card, CONFIG, CHECKPOINT,
+SESSION and LOG surfaces, including an explicit no-native-family or
+machine-consumer qualification where the current tree has no shipped family.
 
 Step 2 is complete only when all potentially high-cardinality families and
 lookup routes have an item-level topology/index disposition; all index contents
@@ -156,38 +165,93 @@ sources before claiming coverage.
 - `GAME/CORE/PERSISTENCE.md`
 - `GAME/CORE/CAMPAIGN_IDENTITY.md`
 - `GAME/CORE/INTEGRITY.md`
+- `GAME/CORE/SESSION.md`
+- `GAME/CORE/MULTIPLAYER.md`
 - `GAME/CORE/LIVE_SCENE.md`
 - `GAME/CORE/CHRONOLOGY.md`
 - `GAME/CORE/BOOTSTRAP_RUNTIME.md`
 - `GAME/CORE/NEW_CAMPAIGN_FAST_PATH.md`
+- `GAME/CORE/CAMPAIGN_CARD.md`
+- `GAME/CORE/CAMPAIGN_SETUP.md`
+- `GAME/CORE/CAMPAIGN_OPERATIONS.md`
+- `GAME/CORE/INFORMATION.md`
+- `GAME/CORE/NARRATIVE.md`
 - `GAME/TOOLS/init_campaign.py`
+- `GAME/SCHEMA/campaign_card.schema.yaml`
+- `GAME/SCHEMA/campaign_config.schema.yaml`
 - `GAME/SCHEMA/campaign_manifest.schema.yaml`
+- `GAME/SCHEMA/checkpoint.schema.yaml`
 - `GAME/SCHEMA/dnd_storage.schema.yaml`
+- `GAME/SCHEMA/faction.schema.yaml`
 - `GAME/SCHEMA/index.schema.yaml`
 - `GAME/SCHEMA/current_state.schema.yaml`
 - `GAME/SCHEMA/event.schema.yaml`
+- `GAME/SCHEMA/item.schema.yaml`
 - `GAME/SCHEMA/live_scene.schema.yaml`
+- `GAME/SCHEMA/location.schema.yaml`
+- `GAME/SCHEMA/lore.schema.yaml`
 - `GAME/SCHEMA/pc.schema.yaml`
 - `GAME/SCHEMA/npc.schema.yaml`
+- `GAME/SCHEMA/player.schema.yaml`
 - `GAME/SCHEMA/session.schema.yaml`
+- `GAME/SCHEMA/thread.schema.yaml`
 - `GAME/CAMPAIGN/MANIFEST.yaml`
+- `GAME/CAMPAIGN/CAMPAIGN_CARD.yaml`
+- `GAME/CAMPAIGN/CONFIG.yaml`
 - `GAME/CAMPAIGN/STATE/CURRENT.yaml`
+- `GAME/CAMPAIGN/STATE/SCENES/.gitkeep`
+- `GAME/CAMPAIGN/CHECKPOINTS/_TEMPLATE.yaml`
+- `GAME/CAMPAIGN/LOG/_TEMPLATE.yaml`
+- `GAME/CAMPAIGN/SESSIONS/_TEMPLATE.yaml`
+- `GAME/CAMPAIGN/WORLD/NPC/.gitkeep`
+- `GAME/CAMPAIGN/WORLD/PCS/.gitkeep`
+- `GAME/CAMPAIGN/WORLD/FACTIONS/.gitkeep`
+- `GAME/CAMPAIGN/WORLD/ITEMS/.gitkeep`
+- `GAME/CAMPAIGN/WORLD/LOCATIONS/.gitkeep`
+- `GAME/CAMPAIGN/WORLD/LORE/.gitkeep`
+- `GAME/CAMPAIGN/WORLD/PLAYERS/.gitkeep`
+- `GAME/CAMPAIGN/WORLD/THREADS/.gitkeep`
 - `GAME/CAMPAIGN/INDEX/EVENT_INDEX.yaml`
+- `GAME/CAMPAIGN/INDEX/FACTION_INDEX.yaml`
+- `GAME/CAMPAIGN/INDEX/ITEM_INDEX.yaml`
+- `GAME/CAMPAIGN/INDEX/LOCATION_INDEX.yaml`
+- `GAME/CAMPAIGN/INDEX/LORE_INDEX.yaml`
 - `GAME/CAMPAIGN/INDEX/NPC_INDEX.yaml`
 - `GAME/CAMPAIGN/INDEX/PC_INDEX.yaml`
+- `GAME/CAMPAIGN/INDEX/PLAYER_INDEX.yaml`
 - `GAME/CAMPAIGN/INDEX/SCENE_INDEX.yaml`
+- `GAME/CAMPAIGN/INDEX/THREAD_INDEX.yaml`
 
 ### 5.4 Development contracts and verification consumers
 
 - `DEV/CATALOG/core-catalog.json`
 - `DEV/CATALOG/entity-structures.json`
 - `DEV/CATALOG/identifier-policies.json`
+- `DEV/CATALOG/mechanical-surfaces.json`
 - `DEV/SCHEMAS/world-record.schema.json`
 - `DEV/SCHEMAS/world-actor-state.schema.json`
 - `DEV/SCHEMAS/world-asset-state.schema.json`
 - `DEV/SCHEMAS/world-effect-state.schema.json`
+- `DEV/SCHEMAS/world-location-state.schema.json`
+- `DEV/SCHEMAS/runtime-interaction-state.schema.json`
+- `DEV/SCHEMAS/runtime-intent-plan-state.schema.json`
+- `DEV/SCHEMAS/intent-clause.schema.json`
 - `DEV/SCHEMAS/runtime-command-state.schema.json`
+- `DEV/SCHEMAS/action-request.schema.json`
+- `DEV/SCHEMAS/transition-request.schema.json`
+- `DEV/SCHEMAS/runtime-procedure-state.schema.json`
+- `DEV/SCHEMAS/runtime-resolution-state.schema.json`
+- `DEV/SCHEMAS/activity-parameter-binding.schema.json`
+- `DEV/SCHEMAS/execution-segment.schema.json`
+- `DEV/SCHEMAS/invocation-fact.schema.json`
+- `DEV/SCHEMAS/pending-child-invocation.schema.json`
+- `DEV/SCHEMAS/roll-result.schema.json`
+- `DEV/SCHEMAS/runtime-resolution-trace-state.schema.json`
 - `DEV/SCHEMAS/runtime-continuation-state.schema.json`
+- `DEV/SCHEMAS/choice-request.schema.json`
+- `DEV/SCHEMAS/reaction-offer.schema.json`
+- `DEV/SCHEMAS/runtime-mechanical-event-state.schema.json`
+- `DEV/SCHEMAS/resolution-receipt.schema.json`
 - `DEV/SCHEMAS/temporal-binding.schema.json`
 - `DEV/TESTS/BOOTSTRAP_STORAGE_REGRESSION_CASES.md`
 - `DEV/TESTS/PERSISTENCE_TRANSACTION_CASES.md`
@@ -195,6 +259,40 @@ sources before claiming coverage.
 - `DEV/TESTS/test_destination_template_boundary.py`
 - `DEV/TOOLS/run_maintenance_audit.py`
 - `.github/workflows/validate.yml`
+
+### 5.5 WP-10 vocabulary to current machine-consumer cross-check
+
+The following cross-check prevents the whole-project claim from relying on
+logical-family names alone. Every row is an item-level Step-2 disposition
+input; the listed paths are current machine/consumer evidence, not a selection
+of physical topology or semantic ownership.
+
+| WP-10 logical member | Current machine/consumer evidence | Step-2 qualification required |
+|---|---|---|
+| Actor-local continuity | `DEV/SCHEMAS/world-actor-state.schema.json`; `GAME/SCHEMA/pc.schema.yaml`; `GAME/SCHEMA/npc.schema.yaml`; `GAME/CAMPAIGN/WORLD/PCS/.gitkeep`; `GAME/CAMPAIGN/WORLD/NPC/.gitkeep` | Source-Actor owner; distinguish retained continuity from legacy/projection fields and route shape. |
+| Knowledge relation | `DEV/CATALOG/core-catalog.json`; `DEV/CATALOG/entity-structures.json`; `GAME/SCHEMA/faction.schema.yaml`; `GAME/SCHEMA/lore.schema.yaml`; `GAME/SCHEMA/pc.schema.yaml`; `GAME/SCHEMA/npc.schema.yaml` | One subject/fact owner; qualify legacy knowledge fields and disclosure/eligibility. |
+| Effect/application | `DEV/CATALOG/entity-structures.json`; `DEV/CATALOG/mechanical-surfaces.json`; `DEV/SCHEMAS/world-effect-state.schema.json` | Natural-owner lifecycle; derived condition aggregation is not an application owner. |
+| Interaction | `DEV/SCHEMAS/runtime-interaction-state.schema.json` | Separate runtime lifecycle member; no Session/LOG surrogate. |
+| IntentPlan | `DEV/SCHEMAS/runtime-intent-plan-state.schema.json`; `DEV/SCHEMAS/intent-clause.schema.json` | Separate proposal lifecycle; embedded clauses do not create a physical topology decision. |
+| Command | `DEV/SCHEMAS/runtime-command-state.schema.json`; `DEV/SCHEMAS/action-request.schema.json`; `DEV/SCHEMAS/transition-request.schema.json` | Accepted command/idempotency boundary; not narration or semantic history. |
+| Procedure | `DEV/SCHEMAS/runtime-procedure-state.schema.json` | Procedure-local operational state; not generic Session state. |
+| Resolution | `DEV/SCHEMAS/runtime-resolution-state.schema.json`; `DEV/SCHEMAS/activity-parameter-binding.schema.json`; `DEV/SCHEMAS/execution-segment.schema.json`; `DEV/SCHEMAS/invocation-fact.schema.json`; `DEV/SCHEMAS/pending-child-invocation.schema.json`; `DEV/SCHEMAS/roll-result.schema.json` | Accepted invocation lifecycle; not current world state or hidden reasoning. |
+| Continuation | `DEV/SCHEMAS/runtime-continuation-state.schema.json`; `DEV/SCHEMAS/choice-request.schema.json`; `DEV/SCHEMAS/reaction-offer.schema.json`; `GAME/CORE/SESSION.md` | Suspended generation remains distinct from maintenance continuation. |
+| MechanicalEvent | `DEV/SCHEMAS/runtime-mechanical-event-state.schema.json`; `DEV/SCHEMAS/execution-segment.schema.json`; `GAME/SCHEMA/event.schema.yaml` | Immutable mechanical evidence; do not merge with semantic event history. |
+| Receipt | `DEV/SCHEMAS/resolution-receipt.schema.json` | Immutable protocol evidence; not mutable state. |
+| ResolutionTrace | `DEV/SCHEMAS/runtime-resolution-trace-state.schema.json` | Bounded diagnostic evidence; hidden reasoning is excluded. |
+| SemanticEvent/relation | `DEV/CATALOG/core-catalog.json`; `GAME/SCHEMA/event.schema.yaml`; `GAME/CAMPAIGN/LOG/_TEMPLATE.yaml` | Semantic history is not a total clock or current-state surrogate. |
+| Disclosure | `DEV/CATALOG/core-catalog.json`; `GAME/CORE/INFORMATION.md` | Recipient-scoped exposure remains distinct from truth, knowledge and message. |
+| Retained Message | `DEV/CATALOG/core-catalog.json`; `GAME/CAMPAIGN/LOG/_TEMPLATE.yaml`; `GAME/CORE/SESSION.md` | Retention/evidence semantics require an explicit current-family or no-native-family disposition. |
+| Story projection | `DEV/CATALOG/core-catalog.json`; `GAME/CORE/NARRATIVE.md` | Noncanonical, source-bound projection; no runtime-local WP-09 source basis. |
+| Native temporal component | `DEV/SCHEMAS/temporal-binding.schema.json`; `DEV/SCHEMAS/world-actor-state.schema.json`; `DEV/SCHEMAS/world-asset-state.schema.json` | Binding remains with its natural owner; Agenda is derived. |
+| Campaign ID allocator | `DEV/CATALOG/core-catalog.json`; `GAME/CORE/CAMPAIGN_IDENTITY.md`; `GAME/CAMPAIGN/MANIFEST.yaml` | Operational identity allocation; no chronology/index authority or physical location selection. |
+| Optional collaboration | `DEV/CATALOG/core-catalog.json`; `GAME/CORE/MULTIPLAYER.md`; `GAME/SCHEMA/player.schema.yaml`; `GAME/CAMPAIGN/INDEX/PLAYER_INDEX.yaml` | Trigger-conditional; no unconditional collaboration root. |
+| Multiplayer planning projection | `DEV/CATALOG/core-catalog.json`; `GAME/CORE/MULTIPLAYER.md` | Dormant single-player / conditional multiplayer projection; no canon or chronology authority. |
+| WP-09 context controls | `DEV/CATALOG/core-catalog.json`; `DEV/docs/superpowers/specs/2026-08-31-r2-7-WP-09-context-loading-resource-bounds-realization-canonical-spec.md` | Explicit no campaign record unless a later concrete owner-conforming requirement appears. |
+
+The cross-check is evidence for future item-level topology analysis. It does not
+turn a catalog entry, current consumer, template root or index into a new owner.
 
 ## 6. Mandatory failure probes
 
