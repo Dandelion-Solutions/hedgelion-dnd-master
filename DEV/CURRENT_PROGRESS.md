@@ -8,14 +8,14 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-10 / STEP 1 TASK-BRIEF PACKAGE AUTHORIZED
+GLOBAL_STATE: R2.7 WP-10 / STEP 1 TASK-BRIEF PACKAGE COMPLETE — MANDATORY SENIOR AUDIT
 
 CURRENT_WORKSTREAM: R2.7 WP-10 — Durable campaign record-family completeness
-CURRENT_SLICE: Step 1 Task Brief, Source Manifest, whole-project critic and mechanically resolvable repairs
+CURRENT_SLICE: WP-10 Step 1 Task Brief, Source Manifest and whole-project critic complete; mandatory Senior audit before Step 2
 
-LAST_CLOSED_UNIT: R2.7 WP-09 Steps 2–8 / Senior GO / context-resource realization allocation closed
-NEXT_AUTHORIZED_UNIT: R2.7 WP-10 Step 1 complete review-ready package
-REQUIRED_GATE: Publish a coherent verified WP-10 Step-1 Task Brief package only after its Source Manifest, mandatory whole-project critic and mechanically resolvable repairs are complete. Then stop for mandatory Senior review; do not begin Step 2, WP-11 or implementation planning without explicit Senior GO
+LAST_CLOSED_UNIT: R2.7 WP-10 Step 1 / Task Brief, Source Manifest and whole-project critic package complete
+NEXT_AUTHORIZED_UNIT: Mandatory Senior audit of the completed R2.7 WP-10 Step-1 package
+REQUIRED_GATE: Mandatory Senior audit of the completed WP-10 Step-1 package. Do not begin Step 2, WP-11 or implementation planning without explicit Senior GO.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
