@@ -8,14 +8,14 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-10 / STEP 3 DECISION SYNTHESIS IN PROGRESS
+GLOBAL_STATE: R2.7 WP-10 / STEPS 2–8 COMPLETE — MANDATORY SENIOR AUDIT
 
 CURRENT_WORKSTREAM: R2.7 WP-10 — Durable campaign record-family completeness
-CURRENT_SLICE: Alternative A accepted — Step 3 decision synthesis and canonical candidate preparation
+CURRENT_SLICE: WP-10 canonical record-family allocation complete; mandatory Senior audit
 
 LAST_CLOSED_UNIT: R2.7 WP-10 Step 1 / Task Brief, Source Manifest and whole-project critic package complete / Senior GO received
-NEXT_AUTHORIZED_UNIT: R2.7 WP-10 Step 3 decision synthesis
-REQUIRED_GATE: Complete Steps 3–8 against accepted Alternative A. Stop only for a genuine new human-owned decision or after Step 8 for mandatory Senior audit. Do not begin WP-11 or implementation planning.n disposition in DEV/docs/superpowers/design/2026-09-01-r2-7-WP-10-step-2-record-family-allocation-decision-brief.md. Do not begin Steps 3–8, WP-11 or implementation planning before that decision.
+NEXT_AUTHORIZED_UNIT: Mandatory Senior audit of completed R2.7 WP-10 Steps 2–8 package
+REQUIRED_GATE: Mandatory Senior audit of the completed WP-10 Steps 2–8 package. Do not begin WP-11 or implementation planning without explicit Senior GO.nst accepted Alternative A. Stop only for a genuine new human-owned decision or after Step 8 for mandatory Senior audit. Do not begin WP-11 or implementation planning.n disposition in DEV/docs/superpowers/design/2026-09-01-r2-7-WP-10-step-2-record-family-allocation-decision-brief.md. Do not begin Steps 3–8, WP-11 or implementation planning before that decision.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
