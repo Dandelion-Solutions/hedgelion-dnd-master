@@ -743,6 +743,10 @@ Historical Step-5 agenda:
 
 Per-slice canon + Step-5.14 integration clarifications supersede older agenda wording where they differ.
 
+## 15.5 R2.7 WP-11
+
+- `DEV/docs/superpowers/specs/2026-09-01-r2-7-WP-11-physical-storage-topology-identity-indexing-canonical-spec.md` — physical campaign-record routes, stable-ID routing and bounded non-authoritative indexes; Step-8 canonicalization is pending mandatory Senior audit.
+
 ---
 
 # 16. Search anchors / glossary

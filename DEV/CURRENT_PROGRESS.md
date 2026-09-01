@@ -8,14 +8,14 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-11 / STEP 7 RE-REVIEW REPAIR IN PROGRESS
+GLOBAL_STATE: R2.7 WP-11 / STEPS 1-8 COMPLETE — MANDATORY SENIOR AUDIT
 
 CURRENT_WORKSTREAM: R2.7 WP-11 — Storage topology, identity and indexing
-CURRENT_SLICE: Re-review found RR-01 MANIFEST selector preservation defect; Step-7 mechanical repair and recheck in progress
+CURRENT_SLICE: Step-8 canonicalization complete; mandatory Senior audit before WP-12
 
-LAST_CLOSED_UNIT: R2.7 WP-11 Step 7 / AR-01 through AR-07 resolved; RR-01 repair pending recheck
-NEXT_AUTHORIZED_UNIT: R2.7 WP-11 Step 7 / recheck RR-01 MANIFEST selector repair
-REQUIRED_GATE: Step-1 Senior GO received. Do not begin WP-12 or implementation planning; stop immediately for a genuine WP-11 human decision under the design process.
+LAST_CLOSED_UNIT: R2.7 WP-11 Steps 1-8 / canonical physical topology, identity and indexing specification complete
+NEXT_AUTHORIZED_UNIT: Mandatory Senior audit of the WP-11 Step-8 canonicalization package
+REQUIRED_GATE: Mandatory Senior audit of WP-11 Step 8. Do not begin WP-12 or implementation planning without explicit Senior GO.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE

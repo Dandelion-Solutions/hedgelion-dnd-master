@@ -47,12 +47,12 @@ That blob records the real R2.7 state before the House-Rules/S6D pause. It is hi
 
 ```text
 AUDIT_STATUS: WAITING_SENIOR_REVIEW
-LAST_CLOSED_DOMAIN: WP-06
-CURRENT_DOMAIN: WP-07
-CURRENT_DOMAIN_TOPIC: Truth, knowledge, disclosure and communication evidence
-CURRENT_SLICE: Mandatory Senior review of corrected WP-07 Step 8 closure
-NEXT_DOMAIN: WP-08
-OWNER_GATE: REQUIRED — WP-07 Step 8 completed; await Senior GO before WP-08
+LAST_CLOSED_DOMAIN: WP-11
+CURRENT_DOMAIN: WP-11
+CURRENT_DOMAIN_TOPIC: Physical storage topology, identity and indexing
+CURRENT_SLICE: Mandatory Senior review of WP-11 Step-8 canonicalization
+NEXT_DOMAIN: WP-12
+OWNER_GATE: REQUIRED — WP-11 Step 8 completed; await Senior GO before WP-12
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -62,11 +62,15 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-07 CORRECTIVE STEPS 6-8 COMPLETE — WAITING SENIOR REVIEW
+R2_7_STATUS: WP-11 STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
-R2_7_WP07: STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW
+R2_7_WP07: STEPS 1-8 COMPLETE — SENIOR REVIEW PASS
+R2_7_WP08: COMPLETE
+R2_7_WP09: COMPLETE
+R2_7_WP10: COMPLETE
+R2_7_WP11: STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW
 ```
 
 This task-local cursor records the R2.7 audit checkpoint. It does not own global
@@ -85,8 +89,12 @@ project state, does not authorize WP-07, and does not alter WP-06 findings. Read
 | WP-04 | CLOSED |
 | WP-05 | CLOSED |
 | WP-06 | CLOSED / SENIOR REVIEW PASS |
-| WP-07 | CORRECTIVE STEPS 6-8 COMPLETE — WAITING SENIOR REVIEW |
-| WP-08..WP-27 | NOT STARTED |
+| WP-07 | CLOSED / SENIOR REVIEW PASS |
+| WP-08 | CLOSED |
+| WP-09 | CLOSED |
+| WP-10 | CLOSED |
+| WP-11 | STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW |
+| WP-12..WP-27 | NOT STARTED |
 
 
 ---
@@ -166,9 +174,9 @@ instruction. The mandatory Senior review is now required before WP-08.
 
 ## Task-local handoff
 
-PRE_STEP8_PUBLISHED_SHA: `3c1693c841fa16656981b7e1500eeb9e0e085b24`
-COMPLETED_SLICES: WP-06 closed / Senior review PASS; WP-07 corrective Steps 6-8 complete (F01-F06 plus N02 item-level adversarial mapping)
-CURRENT_VERIFICATION_STATE: Corrective Step-8 focused tests (21), maintenance audit, and `git diff --check` passed locally before publication. Hosted CI was unavailable/uninspected. This checkpoint must be published and independently read back before Senior review.
-NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of corrected WP-07 Step-8 closure after its required publication/read-back; do not begin WP-08 or implementation planning before GO
+PRE_STEP8_PUBLISHED_SHA: `fb7d0b1`
+COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-11 Steps 2-8 include three evidence slices, decision/review/candidate, independent critic, resolution/re-review and canonicalization.
+CURRENT_VERIFICATION_STATE: Step-8 local maintenance audit, diff check, final artifact inspection and remote read-back remain required before Senior review. Hosted CI is unavailable/uninspected in this runtime.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of WP-11 Step-8 canonicalization after publication/read-back; do not begin WP-12 or implementation planning before GO.
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE
