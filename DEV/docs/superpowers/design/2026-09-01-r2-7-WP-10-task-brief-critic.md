@@ -23,10 +23,11 @@ directory as complete by itself.
 | C07 | Step-5.10–5.13, R2.5 -> Story/message/disclosure/cleanup | Story, transcript/message, collaboration, retirement and no-representation obligations risked falling outside manifest/config/current/session wording. | SIGNIFICANT | AUTO_RESOLVED: added exhaustive Step-5 route, R2.5, false-authority probes and cross-domain routing to WP-18/WP-21/WP-25. |
 | C08 | tests/audit/CI -> actual consumers | Existing tests and maintenance route were absent from the first discovery route. | SIGNIFICANT | AUTO_RESOLVED: added exact focused test/audit/CI paths and required mapping of each result to a behavior/contract. |
 | C09 | Scope discovery -> WP-11/12/19/20/24 | Record-family completeness could silently choose topology, hydration, bootstrap or migration mechanics. | BLOCKING | AUTO_RESOLVED: tightened explicit out-of-scope table and mandatory failure probes. |
+| C10 | Exact-path Source Manifest rule -> Step-1 source lists | Several grouped entries used bare filenames after a directory prefix. They were unambiguous to a reader but were not exact current primary paths. | SIGNIFICANT | AUTO_RESOLVED: expanded every listed architecture/spec/GAME/DEV/test source to its full current repository path. |
 
 ## Actual-owner/consumer verification
 
-The critic opened every direct canonical source group, each listed GAME
+The critic opened every direct canonical source group, each listed exact-path GAME
 schema/template family, all listed runtime/bootstrap consumers, all listed DEV
 record/runtime contracts and the focused test/audit/CI route on the verified
 current public ref. No listed source was unreadable. The current campaign template

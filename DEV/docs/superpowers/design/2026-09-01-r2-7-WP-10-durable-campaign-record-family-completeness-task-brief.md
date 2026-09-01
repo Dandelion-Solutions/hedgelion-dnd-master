@@ -30,9 +30,9 @@ or implementation planning.
 ## 2. Current authorization and closed/upstream input
 
 - Global authority: `DEV/CURRENT_PROGRESS.md`.
-- R2.7 scope/method: `2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`,
-  `2026-08-24-r2-7-audit-execution-protocol.md` and
-  `2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`.
+- R2.7 scope/method: `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`,
+  `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-execution-protocol.md` and
+  `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`.
 - Sequencing: `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`.
 - This branch authorizes **WP-10 Step 1 only**. Step 2 requires mandatory Senior
   GO after this completed package.
@@ -43,7 +43,7 @@ basis and estimator control have **no durable WP-09 record**. That explicit
 no-representation verdict is an input to the record-family matrix, not a reason
 to recreate context control as a campaign record.
 
-The historical task-local `audit-status.md` is provenance only. It must not be
+The historical task-local `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md` is provenance only. It must not be
 rewritten to mirror WP-10 global state.
 
 ## 3. Accepted constraints WP-10 preserves
@@ -61,7 +61,7 @@ rewritten to mirror WP-10 global state.
 - Step-3 execution owners, Step-4 truth/knowledge/disclosure/Story owners and
   Step-5 recovery/durability/currentness/chronology/live/publication owners keep
   their established lifecycles and no-representation verdicts.
-- Campaign storage uses root `MANIFEST.yaml` as layout discriminator; selected
+- Campaign storage uses root `GAME/CAMPAIGN/MANIFEST.yaml` as layout discriminator; selected
   manifest roots route campaign data. The local runtime `GAME/CAMPAIGN/` tree
   is a template source copied by `GAME/TOOLS/init_campaign.py`, not a
   `CAMPAIGN/` wrapper in a new campaign branch.
@@ -131,36 +131,36 @@ A later-discovered owner or consumer is added before a coverage claim.
 
 | Exact source group | Authority role | Required inspection |
 |---|---|---|
-| `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`; `CATALOG_INVENTORY.md`; `CATALOG_RESOLUTION.md`; `ENTITY_STRUCTURES.md`; `ACTOR_MODEL.md`; `ASSET_MODEL.md`; `ACTIVITY_MODEL.md`; `RULE_ELEMENT_MODEL.md`; `ACCESS_CONTROL.md`; `BRANCH_MODEL.md`; `CAMPAIGN_HOUSE_RULES.md`; `HOUSE_RULES_MECHANICAL_BOUNDARY.md`; `RULESET_PACKAGE_IDENTITY.md` | direct architecture owners | natural `world.*`/definition/record classes, owner boundaries, package/manifest/Player/House-Rules constraints |
+| `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`; `DEV/ARCHITECTURE/CATALOG_INVENTORY.md`; `DEV/ARCHITECTURE/CATALOG_RESOLUTION.md`; `DEV/ARCHITECTURE/ENTITY_STRUCTURES.md`; `DEV/ARCHITECTURE/ACTOR_MODEL.md`; `DEV/ARCHITECTURE/ASSET_MODEL.md`; `DEV/ARCHITECTURE/ACTIVITY_MODEL.md`; `DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md`; `DEV/ARCHITECTURE/ACCESS_CONTROL.md`; `DEV/ARCHITECTURE/BRANCH_MODEL.md`; `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`; `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md`; `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` | direct architecture owners | natural `world.*`/definition/record classes, owner boundaries, package/manifest/Player/House-Rules constraints |
 | `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md` | direct canonical owner | `runtime.command`, interaction, intent-plan, procedure, resolution, continuation, event/receipt/trace durable/evidence owners |
 | `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-23-step-4-single-context-role-containment-canonical-amendment.md` | canonical owner/amendment | `world.lore_fact`, `world.knowledge`, disclosure, message/Story and role/proposal boundary |
-| `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-history-canonical-spec.md`; `2026-08-24-r2-2-actor-continuity-canonical-spec.md`; `2026-08-24-r2-3-context-runtime-canonical-spec.md`; `2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md`; `2026-08-24-r2-5-collaboration-multiplayer-canonical-spec.md`; `2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md` | Round-2 canonical constraints | durable/ephemeral boundary, Actor cognition, context no-representation, collaboration/currentness and supported-host qualifiers |
-| Step-5 canonical set: `2026-08-20-step-5-0-authority-contamination-final.md`; `2026-08-20-step-5-1-frontier-model-canonical-spec.md`; `2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md`; `2026-08-20-step-5-3-temporal-pending-continuity-canonical-spec.md`; `2026-08-21-step-5-3-5-9-temporal-agenda-chronology-integration-canonical-amendment.md`; `2026-08-20-step-5-4-host-lifecycle-session-handoff-canonical-spec.md`; `2026-08-20-step-5-5-soft-hard-save-durability-canonical-spec.md`; `2026-08-20-step-5-6-campaign-publication-crash-consistency-canonical-spec.md`; `2026-08-20-step-5-7-checkpoint-recovery-protocol-canonical-spec.md`; `2026-08-20-step-5-8-multiplayer-live-epoch-ownership-canonical-spec.md`; `2026-08-21-step-5-9-chronology-persistence-reconciliation-canonical-spec.md`; `2026-08-21-step-5-10-story-projection-durability-canonical-spec.md`; `2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md`; `2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md`; `2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md`; `2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md` (all under `DEV/docs/superpowers/specs/`) | direct canonical durable/currentness/recovery owners | exhaustively map record/no-record requirement, exact owner, currentness and recovery qualification; no Step-5 decision is reopened by overlap |
+| `DEV/docs/superpowers/specs/2026-08-24-r2-1-continuity-history-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md` | Round-2 canonical constraints | durable/ephemeral boundary, Actor cognition, context no-representation, collaboration/currentness and supported-host qualifiers |
+| Step-5 canonical set: `DEV/docs/superpowers/specs/2026-08-20-step-5-0-authority-contamination-final.md`; `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md`; `DEV/docs/superpowers/specs/2026-08-20-step-5-3-temporal-pending-continuity-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-21-step-5-3-5-9-temporal-agenda-chronology-integration-canonical-amendment.md`; `DEV/docs/superpowers/specs/2026-08-20-step-5-4-host-lifecycle-session-handoff-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-20-step-5-5-soft-hard-save-durability-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-20-step-5-6-campaign-publication-crash-consistency-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md` (all under `DEV/docs/superpowers/specs/`) | direct canonical durable/currentness/recovery owners | exhaustively map record/no-record requirement, exact owner, currentness and recovery qualification; no Step-5 decision is reopened by overlap |
 | `DEV/docs/superpowers/specs/2026-08-31-r2-7-WP-08-llm-role-context-instruction-realization-canonical-spec.md`; `DEV/docs/superpowers/specs/2026-08-31-r2-7-WP-09-context-loading-resource-bounds-realization-canonical-spec.md` | closed upstream realization input | protect runtime-local no-record context controls and route WP-09/F03 only when actual durable need appears |
 
 ### 5.3 Current GAME campaign schema and scaffold family
 
 Exact schema contracts to inspect:
 
-`GAME/SCHEMA/campaign_card.schema.yaml`; `campaign_config.schema.yaml`;
-`campaign_manifest.schema.yaml`; `checkpoint.schema.yaml`;
-`current_state.schema.yaml`; `dnd_storage.schema.yaml`; `event.schema.yaml`;
-`faction.schema.yaml`; `house_rules_policy.schema.yaml`; `index.schema.yaml`;
-`item.schema.yaml`; `live_scene.schema.yaml`; `location.schema.yaml`;
-`lore.schema.yaml`; `npc.schema.yaml`; `pc.schema.yaml`;
-`player.schema.yaml`; `scene.schema.yaml`; `session.schema.yaml`;
-`thread.schema.yaml`; and `GAME/SCHEMA/README.md`.
+`GAME/SCHEMA/campaign_card.schema.yaml`; `GAME/SCHEMA/campaign_config.schema.yaml`;
+`GAME/SCHEMA/campaign_manifest.schema.yaml`; `GAME/SCHEMA/checkpoint.schema.yaml`;
+`GAME/SCHEMA/current_state.schema.yaml`; `GAME/SCHEMA/dnd_storage.schema.yaml`; `GAME/SCHEMA/event.schema.yaml`;
+`GAME/SCHEMA/faction.schema.yaml`; `GAME/SCHEMA/house_rules_policy.schema.yaml`; `GAME/SCHEMA/index.schema.yaml`;
+`GAME/SCHEMA/item.schema.yaml`; `GAME/SCHEMA/live_scene.schema.yaml`; `GAME/SCHEMA/location.schema.yaml`;
+`GAME/SCHEMA/lore.schema.yaml`; `GAME/SCHEMA/npc.schema.yaml`; `GAME/SCHEMA/pc.schema.yaml`;
+`GAME/SCHEMA/player.schema.yaml`; `GAME/SCHEMA/scene.schema.yaml`; `GAME/SCHEMA/session.schema.yaml`;
+`GAME/SCHEMA/thread.schema.yaml`; and `GAME/SCHEMA/README.md`.
 
 Exact local campaign-template sources to inspect:
 
-`GAME/CAMPAIGN/MANIFEST.yaml`; `CONFIG.yaml`; `CAMPAIGN_CARD.yaml`;
-`README.md`; `STATE/CURRENT.yaml`; `CHECKPOINTS/_TEMPLATE.yaml`;
-`LOG/_TEMPLATE.yaml`; `SESSIONS/_TEMPLATE.yaml`;
-`RULES/HOUSE_RULES.md`; `RULES/HOUSE_RULES.yaml`;
-`INDEX/EVENT_INDEX.yaml`; `FACTION_INDEX.yaml`; `ITEM_INDEX.yaml`;
-`LOCATION_INDEX.yaml`; `LORE_INDEX.yaml`; `NPC_INDEX.yaml`;
-`PC_INDEX.yaml`; `PLAYER_INDEX.yaml`; `SCENE_INDEX.yaml`;
-`THREAD_INDEX.yaml`.
+`GAME/CAMPAIGN/MANIFEST.yaml`; `GAME/CAMPAIGN/CONFIG.yaml`; `GAME/CAMPAIGN/CAMPAIGN_CARD.yaml`;
+`GAME/CAMPAIGN/README.md`; `GAME/CAMPAIGN/STATE/CURRENT.yaml`; `GAME/CAMPAIGN/CHECKPOINTS/_TEMPLATE.yaml`;
+`GAME/CAMPAIGN/LOG/_TEMPLATE.yaml`; `GAME/CAMPAIGN/SESSIONS/_TEMPLATE.yaml`;
+`GAME/CAMPAIGN/RULES/HOUSE_RULES.md`; `GAME/CAMPAIGN/RULES/HOUSE_RULES.yaml`;
+`INDEX/EVENT_INDEX.yaml`; `GAME/CAMPAIGN/INDEX/FACTION_INDEX.yaml`; `GAME/CAMPAIGN/INDEX/ITEM_INDEX.yaml`;
+`GAME/CAMPAIGN/INDEX/LOCATION_INDEX.yaml`; `GAME/CAMPAIGN/INDEX/LORE_INDEX.yaml`; `GAME/CAMPAIGN/INDEX/NPC_INDEX.yaml`;
+`GAME/CAMPAIGN/INDEX/PC_INDEX.yaml`; `GAME/CAMPAIGN/INDEX/PLAYER_INDEX.yaml`; `GAME/CAMPAIGN/INDEX/SCENE_INDEX.yaml`;
+`GAME/CAMPAIGN/INDEX/THREAD_INDEX.yaml`.
 
 The critic must check the absence/presence of a template file separately from its
 semantic adequacy. A directory with no seed record is not proof of
@@ -170,12 +170,12 @@ no-representation or a permission to invent a new owner.
 
 Inspect actual current consumer contracts:
 
-`GAME/CORE/STORAGE.md`; `PERSISTENCE.md`; `DURABILITY_GUARD.md`;
-`SAVE_CONTRACT.md`; `SESSION.md`; `INTEGRITY.md`; `MULTIPLAYER.md`;
-`LIVE_SCENE.md`; `CHRONOLOGY.md`; `RUNTIME.md`;
-`BOOTSTRAP_RUNTIME.md`; `NEW_CAMPAIGN_FAST_PATH.md`;
-`CAMPAIGN_IDENTITY.md`; `CAMPAIGN_CARD.md`; `CAMPAIGN_SETUP.md`;
-`CAMPAIGN_OPERATIONS.md`; `ENGINE_UPDATES.md`; and
+`GAME/CORE/STORAGE.md`; `GAME/CORE/PERSISTENCE.md`; `GAME/CORE/DURABILITY_GUARD.md`;
+`GAME/CORE/SAVE_CONTRACT.md`; `GAME/CORE/SESSION.md`; `GAME/CORE/INTEGRITY.md`; `GAME/CORE/MULTIPLAYER.md`;
+`GAME/CORE/LIVE_SCENE.md`; `GAME/CORE/CHRONOLOGY.md`; `GAME/CORE/RUNTIME.md`;
+`GAME/CORE/BOOTSTRAP_RUNTIME.md`; `GAME/CORE/NEW_CAMPAIGN_FAST_PATH.md`;
+`GAME/CORE/CAMPAIGN_IDENTITY.md`; `GAME/CORE/CAMPAIGN_CARD.md`; `GAME/CORE/CAMPAIGN_SETUP.md`;
+`GAME/CORE/CAMPAIGN_OPERATIONS.md`; `GAME/CORE/ENGINE_UPDATES.md`; and
 `GAME/TOOLS/init_campaign.py`.
 
 These files route the actual format/path consumers. They cannot make a
@@ -185,25 +185,25 @@ currently-present record authoritative contrary to the canonical owner.
 
 Inspect exact current development surfaces:
 
-`DEV/CATALOG/core-catalog.json`; `entity-structures.json`;
-`mechanical-surfaces.json`;
-`DEV/SCHEMAS/world-record.schema.json`; `world-actor-state.schema.json`;
-`world-asset-state.schema.json`; `world-effect-state.schema.json`;
-`world-location-state.schema.json`; `runtime-command-state.schema.json`;
-`runtime-continuation-state.schema.json`; `runtime-intent-plan-state.schema.json`;
-`runtime-interaction-state.schema.json`; `runtime-procedure-state.schema.json`;
-`runtime-resolution-state.schema.json`; `runtime-resolution-trace-state.schema.json`;
-`temporal-binding.schema.json`.
+`DEV/CATALOG/core-catalog.json`; `DEV/CATALOG/entity-structures.json`;
+`DEV/CATALOG/mechanical-surfaces.json`;
+`DEV/SCHEMAS/world-record.schema.json`; `DEV/SCHEMAS/world-actor-state.schema.json`;
+`DEV/SCHEMAS/world-asset-state.schema.json`; `DEV/SCHEMAS/world-effect-state.schema.json`;
+`DEV/SCHEMAS/world-location-state.schema.json`; `DEV/SCHEMAS/runtime-command-state.schema.json`;
+`DEV/SCHEMAS/runtime-continuation-state.schema.json`; `DEV/SCHEMAS/runtime-intent-plan-state.schema.json`;
+`DEV/SCHEMAS/runtime-interaction-state.schema.json`; `DEV/SCHEMAS/runtime-procedure-state.schema.json`;
+`DEV/SCHEMAS/runtime-resolution-state.schema.json`; `DEV/SCHEMAS/runtime-resolution-trace-state.schema.json`;
+`DEV/SCHEMAS/temporal-binding.schema.json`.
 
 Focused verification/consumer route:
 
 `DEV/TESTS/BOOTSTRAP_STORAGE_REGRESSION_CASES.md`;
-`PERSISTENCE_TRANSACTION_CASES.md`; `CHRONOLOGY_CASES.md`;
-`LIVE_SCENE_CASES.md`; `CAMPAIGN_CARD_CASES.md`;
-`CAMPAIGN_IDENTITY_CASES.md`; `test_destination_template_boundary.py`;
-`test_maintenance_continuation_contract.py`;
-`test_step2_resource_storage_contract.py`;
-`test_step3_execution_value_schemas.py`;
+`DEV/TESTS/PERSISTENCE_TRANSACTION_CASES.md`; `DEV/TESTS/CHRONOLOGY_CASES.md`;
+`DEV/TESTS/LIVE_SCENE_CASES.md`; `DEV/TESTS/CAMPAIGN_CARD_CASES.md`;
+`DEV/TESTS/CAMPAIGN_IDENTITY_CASES.md`; `DEV/TESTS/test_destination_template_boundary.py`;
+`DEV/TESTS/test_maintenance_continuation_contract.py`;
+`DEV/TESTS/test_step2_resource_storage_contract.py`;
+`DEV/TESTS/test_step3_execution_value_schemas.py`;
 `DEV/TOOLS/run_maintenance_audit.py`; and `.github/workflows/validate.yml`.
 
 ## 6. Required Step-2 proof and exit criteria
