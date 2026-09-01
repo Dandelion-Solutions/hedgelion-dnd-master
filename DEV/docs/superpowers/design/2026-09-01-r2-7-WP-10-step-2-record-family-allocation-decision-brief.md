@@ -23,25 +23,32 @@ The reclassification evidence is:
 - Step-3 lifecycle/evidence owners remain distinct from session, checkpoint,
   semantic event and narration.
 - Disclosure, message and Story retain separate delivery/history/projection
-  authority. Story never becomes current/canon/recovery authority.
+  authority. Story never becomes current/canon/recovery authority. Its retained
+  source basis is Story-layer provenance only; it is distinct from the runtime-local
+  R2.3/WP-09 source basis, which receives no campaign record.
 - Collaboration is conditional; Dramaturg horizons are multiplayer-only
   noncanonical projections. WP-09 controls and generic helpers have no record.
 
-## Alternative A — explicit logical owner-family registry (recommended)
+## Alternative A — documentation-level logical allocation matrix (recommended)
 
 | Logical family | Concerns mapped |
 |---|---|
 | Actor-local continuity | retained private continuity and directed relationships |
 | Knowledge relation | current `world.knowledge` subject/fact stance |
 | Effect/application | independently lifecycled effect/condition application |
-| Runtime lifecycle | Interaction, IntentPlan, Command, Procedure, Resolution, Continuation |
-| Runtime immutable evidence | mechanical event, receipt, bounded trace |
-| History/delivery | semantic event/relation, disclosure, retained message |
-| Story projection | Story content and layer progress/source basis |
+| Runtime lifecycle namespace | separate logical members: Interaction, IntentPlan, Command, Procedure, Resolution and Continuation; each retains its own mutation, recovery and lifecycle boundary |
+| Runtime immutable-evidence namespace | separate logical members: mechanical event, receipt and bounded trace; each retains its own immutable retention contract |
+| History/delivery namespace | separate logical members: semantic event/relation, disclosure and retained message; none is an aggregate or surrogate for another's authority, mutation or retention contract |
+| Story projection | Story content and layer progress with its retained Story-layer provenance/source basis only; never the runtime-local R2.3/WP-09 source basis |
 | Native temporal component | TemporalBinding embedded with its natural owner; no global family |
 | Campaign operations | ID allocator |
 | Optional collaboration | active collaboration generation and contribution refs |
 | Multiplayer planning projection | local/shared Dramaturg horizons only when multiplayer and present |
+
+The table is a documentation-level allocation matrix. “Namespace” groups several
+separate logical record members solely for traceability; it is **not** a new central
+registry, runtime service, subsystem or semantic authority. Each member remains
+owned, mutated, recovered and retained only under its primary owner contract.
 
 **Advantages:** exact audit vocabulary, mechanically testable non-merge rules and
 a direct close for WP-10's owner-to-family question.  
@@ -57,7 +64,8 @@ generator/bootstrap realization.
 
 Map Actor continuity/relationships and effect applications into their *native
 owner-local logical aggregates*; use only a Knowledge relation and a Runtime
-lifecycle/evidence family as cross-owner families. Keep semantic event,
+lifecycle/evidence namespace as cross-owner families, with separate member
+boundaries for every Step-3 owner. Keep semantic event,
 disclosure, message and Story as separate history/delivery/projection families;
 keep allocator operational; preserve temporal-owner locality and optional
 collaboration/Dramaturg rules.
