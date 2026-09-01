@@ -11,10 +11,10 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 WP-11 / STEP 2 EVIDENCE EXTRACTION IN PROGRESS
 
 CURRENT_WORKSTREAM: R2.7 WP-11 — Storage topology, identity and indexing
-CURRENT_SLICE: Step-2 canonical-owner evidence slice complete; current machine/topology evidence next
+CURRENT_SLICE: Step-2 current-runtime route evidence slice complete; DEV machine-contract evidence next
 
-LAST_CLOSED_UNIT: R2.7 WP-11 Step 1 / Senior GO received; Step-2 canonical-owner evidence slice complete
-NEXT_AUTHORIZED_UNIT: R2.7 WP-11 Step 2 / current machine, route and consumer evidence extraction
+LAST_CLOSED_UNIT: R2.7 WP-11 Step 2 / canonical-owner and current-runtime evidence slices complete
+NEXT_AUTHORIZED_UNIT: R2.7 WP-11 Step 2 / DEV machine-contract and verification evidence extraction
 REQUIRED_GATE: Step-1 Senior GO received. Do not begin WP-12 or implementation planning; stop immediately for a genuine WP-11 human decision under the design process.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
