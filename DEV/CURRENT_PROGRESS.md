@@ -15,7 +15,7 @@ CURRENT_SLICE: WP-10 canonical record-family allocation complete; mandatory Seni
 
 LAST_CLOSED_UNIT: R2.7 WP-10 Step 1 / Task Brief, Source Manifest and whole-project critic package complete / Senior GO received
 NEXT_AUTHORIZED_UNIT: Mandatory Senior audit of completed R2.7 WP-10 Steps 2–8 package
-REQUIRED_GATE: Mandatory Senior audit of the completed WP-10 Steps 2–8 package. Do not begin WP-11 or implementation planning without explicit Senior GO.nst accepted Alternative A. Stop only for a genuine new human-owned decision or after Step 8 for mandatory Senior audit. Do not begin WP-11 or implementation planning.n disposition in DEV/docs/superpowers/design/2026-09-01-r2-7-WP-10-step-2-record-family-allocation-decision-brief.md. Do not begin Steps 3–8, WP-11 or implementation planning before that decision.
+REQUIRED_GATE: Mandatory Senior audit of the completed WP-10 Steps 2–8 package. Do not begin WP-11 or implementation planning without explicit Senior GO.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
