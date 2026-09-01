@@ -1,6 +1,6 @@
 # R2.7 WP-10 — Human Decision Package: Logical Record-Family Allocation
 
-Status: **HUMAN ARCHITECT DECISION REQUIRED**
+Status: **DECISION ACCEPTED — ALTERNATIVE A; STEP 3 AUTHORIZED**
 
 ## Decision scope
 
@@ -88,6 +88,10 @@ WP-10 mandate and roadmap, names the receiving owner (at minimum a new bounded
 record-family allocation work package before WP-11/12/18/19/20 realization),
 defines the safe temporary boundary and accepts that WP-10 cannot otherwise be
 closed. No such transfer is proposed by this package.
+
+## Accepted decision
+
+**Human Architect decision: Alternative A accepted.** This records a documentation-level logical allocation matrix only; it does not authorize path, schema, runtime, topology, migration, bootstrap or implementation changes.
 
 ## Recommendation and exact question
 
