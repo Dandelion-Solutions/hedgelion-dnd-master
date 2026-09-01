@@ -24,5 +24,4 @@ runtime, schema, catalog, CORE, test or implementation-planning change.
 
 ## Audit gate
 
-Recovery Step-5 review, Step-6 adversarial critic and Step-7 resolution records re-attest the evidence and are resolved. Mandatory
-Senior audit is required before WP-11 or implementation planning.
+## Operative recovery-completion chain\n\nThe operative completion review chain is:\n\n- DEV/docs/superpowers/design/2026-09-01-r2-7-WP-10-recovery-completion-step-5-candidate-review.md;\n- DEV/docs/superpowers/design/2026-09-01-r2-7-WP-10-recovery-completion-step-6-adversarial-critic.md;\n- DEV/docs/superpowers/design/2026-09-01-r2-7-WP-10-recovery-completion-step-7-resolution-record.md.\n\nIt re-attests every material Alternative-A member, including natural\neffect/application and the campaign ID allocator, and rejects all recorded\nfalse-authority mechanisms, including symmetric-relationship inference and the\neffect-list surrogate. Original and first-recovery Step-5/6/7 records remain\nhistorical evidence; this chain is the operative closure evidence.\n\nMandatory Senior audit is required before WP-11 or implementation planning.

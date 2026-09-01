@@ -13,7 +13,7 @@ GLOBAL_STATE: R2.7 WP-10 / STEPS 2–8 COMPLETE — MANDATORY SENIOR AUDIT
 CURRENT_WORKSTREAM: R2.7 WP-10 — Durable campaign record-family completeness
 CURRENT_SLICE: WP-10 canonical record-family allocation complete; mandatory Senior audit
 
-LAST_CLOSED_UNIT: R2.7 WP-10 Step 1 / Task Brief, Source Manifest and whole-project critic package complete / Senior GO received
+LAST_CLOSED_UNIT: R2.7 WP-10 Steps 2–8 / Alternative-A logical record-family allocation, recovery-completion review, adversarial critic, resolution and canonicalization complete
 NEXT_AUTHORIZED_UNIT: Mandatory Senior audit of completed R2.7 WP-10 Steps 2–8 package
 REQUIRED_GATE: Mandatory Senior audit of the completed WP-10 Steps 2–8 package. Do not begin WP-11 or implementation planning without explicit Senior GO.
 
