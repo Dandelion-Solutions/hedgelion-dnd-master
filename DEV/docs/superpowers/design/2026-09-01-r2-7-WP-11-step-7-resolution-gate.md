@@ -11,6 +11,7 @@ Status: **COMPLETE — ALL STEP-6 FINDINGS RESOLVED**
 | AR-05 | SIGNIFICANT | YES | Restored the accepted Story record path directly below the layer sequence bucket; only projection state remains at the layer root. | NO |
 | AR-06 | SIGNIFICANT | YES | Hash now chooses only the two-level bucket. A chunked unpadded Base32hex encoding of the full framed route input supplies an injective, deterministic filename path, avoiding hash uniqueness authority. | NO |
 | AR-07 | SIGNIFICANT | YES | Selected `scene_id`-only active-scene entries. Stored paths are removed by downstream migration and are derived/rebuilt from the stable Scene route. | NO |
+| RR-01 | SIGNIFICANT | YES | Preserved the current `event_log_root` MANIFEST selector rather than silently renaming it to `log_root`; only new static selectors require downstream schema/template work. | NO |
 
 The repairs introduce no new semantic owner, chronology source, publication
 authority or downstream implementation decision. The candidate remains within

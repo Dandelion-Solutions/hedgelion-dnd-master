@@ -48,7 +48,7 @@ eligibility evidence.
 | Story record | `STORY/<layer>/<floor(sequence/1000)>/<story_id>.yaml` | Existing accepted Story sequence grouping; layer-local non-reused ID and ordering only. |
 
 `MANIFEST.storage` selects static roots as `state_root: STATE`, `index_root:
-INDEX`, `world_root: WORLD`, `log_root: LOG`, `checkpoints_root: CHECKPOINTS`,
+INDEX`, `world_root: WORLD`, `event_log_root: LOG`, `checkpoints_root: CHECKPOINTS`,
 `sessions_root: SESSIONS` and `story_root: STORY`. It never carries mutable
 Story progress. The live route is selected by current campaign routing and an
 epoch claim; branch existence is not authority.
