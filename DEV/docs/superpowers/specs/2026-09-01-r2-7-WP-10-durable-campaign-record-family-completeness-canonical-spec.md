@@ -24,5 +24,5 @@ runtime, schema, catalog, CORE, test or implementation-planning change.
 
 ## Audit gate
 
-Steps 2–7 evidence, candidate review and adversarial probes are resolved. Mandatory
+Recovery Step-5 review, Step-6 adversarial critic and Step-7 resolution records re-attest the evidence and are resolved. Mandatory
 Senior audit is required before WP-11 or implementation planning.
