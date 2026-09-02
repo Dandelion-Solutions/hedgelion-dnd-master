@@ -50,9 +50,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-13
 CURRENT_DOMAIN: WP-14
 CURRENT_DOMAIN_TOPIC: recovery / checkpoints / session / repair
-CURRENT_SLICE: STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
+CURRENT_SLICE: STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW
 NEXT_DOMAIN: WP-15
-OWNER_GATE: REQUIRED — mandatory Senior review of completed WP-14 Step 1; Step 2 must not begin before explicit Senior GO
+OWNER_GATE: REQUIRED — mandatory Senior review of repaired WP-14 Step 1; Step 2 must not begin before explicit Senior GO
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -62,7 +62,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-14 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
+R2_7_STATUS: WP-14 STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
@@ -73,7 +73,7 @@ R2_7_WP10: COMPLETE
 R2_7_WP11: CLOSED / SENIOR REVIEW PASS
 R2_7_WP12: CLOSED / SENIOR REVIEW PASS
 R2_7_WP13: CLOSED / SENIOR REVIEW PASS
-R2_7_WP14: STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
+R2_7_WP14: STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW
 ```
 
 This task-local cursor records the R2.7 audit checkpoint. It does not own global
@@ -99,7 +99,7 @@ findings. Read `DEV/CURRENT_PROGRESS.md` before resuming any work.
 | WP-11 | CLOSED / SENIOR REVIEW PASS |
 | WP-12 | CLOSED / SENIOR REVIEW PASS |
 | WP-13 | CLOSED / SENIOR REVIEW PASS |
-| WP-14 | STEP 1 COMPLETE — MANDATORY SENIOR REVIEW |
+| WP-14 | STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW |
 | WP-15..WP-27 | NOT STARTED |
 
 ---
@@ -114,16 +114,20 @@ Published Step-1 artifacts:
 - `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-source-manifest.md`;
 - `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-task-brief-critic.md`.
 
-The Source Manifest was built from current `DEV/PROJECT_MAP.md` and expanded through actual owners/consumers across Step-3/Step-5 recovery/currentness architecture, WP-10/WP-11/WP-12/WP-13, current CORE runtime/session/bootstrap/integrity/storage/persistence/live consumers, checkpoint/session/current-state schemas/templates, generator and regression surfaces. It is explicitly open-world for Step 2.
+Separate post-critic Senior-recovery artifact:
 
-The mandatory whole-project Task-Brief critic found:
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-senior-recovery-source-graph-omissions.md`.
+
+The Source Manifest was built from current `DEV/PROJECT_MAP.md` and expanded through actual owners/consumers across Step-3/Step-5 recovery/currentness architecture, R2.6 host/transport assurance, WP-10/WP-11/WP-12/WP-13, current CORE runtime/session/bootstrap/integrity/storage/persistence/live consumers, checkpoint/session/current-state/campaign-manifest schemas/templates, maintenance/support surfaces, generator and regression surfaces. It remains explicitly open-world for Step 2.
+
+The mandatory whole-project Task-Brief critic historically found:
 
 ```text
 STEP_1_CRITIC_BLOCKING:    3
 STEP_1_CRITIC_SIGNIFICANT: 8
 ```
 
-Framing defects covered:
+Framing defects C01-C11 covered:
 
 - checkpoint-first startup versus current-authority-first recovery;
 - accepted execution/temporal continuity and no replay/reroll;
@@ -137,24 +141,36 @@ Framing defects covered:
 - chronology separation from checkpoint/event/Git/session ordering;
 - checkpoint facility defects versus SAVE/handoff/current-state proof.
 
-All were mechanically resolvable from accepted architecture and were incorporated into the published Task Brief and Source Manifest before Step-1 closure.
+All C01-C11 were mechanically resolvable from accepted architecture and were incorporated into the original published Task Brief and Source Manifest before initial Step-1 closure.
+
+A subsequent mandatory Senior review found three additional **SIGNIFICANT source-graph omissions**, preserved separately as SR14-01..SR14-03 rather than retroactively rewriting the historical critic:
+
+- **SR14-01:** omitted R2.6 MVP host-assurance canonical authority and fixed gameplay repository-transport owner clarification. The repaired Step-2 perimeter now preserves ambient Project/chat/model-memory non-authority, fixed `deterministic Python/core -> GitHub Connector -> authoritative non-force ref transition`, no alternate runtime transport probe/fallback, supported-profile capability failure when required Connector capability is missing, and exact pinned-ref/currentness/CAS/conflict/ambiguous-failure evidence. Development-agent Connector rules in `AGENTS.md` / `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md` remain separate process authority.
+- **SR14-02:** omitted `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md`, whose exact current status is `INTERNAL CONTROL CONTRACT / PROPOSAL`. It is now a direct current support/recovery/repair consumer requiring Step-2 reconciliation of `HDM_EXPORT_CHECKPOINT_LOG`, `HDM_RESET_LAST_CHECKPOINT`, checkpoint-based local reconstruction, `runtime.maintenance_audit` and Connector/diagnostic evidence against Step-5.7 and WP-10. Step 1 does not decide final command fate.
+- **SR14-03:** omitted actual `MANIFEST.last_checkpoint_id` machine surfaces `GAME/SCHEMA/campaign_manifest.schema.yaml` and `GAME/CAMPAIGN/MANIFEST.yaml`. Both now require Step-2 inspection for narrow pointer semantics, consumers, lifecycle and scaffold/generator impact while preserving that the pointer is not recovery frontier/currentness/SAVE/handoff authority.
+
+Senior-repair disposition:
 
 ```text
+SR14-01: CLOSED
+SR14-02: CLOSED
+SR14-03: CLOSED
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
 HUMAN_DECISION_REQUIRED: NO
 UPSTREAM_REOPEN_REQUIRED: NO
 ```
 
-Explicit upstream obligations consumed by Step 1 include:
+Explicit upstream obligations consumed by Step 1 + Senior repair include:
 
+- R2.6 ambient-host-context non-authority and fixed gameplay Connector transport/currentness/failure evidence;
 - WP-11/F03 current-route-first recovery + deterministic index rebuild;
 - WP-12 current-native-source/exact-pin cold recovery, surviving SQLite as cache only after source-equivalence proof, ephemeral recovery composition and checkpoint optionality;
 - WP-13 current-authority-first recovery/checkpoint machine, checkpoint non-SAVE/non-current authority and session/cached-HEAD non-authority.
 
-Current machine debt is recorded as evidence, not accepted architecture. It includes `BOOTSTRAP_RUNTIME.md` checkpoint-first startup wording, current checkpoint schema/template generic frontier fields, session HEAD/status hints requiring non-authority qualification and bootstrap regression B25's unconditional first-scene/checkpoint wording.
+Current machine/support debt is recorded as evidence, not accepted architecture. It includes `BOOTSTRAP_RUNTIME.md` checkpoint-first startup wording, current checkpoint schema/template generic frontier fields, session HEAD/status hints requiring non-authority qualification, `MAINTENANCE_COMMANDS.md` checkpoint-oriented support flows, `MANIFEST.last_checkpoint_id` consumer/scaffold inspection, and bootstrap regression B25's unconditional first-scene/checkpoint wording.
 
-No runtime/schema/template/test/tool implementation was changed by WP-14 Step 1.
+No runtime/schema/template/catalog/test/tool implementation was changed by WP-14 Step 1 or this Senior repair.
 
 Step 2, WP-15 and implementation planning remain blocked pending mandatory Senior review and explicit Senior GO.
 
@@ -319,7 +335,7 @@ NEW_HUMAN_DECISION: NO
 ARCHITECTURE_REOPENED: NO
 ```
 
-WP-13 is closed. WP-14 Step 1 is complete and awaits mandatory Senior review.
+WP-13 is closed. WP-14 Step 1 + Senior repair is complete and awaits mandatory Senior review.
 
 ---
 
@@ -336,7 +352,7 @@ Post-Step-8 Senior recovery evidence:
 Preserved downstream routes from the final WP-12 specification:
 
 - WP-13 — durability/SAVE/publication machine realization and stale global timer/frontier repair — **closed / Senior review PASS**;
-- WP-14 — checkpoint/recovery machine repair — **Step 1 complete / mandatory Senior review pending**;
+- WP-14 — checkpoint/recovery machine repair — **Step 1 + Senior repair complete / mandatory Senior review pending**;
 - WP-16 — final live currentness/CAS machine realization;
 - WP-19/WP-20 — bootstrap/migration integration if required;
 - WP-22 — executable WP-12/WP-13 conformance/integration/failure-injection coverage;
@@ -470,8 +486,10 @@ WP14_STEP1_START_SHA: `34d143c232b27623bf091a3f39899f8220068685`
 WP14_STEP1_TASK_BRIEF: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-task-brief.md`
 WP14_STEP1_SOURCE_MANIFEST: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-source-manifest.md`
 WP14_STEP1_TASK_BRIEF_CRITIC: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-task-brief-critic.md`
-COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 Steps 1-8 plus Senior SR01 recovery completed and passed mandatory final Senior re-audit; WP-13 Steps 1-8 plus narrow Step-1 Senior SR13-01 repair completed and passed mandatory final Senior audit; WP-14 Step 1 completed with all Task-Brief critic BLOCKING/SIGNIFICANT findings mechanically resolved.
-CURRENT_VERIFICATION_STATE: WP-14 Step-1 documentation package is complete at the architecture-framing level with critic counts 3 BLOCKING + 8 SIGNIFICANT and zero unresolved BLOCKING/SIGNIFICANT findings; no human-owned decision or upstream reopening is required. No runtime/schema/template/test/tool implementation and no implementation-planning work has begun. Mandatory Senior review is pending.
-NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of the completed WP-14 Step-1 package. Step 2, WP-15 and implementation planning remain blocked pending explicit Senior GO.
+WP14_STEP1_PRE_SENIOR_REPAIR_SHA: `8f0666b5a4316137dcc3359d57a7d4b01d8cf00a`
+WP14_STEP1_SENIOR_REPAIR_ARTIFACT: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-senior-recovery-source-graph-omissions.md`
+COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 Steps 1-8 plus Senior SR01 recovery completed and passed mandatory final Senior re-audit; WP-13 Steps 1-8 plus narrow Step-1 Senior SR13-01 repair completed and passed mandatory final Senior audit; WP-14 Step 1 + narrow Senior source-graph repair SR14-01..03 completed with zero unresolved BLOCKING/SIGNIFICANT findings.
+CURRENT_VERIFICATION_STATE: WP-14 Step-1 + Senior-repair documentation package is complete at the architecture-framing/evidence-perimeter level. Historical critic counts remain 3 BLOCKING + 8 SIGNIFICANT for C01-C11; separate SR14-01..03 are CLOSED with zero unresolved BLOCKING/SIGNIFICANT findings, no human-owned decision and no upstream reopening required. No runtime/schema/template/catalog/test/tool implementation and no implementation-planning work has begun. Mandatory Senior review is pending.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of the repaired WP-14 Step-1 package. Step 2, WP-15 and implementation planning remain blocked pending explicit Senior GO.
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE
