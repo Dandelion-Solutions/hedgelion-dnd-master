@@ -174,7 +174,32 @@ as applicable:
 - required verification complete;
 - coherent publication/checkpoint complete;
 - remote read-back/currentness evidence obtained where repository process
-  requires it.
+  requires it;
+- mandatory finding-propagation sweep complete.
+
+#### Mandatory finding-propagation sweep
+
+A `BLOCKING` or `SIGNIFICANT` Step-6 finding that changes, rejects or
+materially qualifies a candidate law must be propagated before Step 7 is
+complete. This is evidence/traceability work within the existing eight-step
+loop; it creates neither a ninth step nor another routine human pause.
+
+For each such finding, the Step-7 resolution record (or a directly linked
+resolution ledger) must account for:
+
+- the finding ID and repaired/current disposition;
+- each affected Task Brief, Decision Brief, review, candidate, critic,
+  canonical artifact, status/current-progress record, roadmap/index or deferred
+  obligation;
+- whether that artifact was updated, explicitly superseded, retained as safely
+  historical/non-current, or shown not applicable;
+- the one current final owner for every changed or rejected normative statement.
+
+An artifact that preserves a rejected formulation as history must say so
+explicitly and route readers to the finding/resolution and current final owner.
+Do not rewrite historical analysis as though it originally made the later
+correction. Update global status and derivative navigation only when their
+current-state or routing claims are affected.
 
 Then **stop for the second mandatory Senior review**. Do not automatically begin
 the next architecture block or implementation-planning work until that review
