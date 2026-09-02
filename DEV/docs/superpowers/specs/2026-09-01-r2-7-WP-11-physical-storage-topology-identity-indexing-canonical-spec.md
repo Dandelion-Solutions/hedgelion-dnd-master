@@ -1,6 +1,6 @@
 # R2.7 WP-11 — Physical Storage Topology, Identity and Indexing
 
-Status: **CANONICALIZATION COMPLETE — PENDING MANDATORY SENIOR AUDIT**
+Status: **CANONICAL — WP-11 CLOSED / SENIOR REVIEW PASS**
 
 ## Scope
 

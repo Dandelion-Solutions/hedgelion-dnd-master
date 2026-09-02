@@ -178,7 +178,7 @@ instruction. The mandatory Senior review is now required before WP-08.
 
 PRE_STEP8_PUBLISHED_SHA: `fb7d0b1`
 COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-11 Steps 2-8 include three evidence slices, decision/review/candidate, independent critic, resolution/re-review and canonicalization.
-CURRENT_VERIFICATION_STATE: Step-8 local maintenance audit, diff check, final artifact inspection and remote read-back remain required before Senior review. Hosted CI is unavailable/uninspected in this runtime.
-NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of WP-11 Step-8 canonicalization after publication/read-back; do not begin WP-12 or implementation planning before GO.
+CURRENT_VERIFICATION_STATE: WP-11 is closed by Senior review; WP-12 Step 1 is the current authorized documentation-only package. Hosted CI is unavailable/uninspected in this runtime.
+NEXT_EXACT_TASK_OR_SLICE: Complete WP-12 Step 1 Task Brief, Source Manifest and whole-project critic; await Senior GO before WP-12 Step 2, WP-13 or implementation planning.
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE

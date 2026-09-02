@@ -12,7 +12,7 @@ Pass: perform only the live ref probe; do not fetch LIVE_STATE, campaign HEAD, c
 
 ## L03 — Changed live HEAD fast refresh
 Another player updates the scene from `L1` to `L2`.
-Pass: probe the live ref, fetch only `CAMPAIGN/LIVE/LIVE_STATE.yaml` at exact `L2`, replace cache, and do not run Git compare/history.
+Pass: probe the live ref, fetch only `LIVE/LIVE_STATE.yaml` at exact `L2`, replace cache, and do not run Git compare/history.
 
 ## L04 — One logical action, one live write
 A player moves, attacks, applies damage/condition, and ends in a new position as one declared/resolved action.
