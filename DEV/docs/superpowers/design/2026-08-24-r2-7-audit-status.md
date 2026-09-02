@@ -50,9 +50,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-11
 CURRENT_DOMAIN: WP-12
 CURRENT_DOMAIN_TOPIC: HOT/SQLite/transaction realization
-CURRENT_SLICE: Step 1 Task Brief, Source Manifest and whole-project critic authorized
+CURRENT_SLICE: Step 1 Task Brief, Source Manifest and whole-project critic complete — mandatory Senior audit before Step 2
 NEXT_DOMAIN: WP-13
-OWNER_GATE: REQUIRED — WP-12 Step 1 must complete local critic and mechanically resolvable repairs; await Senior GO before Step 2
+OWNER_GATE: REQUIRED — mandatory Senior audit of the completed WP-12 Step-1 package; await explicit Senior GO before Step 2
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -62,7 +62,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-12 STEP 1 AUTHORIZED
+R2_7_STATUS: WP-12 STEP 1 COMPLETE — MANDATORY SENIOR AUDIT
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
@@ -71,7 +71,7 @@ R2_7_WP08: COMPLETE
 R2_7_WP09: COMPLETE
 R2_7_WP10: COMPLETE
 R2_7_WP11: CLOSED / SENIOR REVIEW PASS
-R2_7_WP12: STEP 1 AUTHORIZED
+R2_7_WP12: STEP 1 COMPLETE — MANDATORY SENIOR AUDIT
 ```
 
 This task-local cursor records the R2.7 audit checkpoint. It does not own global
@@ -95,7 +95,7 @@ project state, does not authorize WP-07, and does not alter WP-06 findings. Read
 | WP-09 | CLOSED |
 | WP-10 | CLOSED |
 | WP-11 | CLOSED / SENIOR REVIEW PASS |
-| WP-12 | STEP 1 AUTHORIZED |
+| WP-12 | STEP 1 COMPLETE — MANDATORY SENIOR AUDIT |
 | WP-13..WP-27 | NOT STARTED |
 
 
@@ -177,8 +177,8 @@ instruction. The mandatory Senior review is now required before WP-08.
 ## Task-local handoff
 
 PRE_STEP8_PUBLISHED_SHA: `fb7d0b1`
-COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-11 Steps 2-8 include three evidence slices, decision/review/candidate, independent critic, resolution/re-review and canonicalization.
-CURRENT_VERIFICATION_STATE: WP-11 is closed by Senior review; WP-12 Step 1 is the current authorized documentation-only package. Hosted CI is unavailable/uninspected in this runtime.
-NEXT_EXACT_TASK_OR_SLICE: Complete WP-12 Step 1 Task Brief, Source Manifest and whole-project critic; await Senior GO before WP-12 Step 2, WP-13 or implementation planning.
+COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-11 Steps 2-8 include three evidence slices, decision/review/candidate, independent critic, resolution/re-review and canonicalization. WP-12 Step 1 Task Brief, Source Manifest and whole-project critic are complete after narrow recovery.
+CURRENT_VERIFICATION_STATE: WP-12 Step 1 package is complete and documentation-only; mandatory Senior audit is pending before Step 2. Hosted CI is unavailable/uninspected in this runtime.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior audit of the completed WP-12 Step-1 package. WP-12 Step 2, WP-13 and implementation planning remain blocked pending explicit Senior GO.
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE

@@ -15,7 +15,7 @@ surfaces are evidence, not semantic overrides.
 | `DEV/DESIGN_PROCESS.md` | CANONICAL PROCESS | Source Manifest, Step-1 and critic obligations | INSPECTED |
 | `DEV/ARCHITECTURE/DESIGN_PROCESS.md` | CANONICAL PROCESS ADAPTER | project-map reconstruction, repair and Senior stop | INSPECTED |
 | `DEV/PROJECT_MAP.md` | DERIVATIVE LOCATOR | owner/consumer dependency discovery | INSPECTED FOR ROUTING |
-| `DEV/CURRENT_PROGRESS.md` | CURRENT-PROGRESS AUTHORITY | WP-12 Step-1 authorization and gate | INSPECTED |
+| `DEV/CURRENT_PROGRESS.md` | CURRENT-PROGRESS AUTHORITY | WP-12 Step-1 completion and mandatory Senior gate | INSPECTED |
 | `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | SEQUENCING AUTHORITY | R2.7 order and no-implementation boundary | INSPECTED |
 | `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-execution-protocol.md` | EXECUTION PROTOCOL | durable R2.7 cursor and domain loop | INSPECTED |
 | `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md` | ACTIVE PROGRAM BRIEF | WP-12 matrix fields and bidirectional proof | INSPECTED |
@@ -56,6 +56,8 @@ surfaces are evidence, not semantic overrides.
 | `GAME/SCHEMA/current_state.schema.yaml` | SHIPPED SCHEMA | compact current routing; no pending bucket | INSPECTED |
 | `GAME/SCHEMA/live_scene.schema.yaml` | SHIPPED SCHEMA | current live overlay fields and single-file boundary | INSPECTED |
 | `GAME/SCHEMA/checkpoint.schema.yaml` | SHIPPED SCHEMA / DEBT EVIDENCE | stale checkpoint fields against Step-5.7 | INSPECTED |
+| `GAME/SCHEMA/dnd_storage.schema.yaml` | SHIPPED SCHEMA / DIRECT STORAGE DISCOVERY + RUNTIME-PROVENANCE CONTRACT | exact-root storage discovery, storage-format identity, baseline runtime provenance and the baseline-versus-existing-campaign runtime-selection/write boundary; inspect as current machine contract only and reconcile against owning storage/runtime semantics | REQUIRED STEP-2 INSPECTION |
+| `GAME/TEMPLATE/STORAGE_README.md` | SHIPPED STORAGE-TEMPLATE SUPPORTING SURFACE | human-facing storage-main/per-campaign-branch model and storage workflow; inspect only for consistency with owning storage/branch/runtime contracts and never derive semantic authority from template prose | REQUIRED STEP-2 INSPECTION |
 | `DEV/CATALOG/core-catalog.json` | DEV MACHINE CONTRACT | owner/runtime vocabulary and retired classes | REQUIRED STEP-2 INSPECTION |
 | `DEV/CATALOG/identifier-policies.json` | DEV MACHINE CONTRACT | stable and composite ID constraints | REQUIRED STEP-2 INSPECTION |
 | `DEV/SCHEMAS/runtime-command-state.schema.json` | DEV MACHINE CONTRACT | command lifecycle working-copy fields | REQUIRED STEP-2 INSPECTION |
