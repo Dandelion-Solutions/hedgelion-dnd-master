@@ -1,6 +1,19 @@
 # R2.7 WP-11 Step 3 — Physical Topology Decision Brief
 
-Status: **DECISION BRIEF — HUMAN DECISION REQUIRED: NO**
+Status: **SUPERSEDED DESIGN PROVENANCE — NOT CURRENT ROUTE-LAW OWNER**
+
+## Supersession notice
+
+This brief preserves the original Step-3 analysis and its historical hash-only
+route formulation. That formulation was rejected by Step-6 finding AR-06 because
+the hash-only filename `.../H.yaml` makes a hash collision a permanent denial of
+a valid identity. The corrected route resolution is recorded in
+`DEV/docs/superpowers/design/2026-09-01-r2-7-WP-11-step-7-resolution-gate.md`.
+
+The only current final owner of the WP-11 route law is
+`DEV/docs/superpowers/specs/2026-09-01-r2-7-WP-11-physical-storage-topology-identity-indexing-canonical-spec.md`.
+The decision analysis below is retained as historical provenance and must not be
+read as the current route-law specification.
 
 ## Decision
 
