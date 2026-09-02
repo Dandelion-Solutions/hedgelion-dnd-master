@@ -1,6 +1,6 @@
 # R2.7 WP-14 — Recovery / Checkpoints / Session / Repair — Step 2 Evidence Extraction
 
-Status: **STEP 2 COMPLETE — EVIDENCE / COMPLETENESS GATE PASSED**
+Status: **STEP 2 COMPLETE — EVIDENCE / COMPLETENESS GATE PASSED; SR14-04 POST-STEP-8 COMPLETENESS REPAIR APPLIED**
 
 Date: 2026-09-03
 
@@ -13,6 +13,12 @@ Starting repaired Step-1 authority:
 Companion Source-Manifest expansion:
 
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-source-manifest-step-2-expansion.md`
+
+Post-Step-8 Senior completeness recovery:
+
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-post-step-8-senior-recovery-checkpoint-field-disposition.md` (`SR14-04`).
+
+`SR14-04` does not change the Step-2 evidence conclusions or reopen upstream architecture. It repairs the auditability of the Step-2 claim that every current checkpoint field has an explicit owner/disposition.
 
 ---
 
@@ -106,19 +112,49 @@ Binding consequences:
 14. Checkpoint + `last_checkpoint_id` selection publish in the same campaign transaction when created/selected together.
 15. Checkpoint is immutable after authoritative publication.
 
-Current field dispositions:
+#### 2.5.1 Exhaustive current checkpoint field disposition — SR14-04 repaired accounting
 
-| Current concept | Accepted disposition |
-|---|---|
-| `valid_through_event_id` | retire as generic recovery completeness/frontier semantics |
-| `expected_commit_sha` | retire as self-referential containing-commit identity |
-| checkpoint `world_time` | diagnostics/presentation only if retained; not chronology/currentness authority |
-| active PC/thread/scene lists | optional non-exhaustive hints only if proven useful |
-| checkpoint engine/runtime data | optional provenance/diagnostics; not current runtime authority |
-| `MANIFEST.last_checkpoint_id` | nullable campaign-domain pointer to most recently selected/published checkpoint descriptor only |
-| replacement completeness/root/source arrays | forbidden by default; require concrete bounded value and preserved ownership |
+The following table covers every current field admitted by `GAME/SCHEMA/checkpoint.schema.yaml` and the corresponding current `GAME/CAMPAIGN/CHECKPOINTS/_TEMPLATE.yaml` representation.
 
-`last_checkpoint_id` is explicitly **not** current gameplay frontier, cross-domain composition, RRC proof, mandatory startup anchor or guaranteed rewind slot.
+Role vocabulary:
+
+```text
+REQUIRED_DESCRIPTOR_IDENTITY_ASSOCIATION
+OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT
+RETIRED
+SCHEMA_FORMAT_METADATA_ONLY
+```
+
+| Current schema field | Current template | Binding role | Accepted disposition / authority boundary |
+|---|---|---|---|
+| `schema_version` | `schema_version: 2` | `SCHEMA_FORMAT_METADATA_ONLY` | Equivalent checkpoint wire/format version identity only; no recovery/currentness/chronology authority. |
+| `id` | `id: null` | `REQUIRED_DESCRIPTOR_IDENTITY_ASSOCIATION` | Stable immutable checkpoint descriptor identity; identity does not grant gameplay/currentness authority. |
+| `campaign_id` | `campaign_id: null` | `REQUIRED_DESCRIPTOR_IDENTITY_ASSOCIATION` | Campaign association/descriptor validation only; not source selection or frontier authority. |
+| `created_at` | `created_at: null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Diagnostic/provenance timestamp only; never chronology, freshness, currentness or latest-selection authority. |
+| `valid_through_event_id` | `null` | `RETIRED` | Retired as generic checkpoint recovery-completeness/frontier semantics. |
+| `expected_commit_sha` | `null` | `RETIRED` | Retired self-referential containing-commit identity; revision context/provenance must be external/non-self-referential if needed. |
+| `world_time` | `null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Not part of the minimum checkpoint contract. If retained, domain-typed diagnostics/presentation only; never chronology, due/not-due or currentness authority. |
+| `state` container | present | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Structural grouping of non-authoritative layout/root observations only; not a checkpoint-owned state snapshot or authority object. |
+| `state.current_state_path` | `STATE/CURRENT.yaml` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Non-authoritative layout hint only if actual layout indirection needs it. **Not a checkpoint-owned current-state selector, recovery frontier, root-completeness proof, currentness authority, SAVE/handoff proof or fallback source.** |
+| `state.active_pc_ids` | `[]` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional non-exhaustive positive observation only if useful; omission never proves absence/root completeness. |
+| `state.active_thread_ids` | `[]` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional non-exhaustive positive observation only if useful; omission never proves absence/root completeness. |
+| `state.active_scene_ids` | `[]` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional non-exhaustive positive observation only if useful; omission never proves absence/root completeness. |
+| `recovery_notes` | `[]` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Diagnostic/support notes only; cannot supply missing native authority, accepted interpretation, exact evidence or hidden recovery state. |
+| `engine` container | present | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional runtime provenance observation only; not current runtime authority and not a substitute for accepted interpretation dependencies of open execution. |
+| `engine.version` | `null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Runtime-version provenance observation only. |
+| `engine.package_id` | `null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Package-identity provenance observation only; not runtime-selection authority. |
+| `engine.source_commit_sha` | `null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional source provenance observation only; not current campaign/ref/runtime authority. |
+| `engine.package_sha256` | `null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional package provenance/integrity observation only; cannot select current runtime or reinterpret accepted work. |
+| `engine.adopted_at` | `null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Diagnostic adoption-time observation only; no ordering/currentness/chronology semantics. |
+| `ruleset` container | absent from current template | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Schema-admitted non-authoritative ruleset provenance projection. Template omission is current machine/template-alignment debt, not authority evidence. |
+| `ruleset.ruleset_set_sha256` | absent from current template | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional ruleset-set provenance/integrity observation only. **Not current ruleset authority, never selects a replacement ruleset set, and does not replace accepted rules/catalog/invocation interpretation dependencies of open execution.** |
+| `schema_data_version` | `schema_data_version: 2` | `SCHEMA_FORMAT_METADATA_ONLY` | Retain only if checkpoint format/migration ownership needs it; no gameplay/recovery/currentness semantics. |
+
+The current template materializes every schema member above except the optional `ruleset` container / `ruleset.ruleset_set_sha256`. That is later implementation/template-alignment debt only; this Step-2 accounting does not authorize a `GAME/` change.
+
+The field table does **not** introduce a checkpoint root/source completeness manifest, RecoveryCut, new frontier, replacement state selector or new checkpoint field. Checkpoint remains optional; healthy ordinary recovery may read zero checkpoints.
+
+`MANIFEST.last_checkpoint_id` is separately dispositioned as a nullable campaign-domain pointer to the most recently selected/published descriptor only. It is explicitly **not** current gameplay frontier, cross-domain composition, RRC proof, mandatory startup anchor or guaranteed rewind slot.
 
 ### 2.6 Historical maintenance — Step 5.7 laws 52–55
 
@@ -277,7 +313,7 @@ Current prose contains useful no-campaign-fallback/close-until-absorption direct
 
 ### 4.7 Checkpoint/session/current-state schemas
 
-`checkpoint.schema.yaml` and template currently encode fields already dispositioned by Step 5.7. `session.schema.yaml` carries cached HEAD/status/notes without strong enough authority fencing. `current_state.schema.yaml` includes stale global `durable_frontier_time`; WP-14 must not turn that projection into recovery authority.
+`checkpoint.schema.yaml` and template currently encode every field mapped in section 2.5.1. The template currently omits schema-admitted `ruleset.ruleset_set_sha256`; that mismatch is implementation debt only. `session.schema.yaml` carries cached HEAD/status/notes without strong enough authority fencing. `current_state.schema.yaml` includes stale global `durable_frontier_time`; WP-14 must not turn that projection into recovery authority.
 
 ### 4.8 `MANIFEST.last_checkpoint_id` — SR14-03
 
@@ -387,7 +423,7 @@ No new semantic owner was discovered.
 | surviving SQLite reuse | COVERED |
 | session non-authority | COVERED |
 | checkpoint optionality/facility defects | COVERED |
-| checkpoint field dispositions | COVERED |
+| checkpoint field dispositions | **COVERED — exhaustive leaf-by-leaf accounting repaired by SR14-04** |
 | `last_checkpoint_id` pointer/consumers/scaffold | COVERED |
 | WP-11 exact routes/index rebuild | COVERED |
 | READY/RETRY/BLOCKED | COVERED |
@@ -403,7 +439,7 @@ No new semantic owner was discovered.
 | historical maintenance retention/forward-publication semantics | COVERED |
 | downstream implementation/conformance routes | COVERED |
 
-Completeness gate:
+Completeness gate after SR14-04 repair:
 
 ```text
 SOURCE_MANIFEST_OPEN_WORLD:       YES
@@ -411,6 +447,7 @@ NEW_REAL_CONSUMERS_ADDED:         YES
 SR14_01_FULLY_CONSUMED:           YES
 SR14_02_FULLY_CONSUMED:           YES
 SR14_03_FULLY_CONSUMED:           YES
+SR14_04_FIELD_COVERAGE_REPAIRED:  YES
 UNRESOLVED_EVIDENCE_GAPS:         0
 UPSTREAM_CONTRADICTION:           NO
 NEW_UNSATISFIED_CONSUMER:         NO
@@ -420,4 +457,4 @@ HUMAN_DECISION_REQUIRED:          NO
 STEP_3_SYNTHESIS_ALLOWED:         YES
 ```
 
-Step 2 changes no runtime/schema/template/catalog/test implementation.
+Step 2 and the SR14-04 accounting repair change no runtime/schema/template/catalog/test implementation.
