@@ -47,12 +47,12 @@ That blob is historical/pre-resume evidence only. Current work must be recovered
 
 ```text
 AUDIT_STATUS: IN_PROGRESS
-LAST_CLOSED_DOMAIN: WP-13
-CURRENT_DOMAIN: WP-14
-CURRENT_DOMAIN_TOPIC: recovery / checkpoints / session / repair
-CURRENT_SLICE: STEPS 1-8 + SR14-04 FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT
-NEXT_DOMAIN: WP-15
-OWNER_GATE: REQUIRED — mandatory final Senior re-audit of repaired WP-14 Steps 1-8 + SR14-04; await explicit Senior GO before WP-15 or implementation planning
+LAST_CLOSED_DOMAIN: WP-14
+CURRENT_DOMAIN: WP-15
+CURRENT_DOMAIN_TOPIC: temporal owners / processes / chronology
+CURRENT_SLICE: STEP 1 AUTHORIZED — TASK BRIEF / SOURCE MANIFEST / MANDATORY WHOLE-PROJECT TASK-BRIEF CRITIC
+NEXT_DOMAIN: WP-16
+OWNER_GATE: REQUIRED — complete only WP-15 Step 1, then mandatory Senior review; Step 2, WP-16 and implementation planning require explicit Senior GO
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -62,7 +62,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-14 STEPS 1-8 + SR14-04 FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT
+R2_7_STATUS: WP-15 STEP 1 AUTHORIZED
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
@@ -73,10 +73,11 @@ R2_7_WP10: COMPLETE
 R2_7_WP11: CLOSED / SENIOR REVIEW PASS
 R2_7_WP12: CLOSED / SENIOR REVIEW PASS
 R2_7_WP13: CLOSED / SENIOR REVIEW PASS
-R2_7_WP14: STEPS 1-8 + SR14-04 FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT
+R2_7_WP14: CLOSED / FINAL SENIOR RE-AUDIT PASS
+R2_7_WP15: STEP 1 AUTHORIZED
 ```
 
-This cursor does not authorize WP-15 and does not alter closed prior-domain decisions. Read `DEV/CURRENT_PROGRESS.md` before resuming work.
+This cursor authorizes only WP-15 Step 1 and does not alter closed prior-domain decisions. Read `DEV/CURRENT_PROGRESS.md` before resuming work.
 
 ---
 
@@ -97,8 +98,9 @@ This cursor does not authorize WP-15 and does not alter closed prior-domain deci
 | WP-11 | CLOSED / SENIOR REVIEW PASS |
 | WP-12 | CLOSED / SENIOR REVIEW PASS |
 | WP-13 | CLOSED / SENIOR REVIEW PASS |
-| WP-14 | STEPS 1-8 + SR14-04 FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT |
-| WP-15..WP-27 | NOT STARTED |
+| WP-14 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
+| WP-15 | STEP 1 AUTHORIZED |
+| WP-16..WP-27 | NOT STARTED |
 
 ---
 
@@ -153,7 +155,7 @@ Step 2 consumed the owner graph required for current recovery/checkpoint/session
 - `DEV/TESTS/EXPLICIT_SAVE_CASES.md`;
 - explicit Step-5.7 historical-maintenance laws.
 
-The original Step-2 accounting grouped several checkpoint schema leaves under broad categories and therefore overstated checkpoint-field completeness. The mandatory final Senior audit later identified that defect as `SR14-04`; the Step-2 artifact has now been repaired with an exhaustive leaf-by-leaf disposition for every current `GAME/SCHEMA/checkpoint.schema.yaml` field and current template representation.
+The original Step-2 accounting grouped several checkpoint schema leaves under broad categories and therefore overstated checkpoint-field completeness. The mandatory final Senior audit later identified that defect as `SR14-04`; the Step-2 artifact was repaired with an exhaustive leaf-by-leaf disposition for every current `GAME/SCHEMA/checkpoint.schema.yaml` field and current template representation.
 
 Current Step-2 completeness after SR14-04 repair:
 
@@ -329,22 +331,44 @@ HUMAN_DECISION_REQUIRED: NO
 UPSTREAM_REOPEN_REQUIRED: NO
 ```
 
-### Mandatory final Senior re-audit
+### Final Senior re-audit — PASS
 
-Current gate:
+The mandatory final Senior re-audit at public SHA `1ee979c955380baddb5ec1c0a0632a3fbda593f3` verified the SR14-04 repair and the complete WP-14 closure chain.
 
 ```text
-WP14_STEPS_1_8: COMPLETE
+WP14_FINAL_SENIOR_REAUDIT: PASS
+SR14-01: CLOSED
+SR14-02: CLOSED
+SR14-03: CLOSED
 SR14-04: CLOSED
 STEP_6_BLOCKING: 3
 STEP_6_SIGNIFICANT: 5
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
 HUMAN_DECISION_REQUIRED: NO
-NEXT_GATE: MANDATORY FINAL SENIOR RE-AUDIT
+ARCHITECTURE_REOPENED: NO
+WP14_CLOSURE: AUTHORIZED
 ```
 
-WP-15 and implementation planning remain blocked until mandatory Senior final re-audit and explicit subsequent Senior GO.
+WP-14 is closed. This closure authorizes transition to WP-15 Step 1 only; it does not authorize WP-15 Step 2, WP-16 or implementation planning.
+
+---
+
+## WP-15 opening state
+
+WP-15 scope from the controlling R2.7 Task Brief v2 is:
+
+> **temporal owners / processes / chronology**
+
+Authorized work is Step 1 only:
+
+- construct the WP-15 Architecture Task Brief;
+- construct the task-specific open-world Source Manifest from the current dependency subgraph;
+- perform the mandatory whole-project Task-Brief critic;
+- mechanically repair all resolvable BLOCKING/SIGNIFICANT framing defects;
+- publish one coherent Step-1 checkpoint and stop for mandatory Senior review.
+
+Step 2, WP-16 and implementation planning remain blocked pending explicit Senior GO.
 
 ---
 
@@ -380,13 +404,28 @@ NEW_HUMAN_DECISION: NO
 ARCHITECTURE_REOPENED: NO
 ```
 
+WP-14 final implementation-facing authority:
+
+- `DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-canonical-spec.md`.
+
+WP-14 final Senior re-audit:
+
+```text
+WP14_FINAL_SENIOR_REAUDIT_SHA: 1ee979c955380baddb5ec1c0a0632a3fbda593f3
+WP14_FINAL_SENIOR_REAUDIT: PASS
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+NEW_HUMAN_DECISION: NO
+ARCHITECTURE_REOPENED: NO
+```
+
 ---
 
 ## Preserved forward obligations
 
 Downstream routes preserved by current closed/complete architecture:
 
-- **WP-15** — next sequenced audit domain only after WP-14 final Senior re-audit PASS and explicit GO;
+- **WP-15** — current active audit domain; Step 1 only is authorized;
 - **WP-16** — final live currentness/CAS physical machine realization; preserve WP-14 selected-current-live/no-campaign-fallback recovery semantics;
 - **WP-19/WP-20** — bootstrap/migration integration of recovery/checkpoint/session/MANIFEST changes when authorized;
 - **WP-22** — executable conformance/integration/failure-injection coverage for WP-12/WP-13/WP-14, including current recovery, checkpoint optionality and field-authority boundaries, live no-fallback, accepted execution no-replay, SQLite survivor proof, historical maintenance, allocator/disclosure preservation, partial repair and fixed-Connector failures;
@@ -444,6 +483,7 @@ Normative policy is `RULES/HOUSE_RULES.md`; structured companion is `RULES/HOUSE
 
 WP12_FINAL_SENIOR_REAUDIT_SHA: `cc906da9dca4c04fee6342c21128a452b064e312`
 WP13_FINAL_SENIOR_AUDIT_SHA: `f0ba874f20ab607cc9b54b0b4538cf1d8027f71f`
+WP14_FINAL_SENIOR_REAUDIT_SHA: `1ee979c955380baddb5ec1c0a0632a3fbda593f3`
 
 WP14_STEP1_START_SHA: `34d143c232b27623bf091a3f39899f8220068685`
 WP14_STEP1_PRE_SENIOR_REPAIR_SHA: `8f0666b5a4316137dcc3359d57a7d4b01d8cf00a`
@@ -467,8 +507,8 @@ WP14_SR14_04_CANONICAL_REPAIR_SHA: `619c3fbc8dce8b1752b34023502490fdf6c8a0b8`
 WP14_SR14_04_GLOBAL_CURSOR_SHA: `d350f8e07a51c93805393b7bf6c4775fdf0da0e6`
 
 WP14_FINAL_CANONICAL_ARTIFACT: `DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-canonical-spec.md`
-COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 closed after Senior recovery/re-audit; WP-13 closed after final Senior audit; WP-14 repaired Step 1 + Steps 2-8 complete; historical Step-6 findings all resolved; post-Step-8 SR14-04 checkpoint field-completeness repair complete; mandatory final Senior re-audit pending.
-CURRENT_VERIFICATION_STATE: WP-14 Steps 1-8 + SR14-04 documentation/canonicalization package has zero unresolved BLOCKING/SIGNIFICANT findings, no human decision and no upstream reopening; historical Step-6 F01-F08 remain unchanged. No runtime/schema/template/catalog/test/tool implementation and no implementation planning performed. Fresh final exact-diff/read-back verification is the remaining closure action after this cursor publication.
-NEXT_EXACT_TASK_OR_SLICE: Mandatory final Senior re-audit of repaired WP-14 Steps 1-8 + SR14-04 package. WP-15 and implementation planning remain blocked pending explicit subsequent Senior GO.
+COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 closed after Senior recovery/re-audit; WP-13 closed after final Senior audit; WP-14 closed after repaired Step 1, Steps 2-8, SR14-04 and final Senior re-audit PASS.
+CURRENT_VERIFICATION_STATE: WP-14 final Senior re-audit PASS at `1ee979c955380baddb5ec1c0a0632a3fbda593f3`; zero unresolved BLOCKING/SIGNIFICANT, no human decision and no architecture reopening. WP-15 Step 1 is now the only authorized R2.7 work.
+NEXT_EXACT_TASK_OR_SLICE: WP-15 Step 1 — temporal owners / processes / chronology: Task Brief + task-specific Source Manifest + mandatory whole-project Task-Brief critic, then mandatory Senior review.
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE
