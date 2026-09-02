@@ -1,6 +1,6 @@
 # R2.7 WP-14 — Recovery / Checkpoints / Session / Repair — Source Manifest
 
-Status: **STEP-1 TASK-SPECIFIC SOURCE MANIFEST — WHOLE-PROJECT CRITIC REPAIRS APPLIED / READY FOR MANDATORY SENIOR REVIEW**
+Status: **STEP-1 TASK-SPECIFIC SOURCE MANIFEST — WHOLE-PROJECT CRITIC + SENIOR SR14-01..03 REPAIRS APPLIED / READY FOR MANDATORY SENIOR REVIEW**
 
 Date: 2026-09-02
 
@@ -11,6 +11,10 @@ Owning Task Brief:
 Mandatory whole-project Task-Brief critic:
 
 - `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-task-brief-critic.md`
+
+Separate post-critic Senior-recovery record:
+
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-senior-recovery-source-graph-omissions.md`
 
 ---
 
@@ -24,11 +28,13 @@ Roles:
 
 - **CANONICAL / OWNING** — current semantic or implementation-facing architecture authority;
 - **CANONICAL INTEGRATION / OWNING** — current accepted cross-slice integration authority;
+- **OWNER-APPROVED CLARIFICATION / OWNING** — current explicit owner-approved constraint that supersedes broader older design language for the stated topic;
 - **R2.7 UPSTREAM / OWNING** — closed WP-10..WP-13 realization authority consumed without reopening;
 - **CURRENT-PROGRESS / PROCESS AUTHORITY** — process/gate/current-state owner, not semantic authority;
 - **DERIVATIVE LOCATOR / INDEX** — routing aid only;
 - **IMPLEMENTATION / MACHINE CONTRACT** — current shipped/runtime/schema/template/tool surface that may lag architecture;
 - **IMPLEMENTATION / TEST CONTRACT** — current regression expectation that must be reconciled against canonical architecture;
+- **CURRENT SUPPORT / MAINTENANCE CONTRACT / PROPOSAL** — direct current support/recovery/repair consumer whose own repository status is proposal/internal-control, not semantic recovery authority;
 - **DESIGN PROVENANCE** — historical derivation/recovery evidence, not default semantic owner.
 
 Inspection disposition:
@@ -44,12 +50,12 @@ Inspection disposition:
 
 | Source | Role | WP-14 relevance | Disposition |
 |---|---|---|---|
-| `AGENTS.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | Public-repo boundaries, taxonomy, Connector development transport, verification discipline. | INSPECTED FOR STEP 1; re-read if changed. |
-| `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | ChatGPT Connector-only development workflow and publication/read-back requirements. | INSPECTED FOR STEP 1; re-read if changed. |
+| `AGENTS.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | Public-repo boundaries, taxonomy, **development-agent** Connector transport, verification discipline. This is not the gameplay/runtime repository transport owner. | INSPECTED FOR STEP 1; re-read if changed. |
+| `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | ChatGPT Connector-only **development-agent** workflow and publication/read-back requirements. Do not use it as gameplay/recovery transport authority. | INSPECTED FOR STEP 1; re-read if changed. |
 | `DEV/DESIGN_PROCESS.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | Eight-step loop, Source Manifest/evidence gates, decision rights. | INSPECTED FOR STEP 1 / BINDING. |
 | `DEV/ARCHITECTURE/DESIGN_PROCESS.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | Whole-project critic and mandatory Senior stop after Step 1. | INSPECTED FOR STEP 1 / BINDING. |
 | `DEV/PROJECT_MAP.md` | DERIVATIVE LOCATOR / INDEX | Initial dependency route for persistence/recovery/session/integrity/bootstrap/tests. | INSPECTED FOR STEP 1 / ROUTING ONLY. |
-| `DEV/CURRENT_PROGRESS.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | Sole global current cursor; currently authorizes WP-14 Step 1 only. | INSPECTED FOR STEP 1; re-read before writes/transitions. |
+| `DEV/CURRENT_PROGRESS.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | Sole global current cursor; currently authorizes only the WP-14 Step-1 Senior repair and mandatory Senior gate. | INSPECTED FOR STEP 1; re-read before writes/transitions. |
 | `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | DERIVATIVE LOCATOR / INDEX | R2.7 sequence/scope/dependency context. | INSPECTED FOR STEP 1 / ROUTING ONLY. |
 | `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md` | CURRENT-PROGRESS / PROCESS AUTHORITY (task-local) | Durable WP cursor and preserved forward obligations. | INSPECTED FOR STEP 1; synchronize at closure. |
 | `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-execution-protocol.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | R2.7 domain audit protocol and evidence expectations. | INSPECTED FOR STEP 1 / BINDING. |
@@ -86,6 +92,17 @@ Step 2 must perform item-level extraction from these owners. Summaries below are
 
 These remain subordinate to their native owners and cannot be imported wholesale as new WP-14 scope.
 
+### R2.6 host/context and fixed gameplay repository transport owners
+
+These sources are mandatory WP-14 evidence because recovery must remain valid when ambient host context is stale/foreign and because repository currentness/failure evidence is obtained through the already selected gameplay transport. They are deliberately separate from the development-agent Connector rules above.
+
+| Source | Role | Required WP-14 extraction | Step-1 status |
+|---|---|---|---|
+| `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md` | CANONICAL / OWNING | LAW R2.6-6: chat history, Project memory and ambient host/model context are not campaign canon/currentness/Actor/disclosure/collaboration/Story authority; routed semantic owners win. LAW R2.6-9 and acceptance obligation 16: fixed Connector gameplay transport and integrated currentness/CAS/conflict/failure evidence. | INSPECTED FOR SENIOR REPAIR / REQUIRED STEP-2 INSPECTION. |
+| `DEV/docs/superpowers/design/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md` | OWNER-APPROVED CLARIFICATION / OWNING | Supported gameplay/runtime path is fixed `deterministic Python/core -> GitHub Connector -> authoritative non-force ref transition`; no probe/fallback through `gh`, native remote Git, private HTTP/API/token paths, alternate App/MCP/backend, GitHub Actions or equivalent transport; missing required Connector capability is supported-profile capability failure. Extract exact pinned-ref/currentness/CAS/conflict/ambiguous-failure evidence obligations for recovery. | INSPECTED FOR SENIOR REPAIR / REQUIRED STEP-2 INSPECTION. |
+
+Step 2 must preserve this separation explicitly: `AGENTS.md` and `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md` govern **development-agent repository work**; the R2.6 sources above govern the **supported gameplay/runtime repository path** consumed by WP-14 recovery.
+
 ---
 
 ## 4. Closed R2.7 upstream realization owners
@@ -94,7 +111,7 @@ These are hard constraints, not candidates for casual redesign.
 
 | Source | Role | WP-14 obligation |
 |---|---|---|
-| `DEV/docs/superpowers/specs/2026-09-01-r2-7-WP-10-durable-campaign-record-family-completeness-canonical-spec.md` | R2.7 UPSTREAM / OWNING | `runtime.checkpoint` and `runtime.session` are admitted narrow durable families; recovery uses native owners/evidence without inventing snapshot/journal/repair mega-owners. |
+| `DEV/docs/superpowers/specs/2026-09-01-r2-7-WP-10-durable-campaign-record-family-completeness-canonical-spec.md` | R2.7 UPSTREAM / OWNING | `runtime.checkpoint`, `runtime.session` and admitted support/runtime families (including `runtime.maintenance_audit` where applicable) remain narrow typed families; recovery uses native owners/evidence without inventing snapshot/journal/repair mega-owners. |
 | `DEV/docs/superpowers/specs/2026-09-01-r2-7-WP-11-physical-storage-topology-identity-indexing-canonical-spec.md` | R2.7 UPSTREAM / OWNING | Checkpoint route = `CHECKPOINTS`, no index; session route = `SESSIONS`, no index. **F03 -> WP-14:** current-route-first recovery + deterministic index rebuild. Known-ID reads use exact derived routes; index absence never proves semantic absence. |
 | `DEV/docs/superpowers/specs/2026-09-02-r2-7-WP-12-hot-sqlite-transaction-realization-canonical-spec.md` | R2.7 UPSTREAM / OWNING | Cold recovery starts from current native authorities/exact pins; surviving SQLite is cache only after source-equivalence proof; recovery-attempt composition ephemeral; checkpoint optional evidence. |
 | `DEV/docs/superpowers/specs/2026-09-02-r2-7-WP-13-durability-save-publication-canonical-spec.md` | R2.7 UPSTREAM / OWNING | Current compatible source composition proves durability; checkpoint never proves SAVE/handoff/current state; session/cached HEAD fields are not authority. **WP-13 forward obligation -> WP-14:** current-authority-first recovery/checkpoint machine. |
@@ -114,7 +131,7 @@ These are implementation evidence, not semantic authority where they conflict wi
 | `GAME/CORE/SESSION.md` | IMPLEMENTATION / MACHINE CONTRACT | Session lifecycle/handoff/continuation prose; distinguish durable session coordination record from host/model memory and native recovery owners. | INSPECTED FOR STEP 1 / REQUIRED STEP-2. |
 | `GAME/CORE/INTEGRITY.md` | IMPLEMENTATION / MACHINE CONTRACT | Current canon-suspect/repair behavior, evidence requirements and scoped blocking; must not silently fall back to checkpoint/history. | INSPECTED FOR STEP 1 / REQUIRED STEP-2. |
 | `GAME/CORE/STORAGE.md` | IMPLEMENTATION / MACHINE CONTRACT | Campaign/native storage retrieval, current routing, checkpoint relation and local working-set semantics. | REQUIRED STEP-2. |
-| `GAME/CORE/PERSISTENCE.md` | IMPLEMENTATION / MACHINE CONTRACT | Publication/crash outcome/currentness evidence consumed by recovery; no publication journal. | REQUIRED STEP-2. |
+| `GAME/CORE/PERSISTENCE.md` | IMPLEMENTATION / MACHINE CONTRACT | Publication/crash outcome/currentness evidence consumed by recovery; no publication journal; runtime transport evidence remains fixed-Connector-path evidence. | REQUIRED STEP-2. |
 | `GAME/CORE/SAVE_CONTRACT.md` | IMPLEMENTATION / MACHINE CONTRACT | Recovery/checkpoint cannot become save proof; explicit save promise remains WP-13/native durability owned. | REQUIRED STEP-2 where checkpoint/save text intersects. |
 | `GAME/CORE/LIVE_SCENE.md` | IMPLEMENTATION / MACHINE CONTRACT | Current live route/source/closed-unabsorbed recovery behavior; no campaign fallback. | REQUIRED STEP-2 for live recovery boundary; final live machine WP-16. |
 | `GAME/CORE/MULTIPLAYER.md` | IMPLEMENTATION / MACHINE CONTRACT | Campaign/live synchronization, stale sessions, authorization and shared-source currentness. | REQUIRED STEP-2 where recovery/session/currentness participates. |
@@ -133,7 +150,9 @@ These are implementation evidence, not semantic authority where they conflict wi
 | `GAME/SCHEMA/session.schema.yaml` | IMPLEMENTATION / MACHINE CONTRACT | `base_head_sha`, `last_published_head_sha`, status/notes are narrow session coordination evidence only. | INSPECTED FOR STEP 1 / REQUIRED STEP-2. |
 | `GAME/CAMPAIGN/SESSIONS/_TEMPLATE.yaml` | IMPLEMENTATION / MACHINE CONTRACT | Mirrors session hint/currentness fields; must not create host lease/current frontier. | INSPECTED FOR STEP 1 / REQUIRED STEP-2. |
 | `GAME/SCHEMA/current_state.schema.yaml` | IMPLEMENTATION / MACHINE CONTRACT | Compact current/routing projection; must not become universal recovery root list, chronology authority or checkpoint substitute. | INSPECTED FOR STEP 1 / REQUIRED STEP-2. |
-| `GAME/TOOLS/init_campaign.py` | IMPLEMENTATION / MACHINE CONTRACT | Mechanically copies campaign template and initializes MANIFEST/card/CURRENT; any checkpoint/session schema/template repair must remain compatible with scaffold generation without making checkpoint mandatory. | INSPECTED FOR STEP 1 / CONDITIONAL STEP-2. |
+| `GAME/SCHEMA/campaign_manifest.schema.yaml` | IMPLEMENTATION / MACHINE CONTRACT | Current `MANIFEST.last_checkpoint_id` contract declares the latest-checkpoint pointer and explicitly leaves current chronology frontier/semantic-log cursor in `STATE/CURRENT`. Step 2 must inspect pointer semantics and every consumer; accepted Step-5.7 meaning remains a narrow checkpoint-descriptor pointer, never recovery frontier/currentness/SAVE/handoff authority. | INSPECTED FOR SENIOR REPAIR / REQUIRED STEP-2. |
+| `GAME/CAMPAIGN/MANIFEST.yaml` | IMPLEMENTATION / MACHINE CONTRACT | Current scaffold carries `last_checkpoint_id: null`. Step 2 must inspect scaffold/generator impact and pointer lifecycle without making checkpoint mandatory or broadening pointer authority. | INSPECTED FOR SENIOR REPAIR / REQUIRED STEP-2. |
+| `GAME/TOOLS/init_campaign.py` | IMPLEMENTATION / MACHINE CONTRACT | Mechanically copies campaign template and initializes MANIFEST/card/CURRENT; any checkpoint/session/MANIFEST repair must remain compatible with scaffold generation without making checkpoint mandatory. | INSPECTED FOR STEP 1 / CONDITIONAL STEP-2. |
 
 Step 2 must inspect other runtime owner schemas referenced by RRC only as needed for exact recovery-machine realization; the manifest is deliberately open-world.
 
@@ -154,14 +173,15 @@ No test expectation supersedes canonical architecture. Stale tests are machine d
 
 ---
 
-## 8. Access, authorization and repair boundaries
+## 8. Access, authorization, maintenance and repair boundaries
 
-| Source | Role | Why relevant |
+| Source | Role | Why relevant / required Step-2 route |
 |---|---|---|
 | `DEV/ARCHITECTURE/ACCESS_CONTROL.md` | CANONICAL / OWNING | Recovery may read broadly only within lawful information/operation scope; any repair/write remains application-authorized. Session or repository technical permission cannot create gameplay authority. |
 | `DEV/ARCHITECTURE/BRANCH_MODEL.md` | CANONICAL / OWNING where not superseded | Current campaign/live ref roles and non-force currentness context. Existing Storage-v2 documentation debt remains WP-26, not WP-14 semantics. |
+| `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` | CURRENT SUPPORT / MAINTENANCE CONTRACT / PROPOSAL | Direct current recovery/repair/support consumer; repository status is `INTERNAL CONTROL CONTRACT / PROPOSAL`, so it cannot override Step-5.7/WP-10. Step 2 must reconcile `HDM_EXPORT_CHECKPOINT_LOG`, `HDM_RESET_LAST_CHECKPOINT`, checkpoint-based local reconstruction, `runtime.maintenance_audit`, and Connector/diagnostic evidence boundaries against current-authority-first/checkpoint-optional/no-silent-fallback recovery and WP-10 record-family allocation. Step 1 does **not** decide final command retention/removal/redesign. |
 
-If Step 2 discovers a repair operation that writes state, its exact owner/access/currentness contract must be added to this manifest before synthesis.
+If Step 2 discovers another repair operation that writes state, its exact owner/access/currentness contract must be added to this manifest before synthesis.
 
 ---
 
@@ -183,7 +203,7 @@ Step 2 must account item-by-item for at least:
 12. session metadata status/HEAD semantics;
 13. checkpoint optionality/current validation/facility-scoped defects;
 14. exact disposition of current checkpoint schema/template fields;
-15. `MANIFEST.last_checkpoint_id` narrow pointer semantics;
+15. `MANIFEST.last_checkpoint_id` narrow pointer semantics, actual consumers and scaffold/generator impact;
 16. deterministic WP-11 direct-route/index rebuild;
 17. READY / RETRY / BLOCKED and integrity-suspect outcomes;
 18. bounded evidence-gated repair with no silent historical fallback;
@@ -192,7 +212,10 @@ Step 2 must account item-by-item for at least:
 21. checkpoint not SAVE/handoff proof;
 22. bootstrap/session/runtime/integrity consumer reconciliation;
 23. current regression/test expectation classification;
-24. downstream implementation/conformance obligations.
+24. downstream implementation/conformance obligations;
+25. ambient Project/chat/model memory non-authority and zero-model-memory recovery against current routed owners;
+26. fixed gameplay repository transport: exact pinned-ref/currentness/CAS/conflict/ambiguous-failure evidence through `deterministic Python/core -> GitHub Connector`, no alternate transport probe/fallback, and typed supported-profile failure when required Connector capability is absent;
+27. `MAINTENANCE_COMMANDS.md` support flows, checkpoint-based local reconstruction, `runtime.maintenance_audit` allocation and Connector diagnostic-evidence boundaries without silently promoting checkpoint/history/export/support data into authority.
 
 Synthesis is blocked until this completeness accounting is complete.
 
@@ -210,7 +233,7 @@ Expected downstream consumers, without authorization to start them now:
 - **WP-26** — only separately routed documentation consistency debt, not WP-14 semantic repair;
 - later implementation planning — exact APIs/schema migration/test plan only after architecture gates authorize it.
 
-WP-14 Step 1 does not change runtime/schema/template/test/tool implementation.
+WP-14 Step 1 and this Senior repair do not change runtime/schema/template/test/tool implementation.
 
 ---
 
@@ -222,9 +245,11 @@ ACTUAL_OWNER_CONSUMER_EXPANSION:   YES
 OPEN_WORLD_FOR_STEP_2:             YES
 UPSTREAM_WP11_WP12_WP13_CONSUMED:  YES
 CRITIC_REPAIRS_INCORPORATED:       YES
+SENIOR_REPAIR_SR14_01_03:          CLOSED
+HISTORICAL_CRITIC_C01_C11_REWRITTEN: NO
 UNRESOLVED_BLOCKING:               0
 UNRESOLVED_SIGNIFICANT:            0
 HUMAN_DECISION_REQUIRED:           NO
 ```
 
-After Task Brief/manifest publication and cursor synchronization, the next gate is mandatory Senior review. Step 2, WP-15 and implementation planning remain blocked.
+After Task Brief/manifest Senior repair publication and cursor synchronization, the next gate is mandatory Senior review. Step 2, WP-15 and implementation planning remain blocked.
