@@ -1,6 +1,6 @@
 # R2.7 WP-14 — Recovery / Checkpoints / Session / Repair — Architecture Task Brief
 
-Status: **STEP 1 COMPLETE — CRITIC REPAIRS APPLIED / MANDATORY SENIOR REVIEW REQUIRED**
+Status: **STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW REQUIRED**
 
 Date: 2026-09-02
 
@@ -14,6 +14,10 @@ Mandatory whole-project Task-Brief critic:
 
 - `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-task-brief-critic.md`
 
+Separate post-critic Senior-recovery record:
+
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-senior-recovery-source-graph-omissions.md`
+
 ---
 
 ## 1. Mission
@@ -24,7 +28,7 @@ The inherited canonical direction is:
 
 > **CURRENT-AUTHORITY-FIRST / CHECKPOINT-OPTIONAL / NATIVE-ROUTED BOUNDED RECOVERY WITH EVIDENCE-GATED REPAIR**
 
-WP-14 is not a greenfield choice among snapshot/recovery strategies. Steps 5.2/5.4/5.7 and the closed WP-11/WP-12/WP-13 packages already constrain the solution space. This work must reconcile current runtime/schema/template/test surfaces to those contracts without creating a new recovery owner, universal frontier, session lease or checkpoint authority.
+WP-14 is not a greenfield choice among snapshot/recovery strategies. Steps 5.2/5.4/5.7 and the closed WP-11/WP-12/WP-13 packages already constrain the solution space. This work must reconcile current runtime/schema/template/test/support surfaces to those contracts without creating a new recovery owner, universal frontier, session lease or checkpoint authority.
 
 Step 1 only establishes the evidence scope and decision framing. It does not perform Step-2 extraction, select final machine fields/APIs, edit implementation or begin planning.
 
@@ -44,6 +48,7 @@ WP-14 consumes, without reopening by overlap alone:
 - Step-5.8 live ownership/currentness;
 - Step-5.9 chronology separation;
 - Step-5.14 integrated recovery/concurrency review;
+- R2.6 MVP host assurance and fixed gameplay repository transport;
 - WP-10 durable record-family allocation;
 - WP-11 physical topology/routing/indexing;
 - WP-12 HOT/SQLite transaction/currentness realization;
@@ -63,9 +68,13 @@ Implementation debt, stale prose/schema/tests, convenience or preference for a s
 
 WP-14 must explicitly discharge or preserve at least:
 
+- **R2.6 host/context assurance:** ambient Project/chat/model memory is not campaign/currentness/recovery authority; current routed owners win over stale/foreign ambient context;
+- **R2.6 fixed gameplay repository transport:** supported runtime path remains `deterministic Python/core -> GitHub Connector -> authoritative non-force ref transition`; recovery may not probe/fallback through `gh`, native remote Git, private HTTP/API/token paths, alternate App/MCP/backend or GitHub Actions; missing required Connector capability is a supported-profile capability failure; exact pinned-ref/currentness/CAS/conflict/ambiguous-failure evidence must be accounted through the fixed path;
 - **WP-11/F03:** current-route-first recovery and deterministic index rebuild;
 - **WP-12 -> WP-14:** cold recovery from current native authorities/exact pins; surviving SQLite only after source-equivalence proof; recovery composition ephemeral; checkpoint optional evidence;
 - **WP-13 -> WP-14:** current-authority-first sources; checkpoint remains optional/non-SAVE authority; session/cached HEAD is not authority.
+
+The R2.6 gameplay/runtime transport constraints above are distinct from development-agent Connector rules in `AGENTS.md` / `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md`.
 
 ---
 
@@ -83,10 +92,12 @@ Concrete current debt already established in Step 1 includes:
   - active PC/thread/scene observations;
   - engine provenance that is not current runtime authority;
 - `GAME/SCHEMA/session.schema.yaml` and session template `base_head_sha` / `last_published_head_sha` / status fields that must remain coordination/currentness hints, never semantic currentness/recovery authority;
-- bootstrap regression B25 that presently couples first scene with checkpoint creation;
+- `GAME/SCHEMA/campaign_manifest.schema.yaml` and `GAME/CAMPAIGN/MANIFEST.yaml` carry `last_checkpoint_id`; Step 2 must inspect the actual pointer consumers/scaffold behavior while preserving its narrow descriptor-pointer meaning;
+- `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` directly consumes checkpoint export/reset/local reconstruction and `runtime.maintenance_audit` semantics and therefore must be reconciled as a support consumer without becoming recovery authority;
+- bootstrap regression B25 presently couples first scene with checkpoint creation;
 - local/HOT/session/runtime prose that must be reconciled with WP-12/WP-13 source-currentness laws.
 
-These are machine-realization debts. They do not by themselves reopen Step-5.7.
+These are machine/support realization debts and evidence-perimeter obligations. They do not by themselves reopen Step-5.7, R2.6 transport selection or WP-10..WP-13.
 
 ---
 
@@ -105,7 +116,7 @@ Step 2–8, if later authorized, must answer at implementation-facing precision:
 9. Which local SQLite bytes/helpers may be reused after cold start, and what source-equivalence proof is required first?
 10. What exact role remains for `runtime.session`, session HEAD/status fields and session notes?
 11. What exact checkpoint fields survive, change semantics or are retired under Step-5.7?
-12. What remains the meaning of `MANIFEST.last_checkpoint_id`?
+12. What remains the meaning of `MANIFEST.last_checkpoint_id`, which actual consumers use it, and what scaffold/generator consequences follow?
 13. When may ordinary recovery read zero checkpoints?
 14. How are optional checkpoint defects scoped so they do not falsely invalidate independent current gameplay RRC?
 15. How do current source movement and routing movement produce `RETRY` rather than false corruption or stale resume?
@@ -113,9 +124,12 @@ Step 2–8, if later authorized, must answer at implementation-facing precision:
 17. How does repair use bounded checkpoint/history/session/transcript evidence without turning historical evidence into silent fallback authority?
 18. How are derived family/index/query/Agenda/context structures rebuilt deterministically under WP-11/WP-12?
 19. How are access/currentness/acting-principal requirements enforced for any repair that mutates durable state?
-20. Which current runtime/schema/template/test surfaces are conforming, stale, superseded or downstream-owned?
+20. Which current runtime/schema/template/test/support surfaces are conforming, stale, superseded or downstream-owned?
+21. How does recovery remain correct with zero usable ambient Project/chat/model memory, treating ambient context as non-authoritative even when it conflicts with current routed owners?
+22. How are exact repository ref/currentness/CAS/conflict/ambiguous-failure observations acquired and retained through the fixed gameplay Connector path without probing or falling back to alternate transports?
+23. How must `HDM_EXPORT_CHECKPOINT_LOG`, `HDM_RESET_LAST_CHECKPOINT`, checkpoint-based local reconstruction, `runtime.maintenance_audit` and Connector diagnostic evidence be reconciled as support consumers without deciding their final command fate in Step 1?
 
-Exact field/API/schema choices are Step-3+ synthesis/candidate work, not Step 1.
+Exact field/API/schema/command choices are Step-3+ synthesis/candidate work, not Step 1.
 
 ---
 
@@ -254,6 +268,20 @@ optional checkpoint facility defective but current RRC proves
 
 Checkpoint/history may aid explicit repair but never silently replace current authority. Any mutating repair must preserve native owner, access, publication and durability rules.
 
+### 5.16 Ambient host context and repository transport are not fallback authorities
+
+Chat history, Project memory and other ambient host/model context may help interaction but are not campaign canon/currentness/recovery evidence. Recovery correctness must survive zero usable ambient memory and conflicting stale ambient context.
+
+The supported gameplay/runtime remote path remains fixed:
+
+```text
+deterministic Python/core
+-> GitHub Connector
+-> authoritative non-force ref transition
+```
+
+Recovery may consume exact pinned-ref/currentness/CAS/conflict/failure evidence from that path. It must not probe or fall back to `gh`, native remote Git, private HTTP/API/token workarounds, alternate App/MCP/backend transport, GitHub Actions gameplay bridging or equivalent alternate paths. Missing a required Connector capability is a supported-profile capability failure, not permission to improvise transport.
+
 ---
 
 ## 6. Current checkpoint field disposition to carry into Step 2
@@ -267,10 +295,10 @@ The Task Brief does not choose final replacement schema, but Step 2 must begin f
 | checkpoint copied `world_time` | Diagnostics/presentation only if retained; never chronology/currentness authority. |
 | active PC/thread/scene lists | Optional non-exhaustive observations only if measured/proven useful; never root completeness. |
 | checkpoint engine/runtime data | Optional provenance/diagnostics; current campaign runtime comes from current campaign authority, while open work resolves accepted interpretation pins. |
-| `MANIFEST.last_checkpoint_id` | Narrow campaign-domain pointer to most recently selected/published checkpoint descriptor only. |
+| `MANIFEST.last_checkpoint_id` | Narrow campaign-domain pointer to most recently selected/published checkpoint descriptor only; never recovery frontier/currentness/SAVE/handoff authority. Step 2 must inspect actual schema/template consumers and scaffold/generator impact. |
 | new root/source completeness fields | Forbidden by default; require concrete measured bounded-recovery/diagnostic value and preserved authority laws. |
 
-Step 2 must verify current schema/template/test references before any synthesis proposes keep/remove/replace details.
+Step 2 must verify current schema/template/test/support references before any synthesis proposes keep/remove/replace details.
 
 ---
 
@@ -303,23 +331,26 @@ However, accepted architecture already forbids interpreting any of these as dupl
 
 ---
 
-## 8. Concrete current machine/test debt to reverse-audit
+## 8. Concrete current machine/support/test debt to reverse-audit
 
-Mandatory Step-2 machine targets include at least:
+Mandatory Step-2 machine/support targets include at least:
 
 - `GAME/CORE/BOOTSTRAP_RUNTIME.md` — replace checkpoint-first interpretation with current-authority-first/native-route hydration while preserving campaign-selection barrier and bounded lazy reads;
 - `GAME/CORE/SESSION.md` — reconcile host/session handoff and durable session record role;
 - `GAME/CORE/RUNTIME.md` — reconcile cold-start/currentness/lost-dirty behavior;
 - `GAME/CORE/INTEGRITY.md` — classify repair and scoped integrity outcomes without invented fallback;
-- `GAME/CORE/STORAGE.md` / `PERSISTENCE.md` — source/currentness/crash evidence consumed by recovery;
+- `GAME/CORE/STORAGE.md` / `PERSISTENCE.md` — source/currentness/crash and fixed-Connector evidence consumed by recovery;
 - `GAME/CORE/LIVE_SCENE.md` / `MULTIPLAYER.md` — current live authority and stale-session behavior;
 - `GAME/SCHEMA/checkpoint.schema.yaml` and checkpoint template;
 - `GAME/SCHEMA/session.schema.yaml` and session template;
 - `GAME/SCHEMA/current_state.schema.yaml`;
+- `GAME/SCHEMA/campaign_manifest.schema.yaml` and `GAME/CAMPAIGN/MANIFEST.yaml` — actual `last_checkpoint_id` pointer semantics, consumers and scaffold impact;
+- `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` — reconcile `HDM_EXPORT_CHECKPOINT_LOG`, `HDM_RESET_LAST_CHECKPOINT`, checkpoint reconstruction, `runtime.maintenance_audit` and Connector diagnostic evidence without deciding final command fate in Step 1;
+- R2.6 host-assurance canonical spec + fixed-repository-transport owner clarification — ambient-memory non-authority, fixed runtime Connector route and exact currentness/failure evidence;
 - bootstrap regression B25/B42 plus persistence/save tests that constrain checkpoint optionality;
 - any executable schema/contract tests discovered in Step 2.
 
-A current implementation/test contradiction with accepted architecture is implementation debt unless it establishes one of the formal upstream reopen conditions.
+A current implementation/support/test contradiction with accepted architecture is implementation/documentation debt unless it establishes one of the formal upstream reopen conditions.
 
 ---
 
@@ -329,16 +360,20 @@ WP-14 does not:
 
 - redesign Step-3 execution;
 - redefine SOFT/HARD/SAVE or publication;
+- reopen gameplay repository transport selection;
+- use development-agent transport process as runtime recovery authority;
 - choose a new global recovery snapshot;
 - create a persistent RecoveryCut/frontier;
 - make checkpoint mandatory;
 - make session a host lease;
+- make ambient Project/chat/model memory campaign or recovery authority;
 - add generic pending/job/repair queues;
+- decide the final fate of current maintenance commands in Step 1;
 - redefine live claims/CAS/absorption (WP-16 owns final machine);
 - redesign chronology;
 - redesign Story/transcript/disclosure/GC unless a bounded recovery dependency requires inspection;
 - implement bootstrap/migration (WP-19/WP-20);
-- edit runtime/schema/template/tests in Step 1;
+- edit runtime/schema/template/catalog/tests in Step 1 or this Senior repair;
 - begin WP-15;
 - begin implementation planning.
 
@@ -352,13 +387,17 @@ If Senior GO later authorizes Step 2, evidence extraction must:
 2. extract relevant owner laws item-by-item with qualifiers/exceptions;
 3. map every current checkpoint/session/recovery field and behavior to an owner/disposition;
 4. map every admitted independent recovery root and required dependency class;
-5. inventory concrete current consumers/tests/tools before proposing schema removal/change;
+5. inventory concrete current consumers/tests/tools/support commands before proposing schema or command removal/change;
 6. distinguish currentness movement (`RETRY`) from pinned-basis corruption (`BLOCKED`/repair);
 7. prove where optional checkpoint defects are facility-only;
 8. preserve negative findings/non-goals/revisit triggers;
-9. close the synthesis-completeness gate before Step 3.
+9. prove ambient Project/chat/model memory non-authority and zero-model-memory recovery from current routed owners;
+10. extract exact pinned-ref/currentness/CAS/conflict/ambiguous-failure evidence requirements on the fixed gameplay Connector path and preserve no alternate-transport fallback plus typed capability failure;
+11. reconcile `MAINTENANCE_COMMANDS.md` checkpoint export/reset/reconstruction, `runtime.maintenance_audit` and Connector diagnostic evidence against Step-5.7/WP-10 without silently promoting support projections/history/checkpoints to authority;
+12. inspect `campaign_manifest.schema.yaml`, `CAMPAIGN/MANIFEST.yaml`, actual `last_checkpoint_id` consumers and scaffold/generator impact while preserving narrow descriptor-pointer semantics;
+13. close the synthesis-completeness gate before Step 3.
 
-No candidate final schema/API/protocol is authorized before that gate.
+No candidate final schema/API/protocol/command disposition is authorized before that gate.
 
 ---
 
@@ -376,16 +415,16 @@ This Step-1 package anticipates, without starting them:
 
 ---
 
-## 12. Step-1 critic result
+## 12. Step-1 critic and Senior-repair result
 
-Mandatory whole-project framing critic found and mechanically resolved:
+The mandatory whole-project framing critic historically found and mechanically resolved:
 
 ```text
 BLOCKING:     3
 SIGNIFICANT:  8
 ```
 
-Resolved areas:
+Resolved C01-C11 areas:
 
 - checkpoint-first startup authority;
 - accepted execution/temporal recovery continuity;
@@ -399,9 +438,22 @@ Resolved areas:
 - chronology separation;
 - checkpoint facility vs SAVE/handoff/current-state proof.
 
-Final Step-1 state:
+A subsequent Senior review found three **separate** SIGNIFICANT source-graph omissions, recorded only in the Senior-recovery artifact:
 
 ```text
+SR14-01 R2.6 host-memory + fixed gameplay repository transport authorities
+SR14-02 MAINTENANCE_COMMANDS current support/recovery consumer
+SR14-03 campaign MANIFEST.last_checkpoint_id machine surfaces
+```
+
+The historical C01-C11 critic remains unchanged. SR14-01..03 are mechanically closed by this narrow Senior repair.
+
+Final Step-1 + Senior-repair state:
+
+```text
+SR14-01: CLOSED
+SR14-02: CLOSED
+SR14-03: CLOSED
 UNRESOLVED_BLOCKING:     0
 UNRESOLVED_SIGNIFICANT:  0
 HUMAN_DECISION_REQUIRED: NO
@@ -412,7 +464,7 @@ UPSTREAM_REOPEN_REQUIRED: NO
 
 ## 13. Mandatory gate
 
-WP-14 Step 1 ends here.
+WP-14 Step 1 + Senior repair ends here.
 
 After coherent publication, cursor synchronization and fresh verification:
 
