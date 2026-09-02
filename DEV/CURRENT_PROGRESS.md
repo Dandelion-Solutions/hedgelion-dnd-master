@@ -8,14 +8,14 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-14 / STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW
+GLOBAL_STATE: R2.7 WP-14 / STEPS 1-8 COMPLETE — MANDATORY FINAL SENIOR AUDIT
 
 CURRENT_WORKSTREAM: R2.7 WP-14 — recovery / checkpoints / session / repair
-CURRENT_SLICE: Step 1 + narrow Senior repair complete; historical Task-Brief critic C01-C11 remains unchanged; separate SR14-01..SR14-03 source-graph omissions are mechanically repaired in the Source Manifest/Task Brief/Senior-recovery record; mandatory Senior review pending
+CURRENT_SLICE: Repaired Step 1 + Steps 2-8 complete; SR14-01..03 consumed; Step-6 3 BLOCKING + 5 SIGNIFICANT findings mechanically resolved in Step 7 and incorporated into final canonical result; mandatory final Senior audit pending
 
 LAST_CLOSED_UNIT: R2.7 WP-13 Steps 1-8 + Step-1 SR13-01 repair / durability / SAVE / publication — Senior review PASS at f0ba874f20ab607cc9b54b0b4538cf1d8027f71f
-NEXT_AUTHORIZED_UNIT: Mandatory Senior review of the repaired R2.7 WP-14 Step-1 package
-REQUIRED_GATE: Senior review of WP-14 Step 1 + Senior repair. Do not begin Step 2, WP-15 or implementation planning without explicit Senior GO.
+NEXT_AUTHORIZED_UNIT: Mandatory final Senior audit of the completed R2.7 WP-14 Steps 1-8 package
+REQUIRED_GATE: Senior final audit of WP-14 Steps 1-8. Do not begin WP-15 or implementation planning without explicit Senior GO after that audit.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
