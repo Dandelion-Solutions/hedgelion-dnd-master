@@ -50,9 +50,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-12
 CURRENT_DOMAIN: WP-13
 CURRENT_DOMAIN_TOPIC: durability / SAVE / publication
-CURRENT_SLICE: Step 1 complete — Task Brief + task-specific Source Manifest + mandatory whole-project Task-Brief critic repaired; mandatory Senior review pending
+CURRENT_SLICE: Step 1 + narrow post-critic Senior repair complete — SR13-01 fixed gameplay repository-transport omission repaired; mandatory Senior review pending
 NEXT_DOMAIN: WP-14
-OWNER_GATE: REQUIRED — mandatory Senior review of completed WP-13 Step 1; Step 2 must not begin before explicit Senior GO
+OWNER_GATE: REQUIRED — mandatory Senior review of repaired WP-13 Step 1; Step 2 must not begin before explicit Senior GO
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -62,7 +62,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-13 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
+R2_7_STATUS: WP-13 STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
@@ -72,7 +72,7 @@ R2_7_WP09: COMPLETE
 R2_7_WP10: COMPLETE
 R2_7_WP11: CLOSED / SENIOR REVIEW PASS
 R2_7_WP12: CLOSED / SENIOR REVIEW PASS
-R2_7_WP13: STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
+R2_7_WP13: STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW
 ```
 
 This task-local cursor records the R2.7 audit checkpoint. It does not own global
@@ -97,12 +97,12 @@ findings. Read `DEV/CURRENT_PROGRESS.md` before resuming any work.
 | WP-10 | CLOSED |
 | WP-11 | CLOSED / SENIOR REVIEW PASS |
 | WP-12 | CLOSED / SENIOR REVIEW PASS |
-| WP-13 | STEP 1 COMPLETE — MANDATORY SENIOR REVIEW |
+| WP-13 | STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW |
 | WP-14..WP-27 | NOT STARTED |
 
 ---
 
-## WP-13 Step-1 completion
+## WP-13 Step-1 completion and Senior repair
 
 WP-13 scope is the R2.7 domain **durability / SAVE / publication**.
 
@@ -112,7 +112,11 @@ Published Step-1 artifacts:
 - `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-source-manifest.md`;
 - `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-task-brief-critic.md`.
 
-The Step-1 dependency reconstruction used the current `DEV/PROJECT_MAP.md` and actual owning/consumer surfaces across Step-3, Step-5.2/5.4/5.5/5.6/5.7/5.8/5.14, WP-10/WP-11/WP-12, Access Control/Branch Model/House Rules, current GAME durability/save/publication/session/live/integrity consumers, current schemas and current regression/audit surfaces.
+Separate post-critic Senior-recovery artifact:
+
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-senior-recovery-fixed-gameplay-repository-transport.md`.
+
+The original Step-1 dependency reconstruction used the current `DEV/PROJECT_MAP.md` and actual owning/consumer surfaces across Step-3, Step-5.2/5.4/5.5/5.6/5.7/5.8/5.14, WP-10/WP-11/WP-12, Access Control/Branch Model/House Rules, current GAME durability/save/publication/session/live/integrity consumers, current schemas and current regression/audit surfaces.
 
 The mandatory whole-project Task-Brief critic found:
 
@@ -121,9 +125,9 @@ BLOCKING:     2
 SIGNIFICANT:  8
 ```
 
-All were mechanically resolvable from accepted architecture/current repository evidence and are repaired in the published Task Brief/Source Manifest.
+All C01–C10 were mechanically resolvable from accepted architecture/current repository evidence and remain repaired in the Task Brief/Source Manifest.
 
-Final Step-1 critic state:
+Historical critic state remains:
 
 ```text
 UNRESOLVED_BLOCKING:     0
@@ -131,7 +135,23 @@ UNRESOLVED_SIGNIFICANT:  0
 HUMAN_DECISION_REQUIRED: NO
 ```
 
-The repaired framing explicitly preserves:
+A subsequent Senior review found one separate `SIGNIFICANT` source-manifest/framing omission, `SR13-01`: the Step-1 package had omitted the current accepted R2.6 shipped gameplay repository-transport authority:
+
+- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md`;
+- `DEV/docs/superpowers/design/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md`.
+
+`SR13-01` is not retroactively inserted into C01–C10. It is recorded and closed separately by the Senior-recovery artifact.
+
+The repair now preserves as mandatory future Step-2 inputs:
+
+- fixed shipped gameplay path `deterministic Python/core -> GitHub Connector -> authoritative non-force ref transition`;
+- closed repository transport selection;
+- no runtime probing/fallback through `gh`, native remote Git, private HTTP/API/token workarounds, alternate App/MCP/backend write transport, GitHub Actions gameplay bridge, transparent local-commit push assumptions or equivalent alternatives;
+- missing required Connector capability as supported-profile capability failure;
+- R2.7 mapping of the actual publication envelope and fixed-Connector currentness/CAS/conflict/failure acceptance coverage;
+- explicit separation from `AGENTS.md` / `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md`, which govern development-agent transport discipline rather than shipped gameplay architecture.
+
+The repaired framing also continues to preserve:
 
 - Step-5.5 scope-owned durability obligation and multi-native-domain SAVE semantics;
 - Step-5.6 frozen single-ref campaign publication/currentness/ambiguity contract;
@@ -143,9 +163,19 @@ The repaired framing explicitly preserves:
 - bounded native-root/direct-route completeness rather than broad campaign scans;
 - downstream ownership of WP-14/WP-16/WP-19/WP-20/WP-22/WP-24/WP-26 concerns.
 
-Current machine/test debt identified for Step-2 evidence work includes the noncanonical one-hour/global `durable_frontier_time`, campaign-centric `SAVE_ALL_DIRTY` framing, unqualified dirty clearing, and older live-machine surfaces. These are evidence/debt, not accepted architecture and not a reason to reopen closed upstream decisions.
+Current machine/test debt identified for future Step-2 evidence work includes the noncanonical one-hour/global `durable_frontier_time`, campaign-centric `SAVE_ALL_DIRTY` framing, unqualified dirty clearing, and older live-machine surfaces. These are evidence/debt, not accepted architecture and not a reason to reopen closed upstream decisions.
 
-Step 2 is not authorized until mandatory Senior review gives explicit GO.
+Senior-recovery disposition:
+
+```text
+SR13-01_INITIAL_SEVERITY: SIGNIFICANT
+SR13-01_DISPOSITION: CLOSED BY SENIOR REPAIR
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+```
+
+Step 2 is not authorized until mandatory Senior review of the repaired package gives explicit GO.
 
 ---
 
@@ -293,11 +323,13 @@ WP12_STEP8_CANONICALIZATION_PUBLISHED_SHA: `2ddbceaf6aed8a0c79399ea1f721397329e9
 WP12_PRE_SENIOR_RECOVERY_HEAD: `ef9c449c53373213ce812b25d6514780b4618db8`
 WP12_FINAL_SENIOR_REAUDIT_SHA: `cc906da9dca4c04fee6342c21128a452b064e312`
 WP13_STEP1_START_SHA: `bffc0e22c12f42f977e591066eb1f56907502fad`
+WP13_STEP1_PRE_SENIOR_REPAIR_SHA: `67a8d0f0ed38a59c6d6c87a61fe787383afcafa1`
 WP13_STEP1_TASK_BRIEF: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-task-brief.md`
 WP13_STEP1_SOURCE_MANIFEST: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-source-manifest.md`
 WP13_STEP1_TASK_BRIEF_CRITIC: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-task-brief-critic.md`
-COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 Steps 1-8 plus Senior SR01 recovery completed and passed mandatory final Senior re-audit; WP-13 Step 1 completed with repaired Task Brief, task-specific Source Manifest and mandatory whole-project Task-Brief critic.
-CURRENT_VERIFICATION_STATE: WP-13 Step-1 framing package is complete with zero unresolved BLOCKING/SIGNIFICANT critic findings and no human-owned decision. Only documentation/current-state carriers are changed by Step 1; no runtime/schema/catalog/test/topology implementation and no implementation-planning work has begun. Mandatory Senior review is pending.
-NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of the completed WP-13 Step-1 package. Step 2, WP-14 and implementation planning remain blocked pending explicit Senior GO.
+WP13_STEP1_SENIOR_RECOVERY: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-senior-recovery-fixed-gameplay-repository-transport.md`
+COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 Steps 1-8 plus Senior SR01 recovery completed and passed mandatory final Senior re-audit; WP-13 Step 1 completed and narrow post-critic Senior SR13-01 repair applied without starting Step 2.
+CURRENT_VERIFICATION_STATE: WP-13 Step-1 repaired framing package records SR13-01 separately from C01-C10, includes the accepted R2.6 fixed gameplay transport sources in mandatory Step-2 evidence, and has zero unresolved BLOCKING/SIGNIFICANT findings with no human-owned decision. No runtime/schema/catalog/test/topology implementation and no implementation-planning work has begun. Mandatory Senior review is pending.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of the repaired WP-13 Step-1 package. Step 2, WP-14 and implementation planning remain blocked pending explicit Senior GO.
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE

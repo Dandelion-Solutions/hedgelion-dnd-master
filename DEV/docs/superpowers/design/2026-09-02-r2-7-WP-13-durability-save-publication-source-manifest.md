@@ -1,6 +1,6 @@
 # R2.7 WP-13 — Durability / SAVE / Publication — Source Manifest
 
-Status: **STEP-1 TASK-SPECIFIC SOURCE MANIFEST — CRITIC-REPAIRED / READY FOR MANDATORY SENIOR REVIEW**
+Status: **STEP-1 TASK-SPECIFIC SOURCE MANIFEST — CRITIC + SENIOR REPAIR APPLIED / READY FOR MANDATORY SENIOR REVIEW**
 
 Date: 2026-09-02
 
@@ -12,6 +12,10 @@ Mandatory whole-project Task-Brief critic:
 
 - `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-task-brief-critic.md`
 
+Post-critic Senior recovery:
+
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-senior-recovery-fixed-gameplay-repository-transport.md`
+
 ---
 
 ## 1. Manifest purpose and classification rules
@@ -22,6 +26,8 @@ Source roles used below:
 
 - **CANONICAL / OWNING** — current semantic or implementation-facing architecture authority;
 - **CANONICAL AMENDMENT / OWNER DECISION** — accepted final clarification that may qualify another owner;
+- **CROSS-STAGE CANONICAL / OWNING** — current accepted prior-stage authority that constrains this R2.7 workstream and must be consumed without reopening the closed decision;
+- **CROSS-STAGE OWNER CLARIFICATION** — owner-approved prior-stage clarification that supersedes broader earlier wording and remains binding on R2.7 realization;
 - **CURRENT-PROGRESS / PROCESS AUTHORITY** — current execution/gate/process owner, not semantic architecture;
 - **DERIVATIVE LOCATOR / INDEX** — routing aid only;
 - **IMPLEMENTATION / MACHINE CONTRACT / TEST** — current concrete runtime/schema/test/tool surface that may conform to or lag accepted architecture;
@@ -43,8 +49,8 @@ Step-1 inspection does not waive Step-2 enumerated-law accounting where the sour
 
 | Source | Role | Why relevant / required scope | Step-1 status | Step-2 disposition |
 |---|---|---|---|---|
-| `AGENTS.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | Repository boundaries, public-material rules, current branch guardrail, artifact taxonomy, GitHub-Connector publication/verification discipline. | INSPECTED FOR STEP 1 | Re-read if changed before Step 2/publication. |
-| `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | Connector-only remote transport, fresh-ref publication and read-back requirements. | INSPECTED FOR STEP 1 | Re-read if changed. |
+| `AGENTS.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | Repository boundaries, public-material rules, current branch guardrail, artifact taxonomy, GitHub-Connector publication/verification discipline for development agents. **This is not shipped gameplay/runtime repository-transport architecture.** | INSPECTED FOR STEP 1 | Re-read if changed before Step 2/publication. |
+| `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | Connector-only remote transport, fresh-ref publication and read-back requirements for ChatGPT development work. **This is not the gameplay runtime transport owner.** | INSPECTED FOR STEP 1 | Re-read if changed. |
 | `DEV/DESIGN_PROCESS.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | Eight-step loop, Source Manifest/evidence gates, decision rights, Task-Brief requirements. | INSPECTED FOR STEP 1 | Binding process. |
 | `DEV/ARCHITECTURE/DESIGN_PROCESS.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | HDM whole-project critic route and mandatory Senior stop after completed Step 1. | INSPECTED FOR STEP 1 | Binding process. |
 | `DEV/PROJECT_MAP.md` | DERIVATIVE LOCATOR / INDEX | Starting route for persistence/durability/recovery, access, tests and actual owning neighbors. | INSPECTED FOR STEP 1 | ROUTING ONLY; refresh before whole-project critic if changed. |
@@ -54,6 +60,17 @@ Step-1 inspection does not waive Step-2 enumerated-law accounting where the sour
 | `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-execution-protocol.md` | CURRENT-PROGRESS / PROCESS AUTHORITY | R2.7 per-domain audit protocol and artifact/gate expectations. | INSPECTED FOR STEP 1 | Binding task process. |
 | `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md` | DESIGN PROVENANCE / PROGRAM INPUT | WP-13 audit questions and architecture↔machine proof objective. | INSPECTED FOR STEP 1 | Use as program-level scope input. |
 | `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md` | DESIGN PROVENANCE / PROGRAM INPUT | Original whole-project evidence routing; not current architecture authority. | INSPECTED FOR STEP 1 | Discovery aid only. |
+
+### Accepted R2.6 cross-stage gameplay repository-transport authority
+
+These sources are independent of the development-agent transport rules above. They define the shipped gameplay/runtime supported repository path and therefore constrain WP-13 machine realization directly.
+
+| Source | Role | Why relevant / required Step-2 scope | Step-1 status |
+|---|---|---|---|
+| `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md` | CROSS-STAGE CANONICAL / OWNING | Current accepted R2.6 supported-host contract. LAW R2.6-9 closes repository transport selection: `deterministic Python/core -> GitHub Connector Git-data/ref operations -> non-force authoritative ref transition`. Missing required Connector capability is a supported-profile capability failure. R2.7 must map actual publication envelopes and preserve Connector currentness/CAS/conflict/failure regression coverage. | INSPECTED FOR STEP 1 / REQUIRED STEP-2 INSPECTION |
+| `DEV/docs/superpowers/design/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md` | CROSS-STAGE OWNER CLARIFICATION / OWNER-APPROVED | Supersedes broader R2.6 transport-selection language. Forbids runtime probing/fallback through `gh`, native remote Git, private HTTP/API/token workarounds, alternate App/MCP/backend write transport, GitHub Actions gameplay bridge, transparent local-commit push assumptions or equivalent alternate-transport experiments. Preserves current `GAME/CORE/PERSISTENCE.md` as runtime HOW owner for the concrete sequence while fixing the allowed remote transport path. | INSPECTED FOR STEP 1 / REQUIRED STEP-2 INSPECTION |
+
+The R2.6 sources must be extracted as architecture evidence in Step 2. `AGENTS.md` and `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md` may still govern how the development agent performs this repository work, but they cannot substitute for or redefine shipped gameplay/runtime transport architecture.
 
 ---
 
@@ -117,7 +134,7 @@ These are shipped machine/runtime contracts. When they conflict with accepted ca
 |---|---|---|---|
 | `GAME/CORE/RUNTIME.md` | Turn-loop and persistence routing consumer | Correctly separates boundary/transport owners and zero-I/O fast path; currently includes one-hour ceiling in HARD examples. Extract all persistence-boundary/currentness/integrity routing text and classify stale clauses. | IMPLEMENTATION / MACHINE CONTRACT / TEST — INSPECTED / REQUIRED STEP-2 |
 | `GAME/CORE/DURABILITY_GUARD.md` | Current runtime WHEN-publication guard | Encodes current one-hour dirty ceiling and global `durable_frontier_time`; this is direct machine debt against Step-5.5/WP-12. Also contains valid sparse-save/no-heartbeat concepts. Must be inspected line-by-line against named owner edges. | IMPLEMENTATION / MACHINE CONTRACT — INSPECTED / REQUIRED STEP-2 |
-| `GAME/CORE/PERSISTENCE.md` | Current campaign/live/storage publication transport | Current `CAMPAIGN_TREE_TXN` largely matches base-tree/non-force campaign publication but needs exact comparison for frozen fields, G/G+1, currentness/auth, ambiguity and no mixed domain semantics. | IMPLEMENTATION / MACHINE CONTRACT — INSPECTED / REQUIRED STEP-2 |
+| `GAME/CORE/PERSISTENCE.md` | Current campaign/live/storage publication transport | Current `CAMPAIGN_TREE_TXN` largely matches base-tree/non-force campaign publication but needs exact comparison for frozen fields, G/G+1, currentness/auth, ambiguity, no mixed-domain semantics **and conformance with the fixed R2.6 Python/core -> GitHub Connector -> non-force ref path**. | IMPLEMENTATION / MACHINE CONTRACT — INSPECTED / REQUIRED STEP-2 |
 | `GAME/CORE/SAVE_CONTRACT.md` | Current explicit-save runtime surface | Current `SAVE_ALL_DIRTY` / one `CAMPAIGN_TREE_TXN` framing is insufficient as the general multi-native-domain SAVE promise. Preserve structured-state/local-completeness rules while reconciling composition. | IMPLEMENTATION / MACHINE CONTRACT — INSPECTED / REQUIRED STEP-2 |
 | `GAME/CORE/STORAGE.md` | Current storage/HOT/repository-role runtime support | Contains `known_head_sha`/tree and current global durable-frontier time. Separate storage-default metadata publication from campaign SAVE. | IMPLEMENTATION / MACHINE CONTRACT — INSPECTED / REQUIRED STEP-2 |
 | `GAME/CORE/SESSION.md` | Session lifecycle/handoff consumer | Contains current inactive-gap one-hour check; valid session-end/handoff/checkpoint-economy concepts must be reconciled to Step5.4/5.5. Checkpoint remains optional. | IMPLEMENTATION / MACHINE CONTRACT — INSPECTED / REQUIRED STEP-2 |
@@ -177,6 +194,8 @@ Current tests are evidence of what the repository enforces today. They do not ov
 
 Step 2 must not infer accepted architecture from test presence alone. Stale tests must be dispositioned as implementation debt and routed to later implementation/WP-22.
 
+R2.6 additionally requires later integrated acceptance/regression coverage of the fixed Connector path, including currentness/CAS/conflict/failure behavior and supported handling of missing required Connector capabilities. Step 2 must map these obligations to the actual publication envelope; it does not implement the tests.
+
 ---
 
 ## 9. Tooling / verification surfaces
@@ -185,7 +204,7 @@ Step 2 must not infer accepted architecture from test presence alone. Stale test
 |---|---|---|---|
 | `DEV/TOOLS/run_maintenance_audit.py` | IMPLEMENTATION / TEST TOOL | Canonical repository audit entry point; future implementation verification may use it. Step 1 does not claim that it proves WP-13 architecture. | INSPECTED FOR STEP 1 |
 | `DEV/TOOLS/audit_engine.py` and validators it invokes | IMPLEMENTATION / TEST TOOL | Inspect in Step 2 only if current audit checks directly constrain publication/durability contracts or create stale assertions. | CONDITIONAL STEP-2 INSPECTION |
-| `.github/workflows/validate.yml` | IMPLEMENTATION / TEST TOOL | Hosted validation transport; publication/status evidence only, not architecture. | CONDITIONAL verification support |
+| `.github/workflows/validate.yml` | IMPLEMENTATION / TEST TOOL | Hosted validation transport for development verification; **not a gameplay/runtime repository transport and not a fallback gameplay persistence bridge**. | CONDITIONAL verification support |
 
 ---
 
@@ -203,6 +222,7 @@ Step 2 must not infer accepted architecture from test presence alone. Stale test
 | O08 | checkpoint fields/current recovery machine have known debt. | DOWNSTREAM OWNER | **WP-14**; WP-13 only preserves checkpoint-not-save-proof law. |
 | O09 | Storage-v2 wording in `BRANCH_MODEL.md` / `ACCESS_CONTROL.md`. | MINOR DOC CONSISTENCY | **WP-26**; explicitly out of WP-13 repair scope. |
 | O10 | executable architecture conformance/failure injection is incomplete. | DOWNSTREAM IMPLEMENTATION | **WP-22** after approved architecture/plan. |
+| O11 | R2.6 fixes shipped gameplay repository transport to Python/core -> GitHub Connector -> non-force ref transition; alternate runtime transports are outside the supported profile and missing required Connector capability is a supported-profile capability failure. | CLOSED CROSS-STAGE AUTHORITY + R2.7 FORWARD OBLIGATION | **ACTIVE WP-13 input**; Step 2 must map the actual publication envelope and Connector currentness/CAS/conflict/failure behavior without reopening transport selection. |
 
 ---
 
@@ -213,10 +233,12 @@ If Senior gives GO, Step 2 must execute this route before synthesis:
 ```text
 fresh current-progress/ref
 -> refresh this Source Manifest against current PROJECT_MAP/tree
+-> extract R2.6 fixed gameplay-transport law + owner clarification item by item
 -> extract Step5.5 laws/qualifiers item by item
 -> extract Step5.6 laws/qualifiers item by item
 -> extract RRC / handoff / checkpoint / live constraints that affect the promise
 -> extract WP11/F02 + WP12 dirty-generation/publication obligations
+-> map the fixed Python/core -> GitHub Connector -> non-force publication envelope
 -> enumerate actual named durability-edge owners in current GAME/architecture
 -> enumerate current runtime/schema/test implementations of each edge/flow
 -> classify each surface:
@@ -233,14 +255,22 @@ fresh current-progress/ref
 Required search/discovery after structural inspection:
 
 - concrete references to `HARD`, `SOFT`, `SAVE`, `SAVE_ALL_DIRTY`, `durable_frontier_time`, `one-hour`, `PERSISTENCE`, `CAMPAIGN_TREE_TXN`, publication, `update_ref`, checkpoint, membership/policy adoption, `PROVISIONAL_IDENTITY`, READY_PC/PLAY_READY and live CAS;
+- concrete gameplay/runtime transport references to `GitHub Connector`, `gh`, native Git/clone/fetch/pull/push/ls-remote, private HTTP/API/token paths, alternate App/MCP/backend transport, GitHub Actions bridge, force push, capability failure, currentness/CAS/conflict/ambiguous failure;
 - direct consumers of current campaign publication and dirty-clearing APIs/contracts once implementation-facing surfaces are identified;
-- tests asserting stale/global timing or campaign-only SAVE assumptions.
+- tests asserting stale/global timing or campaign-only SAVE assumptions;
+- acceptance/regression surfaces that must eventually discharge the R2.6 fixed-Connector currentness/CAS/conflict/failure obligation.
 
 An empty search result is not absence proof; inspect the routed directory/owner family when the claim depends on completeness.
 
 ---
 
 ## 12. Explicit boundaries against accidental scope expansion
+
+### R2.6 fixed gameplay repository transport
+
+WP-13 consumes the already selected supported gameplay/runtime transport path. It may map the exact publication envelope, Connector operation requirements, currentness/CAS/conflict/ambiguous-failure behavior and supported capability-failure semantics. It must not compare or select alternate repository transports.
+
+No new transport research is authorized merely because another backend exists. Only a concrete feasibility uncertainty **inside the selected Connector path**, discovered after the required R2.6 evidence inspection and not resolvable from current accepted evidence, may justify a bounded feasibility spike; such a spike cannot silently reopen transport selection.
 
 ### WP-14 checkpoint/recovery
 
@@ -256,7 +286,7 @@ WP-13 may define a reusable publication contract consumed later. It does not des
 
 ### WP-22 tests
 
-WP-13 Step 8 may state mandatory executable obligations. Production/test implementation belongs after architecture approval and approved planning; R2.7 Step 1 changes no tests.
+WP-13 Step 8 may state mandatory executable obligations, including inherited R2.6 fixed-Connector currentness/CAS/conflict/failure coverage. Production/test implementation belongs after architecture approval and approved planning; R2.7 Step 1 changes no tests.
 
 ### WP-24 performance
 
@@ -273,6 +303,8 @@ Storage-v2 wording remains forward documentation work. It does not alter the cur
 ```text
 [x] current remote ref/current-progress/process sources were recovered
 [x] PROJECT_MAP persistence/access/test routes were followed to actual owners
+[x] R2.6 fixed gameplay repository-transport canonical authority and owner clarification were inspected and classified separately from development-agent transport rules
+[x] fixed transport selection, no runtime fallback/probing, Connector capability-failure semantics and R2.7 currentness/CAS/conflict/failure obligation are routed into mandatory Step-2 evidence inspection
 [x] primary Step5.5/Step5.6 semantic owners were inspected
 [x] RRC, handoff, checkpoint and live neighboring authority boundaries were inspected
 [x] WP10/WP11/WP12 upstream realization owners and forward obligations were inspected
@@ -296,10 +328,10 @@ No current evidence creates a new product/authority choice at Step 1.
 
 ## 14. Step-1 gate
 
-This manifest plus the repaired Task Brief and whole-project critic form the complete Step-1 framing package.
+This manifest plus the repaired Task Brief, historical whole-project critic and separate Senior-recovery finding form the current complete Step-1 framing package.
 
 After verified publication:
 
-- mandatory Senior review is required;
+- mandatory Senior review of the repaired Step-1 package is required;
 - Step 2 is blocked until explicit Senior GO;
 - WP-14 and implementation planning remain blocked.

@@ -1,6 +1,6 @@
 # R2.7 WP-13 — Durability / SAVE / Publication — Architecture Task Brief
 
-Status: **STEP-1 TASK BRIEF / WHOLE-PROJECT CRITIC REPAIRED — READY FOR MANDATORY SENIOR REVIEW**
+Status: **STEP-1 TASK BRIEF / WHOLE-PROJECT CRITIC + SENIOR REPAIR APPLIED — READY FOR MANDATORY SENIOR REVIEW**
 
 Date: 2026-09-02
 
@@ -11,6 +11,10 @@ Task-specific Source Manifest:
 Mandatory whole-project Task-Brief critic:
 
 - `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-task-brief-critic.md`
+
+Post-critic Senior recovery:
+
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-senior-recovery-fixed-gameplay-repository-transport.md`
 
 Global current-progress authority:
 
@@ -52,7 +56,8 @@ Accepted HDM architecture already defines the semantic durability and publicatio
 - independent native durability domains compose but do not become one distributed transaction;
 - live-claimed mutable consequences establish through exact-source live CAS, not through local SQLite or a campaign-tree commit;
 - checkpoint is optional recovery evidence and does not prove SAVE success;
-- native owner records and required derived indexes remain separate authority classes but must be publication-coherent where the index contract requires it.
+- native owner records and required derived indexes remain separate authority classes but must be publication-coherent where the index contract requires it;
+- the supported shipped gameplay repository transport is already fixed by accepted R2.6 authority as `deterministic Python/core -> GitHub Connector -> authoritative non-force ref transition`; transport selection is closed and missing required Connector capability is a supported-profile capability failure rather than permission to probe another transport.
 
 The current shipped runtime/tests do not yet realize this model uniformly. Important surfaces still encode or imply:
 
@@ -62,7 +67,7 @@ The current shipped runtime/tests do not yet realize this model uniformly. Impor
 - current one-file live implementation details that are downstream debt relative to accepted Step-5.8/WP-12 authority;
 - publication language whose exact relationship to native record/index closure, authorization basis, ambiguity, partial multi-domain success and named HARD-edge owners must be reconciled.
 
-WP-13 must define the implementation-facing **machine realization contract** that closes that gap without reopening the accepted Step-5/WP-11/WP-12 architecture merely for implementation convenience.
+WP-13 must define the implementation-facing **machine realization contract** that closes that gap without reopening the accepted Step-5/WP-11/WP-12 architecture or the accepted R2.6 gameplay transport selection merely for implementation convenience.
 
 ---
 
@@ -81,7 +86,8 @@ WP-13 Steps 2–8, if authorized later, must be framed to produce a canonical re
 9. maps named durability/HARD edges from their actual owning contracts rather than centralizing their semantics in `DURABILITY_GUARD.md`;
 10. preserves local completeness and currentness checks as bounded operations over selected roots, native direct routes and directly relevant dependencies rather than campaign/WORLD/history scans;
 11. keeps checkpoint creation/recovery selection, final live-machine realization, bootstrap/migration, implementation tests and performance work with their downstream owners;
-12. supplies explicit later verification obligations for WP-22 and implementation planning without performing implementation during R2.7 architecture audit.
+12. supplies explicit later verification obligations for WP-22 and implementation planning without performing implementation during R2.7 architecture audit;
+13. preserves the closed R2.6 gameplay repository path and maps the actual Python/core publication envelope onto required GitHub Connector operations, currentness/CAS/conflict/ambiguous-failure handling and supported capability-failure behavior without runtime alternate-transport probing.
 
 ---
 
@@ -100,6 +106,7 @@ WP-13 does **not** own or reopen:
 - WP-10 durable record-family allocation;
 - WP-11 physical route/identity/index laws;
 - WP-12 HOT/SQLite transaction architecture, including the repaired local-HOT versus live-CAS establishment split;
+- R2.6 gameplay repository transport selection or comparison of alternate Git/CLI/HTTP/App/MCP/backend/Actions transport paths;
 - exact SQLite DDL/API or local database lifecycle;
 - final checkpoint schema/recovery machine repair (`WP-14`);
 - final live-machine realization and source-native live identity (`WP-16`);
@@ -204,6 +211,32 @@ WP-14 owns final checkpoint/recovery machine realization.
 
 `ACCESS_CONTROL.md` and Step 5.6 require application-level acting-principal authorization in addition to technical repository write ability. A frozen attempt must retain the required authorization basis and revalidate mutable authorization dependencies at the owning boundary.
 
+### 5.11 Fixed gameplay repository transport
+
+R2.6 owns the supported shipped gameplay repository-transport selection. The current accepted path is:
+
+```text
+deterministic Python/core
+    prepare/freeze publication state
+    compute/validate exact semantic delta
+    own transaction/currentness/retry decision
+        |
+        v
+GitHub Connector
+    perform the defined Git-data/ref remote operations
+        |
+        v
+authoritative non-force ref transition
+```
+
+Transport selection is closed. Gameplay/runtime behavior must not probe, compare or fall back to `gh`, shell/native remote Git, direct private HTTP/API/token workarounds, alternate GitHub App/MCP/backend write services, GitHub Actions as a gameplay bridge, transparent local-commit push assumptions or equivalent alternate transports.
+
+A missing required Connector capability is a **supported-profile capability failure**, not a degraded-mode permission to improvise another repository path.
+
+`GAME/CORE/PERSISTENCE.md` remains the runtime HOW owner for the concrete campaign publication sequence where applicable. Step 5.6 owns publication/currentness semantics; R2.6 fixes the allowed remote transport path. WP-13 must reconcile these rather than treating development-agent rules in `AGENTS.md` / `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md` as gameplay architecture.
+
+R2.7 must map the actual publication envelope and preserve downstream integrated coverage for fixed-Connector currentness/CAS/conflict/failure behavior.
+
 ---
 
 ## 6. Current machine-debt perimeter established during Step 1
@@ -271,6 +304,7 @@ If Senior authorizes Step 2, evidence extraction must answer at least:
 15. How does confirmed campaign publication adopt the new known frontier and clear only frozen owner generation G while preserving G+1?
 16. How are explicit save success, HARD-edge success and ordinary deferred publication surfaced to player/host behavior without technical chatter on healthy success?
 17. Which current GAME/schema/test/tool surfaces directly implement each law, which are stale pre-realization debt, and which belong to WP-14/WP-16/later work?
+18. How does the already fixed R2.6 Python/core -> GitHub Connector -> non-force path realize the exact WP-13 campaign publication envelope, required Connector operation/capability set, currentness/CAS/conflict/ambiguous-failure behavior and supported-profile capability-failure outcome without alternate transport probing?
 
 ---
 
@@ -289,8 +323,10 @@ trigger / named edge
 -> freeze/quiescence requirement
 -> frozen generation/fingerprint + auth/source/dependency basis
 -> exact native path delta + required-index closure
+-> fixed gameplay transport authority + required Connector operation/capability where repository publication participates
 -> publication protocol/outcome classes
 -> disjoint/overlap/ambiguity handling
+-> Connector capability-failure / no-runtime-fallback disposition where applicable
 -> success / partial-success / failure postcondition
 -> generation-specific local adoption/dirty clearing
 -> player-visible acknowledgement rule
@@ -311,13 +347,14 @@ A coverage claim requires item-level accounting or an equally strong mechanicall
 | Controlled handoff | Step 5.4 | consume durability-success promise |
 | SOFT/HARD/SAVE semantics | Step 5.5 | machine realization target; semantics closed |
 | Campaign publication/crash consistency | Step 5.6 | machine realization target; semantics closed |
+| Fixed gameplay repository transport | R2.6 canonical host assurance + fixed-transport owner clarification | consume closed `Python/core -> GitHub Connector -> non-force ref transition`; map envelope/capabilities/failures, do not compare alternate transports |
 | Checkpoint/recovery | Step 5.7 / WP-14 | preserve boundary; defer machine repair |
 | Live claims/CAS | Step 5.8 / WP-16 | compose native durability edge; do not redesign |
 | Native record families | WP-10 | consume owner allocation |
 | Native routes/indexes | WP-11 | realize publication closure/path delta |
 | HOT owner generations | WP-12 | consume dirty/frozen-generation/adoption laws |
 | Access/acting principal | `ACCESS_CONTROL.md` | carry/revalidate existing authorization basis |
-| Publication transport machine | `PERSISTENCE.md` + later implementation | reconcile against closed architecture |
+| Publication transport machine | R2.6 fixed transport + `PERSISTENCE.md` runtime HOW | reconcile current concrete machine with closed Step-5.6/R2.6 architecture |
 | Boundary classification runtime | owner modules + `DURABILITY_GUARD.md` | realize routing/evaluation without centralizing semantics |
 | Explicit save runtime | `SAVE_CONTRACT.md` | reconcile campaign-only wording with native-domain composition |
 | Integrity preflight | `INTEGRITY.md` | preserve bounded directly-touched validation |
@@ -359,6 +396,8 @@ publication reason/edge
 
 It remains ephemeral and immutable for one attempt.
 
+The remote execution of that attempt remains constrained by the R2.6 fixed gameplay transport path. The operation value does not contain a runtime-selectable backend/fallback choice.
+
 ### SAVE operation composition
 
 An explicit SAVE may require ephemeral composition state describing participating native domains and whether each promised closure component is already durable, confirmed accepted, rejected or still indeterminate.
@@ -397,14 +436,17 @@ The owner defines **why/when** the edge is HARD; WP-13 realizes the shared machi
 
 ```text
 frozen generation/closure
--> derive WP-11 native path delta + required indexes
+-> deterministic Python/core derives WP-11 native path delta + required indexes
 -> local bounded integrity/result-tree proof
 -> exact currentness/auth revalidation
+-> GitHub Connector performs the defined Git-data/ref operations
 -> one single-parent campaign commit
--> non-force ref transition
+-> authoritative non-force ref transition
 -> classify result
 -> adopt confirmed source basis / exact frozen generations only
 ```
+
+No gameplay/runtime alternate-transport fallback or probing participates in this flow. Missing required Connector capability is a supported-profile capability failure.
 
 ### 11.4 Explicit SAVE across native domains
 
@@ -454,7 +496,8 @@ Step 2 and later candidate review must preserve at least these scenarios:
 15. checkpoint is absent during an otherwise valid explicit SAVE; SAVE may still succeed;
 16. partial multi-domain SAVE publishes one native domain and then another domain rejects; accepted first-domain durability remains real, overall SAVE remains incomplete and no rollback/replay occurs;
 17. lost unpublished local state after context destruction is not invented from narration, Story or expected player intent;
-18. current old one-hour test/runtime policy is classified and removed/replaced only through accepted scope policy, not preserved as an accidental global architecture law.
+18. current old one-hour test/runtime policy is classified and removed/replaced only through accepted scope policy, not preserved as an accidental global architecture law;
+19. a required GitHub Connector gameplay capability is unavailable; the supported profile reports/handles capability failure under the fixed-path contract and does not probe or fall back to `gh`, native remote Git, private HTTP/API/token paths, alternate App/MCP/backend transports or GitHub Actions.
 
 ---
 
@@ -467,6 +510,7 @@ The eventual WP-13 result must optimize for:
 - **boundedness** — ordinary save/publication preflight scales with selected dirty/required closure, not total campaign/history size;
 - **concurrency safety** — stale/ambiguous ref outcomes are classified without force overwrite;
 - **authority preservation** — storage/SQLite/index/checkpoint/session metadata do not become semantic owners;
+- **transport conformance** — repository publication remains inside the accepted R2.6 Python/core + GitHub Connector + non-force-ref supported path and capability failures do not trigger alternate transports;
 - **latency** — ordinary SOFT turns remain zero-I/O when no durability obligation fires;
 - **recoverability** — promised durable closure is sufficient for honest native recovery;
 - **authorization** — technical repository capability never substitutes for HDM application authority;
@@ -533,15 +577,21 @@ Current session prose can make checkpoint appear adjacent to save/session bounda
 
 Mitigation: Step-5.7 boundary is explicit: checkpoint optional, separate purpose, never SAVE proof.
 
+### R10 — implementation convenience reopens repository transport selection
+
+A Connector gap or awkward operation could tempt runtime fallback/probing through CLI/native Git/private HTTP/custom services/Actions.
+
+Mitigation: preserve R2.6 fixed-path authority. Missing required Connector capability is a supported-profile capability failure; only evidence of a concrete feasibility uncertainty inside the selected path may justify a bounded spike, not an alternatives study.
+
 ---
 
 ## 15. Research / spikes
 
 No external research or technology-selection spike is currently required for Step 2.
 
-Reason: current HDM canonical architecture already determines the authority, concurrency and durability semantics strongly enough. The present work is primarily repository evidence extraction, machine-contract reconciliation and bounded implementation-facing formalization.
+Reason: current HDM canonical architecture already determines the authority, concurrency, durability and gameplay repository-transport semantics strongly enough. The present work is primarily repository evidence extraction, machine-contract reconciliation and bounded implementation-facing formalization.
 
-A later spike is justified only if Step-2 repository evidence exposes an implementation feasibility uncertainty not answerable from current Git/host contracts. Such a spike would produce evidence, not silently reopen accepted architecture.
+Transport alternatives are explicitly not a research question: R2.6 closed that selection. A later bounded spike is justified only if Step-2 repository evidence exposes a concrete implementation feasibility uncertainty **inside the selected GitHub Connector path** that cannot be answered from current accepted host/Connector contracts. Such a spike would produce evidence about the chosen path, not silently reopen backend/transport selection.
 
 ---
 
@@ -558,7 +608,8 @@ A later spike is justified only if Step-2 repository evidence exposes an impleme
 - generation-specific dirty adoption;
 - checkpoint optionality/non-authority;
 - WP-11 path/index authority rules;
-- WP-12 local-HOT/live-CAS split.
+- WP-12 local-HOT/live-CAS split;
+- R2.6 fixed shipped gameplay repository transport selection and no alternate runtime probing/fallback.
 
 ### Agent-owned mechanical work
 
@@ -572,7 +623,7 @@ A later spike is justified only if Step-2 repository evidence exposes an impleme
 
 Escalate only if evidence leaves a material unresolved choice involving product semantics, durability promise, compatibility policy, authority ownership, hard-to-reverse scope or explicit material risk acceptance.
 
-At Step-1 completion:
+At Step-1 completion after Senior repair:
 
 **Human decision required: NO.**
 
@@ -586,6 +637,8 @@ Before any Step-2 synthesis/Decision Brief, the worker must:
 
 ```text
 [ ] inspect every REQUIRED STEP-2 source to the stated depth;
+[ ] extract R2.6 fixed gameplay-transport canonical law and owner clarification, including closed selection, no runtime fallback/probing, supported Connector capability-failure semantics and R2.7 publication-envelope/currentness/CAS/conflict/failure obligations;
+[ ] preserve the distinction between shipped gameplay transport authority and development-agent transport rules in AGENTS.md / DEV/AGENT_RUNTIMES/CHATGPT_WORK.md;
 [ ] preserve every relevant enumerated law/finding/qualifier;
 [ ] classify current GAME/schema/test surfaces as conforming, stale debt, supporting evidence or downstream-owned;
 [ ] map every named durability edge to its actual owner;
@@ -603,7 +656,7 @@ Step 2 must not assume that the manifest is a closed-world list; newly discovere
 
 The mandatory critic found two `BLOCKING` and eight `SIGNIFICANT` framing defects in the initial framing. All were mechanically repairable from existing accepted architecture and actual repository evidence.
 
-Repairs now incorporated into this Task Brief / Source Manifest include:
+Repairs incorporated by that original critic into the Task Brief / Source Manifest include:
 
 - explicit multi-native-domain SAVE composition rather than campaign-only SAVE;
 - explicit rejection/classification of the current global one-hour/frontier machine as debt;
@@ -616,7 +669,7 @@ Repairs now incorporated into this Task Brief / Source Manifest include:
 - storage metadata/default-branch publication separation;
 - partial/indeterminate multi-domain result semantics.
 
-Final critic state:
+Historical critic closure:
 
 ```text
 UNRESOLVED BLOCKING:     0
@@ -625,13 +678,43 @@ HUMAN DECISION REQUIRED: NO
 STEP 2 AUTHORIZED:       NO — MANDATORY SENIOR REVIEW PENDING
 ```
 
+### 18.1 Post-critic Senior recovery SR13-01
+
+A subsequent Senior review found one separate `SIGNIFICANT` Step-1 framing/source-manifest omission: the package had not included the accepted R2.6 fixed gameplay repository-transport authority and its owner clarification.
+
+This was **not** C01–C10 and the historical critic is not rewritten as if it found the issue.
+
+The separate recovery record is:
+
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-senior-recovery-fixed-gameplay-repository-transport.md`.
+
+The repair adds mandatory Step-2 inspection of:
+
+- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md`;
+- `DEV/docs/superpowers/design/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md`;
+- the fixed `Python/core -> GitHub Connector -> non-force ref transition` gameplay path;
+- closed transport selection / no runtime fallback-probing contract;
+- supported-profile capability failure when a required Connector capability is missing;
+- R2.7 actual publication-envelope and fixed-Connector currentness/CAS/conflict/failure coverage obligations.
+
+Senior-recovery disposition:
+
+```text
+SR13-01 INITIAL SEVERITY: SIGNIFICANT
+SR13-01 DISPOSITION:      CLOSED BY SENIOR REPAIR
+UNRESOLVED BLOCKING:      0
+UNRESOLVED SIGNIFICANT:   0
+HUMAN DECISION REQUIRED:  NO
+STEP 2 AUTHORIZED:        NO — MANDATORY SENIOR REVIEW PENDING
+```
+
 ---
 
 ## 19. Step-1 completion gate
 
-This Task Brief is complete only together with the current Source Manifest and whole-project critic.
+This Task Brief is complete only together with the current Source Manifest, historical whole-project critic and separate Senior-recovery finding.
 
-After publication/read-back of the coherent Step-1 package:
+After publication/read-back of the repaired coherent Step-1 package:
 
 - stop for mandatory Senior review;
 - do not begin Step 2;
