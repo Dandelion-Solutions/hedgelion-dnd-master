@@ -8,14 +8,14 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-12 / STEPS 1-8 + SENIOR RECOVERY COMPLETE — MANDATORY SENIOR RE-AUDIT
+GLOBAL_STATE: R2.7 WP-13 / STEP 1 AUTHORIZED
 
-CURRENT_WORKSTREAM: R2.7 WP-12 — HOT/SQLite/transaction realization
-CURRENT_SLICE: Steps 1-8 complete; post-Step-8 Senior BLOCKING SR01 repaired in canonical specification and recovery record; mandatory Senior re-audit pending
+CURRENT_WORKSTREAM: R2.7 WP-13 — durability / SAVE / publication
+CURRENT_SLICE: WP-13 Step 1 is the next authorized unit: complete Task Brief + task-specific Source Manifest + whole-project Task-Brief critic, repair all mechanically resolvable BLOCKING/SIGNIFICANT framing defects, then stop for mandatory Senior review
 
-LAST_CLOSED_UNIT: R2.7 WP-11 Steps 1-8 / physical storage topology, identity and indexing closed by Senior review
-NEXT_AUTHORIZED_UNIT: Mandatory Senior re-audit of the repaired R2.7 WP-12 package
-REQUIRED_GATE: Senior re-audit of WP-12 Steps 1-8 + Senior recovery. Do not begin WP-13 or implementation planning without explicit Senior GO after that re-audit.
+LAST_CLOSED_UNIT: R2.7 WP-12 Steps 1-8 + Senior recovery / HOT/SQLite/transaction realization — Senior review PASS at cc906da9dca4c04fee6342c21128a452b064e312
+NEXT_AUTHORIZED_UNIT: R2.7 WP-13 Step 1 — complete review-ready framing package
+REQUIRED_GATE: Complete WP-13 Step 1 as one coherent package, then mandatory Senior review. Do not begin Step 2, WP-14 or implementation planning without the required gate.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
