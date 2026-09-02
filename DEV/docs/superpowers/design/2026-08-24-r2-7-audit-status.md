@@ -50,9 +50,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-11
 CURRENT_DOMAIN: WP-12
 CURRENT_DOMAIN_TOPIC: HOT/SQLite/transaction realization
-CURRENT_SLICE: Steps 1-8 complete — final canonical specification and Step-8 synchronization complete; mandatory Senior audit pending
+CURRENT_SLICE: Steps 1-8 + post-Step-8 Senior recovery complete — SR01 repaired; mandatory Senior re-audit pending
 NEXT_DOMAIN: WP-13
-OWNER_GATE: REQUIRED — mandatory Senior audit of the completed WP-12 Steps 1-8 package; await explicit Senior GO before WP-13 or implementation planning
+OWNER_GATE: REQUIRED — mandatory Senior re-audit of the repaired WP-12 package; await explicit Senior GO before WP-13 or implementation planning
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -62,7 +62,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-12 STEPS 1-8 COMPLETE — MANDATORY SENIOR AUDIT
+R2_7_STATUS: WP-12 STEPS 1-8 + SENIOR RECOVERY COMPLETE — MANDATORY SENIOR RE-AUDIT
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
@@ -71,7 +71,7 @@ R2_7_WP08: COMPLETE
 R2_7_WP09: COMPLETE
 R2_7_WP10: COMPLETE
 R2_7_WP11: CLOSED / SENIOR REVIEW PASS
-R2_7_WP12: STEPS 1-8 COMPLETE — MANDATORY SENIOR AUDIT
+R2_7_WP12: STEPS 1-8 + SENIOR RECOVERY COMPLETE — MANDATORY SENIOR RE-AUDIT
 ```
 
 This task-local cursor records the R2.7 audit checkpoint. It does not own global
@@ -95,7 +95,7 @@ findings. Read `DEV/CURRENT_PROGRESS.md` before resuming any work.
 | WP-09 | CLOSED |
 | WP-10 | CLOSED |
 | WP-11 | CLOSED / SENIOR REVIEW PASS |
-| WP-12 | STEPS 1-8 COMPLETE — MANDATORY SENIOR AUDIT |
+| WP-12 | STEPS 1-8 + SENIOR RECOVERY COMPLETE — MANDATORY SENIOR RE-AUDIT |
 | WP-13..WP-27 | NOT STARTED |
 
 ---
@@ -106,15 +106,19 @@ WP-12 final implementation-facing authority:
 
 - `DEV/docs/superpowers/specs/2026-09-02-r2-7-WP-12-hot-sqlite-transaction-realization-canonical-spec.md`
 
+Post-Step-8 Senior recovery evidence:
+
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-12-senior-recovery-live-cas-boundary.md`
+
 Preserved downstream routes from the final WP-12 specification:
 
 - WP-13 — durability/SAVE/publication machine realization and stale global timer/frontier repair;
 - WP-14 — checkpoint/recovery machine repair;
 - WP-16 — final live currentness/CAS machine realization;
 - WP-19/WP-20 — bootstrap/migration integration if required;
-- WP-22 — executable WP-12 conformance/integration/failure-injection coverage;
+- WP-22 — executable WP-12 conformance/integration/failure-injection coverage, including the repaired local-HOT versus live-CAS establishment distinction;
 - WP-24 — measured HOT/query/storage performance and any proven narrow optimization;
-- **WP-12/F09 -> WP-26** — reconcile stale `DEV/ARCHITECTURE/BRANCH_MODEL.md` storage-v2 marker wording with the current storage machine/owner contract without changing the settled baseline-versus-existing-campaign authority rule.
+- **WP-12/F09 + Senior recovery -> WP-26** — reconcile stale Storage-v2 wording in both `DEV/ARCHITECTURE/BRANCH_MODEL.md` and the `Storage v2 baseline maintenance...` label in `DEV/ARCHITECTURE/ACCESS_CONTROL.md` with the current storage machine/owner contract without changing the settled baseline-versus-existing-campaign authority rule.
 
 These are downstream ownership routes, not authorization to start those domains
 before the current global gate permits them.
@@ -194,14 +198,41 @@ instruction. The mandatory Senior review is now required before WP-08.
 
 ---
 
+## WP-12 Senior recovery
+
+The mandatory post-Step-8 Senior audit found one BLOCKING canonical-consistency
+defect, SR01: LAW WP12-8 could be read as making authoritative establishment of a
+live-claimed ExecutionSegment local-SQLite-commit-bound, conflicting with the
+already accepted exact-source live-CAS durability boundary.
+
+The recovery:
+
+- retained historical Step-6/Step-7 unchanged;
+- repaired final WP12-8 so local SQLite is the establishment boundary only when
+  the owning native authority/durability contract permits local HOT establishment;
+- made exact-source live CAS the explicit authoritative establishment edge for
+  live-claimed mutable consequences;
+- preserved pre-CAS prospective/non-current semantics and post-CAS adoption-only
+  SQLite semantics;
+- repaired the matching implementation-verification obligation;
+- broadened the existing WP-26 Storage-v2 consistency item to include
+  `ACCESS_CONTROL.md` as well as `BRANCH_MODEL.md`;
+- performed the scoped WP12-7/8/9 <-> WP12-22/23/24 <-> Step-3 <-> Step-5.8
+  cross-law review with zero unresolved BLOCKING/SIGNIFICANT findings.
+
+Human decision required: **NO**.
+
+---
+
 ## Task-local handoff
 
 PRE_STEP8_PUBLISHED_SHA: `fb7d0b1`
 WP12_STEP8_START_SHA: `15514cf07d70eb22f88cb24d221aa02c3012de04`
 WP12_CANONICAL_SPEC_PUBLISHED_SHA: `0d30d616ef64d3c6b8189dbdafe13ada0efbe378`
 WP12_STEP8_CANONICALIZATION_PUBLISHED_SHA: `2ddbceaf6aed8a0c79399ea1f721397329e9b9bc`
-COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 Steps 1-8 completed with Task Brief/Source Manifest/critics, Step-2 evidence matrix, analytical challenge, Decision Brief/review, repaired candidate, Step-6 whole-project critic, Step-7 finding propagation/re-review and final canonical specification/Step-8 canonicalization.
-CURRENT_VERIFICATION_STATE: WP-12 Steps 1-8 architecture/documentation package is complete. Step-6 has zero unresolved BLOCKING/SIGNIFICANT findings; F09 is routed to WP-26. No runtime/schema/catalog/test/topology implementation was performed and no implementation-test or hosted-CI PASS is claimed for future WP-12 realization. Mandatory Senior audit is pending.
-NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior audit of the completed WP-12 Steps 1-8 package. WP-13 and implementation planning remain blocked pending explicit Senior GO.
+WP12_PRE_SENIOR_RECOVERY_HEAD: `ef9c449c53373213ce812b25d6514780b4618db8`
+COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 Steps 1-8 completed and the post-Step-8 Senior SR01 recovery completed with final canonical-law repair, matching verification-obligation repair, scoped cross-law review and current-state synchronization.
+CURRENT_VERIFICATION_STATE: WP-12 Steps 1-8 + Senior recovery documentation package is complete. Historical Step-6 has zero unresolved BLOCKING/SIGNIFICANT findings after Step-7 repair; Senior SR01 is separately recorded and repaired. No runtime/schema/catalog/test/topology implementation was performed and no implementation-test or hosted-CI PASS is claimed for future WP-12 realization. Mandatory Senior re-audit is pending.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior re-audit of the repaired WP-12 package. WP-13 and implementation planning remain blocked pending explicit Senior GO.
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE
