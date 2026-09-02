@@ -8,14 +8,14 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-13 / STEPS 1-8 + SENIOR REPAIR COMPLETE — MANDATORY FINAL SENIOR AUDIT
+GLOBAL_STATE: R2.7 WP-14 / STEP 1 AUTHORIZED
 
-CURRENT_WORKSTREAM: R2.7 WP-13 — durability / SAVE / publication
-CURRENT_SLICE: Steps 1-8 complete; Step-1 SR13-01 fixed gameplay repository-transport omission repaired; Step-6 whole-project critic findings resolved in Step 7; final canonical specification published; mandatory final Senior audit pending
+CURRENT_WORKSTREAM: R2.7 WP-14 — recovery / checkpoints / session / repair
+CURRENT_SLICE: Step 1 authorized after WP-13 Steps 1-8 + Step-1 SR13-01 repair passed mandatory final Senior audit at f0ba874f20ab607cc9b54b0b4538cf1d8027f71f
 
-LAST_CLOSED_UNIT: R2.7 WP-12 Steps 1-8 + Senior recovery / HOT/SQLite/transaction realization — Senior review PASS at cc906da9dca4c04fee6342c21128a452b064e312
-NEXT_AUTHORIZED_UNIT: Mandatory Senior final audit of the completed R2.7 WP-13 package
-REQUIRED_GATE: Senior final audit of WP-13 Steps 1-8 + Senior repair. Do not begin WP-14 or implementation planning without explicit Senior GO after that audit.
+LAST_CLOSED_UNIT: R2.7 WP-13 Steps 1-8 + Step-1 SR13-01 repair / durability / SAVE / publication — Senior review PASS at f0ba874f20ab607cc9b54b0b4538cf1d8027f71f
+NEXT_AUTHORIZED_UNIT: R2.7 WP-14 Step 1 — complete Architecture Task Brief + task-specific Source Manifest + whole-project Task-Brief critic, repairing all mechanically resolvable BLOCKING/SIGNIFICANT framing findings before the mandatory Senior stop
+REQUIRED_GATE: Mandatory Senior review after completed WP-14 Step 1. Do not begin Step 2, WP-15 or implementation planning without explicit Senior GO.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
