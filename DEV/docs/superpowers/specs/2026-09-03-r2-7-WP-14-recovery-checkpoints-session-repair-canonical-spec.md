@@ -1,6 +1,6 @@
 # R2.7 WP-14 — Recovery / Checkpoints / Session / Repair — Canonical Specification
 
-Status: **CANONICAL WP-14 RESULT — STEPS 1-8 COMPLETE / MANDATORY FINAL SENIOR AUDIT PENDING**
+Status: **CANONICAL WP-14 RESULT — STEPS 1-8 + SR14-04 RECOVERY COMPLETE / MANDATORY FINAL SENIOR RE-AUDIT PENDING**
 
 Date: 2026-09-03
 
@@ -18,9 +18,10 @@ Canonicalization basis:
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-step-4-collaborative-review.md`;
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-step-5-candidate-spec.md`;
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-step-6-whole-project-adversarial-review.md`;
-- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-step-7-resolution-gate.md`.
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-step-7-resolution-gate.md`;
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-post-step-8-senior-recovery-checkpoint-field-disposition.md` (`SR14-04`).
 
-This file is the final WP-14 implementation-facing architecture source of truth, subject to mandatory final Senior audit. Earlier Step-5 wording is derivation where it differs from this canonical result.
+This file is the final WP-14 implementation-facing architecture source of truth, subject to mandatory final Senior re-audit. Earlier Step-5 wording is derivation where it differs from this canonical result. Historical Step-6 F01-F08 remain unchanged; SR14-04 is a separate post-Step-8 canonical-completeness recovery.
 
 ---
 
@@ -156,18 +157,49 @@ Checkpoint observations affecting ordinary recovery are hints only:
 - stale observations never select older current authority;
 - malformed/dangling optional checkpoint metadata is facility-scoped unless the requested operation depends on it.
 
-## LAW WP14-16 — Current checkpoint field disposition is binding
+## LAW WP14-16 — Every current checkpoint field has one explicit non-duplicating disposition
 
-Implementation must reconcile current schema/template as follows:
+The current `GAME/SCHEMA/checkpoint.schema.yaml` and `GAME/CAMPAIGN/CHECKPOINTS/_TEMPLATE.yaml` SHALL be reconciled field-by-field against the following binding roles. These roles constrain later schema/template implementation; they do not require all optional current fields to survive.
 
-- retire generic `valid_through_event_id` recovery-completeness/frontier semantics;
-- retire self-referential containing-commit `expected_commit_sha`;
-- checkpoint world-time observation is non-authoritative diagnostics only if retained;
-- active PC/thread/scene lists are optional non-exhaustive hints only if proven useful;
-- engine/runtime metadata is optional provenance/diagnostics, not current runtime authority;
-- no replacement global root/source completeness array is introduced without separate proven bounded value and preserved ownership.
+Role vocabulary:
 
-WP-14 fixes semantics, not final YAML field names.
+```text
+REQUIRED_DESCRIPTOR_IDENTITY_ASSOCIATION
+OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT
+RETIRED
+SCHEMA_FORMAT_METADATA_ONLY
+```
+
+| Current schema field | Current template | Binding role | Canonical disposition / authority boundary |
+|---|---|---|---|
+| `schema_version` | `schema_version: 2` | `SCHEMA_FORMAT_METADATA_ONLY` | Equivalent checkpoint wire/format version identity only. It has no recovery/currentness/chronology authority. |
+| `id` | `id: null` | `REQUIRED_DESCRIPTOR_IDENTITY_ASSOCIATION` | Stable immutable checkpoint descriptor identity. Identity alone grants no gameplay/currentness authority. |
+| `campaign_id` | `campaign_id: null` | `REQUIRED_DESCRIPTOR_IDENTITY_ASSOCIATION` | Campaign association and descriptor validation only; not a source selector or recovery frontier. |
+| `created_at` | `created_at: null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Diagnostic/provenance timestamp only. Never chronology, freshness, currentness or latest-selection authority. |
+| `valid_through_event_id` | `null` | `RETIRED` | Retired as generic checkpoint recovery-completeness/frontier semantics. Event-ID position cannot replace current native routing/currentness. |
+| `expected_commit_sha` | `null` | `RETIRED` | Retired. A checkpoint in content-addressed Git cannot depend on embedding its own containing-commit identity. Use external/non-self-referential revision context when provenance is needed. |
+| `world_time` | `null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Not part of the minimum checkpoint contract. If retained later, it is domain-typed diagnostic/presentation observation only; never chronology, due/not-due or currentness authority. |
+| `state` container | present | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Structural grouping of non-authoritative layout/root observations only. It is not a checkpoint-owned state snapshot or authority object. |
+| `state.current_state_path` | `STATE/CURRENT.yaml` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Non-authoritative layout hint only if actual layout indirection needs it. **It is not a checkpoint-owned current-state selector, recovery frontier, root-completeness evidence, currentness authority, SAVE/handoff proof or fallback source.** Current native routing/owners select current state. |
+| `state.active_pc_ids` | `[]` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional non-exhaustive positive observation only if measured/proven useful. Omission never proves absence or root completeness. |
+| `state.active_thread_ids` | `[]` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional non-exhaustive positive observation only if measured/proven useful. Omission never proves absence or root completeness. |
+| `state.active_scene_ids` | `[]` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional non-exhaustive positive observation only if measured/proven useful. Omission never proves absence or root completeness. |
+| `recovery_notes` | `[]` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Diagnostic/support notes only. They cannot supply missing native authority, accepted interpretation, exact evidence or hidden recovery state. |
+| `engine` container | present | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional runtime provenance observation only. **Checkpoint engine projection is not current runtime authority and does not replace accepted interpretation dependencies of open execution.** |
+| `engine.version` | `null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Runtime-version provenance observation only; current campaign/runtime owner and open-work interpretation contracts govern actual compatibility. |
+| `engine.package_id` | `null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Package-identity provenance observation only; not runtime-selection/currentness authority. |
+| `engine.source_commit_sha` | `null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional source provenance observation only; not current campaign/ref/runtime authority. |
+| `engine.package_sha256` | `null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional package provenance/integrity observation only; cannot select current runtime or reinterpret accepted work. |
+| `engine.adopted_at` | `null` | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Diagnostic adoption-time observation only; no ordering/currentness/chronology semantics. |
+| `ruleset` container | absent from current template | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Schema-admitted non-authoritative ruleset provenance projection. Current template omission is implementation/template-alignment debt, not authority evidence. |
+| `ruleset.ruleset_set_sha256` | absent from current template | `OPTIONAL_DIAGNOSTIC_PROVENANCE_HINT` | Optional ruleset-set provenance/integrity observation only. **It is not current ruleset authority, does not select a replacement ruleset set, and does not replace accepted rules/catalog/invocation interpretation dependencies of open execution.** |
+| `schema_data_version` | `schema_data_version: 2` | `SCHEMA_FORMAT_METADATA_ONLY` | Retain only if checkpoint format/migration ownership needs it. It has no gameplay/recovery/currentness semantics. |
+
+The current template materializes every schema member above except the optional schema-admitted `ruleset` container / `ruleset.ruleset_set_sha256`. That mismatch is later machine/template-alignment debt only. It does not imply that the field must be retained in the replacement schema.
+
+No checkpoint field or container may become a RecoveryCut, current-state owner, source/root completeness manifest, universal frontier, session lease, SAVE proof or handoff proof by serialization alone.
+
+This law does **not** introduce any new checkpoint source/root completeness manifest, RecoveryCut, frontier field or replacement selector. New completeness/root/source fields remain forbidden by default absent separate proven bounded value and preserved owner semantics.
 
 ## LAW WP14-17 — `MANIFEST.last_checkpoint_id` is only a nullable campaign-domain descriptor pointer
 
@@ -506,7 +538,7 @@ The final realization must preserve these owner boundaries:
 - **Step 3:** accepted execution, Continuation, RNG, child/firing and idempotency identities resume rather than replay;
 - **Step 4 / Step 5.12:** `world.knowledge` and `runtime.disclosure` remain independent owners; historical repair does not erase actual exposure;
 - **Step 5.1:** domain markers are not global frontiers; current allocator published IDs never become reusable;
-- **Step 5.2 / 5.7:** recovery targets bounded current native RRC; checkpoint remains optional evidence;
+- **Step 5.2 / 5.7:** recovery targets bounded current native RRC; checkpoint remains optional evidence; every checkpoint field remains within LAW WP14-16's non-duplicating role;
 - **Step 5.8:** current live owner/source exactness governs live scopes; no campaign fallback;
 - **Step 5.11 / 5.13:** retained exact evidence and cleanup/GC semantics constrain historical maintenance; residual Git bytes do not automatically restore semantic retention;
 - **R2.6:** shipped gameplay repository transport remains fixed Connector-only path;
@@ -514,7 +546,7 @@ The final realization must preserve these owner boundaries:
 - **WP-12:** surviving SQLite is reusable only after source-equivalence proof and cannot become authority;
 - **WP-13:** repair publication uses current frozen owner-native attempts, no distributed transaction and truthful partial/indeterminate outcomes.
 
-No upstream architecture is reopened by WP-14.
+No upstream architecture is reopened by WP-14 or SR14-04.
 
 ---
 
@@ -526,7 +558,7 @@ Later implementation planning/TDD must reconcile at least:
 2. typed current routing/root lifecycle consumption;
 3. exact source pin/currentness and bounded retry;
 4. healthy recovery with no checkpoint;
-5. checkpoint schema/template reduction under LAW WP14-16;
+5. checkpoint schema/template reduction/alignment under the exhaustive LAW WP14-16 field dispositions, without preserving optional fields by inertia or inventing new completeness fields;
 6. `MANIFEST.last_checkpoint_id` narrow nullable pointer semantics and no guessed-latest fallback;
 7. session schema/template non-authority wording/consumer behavior;
 8. surviving SQLite equivalence/adoption proof;
@@ -546,7 +578,7 @@ Later implementation planning/TDD must reconcile at least:
 22. Step-5.13 pinned historical reader and semantic-retention boundary;
 23. access/disclosure/application authorization for recovery/repair/support;
 24. removal of stale checkpoint-at-PLAY_READY/ordinary-save assumptions;
-25. WP-22 conformance/failure coverage for all final laws and Step-7 repairs.
+25. WP-22 conformance/failure coverage for all final laws, Step-7 repairs and SR14-04 checkpoint-field authority boundaries.
 
 WP-16 retains final live physical machine ownership; WP-19/WP-20 retain bootstrap/migration integration; WP-22 owns executable conformance coverage; WP-24 owns performance measurement; WP-26 retains separately routed documentation consistency work.
 
@@ -558,15 +590,17 @@ No implementation work is authorized by this specification.
 
 WP-14 closes with this invariant:
 
-> HDM ordinary recovery always reconstructs a validated current RRC from exact current native owners and routes; checkpoint/session/SQLite/ambient context remain subordinate evidence or acceleration only. Historical checkpoint-based reconstruction is an explicitly separate maintenance operation whose availability depends on retained exact owner-valid evidence, remains isolated and non-playable until lawful current promotion, and can become current only by fresh-basis owner-native forward publication that preserves live ownership, accepted execution, allocator identity history, disclosure/knowledge owners and truthful partial outcomes.
+> HDM ordinary recovery always reconstructs a validated current RRC from exact current native owners and routes; checkpoint/session/SQLite/ambient context remain subordinate evidence or acceleration only. Every checkpoint field is either narrow descriptor identity/association, optional diagnostic/provenance/hint, retired legacy semantics, or schema/format metadata; no checkpoint path, runtime/ruleset projection or list becomes currentness/root/interpretation authority. Historical checkpoint-based reconstruction is an explicitly separate maintenance operation whose availability depends on retained exact owner-valid evidence, remains isolated and non-playable until lawful current promotion, and can become current only by fresh-basis owner-native forward publication that preserves live ownership, accepted execution, allocator identity history, disclosure/knowledge owners and truthful partial outcomes.
 
-Final Step-6/Step-7 state:
+Final historical Step-6/Step-7 state plus post-Step-8 recovery:
 
 ```text
 STEP_6_BLOCKING:         3
 STEP_6_SIGNIFICANT:      5
+SR14-04:                 CLOSED
 UNRESOLVED_BLOCKING:     0
 UNRESOLVED_SIGNIFICANT:  0
 HUMAN_DECISION_REQUIRED: NO
 UPSTREAM_REOPEN_REQUIRED: NO
+NEXT_GATE:               MANDATORY FINAL SENIOR RE-AUDIT
 ```
