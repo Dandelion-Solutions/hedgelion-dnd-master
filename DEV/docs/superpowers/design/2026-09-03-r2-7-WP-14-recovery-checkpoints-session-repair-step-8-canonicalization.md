@@ -1,6 +1,6 @@
 # R2.7 WP-14 — Recovery / Checkpoints / Session / Repair — Step 8 Canonicalization
 
-Status: **STEP 8 COMPLETE — MANDATORY FINAL SENIOR AUDIT REQUIRED**
+Status: **STEP 8 COMPLETE + POST-STEP-8 SR14-04 RECOVERY — MANDATORY FINAL SENIOR RE-AUDIT REQUIRED**
 
 Date: 2026-09-03
 
@@ -11,7 +11,7 @@ Final canonical artifact:
 Derivation chain:
 
 - repaired Step-1 Task Brief / Source Manifest / critic;
-- `SR14-01..SR14-03` Senior recovery;
+- `SR14-01..SR14-03` Step-1 Senior recovery;
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-step-2-evidence-extraction.md`;
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-source-manifest-step-2-expansion.md`;
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-step-3-decision-brief.md`;
@@ -20,7 +20,10 @@ Derivation chain:
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-source-manifest-step-6-expansion.md`;
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-step-6-whole-project-adversarial-review.md`;
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-step-7-resolution-gate.md`;
-- final canonical specification above.
+- final canonical specification above;
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-post-step-8-senior-recovery-checkpoint-field-disposition.md` (`SR14-04`) — post-Step-8 canonical-completeness repair required by mandatory final Senior audit.
+
+Historical Step-6 F01-F08 remain unchanged. `SR14-04` was discovered only after Step 8 and repairs checkpoint-field coverage/accounting without changing the selected architecture.
 
 ---
 
@@ -49,7 +52,13 @@ The final specification fixes these implementation-facing laws:
 - surviving SQLite is reusable only after source-equivalence/derivability proof;
 - Agenda/index/cache/context state rebuilds from validated native state;
 - checkpoint remains optional immutable evidence/maintenance descriptor and ordinary recovery may read zero checkpoints;
+- every current checkpoint schema/template field now has an explicit auditable owner/disposition after SR14-04;
 - generic checkpoint `valid_through_event_id` and self-referential containing-commit `expected_commit_sha` semantics are retired;
+- checkpoint identity/association and schema/format fields remain narrowly non-semantic;
+- `state.current_state_path` is only a non-authoritative layout hint and never selects current state, currentness, root completeness or recovery frontier;
+- active PC/thread/scene fields remain optional non-exhaustive hints only;
+- checkpoint `engine.*` and `ruleset.ruleset_set_sha256` remain optional provenance/diagnostic observations, never current runtime/ruleset authority or replacement for accepted open-execution interpretation dependencies;
+- no new checkpoint root/source completeness manifest, RecoveryCut or replacement frontier field is introduced;
 - `MANIFEST.last_checkpoint_id` remains a nullable narrow campaign-domain pointer only;
 - “last checkpoint” never falls back to directory/ID/time/Git/session/SQLite guessing when the pointer is null/dangling;
 - `runtime.session` remains coordination/navigation/audit/observability evidence only;
@@ -96,7 +105,7 @@ F08 SIGNIFICANT  retention/GC pinned-reader and semantic-history boundary
 
 Step 7 resolved every item mechanically from already accepted authority.
 
-Final state:
+Final historical Step-6/Step-7 state remains:
 
 ```text
 STEP_6_BLOCKING:         3
@@ -107,9 +116,16 @@ HUMAN_DECISION_REQUIRED: NO
 UPSTREAM_REOPENED:       NO
 ```
 
+Post-Step-8 Senior audit finding:
+
+```text
+SR14-04 SIGNIFICANT      incomplete checkpoint field-by-field disposition
+SR14-04:                 CLOSED
+```
+
 ---
 
-## 4. Source Manifest closure
+## 4. Source Manifest / completeness closure
 
 The repaired Step-1 Source Manifest remained open-world throughout Step 2 and was expanded again before Step-6 findings when historical promotion exposed additional material owner seams.
 
@@ -131,13 +147,16 @@ Step-6 expansion promoted already accepted owner seams material to historical cu
 - Step-5.11 exact-evidence retention;
 - Step-5.13 retention/GC/pinned-reader semantics.
 
-No new semantic owner was created. No unconsumed Source Manifest gap remained before final canonicalization.
+The mandatory final Senior audit then identified that Step-2's broad checkpoint-field categories did not constitute complete leaf-by-leaf accounting. `SR14-04` repaired that completeness claim by mapping every current `GAME/SCHEMA/checkpoint.schema.yaml` member and corresponding template representation to one binding role/disposition, including the schema-admitted/template-absent `ruleset.ruleset_set_sha256` field.
 
-`SR14-01..SR14-03` remained mandatory inputs throughout Steps 2–8:
+No new semantic owner was created. No unconsumed Source Manifest/evidence gap remains after SR14-04.
+
+`SR14-01..SR14-04` are now all consumed/closed:
 
 - ambient host context never became authority and shipped runtime transport stayed fixed Connector-only;
 - `MAINTENANCE_COMMANDS.md` was reconciled as a proposal/consumer, not authority;
-- `MANIFEST.last_checkpoint_id` stayed a nullable narrow descriptor pointer across schema/template/scaffold semantics.
+- `MANIFEST.last_checkpoint_id` stayed a nullable narrow descriptor pointer across schema/template/scaffold semantics;
+- every current checkpoint field now has an explicit auditable disposition without introducing new checkpoint completeness structures.
 
 ---
 
@@ -157,7 +176,7 @@ No global frontier is introduced. Historical repair cannot regress the current c
 
 ### Step 5.7
 
-Checkpoint remains optional immutable evidence, current authority wins ordinary recovery, historical maintenance is separate, rewind is not guaranteed and current replacement uses forward publication. CONSISTENT.
+Checkpoint remains optional immutable evidence, current authority wins ordinary recovery, historical maintenance is separate, rewind is not guaranteed and current replacement uses forward publication. SR14-04 now mirrors Step-5.7 section-17 field dispositions at leaf-level precision; no field is elevated into authority. CONSISTENT.
 
 ### Step 5.8
 
@@ -189,12 +208,14 @@ No accepted upstream decision required reopening.
 
 ## 6. Current machine impact
 
-No runtime/schema/template/catalog/test/tool implementation was changed in WP-14 Steps 2–8.
+No runtime/schema/template/catalog/test/tool implementation was changed in WP-14 Steps 2–8 or SR14-04 recovery.
 
 The final canonical result explicitly routes later implementation repair for current debt including:
 
 - checkpoint-first recovery wording in current bootstrap/storage/session surfaces;
-- noncanonical checkpoint frontier/self-commit fields in schema/template;
+- checkpoint schema/template reduction/alignment according to the exhaustive SR14-04 field dispositions;
+- noncanonical checkpoint frontier/self-commit fields;
+- template absence of schema-admitted optional `ruleset.ruleset_set_sha256` as alignment debt, without implying it must be retained;
 - session fields whose wording can imply recovery/currentness authority;
 - stale `MAINTENANCE_COMMANDS.md` reset/export behavior;
 - narrow nullable `MANIFEST.last_checkpoint_id` schema/template/scaffold semantics;
@@ -216,10 +237,10 @@ Executable changes remain later implementation/WP-22 work after the required arc
 
 ## 7. Downstream obligations
 
-- **WP-15:** not started and not authorized by this Step 8; consumes WP-14 only after mandatory Senior final audit and explicit authorization.
+- **WP-15:** not started and not authorized; consumes WP-14 only after mandatory Senior final re-audit and explicit authorization.
 - **WP-16:** final live physical realization must preserve selected owner/source recovery, exact-source CAS and no campaign fallback.
 - **WP-19/WP-20:** bootstrap/migration must reconcile checkpoint/session/MANIFEST/recovery machine shape without making checkpoint mandatory or authority.
-- **WP-22:** executable conformance/failure-injection coverage for current recovery, checkpoint optionality, live no-fallback, accepted execution no-replay, SQLite survivor proof, historical maintenance, allocator/disclosure preservation, partial repair and fixed Connector failures.
+- **WP-22:** executable conformance/failure-injection coverage for current recovery, checkpoint optionality, checkpoint-field authority boundaries, live no-fallback, accepted execution no-replay, SQLite survivor proof, historical maintenance, allocator/disclosure preservation, partial repair and fixed Connector failures.
 - **WP-24:** measure bounded recovery/maintenance reads before optimization.
 - **WP-26:** previously routed documentation-consistency debt remains separate.
 - **implementation planning:** exact APIs/schema fields/retry bounds/error vocabulary only after architecture authorization.
@@ -233,15 +254,21 @@ These routes do not authorize those domains now.
 ```text
 [x] repaired Step-1 package + SR14-01..03 preserved
 [x] Source Manifest kept open-world through Step 2
-[x] Step-2 evidence/completeness gate passed before synthesis
+[x] Step-2 evidence/completeness gate passed before synthesis, with post-Step-8 SR14-04 correcting the checkpoint-field completeness defect
 [x] Step-2 manifest expansion recorded
 [x] Step-3 alternatives/tradeoffs/recommendation documented
 [x] Step-4 collaborative refinements incorporated
 [x] Step-5 candidate written before adversarial critic
 [x] Step-6 dependency subgraph expanded where historical promotion exposed real owner seams
 [x] Step-6 whole-project critic itemized 3 BLOCKING + 5 SIGNIFICANT findings
-[x] Step-7 all BLOCKING/SIGNIFICANT findings mechanically resolved
-[x] final canonical source contains every Step-7 repair
+[x] Step-7 all historical Step-6 BLOCKING/SIGNIFICANT findings mechanically resolved
+[x] historical Step-6 F01-F08 remain unchanged by post-Step-8 recovery
+[x] SR14-04 recorded separately as the final-Senior-audit checkpoint-field completeness defect
+[x] every current checkpoint.schema.yaml field and current template representation has an explicit auditable disposition after SR14-04
+[x] state.current_state_path explicitly remains only a non-authoritative layout hint
+[x] checkpoint engine/ruleset projections explicitly remain provenance only and cannot replace current or accepted open-execution interpretation authority
+[x] no new checkpoint source/root manifest, RecoveryCut/frontier or mandatory checkpoint field introduced by SR14-04
+[x] final canonical source contains every Step-7 repair plus SR14-04 field-completeness clarification
 [x] checkpoint/session/SQLite/ambient context/exports/audit remain non-authoritative
 [x] no campaign fallback over current or required historical live authority
 [x] no replay/reroll/reallocation of accepted execution
@@ -254,21 +281,22 @@ These routes do not authorize those domains now.
 [x] no runtime/schema/template/catalog/test/tool implementation changed
 [x] no WP-15 work started
 [x] no implementation planning started
-[x] final next gate is mandatory Senior final audit
+[x] final next gate is mandatory Senior final re-audit
 ```
 
 ---
 
-## 9. Step-8 gate
+## 9. Step-8 + SR14-04 gate
 
 ```text
 WP-14_STEPS_2_8:          COMPLETE
+SR14-04:                  CLOSED
 STEP_6_BLOCKING:          3
 STEP_6_SIGNIFICANT:       5
 UNRESOLVED_BLOCKING:      0
 UNRESOLVED_SIGNIFICANT:   0
 HUMAN_DECISION_REQUIRED:  NO
-NEXT_GATE:                MANDATORY SENIOR FINAL AUDIT
+NEXT_GATE:                MANDATORY SENIOR FINAL RE-AUDIT
 ```
 
-Do not start WP-15 or implementation planning before mandatory Senior final audit and explicit subsequent authorization.
+Do not start WP-15 or implementation planning before mandatory Senior final re-audit and explicit subsequent authorization.
