@@ -1,6 +1,6 @@
 # R2.7 WP-12 — HOT, SQLite and Transaction Realization — Canonical Specification
 
-Status: **CANONICAL WP-12 RESULT — STEPS 1-8 COMPLETE / MANDATORY SENIOR AUDIT PENDING**
+Status: **CANONICAL WP-12 RESULT — STEPS 1-8 + SENIOR RECOVERY COMPLETE / MANDATORY SENIOR RE-AUDIT PENDING**
 
 ## 1. Scope and accepted direction
 
@@ -110,12 +110,14 @@ Loss before an applicable durability edge returns recovery to actual surviving
 native durable sources. Surviving local bytes do not expand the durability
 promise.
 
-### LAW WP12-8 — ExecutionSegment is the normal local atomic commit boundary
+### LAW WP12-8 — ExecutionSegment follows the owning establishment boundary
 
-One local SQLite transaction implements one accepted Step-3 ExecutionSegment or
-another already-defined native local atomic edge.
+For an accepted Step-3 ExecutionSegment or another already-defined native atomic
+edge whose owning authority/durability contract permits establishment in local
+HOT, **one local SQLite transaction is the local atomic commit/establishment
+boundary**.
 
-As applicable, that transaction may atomically advance distinct native
+As applicable, that local transaction may atomically advance distinct native
 owners/evidence including:
 
 - world owner state;
@@ -128,6 +130,18 @@ owners/evidence including:
 - idempotency state;
 - local owner generation/dirty bookkeeping;
 - helper updates/invalidations that must not observe a half-commit.
+
+For a **live-claimed mutable consequence**, the deterministic ExecutionSegment
+remains the native execution edge, but the local SQLite transaction is **not** the
+authoritative shared establishment boundary. The pre-CAS result remains
+prospective/non-current under WP12-22; authoritative establishment occurs only at
+the Step-5.8 **exact-source live CAS native durability edge**. After confirmed
+compatible CAS, a separate local SQLite transaction only adopts the already
+accepted live authority under WP12-23.
+
+Therefore no interpretation of this law may create a SQLite+live distributed
+transaction, expose a pre-CAS live consequence as current, or treat post-CAS local
+adoption as a rollbackable authoritative gameplay commit.
 
 Physical co-commit does not merge semantic owners.
 
@@ -406,8 +420,13 @@ The implementation/verification plan must prove at least:
 2. hard campaign/context namespace isolation exists;
 3. physical HOT possession cannot bypass role/access/information eligibility;
 4. SQL row identity/order cannot leak as native identity, chronology or mechanics;
-5. one ExecutionSegment commits all implicated local owner/runtime/evidence/dirty
-   state atomically or none;
+5. for an ExecutionSegment/native edge whose owning contract permits local HOT
+   establishment, one local SQLite transaction commits all implicated local
+   owner/runtime/evidence/dirty state atomically or none; for a live-claimed
+   mutable consequence, pre-CAS state remains prospective/non-current,
+   exact-source live CAS is the authoritative establishment edge, and the
+   post-CAS SQLite transaction only atomically adopts the already accepted live
+   state locally;
 6. no SQLite transaction spans external dialogue or repository/network I/O;
 7. open accepted execution resumes under compatible accepted interpretation
    context rather than arbitrary ambient mechanics;
@@ -444,9 +463,11 @@ plan.
 - **WP-22** — executable WP-12 conformance/integration/failure-injection tests.
 - **WP-24** — measured performance/query/storage evaluation and any proven narrow
   normalization/index optimization.
-- **WP-26** — reconcile stale `DEV/ARCHITECTURE/BRANCH_MODEL.md` storage-v2 marker
-  wording with the current storage machine/owner contract without changing the
-  settled baseline-versus-existing-campaign authority rule.
+- **WP-26** — reconcile stale storage-v2 marker/baseline wording in
+  `DEV/ARCHITECTURE/BRANCH_MODEL.md` and the stale `Storage v2 baseline
+  maintenance...` label in `DEV/ARCHITECTURE/ACCESS_CONTROL.md` with the current
+  storage machine/owner contract, without changing the settled
+  baseline-versus-existing-campaign authority rule.
 
 These forward items do not reopen WP-12 architecture merely by overlap.
 
@@ -457,9 +478,13 @@ Recommendation confidence: **HIGH**
 Human decision required: **NO**
 
 WP-12 architecture is complete under the current accepted product/deployment
-scope. Step-6 findings F01–F08 are incorporated in this final law; F09 is the
-bounded WP-26 documentation-consistency item above.
+scope. Step-6 findings F01–F08 remain incorporated in this final law; F09 remains
+the bounded WP-26 documentation-consistency item and is broadened by the Senior
+recovery to include the stale `ACCESS_CONTROL.md` storage-v2 label. The post-Step-8
+Senior finding SR01 repairs only the live-CAS/local-HOT establishment qualification
+in WP12-8 and its matching verification obligation; it does not reopen the
+accepted architecture.
 
-No implementation is authorized by this specification alone. After Step-8
-canonicalization, the mandatory Senior audit must pass before WP-13 or any
+No implementation is authorized by this specification alone. After this Senior
+recovery checkpoint, mandatory Senior re-audit must pass before WP-13 or any
 implementation-planning transition is authorized.
