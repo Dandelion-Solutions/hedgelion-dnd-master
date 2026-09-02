@@ -8,17 +8,17 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-11 / SENIOR HOLD — NARROW STEP-3 PROVENANCE REPAIR
+GLOBAL_STATE: R2.7 WP-12 / STEP 1 AUTHORIZED — TASK BRIEF AND WHOLE-PROJECT CRITIC
 
-CURRENT_WORKSTREAM: R2.7 WP-11 — Storage topology, identity and indexing
-CURRENT_SLICE: Step-3 brief supersession notice and historical hash-only route repair; mandatory Senior audit before WP-12
+CURRENT_WORKSTREAM: R2.7 WP-12 — HOT/SQLite/transaction realization
+CURRENT_SLICE: Step 1 Task Brief, Source Manifest and whole-project critic authorized; mandatory Senior audit before Step 2
 
-LAST_CLOSED_UNIT: R2.7 WP-11 Steps 1-8 / final spec published; closure package reopened only for narrow Step-3 provenance repair
-NEXT_AUTHORIZED_UNIT: Mandatory Senior audit of the narrow Step-3 provenance repair
-REQUIRED_GATE: Senior HOLD on Step-3 provenance alignment. Do not begin WP-12 or implementation planning without new explicit Senior GO after this repair.
+LAST_CLOSED_UNIT: R2.7 WP-11 Steps 1-8 / physical storage topology, identity and indexing closed by Senior review
+NEXT_AUTHORIZED_UNIT: R2.7 WP-12 Step 1 / Task Brief, Source Manifest and whole-project critic
+REQUIRED_GATE: Complete WP-12 Step-1 package, including local critic and all mechanically resolvable repairs, then mandatory Senior audit before Step 2. Do not begin WP-12 Step 2, WP-13 or implementation planning without explicit Senior GO.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
-KNOWN_BLOCKERS: SENIOR HOLD — Step-3 Decision Brief must be explicitly superseded and routed to AR-06, Step 7 and the final canonical specification
+KNOWN_BLOCKERS: NONE
 ```
 
 ## Scope boundary

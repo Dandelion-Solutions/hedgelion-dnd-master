@@ -46,13 +46,13 @@ That blob records the real R2.7 state before the House-Rules/S6D pause. It is hi
 ## Task-local R2.7 cursor
 
 ```text
-AUDIT_STATUS: WAITING_SENIOR_REVIEW
+AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-11
-CURRENT_DOMAIN: WP-11
-CURRENT_DOMAIN_TOPIC: Physical storage topology, identity and indexing
-CURRENT_SLICE: Mandatory Senior review of WP-11 Step-8 canonicalization
-NEXT_DOMAIN: WP-12
-OWNER_GATE: REQUIRED — WP-11 Step 8 completed; await Senior GO before WP-12
+CURRENT_DOMAIN: WP-12
+CURRENT_DOMAIN_TOPIC: HOT/SQLite/transaction realization
+CURRENT_SLICE: Step 1 Task Brief, Source Manifest and whole-project critic authorized
+NEXT_DOMAIN: WP-13
+OWNER_GATE: REQUIRED — WP-12 Step 1 must complete local critic and mechanically resolvable repairs; await Senior GO before Step 2
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -62,7 +62,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-11 STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW
+R2_7_STATUS: WP-12 STEP 1 AUTHORIZED
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
@@ -70,7 +70,8 @@ R2_7_WP07: STEPS 1-8 COMPLETE — SENIOR REVIEW PASS
 R2_7_WP08: COMPLETE
 R2_7_WP09: COMPLETE
 R2_7_WP10: COMPLETE
-R2_7_WP11: STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW
+R2_7_WP11: CLOSED / SENIOR REVIEW PASS
+R2_7_WP12: STEP 1 AUTHORIZED
 ```
 
 This task-local cursor records the R2.7 audit checkpoint. It does not own global
@@ -93,8 +94,9 @@ project state, does not authorize WP-07, and does not alter WP-06 findings. Read
 | WP-08 | CLOSED |
 | WP-09 | CLOSED |
 | WP-10 | CLOSED |
-| WP-11 | STEPS 1-8 COMPLETE — WAITING SENIOR REVIEW |
-| WP-12..WP-27 | NOT STARTED |
+| WP-11 | CLOSED / SENIOR REVIEW PASS |
+| WP-12 | STEP 1 AUTHORIZED |
+| WP-13..WP-27 | NOT STARTED |
 
 
 ---
