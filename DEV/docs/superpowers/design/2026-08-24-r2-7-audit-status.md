@@ -50,9 +50,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-13
 CURRENT_DOMAIN: WP-14
 CURRENT_DOMAIN_TOPIC: recovery / checkpoints / session / repair
-CURRENT_SLICE: STEP 1 AUTHORIZED
+CURRENT_SLICE: STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 NEXT_DOMAIN: WP-15
-OWNER_GATE: REQUIRED — mandatory Senior review after completed WP-14 Step 1; Step 2 must not begin before explicit Senior GO
+OWNER_GATE: REQUIRED — mandatory Senior review of completed WP-14 Step 1; Step 2 must not begin before explicit Senior GO
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -62,7 +62,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-14 STEP 1 AUTHORIZED
+R2_7_STATUS: WP-14 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
@@ -73,7 +73,7 @@ R2_7_WP10: COMPLETE
 R2_7_WP11: CLOSED / SENIOR REVIEW PASS
 R2_7_WP12: CLOSED / SENIOR REVIEW PASS
 R2_7_WP13: CLOSED / SENIOR REVIEW PASS
-R2_7_WP14: STEP 1 AUTHORIZED
+R2_7_WP14: STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 ```
 
 This task-local cursor records the R2.7 audit checkpoint. It does not own global
@@ -99,8 +99,64 @@ findings. Read `DEV/CURRENT_PROGRESS.md` before resuming any work.
 | WP-11 | CLOSED / SENIOR REVIEW PASS |
 | WP-12 | CLOSED / SENIOR REVIEW PASS |
 | WP-13 | CLOSED / SENIOR REVIEW PASS |
-| WP-14 | STEP 1 AUTHORIZED |
+| WP-14 | STEP 1 COMPLETE — MANDATORY SENIOR REVIEW |
 | WP-15..WP-27 | NOT STARTED |
+
+---
+
+## WP-14 Step-1 completion state
+
+WP-14 scope is the R2.7 domain **recovery / checkpoints / session / repair**.
+
+Published Step-1 artifacts:
+
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-task-brief.md`;
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-task-brief-critic.md`.
+
+The Source Manifest was built from current `DEV/PROJECT_MAP.md` and expanded through actual owners/consumers across Step-3/Step-5 recovery/currentness architecture, WP-10/WP-11/WP-12/WP-13, current CORE runtime/session/bootstrap/integrity/storage/persistence/live consumers, checkpoint/session/current-state schemas/templates, generator and regression surfaces. It is explicitly open-world for Step 2.
+
+The mandatory whole-project Task-Brief critic found:
+
+```text
+STEP_1_CRITIC_BLOCKING:    3
+STEP_1_CRITIC_SIGNIFICANT: 8
+```
+
+Framing defects covered:
+
+- checkpoint-first startup versus current-authority-first recovery;
+- accepted execution/temporal continuity and no replay/reroll;
+- selected live-source current truth with no campaign fallback;
+- session HEAD/status fields as coordination hints only;
+- current checkpoint schema/template field disposition;
+- surviving SQLite source-equivalence requirement;
+- WP-11/F03 direct routing + deterministic index rebuild;
+- evidence-gated repair with no silent historical fallback;
+- interpretation/catalog/rules closure for open work;
+- chronology separation from checkpoint/event/Git/session ordering;
+- checkpoint facility defects versus SAVE/handoff/current-state proof.
+
+All were mechanically resolvable from accepted architecture and were incorporated into the published Task Brief and Source Manifest before Step-1 closure.
+
+```text
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+UPSTREAM_REOPEN_REQUIRED: NO
+```
+
+Explicit upstream obligations consumed by Step 1 include:
+
+- WP-11/F03 current-route-first recovery + deterministic index rebuild;
+- WP-12 current-native-source/exact-pin cold recovery, surviving SQLite as cache only after source-equivalence proof, ephemeral recovery composition and checkpoint optionality;
+- WP-13 current-authority-first recovery/checkpoint machine, checkpoint non-SAVE/non-current authority and session/cached-HEAD non-authority.
+
+Current machine debt is recorded as evidence, not accepted architecture. It includes `BOOTSTRAP_RUNTIME.md` checkpoint-first startup wording, current checkpoint schema/template generic frontier fields, session HEAD/status hints requiring non-authority qualification and bootstrap regression B25's unconditional first-scene/checkpoint wording.
+
+No runtime/schema/template/test/tool implementation was changed by WP-14 Step 1.
+
+Step 2, WP-15 and implementation planning remain blocked pending mandatory Senior review and explicit Senior GO.
 
 ---
 
@@ -263,7 +319,7 @@ NEW_HUMAN_DECISION: NO
 ARCHITECTURE_REOPENED: NO
 ```
 
-WP-13 is closed. The next authorized domain is WP-14 Step 1 only.
+WP-13 is closed. WP-14 Step 1 is complete and awaits mandatory Senior review.
 
 ---
 
@@ -280,7 +336,7 @@ Post-Step-8 Senior recovery evidence:
 Preserved downstream routes from the final WP-12 specification:
 
 - WP-13 — durability/SAVE/publication machine realization and stale global timer/frontier repair — **closed / Senior review PASS**;
-- WP-14 — checkpoint/recovery machine repair;
+- WP-14 — checkpoint/recovery machine repair — **Step 1 complete / mandatory Senior review pending**;
 - WP-16 — final live currentness/CAS machine realization;
 - WP-19/WP-20 — bootstrap/migration integration if required;
 - WP-22 — executable WP-12/WP-13 conformance/integration/failure-injection coverage;
@@ -410,8 +466,12 @@ WP13_CANONICAL_SPEC_PUBLISHED_SHA: `a398362909e2d8c66b0c3e731331bb96aa34f1cc`
 WP13_STEP8_CANONICALIZATION_PUBLISHED_SHA: `2aa966c80eb434fc8b0997433198fe078c14d883`
 WP13_FINAL_CANONICAL_ARTIFACT: `DEV/docs/superpowers/specs/2026-09-02-r2-7-WP-13-durability-save-publication-canonical-spec.md`
 WP13_FINAL_SENIOR_AUDIT_SHA: `f0ba874f20ab607cc9b54b0b4538cf1d8027f71f`
-COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 Steps 1-8 plus Senior SR01 recovery completed and passed mandatory final Senior re-audit; WP-13 Steps 1-8 plus narrow Step-1 Senior SR13-01 repair completed and passed mandatory final Senior audit.
-CURRENT_VERIFICATION_STATE: WP-13 is closed / Senior review PASS at f0ba874f20ab607cc9b54b0b4538cf1d8027f71f. No runtime/schema/catalog/test implementation and no implementation-planning work has begun. WP-14 Step 1 is the only currently authorized architecture unit.
-NEXT_EXACT_TASK_OR_SLICE: R2.7 WP-14 Step 1 — prepare complete Architecture Task Brief + task-specific Source Manifest + mandatory whole-project Task-Brief critic, repair all mechanically resolvable BLOCKING/SIGNIFICANT framing defects, publish a coherent checkpoint, then stop for mandatory Senior review before Step 2.
+WP14_STEP1_START_SHA: `34d143c232b27623bf091a3f39899f8220068685`
+WP14_STEP1_TASK_BRIEF: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-task-brief.md`
+WP14_STEP1_SOURCE_MANIFEST: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-source-manifest.md`
+WP14_STEP1_TASK_BRIEF_CRITIC: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-14-recovery-checkpoints-session-repair-task-brief-critic.md`
+COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 Steps 1-8 plus Senior SR01 recovery completed and passed mandatory final Senior re-audit; WP-13 Steps 1-8 plus narrow Step-1 Senior SR13-01 repair completed and passed mandatory final Senior audit; WP-14 Step 1 completed with all Task-Brief critic BLOCKING/SIGNIFICANT findings mechanically resolved.
+CURRENT_VERIFICATION_STATE: WP-14 Step-1 documentation package is complete at the architecture-framing level with critic counts 3 BLOCKING + 8 SIGNIFICANT and zero unresolved BLOCKING/SIGNIFICANT findings; no human-owned decision or upstream reopening is required. No runtime/schema/template/test/tool implementation and no implementation-planning work has begun. Mandatory Senior review is pending.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of the completed WP-14 Step-1 package. Step 2, WP-15 and implementation planning remain blocked pending explicit Senior GO.
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE
