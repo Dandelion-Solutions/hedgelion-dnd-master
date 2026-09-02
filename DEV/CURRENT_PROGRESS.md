@@ -8,14 +8,14 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-14 / STEPS 1-8 + SR14-04 FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT
+GLOBAL_STATE: R2.7 WP-15 / STEP 1 AUTHORIZED
 
-CURRENT_WORKSTREAM: R2.7 WP-14 — recovery / checkpoints / session / repair
-CURRENT_SLICE: Steps 1-8 complete; Step-1 SR14-01..03 consumed; post-Step-8 SR14-04 checkpoint field-by-field canonical-completeness defect mechanically repaired across Step-2 accounting, Step-8 self-review and final canonical result; historical Step-6 F01-F08 unchanged; mandatory final Senior re-audit pending
+CURRENT_WORKSTREAM: R2.7 WP-15 — temporal owners / processes / chronology
+CURRENT_SLICE: Step 1 authorized after WP-14 final Senior re-audit PASS at 1ee979c955380baddb5ec1c0a0632a3fbda593f3; prepare WP-15 Task Brief + task-specific Source Manifest + mandatory whole-project Task-Brief critic, repair mechanically resolvable BLOCKING/SIGNIFICANT framing defects, then stop for mandatory Senior review
 
-LAST_CLOSED_UNIT: R2.7 WP-13 Steps 1-8 + Step-1 SR13-01 repair / durability / SAVE / publication — Senior review PASS at f0ba874f20ab607cc9b54b0b4538cf1d8027f71f
-NEXT_AUTHORIZED_UNIT: Mandatory final Senior re-audit of the repaired R2.7 WP-14 Steps 1-8 + SR14-04 package
-REQUIRED_GATE: Senior final re-audit of WP-14 after SR14-04. Do not begin WP-15 or implementation planning without explicit Senior GO after that re-audit.
+LAST_CLOSED_UNIT: R2.7 WP-14 Steps 1-8 + SR14-01..04 / recovery / checkpoints / session / repair — final Senior re-audit PASS at 1ee979c955380baddb5ec1c0a0632a3fbda593f3
+NEXT_AUTHORIZED_UNIT: R2.7 WP-15 Step 1 — temporal owners / processes / chronology
+REQUIRED_GATE: Complete only WP-15 Step 1 and stop for mandatory Senior review. Do not begin Step 2, WP-16 or implementation planning without explicit Senior GO.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
