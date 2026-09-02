@@ -50,9 +50,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-12
 CURRENT_DOMAIN: WP-13
 CURRENT_DOMAIN_TOPIC: durability / SAVE / publication
-CURRENT_SLICE: Step 1 authorized — complete Task Brief + task-specific Source Manifest + mandatory whole-project Task-Brief critic, repair all mechanically resolvable BLOCKING/SIGNIFICANT framing defects, then stop for mandatory Senior review
+CURRENT_SLICE: Step 1 complete — Task Brief + task-specific Source Manifest + mandatory whole-project Task-Brief critic repaired; mandatory Senior review pending
 NEXT_DOMAIN: WP-14
-OWNER_GATE: REQUIRED — mandatory Senior review after completed WP-13 Step 1; Step 2 must not begin before explicit Senior GO
+OWNER_GATE: REQUIRED — mandatory Senior review of completed WP-13 Step 1; Step 2 must not begin before explicit Senior GO
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -62,7 +62,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-13 STEP 1 AUTHORIZED
+R2_7_STATUS: WP-13 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
@@ -72,7 +72,7 @@ R2_7_WP09: COMPLETE
 R2_7_WP10: COMPLETE
 R2_7_WP11: CLOSED / SENIOR REVIEW PASS
 R2_7_WP12: CLOSED / SENIOR REVIEW PASS
-R2_7_WP13: STEP 1 AUTHORIZED
+R2_7_WP13: STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 ```
 
 This task-local cursor records the R2.7 audit checkpoint. It does not own global
@@ -97,37 +97,55 @@ findings. Read `DEV/CURRENT_PROGRESS.md` before resuming any work.
 | WP-10 | CLOSED |
 | WP-11 | CLOSED / SENIOR REVIEW PASS |
 | WP-12 | CLOSED / SENIOR REVIEW PASS |
-| WP-13 | IN PROGRESS / STEP 1 AUTHORIZED |
+| WP-13 | STEP 1 COMPLETE — MANDATORY SENIOR REVIEW |
 | WP-14..WP-27 | NOT STARTED |
 
 ---
 
-## WP-13 current-domain opening
+## WP-13 Step-1 completion
 
 WP-13 scope is the R2.7 domain **durability / SAVE / publication**.
 
-The next authorized work is only Step 1 of the current eight-step deep-design
-loop. The worker must:
+Published Step-1 artifacts:
 
-- recover current repository/process/current-progress state;
-- use `DEV/PROJECT_MAP.md` to construct the relevant whole-project dependency
-  subgraph;
-- construct the task-specific Source Manifest deeply enough to frame WP-13;
-- produce the complete WP-13 Architecture Task Brief;
-- run the mandatory whole-project Step-1 Task-Brief critic;
-- inspect the actual owners/dependencies exposed by that critic;
-- repair all mechanically resolvable `BLOCKING`/`SIGNIFICANT` framing defects,
-  omissions and stale assumptions;
-- record any genuine human-owned residual decision explicitly;
-- publish one coherent review-ready Step-1 checkpoint and stop for the mandatory
-  Senior review.
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-task-brief.md`;
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-task-brief-critic.md`.
 
-Step 2, WP-14 and implementation planning are not authorized by this opening.
+The Step-1 dependency reconstruction used the current `DEV/PROJECT_MAP.md` and actual owning/consumer surfaces across Step-3, Step-5.2/5.4/5.5/5.6/5.7/5.8/5.14, WP-10/WP-11/WP-12, Access Control/Branch Model/House Rules, current GAME durability/save/publication/session/live/integrity consumers, current schemas and current regression/audit surfaces.
 
-WP-13 must consume, among other sources discovered by its own Source Manifest,
-the accepted WP-12 local-HOT/live-CAS establishment split and the existing
-Step-5 durability/publication owners. It must not reopen accepted WP-12
-architecture merely because durability/publication is a downstream consumer.
+The mandatory whole-project Task-Brief critic found:
+
+```text
+BLOCKING:     2
+SIGNIFICANT:  8
+```
+
+All were mechanically resolvable from accepted architecture/current repository evidence and are repaired in the published Task Brief/Source Manifest.
+
+Final Step-1 critic state:
+
+```text
+UNRESOLVED_BLOCKING:     0
+UNRESOLVED_SIGNIFICANT:  0
+HUMAN_DECISION_REQUIRED: NO
+```
+
+The repaired framing explicitly preserves:
+
+- Step-5.5 scope-owned durability obligation and multi-native-domain SAVE semantics;
+- Step-5.6 frozen single-ref campaign publication/currentness/ambiguity contract;
+- WP-11/F02 native-record + required-index publication closure;
+- WP-12 owner-generation dirty/adoption law and no global durability timer/frontier;
+- Step-5.8/WP-12 exact-source live-CAS establishment boundary;
+- Step-5.7 checkpoint-not-save-proof boundary;
+- application authorization/currentness basis;
+- bounded native-root/direct-route completeness rather than broad campaign scans;
+- downstream ownership of WP-14/WP-16/WP-19/WP-20/WP-22/WP-24/WP-26 concerns.
+
+Current machine/test debt identified for Step-2 evidence work includes the noncanonical one-hour/global `durable_frontier_time`, campaign-centric `SAVE_ALL_DIRTY` framing, unqualified dirty clearing, and older live-machine surfaces. These are evidence/debt, not accepted architecture and not a reason to reopen closed upstream decisions.
+
+Step 2 is not authorized until mandatory Senior review gives explicit GO.
 
 ---
 
@@ -274,8 +292,12 @@ WP12_CANONICAL_SPEC_PUBLISHED_SHA: `0d30d616ef64d3c6b8189dbdafe13ada0efbe378`
 WP12_STEP8_CANONICALIZATION_PUBLISHED_SHA: `2ddbceaf6aed8a0c79399ea1f721397329e9b9bc`
 WP12_PRE_SENIOR_RECOVERY_HEAD: `ef9c449c53373213ce812b25d6514780b4618db8`
 WP12_FINAL_SENIOR_REAUDIT_SHA: `cc906da9dca4c04fee6342c21128a452b064e312`
-COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 Steps 1-8 plus Senior SR01 recovery completed and passed mandatory final Senior re-audit.
-CURRENT_VERIFICATION_STATE: WP-12 is closed / Senior review PASS. WP-13 is the current domain and only Step 1 is authorized; no WP-13 Step-1 package exists yet at this transition checkpoint. No WP-13 runtime/schema/catalog/test/topology implementation and no implementation-planning work has begun.
-NEXT_EXACT_TASK_OR_SLICE: R2.7 WP-13 Step 1 — build the complete Architecture Task Brief + task-specific Source Manifest + mandatory whole-project Task-Brief critic, repair mechanically resolvable BLOCKING/SIGNIFICANT framing defects, publish a coherent review-ready checkpoint, then stop for mandatory Senior review before Step 2.
+WP13_STEP1_START_SHA: `bffc0e22c12f42f977e591066eb1f56907502fad`
+WP13_STEP1_TASK_BRIEF: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-task-brief.md`
+WP13_STEP1_SOURCE_MANIFEST: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-source-manifest.md`
+WP13_STEP1_TASK_BRIEF_CRITIC: `DEV/docs/superpowers/design/2026-09-02-r2-7-WP-13-durability-save-publication-task-brief-critic.md`
+COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 Steps 1-8 plus Senior SR01 recovery completed and passed mandatory final Senior re-audit; WP-13 Step 1 completed with repaired Task Brief, task-specific Source Manifest and mandatory whole-project Task-Brief critic.
+CURRENT_VERIFICATION_STATE: WP-13 Step-1 framing package is complete with zero unresolved BLOCKING/SIGNIFICANT critic findings and no human-owned decision. Only documentation/current-state carriers are changed by Step 1; no runtime/schema/catalog/test/topology implementation and no implementation-planning work has begun. Mandatory Senior review is pending.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of the completed WP-13 Step-1 package. Step 2, WP-14 and implementation planning remain blocked pending explicit Senior GO.
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE
