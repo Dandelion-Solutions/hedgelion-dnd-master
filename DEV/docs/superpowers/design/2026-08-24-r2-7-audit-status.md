@@ -50,9 +50,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-13
 CURRENT_DOMAIN: WP-14
 CURRENT_DOMAIN_TOPIC: recovery / checkpoints / session / repair
-CURRENT_SLICE: STEPS 1-8 COMPLETE — MANDATORY FINAL SENIOR AUDIT
+CURRENT_SLICE: STEPS 1-8 + SR14-04 FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT
 NEXT_DOMAIN: WP-15
-OWNER_GATE: REQUIRED — mandatory final Senior audit of completed WP-14 Steps 1-8; await explicit Senior GO before WP-15 or implementation planning
+OWNER_GATE: REQUIRED — mandatory final Senior re-audit of repaired WP-14 Steps 1-8 + SR14-04; await explicit Senior GO before WP-15 or implementation planning
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -62,7 +62,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-14 STEPS 1-8 COMPLETE — MANDATORY FINAL SENIOR AUDIT
+R2_7_STATUS: WP-14 STEPS 1-8 + SR14-04 FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
@@ -73,7 +73,7 @@ R2_7_WP10: COMPLETE
 R2_7_WP11: CLOSED / SENIOR REVIEW PASS
 R2_7_WP12: CLOSED / SENIOR REVIEW PASS
 R2_7_WP13: CLOSED / SENIOR REVIEW PASS
-R2_7_WP14: STEPS 1-8 COMPLETE — MANDATORY FINAL SENIOR AUDIT
+R2_7_WP14: STEPS 1-8 + SR14-04 FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT
 ```
 
 This cursor does not authorize WP-15 and does not alter closed prior-domain decisions. Read `DEV/CURRENT_PROGRESS.md` before resuming work.
@@ -97,7 +97,7 @@ This cursor does not authorize WP-15 and does not alter closed prior-domain deci
 | WP-11 | CLOSED / SENIOR REVIEW PASS |
 | WP-12 | CLOSED / SENIOR REVIEW PASS |
 | WP-13 | CLOSED / SENIOR REVIEW PASS |
-| WP-14 | STEPS 1-8 COMPLETE — MANDATORY FINAL SENIOR AUDIT |
+| WP-14 | STEPS 1-8 + SR14-04 FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT |
 | WP-15..WP-27 | NOT STARTED |
 
 ---
@@ -142,7 +142,7 @@ Artifacts:
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-step-2-evidence-extraction.md`;
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-source-manifest-step-2-expansion.md`.
 
-Step 2 consumed the full owner graph required for current recovery/checkpoint/session/repair and expanded the manifest with actual consumers/evidence including:
+Step 2 consumed the owner graph required for current recovery/checkpoint/session/repair and expanded the manifest with actual consumers/evidence including:
 
 - `DEV/ARCHITECTURE/CATALOG_INVENTORY.md`;
 - `DEV/CATALOG/identifier-policies.json`;
@@ -153,7 +153,9 @@ Step 2 consumed the full owner graph required for current recovery/checkpoint/se
 - `DEV/TESTS/EXPLICIT_SAVE_CASES.md`;
 - explicit Step-5.7 historical-maintenance laws.
 
-Step-2 completeness:
+The original Step-2 accounting grouped several checkpoint schema leaves under broad categories and therefore overstated checkpoint-field completeness. The mandatory final Senior audit later identified that defect as `SR14-04`; the Step-2 artifact has now been repaired with an exhaustive leaf-by-leaf disposition for every current `GAME/SCHEMA/checkpoint.schema.yaml` field and current template representation.
+
+Current Step-2 completeness after SR14-04 repair:
 
 ```text
 NEW_SEMANTIC_OWNER_DISCOVERED: NO
@@ -162,6 +164,7 @@ MANIFEST_EXPANDED: YES
 SR14_01_ROUTE_COMPLETE: YES
 SR14_02_ROUTE_COMPLETE: YES
 SR14_03_ROUTE_COMPLETE: YES
+SR14_04_FIELD_COVERAGE_REPAIRED: YES
 UNRESOLVED_SOURCE_GRAPH_GAPS: 0
 UNRESOLVED_EVIDENCE_GAPS: 0
 UPSTREAM_REOPEN_REQUIRED: NO
@@ -213,7 +216,7 @@ Adversarial artifact:
 
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-step-6-whole-project-adversarial-review.md`.
 
-Findings:
+Historical findings remain exactly:
 
 ```text
 F01 BLOCKING     fresh current-basis reconciliation/freeze for historical promotion
@@ -235,6 +238,8 @@ HUMAN_DECISION_REQUIRED: NO
 UPSTREAM_REOPEN_REQUIRED: NO
 ```
 
+`SR14-04` is not retroactively attributed to Step 6.
+
 ### Step 7 — resolution gate
 
 Artifact:
@@ -252,7 +257,7 @@ All F01-F08 were mechanically resolved from accepted architecture:
 - durable maintenance audit uses current authority/current allocator/current publication semantics;
 - historical readers use exact pinned basis without creating a durable GC lease or reviving semantically retired evidence.
 
-Final Step-7 state:
+Final historical Step-7 state:
 
 ```text
 UNRESOLVED_BLOCKING: 0
@@ -289,21 +294,57 @@ The final canonical result incorporates every Step-7 repair and preserves these 
 
 No runtime/schema/template/catalog/test/tool implementation was changed by WP-14 Steps 2-8.
 
-### Mandatory final Senior audit
+### Post-Step-8 mandatory Senior recovery — SR14-04
+
+Artifact:
+
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-14-post-step-8-senior-recovery-checkpoint-field-disposition.md`.
+
+The mandatory final Senior audit found one additional **SIGNIFICANT canonical-completeness defect**:
+
+```text
+SR14-04 — incomplete checkpoint field-by-field disposition
+```
+
+The repair is documentation/canonical-accounting only and does not change selected architecture or implementation. It adds a complete auditable disposition for every current `GAME/SCHEMA/checkpoint.schema.yaml` field and matching current template representation, including:
+
+- descriptor identity/association fields;
+- schema/format-only fields;
+- retired frontier/self-commit fields;
+- optional world-time/active-list/recovery-note hints;
+- explicit non-authoritative `state.current_state_path` layout-hint semantics;
+- leaf-level `engine.*` provenance-only semantics;
+- schema-admitted/template-absent `ruleset.ruleset_set_sha256` provenance-only semantics;
+- explicit prohibition on using checkpoint engine/ruleset projections as current runtime/ruleset or accepted open-execution interpretation authority.
+
+No new checkpoint source/root completeness manifest, RecoveryCut, frontier field or mandatory checkpoint requirement is introduced.
+
+Disposition:
+
+```text
+SR14-04: CLOSED
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+UPSTREAM_REOPEN_REQUIRED: NO
+```
+
+### Mandatory final Senior re-audit
 
 Current gate:
 
 ```text
 WP14_STEPS_1_8: COMPLETE
+SR14-04: CLOSED
 STEP_6_BLOCKING: 3
 STEP_6_SIGNIFICANT: 5
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
 HUMAN_DECISION_REQUIRED: NO
-NEXT_GATE: MANDATORY FINAL SENIOR AUDIT
+NEXT_GATE: MANDATORY FINAL SENIOR RE-AUDIT
 ```
 
-WP-15 and implementation planning remain blocked until mandatory Senior final audit and explicit subsequent Senior GO.
+WP-15 and implementation planning remain blocked until mandatory Senior final re-audit and explicit subsequent Senior GO.
 
 ---
 
@@ -345,10 +386,10 @@ ARCHITECTURE_REOPENED: NO
 
 Downstream routes preserved by current closed/complete architecture:
 
-- **WP-15** — next sequenced audit domain only after WP-14 final Senior PASS and explicit GO;
+- **WP-15** — next sequenced audit domain only after WP-14 final Senior re-audit PASS and explicit GO;
 - **WP-16** — final live currentness/CAS physical machine realization; preserve WP-14 selected-current-live/no-campaign-fallback recovery semantics;
 - **WP-19/WP-20** — bootstrap/migration integration of recovery/checkpoint/session/MANIFEST changes when authorized;
-- **WP-22** — executable conformance/integration/failure-injection coverage for WP-12/WP-13/WP-14, including current recovery, checkpoint optionality, live no-fallback, accepted execution no-replay, SQLite survivor proof, historical maintenance, allocator/disclosure preservation, partial repair and fixed-Connector failures;
+- **WP-22** — executable conformance/integration/failure-injection coverage for WP-12/WP-13/WP-14, including current recovery, checkpoint optionality and field-authority boundaries, live no-fallback, accepted execution no-replay, SQLite survivor proof, historical maintenance, allocator/disclosure preservation, partial repair and fixed-Connector failures;
 - **WP-24** — measured recovery/HOT/query/storage/publication performance before optimization;
 - **WP-26 / WP-06-F02** — remove stale pre-realization B′ wording from `DEV/ARCHITECTURE/DOMAIN_RULES_COVERAGE.md` without reopening the current machine binding;
 - **WP-26 / WP-06-F03** — align `GAME/CORE/EXPLORATION.md` spatial guidance with bounded location/procedure/applicability contract without generalized spatial engine;
@@ -418,10 +459,16 @@ WP14_STEP7_RESOLUTION_SHA: `8d6359f2293536e00b4402839d3d697c12d58abe`
 WP14_CANONICAL_SPEC_PUBLISHED_SHA: `1a583ada0cfcab9b9da537fbaa8f3bee6fb6b468`
 WP14_STEP8_CANONICALIZATION_PUBLISHED_SHA: `d26b0e9b443fcc2459c6e6252bd56ea3398b5f1c`
 WP14_GLOBAL_CURSOR_SYNC_SHA: `88ae90154646cc994c0f237e94b2ea74ddf1edbc`
+WP14_PRE_SR14_04_SHA: `c301c4aa4d89840057e6f18e068d9057cd10a0df`
+WP14_SR14_04_RECOVERY_ARTIFACT_SHA: `afe7f0423fb209621163ddb0df0a602db9af7e6d`
+WP14_SR14_04_STEP2_ACCOUNTING_REPAIR_SHA: `d9950bde8fb5670e4f1533e59bd661c0cc44b3e9`
+WP14_SR14_04_STEP8_REPAIR_SHA: `7b8ff8be7cc0ced2b61b9e9a73c0186b417f1a74`
+WP14_SR14_04_CANONICAL_REPAIR_SHA: `619c3fbc8dce8b1752b34023502490fdf6c8a0b8`
+WP14_SR14_04_GLOBAL_CURSOR_SHA: `d350f8e07a51c93805393b7bf6c4775fdf0da0e6`
 
 WP14_FINAL_CANONICAL_ARTIFACT: `DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-canonical-spec.md`
-COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 closed after Senior recovery/re-audit; WP-13 closed after final Senior audit; WP-14 repaired Step 1 + Steps 2-8 complete with all Step-6 findings resolved and mandatory final Senior audit pending.
-CURRENT_VERIFICATION_STATE: WP-14 Steps 1-8 documentation/canonicalization package complete; Step-6 found 3 BLOCKING + 5 SIGNIFICANT and Step 7 closed all eight mechanically; unresolved BLOCKING/SIGNIFICANT = 0; no human decision; no upstream reopening; no runtime/schema/template/catalog/test/tool implementation and no implementation planning performed. Final remote verification/read-back remains the closure action after this cursor publication.
-NEXT_EXACT_TASK_OR_SLICE: Mandatory final Senior audit of completed WP-14 Steps 1-8. WP-15 and implementation planning remain blocked pending explicit subsequent Senior GO.
+COMPLETED_SLICES: WP-08, WP-09, WP-10 and WP-11 completed; WP-12 closed after Senior recovery/re-audit; WP-13 closed after final Senior audit; WP-14 repaired Step 1 + Steps 2-8 complete; historical Step-6 findings all resolved; post-Step-8 SR14-04 checkpoint field-completeness repair complete; mandatory final Senior re-audit pending.
+CURRENT_VERIFICATION_STATE: WP-14 Steps 1-8 + SR14-04 documentation/canonicalization package has zero unresolved BLOCKING/SIGNIFICANT findings, no human decision and no upstream reopening; historical Step-6 F01-F08 remain unchanged. No runtime/schema/template/catalog/test/tool implementation and no implementation planning performed. Fresh final exact-diff/read-back verification is the remaining closure action after this cursor publication.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory final Senior re-audit of repaired WP-14 Steps 1-8 + SR14-04 package. WP-15 and implementation planning remain blocked pending explicit subsequent Senior GO.
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE
