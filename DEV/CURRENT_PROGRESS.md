@@ -6,14 +6,14 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-17 / STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW
+GLOBAL_STATE: R2.7 WP-17 / STEPS 1-8 COMPLETE — MANDATORY SENIOR FINAL AUDIT
 
 CURRENT_WORKSTREAM: R2.7 WP-17 — async collaboration / agency-safe progression
-CURRENT_SLICE: WP-17 Step-1 package plus narrow Senior repair SR17-01 complete; historical Task-Brief critic remains 5 BLOCKING + 11 SIGNIFICANT; SR17-01 closes one additional BLOCKING terminology/owner-routing defect; unresolved BLOCKING/SIGNIFICANT 0/0; no human decision; no upstream reopen; Step 2 remains unauthorized
+CURRENT_SLICE: WP-17 Steps 1-8 complete after Step-1 Senior repair SR17-01; Step-6 whole-project adversarial review found 2 BLOCKING + 4 SIGNIFICANT; Step 7 closed all 6; unresolved BLOCKING/SIGNIFICANT 0/0; no human decision; no upstream reopen; final canonical specification published and Step-8 self-review complete
 
 LAST_CLOSED_UNIT: R2.7 WP-16 Steps 1-8 / multiplayer / access control / live state — final Senior audit PASS at 659b22c34bda5c967b1bc438eaba5a17df9e089c
-NEXT_AUTHORIZED_UNIT: Mandatory Senior review of WP-17 Step 1 + Senior repair
-REQUIRED_GATE: Senior review of WP-17 Step 1 + Senior repair. Do not begin Step 2, WP-18 or implementation planning without explicit Senior GO.
+NEXT_AUTHORIZED_UNIT: Mandatory Senior final audit of completed WP-17 Steps 1-8
+REQUIRED_GATE: Senior final audit of WP-17 canonical result. Do not begin WP-18 or implementation planning without explicit Senior closure/GO.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
@@ -38,65 +38,79 @@ UPSTREAM_REOPEN_REQUIRED: NO
 
 WP-17 consumes WP-16 stable-principal/PLAYER/control/authorization, LIVE claim/currentness and no-agency-transfer constraints without reopening them.
 
-## WP-17 Step-1 package + Senior repair
+## WP-17 completed architecture result
 
 Domain:
 
 > **async collaboration / agency-safe progression**
 
-Published Step-1 artifacts:
+Final implementation-facing authority:
 
-- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-task-brief.md`;
-- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-source-manifest.md`;
-- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-task-brief-critic.md`;
-- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-step-1-senior-recovery-SR17-01.md`.
+- `DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-canonical-spec.md`.
 
-Historical mandatory critic result remains:
+Step-8 self-review:
 
-```text
-STEP_1_CRITIC_BLOCKING:      5
-STEP_1_CRITIC_SIGNIFICANT:   11
-```
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-step-8-canonicalization-self-review.md`.
 
-Senior repair disposition:
+Canonical direction:
+
+> **COORDINATION-FAMILY-FIRST ADMISSION / NATIVE-OWNER PRECEDENCE / BOUNDED COLLABORATION OBLIGATION LIFECYCLE / INTERACTION-CLAUSE HUMAN INPUT / RECIPIENT-SAFE CATCH-UP / MAXIMAL-SAFE-FRONTIER PROGRESSION**
+
+Final review disposition:
 
 ```text
-SR17_01:                     CLOSED
-UNRESOLVED_BLOCKING:         0
-UNRESOLVED_SIGNIFICANT:      0
-HUMAN_DECISION_REQUIRED:     NO
-UPSTREAM_REOPEN_REQUIRED:    NO
-STEP_2_AUTHORIZED:           NO
+STEP_6_BLOCKING:              2
+STEP_6_SIGNIFICANT:           4
+UNRESOLVED_BLOCKING:          0
+UNRESOLVED_SIGNIFICANT:       0
+HUMAN_DECISION_REQUIRED:      NO
+UPSTREAM_REOPEN_REQUIRED:     NO
+STEP_8_COMPLETE:              YES
+WP18_AUTHORIZED:              NO
+IMPLEMENTATION_PLAN_AUTHORIZED: NO
 ```
 
-SR17-01 repaired one semantic collision in the Step-1 framing:
+The final result preserves the mandatory SR17-01 separation:
 
 ```text
 existing value.contribution
     = Rule-Element mechanical calculation contribution
     != human async collaboration input
-    != collaboration-obligation contribution lifecycle
+    != collaboration-obligation lifecycle
 ```
 
-Mandatory Step-2 routing, if Senior GO is later granted, now includes:
+Human async collaboration input remains owned by accepted Interaction / IntentPlan / IntentClause semantics, with `runtime.message` as communication/exact-text evidence rather than the semantic input owner. A durable `runtime.collaboration_obligation` is admitted only for a genuinely independently durable `AGENCY_DEPENDENT_COLLECTIVE` collection lifecycle after native Procedure/Continuation/Choice/Reaction ownership has been excluded.
 
-1. `DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md` as the existing mechanical Contribution semantic owner;
-2. `DEV/CATALOG/core-catalog.json` as the current `value.contribution` catalog surface;
-3. R2.5 LAW R2.5-18 requiring collaboration state to reference accepted Interaction/input identities rather than copying transcript prose;
-4. current Step-3 Interaction/input identity and Step-5.11 message-evidence owners to determine the exact human collaboration input representation;
-5. explicit prohibition on automatically reusing `value.contribution` for human collaboration;
-6. no new replacement protocol kind/name/schema in Step 1; exact representation remains a later evidence/design question.
+The obligation owns collection/wait/current-generation semantics only. It does not own gameplay consequence execution, PLAYER/control authority, fictional chronology, truth/knowledge/disclosure/message delivery, Story or Dramaturg planning.
 
-The Source Manifest remains open-world.
+Step-6 repairs are incorporated into the final canonical owner, including bounded recovery/rejoin routing for nonterminal obligations and the explicit handoff of collaboration-held `ACTIONABLE_INTENT` back to the existing Step-3 input/native owners without synthetic merged commands, replay or reroll.
 
-No runtime/schema/template/catalog/test implementation was changed by WP-17 Step 1 or SR17-01.
+No runtime/schema/template/catalog/test implementation was changed by WP-17 architecture work.
+
+## WP-17 design provenance
+
+Published design/evidence artifacts include:
+
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-task-brief.md`;
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-task-brief-critic.md`;
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-step-1-senior-recovery-SR17-01.md`;
+- Step-2 evidence extraction and Source-Manifest expansion;
+- Step-3 Decision Brief;
+- Step-4 collaborative review;
+- Step-5 candidate specification;
+- Step-6 independent Source-Manifest expansion and whole-project adversarial review;
+- Step-7 resolution gate;
+- Step-8 canonicalization self-review.
+
+The Source Manifest remained open-world through the independent Step-6 reconstruction.
 
 ## Scope boundary
 
 - Roadmaps own intended sequencing, scope and dependencies.
 - Task-local execution/audit cursors own recovery details inside their bounded workstream and are subordinate to this file.
 - Historical closure, provenance and status records remain historical evidence; they do not become current-progress authority.
-- Historical WP-17 critic findings B01-B05/S01-S11 and counts 5/11 remain unchanged by SR17-01.
-- Closed upstream architecture is reopened only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; SR17-01 found none.
-- The WP-17 Source Manifest remains open-world if later Steps are authorized.
-- WP-18 and implementation planning remain unauthorized.
+- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; WP-17 Steps 2-8 found none.
+- WP-17 is not closed until mandatory Senior final audit passes.
+- WP-18 Story/continuity/Dramaturg planning remains downstream and not started.
+- Implementation planning remains unauthorized.
