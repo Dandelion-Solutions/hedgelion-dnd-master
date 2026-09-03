@@ -39,9 +39,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-16
 CURRENT_DOMAIN: WP-17
 CURRENT_DOMAIN_TOPIC: async collaboration / agency-safe progression
-CURRENT_SLICE: STEP 1 AUTHORIZED — TASK BRIEF REQUIRED
+CURRENT_SLICE: STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 NEXT_DOMAIN: WP-18
-OWNER_GATE: REQUIRED — complete only WP-17 Step 1 and stop for mandatory Senior review; Step 2, WP-18 and implementation planning require explicit Senior GO
+OWNER_GATE: REQUIRED — mandatory Senior review of completed WP-17 Step 1; Step 2, WP-18 and implementation planning require explicit Senior GO
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -51,7 +51,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-17 STEP 1 AUTHORIZED
+R2_7_STATUS: WP-17 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
 R2_7_WP07: STEPS 1-8 COMPLETE — SENIOR REVIEW PASS
 R2_7_WP08: COMPLETE
@@ -63,10 +63,10 @@ R2_7_WP13: CLOSED / SENIOR REVIEW PASS
 R2_7_WP14: CLOSED / FINAL SENIOR RE-AUDIT PASS
 R2_7_WP15: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP16: CLOSED / FINAL SENIOR AUDIT PASS
-R2_7_WP17: STEP 1 AUTHORIZED
+R2_7_WP17: STEP 1 COMPLETE / SENIOR REVIEW PENDING
 ```
 
-Only WP-17 Step 1 is authorized. Step 2, WP-18 and implementation planning remain blocked.
+This cursor authorizes only mandatory Senior review of WP-17 Step 1. It does not authorize Step 2, WP-18 or implementation planning.
 
 ---
 
@@ -84,7 +84,7 @@ Only WP-17 Step 1 is authorized. Step 2, WP-18 and implementation planning remai
 | WP-14 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
 | WP-15 | CLOSED / FINAL SENIOR AUDIT PASS |
 | WP-16 | CLOSED / FINAL SENIOR AUDIT PASS |
-| WP-17 | STEP 1 AUTHORIZED |
+| WP-17 | STEP 1 COMPLETE / SENIOR REVIEW PENDING |
 | WP-18..WP-27 | NOT STARTED |
 
 ---
@@ -99,46 +99,74 @@ Final implementation-facing authority:
 WP16_FINAL_SHA:             659b22c34bda5c967b1bc438eaba5a17df9e089c
 WP16_FINAL_SENIOR_AUDIT:    PASS
 WP16_CLOSURE:               AUTHORIZED
-STEP_6_BLOCKING:            2
-STEP_6_SIGNIFICANT:         4
 UNRESOLVED_BLOCKING:        0
 UNRESOLVED_SIGNIFICANT:     0
 HUMAN_DECISION_REQUIRED:    NO
 UPSTREAM_REOPEN_REQUIRED:   NO
 ```
 
-Closed WP-16 and all earlier accepted domains remain constraints. Do not reopen them merely because WP-17 overlaps multiplayer, currentness, chronology, information or recovery.
+Closed WP-16 and all earlier accepted domains remain constraints. WP-17 Step 1 found no contradiction, newly unsatisfied consumer or material insufficiency requiring upstream reopen.
 
 ---
 
-## WP-17 Step-1 opening
+## WP-17 Step-1 package
 
-Domain:
+Starting verified public state:
 
-> **async collaboration / agency-safe progression**
+```text
+WP17_STEP1_START_SHA: cc2c02da53c5d8b0e4cc5e759d3991716766d8c8
+```
 
-Owning R2.7 scope-discovery questions:
+Artifacts:
 
-1. what exact record/currentness owner, if any, stores collaboration obligation/window/generation/contributions;
-2. required/optional contributors, purpose/scope/generation binding and stale-response behavior without a global active-player queue;
-3. maximal safe frontier without letting transport or response-arrival order choose fiction;
-4. join/rejoin and recipient catch-up mapped to current authoritative routes and disclosure rules.
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-task-brief.md`;
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-task-brief-critic.md`.
 
-Step 1 must build an open-world Source Manifest from current `DEV/PROJECT_MAP.md` and actual owners/consumers, then run the mandatory whole-project Task-Brief critic. Mechanically resolvable BLOCKING/SIGNIFICANT framing defects must be repaired before publication.
+Critic disposition:
 
-Sensitive inherited boundaries include:
+```text
+STEP_1_CRITIC_BLOCKING:      5
+STEP_1_CRITIC_SIGNIFICANT:   11
+UNRESOLVED_BLOCKING:         0
+UNRESOLVED_SIGNIFICANT:      0
+HUMAN_DECISION_REQUIRED:     NO
+UPSTREAM_REOPEN_REQUIRED:    NO
+STEP_2_AUTHORIZED:           NO
+```
 
-- R2.5 collaboration/agency semantics;
-- WP-16 stable principal/PLAYER/control/authorization and LIVE currentness;
-- WP-15 chronology/temporal-owner separation;
-- Step-3 accepted execution/Continuation/RNG/idempotency;
-- Step-4 truth/knowledge and Step-5.12 disclosure/message delivery boundaries;
-- WP-13/WP-14 durability/recovery/currentness;
-- no background heartbeat/global active-player queue/global fictional scheduler unless a current owner actually requires one;
-- transport/message/ref order never establishes fictional ordering by itself;
-- absence is not consent and does not transfer voluntary PC agency.
+The repaired framing requires later WP-17 work, if Senior-authorized, to establish:
 
-WP-18 Story/continuity/Dramaturg planning remains downstream. Step 1 may consume its constraints only if reached through actual owner dependencies; it must not start WP-18 design.
+1. coordination-family/natural-owner admission before representation;
+2. no duplicate collaboration owner where Procedure/Continuation/Choice/Reaction already owns ordered response;
+3. current principal/PLAYER/control/authorization for voluntary agency-bearing contribution;
+4. minimal required and optional contributor semantics;
+5. purpose/scope/generation binding and explicit stale/superseded generation handling;
+6. Interaction/idempotency-bound duplicate/late response semantics without replay/reroll;
+7. maximal safe frontier with scope-local waiting and matching visible-consequence fence;
+8. absence neither consent/agency transfer nor automatic immunity;
+9. technical/transport/message/ref order never chooses fictional chronology;
+10. bounded join/rejoin catch-up through current routes and recipient eligibility;
+11. truth/knowledge/message/disclosure/collaboration-owner separation;
+12. native-domain durability/recovery with no generic queue/scheduler/global frontier/session/checkpoint/cache authority;
+13. conditional catalog/root/ID realization evidence plus current absence of dedicated collaboration schema;
+14. explicit WP-18 downstream boundary.
+
+No runtime/schema/template/catalog/test implementation was changed by Step 1.
+
+---
+
+## Forward obligations
+
+- **WP-17** — mandatory Senior review is the only current authorized unit. Step 2 remains blocked.
+- **WP-18** — Story/continuity/Dramaturg remains not started.
+- **WP-19/WP-20** — bootstrap/migration remain downstream consumers of approved architecture.
+- **WP-22** — executable async-collaboration/agency-safe progression coverage remains downstream.
+- **WP-24** — collaboration scale/latency/fanout/retention measurement remains downstream.
+- **WP-26** — stale documentation/schema/catalog/test reconciliation remains downstream.
+- **WP-27** — implementation-planning readiness remains final R2.7 domain.
+
+These are routing obligations, not authorization to start later work.
 
 ---
 
@@ -146,10 +174,14 @@ WP-18 Story/continuity/Dramaturg planning remains downstream. Step 1 may consume
 
 ```text
 WP16_FINAL_SHA: 659b22c34bda5c967b1bc438eaba5a17df9e089c
-WP17_AUTHORIZATION_COMMIT_PREDECESSOR: 659b22c34bda5c967b1bc438eaba5a17df9e089c
+WP17_STEP1_START_SHA: cc2c02da53c5d8b0e4cc5e759d3991716766d8c8
 
-CURRENT_VERIFICATION_STATE: WP-16 final Senior audit PASS is closed; WP-17 Step 1 is authorized by owner request and cursor transition.
-NEXT_EXACT_TASK_OR_SLICE: Prepare only WP-17 Step-1 Task Brief + open-world Source Manifest + mandatory whole-project Task-Brief critic; repair framing findings and stop for mandatory Senior review.
+WP17_STEP1_TASK_BRIEF: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-task-brief.md
+WP17_STEP1_SOURCE_MANIFEST: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-source-manifest.md
+WP17_STEP1_TASK_BRIEF_CRITIC: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-task-brief-critic.md
+
+CURRENT_VERIFICATION_STATE: WP-17 Step-1 package prepared for coherent publication; exact remote diff/read-back verification is required before external completion claim.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of completed WP-17 Step 1. Step 2, WP-18 and implementation planning remain blocked pending explicit Senior GO.
 KNOWN_BLOCKERS: NONE
-UNPUBLISHED_WORK: NONE
+UNPUBLISHED_WORK: NONE after coherent publication
 ```
