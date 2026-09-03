@@ -33,15 +33,11 @@ Current House-Rules canonical authority:
 
 ## Immutable pre-pause R2.7 evidence
 
-The complete pre-resume R2.7 cursor, open forward obligations, closed-domain summaries and recovery state remain preserved in the immutable Git blob:
-
 ```text
 PRE_PAUSE_STATUS_BLOB_SHA: d486825dc5c9463b2e2159086e6c7102c3caf354
 ```
 
-That blob is historical/pre-resume evidence only. Current work must be recovered from `DEV/CURRENT_PROGRESS.md`, this cursor and current owning artifacts.
-
-Closed-domain detail remains in its owning reports/specifications and immutable repository history rather than being duplicated here.
+That blob is historical/pre-resume evidence only. Current work must be recovered from `DEV/CURRENT_PROGRESS.md`, this cursor and current owning artifacts. Closed-domain detail remains in its owning reports/specifications and immutable repository history rather than being duplicated here.
 
 ---
 
@@ -117,8 +113,6 @@ Final implementation-facing authority:
 ```text
 WP15_FINAL_SHA:             4af683bbe94c9c115c5cee8f1be94562e97d17c1
 WP15_FINAL_SENIOR_AUDIT:    PASS
-STEP_6_BLOCKING:            2
-STEP_6_SIGNIFICANT:         6
 UNRESOLVED_BLOCKING:        0
 UNRESOLVED_SIGNIFICANT:     0
 HUMAN_DECISION_REQUIRED:    NO
@@ -134,13 +128,12 @@ Closed WP-15 and other upstream decisions remain constraints. WP-16 Step 1 found
 
 WP-16 is **multiplayer / access control / live state**.
 
-Starting verified public state:
-
 ```text
-WP16_STEP1_START_SHA: b2afeae3033b96f8d688d437972a020eb0f1746f
+WP16_STEP1_START_SHA:   b2afeae3033b96f8d688d437972a020eb0f1746f
+WP16_STEP1_PACKAGE_SHA: 597511a207f51334e31e815d7ff90198804cdf04
 ```
 
-Published Step-1 artifacts:
+Published artifacts:
 
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-task-brief.md`;
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-source-manifest.md`;
@@ -158,7 +151,7 @@ UPSTREAM_REOPEN_REQUIRED:     NO
 STEP_2_AUTHORIZED:            NO
 ```
 
-Critic findings and repaired framing:
+Findings:
 
 ```text
 C01 BLOCKING     authenticated identity / PLAYER / controlled PC / operation authorization separation
@@ -177,7 +170,7 @@ C12 SIGNIFICANT  WP-17 async collaboration boundary
 C13 SIGNIFICANT  policy authority distinct from gameplay/PC/live authority
 C14 SIGNIFICANT  prepared/orphan/unselected/absorbed LIVE source nonauthority + cleanup
 C15 SIGNIFICANT  bootstrap/menu/card cached identity nonauthority
-C16 SIGNIFICANT  transport/CAS order vs semantic/fictitious order
+C16 SIGNIFICANT  transport/CAS order vs semantic/fictional order
 ```
 
 All C01-C16 are mechanically resolved in the published Task Brief/Source Manifest. No implementation shape was selected by the repairs.
@@ -224,13 +217,14 @@ These are routing obligations, not authorization to start later work.
 ```text
 WP15_FINAL_SHA: 4af683bbe94c9c115c5cee8f1be94562e97d17c1
 WP16_STEP1_START_SHA: b2afeae3033b96f8d688d437972a020eb0f1746f
+WP16_STEP1_PACKAGE_SHA: 597511a207f51334e31e815d7ff90198804cdf04
 
 WP16_STEP1_TASK_BRIEF: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-task-brief.md
 WP16_STEP1_SOURCE_MANIFEST: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-source-manifest.md
 WP16_STEP1_TASK_BRIEF_CRITIC: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-task-brief-critic.md
 
-CURRENT_VERIFICATION_STATE: WP-16 Step 1 package complete at artifact level; critic 4 BLOCKING + 12 SIGNIFICANT all resolved; unresolved 0/0; no human decision; no upstream reopen; no implementation; awaiting coherent publication/read-back and then mandatory Senior review.
+CURRENT_VERIFICATION_STATE: WP-16 Step-1 package is published; Task Brief, Source Manifest, critic and global cursor were read back at package SHA; task-local cursor is synchronized to the mandatory Senior gate; no implementation work was started.
 NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of completed WP-16 Step-1 package. Step 2, WP-17 and implementation planning remain blocked pending explicit Senior GO.
 KNOWN_BLOCKERS: NONE
-UNPUBLISHED_WORK: NONE after coherent package publication
+UNPUBLISHED_WORK: NONE
 ```
