@@ -1,6 +1,6 @@
 # R2.7 WP-17 — Async Collaboration / Agency-Safe Progression — Step 8 Canonicalization Self-Review
 
-Status: **STEP 8 COMPLETE — MANDATORY SENIOR FINAL AUDIT PENDING**
+Status: **STEP 8 COMPLETE + FINAL SENIOR PROVENANCE RECOVERY SR17-FINAL-01 COMPLETE — MANDATORY SENIOR RE-AUDIT**
 
 Date: 2026-09-03
 
@@ -8,11 +8,16 @@ Starting verified Steps-2–8 state:
 
 ```text
 WP17_STEPS_2_8_START_SHA: cc4edd01a2c7b68a0a749041bb2f8aa1987d1be3
+WP17_FINAL_SENIOR_RECOVERY_START_SHA: d372f734a34ff9c5e3759a31918df7fba251c901
 ```
 
 Final implementation-facing canonical artifact:
 
 - `DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-canonical-spec.md`
+
+Final Senior recovery record:
+
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-final-senior-recovery-SR17-FINAL-01.md`
 
 Canonical direction:
 
@@ -36,6 +41,8 @@ Step 8 reviewed the complete current WP-17 design chain rather than only the Ste
 10. the final WP-17 canonical specification.
 
 No Step-8 semantic decision was introduced outside that evidence/decision chain.
+
+The final Senior audit later returned `HOLD` only for `SR17-FINAL-01 — false item-level finding provenance`: the Step-8 table mislabeled F17-03..F17-06 even though the Step-6 findings, Step-7 resolutions and final canonical semantics themselves were correct. The recovery below corrects provenance only; it does not reopen architecture or modify the canonical specification.
 
 ---
 
@@ -148,31 +155,35 @@ WP-16 stable-principal / PLAYER / controlled-PC / operation authorization / doma
 
 ## 3. Step-6 finding propagation audit
 
-Step-6 counts:
+Step-6 counts remain historical evidence exactly as published:
 
 ```text
 STEP_6_BLOCKING:     2
 STEP_6_SIGNIFICANT:  4
 ```
 
-Item-level propagation:
+Item-level propagation, corrected by Senior recovery `SR17-FINAL-01` to match the actual Step-6 findings and Step-7 resolutions:
 
 | Finding | Severity | Step-7 resolution | Final canonical propagation | Step-8 result |
 |---|---|---|---|---|
-| F17-01 — no bounded complete recovery/rejoin route to open obligations | BLOCKING | add completeness-protected participant routing companion; obligation remains authority | final recovery/rejoin and persistence sections require bounded `(obligation_id, generation)` nomination, coherent companion update/removal and no generic collaboration index authority | CLOSED |
-| F17-02 — collaboration-held `ACTIONABLE_INTENT` to Step-3 seam under-specified | BLOCKING | hold original clause pending; no command until handoff; no synthetic merged command | final input/execution boundary preserves original Interaction/clause and returns frozen collection to existing Step-3/native owner | CLOSED |
-| F17-03 — optional accepted contribution / rejoin cleanup under-specified | SIGNIFICANT | optional inputs remain same-generation relevant only and never block; routes close/advance coherently | final participant/generation lifecycle makes optional contributors non-blocking and closes obsolete route state | CLOSED |
-| F17-04 — content sufficiency after message compaction under-specified | SIGNIFICANT | bounded normalized semantic content remains with collaboration-relevant IntentClause; exact wording separately protected | final human-input and message-evidence sections prohibit bare message/Interaction references from substituting for required semantic content | CLOSED |
-| F17-05 — currentness revalidation at collection handoff under-specified | SIGNIFICANT | revalidate underlying owner opportunity/current source before consuming frozen collection | final currentness/supersession laws close/supersede stale opportunity rather than applying old inputs to a successor | CLOSED |
-| F17-06 — per-input mechanical idempotency under-specified | SIGNIFICANT | preserve original Interaction/clause identity; collection creates no command idempotency owner | final retry/stale/duplicate and Step-3 handoff laws prohibit replay/reroll/rematerialization and synthetic merged execution | CLOSED |
+| F17-01 — no bounded complete recovery/rejoin route from a current PLAYER to relevant nonterminal collaboration obligations | BLOCKING | add completeness-protected PLAYER routing companions; obligation remains semantic authority | final routing/recovery laws require bounded `(obligation_id, generation)` nomination, coherent companion publication/removal and no generic collaboration index/scan authority | CLOSED |
+| F17-02 — collaboration-held `ACTIONABLE_INTENT` to Step-3 command ownership/handoff seam under-specified | BLOCKING | hold the original accepted clause pre-command; no RuntimeCommand until deterministic handoff; no synthetic collaboration/merged command | final held-input and handoff laws preserve original Interaction/IntentClause identity and release only through existing Step-3/native ownership | CLOSED |
+| F17-03 — accepted collaboration-relevant semantic input was not explicitly immutable and unitary | SIGNIFICANT | freeze one bounded semantic unit/class per referenced accepted IntentClause; split mixed units; correction/reinterpretation creates a new accepted identity/current interpretation path | final human-input laws make each collaboration-relevant clause one immutable material semantic unit with bounded normalized semantics and separately protected exact-text evidence where required | CLOSED |
+| F17-04 — stable `obligation_id` lineage versus successor-generation/new-obligation boundaries were under-specified | SIGNIFICANT | define one obligation ID as one bounded dependency lineage; same-lineage material evolution uses successor generation; semantically new decision uses a new ID; terminal IDs are never repurposed | final obligation identity/generation laws distinguish stable lineage, successor generation and semantically new obligation identity without turning numeric order into chronology/currentness | CLOSED |
+| F17-05 — recipient-safe catch-up could leak another participant's private/OOC collaboration input | SIGNIFICANT | project only independently recipient-eligible content; same-obligation membership grants no access to another participant's semantic input | final catch-up/disclosure laws forbid using an obligation/input reference as disclosure authority and preserve existing message/knowledge/disclosure/context eligibility owners | CLOSED |
+| F17-06 — `RESOLVED` risked mirroring downstream gameplay/native execution completion | SIGNIFICANT | define `RESOLVED` as completion of collaboration collection handoff only; downstream native execution proceeds independently and collaboration never reopens to mirror it | final lifecycle/handoff laws terminate collaboration responsibility at successful handoff rather than gameplay settlement, preventing a shadow execution lifecycle | CLOSED |
 
-Final disposition:
+The earlier Step-8 table incorrectly attached F17-03..F17-06 identifiers to other valid final-architecture properties (optional-contributor handling, compaction content sufficiency, currentness revalidation and per-input idempotency). Those properties remain valid elsewhere in the final specification, but they are not the provenance identities of Step-6 F17-03..F17-06. `SR17-FINAL-01` repairs only that attribution error.
+
+Final substantive disposition remains:
 
 ```text
-UNRESOLVED_BLOCKING:       0
-UNRESOLVED_SIGNIFICANT:    0
-HUMAN_DECISION_REQUIRED:   NO
-UPSTREAM_REOPEN_REQUIRED:  NO
+SUBSTANTIVE_UNRESOLVED_BLOCKING:    0
+SUBSTANTIVE_UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED:            NO
+ARCHITECTURE_REOPENED:              NO
+UPSTREAM_REOPEN_REQUIRED:           NO
+CANONICAL_SPEC_REPAIR_REQUIRED:     NO
 ```
 
 ---
@@ -200,7 +211,7 @@ The Source Manifest remained open-world through the independent Step-6 reconstru
 - relevant regression/contract cases;
 - WP-18 and later implementation/verification consumers.
 
-No evidence discovered during Steps 2–8 demonstrates an upstream contradiction, newly unsatisfied upstream owner requiring reopening, or a human-owned material product trade-off.
+No evidence discovered during Steps 2–8 or the final Senior provenance recovery demonstrates an upstream contradiction, newly unsatisfied upstream owner requiring reopening, or a human-owned material product trade-off.
 
 ---
 
@@ -208,15 +219,15 @@ No evidence discovered during Steps 2–8 demonstrates an upstream contradiction
 
 ### Final canonical owner
 
-The final implementation-facing WP-17 authority is:
+The final implementation-facing WP-17 authority remains unchanged:
 
 - `DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-canonical-spec.md`.
 
-Earlier Decision Brief/review/candidate artifacts remain design provenance and do not override the final specification or Step-7 resolutions.
+Earlier Decision Brief/review/candidate artifacts remain design provenance and do not override the final specification or Step-7 resolutions. `SR17-FINAL-01` changes only the Step-8 audit provenance record and current status routing.
 
 ### Known downstream machine-realization debt
 
-No implementation is performed in WP-17 architecture Steps 2–8. Later approved realization must align at least:
+No implementation is performed in WP-17 architecture Steps 2–8 or the final Senior recovery. Later approved realization must align at least:
 
 - IntentClause machine shape for collaboration-relevant semantic class/content sufficiency;
 - `runtime.collaboration_obligation` exact schema/state lifecycle;
@@ -238,7 +249,7 @@ These are downstream realization obligations, not authorization to implement the
 
 ## 6. Scope / mutation audit
 
-Step 8 confirms:
+Step 8 plus final Senior recovery confirms:
 
 ```text
 WP18_STARTED:                    NO
@@ -248,28 +259,34 @@ SCHEMA_IMPLEMENTATION_CHANGED:   NO
 TEMPLATE_IMPLEMENTATION_CHANGED: NO
 CATALOG_IMPLEMENTATION_CHANGED:  NO
 TEST_IMPLEMENTATION_CHANGED:     NO
+CANONICAL_SPEC_CHANGED_BY_SR17_FINAL_01: NO
 NEW_BRANCH_CREATED:              NO
 DO_NOT_CREATE_USED_OR_CHANGED:   NO
 ```
 
-The only Step-8 publication work after canonical-spec creation is this self-review plus synchronization of the global and task-local cursors.
+The final Senior recovery changes only this provenance/self-review record, adds its Senior recovery record and synchronizes the global/task-local cursors.
 
 ---
 
-## 7. Step-8 disposition
+## 7. Step-8 + final Senior recovery disposition
 
 ```text
-STEP_8_COMPLETE:               YES
-FINAL_CANONICAL_ARTIFACT:      DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-canonical-spec.md
-STEP_6_BLOCKING:               2
-STEP_6_SIGNIFICANT:            4
-UNRESOLVED_BLOCKING:           0
-UNRESOLVED_SIGNIFICANT:        0
-HUMAN_DECISION_REQUIRED:       NO
-UPSTREAM_REOPEN_REQUIRED:      NO
-WP18_AUTHORIZED:               NO
-IMPLEMENTATION_PLAN_AUTHORIZED: NO
-NEXT_GATE:                     MANDATORY SENIOR FINAL AUDIT
+STEP_8_COMPLETE:                  YES
+FINAL_CANONICAL_ARTIFACT:         DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-canonical-spec.md
+STEP_6_BLOCKING:                  2
+STEP_6_SIGNIFICANT:               4
+SUBSTANTIVE_UNRESOLVED_BLOCKING:   0
+SUBSTANTIVE_UNRESOLVED_SIGNIFICANT: 0
+FINAL_SENIOR_AUDIT:               HOLD
+ADDITIONAL_SENIOR_BLOCKING_AT_AUDIT: 1
+SR17_FINAL_01:                    CLOSED BY PROVENANCE RECOVERY
+HUMAN_DECISION_REQUIRED:          NO
+ARCHITECTURE_REOPENED:             NO
+UPSTREAM_REOPEN_REQUIRED:          NO
+CANONICAL_SPEC_REPAIR_REQUIRED:    NO
+WP18_AUTHORIZED:                   NO
+IMPLEMENTATION_PLAN_AUTHORIZED:    NO
+NEXT_GATE:                         MANDATORY SENIOR FINAL RE-AUDIT
 ```
 
-WP-17 is not closed until the mandatory Senior final audit passes. Until then, WP-18 and implementation planning remain blocked.
+WP-17 remains unclosed until the mandatory Senior final re-audit passes. WP-18 and implementation planning remain blocked.
