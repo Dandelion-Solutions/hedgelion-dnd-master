@@ -1,6 +1,6 @@
 # R2.7 WP-16 — Multiplayer / Access Control / Live State — Mandatory Whole-Project Task-Brief Critic
 
-Status: **STEP-1 CRITIC COMPLETE — 4 BLOCKING + 12 SIGNIFICANT / ALL MECHANICALLY RESOLVED IN PUBLISHED STEP-1 FRAMING**
+Status: **STEP-1 CRITIC COMPLETE — 4 BLOCKING + 12 SIGNIFICANT / HISTORICAL RECORD PRESERVED; SENIOR CORRECTION APPENDED**
 
 Date: 2026-09-03
 
@@ -16,7 +16,7 @@ Starting verified public state:
 
 - `b2afeae3033b96f8d688d437972a020eb0f1746f`
 
-The critic was performed against current owning sources and current machine/test consumers, not only against roadmap wording. The Task Brief and Source Manifest published with this critic already incorporate every required repair below.
+The critic was performed against current owning sources and current machine/test consumers, not only against roadmap wording. The historical findings C01-C16 and their counts below remain the critic record. A later Senior review found two additional Step-1 coverage defects; those are recorded separately in §7 and in the dedicated Senior-recovery artifact rather than being retroactively folded into C01-C16.
 
 ---
 
@@ -75,7 +75,7 @@ It must state that no stage implies the next merely by existence and that login/
 
 ### Resolution
 
-**CLOSED.** Task Brief §3.1, §5.1 and failure cases now make the chain and negative rules mandatory; Source Manifest routes every repeated association surface for later classification.
+**CLOSED.** Task Brief §3.1, §5.1 and failure cases make the chain and negative rules mandatory; Source Manifest routes repeated association surfaces for later classification. Senior repair SR16-01 later extends the manifest upstream to the supported-host/principal-acquisition owners without changing this historical finding or count.
 
 ---
 
@@ -153,7 +153,7 @@ It must state that confirmed accepted native edges remain real, partial rejectio
 
 ### Resolution
 
-**CLOSED.** Task Brief §5.6 and failure matrix now make this separation explicit and ban distributed transaction/global LIVE owner/global rollback semantics.
+**CLOSED.** Task Brief §5.6 and failure matrix make this separation explicit and ban distributed transaction/global LIVE owner/global rollback semantics.
 
 ---
 
@@ -333,9 +333,11 @@ Bootstrap deliberately renders menus from compact cards/cached creator/participa
 
 Include `BOOTSTRAP_RUNTIME.md`, campaign MANIFEST/card/player routing and bootstrap regression surfaces. Require selected-campaign exact basis plus current identity/PLAYER/control/authorization resolution before mutable access.
 
-### Resolution
+### Historical resolution at original critic publication
 
-**CLOSED.** Task Brief §§5.1/6 and Manifest §§6/8/9 include bootstrap and explicitly mark cached login/card/session/index values non-authoritative.
+**CLOSED (historical critic disposition).** Task Brief §§5.1/6 and the then-published Manifest §§6/8/9 included bootstrap and marked cached login/card/session/index values non-authoritative.
+
+**Senior correction:** this resolution overstated direct Source-Manifest coverage. The original manifest referenced card semantics indirectly but did **not** enumerate the direct owning/consumer surfaces `GAME/CORE/CAMPAIGN_CARD.md`, `GAME/SCHEMA/campaign_card.schema.yaml`, and `GAME/CAMPAIGN/CAMPAIGN_CARD.yaml`. Senior review therefore raised SR16-02. The dedicated Senior repair adds those files and makes their fields mandatory Step-2 dispositions. This correction supersedes only the old claim of direct manifest coverage; it does not rewrite C15, its severity, or the historical 4/12 critic counts.
 
 ---
 
@@ -377,11 +379,16 @@ C15 SIGNIFICANT  bootstrap/menu/card cached identity nonauthority
 C16 SIGNIFICANT  transport/CAS order vs semantic/fictitious order
 ```
 
-Counts:
+Historical counts:
 
 ```text
 STEP_1_CRITIC_BLOCKING:       4
 STEP_1_CRITIC_SIGNIFICANT:    12
+```
+
+Current Step-1 state after the separately recorded Senior repair:
+
+```text
 UNRESOLVED_BLOCKING:          0
 UNRESOLVED_SIGNIFICANT:       0
 HUMAN_DECISION_REQUIRED:      NO
@@ -392,26 +399,7 @@ UPSTREAM_REOPEN_REQUIRED:     NO
 
 # 4. Mechanical repair verification
 
-The repaired Task Brief and Source Manifest now require all material Step-1 framing dimensions:
-
-- authenticated principal / PLAYER / controlled-PC / operation authorization separation;
-- creator/member/policy/storage/engine authority separation;
-- campaign currentness / LIVE currentness / local HOT currentness separation;
-- immutable typed LIVE claim/containment model;
-- exact-source CAS/currentness field audit;
-- active/closed/absorbed/successor lifecycle;
-- deactivation/revocation no-writer-window review;
-- absent-player agency/world continuity;
-- source-native accepted LIVE identity;
-- per-native durability-edge semantics;
-- prepared/orphan source nonauthority;
-- recovery no campaign fallback;
-- multi-live partial outcomes without distributed transaction/global rollback;
-- technical order distinct from semantic/fictional order;
-- LIVE information fields constrained by natural information owners;
-- bootstrap/cache/index summaries treated as nonauthoritative until revalidated;
-- WP-17 async collaboration realization explicitly excluded/routed downstream;
-- current CORE/schema/test expectations included as consumers/evidence rather than presumed owners.
+The repaired Task Brief and Source Manifest require the material Step-1 framing dimensions identified by the historical critic. The later Senior repair additionally closes supported-host/principal-acquisition coverage and direct campaign-card coverage without changing historical critic counts.
 
 No framing repair selected an implementation, reopened accepted architecture or introduced a new human-owned product decision.
 
@@ -432,7 +420,7 @@ The critic found no Step-1 evidence requiring:
 - chronology derived from Git/CAS order;
 - deletion/takeover of absent-player PCs;
 - implementation of WP-17 async collaboration;
-- reopening R2.5, Step-5.8 or WP-11..WP-15;
+- reopening R2.5, Step-5.8, R2.6 transport selection or WP-11..WP-15;
 - implementation planning.
 
 ---
@@ -441,16 +429,39 @@ The critic found no Step-1 evidence requiring:
 
 ```text
 STEP_1_CRITIC_COMPLETE:        YES
-BLOCKING_FOUND:                 4
-SIGNIFICANT_FOUND:              12
-BLOCKING_RESOLVED:              4
-SIGNIFICANT_RESOLVED:           12
+BLOCKING_FOUND_HISTORICAL:      4
+SIGNIFICANT_FOUND_HISTORICAL:   12
 UNRESOLVED_BLOCKING:            0
 UNRESOLVED_SIGNIFICANT:         0
 HUMAN_DECISION_REQUIRED:        NO
 UPSTREAM_REOPEN_REQUIRED:       NO
-TASK_BRIEF_REPAIRED:            YES
 SOURCE_MANIFEST_REPAIRED:       YES
 STEP_2_AUTHORIZED:              NO
 NEXT_GATE:                      MANDATORY SENIOR REVIEW
+```
+
+---
+
+# 7. Senior review correction / superseding note
+
+Senior review at public HEAD `914bd955544834260841b2428a3014462e780fb4` identified two Step-1 package defects outside the historical C01-C16 critic record:
+
+```text
+SR16-01 BLOCKING     supported-host / trusted-principal-acquisition owners missing from Source Manifest
+SR16-02 SIGNIFICANT  direct campaign-card surfaces missing from Source Manifest; C15 direct-coverage claim overstated
+```
+
+The repair is recorded in:
+
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-step-1-senior-recovery-SR16-01-SR16-02.md`.
+
+Disposition after that repair:
+
+```text
+SR16-01:                  CLOSED
+SR16-02:                  CLOSED
+HISTORICAL_C01_C16:       PRESERVED
+HISTORICAL_COUNTS_4_12:   PRESERVED
+STEP_2_AUTHORIZED:        NO
+NEXT_GATE:                MANDATORY SENIOR REVIEW
 ```

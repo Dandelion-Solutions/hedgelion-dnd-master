@@ -1,6 +1,6 @@
 # R2.7 WP-16 — Multiplayer / Access Control / Live State — Source Manifest
 
-Status: **STEP-1 TASK-SPECIFIC OPEN-WORLD SOURCE MANIFEST — WHOLE-PROJECT CRITIC APPLIED / MANDATORY SENIOR REVIEW REQUIRED**
+Status: **STEP-1 TASK-SPECIFIC OPEN-WORLD SOURCE MANIFEST — SENIOR REPAIR SR16-01/SR16-02 APPLIED / MANDATORY SENIOR REVIEW REQUIRED**
 
 Date: 2026-09-03
 
@@ -14,9 +14,17 @@ Mandatory Task-Brief critic:
 
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-task-brief-critic.md`
 
-Starting verified public state:
+Senior-recovery record:
+
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-step-1-senior-recovery-SR16-01-SR16-02.md`
+
+Starting verified public state for original Step 1:
 
 - `b2afeae3033b96f8d688d437972a020eb0f1746f`
+
+Senior-repair basis:
+
+- `914bd955544834260841b2428a3014462e780fb4`
 
 This manifest is **open-world**. It was reconstructed from current `DEV/PROJECT_MAP.md`, then expanded by direct owner/consumer traversal. It is not a closed bibliography and it is not a substitute for reading owning sources. If Step 2 is later authorized, actual searches/references must extend this manifest whenever another material owner, consumer, machine field, bootstrap path, migration surface, test or supersession route is discovered.
 
@@ -55,6 +63,59 @@ This manifest is **open-world**. It was reconstructed from current `DEV/PROJECT_
 | `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md` | `CURRENT-PROGRESS / PROCESS AUTHORITY` | Program audit contract. |
 | `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md` | `DERIVATIVE LOCATOR / INDEX` | WP-16 program question/downstream routing. |
 | `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-execution-protocol.md` | `CURRENT-PROGRESS / PROCESS AUTHORITY` | Durable R2.7 execution/checkpoint rules. |
+
+---
+
+## 2A. Supported host / principal acquisition boundary — SR16-01 mandatory Step-2 inputs
+
+Senior review found that the original manifest began at “authenticated external identity” without enumerating the current supported-host/principal-acquisition owners that establish whether a trusted GitHub principal can be used at all.
+
+The following are mandatory Step-2 inputs if Senior GO is later granted:
+
+| Source | Classification | Mandatory Step-2 extraction |
+|---|---|---|
+| `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md` | `CANONICAL / OWNING` | Supported MVP host is ChatGPT/ChatGPT Plus; supported repository path is deterministic core + connected GitHub Connector; transport selection is closed; missing required Connector capability is a supported-profile capability failure, not permission to improvise another transport. |
+| `DEV/docs/superpowers/design/2026-08-24-r2-6-fixed-repository-transport-owner-clarification.md` | `CANONICAL OWNER CLARIFICATION` | Supersedes broader R2.6 transport-selection language. Explicitly forbids shell/native remote `git`, `gh`, direct private HTTP/API/token workarounds, ad-hoc app/MCP/custom service fallbacks, Actions bridge or transparent local-push assumptions. Do not reopen transport selection. |
+| `GAME/INSTALL/PROJECT_INSTRUCTIONS.txt` | `IMPLEMENTATION / HOST INSTRUCTION CONTRACT` | Current shipped Project startup contract: supported runtime package, connected GitHub Connector as default campaign-storage transport, no shell `git`/`gh`/clone/direct private HTTP fallback, explicit campaign-choice gate. Inspect only the host/principal/access portions relevant to WP-16. |
+| `GAME/INSTALL/00_DND_BOOTSTRAP.md` | `IMPLEMENTATION / BOOTSTRAP CONTRACT` | Current bootstrap obtains GitHub identity/metadata through the connected Connector, resolves authenticated login, discovers storage/campaigns, uses card hints before authoritative post-selection validation, and diagnoses Connector binding/permission gaps rather than substituting unsupported transports. |
+
+### 2A.1 Mandatory Step-2 authority chain
+
+Step 2, if authorized, must explicitly walk and disposition this complete chain:
+
+```text
+SUPPORTED CHATGPT HOST
+    |
+    v
+CONNECTED GITHUB CONNECTOR IDENTITY / METADATA SURFACE
+    |
+    v
+CURRENT AUTHENTICATED GITHUB PRINCIPAL
+    |
+    v
+STABLE EXTERNAL GITHUB USER IDENTITY
+    |
+    v
+CURRENT PLAYER BINDING / MEMBERSHIP
+    |
+    v
+CURRENT CONTROLLED-PC RELATION
+    |
+    v
+OPERATION-SPECIFIC AUTHORIZATION
+    |
+    v
+CURRENT NATIVE WRITE ROUTE / CURRENTNESS
+```
+
+Binding boundaries:
+
+- Connector authentication and repository capability are infrastructure prerequisites, not gameplay authorization;
+- GitHub login is mutable metadata and cannot be the stable PLAYER identity;
+- repository Write/Admin/collaborator status does not itself grant campaign, PC, policy or LIVE authority;
+- unsupported alternate `git`, `gh`, direct HTTP, credential/token, MCP/custom-service or equivalent transport/identity fallback is not allowed;
+- inability to establish a trusted current principal for a write-sensitive operation produces deny/block/capability failure under the owning contract, never guessed identity;
+- R2.6 transport selection remains closed and is consumed only as a constraint.
 
 ---
 
@@ -184,6 +245,30 @@ If later traversal discovers additional templates/migrations/bootstrap files tha
 
 ---
 
+## 8A. Campaign-card discovery/access-hint surfaces — SR16-02 mandatory Step-2 inputs
+
+Senior review found that the original C15 resolution referred to campaign-card behavior but the Source Manifest omitted the direct card surfaces. Those direct consumers are now mandatory:
+
+| Source | Classification | Mandatory Step-2 disposition |
+|---|---|---|
+| `GAME/CORE/CAMPAIGN_CARD.md` | `IMPLEMENTATION / PROJECTION CONTRACT` | Card is a compact campaign-menu projection only. Inspect cached creator login, multiplayer participant login labels, join-policy/menu classifications and post-selection revalidation rule. |
+| `GAME/SCHEMA/campaign_card.schema.yaml` | `IMPLEMENTATION / MACHINE CONTRACT` | Disposition `creator_github_login`, `multiplayer.participant_github_logins`, `multiplayer.join_policy` and all access-hint invariants. Schema already declares these fields as display/access-hint caches rather than authority. |
+| `GAME/CAMPAIGN/CAMPAIGN_CARD.yaml` | `IMPLEMENTATION SCAFFOLD` | Template realization of card fields; presence/value is projection only and cannot establish creator, membership, PLAYER/control or write authority. |
+
+Binding boundary for all card-derived classifications:
+
+- campaign-card values are presentation/discovery/access-hint projections;
+- `creator_github_login` does not establish canonical creator identity;
+- `multiplayer.participant_github_logins` does not establish active membership or PLAYER binding;
+- join/lock/menu classifications do not establish controlled-PC authority or write permission;
+- GitHub login strings are mutable labels rather than stable external identity keys;
+- after campaign selection, authority must be revalidated against actual Git provenance plus current PLAYER/access owners and current write route/currentness;
+- a stale/tampered card may affect menu presentation only; it cannot expand authority.
+
+Historical critic C15 remains a 1x SIGNIFICANT finding in the original critic record. Its old resolution overstated direct Manifest coverage; the critic now carries an explicit superseding Senior correction rather than rewriting history.
+
+---
+
 ## 9. Current regression / scenario consumers
 
 | Source | Classification | Current evidence / future disposition |
@@ -246,9 +331,14 @@ These sources are in the dependency graph only where they constrain WP-16; their
 
 The later evidence extraction must explicitly produce item-level dispositions for:
 
-### Identity / access
+### Supported host / principal acquisition / identity
 
-- authenticated external user identity;
+- supported ChatGPT host/profile applicability;
+- connected GitHub Connector identity/metadata capability;
+- trusted current authenticated GitHub principal acquisition;
+- stable external GitHub user identity versus mutable login metadata;
+- failure/deny/block semantics when trusted principal cannot be established;
+- explicit proof that no alternate `git`/`gh`/HTTP/credential/MCP transport or identity fallback is admitted;
 - campaign creator;
 - PLAYER stable identity;
 - external binding;
@@ -257,7 +347,10 @@ The later evidence extraction must explicitly produce item-level dispositions fo
 - controlled-PC assignment and transfer;
 - policy authority;
 - campaign/ref/repository operation authorization;
-- cached/display/session/index projections.
+- cached/display/session/index projections;
+- campaign-card `creator_github_login`;
+- campaign-card `multiplayer.participant_github_logins`;
+- derived campaign-card lock/join/menu classifications and their post-selection revalidation.
 
 ### LIVE currentness / ownership
 
@@ -304,13 +397,14 @@ The later evidence extraction must explicitly produce item-level dispositions fo
 - touched/dependency evidence;
 - exact route/currentness fields;
 - bootstrap/generator/player-index surfaces;
+- campaign-card core/schema/scaffold projection surfaces;
 - stale/current tests.
 
 ---
 
 ## 13. Reopen threshold
 
-Do **not** reopen R2.5, Step-5.8 or WP-11..15 because a shipped CORE/schema/test artifact differs from them.
+Do **not** reopen R2.5, Step-5.8, R2.6 transport selection or WP-11..15 because a shipped CORE/schema/test artifact differs from them.
 
 A reopen requires evidence of at least one:
 
@@ -325,7 +419,7 @@ MATERIAL INSUFFICIENCY
     accepted law cannot decide a correctness-critical case needed by WP-16
 ```
 
-Current Step-1 traversal found no such threshold. All observed gaps are framing/machine-realization reconciliation debt.
+Current Step-1 traversal plus Senior repair found no such threshold. SR16-01 and SR16-02 were coverage/framing defects only.
 
 ---
 
@@ -335,11 +429,14 @@ Current Step-1 source graph is:
 
 ```text
 process/current-status authorities
++ R2.6 supported-host assurance + fixed Connector transport owner clarification
++ PROJECT_INSTRUCTIONS + 00_DND_BOOTSTRAP principal-acquisition consumers
 + R2.5 collaboration/multiplayer
 + Step-3 / Step-4 / Step-5.8 / Step-5.12 / Step-5.13 / Step-5.14
 + ACCESS_CONTROL / BRANCH_MODEL / policy-authority boundary
 + WP-11 / WP-12 / WP-13 / WP-14 / WP-15
 + MULTIPLAYER / LIVE_SCENE / RUNTIME / BOOTSTRAP_RUNTIME / SESSION / PERSISTENCE / STORAGE / INTEGRITY
++ CAMPAIGN_CARD core/schema/scaffold projections
 + limited INFORMATION / CHRONOLOGY / PROCESSES neighbors
 + PLAYER / LIVE / SCENE / SESSION / MANIFEST / CURRENT / event / PC / relevant runtime/info schemas
 + campaign PLAYER/SCENE/CURRENT/index/scaffold and generator paths
@@ -354,20 +451,27 @@ The manifest remains open-world through future Step 8. Step 2, if authorized, mu
 ## 15. Step-1 manifest gate
 
 ```text
-SOURCE_MANIFEST_OPEN_WORLD:               YES
-PROJECT_MAP_TRAVERSAL_PERFORMED:           YES
-ACTUAL_OWNER_TRAVERSAL_PERFORMED:          YES
-ACTUAL_RUNTIME_SCHEMA_TEST_CONSUMERS:      INCLUDED
-R2_5_CONSUMED_AS_CONSTRAINT:               YES
-STEP_5_8_CONSUMED_AS_CONSTRAINT:           YES
-WP11_WP15_CONSUMED_AS_CONSTRAINTS:         YES
-IDENTITY_PLAYER_PC_AUTH_CHAIN_EXPLICIT:    YES
-CLOSED_UNABSORBED_EXPLICIT:                YES
-MULTI_LIVE_CROSS_SCOPE_EXPLICIT:           YES
-ABSENCE_AGENCY_BOUNDARY_EXPLICIT:          YES
-WP17_BOUNDARY_EXPLICIT:                    YES
-UPSTREAM_REOPEN_REQUIRED:                  NO
-HUMAN_DECISION_REQUIRED:                   NO
-STEP_2_AUTHORIZED:                         NO
-NEXT_GATE:                                 MANDATORY SENIOR REVIEW
+SOURCE_MANIFEST_OPEN_WORLD:                    YES
+PROJECT_MAP_TRAVERSAL_PERFORMED:                YES
+ACTUAL_OWNER_TRAVERSAL_PERFORMED:               YES
+ACTUAL_RUNTIME_SCHEMA_TEST_CONSUMERS:           INCLUDED
+R2_6_HOST_PRINCIPAL_INPUTS_INCLUDED:            YES
+FIXED_CONNECTOR_TRANSPORT_REOPENED:              NO
+R2_5_CONSUMED_AS_CONSTRAINT:                    YES
+STEP_5_8_CONSUMED_AS_CONSTRAINT:                YES
+WP11_WP15_CONSUMED_AS_CONSTRAINTS:              YES
+HOST_TO_NATIVE_WRITE_AUTH_CHAIN_EXPLICIT:       YES
+IDENTITY_PLAYER_PC_AUTH_CHAIN_EXPLICIT:         YES
+DIRECT_CAMPAIGN_CARD_SURFACES_INCLUDED:          YES
+CARD_PROJECTION_NONAUTHORITY_EXPLICIT:           YES
+CLOSED_UNABSORBED_EXPLICIT:                     YES
+MULTI_LIVE_CROSS_SCOPE_EXPLICIT:                YES
+ABSENCE_AGENCY_BOUNDARY_EXPLICIT:               YES
+WP17_BOUNDARY_EXPLICIT:                         YES
+SR16_01:                                        CLOSED
+SR16_02:                                        CLOSED
+UPSTREAM_REOPEN_REQUIRED:                       NO
+HUMAN_DECISION_REQUIRED:                       NO
+STEP_2_AUTHORIZED:                              NO
+NEXT_GATE:                                      MANDATORY SENIOR REVIEW
 ```

@@ -8,14 +8,14 @@ semantics, replace a roadmap, or absorb task-local execution cursors.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-16 / STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
+GLOBAL_STATE: R2.7 WP-16 / STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW
 
 CURRENT_WORKSTREAM: R2.7 WP-16 — multiplayer / access control / live state
-CURRENT_SLICE: Step-1 Architecture Task Brief + task-specific open-world Source Manifest + mandatory whole-project Task-Brief critic complete; critic found 4 BLOCKING + 12 SIGNIFICANT framing defects, all mechanically repaired in the published Step-1 package; zero unresolved findings; no human decision; Step 2 remains unauthorized
+CURRENT_SLICE: WP-16 Step-1 package plus narrow Senior repair SR16-01/SR16-02 complete; historical Task-Brief critic remains 4 BLOCKING + 12 SIGNIFICANT; Senior repair closed one additional BLOCKING coverage defect and one additional SIGNIFICANT coverage/provenance defect; unresolved BLOCKING/SIGNIFICANT 0/0; no human decision; Step 2 remains unauthorized
 
 LAST_CLOSED_UNIT: R2.7 WP-15 Steps 1-8 / temporal owners / processes / chronology — final Senior audit PASS at 4af683bbe94c9c115c5cee8f1be94562e97d17c1
-NEXT_AUTHORIZED_UNIT: Mandatory Senior review of completed R2.7 WP-16 Step-1 package
-REQUIRED_GATE: Senior review of WP-16 Step 1. Do not begin Step 2, WP-17 or implementation planning without explicit Senior GO.
+NEXT_AUTHORIZED_UNIT: Mandatory Senior review of WP-16 Step 1 + Senior repair package
+REQUIRED_GATE: Senior review of WP-16 Step 1 + Senior repair. Do not begin Step 2, WP-17 or implementation planning without explicit Senior GO.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
@@ -52,37 +52,51 @@ Published Step-1 artifacts:
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-source-manifest.md`;
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-task-brief-critic.md`.
 
-Step-1 critic disposition:
+Historical Step-1 critic record:
 
 ```text
 STEP_1_CRITIC_BLOCKING:       4
 STEP_1_CRITIC_SIGNIFICANT:    12
-UNRESOLVED_BLOCKING:          0
-UNRESOLVED_SIGNIFICANT:       0
-HUMAN_DECISION_REQUIRED:      NO
-UPSTREAM_REOPEN_REQUIRED:     NO
-STEP_2_AUTHORIZED:            NO
 ```
 
-The repaired Step-1 framing requires later evidence, if Senior GO is granted, to preserve:
+Those counts are preserved as the original critic record.
 
-1. authenticated external identity != PLAYER identity/binding != active membership != controlled-PC relation != operation authorization;
-2. creator/member/policy/storage/engine authorities as separate operation-specific roles;
-3. campaign-native currentness != selected live-epoch currentness != local HOT/cache currentness;
-4. selected LIVE authority only for immutable typed native owner/partition claims with bounded containment and overlap/write-authority routing;
-5. exact-source LIVE CAS as the native LIVE establishment/currentness edge, with application authorization distinct from transport success;
-6. `CLOSED_UNABSORBED` as current truth with zero ordinary writers until lawful forward absorption/route movement;
-7. deactivation/revocation sequencing that closes/fences affected LIVE authority, preserves accepted pre-close semantics and avoids a stale authorization/write window;
-8. multi-LIVE/cross-scope composition without distributed transaction/global rollback/global LIVE owner semantics;
-9. accepted semantic establishment distinct from freeze/ref/CAS order and fictional chronology;
-10. player absence/deactivation without invented voluntary material action, takeover, teleport, deletion or other agency/world-continuity violation;
-11. source-native accepted LIVE identity where stable references escape, rather than unconditional provisional rekeying;
-12. current one-file/scene-centric/action-batching schemas/tests treated as realization evidence to reconcile, not authority over Step-5.8/WP-11..15;
-13. selected LIVE recovery without campaign fallback and with prepared/orphan/unselected source nonauthority;
-14. LIVE information fields constrained by natural knowledge/disclosure/message owners;
-15. WP-17 async collaboration explicitly downstream and not activated by WP-16 Step 1.
+## WP-16 Step-1 Senior repair
 
-No runtime/schema/template/catalog/test/tool implementation was changed by WP-16 Step 1.
+Senior-recovery artifact:
+
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-step-1-senior-recovery-SR16-01-SR16-02.md`.
+
+Repair findings:
+
+```text
+SR16-01: BLOCKING    supported-host / principal-acquisition owners missing from Source Manifest
+SR16-02: SIGNIFICANT direct campaign-card surfaces missing; historical C15 coverage claim overstated
+```
+
+Current repair disposition:
+
+```text
+SR16-01:                   CLOSED
+SR16-02:                   CLOSED
+UNRESOLVED_BLOCKING:       0
+UNRESOLVED_SIGNIFICANT:    0
+HUMAN_DECISION_REQUIRED:   NO
+UPSTREAM_REOPEN_REQUIRED:  NO
+STEP_2_AUTHORIZED:         NO
+```
+
+The repaired open-world Source Manifest now makes mandatory, if Senior GO later authorizes Step 2:
+
+1. the complete supported-host/principal chain:
+   `supported ChatGPT host -> connected GitHub Connector identity/metadata surface -> current authenticated GitHub principal -> stable external GitHub user identity -> current PLAYER binding/membership -> controlled-PC relation -> operation-specific authorization -> current native write route/currentness`;
+2. R2.6 host-assurance and fixed Connector-transport owners without reopening transport selection;
+3. deny/block rather than guessing when a trusted current principal cannot be established for a write-sensitive operation;
+4. direct campaign-card core/schema/scaffold surfaces;
+5. explicit disposition of `creator_github_login`, `multiplayer.participant_github_logins`, join policy and derived lock/join/menu hints as non-authoritative projections;
+6. post-selection revalidation against actual Git provenance, PLAYER/access owners and current native write route/currentness.
+
+No runtime/schema/template/catalog/test/tool implementation was changed by this Senior repair.
 
 ## Scope boundary
 

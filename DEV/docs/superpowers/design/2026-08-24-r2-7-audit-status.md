@@ -48,9 +48,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-15
 CURRENT_DOMAIN: WP-16
 CURRENT_DOMAIN_TOPIC: multiplayer / access control / live state
-CURRENT_SLICE: STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
+CURRENT_SLICE: STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW
 NEXT_DOMAIN: WP-17
-OWNER_GATE: REQUIRED — mandatory Senior review of completed WP-16 Step 1; Step 2, WP-17 and implementation planning require explicit Senior GO
+OWNER_GATE: REQUIRED — mandatory Senior review of completed WP-16 Step 1 + Senior repair; Step 2, WP-17 and implementation planning require explicit Senior GO
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -60,7 +60,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-16 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
+R2_7_STATUS: WP-16 STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW
 R2_7_RESUME_TRIGGER: SATISFIED — explicit owner continuation received
 R2_7_WP06_RESUME_ALLOWED: TRUE
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
@@ -73,10 +73,10 @@ R2_7_WP12: CLOSED / SENIOR REVIEW PASS
 R2_7_WP13: CLOSED / SENIOR REVIEW PASS
 R2_7_WP14: CLOSED / FINAL SENIOR RE-AUDIT PASS
 R2_7_WP15: CLOSED / FINAL SENIOR AUDIT PASS
-R2_7_WP16: STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
+R2_7_WP16: STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW
 ```
 
-This cursor authorizes only mandatory Senior review of the completed WP-16 Step-1 package. It does not authorize Step 2, WP-17 or implementation planning.
+This cursor authorizes only mandatory Senior review of the completed WP-16 Step-1 + Senior-repair package. It does not authorize Step 2, WP-17 or implementation planning.
 
 ---
 
@@ -99,7 +99,7 @@ This cursor authorizes only mandatory Senior review of the completed WP-16 Step-
 | WP-13 | CLOSED / SENIOR REVIEW PASS |
 | WP-14 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
 | WP-15 | CLOSED / FINAL SENIOR AUDIT PASS |
-| WP-16 | STEP 1 COMPLETE — MANDATORY SENIOR REVIEW |
+| WP-16 | STEP 1 + SENIOR REPAIR COMPLETE — MANDATORY SENIOR REVIEW |
 | WP-17..WP-27 | NOT STARTED |
 
 ---
@@ -120,80 +120,74 @@ UPSTREAM_REOPEN_REQUIRED:   NO
 WP15_CLOSURE:               AUTHORIZED
 ```
 
-Closed WP-15 and other upstream decisions remain constraints. WP-16 Step 1 found no contradiction, newly unsatisfied consumer or material insufficiency requiring an upstream reopen.
+Closed WP-15 and other upstream decisions remain constraints. WP-16 Step 1 + Senior repair found no contradiction, newly unsatisfied consumer or material insufficiency requiring an upstream reopen.
 
 ---
 
 ## WP-16 Step-1 package
 
-WP-16 is **multiplayer / access control / live state**.
-
 ```text
-WP16_STEP1_START_SHA:   b2afeae3033b96f8d688d437972a020eb0f1746f
-WP16_STEP1_PACKAGE_SHA: 597511a207f51334e31e815d7ff90198804cdf04
+WP16_STEP1_START_SHA:         b2afeae3033b96f8d688d437972a020eb0f1746f
+WP16_STEP1_PACKAGE_SHA:       597511a207f51334e31e815d7ff90198804cdf04
+WP16_SENIOR_REPAIR_START_SHA: 914bd955544834260841b2428a3014462e780fb4
 ```
 
-Published artifacts:
+Step-1 artifacts:
 
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-task-brief.md`;
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-source-manifest.md`;
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-task-brief-critic.md`.
 
-Mandatory whole-project Task-Brief critic:
+Historical whole-project Task-Brief critic:
 
 ```text
 STEP_1_CRITIC_BLOCKING:       4
 STEP_1_CRITIC_SIGNIFICANT:    12
-UNRESOLVED_BLOCKING:          0
-UNRESOLVED_SIGNIFICANT:       0
-HUMAN_DECISION_REQUIRED:      NO
-UPSTREAM_REOPEN_REQUIRED:     NO
-STEP_2_AUTHORIZED:            NO
 ```
 
-Findings:
+Historical C01-C16 and those counts remain preserved.
+
+---
+
+## WP-16 Step-1 Senior recovery
+
+Senior-recovery artifact:
+
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-step-1-senior-recovery-SR16-01-SR16-02.md`.
+
+Senior findings:
 
 ```text
-C01 BLOCKING     authenticated identity / PLAYER / controlled PC / operation authorization separation
-C02 BLOCKING     typed LIVE claims/native owner containment vs scene mega-owner
-C03 BLOCKING     deactivation/revocation + close/absorption no-authorization-window closure
-C04 BLOCKING     multi-LIVE/cross-scope composition without distributed transaction/global rollback
-
-C05 SIGNIFICANT  exact currentness/fence field disposition
-C06 SIGNIFICANT  live-born stable identity vs provisional rekey
-C07 SIGNIFICANT  native durability edge vs one-action-one-write assumption
-C08 SIGNIFICANT  participant/player/PC/session/index summaries nonauthority
-C09 SIGNIFICANT  absence/deactivation player agency + world continuity
-C10 SIGNIFICANT  LIVE information fields vs knowledge/disclosure owners
-C11 SIGNIFICANT  CLOSED_UNABSORBED recovery/current truth
-C12 SIGNIFICANT  WP-17 async collaboration boundary
-C13 SIGNIFICANT  policy authority distinct from gameplay/PC/live authority
-C14 SIGNIFICANT  prepared/orphan/unselected/absorbed LIVE source nonauthority + cleanup
-C15 SIGNIFICANT  bootstrap/menu/card cached identity nonauthority
-C16 SIGNIFICANT  transport/CAS order vs semantic/fictional order
+SR16-01 BLOCKING     supported-host / principal-acquisition owners missing from Source Manifest
+SR16-02 SIGNIFICANT  direct campaign-card surfaces missing; historical C15 direct-coverage claim overstated
 ```
 
-All C01-C16 are mechanically resolved in the published Task Brief/Source Manifest. No implementation shape was selected by the repairs.
+Current disposition:
 
-### Binding Step-1 distinctions
+```text
+SR16-01:                  CLOSED
+SR16-02:                  CLOSED
+UNRESOLVED_BLOCKING:      0
+UNRESOLVED_SIGNIFICANT:   0
+HUMAN_DECISION_REQUIRED:  NO
+UPSTREAM_REOPEN_REQUIRED: NO
+STEP_2_AUTHORIZED:        NO
+```
 
-1. authenticated external identity, PLAYER semantic identity/binding, active membership, controlled-PC relation and operation-specific authorization are distinct;
-2. repository Write/Admin/collaborator ability and successful CAS are not gameplay authorization;
-3. campaign currentness, selected LIVE exact-source currentness and local HOT/cache currentness are distinct;
-4. LIVE owns only immutable typed native owner/partition claims selected by current campaign routing; physical scene/LIVE packing does not create a mega-owner;
-5. ACTIVE LIVE is writable current truth; CLOSED_UNABSORBED is current truth with zero ordinary writers until forward absorption/route movement;
-6. deactivation/revocation must close/fence affected live authority and preserve authorization/current-route coherence without replaying accepted semantics;
-7. multi-LIVE/cross-scope transitions are compositions of native edges, not distributed transactions; partial accepted edges remain real;
-8. technical freeze/ref/CAS order is not automatically semantic or fictional chronology order;
-9. accepted LIVE-born externally referenced IDs must remain stable through absorption; provisional rekeying is conditional only;
-10. one user action/message does not automatically define one semantic LIVE durability edge;
-11. temporary absence/deactivation does not grant another participant/LLM authority to invent the absent player's material voluntary action or erase/move the PC;
-12. current LIVE information fields cannot become parallel current knowledge/disclosure/message owners;
-13. selected LIVE recovery never silently falls back to campaign base; prepared/orphan/unselected sources are non-authoritative until selected;
-14. bootstrap/card/session/index/player-list metadata is revalidated against current owning sources before mutable access;
-15. WP-17 async collaboration realization remains downstream and not started.
+Senior repair requirements now bound into the open-world Source Manifest:
 
-No runtime/schema/template/catalog/test/tool implementation was changed by WP-16 Step 1.
+1. mandatory R2.6 host-assurance and fixed Connector-transport owner inputs;
+2. mandatory `GAME/INSTALL/PROJECT_INSTRUCTIONS.txt` and `GAME/INSTALL/00_DND_BOOTSTRAP.md` inputs for host/principal acquisition;
+3. explicit chain from supported ChatGPT host through connected GitHub Connector/current principal/stable external identity/PLAYER/control/authorization to current native write route/currentness;
+4. Connector/repository capability remains infrastructure, not gameplay authority;
+5. no unsupported alternate transport/identity fallback; untrusted current principal means deny/block rather than guess;
+6. mandatory direct campaign-card inputs: `GAME/CORE/CAMPAIGN_CARD.md`, `GAME/SCHEMA/campaign_card.schema.yaml`, `GAME/CAMPAIGN/CAMPAIGN_CARD.yaml`;
+7. card login/join/lock/menu fields are projections only and must be revalidated against actual Git provenance + PLAYER/access owners after selection;
+8. historical C15 resolution correction is explicit rather than retroactively rewritten.
+
+R2.6 transport selection remains closed.
+
+No runtime/schema/template/catalog/test/tool implementation was changed by this Senior repair.
 
 ---
 
@@ -218,13 +212,15 @@ These are routing obligations, not authorization to start later work.
 WP15_FINAL_SHA: 4af683bbe94c9c115c5cee8f1be94562e97d17c1
 WP16_STEP1_START_SHA: b2afeae3033b96f8d688d437972a020eb0f1746f
 WP16_STEP1_PACKAGE_SHA: 597511a207f51334e31e815d7ff90198804cdf04
+WP16_SENIOR_REPAIR_START_SHA: 914bd955544834260841b2428a3014462e780fb4
 
 WP16_STEP1_TASK_BRIEF: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-task-brief.md
 WP16_STEP1_SOURCE_MANIFEST: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-source-manifest.md
 WP16_STEP1_TASK_BRIEF_CRITIC: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-task-brief-critic.md
+WP16_STEP1_SENIOR_RECOVERY: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-step-1-senior-recovery-SR16-01-SR16-02.md
 
-CURRENT_VERIFICATION_STATE: WP-16 Step-1 package is published; Task Brief, Source Manifest, critic and global cursor were read back at package SHA; task-local cursor is synchronized to the mandatory Senior gate; no implementation work was started.
-NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of completed WP-16 Step-1 package. Step 2, WP-17 and implementation planning remain blocked pending explicit Senior GO.
+CURRENT_VERIFICATION_STATE: WP-16 Step-1 Senior repair artifacts prepared for coherent publication; no implementation work started.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of completed WP-16 Step-1 + Senior-repair package. Step 2, WP-17 and implementation planning remain blocked pending explicit Senior GO.
 KNOWN_BLOCKERS: NONE
-UNPUBLISHED_WORK: NONE
+UNPUBLISHED_WORK: NONE after coherent repair publication and read-back
 ```
