@@ -219,8 +219,8 @@ WP16_STEP1_SOURCE_MANIFEST: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-mu
 WP16_STEP1_TASK_BRIEF_CRITIC: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-task-brief-critic.md
 WP16_STEP1_SENIOR_RECOVERY: DEV/docs/superpowers/design/2026-09-03-r2-7-WP-16-step-1-senior-recovery-SR16-01-SR16-02.md
 
-CURRENT_VERIFICATION_STATE: WP-16 Step-1 Senior repair artifacts prepared for coherent publication; no implementation work started.
+CURRENT_VERIFICATION_STATE: WP-16 Step-1 Senior repair is published; no implementation work was started; exact repair-delta/read-back verification is required before any external completion claim.
 NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of completed WP-16 Step-1 + Senior-repair package. Step 2, WP-17 and implementation planning remain blocked pending explicit Senior GO.
 KNOWN_BLOCKERS: NONE
-UNPUBLISHED_WORK: NONE after coherent repair publication and read-back
+UNPUBLISHED_WORK: NONE
 ```
