@@ -39,9 +39,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-16
 CURRENT_DOMAIN: WP-17
 CURRENT_DOMAIN_TOPIC: async collaboration / agency-safe progression
-CURRENT_SLICE: WP-17 STEPS 1-8 + FINAL SENIOR RECOVERY COMPLETE — MANDATORY SENIOR FINAL RE-AUDIT
+CURRENT_SLICE: WP-17 STEPS 1-8 + FINAL SENIOR RECOVERY R1 COMPLETE — MANDATORY SENIOR FINAL RE-AUDIT
 NEXT_DOMAIN: WP-18
-OWNER_GATE: REQUIRED — mandatory Senior final re-audit after SR17-FINAL-01 provenance recovery; WP-18 and implementation planning require explicit Senior closure/GO
+OWNER_GATE: REQUIRED — mandatory Senior final re-audit after SR17-FINAL-01-R1 provenance recovery; WP-18 and implementation planning require explicit Senior closure/GO
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -51,7 +51,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-17 STEPS 1-8 + FINAL SENIOR RECOVERY COMPLETE — MANDATORY SENIOR FINAL RE-AUDIT
+R2_7_STATUS: WP-17 STEPS 1-8 + FINAL SENIOR RECOVERY R1 COMPLETE — MANDATORY SENIOR FINAL RE-AUDIT
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
 R2_7_WP07: STEPS 1-8 COMPLETE — SENIOR REVIEW PASS
 R2_7_WP08: COMPLETE
@@ -63,7 +63,7 @@ R2_7_WP13: CLOSED / SENIOR REVIEW PASS
 R2_7_WP14: CLOSED / FINAL SENIOR RE-AUDIT PASS
 R2_7_WP15: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP16: CLOSED / FINAL SENIOR AUDIT PASS
-R2_7_WP17: STEPS 1-8 + FINAL SENIOR RECOVERY COMPLETE / FINAL SENIOR RE-AUDIT PENDING
+R2_7_WP17: STEPS 1-8 + FINAL SENIOR RECOVERY R1 COMPLETE / FINAL SENIOR RE-AUDIT PENDING
 ```
 
 This cursor authorizes only mandatory Senior final re-audit of the recovered WP-17 result. It does not authorize WP-18 or implementation planning.
@@ -84,7 +84,7 @@ This cursor authorizes only mandatory Senior final re-audit of the recovered WP-
 | WP-14 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
 | WP-15 | CLOSED / FINAL SENIOR AUDIT PASS |
 | WP-16 | CLOSED / FINAL SENIOR AUDIT PASS |
-| WP-17 | STEPS 1-8 + FINAL SENIOR RECOVERY COMPLETE / FINAL SENIOR RE-AUDIT PENDING |
+| WP-17 | STEPS 1-8 + FINAL SENIOR RECOVERY R1 COMPLETE / FINAL SENIOR RE-AUDIT PENDING |
 | WP-18..WP-27 | NOT STARTED |
 
 ---
@@ -105,7 +105,7 @@ HUMAN_DECISION_REQUIRED:    NO
 UPSTREAM_REOPEN_REQUIRED:   NO
 ```
 
-Closed WP-16 and all earlier accepted domains remain constraints. WP-17 and final Senior recovery found no contradiction, newly unsatisfied upstream consumer or material insufficiency requiring upstream reopen.
+Closed WP-16 and all earlier accepted domains remain constraints. WP-17 and final Senior provenance recoveries found no contradiction, newly unsatisfied upstream consumer or material insufficiency requiring upstream reopen.
 
 ---
 
@@ -114,10 +114,11 @@ Closed WP-16 and all earlier accepted domains remain constraints. WP-17 and fina
 Starting verified public states:
 
 ```text
-WP17_STEP1_START_SHA:             cc2c02da53c5d8b0e4cc5e759d3991716766d8c8
-WP17_SENIOR_REPAIR_START_SHA:     d72662d827049b39612386bb236fa14c83fc9ef8
-WP17_STEPS_2_8_START_SHA:         cc4edd01a2c7b68a0a749041bb2f8aa1987d1be3
-WP17_FINAL_SENIOR_RECOVERY_START_SHA: d372f734a34ff9c5e3759a31918df7fba251c901
+WP17_STEP1_START_SHA:                  cc2c02da53c5d8b0e4cc5e759d3991716766d8c8
+WP17_SENIOR_REPAIR_START_SHA:          d72662d827049b39612386bb236fa14c83fc9ef8
+WP17_STEPS_2_8_START_SHA:              cc4edd01a2c7b68a0a749041bb2f8aa1987d1be3
+WP17_FINAL_SENIOR_RECOVERY_START_SHA:  d372f734a34ff9c5e3759a31918df7fba251c901
+WP17_FINAL_SENIOR_RECOVERY_R1_START_SHA: 667d59f63527b9e82afa3724847cf69877fa6aff
 ```
 
 Step-1 artifacts:
@@ -179,15 +180,15 @@ Published Steps-2–7 design/evidence chain:
 Step-6 / Step-7 substantive disposition remains:
 
 ```text
-STEP_6_BLOCKING:                  2
-STEP_6_SIGNIFICANT:               4
-SUBSTANTIVE_UNRESOLVED_BLOCKING:   0
+STEP_6_BLOCKING:                    2
+STEP_6_SIGNIFICANT:                 4
+SUBSTANTIVE_UNRESOLVED_BLOCKING:    0
 SUBSTANTIVE_UNRESOLVED_SIGNIFICANT: 0
-HUMAN_DECISION_REQUIRED:          NO
-ARCHITECTURE_REOPENED:             NO
-UPSTREAM_REOPEN_REQUIRED:          NO
-CANONICAL_SPEC_REPAIR_REQUIRED:    NO
-STEP_8_COMPLETE:                   YES
+HUMAN_DECISION_REQUIRED:            NO
+ARCHITECTURE_REOPENED:               NO
+UPSTREAM_REOPEN_REQUIRED:            NO
+CANONICAL_SPEC_REPAIR_REQUIRED:      NO
+STEP_8_COMPLETE:                     YES
 ```
 
 ### Correct item-level Step-6 provenance
@@ -199,9 +200,9 @@ The actual Step-6 findings propagated through Step 7 and the unchanged final can
 3. **F17-03 / SIGNIFICANT — immutable, unitary accepted collaboration input semantics.** The candidate did not explicitly freeze accepted collaboration-relevant clause semantics or require one semantic unit/class per referenced clause. Step 7 makes each referenced accepted clause one immutable bounded semantic unit/class; mixed units split; correction/reinterpretation uses a new accepted identity/current interpretation path.
 4. **F17-04 / SIGNIFICANT — stable obligation lineage vs new obligation.** The candidate did not define when successor generations remain one stable obligation lineage versus when a new obligation ID is required. Step 7 defines one bounded dependency lineage per obligation ID, successor generations for same-lineage material evolution, new IDs for semantically new decisions and no terminal-ID repurposing.
 5. **F17-05 / SIGNIFICANT — recipient-safe obligation catch-up projection.** Same-obligation input references risked leaking another participant's private/OOC semantic input. Step 7 forbids obligation membership from granting content eligibility and requires independent message/knowledge/disclosure/context authority.
-6. **F17-06 / SIGNIFICANT — collection resolution is handoff, not gameplay completion.** Candidate `RESOLVED` wording risked coupling collaboration to downstream gameplay completion. Step 7 defines `RESOLVED` as successful collection handoff only; native execution proceeds independently and collaboration never reopens to mirror it.
+6. **F17-06 / SIGNIFICANT — collection resolution is accepted handoff, with partial-publication no-replay recovery.** Candidate `RESOLVED` wording was too loosely separated from both downstream gameplay/native execution completion and partial-publication failure after native handoff/accepted execution had already succeeded. Step 7 defines `RESOLVED` as accepted handoff/consumption of the frozen closed collection rather than downstream gameplay completion; preserves immutable source basis equivalent to `(obligation_id, generation, closed_input_set_fingerprint)` plus consuming native execution/input owner refs; leaves subsequent gameplay execution to the native owner; and requires recovery, when handoff/accepted execution succeeded but collaboration terminalization did not publish, to recognize consumed-handoff evidence and forward-repair `RESOLVED` without re-release/replay/reroll/reopen of already consumed/accepted execution.
 
-The previous task-local cursor falsely attributed F17-03..F17-06 to other valid final properties (optional-contributor behavior, compaction content sufficiency, currentness revalidation and per-input idempotency). Those properties remain valid architecture, but they are not the historical Step-6 finding identities. That false provenance is the sole defect identified as `SR17-FINAL-01`.
+The previous task-local cursor falsely attributed F17-03..F17-06 to other valid final properties (optional-contributor behavior, compaction content sufficiency, currentness revalidation and per-input idempotency). Those properties remain valid architecture, but they are not the historical Step-6 finding identities. `SR17-FINAL-01` repaired that false attribution; `SR17-FINAL-01-R1` restores the complete F17-06 provenance that the first recovery only partially preserved.
 
 ---
 
@@ -229,6 +230,7 @@ Recovery disposition:
 
 ```text
 SR17_FINAL_01:                    CLOSED BY PROVENANCE RECOVERY
+SR17_FINAL_01_R1:                 CLOSED BY RESIDUAL PROVENANCE REPAIR
 STEP_6_COUNTS_CHANGED:             NO
 SUBSTANTIVE_ARCHITECTURE_CHANGED:  NO
 CANONICAL_SPEC_CHANGED:            NO
@@ -237,7 +239,7 @@ STEP_7_RESOLUTION_GATE_CHANGED:    NO
 NEXT_GATE:                         MANDATORY SENIOR FINAL RE-AUDIT
 ```
 
-The repair changes only audit provenance/status artifacts. It does not convert the Senior HOLD to PASS and does not close WP-17.
+The repairs change only audit provenance/status artifacts. They do not convert the Senior HOLD to PASS and do not close WP-17.
 
 Final owner allocation remains unchanged and includes:
 
@@ -258,13 +260,13 @@ Final owner allocation remains unchanged and includes:
 - WP-16 principal/PLAYER/control/currentness constraints preserved;
 - WP-18 remains downstream.
 
-No runtime/schema/template/catalog/test implementation was changed by WP-17 architecture Steps 2-8 or the final Senior recovery.
+No runtime/schema/template/catalog/test implementation was changed by WP-17 architecture Steps 2-8 or either final Senior provenance recovery.
 
 ---
 
 ## Forward obligations
 
-- **WP-17** — mandatory Senior final re-audit after SR17-FINAL-01 recovery is the only current authorized unit. WP-17 remains unclosed.
+- **WP-17** — mandatory Senior final re-audit after SR17-FINAL-01-R1 recovery is the only current authorized unit. WP-17 remains unclosed.
 - **WP-18** — Story/continuity/Dramaturg remains not started and unauthorized.
 - **WP-19/WP-20** — scaffold/bootstrap and pre-release migration remain downstream consumers of accepted architecture only after their sequence is authorized.
 - **WP-22** — executable async-collaboration/agency-safe progression coverage remains downstream.
@@ -279,28 +281,30 @@ These are routing obligations, not authorization to start later work.
 ## Task-local handoff
 
 ```text
-WP16_FINAL_SHA:                        659b22c34bda5c967b1bc438eaba5a17df9e089c
-WP17_STEP1_START_SHA:                  cc2c02da53c5d8b0e4cc5e759d3991716766d8c8
-WP17_SENIOR_REPAIR_START_SHA:          d72662d827049b39612386bb236fa14c83fc9ef8
-WP17_STEPS_2_8_START_SHA:              cc4edd01a2c7b68a0a749041bb2f8aa1987d1be3
-WP17_FINAL_SENIOR_RECOVERY_START_SHA:  d372f734a34ff9c5e3759a31918df7fba251c901
+WP16_FINAL_SHA:                         659b22c34bda5c967b1bc438eaba5a17df9e089c
+WP17_STEP1_START_SHA:                   cc2c02da53c5d8b0e4cc5e759d3991716766d8c8
+WP17_SENIOR_REPAIR_START_SHA:           d72662d827049b39612386bb236fa14c83fc9ef8
+WP17_STEPS_2_8_START_SHA:               cc4edd01a2c7b68a0a749041bb2f8aa1987d1be3
+WP17_FINAL_SENIOR_RECOVERY_START_SHA:   d372f734a34ff9c5e3759a31918df7fba251c901
+WP17_FINAL_SENIOR_RECOVERY_R1_START_SHA: 667d59f63527b9e82afa3724847cf69877fa6aff
 
 WP17_FINAL_CANONICAL_ARTIFACT: DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-canonical-spec.md
 WP17_STEP8_SELF_REVIEW:        DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-step-8-canonicalization-self-review.md
 WP17_FINAL_SENIOR_RECOVERY:    DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-final-senior-recovery-SR17-FINAL-01.md
 
-STEP_6_BLOCKING:                  2
-STEP_6_SIGNIFICANT:               4
-SUBSTANTIVE_UNRESOLVED_BLOCKING:   0
+STEP_6_BLOCKING:                    2
+STEP_6_SIGNIFICANT:                 4
+SUBSTANTIVE_UNRESOLVED_BLOCKING:    0
 SUBSTANTIVE_UNRESOLVED_SIGNIFICANT: 0
-SR17_FINAL_01:                    CLOSED BY PROVENANCE RECOVERY
-HUMAN_DECISION_REQUIRED:          NO
-ARCHITECTURE_REOPENED:             NO
-UPSTREAM_REOPEN_REQUIRED:          NO
-CANONICAL_SPEC_REPAIR_REQUIRED:    NO
+SR17_FINAL_01:                      CLOSED BY PROVENANCE RECOVERY
+SR17_FINAL_01_R1:                   CLOSED BY RESIDUAL PROVENANCE REPAIR
+HUMAN_DECISION_REQUIRED:            NO
+ARCHITECTURE_REOPENED:               NO
+UPSTREAM_REOPEN_REQUIRED:            NO
+CANONICAL_SPEC_REPAIR_REQUIRED:      NO
 
-CURRENT_VERIFICATION_STATE: Final Senior recovery artifacts prepared for coherent publication; exact recovery-delta, canonical-spec blob identity and fresh remote read-back are required before external recovery-completion claim.
-NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior final re-audit of WP-17 after SR17-FINAL-01 recovery. WP-18 and implementation planning remain blocked pending explicit Senior closure/GO.
-KNOWN_BLOCKERS: NONE after verified recovery publication; Senior re-audit remains mandatory gate
+CURRENT_VERIFICATION_STATE: Final Senior R1 provenance recovery prepared for coherent publication; exact R1 delta, canonical-spec blob identity, fresh remote read-back and hosted validation on final SHA are required before external recovery-completion claim.
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior final re-audit of WP-17 after SR17-FINAL-01-R1 recovery. WP-18 and implementation planning remain blocked pending explicit Senior closure/GO.
+KNOWN_BLOCKERS: NONE after verified R1 recovery publication; Senior re-audit remains mandatory gate
 UNPUBLISHED_WORK: NONE after coherent publication
 ```

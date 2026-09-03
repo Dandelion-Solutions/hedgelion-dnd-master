@@ -9,14 +9,14 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 WP-17 / STEPS 1-8 + FINAL SENIOR RECOVERY COMPLETE — MANDATORY SENIOR FINAL RE-AUDIT
 
 CURRENT_WORKSTREAM: R2.7 WP-17 — async collaboration / agency-safe progression
-CURRENT_SLICE: WP-17 Steps 1-8 complete; final Senior audit returned HOLD for one additional provenance-only BLOCKING finding SR17-FINAL-01; Step-6 substantive findings remain 2 BLOCKING + 4 SIGNIFICANT with substantive unresolved 0/0; SR17-FINAL-01 recovery corrected false item-level finding provenance without architecture/canonical-spec repair; mandatory Senior final re-audit pending
+CURRENT_SLICE: WP-17 Steps 1-8 complete; final Senior audit returned HOLD for one additional provenance-only BLOCKING finding SR17-FINAL-01; Step-6 substantive findings remain 2 BLOCKING + 4 SIGNIFICANT with substantive unresolved 0/0; SR17-FINAL-01 recovery corrected false item-level finding provenance without architecture/canonical-spec repair; residual provenance repair SR17-FINAL-01-R1 restores the complete historical F17-06 partial-publication/no-replay semantics; mandatory Senior final re-audit pending
 
 LAST_CLOSED_UNIT: R2.7 WP-16 Steps 1-8 / multiplayer / access control / live state — final Senior audit PASS at 659b22c34bda5c967b1bc438eaba5a17df9e089c
-NEXT_AUTHORIZED_UNIT: Mandatory Senior final re-audit of WP-17 after SR17-FINAL-01 provenance recovery
+NEXT_AUTHORIZED_UNIT: Mandatory Senior final re-audit of WP-17 after SR17-FINAL-01-R1 provenance recovery
 REQUIRED_GATE: Senior final re-audit of the recovered WP-17 result. Do not begin WP-18 or implementation planning without explicit Senior closure/GO.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
-KNOWN_BLOCKERS: NONE — SR17-FINAL-01 recovery complete; Senior re-audit remains the gate
+KNOWN_BLOCKERS: NONE — SR17-FINAL-01-R1 recovery complete; Senior re-audit remains the gate
 ```
 
 ## Closed WP-16 canonical result
@@ -70,6 +70,7 @@ SUBSTANTIVE_UNRESOLVED_BLOCKING:   0
 SUBSTANTIVE_UNRESOLVED_SIGNIFICANT: 0
 ADDITIONAL_SENIOR_BLOCKING_AT_AUDIT: 1
 SR17_FINAL_01:                    CLOSED BY PROVENANCE RECOVERY
+SR17_FINAL_01_R1:                 CLOSED BY RESIDUAL PROVENANCE REPAIR
 HUMAN_DECISION_REQUIRED:          NO
 ARCHITECTURE_REOPENED:             NO
 UPSTREAM_REOPEN_REQUIRED:          NO
@@ -78,7 +79,7 @@ WP18_AUTHORIZED:                   NO
 IMPLEMENTATION_PLAN_AUTHORIZED:    NO
 ```
 
-`SR17-FINAL-01` identified false item-level provenance in the Step-8 propagation table and the task-local cursor. The aggregate Step-6 counts were correct, Step 7 had correctly resolved the actual six findings, and the final canonical specification already contained the correct substantive repairs. The recovery therefore corrected only the audit/provenance representation and current status routing.
+`SR17-FINAL-01` identified false item-level provenance in the Step-8 propagation table and the task-local cursor. The aggregate Step-6 counts were correct, Step 7 had correctly resolved the actual six findings, and the final canonical specification already contained the correct substantive repairs. The recovery therefore corrected only the audit/provenance representation and current status routing. Residual repair `SR17-FINAL-01-R1` restores the omitted partial-publication/no-replay half of the historical F17-06 provenance without changing architecture or the canonical specification.
 
 The actual Step-6 item identities remain:
 
@@ -87,7 +88,7 @@ The actual Step-6 item identities remain:
 3. **F17-03 / SIGNIFICANT** — accepted collaboration-relevant semantic input lacked explicit immutable/unitary clause semantics;
 4. **F17-04 / SIGNIFICANT** — stable `obligation_id` lineage versus successor-generation/new-obligation boundaries were under-specified;
 5. **F17-05 / SIGNIFICANT** — recipient catch-up could leak another participant's private/OOC input without independent eligibility;
-6. **F17-06 / SIGNIFICANT** — `RESOLVED` risked shadowing downstream gameplay/native execution completion.
+6. **F17-06 / SIGNIFICANT** — `RESOLVED` was too loosely separated from both downstream gameplay/native execution completion and partial-publication failure after already-accepted handoff/native execution. Step 7 defines `RESOLVED` as accepted handoff/consumption of the frozen closed collection, preserves immutable source basis `(obligation_id, generation, closed_input_set_fingerprint)` plus consuming native execution/input owner refs, leaves subsequent gameplay execution to the native owner, and requires recovery to recognize consumed-handoff evidence and forward-repair terminal `RESOLVED` without re-release/replay/reroll/reopen of already consumed/accepted execution.
 
 All six remain substantively closed by Step 7 and represented by the unchanged final canonical specification. The earlier false Step-8 labels referred to other valid architecture properties, but not to these historical finding identities.
 
@@ -104,7 +105,7 @@ Human async collaboration input remains owned by accepted Interaction / IntentPl
 
 The obligation owns collection/wait/current-generation semantics only. It does not own gameplay consequence execution, PLAYER/control authority, fictional chronology, truth/knowledge/disclosure/message delivery, Story or Dramaturg planning.
 
-No runtime/schema/template/catalog/test implementation was changed by WP-17 architecture work or the final Senior recovery.
+No runtime/schema/template/catalog/test implementation was changed by WP-17 architecture work or either final Senior provenance recovery.
 
 ## WP-17 design provenance
 
@@ -130,8 +131,8 @@ The Source Manifest remained open-world through the independent Step-6 reconstru
 - Roadmaps own intended sequencing, scope and dependencies.
 - Task-local execution/audit cursors own recovery details inside their bounded workstream and are subordinate to this file.
 - Historical closure, provenance and status records remain historical evidence; they do not become current-progress authority.
-- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; SR17-FINAL-01 found none and architecture was not reopened.
-- The WP-17 canonical specification was not repaired or changed by SR17-FINAL-01.
+- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; SR17-FINAL-01 and SR17-FINAL-01-R1 found none and architecture was not reopened.
+- The WP-17 canonical specification was not repaired or changed by SR17-FINAL-01 or SR17-FINAL-01-R1.
 - WP-17 is not closed until mandatory Senior final re-audit passes.
 - WP-18 Story/continuity/Dramaturg planning remains downstream, not started and unauthorized.
 - Implementation planning remains unauthorized.

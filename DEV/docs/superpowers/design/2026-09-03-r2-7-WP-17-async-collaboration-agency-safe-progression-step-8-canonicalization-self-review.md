@@ -1,6 +1,6 @@
 # R2.7 WP-17 — Async Collaboration / Agency-Safe Progression — Step 8 Canonicalization Self-Review
 
-Status: **STEP 8 COMPLETE + FINAL SENIOR PROVENANCE RECOVERY SR17-FINAL-01 COMPLETE — MANDATORY SENIOR RE-AUDIT**
+Status: **STEP 8 COMPLETE + FINAL SENIOR PROVENANCE RECOVERY SR17-FINAL-01-R1 COMPLETE — MANDATORY SENIOR RE-AUDIT**
 
 Date: 2026-09-03
 
@@ -9,6 +9,7 @@ Starting verified Steps-2–8 state:
 ```text
 WP17_STEPS_2_8_START_SHA: cc4edd01a2c7b68a0a749041bb2f8aa1987d1be3
 WP17_FINAL_SENIOR_RECOVERY_START_SHA: d372f734a34ff9c5e3759a31918df7fba251c901
+WP17_FINAL_SENIOR_RECOVERY_R1_START_SHA: 667d59f63527b9e82afa3724847cf69877fa6aff
 ```
 
 Final implementation-facing canonical artifact:
@@ -42,7 +43,7 @@ Step 8 reviewed the complete current WP-17 design chain rather than only the Ste
 
 No Step-8 semantic decision was introduced outside that evidence/decision chain.
 
-The final Senior audit later returned `HOLD` only for `SR17-FINAL-01 — false item-level finding provenance`: the Step-8 table mislabeled F17-03..F17-06 even though the Step-6 findings, Step-7 resolutions and final canonical semantics themselves were correct. The recovery below corrects provenance only; it does not reopen architecture or modify the canonical specification.
+The final Senior audit later returned `HOLD` only for `SR17-FINAL-01 — false item-level finding provenance`: the Step-8 table mislabeled F17-03..F17-06 even though the Step-6 findings, Step-7 resolutions and final canonical semantics themselves were correct. The first recovery repaired those identities but retained only half of historical F17-06. Residual recovery `SR17-FINAL-01-R1` restores the omitted partial-publication/no-replay provenance only; it does not reopen architecture or modify the canonical specification.
 
 ---
 
@@ -162,7 +163,7 @@ STEP_6_BLOCKING:     2
 STEP_6_SIGNIFICANT:  4
 ```
 
-Item-level propagation, corrected by Senior recovery `SR17-FINAL-01` to match the actual Step-6 findings and Step-7 resolutions:
+Item-level propagation, corrected by Senior recovery `SR17-FINAL-01` and residual repair `SR17-FINAL-01-R1` to match the actual Step-6 findings and Step-7 resolutions:
 
 | Finding | Severity | Step-7 resolution | Final canonical propagation | Step-8 result |
 |---|---|---|---|---|
@@ -171,9 +172,9 @@ Item-level propagation, corrected by Senior recovery `SR17-FINAL-01` to match th
 | F17-03 — accepted collaboration-relevant semantic input was not explicitly immutable and unitary | SIGNIFICANT | freeze one bounded semantic unit/class per referenced accepted IntentClause; split mixed units; correction/reinterpretation creates a new accepted identity/current interpretation path | final human-input laws make each collaboration-relevant clause one immutable material semantic unit with bounded normalized semantics and separately protected exact-text evidence where required | CLOSED |
 | F17-04 — stable `obligation_id` lineage versus successor-generation/new-obligation boundaries were under-specified | SIGNIFICANT | define one obligation ID as one bounded dependency lineage; same-lineage material evolution uses successor generation; semantically new decision uses a new ID; terminal IDs are never repurposed | final obligation identity/generation laws distinguish stable lineage, successor generation and semantically new obligation identity without turning numeric order into chronology/currentness | CLOSED |
 | F17-05 — recipient-safe catch-up could leak another participant's private/OOC collaboration input | SIGNIFICANT | project only independently recipient-eligible content; same-obligation membership grants no access to another participant's semantic input | final catch-up/disclosure laws forbid using an obligation/input reference as disclosure authority and preserve existing message/knowledge/disclosure/context eligibility owners | CLOSED |
-| F17-06 — `RESOLVED` risked mirroring downstream gameplay/native execution completion | SIGNIFICANT | define `RESOLVED` as completion of collaboration collection handoff only; downstream native execution proceeds independently and collaboration never reopens to mirror it | final lifecycle/handoff laws terminate collaboration responsibility at successful handoff rather than gameplay settlement, preventing a shadow execution lifecycle | CLOSED |
+| F17-06 — `RESOLVED` was too loosely separated from both downstream gameplay/native execution completion and partial-publication failure after already-accepted handoff/native execution | SIGNIFICANT | define `RESOLVED` as accepted handoff/consumption of the frozen closed collection, not downstream gameplay completion; preserve immutable source basis `(obligation_id, generation, closed_input_set_fingerprint)` plus consuming native execution/input owner refs; if handoff/accepted execution succeeded but collaboration terminalization did not publish, recovery recognizes consumed-handoff evidence and forward-repairs `RESOLVED` without re-release/replay/reroll/reopen | final lifecycle/handoff/recovery laws terminate collaboration responsibility at accepted handoff, leave subsequent gameplay execution to the native owner, retain consumed-handoff causal/idempotency evidence and forbid replay or reopening of already consumed/accepted execution during forward repair | CLOSED |
 
-The earlier Step-8 table incorrectly attached F17-03..F17-06 identifiers to other valid final-architecture properties (optional-contributor handling, compaction content sufficiency, currentness revalidation and per-input idempotency). Those properties remain valid elsewhere in the final specification, but they are not the provenance identities of Step-6 F17-03..F17-06. `SR17-FINAL-01` repairs only that attribution error.
+The earlier Step-8 table incorrectly attached F17-03..F17-06 identifiers to other valid final-architecture properties (optional-contributor handling, compaction content sufficiency, currentness revalidation and per-input idempotency). Those properties remain valid elsewhere in the final specification, but they are not the provenance identities of Step-6 F17-03..F17-06. `SR17-FINAL-01` repaired that attribution error; `SR17-FINAL-01-R1` restores the complete historical F17-06 partial-publication/no-replay half that the first recovery omitted.
 
 Final substantive disposition remains:
 
@@ -211,7 +212,7 @@ The Source Manifest remained open-world through the independent Step-6 reconstru
 - relevant regression/contract cases;
 - WP-18 and later implementation/verification consumers.
 
-No evidence discovered during Steps 2–8 or the final Senior provenance recovery demonstrates an upstream contradiction, newly unsatisfied upstream owner requiring reopening, or a human-owned material product trade-off.
+No evidence discovered during Steps 2–8 or either final Senior provenance recovery demonstrates an upstream contradiction, newly unsatisfied upstream owner requiring reopening, or a human-owned material product trade-off.
 
 ---
 
@@ -223,11 +224,11 @@ The final implementation-facing WP-17 authority remains unchanged:
 
 - `DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-canonical-spec.md`.
 
-Earlier Decision Brief/review/candidate artifacts remain design provenance and do not override the final specification or Step-7 resolutions. `SR17-FINAL-01` changes only the Step-8 audit provenance record and current status routing.
+Earlier Decision Brief/review/candidate artifacts remain design provenance and do not override the final specification or Step-7 resolutions. `SR17-FINAL-01` and `SR17-FINAL-01-R1` change only audit provenance records and current status routing.
 
 ### Known downstream machine-realization debt
 
-No implementation is performed in WP-17 architecture Steps 2–8 or the final Senior recovery. Later approved realization must align at least:
+No implementation is performed in WP-17 architecture Steps 2–8 or either final Senior provenance recovery. Later approved realization must align at least:
 
 - IntentClause machine shape for collaboration-relevant semantic class/content sufficiency;
 - `runtime.collaboration_obligation` exact schema/state lifecycle;
@@ -249,7 +250,7 @@ These are downstream realization obligations, not authorization to implement the
 
 ## 6. Scope / mutation audit
 
-Step 8 plus final Senior recovery confirms:
+Step 8 plus final Senior provenance recoveries confirms:
 
 ```text
 WP18_STARTED:                    NO
@@ -260,11 +261,12 @@ TEMPLATE_IMPLEMENTATION_CHANGED: NO
 CATALOG_IMPLEMENTATION_CHANGED:  NO
 TEST_IMPLEMENTATION_CHANGED:     NO
 CANONICAL_SPEC_CHANGED_BY_SR17_FINAL_01: NO
+CANONICAL_SPEC_CHANGED_BY_SR17_FINAL_01_R1: NO
 NEW_BRANCH_CREATED:              NO
 DO_NOT_CREATE_USED_OR_CHANGED:   NO
 ```
 
-The final Senior recovery changes only this provenance/self-review record, adds its Senior recovery record and synchronizes the global/task-local cursors.
+The final Senior provenance recoveries change only this provenance/self-review record, the existing Senior recovery record and the global/task-local cursors.
 
 ---
 
@@ -280,6 +282,7 @@ SUBSTANTIVE_UNRESOLVED_SIGNIFICANT: 0
 FINAL_SENIOR_AUDIT:               HOLD
 ADDITIONAL_SENIOR_BLOCKING_AT_AUDIT: 1
 SR17_FINAL_01:                    CLOSED BY PROVENANCE RECOVERY
+SR17_FINAL_01_R1:                 CLOSED BY RESIDUAL PROVENANCE REPAIR
 HUMAN_DECISION_REQUIRED:          NO
 ARCHITECTURE_REOPENED:             NO
 UPSTREAM_REOPEN_REQUIRED:          NO

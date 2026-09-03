@@ -1,6 +1,6 @@
 # R2.7 WP-17 — Final Senior Recovery SR17-FINAL-01
 
-Status: **FINAL SENIOR PROVENANCE RECOVERY COMPLETE — MANDATORY SENIOR FINAL RE-AUDIT REQUIRED**
+Status: **FINAL SENIOR PROVENANCE RECOVERY + SR17-FINAL-01-R1 COMPLETE — MANDATORY SENIOR FINAL RE-AUDIT REQUIRED**
 
 Date: 2026-09-03
 
@@ -10,11 +10,15 @@ Recovery basis public HEAD:
 
 - `d372f734a34ff9c5e3759a31918df7fba251c901`
 
+Residual provenance-repair basis public HEAD:
+
+- `667d59f63527b9e82afa3724847cf69877fa6aff`
+
 Final implementation-facing canonical artifact, deliberately unchanged by this recovery:
 
 - `DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-canonical-spec.md`
 
-This artifact records a narrow recovery from the WP-17 final Senior audit HOLD. It does not reopen architecture, does not repair or alter the canonical specification, does not start WP-18, does not begin implementation planning, and does not alter runtime/schema/template/catalog/test implementation.
+This artifact records the narrow recovery from the WP-17 final Senior audit HOLD plus residual provenance repair `SR17-FINAL-01-R1`. Neither repair reopens architecture, repairs or alters the canonical specification, starts WP-18, begins implementation planning, or alters runtime/schema/template/catalog/test implementation.
 
 ---
 
@@ -53,7 +57,7 @@ The task-local R2.7 cursor repeated the same false six-item provenance list.
 
 Those substitute properties are legitimate final WP-17 concerns, but they are not the actual historical identities of Step-6 `F17-03..F17-06`. Coverage of a valid property does not permit rewriting finding provenance.
 
-Disposition: **CLOSED** by correcting the Step-8 item-level table and task-local cursor to the actual Step-6 finding identities/resolutions below.
+Disposition: **CLOSED**, with residual completeness repair `SR17-FINAL-01-R1` also **CLOSED** after restoring the omitted second half of historical F17-06 provenance.
 
 ---
 
@@ -68,9 +72,31 @@ The historical Step-6 review and Step-7 resolution gate remain unchanged evidenc
 | F17-03 | SIGNIFICANT | accepted collaboration-relevant clause semantics were not explicitly immutable/unitary while referenced | one referenced collaboration-relevant IntentClause is one immutable bounded semantic unit/class; mixed units split into distinct clauses; correction/reinterpretation creates a new accepted identity/current interpretation path |
 | F17-04 | SIGNIFICANT | stable `obligation_id` lineage versus successor-generation/new-obligation boundaries were under-specified | one obligation ID owns one bounded dependency lineage; same-lineage material evolution uses successor generation; semantically new decision gets a new obligation ID; terminal IDs are never repurposed |
 | F17-05 | SIGNIFICANT | recipient catch-up could expose another participant's private/OOC input merely because it was referenced by the same obligation | catch-up is recipient-safe projection only; obligation membership grants no content eligibility; existing message/knowledge/disclosure/context owners independently govern visibility |
-| F17-06 | SIGNIFICANT | `RESOLVED` wording risked making collaboration mirror downstream gameplay/native execution completion | `RESOLVED` means successful collection handoff only; downstream command/procedure/native execution continues under its own owner and collaboration never reopens to shadow it |
+| F17-06 | SIGNIFICANT | `RESOLVED` was too loosely separated from both downstream gameplay/native execution completion and partial-publication failure after native handoff/accepted execution had already succeeded | `RESOLVED` means accepted handoff/consumption of the frozen closed collection, not downstream gameplay completion; immutable source basis equivalent to `(obligation_id, generation, closed_input_set_fingerprint)` plus consuming native execution/input owner refs is preserved; downstream gameplay execution belongs to the native owner; if handoff/accepted execution succeeded but collaboration terminalization did not publish, recovery recognizes consumed-handoff evidence and forward-repairs `RESOLVED`; recovery never re-releases/replays/rerolls/reopens already consumed/accepted execution |
 
 The six Step-7 closures remain substantive architecture evidence. This recovery changes only their audit attribution.
+
+### 3.1 SR17-FINAL-01-R1 residual provenance repair
+
+The first SR17-FINAL-01 recovery retained only the gameplay-completion half of historical F17-06 and omitted its partial-publication/recovery half. `SR17-FINAL-01-R1` restores the complete Step-6/Step-7 semantics:
+
+```text
+RESOLVED
+    = accepted handoff/consumption of the frozen closed collection
+    != downstream gameplay completion
+
+immutable consumed-handoff source basis
+    = (obligation_id, generation, closed_input_set_fingerprint)
+      + consuming native execution/input owner refs
+
+accepted native handoff/execution exists
++ collaboration terminal publication missing
+    -> recovery recognizes consumed-handoff evidence
+    -> forward-repairs RESOLVED
+    -> never re-release / replay / reroll / reopen consumed execution
+```
+
+This is provenance restoration only. Step 6, Step 7 and the final canonical specification remain unchanged.
 
 ---
 
@@ -91,7 +117,7 @@ No canonical rule is removed or weakened by correcting the provenance.
 
 ## 5. Canonical and reopen disposition
 
-Fresh reconciliation of the Senior finding against Step 6, Step 7 and the final canonical owner establishes:
+Fresh reconciliation of the Senior finding and residual R1 repair against Step 6, Step 7 and the final canonical owner establishes:
 
 - Step-6 aggregate counts remain `2 BLOCKING + 4 SIGNIFICANT`;
 - all six substantive Step-6 findings remain closed in Step 7 and propagated into the final canonical specification;
@@ -100,22 +126,22 @@ Fresh reconciliation of the Senior finding against Step 6, Step 7 and the final 
 - no architecture is reopened;
 - no upstream owner is reopened;
 - no canonical-spec repair is required;
-- the final canonical specification remains byte-identical through this recovery;
+- the final canonical specification remains byte-identical through both provenance repairs;
 - WP-18 remains unauthorized;
 - implementation planning remains unauthorized.
 
-The recovery does not convert the prior Senior HOLD into PASS. It only closes the identified recovery defect and returns WP-17 to mandatory Senior final re-audit.
+The recovery does not convert the prior Senior HOLD into PASS. It closes the identified provenance defects and returns WP-17 to mandatory Senior final re-audit.
 
 ---
 
 ## 6. Recovery mutation boundary
 
-Permitted recovery delta is limited to:
+Permitted recovery delta is limited to provenance/status surfaces:
 
 1. this Senior recovery artifact;
 2. corrected item-level provenance in the Step-8 self-review;
 3. corrected provenance/status in the task-local R2.7 cursor;
-4. global current-progress synchronization to the Senior HOLD/recovery/re-audit state.
+4. global current-progress synchronization to the recovered Senior re-audit state.
 
 Explicitly unchanged:
 
@@ -135,19 +161,21 @@ Explicitly unchanged:
 ## 7. Recovery disposition
 
 ```text
-WP17_FINAL_SENIOR_AUDIT:          HOLD
-STEP_6_BLOCKING:                  2
-STEP_6_SIGNIFICANT:               4
-SUBSTANTIVE_UNRESOLVED_BLOCKING:   0
+WP17_FINAL_SENIOR_AUDIT:            HOLD
+STEP_6_BLOCKING:                    2
+STEP_6_SIGNIFICANT:                 4
+SUBSTANTIVE_UNRESOLVED_BLOCKING:    0
 SUBSTANTIVE_UNRESOLVED_SIGNIFICANT: 0
 ADDITIONAL_SENIOR_BLOCKING_AT_AUDIT: 1
-SR17_FINAL_01:                    CLOSED
-HUMAN_DECISION_REQUIRED:          NO
-ARCHITECTURE_REOPENED:             NO
-UPSTREAM_REOPEN_REQUIRED:          NO
-CANONICAL_SPEC_REPAIR_REQUIRED:    NO
-WP18_AUTHORIZED:                   NO
-IMPLEMENTATION_PLANNING:           NO
-IMPLEMENTATION_CHANGED:            NO
-NEXT_GATE:                         MANDATORY SENIOR FINAL RE-AUDIT
+SR17_FINAL_01:                      CLOSED
+SR17_FINAL_01_R1:                   CLOSED
+CANONICAL_SPEC_CHANGED_BY_R1:       NO
+HUMAN_DECISION_REQUIRED:            NO
+ARCHITECTURE_REOPENED:               NO
+UPSTREAM_REOPEN_REQUIRED:            NO
+CANONICAL_SPEC_REPAIR_REQUIRED:      NO
+WP18_AUTHORIZED:                     NO
+IMPLEMENTATION_PLANNING:             NO
+IMPLEMENTATION_CHANGED:              NO
+NEXT_GATE:                           MANDATORY SENIOR FINAL RE-AUDIT
 ```
