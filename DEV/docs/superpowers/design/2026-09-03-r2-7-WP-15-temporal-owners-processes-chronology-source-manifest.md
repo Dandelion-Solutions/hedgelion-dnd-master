@@ -17,8 +17,9 @@ Mandatory whole-project Task-Brief critic:
 Post-critic Senior recovery:
 
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-15-senior-recovery-process-source-graph-omissions.md` (`SR15-01..SR15-02`)
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-15-senior-recovery-thread-visibility-knowledge-disclosure.md` (`SR15-03`)
 
-This manifest is **open-world**. It records the dependency subgraph established at Step 1 from current `DEV/PROJECT_MAP.md` plus direct owner/consumer inspection. Step 2, if later authorized, must extend it when actual search discovers another owner, consumer, process/domain representation, test, migration/bootstrap dependency or material supersession route.
+This manifest is **open-world**. It records the dependency subgraph established at Step 1 from current `DEV/PROJECT_MAP.md` plus direct owner/consumer inspection. Step 2, if later authorized, must extend it when actual search discovers another owner, consumer, process/domain representation, knowledge/disclosure realization surface, test, migration/bootstrap dependency or material supersession route.
 
 ---
 
@@ -58,11 +59,12 @@ This manifest is **open-world**. It records the dependency subgraph established 
 
 ---
 
-## 3. Primary canonical temporal / chronology authority
+## 3. Primary canonical temporal / chronology / information-boundary authority
 
 | Source | Classification | Mandatory Step-2 extraction |
 |---|---|---|
 | `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md` | `CANONICAL / OWNING` | Accepted RuntimeCommand/Procedure/Resolution/Continuation/ExecutionSegment identity; fixed accepted RNG; idempotency; suspension/resume; no wall-clock fingerprint/replay. |
+| `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md` | `CANONICAL / OWNING` | **Mandatory because of SR15-03.** Truth/knowledge/disclosure separation; `world.knowledge` is the durable fictional subject-stance owner. Physical readability or record existence does not establish fictional knowledge. |
 | `DEV/docs/superpowers/specs/2026-08-20-step-5-1-frontier-model-canonical-spec.md` | `CANONICAL / OWNING` | Domain typing, no implicit cross-domain order, no generic Frontier/global sequence/RecoveryCut; chronology independent from Git/publication/allocation/durability. |
 | `DEV/docs/superpowers/specs/2026-08-20-step-5-2-resumable-runtime-closure-canonical-spec-v2.md` | `CANONICAL / OWNING` | Native temporal roots/recovery reachability, bounded hydration, Agenda rebuild, no generic scheduler, no accepted-execution replay. |
 | `DEV/docs/superpowers/specs/2026-08-20-step-5-3-temporal-pending-continuity-canonical-spec.md` | `CANONICAL / OWNING` | Native temporal owner families; occurrence identity/lifecycle; `NOT_DUE|DUE|INDETERMINATE`; owner claim/materialization; no background advancement; fixed RNG/interpretation continuity. |
@@ -70,6 +72,7 @@ This manifest is **open-world**. It records the dependency subgraph established 
 | `DEV/docs/superpowers/specs/2026-08-21-step-5-3-5-9-temporal-agenda-chronology-integration-canonical-amendment.md` | `CANONICAL INTEGRATION / OWNING` | **Mandatory because of critic C04.** Four-way owner/Agenda/chronology/Step-3 split; derived enrollment/invalidation/recheck; Agenda never executes or advances chronology; cold rebuild behavior. |
 | `DEV/docs/superpowers/design/2026-08-21-step-5-9-forward-extensible-time-boundary-owner-decision.md` | `OWNER-APPROVED DECISION / OWNING` | **Mandatory because of critic C05.** Forward-extensible accepted history; supported deadlines/split rates/immutable-history travel vs unsupported mutable-past/branching/causal-loop baseline; Dramaturg guard. |
 | `DEV/docs/superpowers/specs/2026-08-20-step-5-8-multiplayer-live-epoch-ownership-canonical-spec.md` | `CANONICAL / OWNING` | Live exact-source currentness/CAS/routing vs fiction; close/absorption/source movement; no campaign fallback; no live revision chronology. |
+| `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md` | `CANONICAL / OWNING` | **Mandatory because of SR15-03.** `runtime.disclosure` owns recipient-scoped PLAYER-delivery evidence only; delivery does not establish PC knowledge and eligibility/readability does not prove delivery. |
 | `DEV/docs/superpowers/specs/2026-08-21-step-5-13-garbage-collection-orphan-cleanup-canonical-spec.md` | `CANONICAL / OWNING` | Chronology/temporal protected-consumer retention, new-consumer enrollment, no age/reachability/global GC frontier, source-vs-derivative cleanup. |
 | `DEV/docs/superpowers/specs/2026-08-21-step-5-14-full-recovery-concurrency-adversarial-review-canonical-final.md` | `CANONICAL INTEGRATION / OWNING` | Whole-system recovery/live/currentness/temporal/chronology consistency; no substitute authority; concurrent/source movements do not create fiction. |
 
@@ -94,6 +97,20 @@ Step 2 must expand this section if another current domain owner proves a tempora
 | `DEV/docs/superpowers/specs/2026-09-02-r2-7-WP-13-durability-save-publication-canonical-spec.md` | `R2.7 UPSTREAM / OWNING` | No global durability frontier/timer; durability/publication/currentness markers remain separate from chronology; persistence retries cannot replay accepted semantics. |
 | `DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-14-recovery-checkpoints-session-repair-canonical-spec.md` | `R2.7 UPSTREAM / OWNING` | Current native temporal root recovery; Agenda rebuild; accepted occurrence/execution no replay/reroll; checkpoint/session/SQLite/ambient context/time fields non-authority; technical order not chronology. |
 
+### 5.1 Closed WP-07 truth / knowledge / disclosure / message-evidence chain — SR15-03
+
+These are mandatory upstream constraints for the two `thread.visibility.*` fields; they do not reopen WP-07 and do not supersede Step-4 / Step-5.12 owners:
+
+| Source | Classification | Step-2 treatment |
+|---|---|---|
+| `DEV/docs/superpowers/research/2026-08-24-r2-7-WP-07-truth-knowledge-disclosure-mini-report.md` | `DESIGN PROVENANCE / CONDITIONAL` | Evidence/disposition route proving the five-way information split and existing machine-realization obligations. |
+| `DEV/docs/superpowers/design/2026-08-31-r2-7-WP-07-truth-knowledge-disclosure-task-brief.md` | `DESIGN PROVENANCE / CONDITIONAL` | Closed task scope/owner graph only. |
+| `DEV/docs/superpowers/design/2026-08-31-r2-7-WP-07-step-3-decision-brief.md` | `R2.7 UPSTREAM / OWNING` | No new information architecture owner; preserve separation of truth, fictional knowledge, human disclosure and accepted communication evidence. |
+| `DEV/docs/superpowers/design/2026-08-31-r2-7-WP-07-step-5-candidate-spec.md` | `R2.7 UPSTREAM / OWNING` | Closed owner mapping: `world.knowledge` fictional stance; `runtime.disclosure` recipient-scoped human exposure; `runtime.message` accepted communication evidence. |
+| `DEV/docs/superpowers/design/2026-08-31-r2-7-WP-07-step-6-adversarial-review.md` | `R2.7 UPSTREAM / OWNING` | Negative-case constraint: embedded PC/live-style fields must not become parallel global knowledge/disclosure authority. |
+| `DEV/docs/superpowers/design/2026-08-31-r2-7-WP-07-step-7-resolution-gate.md` | `R2.7 UPSTREAM / OWNING` | Retains owner-bound normalization / recipient-isolation obligations without creating a new owner. |
+| `DEV/docs/superpowers/design/2026-08-31-r2-7-WP-07-step-8-canonicalization.md` | `R2.7 UPSTREAM / OWNING` | Closed audit result; durable semantic owners remain Step-4/Step-5.12 and catalog contracts only in their declared machine role. |
+
 Closed upstream results are constraints, not subjects to reopen by overlap. Step 2 may reopen only on a proved contradiction, new unsatisfied consumer or material insufficiency.
 
 ---
@@ -105,6 +122,7 @@ Closed upstream results are constraints, not subjects to reopen by overlap. Step
 | `GAME/CORE/CHRONOLOGY.md` | `IMPLEMENTATION / MACHINE CONTRACT` | Reconcile partial-order/adaptive/local behavior with Step 5.9; retire/demote global `CURRENT.world_time.frontier`; replace singleton chronology-frontier semantic assumption with multi-anchor-capable owner-typed basis; preserve INDETERMINATE rather than arbitrary ordering. |
 | `GAME/CORE/RUNTIME.md` | `IMPLEMENTATION / MACHINE CONTRACT` | OOC/maintenance/process loss must not advance fiction; world changes require causes; separate stale durability timer/frontier wording from fictional time; no host/message progress as chronology. |
 | `GAME/CORE/PROCESSES.md` | `IMPLEMENTATION / MACHINE CONTRACT` | **Mandatory because of SR15-01.** Primary shipped process/threat/clock runtime. Reverse-audit threats/goals/projects/countdowns/investigations/pursuits, stage/progress/advancement conditions/deadlines/resources, clocks, off-screen advancement, causal triggers, simulation budget, multiplayer duplicate-advancement prevention, event dependencies, visibility, recovery/publication/retention implications. Do not presume `world.thread` owns every temporal obligation. |
+| `GAME/CORE/INFORMATION.md` | `IMPLEMENTATION / MACHINE CONTRACT` | **Mandatory because of SR15-03.** Reconcile current truth/knowledge/player-information prose against Step-4/Step-5.12; record readability/publicness does not establish PC knowledge, PLAYER delivery or eligibility. |
 | `GAME/CORE/ADVANCEMENT.md` | `IMPLEMENTATION / MACHINE CONTRACT` | **Direct scoped consumer from SR15-02.** Inspect only rest/downtime/long-project timing, in-world time/resource cost and causally permitted off-screen process advancement; unrelated advancement semantics out of scope. |
 | `GAME/CORE/EXPLORATION.md` | `IMPLEMENTATION / MACHINE CONTRACT` | **Direct scoped consumer from SR15-02.** Inspect only elapsed/travel-time semantics and off-screen process advancement; unrelated exploration/spatial mechanics out of scope. |
 | `GAME/CORE/COMBAT.md` | `IMPLEMENTATION / MACHINE CONTRACT` | **Direct scoped consumer from SR15-02.** Preserve active `runtime.procedure` ownership of initiative/round/turn/active-participant/local procedure time; inspect elapsed-time consequences only; unrelated combat mechanics out of scope. |
@@ -115,7 +133,7 @@ Closed upstream results are constraints, not subjects to reopen by overlap. Step
 | `GAME/CORE/INTEGRITY.md` | `IMPLEMENTATION / MACHINE CONTRACT` | Chronology contradiction vs stale/incomplete/INDETERMINATE evidence; targeted current refresh; no invented repair story; bounded diagnosis. |
 | `GAME/CORE/STORAGE.md` | `IMPLEMENTATION / MACHINE CONTRACT` | Storage/ref/frontier/timestamps/durability language is not fictional chronology; stale “durable frontier time” and current-frontier terms must not cross domains. |
 
-Step 2 must search additional `GAME/CORE` and domain consumers/representations reached from process kinds, clocks/deadlines, TemporalBinding, chronology, Agenda, execution and recovery/publication/retention dependencies. This list remains open-world.
+Step 2 must search additional `GAME/CORE` and domain consumers/representations reached from process kinds, clocks/deadlines, TemporalBinding, chronology, Agenda, execution, knowledge/disclosure fields and recovery/publication/retention dependencies. This list remains open-world.
 
 ---
 
@@ -128,13 +146,15 @@ Step 2 must search additional `GAME/CORE` and domain consumers/representations r
 | `GAME/SCHEMA/event.schema.yaml` | `IMPLEMENTATION / MACHINE CONTRACT` | `caused_by_event_ids`, `after_event_ids`, `world_order.scene_id/time/sequence`: exact domain/owner/retention semantics; IDs/sequence/storage order never implicit chronology. |
 | `GAME/SCHEMA/scene.schema.yaml` | `IMPLEMENTATION / MACHINE CONTRACT` | `local_time`, singleton `chronology_frontier_event_id`, `last_event_id`, live routing fields; multi-anchor-capable chronology semantics and identity/order separation. |
 | `GAME/SCHEMA/live_scene.schema.yaml` | `IMPLEMENTATION / MACHINE CONTRACT` | `revision`, `local_time`, observable-event `world_time`, live-event identity, close status; distinguish currentness/observability from accepted chronology evidence. |
-| `GAME/SCHEMA/thread.schema.yaml` | `IMPLEMENTATION / MACHINE CONTRACT` | **Mandatory because of SR15-01.** Current durable `world.thread`-shaped process representation. Account field-by-field for kind/status/owner/objective, stage/progress/next-development/advancement-conditions/deadline/resources, affected entities, visibility, `created_event_id` and `last_event_id`; map each temporal/process meaning to the actual native owner rather than inferring blanket thread ownership. |
+| `GAME/SCHEMA/thread.schema.yaml` | `IMPLEMENTATION / MACHINE CONTRACT` | **Mandatory because of SR15-01/SR15-03.** Account field-by-field for kind/status/owner/objective, stage/progress/next-development/advancement-conditions/deadline/resources, affected entities, `created_event_id`/`last_event_id`, and separately disposition `visibility.known_by_pc_ids` / `visibility.public` against Step-4/Step-5.12/WP-07. Do not infer blanket thread temporal ownership or parallel knowledge/disclosure authority. |
 
 Mandatory Step-2 rule: map every current chronology/process-adjacent field/behavior encountered to one current owner/disposition. Similar names such as `frontier`, `sequence`, `revision`, `time`, `event_id`, `deadline`, `progress` or `clock` are never presumed comparable or owner-equivalent.
 
+For `thread.visibility.known_by_pc_ids` and `thread.visibility.public`, Step 2 must explicitly determine from evidence whether each is retained, derived, cached, a bounded hint/projection, denormalized, retired or otherwise constrained. **Step 1 does not choose that machine shape.** Until disposition is established, neither field is knowledge/delivery/eligibility authority.
+
 ---
 
-## 8. DEV temporal/process/execution machine contracts
+## 8. DEV temporal/process/execution/information machine contracts
 
 ### 8.1 Temporal values / domain-owner state
 
@@ -161,7 +181,14 @@ Mandatory Step-2 rule: map every current chronology/process-adjacent field/behav
 | `DEV/SCHEMAS/execution-segment.schema.json` | `IMPLEMENTATION / MACHINE CONTRACT` | Committed accepted edge/event/child evidence; segment sequence is execution-domain order only. |
 | `DEV/SCHEMAS/procedure-state-changed-event.schema.json` | `IMPLEMENTATION / MACHINE CONTRACT` | Procedure transition causal evidence; before/after revision and event ordinal do not create fictional chronology outside owning semantics. |
 
-Step 2 must add any direct concrete schema/process consumer discovered by reference traversal/search rather than assuming this initial list is exhaustive.
+### 8.3 Knowledge / disclosure current machine surfaces — SR15-03
+
+| Source | Classification | Step-2 obligation |
+|---|---|---|
+| `DEV/CATALOG/entity-structures.json` | `IMPLEMENTATION / MACHINE CONTRACT` | Current `world.knowledge` field contract (`knower_id`, `fact_id`, `stance`, bounded source/change/confidence fields); machine contract only, not a second semantic owner. |
+| `DEV/CATALOG/identifier-policies.json` | `IMPLEMENTATION / MACHINE CONTRACT` | Current composite identities: `world.knowledge=(knower_id,fact_id)` and `runtime.disclosure=(player_id,fact_id)`; identity policy does not itself prove physical durable realization or semantic delivery/knowledge. |
+
+Step 2 must add any direct concrete schema/process/information consumer discovered by reference traversal/search rather than assuming this initial list is exhaustive. In particular it must discover any additional current realization/routing/storage/schema/test surfaces for `world.knowledge` and `runtime.disclosure`; it must not invent missing physical paths at Step 1.
 
 ---
 
@@ -216,9 +243,15 @@ initiative
 round
 turn
 time pressure
+known_by_pc_ids
+visibility.public
+world.knowledge
+runtime.disclosure
+runtime.message
+information eligibility
 ```
 
-Any directly relevant test or process/domain consumer/representation found becomes part of evidence accounting; existence never overrides canonical owners.
+Any directly relevant test or process/domain/information consumer/representation found becomes part of evidence accounting; existence never overrides canonical owners.
 
 ---
 
@@ -229,7 +262,10 @@ Step 2 must preserve these exact category boundaries while extracting evidence:
 | Thing | What it may own/mean | What it cannot own/mean |
 |---|---|---|
 | Native TemporalBinding owner | Obligation existence, occurrence generation/lifecycle, binding/settlement | Generic Agenda job, current world clock, accepted execution progress |
-| Process / `world.thread` representation | Owner-approved process state only where current architecture assigns it; may carry stage/progress/dependency/visibility data | Blanket ownership of every clock/deadline/temporal obligation, generic scheduler, chronology or execution authority |
+| Process / `world.thread` representation | Owner-approved process state only where current architecture assigns it; may carry stage/progress/dependency/visibility data | Blanket ownership of every clock/deadline/temporal obligation, generic scheduler, chronology, execution authority, second durable PC-knowledge owner or PLAYER-delivery authority |
+| `world.knowledge` | Durable subject-local fictional stance under Step 4 | PLAYER delivery, truth ownership, blanket information eligibility |
+| `runtime.disclosure` | Recipient-scoped durable PLAYER-delivery evidence under Step 5.12 | Fictional PC knowledge, truth ownership, information eligibility |
+| `thread.visibility.known_by_pc_ids` / `thread.visibility.public` | Current machine fields awaiting evidence-based disposition | Automatic PC knowledge, PLAYER delivery, eligibility, truth, or durable authority merely by presence/publicness/readability |
 | Agenda / candidate routing | Derived enrollment/recheck nomination; correctness-critical bounded discoverability where promised | Temporal obligation, DUE truth, firing execution, fictional order |
 | Chronology anchor/relation/provider evidence | Typed cause/order/metric-position/elapsed evidence | Current world state, scheduler, live/currentness, publication/durability authority |
 | Step-3 RuntimeCommand/Procedure/Resolution/Continuation | Accepted execution/process continuation, fixed RNG, idempotency | New native temporal source authority merely by consuming an occurrence |
@@ -248,6 +284,11 @@ If Senior GO later authorizes Step 2, run:
 fresh current ref / DEV/CURRENT_PROGRESS.md
 -> refresh open-world Source Manifest from DEV/PROJECT_MAP.md + actual searches
 -> extract Step-3 accepted execution / continuation / fixed-RNG laws
+-> extract Step-4 truth / world.knowledge / logical-eligibility laws relevant to thread visibility
+-> extract Step-5.12 PLAYER-delivery / runtime.disclosure / message-evidence laws relevant to thread visibility
+-> consume applicable closed WP-07 truth/knowledge/disclosure/message-evidence chain as upstream constraints
+-> inspect GAME/CORE/INFORMATION.md and current world.knowledge/runtime.disclosure machine contracts
+-> discover any additional actual world.knowledge/runtime.disclosure realization/routing/storage/schema/test surfaces
 -> extract Step-5.1 domain frontier typing and no cross-domain-order laws
 -> extract Step-5.3 native temporal owner / occurrence / materialization laws item-by-item
 -> extract Step-5.9 sparse chronology / domain-order / metric-provider / bridge / frontier / capability laws item-by-item
@@ -260,13 +301,14 @@ fresh current ref / DEV/CURRENT_PROGRESS.md
 -> consume WP-11/WP-12/WP-13/WP-14 realization constraints
 -> reverse-audit GAME/CORE/PROCESSES.md as the primary shipped process/threat/clock runtime
 -> field/behavior-map GAME/SCHEMA/thread.schema.yaml as current durable process representation
+-> explicitly disposition thread.visibility.known_by_pc_ids and thread.visibility.public against Step-4/Step-5.12/WP-07 evidence
 -> for every process/clock/deadline establish actual native owner + relation to TemporalBinding / chronology / Step-3 execution / derived Agenda
 -> inspect only temporal/process statements in ADVANCEMENT.md / EXPLORATION.md / COMBAT.md / ENCOUNTERS.md
 -> reverse-audit remaining current CORE temporal/frontier/process wording
 -> field/behavior-map GAME current/event/scene/live schemas/templates
 -> inspect DEV temporal/process/execution machine contracts including Continuation debt
 -> inspect recovery/publication/retention/visibility consequences for discovered process owners/representations
--> classify current tests and search for additional direct process/domain consumers/representations
+-> classify current tests and search for additional direct process/domain/information consumers/representations
 -> architecture -> machine accounting
 -> machine -> architecture accounting
 -> synthesis-completeness gate
@@ -289,6 +331,11 @@ Before synthesis may claim complete evidence, account explicitly for at least:
 - current `frontier` terms by semantic domain rather than English-name similarity;
 - `PROCESSES.md` threats/goals/projects/countdowns/investigations/pursuits and all stage/progress/conditions/deadline/resources/clock/off-screen/simulation-budget/duplicate-advancement behaviors;
 - `thread.schema.yaml` field-by-field process representation, event dependencies and visibility;
+- explicit evidence-based disposition of `thread.visibility.known_by_pc_ids` and `thread.visibility.public`, without selecting their final machine role before evidence;
+- proof that `world.thread` is not a second durable PC-knowledge owner;
+- proof that PC knowledge and PLAYER delivery remain separate and `runtime.disclosure` remains delivery evidence rather than fictional knowledge;
+- proof that `public`, physical readability and record existence do not independently establish PC knowledge, PLAYER delivery or information eligibility;
+- current `world.knowledge` / `runtime.disclosure` catalog/identity contracts plus any additional actual realization surfaces discovered open-world;
 - actual native owner for every represented process/clock/deadline, without blanket `world.thread` ownership;
 - TemporalBinding / chronology / Step-3 execution / Agenda relation for each temporal process obligation;
 - scoped temporal/process statements in advancement, exploration, combat and encounters without unrelated semantic reopening;
@@ -301,7 +348,7 @@ Before synthesis may claim complete evidence, account explicitly for at least:
 - stale/conforming tests;
 - downstream consumers/verification/performance obligations.
 
-The manifest remains open-world even after this checklist is met. Step 2 must actively discover additional process/domain consumers and representations rather than treating the repaired list as closed-world.
+The manifest remains open-world even after this checklist is met. Step 2 must actively discover additional process/domain/information consumers and representations rather than treating the repaired list as closed-world.
 
 ---
 
@@ -350,7 +397,15 @@ Separate Senior recovery `SR15-01..SR15-02` adds:
 - `SR15-01 BLOCKING` — mandatory `GAME/CORE/PROCESSES.md` + `GAME/SCHEMA/thread.schema.yaml` process-runtime/representation route, including actual native-owner proof and recovery/publication/retention implications;
 - `SR15-02 SIGNIFICANT` — direct scoped temporal/process consumer routes for `ADVANCEMENT.md`, `EXPLORATION.md`, `COMBAT.md` and `ENCOUNTERS.md`.
 
-Both Senior findings are mechanically closed by this repaired manifest and companion Task Brief; no human decision or upstream reopening is required.
+Both earlier Senior findings remain mechanically closed and their historical recovery artifact is unchanged.
+
+Separate Senior recovery `SR15-03` adds:
+
+- `SR15-03 SIGNIFICANT` — mandatory Step-4 / Step-5.12 / `GAME/CORE/INFORMATION.md` / current `world.knowledge` + `runtime.disclosure` machine-contract / closed WP-07 route for `thread.visibility.known_by_pc_ids` and `thread.visibility.public`;
+- explicit later Step-2 disposition of both fields without preselecting retained/derived/cache/hint/denormalized/retired machine shape;
+- binding no-parallel-knowledge-owner, knowledge-vs-delivery and public/readability/non-eligibility boundaries.
+
+`SR15-03` is mechanically closed by this repaired manifest and companion Task Brief; no human decision or upstream reopening is required.
 
 Final Step-1 manifest state:
 
@@ -358,6 +413,7 @@ Final Step-1 manifest state:
 SOURCE_MANIFEST_OPEN_WORLD:      YES
 SR15_01:                         CLOSED
 SR15_02:                         CLOSED
+SR15_03:                         CLOSED
 UNRESOLVED_BLOCKING:             0
 UNRESOLVED_SIGNIFICANT:          0
 HUMAN_DECISION_REQUIRED:         NO
