@@ -1,6 +1,6 @@
 # R2.7 WP-17 — Async Collaboration / Agency-Safe Progression — Open-World Source Manifest
 
-Status: **STEP-1 OPEN-WORLD SOURCE MANIFEST — REPAIRED AFTER WHOLE-PROJECT TASK-BRIEF CRITIC**
+Status: **STEP-1 OPEN-WORLD SOURCE MANIFEST — WHOLE-PROJECT CRITIC + SENIOR REPAIR SR17-01 APPLIED**
 
 Date: 2026-09-03
 
@@ -13,6 +13,10 @@ Task Brief:
 Mandatory critic:
 
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-task-brief-critic.md`
+
+Senior recovery:
+
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-step-1-senior-recovery-SR17-01.md`
 
 This manifest is an **open-world evidence-routing artifact**, not a closed source whitelist. It was constructed from current `DEV/PROJECT_MAP.md`, then expanded by following actual owners, machine surfaces and consumers reached from the WP-17 dependency graph. If later authorized Steps discover another material owner/consumer/counterexample, it must be added rather than excluded because it was absent here.
 
@@ -45,9 +49,16 @@ R2.5 collaboration semantics
     |       +-> Catalog Contracts independent-owner threshold
     |       +-> conditional collaboration catalog/root/identity surfaces
     |
-    +-> human contribution / agency
+    +-> human collaboration input / agency
     |       +-> WP-16 principal / PLAYER / control / authorization
     |       +-> Interaction / RuntimeCommand / Continuation / idempotency
+    |       +-> runtime.message accepted communication evidence
+    |       +-> exact input representation remains evidence/design question
+    |
+    +-> terminology / machine-surface collision check
+    |       +-> RULE_ELEMENT_MODEL Rule-Element Contribution semantics
+    |       +-> core-catalog existing value.contribution registration
+    |       +-> existing mechanical value.contribution != human collaboration input
     |
     +-> maximal safe frontier
     |       +-> current campaign/LIVE/native owner basis
@@ -101,7 +112,7 @@ This graph is intentionally not a generic dependency graph owner. It is evidence
 
 | Path | Class | Mandatory extraction |
 |---|---|---|
-| `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-canonical-spec.md` | `CANONICAL_OWNER` | Coordination families; positive material dependency; maximal safe frontier; scope-local waiting; absence rules; required/optional contributors; contribution purpose/scope/generation; obsolete generations; catch-up; no global active player; no timeout correctness; collaboration-owns-collection-only. |
+| `DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-canonical-spec.md` | `CANONICAL_OWNER` | Coordination families; positive material dependency; maximal safe frontier; scope-local waiting; absence rules; required/optional contributors; contribution purpose/scope/generation; obsolete generations; catch-up; no global active player; no timeout correctness; collaboration-owns-collection-only; LAW R2.5-18 requiring accepted Interaction/input identity references rather than transcript prose. |
 
 R2.5 is the primary product/semantic owner for WP-17. Step 2, if authorized, must realize it rather than redesign it by default.
 
@@ -113,36 +124,54 @@ R2.5 is the primary product/semantic owner for WP-17. Step 2, if authorized, mus
 | `DEV/ARCHITECTURE/ACCESS_CONTROL.md` | `CANONICAL_OWNER` | Current application authorization, membership/control/policy boundaries consumed by WP-16/WP-17. |
 | `DEV/ARCHITECTURE/BRANCH_MODEL.md` | `CANONICAL_OWNER` | Campaign/storage/live ref authority separation and campaign binding context. |
 
-### 4.3 Execution / native ordered responder / idempotency
+### 4.3 Execution / native ordered responder / input identity / idempotency
 
 | Path | Class | Mandatory extraction |
 |---|---|---|
-| `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md` | `CANONICAL_OWNER` | Interaction identity, RuntimeCommand idempotency, Procedure, Resolution, Continuation, Choice/Reaction routing, fixed RNG/event identity, no rollback/replay of accepted segments. |
+| `DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md` | `CANONICAL_OWNER` | Interaction identity, RuntimeCommand idempotency, Procedure, Resolution, Continuation, Choice/Reaction routing, fixed RNG/event identity, no rollback/replay of accepted segments; current input/evidence boundaries that human collaboration representation must compose with rather than bypass. |
 
-This source is necessary to prove when a collaboration owner is **not** admitted because a native ordered owner already owns waiting/resume semantics.
+This source is necessary to prove when a collaboration owner is **not** admitted because a native ordered owner already owns waiting/resume semantics, and to determine how an accepted human input identity can be referenced without inventing a second execution-input authority.
 
-### 4.4 Chronology / temporal-owner separation
+### 4.4 Existing mechanical `value.contribution` owner — mandatory collision route
+
+| Path | Class | Mandatory extraction |
+|---|---|---|
+| `DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md` | `CANONICAL_OWNER` | Existing Rule Element semantics: a Rule Element is a pure embedded mechanical value object and, when evaluated, returns a typed `value.contribution`; the deterministic selector resolver accepts/combines/suppresses/rejects those mechanical Contributions. |
+| `DEV/CATALOG/core-catalog.json` — `protocol_value_kinds` / `value.contribution` | `CURRENT_MACHINE_CONTRACT` | Confirms the existing protocol value kind is already registered. Its presence must be interpreted through `RULE_ELEMENT_MODEL.md`, not reassigned by terminology overlap. |
+
+Mandatory Step-2 separation:
+
+```text
+existing value.contribution
+    = Rule-Element mechanical calculation contribution
+    != human async collaboration input
+    != collaboration-obligation contribution lifecycle
+```
+
+Step 2, if authorized, must determine the exact representation of human collaboration input through the current Interaction/message/input owners and evidence. It must not automatically reuse `value.contribution`. This Step-1 repair does not invent a replacement protocol kind/name/schema.
+
+### 4.5 Chronology / temporal-owner separation
 
 | Path | Class | Mandatory extraction |
 |---|---|---|
 | `DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-15-temporal-owners-processes-chronology-canonical-spec.md` | `CANONICAL_OWNER` | Domain-typed chronology/currentness, temporal-owner separation, technical-order prohibition, occurrence/idempotency continuity. |
 | `DEV/docs/superpowers/specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-canonical-spec.md` | `CANONICAL_OWNER` | Sparse causal/order authority where exact WP-15 integration routes to Step 5.9 semantics. |
 
-### 4.5 Truth / knowledge / role-context / catch-up eligibility
+### 4.6 Truth / knowledge / role-context / catch-up eligibility
 
 | Path | Class | Mandatory extraction |
 |---|---|---|
 | `DEV/docs/superpowers/specs/2026-08-20-step-4-truth-knowledge-role-context-story-canonical-spec.md` | `CANONICAL_OWNER` | Truth/knowledge/role eligibility and physical-context nonauthority. |
 | `DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md` | `CANONICAL_OWNER` | Recipient/role-scoped bounded context assembly from current routed owners; no full preload/secret leakage. |
 
-### 4.6 Accepted communication and human disclosure
+### 4.7 Accepted communication and human disclosure
 
 | Path | Class | Mandatory extraction |
 |---|---|---|
-| `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md` | `CANONICAL_OWNER` | `runtime.message` as accepted communication evidence, visible chat nonauthority, selective exactness, message order not fiction. |
+| `DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md` | `CANONICAL_OWNER` | `runtime.message` as accepted communication evidence, visible chat nonauthority, selective exactness, message order not fiction; mandatory input to deciding the exact representation/evidence path for human collaboration input. |
 | `DEV/docs/superpowers/specs/2026-08-21-step-5-12-host-delivery-disclosure-boundary-canonical-spec.md` | `CANONICAL_OWNER` | Recipient/source/material reveal validation, `runtime.disclosure`, `EMISSION_COMMIT`, retry/interruption presentation semantics, no baseline outbox/ACK worker. |
 
-### 4.7 Durability / recovery / physical routing
+### 4.8 Durability / recovery / physical routing
 
 | Path | Class | Mandatory extraction |
 |---|---|---|
@@ -157,7 +186,7 @@ This source is necessary to prove when a collaboration owner is **not** admitted
 
 | Path / surface | Class | Current evidence and required disposition |
 |---|---|---|
-| `DEV/CATALOG/core-catalog.json` | `CURRENT_MACHINE_CONTRACT` | Contains conditional `runtime.collaboration_obligation` catalog surface; later audit must prove semantic admission/applicability rather than treat catalog presence as automatic activation. |
+| `DEV/CATALOG/core-catalog.json` | `CURRENT_MACHINE_CONTRACT` | Contains conditional `runtime.collaboration_obligation` and the already-existing `value.contribution` protocol value. The former requires later semantic admission; the latter is already owned by Rule Element mechanics and must not be repurposed as human collaboration input by terminology overlap. |
 | `DEV/CATALOG/catalog-admission-ledger.json` | `CURRENT_MACHINE_CONTRACT` | Admission/realization trace is audit support only; cannot override the actual domain owner or create runtime authority. |
 | `DEV/CATALOG/identifier-policies.json` | `CURRENT_MACHINE_CONTRACT` | Current campaign-scoped sequential policy exists for `runtime.collaboration_obligation`; later audit must reconcile it with the admitted lifecycle/currentness model. |
 | WP-11 `STATE/RUNTIME/COLLABORATION` conditional root | `CURRENT_MACHINE_CONTRACT` | Conditional physical route with no baseline index; physical slot does not prove per-case owner necessity. |
@@ -167,6 +196,8 @@ This source is necessary to prove when a collaboration owner is **not** admitted
 | `GAME/SCHEMA/live_scene.schema.yaml` | `CURRENT_MACHINE_CONTRACT` | LIVE packing/currentness neighbor; WP-16 forbids deriving collaboration/agency authority from LIVE presence. |
 
 The combination “conditional catalog/root/ID policy exists + dedicated runtime schema absent” is deliberately treated as **evidence to reconcile**, not as a contradiction and not as authorization to implement a schema in Step 1.
+
+The existing `value.contribution` surface is a separate negative-collision constraint: its existence proves there is already a mechanical Contribution vocabulary and therefore human async collaboration input representation must be established independently from the current Interaction/message/input evidence graph.
 
 ---
 
@@ -242,7 +273,7 @@ The Step-1 source graph intentionally did **not** inspect or activate:
 - HDM Lab/private research — no unresolved evidence question currently requires external/private research;
 - external web/research — current owning repository sources are sufficient to frame Step 1; no external factual decision is being made;
 - WP-18 planning/Story design corpus beyond boundary references — downstream and unauthorized;
-- unrelated rules/content catalogs — no current dependency from collaboration owner admission to their exact content;
+- unrelated rules/content catalogs — no current dependency from collaboration owner admission to their exact content; the Rule Element owner is included only because `value.contribution` creates a direct terminology/machine-surface collision;
 - repository history scans — current owning documents and exact verified branch state suffice for Step-1 framing;
 - `DO-NOT-CREATE` — neither used nor changed.
 
@@ -255,6 +286,8 @@ Omission is not a future exclusion. If a later authorized evidence pass reaches 
 | Step-1 question | Owning / mandatory sources |
 |---|---|
 | Does a collaboration owner exist for this case? | R2.5 + Step 3 + Catalog Contracts + core catalog + WP-11 conditional root |
+| What does existing `value.contribution` mean? | `RULE_ELEMENT_MODEL.md` + `core-catalog.json` `value.contribution` surface |
+| What represents human collaboration input? | R2.5 LAW R2.5-18 + Step 3 Interaction/input identity + Step-5.11 `runtime.message` evidence + current catalog/runtime consumers; exact representation remains open pending evidence |
 | Required vs optional contributors | R2.5 + WP-16 authorization/control |
 | Purpose/scope/generation binding | R2.5 + Step 3 Interaction/idempotency + WP-14 recovery |
 | Stale/late/duplicate responses | R2.5 + Step 3 + WP-13 + WP-14 |
@@ -280,9 +313,13 @@ If Senior review authorizes Step 2, evidence extraction must:
 3. add every newly discovered owner/consumer/counter-evidence source that can alter the decision;
 4. preserve negative findings, applicability limits, conditional triggers and supersession status item-by-item;
 5. prove the collaboration-owner admission threshold before designing representation;
-6. reverse-audit machine consumers rather than assuming current CORE/schema wording is canonical;
-7. route Story/planning questions to WP-18 unless a direct contradiction makes WP-17 impossible to close;
-8. stop at a human gate only for a real product-semantic/material trade-off after evidence is complete.
+6. read `DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md` together with the current `DEV/CATALOG/core-catalog.json` `value.contribution` surface and preserve their existing mechanical ownership;
+7. determine the exact human collaboration input representation from current Interaction/message/input owners and evidence rather than reusing `value.contribution` automatically;
+8. preserve R2.5 LAW R2.5-18 by storing/referencing accepted input identities rather than copying transcript prose into collaboration lifecycle state;
+9. avoid inventing a replacement protocol kind/name/schema until evidence and design actually require one;
+10. reverse-audit machine consumers rather than assuming current CORE/schema wording is canonical;
+11. route Story/planning questions to WP-18 unless a direct contradiction makes WP-17 impossible to close;
+12. stop at a human gate only for a real product-semantic/material trade-off after evidence is complete.
 
 ---
 
@@ -296,6 +333,10 @@ R2_5_PRIMARY_OWNER_PRESENT:                 YES
 WP16_AUTH_CURRENTNESS_PRESENT:              YES
 WP15_CHRONOLOGY_PRESENT:                    YES
 STEP3_NATIVE_ORDER_EXECUTION_PRESENT:       YES
+RULE_ELEMENT_VALUE_CONTRIBUTION_OWNER:      PRESENT
+VALUE_CONTRIBUTION_CATALOG_SURFACE:         PRESENT
+VALUE_CONTRIBUTION_COLLISION_DISAMBIGUATED: YES
+HUMAN_INPUT_REPRESENTATION:                 STEP-2 EVIDENCE/DESIGN QUESTION
 STEP4_R2_3_INFORMATION_CONTEXT_PRESENT:     YES
 STEP5_11_5_12_MESSAGE_DISCLOSURE_PRESENT:   YES
 WP11_WP13_WP14_MACHINE_RECOVERY_PRESENT:    YES

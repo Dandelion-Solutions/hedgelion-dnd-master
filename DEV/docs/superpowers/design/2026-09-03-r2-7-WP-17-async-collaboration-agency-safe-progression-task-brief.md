@@ -1,6 +1,6 @@
 # R2.7 WP-17 — Async Collaboration / Agency-Safe Progression — Architecture Task Brief
 
-Status: **STEP-1 TASK BRIEF — WHOLE-PROJECT CRITIC APPLIED / MANDATORY SENIOR REVIEW REQUIRED**
+Status: **STEP-1 TASK BRIEF + SENIOR REPAIR SR17-01 — MANDATORY SENIOR REVIEW REQUIRED**
 
 Date: 2026-09-03
 
@@ -16,7 +16,11 @@ Mandatory whole-project Task-Brief critic:
 
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-task-brief-critic.md`
 
-This is the repaired Step-1 framing after the mandatory whole-project critic. It authorizes no Step 2 work until Senior review explicitly grants GO.
+Senior recovery:
+
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-step-1-senior-recovery-SR17-01.md`
+
+This is the repaired Step-1 framing after the mandatory whole-project critic plus narrow Senior repair SR17-01. It authorizes no Step 2 work until Senior review explicitly grants GO.
 
 ---
 
@@ -28,9 +32,9 @@ The domain is not a generic messaging, queueing or scheduling subsystem. Its job
 
 The Step-1 question is:
 
-> What exact natural owner graph, admission threshold, generation/currentness rules, contribution identity and agency barriers must WP-17 inspect so that asynchronous multiplayer can wait only where material human agency is actually unresolved, progress every independent safe consequence, recover correctly across joins/rejoins/source movement, and never turn transport order, presence, message history, session state or a generic queue into gameplay authority?
+> What exact natural owner graph, admission threshold, generation/currentness rules, human-input identity and agency barriers must WP-17 inspect so that asynchronous multiplayer can wait only where material human agency is actually unresolved, progress every independent safe consequence, recover correctly across joins/rejoins/source movement, and never turn transport order, presence, message history, session state or a generic queue into gameplay authority?
 
-Step 1 establishes the evidence graph and mandatory audit questions. It does **not** choose exact schemas/APIs, implement a collaboration record, start WP-18 or begin implementation planning.
+Step 1 establishes the evidence graph and mandatory audit questions. It does **not** choose exact schemas/APIs, implement a collaboration record, choose a protocol kind for human collaboration input, start WP-18 or begin implementation planning.
 
 ---
 
@@ -42,18 +46,19 @@ WP-17 must cover, at minimum:
 2. exact natural owner, if one is needed, for durable/recoverable collaboration collection state;
 3. collaboration obligation/window/generation identity and currentness without a campaign-global collaboration frontier;
 4. required versus optional contributor enrollment and removal/supersession;
-5. purpose/scope/generation binding for every accepted contribution;
-6. accepted contribution identity and relation to `runtime.interaction` / current participant authority;
+5. purpose/scope/generation binding for every accepted human collaboration input;
+6. accepted human collaboration input identity and relation to current `runtime.interaction`, `runtime.message` and other admitted input owners/evidence;
 7. stale, late, duplicate, retry and successor-generation response behavior;
 8. maximal-safe-frontier progression and visible-consequence fencing;
 9. agency-safe behavior while a required participant is absent, delayed, inactive or rejoining;
-10. current principal -> PLAYER -> controlled-PC -> operation authorization where a contribution purports to exercise voluntary PC agency;
+10. current principal -> PLAYER -> controlled-PC -> operation authorization where an input purports to exercise voluntary PC agency;
 11. current campaign/LIVE/native owner and chronology basis required before deciding that a contribution opportunity still exists;
 12. join/rejoin admission and recipient catch-up through current authoritative routes;
 13. truth/knowledge/disclosure/message-evidence separation for waiting/catch-up/collaboration output;
 14. durability/publication/recovery behavior for any independently durable collaboration owner that Step 2 proves necessary;
 15. current CORE/catalog/identity/storage/schema/session/test consumers and negative evidence that constrain machine realization;
-16. explicit boundary to WP-18 Story/continuity/Dramaturg planning and later implementation/test/performance work.
+16. explicit collision check against existing mechanical `value.contribution` ownership before selecting any human collaboration input representation;
+17. explicit boundary to WP-18 Story/continuity/Dramaturg planning and later implementation/test/performance work.
 
 ---
 
@@ -93,7 +98,7 @@ bounded purpose + collaboration scope
 current source/currentness basis needed by that lifecycle
 minimal required contributor set
 optional contributor set
-accepted contribution references
+accepted human-input references to accepted input identities
 maximal-safe-frontier association where needed
 OPEN / CLOSED / RESOLVED / OBSOLETE-equivalent lifecycle
 supersession / obsolete reason where needed
@@ -112,15 +117,17 @@ It must not own or duplicate:
 - Story or Dramaturg planning;
 - a generic pending-work/job queue or scheduler.
 
+R2.5 LAW R2.5-18 remains binding: collaboration state references accepted Interaction/input identities rather than copying transcript prose or becoming a second message store.
+
 The current conditional catalog family, WP-11 conditional root and identifier policy are machine inventory to reconcile, not proof that a collaboration record must exist for every case.
 
 ---
 
 ## 4. Authority and currentness distinctions
 
-### 4.1 Contribution agency admission
+### 4.1 Human collaboration input agency admission
 
-A contribution that would exercise voluntary PC agency must pass the current WP-16 chain before it can be accepted for that purpose:
+A human collaboration input that would exercise voluntary PC agency must pass the current WP-16 chain before it can be accepted for that purpose:
 
 ```text
 trusted current external principal
@@ -150,7 +157,7 @@ PROCEDURE / CONTINUATION CURRENTNESS
     whether a native ordered owner now owns responder/resume semantics
 
 PLAYER / CONTROL / AUTHORIZATION CURRENTNESS
-    whether this principal may supply this typed contribution now
+    whether this principal may supply this human collaboration input now
 
 INTERACTION / MESSAGE EVIDENCE IDENTITY
     what accepted input/output evidence exists
@@ -163,27 +170,42 @@ No collaboration generation, message sequence, arrival timestamp, session cursor
 
 ### 4.3 Generation supersession
 
-A contribution addressed to an obsolete/superseded generation cannot silently mutate its successor. Step 2 must define bounded current-generation acquisition plus deterministic disposition such as current accept, duplicate/idempotent acknowledgement, explicit reinterpret/reconfirmation as new current input, obsolete/stale rejection or typed ambiguity requiring refresh.
+A human collaboration input addressed to an obsolete/superseded generation cannot silently mutate its successor. Step 2 must define bounded current-generation acquisition plus deterministic disposition such as current accept, duplicate/idempotent acknowledgement, explicit reinterpret/reconfirmation as new current input, obsolete/stale rejection or typed ambiguity requiring refresh.
 
 Generation supersession cannot rewrite already accepted fiction or cancel an already established native execution edge merely because a later response arrived.
 
 ---
 
-## 5. Contribution versus execution, evidence and chronology
+## 5. Human collaboration input versus execution, evidence and chronology
 
-### 5.1 Contribution collection does not establish gameplay consequence
+### 5.1 Existing mechanical `value.contribution` is not collaboration input
 
-Collaboration owns collection only. Accepted contribution references should normally anchor to accepted `runtime.interaction` identity/typed semantic contribution rather than copied transcript prose.
+Current architecture already owns the catalog protocol kind `value.contribution` for Rule Element mechanics. `DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md` defines a Rule Element as returning a typed `value.contribution` to a deterministic Calculation Selector resolver, and `DEV/CATALOG/core-catalog.json` registers that existing kind.
+
+The mandatory semantic separation is:
+
+```text
+existing value.contribution
+    = Rule-Element mechanical calculation contribution
+    != human async collaboration input
+    != collaboration-obligation contribution lifecycle
+```
+
+Therefore WP-17 SHALL NOT automatically reuse `value.contribution` as the representation of a human collaboration response merely because R2.5 uses the English word “contribution”.
+
+Collaboration owns collection only. Accepted human collaboration input references SHALL anchor to accepted Interaction/input identities under R2.5 LAW R2.5-18 rather than copied transcript prose. Step 2, if later authorized, must determine the exact representation of human collaboration input from the current Interaction/message/input owner graph and evidence, including Step-3 execution/input identity and Step-5.11 accepted-message evidence.
+
+Step 1 does not invent a replacement protocol kind, value kind, record kind, field name or schema for that input. Exact representation remains an evidence/design question for later authorized Steps.
 
 A collaboration record, if admitted, cannot by itself execute an Activity, mutate world state, close a Procedure, establish chronology or declare a player-visible fact true.
 
-Dependent consequence returns through the current Step-3/native execution owner after the required contribution condition is satisfied.
+Dependent consequence returns through the current Step-3/native execution owner after the required human-input condition is satisfied.
 
 ### 5.2 Duplicate, retry and late input
 
 Step 2 must preserve Step-3 identity rules:
 
-- transport retry of the same accepted Interaction is the same input identity, not a second contribution/action;
+- transport retry of the same accepted Interaction is the same input identity, not a second human collaboration input/action;
 - identical prose in a later intentional Interaction is new input and must pass current admission;
 - duplicate association cannot execute the same gameplay consequence twice;
 - stale/late input cannot replay a settled RuntimeCommand/ExecutionSegment;
@@ -195,7 +217,7 @@ Step 2 must preserve Step-3 identity rules:
 The audit must never use any of these as an implicit fictional winner/order:
 
 - host message arrival;
-- collaboration contribution append/order;
+- collaboration input append/order;
 - Git commit/ref/CAS order;
 - message/Interaction/record ID order;
 - session/catch-up order;
@@ -322,7 +344,7 @@ Mandatory questions include:
 3. how the owner participates in required durable source closure;
 4. how stale campaign/LIVE/native movement invalidates or obsoletes a generation without global scans;
 5. how recovery discovers an open independent collaboration root boundedly, if that lifecycle qualifies as a recovery root;
-6. how accepted contribution identities survive retry/recovery without duplicate use;
+6. how accepted input identities survive retry/recovery without duplicate use;
 7. how partial publication/currentness outcomes remain truthful without rollback of accepted native gameplay edges;
 8. how selected LIVE currentness composes where a collaboration dependency touches a live-owned scope without making LIVE the collaboration owner;
 9. how session/checkpoint/SQLite/cache survival remains non-authoritative;
@@ -337,7 +359,10 @@ No distributed transaction across collaboration/campaign/LIVE/message sources is
 Step 2 must reverse-audit at least:
 
 - conditional `runtime.collaboration_obligation` catalog admission;
-- current campaign-scoped identifier policy for that conditional family;
+- existing `value.contribution` catalog registration in `DEV/CATALOG/core-catalog.json`;
+- `DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md` as the semantic owner showing that existing `value.contribution` is the embedded Rule-Element mechanical calculation contribution returned to deterministic selector resolution;
+- the exact human collaboration input representation through current `runtime.interaction`, `runtime.message` and other admitted input owners/evidence, without automatically reusing `value.contribution`;
+- current campaign-scoped identifier policy for the conditional collaboration-obligation family;
 - WP-11 conditional `STATE/RUNTIME/COLLABORATION` root with no baseline index;
 - absence of a dedicated current collaboration schema in `GAME/SCHEMA/`;
 - `GAME/CORE/MULTIPLAYER.md` waiting/join/rejoin/absence/currentness behavior;
@@ -347,7 +372,7 @@ Step 2 must reverse-audit at least:
 - access-control, membership, live-scene, chronology, Context Runtime and Step-3 regression consumers;
 - lack of dedicated async-collaboration executable coverage as a downstream verification obligation rather than license to implement tests in WP-17 Step 1.
 
-The conditional catalog/root/identifier surfaces are evidence of an anticipated physical slot, not semantic proof that every collaboration case must instantiate a record. Conversely, absence of a current schema cannot be used to hide a proven independent durable lifecycle in chat/session state.
+The conditional catalog/root/identifier surfaces are evidence of an anticipated physical slot, not semantic proof that every collaboration case must instantiate a record. The existing mechanical `value.contribution` is a separate already-owned surface and is not evidence of a human-collaboration input representation. Conversely, absence of a current collaboration schema cannot be used to hide a proven independent durable lifecycle in chat/session state.
 
 ---
 
@@ -369,7 +394,7 @@ current input A
 -> prove bounded dependency on B
 -> establish maximal safe prefix
 -> admit/reuse current collaboration generation if required
--> collect current authorized B contribution
+-> collect current authorized B human input
 -> revalidate underlying current basis
 -> resolve dependent consequence once through native execution
 ```
@@ -409,6 +434,8 @@ principal/PLAYER/control/routing current
 WP-17 Step 1 does not:
 
 - implement `runtime.collaboration_obligation` schema/code;
+- create a new human collaboration input protocol kind/name/schema;
+- repurpose existing mechanical `value.contribution` as human async collaboration input;
 - create a generic collaboration queue/registry/scheduler/job system;
 - create a global active-player loop or round-robin turn owner;
 - use timeout/presence/heartbeat as correctness authority;
@@ -461,7 +488,8 @@ The audit must explicitly cover at least:
 - host interruption/Retry around collaboration status output;
 - partial durability/publication success across independent native domains;
 - attempted timeout/presence-based auto-close;
-- another participant attempts to speak/act voluntarily for an absent PC.
+- another participant attempts to speak/act voluntarily for an absent PC;
+- existing Rule-Element mechanical `value.contribution` is mistaken for human async collaboration input or collaboration-obligation lifecycle state.
 
 Ambiguity produces bounded refresh/revalidation/wait/block under the owning contract, not guessing, silent takeover, replay or global freeze.
 
@@ -473,9 +501,9 @@ Before a Decision Brief/candidate/canonical result, later WP-17 work must demons
 
 1. complete owner/admission graph for all three coordination families;
 2. explicit proof whether `runtime.collaboration_obligation` is required and for which exact lifecycle only;
-3. field/consumer disposition for obligation identity/generation/scope/purpose/contributors/contribution references/currentness;
+3. field/consumer disposition for obligation identity/generation/scope/purpose/contributors/accepted-input references/currentness;
 4. minimal required/optional contributor admission and removal rules;
-5. current principal/PLAYER/control/authorization proof for agency-bearing contributions;
+5. current principal/PLAYER/control/authorization proof for agency-bearing human input;
 6. stale/late/duplicate/retry semantics tied to Interaction/idempotency without gameplay replay;
 7. maximal-safe-frontier and visible-output fencing without transport chronology;
 8. bounded currentness composition across collaboration, campaign/LIVE/native owner and Procedure/Continuation domains;
@@ -483,9 +511,11 @@ Before a Decision Brief/candidate/canonical result, later WP-17 work must demons
 10. truth/knowledge/message/disclosure separation;
 11. durability/recovery behavior without session/checkpoint/cache authority or generic background scheduler;
 12. exact negative ownership proof preventing collaboration from becoming gameplay, chronology, authorization or planning authority;
-13. downstream executable coverage routed to WP-22;
-14. any measured scaling/latency/retention question routed to WP-24;
-15. stale CORE/schema/catalog/test wording routed to the appropriate later realization/cleanup domain rather than modified during Step 1.
+13. explicit separation of existing mechanical `value.contribution` from human async collaboration input and collaboration-obligation lifecycle;
+14. evidence-based selection of the exact human collaboration input representation through current Interaction/message/input owners without inventing or reusing a protocol kind by assumption;
+15. downstream executable coverage routed to WP-22;
+16. any measured scaling/latency/retention question routed to WP-24;
+17. stale CORE/schema/catalog/test wording routed to the appropriate later realization/cleanup domain rather than modified during Step 1.
 
 The Source Manifest remains open-world through Step 8 if Senior authorizes continuation.
 
@@ -497,6 +527,7 @@ The Source Manifest remains open-world through Step 8 if Senior authorizes conti
 TASK_BRIEF_PRESENT:                            YES
 OPEN_WORLD_SOURCE_MANIFEST_PRESENT:            YES
 WHOLE_PROJECT_TASK_BRIEF_CRITIC_PRESENT:       YES
+SENIOR_REPAIR_SR17_01_PRESENT:                 YES
 ALL_BLOCKING_FRAMING_FINDINGS_RESOLVED:        YES
 ALL_SIGNIFICANT_FRAMING_FINDINGS_RESOLVED:     YES
 COORDINATION_FAMILY_ADMISSION_EXPLICIT:         YES
@@ -509,6 +540,9 @@ ABSENCE_AGENCY_BOUNDARY_REQUIRED:               YES
 TRANSPORT_ORDER_NOT_CHRONOLOGY:                 YES
 JOIN_REJOIN_CATCHUP_ROUTE_REQUIRED:             YES
 KNOWLEDGE_DISCLOSURE_MESSAGE_SEPARATED:         YES
+VALUE_CONTRIBUTION_COLLISION_DISAMBIGUATED:     YES
+HUMAN_INPUT_REPRESENTATION_DEFERRED_TO_STEP2:   YES
+NEW_PROTOCOL_KIND_IN_STEP1:                     NO
 NO_GENERIC_QUEUE_SCHEDULER_ASSUMPTION:          YES
 WP18_BOUNDARY_EXPLICIT:                         YES
 UPSTREAM_REOPEN_REQUIRED:                       NO
@@ -535,7 +569,8 @@ These are obligations only. Step 1 activates none of them.
 ## 19. Step-1 gate
 
 ```text
-WP17_STEP_1:                 COMPLETE AFTER COHERENT PUBLICATION
+WP17_STEP_1:                 COMPLETE
+SENIOR_REPAIR_SR17_01:       CLOSED
 STEP_1_CRITIC_BLOCKING:      5
 STEP_1_CRITIC_SIGNIFICANT:   11
 UNRESOLVED_BLOCKING:         0
