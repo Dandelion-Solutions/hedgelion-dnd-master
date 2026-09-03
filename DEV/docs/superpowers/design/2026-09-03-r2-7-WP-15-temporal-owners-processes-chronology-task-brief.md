@@ -1,6 +1,6 @@
 # R2.7 WP-15 — Temporal Owners / Processes / Chronology — Architecture Task Brief
 
-Status: **STEP-1 TASK BRIEF / WHOLE-PROJECT CRITIC REPAIRS APPLIED — READY FOR MANDATORY SENIOR REVIEW**
+Status: **STEP-1 TASK BRIEF / WHOLE-PROJECT CRITIC + SENIOR REPAIR APPLIED — READY FOR MANDATORY SENIOR REVIEW**
 
 Date: 2026-09-03
 
@@ -13,6 +13,10 @@ Task-specific open-world Source Manifest:
 Mandatory whole-project Task-Brief critic:
 
 - `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-15-temporal-owners-processes-chronology-task-brief-critic.md`
+
+Post-critic Senior recovery:
+
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-15-senior-recovery-process-source-graph-omissions.md` (`SR15-01..SR15-02`)
 
 ---
 
@@ -222,6 +226,8 @@ Step 2 must map at least the following admitted families from owner law to curre
 
 Step 2 must add a discovered real family rather than force it into a generic scheduler owner.
 
+Critically, the presence of a `world.thread` / process record does **not** establish that `world.thread` owns every deadline, clock, advancement predicate or other temporal obligation represented near it. Step 2 must identify the real native owner for each process/clock/deadline and then map any relationship to `TemporalBinding`, chronology, Step-3 execution and derived Agenda.
+
 ---
 
 ## 7. Processes / off-screen change
@@ -247,6 +253,43 @@ Not permitted as baseline authority:
 - reconstructing process advancement from commit count or elapsed real time.
 
 A future autonomous/background progression product would require a separate architecture decision; Step 5.3 explicitly did not create it.
+
+### 7.1 Shipped process runtime and durable representation — mandatory Step-2 route
+
+Senior recovery `SR15-01` adds these mandatory current machine inputs:
+
+- `GAME/CORE/PROCESSES.md` — shipped process/threat/clock runtime contract;
+- `GAME/SCHEMA/thread.schema.yaml` — current durable `world.thread`-shaped process representation.
+
+Step 2 must reverse-audit, field/behavior by field/behavior:
+
+- process kinds: threat, goal, project, countdown, investigation, pursuit and custom;
+- process status, owner association, objective and affected entities;
+- stage/progress/next-development semantics;
+- advancement conditions and causal trigger requirements;
+- deadlines and resources;
+- segmented clocks and predefined meaning/completion semantics;
+- off-screen advancement and simulation-budget rules;
+- prohibition on continuously simulating dormant entities;
+- multiplayer prevention of advancing the same causal stage/elapsed interval twice;
+- `created_event_id` / `last_event_id` dependency semantics;
+- visibility (`known_by_pc_ids`, public) and information-eligibility interaction;
+- recovery/currentness/rebuild behavior;
+- publication/durability closure;
+- retention/GC/protected-consumer implications.
+
+For each represented process/clock/deadline, Step 2 must establish one actual native owner and an explicit relation to any temporal/chronology/execution/Agenda machinery. `PROCESSES.md` and `thread.schema.yaml` are machine evidence; neither is promoted to universal temporal authority by this repair.
+
+### 7.2 Direct temporal/process CORE consumers — scoped only
+
+Senior recovery `SR15-02` adds these direct current consumers:
+
+- `GAME/CORE/ADVANCEMENT.md` — rest/downtime/long projects and in-world time/resource cost;
+- `GAME/CORE/EXPLORATION.md` — elapsed/travel time and causally driven off-screen processes;
+- `GAME/CORE/COMBAT.md` — Procedure-local initiative/round/turn/active-participant/local-time ownership;
+- `GAME/CORE/ENCOUNTERS.md` — time pressure and active-process consequences.
+
+Step 2 inspects only their temporal/process statements. It must not reopen unrelated advancement, exploration, combat or encounter semantics.
 
 ---
 
@@ -295,7 +338,7 @@ No generic durable DUE flag is required.
 
 Existing machine material is evidence, not accepted architecture by inertia.
 
-### 9.1 CORE chronology/runtime/live prose
+### 9.1 CORE chronology/runtime/live/process prose
 
 Mandatory targets:
 
@@ -308,6 +351,18 @@ Mandatory targets:
   - OOC and maintenance do not advance fiction;
   - world changes require causes;
   - stale durability-timer/frontier wording must remain durability-only and cannot imply fictional time.
+- `GAME/CORE/PROCESSES.md`:
+  - threats/goals/projects/countdowns/investigations/pursuits;
+  - stage/progress/advancement conditions/deadlines/resources;
+  - clocks and off-screen advancement;
+  - causal advancement and simulation budget;
+  - multiplayer duplicate-advancement prevention;
+  - event dependencies and visibility;
+  - no assumption that process abstraction itself owns all temporal obligations.
+- `GAME/CORE/ADVANCEMENT.md` — only rest/downtime/long-project temporal/process statements.
+- `GAME/CORE/EXPLORATION.md` — only elapsed/travel-time and off-screen-process statements.
+- `GAME/CORE/COMBAT.md` — only Procedure-local initiative/round/turn/local-time ownership and elapsed-time consequences.
+- `GAME/CORE/ENCOUNTERS.md` — only time-pressure/process-consequence statements.
 - `GAME/CORE/MULTIPLAYER.md`:
   - Git/commit winner does not win simultaneous fiction;
   - local/global chronology-frontier wording requires Step-5.9 reconciliation.
@@ -322,7 +377,7 @@ Mandatory targets:
 - `GAME/CORE/STORAGE.md`:
   - storage/durable frontier and timestamps remain technical and cannot leak into fictional chronology.
 
-### 9.2 GAME chronology/current/live fields
+### 9.2 GAME chronology/current/live/process fields
 
 Step 2 must field/behavior-map at least:
 
@@ -353,6 +408,14 @@ GAME/SCHEMA/live_scene.schema.yaml
     observable_events[].live_event_id
     observable_events[].world_time
     status/base/currentness fields
+
+GAME/SCHEMA/thread.schema.yaml
+    id / status / kind / owner_entity_id / objective
+    state.stage / state.progress / state.next_development
+    state.advancement_conditions / state.deadline / state.resources
+    affected_entity_ids
+    visibility.known_by_pc_ids / visibility.public
+    created_event_id / last_event_id
 ```
 
 Required inherited dispositions include:
@@ -363,7 +426,8 @@ Required inherited dispositions include:
 - `world_order.sequence` is not a campaign-global fictional counter;
 - `after_event_ids` may encode a clearly owner-defined local order domain, not untyped universal precedence;
 - `caused_by_event_ids` is causal ancestry, not calendar order;
-- live revision/HEAD/currentness fields are not chronology.
+- live revision/HEAD/currentness fields are not chronology;
+- `thread` process fields are durable machine representation only to the authority actually assigned by owning architecture; deadline/clock/event fields do not automatically grant `world.thread` temporal or chronology ownership.
 
 ### 9.3 DEV temporal/process/execution contracts
 
@@ -394,7 +458,7 @@ Known debt requiring explicit Step-2 disposition includes current Continuation `
 - cases preserving independent scenes, Git-order non-authority, contested simultaneity, contradiction handling and boundedness are useful;
 - current C12/C13 preserve stale singleton/global frontier expectations and require later repair under final WP-15 architecture.
 
-Step 2 must search the repository for additional direct tests/consumers rather than treating this as a closed list.
+Step 2 must search the repository for additional direct tests/consumers rather than treating this as a closed list. Senior repair additionally requires open-world discovery of process/domain consumers and representations reached from `PROCESSES.md`, `world.thread`, process fields, clocks/deadlines, rest/downtime/travel/combat/encounter statements and their recovery/publication/retention dependencies.
 
 ---
 
@@ -409,23 +473,25 @@ If later authorized, WP-15 must answer at implementation-facing precision:
 5. How does one temporal owner evaluate `NOT_DUE | DUE | INDETERMINATE` from lawful chronology/provider evidence?
 6. How are metric contexts/providers selected and transferred/rebased across scene/process movement?
 7. How do Effect/resource/LifeState/Procedure/rest/off-screen process owners map to current schemas and routes?
-8. How do event/signal/boundary followups cross from transient evidence into accepted Step-3 execution without a generic job queue?
-9. How is one occurrence materialized exactly once even across crash/retry/live conflict?
-10. How do accepted fixed RNG/children/Continuation/process state prevent duplicate consequences?
-11. What chronology anchor/relation representation is required for current admitted consumers and what remains embedded?
-12. How are late-established chronology relations given stable identity/bounded discovery without rewriting old events?
-13. What exact semantics replace current singleton/global chronology frontier fields?
-14. How does `ActiveExtensionFrontier(S)` admit multiple unordered maxima, safe retirement and singleton optimization?
-15. Which current chronology fields remain semantic evidence, presentation only, derivative, stale or retired?
-16. How do split/independent scenes remain incomparable until a concrete material bridge is needed?
-17. How are global/shared processes represented without forcing one campaign-global mutable now?
-18. How do live source currentness/revision/close/absorption compose with stable chronology anchors and relations?
-19. How does recovery restore temporal owners/Agenda/provider evidence without advancing time or rematerializing accepted work?
-20. Which chronology/temporal evidence is protected for live consumers and when may derivative/source evidence compact?
-21. What chronology contradictions are integrity defects versus legitimate INDETERMINATE/incomparability?
-22. How is the forward-extensible temporal capability boundary enforced before unsupported mutable-past/branching writes?
-23. What current tests are conforming/stale/missing?
-24. What boundedness/performance requirements must future implementation verify before any optimization?
+8. For every shipped process/clock/deadline in `PROCESSES.md` / `thread.schema.yaml`, what is the actual native owner and what is only durable process representation?
+9. How do process stage/progress/conditions/deadline/resources and created/last-event dependencies compose with TemporalBinding/chronology without becoming a generic scheduler or chronology owner?
+10. How do event/signal/boundary followups cross from transient evidence into accepted Step-3 execution without a generic job queue?
+11. How is one occurrence materialized exactly once even across crash/retry/live conflict?
+12. How do accepted fixed RNG/children/Continuation/process state prevent duplicate consequences?
+13. What chronology anchor/relation representation is required for current admitted consumers and what remains embedded?
+14. How are late-established chronology relations given stable identity/bounded discovery without rewriting old events?
+15. What exact semantics replace current singleton/global chronology frontier fields?
+16. How does `ActiveExtensionFrontier(S)` admit multiple unordered maxima, safe retirement and singleton optimization?
+17. Which current chronology fields remain semantic evidence, presentation only, derivative, stale or retired?
+18. How do split/independent scenes remain incomparable until a concrete material bridge is needed?
+19. How are global/shared processes represented without forcing one campaign-global mutable now or duplicate multiplayer advancement?
+20. How do live source currentness/revision/close/absorption compose with stable chronology anchors and relations?
+21. How does recovery restore temporal/process owners/Agenda/provider evidence without advancing time or rematerializing accepted work?
+22. Which chronology/temporal/process evidence is protected for live/recovery consumers and when may derivative/source evidence compact?
+23. What chronology contradictions are integrity defects versus legitimate INDETERMINATE/incomparability?
+24. How is the forward-extensible temporal capability boundary enforced before unsupported mutable-past/branching writes?
+25. What current tests are conforming/stale/missing?
+26. What boundedness/performance requirements must future implementation verify before any optimization?
 
 ---
 
@@ -444,6 +510,8 @@ WP-15 does **not** authorize:
 - automatic total ordering of independent scenes;
 - mutable-past/branching/causal-loop baseline architecture;
 - using Git/ref/live CAS/storage/session/message/ID order as fictional order;
+- treating `world.thread`/process representation as blanket owner for every temporal obligation;
+- reopening unrelated advancement/exploration/combat/encounter mechanics merely because their CORE modules contain temporal statements;
 - starting WP-16;
 - implementation planning;
 - runtime/schema/template/catalog/test implementation during Step 1.
@@ -493,7 +561,9 @@ Rationale
 
 Synthesis is blocked until architecture→machine and machine→architecture accounting covers every material current temporal owner/consumer/frontier/time/process surface in the active dependency subgraph.
 
-The initial Source Manifest is not a closed world.
+The initial Source Manifest is not a closed world. Step 2 must explicitly discover further process/domain consumers and representations, not merely the files enumerated in Step 1.
+
+The repaired mandatory evidence perimeter includes `GAME/CORE/PROCESSES.md`, `GAME/SCHEMA/thread.schema.yaml`, and the scoped temporal/process statements in `ADVANCEMENT.md`, `EXPLORATION.md`, `COMBAT.md` and `ENCOUNTERS.md`, together with their recovery/publication/retention implications.
 
 ---
 
@@ -503,8 +573,8 @@ Preserve without activation:
 
 - **WP-16:** live physical realization must keep currentness/CAS separate from fiction and preserve chronology identity/evidence across authority transfer;
 - **WP-18:** Dramaturg temporal capability guard;
-- **WP-22:** executable conformance/failure/adversarial coverage including stale chronology-case repair;
-- **WP-24:** measured bounded Agenda/chronology/reconciliation performance before optimization;
+- **WP-22:** executable conformance/failure/adversarial coverage including stale chronology-case repair and process/clock/deadline ownership/non-duplication cases;
+- **WP-24:** measured bounded Agenda/chronology/process/reconciliation performance before optimization;
 - **WP-26:** stale documentation/schema/test consistency routes owned there by the eventual final package.
 
 No downstream route authorizes work now.
@@ -533,7 +603,7 @@ C12 SIGNIFICANT downstream verification/performance/consumer routes incomplete
 
 All C01-C12 are mechanically repaired in this Task Brief and its Source Manifest.
 
-Final Step-1 critic disposition:
+Final historical Step-1 critic disposition remains:
 
 ```text
 STEP_1_CRITIC_BLOCKING:     3
@@ -544,15 +614,37 @@ HUMAN_DECISION_REQUIRED:    NO
 UPSTREAM_REOPEN_REQUIRED:   NO
 ```
 
-No human-owned decision is required at Step 1.
+The historical critic is not rewritten by later Senior findings.
+
+### 15.1 Post-critic Senior recovery — SR15-01 / SR15-02
+
+Separate recovery artifact:
+
+- `DEV/docs/superpowers/design/2026-09-03-r2-7-WP-15-senior-recovery-process-source-graph-omissions.md`
+
+```text
+SR15-01  BLOCKING     shipped PROCESSES runtime + thread durable representation omitted
+SR15-02  SIGNIFICANT  direct ADVANCEMENT/EXPLORATION/COMBAT/ENCOUNTERS temporal consumers omitted
+
+SR15-01: CLOSED BY SENIOR REPAIR
+SR15-02: CLOSED BY SENIOR REPAIR
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+UPSTREAM_REOPEN_REQUIRED: NO
+```
+
+These repairs extend only the mandatory Step-2 evidence perimeter. They do not choose final process ownership/schema semantics and do not authorize Step 2.
 
 ---
 
 ## 16. Step-1 closure gate
 
 ```text
-WP15_STEP1_PACKAGE:          COMPLETE AFTER CURSOR/REMOTE VERIFICATION
+WP15_STEP1_PACKAGE:          STEP 1 + SENIOR REPAIR COMPLETE
 SOURCE_MANIFEST_OPEN_WORLD:  YES
+SR15_01:                     CLOSED
+SR15_02:                     CLOSED
 UNRESOLVED_BLOCKING:         0
 UNRESOLVED_SIGNIFICANT:      0
 HUMAN_DECISION_REQUIRED:     NO
