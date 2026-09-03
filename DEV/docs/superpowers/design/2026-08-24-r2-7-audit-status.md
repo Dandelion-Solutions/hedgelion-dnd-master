@@ -176,7 +176,7 @@ No implementation planning is authorized.
 
 ```text
 WP15_FINAL_SHA: 4af683bbe94c9c115c5cee8f1be94562e97d17c1
-WP16_STEP1_START_SHA: b4f3242e36fa4863a20483ce1efb7ec8d70fbef0
+WP16_STEP1_AUTHORIZATION_SHA: b4f3242e36fa4863a20483ce1efb7ec8d70fbef0
 
 CURRENT_VERIFICATION_STATE: WP-15 final Senior audit PASS; WP-16 Step 1 authorized; no WP-16 architecture work performed by this cursor transition.
 NEXT_EXACT_TASK_OR_SLICE: WP-16 Step 1 Task Brief + open-world Source Manifest + mandatory whole-project Task-Brief critic, then mandatory Senior review.
