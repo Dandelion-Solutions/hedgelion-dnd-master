@@ -2,6 +2,7 @@
 import hashlib, json, re, sys
 from pathlib import Path
 from DEV.TOOLS.validate_ruleset_package_closure import build_resolved_lock
+from DEV.TOOLS.catalog_admission import load_catalog_admission_ledger
 
 POLICY_BASIS_REF=re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*@[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 MACHINE_ID=re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
@@ -110,7 +111,7 @@ def fact_rows(root):
 def validate_failures(root):
     registered=set(load(root,"DEV/CATALOG/core-catalog.json")["registries"]["execution_failure_codes"])
     if not POLICY_FAILURES<=registered: raise ValueError(f"unregistered policy failure codes: {sorted(POLICY_FAILURES-registered)}")
-    admitted={r["id"] for r in load(root,"DEV/CATALOG/catalog-admission-ledger.json")["entries"] if r.get("registry_family")=="execution_failure_codes" and r.get("admission_disposition")=="ACTIVE_ADMITTED"}
+    admitted={r["id"] for r in load_catalog_admission_ledger(root)["entries"] if r.get("registry_family")=="execution_failure_codes" and r.get("admission_disposition")=="ACTIVE_ADMITTED"}
     if not POLICY_FAILURES<=admitted: raise ValueError(f"unadmitted policy failure codes: {sorted(POLICY_FAILURES-admitted)}")
 
 def validate(root):

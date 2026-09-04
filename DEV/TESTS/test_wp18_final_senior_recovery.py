@@ -1,10 +1,13 @@
 import json
+import sys
 import unittest
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LEDGER_PATH = REPO_ROOT / "DEV" / "CATALOG" / "catalog-admission-ledger.json"
+sys.path.insert(0, str(REPO_ROOT / "DEV" / "TOOLS"))
+from catalog_admission import load_catalog_admission_ledger  # noqa: E402
+
 CORE_CATALOG_PATH = REPO_ROOT / "DEV" / "CATALOG" / "core-catalog.json"
 
 OWNER_CHAIN = (
@@ -20,7 +23,7 @@ PLANNING_IDS = [
 class WP18FinalSeniorRecoveryTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.ledger = json.loads(LEDGER_PATH.read_text(encoding="utf-8"))
+        cls.ledger = load_catalog_admission_ledger(REPO_ROOT)
         cls.core_catalog = json.loads(CORE_CATALOG_PATH.read_text(encoding="utf-8"))
 
     def test_planning_entry_class_vocabulary_is_unchanged(self):

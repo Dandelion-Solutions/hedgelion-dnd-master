@@ -1,0 +1,78 @@
+{
+  "registry_family": "effect_terminal_reasons",
+  "registry_census": {
+    "registry_family": "effect_terminal_reasons",
+    "count": 4,
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admitted": 4,
+    "embedded_nonowner": 0,
+    "dormant_nonselectable": 0,
+    "stale_remove": 0
+  },
+  "family_policy": {
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admission_disposition": "ACTIVE_ADMITTED",
+    "admission_evidence": "ACCEPTED_ENGINE_VOCABULARY_PLUS_CROSS_SURFACE_CONSISTENCY",
+    "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+    "machine_destination_family": "DEV/CATALOG/core-catalog.json#/registries/effect_terminal_reasons",
+    "consumer_or_dependency": "owning catalog/schema/runtime contract",
+    "identity_namespace_owner": "N/A Р Р†Р вЂљРІР‚Сњ closed engine vocabulary or non-package identity",
+    "default_realization_state": "COMPLETE",
+    "default_downstream_owner": null,
+    "notes": "Admission and registry-level realization are complete for S6D-02."
+  },
+  "entries": [
+    {
+      "registry_family": "effect_terminal_reasons",
+      "id": "effect_end.expired",
+      "profile": "effect_terminal_reasons",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: effect_end.expired",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: effect_end.expired"
+    },
+    {
+      "registry_family": "effect_terminal_reasons",
+      "id": "effect_end.removed",
+      "profile": "effect_terminal_reasons",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: effect_end.removed",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: effect_end.removed"
+    },
+    {
+      "registry_family": "effect_terminal_reasons",
+      "id": "effect_end.replaced",
+      "profile": "effect_terminal_reasons",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: effect_end.replaced",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: effect_end.replaced"
+    },
+    {
+      "registry_family": "effect_terminal_reasons",
+      "id": "effect_end.support_lost",
+      "profile": "effect_terminal_reasons",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: effect_end.support_lost",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: effect_end.support_lost"
+    }
+  ]
+}

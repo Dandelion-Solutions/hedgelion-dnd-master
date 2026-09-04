@@ -1,0 +1,78 @@
+{
+  "registry_family": "duration_modes",
+  "registry_census": {
+    "registry_family": "duration_modes",
+    "count": 4,
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admitted": 4,
+    "embedded_nonowner": 0,
+    "dormant_nonselectable": 0,
+    "stale_remove": 0
+  },
+  "family_policy": {
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admission_disposition": "ACTIVE_ADMITTED",
+    "admission_evidence": "ACCEPTED_ENGINE_VOCABULARY_PLUS_CROSS_SURFACE_CONSISTENCY",
+    "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+    "machine_destination_family": "DEV/CATALOG/core-catalog.json#/registries/duration_modes",
+    "consumer_or_dependency": "owning catalog/schema/runtime contract",
+    "identity_namespace_owner": "N/A Р Р†Р вЂљРІР‚Сњ closed engine vocabulary or non-package identity",
+    "default_realization_state": "COMPLETE",
+    "default_downstream_owner": null,
+    "notes": "Admission and registry-level realization are complete for S6D-02."
+  },
+  "entries": [
+    {
+      "registry_family": "duration_modes",
+      "id": "duration.instant",
+      "profile": "duration_modes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: duration.instant",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: duration.instant"
+    },
+    {
+      "registry_family": "duration_modes",
+      "id": "duration.metric",
+      "profile": "duration_modes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: duration.metric",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: duration.metric"
+    },
+    {
+      "registry_family": "duration_modes",
+      "id": "duration.boundary",
+      "profile": "duration_modes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: duration.boundary",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: duration.boundary"
+    },
+    {
+      "registry_family": "duration_modes",
+      "id": "duration.permanent",
+      "profile": "duration_modes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: duration.permanent",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: duration.permanent"
+    }
+  ]
+}

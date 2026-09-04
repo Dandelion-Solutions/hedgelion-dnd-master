@@ -1,0 +1,143 @@
+{
+  "registry_family": "organization_facets",
+  "registry_census": {
+    "registry_family": "organization_facets",
+    "count": 9,
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admitted": 9,
+    "embedded_nonowner": 0,
+    "dormant_nonselectable": 0,
+    "stale_remove": 0
+  },
+  "family_policy": {
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admission_disposition": "ACTIVE_ADMITTED",
+    "admission_evidence": "ACCEPTED_ENGINE_VOCABULARY_PLUS_CROSS_SURFACE_CONSISTENCY",
+    "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+    "machine_destination_family": "DEV/CATALOG/core-catalog.json#/registries/organization_facets",
+    "consumer_or_dependency": "owning catalog/schema/runtime contract",
+    "identity_namespace_owner": "N/A Р Р†Р вЂљРІР‚Сњ closed engine vocabulary or non-package identity",
+    "default_realization_state": "COMPLETE",
+    "default_downstream_owner": null,
+    "notes": "Admission and registry-level realization are complete for S6D-02."
+  },
+  "entries": [
+    {
+      "registry_family": "organization_facets",
+      "id": "organization.faction",
+      "profile": "organization_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: organization.faction",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: organization.faction"
+    },
+    {
+      "registry_family": "organization_facets",
+      "id": "organization.government",
+      "profile": "organization_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: organization.government",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: organization.government"
+    },
+    {
+      "registry_family": "organization_facets",
+      "id": "organization.guild",
+      "profile": "organization_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: organization.guild",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: organization.guild"
+    },
+    {
+      "registry_family": "organization_facets",
+      "id": "organization.religious",
+      "profile": "organization_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: organization.religious",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: organization.religious"
+    },
+    {
+      "registry_family": "organization_facets",
+      "id": "organization.military",
+      "profile": "organization_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: organization.military",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: organization.military"
+    },
+    {
+      "registry_family": "organization_facets",
+      "id": "organization.business",
+      "profile": "organization_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: organization.business",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: organization.business"
+    },
+    {
+      "registry_family": "organization_facets",
+      "id": "organization.criminal",
+      "profile": "organization_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: organization.criminal",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: organization.criminal"
+    },
+    {
+      "registry_family": "organization_facets",
+      "id": "organization.family",
+      "profile": "organization_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: organization.family",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: organization.family"
+    },
+    {
+      "registry_family": "organization_facets",
+      "id": "organization.community",
+      "profile": "organization_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: organization.community",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: organization.community"
+    }
+  ]
+}

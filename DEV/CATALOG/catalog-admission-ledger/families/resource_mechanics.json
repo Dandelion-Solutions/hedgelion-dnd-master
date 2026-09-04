@@ -1,0 +1,130 @@
+{
+  "registry_family": "resource_mechanics",
+  "registry_census": {
+    "registry_family": "resource_mechanics",
+    "count": 8,
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admitted": 8,
+    "embedded_nonowner": 0,
+    "dormant_nonselectable": 0,
+    "stale_remove": 0
+  },
+  "family_policy": {
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admission_disposition": "ACTIVE_ADMITTED",
+    "admission_evidence": "ACCEPTED_ENGINE_VOCABULARY_PLUS_CROSS_SURFACE_CONSISTENCY",
+    "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+    "machine_destination_family": "DEV/CATALOG/core-catalog.json#/registries/resource_mechanics",
+    "consumer_or_dependency": "owning catalog/schema/runtime contract",
+    "identity_namespace_owner": "N/A Р Р†Р вЂљРІР‚Сњ closed engine vocabulary or non-package identity",
+    "default_realization_state": "COMPLETE",
+    "default_downstream_owner": null,
+    "notes": "Admission and registry-level realization are complete for S6D-02."
+  },
+  "entries": [
+    {
+      "registry_family": "resource_mechanics",
+      "id": "resource.die_pool",
+      "profile": "resource_mechanics",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: resource.die_pool",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: resource.die_pool"
+    },
+    {
+      "registry_family": "resource_mechanics",
+      "id": "resource.tiered_pool",
+      "profile": "resource_mechanics",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: resource.tiered_pool",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: resource.tiered_pool"
+    },
+    {
+      "registry_family": "resource_mechanics",
+      "id": "resource.bounded_pool",
+      "profile": "resource_mechanics",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: resource.bounded_pool",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: resource.bounded_pool"
+    },
+    {
+      "registry_family": "resource_mechanics",
+      "id": "resource.binary",
+      "profile": "resource_mechanics",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: resource.binary",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: resource.binary"
+    },
+    {
+      "registry_family": "resource_mechanics",
+      "id": "resource.cooldown",
+      "profile": "resource_mechanics",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: resource.cooldown",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: resource.cooldown"
+    },
+    {
+      "registry_family": "resource_mechanics",
+      "id": "resource.action_budget",
+      "profile": "resource_mechanics",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: resource.action_budget",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: resource.action_budget"
+    },
+    {
+      "registry_family": "resource_mechanics",
+      "id": "resource.movement_budget",
+      "profile": "resource_mechanics",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: resource.movement_budget",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: resource.movement_budget"
+    },
+    {
+      "registry_family": "resource_mechanics",
+      "id": "resource.currency_balance",
+      "profile": "resource_mechanics",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: resource.currency_balance",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: resource.currency_balance"
+    }
+  ]
+}

@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.com/schemas/catalog-admission-ledger-family.schema.json",
+  "title": "HDM Catalog Admission Ledger — Physical Family Shard",
+  "$comment": "Physical-representation shape of one DEV/CATALOG/catalog-admission-ledger/families/<registry_family>.json shard: exactly one registry family's census row, family policy and entries, held together as one semantic unit. This schema checks per-shard structural shape only. The cross-field admission/realization business rules (the allOf conditionals in catalog-admission-ledger.schema.json) are enforced once, on the assembled logical ledger, by DEV/TOOLS/catalog_admission.py plus catalog-admission-ledger.schema.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "registry_family",
+    "registry_census",
+    "family_policy",
+    "entries"
+  ],
+  "properties": {
+    "registry_family": {
+      "type": "string",
+      "minLength": 1
+    },
+    "registry_census": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_family",
+        "count",
+        "scope_stratum",
+        "admitted",
+        "embedded_nonowner",
+        "dormant_nonselectable",
+        "stale_remove"
+      ],
+      "properties": {
+        "registry_family": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scope_stratum": {
+          "enum": [
+            "S6D_PRIMARY",
+            "ENGINE_ENUM_CONSISTENCY",
+            "INHERITED_ROUND2",
+            "MIXED_S6D_PRIMARY_AND_INHERITED_ROUND2"
+          ]
+        },
+        "admitted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "embedded_nonowner": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dormant_nonselectable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stale_remove": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "family_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_stratum",
+        "admission_disposition",
+        "admission_evidence",
+        "semantic_owner",
+        "machine_destination_family",
+        "consumer_or_dependency",
+        "identity_namespace_owner",
+        "default_realization_state",
+        "default_downstream_owner",
+        "notes"
+      ],
+      "properties": {
+        "scope_stratum": {
+          "enum": [
+            "S6D_PRIMARY",
+            "ENGINE_ENUM_CONSISTENCY",
+            "INHERITED_ROUND2"
+          ]
+        },
+        "admission_disposition": {
+          "enum": [
+            "ACTIVE_ADMITTED",
+            "EMBEDDED_NONOWNER",
+            "DORMANT_NONSELECTABLE",
+            "STALE_REMOVE"
+          ]
+        },
+        "admission_evidence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "semantic_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "machine_destination_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "consumer_or_dependency": {
+          "type": "string",
+          "minLength": 1
+        },
+        "identity_namespace_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "default_realization_state": {
+          "enum": [
+            "COMPLETE",
+            "INHERITED_ACTIVE",
+            "DOWNSTREAM_S6D_03",
+            "DOWNSTREAM_S6D_04",
+            "DOWNSTREAM_S6D_05",
+            "DOWNSTREAM_S6D_06",
+            "DOWNSTREAM_S6D_07",
+            "DOWNSTREAM_S6D_08",
+            "DOWNSTREAM_S6D_09"
+          ]
+        },
+        "default_downstream_owner": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "registry_family",
+          "id",
+          "profile",
+          "scope_stratum",
+          "admission_disposition",
+          "evidence_class",
+          "evidence_citation",
+          "semantic_owner",
+          "consumer_or_dependency",
+          "realization_state",
+          "downstream_owner"
+        ],
+        "properties": {
+          "registry_family": {
+            "type": "string",
+            "minLength": 1
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "profile": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope_stratum": {
+            "enum": [
+              "S6D_PRIMARY",
+              "ENGINE_ENUM_CONSISTENCY",
+              "INHERITED_ROUND2"
+            ]
+          },
+          "admission_disposition": {
+            "enum": [
+              "ACTIVE_ADMITTED",
+              "EMBEDDED_NONOWNER",
+              "DORMANT_NONSELECTABLE",
+              "STALE_REMOVE"
+            ]
+          },
+          "evidence_class": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_citation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "semantic_owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "consumer_or_dependency": {
+            "type": "string",
+            "minLength": 1
+          },
+          "realization_state": {
+            "type": "string",
+            "minLength": 1
+          },
+          "downstream_owner": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "notes": {
+            "type": "string",
+            "minLength": 1
+          },
+          "containing_owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "activation_trigger": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

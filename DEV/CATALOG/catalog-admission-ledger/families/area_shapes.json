@@ -1,0 +1,104 @@
+{
+  "registry_family": "area_shapes",
+  "registry_census": {
+    "registry_family": "area_shapes",
+    "count": 6,
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admitted": 6,
+    "embedded_nonowner": 0,
+    "dormant_nonselectable": 0,
+    "stale_remove": 0
+  },
+  "family_policy": {
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admission_disposition": "ACTIVE_ADMITTED",
+    "admission_evidence": "ACCEPTED_ENGINE_VOCABULARY_PLUS_CROSS_SURFACE_CONSISTENCY",
+    "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+    "machine_destination_family": "DEV/CATALOG/core-catalog.json#/registries/area_shapes",
+    "consumer_or_dependency": "owning catalog/schema/runtime contract",
+    "identity_namespace_owner": "N/A Р Р†Р вЂљРІР‚Сњ closed engine vocabulary or non-package identity",
+    "default_realization_state": "COMPLETE",
+    "default_downstream_owner": null,
+    "notes": "Admission and registry-level realization are complete for S6D-02."
+  },
+  "entries": [
+    {
+      "registry_family": "area_shapes",
+      "id": "area.cone",
+      "profile": "area_shapes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: area.cone",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: area.cone"
+    },
+    {
+      "registry_family": "area_shapes",
+      "id": "area.cube",
+      "profile": "area_shapes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: area.cube",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: area.cube"
+    },
+    {
+      "registry_family": "area_shapes",
+      "id": "area.cylinder",
+      "profile": "area_shapes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: area.cylinder",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: area.cylinder"
+    },
+    {
+      "registry_family": "area_shapes",
+      "id": "area.emanation",
+      "profile": "area_shapes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: area.emanation",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: area.emanation"
+    },
+    {
+      "registry_family": "area_shapes",
+      "id": "area.line",
+      "profile": "area_shapes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: area.line",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: area.line"
+    },
+    {
+      "registry_family": "area_shapes",
+      "id": "area.sphere",
+      "profile": "area_shapes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: area.sphere",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: area.sphere"
+    }
+  ]
+}

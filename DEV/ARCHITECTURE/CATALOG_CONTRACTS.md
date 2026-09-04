@@ -7,7 +7,7 @@ Active unreleased catalog generation: `2.0.0`.
 Machine-readable contracts:
 
 - `DEV/CATALOG/core-catalog.json`
-- `DEV/CATALOG/catalog-admission-ledger.json` — admission disposition and realization-trace ledger; it is not an exact-ID, semantic, or runtime package owner.
+- `DEV/CATALOG/catalog-admission-ledger/` — admission disposition and realization-trace ledger (`manifest.json` plus per-registry-family `families/*.json` shards, assembled by `DEV/TOOLS/catalog_admission.py`); it is not an exact-ID, semantic, or runtime package owner.
 - `DEV/CATALOG/entity-structures.json`
 - `DEV/CATALOG/identifier-policies.json`
 - `DEV/CATALOG/mechanical-surfaces.json`

@@ -16,9 +16,21 @@ except ModuleNotFoundError:
     from GAME.TOOLS.ruleset_package import *
     from GAME.TOOLS.ruleset_package import _validated_engine_contract_entries
 
+try:
+    from DEV.TOOLS.catalog_admission import load_catalog_admission_ledger
+except ModuleNotFoundError:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from catalog_admission import load_catalog_admission_ledger
+
+
+# Symbolic member path for the catalog-admission-ledger engine-contract member. It is
+# not read as a literal file: derive_engine_contract_inventory() recognizes this exact
+# string and resolves it through the canonical loader/assembler instead, since the
+# ledger is physically a manifest + per-registry-family shards, not one file.
+CATALOG_ADMISSION_LEDGER_MEMBER_PATH = "DEV/CATALOG/catalog-admission-ledger.json"
 
 ENGINE_CONTRACT_SOURCE_GROUPS = {
-    "catalog_admission": (("catalog_admission_ledger","DEV/CATALOG/catalog-admission-ledger.json"),),
+    "catalog_admission": (("catalog_admission_ledger", CATALOG_ADMISSION_LEDGER_MEMBER_PATH),),
     "mechanical_surface": (
         ("core_catalog","DEV/CATALOG/core-catalog.json"),
         ("mechanical_surfaces","DEV/CATALOG/mechanical-surfaces.json"),
@@ -119,6 +131,12 @@ def derive_engine_contract_inventory(
         if len(member_ids) != len(set(member_ids)):
             raise RulesetContractError("unreconstructable_context", f"duplicate stable member ID in {family}")
         for member_id, rel in members:
+            if rel == CATALOG_ADMISSION_LEDGER_MEMBER_PATH:
+                try:
+                    payloads[member_id] = load_catalog_admission_ledger(repo_root)
+                except ValueError as exc:
+                    raise RulesetContractError("unreconstructable_context", str(exc)) from exc
+                continue
             path = repo_root / rel
             if not path.is_file():
                 raise RulesetContractError("unreconstructable_context", f"missing active owner artifact: {rel}")

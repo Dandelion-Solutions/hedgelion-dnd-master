@@ -1,0 +1,52 @@
+{
+  "registry_family": "story_candidate_dispositions",
+  "registry_census": {
+    "registry_family": "story_candidate_dispositions",
+    "count": 2,
+    "scope_stratum": "INHERITED_ROUND2",
+    "admitted": 2,
+    "embedded_nonowner": 0,
+    "dormant_nonselectable": 0,
+    "stale_remove": 0
+  },
+  "family_policy": {
+    "scope_stratum": "INHERITED_ROUND2",
+    "admission_disposition": "ACTIVE_ADMITTED",
+    "admission_evidence": "ACCEPTED_OWNER_PLUS_CATALOG_CONSISTENCY",
+    "semantic_owner": "DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md",
+    "machine_destination_family": "DEV/CATALOG/core-catalog.json#/registries/story_candidate_dispositions",
+    "consumer_or_dependency": "accepted Round-2 contract; machine realization remains with named R2.x/R2.7 owner",
+    "identity_namespace_owner": "N/A Р Р†Р вЂљРІР‚Сњ closed engine vocabulary or non-package identity",
+    "default_realization_state": "INHERITED_ACTIVE",
+    "default_downstream_owner": "DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md",
+    "notes": "Consistency checked; no S6D realization obligation unless a concrete contradiction or unsatisfied S6D consumer promotes the item."
+  },
+  "entries": [
+    {
+      "registry_family": "story_candidate_dispositions",
+      "id": "story.must_materialize",
+      "profile": "story_candidate_dispositions",
+      "scope_stratum": "INHERITED_ROUND2",
+      "realization_state": "INHERITED_ACTIVE",
+      "downstream_owner": "DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md",
+      "semantic_owner": "DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md; exact closed enum member: story.must_materialize",
+      "consumer_or_dependency": "accepted Round-2 contract; machine realization remains with named R2.x/R2.7 owner; exact ID: story.must_materialize"
+    },
+    {
+      "registry_family": "story_candidate_dispositions",
+      "id": "story.may_omit",
+      "profile": "story_candidate_dispositions",
+      "scope_stratum": "INHERITED_ROUND2",
+      "realization_state": "INHERITED_ACTIVE",
+      "downstream_owner": "DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md",
+      "semantic_owner": "DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md; exact closed enum member: story.may_omit",
+      "consumer_or_dependency": "accepted Round-2 contract; machine realization remains with named R2.x/R2.7 owner; exact ID: story.may_omit"
+    }
+  ]
+}

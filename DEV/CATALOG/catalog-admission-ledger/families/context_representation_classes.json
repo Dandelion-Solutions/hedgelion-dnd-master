@@ -1,0 +1,91 @@
+{
+  "registry_family": "context_representation_classes",
+  "registry_census": {
+    "registry_family": "context_representation_classes",
+    "count": 5,
+    "scope_stratum": "INHERITED_ROUND2",
+    "admitted": 5,
+    "embedded_nonowner": 0,
+    "dormant_nonselectable": 0,
+    "stale_remove": 0
+  },
+  "family_policy": {
+    "scope_stratum": "INHERITED_ROUND2",
+    "admission_disposition": "ACTIVE_ADMITTED",
+    "admission_evidence": "ACCEPTED_OWNER_PLUS_CATALOG_CONSISTENCY",
+    "semantic_owner": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+    "machine_destination_family": "DEV/CATALOG/core-catalog.json#/registries/context_representation_classes",
+    "consumer_or_dependency": "accepted Round-2 contract; machine realization remains with named R2.x/R2.7 owner",
+    "identity_namespace_owner": "N/A Р Р†Р вЂљРІР‚Сњ closed engine vocabulary or non-package identity",
+    "default_realization_state": "INHERITED_ACTIVE",
+    "default_downstream_owner": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+    "notes": "Consistency checked; no S6D realization obligation unless a concrete contradiction or unsatisfied S6D consumer promotes the item."
+  },
+  "entries": [
+    {
+      "registry_family": "context_representation_classes",
+      "id": "context.exact",
+      "profile": "context_representation_classes",
+      "scope_stratum": "INHERITED_ROUND2",
+      "realization_state": "INHERITED_ACTIVE",
+      "downstream_owner": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+      "semantic_owner": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md; exact closed enum member: context.exact",
+      "consumer_or_dependency": "accepted Round-2 contract; machine realization remains with named R2.x/R2.7 owner; exact ID: context.exact"
+    },
+    {
+      "registry_family": "context_representation_classes",
+      "id": "context.full_structured",
+      "profile": "context_representation_classes",
+      "scope_stratum": "INHERITED_ROUND2",
+      "realization_state": "INHERITED_ACTIVE",
+      "downstream_owner": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+      "semantic_owner": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md; exact closed enum member: context.full_structured",
+      "consumer_or_dependency": "accepted Round-2 contract; machine realization remains with named R2.x/R2.7 owner; exact ID: context.full_structured"
+    },
+    {
+      "registry_family": "context_representation_classes",
+      "id": "context.compact_structured",
+      "profile": "context_representation_classes",
+      "scope_stratum": "INHERITED_ROUND2",
+      "realization_state": "INHERITED_ACTIVE",
+      "downstream_owner": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+      "semantic_owner": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md; exact closed enum member: context.compact_structured",
+      "consumer_or_dependency": "accepted Round-2 contract; machine realization remains with named R2.x/R2.7 owner; exact ID: context.compact_structured"
+    },
+    {
+      "registry_family": "context_representation_classes",
+      "id": "context.summary",
+      "profile": "context_representation_classes",
+      "scope_stratum": "INHERITED_ROUND2",
+      "realization_state": "INHERITED_ACTIVE",
+      "downstream_owner": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+      "semantic_owner": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md; exact closed enum member: context.summary",
+      "consumer_or_dependency": "accepted Round-2 contract; machine realization remains with named R2.x/R2.7 owner; exact ID: context.summary"
+    },
+    {
+      "registry_family": "context_representation_classes",
+      "id": "context.reference_only",
+      "profile": "context_representation_classes",
+      "scope_stratum": "INHERITED_ROUND2",
+      "realization_state": "INHERITED_ACTIVE",
+      "downstream_owner": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+      "semantic_owner": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-24-r2-3-context-runtime-canonical-spec.md + DEV/docs/superpowers/specs/2026-08-24-r2-4-single-context-llm-execution-canonical-spec.md; exact closed enum member: context.reference_only",
+      "consumer_or_dependency": "accepted Round-2 contract; machine realization remains with named R2.x/R2.7 owner; exact ID: context.reference_only"
+    }
+  ]
+}

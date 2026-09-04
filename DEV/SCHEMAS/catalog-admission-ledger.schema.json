@@ -398,6 +398,7 @@
         "downstream_owner": {
           "enum": [
             null,
+            "S6D-10",
             "S6D-09",
             "S6D-08",
             "S6D-07",
@@ -417,7 +418,8 @@
             "DEV/docs/superpowers/specs/2026-08-21-step-5-9-chronology-persistence-reconciliation-canonical-spec.md",
             "DEV/docs/superpowers/specs/2026-08-20-step-5-7-checkpoint-recovery-protocol-canonical-spec.md",
             "DEV/docs/superpowers/specs/2026-08-21-step-5-10-story-projection-durability-canonical-spec.md",
-            "DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md"
+            "DEV/docs/superpowers/specs/2026-08-21-step-5-11-transcript-history-retention-compaction-canonical-spec.md",
+            "DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-canonical-spec.md + DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-canonical-spec.md"
           ]
         },
         "semantic_owner": {
@@ -439,7 +441,9 @@
         "evidence_class": {
           "enum": [
             "ACCEPTED_OWNER_REQUIREMENT",
-            "ACCEPTED_ENUM_CONSISTENCY"
+            "ACCEPTED_ENUM_CONSISTENCY",
+            "MACHINE_CONTRACT_AND_EXACT_CONSUMER",
+            "ACCEPTED_HOUSE_RULES_OWNER_PLUS_EXACT_MACHINE_CONSUMER"
           ]
         },
         "evidence_citation": {
@@ -535,25 +539,6 @@
                 "not": {
                   "const": "INHERITED_ACTIVE"
                 }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "realization_state": {
-                "const": "COMPLETE"
-              }
-            },
-            "required": [
-              "realization_state"
-            ]
-          },
-          "then": {
-            "properties": {
-              "downstream_owner": {
-                "type": "null"
               }
             }
           }

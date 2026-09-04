@@ -1,0 +1,130 @@
+{
+  "registry_family": "actor_facets",
+  "registry_census": {
+    "registry_family": "actor_facets",
+    "count": 8,
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admitted": 8,
+    "embedded_nonowner": 0,
+    "dormant_nonselectable": 0,
+    "stale_remove": 0
+  },
+  "family_policy": {
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admission_disposition": "ACTIVE_ADMITTED",
+    "admission_evidence": "ACCEPTED_ENGINE_VOCABULARY_PLUS_CROSS_SURFACE_CONSISTENCY",
+    "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+    "machine_destination_family": "DEV/CATALOG/core-catalog.json#/registries/actor_facets",
+    "consumer_or_dependency": "owning catalog/schema/runtime contract",
+    "identity_namespace_owner": "N/A Р Р†Р вЂљРІР‚Сњ closed engine vocabulary or non-package identity",
+    "default_realization_state": "COMPLETE",
+    "default_downstream_owner": null,
+    "notes": "Admission and registry-level realization are complete for S6D-02."
+  },
+  "entries": [
+    {
+      "registry_family": "actor_facets",
+      "id": "actor.player_character",
+      "profile": "actor_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: actor.player_character",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: actor.player_character"
+    },
+    {
+      "registry_family": "actor_facets",
+      "id": "actor.nonplayer_character",
+      "profile": "actor_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: actor.nonplayer_character",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: actor.nonplayer_character"
+    },
+    {
+      "registry_family": "actor_facets",
+      "id": "actor.companion",
+      "profile": "actor_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: actor.companion",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: actor.companion"
+    },
+    {
+      "registry_family": "actor_facets",
+      "id": "actor.summon",
+      "profile": "actor_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: actor.summon",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: actor.summon"
+    },
+    {
+      "registry_family": "actor_facets",
+      "id": "actor.swarm",
+      "profile": "actor_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: actor.swarm",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: actor.swarm"
+    },
+    {
+      "registry_family": "actor_facets",
+      "id": "actor.mount",
+      "profile": "actor_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: actor.mount",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: actor.mount"
+    },
+    {
+      "registry_family": "actor_facets",
+      "id": "actor.hireling",
+      "profile": "actor_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: actor.hireling",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: actor.hireling"
+    },
+    {
+      "registry_family": "actor_facets",
+      "id": "actor.temporary",
+      "profile": "actor_facets",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: actor.temporary",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: actor.temporary"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "registry_family": "resource_recovery_operations",
+  "registry_census": {
+    "registry_family": "resource_recovery_operations",
+    "count": 3,
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admitted": 3,
+    "embedded_nonowner": 0,
+    "dormant_nonselectable": 0,
+    "stale_remove": 0
+  },
+  "family_policy": {
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admission_disposition": "ACTIVE_ADMITTED",
+    "admission_evidence": "ACCEPTED_ENGINE_VOCABULARY_PLUS_CROSS_SURFACE_CONSISTENCY",
+    "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+    "machine_destination_family": "DEV/CATALOG/core-catalog.json#/registries/resource_recovery_operations",
+    "consumer_or_dependency": "owning catalog/schema/runtime contract",
+    "identity_namespace_owner": "N/A Р Р†Р вЂљРІР‚Сњ closed engine vocabulary or non-package identity",
+    "default_realization_state": "COMPLETE",
+    "default_downstream_owner": null,
+    "notes": "Admission and registry-level realization are complete for S6D-02."
+  },
+  "entries": [
+    {
+      "registry_family": "resource_recovery_operations",
+      "id": "resource_recovery.reset_spent",
+      "profile": "resource_recovery_operations",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: resource_recovery.reset_spent",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: resource_recovery.reset_spent"
+    },
+    {
+      "registry_family": "resource_recovery_operations",
+      "id": "resource_recovery.restore_to_capacity",
+      "profile": "resource_recovery_operations",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: resource_recovery.restore_to_capacity",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: resource_recovery.restore_to_capacity"
+    },
+    {
+      "registry_family": "resource_recovery_operations",
+      "id": "resource_recovery.restore_amount",
+      "profile": "resource_recovery_operations",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: resource_recovery.restore_amount",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: resource_recovery.restore_amount"
+    }
+  ]
+}

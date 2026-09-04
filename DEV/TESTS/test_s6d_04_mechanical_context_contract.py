@@ -1,9 +1,13 @@
 import json
+import sys
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "DEV" / "TOOLS"))
+from catalog_admission import load_catalog_admission_ledger  # noqa: E402
+
 CATALOG = ROOT / "DEV" / "CATALOG"
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
 
@@ -172,7 +176,7 @@ def test_accessors_are_item_complete_and_ledger_disposition_matches():
         assert meta["input_class"] == "ENGINE_STATE"
     assert sum(x["disposition"] == "ACTIVE_ADMITTED" for x in accessors.values()) == 9
     assert accessors["condition.value"]["disposition"] == "DORMANT_RESERVED"
-    ledger = load(CATALOG / "catalog-admission-ledger.json")
+    ledger = load_catalog_admission_ledger(ROOT)
     entries = {e["id"]: e for e in ledger["entries"]
                if e["registry_family"] == "mechanical_accessors"}
     assert entries["condition.value"]["admission_disposition"] == "DORMANT_NONSELECTABLE"

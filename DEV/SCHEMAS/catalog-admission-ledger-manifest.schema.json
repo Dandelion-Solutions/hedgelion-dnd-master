@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.com/schemas/catalog-admission-ledger-manifest.schema.json",
+  "title": "HDM Catalog Admission Ledger — Physical Manifest",
+  "$comment": "Physical-representation shape of DEV/CATALOG/catalog-admission-ledger/manifest.json. Global ledger state that is not owned by a single registry family. Family-scoped state (registry_census rows, family_policies, entries) is not repeated here; it lives in the paired family shards and is reassembled by DEV/TOOLS/catalog_admission.py into the logical contract validated by catalog-admission-ledger.schema.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_name",
+    "schema_version",
+    "catalog_generation",
+    "source_registry",
+    "decision_owner",
+    "laws",
+    "ruleset_package_admission",
+    "retired_reference_audit",
+    "family_shards"
+  ],
+  "properties": {
+    "schema_name": {
+      "const": "hdm_catalog_admission_ledger"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "catalog_generation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_registry": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "laws": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "admission_dispositions",
+        "realization_states",
+        "no_placeholder_state",
+        "integrated_complete_or_remove_scope",
+        "active_admitted_definition",
+        "embedded_nonowner_definition"
+      ],
+      "properties": {
+        "admission_dispositions": {
+          "type": "array",
+          "const": [
+            "ACTIVE_ADMITTED",
+            "EMBEDDED_NONOWNER",
+            "DORMANT_NONSELECTABLE",
+            "STALE_REMOVE"
+          ]
+        },
+        "realization_states": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "no_placeholder_state": {
+          "const": true
+        },
+        "integrated_complete_or_remove_scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "active_admitted_definition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "embedded_nonowner_definition": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "ruleset_package_admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_kind",
+        "package_id",
+        "status",
+        "selectable_now",
+        "activation_gate",
+        "compatibility_id",
+        "catalog_generation",
+        "namespace_claims",
+        "semantic_content_root",
+        "current_content_disposition",
+        "physical_realization_owner",
+        "failure_mapping"
+      ],
+      "properties": {
+        "package_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+        },
+        "status": {
+          "const": "RESERVED_TOPOLOGY_AND_NAMESPACES"
+        },
+        "selectable_now": {
+          "const": false
+        },
+        "activation_gate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "compatibility_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "catalog_generation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "namespace_claims": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*\\.\\*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "semantic_content_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_content_disposition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "failure_mapping": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "top_level_code",
+            "typed_reason_owner",
+            "required_reasons",
+            "unsupported_capability_surface"
+          ],
+          "properties": {
+            "top_level_code": {
+              "const": "failure.catalog_context_incompatible"
+            },
+            "typed_reason_owner": {
+              "const": "S6D-11"
+            },
+            "required_reasons": {
+              "const": [
+                "invalid_manifest",
+                "content_mismatch",
+                "missing_dependency",
+                "ambiguous_dependency",
+                "dependency_cycle",
+                "package_id_ambiguity",
+                "namespace_conflict",
+                "engine_incompatibility",
+                "catalog_incompatibility",
+                "resolved_set_mismatch",
+                "unreconstructable_context"
+              ]
+            },
+            "unsupported_capability_surface": {
+              "const": "runtime.catalog_gap_report"
+            }
+          }
+        },
+        "artifact_kind": {
+          "const": "NON_RUNTIME_ADMISSION_PLAN"
+        },
+        "physical_realization_owner": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "retired_reference_audit": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "disposition",
+          "remaining_allowed_mentions"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "disposition": {
+            "type": "string"
+          },
+          "remaining_allowed_mentions": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "family_shards": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  }
+}

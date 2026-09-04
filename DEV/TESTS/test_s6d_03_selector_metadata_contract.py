@@ -1,5 +1,6 @@
 """Focused S6D-03 selector-metadata closure checks."""
 import json
+import sys
 import unittest
 from collections import Counter
 from pathlib import Path
@@ -7,9 +8,11 @@ from pathlib import Path
 import jsonschema
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "DEV" / "TOOLS"))
+from catalog_admission import load_catalog_admission_ledger  # noqa: E402
+
 CORE = ROOT / "DEV/CATALOG/core-catalog.json"
 SURFACES = ROOT / "DEV/CATALOG/mechanical-surfaces.json"
-LEDGER = ROOT / "DEV/CATALOG/catalog-admission-ledger.json"
 SCHEMA = ROOT / "DEV/SCHEMAS/mechanical-surfaces.schema.json"
 
 EXPECTED_SELECTORS = {"condition.applicability", "health.maximum", "resource.capacity", "check.roll", "attack.roll", "save.roll", "spell.dc", "defense.armor_class", "damage.received", "healing.received"}
@@ -36,7 +39,8 @@ def _load(path):
 
 class SelectorMetadataContractTests(unittest.TestCase):
     def test_schema_and_active_sets_are_exact(self):
-        core, surfaces, ledger, schema = map(_load, (CORE, SURFACES, LEDGER, SCHEMA))
+        core, surfaces, schema = map(_load, (CORE, SURFACES, SCHEMA))
+        ledger = load_catalog_admission_ledger(ROOT)
         jsonschema.Draft202012Validator.check_schema(schema)
         jsonschema.validate(surfaces, schema)
         active_selectors = {e["id"] for e in ledger["entries"]
@@ -52,7 +56,7 @@ class SelectorMetadataContractTests(unittest.TestCase):
         assert active_operations <= set(core["registries"]["rule_operations"])
     
     def test_all_registered_ids_have_active_or_dormant_outcome(self):
-        core, ledger = _load(CORE), _load(LEDGER)
+        core, ledger = _load(CORE), load_catalog_admission_ledger(ROOT)
         selectors = [e for e in ledger["entries"] if e["registry_family"] == "rule_selectors"]
         operations = [e for e in ledger["entries"] if e["registry_family"] == "rule_operations"]
         assert {e["id"] for e in selectors} == set(core["registries"]["rule_selectors"])
@@ -143,7 +147,7 @@ class SelectorMetadataContractTests(unittest.TestCase):
             assert selector not in surfaces or operation not in surfaces[selector]["allowed_operations"]
     
     def test_global_disposition_totals(self):
-        totals = Counter(e["admission_disposition"] for e in _load(LEDGER)["entries"])
+        totals = Counter(e["admission_disposition"] for e in load_catalog_admission_ledger(ROOT)["entries"])
         assert totals == {
             "ACTIVE_ADMITTED": 481,
             "EMBEDDED_NONOWNER": 35,

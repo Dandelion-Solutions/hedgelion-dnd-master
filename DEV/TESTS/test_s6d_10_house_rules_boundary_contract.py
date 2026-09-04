@@ -89,7 +89,22 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
         self.write_json(root, "DEV/CATALOG/activity-primitive-contracts.json", {"contracts": [{"primitive_id": "op.request_choice", "selection_state": "DORMANT_NONSELECTABLE", "realization_state": "QUARANTINED"}]})
         failures = sorted(VALIDATOR.POLICY_FAILURES)
         self.write_json(root, "DEV/CATALOG/core-catalog.json", {"registries": {"execution_failure_codes": failures}})
-        self.write_json(root, "DEV/CATALOG/catalog-admission-ledger.json", {"entries": [{"registry_family": "execution_failure_codes", "id": value, "admission_disposition": "ACTIVE_ADMITTED"} for value in failures]})
+        self.write_json(root, "DEV/CATALOG/catalog-admission-ledger/manifest.json", {
+            "schema_name": "hdm_catalog_admission_ledger", "schema_version": 1,
+            "catalog_generation": "test", "source_registry": "DEV/CATALOG/core-catalog.json",
+            "decision_owner": "test", "laws": {}, "ruleset_package_admission": {},
+            "retired_reference_audit": [], "family_shards": ["execution_failure_codes"],
+        })
+        self.write_json(root, "DEV/CATALOG/catalog-admission-ledger/families/execution_failure_codes.json", {
+            "registry_family": "execution_failure_codes",
+            "registry_census": {
+                "registry_family": "execution_failure_codes", "count": len(failures),
+                "scope_stratum": "S6D_PRIMARY", "admitted": len(failures),
+                "embedded_nonowner": 0, "dormant_nonselectable": 0, "stale_remove": 0,
+            },
+            "family_policy": {},
+            "entries": [{"registry_family": "execution_failure_codes", "id": value, "admission_disposition": "ACTIVE_ADMITTED"} for value in failures],
+        })
         template = root / "GAME/CAMPAIGN/RULES/HOUSE_RULES.yaml"
         template.parent.mkdir(parents=True, exist_ok=True)
         template.write_text("schema_version: 1\npolicies: []\n", encoding="utf-8")

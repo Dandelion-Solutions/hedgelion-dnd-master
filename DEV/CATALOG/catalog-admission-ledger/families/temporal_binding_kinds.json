@@ -1,0 +1,65 @@
+{
+  "registry_family": "temporal_binding_kinds",
+  "registry_census": {
+    "registry_family": "temporal_binding_kinds",
+    "count": 3,
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admitted": 3,
+    "embedded_nonowner": 0,
+    "dormant_nonselectable": 0,
+    "stale_remove": 0
+  },
+  "family_policy": {
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admission_disposition": "ACTIVE_ADMITTED",
+    "admission_evidence": "ACCEPTED_ENGINE_VOCABULARY_PLUS_CROSS_SURFACE_CONSISTENCY",
+    "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+    "machine_destination_family": "DEV/CATALOG/core-catalog.json#/registries/temporal_binding_kinds",
+    "consumer_or_dependency": "owning catalog/schema/runtime contract",
+    "identity_namespace_owner": "N/A Р Р†Р вЂљРІР‚Сњ closed engine vocabulary or non-package identity",
+    "default_realization_state": "COMPLETE",
+    "default_downstream_owner": null,
+    "notes": "Admission and registry-level realization are complete for S6D-02."
+  },
+  "entries": [
+    {
+      "registry_family": "temporal_binding_kinds",
+      "id": "temporal.metric_deadline",
+      "profile": "temporal_binding_kinds",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: temporal.metric_deadline",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: temporal.metric_deadline"
+    },
+    {
+      "registry_family": "temporal_binding_kinds",
+      "id": "temporal.procedure_boundary",
+      "profile": "temporal_binding_kinds",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: temporal.procedure_boundary",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: temporal.procedure_boundary"
+    },
+    {
+      "registry_family": "temporal_binding_kinds",
+      "id": "temporal.semantic_boundary",
+      "profile": "temporal_binding_kinds",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: temporal.semantic_boundary",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: temporal.semantic_boundary"
+    }
+  ]
+}

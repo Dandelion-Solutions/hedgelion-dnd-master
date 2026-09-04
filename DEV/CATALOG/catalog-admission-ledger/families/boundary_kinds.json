@@ -1,0 +1,117 @@
+{
+  "registry_family": "boundary_kinds",
+  "registry_census": {
+    "registry_family": "boundary_kinds",
+    "count": 7,
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admitted": 7,
+    "embedded_nonowner": 0,
+    "dormant_nonselectable": 0,
+    "stale_remove": 0
+  },
+  "family_policy": {
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admission_disposition": "ACTIVE_ADMITTED",
+    "admission_evidence": "ACCEPTED_ENGINE_VOCABULARY_PLUS_CROSS_SURFACE_CONSISTENCY",
+    "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+    "machine_destination_family": "DEV/CATALOG/core-catalog.json#/registries/boundary_kinds",
+    "consumer_or_dependency": "owning catalog/schema/runtime contract",
+    "identity_namespace_owner": "N/A Р Р†Р вЂљРІР‚Сњ closed engine vocabulary or non-package identity",
+    "default_realization_state": "COMPLETE",
+    "default_downstream_owner": null,
+    "notes": "Admission and registry-level realization are complete for S6D-02."
+  },
+  "entries": [
+    {
+      "registry_family": "boundary_kinds",
+      "id": "boundary.turn_start",
+      "profile": "boundary_kinds",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: boundary.turn_start",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: boundary.turn_start"
+    },
+    {
+      "registry_family": "boundary_kinds",
+      "id": "boundary.turn_end",
+      "profile": "boundary_kinds",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: boundary.turn_end",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: boundary.turn_end"
+    },
+    {
+      "registry_family": "boundary_kinds",
+      "id": "boundary.round_start",
+      "profile": "boundary_kinds",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: boundary.round_start",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: boundary.round_start"
+    },
+    {
+      "registry_family": "boundary_kinds",
+      "id": "boundary.round_end",
+      "profile": "boundary_kinds",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: boundary.round_end",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: boundary.round_end"
+    },
+    {
+      "registry_family": "boundary_kinds",
+      "id": "boundary.short_rest_complete",
+      "profile": "boundary_kinds",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: boundary.short_rest_complete",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: boundary.short_rest_complete"
+    },
+    {
+      "registry_family": "boundary_kinds",
+      "id": "boundary.long_rest_complete",
+      "profile": "boundary_kinds",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: boundary.long_rest_complete",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: boundary.long_rest_complete"
+    },
+    {
+      "registry_family": "boundary_kinds",
+      "id": "boundary.dawn",
+      "profile": "boundary_kinds",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md; exact closed enum member: boundary.dawn",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: boundary.dawn"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "registry_family": "mapping_outcomes",
+  "registry_census": {
+    "registry_family": "mapping_outcomes",
+    "count": 5,
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admitted": 5,
+    "embedded_nonowner": 0,
+    "dormant_nonselectable": 0,
+    "stale_remove": 0
+  },
+  "family_policy": {
+    "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+    "admission_disposition": "ACTIVE_ADMITTED",
+    "admission_evidence": "ACCEPTED_ENGINE_VOCABULARY_PLUS_CROSS_SURFACE_CONSISTENCY",
+    "semantic_owner": "DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md",
+    "machine_destination_family": "DEV/CATALOG/core-catalog.json#/registries/mapping_outcomes",
+    "consumer_or_dependency": "owning catalog/schema/runtime contract",
+    "identity_namespace_owner": "N/A Р Р†Р вЂљРІР‚Сњ closed engine vocabulary or non-package identity",
+    "default_realization_state": "COMPLETE",
+    "default_downstream_owner": null,
+    "notes": "Admission and registry-level realization are complete for S6D-02."
+  },
+  "entries": [
+    {
+      "registry_family": "mapping_outcomes",
+      "id": "exact",
+      "profile": "mapping_outcomes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md; exact closed enum member: exact",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: exact"
+    },
+    {
+      "registry_family": "mapping_outcomes",
+      "id": "composed",
+      "profile": "mapping_outcomes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md; exact closed enum member: composed",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: composed"
+    },
+    {
+      "registry_family": "mapping_outcomes",
+      "id": "narrative_only",
+      "profile": "mapping_outcomes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md; exact closed enum member: narrative_only",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: narrative_only"
+    },
+    {
+      "registry_family": "mapping_outcomes",
+      "id": "clarification_required",
+      "profile": "mapping_outcomes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md; exact closed enum member: clarification_required",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: clarification_required"
+    },
+    {
+      "registry_family": "mapping_outcomes",
+      "id": "unsupported",
+      "profile": "mapping_outcomes",
+      "scope_stratum": "ENGINE_ENUM_CONSISTENCY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_ENUM_CONSISTENCY",
+      "evidence_citation": "DEV/docs/superpowers/specs/2026-08-19-step-3-execution-boundary-canonical-spec.md; exact closed enum member: unsupported",
+      "consumer_or_dependency": "owning catalog/schema/runtime contract; exact ID: unsupported"
+    }
+  ]
+}

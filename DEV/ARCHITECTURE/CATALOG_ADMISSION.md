@@ -10,7 +10,7 @@ HDM maintains one exact machine-readable admission ledger for the current catalo
 
 Semantic owner: `DEV/ARCHITECTURE/CATALOG_ADMISSION.md`.
 
-Machine-readable traceability/disposition record: `DEV/CATALOG/catalog-admission-ledger.json`.
+Machine-readable traceability/disposition record: `DEV/CATALOG/catalog-admission-ledger/` (`manifest.json` plus one `families/<registry_family>.json` shard per registry family; one logical ledger contract, assembled by `DEV/TOOLS/catalog_admission.py` and validated against `DEV/SCHEMAS/catalog-admission-ledger.schema.json`).
 
 ## 2. Admission model
 
