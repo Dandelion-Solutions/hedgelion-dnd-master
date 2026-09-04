@@ -9,7 +9,7 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 WP-18 / STEPS 1-8 COMPLETE — MANDATORY FINAL SENIOR AUDIT
 
 CURRENT_WORKSTREAM: R2.7 WP-18 — Story / continuity / Dramaturg planning
-CURRENT_SLICE: WP-18 Step 8 canonicalization complete — final implementation-facing canonical spec + Step-8 self-review; Step-6 1 BLOCKING + 7 SIGNIFICANT all resolved/propagated; final verification/publication evidence in progress; stop at mandatory final Senior audit
+CURRENT_SLICE: WP-18 Step 8 canonicalization complete — final implementation-facing canonical spec + Step-8 self-review; Step-6 1 BLOCKING + 7 SIGNIFICANT all resolved/propagated; stop at mandatory final Senior audit
 
 LAST_CLOSED_UNIT: R2.7 WP-17 Steps 1-8 / async collaboration / agency-safe progression — final Senior re-audit PASS at 6855c79190e6bb087c8039a1adf2bf71deec2c70
 NEXT_AUTHORIZED_UNIT: Mandatory final Senior audit of the completed WP-18 Steps 1-8 package only
