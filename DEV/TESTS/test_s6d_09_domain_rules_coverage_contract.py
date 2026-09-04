@@ -3,6 +3,7 @@ from pathlib import Path
 import DEV.TOOLS.validate_domain_rules_coverage as coverage
 from DEV.TOOLS.validate_character_mvp_seed import CanonicalSchemaValidator
 from DEV.TOOLS.validate_domain_rules_coverage import advance_combat_turn, build_binding, build_contract, build_expected_source_sets, execute_asset_equip, execute_asset_transfer, execute_combat_procedure_transition, execute_mechanical_null_resolution, execute_outside_procedure_movement, execute_procedure_movement, initialize_combat_procedure, resolve_asset_use, validate_binding, validate_combat_procedure_state, validate_contract, validate_gameplay_seed
+from DEV.TOOLS.activity_primitive_contracts import load_activity_primitive_contracts
 
 ROOT=Path(__file__).resolve().parents[2]
 CAT=ROOT/"DEV/CATALOG/domain-rules-coverage.json"
@@ -42,7 +43,7 @@ class CoverageTests(unittest.TestCase):
   self.assertEqual({x["source_key"] for x in self.value["coverage_ledger"]},union)
   self.assertEqual(len(self.value["coverage_ledger"]),len(union))
  def test_every_machine_edge_resolves_to_package_activity_and_primitive_owner(self):
-  prim=json.loads((ROOT/"DEV/CATALOG/activity-primitive-contracts.json").read_text())
+  prim=load_activity_primitive_contracts(ROOT)
   rows={r["primitive_id"]:r for r in prim["contracts"]}
   facts=json.loads((ROOT/"DEV/CATALOG/mechanical-surfaces.json").read_text())["context_facts"]
   activities=set()
@@ -57,7 +58,7 @@ class CoverageTests(unittest.TestCase):
  def test_generic_activities_are_identity_bound_and_exact_consumers(self):
   spine=json.loads((PKG/"gameplay-spine-seed.json").read_text())
   self.assertEqual({x["id"] for x in spine["activity_definitions"]},{"activity.check.generic","activity.save.generic"})
-  rows={r["primitive_id"]:r for r in json.loads((ROOT/"DEV/CATALOG/activity-primitive-contracts.json").read_text())["contracts"]}
+  rows={r["primitive_id"]:r for r in load_activity_primitive_contracts(ROOT)["contracts"]}
   self.assertIn("activity.check.generic",rows["op.roll"]["exact_seed_consumer_ids"])
   self.assertIn("activity.save.generic",rows["op.roll"]["exact_seed_consumer_ids"])
   self.assertIn("activity.check.generic",rows["op.resolve_check"]["exact_seed_consumer_ids"])

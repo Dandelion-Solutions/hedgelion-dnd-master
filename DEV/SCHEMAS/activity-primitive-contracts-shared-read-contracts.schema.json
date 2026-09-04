@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/activity-primitive-contracts-shared-read-contracts.schema.json",
+  "title": "HDM Activity Primitive Contracts — Shared read_contracts",
+  "$comment": "Physical-representation shape of DEV/CATALOG/activity-primitive-contracts/shared/read_contracts.json: exactly the current logical `read_contracts` member, verbatim. Entirely deferred via $ref to the canonical logical schema's own definition rather than duplicating it.",
+  "$ref": "https://hedgelion.invalid/schemas/activity-primitive-contracts.schema.json#/properties/read_contracts"
+}

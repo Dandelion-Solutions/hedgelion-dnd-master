@@ -1,0 +1,143 @@
+{
+  "primitive_id": "op.create_effect",
+  "contract": {
+    "primitive_id": "op.create_effect",
+    "family": "EFFECT",
+    "execution_kind": "MUTATION",
+    "realization_state": "COMPLETE",
+    "selection_state": "ACTIVE_ADMITTED",
+    "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+    "exact_seed_consumer_ids": [
+      "activity.feature.innate_sorcery"
+    ],
+    "authority_denied": [
+      "arbitrary_effect_authorship",
+      "target_discovery",
+      "direct_commit",
+      "duration_owner_bypass"
+    ],
+    "arguments": {
+      "effect_definition_ref": {
+        "value_kind": "innate_sorcery_effect_definition_ref",
+        "cardinality": "single",
+        "required": true,
+        "source": "ACTIVITY_ARGUMENT"
+      },
+      "target_role": {
+        "value_kind": "self_actor_role",
+        "cardinality": "single",
+        "required": true,
+        "source": "BOUND_ROLE"
+      },
+      "source_role": {
+        "value_kind": "self_actor_role",
+        "cardinality": "single",
+        "required": true,
+        "source": "BOUND_ROLE"
+      },
+      "duration": {
+        "value_kind": "innate_sorcery_duration_spec",
+        "cardinality": "single",
+        "required": true,
+        "source": "ACTIVITY_ARGUMENT"
+      }
+    },
+    "results": {
+      "effect_ref": {
+        "value_kind": "entity_ref",
+        "cardinality": "single",
+        "required": true,
+        "source": "PRIMITIVE_RESULT"
+      },
+      "instance_key": {
+        "value_kind": "effect_instance_key",
+        "cardinality": "single",
+        "required": true,
+        "source": "PRIMITIVE_RESULT"
+      },
+      "temporal_binding": {
+        "value_kind": "temporal_binding",
+        "cardinality": "single",
+        "required": true,
+        "source": "PRIMITIVE_RESULT"
+      }
+    },
+    "reads": [
+      {
+        "kind": "DOMAIN_OWNER",
+        "id": "effect_definition",
+        "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
+      },
+      {
+        "kind": "DOMAIN_OWNER",
+        "id": "temporal_owner",
+        "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
+      }
+    ],
+    "rng": {
+      "policy": "NONE"
+    },
+    "prospective_outputs": {
+      "transition_kinds": [
+        "transition.effect_state"
+      ],
+      "event_kinds": [
+        "event.effect.created"
+      ],
+      "state_delta_policy": "PRIMITIVE_LOCAL_TYPED_PROSPECTIVE_ONLY"
+    },
+    "atomicity": {
+      "owner": "EXECUTION_SEGMENT",
+      "policy": "ATOMIC_CREATE_OR_REPLACE_SAME_INSTANCE_WITH_TEMPORAL_BINDING"
+    },
+    "suspension": {
+      "kind": "NONE",
+      "retention": "NONE"
+    },
+    "failures": [
+      "failure.hydration_required",
+      "failure.missing_reference",
+      "failure.catalog_context_incompatible",
+      "failure.execution_limit",
+      "failure.effect_identity_mismatch",
+      "failure.effect_duration_mismatch"
+    ],
+    "bounds": [
+      "one_effect_instance",
+      "one_minute_duration",
+      "same_source_target_definition_replacement"
+    ],
+    "evidence": {
+      "commit_disposition_owner": "EXECUTION_SEGMENT",
+      "committed_fact_owner": "MECHANICAL_EVENT",
+      "outcome_owner": "RESOLUTION_RECEIPT",
+      "trace_policy": "RETAIN_PRIMITIVE_ID_ARGUMENT_FINGERPRINT_RESULTS_AND_DISPOSITION"
+    }
+  },
+  "validation_matrix": {
+    "subject_policy": "BOUND_ACTOR_IS_BOTH_SOURCE_AND_TARGET",
+    "storage_policy": "WORLD_EFFECT_OWNER_STABLE_TARGET_SOURCE_DEFINITION_KEY_ONLY",
+    "failure_policy": "EXACT_CONTRACT_FAILURE_CODES",
+    "validation_policy": "EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS",
+    "segment_semantics": "ONE_SEGMENT",
+    "compiler_form_propagation": "NOT_COMPILER_FORM",
+    "activation_dependencies": {
+      "requires_exact_seed_consumer": true,
+      "required_active_primitive_ids": [],
+      "required_active_value_kinds": [
+        "innate_sorcery_effect_definition_ref",
+        "innate_sorcery_duration_spec",
+        "self_actor_role",
+        "effect_instance_key",
+        "entity_ref",
+        "temporal_binding"
+      ]
+    },
+    "causal_recovery": {
+      "causal_key": "EFFECT_INSTANCE_KEY_AND_CAUSING_SEGMENT_IDEMPOTENCY_KEY",
+      "recovery_owner": "WORLD_EFFECT_AND_TEMPORAL_AGENDA",
+      "retention": "COMMITTED_EFFECT_EVENT_AND_PINNED_TEMPORAL_BINDING_UNTIL_EXPIRY"
+    },
+    "chronology_barrier": "START_AT_CAUSING_COMMIT; EXPIRY_AFTER_ONE_MINUTE_IN_SAME_LOCAL_CHRONOLOGY; IDEMPOTENT_EXPIRY_TRANSITION"
+  }
+}

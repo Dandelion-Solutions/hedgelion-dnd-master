@@ -1,0 +1,91 @@
+{
+  "primitive_id": "op.branch",
+  "contract": {
+    "primitive_id": "op.branch",
+    "family": "CONTROL",
+    "execution_kind": "COMPILER_FORM",
+    "realization_state": "QUARANTINED",
+    "selection_state": "DORMANT_NONSELECTABLE",
+    "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+    "arguments": {
+      "when": {
+        "value_kind": "mechanical_predicate",
+        "cardinality": "single",
+        "required": true,
+        "source": "ACTIVITY_ARGUMENT"
+      },
+      "then_steps": {
+        "value_kind": "compiled_step_list",
+        "cardinality": "single",
+        "required": true,
+        "source": "ACTIVITY_ARGUMENT"
+      },
+      "else_steps": {
+        "value_kind": "compiled_step_list",
+        "cardinality": "single",
+        "required": false,
+        "source": "ACTIVITY_ARGUMENT"
+      }
+    },
+    "results": {
+      "branch_id": {
+        "value_kind": "machine_id",
+        "cardinality": "single",
+        "required": true,
+        "source": "PRIMITIVE_RESULT"
+      }
+    },
+    "reads": [],
+    "rng": {
+      "policy": "NONE"
+    },
+    "prospective_outputs": {
+      "transition_kinds": [],
+      "event_kinds": [],
+      "state_delta_policy": "PRIMITIVE_LOCAL_TYPED_PROSPECTIVE_ONLY"
+    },
+    "atomicity": {
+      "owner": "EXECUTION_SEGMENT",
+      "policy": "CHILD_STEPS_DEFINE_SEGMENTS"
+    },
+    "suspension": {
+      "kind": "NONE",
+      "retention": "NONE"
+    },
+    "failures": [
+      "failure.hydration_required",
+      "failure.missing_reference",
+      "failure.catalog_context_incompatible",
+      "failure.execution_limit"
+    ],
+    "bounds": [
+      "step_count",
+      "branch_depth"
+    ],
+    "evidence": {
+      "commit_disposition_owner": "EXECUTION_SEGMENT",
+      "committed_fact_owner": "MECHANICAL_EVENT",
+      "outcome_owner": "RESOLUTION_RECEIPT",
+      "trace_policy": "RETAIN_PRIMITIVE_ID_ARGUMENT_FINGERPRINT_RESULTS_AND_DISPOSITION"
+    }
+  },
+  "validation_matrix": {
+    "subject_policy": "ENCLOSING_COMPILED_BINDINGS_ONLY",
+    "storage_policy": "ENCLOSING_CHILD_STEPS_ONLY",
+    "failure_policy": "EXACT_CONTRACT_FAILURE_CODES",
+    "validation_policy": "EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS",
+    "segment_semantics": "CHILD_STEPS_DEFINE_SEGMENTS",
+    "compiler_form_propagation": "CHILD_STEPS_ONLY_WITH_ENCLOSING_SEGMENT_INHERITANCE",
+    "activation_dependencies": {
+      "requires_exact_seed_consumer": true,
+      "required_active_primitive_ids": [],
+      "required_active_value_kinds": [
+        "compiled_step_list",
+        "mechanical_predicate",
+        "machine_id"
+      ]
+    },
+    "causal_recovery": "NOT_APPLICABLE",
+    "chronology_barrier": "NOT_APPLICABLE"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "primitive_id": "op.request_choice",
+  "contract": {
+    "primitive_id": "op.request_choice",
+    "family": "INTERACTION",
+    "execution_kind": "SUSPENSION",
+    "realization_state": "QUARANTINED",
+    "selection_state": "DORMANT_NONSELECTABLE",
+    "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+    "arguments": {
+      "request": {
+        "value_kind": "choice_request",
+        "cardinality": "single",
+        "required": true,
+        "source": "ACTIVITY_ARGUMENT"
+      }
+    },
+    "results": {
+      "option_id": {
+        "value_kind": "machine_id",
+        "cardinality": "single",
+        "required": true,
+        "source": "PRIMITIVE_RESULT"
+      }
+    },
+    "reads": [
+      {
+        "kind": "BINDING",
+        "id": "choice_request",
+        "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
+      }
+    ],
+    "rng": {
+      "policy": "NONE"
+    },
+    "prospective_outputs": {
+      "transition_kinds": [],
+      "event_kinds": [],
+      "state_delta_policy": "PRIMITIVE_LOCAL_TYPED_PROSPECTIVE_ONLY"
+    },
+    "atomicity": {
+      "owner": "EXECUTION_SEGMENT",
+      "policy": "SUSPENSION_STATE_ONLY"
+    },
+    "suspension": {
+      "kind": "CHOICE",
+      "retention": "CONTINUATION_PENDING_RESPONSE_AND_GENERATION"
+    },
+    "failures": [
+      "failure.hydration_required",
+      "failure.missing_reference",
+      "failure.catalog_context_incompatible",
+      "failure.execution_limit",
+      "failure.continuation_conflict",
+      "failure.continuation_stale"
+    ],
+    "bounds": [],
+    "evidence": {
+      "commit_disposition_owner": "EXECUTION_SEGMENT",
+      "committed_fact_owner": "MECHANICAL_EVENT",
+      "outcome_owner": "RESOLUTION_RECEIPT",
+      "trace_policy": "RETAIN_PRIMITIVE_ID_ARGUMENT_FINGERPRINT_RESULTS_AND_DISPOSITION"
+    }
+  },
+  "validation_matrix": {
+    "subject_policy": "CONTINUATION_RESPONDER_ONLY",
+    "storage_policy": "CONTINUATION_ONLY",
+    "failure_policy": "EXACT_CONTRACT_FAILURE_CODES",
+    "validation_policy": "EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS",
+    "segment_semantics": "SUSPENSION_STATE_ONLY",
+    "compiler_form_propagation": "NOT_COMPILER_FORM",
+    "activation_dependencies": {
+      "requires_exact_seed_consumer": true,
+      "required_active_primitive_ids": [],
+      "required_active_value_kinds": [
+        "choice_request",
+        "machine_id"
+      ]
+    },
+    "causal_recovery": "NOT_APPLICABLE",
+    "chronology_barrier": "NOT_APPLICABLE"
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "primitive_id": "op.schedule_followup",
+  "contract": {
+    "primitive_id": "op.schedule_followup",
+    "family": "FOLLOWUP",
+    "execution_kind": "FOLLOWUP",
+    "realization_state": "QUARANTINED",
+    "selection_state": "DORMANT_NONSELECTABLE",
+    "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+    "arguments": {
+      "activity_ref": {
+        "value_kind": "activity_definition_ref",
+        "cardinality": "single",
+        "required": true,
+        "source": "ACTIVITY_ARGUMENT"
+      },
+      "temporal_binding": {
+        "value_kind": "temporal_binding",
+        "cardinality": "single",
+        "required": true,
+        "source": "ACTIVITY_ARGUMENT"
+      },
+      "bindings": {
+        "value_kind": "parameter_bindings",
+        "cardinality": "single",
+        "required": false,
+        "source": "ACTIVITY_ARGUMENT"
+      }
+    },
+    "results": {
+      "pending_child_ref": {
+        "value_kind": "machine_id",
+        "cardinality": "single",
+        "required": true,
+        "source": "PRIMITIVE_RESULT"
+      }
+    },
+    "reads": [
+      {
+        "kind": "DOMAIN_OWNER",
+        "id": "temporal_owner",
+        "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
+      }
+    ],
+    "rng": {
+      "policy": "NONE"
+    },
+    "prospective_outputs": {
+      "transition_kinds": [],
+      "event_kinds": [],
+      "state_delta_policy": "PRIMITIVE_LOCAL_TYPED_PROSPECTIVE_ONLY"
+    },
+    "atomicity": {
+      "owner": "EXECUTION_SEGMENT",
+      "policy": "PENDING_CHILD_IDENTITY_ATOMIC_WITH_TRIGGERING_COMMIT"
+    },
+    "suspension": {
+      "kind": "NONE",
+      "retention": "PENDING_CHILD_INVOCATION"
+    },
+    "failures": [
+      "failure.hydration_required",
+      "failure.missing_reference",
+      "failure.catalog_context_incompatible",
+      "failure.execution_limit"
+    ],
+    "bounds": [
+      "trigger_chain_depth"
+    ],
+    "evidence": {
+      "commit_disposition_owner": "EXECUTION_SEGMENT",
+      "committed_fact_owner": "MECHANICAL_EVENT",
+      "outcome_owner": "RESOLUTION_RECEIPT",
+      "trace_policy": "RETAIN_PRIMITIVE_ID_ARGUMENT_FINGERPRINT_RESULTS_AND_DISPOSITION"
+    }
+  },
+  "validation_matrix": {
+    "subject_policy": "ENCLOSING_OWNER_BOUND_SUBJECT_ONLY",
+    "storage_policy": "PENDING_CHILD_INVOCATION_ONLY",
+    "failure_policy": "EXACT_CONTRACT_FAILURE_CODES",
+    "validation_policy": "EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS",
+    "segment_semantics": "PENDING_CHILD_IDENTITY_ATOMIC_WITH_TRIGGERING_COMMIT",
+    "compiler_form_propagation": "NOT_COMPILER_FORM",
+    "activation_dependencies": {
+      "requires_exact_seed_consumer": true,
+      "required_active_primitive_ids": [],
+      "required_active_value_kinds": [
+        "activity_definition_ref",
+        "parameter_bindings",
+        "temporal_binding",
+        "machine_id"
+      ]
+    },
+    "causal_recovery": {
+      "causal_key": "TRIGGERING_SEGMENT_AND_TEMPORAL_BINDING",
+      "recovery_owner": "PENDING_CHILD_INVOCATION",
+      "retention": "UNTIL_SETTLED_OR_PROVEN_UNREACHABLE"
+    },
+    "chronology_barrier": "DUE_DISCOVERY_AFTER_TRIGGERING_SEGMENT_COMMIT"
+  }
+}

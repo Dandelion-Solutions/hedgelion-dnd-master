@@ -1,0 +1,126 @@
+{
+  "primitive_id": "op.select_targets",
+  "contract": {
+    "primitive_id": "op.select_targets",
+    "family": "SELECTION",
+    "execution_kind": "CALCULATION",
+    "realization_state": "COMPLETE",
+    "selection_state": "ACTIVE_ADMITTED",
+    "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+    "exact_seed_consumer_ids": [
+      "activity.attack.ranged_weapon",
+      "activity.spell.fire_bolt",
+      "activity.spell.poison_spray",
+      "activity.spell.thunderclap",
+      "activity.spell.acid_splash",
+      "activity.spell.magic_missile",
+      "activity.spell.burning_hands"
+    ],
+    "authority_denied": [
+      "world_search",
+      "arbitrary_entity_discovery",
+      "mutation",
+      "persistence"
+    ],
+    "arguments": {
+      "target_spec": {
+        "value_kind": "target_spec",
+        "cardinality": "single",
+        "required": true,
+        "source": "ACTIVITY_ARGUMENT"
+      },
+      "source_role": {
+        "value_kind": "role",
+        "cardinality": "single",
+        "required": true,
+        "source": "BOUND_ROLE"
+      },
+      "candidate_roles": {
+        "value_kind": "role",
+        "cardinality": "many",
+        "required": true,
+        "source": "BOUND_ROLE"
+      },
+      "applicability_facts": {
+        "value_kind": "invocation_fact",
+        "cardinality": "many",
+        "required": true,
+        "source": "ACCEPTED_INVOCATION_FACT"
+      }
+    },
+    "results": {
+      "targets": {
+        "value_kind": "entity_ref",
+        "cardinality": "many",
+        "required": true,
+        "source": "PRIMITIVE_RESULT"
+      }
+    },
+    "reads": [
+      {
+        "kind": "BINDING",
+        "id": "source_role",
+        "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
+      },
+      {
+        "kind": "BINDING",
+        "id": "candidate_roles",
+        "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
+      },
+      {
+        "kind": "INVOCATION_FACT",
+        "id": "fiction.target_reachable",
+        "view": "FIXED_ACCEPTED_INVOCATION"
+      }
+    ],
+    "rng": {
+      "policy": "NONE"
+    },
+    "prospective_outputs": {
+      "transition_kinds": [],
+      "event_kinds": [],
+      "state_delta_policy": "PRIMITIVE_LOCAL_TYPED_PROSPECTIVE_ONLY"
+    },
+    "atomicity": {
+      "owner": "EXECUTION_SEGMENT",
+      "policy": "ONE_EXECUTION_SEGMENT"
+    },
+    "suspension": {
+      "kind": "NONE",
+      "retention": "NONE"
+    },
+    "failures": [
+      "failure.hydration_required",
+      "failure.missing_reference",
+      "failure.catalog_context_incompatible",
+      "failure.execution_limit"
+    ],
+    "bounds": [
+      "target_count"
+    ],
+    "evidence": {
+      "commit_disposition_owner": "EXECUTION_SEGMENT",
+      "committed_fact_owner": "MECHANICAL_EVENT",
+      "outcome_owner": "RESOLUTION_RECEIPT",
+      "trace_policy": "RETAIN_PRIMITIVE_ID_ARGUMENT_FINGERPRINT_RESULTS_AND_DISPOSITION"
+    }
+  },
+  "validation_matrix": {
+    "subject_policy": "BOUND_CANDIDATE_ROLES_ONLY",
+    "storage_policy": "RESOLUTION_PROSPECTIVE_SELECTION_ONLY",
+    "failure_policy": "EXACT_CONTRACT_FAILURE_CODES",
+    "validation_policy": "EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS",
+    "segment_semantics": "ONE_SEGMENT",
+    "compiler_form_propagation": "NOT_COMPILER_FORM",
+    "activation_dependencies": {
+      "requires_exact_seed_consumer": true,
+      "required_active_primitive_ids": [],
+      "required_active_value_kinds": [
+        "role",
+        "target_spec"
+      ]
+    },
+    "causal_recovery": "NOT_APPLICABLE",
+    "chronology_barrier": "NOT_APPLICABLE"
+  }
+}

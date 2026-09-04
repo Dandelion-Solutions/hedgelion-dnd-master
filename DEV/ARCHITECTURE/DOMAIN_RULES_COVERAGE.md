@@ -80,7 +80,7 @@ A player tries to persuade a guard. Fiction determines feasibility and supplies 
 - `GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/gameplay-spine-seed.json`
 - `DEV/CATALOG/domain-rules-coverage.json`
 - `DEV/CATALOG/domain-rules-coverage-binding.json` — approved B′ strictly-derived package-identity companion; not yet materialized while the recorded execution-capability blocker remains open
-- `DEV/CATALOG/activity-primitive-contracts.json`
+- `DEV/CATALOG/activity-primitive-contracts/` (manifest + shared vocabularies + per-primitive shards, assembled by `DEV/TOOLS/activity_primitive_contracts.py`)
 - `DEV/SCHEMAS/domain-rules-coverage.schema.json`
 - `DEV/SCHEMAS/domain-rules-coverage-binding.schema.json` — approved B′ closed binding schema; not yet materialized while the same blocker remains open
 - `DEV/SCHEMAS/gameplay-spine-seed.schema.json`

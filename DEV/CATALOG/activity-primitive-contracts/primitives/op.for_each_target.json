@@ -1,0 +1,104 @@
+{
+  "primitive_id": "op.for_each_target",
+  "contract": {
+    "primitive_id": "op.for_each_target",
+    "family": "CONTROL",
+    "execution_kind": "COMPILER_FORM",
+    "realization_state": "COMPLETE",
+    "selection_state": "ACTIVE_ADMITTED",
+    "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+    "exact_seed_consumer_ids": [
+      "activity.spell.acid_splash",
+      "activity.spell.thunderclap",
+      "activity.spell.magic_missile",
+      "activity.spell.burning_hands"
+    ],
+    "authority_denied": [
+      "dynamic_query",
+      "unbounded_iteration",
+      "child_authority_expansion",
+      "independent_commit"
+    ],
+    "arguments": {
+      "targets": {
+        "value_kind": "prior_export_ref",
+        "cardinality": "single",
+        "required": true,
+        "source": "ACTIVITY_ARGUMENT"
+      },
+      "steps": {
+        "value_kind": "compiled_step_list",
+        "cardinality": "single",
+        "required": true,
+        "source": "ACTIVITY_ARGUMENT"
+      }
+    },
+    "results": {
+      "results": {
+        "value_kind": "ordered_result_list",
+        "cardinality": "single",
+        "required": true,
+        "source": "PRIMITIVE_RESULT"
+      }
+    },
+    "reads": [
+      {
+        "kind": "BINDING",
+        "id": "targets",
+        "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
+      }
+    ],
+    "rng": {
+      "policy": "NONE"
+    },
+    "prospective_outputs": {
+      "transition_kinds": [],
+      "event_kinds": [],
+      "state_delta_policy": "PRIMITIVE_LOCAL_TYPED_PROSPECTIVE_ONLY"
+    },
+    "atomicity": {
+      "owner": "EXECUTION_SEGMENT",
+      "policy": "CHILD_STEPS_DEFINE_SEGMENTS"
+    },
+    "suspension": {
+      "kind": "NONE",
+      "retention": "NONE"
+    },
+    "failures": [
+      "failure.hydration_required",
+      "failure.missing_reference",
+      "failure.catalog_context_incompatible",
+      "failure.execution_limit"
+    ],
+    "bounds": [
+      "target_count",
+      "step_count",
+      "branch_depth"
+    ],
+    "evidence": {
+      "commit_disposition_owner": "EXECUTION_SEGMENT",
+      "committed_fact_owner": "MECHANICAL_EVENT",
+      "outcome_owner": "RESOLUTION_RECEIPT",
+      "trace_policy": "RETAIN_PRIMITIVE_ID_ARGUMENT_FINGERPRINT_RESULTS_AND_DISPOSITION"
+    }
+  },
+  "validation_matrix": {
+    "subject_policy": "PRIOR_TARGET_EXPORT_ONLY",
+    "storage_policy": "ENCLOSING_CHILD_STEPS_ONLY",
+    "failure_policy": "EXACT_CONTRACT_FAILURE_CODES",
+    "validation_policy": "EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS",
+    "segment_semantics": "CHILD_STEPS_DEFINE_SEGMENTS",
+    "compiler_form_propagation": "CHILD_STEPS_ONLY_WITH_ENCLOSING_SEGMENT_INHERITANCE",
+    "activation_dependencies": {
+      "requires_exact_seed_consumer": true,
+      "required_active_primitive_ids": [],
+      "required_active_value_kinds": [
+        "compiled_step_list",
+        "prior_export_ref",
+        "ordered_result_list"
+      ]
+    },
+    "causal_recovery": "NOT_APPLICABLE",
+    "chronology_barrier": "NOT_APPLICABLE"
+  }
+}

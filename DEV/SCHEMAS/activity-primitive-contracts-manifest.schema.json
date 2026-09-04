@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/activity-primitive-contracts-manifest.schema.json",
+  "title": "HDM Activity Primitive Contracts — Physical Manifest",
+  "$comment": "Physical-representation shape of DEV/CATALOG/activity-primitive-contracts/manifest.json. Global contract-level state not owned by a single primitive. Reuses top-level property definitions from the canonical logical schema (activity-primitive-contracts.schema.json) via $ref rather than duplicating them; per-primitive state lives in the paired primitive shards and shared vocabulary files, reassembled by DEV/TOOLS/activity_primitive_contracts.py into the logical contract validated by activity-primitive-contracts.schema.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_name", "schema_version", "catalog_generation", "owner", "laws", "primitive_shards"],
+  "properties": {
+    "schema_name": {"$ref": "https://hedgelion.invalid/schemas/activity-primitive-contracts.schema.json#/properties/schema_name"},
+    "schema_version": {"$ref": "https://hedgelion.invalid/schemas/activity-primitive-contracts.schema.json#/properties/schema_version"},
+    "catalog_generation": {"$ref": "https://hedgelion.invalid/schemas/activity-primitive-contracts.schema.json#/properties/catalog_generation"},
+    "owner": {"$ref": "https://hedgelion.invalid/schemas/activity-primitive-contracts.schema.json#/properties/owner"},
+    "laws": {"$ref": "https://hedgelion.invalid/schemas/activity-primitive-contracts.schema.json#/properties/laws"},
+    "primitive_shards": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^op\\.[a-z][a-z0-9_]*$"}
+    }
+  }
+}

@@ -4,7 +4,7 @@ Status: **CANONICAL S6D-06 OWNER**
 
 ## 1. Scope and authority
 
-This document owns the exact compile-time and execution contract of every registered `op.*` Activity primitive. The machine companion is `DEV/CATALOG/activity-primitive-contracts.json`; its schema and primitive-local value shapes are in `DEV/SCHEMAS/activity-primitive-contracts.schema.json` and `DEV/SCHEMAS/activity-primitive-values.schema.json`.
+This document owns the exact compile-time and execution contract of every registered `op.*` Activity primitive. The machine companion is `DEV/CATALOG/activity-primitive-contracts/` (`manifest.json` plus `shared/value_contracts.json`, `shared/read_contracts.json` and one `primitives/<primitive_id>.json` shard per primitive, assembled by `DEV/TOOLS/activity_primitive_contracts.py`); its schema and primitive-local value shapes are in `DEV/SCHEMAS/activity-primitive-contracts.schema.json` and `DEV/SCHEMAS/activity-primitive-values.schema.json`.
 
 At S6D-06 closure the registry contained exactly 31 quarantine dispositions and granted no execution authority. S6D-07 replaces eleven of those dispositions after exact MVP seed consumers, owner-local semantics, failure closure, dependency admission and recovery boundaries are proven: `op.select_targets`, `op.roll`, `op.resolve_check`, `op.resolve_attack`, `op.resolve_save`, `op.apply_damage`, `op.apply_healing`, `op.consume_resource`, exact `op.create_effect`, exact action-entitlement `op.emit_fact`, and bounded compiler form `op.for_each_target`. Their catalog rows are now `COMPLETE / ACTIVE_ADMITTED`; the remaining 20 rows retain their S6D-06 quarantine.
 

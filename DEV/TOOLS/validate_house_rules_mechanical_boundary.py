@@ -3,6 +3,7 @@ import hashlib, json, re, sys
 from pathlib import Path
 from DEV.TOOLS.validate_ruleset_package_closure import build_resolved_lock
 from DEV.TOOLS.catalog_admission import load_catalog_admission_ledger
+from DEV.TOOLS.activity_primitive_contracts import load_activity_primitive_contracts
 
 POLICY_BASIS_REF=re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*@[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 MACHINE_ID=re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
@@ -122,7 +123,7 @@ def validate(root):
     if set(dw)!=set(rw): raise ValueError("active adjudicated consumer mismatch: complete normalized rows differ")
     parse_empty_template(root)
     if c["current_supported_policy_realizations"]: raise ValueError("empty engine campaign template requires an empty current realization set")
-    primitives={r["primitive_id"]:r for r in load(root,"DEV/CATALOG/activity-primitive-contracts.json")["contracts"]}
+    primitives={r["primitive_id"]:r for r in load_activity_primitive_contracts(root)["contracts"]}
     for f in c["conformance_only_policy_realizations"]:
         valid=all(definitions.get(x)=="definition.activity" for x in f["realization_refs"]) if f["target_class"]=="PACKAGE_DEFINITION" else all(x in primitives and primitives[x].get("selection_state")=="ACTIVE_ADMITTED" and primitives[x].get("realization_state")=="COMPLETE" for x in f["realization_refs"])
         actual="CONFORMANCE_VALID_LINK_ONLY" if valid else "failure.policy_realization_gap"

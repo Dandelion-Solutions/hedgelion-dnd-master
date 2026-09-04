@@ -86,14 +86,29 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
                 {"fixture_id": "quarantined-link", "policy_basis_ref": "policy.test@" + "d" * 40, "target_class": "PRIMITIVE", "realization_refs": ["op.request_choice"], "expected": "failure.policy_realization_gap"},
             ],
         })
-        self.write_json(root, "DEV/CATALOG/activity-primitive-contracts.json", {"contracts": [{"primitive_id": "op.request_choice", "selection_state": "DORMANT_NONSELECTABLE", "realization_state": "QUARANTINED"}]})
+        self.write_json(root, "DEV/CATALOG/activity-primitive-contracts/manifest.json", {
+            "schema_name": "hdm_activity_primitive_contracts", "schema_version": 1,
+            "catalog_generation": "test", "owner": "test", "laws": {"test_law": "x"},
+            "primitive_shards": ["op.request_choice"],
+        })
+        self.write_json(root, "DEV/CATALOG/activity-primitive-contracts/shared/value_contracts.json", {
+            "dummy_value_kind": {"owner": "test", "validation": "EXACT_NAMED_CONTRACT", "type": "string"},
+        })
+        self.write_json(root, "DEV/CATALOG/activity-primitive-contracts/shared/read_contracts.json", {
+            "SELECTOR": [], "ACCESSOR": [], "INVOCATION_FACT": [], "DOMAIN_OWNER": [], "INFRASTRUCTURE": [],
+        })
+        self.write_json(root, "DEV/CATALOG/activity-primitive-contracts/primitives/op.request_choice.json", {
+            "primitive_id": "op.request_choice",
+            "contract": {"primitive_id": "op.request_choice", "selection_state": "DORMANT_NONSELECTABLE", "realization_state": "QUARANTINED"},
+            "validation_matrix": {"subject_policy": "test"},
+        })
         failures = sorted(VALIDATOR.POLICY_FAILURES)
-        self.write_json(root, "DEV/CATALOG/core-catalog.json", {"registries": {"execution_failure_codes": failures}})
+        self.write_json(root, "DEV/CATALOG/core-catalog.json", {"registries": {"execution_failure_codes": failures, "activity_primitives": ["op.request_choice"]}})
         self.write_json(root, "DEV/CATALOG/catalog-admission-ledger/manifest.json", {
             "schema_name": "hdm_catalog_admission_ledger", "schema_version": 1,
             "catalog_generation": "test", "source_registry": "DEV/CATALOG/core-catalog.json",
             "decision_owner": "test", "laws": {}, "ruleset_package_admission": {},
-            "retired_reference_audit": [], "family_shards": ["execution_failure_codes"],
+            "retired_reference_audit": [], "family_shards": ["execution_failure_codes", "activity_primitives"],
         })
         self.write_json(root, "DEV/CATALOG/catalog-admission-ledger/families/execution_failure_codes.json", {
             "registry_family": "execution_failure_codes",
@@ -104,6 +119,16 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
             },
             "family_policy": {},
             "entries": [{"registry_family": "execution_failure_codes", "id": value, "admission_disposition": "ACTIVE_ADMITTED"} for value in failures],
+        })
+        self.write_json(root, "DEV/CATALOG/catalog-admission-ledger/families/activity_primitives.json", {
+            "registry_family": "activity_primitives",
+            "registry_census": {
+                "registry_family": "activity_primitives", "count": 1,
+                "scope_stratum": "S6D_PRIMARY", "admitted": 0,
+                "embedded_nonowner": 0, "dormant_nonselectable": 1, "stale_remove": 0,
+            },
+            "family_policy": {},
+            "entries": [{"registry_family": "activity_primitives", "id": "op.request_choice", "admission_disposition": "DORMANT_NONSELECTABLE"}],
         })
         template = root / "GAME/CAMPAIGN/RULES/HOUSE_RULES.yaml"
         template.parent.mkdir(parents=True, exist_ok=True)

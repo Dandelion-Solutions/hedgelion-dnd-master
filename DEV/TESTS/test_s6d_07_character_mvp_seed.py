@@ -2,6 +2,7 @@ import json
 import unittest
 from pathlib import Path
 from DEV.TOOLS.validate_character_mvp_seed import advance_fighter_to_level_2, create_innate_sorcery_effect_candidate, evaluate_ready_pc, resolve_package, validate_primitive_argument
+from DEV.TOOLS.activity_primitive_contracts import load_activity_primitive_contracts
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -14,9 +15,7 @@ class CharacterMvpSeedTests(unittest.TestCase):
         cls.capability = json.loads((PACKAGE / "character-capabilities.json").read_text(encoding="utf-8"))
         cls.manifest = json.loads((PACKAGE / "ruleset-package-manifest.json").read_text(encoding="utf-8"))
         cls.seed = json.loads((PACKAGE / "character-mvp-seed.json").read_text(encoding="utf-8"))
-        cls.primitive_catalog = json.loads(
-            (ROOT / "DEV" / "CATALOG" / "activity-primitive-contracts.json").read_text(encoding="utf-8")
-        )
+        cls.primitive_catalog = load_activity_primitive_contracts(ROOT)
         cls.actors = json.loads(
             (ROOT / "DEV" / "TESTS" / "fixtures" / "s6d-07-character-mvp-actors.json").read_text(encoding="utf-8")
         )

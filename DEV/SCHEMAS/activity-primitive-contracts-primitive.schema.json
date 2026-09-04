@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/activity-primitive-contracts-primitive.schema.json",
+  "title": "HDM Activity Primitive Contracts — Physical Primitive Shard",
+  "$comment": "Physical-representation shape of one DEV/CATALOG/activity-primitive-contracts/primitives/<primitive_id>.json shard: exactly one primitive's `contract` and `validation_matrix`, held together as one semantic unit, matching the identity-bound pair the logical schema requires (contracts[primitive_id] + primitive_validation_matrix[primitive_id]). Reuses the `contract` and `primitiveValidationMatrix` $defs from the canonical logical schema via $ref. DEV/TOOLS/activity_primitive_contracts.py separately enforces that `contract.primitive_id`, the wrapper's own `primitive_id` and the shard's file name all agree.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["primitive_id", "contract", "validation_matrix"],
+  "properties": {
+    "primitive_id": {"type": "string", "pattern": "^op\\.[a-z][a-z0-9_]*$"},
+    "contract": {"$ref": "https://hedgelion.invalid/schemas/activity-primitive-contracts.schema.json#/$defs/contract"},
+    "validation_matrix": {"$ref": "https://hedgelion.invalid/schemas/activity-primitive-contracts.schema.json#/$defs/primitiveValidationMatrix"}
+  }
+}

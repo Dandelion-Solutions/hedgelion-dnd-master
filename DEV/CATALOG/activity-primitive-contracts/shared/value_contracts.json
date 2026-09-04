@@ -1,0 +1,268 @@
+{
+  "action_economy_id": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      "resource.action"
+    ]
+  },
+  "action_entitlement_consumption": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      "NEXT_ELIGIBLE_ACTIVATION"
+    ]
+  },
+  "action_entitlement_fact_kind": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      "fact.action_entitlement"
+    ]
+  },
+  "action_entitlement_retry": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      "IDEMPOTENCY_KEY_REUSES_COMMITTED_GRANT"
+    ]
+  },
+  "action_entitlement_scope": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      "CURRENT_TURN"
+    ]
+  },
+  "activity_family_ref": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "catalog_ref": "activity_families"
+  },
+  "effect_instance_key": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "compiler_ref": "stable_target_source_definition_tuple"
+  },
+  "innate_sorcery_duration_spec": {
+    "owner": "DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      {
+        "kind_id": "duration.metric",
+        "amount": 1,
+        "unit_id": "unit.minute"
+      }
+    ]
+  },
+  "innate_sorcery_effect_definition_ref": {
+    "owner": "DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      "effect.innate_sorcery"
+    ]
+  },
+  "self_actor_role": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      "actor"
+    ]
+  },
+  "activity_definition_ref": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "catalog_ref": "content_definition_kinds:definition.activity"
+  },
+  "area_spec": {
+    "owner": "DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/area-spec.schema.json"
+  },
+  "invocation_fact": {
+    "owner": "DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/invocation-fact.schema.json"
+  },
+  "attack_outcome": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      "hit",
+      "miss",
+      "critical"
+    ]
+  },
+  "boundary_occurrence": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/boundary-occurrence.schema.json"
+  },
+  "check_outcome": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      "success",
+      "failure"
+    ]
+  },
+  "choice_request": {
+    "owner": "DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/choice-request.schema.json"
+  },
+  "compiled_step_list": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "compiler_ref": "bounded_compiled_activity_steps"
+  },
+  "contest_outcome": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      "actor_wins",
+      "opponent_wins",
+      "tie"
+    ]
+  },
+  "cost_commitment_id": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      "cost_commit.on_accept"
+    ]
+  },
+  "currency_definition_ref": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "catalog_ref": "content_definition_kinds:definition.currency"
+  },
+  "damage_components": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/activity-primitive-values.schema.json#/$defs/damageComponents"
+  },
+  "duration_spec": {
+    "owner": "DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/duration-spec.schema.json"
+  },
+  "effect_definition_ref": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "catalog_ref": "content_definition_kinds:definition.effect"
+  },
+  "effect_update_spec": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/activity-primitive-values.schema.json#/$defs/effectUpdate"
+  },
+  "entity_definition_ref": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "catalog_ref": "content_definition_kinds"
+  },
+  "entity_ref": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/activity-primitive-values.schema.json#/$defs/entityRef"
+  },
+  "event_kind": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "catalog_ref": "event_kinds"
+  },
+  "integer": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "type": "integer"
+  },
+  "machine_id": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/activity-primitive-values.schema.json#/$defs/machineId"
+  },
+  "mechanical_predicate": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/mechanical-predicate.schema.json"
+  },
+  "number": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "type": "number"
+  },
+  "ordered_result_list": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "compiler_ref": "bounded_ordered_typed_result_list"
+  },
+  "parameter_bindings": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/activity-parameter-binding.schema.json"
+  },
+  "prior_export_ref": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "compiler_ref": "typed_prior_export_symbol"
+  },
+  "prior_roll_result": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/roll-result.schema.json"
+  },
+  "reaction_offer": {
+    "owner": "DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/reaction-offer.schema.json"
+  },
+  "resource_definition_ref": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "catalog_ref": "content_definition_kinds:definition.resource"
+  },
+  "role": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/activity-primitive-values.schema.json#/$defs/role"
+  },
+  "roll_request": {
+    "owner": "DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/roll-request.schema.json"
+  },
+  "roll_result": {
+    "owner": "DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/roll-result.schema.json"
+  },
+  "save_outcome": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "enum": [
+      "success",
+      "failure"
+    ]
+  },
+  "target_spec": {
+    "owner": "DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/target-spec.schema.json"
+  },
+  "temporal_binding": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/temporal-binding.schema.json"
+  },
+  "zone_definition_ref": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "catalog_ref": "content_definition_kinds:definition.effect"
+  },
+  "zone_update_spec": {
+    "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
+    "validation": "EXACT_NAMED_CONTRACT",
+    "schema_ref": "DEV/SCHEMAS/activity-primitive-values.schema.json#/$defs/zoneUpdate"
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "primitive_id": "op.remove_effect",
+  "contract": {
+    "primitive_id": "op.remove_effect",
+    "family": "EFFECT",
+    "execution_kind": "MUTATION",
+    "realization_state": "QUARANTINED",
+    "selection_state": "DORMANT_NONSELECTABLE",
+    "activation_trigger": "S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES",
+    "arguments": {
+      "effect_role": {
+        "value_kind": "role",
+        "cardinality": "single",
+        "required": true,
+        "source": "BOUND_ROLE"
+      },
+      "reason_id": {
+        "value_kind": "machine_id",
+        "cardinality": "single",
+        "required": true,
+        "source": "ACTIVITY_ARGUMENT"
+      }
+    },
+    "results": {
+      "effect_ref": {
+        "value_kind": "entity_ref",
+        "cardinality": "single",
+        "required": true,
+        "source": "PRIMITIVE_RESULT"
+      }
+    },
+    "reads": [
+      {
+        "kind": "DOMAIN_OWNER",
+        "id": "world.effect",
+        "view": "PINNED_COMMITTED_OR_PROSPECTIVE"
+      }
+    ],
+    "rng": {
+      "policy": "NONE"
+    },
+    "prospective_outputs": {
+      "transition_kinds": [
+        "transition.actor_state"
+      ],
+      "event_kinds": [
+        "event.effect.removed"
+      ],
+      "state_delta_policy": "PRIMITIVE_LOCAL_TYPED_PROSPECTIVE_ONLY"
+    },
+    "atomicity": {
+      "owner": "EXECUTION_SEGMENT",
+      "policy": "ONE_EXECUTION_SEGMENT"
+    },
+    "suspension": {
+      "kind": "NONE",
+      "retention": "NONE"
+    },
+    "failures": [
+      "failure.hydration_required",
+      "failure.missing_reference",
+      "failure.catalog_context_incompatible",
+      "failure.execution_limit"
+    ],
+    "bounds": [],
+    "evidence": {
+      "commit_disposition_owner": "EXECUTION_SEGMENT",
+      "committed_fact_owner": "MECHANICAL_EVENT",
+      "outcome_owner": "RESOLUTION_RECEIPT",
+      "trace_policy": "RETAIN_PRIMITIVE_ID_ARGUMENT_FINGERPRINT_RESULTS_AND_DISPOSITION"
+    }
+  },
+  "validation_matrix": {
+    "subject_policy": "EFFECT_ROLE_ONLY",
+    "storage_policy": "WORLD_EFFECT_OWNER_ONLY",
+    "failure_policy": "EXACT_CONTRACT_FAILURE_CODES",
+    "validation_policy": "EXACT_CONTRACT_ARGUMENT_AND_RESULT_VALUE_CONTRACTS",
+    "segment_semantics": "ONE_SEGMENT",
+    "compiler_form_propagation": "NOT_COMPILER_FORM",
+    "activation_dependencies": {
+      "requires_exact_seed_consumer": true,
+      "required_active_primitive_ids": [],
+      "required_active_value_kinds": [
+        "role",
+        "machine_id",
+        "entity_ref"
+      ]
+    },
+    "causal_recovery": "NOT_APPLICABLE",
+    "chronology_barrier": "NOT_APPLICABLE"
+  }
+}

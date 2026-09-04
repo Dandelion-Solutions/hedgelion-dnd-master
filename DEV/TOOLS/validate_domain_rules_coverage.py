@@ -4,6 +4,7 @@ import hashlib, json, re
 from pathlib import Path
 from DEV.TOOLS.validate_character_mvp_seed import CanonicalSchemaValidator
 from DEV.TOOLS.validate_ruleset_package_closure import build_resolved_lock
+from DEV.TOOLS.activity_primitive_contracts import load_activity_primitive_contracts
 
 MACHINE_ID=re.compile(r"^[a-z][a-z0-9_]*(?:\.[a-z0-9_]+)+$")
 TOP={"schema_name","schema_version","profile_id","source_manifest","source_sets","required_coverage_keys","coverage_ledger","atomic_routes","scope_exclusions","completeness_proof"}
@@ -36,7 +37,7 @@ def build_expected_source_sets(root):
  package=set()
  for name in ("character-mvp-seed.json","health-effects-recovery-seed.json","gameplay-spine-seed.json"):
   package.update(x for x in strings(load(pkg/name)) if MACHINE_ID.fullmatch(x))
- mech=load(root/"DEV/CATALOG/mechanical-surfaces.json"); portable=load(root/"DEV/CATALOG/portable-value-routes.json"); prim=load(root/"DEV/CATALOG/activity-primitive-contracts.json")
+ mech=load(root/"DEV/CATALOG/mechanical-surfaces.json"); portable=load(root/"DEV/CATALOG/portable-value-routes.json"); prim=load_activity_primitive_contracts(root)
  machine=[]
  machine += [f"accessor:{k}" for k,v in mech["accessors"].items() if v["disposition"]=="ACTIVE_ADMITTED"]
  machine += [f"selector:{k}" for k in mech["selectors"]]
@@ -135,7 +136,7 @@ def validate_contract(value,root=None):
  for row in value["coverage_ledger"]: exact(row,LEDGER,row.get("source_key","row"))
  if value["coverage_ledger"]!=expected["coverage_ledger"]: raise ValueError("ledger evidence/route mismatch")
  for row in value["atomic_routes"]: exact(row,ROUTE,row.get("route_id","route"))
- prim=load(root/"DEV/CATALOG/activity-primitive-contracts.json"); rows={x["primitive_id"]:x for x in prim["contracts"]}; activities=set()
+ prim=load_activity_primitive_contracts(root); rows={x["primitive_id"]:x for x in prim["contracts"]}; activities=set()
  for name in ("character-mvp-seed.json","gameplay-spine-seed.json"): activities|={x["id"] for x in load(root/"GAME/RULES/packages/hdm.rules.dnd2024-srd52-core"/name)["activity_definitions"]}
  for key in value["source_sets"]["ACTIVE_MACHINE_CONSUMER_KEYS"]:
   if key.startswith("MACHINE:edge:"):
