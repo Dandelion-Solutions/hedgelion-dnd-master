@@ -371,8 +371,8 @@ ARCHITECTURE_REOPENED:                   NO
 UPSTREAM_REOPEN_REQUIRED:                NO
 WP19_STARTED:                            NO
 IMPLEMENTATION_PLANNING_STARTED:         NO
-CURRENT_VERIFICATION_STATE:              Final Senior recovery publication pending exact-SHA hosted validation/read-back
-NEXT_EXACT_TASK_OR_SLICE:                 Mandatory final Senior re-audit of recovered WP-18 package after exact final-SHA verification
+CURRENT_VERIFICATION_STATE:              Recovery publication complete; hosted validation is external exact-current-SHA evidence required before final PASS claim
+NEXT_EXACT_TASK_OR_SLICE:                 Mandatory final Senior re-audit of recovered WP-18 package
 KNOWN_BLOCKERS:                           NONE
-UNPUBLISHED_WORK:                         Final recovery publication checkpoint only
+UNPUBLISHED_WORK:                         NONE
 ```
