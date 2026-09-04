@@ -6,14 +6,14 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-18 / FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT
+GLOBAL_STATE: R2.7 WP-18 CLOSED / FINAL SENIOR RE-AUDIT PASS — AWAITING NEXT OWNER AUTHORIZATION
 
-CURRENT_WORKSTREAM: R2.7 WP-18 — Story / continuity / Dramaturg planning
-CURRENT_SLICE: Final Senior recovery complete — SR18-FINAL-01 machine provenance repaired, focused regression added, downstream obligations reclassified; stop at mandatory final Senior re-audit
+CURRENT_WORKSTREAM: NONE ACTIVE — WP-18 closed; WP-19 not started
+CURRENT_SLICE: WP-18 final Senior re-audit PASS after final recovery and downstream-consumer impact reconciliation; no next architecture domain activated
 
-LAST_CLOSED_UNIT: R2.7 WP-17 Steps 1-8 / async collaboration / agency-safe progression — final Senior re-audit PASS at 6855c79190e6bb087c8039a1adf2bf71deec2c70
-NEXT_AUTHORIZED_UNIT: Mandatory final Senior re-audit of the recovered WP-18 package only
-REQUIRED_GATE: Mandatory final Senior re-audit after WP-18 final recovery. Do not begin WP-19 or implementation planning without explicit Senior GO/closure.
+LAST_CLOSED_UNIT: R2.7 WP-18 / Story / continuity / Dramaturg planning — final Senior re-audit PASS against audited public basis 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
+NEXT_AUTHORIZED_UNIT: NONE — WP-19 Step 1 is next in sequence but requires explicit owner/Senior transition authorization
+REQUIRED_GATE: Explicit owner/Senior authorization before starting WP-19. Implementation planning remains unauthorized until later R2.7 sequencing permits it.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
@@ -65,7 +65,7 @@ WP17_CLOSURE:                       AUTHORIZED
 
 WP-17 owns async collaboration collection/handoff only and does not own Story/Dramaturg planning. WP-18 consumes that boundary without absorbing or reopening WP-17.
 
-## WP-18 completed Steps 1-8 result
+## Closed WP-18 architecture result and final Senior recovery
 
 Domain:
 
@@ -109,9 +109,9 @@ WP-18 Step 1 was recovered after Senior HOLD. `SR18-01..SR18-04` were closed, th
 Independent Step-6 whole-project reconstruction produced:
 
 ```text
-STEP_6_BLOCKING:       1
-STEP_6_SIGNIFICANT:    7
-UNRESOLVED_BLOCKING:   0
+STEP_6_BLOCKING:        1
+STEP_6_SIGNIFICANT:     7
+UNRESOLVED_BLOCKING:    0
 UNRESOLVED_SIGNIFICANT: 0
 HUMAN_DECISION_REQUIRED: NO
 UPSTREAM_REOPEN_REQUIRED: NO
@@ -134,13 +134,13 @@ All eight were architecturally resolved and propagated through Step 7 into the f
 
 `SR18-FINAL-01 / SIGNIFICANT` is closed by final recovery:
 
-- `DEV/CATALOG/catalog-admission-ledger.json` now routes `planning_entry_classes` family-level and item-level semantic/downstream/evidence provenance through accepted R2.5 + final WP-18 owner;
+- the catalog-admission machine contract routes `planning_entry_classes` family-level and item-level semantic/downstream/evidence provenance through accepted R2.5 + final WP-18 owner;
 - planning IDs and semantics remain unchanged;
-- `DEV/TESTS/test_wp18_final_senior_recovery.py` guards exact vocabulary and provenance;
+- `DEV/TESTS/test_wp18_final_senior_recovery.py` guards exact vocabulary and provenance through the canonical catalog-admission loader;
 - `DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-final-senior-recovery-canonical-amendment.md` supersedes the old blanket machine-defer interpretation;
 - `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-final-senior-recovery.md` records the itemized 13-duty re-audit.
 
-Current recovery disposition:
+Recovery disposition:
 
 ```text
 SR18_FINAL_01: CLOSED
@@ -204,12 +204,44 @@ Substantive implementation remains later for canonical §13 items 1-9 and 11-13.
 
 No WP-18 runtime/schema/template implementation was started by this recovery.
 
+### Final Senior re-audit closure
+
+The final Senior re-audit was repeated against current public basis `3fe5784a452e6a7eb4a3da7fa21a721aa39a4506` after subsequent DEV-only catalog/tooling refactors and downstream-consumer reconciliation.
+
+Those intervening changes preserve WP-18 semantic contracts, the exact planning vocabulary and the accepted R2.5 + WP-18 provenance chain. No contradiction, newly unsatisfied current consumer or material insufficiency requiring WP-18 reopen was found.
+
+Hosted verification for that audited basis:
+
+```text
+WORKFLOW: Validate engine source
+RUN_ID: 33909858743
+HEAD_SHA: 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
+STATUS: completed
+CONCLUSION: success
+FULL_MAINTENANCE_AUDIT_STEP: success
+DEV_UNIT_TESTS_STEP: success
+```
+
+Final disposition:
+
+```text
+WP18_FINAL_SENIOR_RE_AUDIT:         PASS
+WP18_CLOSURE:                       AUTHORIZED
+RESIDUAL_SENIOR_BLOCKING:           0
+RESIDUAL_SENIOR_SIGNIFICANT:        0
+HUMAN_DECISION_REQUIRED:            NO
+ARCHITECTURE_REOPENED:              NO
+UPSTREAM_REOPEN_REQUIRED:           NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
+IMPLEMENTATION_PLANNING_STARTED:     NO
+```
+
 ## Scope boundary
 
 - Roadmaps own intended sequencing, scope and dependencies; `DEV/CURRENT_PROGRESS.md` owns actual current state/gate.
-- `DEV/PROJECT_MAP.md` and `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` are derivative routing aids and were not changed by WP-18 Step 8 because fresh current routing already reaches the needed owner/consumer families and the R2.7 index intentionally delegates current completion state to this file/task-local cursor.
-- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; WP-18 recovery found none requiring reopen.
-- WP-18 is **not closed** until mandatory final Senior re-audit passes.
-- WP-19 remains not started and unauthorized pending explicit Senior closure/GO.
+- `DEV/PROJECT_MAP.md` and `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` are derivative routing aids; current routing already reaches the needed owner/consumer families and the R2.7 index intentionally delegates current completion state to this file/task-local cursor.
+- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; the final WP-18 re-audit found none.
+- WP-18 is **closed / final Senior re-audit PASS**.
+- WP-19 remains not started and is not activated by this closure checkpoint; it requires an explicit owner/Senior transition.
 - Implementation planning remains unauthorized.
 - Aside from the mechanically determined catalog provenance correction and its focused regression guard, no runtime/schema/template implementation was changed by WP-18 recovery.

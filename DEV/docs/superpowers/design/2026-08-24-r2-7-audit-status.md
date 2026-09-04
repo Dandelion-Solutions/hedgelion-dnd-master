@@ -40,12 +40,12 @@ Historical/pre-resume evidence remains subordinate to current progress and curre
 
 ```text
 AUDIT_STATUS: IN_PROGRESS
-LAST_CLOSED_DOMAIN: WP-17
-CURRENT_DOMAIN: WP-18
-CURRENT_DOMAIN_TOPIC: Story / continuity / Dramaturg planning
-CURRENT_SLICE: WP-18 FINAL SENIOR RECOVERY COMPLETE — SR18-FINAL-01 CLOSED — MANDATORY FINAL SENIOR RE-AUDIT
+LAST_CLOSED_DOMAIN: WP-18
+CURRENT_DOMAIN: NONE
+CURRENT_DOMAIN_TOPIC: NONE
+CURRENT_SLICE: WP-18 CLOSED — FINAL SENIOR RE-AUDIT PASS; no next domain activated
 NEXT_DOMAIN: WP-19
-OWNER_GATE: REQUIRED — mandatory final Senior re-audit of recovered WP-18 package; WP-19 and implementation planning require explicit Senior GO/closure
+OWNER_GATE: REQUIRED — explicit owner/Senior transition before WP-19 Step 1; implementation planning remains unauthorized
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -55,7 +55,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-18 FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT
+R2_7_STATUS: WP-18 CLOSED / FINAL SENIOR RE-AUDIT PASS — AWAITING NEXT OWNER AUTHORIZATION
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
 R2_7_WP07: STEPS 1-8 COMPLETE — SENIOR REVIEW PASS
 R2_7_WP08: COMPLETE
@@ -68,10 +68,10 @@ R2_7_WP14: CLOSED / FINAL SENIOR RE-AUDIT PASS
 R2_7_WP15: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP16: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP17: CLOSED / FINAL SENIOR RE-AUDIT PASS
-R2_7_WP18: FINAL SENIOR RECOVERY COMPLETE / MANDATORY FINAL SENIOR RE-AUDIT
+R2_7_WP18: CLOSED / FINAL SENIOR RE-AUDIT PASS
 ```
 
-WP-18 is not closed until mandatory final Senior re-audit passes. WP-19 and implementation planning remain blocked.
+WP-18 is closed. WP-19 is next in sequence but has not been activated. Implementation planning remains blocked by later R2.7 sequencing.
 
 ---
 
@@ -90,7 +90,7 @@ WP-18 is not closed until mandatory final Senior re-audit passes. WP-19 and impl
 | WP-15 | CLOSED / FINAL SENIOR AUDIT PASS |
 | WP-16 | CLOSED / FINAL SENIOR AUDIT PASS |
 | WP-17 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
-| WP-18 | FINAL SENIOR RECOVERY COMPLETE / MANDATORY FINAL SENIOR RE-AUDIT |
+| WP-18 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
 | WP-19..WP-27 | NOT STARTED |
 
 ---
@@ -290,9 +290,9 @@ Confirmed defect:
 
 Recovery completed:
 
-1. `DEV/CATALOG/catalog-admission-ledger.json` family-level and both item-level provenance fields now use the exact accepted R2.5 + final WP-18 owner chain;
+1. the catalog-admission machine contract family-level and both item-level provenance fields use the exact accepted R2.5 + final WP-18 owner chain;
 2. planning vocabulary remains exactly `planning.source_anchored_constraint` and `planning.provisional_dramaturgic_direction`;
-3. `DEV/TESTS/test_wp18_final_senior_recovery.py` guards exact vocabulary and provenance;
+3. `DEV/TESTS/test_wp18_final_senior_recovery.py` guards exact vocabulary and provenance through the canonical catalog-admission loader;
 4. `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-final-senior-recovery.md` records the 13-duty downstream machine/runtime re-audit;
 5. `DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-final-senior-recovery-canonical-amendment.md` supersedes the old blanket machine-defer interpretation without reopening WP-18 semantics.
 
@@ -325,14 +325,47 @@ IMPLEMENTATION_PLANNING_STARTED:     NO
 
 ---
 
+## WP-18 final Senior re-audit closure
+
+Final re-audit basis:
+
+```text
+WP18_FINAL_AUDITED_PUBLIC_BASIS_SHA: 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
+WP18_FINAL_SENIOR_RE_AUDIT:          PASS
+WP18_CLOSURE:                        AUTHORIZED
+RESIDUAL_SENIOR_BLOCKING:            0
+RESIDUAL_SENIOR_SIGNIFICANT:         0
+HUMAN_DECISION_REQUIRED:             NO
+ARCHITECTURE_REOPENED:               NO
+UPSTREAM_REOPEN_REQUIRED:            NO
+```
+
+The final re-audit checked the recovered canonical owner/amendment, current machine provenance and focused regression, intervening DEV-only catalog/tooling refactors, and whether any new current downstream consumer requires reopening the accepted Story/continuity/Dramaturg ownership boundary.
+
+No contradiction, newly unsatisfied current consumer or material insufficiency was found. Intervening structural refactors preserve the exact planning vocabulary and accepted R2.5 + WP-18 provenance chain.
+
+Hosted verification on the exact audited public basis:
+
+```text
+WORKFLOW: Validate engine source
+RUN_ID: 33909858743
+HEAD_SHA: 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
+STATUS: completed
+CONCLUSION: success
+FULL_MAINTENANCE_AUDIT_STEP: success
+DEV_UNIT_TESTS_STEP: success
+```
+
+---
+
 ## Forward obligations
 
-- **WP-18** — final Senior recovery complete; mandatory final Senior re-audit is the only current gate.
-- **WP-19** — bootstrap/campaign creation remains downstream and not started.
+- **WP-18** — CLOSED / final Senior re-audit PASS.
+- **WP-19** — bootstrap/campaign creation is next in sequence, remains not started, and requires explicit owner/Senior transition authorization before Step 1.
 - **WP-20** — engine update/schema evolution/migration remains downstream.
 - **WP-21..WP-26** — remain downstream audit domains.
 - **WP-27** — implementation-planning readiness remains the final R2.7 domain.
-- **Implementation planning** — unauthorized until current Senior gate and later R2.7 sequencing permit it.
+- **Implementation planning** — unauthorized until later R2.7 sequencing permits it.
 
 These are routing obligations, not authorization to start later work.
 
@@ -360,6 +393,9 @@ WP18_FINAL_RECOVERY_RECORD:              DEV/docs/superpowers/design/2026-09-04-
 WP18_FINAL_RECOVERY_AMENDMENT:           DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-final-senior-recovery-canonical-amendment.md
 WP18_FINAL_RECOVERY_TEST:                DEV/TESTS/test_wp18_final_senior_recovery.py
 WP18_CATALOG_PROVENANCE_SYNC_SHA:        bbf0b6ad04a78f5df701197957e751fde19b1464
+WP18_FINAL_AUDITED_PUBLIC_BASIS_SHA:      3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
+WP18_FINAL_SENIOR_RE_AUDIT:              PASS
+WP18_CLOSURE:                            AUTHORIZED
 
 WP18_STEP6_BLOCKING:                     1
 WP18_STEP6_SIGNIFICANT:                  7
@@ -371,8 +407,8 @@ ARCHITECTURE_REOPENED:                   NO
 UPSTREAM_REOPEN_REQUIRED:                NO
 WP19_STARTED:                            NO
 IMPLEMENTATION_PLANNING_STARTED:         NO
-CURRENT_VERIFICATION_STATE:              Recovery publication complete; hosted validation is external exact-current-SHA evidence required before final PASS claim
-NEXT_EXACT_TASK_OR_SLICE:                 Mandatory final Senior re-audit of recovered WP-18 package
+CURRENT_VERIFICATION_STATE:              Hosted Validate engine source run 33909858743 succeeded on exact audited basis 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506; closure checkpoint itself is status-only and requires normal post-publication read-back/CI verification
+NEXT_EXACT_TASK_OR_SLICE:                 Await explicit owner/Senior authorization to transition to WP-19 Step 1
 KNOWN_BLOCKERS:                           NONE
 UNPUBLISHED_WORK:                         NONE
 ```
