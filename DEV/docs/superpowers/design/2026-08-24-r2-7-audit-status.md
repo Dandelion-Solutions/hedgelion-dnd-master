@@ -43,9 +43,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-17
 CURRENT_DOMAIN: WP-18
 CURRENT_DOMAIN_TOPIC: Story / continuity / Dramaturg planning
-CURRENT_SLICE: WP-18 STEPS 1-8 COMPLETE — CANONICAL SPEC + STEP-8 SELF-REVIEW + STEP-6 FINDING PROPAGATION COMPLETE — MANDATORY FINAL SENIOR AUDIT
+CURRENT_SLICE: WP-18 FINAL SENIOR RECOVERY COMPLETE — SR18-FINAL-01 CLOSED — MANDATORY FINAL SENIOR RE-AUDIT
 NEXT_DOMAIN: WP-19
-OWNER_GATE: REQUIRED — mandatory final Senior audit of completed WP-18 Steps 1-8; WP-19 and implementation planning require explicit Senior GO/closure
+OWNER_GATE: REQUIRED — mandatory final Senior re-audit of recovered WP-18 package; WP-19 and implementation planning require explicit Senior GO/closure
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -55,7 +55,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-18 STEPS 1-8 COMPLETE — MANDATORY FINAL SENIOR AUDIT
+R2_7_STATUS: WP-18 FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
 R2_7_WP07: STEPS 1-8 COMPLETE — SENIOR REVIEW PASS
 R2_7_WP08: COMPLETE
@@ -68,10 +68,10 @@ R2_7_WP14: CLOSED / FINAL SENIOR RE-AUDIT PASS
 R2_7_WP15: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP16: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP17: CLOSED / FINAL SENIOR RE-AUDIT PASS
-R2_7_WP18: STEPS 1-8 COMPLETE / MANDATORY FINAL SENIOR AUDIT
+R2_7_WP18: FINAL SENIOR RECOVERY COMPLETE / MANDATORY FINAL SENIOR RE-AUDIT
 ```
 
-WP-18 is not closed until mandatory final Senior audit passes. WP-19 and implementation planning remain blocked.
+WP-18 is not closed until mandatory final Senior re-audit passes. WP-19 and implementation planning remain blocked.
 
 ---
 
@@ -90,7 +90,7 @@ WP-18 is not closed until mandatory final Senior audit passes. WP-19 and impleme
 | WP-15 | CLOSED / FINAL SENIOR AUDIT PASS |
 | WP-16 | CLOSED / FINAL SENIOR AUDIT PASS |
 | WP-17 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
-| WP-18 | STEPS 1-8 COMPLETE / MANDATORY FINAL SENIOR AUDIT |
+| WP-18 | FINAL SENIOR RECOVERY COMPLETE / MANDATORY FINAL SENIOR RE-AUDIT |
 | WP-19..WP-27 | NOT STARTED |
 
 ---
@@ -181,7 +181,12 @@ Explicit Senior GO then authorized WP-18 Steps 2-8.
 
 Final implementation-facing authority:
 
-- `DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-canonical-spec.md`.
+- `DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-canonical-spec.md`;
+- `DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-final-senior-recovery-canonical-amendment.md`.
+
+Final-Senior recovery provenance:
+
+- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-final-senior-recovery.md`.
 
 Step-8 self-review:
 
@@ -223,10 +228,10 @@ Correct item-level Step-6 provenance:
 4. **F18-04 / SIGNIFICANT** — player-local membership/control/role eligibility invalidation incomplete; resolved by separating stable PLAYER route identity from current active membership, role/recipient eligibility and relevant control/subject compatibility.
 5. **F18-05 / SIGNIFICANT** — generic `source_basis[]` risked a universal currentness vector; resolved by native-owner-typed source basis and owner-local currentness evidence only where the owner defines it.
 6. **F18-06 / SIGNIFICANT** — physical planning root ambiguous; resolved by fixed baseline routes `DRAMATURG/SHARED.yaml` and `DRAMATURG/PLAYERS/<player_id>.yaml`, with no planning registry/index/root selector authority.
-7. **F18-07 / SIGNIFICANT** — catalog admission provenance stale; resolved architecturally by preserving vocabulary and recording downstream owner-provenance alignment through R2.5 + final WP-18 owner.
+7. **F18-07 / SIGNIFICANT** — catalog admission provenance stale; resolved architecturally by preserving vocabulary and recording owner-provenance alignment through R2.5 + final WP-18 owner; final Senior recovery additionally closes the previously omitted current machine synchronization.
 8. **F18-08 / SIGNIFICANT** — Source Manifest retained a false current Project-Map negative; resolved by correcting current routing and retaining legacy absence only as historical nonauthority evidence.
 
-All eight findings are resolved/propagated. No material human decision or upstream reopen remains.
+All eight findings are architecturally resolved/propagated. No material human decision or upstream reopen remains.
 
 ### Final owner allocation
 
@@ -263,15 +268,66 @@ Only successfully published retained planning generations are eligible as cross-
 
 ### Downstream realization obligations
 
-Later implementation must align Story schemas/topology, retained Dramaturg schema/routes, eligibility/currentness/CAS/rebase, multiplayer mode lifecycle, catalog owner provenance, current CORE/instruction mapping and required regression/host-containment evaluation.
+Later implementation must align Story schemas/topology, retained Dramaturg schema/routes, eligibility/currentness/CAS/rebase, multiplayer mode lifecycle, current CORE/instruction mapping and required regression/host-containment evaluation.
 
-No runtime/schema/template/catalog/test implementation changed in WP-18 architecture Steps 1-8.
+Canonical §13 item 10 (`planning_entry_classes` catalog/admission provenance) is mechanically synchronized now; the full behavioral acceptance suite under item 12 remains downstream except for the focused provenance regression guarding item 10.
+
+No runtime/schema/template implementation changed in WP-18 final Senior recovery.
+
+---
+
+## WP-18 final Senior recovery
+
+Senior finding:
+
+```text
+SR18_FINAL_01: SIGNIFICANT
+```
+
+Confirmed defect:
+
+- `planning_entry_classes` machine-readable semantic/downstream/evidence provenance still pointed to stale R2.1 / Step-5.10 Story-continuity owners despite accepted R2.5 + final WP-18 planning ownership.
+
+Recovery completed:
+
+1. `DEV/CATALOG/catalog-admission-ledger.json` family-level and both item-level provenance fields now use the exact accepted R2.5 + final WP-18 owner chain;
+2. planning vocabulary remains exactly `planning.source_anchored_constraint` and `planning.provisional_dramaturgic_direction`;
+3. `DEV/TESTS/test_wp18_final_senior_recovery.py` guards exact vocabulary and provenance;
+4. `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-final-senior-recovery.md` records the 13-duty downstream machine/runtime re-audit;
+5. `DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-final-senior-recovery-canonical-amendment.md` supersedes the old blanket machine-defer interpretation without reopening WP-18 semantics.
+
+Downstream classification:
+
+```text
+MECHANICAL_SYNC_NOW:
+  canonical §13 item 10 — COMPLETE
+  focused item-10 provenance regression — COMPLETE
+
+SUBSTANTIVE_IMPLEMENTATION_LATER:
+  canonical §13 items 1-9 and 11-13
+  item 12 full behavioral acceptance suite remains downstream
+```
+
+Recovery disposition:
+
+```text
+SR18_FINAL_01:                       CLOSED
+NEW_BLOCKING:                        0
+NEW_SIGNIFICANT:                     1
+UNRESOLVED_BLOCKING:                 0
+UNRESOLVED_SIGNIFICANT:              0
+HUMAN_DECISION_REQUIRED:             NO
+ARCHITECTURE_REOPENED:               NO
+UPSTREAM_REOPEN_REQUIRED:            NO
+WP19_STARTED:                        NO
+IMPLEMENTATION_PLANNING_STARTED:     NO
+```
 
 ---
 
 ## Forward obligations
 
-- **WP-18** — Steps 1-8 complete; mandatory final Senior audit is the only current gate.
+- **WP-18** — final Senior recovery complete; mandatory final Senior re-audit is the only current gate.
 - **WP-19** — bootstrap/campaign creation remains downstream and not started.
 - **WP-20** — engine update/schema evolution/migration remains downstream.
 - **WP-21..WP-26** — remain downstream audit domains.
@@ -300,9 +356,14 @@ WP18_STEP1_CRITIC:                       DEV/docs/superpowers/design/2026-09-04-
 WP18_STEP7_RESOLUTION:                   DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-step-7-finding-resolution-propagation-gate.md
 WP18_STEP8_SELF_REVIEW:                  DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-step-8-canonicalization-self-review.md
 WP18_FINAL_CANONICAL_ARTIFACT:           DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-canonical-spec.md
+WP18_FINAL_RECOVERY_RECORD:              DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-final-senior-recovery.md
+WP18_FINAL_RECOVERY_AMENDMENT:           DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-final-senior-recovery-canonical-amendment.md
+WP18_FINAL_RECOVERY_TEST:                DEV/TESTS/test_wp18_final_senior_recovery.py
+WP18_CATALOG_PROVENANCE_SYNC_SHA:        bbf0b6ad04a78f5df701197957e751fde19b1464
 
 WP18_STEP6_BLOCKING:                     1
 WP18_STEP6_SIGNIFICANT:                  7
+WP18_SR18_FINAL_01:                      CLOSED
 WP18_UNRESOLVED_BLOCKING:                0
 WP18_UNRESOLVED_SIGNIFICANT:             0
 HUMAN_DECISION_REQUIRED:                 NO
@@ -310,8 +371,8 @@ ARCHITECTURE_REOPENED:                   NO
 UPSTREAM_REOPEN_REQUIRED:                NO
 WP19_STARTED:                            NO
 IMPLEMENTATION_PLANNING_STARTED:         NO
-CURRENT_VERIFICATION_STATE:              Final Senior gate; any completion claim must be backed by fresh verification of the current remote HEAD
-NEXT_EXACT_TASK_OR_SLICE:                 Mandatory final Senior audit of completed WP-18 package; no WP-19 or implementation planning without explicit Senior GO/closure
+CURRENT_VERIFICATION_STATE:              Final Senior recovery publication pending exact-SHA hosted validation/read-back
+NEXT_EXACT_TASK_OR_SLICE:                 Mandatory final Senior re-audit of recovered WP-18 package after exact final-SHA verification
 KNOWN_BLOCKERS:                           NONE
-UNPUBLISHED_WORK:                         NONE after final cursor synchronization checkpoint
+UNPUBLISHED_WORK:                         Final recovery publication checkpoint only
 ```

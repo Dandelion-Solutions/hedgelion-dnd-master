@@ -6,14 +6,14 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-18 / STEPS 1-8 COMPLETE — MANDATORY FINAL SENIOR AUDIT
+GLOBAL_STATE: R2.7 WP-18 / FINAL SENIOR RECOVERY COMPLETE — MANDATORY FINAL SENIOR RE-AUDIT
 
 CURRENT_WORKSTREAM: R2.7 WP-18 — Story / continuity / Dramaturg planning
-CURRENT_SLICE: WP-18 Step 8 canonicalization complete — final implementation-facing canonical spec + Step-8 self-review; Step-6 1 BLOCKING + 7 SIGNIFICANT all resolved/propagated; stop at mandatory final Senior audit
+CURRENT_SLICE: Final Senior recovery complete — SR18-FINAL-01 machine provenance repaired, focused regression added, downstream obligations reclassified; stop at mandatory final Senior re-audit
 
 LAST_CLOSED_UNIT: R2.7 WP-17 Steps 1-8 / async collaboration / agency-safe progression — final Senior re-audit PASS at 6855c79190e6bb087c8039a1adf2bf71deec2c70
-NEXT_AUTHORIZED_UNIT: Mandatory final Senior audit of the completed WP-18 Steps 1-8 package only
-REQUIRED_GATE: Mandatory final Senior audit after complete WP-18 Step 8. Do not begin WP-19 or implementation planning without explicit Senior GO/closure.
+NEXT_AUTHORIZED_UNIT: Mandatory final Senior re-audit of the recovered WP-18 package only
+REQUIRED_GATE: Mandatory final Senior re-audit after WP-18 final recovery. Do not begin WP-19 or implementation planning without explicit Senior GO/closure.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
@@ -77,7 +77,12 @@ Canonical direction:
 
 Final implementation-facing authority:
 
-- `DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-canonical-spec.md`.
+- `DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-canonical-spec.md`;
+- `DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-final-senior-recovery-canonical-amendment.md`.
+
+Final-Senior recovery provenance:
+
+- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-final-senior-recovery.md`.
 
 Step-8 self-review:
 
@@ -123,7 +128,29 @@ The eight itemized findings are:
 7. **F18-07 / SIGNIFICANT** — current catalog admission provenance for planning entry classes was stale;
 8. **F18-08 / SIGNIFICANT** — the expanded Source Manifest retained a false claim about current `DEV/PROJECT_MAP.md` routing Story through a legacy absent `GAME/CORE/STORY.md` path.
 
-All eight were mechanically resolved and propagated through Step 7 into the final canonical owner and/or final Source Manifest. No finding required a new human product-semantics decision or upstream architecture reopen.
+All eight were architecturally resolved and propagated through Step 7 into the final canonical owner and/or final Source Manifest. Final Senior audit later identified that F18-07's current machine-readable provenance had not actually been synchronized. No finding required a new human product-semantics decision or upstream architecture reopen.
+
+### Final Senior recovery / SR18-FINAL-01
+
+`SR18-FINAL-01 / SIGNIFICANT` is closed by final recovery:
+
+- `DEV/CATALOG/catalog-admission-ledger.json` now routes `planning_entry_classes` family-level and item-level semantic/downstream/evidence provenance through accepted R2.5 + final WP-18 owner;
+- planning IDs and semantics remain unchanged;
+- `DEV/TESTS/test_wp18_final_senior_recovery.py` guards exact vocabulary and provenance;
+- `DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-final-senior-recovery-canonical-amendment.md` supersedes the old blanket machine-defer interpretation;
+- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-final-senior-recovery.md` records the itemized 13-duty re-audit.
+
+Current recovery disposition:
+
+```text
+SR18_FINAL_01: CLOSED
+NEW_BLOCKING: 0
+NEW_SIGNIFICANT: 1
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+UPSTREAM_REOPEN_REQUIRED: NO
+```
 
 ### Final owner allocation
 
@@ -166,20 +193,23 @@ PREPARATION HAS NO ENTITLEMENT TO OCCUR
 CANON INVALIDATES PREPARATION
 ```
 
-### Downstream realization, not current implementation
+### Machine-realization classification after final Senior recovery
 
-WP-18 architecture records later realization obligations for Story schemas/topology, retained Dramaturg schema/routes/currentness/CAS, catalog provenance, current CORE/instruction mapping and regression coverage.
+Mechanical synchronization completed now:
 
-No runtime/schema/template/catalog/test implementation was changed by WP-18 Steps 1-8.
+- canonical §13 item 10 — `planning_entry_classes` catalog/admission provenance;
+- focused regression guarding that exact provenance.
 
-The current `planning_entry_classes` vocabulary remains semantically unchanged; stale provenance alignment is a downstream implementation obligation.
+Substantive implementation remains later for canonical §13 items 1-9 and 11-13. The full behavioral acceptance suite under item 12 remains downstream; only the narrow provenance guard was mechanically implicated now.
+
+No WP-18 runtime/schema/template implementation was started by this recovery.
 
 ## Scope boundary
 
 - Roadmaps own intended sequencing, scope and dependencies; `DEV/CURRENT_PROGRESS.md` owns actual current state/gate.
 - `DEV/PROJECT_MAP.md` and `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` are derivative routing aids and were not changed by WP-18 Step 8 because fresh current routing already reaches the needed owner/consumer families and the R2.7 index intentionally delegates current completion state to this file/task-local cursor.
-- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; WP-18 found none requiring reopen.
-- WP-18 Steps 1-8 are complete but **not closed** until mandatory final Senior audit passes.
+- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; WP-18 recovery found none requiring reopen.
+- WP-18 is **not closed** until mandatory final Senior re-audit passes.
 - WP-19 remains not started and unauthorized pending explicit Senior closure/GO.
 - Implementation planning remains unauthorized.
-- No runtime/schema/template/catalog/test implementation was changed by WP-18 architecture work.
+- Aside from the mechanically determined catalog provenance correction and its focused regression guard, no runtime/schema/template implementation was changed by WP-18 recovery.
