@@ -6,14 +6,14 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-18 / STEP 1 COMPLETE — MANDATORY SENIOR STEP-1 REVIEW
+GLOBAL_STATE: R2.7 WP-18 / STEP 1 RECOVERED — MANDATORY SENIOR STEP-1 RE-REVIEW
 
 CURRENT_WORKSTREAM: R2.7 WP-18 — Story / continuity / Dramaturg planning
-CURRENT_SLICE: WP-18 Step 1 complete — Decision Brief + open-world Source Manifest + whole-project Step-1 critic published; 6 BLOCKING + 8 SIGNIFICANT itemized findings all closed; stop at mandatory Senior review
+CURRENT_SLICE: WP-18 Step 1 recovered after Senior HOLD — Architecture Task Brief + expanded open-world Source Manifest + rerun whole-project Task-Brief critic; SR18-01..SR18-04 closed; recovery critic found 0 new BLOCKING / 0 new SIGNIFICANT; stop at mandatory Senior re-review
 
 LAST_CLOSED_UNIT: R2.7 WP-17 Steps 1-8 / async collaboration / agency-safe progression — final Senior re-audit PASS at 6855c79190e6bb087c8039a1adf2bf71deec2c70
-NEXT_AUTHORIZED_UNIT: Mandatory Senior review of the WP-18 Step-1 package only
-REQUIRED_GATE: Mandatory Senior review after WP-18 Step 1. Do not begin WP-18 Step 2, WP-19 or implementation planning without explicit Senior GO.
+NEXT_AUTHORIZED_UNIT: Mandatory Senior re-review of the recovered WP-18 Step-1 package only
+REQUIRED_GATE: Mandatory Senior Step-1 re-review after WP-18 Senior recovery. Do not begin WP-18 Step 2, WP-19 or implementation planning without explicit Senior GO.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
@@ -144,42 +144,95 @@ Published design/evidence artifacts include:
 
 The Source Manifest remained open-world through the independent Step-6 reconstruction.
 
-## WP-18 Step-1 result
+## WP-18 Step-1 Senior recovery result
 
 Domain:
 
 > **Story / continuity / Dramaturg planning**
 
-Published Step-1 package:
-
-- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-decision-brief.md`;
-- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-source-manifest.md`;
-- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-decision-brief-critic.md`.
-
-The Step-1 framing preserves the accepted split between retrospective Story/continuity projections and prospective provisional Dramaturg planning, treats missing legacy Story paths as negative routing/machine-realization evidence rather than an architecture reopen trigger, requires consumer-first admission for retained planning, and makes bidirectional architecture-to-machine/machine-to-architecture proof mandatory in later synthesis.
-
-Step-1 critic disposition:
+Original Step-1 starting public state:
 
 ```text
-REPORTED_PRELIMINARY_BLOCKING:         5
-REPORTED_PRELIMINARY_SIGNIFICANT:      8
-RECONSTRUCTED_PRELIMINARY_BLOCKING:    5
-RECONSTRUCTED_PRELIMINARY_SIGNIFICANT: 8
-ADDITIONAL_SECOND_PASS_BLOCKING:       1
-ADDITIONAL_SECOND_PASS_SIGNIFICANT:    0
-TOTAL_ITEMIZED_BLOCKING:               6
-TOTAL_ITEMIZED_SIGNIFICANT:            8
-UNRESOLVED_BLOCKING:                   0
-UNRESOLVED_SIGNIFICANT:                0
-THIRD_PASS_NEW_BLOCKING:               0
-THIRD_PASS_NEW_SIGNIFICANT:            0
-HUMAN_DECISION_REQUIRED:               NO
-UPSTREAM_REOPEN_REQUIRED:              NO
-ARCHITECTURE_SELECTED:                 NO
-IMPLEMENTATION_CHANGED:                NO
-STEP_2_AUTHORIZED:                     NO
-NEXT_GATE:                             MANDATORY SENIOR STEP-1 REVIEW
+WP18_STEP1_START_SHA: 0b6cde38eb188713ac50ab7690f73eeab524e693
+WP18_STEP1_SENIOR_RECOVERY_BASIS_SHA: e35d96a08c73a818b62b0e799bc9d9fc3fc3e54e
 ```
+
+Correct recovered Step-1 package:
+
+- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-task-brief.md` — **Architecture Task Brief**;
+- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-source-manifest.md` — recovered open-world Source Manifest;
+- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-task-brief-critic.md` — mandatory whole-project Task-Brief critic.
+
+The incorrectly classified Step-1 `...-decision-brief.md` and `...-decision-brief-critic.md` are retired from the current tree and are not competing artifacts.
+
+### Senior HOLD recovery
+
+```text
+SR18_01: SIGNIFICANT — CLOSED
+SR18_02: BLOCKING    — CLOSED
+SR18_03: BLOCKING    — CLOSED
+SR18_04: SIGNIFICANT — CLOSED
+
+RECOVERY_CRITIC_NEW_BLOCKING:      0
+RECOVERY_CRITIC_NEW_SIGNIFICANT:   0
+UNRESOLVED_BLOCKING:               0
+UNRESOLVED_SIGNIFICANT:            0
+HUMAN_DECISION_REQUIRED:           NO
+UPSTREAM_REOPEN_REQUIRED:          NO
+ARCHITECTURE_SELECTED:             NO
+IMPLEMENTATION_CHANGED:            NO
+STEP_2_AUTHORIZED:                 NO
+NEXT_GATE:                         MANDATORY SENIOR STEP-1 RE-REVIEW
+```
+
+The historical pre-Senior Step-1 critic remains provenance only: 6 itemized BLOCKING + 8 itemized SIGNIFICANT, all previously closed. The four Senior findings are a separate recovery layer and do not rewrite historical finding identities.
+
+### SR18-01 — artifact taxonomy
+
+Current process requires Step 1 **Architecture Task Brief** + **Task-Brief critic**. Recovery uses only corrected `task-brief*` paths in current routing/status surfaces.
+
+### SR18-02 — Actor/native intentional-state owner
+
+WP-18 now explicitly includes R2.2 source-Actor ownership and current R2.7 realization:
+
+```text
+world.actor current private non-epistemic continuity
+    long_term_goal
+    current_objective
+    next_intention
+    material_commitments
+    reconsideration_cues
+```
+
+Current realization is represented by `ACTOR_MODEL.md`, `DEV/SCHEMAS/world-actor-state.schema.json`, `DEV/SCHEMAS/world-record.schema.json`, `DEV/CATALOG/entity-structures.json` and `DEV/TESTS/test_r2_7_wp04_actor_asset_conformance.py`.
+
+The required boundary is:
+
+```text
+Actor/NPC canonical current intentional state
+    != Dramaturg noncanonical future preparation
+    != Story/continuity retrospective projection
+```
+
+No evidence requires reopening R2.2.
+
+### SR18-03 — runtime consumer reconstruction
+
+The Source Manifest no longer claims a short CORE list is complete. The direct current material subgraph was rebuilt from `DEV/PROJECT_MAP.md` plus actual consumers and now includes, among others:
+
+- role/reasoning/presentation: `RUNTIME`, `AI_REASONING`, `PLAY_POLICY`, `PREP`, `GM_CRAFT`, `NARRATIVE`, `INFORMATION`, `LORE`, `NPC`, `DIALOGUE`;
+- world continuity/development: `PROCESSES`, `WORLDGEN`, `CAMPAIGN_OPERATIONS`, `SESSION`;
+- durability/currentness/shared state: `DURABILITY_GUARD`, `STORAGE`, `PERSISTENCE`, `SAVE_CONTRACT`, `INTEGRITY`, `MULTIPLAYER`, `LIVE_SCENE`, `CHRONOLOGY`, `SOURCES`.
+
+This is a current direct-consumer reconstruction for evidence routing, not a repository-global closed-world proof. The Source Manifest remains open-world.
+
+### SR18-04 — R2.6 host assurance
+
+R2.6 now constrains the WP-18 instruction/runtime/test/evaluation mapping. Architecture work must preserve behavioral-containment and planning/Story isolation acceptance obligations, while production-like integrated evaluation remains a **post-implementation implemented-MVP** obligation. No implementation or parallel MVP harness is activated by Step 1.
+
+### Recovered framing
+
+WP-18 continues to preserve accepted Story and Dramaturg semantics while adding the missing Actor owner and complete-enough direct runtime routing for Step-1 review. It still requires bidirectional architecture->machine and machine->architecture proof in later authorized work and still forbids machine representation from creating authority.
 
 R2.7 scope-discovery questions remain the subject of later evidence/design, not Step-1 answers by premature representation choice:
 
@@ -189,16 +242,15 @@ R2.7 scope-discovery questions remain the subject of later evidence/design, not 
 - how `preparation has no entitlement to occur; canon invalidates preparation` is enforced in instruction/runtime/test mapping;
 - how retained planning/Story state is prevented from becoming required canon/recovery authority accidentally.
 
-The Source Manifest remains open-world and must expand in Step 2 if Senior authorizes it.
-
 ## Scope boundary
 
 - Roadmaps own intended sequencing, scope and dependencies.
 - Task-local execution/audit cursors own recovery details inside their bounded workstream and are subordinate to this file.
 - Historical closure, provenance and status records remain historical evidence; they do not become current-progress authority.
-- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; WP-18 Step 1 found none requiring upstream reopen.
-- The WP-17 canonical specification was not repaired or changed by SR17-FINAL-01 or SR17-FINAL-01-R1.
+- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; WP-18 Step-1 recovery found none requiring R2.2 or other upstream reopen.
+- The WP-17 canonical specification was not repaired or changed by WP-18 recovery.
 - WP-17 is closed by final Senior re-audit PASS at `6855c79190e6bb087c8039a1adf2bf71deec2c70`.
-- WP-18 Story/continuity/Dramaturg planning is the only active domain; Step 1 is complete and awaiting mandatory Senior review.
+- WP-18 Story/continuity/Dramaturg planning is the only active domain; Step 1 is **RECOVERED — MANDATORY SENIOR STEP-1 RE-REVIEW**.
 - WP-18 Step 2 and WP-19 remain blocked pending explicit Senior Step-1 GO.
 - Implementation planning remains unauthorized.
+- No runtime/schema/template/catalog/test implementation was changed by this Senior recovery.
