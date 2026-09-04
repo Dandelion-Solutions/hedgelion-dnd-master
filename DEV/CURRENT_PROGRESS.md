@@ -6,38 +6,66 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-19 STEP 1 ACTIVE — TASK BRIEF / SOURCE MANIFEST / WHOLE-PROJECT BRIEF CRITIC
+GLOBAL_STATE: R2.7 WP-19 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 
 CURRENT_WORKSTREAM: R2.7 WP-19 — Bootstrap / campaign creation / initial materialization
-CURRENT_SLICE: WP-19 Step 1 only — construct the task-specific Source Manifest, complete the Architecture Task Brief, run the mandatory whole-project Task-Brief critic, repair mechanically resolvable BLOCKING/SIGNIFICANT framing defects, then stop for mandatory Senior review
+CURRENT_SLICE: WP-19 Step 1 complete — task-specific Source Manifest, complete Architecture Task Brief and mandatory whole-project Task-Brief critic published; all mechanically resolvable BLOCKING/SIGNIFICANT framing defects closed; awaiting mandatory Senior review
 
 LAST_CLOSED_UNIT: R2.7 WP-18 / Story / continuity / Dramaturg planning — final Senior re-audit PASS against audited public basis 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
-NEXT_AUTHORIZED_UNIT: R2.7 WP-19 Step 1 only
-REQUIRED_GATE: Mandatory Senior review after completed WP-19 Step 1. Step 2 is blocked pending explicit Senior GO. Any genuine product-semantics, authority, compatibility, hard-to-reverse lifecycle or risk-acceptance decision discovered in Step 1 must be raised as a decision-ready human gate; mechanically derivable technical detail remains agent-owned. Implementation planning remains unauthorized until later R2.7 sequencing permits it.
+NEXT_AUTHORIZED_UNIT: NONE — WP-19 Step 2 requires explicit Senior GO after review of the completed Step-1 package
+REQUIRED_GATE: Mandatory Senior review of completed WP-19 Step 1. Step 2 is blocked pending explicit Senior GO. Step-1 evidence identifies no residual Product Owner decision: HUMAN_DECISION_REQUIRED=NO and UPSTREAM_REOPEN_REQUIRED=NO. Implementation planning remains unauthorized until later R2.7 sequencing permits it.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
 ```
 
-## Active WP-19 Step-1 transition
+## WP-19 Step-1 mandatory Senior checkpoint
 
 Domain:
 
 > **Bootstrap / campaign creation / initial materialization**
 
-Transition authorization:
+Verified Step-1 execution basis:
 
 ```text
-WP19_STEP1_START_BASIS_SHA:        39d12e5b1c1d4b890cfcc4b4c64e5cab16e0d7ca
-OWNER_TRANSITION_AUTHORIZED:       YES — 2026-09-05
-WP19_STEP1_AUTHORIZED:             YES
-WP19_STEP2_AUTHORIZED:             NO
-IMPLEMENTATION_PLANNING_STARTED:   NO
+WP19_STEP1_EXECUTION_BASIS_SHA: 5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053
+OWNER_TRANSITION_AUTHORIZED:    YES — 2026-09-05
+WP19_STEP1_COMPLETE:            YES
+WP19_STEP1_SENIOR_REVIEW:       PENDING
+WP19_STEP2_AUTHORIZED:          NO
+IMPLEMENTATION_PLANNING_STARTED: NO
 ```
 
-The current authorization is deliberately narrow. Step 1 must complete its Source Manifest, Architecture Task Brief, mandatory whole-project Task-Brief critic, mechanically resolvable framing repairs and coherent publication checkpoint before returning to the mandatory Senior review stop. Step 2 must not begin before Senior GO.
+Review-ready Step-1 artifacts:
 
-Senior review for WP-19 must explicitly test whether any bootstrap/campaign-creation/first-play-readiness/compatibility choice crosses the human Product Owner boundary. Product semantics, canonical authority/ownership, meaningful compatibility policy, hard-to-reverse lifecycle choices and explicit risk acceptance belong at a decision-ready human gate when genuinely unresolved. Technical choices that are mechanically derivable from accepted owners remain agent-owned and must not be escalated merely because WP-19 touches product-facing bootstrap.
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief-critic.md`.
+
+Whole-project critic disposition:
+
+```text
+STEP1_BLOCKING:                 2
+STEP1_SIGNIFICANT:              5
+STEP1_MINOR:                    1
+UNRESOLVED_BLOCKING:            0
+UNRESOLVED_SIGNIFICANT:         0
+HUMAN_DECISION_REQUIRED:        NO
+UPSTREAM_REOPEN_REQUIRED:       NO
+ARCHITECTURE_REOPENED:          NO
+STEP2_STARTED:                  NO
+```
+
+The critic independently reconstructed storage/branch/access, runtime+ruleset package identity, materializer/template/schema/test, campaign identity/card/config, persistence/session/readiness and multiplayer/House-Rules dependencies beyond the original scope inventory.
+
+Two BLOCKING framing defects were closed before this checkpoint:
+
+1. current bootstrap prose omits the required exact `ruleset_set_sha256` materializer input even though canonical ruleset identity, runtime package metadata, `init_campaign.py` and release integration test establish the exact chain;
+2. a broad “campaign creation / first play” frame could collapse scaffold publication, provisional onboarding, READY_PC and PLAY_READY into one readiness state despite current accepted lifecycle/durability owners distinguishing them.
+
+Five SIGNIFICANT framing defects were also closed: branch/storage/access + stale-v2 reconciliation; campaign identity/card/config/current projections; initial-publication versus later durability/session/resume boundaries; multiplayer initial authority; and bidirectional machine/template/schema/test coverage. One MINOR WP-20/dormant-neighbor bleed risk was bounded explicitly.
+
+The Product Owner watch found no genuine unresolved product-semantics, authority, compatibility, hard-to-reverse lifecycle, material quality-trade-off or explicit risk-acceptance decision. Existing owners already settle those boundaries; current contradictions are mechanically resolvable consistency defects. Mandatory Senior review remains required as the independent process gate.
 
 ## Closed WP-16 canonical result
 
@@ -259,9 +287,10 @@ IMPLEMENTATION_PLANNING_STARTED:     NO
 ## Scope boundary
 
 - Roadmaps own intended sequencing, scope and dependencies; `DEV/CURRENT_PROGRESS.md` owns actual current state/gate.
-- `DEV/PROJECT_MAP.md` and `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` are derivative routing aids; current routing already reaches the needed owner/consumer families and the R2.7 index intentionally delegates current completion state to this file/task-local cursor.
-- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; the final WP-18 re-audit found none.
+- `DEV/PROJECT_MAP.md` and `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` are derivative routing aids; correctness-sensitive WP-19 framing follows actual current owners and machine/runtime consumers.
+- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; WP-19 Step-1 evidence requires no reopen.
 - WP-18 is **closed / final Senior re-audit PASS**.
-- WP-19 Step 1 is **active** under explicit owner/Senior transition authorization; Step 2 remains blocked pending the mandatory completed-Step-1 Senior review and GO.
+- WP-19 Step 1 is **COMPLETE — MANDATORY SENIOR REVIEW**. Step 2 is not authorized and has not started.
+- WP-20 is not started.
 - Implementation planning remains unauthorized.
-- Aside from the mechanically determined catalog provenance correction and its focused regression guard, no runtime/schema/template implementation was changed by WP-18 recovery.
+- No substantive runtime/schema/template implementation was performed by WP-19 Step 1; only design/provenance/status artifacts were changed.
