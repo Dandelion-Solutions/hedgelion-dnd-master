@@ -43,9 +43,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-18
 CURRENT_DOMAIN: WP-19
 CURRENT_DOMAIN_TOPIC: Bootstrap / campaign creation / initial materialization
-CURRENT_SLICE: WP-19 STEP 1 ACTIVE — Source Manifest + complete Architecture Task Brief + mandatory whole-project Task-Brief critic + mechanically resolvable framing repairs; Step 2 blocked
+CURRENT_SLICE: WP-19 STEP 1 COMPLETE — Source Manifest + Architecture Task Brief + mandatory whole-project Task-Brief critic complete; all mechanically resolvable BLOCKING/SIGNIFICANT framing defects closed; mandatory Senior review pending; Step 2 blocked
 NEXT_DOMAIN: WP-20
-OWNER_GATE: CLEARED FOR WP-19 STEP 1 ONLY — explicit owner/Senior transition 2026-09-05; mandatory Senior review after completed Step 1 before Step 2
+OWNER_GATE: REQUIRED — completed WP-19 Step 1 awaits mandatory Senior review; Step 2 requires explicit Senior GO
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -55,7 +55,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-19 STEP 1 ACTIVE — MANDATORY SENIOR REVIEW AFTER COMPLETED STEP 1
+R2_7_STATUS: WP-19 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
 R2_7_WP07: STEPS 1-8 COMPLETE — SENIOR REVIEW PASS
 R2_7_WP08: COMPLETE
@@ -69,12 +69,12 @@ R2_7_WP15: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP16: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP17: CLOSED / FINAL SENIOR RE-AUDIT PASS
 R2_7_WP18: CLOSED / FINAL SENIOR RE-AUDIT PASS
-R2_7_WP19: STEP 1 ACTIVE
+R2_7_WP19: STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 ```
 
-WP-19 is activated for Step 1 only. The worker must complete the task-specific Source Manifest, Architecture Task Brief, mandatory whole-project Task-Brief critic and all mechanically resolvable BLOCKING/SIGNIFICANT framing repairs, publish a coherent Step-1 checkpoint, and stop for Senior review. Step 2 and implementation planning remain blocked.
+WP-19 Step 1 is complete and review-ready. Step 2 is not authorized. The mandatory Senior review must inspect the Source Manifest, completed Architecture Task Brief and independent whole-project Task-Brief critic before any Step-2 work begins.
 
-Senior review carries an explicit Product Owner watch: genuine unresolved product semantics, canonical authority/ownership, meaningful compatibility policy, hard-to-reverse lifecycle choices or explicit risk acceptance must be surfaced as decision-ready human gates; mechanically derivable technical choices remain agent-owned and are not escalation grounds by themselves.
+The Step-1 Product Owner watch found no residual human-owned decision. Accepted owners already settle the relevant product semantics, canonical authority, current pre-release compatibility policy, lifecycle boundaries and quality direction. The discovered bootstrap/materializer and stale-v2 inconsistencies are mechanically resolvable consistency defects against those owners.
 
 ---
 
@@ -94,7 +94,7 @@ Senior review carries an explicit Product Owner watch: genuine unresolved produc
 | WP-16 | CLOSED / FINAL SENIOR AUDIT PASS |
 | WP-17 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
 | WP-18 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
-| WP-19 | STEP 1 ACTIVE — MANDATORY SENIOR REVIEW AFTER COMPLETED STEP 1 |
+| WP-19 | STEP 1 COMPLETE — MANDATORY SENIOR REVIEW |
 | WP-20..WP-27 | NOT STARTED |
 
 ---
@@ -362,10 +362,59 @@ DEV_UNIT_TESTS_STEP: success
 
 ---
 
+## WP-19 Step-1 completed / mandatory Senior checkpoint
+
+Domain:
+
+> **Bootstrap / campaign creation / initial materialization**
+
+Verified Step-1 execution basis:
+
+```text
+WP19_STEP1_EXECUTION_BASIS_SHA: 5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053
+```
+
+Review-ready Step-1 artifacts:
+
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief-critic.md`.
+
+Independent whole-project critic disposition:
+
+```text
+STEP1_BLOCKING:                 2
+STEP1_SIGNIFICANT:              5
+STEP1_MINOR:                    1
+UNRESOLVED_BLOCKING:            0
+UNRESOLVED_SIGNIFICANT:         0
+HUMAN_DECISION_REQUIRED:        NO
+UPSTREAM_REOPEN_REQUIRED:       NO
+ARCHITECTURE_REOPENED:          NO
+STEP2_STARTED:                  NO
+STEP2_AUTHORIZED:               NO
+IMPLEMENTATION_PLANNING_STARTED: NO
+```
+
+Finding summary:
+
+1. `F19-S1-01 / BLOCKING` — exact `ruleset_set_sha256` propagation was missing from bootstrap prose framing although required by the materializer and current package/test contracts; framing repaired to require exact `RUNTIME_PACKAGE -> init_campaign -> MANIFEST.ruleset` reconciliation.
+2. `F19-S1-02 / BLOCKING` — scaffold, provisional onboarding, READY_PC and PLAY_READY could be collapsed into one readiness state; framing repaired with explicit lifecycle/authority transitions.
+3. `F19-S1-03 / SIGNIFICANT` — branch/storage/access owners and stale storage-v2 projections were not safe to omit; framing now requires current v3/supersession reconciliation under existing pre-release canonicalization authority.
+4. `F19-S1-04 / SIGNIFICANT` — campaign identity/card/config/current projections were under-scoped; actual owners/schemas/templates added.
+5. `F19-S1-05 / SIGNIFICANT` — initial from-scratch publication versus later setup durability/session/resume path was under-scoped; transaction classes and failure cases added.
+6. `F19-S1-06 / SIGNIFICANT` — multiplayer initial mode/join-policy/PLAYER authority was not guaranteed by a singleplayer-shaped frame; current closed access owners added without reopen.
+7. `F19-S1-07 / SIGNIFICANT` — prose-only audit would miss the R2.7 machine->architecture direction; template/schema/materializer/release/test consumers added as first-class evidence.
+8. `F19-S1-08 / MINOR` — future WP-20 compatibility and dormant neighboring work could bleed into WP-19; explicit non-activation/defer boundaries added.
+
+All mechanically resolvable BLOCKING/SIGNIFICANT framing defects are closed in the published Step-1 package. No Product Owner decision is currently required. Senior review is the mandatory independent process gate only.
+
+---
+
 ## Forward obligations
 
 - **WP-18** — CLOSED / final Senior re-audit PASS.
-- **WP-19** — Step 1 ACTIVE under explicit owner/Senior transition authorization. Complete Source Manifest + Architecture Task Brief + mandatory whole-project Task-Brief critic + mechanically resolvable framing repairs, publish a coherent checkpoint, then stop for mandatory Senior review. Step 2 remains blocked pending Senior GO.
+- **WP-19** — Step 1 COMPLETE / mandatory Senior review pending. Step 2 requires explicit Senior GO and has not started.
 - **WP-20** — engine update/schema evolution/migration remains downstream and not started.
 - **WP-21..WP-26** — remain downstream audit domains.
 - **WP-27** — implementation-planning readiness remains the final R2.7 domain.
@@ -408,17 +457,26 @@ WP18_UNRESOLVED_BLOCKING:                0
 WP18_UNRESOLVED_SIGNIFICANT:             0
 
 WP19_STEP1_START_BASIS_SHA:              39d12e5b1c1d4b890cfcc4b4c64e5cab16e0d7ca
+WP19_STEP1_EXECUTION_BASIS_SHA:          5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053
 WP19_OWNER_TRANSITION_AUTHORIZED:        YES — 2026-09-05
-WP19_STEP1_STATUS:                       ACTIVE
+WP19_SOURCE_MANIFEST:                    DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-source-manifest.md
+WP19_STEP1_TASK_BRIEF:                   DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief.md
+WP19_STEP1_CRITIC:                       DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief-critic.md
+WP19_STEP1_STATUS:                       COMPLETE — MANDATORY SENIOR REVIEW
+WP19_STEP1_BLOCKING:                     2
+WP19_STEP1_SIGNIFICANT:                  5
+WP19_STEP1_MINOR:                        1
+WP19_UNRESOLVED_BLOCKING:                0
+WP19_UNRESOLVED_SIGNIFICANT:             0
 WP19_STEP2_AUTHORIZED:                   NO
-WP19_PRODUCT_OWNER_WATCH:                ELEVATED — surface genuine product-semantics/authority/compatibility/hard-to-reverse lifecycle/risk decisions; do not escalate mechanically derivable technical detail
-HUMAN_DECISION_REQUIRED:                 NONE IDENTIFIED AT TRANSITION
+WP19_PRODUCT_OWNER_WATCH:                COMPLETE — no residual human-owned decision identified
+HUMAN_DECISION_REQUIRED:                 NO
 ARCHITECTURE_REOPENED:                   NO
 UPSTREAM_REOPEN_REQUIRED:                NO
 WP19_STARTED:                            YES
 IMPLEMENTATION_PLANNING_STARTED:         NO
-CURRENT_VERIFICATION_STATE:              Status-only transition; no runtime/schema/template change is part of this checkpoint; normal remote publication/read-back verification applies
-NEXT_EXACT_TASK_OR_SLICE:                 Complete WP-19 Step 1 package and stop at mandatory Senior review; do not begin Step 2
+CURRENT_VERIFICATION_STATE:              Step-1 design artifacts published; final checkpoint remote read-back and branch-delta verification required before worker completion report
+NEXT_EXACT_TASK_OR_SLICE:                 Mandatory Senior review of completed WP-19 Step 1; do not begin Step 2 without explicit Senior GO
 KNOWN_BLOCKERS:                           NONE
 UNPUBLISHED_WORK:                         NONE
 ```
