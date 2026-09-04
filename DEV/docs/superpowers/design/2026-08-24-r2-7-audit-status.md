@@ -2,7 +2,7 @@
 
 Status: **TASK-LOCAL R2.7 AUDIT CURSOR — NOT GLOBAL CURRENT-PROGRESS AUTHORITY**
 
-Date: 2026-09-04
+Date: 2026-09-05
 
 Execution protocol:
 
@@ -41,11 +41,11 @@ Historical/pre-resume evidence remains subordinate to current progress and curre
 ```text
 AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-18
-CURRENT_DOMAIN: NONE
-CURRENT_DOMAIN_TOPIC: NONE
-CURRENT_SLICE: WP-18 CLOSED — FINAL SENIOR RE-AUDIT PASS; no next domain activated
-NEXT_DOMAIN: WP-19
-OWNER_GATE: REQUIRED — explicit owner/Senior transition before WP-19 Step 1; implementation planning remains unauthorized
+CURRENT_DOMAIN: WP-19
+CURRENT_DOMAIN_TOPIC: Bootstrap / campaign creation / initial materialization
+CURRENT_SLICE: WP-19 STEP 1 ACTIVE — Source Manifest + complete Architecture Task Brief + mandatory whole-project Task-Brief critic + mechanically resolvable framing repairs; Step 2 blocked
+NEXT_DOMAIN: WP-20
+OWNER_GATE: CLEARED FOR WP-19 STEP 1 ONLY — explicit owner/Senior transition 2026-09-05; mandatory Senior review after completed Step 1 before Step 2
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -55,7 +55,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-18 CLOSED / FINAL SENIOR RE-AUDIT PASS — AWAITING NEXT OWNER AUTHORIZATION
+R2_7_STATUS: WP-19 STEP 1 ACTIVE — MANDATORY SENIOR REVIEW AFTER COMPLETED STEP 1
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
 R2_7_WP07: STEPS 1-8 COMPLETE — SENIOR REVIEW PASS
 R2_7_WP08: COMPLETE
@@ -69,9 +69,12 @@ R2_7_WP15: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP16: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP17: CLOSED / FINAL SENIOR RE-AUDIT PASS
 R2_7_WP18: CLOSED / FINAL SENIOR RE-AUDIT PASS
+R2_7_WP19: STEP 1 ACTIVE
 ```
 
-WP-18 is closed. WP-19 is next in sequence but has not been activated. Implementation planning remains blocked by later R2.7 sequencing.
+WP-19 is activated for Step 1 only. The worker must complete the task-specific Source Manifest, Architecture Task Brief, mandatory whole-project Task-Brief critic and all mechanically resolvable BLOCKING/SIGNIFICANT framing repairs, publish a coherent Step-1 checkpoint, and stop for Senior review. Step 2 and implementation planning remain blocked.
+
+Senior review carries an explicit Product Owner watch: genuine unresolved product semantics, canonical authority/ownership, meaningful compatibility policy, hard-to-reverse lifecycle choices or explicit risk acceptance must be surfaced as decision-ready human gates; mechanically derivable technical choices remain agent-owned and are not escalation grounds by themselves.
 
 ---
 
@@ -91,7 +94,8 @@ WP-18 is closed. WP-19 is next in sequence but has not been activated. Implement
 | WP-16 | CLOSED / FINAL SENIOR AUDIT PASS |
 | WP-17 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
 | WP-18 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
-| WP-19..WP-27 | NOT STARTED |
+| WP-19 | STEP 1 ACTIVE — MANDATORY SENIOR REVIEW AFTER COMPLETED STEP 1 |
+| WP-20..WP-27 | NOT STARTED |
 
 ---
 
@@ -361,8 +365,8 @@ DEV_UNIT_TESTS_STEP: success
 ## Forward obligations
 
 - **WP-18** — CLOSED / final Senior re-audit PASS.
-- **WP-19** — bootstrap/campaign creation is next in sequence, remains not started, and requires explicit owner/Senior transition authorization before Step 1.
-- **WP-20** — engine update/schema evolution/migration remains downstream.
+- **WP-19** — Step 1 ACTIVE under explicit owner/Senior transition authorization. Complete Source Manifest + Architecture Task Brief + mandatory whole-project Task-Brief critic + mechanically resolvable framing repairs, publish a coherent checkpoint, then stop for mandatory Senior review. Step 2 remains blocked pending Senior GO.
+- **WP-20** — engine update/schema evolution/migration remains downstream and not started.
 - **WP-21..WP-26** — remain downstream audit domains.
 - **WP-27** — implementation-planning readiness remains the final R2.7 domain.
 - **Implementation planning** — unauthorized until later R2.7 sequencing permits it.
@@ -402,13 +406,19 @@ WP18_STEP6_SIGNIFICANT:                  7
 WP18_SR18_FINAL_01:                      CLOSED
 WP18_UNRESOLVED_BLOCKING:                0
 WP18_UNRESOLVED_SIGNIFICANT:             0
-HUMAN_DECISION_REQUIRED:                 NO
+
+WP19_STEP1_START_BASIS_SHA:              39d12e5b1c1d4b890cfcc4b4c64e5cab16e0d7ca
+WP19_OWNER_TRANSITION_AUTHORIZED:        YES — 2026-09-05
+WP19_STEP1_STATUS:                       ACTIVE
+WP19_STEP2_AUTHORIZED:                   NO
+WP19_PRODUCT_OWNER_WATCH:                ELEVATED — surface genuine product-semantics/authority/compatibility/hard-to-reverse lifecycle/risk decisions; do not escalate mechanically derivable technical detail
+HUMAN_DECISION_REQUIRED:                 NONE IDENTIFIED AT TRANSITION
 ARCHITECTURE_REOPENED:                   NO
 UPSTREAM_REOPEN_REQUIRED:                NO
-WP19_STARTED:                            NO
+WP19_STARTED:                            YES
 IMPLEMENTATION_PLANNING_STARTED:         NO
-CURRENT_VERIFICATION_STATE:              Hosted Validate engine source run 33909858743 succeeded on exact audited basis 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506; closure checkpoint itself is status-only and requires normal post-publication read-back/CI verification
-NEXT_EXACT_TASK_OR_SLICE:                 Await explicit owner/Senior authorization to transition to WP-19 Step 1
+CURRENT_VERIFICATION_STATE:              Status-only transition; no runtime/schema/template change is part of this checkpoint; normal remote publication/read-back verification applies
+NEXT_EXACT_TASK_OR_SLICE:                 Complete WP-19 Step 1 package and stop at mandatory Senior review; do not begin Step 2
 KNOWN_BLOCKERS:                           NONE
 UNPUBLISHED_WORK:                         NONE
 ```

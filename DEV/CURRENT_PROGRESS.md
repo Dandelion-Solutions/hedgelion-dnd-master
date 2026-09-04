@@ -6,18 +6,38 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-18 CLOSED / FINAL SENIOR RE-AUDIT PASS — AWAITING NEXT OWNER AUTHORIZATION
+GLOBAL_STATE: R2.7 WP-19 STEP 1 ACTIVE — TASK BRIEF / SOURCE MANIFEST / WHOLE-PROJECT BRIEF CRITIC
 
-CURRENT_WORKSTREAM: NONE ACTIVE — WP-18 closed; WP-19 not started
-CURRENT_SLICE: WP-18 final Senior re-audit PASS after final recovery and downstream-consumer impact reconciliation; no next architecture domain activated
+CURRENT_WORKSTREAM: R2.7 WP-19 — Bootstrap / campaign creation / initial materialization
+CURRENT_SLICE: WP-19 Step 1 only — construct the task-specific Source Manifest, complete the Architecture Task Brief, run the mandatory whole-project Task-Brief critic, repair mechanically resolvable BLOCKING/SIGNIFICANT framing defects, then stop for mandatory Senior review
 
 LAST_CLOSED_UNIT: R2.7 WP-18 / Story / continuity / Dramaturg planning — final Senior re-audit PASS against audited public basis 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
-NEXT_AUTHORIZED_UNIT: NONE — WP-19 Step 1 is next in sequence but requires explicit owner/Senior transition authorization
-REQUIRED_GATE: Explicit owner/Senior authorization before starting WP-19. Implementation planning remains unauthorized until later R2.7 sequencing permits it.
+NEXT_AUTHORIZED_UNIT: R2.7 WP-19 Step 1 only
+REQUIRED_GATE: Mandatory Senior review after completed WP-19 Step 1. Step 2 is blocked pending explicit Senior GO. Any genuine product-semantics, authority, compatibility, hard-to-reverse lifecycle or risk-acceptance decision discovered in Step 1 must be raised as a decision-ready human gate; mechanically derivable technical detail remains agent-owned. Implementation planning remains unauthorized until later R2.7 sequencing permits it.
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: NONE
 ```
+
+## Active WP-19 Step-1 transition
+
+Domain:
+
+> **Bootstrap / campaign creation / initial materialization**
+
+Transition authorization:
+
+```text
+WP19_STEP1_START_BASIS_SHA:        39d12e5b1c1d4b890cfcc4b4c64e5cab16e0d7ca
+OWNER_TRANSITION_AUTHORIZED:       YES — 2026-09-05
+WP19_STEP1_AUTHORIZED:             YES
+WP19_STEP2_AUTHORIZED:             NO
+IMPLEMENTATION_PLANNING_STARTED:   NO
+```
+
+The current authorization is deliberately narrow. Step 1 must complete its Source Manifest, Architecture Task Brief, mandatory whole-project Task-Brief critic, mechanically resolvable framing repairs and coherent publication checkpoint before returning to the mandatory Senior review stop. Step 2 must not begin before Senior GO.
+
+Senior review for WP-19 must explicitly test whether any bootstrap/campaign-creation/first-play-readiness/compatibility choice crosses the human Product Owner boundary. Product semantics, canonical authority/ownership, meaningful compatibility policy, hard-to-reverse lifecycle choices and explicit risk acceptance belong at a decision-ready human gate when genuinely unresolved. Technical choices that are mechanically derivable from accepted owners remain agent-owned and must not be escalated merely because WP-19 touches product-facing bootstrap.
 
 ## Closed WP-16 canonical result
 
@@ -242,6 +262,6 @@ IMPLEMENTATION_PLANNING_STARTED:     NO
 - `DEV/PROJECT_MAP.md` and `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` are derivative routing aids; current routing already reaches the needed owner/consumer families and the R2.7 index intentionally delegates current completion state to this file/task-local cursor.
 - Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; the final WP-18 re-audit found none.
 - WP-18 is **closed / final Senior re-audit PASS**.
-- WP-19 remains not started and is not activated by this closure checkpoint; it requires an explicit owner/Senior transition.
+- WP-19 Step 1 is **active** under explicit owner/Senior transition authorization; Step 2 remains blocked pending the mandatory completed-Step-1 Senior review and GO.
 - Implementation planning remains unauthorized.
 - Aside from the mechanically determined catalog provenance correction and its focused regression guard, no runtime/schema/template implementation was changed by WP-18 recovery.
