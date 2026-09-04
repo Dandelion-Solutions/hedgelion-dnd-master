@@ -13,7 +13,7 @@ Recovery basis:
 - Step-7 finding-resolution / propagation gate;
 - Step-8 canonicalization self-review;
 - current `DEV/CATALOG/catalog-admission-ledger.json`;
-- current `DEV/CATALOG/planning-entry-classes.json`;
+- current `DEV/CATALOG/core-catalog.json#/registries/planning_entry_classes`;
 - current runtime/schema/template/test surfaces;
 - final-Senior instruction clarifying that mechanically derivable repository synchronization is allowed during design recovery when no material implementation decision is required.
 
