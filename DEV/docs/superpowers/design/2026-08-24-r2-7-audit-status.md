@@ -310,7 +310,7 @@ ARCHITECTURE_REOPENED:                   NO
 UPSTREAM_REOPEN_REQUIRED:                NO
 WP19_STARTED:                            NO
 IMPLEMENTATION_PLANNING_STARTED:         NO
-CURRENT_VERIFICATION_STATE:              WP-18 Steps 1-8 complete; final publication/read-back/hosted validation evidence required before completion claim
+CURRENT_VERIFICATION_STATE:              Final Senior gate; any completion claim must be backed by fresh verification of the current remote HEAD
 NEXT_EXACT_TASK_OR_SLICE:                 Mandatory final Senior audit of completed WP-18 package; no WP-19 or implementation planning without explicit Senior GO/closure
 KNOWN_BLOCKERS:                           NONE
 UNPUBLISHED_WORK:                         NONE after final cursor synchronization checkpoint
