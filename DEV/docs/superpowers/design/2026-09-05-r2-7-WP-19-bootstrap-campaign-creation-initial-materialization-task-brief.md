@@ -1,12 +1,16 @@
 # R2.7 WP-19 — Bootstrap / Campaign Creation / Initial Materialization — Architecture Task Brief
 
-Status: **STEP 1 COMPLETE — MANDATORY SENIOR REVIEW CANDIDATE**
+Status: **STEP 1 SENIOR RECOVERY COMPLETE — MANDATORY SENIOR RE-REVIEW CANDIDATE**
 
 Date: 2026-09-05
 
-Verified Step-1 execution basis: `5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053`
+Original Step-1 execution basis: `5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053`
 
-This is the Architecture Task Brief required by the current HDM design process for WP-19. It frames Step-2 evidence/research only. It does not authorize or begin Step 2, WP-20, implementation planning, gameplay bootstrap, campaign creation, or substantive runtime/schema/template implementation.
+Senior-recovery basis: `df5fe6441c2b85e9cbffcb6f83caa885501da794`
+
+This is the Architecture Task Brief required by the current HDM design process for WP-19. Senior recovery SR19-01 materially qualifies the evidence framing: verification/scenario catalogs and executable tests are first-class reverse-conformance consumers that must themselves be reconciled against current owners rather than presumed current because they exist or pass CI.
+
+This brief does not authorize or begin Step 2, WP-20, implementation planning, gameplay bootstrap, campaign creation, or substantive runtime/schema/template/test implementation.
 
 Companion Step-1 artifacts:
 
@@ -19,7 +23,7 @@ Companion Step-1 artifacts:
 
 WP-19 must audit and reconcile the complete architecture-to-machine path by which an explicit **New Game** choice becomes a correctly owned, resumable campaign and then reaches the first normal mechanics-capable play frontier.
 
-The domain is broader than copying an empty directory and narrower than ordinary gameplay. It spans several already-owned boundaries that must compose without ambiguity:
+The domain is broader than copying an empty directory and narrower than ordinary gameplay:
 
 ```text
 storage selection / storage baseline
@@ -38,27 +42,27 @@ storage selection / storage baseline
     -> first true mechanics-capable live scene / normal runtime
 ```
 
-WP-19 must prove that every transition above has one accepted authority, correct input provenance, an honest machine/runtime destination, bounded failure semantics and a resumable publication boundary where required.
+Every transition must have one accepted authority, correct input provenance, an honest machine/runtime destination, bounded failure semantics and a resumable publication boundary where required.
 
-It must also perform the reverse audit: every current bootstrap instruction, materializer input, campaign-template field/root, schema constraint, setup projection and relevant test must have an accepted semantic owner or be explicitly classified as stale, derived, implementation-only, historical, safely deferred or out of scope.
+WP-19 must also perform the reverse audit: every current bootstrap instruction, materializer input, campaign-template field/root, schema constraint, setup projection, executable test and materially relevant scenario expectation must have an accepted semantic owner or be explicitly classified as current, current-with-qualifier, stale/superseded, historical, derived, implementation-only, safely deferred or out of scope.
 
-The audit must not collapse technical scaffold creation, provisional onboarding, READY_PC and PLAY_READY into one generic concept of “campaign ready”. Those states have different semantic and durability meanings under existing owners.
+The audit must not collapse technical scaffold creation, provisional onboarding, READY_PC and PLAY_READY into one generic concept of “campaign ready”. It must also not let a stale regression scenario override a later/current owner.
 
 ---
 
 ## 2. Goals
 
-WP-19 Step 2, if Senior-authorized, must establish all of the following.
+WP-19 Step 2, **only if Senior-authorized**, must establish all of the following.
 
 1. **Creation preconditions and selection authority**
-   - prove the storage discovery/selection and explicit campaign-choice gate;
-   - prove which principal may create/publish the campaign and how creator identity becomes stable evidence;
+   - prove storage discovery/selection and explicit campaign-choice gate;
+   - prove which principal may create/publish a campaign and how creator identity becomes stable evidence;
    - prevent ambient package, previous chat, sole-campaign presence or repository permission from silently choosing semantic authority.
 
 2. **Exact runtime/ruleset creation identity**
-   - establish one reconstructive chain from selected storage baseline through the validated runtime package to campaign `engine.created_with/current` and `ruleset.created_with/current`;
-   - reconcile every current bootstrap/materializer/test consumer of that identity;
-   - fail closed rather than inventing missing provenance.
+   - establish one reconstructive chain from storage baseline through validated runtime package to campaign `engine.created_with/current` and `ruleset.created_with/current`;
+   - reconcile every current bootstrap/materializer/package/test consumer of that identity;
+   - fail closed rather than inventing missing provenance or re-resolving an old package from a mutable tag position.
 
 3. **Branch and initial publication contract**
    - reconcile storage-default ancestry, neutral campaign branch identity, from-scratch generated campaign tree and first campaign-specific commit;
@@ -81,12 +85,16 @@ WP-19 Step 2, if Senior-authorized, must establish all of the following.
    - do not reopen closed access/multiplayer architecture absent demonstrated insufficiency.
 
 7. **Low-friction product semantics**
-   - preserve the accepted player-facing contract: no installation-wizard behavior after successful scaffold publication, no compulsory Session Zero questionnaire, ask only material unresolved choices, no ceremonial confirmation when nothing blocks launch;
-   - preserve provisional/diegetic onboarding where allowed without manufacturing mechanical authority.
+   - preserve scaffold-first **invisible** infrastructure and human game-facing handoff;
+   - preserve no compulsory Session Zero questionnaire and smallest-material-question behavior;
+   - preserve provisional/diegetic onboarding without manufacturing mechanical authority;
+   - prevent stale “show technical setup stages” regression text from becoming implementation guidance.
 
-8. **Bidirectional architecture/machine closure**
+8. **Bidirectional architecture/machine/verification closure**
    - map accepted laws to install/CORE/tool/template/schema/test surfaces;
-   - map those machine surfaces back to one accepted owner or explicit disposition;
+   - map those surfaces back to one accepted owner or explicit disposition;
+   - independently classify scenario-catalog expectations rather than treating `DEV/TESTS/*_CASES.md` as normative;
+   - distinguish executable green evidence from semantic currentness of nonexecuted scenario text;
    - leave a concrete downstream realization/test map without starting implementation planning.
 
 ---
@@ -95,18 +103,20 @@ WP-19 Step 2, if Senior-authorized, must establish all of the following.
 
 WP-19 must **not**:
 
-- execute a real campaign, create gameplay content or run campaign bootstrap as a player flow during the architecture audit;
-- begin Step 2 before the mandatory Senior Step-1 GO;
+- execute a real campaign, create gameplay content or run campaign bootstrap as a player flow during this audit;
+- begin Step 2 before explicit Senior GO;
 - begin WP-20 or design future incompatible schema/engine/ruleset migration policy;
-- preserve current unreleased scaffold fields/layouts merely for backward compatibility — the owner has explicitly stated no real campaigns depend on them;
-- reopen accepted READY_PC, access-control, multiplayer, House-Rules, persistence, Story/Dramaturg or ruleset architecture merely because bootstrap consumes those owners;
+- preserve current unreleased scaffold fields/layouts merely for backward compatibility;
+- reopen accepted READY_PC, access-control, multiplayer, House-Rules, persistence, Story/Dramaturg or ruleset architecture merely because bootstrap consumes them;
+- treat `DEV/TESTS/*_CASES.md`, historical audits or a passing CI run as architecture authority;
+- rewrite stale tests/scenarios during Step 1 merely for repository cleanliness;
 - build broad world/NPC/faction/lore inventories before the first scene;
-- turn `CAMPAIGN_CARD`, README, session/checkpoint/index or template placeholders into canonical gameplay authority;
-- introduce a second package/ruleset resolver, second creator identity, second lifecycle owner or second publication authority;
-- design implementation tasks or begin substantive runtime/schema/template code changes;
-- treat future/dormant obligations as current work without their trigger.
+- turn `CAMPAIGN_CARD`, README, session/checkpoint/index, test fixture or scenario catalog into canonical gameplay authority;
+- introduce a second package/ruleset resolver, creator identity, lifecycle owner or publication authority;
+- design implementation tasks or begin substantive runtime/schema/template/test changes;
+- activate future/dormant obligations before their trigger.
 
-Future released-campaign compatibility/evolution is explicitly downstream in WP-20. Current WP-19 may define the clean creation-side identity that WP-20 will later consume, but it does not decide the migration policy.
+Future released-campaign compatibility/evolution is explicitly downstream in WP-20. Current WP-19 may define the clean creation-side identity WP-20 later consumes, but it does not decide migration policy.
 
 ---
 
@@ -116,40 +126,37 @@ Future released-campaign compatibility/evolution is explicitly downstream in WP-
 
 A new chat does not infer campaign continuation from recency, uniqueness or generic play intent. Campaign-specific state/runtime resolution starts only after an unambiguous existing-campaign or New Game choice.
 
-This is already an accepted agency and latency rule in current bootstrap owners; WP-19 audits its composition, not whether to keep it.
-
 ### 4.2 New Game resolves one exact local runtime from storage baseline
 
-For a new campaign, `DND_STORAGE.engine.baseline` identifies the storage-owner-approved portable runtime default. It does not install bytes and does not override existing campaigns.
+For a new campaign, current storage schema v3 `DND_STORAGE.engine.baseline` identifies the storage-owner-approved portable runtime default. It does not install bytes and does not override existing campaigns.
 
-The selected local runtime package provides:
+The selected runtime package provides distinct identities:
 
 ```text
-ENGINE_VERSION.yaml              semantic engine contract
-RUNTIME_PACKAGE.yaml             exact built-package provenance
-runtime ZIP SHA-256              exact artifact/cache identity
-RUNTIME_PACKAGE.ruleset_set_sha256
-                                 exact embedded resolved ruleset-set identity
+ENGINE_VERSION.yaml                    semantic engine contract
+RUNTIME_PACKAGE.yaml                   built-package provenance
+runtime ZIP SHA-256                    exact artifact/cache identity
+RUNTIME_PACKAGE.ruleset_set_sha256     exact resolved ruleset-set identity
 ```
 
-One isolated `current_runtime_root` is ephemeral session cache only and must never become campaign/storage authority.
+`current_runtime_root` is ephemeral cache only.
 
 ### 4.3 New campaign branch and first commit have special semantics
 
-The branch name is neutral `campaign/YYYYMMDD[-NN]` and starts from current storage default-branch HEAD for ancestry. The first campaign-specific commit publishes a generated campaign tree **from scratch**; storage marker/README or other inherited storage-root data are not campaign canon.
+The branch name is neutral `campaign/YYYYMMDD[-NN]` and starts from storage default HEAD for ancestry. The first campaign-specific commit publishes the generated campaign tree from scratch; storage marker/README are excluded.
 
-Campaign creator authority derives from Git provenance of that first campaign-specific initialization commit. Card creator login remains a nonauthoritative hint.
+Campaign creator authority derives from Git provenance of that first campaign-specific commit. Card creator login is a nonauthoritative hint.
 
 ### 4.4 Scaffold is produced by one exact materializer
 
-`GAME/TOOLS/init_campaign.py` is the authoritative scaffold materializer for the selected runtime package. The current generator requires at least:
+`GAME/TOOLS/init_campaign.py` is authoritative for selected-runtime scaffold generation and requires:
 
 ```text
 campaign_id
 branch
 engine_version
 package_id
-source_commit_sha?        # nullable where package provenance truthfully has none
+source_commit_sha?       # nullable when provenance truthfully lacks it
 package_sha256
 ruleset_set_sha256
 created_at
@@ -157,186 +164,191 @@ creator_github_login
 mode
 ```
 
-It copies the selected runtime package's `CAMPAIGN/` template contents into the future campaign root and fills technical identity/projection fields only. It does not create gameplay lore and does not contact GitHub.
+It copies selected runtime `CAMPAIGN/` contents into the campaign root and fills technical identity/projection fields only.
 
-The materialized `MANIFEST.engine.created_with/current` start equal. `MANIFEST.ruleset.created_with/current` start from the exact package ruleset-set identity.
+### 4.5 Current bootstrap prose has a mechanically settled ruleset-input defect
 
-### 4.5 Current bootstrap prose has a mechanically settled cross-contract defect
-
-Current `00_DND_BOOTSTRAP.md`, `BOOTSTRAP_RUNTIME.md` and `CAMPAIGN_SETUP.md` list the generator identity arguments but omit required `--ruleset-set-sha256`.
+`00_DND_BOOTSTRAP.md`, `BOOTSTRAP_RUNTIME.md` and `CAMPAIGN_SETUP.md` omit required `--ruleset-set-sha256` from their listed materializer arguments.
 
 Current machine evidence is unambiguous:
 
-- `init_campaign.py` requires the argument and writes both ruleset projections;
-- canonical ruleset-package architecture requires the campaign projection;
-- release-package metadata carries `ruleset_set_sha256`;
-- `test_release_integration.py` invokes the generator with `package_meta["ruleset_set_sha256"]`.
+- `init_campaign.py` requires and writes it;
+- ruleset architecture requires the campaign projection;
+- `RUNTIME_PACKAGE.yaml` carries it;
+- `test_release_builder.py` validates package production;
+- `test_release_integration.py` passes it into the generator.
 
-Therefore Step 2 must reconcile the affected runtime/instruction surfaces to the accepted exact identity chain. This is not a Product Owner decision and does not justify inventing a new ruleset-selection policy.
+Later authorized WP-19 work must reconcile these consumers; this is not a Product Owner decision.
 
-### 4.6 Current storage/branch documentation contains stale v2 projections
+### 4.6 Current storage/branch documentation and some scenario catalogs contain stale v2 projections
 
-`DEV/ARCHITECTURE/BRANCH_MODEL.md` still contains storage-v2 / `baseline_version` and older campaign engine-provenance wording while later/current owners use storage v3 exact package baseline and manifest-v3 sibling engine/ruleset identity.
+`DEV/ARCHITECTURE/BRANCH_MODEL.md` and `BOOTSTRAP_STORAGE_REGRESSION_CASES.md:B12` contain storage-v2 / `baseline_version` assumptions while current runtime/schema/executable tests use storage v3 exact baseline identity.
 
-The useful branch/root/creator laws remain relevant. Step 2 must determine the precise current owner/supersession repair instead of treating the whole document as either automatically authoritative or automatically obsolete.
+The branch/root/creator laws that remain valid must be preserved separately from stale storage identity text. No backward compatibility is required for the current unreleased scaffold.
 
-No compatibility preservation is required for the current unreleased scaffold. R2.7 owner clarification already settles that policy; no Product Owner compatibility gate remains merely because stale v2 prose exists.
+### 4.7 Package provenance is package-owned, not reconstructed from mutable tag state
 
-### 4.7 Campaign projections are not authority
+A selected package's exact source provenance comes from its own `RUNTIME_PACKAGE.source_commit_sha` when truthfully present. The current position of a tag may assist bounded comparison where the relevant owner permits it, but must not be used to manufacture the provenance of an already-built package.
 
-`MANIFEST` owns campaign lifecycle/mode/current engine/ruleset/storage routes; native PC/PLAYER/STATE/WORLD records and Git provenance own their respective facts. `CAMPAIGN_CARD` and campaign README are human/menu projections.
+Therefore `BOOTSTRAP_STORAGE_REGRESSION_CASES.md:B22` is stale where it requires resolving the published tag to obtain the new-campaign package source SHA.
 
-Projection updates join the same coherent campaign transaction as their owner changes. Projection freshness alone never creates a persistence boundary.
+### 4.8 Campaign projections are not authority
 
-### 4.8 Lifecycle states are semantically distinct
+MANIFEST/native owners/Git provenance remain authoritative. Card/README are projections and change only with their owner transitions.
 
-The accepted creation/readiness path is:
+Current card status presentation distinguishes:
 
 ```text
-SCaffold publication
+initializing -> 🟡
+paused       -> ⏸️
+active       -> 🟢 (when otherwise eligible)
+```
+
+Therefore `CAMPAIGN_CARD_CASES.md:C12` is stale where it assigns 🟡 to both paused and initializing.
+
+### 4.9 Lifecycle states are semantically distinct
+
+```text
+scaffold publication
     -> campaign identity exists
-    -> lifecycle initializing
+    -> initializing
 
 optional PROVISIONAL_IDENTITY
-    -> stable protagonist/Actor/setup truth may be durable/resumable
-    -> PC still provisional where mechanics remain unresolved
-    -> lifecycle still initializing
+    -> stable setup truth may be durable/resumable
+    -> PC may remain provisional
+    -> initializing
 
 READY_PC
     -> reconstructable initial mechanical commitment frontier
-    -> exact required current mechanics exist
-    -> still does not alone imply campaign activation
 
 PLAY_READY
-    -> minimum starting location/current-scene/routing + required durable launch state
-    -> with READY_PC authorizes lifecycle active
-    -> first true normal mechanics-capable live scene
+    -> minimum starting/current routing + durable launch state
+    -> with READY_PC permits active
+    -> first normal mechanics-capable live scene
 ```
 
-An explicit save before PLAY_READY does not manufacture readiness. Stopped unfinished setup remains `initializing`, not `paused`.
+Save does not manufacture readiness. Stopped unfinished setup remains initializing, not paused.
 
-### 4.9 First-play latency is intentionally bounded
+### 4.10 First-play latency is intentionally bounded and technical setup is normally invisible
 
-Accepted runtime behavior prefers:
+Accepted runtime behavior is scaffold-first, then human game-facing setup, minimal material questions, minimal starting horizon and immediate launch when the last true blocker is resolved.
 
-- scaffold first, invisibly;
-- then human-facing setup;
-- minimal protagonist questions;
-- accepted defaults/inference for nonmaterial preferences;
-- minimal starting horizon only;
-- immediate launch when the last true blocker is resolved.
+`NEW_CAMPAIGN_FAST_PATH.md` has precedence over older setup wording that would expose internal stages. `BOOTSTRAP_STORAGE_REGRESSION_CASES.md:B23` is therefore stale; it must not direct future implementation to announce the character/world/scene setup pipeline.
 
-No current requirement justifies a broad pre-generated world or a setup questionnaire merely because template/schema capacity exists.
+### 4.11 Menu discovery is card-first
 
-### 4.10 Multiplayer creation consumes closed access architecture
+Current campaign discovery probes `CAMPAIGN_CARD.yaml` first and uses MANIFEST only as fallback. `REGRESSION_CASES.md:T13` is stale where it says discovery reads manifests only.
 
-Mode is creator-controlled. `invite_only` is the safe baseline unless explicitly changed. Normal multiplayer gameplay requires an active authenticated PLAYER binding under current access owners.
+### 4.12 Multiplayer creation consumes closed access architecture
 
-WP-19 may discover a bootstrap consumer mismatch, but closed WP-16/access semantics reopen only for demonstrated contradiction, a newly unsatisfied consumer or material insufficiency.
+Mode is creator-controlled. `invite_only` is the safe baseline unless explicitly changed. Normal multiplayer gameplay requires active authenticated PLAYER binding. Open-contributor self-enrollment remains the narrow accepted exception.
 
-### 4.11 House-Rules template presence does not reactivate House-Rules design
+### 4.13 House-Rules template presence does not reactivate House-Rules design
 
-Current scaffold includes `RULES/HOUSE_RULES.md` and `RULES/HOUSE_RULES.yaml`. Their semantic ownership remains the accepted House-Rules architecture. Copying an empty/default policy surface is initial materialization, not a new policy decision.
+Scaffold House-Rules files inherit existing policy ownership; copy/materialization is not policy adoption.
+
+### 4.14 Verification evidence is subordinate to current owners
+
+Executable tests and scenario catalogs are implementation/verification consumers. They are essential reverse-conformance evidence but do not create semantic authority by existence, age or pass status.
+
+Current evidence already demonstrates mixed generations:
+
+- executable tests enforce storage/manifest v3 and current package identity;
+- some Markdown regression cases still demand storage v2, tag-derived provenance, visible setup stages, old paused icon behavior, or manifest-only campaign discovery.
+
+This mixed state is itself a material WP-19 audit fact.
 
 ---
 
-## 5. Quality attributes that distinguish a correct WP-19 result
+## 5. Quality attributes
 
-Step-2 alternatives/recommendations must be evaluated against the actual accepted product/runtime qualities:
+Step-2 analysis must evaluate against:
 
-- **authority correctness** — one owner for creator, package/ruleset identity, lifecycle and canonical gameplay state;
-- **deterministic/reconstructive identity** — a created campaign records enough exact engine/ruleset provenance to resolve later without ambient-memory guesses;
-- **resumability** — every admitted durable intermediate state can be recovered honestly;
-- **player agency** — campaign selection and material character choices are not guessed from convenience metadata;
-- **low setup latency / bounded I/O** — no broad repository/package/world scans or unnecessary commits merely to begin play;
-- **failure containment** — malformed package/materializer/publication stops rather than silently synthesizing a different scaffold;
-- **atomicity/currentness** — initial and later setup publications have explicit coherent transaction shapes;
-- **projection safety** — menu/README/session convenience data never gains canonical authority;
-- **multiplayer safety** — collaborator access does not become PLAYER or creator authority;
-- **testability** — package -> generator -> template/schema -> publication/readiness invariants have concrete executable verification points;
-- **maintainability** — stale v2/current v3 dual descriptions do not survive as competing live contracts.
+- authority correctness;
+- deterministic/reconstructive engine + ruleset identity;
+- honest resumability across scaffold/provisional/READY/PLAY_READY states;
+- player agency;
+- low setup latency and bounded I/O;
+- failure containment;
+- atomic/current publication;
+- projection safety;
+- multiplayer authorization safety;
+- verification traceability across current owners, executable tests and scenario expectations;
+- maintainability: no competing v2/v3 or stale/current verification contracts survive final closure.
 
-Do not invent numerical latency/throughput targets not already owned by the project.
+Do not invent numerical performance targets not already owned.
 
 ---
 
 ## 6. Step-2 evidence questions after Senior GO
 
 ### A. Storage discovery / explicit selection
+1. Do Project Instructions, install bootstrap and CORE bootstrap agree on exact discovery/selection barriers?
+2. Does storage v3 have one authoritative baseline shape across runtime docs/schema/tool/tests?
+3. Can foreign/friend/development-package paths accidentally grant owner/creator authority?
 
-1. Do Project Instructions, install bootstrap and CORE bootstrap agree on the exact discovery/selection barrier?
-2. Does storage v3 have one authoritative baseline shape across runtime docs/schema/template/support surfaces?
-3. Can a foreign/friend storage or development package path accidentally grant storage-owner or campaign-creator authority?
-
-### B. Exact runtime and ruleset package identity
-
-4. Is every creation input derivable from the selected validated package without mutable-tag archaeology or ambient cache assumptions?
-5. Is `ruleset_set_sha256` routed exactly once from `RUNTIME_PACKAGE.yaml` into the materializer and campaign MANIFEST projections?
+### B. Exact runtime and ruleset identity
+4. Is every creation input derivable from the selected validated package without ambient cache guesses or mutable-tag provenance reconstruction?
+5. Is `ruleset_set_sha256` routed exactly once from `RUNTIME_PACKAGE.yaml` to materializer and MANIFEST?
 6. Are package failure/mismatch cases finite and fail-closed?
-7. Does any human-facing baseline label accidentally substitute for exact ruleset identity?
+7. Does any human-facing label substitute for exact identity?
 
 ### C. Branch/materializer/publication
-
-8. Do branch creation, first commit and campaign root replacement preserve storage ancestry without copying storage infrastructure into campaign canon?
-9. Is creator identity unambiguous on first successful campaign publication?
-10. Does the generator emit exactly the intended current campaign root and only technical identity fields?
-11. Are partial publication/retry/failure states safe, with no half-created campaign treated as ready?
-12. Do current docs/tool/test agree on all generator arguments and validation requirements?
+8. Do branch creation and first root replacement preserve ancestry without storage-byte leakage?
+9. Is creator identity unambiguous on first successful publication?
+10. Does generator emit exactly intended current root and technical identity fields?
+11. Are partial/retry/failure states safe?
+12. Do docs/tool/executable tests/scenario cases agree on generator inputs/publication contract, and if not, which expectation is stale?
 
 ### D. Manifest/config/card/identity projections
-
-13. Do manifest/card/config templates and schemas match accepted owner allocation?
-14. Is campaign naming optional and projection-safe from the first setup transaction onward?
-15. Can card/menu data ever be mistaken for authorization or current canon after selection?
-16. Are mode/status/current-location/engine/membership projections updated only with their native owners?
+13. Do templates/schemas match accepted owner allocation?
+14. Is naming optional/projection-safe?
+15. Can card/menu data become authorization or canon accidentally?
+16. Are mode/status/location/engine/membership projections current and same-transaction?
+17. Do menu scenario expectations match current card-first route and fixed status icons?
 
 ### E. PLAYER / PC / provisional onboarding / READY_PC
-
-17. At what exact durability boundary is stable PLAYER/PC identity first required for singleplayer and multiplayer?
-18. Which provisional fields may be absent without blocking honest onboarding?
-19. Is every READY_PC-required mechanical dependency reconstructable from the exact selected ruleset/current owners?
-20. Do any legacy flattened PC schema surfaces accidentally regain authority during bootstrap?
-21. Can a player-facing setup inference improperly harden a discretionary mechanical choice after situational information is known?
+18. At what durability boundary is stable PLAYER/PC identity first required?
+19. Which provisional fields may be absent?
+20. Is every READY_PC dependency reconstructable from exact selected ruleset/current owners?
+21. Do legacy flattened PC surfaces regain authority anywhere?
+22. Can setup inference harden a discretionary choice too late?
+23. Do readiness/onboarding scenario and executable tests agree with the accepted owner boundary?
 
 ### F. PLAY_READY / first scene / session / resumability
-
-22. What exact owner set must exist coherently at PLAY_READY for honest resume and ordinary mechanics-dependent play?
-23. Is the minimum starting scene/current routing represented without inventing broad unused world state?
-24. Does initial session/recovery state distinguish an unfinished initializing campaign from an active/paused campaign?
-25. Are checkpoint creation and session files optional/required only under their actual owners rather than ceremony?
-26. Does the first active launch transaction preserve projection/currentness/persistence invariants atomically?
+24. What owner set must exist at PLAY_READY?
+25. Is minimum starting scene/current routing sufficient without broad world materialization?
+26. Does session/recovery distinguish unfinished initializing from active/paused?
+27. Is checkpoint creation optional/required only by its actual owner?
+28. Does launch preserve projection/currentness/persistence atomically?
 
 ### G. Multiplayer and House Rules
+29. Does initial multiplayer preserve creator-only mode/join-policy and PLAYER identity?
+30. Does card participant projection remain nonauthority?
+31. Are default House-Rules surfaces materialized without policy activation by presence?
 
-27. Does new multiplayer setup preserve creator-only mode/join-policy authority and active PLAYER identity from the first applicable write?
-28. Does card participant projection remain a hint/cache rather than access authority?
-29. Are empty/default House-Rules surfaces created with the intended accepted baseline without triggering policy adoption or executable mechanics by presence alone?
-
-### H. Architecture <-> machine realization
-
-30. For every accepted bootstrap/creation/readiness law, where is the current instruction/schema/template/tool/test destination?
-31. For every current campaign-template root/schema/materializer field/setup instruction, what accepted owner or explicit disposition justifies it?
-32. Which stale/duplicate current surfaces must be structurally canonicalized before WP-19 can close?
-33. Which behavioral obligations are architecture requirements now but production implementation/test work later?
+### H. Architecture <-> machine <-> verification realization
+32. For every accepted law, where is the current instruction/schema/template/tool/executable-test destination?
+33. For every current template/schema/materializer/setup instruction, what owner/disposition justifies it?
+34. For every materially relevant `DEV/TESTS/*_CASES.md` expectation, is it CURRENT, CURRENT WITH QUALIFIER, STALE/SUPERSEDED, HISTORICAL, or downstream/out of scope?
+35. Which stale tests/scenarios could misdirect future implementation if copied literally?
+36. Which stale/duplicate current surfaces must be canonicalized before WP-19 can close?
+37. Which obligations are architecture requirements now but production implementation/test work later?
 
 ### I. Product Owner boundary
-
-34. After owner reconciliation, does any remaining question genuinely alter product semantics, canonical authority, meaningful compatibility, hard-to-reverse lifecycle behavior, material quality trade-off or explicit risk acceptance?
-35. If yes, can all technical evidence first narrow it to decision-ready alternatives with a recommendation?
-36. If no, keep it agent-owned and do not create an artificial human approval gate.
+38. After owner reconciliation, does any residual question genuinely alter product semantics, authority, compatibility, hard-to-reverse lifecycle, material quality trade-off or explicit risk acceptance?
+39. If yes, narrow it to decision-ready alternatives first.
+40. If no, keep it agent-owned.
 
 ### J. WP-20 boundary
-
-37. Which creation-side identity/version facts must be stable inputs to later migration/evolution?
-38. Which questions are strictly future released-campaign compatibility and therefore must remain deferred until WP-20 authorization?
+41. Which creation identity/version facts are stable inputs to future migration/evolution?
+42. Which update/migration test expectations belong strictly to WP-20 and must not leak into WP-19?
 
 ---
 
 ## 7. Source Manifest / dependency subgraph requirements
 
-Step 2 must use the companion Source Manifest as a starting evidence ledger, not a closed list. If research exposes another actual owner/consumer capable of changing the conclusion, add it and inspect it.
-
-At minimum the active evidence subgraph includes:
+Step 2 must use the companion Source Manifest as an evidence ledger, not a closed list. The active subgraph now explicitly includes verification consumers:
 
 ```text
 INSTALL/PROJECT_INSTRUCTIONS
@@ -350,87 +362,111 @@ CAMPAIGN_SETUP
     -> release package producer
     -> init_campaign materializer
     -> GAME/CAMPAIGN tree + MANIFEST/CONFIG/CARD/CURRENT
-    -> campaign/storage/card/current schemas
+    -> campaign/storage/card/current/session/player/pc schemas
     -> PERSISTENCE / RUNTIME / DURABILITY_GUARD
     -> CAMPAIGN_IDENTITY / CAMPAIGN_CARD
     -> CHARACTER_READINESS / canonical READY_PC owner / DIEGETIC_ONBOARDING
-    -> SESSION + session/player/pc schemas
-    -> MULTIPLAYER
-    -> CAMPAIGN_HOUSE_RULES + template policy files
-    -> release integration / other implicated executable tests
+    -> SESSION / MULTIPLAYER / CAMPAIGN_HOUSE_RULES
+    -> executable producer/identity/integration/readiness/ruleset tests
+    -> bootstrap/install/card/identity/readiness/onboarding/durability/save/access/persistence/latency scenario catalogs
+    -> item-level currentness/supersession disposition
+    -> WP-20 update/evolution test boundary
 ```
 
-Derivative indexes/roadmaps never substitute for those owners.
+Derivative indexes, historical audits and test names never substitute for actual owners.
 
 ---
 
-## 8. Failure scenarios the later architecture must survive
+## 8. Failure scenarios later architecture must survive
 
-Step 2 must challenge at least these concrete cases where applicable:
+At minimum:
 
 1. one existing campaign exists but user only says “let's play”;
-2. storage baseline package exists but a different cached runtime was used to enter bootstrap;
-3. selected package ruleset set differs from an ambient/older package;
-4. generator is invoked without a required ruleset set digest;
+2. storage baseline package exists but another cached runtime entered bootstrap;
+3. selected package ruleset differs from ambient/older package;
+4. generator is invoked without required ruleset digest;
 5. generator fails after branch creation but before first campaign-specific commit;
-6. initial ref publication races or fails;
-7. storage README/marker accidentally enters the campaign tree;
-8. scaffold commit succeeds and the chat ends before protagonist selection;
-9. stable protagonist becomes durable before READY_PC and the chat ends;
-10. READY_PC is achieved but PLAY_READY/current-scene publication is not yet complete;
-11. a save is requested during initializing setup;
-12. card says active but authoritative readiness/lifecycle sources do not;
-13. singleplayer repository collaborator tries to publish setup changes;
-14. multiplayer is selected but no valid active PLAYER binding exists yet;
-15. a legacy/stale storage-v2 branch document is followed instead of current v3 schema/runtime owner;
-16. a stale/flattened PC schema field is treated as authority despite its explicit nonauthoritative qualifier;
-17. future migration concerns are used to preserve obsolete current scaffold structures despite the owner-approved pre-release canonicalization boundary.
+6. initial ref publication races/fails;
+7. storage README/marker leaks into campaign tree;
+8. scaffold succeeds and chat ends before protagonist selection;
+9. stable protagonist is durable before READY_PC and chat ends;
+10. READY_PC exists but PLAY_READY/current-scene publication is incomplete;
+11. save during initializing setup;
+12. card says active but readiness/lifecycle owners disagree;
+13. singleplayer collaborator tries to publish setup changes;
+14. multiplayer selected without valid applicable PLAYER authorization;
+15. stale Storage-v2 B12 expectation is followed instead of current v3 owner;
+16. stale B22 tag-resolution expectation overwrites package-owned provenance;
+17. stale B23 setup-stage narration is implemented despite fast-path precedence;
+18. stale Campaign Card C12 maps paused to 🟡 instead of ⏸️;
+19. stale T13 manifest-only menu discovery bypasses current card-first fast path;
+20. a passing executable suite is treated as proof that all Markdown scenarios are current;
+21. a legacy/flattened PC surface is treated as authority despite qualifier;
+22. future migration concerns preserve obsolete current scaffold structures despite pre-release canonicalization authority.
 
 ---
 
-## 9. Product Owner decision status at Step 1
+## 9. Senior recovery verification qualifier
 
-The dedicated Step-1 Product Owner watch found no genuine residual human-owned decision.
+SR19-01 established a material framing defect in the original Step-1 reverse-conformance claim: the original Source Manifest/critic named the materializer, schemas, package producer and `test_release_integration.py`, but did not inspect the directly affected verification/scenario subgraph deeply enough to support the claimed test coverage.
 
-Established owners already settle:
+Recovery independently inspected, among others:
 
-- explicit campaign choice and low-friction setup semantics;
+- bootstrap/storage/install/menu/identity scenario families;
+- readiness/diegetic/durability/save scenario families;
+- access/multiplayer/persistence/runtime-latency scenario families;
+- package provenance/build/integration executable tests;
+- storage/manifest identity executable tests;
+- S6D READY_PC and ruleset-package closure executable tests;
+- engine update/mismatch neighbors for WP-20 routing;
+- historical pre-release audit evidence.
+
+The recovered evidence found no contradiction requiring upstream architecture reopen. Instead it found stale/qualified verification expectations with already-settled current owners.
+
+This materially changes the **evidence requirements** of Step 2, but not the accepted WP-19 product semantics or architecture direction.
+
+---
+
+## 10. Product Owner decision status after recovery
+
+Current owners already settle:
+
+- explicit campaign choice and low-friction invisible setup;
 - creator/access authority;
-- exact engine/ruleset creation identity classes;
-- provisional onboarding versus READY_PC versus PLAY_READY lifecycle;
+- exact engine/ruleset creation identities;
+- package-owned provenance;
+- card-first menu/status projection;
+- provisional onboarding vs READY_PC vs PLAY_READY;
 - current pre-release compatibility policy;
 - future migration ownership in WP-20;
-- projection/nonauthority boundaries;
-- multiplayer default authority and House-Rules baseline semantics.
+- multiplayer and House-Rules boundaries.
 
-The observed runtime/document contradictions are technical consistency defects against those accepted owners.
+The stale verification expectations are technical supersession/consistency defects.
 
 ```text
 HUMAN_DECISION_REQUIRED: NO
 UPSTREAM_REOPEN_REQUIRED: NO
 ```
 
-If Step 2 later establishes a true contradiction/material insufficiency rather than a stale consumer, the normal design process governs escalation. Step 1 does not pre-authorize such a reopen.
-
 ---
 
-## 10. Step-1 exit criteria
-
-This Task Brief is review-ready only together with its Source Manifest and independent whole-project critic.
-
-Step-1 exit requires:
+## 11. Recovered Step-1 exit criteria
 
 ```text
-[x] Task-specific Source Manifest constructed beyond the initial scope inventory.
-[x] Actual owning bootstrap/storage/access/ruleset/readiness/persistence sources inspected.
-[x] Current templates/schemas/materializer/release-test consumers included.
-[x] Architecture Task Brief defines scope, goals, non-goals, invariants, quality attributes and evidence questions.
-[x] Product Owner boundary explicitly tested.
-[x] Whole-project Task-Brief critic performed independently through DEV/PROJECT_MAP and actual owners.
-[x] Every mechanically resolvable BLOCKING/SIGNIFICANT framing defect repaired in the Step-1 package.
-[x] No residual framing blocker/significant omission is knowingly delegated to Senior.
+[x] Task-specific Source Manifest constructed beyond initial scope inventory.
+[x] Actual bootstrap/storage/access/ruleset/readiness/persistence owners inspected.
+[x] Current templates/schemas/materializer/package producers included.
+[x] Directly implicated executable verification families inspected.
+[x] Directly implicated scenario/regression families independently discovered and inspected.
+[x] Material scenario expectations receive item-level current/stale/qualified/downstream disposition.
+[x] Architecture Task Brief now makes verification reverse-conformance explicit.
+[x] Product Owner boundary rechecked after evidence expansion.
+[x] Whole-project critic recovered for SR19-01.
+[x] Original two BLOCKING findings remain confirmed/closed.
+[x] No mechanically resolvable BLOCKING/SIGNIFICANT framing omission remains knowingly delegated to Senior.
 [x] Step 2 remains unauthorized and unstarted.
+[x] WP-20 remains unstarted.
 [x] Implementation planning remains unauthorized and unstarted.
 ```
 
-The next process action after publication is the **mandatory Senior Step-1 review**. Senior may grant or withhold GO for Step 2; this Task Brief cannot grant it itself.
+The next process action after recovery publication is **mandatory Senior re-review**. Only explicit Senior GO may authorize WP-19 Step 2.
