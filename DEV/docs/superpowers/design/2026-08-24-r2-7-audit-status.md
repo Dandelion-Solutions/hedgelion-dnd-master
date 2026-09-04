@@ -2,7 +2,7 @@
 
 Status: **TASK-LOCAL R2.7 AUDIT CURSOR — NOT GLOBAL CURRENT-PROGRESS AUTHORITY**
 
-Date: 2026-09-03
+Date: 2026-09-04
 
 Execution protocol:
 
@@ -43,9 +43,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-17
 CURRENT_DOMAIN: WP-18
 CURRENT_DOMAIN_TOPIC: Story / continuity / Dramaturg planning
-CURRENT_SLICE: WP-18 STEP 1 AUTHORIZED — TASK BRIEF + OPEN-WORLD SOURCE MANIFEST + WHOLE-PROJECT TASK-BRIEF CRITIC
+CURRENT_SLICE: WP-18 STEP 1 COMPLETE — DECISION BRIEF + OPEN-WORLD SOURCE MANIFEST + WHOLE-PROJECT STEP-1 CRITIC — MANDATORY SENIOR REVIEW
 NEXT_DOMAIN: WP-19
-OWNER_GATE: REQUIRED — mandatory Senior review after WP-18 Step 1; WP-18 Step 2, WP-19 and implementation planning require explicit Senior GO
+OWNER_GATE: REQUIRED — mandatory Senior review of completed WP-18 Step 1; WP-18 Step 2, WP-19 and implementation planning require explicit Senior GO
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -55,7 +55,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-18 STEP 1 AUTHORIZED
+R2_7_STATUS: WP-18 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
 R2_7_WP07: STEPS 1-8 COMPLETE — SENIOR REVIEW PASS
 R2_7_WP08: COMPLETE
@@ -68,10 +68,10 @@ R2_7_WP14: CLOSED / FINAL SENIOR RE-AUDIT PASS
 R2_7_WP15: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP16: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP17: CLOSED / FINAL SENIOR RE-AUDIT PASS
-R2_7_WP18: STEP 1 AUTHORIZED
+R2_7_WP18: STEP 1 COMPLETE / MANDATORY SENIOR REVIEW
 ```
 
-Only WP-18 Step 1 is authorized. WP-18 Step 2, WP-19 and implementation planning remain blocked pending mandatory Senior Step-1 review.
+WP-18 Step 1 is complete. WP-18 Step 2, WP-19 and implementation planning remain blocked pending mandatory Senior Step-1 review and explicit GO.
 
 ---
 
@@ -90,7 +90,7 @@ Only WP-18 Step 1 is authorized. WP-18 Step 2, WP-19 and implementation planning
 | WP-15 | CLOSED / FINAL SENIOR AUDIT PASS |
 | WP-16 | CLOSED / FINAL SENIOR AUDIT PASS |
 | WP-17 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
-| WP-18 | STEP 1 AUTHORIZED |
+| WP-18 | STEP 1 COMPLETE / MANDATORY SENIOR REVIEW |
 | WP-19..WP-27 | NOT STARTED |
 
 ---
@@ -285,13 +285,25 @@ No runtime/schema/template/catalog/test implementation was changed by WP-17 arch
 
 ---
 
-## WP-18 Step-1 active scope
+## WP-18 Step-1 result
 
 Domain:
 
 > **Story / continuity / Dramaturg planning**
 
-The controlling R2.7 scope-discovery questions are:
+Step-1 starting verified public state:
+
+```text
+WP18_STEP1_START_SHA: 0b6cde38eb188713ac50ab7690f73eeab524e693
+```
+
+Published Step-1 package:
+
+- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-decision-brief.md`;
+- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-decision-brief-critic.md`.
+
+The controlling R2.7 scope-discovery questions remain:
 
 1. Where do Story records, indexes, coverage/source basis and Chronicler service state live?
 2. Are Story, continuity projections and prospective Dramaturg planning physically and semantically distinct?
@@ -299,22 +311,41 @@ The controlling R2.7 scope-discovery questions are:
 4. Is `preparation has no entitlement to occur; canon invalidates preparation` enforced in instruction/runtime/test mapping?
 5. Can any retained planning/Story state become required canon/recovery authority accidentally?
 
-Step 1 must establish framing and source coverage, not select representation prematurely. The Source Manifest remains open-world and must be expanded through `DEV/PROJECT_MAP.md` plus current owning/consumer surfaces.
+Step 1 establishes framing and source coverage without selecting representation. Its repaired package explicitly separates retrospective Story/continuity projections from prospective provisional Dramaturg planning, treats absent legacy Story paths as negative machine/routing evidence rather than semantic absence, requires consumer-first admission of any retained planning owner, and requires architecture->machine plus machine->architecture completeness proof in later synthesis.
 
-Mandatory Step-1 package:
+Critic disposition:
 
-- WP-18 Task Brief;
-- WP-18 open-world Source Manifest;
-- WP-18 whole-project Task-Brief critic;
-- mechanical repair of all BLOCKING/SIGNIFICANT framing defects before publication.
+```text
+REPORTED_PRELIMINARY_BLOCKING:         5
+REPORTED_PRELIMINARY_SIGNIFICANT:      8
+RECONSTRUCTED_PRELIMINARY_BLOCKING:    5
+RECONSTRUCTED_PRELIMINARY_SIGNIFICANT: 8
+ADDITIONAL_SECOND_PASS_BLOCKING:       1
+ADDITIONAL_SECOND_PASS_SIGNIFICANT:    0
+TOTAL_ITEMIZED_BLOCKING:               6
+TOTAL_ITEMIZED_SIGNIFICANT:            8
+TOTAL_ITEMIZED_MINOR:                  0
+UNRESOLVED_BLOCKING:                   0
+UNRESOLVED_SIGNIFICANT:                0
+THIRD_PASS_NEW_BLOCKING:               0
+THIRD_PASS_NEW_SIGNIFICANT:            0
+THIRD_PASS_NEW_MINOR:                  0
+HUMAN_DECISION_REQUIRED:               NO
+UPSTREAM_REOPEN_REQUIRED:              NO
+ARCHITECTURE_SELECTED:                 NO
+IMPLEMENTATION_CHANGED:                NO
+WP_19_AUTHORIZED:                      NO
+STEP_2_AUTHORIZED:                     NO
+NEXT_GATE:                             MANDATORY SENIOR STEP-1 REVIEW
+```
 
-Mandatory stop after coherent Step-1 publication: Senior review.
+No runtime/schema/template/catalog/CORE/test implementation changed in Step 1. The Source Manifest remains open-world and must be expanded during Step 2 only if the mandatory Senior gate grants GO.
 
 ---
 
 ## Forward obligations
 
-- **WP-18** — Step 1 is the only active/authorized unit.
+- **WP-18** — Step 1 is complete; mandatory Senior Step-1 review is the only current gate. Step 2 remains blocked without explicit GO.
 - **WP-19** — bootstrap/campaign creation remains downstream and not started.
 - **WP-20** — engine update/schema evolution/migration remains downstream.
 - **WP-21..WP-26** — remain downstream audit domains.
@@ -328,13 +359,13 @@ These are routing obligations, not authorization to start later work.
 ## Task-local handoff
 
 ```text
-WP16_FINAL_SHA:                         659b22c34bda5c967b1bc438eaba5a17df9e089c
-WP17_STEP1_START_SHA:                   cc2c02da53c5d8b0e4cc5e759d3991716766d8c8
-WP17_SENIOR_REPAIR_START_SHA:           d72662d827049b39612386bb236fa14c83fc9ef8
-WP17_STEPS_2_8_START_SHA:               cc4edd01a2c7b68a0a749041bb2f8aa1987d1be3
-WP17_FINAL_SENIOR_RECOVERY_START_SHA:   d372f734a34ff9c5e3759a31918df7fba251c901
+WP16_FINAL_SHA:                          659b22c34bda5c967b1bc438eaba5a17df9e089c
+WP17_STEP1_START_SHA:                    cc2c02da53c5d8b0e4cc5e759d3991716766d8c8
+WP17_SENIOR_REPAIR_START_SHA:            d72662d827049b39612386bb236fa14c83fc9ef8
+WP17_STEPS_2_8_START_SHA:                cc4edd01a2c7b68a0a749041bb2f8aa1987d1be3
+WP17_FINAL_SENIOR_RECOVERY_START_SHA:    d372f734a34ff9c5e3759a31918df7fba251c901
 WP17_FINAL_SENIOR_RECOVERY_R1_START_SHA: 667d59f63527b9e82afa3724847cf69877fa6aff
-WP17_FINAL_SHA:                         6855c79190e6bb087c8039a1adf2bf71deec2c70
+WP17_FINAL_SHA:                          6855c79190e6bb087c8039a1adf2bf71deec2c70
 
 WP17_FINAL_CANONICAL_ARTIFACT: DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-canonical-spec.md
 WP17_STEP8_SELF_REVIEW:        DEV/docs/superpowers/design/2026-09-03-r2-7-WP-17-async-collaboration-agency-safe-progression-step-8-canonicalization-self-review.md
@@ -353,9 +384,14 @@ ARCHITECTURE_REOPENED:               NO
 UPSTREAM_REOPEN_REQUIRED:            NO
 CANONICAL_SPEC_REPAIR_REQUIRED:      NO
 
-WP18_STEP1_START_BASIS_SHA: 6855c79190e6bb087c8039a1adf2bf71deec2c70
-CURRENT_VERIFICATION_STATE: WP-17 final Senior re-audit PASS and closure are accepted; public cursor transition authorizes WP-18 Step 1 only
-NEXT_EXACT_TASK_OR_SLICE: WP-18 Step 1 — Task Brief + open-world Source Manifest + whole-project Task-Brief critic; mechanically resolve BLOCKING/SIGNIFICANT framing defects; stop for mandatory Senior review
+WP18_STEP1_START_BASIS_SHA: 0b6cde38eb188713ac50ab7690f73eeab524e693
+WP18_STEP1_DECISION_BRIEF: DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-decision-brief.md
+WP18_STEP1_SOURCE_MANIFEST: DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-source-manifest.md
+WP18_STEP1_CRITIC: DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-decision-brief-critic.md
+WP18_STEP1_UNRESOLVED_BLOCKING: 0
+WP18_STEP1_UNRESOLVED_SIGNIFICANT: 0
+CURRENT_VERIFICATION_STATE: WP-18 Step-1 package complete candidate; mandatory Senior Step-1 review required before any Step-2 work
+NEXT_EXACT_TASK_OR_SLICE: Mandatory Senior review of WP-18 Step-1 package; no WP-18 Step 2, WP-19 or implementation planning without explicit Senior GO
 KNOWN_BLOCKERS: NONE
-UNPUBLISHED_WORK: NONE after coherent cursor publication
+UNPUBLISHED_WORK: NONE after coherent Step-1 checkpoint publication
 ```
