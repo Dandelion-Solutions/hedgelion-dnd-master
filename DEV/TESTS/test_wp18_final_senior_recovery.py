@@ -5,7 +5,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LEDGER_PATH = REPO_ROOT / "DEV" / "CATALOG" / "catalog-admission-ledger.json"
-PLANNING_CLASSES_PATH = REPO_ROOT / "DEV" / "CATALOG" / "planning-entry-classes.json"
+CORE_CATALOG_PATH = REPO_ROOT / "DEV" / "CATALOG" / "core-catalog.json"
 
 OWNER_CHAIN = (
     "DEV/docs/superpowers/specs/2026-08-24-r2-5-collaboration-multiplayer-canonical-spec.md + "
@@ -21,10 +21,13 @@ class WP18FinalSeniorRecoveryTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.ledger = json.loads(LEDGER_PATH.read_text(encoding="utf-8"))
-        cls.planning_classes = json.loads(PLANNING_CLASSES_PATH.read_text(encoding="utf-8"))
+        cls.core_catalog = json.loads(CORE_CATALOG_PATH.read_text(encoding="utf-8"))
 
     def test_planning_entry_class_vocabulary_is_unchanged(self):
-        self.assertEqual(self.planning_classes["values"], PLANNING_IDS)
+        self.assertEqual(
+            self.core_catalog["registries"]["planning_entry_classes"],
+            PLANNING_IDS,
+        )
 
     def test_planning_entry_family_uses_current_owner_chain(self):
         policy = self.ledger["family_policies"]["planning_entry_classes"]
