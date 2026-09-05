@@ -6,7 +6,8 @@
   "additionalProperties": false,
   "required": [
     "generation", "root_command_id", "resolution_id", "activity_id", "actor_id",
-    "ruleset_set_sha256", "catalog_context_fingerprint", "execution_cursor", "safe_recompute_phase",
+    "ruleset_set_digest_generation", "ruleset_set_sha256",
+    "catalog_context_fingerprint_generation", "catalog_context_fingerprint", "execution_cursor", "safe_recompute_phase",
     "invocation_facts", "fixed_rng_results", "prior_step_exports",
     "committed_segment_refs", "dependency_frontier_refs",
     "expected_child_resolution_ids", "future_rng_frontier"
@@ -28,7 +29,9 @@
       "propertyNames": {"$ref": "#/$defs/id"},
       "additionalProperties": {"$ref": "https://hedgelion.invalid/schemas/activity-parameter-binding.schema.json"}
     },
+    "catalog_context_fingerprint_generation": {"const": 1},
     "catalog_context_fingerprint": {"type": "string", "minLength": 1},
+    "ruleset_set_digest_generation": {"const": 1},
     "ruleset_set_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "procedure_id": {"type": "string", "minLength": 1},
     "execution_cursor": {"type": "string", "minLength": 1},
@@ -92,7 +95,9 @@
       "activity_id": "activity.attack.basic",
       "actor_id": "actor-0001",
       "target_ids": ["actor-0002"],
+      "catalog_context_fingerprint_generation": 1,
       "catalog_context_fingerprint": "ctx",
+      "ruleset_set_digest_generation": 1,
       "ruleset_set_sha256": "4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca",
       "execution_cursor": "step.attack.resolve",
       "safe_recompute_phase": "determine",
