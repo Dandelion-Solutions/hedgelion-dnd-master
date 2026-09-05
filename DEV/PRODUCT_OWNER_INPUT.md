@@ -40,6 +40,7 @@ SUPERSEDED
 | `PO-001` | REQUIREMENT | INCORPORATED | WP-19 final Senior PASS accepted the ordinary active-player retrospective composition; runtime/test realization remains deferred until R2.7 final reconciliation plus approved implementation planning/execution | accepted gameplay/navigation owner decision; WP-19 canonical spec; ordinary Master history consumer; later runtime/tests | NONE |
 | `PO-002` | REQUIREMENT | INCORPORATED | WP-19 final Senior PASS accepted save-success -> session-local clear -> same-chat campaign-menu composition; runtime/test realization remains deferred until R2.7 final reconciliation plus approved implementation planning/execution | accepted gameplay/navigation owner decision; WP-19 canonical spec; save/session/menu/live consumers; later runtime/tests | NONE |
 | `PO-003` | REQUIREMENT | INCORPORATED | WP-19 final Senior PASS accepted the bounded SemanticEvent historical-decision-basis composition and mandatory zero-extra-serial performance law; physical schema/runtime/test realization remains deferred until R2.7 final reconciliation plus approved implementation planning/execution | historical Actor decision-basis owner decision; WP-19 canonical spec; Step-4 LOG/SemanticEvent extension; R2.2/world.knowledge boundaries; retrospective/performance consumers | NONE |
+| `PO-004` | COMPATIBILITY POLICY | PARTIALLY_INCORPORATED | Product semantics are formalized; WP-20 Step 1 is the active pending consumer and must frame compatibility from the released v1.0 baseline rather than obsolete pre-release state | v1 clean-slate compatibility owner decision; WP-20; engine/runtime/schema migration/update/release/test consumers | NONE |
 
 ---
 
@@ -236,12 +237,57 @@ Those recovery records remain historical provenance; the current architecture re
 
 ---
 
+## PO-004 — v1.0 clean-slate compatibility baseline
+
+Date: 2026-09-05  
+Kind: COMPATIBILITY POLICY  
+Status: PARTIALLY_INCORPORATED
+
+### PO input — VERBATIM / IMMUTABLE
+
+```text
+В данный момент нигде не существует обязательств по совместимости. Версия 1.0 начинается с чистого листа и не совместима с версией 0.8. Весь абсолютно pre-release Skaffold можно считать obsolete и не тащить за собой. Всю структуру и, модели и инструкции можно переписать хоть полностью.
+```
+
+### Agent interpretation / classification
+
+```text
+CLEAN-SLATE RELEASE BASELINE
+PRE-RELEASE COMPATIBILITY OBLIGATION: NONE
+V0.8 -> V1.0 MIGRATION OBLIGATION: NONE
+PRE-RELEASE STRUCTURAL FREEZE: NONE
+PRE-RELEASE SCHEMA/MODEL/INSTRUCTION PRESERVATION: NOT REQUIRED
+CURRENT WP-20 CONSUMER: YES
+```
+
+### Current routing
+
+| Route | State | Trigger / obligation | Current evidence / owner |
+|---|---|---|---|
+| Product semantics | INCORPORATED | complete | `DEV/docs/superpowers/specs/2026-09-05-hdm-v1-clean-slate-compatibility-owner-decision.md` |
+| WP-20 Step-1 framing | ACTIVE / PENDING | must be included in Source Manifest, Architecture Task Brief and mandatory Task-Brief critic | R2.7 WP-20 — engine update / schema evolution / migration |
+| Pre-release `0.8 -> 1.0` migration | NOT APPLICABLE BY OWNER DECISION | no compatibility layer/migrator required solely for pre-release state | owner decision above |
+| Pre-release structures/models/instructions | NO COMPATIBILITY FREEZE | may be replaced when current accepted architecture requires it | current owners + WP-20 reverse audit |
+| Released v1.0+ compatibility/update/migration policy | ROUTED / CURRENT WP-20 | define future released-campaign behavior without importing pre-release baggage | WP-20 |
+| Runtime/schema/tool/test realization | DEFERRED | after complete R2.7 final reconciliation + approved implementation planning/execution | later implementation consumers |
+
+### Current impact
+
+PO-004 narrows WP-20 materially. The architecture must begin its compatibility horizon at the released v1.0 baseline. It must not create migration or compatibility machinery merely to preserve obsolete v0.8/pre-release scaffolds.
+
+WP-20 still owns future released-campaign engine/ruleset/schema evolution from v1.0 onward, including explicit compatibility, safe migration/update failure behavior, recovery and release/test consequences.
+
+Product Owner decision still required: `NONE`.
+
+---
+
 ## 4. Current ledger terminal state
 
 ```text
 PO-001: INCORPORATED
 PO-002: INCORPORATED
 PO-003: INCORPORATED
+PO-004: PARTIALLY_INCORPORATED — WP-20 STEP-1 CONSUMER ACTIVE/PENDING
 
 HUMAN_DECISION_REQUIRED: NO
 NEEDS_PO: NONE
@@ -258,4 +304,4 @@ SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-The next architecture unit is WP-20 Step 1. Implementation realization remains deferred until the complete R2.7 architecture sequence and final reconciliation permit implementation planning.
+The next architecture unit is WP-20 Step 1. PO-004 is mandatory input to its framing. Implementation realization remains deferred until the complete R2.7 architecture sequence and final reconciliation permit implementation planning.
