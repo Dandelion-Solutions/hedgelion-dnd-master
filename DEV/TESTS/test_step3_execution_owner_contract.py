@@ -7,6 +7,7 @@ from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
+RULESET_SET_SHA256 = "0700d3ccf367ade9ff56f620c4330bd5b4544fb9e22031f9d1eac3718a88ef2d"
 
 
 def load(name):
@@ -44,8 +45,10 @@ def resolution():
         "activity_id": "activity.attack.basic",
         "actor_id": "actor-0001",
         "target_ids": ["actor-0002"],
+        "catalog_context_fingerprint_generation": 1,
         "catalog_context_fingerprint": "ctx",
-        "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
+        "ruleset_set_digest_generation": 1,
+        "ruleset_set_sha256": RULESET_SET_SHA256,
         "procedure_id": "procedure-000001",
         "status": "AWAITING_REACTION",
         "next_segment_sequence": 2,
@@ -73,8 +76,10 @@ def continuation():
         "activity_id": "activity.attack.basic",
         "actor_id": "actor-0001",
         "target_ids": ["actor-0002"],
+        "catalog_context_fingerprint_generation": 1,
         "catalog_context_fingerprint": "ctx",
-        "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
+        "ruleset_set_digest_generation": 1,
+        "ruleset_set_sha256": RULESET_SET_SHA256,
         "procedure_id": "procedure-000001",
         "execution_cursor": "step.attack.resolve",
         "safe_recompute_phase": "determine",
@@ -146,8 +151,10 @@ class Step3ExecutionOwnerContractTest(unittest.TestCase):
             "root_command_id": "cmd",
             "activity_id": "activity.followup",
             "actor_id": "actor-0001",
+            "catalog_context_fingerprint_generation": 1,
             "catalog_context_fingerprint": "ctx",
-            "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
+            "ruleset_set_digest_generation": 1,
+            "ruleset_set_sha256": RULESET_SET_SHA256,
             "status": "PENDING",
             "next_segment_sequence": 1,
             "invocation_facts": [],
