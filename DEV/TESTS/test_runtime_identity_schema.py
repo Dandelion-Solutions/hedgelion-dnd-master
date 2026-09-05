@@ -15,7 +15,8 @@ ROOT = Path(__file__).resolve().parents[2]
 class RuntimeIdentitySchemaTests(unittest.TestCase):
     def test_campaign_template_uses_created_with_and_current_runtime_identity(self):
         manifest = yaml.safe_load((ROOT / "GAME" / "CAMPAIGN" / "MANIFEST.yaml").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["schema_version"], 3)
+        self.assertEqual(manifest["schema_version"], 4)
+        self.assertEqual(manifest["campaign_contract"], {"created_with": 2, "current": 2})
         engine = manifest["engine"]
         self.assertEqual(set(engine), {"created_with", "current", "update_policy"})
         self.assertEqual(
@@ -26,12 +27,16 @@ class RuntimeIdentitySchemaTests(unittest.TestCase):
             set(engine["current"]),
             {"version", "package_id", "source_commit_sha", "package_sha256", "adopted_at"},
         )
+        self.assertEqual(manifest["ruleset"]["created_with"]["ruleset_set_digest_generation"], 1)
+        self.assertEqual(manifest["ruleset"]["current"]["ruleset_set_digest_generation"], 1)
         for legacy in ("base_tag", "base_sha", "integrated_tag", "integrated_main_sha"):
             self.assertNotIn(legacy, engine)
 
-    def test_storage_schema_v3_uses_portable_baseline_object(self):
+    def test_storage_schema_v4_uses_portable_baseline_object(self):
         schema = yaml.safe_load((ROOT / "GAME" / "SCHEMA" / "dnd_storage.schema.yaml").read_text(encoding="utf-8"))
-        self.assertEqual(schema["schema_version"], 3)
+        self.assertEqual(schema["schema_version"], 4)
+        self.assertIn("storage_format_generation", schema["required"])
+        self.assertEqual(schema["fields"]["storage_format_generation"], "integer")
         baseline = schema["fields"]["engine"]["baseline"]
         self.assertEqual(
             set(baseline),
@@ -76,7 +81,8 @@ class RuntimeIdentitySchemaTests(unittest.TestCase):
             self.assertEqual(cp.returncode, 0, cp.stderr or cp.stdout)
             manifest = yaml.safe_load((output / "MANIFEST.yaml").read_text(encoding="utf-8"))
 
-        self.assertEqual(manifest["schema_version"], 3)
+        self.assertEqual(manifest["schema_version"], 4)
+        self.assertEqual(manifest["campaign_contract"], {"created_with": 2, "current": 2})
         self.assertEqual(
             manifest["engine"]["created_with"],
             {
@@ -95,6 +101,15 @@ class RuntimeIdentitySchemaTests(unittest.TestCase):
                 "adopted_at": "2099-01-02T00:00:00+00:00",
             },
         )
+        self.assertEqual(
+            manifest["ruleset"]["created_with"],
+            {
+                "ruleset_set_sha256": "c" * 64,
+                "ruleset_set_digest_generation": 1,
+            },
+        )
+        self.assertEqual(manifest["ruleset"]["current"]["ruleset_set_digest_generation"], 1)
+        self.assertEqual(manifest["ruleset"]["current"]["ruleset_set_sha256"], "c" * 64)
         self.assertEqual(manifest["engine"]["update_policy"], "ask")
         for legacy in ("base_tag", "base_sha", "integrated_tag", "integrated_main_sha"):
             self.assertNotIn(legacy, manifest["engine"])
