@@ -1,6 +1,6 @@
 # Character Mechanical Readiness
 
-framework_module_version: 1.1.0
+framework_module_version: 1.0.3
 load_policy: ALWAYS_DURING_GAMEPLAY
 precedence: authoritative for deciding whether a player character has crossed the initial mechanical commitment frontier for ordinary mechanics-capable play; DIEGETIC_ONBOARDING owns gameplay-first provisional materialization
 
