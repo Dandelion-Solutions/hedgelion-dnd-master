@@ -73,7 +73,7 @@ def init_fixture_repo(root: Path, release_status: str) -> str:
         "repository: Dandelion-Solutions/hedgelion-dnd-master\n"
         "engine_owner_login: dkolyada\n"
         "rules_baseline: D&D 2024 / SRD 5.2.1\n"
-        "schema_version: 2\n"
+        "campaign_contract_generation: 2\n"
         "campaign_update:\n"
         "  compatibility: maintenance_required\n"
         "recommended_tag: v1.0-alpha\n"
@@ -102,12 +102,13 @@ class RuntimePackageProvenanceTests(unittest.TestCase):
 
         meta = module.build_runtime_package_metadata(ROOT, "v1.0-alpha", tag_mode=False)
 
-        self.assertEqual(meta["schema_version"], 2)
+        self.assertEqual(meta["schema_version"], 3)
         self.assertEqual(meta["engine_version"], "1.0-alpha")
         self.assertEqual(meta["package_id"], "dev-v1.0-alpha")
         self.assertEqual(meta["source_state"], "clean_head")
         self.assertEqual(meta["source_ref"], "HEAD")
         self.assertEqual(meta["source_commit_sha"], expected_head)
+        self.assertEqual(meta["ruleset_set_digest_generation"], 1)
 
     def test_tagged_metadata_records_exact_tagged_commit(self):
         module = load_module()
@@ -118,11 +119,13 @@ class RuntimePackageProvenanceTests(unittest.TestCase):
 
             meta = module.build_runtime_package_metadata(root, "v1.0-alpha", tag_mode=True)
 
+        self.assertEqual(meta["schema_version"], 3)
         self.assertEqual(meta["engine_version"], "1.0-alpha")
         self.assertEqual(meta["package_id"], "v1.0-alpha")
         self.assertEqual(meta["source_state"], "tagged")
         self.assertEqual(meta["source_ref"], "v1.0-alpha")
         self.assertEqual(meta["source_commit_sha"], expected_head)
+        self.assertEqual(meta["ruleset_set_digest_generation"], 1)
 
     def test_dirty_worktree_does_not_falsely_claim_head_provenance(self):
         module = load_module()
@@ -133,11 +136,13 @@ class RuntimePackageProvenanceTests(unittest.TestCase):
 
             meta = module.build_runtime_package_metadata(root, "v1.0-alpha", tag_mode=False)
 
+        self.assertEqual(meta["schema_version"], 3)
         self.assertEqual(meta["engine_version"], "1.0-alpha")
         self.assertEqual(meta["package_id"], "dev-v1.0-alpha")
         self.assertEqual(meta["source_state"], "dirty_worktree")
         self.assertIsNone(meta["source_ref"])
         self.assertIsNone(meta["source_commit_sha"])
+        self.assertEqual(meta["ruleset_set_digest_generation"], 1)
 
     def test_built_zip_contains_one_generated_root_provenance_member(self):
         module = load_module()
@@ -151,12 +156,13 @@ class RuntimePackageProvenanceTests(unittest.TestCase):
                 self.assertNotIn("GAME/RUNTIME_PACKAGE.yaml", names)
                 meta = yaml.safe_load(zf.read("RUNTIME_PACKAGE.yaml"))
 
-        self.assertEqual(meta["schema_version"], 2)
+        self.assertEqual(meta["schema_version"], 3)
         self.assertEqual(meta["engine_version"], "1.0-alpha")
         self.assertEqual(meta["package_id"], "dev-v1.0-alpha")
         self.assertIn(meta["source_state"], {"tagged", "clean_head", "dirty_worktree", "non_git"})
         self.assertIn("source_ref", meta)
         self.assertIn("source_commit_sha", meta)
+        self.assertEqual(meta["ruleset_set_digest_generation"], 1)
 
 
 if __name__ == "__main__":
