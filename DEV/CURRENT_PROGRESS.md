@@ -9,36 +9,48 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 WP-20 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-20 Step 1 complete and review-ready; mandatory Senior review pending; Step 2 is not authorized
+CURRENT_SLICE: WP-20 Step 1 complete and review-ready; post-Brief human-approved versioning amendment integrated into the Senior review basis; Step 2 is not authorized
 
 LAST_CLOSED_UNIT: R2.7 WP-19 — Bootstrap / campaign creation / initial materialization — FINAL SENIOR REVIEW PASS on audited basis 6abee95ce1c19ab2d208fbd44f472814ca35a3c9
 NEXT_AUTHORIZED_UNIT: NONE — MANDATORY SENIOR REVIEW
-REQUIRED_GATE: Senior review of the complete WP-20 Step-1 Source Manifest + Architecture Task Brief + whole-project Task-Brief critic; Step 2 requires explicit Senior GO
+REQUIRED_GATE: Senior review of the complete WP-20 Step-1 Source Manifest + Architecture Task Brief + whole-project Task-Brief critic + approved versioning amendment/reconciliation; Step 2 requires explicit Senior GO
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-task-brief-critic.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-step-1-versioning-amendment-reconciliation.md
 KNOWN_BLOCKERS: NONE
 ```
 
 ## WP-20 Step-1 review package
 
-Source Manifest:
+Original Source Manifest:
 
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-source-manifest.md`.
 
-Architecture Task Brief:
+Original Architecture Task Brief:
 
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-architecture-task-brief.md`.
 
-Mandatory whole-project Task-Brief critic:
+Original mandatory whole-project Task-Brief critic:
 
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-task-brief-critic.md`.
+
+Post-Brief versioning research / accepted architecture / reconciliation now included in the mandatory Senior review basis:
+
+- `DEV/docs/superpowers/research/2026-09-05-versioning-namespace-inventory-and-analysis.md`;
+- `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md`;
+- `DEV/RELEASE/VERSIONING.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-step-1-versioning-amendment-reconciliation.md`.
+
+Neighboring canonical owners already reconciled at documentation-law level:
+
+- `DEV/ARCHITECTURE/CATALOG_INVENTORY.md`;
+- `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md`.
 
 Controlling Product Owner compatibility input:
 
 - `DEV/PRODUCT_OWNER_INPUT.md` — `PO-004`;
 - `DEV/docs/superpowers/specs/2026-09-05-hdm-v1-clean-slate-compatibility-owner-decision.md`.
 
-Step-1 framing result:
+Step-1 framing result remains:
 
 - compatibility horizon begins at released v1.0+; v0.8/pre-release compatibility is outside the required surface;
 - compatibility is multi-axis and cannot be inferred from semantic engine version alone;
@@ -50,9 +62,25 @@ Step-1 framing result:
 - active/current LIVE ownership cannot be bypassed by campaign-base migration;
 - current migration/update/schema/test scaffold has no presumption of correctness; pre-release legacy compatibility assumptions are non-binding under PO-004;
 - current `ACCESS_CONTROL.md` creator-vs-storage-owner migration wording is explicitly routed for Step-2 owner reconciliation rather than silently choosing a new authority;
-- no genuine Product Owner decision is required to complete Step 1.
+- no genuine Product Owner decision remains open at the Step-1 gate.
 
-Critic disposition:
+Accepted versioning amendment additionally establishes:
+
+- exactly three HDM-owned numbering categories: engine release, engine-bound component/module, independent integer counter;
+- Category-C `revision`, `schema_version`, `generation` and domain-local ordinal semantics are distinct despite sharing integer representation;
+- aggregate persistent-campaign compatibility is named `campaign_contract_generation`, superseding ambiguous global `ENGINE_VERSION.schema_version` semantics;
+- persistent record-family schemas remain independent integer versions;
+- storage uses independent `storage_format_generation` semantics;
+- catalog uses one coordinated integer `catalog_generation`, with current pre-release `2.0.0` spelling mapped conceptually to generation `2` pending machine realization;
+- ruleset package update order and semantic compatibility separate into `package_revision` and `compatibility_family`/`compatibility_generation`;
+- custom digest/fingerprint canonicalization generation is explicit/typed; current `_V1` literals are pre-release realization spelling, not future architecture authority;
+- migration is an explicit directed graph edge, not arithmetic over version integers;
+- reverse/downgrade migration is not a baseline promise;
+- unsupported newer schemas/generations fail closed;
+- released assets are immutable;
+- current pre-release machine versions/hashes may be normalized/recomputed later without compatibility shims.
+
+Original critic disposition:
 
 ```text
 BLOCKING_FOUND: 0
@@ -68,6 +96,16 @@ UPSTREAM_REOPEN_REQUIRED: NO
 ARCHITECTURE_REOPENED: NO
 ```
 
+Supplemental versioning reconciliation disposition:
+
+```text
+SUPPLEMENTAL_BLOCKING: 0
+SUPPLEMENTAL_SIGNIFICANT_UNRESOLVED: 0
+HUMAN_DECISION_REQUIRED: NO
+NEEDS_PO: NONE
+UPSTREAM_REOPEN_REQUIRED: NO
+```
+
 Current gate:
 
 ```text
@@ -75,6 +113,9 @@ WP20_STEP1: COMPLETE — MANDATORY SENIOR REVIEW
 SOURCE_MANIFEST: COMPLETE
 ARCHITECTURE_TASK_BRIEF: COMPLETE
 TASK_BRIEF_CRITIC: COMPLETE
+VERSIONING_RESEARCH: COMPLETE
+VERSIONING_ARCHITECTURE_AMENDMENT: HUMAN-APPROVED / CANONICAL
+VERSIONING_MACHINE_REALIZATION: NOT STARTED
 
 WP20_STEP2_AUTHORIZED: NO
 WP20_STEP2_STARTED: NO
@@ -83,6 +124,7 @@ IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RUNTIME_MIGRATION_EXECUTED: NO
 REAL_CAMPAIGN_MIGRATED: NO
+VERSION_NORMALIZATION_IMPLEMENTATION_STARTED: NO
 
 NEXT_AUTHORIZED_UNIT: NONE — MANDATORY SENIOR REVIEW
 ```
@@ -173,10 +215,12 @@ WP-19 leaves explicit downstream realization obligations for the later implement
 - PO-003 T0->T1 retrospective acceptance and direct zero-extra-serial performance verification;
 - already-classified stale scenario maintenance.
 
-These obligations remain blocked from implementation until the R2.7 WP-01..WP-27 sequence and final reconciliation permit implementation planning, followed by the normal implementation-plan/execution gates.
+The approved versioning amendment adds separate deferred normalization obligations including version-field renaming, coordinated catalog/ruleset representation normalization and affected digest/fixture recalculation. Those obligations remain documentation-level accepted architecture only; no normalization implementation has started.
+
+These obligations remain blocked from implementation until the applicable R2.7 gates permit implementation planning and execution.
 
 ## WP-20 boundary
 
 WP-20 owns **engine update / schema evolution / migration** for released v1.0+ campaign evolution. It must not reopen WP-19 creation architecture merely because update/migration consumes the same identity fields, and it must not manufacture compatibility work for obsolete pre-release state.
 
-No Step-2 research, WP-21 work, implementation planning, substantive implementation, runtime migration or real campaign migration has started. The only current continuation is the mandatory Senior review of the Step-1 package.
+No Step-2 research, WP-21 work, implementation planning, substantive implementation, runtime migration, real campaign migration or version-normalization implementation has started. The only current continuation is the mandatory Senior review of the augmented Step-1 package.
