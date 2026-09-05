@@ -1,10 +1,11 @@
 {
-  "manifest_schema_version": 1,
+  "manifest_schema_version": 2,
   "package_id": "hdm.rules.dnd2024-srd52-core",
-  "package_version": "0.1.0-mvp",
-  "compatibility_id": "hdm.rules.dnd2024-srd52.v1",
+  "package_revision": 1,
+  "compatibility_family": "hdm.rules.dnd2024-srd52",
+  "compatibility_generation": 1,
   "engine_requirement": {"engine_version": "1.0-alpha"},
-  "catalog_generation": "2.0.0",
+  "catalog_generation": 2,
   "owned_namespaces": [
     "ability.*", "skill.*", "proficiency.*", "size_category.*", "creature_type.*",
     "movement_mode.*", "sense.*", "language.*", "damage_type.*", "currency.*",
