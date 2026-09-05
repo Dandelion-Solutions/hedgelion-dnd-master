@@ -43,11 +43,18 @@ def validate_accepted_policy_basis_collections(parameter_bindings,invocation_fac
 
 def validate_shape(c):
     if set(c)!=TOP_KEYS: raise ValueError(f"unknown contract members or missing required members: {sorted(set(c)^TOP_KEYS)}")
-    if c["schema_version"]!=1: raise ValueError("unsupported contract schema_version")
+    if c["schema_version"]!=2: raise ValueError("unsupported contract schema_version")
     if c["identity_bound_package_capabilities_path"]!="GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-capabilities.json": raise ValueError("invalid identity-bound package capabilities path")
-    identity=c["resolved_ruleset_identity"]; ik={"package_id","package_version","catalog_generation","ruleset_set_sha256","runtime_selection_state"}
-    if not isinstance(identity,dict) or set(identity)!=ik or not all(isinstance(identity[k],str) and identity[k] for k in ik) or not re.fullmatch(r"[a-f0-9]{64}",identity["ruleset_set_sha256"]) or identity["runtime_selection_state"]!="ACTIVE_VERIFIED_MACHINE_CONTRACT": raise ValueError("invalid resolved ruleset identity")
-    if (identity["package_id"],identity["package_version"],identity["catalog_generation"]) != ("hdm.rules.dnd2024-srd52-core","0.1.0-mvp","2.0.0"): raise ValueError("unexpected identity-bound package candidate")
+    identity=c["resolved_ruleset_identity"]
+    ik={"package_id","package_revision","compatibility_family","compatibility_generation","catalog_generation","ruleset_set_digest_generation","ruleset_set_sha256","runtime_selection_state"}
+    if not isinstance(identity,dict) or set(identity)!=ik: raise ValueError("invalid resolved ruleset identity shape")
+    if not isinstance(identity["package_id"],str) or not identity["package_id"]: raise ValueError("invalid package_id")
+    if not isinstance(identity["compatibility_family"],str) or not identity["compatibility_family"]: raise ValueError("invalid compatibility_family")
+    if any(not isinstance(identity[k],int) or isinstance(identity[k],bool) or identity[k]<1 for k in ("package_revision","compatibility_generation","catalog_generation","ruleset_set_digest_generation")): raise ValueError("invalid generation/revision identity")
+    if not re.fullmatch(r"[a-f0-9]{64}",identity["ruleset_set_sha256"]) or identity["runtime_selection_state"]!="ACTIVE_VERIFIED_MACHINE_CONTRACT": raise ValueError("invalid resolved ruleset identity")
+    expected=("hdm.rules.dnd2024-srd52-core",1,"hdm.rules.dnd2024-srd52",1,2,1)
+    observed=(identity["package_id"],identity["package_revision"],identity["compatibility_family"],identity["compatibility_generation"],identity["catalog_generation"],identity["ruleset_set_digest_generation"])
+    if observed!=expected: raise ValueError("unexpected identity-bound package candidate")
     route_keys={"policy_revision_and_lifecycle","authority_and_eligibility","consumer_and_value_contract","provenance_and_freeze","catalog_and_native_validation","rng_and_mutation","execution_and_failure","retry_recovery_and_publication","proof_ids","revisit_trigger"}
     profiles=c["route_profiles"]
     if not isinstance(profiles,dict) or set(profiles)!={"route.adjudicated_parameter_to_mechanics","route.invocation_fact_to_mechanics","route.policy_realization_link_conformance"} or any(set(v)!=route_keys for v in profiles.values()): raise ValueError("invalid route profile matrix")
@@ -84,7 +91,9 @@ def package_rows(root,c):
     manifest=json.loads((package_dir/"ruleset-package-manifest.json").read_text(encoding="utf-8"))
     lock,_=build_resolved_lock([package_dir],root_package_ids=[manifest["package_id"]],engine_version=manifest["engine_requirement"]["engine_version"],catalog_generation=manifest["catalog_generation"])
     identity=c["resolved_ruleset_identity"]
-    if (identity["package_id"],identity["package_version"],identity["catalog_generation"],identity["ruleset_set_sha256"]) != (manifest["package_id"],manifest["package_version"],manifest["catalog_generation"],lock["ruleset_set_sha256"]): raise ValueError("resolved ruleset identity mismatch")
+    expected=(manifest["package_id"],manifest["package_revision"],manifest["compatibility_family"],manifest["compatibility_generation"],manifest["catalog_generation"],lock["ruleset_set_digest_generation"],lock["ruleset_set_sha256"])
+    observed=(identity["package_id"],identity["package_revision"],identity["compatibility_family"],identity["compatibility_generation"],identity["catalog_generation"],identity["ruleset_set_digest_generation"],identity["ruleset_set_sha256"])
+    if observed!=expected: raise ValueError("resolved ruleset identity mismatch")
     definitions={}; rows=[]; paths=set()
     for p in manifest["content_files"]:
         if p=="ruleset-package-manifest.json" or not p.endswith(".json"): continue
