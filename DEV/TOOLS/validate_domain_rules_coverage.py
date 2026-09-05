@@ -107,7 +107,8 @@ def build_binding(root):
 def validate_binding(value,root=None):
  root=Path(root or Path(__file__).resolve().parents[2]);exact(value,BINDING,"coverage binding")
  CanonicalSchemaValidator(root/"DEV/SCHEMAS").validate(value,load(root/"DEV/SCHEMAS/domain-rules-coverage-binding.schema.json"))
- if value!=build_binding(root): raise ValueError("coverage binding differs from reconstructed package snapshot/resolved lock")
+ expected=build_binding(root)
+ if value!=expected: raise ValueError(f"coverage binding differs from reconstructed package snapshot/resolved lock; expected={expected!r}; actual={value!r}")
  return True
 
 def validate_gameplay_seed(spine,schemas):
