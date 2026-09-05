@@ -16,10 +16,10 @@ The engine package and campaign storage are separate.
 
 A campaign-storage repository is discovered by exact root `DND_STORAGE.yaml` on its default branch.
 
-New storage uses marker v3:
+New storage uses storage-format generation 3:
 
 ```yaml
-storage_format_version: 3
+storage_format_generation: 3
 repository_role: campaign_storage
 engine:
   baseline:
