@@ -1,6 +1,6 @@
 # Diegetic Character Onboarding
 
-framework_module_version: 1.1.0
+framework_module_version: 1.0.2
 load_when: story-first character setup, adopted provisional PC identity, or resume of unfinished onboarding
 precedence: authoritative for gameplay-first progressive character materialization and the PROVISIONAL_IDENTITY boundary; CHARACTER_READINESS owns READY_PC and DURABILITY_GUARD owns general save timing
 
