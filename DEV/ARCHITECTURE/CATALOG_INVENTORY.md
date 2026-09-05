@@ -2,9 +2,11 @@
 
 Status: **R2.7 WP-03 CANONICAL CLASSIFICATION — STRUCTURAL REALIZATION IN PROGRESS**
 
-Catalog generation: `2.0.0`
+Canonical catalog generation: `2`
 
-`2.0.0` is the unreleased clean-slate R2.7 machine-contract generation. Later R2.7 domains may make coordinated changes inside this generation before the final architecture gate closes; no campaign or released runtime depends on the superseded `1.6.0` scaffold.
+Generation `2` is the unreleased clean-slate R2.7 coordinated machine-contract generation. The current pre-release machine artifacts still serialize the legacy representation `2.0.0`; that representation is realization debt and is to be normalized to integer `catalog_generation: 2` under `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md`. No campaign or released runtime depends on either the superseded `1.6.0` scaffold or the current pre-release spelling.
+
+All coordinated catalog-generation projections MUST equal the canonical catalog generation. Mixed coordinated generations are invalid. Individual catalog artifact `schema_version` values remain independent structural schema versions and do not have to equal the catalog generation.
 
 The exact closed machine IDs are in `DEV/CATALOG/core-catalog.json`. This document is authoritative for classification and class semantics. `CATALOG_ADMISSION.md` and `DEV/CATALOG/catalog-admission-ledger/` (manifest + per-registry-family shards, assembled by `DEV/TOOLS/catalog_admission.py`) own admission disposition and realization traceability without becoming a second ID or semantic owner. Exact persistent schemas, roots, sharding and HOT/SQLite realization are owned by later R2.7 domains.
 
@@ -29,7 +31,7 @@ A concept is not promoted to a record merely because it is serialized, cached or
 
 ## 2. Reusable definition classes
 
-Catalog 2.0 retains the accepted reusable definition families. Exact IDs are machine-owned in `core-catalog.json`.
+Catalog generation 2 retains the accepted reusable definition families. Exact IDs are machine-owned in `core-catalog.json`.
 
 ### Rules vocabulary
 
@@ -86,7 +88,7 @@ A reusable definition never becomes mutable world-instance state. A new executab
 
 ## 3. World-record classes
 
-Catalog 2.0 world owners are:
+Catalog generation 2 world owners are:
 
 | ID | Responsibility |
 |---|---|
@@ -108,7 +110,7 @@ Catalog 2.0 world owners are:
 
 ### Retired generic relationship record
 
-`world.relationship` is **not** admitted in catalog 2.0.
+`world.relationship` is **not** admitted in catalog generation 2.
 
 R2.2 assigns subjective directed relationship continuity to the source Actor:
 
@@ -152,7 +154,7 @@ Legacy Actor/PC/Faction embedded knowledge arrays are not parallel writable owne
 
 ## 4. Runtime-record classes
 
-Catalog 2.0 runtime owners are:
+Catalog generation 2 runtime owners are:
 
 | ID | Responsibility |
 |---|---|
@@ -235,9 +237,9 @@ The following remain embedded typed values because they do not independently own
 
 ---
 
-## 6. Closed semantic/protocol vocabularies added in 2.0
+## 6. Closed semantic/protocol vocabularies added in generation 2
 
-Catalog 2.0 registers later accepted architecture where exact machine spelling was previously deferred.
+Catalog generation 2 registers later accepted architecture where exact machine spelling was previously deferred.
 
 ### Actor continuity
 
@@ -309,7 +311,7 @@ Exact physical representations remain owned by their later R2.7 domains.
 
 ## 7. Durability/publication vocabulary correction
 
-Catalog 1.6 incorrectly represented `soft|hard` as intrinsic durability classes and exposed a generic publication-state ladder.
+The superseded pre-rearchitecture catalog scaffold `1.6.0` incorrectly represented `soft|hard` as intrinsic durability classes and exposed a generic publication-state ladder.
 
 Step 5.5 instead defines independent logical axes:
 
@@ -337,7 +339,7 @@ Step 5.6 final ref transition exposes exactly the epistemic outcomes:
 
 Prepared Git objects, queued work or a transport request do not become publication authority through a generic `publication.state` enum.
 
-Therefore catalog 2.0 retires:
+Therefore catalog generation 2 retires:
 
 - `canonicality_classes`;
 - old `durability_classes`;
@@ -416,4 +418,4 @@ WP-03 fixes class admission and the closed catalog vocabulary. It does **not** c
 - collaboration full schema — WP-17;
 - Story/planning projection schemas — WP-18.
 
-Those domains may refine coordinated `2.0.0` machine artifacts before R2.7 final closure without creating a compatibility obligation to the discarded `1.6.0` scaffold.
+Those domains may refine coordinated generation-2 machine artifacts before R2.7 final closure without creating a compatibility obligation to the discarded `1.6.0` scaffold. Current machine projections that still spell the generation as `2.0.0` remain explicitly deferred normalization debt under the canonical versioning amendment; they do not redefine the catalog generation as an engine-style three-component version.
