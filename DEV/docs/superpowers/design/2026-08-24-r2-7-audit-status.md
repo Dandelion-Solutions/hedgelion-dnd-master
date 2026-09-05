@@ -27,14 +27,14 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-19
 CURRENT_DOMAIN: WP-20
 CURRENT_DOMAIN_TOPIC: Engine update / schema evolution / migration
-CURRENT_SLICE: WP-19 FINAL SENIOR REVIEW PASS / CLOSED; WP-20 STEP 1 AUTHORIZED / NOT STARTED
+CURRENT_SLICE: WP-20 STEP 1 COMPLETE / MANDATORY SENIOR REVIEW; human-approved versioning architecture amendment integrated into review basis; STEP 2 NOT AUTHORIZED
 NEXT_DOMAIN: WP-21
-OWNER_GATE: WP-20 Step 1 must complete Source Manifest + Task Brief + whole-project Task-Brief critic and stop for mandatory Senior review before Step 2
+OWNER_GATE: Senior review of original WP-20 Step-1 package plus versioning research/canonical amendment/supplemental reconciliation before any Step-2 work
 FINAL_RECONCILIATION: NOT_STARTED
 
-R2_7_STATUS: WP-19 CLOSED / WP-20 STEP 1 AUTHORIZED
+R2_7_STATUS: WP-19 CLOSED / WP-20 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 R2_7_WP19: CLOSED / FINAL SENIOR REVIEW PASS
-R2_7_WP20: STEP 1 AUTHORIZED / NOT STARTED
+R2_7_WP20: STEP 1 COMPLETE / MANDATORY SENIOR REVIEW
 ```
 
 ## R2.7 progress
@@ -54,7 +54,7 @@ R2_7_WP20: STEP 1 AUTHORIZED / NOT STARTED
 | WP-17 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
 | WP-18 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
 | WP-19 | CLOSED / FINAL SENIOR REVIEW PASS |
-| WP-20 | STEP 1 AUTHORIZED / NOT STARTED |
+| WP-20 | STEP 1 COMPLETE / MANDATORY SENIOR REVIEW |
 | WP-21..WP-27 | NOT STARTED |
 
 ---
@@ -73,7 +73,7 @@ WP19_FINAL_SENIOR_REVIEW:              PASS
 WP19_CLOSURE:                          AUTHORIZED
 ```
 
-WP-19 did not reopen WP-16..WP-18 or any other accepted upstream owner.
+WP-20 has not reopened WP-16..WP-19 or any other accepted upstream owner merely because migration/versioning consumes their identity/currentness contracts.
 
 ---
 
@@ -167,6 +167,74 @@ Full maintenance audit and DEV unit tests both passed.
 
 ---
 
+## WP-20 Step-1 completed review basis
+
+Original Step-1 package:
+
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-architecture-task-brief.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-task-brief-critic.md`.
+
+Controlling clean-slate Product Owner input:
+
+- `DEV/PRODUCT_OWNER_INPUT.md` — `PO-004`;
+- `DEV/docs/superpowers/specs/2026-09-05-hdm-v1-clean-slate-compatibility-owner-decision.md`.
+
+Post-Brief versioning evidence / accepted amendment / reconciliation:
+
+- `DEV/docs/superpowers/research/2026-09-05-versioning-namespace-inventory-and-analysis.md`;
+- `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md`;
+- `DEV/RELEASE/VERSIONING.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-step-1-versioning-amendment-reconciliation.md`.
+
+Canonical neighboring owners reconciled at documentation-law level:
+
+- `DEV/ARCHITECTURE/CATALOG_INVENTORY.md`;
+- `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md`.
+
+Accepted versioning architecture includes:
+
+```text
+A: engine release             -> MAJOR.MINOR[-prerelease]
+B: engine-bound component     -> ENGINE_MAJOR.ENGINE_MINOR.REVISION
+C: independent integer        -> revision / schema_version / generation / owner-local ordinal
+```
+
+Material laws:
+
+- aggregate persistent campaign compatibility is `campaign_contract_generation`, superseding ambiguous global `ENGINE_VERSION.schema_version` semantics;
+- persistent family `schema_version` remains independently owned per family;
+- storage-format generation is independent from campaign contract generation;
+- catalog uses one coordinated integer generation; current pre-release `2.0.0` spelling maps conceptually to generation `2` pending machine realization;
+- ruleset package order and semantic compatibility split into package revision and compatibility family/generation;
+- exact digest/fingerprint canonicalization is generation-aware;
+- migration is explicit directed graph topology, not arithmetic over version numbers;
+- reverse/downgrade migration is not a baseline promise;
+- unsupported newer schemas/generations fail closed;
+- released artifacts remain immutable;
+- current pre-release version/hash representations may later be normalized/recomputed without compatibility shims.
+
+Original Step-1 critic remains:
+
+```text
+BLOCKING_FOUND: 0
+SIGNIFICANT_FOUND: 11
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+```
+
+Supplemental versioning reconciliation:
+
+```text
+SUPPLEMENTAL_BLOCKING: 0
+SUPPLEMENTAL_SIGNIFICANT_UNRESOLVED: 0
+HUMAN_DECISION_REQUIRED: NO
+NEEDS_PO: NONE
+UPSTREAM_REOPEN_REQUIRED: NO
+```
+
+---
+
 ## Deferred realization obligations
 
 WP-19 leaves implementation-phase obligations for:
@@ -179,27 +247,38 @@ WP-19 leaves implementation-phase obligations for:
 6. PO-003 T0->T1 retrospective acceptance and zero-extra-serial performance verification;
 7. stale scenario expectation maintenance.
 
-These are not active implementation work. They remain deferred until the R2.7 WP-01..WP-27 sequence and final reconciliation authorize implementation planning and the normal implementation gates are satisfied.
+The approved versioning architecture adds deferred machine-normalization obligations, including:
+
+- rename/split ambiguous version fields;
+- normalize catalog generation representation;
+- normalize ruleset package revision/compatibility representation;
+- type digest/canonicalization generations and recompute affected pre-release hashes/fixtures;
+- reconcile engine/runtime/campaign/storage projections;
+- update loaders/builders/validators/tests/audits/release checks.
+
+These are not active implementation work. They remain deferred until applicable R2.7 gates authorize implementation planning/execution.
 
 ---
 
-## WP-20 entry gate
+## WP-20 current mandatory gate
 
-WP-20 scope from the R2.7 task brief:
+WP-20 scope:
 
 > **engine update / schema evolution / migration**
 
-WP-20 Step 1 is now authorized. It must build its own task-specific Source Manifest, complete Architecture Task Brief and mandatory whole-project Task-Brief critic, repair mechanically resolvable BLOCKING/SIGNIFICANT framing defects, and then stop for mandatory Senior review before Step 2.
-
-Do not reopen WP-19 merely because update/migration uses creation/runtime identity fields.
+Step 1 is complete. The only current continuation is mandatory Senior review of the augmented Step-1 basis above.
 
 ```text
-WP20_STEP1_AUTHORIZED:           YES
-WP20_STARTED:                    NO
-WP20_STEP2_AUTHORIZED:           NO
-IMPLEMENTATION_PLANNING_STARTED: NO
+WP20_STEP1:                       COMPLETE — MANDATORY SENIOR REVIEW
+WP20_STEP2_AUTHORIZED:            NO
+WP20_STEP2_STARTED:               NO
+WP21_STARTED:                     NO
+IMPLEMENTATION_PLANNING_STARTED:  NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
-REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
-KNOWN_BLOCKERS:                  NONE
-UNPUBLISHED_WORK:                NONE after closure publication/read-back
+VERSION_NORMALIZATION_IMPLEMENTATION_STARTED: NO
+RUNTIME_MIGRATION_EXECUTED:       NO
+REAL_CAMPAIGN_MIGRATED:           NO
+KNOWN_BLOCKERS:                   NONE
 ```
+
+Do not start WP-20 Step 2, WP-21, version-normalization implementation or migration implementation before the required Senior gate.
