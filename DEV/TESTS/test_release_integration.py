@@ -112,6 +112,9 @@ class ReleaseIntegrationTests(unittest.TestCase):
                 package_meta = yaml.safe_load(archive.read("RUNTIME_PACKAGE.yaml"))
                 archive.extractall(extracted)
 
+            self.assertEqual(package_meta["schema_version"], 3)
+            self.assertEqual(package_meta["ruleset_set_digest_generation"], 1)
+
             generator = extracted / "TOOLS" / "init_campaign.py"
             generator_args = [
                 sys.executable,
@@ -154,7 +157,10 @@ class ReleaseIntegrationTests(unittest.TestCase):
             self.assertFalse((campaign / "CAMPAIGN" / "MANIFEST.yaml").exists())
             self.assertFalse((campaign / "DND_STORAGE.yaml").exists())
             manifest = yaml.safe_load((campaign / "MANIFEST.yaml").read_text(encoding="utf-8"))
-            self.assertEqual(manifest["schema_version"], 3)
+            self.assertEqual(manifest["schema_version"], 4)
+            self.assertEqual(manifest["campaign_contract"], {"created_with": 2, "current": 2})
+            self.assertEqual(manifest["ruleset"]["current"]["ruleset_set_digest_generation"], 1)
+            self.assertEqual(manifest["ruleset"]["current"]["ruleset_set_sha256"], package_meta["ruleset_set_sha256"])
             self.assertEqual(manifest["engine"]["current"]["package_sha256"], package_sha256)
             self.assertEqual(manifest["engine"]["current"]["package_id"], package_meta["package_id"])
 
