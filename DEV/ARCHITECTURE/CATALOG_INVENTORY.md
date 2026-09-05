@@ -4,7 +4,7 @@ Status: **R2.7 WP-03 CANONICAL CLASSIFICATION — STRUCTURAL REALIZATION IN PROG
 
 Canonical catalog generation: `2`
 
-Generation `2` is the unreleased clean-slate R2.7 coordinated machine-contract generation. The current pre-release machine artifacts still serialize the legacy representation `2.0.0`; that representation is realization debt and is to be normalized to integer `catalog_generation: 2` under `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md`. No campaign or released runtime depends on either the superseded `1.6.0` scaffold or the current pre-release spelling.
+Generation `2` is the unreleased clean-slate R2.7 coordinated machine-contract generation. Current coordinated machine artifacts serialize this directly as integer `catalog_generation: 2` under `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md`. No campaign or released runtime depends on the superseded pre-rearchitecture scaffold or its pre-normalization representation.
 
 All coordinated catalog-generation projections MUST equal the canonical catalog generation. Mixed coordinated generations are invalid. Individual catalog artifact `schema_version` values remain independent structural schema versions and do not have to equal the catalog generation.
 
@@ -311,7 +311,7 @@ Exact physical representations remain owned by their later R2.7 domains.
 
 ## 7. Durability/publication vocabulary correction
 
-The superseded pre-rearchitecture catalog scaffold `1.6.0` incorrectly represented `soft|hard` as intrinsic durability classes and exposed a generic publication-state ladder.
+The superseded pre-rearchitecture catalog scaffold incorrectly represented `soft|hard` as intrinsic durability classes and exposed a generic publication-state ladder.
 
 Step 5.5 instead defines independent logical axes:
 
@@ -418,4 +418,4 @@ WP-03 fixes class admission and the closed catalog vocabulary. It does **not** c
 - collaboration full schema — WP-17;
 - Story/planning projection schemas — WP-18.
 
-Those domains may refine coordinated generation-2 machine artifacts before R2.7 final closure without creating a compatibility obligation to the discarded `1.6.0` scaffold. Current machine projections that still spell the generation as `2.0.0` remain explicitly deferred normalization debt under the canonical versioning amendment; they do not redefine the catalog generation as an engine-style three-component version.
+Those domains may refine coordinated generation-2 machine artifacts before R2.7 final closure without creating a compatibility obligation to the discarded pre-rearchitecture scaffold. Current coordinated machine projections use integer `catalog_generation: 2`; any mixed or obsolete representation is rejected by maintenance audit/admission and does not redefine catalog generation as an engine-style three-component version.
