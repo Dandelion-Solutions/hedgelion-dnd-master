@@ -43,16 +43,14 @@ class RuntimeProcedureClassContractTest(unittest.TestCase):
         self.assertIn("runtime.procedure", runtime_schema["required"])
         self.assertIn("runtime.procedure", runtime_schema["properties"])
 
-    def test_runtime_class_remains_in_one_coherent_catalog_version(self):
-        versions = {
-            self.core["catalog_version"],
-            self.policies["catalog_version"],
-            self.entity_structures["catalog_version"],
-            self.mechanical_surfaces["catalog_version"],
+    def test_runtime_class_remains_in_one_coherent_catalog_generation(self):
+        generations = {
+            self.core["catalog_generation"],
+            self.policies["catalog_generation"],
+            self.entity_structures["catalog_generation"],
+            self.mechanical_surfaces["catalog_generation"],
         }
-        self.assertEqual(len(versions), 1)
-        version = next(iter(versions))
-        self.assertGreaterEqual(tuple(map(int, version.split("."))), (1, 4, 0))
+        self.assertEqual(generations, {2})
 
 
 if __name__ == "__main__":
