@@ -100,6 +100,7 @@ def audit_current_progress_authority() -> None:
     require('Architecture state:' not in canonical_index, 'canonical index must not retain a global architecture-state summary')
     require('TASK-LOCAL R2.7 AUDIT CURSOR — NOT GLOBAL CURRENT-PROGRESS AUTHORITY' in r27_cursor, 'R2.7 cursor must declare task-local scope')
 
+
 def audit_layout_and_version() -> None:
     forbidden_root = {
         "CORE", "RULES", "SCHEMA", "CAMPAIGN", "TEMPLATE", "MIGRATIONS", "INSTALL",
@@ -125,16 +126,18 @@ def audit_layout_and_version() -> None:
         return
     expected_game_fields = {
         "engine_version", "release_status", "repository", "engine_owner_login",
-        "rules_baseline", "schema_version", "campaign_update", "recommended_tag",
+        "rules_baseline", "campaign_contract_generation", "campaign_update", "recommended_tag",
     }
     require(set(game or {}) == expected_game_fields, f"GAME version fields mismatch: {sorted(set(game or {}))}")
     for key in expected_game_fields:
         require(dev.get(key) == game.get(key), f"DEV/GAME version field differs: {key}")
     engine_version = str(game.get("engine_version") or "")
-    require(bool(engine_version), "engine_version must be non-empty")
+    require(bool(re.fullmatch(r"\d+\.\d+(?:-[0-9A-Za-z][0-9A-Za-z.-]*)?", engine_version)), "engine_version must use MAJOR.MINOR[-prerelease]")
+    require(game.get("campaign_contract_generation") == 2, "campaign_contract_generation must be 2")
     require(game.get("recommended_tag") == f"v{engine_version}", "recommended_tag must exactly project engine_version")
     revision_fields = [key for key in game if key.endswith("_revision")]
     require(not revision_fields, f"GAME manifest leaked DEV revisions: {revision_fields}")
+    require("schema_version" not in game, "GAME engine manifest must not carry aggregate schema_version")
 
 
 def audit_core_activation() -> None:
@@ -265,15 +268,17 @@ def audit_schema_and_templates() -> None:
     c_schema = game_text("SCHEMA/campaign_card.schema.yaml")
     pc_schema = game_text("SCHEMA/pc.schema.yaml")
     readme = game_text("CAMPAIGN/README.md")
-    require("schema_version: 3" in manifest, "campaign scaffold manifest must use schema_version 3")
-    require("created_with:" in manifest and "current:" in manifest and "package_sha256:" in manifest, "campaign scaffold manifest must use portable runtime identity")
+    require("schema_version: 4" in manifest, "campaign scaffold manifest must use schema_version 4")
+    require("campaign_contract:" in manifest and "created_with: 2" in manifest and "current: 2" in manifest, "campaign scaffold manifest must carry campaign contract generation 2")
+    require("ruleset_set_digest_generation: 1" in manifest, "campaign scaffold manifest must carry ruleset digest generation")
+    require("created_with:" in manifest and "package_sha256:" in manifest, "campaign scaffold manifest must use portable runtime identity")
     for stale in ("base_tag:", "base_sha:", "integrated_tag:", "integrated_main_sha:"):
         require(stale not in manifest, f"campaign scaffold manifest leaked legacy engine field: {stale}")
     require("campaign_name_origin: null" in manifest, "campaign scaffold manifest must initialize campaign_name_origin")
-    require("schema_version: 3" in m_schema and "created_with:" in m_schema and "package_sha256:" in m_schema, "manifest schema must define runtime identity v3")
+    require("schema_version: 4" in m_schema and "campaign_contract:" in m_schema and "package_sha256:" in m_schema, "manifest schema must define runtime identity v4")
     require("campaign_name_origin" in m_schema, "manifest schema must define campaign_name_origin")
     require("READY_PC" in m_schema and "PLAY_READY" in m_schema, "manifest schema must encode active lifecycle gate")
-    require("schema_version: 3" in storage_schema and "baseline:" in storage_schema and "baseline_version" not in storage_schema, "storage schema must define portable baseline v3")
+    require("schema_version: 4" in storage_schema and "storage_format_generation:" in storage_schema and "storage_format_version" not in storage_schema, "storage schema must define generation-based portable storage v4")
     require("MANIFEST.campaign_name" in c_schema and "including null" in c_schema, "card schema must encode exact name projection")
     require("DM-seeded" in pc_schema and "player_defined_traits" in pc_schema, "PC schema must encode seeded/player-authored distinction")
     markers = [
@@ -345,8 +350,8 @@ def audit_json_schemas() -> None:
         identifiers = json.loads((DEV_ROOT / "CATALOG/identifier-policies.json").read_text(encoding="utf-8"))
         surfaces = json.loads((DEV_ROOT / "CATALOG/mechanical-surfaces.json").read_text(encoding="utf-8"))
         require(
-            core["catalog_version"] == structures["catalog_version"] == identifiers["catalog_version"] == surfaces["catalog_version"],
-            "all machine catalogs must use the same catalog_version",
+            core["catalog_generation"] == structures["catalog_generation"] == identifiers["catalog_generation"] == surfaces["catalog_generation"] == 2,
+            "all coordinated machine catalogs must use catalog_generation 2",
         )
         require(set(core["registries"]["content_definition_kinds"]) == set(structures["definitions"]), "content_definition_kinds and entity-structure definition keys differ")
         require(set(core["registries"]["world_record_kinds"]) == set(structures["world_records"]), "world_record_kinds and entity-structure world-record keys differ")
@@ -447,10 +452,12 @@ def smoke_generator() -> None:
         manifest = (out / "MANIFEST.yaml").read_text(encoding="utf-8")
         card = (out / "CAMPAIGN_CARD.yaml").read_text(encoding="utf-8")
         readme = (out / "README.md").read_text(encoding="utf-8")
-        require("schema_version: 3" in manifest, "generated MANIFEST must use schema_version 3")
+        require("schema_version: 4" in manifest, "generated MANIFEST must use schema_version 4")
+        require("campaign_contract:" in manifest and "created_with: 2" in manifest and "current: 2" in manifest, "generated MANIFEST missing campaign contract generation")
+        require("ruleset_set_digest_generation: 1" in manifest, "generated MANIFEST missing ruleset digest generation")
         require("status: initializing" in manifest, "generated MANIFEST must start initializing")
         require("campaign_name: null" in manifest and "campaign_name_origin: null" in manifest, "generated MANIFEST must start unnamed")
-        require("created_with:" in manifest and "current:" in manifest and "package_sha256:" in manifest, "generated MANIFEST missing portable runtime identity")
+        require("created_with:" in manifest and "package_sha256:" in manifest, "generated MANIFEST missing portable runtime identity")
         for stale in ("base_tag:", "base_sha:", "integrated_tag:", "integrated_main_sha:"):
             require(stale not in manifest, f"generated MANIFEST leaked legacy engine field: {stale}")
         require("campaign_name: null" in card, "generated card must start with null campaign name")
