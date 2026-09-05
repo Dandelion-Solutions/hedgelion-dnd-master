@@ -12,6 +12,7 @@
 - [ ] `DEV/ENGINE_DEVELOPMENT.yaml` contains the full development/release bookkeeping record.
 - [ ] `GAME/ENGINE_VERSION.yaml` contains only the approved semantic runtime projection and shared fields remain identical.
 - [ ] `engine_version` and `recommended_tag` are coherent: `recommended_tag == v<engine_version>` and uses a supported version-tag form.
+- [ ] Shared `campaign_contract_generation` is an equal positive integer in DEV/GAME version manifests; neither manifest carries an aggregate engine-level `schema_version` alias.
 - [ ] No manual release-status transition is required before tagging; `release_status` is descriptive bookkeeping and does not authorize or block tag-mode publication.
 - [ ] Tag publication requires the actual tag to equal `recommended_tag`, point at the exact checked-out commit, and pass approved-main-lineage validation.
 
@@ -21,7 +22,7 @@
 - [ ] Runtime composition is **all valid files under `GAME/` plus exactly one** builder-generated `RUNTIME_PACKAGE.yaml`; there is no maintained GAME include list and no `GAME/` wrapper in the ZIP.
 - [ ] The generated `RUNTIME_PACKAGE.yaml` is produced as an **in-memory ZIP entry** only. It is never written/tracked as `GAME/RUNTIME_PACKAGE.yaml`.
 - [ ] ZIP root contains `ENGINE_VERSION.yaml`, generated `RUNTIME_PACKAGE.yaml`, `CORE/`, `RULES/`, `SCHEMA/`, `CAMPAIGN/`, `INSTALL/`, runtime `TOOLS/` and required support/legal files.
-- [ ] `RUNTIME_PACKAGE.yaml` records schema version, semantic engine version, logical package id, source state/ref and truthful source commit SHA when available; dirty/non-Git packages never falsely claim exact HEAD provenance.
+- [ ] `RUNTIME_PACKAGE.yaml` uses schema `3` and records semantic engine version, logical package id, source state/ref, truthful source commit SHA when available, `ruleset_set_digest_generation: 1`, the exact resolved-set digest/lock and normalized conformance evidence; dirty/non-Git packages never falsely claim exact HEAD provenance.
 - [ ] Final ZIP SHA-256 is external artifact identity and is not self-embedded in `RUNTIME_PACKAGE.yaml`; the `.sha256` sidecar is produced next to the ZIP.
 - [ ] ZIP contains no `DEV/`, development tests, architecture, release policy or maintenance tooling.
 - [ ] Builder rejects output inside GAME, symlinks, build junk, case-insensitive path collisions and tracked `GAME/RUNTIME_PACKAGE.yaml`.
@@ -39,12 +40,12 @@
 - [ ] After exact package resolution, complete selected `CORE/*.md` + `RULES/INDEX.md` + `RULES/README.md` are preloaded once; campaign/world data remains lazy.
 
 ## Portable storage and campaign runtime identity
-- [ ] Storage marker/schema use format/schema v3 with portable `DND_STORAGE.engine.baseline` (`version`, `package_id`, `source_commit_sha`, `package_sha256`, `adopted_at`).
+- [ ] Storage marker uses `storage_format_generation: 3`; `dnd_storage` local schema is `4` and carries portable `DND_STORAGE.engine.baseline` (`version`, `package_id`, `source_commit_sha`, `package_sha256`, `adopted_at`).
 - [ ] `DND_STORAGE.engine.baseline` is storage-owner authority for NEW campaigns only; it never overrides an existing campaign.
-- [ ] New campaign MANIFEST/schema use v3 `engine.created_with` + `MANIFEST.engine.current` + `update_policy`; retired `base_tag/base_sha/integrated_tag/integrated_main_sha` are absent from newly generated campaigns.
+- [ ] New campaign MANIFEST/local schema use schema `4` with `campaign_contract.created_with/current: 2`, `engine.created_with`, `MANIFEST.engine.current`, `update_policy`, and ruleset created/current exact identity with `ruleset_set_digest_generation: 1`.
 - [ ] `engine.created_with` is immutable creation provenance; `MANIFEST.engine.current` is the portable runtime identity currently required by that campaign.
-- [ ] `GAME/TOOLS/init_campaign.py` remains standard-library-only, is run from the exact selected runtime package, and receives version/package/source SHA/package SHA-256/adoption timestamp explicitly.
-- [ ] Extracted-package generator smoke produces root-layout campaign tree with no copied engine tree and only the new runtime identity schema.
+- [ ] `GAME/TOOLS/init_campaign.py` remains standard-library-only, is run from the exact selected runtime package, and receives version/package/source SHA/package SHA-256/ruleset-set SHA-256/adoption timestamp explicitly; emitted ruleset identity includes digest generation `1`.
+- [ ] Extracted-package generator smoke produces root-layout campaign tree with no copied engine tree and only the normalized schema-4 campaign/runtime/ruleset identity contract.
 
 ## Runtime update, authority and mismatch behavior
 - [ ] The **campaign creator** controls semantic engine-version adoption for that campaign; the storage owner independently controls only storage baseline metadata.
@@ -68,9 +69,9 @@
 ## Maintenance regression
 - [ ] `DEV/TOOLS/run_maintenance_audit.py` passes.
 - [ ] `.hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v` passes.
-- [ ] Audit/tests validate GAME/DEV geometry, semantic version projection, catalogs/schemas, Project Instructions parity, legal copies, generated artifact provenance, portable v3 storage/campaign identity and an actual built runtime ZIP.
+- [ ] Audit/tests validate GAME/DEV geometry, semantic version projection, normalized version/generation namespaces, catalogs/schemas, Project Instructions parity, legal copies, generated artifact provenance, portable storage/campaign identities and an actual built runtime ZIP.
 - [ ] Full-check integration builds the runtime ZIP twice from a real checkout and verifies identical bytes for unchanged source state.
-- [ ] Full-check extracts the built ZIP and runs that package's exact `TOOLS/init_campaign.py`; emitted MANIFEST uses the new v3 runtime identity.
+- [ ] Full-check extracts the built ZIP and runs that package's exact `TOOLS/init_campaign.py`; emitted MANIFEST uses schema `4`, campaign-contract generation `2` and ruleset-set digest generation `1`.
 - [ ] Deprecated `GAME/TEMPLATE/CAMPAIGN_MANIFEST.yaml` is absent.
 - [ ] `GAME/MIGRATIONS/README.md` describes campaign data/schema migration only; no engine-tree merge semantics remain.
 
