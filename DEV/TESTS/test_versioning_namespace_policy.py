@@ -55,6 +55,11 @@ EXTERNAL_PATHS = {
     ".github/workflows/release-runtime.yml",
     ".github/workflows/validate.yml",
 }
+INTENTIONAL_NEGATIVE_GUARDS = {
+    ("GAME/TOOLS/ruleset_package.py", "package_version"),
+    ("GAME/TOOLS/ruleset_package.py", "compatibility_id"),
+    ("DEV/TOOLS/audit_engine.py", "storage_format_version"),
+}
 
 
 def _iter_text_files():
@@ -73,8 +78,21 @@ def _iter_text_files():
         yield rel, text
 
 
+def _is_intentional_negative_guard(rel: str, token: str, text: str) -> bool:
+    if (rel, token) not in INTENTIONAL_NEGATIVE_GUARDS:
+        return False
+    if rel == "GAME/TOOLS/ruleset_package.py":
+        return token in text and "forbidden" in text and "obsolete" in text
+    if rel == "DEV/TOOLS/audit_engine.py":
+        return token in text and "not in storage_schema" in text
+    return False
+
+
 def _classify(rel: str, text: str, start: int, end: int) -> str:
     context = text[max(0, start - 100): min(len(text), end + 100)].lower()
+    token = text[start:end]
+    if _is_intentional_negative_guard(rel, token, text):
+        return "INTENTIONAL_NEGATIVE_GUARD"
     if rel.startswith(HISTORICAL_DOC_PREFIXES):
         return "HISTORICAL_PROVENANCE"
     if rel.startswith("DEV/TESTS/"):
@@ -189,7 +207,7 @@ class VersionNamespacePolicyTests(unittest.TestCase):
                 continue
             if rel == "DEV/ENGINE_DEVELOPMENT.yaml" or rel.startswith(current_machine_prefixes):
                 for token in forbidden:
-                    if token in text:
+                    if token in text and not _is_intentional_negative_guard(rel, token, text):
                         bad.append(f"{rel}: {token}")
         print("VERSION_LEGACY_HITS=" + json.dumps(bad, ensure_ascii=False))
         self.assertEqual(bad, [])
