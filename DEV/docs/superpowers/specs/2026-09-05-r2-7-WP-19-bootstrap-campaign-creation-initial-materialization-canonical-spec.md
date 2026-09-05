@@ -1,10 +1,13 @@
 # R2.7 WP-19 — Bootstrap / Campaign Creation / Initial Materialization — Canonical Specification
 
-Status: **CANONICALIZED ARCHITECTURE — MANDATORY SENIOR REVIEW PENDING**
+Status: **CANONICAL — FINAL SENIOR REVIEW PASS**
 
 Date: 2026-09-05
 
-This specification is the implementation-facing WP-19 owner after Steps 2–8. It composes existing owners; it does not replace their native semantics.
+This specification is the final implementation-facing WP-19 owner after Steps 2–8 and mandatory Senior review. It composes existing owners; it does not replace their native semantics.
+
+Final Senior review:
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-final-senior-review.md`.
 
 Design provenance:
 - Step-1 Source Manifest / Task Brief / Task-Brief critic;
@@ -431,7 +434,7 @@ Architecture is complete; the following are **not** implementation authorization
 9. add direct PO-003 L38 performance verification;
 10. repair/remove/qualify stale scenario expectations already classified in WP-19 evidence.
 
-These items activate only after final architecture Senior approval and the normal implementation-planning/execution gates.
+These items remain deferred until the complete R2.7 architecture sequence and final reconciliation permit implementation planning, followed by the normal implementation-planning/execution gates.
 
 ---
 
@@ -439,7 +442,9 @@ These items activate only after final architecture Senior approval and the norma
 
 WP-19 owns clean creation-side identity/materialization and adjacent consumers. It establishes no compatibility obligation for obsolete unreleased scaffold state.
 
-Future **released-campaign** engine/ruleset/schema evolution, compatibility and migration remain WP-20 and are not started or authorized here.
+Future **released-campaign** engine/ruleset/schema evolution, compatibility and migration remain WP-20.
+
+WP-20 Step 1 is authorized by the final Senior review of WP-19, but WP-20 has not started and WP-20 Step 2 remains unauthorized until its own completed Step-1 package passes the mandatory Senior gate.
 
 ---
 
@@ -448,22 +453,26 @@ Future **released-campaign** engine/ruleset/schema evolution, compatibility and 
 ```text
 WP19_STEPS_2_8: COMPLETE
 WP19_CANONICALIZATION: COMPLETE
+WP19_FINAL_SENIOR_REVIEW: PASS
+WP19_CLOSURE: AUTHORIZED
 
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
 
 HUMAN_DECISION_REQUIRED: NO
 NEEDS_PO: NONE
-
 UPSTREAM_REOPEN_REQUIRED: NO
 ARCHITECTURE_REOPENED: NO
 
+WP20_STEP1_AUTHORIZED: YES
 WP20_STARTED: NO
+WP20_STEP2_AUTHORIZED: NO
+
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
-NEXT_AUTHORIZED_UNIT: NONE — MANDATORY SENIOR REVIEW
+NEXT_AUTHORIZED_UNIT: R2.7 WP-20 STEP 1 — engine update / schema evolution / migration
 ```
 
-No final Senior PASS is implied by canonicalization.
+Implementation planning remains blocked until the complete R2.7 audit sequence and final reconciliation authorize it.

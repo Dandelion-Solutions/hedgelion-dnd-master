@@ -24,19 +24,18 @@ PRE_PAUSE_STATUS_BLOB_SHA: d486825dc5c9463b2e2159086e6c7102c3caf354
 
 ```text
 AUDIT_STATUS: IN_PROGRESS
-LAST_CLOSED_DOMAIN: WP-18
-CURRENT_DOMAIN: WP-19
-CURRENT_DOMAIN_TOPIC: Bootstrap / campaign creation / initial materialization
-CURRENT_SLICE: WP-19 STEPS 2–8 COMPLETE — CANONICALIZATION COMPLETE — MANDATORY SENIOR REVIEW PENDING
-NEXT_DOMAIN: WP-20
-OWNER_GATE: REQUIRED — canonical WP-19 architecture awaits mandatory Senior review; WP-20 remains unauthorized
+LAST_CLOSED_DOMAIN: WP-19
+CURRENT_DOMAIN: WP-20
+CURRENT_DOMAIN_TOPIC: Engine update / schema evolution / migration
+CURRENT_SLICE: WP-19 FINAL SENIOR REVIEW PASS / CLOSED; WP-20 STEP 1 AUTHORIZED / NOT STARTED
+NEXT_DOMAIN: WP-21
+OWNER_GATE: WP-20 Step 1 must complete Source Manifest + Task Brief + whole-project Task-Brief critic and stop for mandatory Senior review before Step 2
 FINAL_RECONCILIATION: NOT_STARTED
 
-R2_7_STATUS: WP-19 STEPS 2–8 COMPLETE — MANDATORY SENIOR REVIEW
-R2_7_WP19: STEPS 2–8 COMPLETE / CANONICALIZATION COMPLETE — MANDATORY SENIOR REVIEW
+R2_7_STATUS: WP-19 CLOSED / WP-20 STEP 1 AUTHORIZED
+R2_7_WP19: CLOSED / FINAL SENIOR REVIEW PASS
+R2_7_WP20: STEP 1 AUTHORIZED / NOT STARTED
 ```
-
-No final Senior review/PASS was performed by Steps 2–8.
 
 ## R2.7 progress
 
@@ -54,8 +53,9 @@ No final Senior review/PASS was performed by Steps 2–8.
 | WP-16 | CLOSED / FINAL SENIOR AUDIT PASS |
 | WP-17 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
 | WP-18 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
-| WP-19 | STEPS 2–8 COMPLETE / CANONICALIZATION COMPLETE — MANDATORY SENIOR REVIEW |
-| WP-20..WP-27 | NOT STARTED |
+| WP-19 | CLOSED / FINAL SENIOR REVIEW PASS |
+| WP-20 | STEP 1 AUTHORIZED / NOT STARTED |
+| WP-21..WP-27 | NOT STARTED |
 
 ---
 
@@ -68,15 +68,18 @@ WP17_FINAL_SHA:                        6855c79190e6bb087c8039a1adf2bf71deec2c70
 WP17_FINAL_SENIOR_RE_AUDIT:            PASS
 WP18_FINAL_AUDITED_PUBLIC_BASIS_SHA:   3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
 WP18_FINAL_SENIOR_RE_AUDIT:            PASS
+WP19_FINAL_AUDITED_PUBLIC_BASIS_SHA:   6abee95ce1c19ab2d208fbd44f472814ca35a3c9
+WP19_FINAL_SENIOR_REVIEW:              PASS
+WP19_CLOSURE:                          AUTHORIZED
 ```
 
-WP-19 did not reopen these owners.
+WP-19 did not reopen WP-16..WP-18 or any other accepted upstream owner.
 
 ---
 
 ## Historical WP-19 Step-1 provenance
 
-The following bases remain historical evidence for what they actually inspected; they are not rewritten as if later Product Owner inputs or Steps 2–8 existed earlier.
+The following bases remain historical evidence for what they actually inspected:
 
 ```text
 WP19_STEP1_EXECUTION_BASIS_SHA:          5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053
@@ -86,7 +89,7 @@ WP19_PO003_ROUTING_BASIS_SHA:            341cc592fbc53247d0d7f8d38eb07ec4297cd45
 WP19_STEP1_FINAL_LEDGER_BASIS_SHA:       aa9f23be5d7ee137bff107abc7199c3cf4236e66
 ```
 
-Retained closed Step-1 findings:
+Retained closed Step-1/Senior findings:
 
 ```text
 F19-S1-01..F19-S1-08: RETAINED / CLOSED
@@ -97,7 +100,40 @@ SR19-03:                CLOSED
 SR19-04:                CLOSED
 ```
 
-PO-003 current classification remains:
+---
+
+## WP-19 final closed basis
+
+Canonical implementation-facing owner:
+- `DEV/docs/superpowers/specs/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-canonical-spec.md`.
+
+Final Senior review:
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-final-senior-review.md`.
+
+Selected direction: **composition-first existing-owner contract**.
+
+Step-6/Step-7 result:
+
+```text
+STEP6_BLOCKING:       0
+STEP6_SIGNIFICANT:    7
+STEP6_MINOR:          1
+UNRESOLVED_BLOCKING:  0
+UNRESOLVED_SIGNIFICANT: 0
+```
+
+Material dispositions:
+
+- exact `ruleset_set_sha256` creation identity is canonical; runtime prose realization deferred;
+- stale `BRANCH_MODEL.md` current projection repaired;
+- progressive readiness canon supersedes hard pre-live/true-live vocabulary; runtime/schema/test alignment deferred;
+- PO-001 ordinary Master retrospective architecture complete; direct realization deferred;
+- PO-002 save-and-exit composition complete; direct realization deferred;
+- PO-003 logical SemanticEvent decision-basis contract complete; physical schema/index realization deferred;
+- PO-003 zero-extra-serial law complete; direct performance verification deferred;
+- stale scenario maintenance remains a MINOR downstream route.
+
+PO-003 current classification:
 
 ```text
 PO003_CLASSIFICATION:                       NEW CONSUMER + EXTENSION
@@ -108,56 +144,7 @@ UPSTREAM_REOPEN_REQUIRED:                   NO
 ARCHITECTURE_REOPENED:                      NO
 ```
 
----
-
-## WP-19 Steps 2–8 — current review basis
-
-Canonical implementation-facing owner:
-- `DEV/docs/superpowers/specs/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-canonical-spec.md`.
-
-Current design provenance:
-
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-steps-2-8-source-manifest-refinement.md`;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-research-architecture-draft.md`;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-decision-brief.md`;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-decision-resolution.md`;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-candidate-specification.md`;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-whole-project-adversarial-review.md`;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-resolution-propagation.md`;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-canonicalization.md`.
-
-Selected direction: **composition-first existing-owner contract**.
-
-Rejected material alternatives:
-- monolithic bootstrap/session owner;
-- full NPC psychology/snapshot history store;
-- reconstruct historical motive from mutable current state/Story;
-- dedicated post-decision serial LLM rationale call;
-- broad upfront Session Zero/world materialization.
-
-### Step-6 / Step-7 disposition
-
-```text
-STEP6_BLOCKING:    0
-STEP6_SIGNIFICANT: 7
-STEP6_MINOR:       1
-
-F19-S6-01: CLOSED
-F19-S6-02: CLOSED
-F19-S6-03: CLOSED
-F19-S6-04: CLOSED
-F19-S6-05: CLOSED
-F19-S6-06: CLOSED
-F19-S6-07: CLOSED
-F19-S6-08: MINOR / DOWNSTREAM MAINTENANCE ROUTE
-
-UNRESOLVED_BLOCKING:    0
-UNRESOLVED_SIGNIFICANT: 0
-```
-
-`F19-S6-02` is closed by current `DEV/ARCHITECTURE/BRANCH_MODEL.md` synchronization. Other machine/runtime/test findings are closed as complete canonical law plus safe deferred realization behind the implementation gate.
-
-### PO-003 performance result
+PO-003 performance law:
 
 ```text
 ADDITIONAL_SEQUENTIAL_LLM_CALLS_SOLELY_FOR_CAPTURE: 0
@@ -167,48 +154,52 @@ IRRELEVANT_TURN_BASIS_WORK: 0
 ADDITIONAL_CONTEXT_OUTPUT: bounded typed material basis only
 ```
 
-A future demonstrated need for extra serial critical-path work is a material architecture/performance issue; it is not approved here.
+Hosted verification on audited basis `6abee95ce1c19ab2d208fbd44f472814ca35a3c9`:
+
+```text
+WORKFLOW: Validate engine source
+RUN_ID: 33953298585
+STATUS: completed
+CONCLUSION: success
+```
+
+Full maintenance audit and DEV unit tests both passed.
 
 ---
 
 ## Deferred realization obligations
 
-After final Senior approval and the normal implementation-planning/execution gates, realize/verify:
+WP-19 leaves implementation-phase obligations for:
 
-1. exact `ruleset_set_sha256` creation propagation in runtime prose/consumer tests;
+1. exact `ruleset_set_sha256` propagation in runtime prose/consumer tests;
 2. progressive-onboarding vocabulary alignment in runtime/schema/test consumers;
 3. PO-001 ordinary Master retrospective runtime/direct acceptance;
 4. PO-002 save-success -> session clear -> same-chat menu runtime/direct acceptance with multiplayer non-interference;
-5. PO-003 SemanticEvent schema/validator/minimum derived discovery projection as actually required;
-6. PO-003 T0->T1 retrospective acceptance and zero-extra-serial performance checks;
+5. PO-003 SemanticEvent schema/validator/minimum derived discovery support;
+6. PO-003 T0->T1 retrospective acceptance and zero-extra-serial performance verification;
 7. stale scenario expectation maintenance.
 
-These are deferred realization obligations, not current architecture incompleteness and not authorization to start implementation.
+These are not active implementation work. They remain deferred until the R2.7 WP-01..WP-27 sequence and final reconciliation authorize implementation planning and the normal implementation gates are satisfied.
 
 ---
 
-## Task-local handoff
+## WP-20 entry gate
+
+WP-20 scope from the R2.7 task brief:
+
+> **engine update / schema evolution / migration**
+
+WP-20 Step 1 is now authorized. It must build its own task-specific Source Manifest, complete Architecture Task Brief and mandatory whole-project Task-Brief critic, repair mechanically resolvable BLOCKING/SIGNIFICANT framing defects, and then stop for mandatory Senior review before Step 2.
+
+Do not reopen WP-19 merely because update/migration uses creation/runtime identity fields.
 
 ```text
-WP19_STEP1:                       COMPLETE / SENIOR GO RECEIVED
-WP19_STEPS_2_8:                   COMPLETE
-WP19_CANONICALIZATION:            COMPLETE
-WP19_UNRESOLVED_BLOCKING:         0
-WP19_UNRESOLVED_SIGNIFICANT:      0
-
-HUMAN_DECISION_REQUIRED:          NO
-NEEDS_PO:                         NONE
-UPSTREAM_REOPEN_REQUIRED:         NO
-ARCHITECTURE_REOPENED:            NO
-
-WP20_STARTED:                     NO
-IMPLEMENTATION_PLANNING_STARTED:  NO
-SUBSTANTIVE_IMPLEMENTATION_STARTED:NO
-REAL_GAMEPLAY_BOOTSTRAP_STARTED:  NO
-
-NEXT_EXACT_TASK_OR_SLICE:         Mandatory Senior review of canonical WP-19; do not start WP-20 or implementation planning without explicit subsequent authorization
-KNOWN_BLOCKERS:                   NONE
-UNPUBLISHED_WORK:                 NONE after publication/read-back
+WP20_STEP1_AUTHORIZED:           YES
+WP20_STARTED:                    NO
+WP20_STEP2_AUTHORIZED:           NO
+IMPLEMENTATION_PLANNING_STARTED: NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
+REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
+KNOWN_BLOCKERS:                  NONE
+UNPUBLISHED_WORK:                NONE after closure publication/read-back
 ```
-
-**STOP GATE:** mandatory Senior review. This cursor does not grant final Senior PASS or authorize WP-20.

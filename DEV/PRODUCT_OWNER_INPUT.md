@@ -37,9 +37,9 @@ SUPERSEDED
 
 | ID | Kind | Status | Current trigger / reason | Primary routes | Open PO decision |
 |---|---|---|---|---|---|
-| `PO-001` | REQUIREMENT | INCORPORATED | WP-19 canonical architecture now owns the ordinary active-player retrospective composition; runtime/test realization is deferred until final Senior approval plus implementation-planning/execution authorization | accepted gameplay/navigation owner decision; WP-19 canonical spec; ordinary Master history consumer; later runtime/tests | NONE |
-| `PO-002` | REQUIREMENT | INCORPORATED | WP-19 canonical architecture now owns save-success -> session-local clear -> same-chat campaign-menu composition; runtime/test realization is deferred until final Senior approval plus implementation-planning/execution authorization | accepted gameplay/navigation owner decision; WP-19 canonical spec; save/session/menu/live consumers; later runtime/tests | NONE |
-| `PO-003` | REQUIREMENT | INCORPORATED | WP-19 canonical architecture now owns the bounded SemanticEvent historical-decision-basis composition and mandatory zero-extra-serial performance law; physical schema/runtime/test realization is deferred until final Senior approval plus implementation-planning/execution authorization | historical Actor decision-basis owner decision; WP-19 canonical spec; Step-4 LOG/SemanticEvent extension; R2.2/world.knowledge boundaries; retrospective/performance consumers | NONE |
+| `PO-001` | REQUIREMENT | INCORPORATED | WP-19 final Senior PASS accepted the ordinary active-player retrospective composition; runtime/test realization remains deferred until R2.7 final reconciliation plus approved implementation planning/execution | accepted gameplay/navigation owner decision; WP-19 canonical spec; ordinary Master history consumer; later runtime/tests | NONE |
+| `PO-002` | REQUIREMENT | INCORPORATED | WP-19 final Senior PASS accepted save-success -> session-local clear -> same-chat campaign-menu composition; runtime/test realization remains deferred until R2.7 final reconciliation plus approved implementation planning/execution | accepted gameplay/navigation owner decision; WP-19 canonical spec; save/session/menu/live consumers; later runtime/tests | NONE |
+| `PO-003` | REQUIREMENT | INCORPORATED | WP-19 final Senior PASS accepted the bounded SemanticEvent historical-decision-basis composition and mandatory zero-extra-serial performance law; physical schema/runtime/test realization remains deferred until R2.7 final reconciliation plus approved implementation planning/execution | historical Actor decision-basis owner decision; WP-19 canonical spec; Step-4 LOG/SemanticEvent extension; R2.2/world.knowledge boundaries; retrospective/performance consumers | NONE |
 
 ---
 
@@ -62,7 +62,7 @@ Source: direct Product Owner conversation
 Commentator не является режимом, в который нормальный активный игрок должен дополнительно входить ради просмотра истории.
 ```
 
-Agent-owned disposition: incorporated by the accepted PO-001/PO-002 owner decision and the WP-19 canonical composition. It adds no extra mode hierarchy.
+Agent-owned disposition: incorporated by the accepted PO-001/PO-002 owner decision and the final Senior-approved WP-19 canonical composition. It adds no extra mode hierarchy.
 
 ---
 
@@ -110,9 +110,9 @@ NO COMMENTATOR TRANSITION FOR AN AUTHORIZED ACTIVE PLAYER
 | Route | State | Trigger / obligation | Current evidence / owner |
 |---|---|---|---|
 | Product semantics | INCORPORATED | complete | `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md` |
-| WP-19 architecture | INCORPORATED | Steps 2–8 complete; mandatory final Senior review pending | `DEV/docs/superpowers/specs/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-canonical-spec.md` |
+| WP-19 architecture | INCORPORATED / FINAL SENIOR PASS | WP-19 closed | `DEV/docs/superpowers/specs/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-canonical-spec.md` + final Senior review |
 | Story/information/context boundaries | INCORPORATED / NO REOPEN | current owners remain controlling | Step-4, R2.3/R2.4, WP-18 |
-| Runtime consumer realization | DEFERRED | after final Senior approval + approved implementation plan/execution gate | `GAME/CORE/RUNTIME.md`, `PLAY_POLICY.md`, `INFORMATION.md`, `NARRATIVE.md` |
+| Runtime consumer realization | DEFERRED | after R2.7 final reconciliation + approved implementation plan/execution gate | `GAME/CORE/RUNTIME.md`, `PLAY_POLICY.md`, `INFORMATION.md`, `NARRATIVE.md` |
 | Direct acceptance | DEFERRED | same implementation authorization; prove active player remains ordinary Master and disclosure-safe | current tests are supporting only |
 
 Product Owner decision still required: `NONE`.
@@ -158,8 +158,8 @@ NO AUTOMATIC MULTIPLAYER MEMBERSHIP LEAVE
 | Route | State | Trigger / obligation | Current evidence / owner |
 |---|---|---|---|
 | Product semantics | INCORPORATED | complete | `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md` |
-| WP-19 architecture | INCORPORATED | Steps 2–8 complete; mandatory final Senior review pending | WP-19 canonical spec, save-and-exit laws |
-| Save/session/menu/live composition | INCORPORATED AS ARCHITECTURE / REALIZATION DEFERRED | implement only after final Senior approval + approved plan/execution gate | WP-13, `SAVE_CONTRACT.md`, `SESSION.md`, bootstrap/menu, WP-16/live owners |
+| WP-19 architecture | INCORPORATED / FINAL SENIOR PASS | WP-19 closed | WP-19 canonical spec, save-and-exit laws + final Senior review |
+| Save/session/menu/live composition | INCORPORATED AS ARCHITECTURE / REALIZATION DEFERRED | implement only after R2.7 final reconciliation + approved implementation plan/execution gate | WP-13, `SAVE_CONTRACT.md`, `SESSION.md`, bootstrap/menu, WP-16/live owners |
 | Direct acceptance | DEFERRED | same implementation authorization; prove save success -> clear -> menu and no pause/leave/control/global-stop side effects | current save/membership/menu tests are supporting only |
 
 Product Owner decision still required: `NONE`.
@@ -207,19 +207,19 @@ LATENCY / INTERACTIVITY: MANDATORY PRODUCT CONSTRAINT
 | Route | State | Trigger / obligation | Current evidence / owner |
 |---|---|---|---|
 | Product semantics | INCORPORATED | complete | `DEV/docs/superpowers/specs/2026-09-05-hdm-historical-actor-decision-basis-owner-decision.md` + immutable amendment above |
-| WP-19 architecture | INCORPORATED | Steps 2–8 complete; mandatory final Senior review pending | WP-19 canonical spec `WP19-L29..L39` |
+| WP-19 architecture | INCORPORATED / FINAL SENIOR PASS | WP-19 closed | WP-19 canonical spec `WP19-L29..L39` + final Senior review |
 | R2.2 current Actor continuity | INCORPORATED / NO REOPEN | current-state owner preserved | R2.2 canonical spec |
 | Step-4 current knowledge + history | INCORPORATED / EXTENSION | `world.knowledge` remains current; bounded T0 basis is SemanticEvent history | Step-4 canonical spec |
 | Durable record-family allocation | INCORPORATED / NO REOPEN | existing SemanticEvent/history family is sufficient | WP-10 |
 | Story / Master / Commentator consumption | INCORPORATED AS ARCHITECTURE | event-time evidence + current disclosure/no-spoiler boundaries | PO-001, R2.3/R2.4, WP-18, WP-19 canonical spec |
 | Latency/interactivity | INCORPORATED AS NORMATIVE ARCHITECTURE LAW | zero-extra-serial baseline is mandatory; extra serial critical-path work requires architecture/performance re-evaluation | WP-19 `WP19-L38/L39`, `PLAY_POLICY.md` |
-| Exact runtime/schema/validator/index realization | DEFERRED | after final Senior approval + approved implementation plan/execution gate | existing SemanticEvent/history/context/persistence owners |
+| Exact runtime/schema/validator/index realization | DEFERRED | after R2.7 final reconciliation + approved implementation plan/execution gate | existing SemanticEvent/history/context/persistence owners |
 | Direct T0->T1 retrospective acceptance | DEFERRED | same implementation authorization | prove retained T0 basis is used after mutable current state changes |
 | Direct performance acceptance | DEFERRED | same implementation authorization | prove 0 dedicated call / redundant read / separate publication / irrelevant-turn work |
 
 ### Current impact
 
-PO-003 is fully incorporated at the architecture level. The final WP-19 design keeps event-time historical basis bounded and situation-specific, uses the existing SemanticEvent owner/family, preserves current Actor/knowledge ownership, and makes latency/interactivity a hard product constraint.
+PO-003 is fully incorporated at the architecture level. Final Senior review passed WP-19 with event-time historical basis bounded and situation-specific, using the existing SemanticEvent owner/family, preserving current Actor/knowledge ownership, and keeping latency/interactivity as a hard product constraint.
 
 Physical runtime/schema/test realization remains deferred; this does not make the entry partially incorporated because every known current route is either incorporated or safely deferred behind an explicit authorization trigger.
 
@@ -232,7 +232,7 @@ SR19_03: CLOSED
 SR19_04: CLOSED
 ```
 
-Those recovery records remain historical provenance; the current architecture result is the WP-19 canonical spec.
+Those recovery records remain historical provenance; the current architecture result is the final Senior-approved WP-19 canonical spec.
 
 ---
 
@@ -248,12 +248,14 @@ NEEDS_PO: NONE
 UPSTREAM_REOPEN_REQUIRED: NO
 ARCHITECTURE_REOPENED: NO
 
-WP19_STEPS_2_8: COMPLETE
-WP19_CANONICALIZATION: COMPLETE
-NEXT_AUTHORIZED_UNIT: NONE — MANDATORY SENIOR REVIEW
-
+WP19_FINAL_SENIOR_REVIEW: PASS
+WP19_CLOSURE: AUTHORIZED
+WP20_STEP1_AUTHORIZED: YES
 WP20_STARTED: NO
+
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
+
+The next architecture unit is WP-20 Step 1. Implementation realization remains deferred until the complete R2.7 architecture sequence and final reconciliation permit implementation planning.
