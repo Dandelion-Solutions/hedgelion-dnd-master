@@ -24,16 +24,19 @@ from validate_domain_rules_coverage import build_binding, build_contract, valida
 
 PACKAGE_ID = "hdm.rules.dnd2024-srd52-core"
 PACKAGE = ROOT / "GAME" / "RULES" / "packages" / PACKAGE_ID
+CURRENT_PACKAGE_SHA256 = "5ea6bd490c052b4ee8cde6a29d9f6444f3e4e49151cab766849678aa81ee9d6f"
+CURRENT_RULESET_SET_SHA256 = "4d63deb1998213854f690708767fe03570ce143300fc655a460f6a2d892c6295"
 
 
 class RulesetPackageClosureTests(unittest.TestCase):
     def build(self, package=PACKAGE):
-        return build_resolved_lock([package], root_package_ids=[PACKAGE_ID], engine_version="1.0-alpha", catalog_generation="2.0.0")
+        return build_resolved_lock([package], root_package_ids=[PACKAGE_ID], engine_version="1.0-alpha", catalog_generation=2)
 
     def inventory(self, lock, marker="a"):
         core = {
-            "inventory_schema_version": 1,
+            "inventory_schema_version": 2,
             "engine_version": "1.0-alpha",
+            "ruleset_set_digest_generation": lock["ruleset_set_digest_generation"],
             "ruleset_set_sha256": lock["ruleset_set_sha256"],
             "items": [
                 {"family":family,"contract_id":f"engine_contract.{family}.v1","semantic_sha256":marker*64}
@@ -41,6 +44,11 @@ class RulesetPackageClosureTests(unittest.TestCase):
             ],
         }
         return {**core, "inventory_sha256": sha256(INVENTORY_DOMAIN + canonical_json(core))}
+
+    def rehash_lock(self, lock):
+        core = {key: lock[key] for key in ("lock_schema_version", "ruleset_set_digest_generation", "root_package_ids", "packages")}
+        lock["ruleset_set_sha256"] = sha256(closure_tool.SET_DOMAIN + canonical_json(core))
+        return lock
 
     def compare(self, adopted_lock, adopted_snapshots, candidate_lock, candidate_snapshots, *, adopted_sources=None, candidate_sources=None, frontier=None):
         return compare_resolved_sets(
@@ -52,8 +60,10 @@ class RulesetPackageClosureTests(unittest.TestCase):
 
     def test_current_package_builds_exact_reconstructive_lock(self):
         lock, snapshots = self.build()
-        self.assertEqual(lock["ruleset_set_sha256"], "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143")
-        self.assertEqual(lock["packages"][0]["content_sha256"], "0ad0e9368f30d5aaa0f22392a83f7e19b6bff8ac4d6e6a19f5aa5f4ad3932d6f")
+        self.assertEqual(lock["lock_schema_version"], 2)
+        self.assertEqual(lock["ruleset_set_digest_generation"], 1)
+        self.assertEqual(lock["ruleset_set_sha256"], CURRENT_RULESET_SET_SHA256)
+        self.assertEqual(lock["packages"][0]["content_sha256"], CURRENT_PACKAGE_SHA256)
         self.assertIn("ruleset-package-manifest.json", {row["path"] for row in lock["packages"][0]["members"]})
         self.assertGreaterEqual(len(combined_semantic_entries(snapshots)), 90)
 
@@ -81,8 +91,9 @@ class RulesetPackageClosureTests(unittest.TestCase):
                 "from pathlib import Path;"
                 "from GAME.TOOLS.ruleset_package import build_resolved_lock;"
                 f"p=Path(r'{package}');"
-                f"lock,_=build_resolved_lock([p],root_package_ids=['{PACKAGE_ID}'],engine_version='1.0-alpha',catalog_generation='2.0.0');"
-                f"assert lock['ruleset_set_sha256']=='fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143'"
+                f"lock,_=build_resolved_lock([p],root_package_ids=['{PACKAGE_ID}'],engine_version='1.0-alpha',catalog_generation=2);"
+                f"assert lock['ruleset_set_digest_generation']==1;"
+                f"assert lock['ruleset_set_sha256']=='{CURRENT_RULESET_SET_SHA256}'"
             )
             completed = subprocess.run([sys.executable, "-c", script], cwd=root, capture_output=True, text=True)
             self.assertEqual(completed.returncode, 0, completed.stderr)
@@ -100,6 +111,8 @@ class RulesetPackageClosureTests(unittest.TestCase):
         )
         serialized = json.dumps({"inventory":inventory,"attestation":attestation}, sort_keys=True)
         self.assertNotIn("DEV/", serialized)
+        self.assertEqual(attestation["attestation_schema_version"], 2)
+        self.assertEqual(attestation["ruleset_set_digest_generation"], 1)
         validate_runtime_conformance_evidence(
             inventory, attestation, lock=lock, engine_version="1.0-alpha"
         )
@@ -118,7 +131,9 @@ class RulesetPackageClosureTests(unittest.TestCase):
             )
         missing = copy.deepcopy(inventory)
         missing["items"].pop()
-        core = {key:missing[key] for key in ("inventory_schema_version","engine_version","ruleset_set_sha256","items")}
+        core = {key:missing[key] for key in (
+            "inventory_schema_version", "engine_version", "ruleset_set_digest_generation", "ruleset_set_sha256", "items"
+        )}
         missing["inventory_sha256"] = sha256(INVENTORY_DOMAIN + canonical_json(core))
         with self.assertRaises(RulesetContractError):
             validate_runtime_conformance_evidence(
@@ -140,11 +155,11 @@ class RulesetPackageClosureTests(unittest.TestCase):
                     path.write_text(json.dumps({"stable_semantics":family,"value":index}), encoding="utf-8")
                 groups_a[family] = ((stable_id, rel_a),)
                 groups_b[family] = ((stable_id, rel_b),)
-            kwargs = {"engine_version":"1.0-alpha","ruleset_set_sha256":"0"*64}
+            lock, _snapshots = self.build()
+            kwargs = {"engine_version":"1.0-alpha","ruleset_set_sha256":lock["ruleset_set_sha256"]}
             first = derive_engine_contract_inventory(root, source_groups=groups_a, **kwargs)
             renamed = derive_engine_contract_inventory(root, source_groups=groups_b, **kwargs)
             self.assertEqual(first, renamed)
-            lock = {"ruleset_set_sha256":"0"*64}
             results = [{"validator_id":key,"result":"PASS"} for key in sorted({
                 "character_seed_closure","health_effect_recovery_closure",
                 "domain_rules_coverage_closure","house_rules_boundary_closure",
@@ -215,7 +230,7 @@ class RulesetPackageClosureTests(unittest.TestCase):
                 manifest = json.loads(path.read_text(encoding="utf-8"))
                 if mutation == "path": manifest["content_files"].append("../escape.json")
                 elif mutation == "engine": manifest["engine_requirement"]["engine_version"] = "9.9"
-                elif mutation == "catalog": manifest["catalog_generation"] = "9.9.9"
+                elif mutation == "catalog": manifest["catalog_generation"] = 9
                 else: (candidate / "gameplay-spine-seed.json").unlink()
                 if mutation != "missing": path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
                 with self.assertRaises(RulesetContractError) as cm: self.build(candidate)
@@ -251,7 +266,9 @@ class RulesetPackageClosureTests(unittest.TestCase):
     def test_declaration_ancestry_labels_and_load_pass_do_not_replace_evidence(self):
         lock, snapshots = self.build()
         incomplete = self.inventory(lock); incomplete["items"].pop()
-        incomplete["inventory_sha256"] = sha256(INVENTORY_DOMAIN + canonical_json({key:incomplete[key] for key in ("inventory_schema_version","engine_version","ruleset_set_sha256","items")}))
+        incomplete["inventory_sha256"] = sha256(INVENTORY_DOMAIN + canonical_json({key:incomplete[key] for key in (
+            "inventory_schema_version", "engine_version", "ruleset_set_digest_generation", "ruleset_set_sha256", "items"
+        )}))
         result = self.compare(lock, snapshots, lock, snapshots, candidate_sources=incomplete)
         self.assertEqual(result["result"], "BLOCKED_INSUFFICIENT_EVIDENCE")
         self.assertEqual(result["reasons"][0]["code"], "EVIDENCE_MISSING")
@@ -260,12 +277,14 @@ class RulesetPackageClosureTests(unittest.TestCase):
         lock, snapshots = self.build()
         namespace_changed = copy.deepcopy(lock)
         namespace_changed["packages"][0]["owned_namespaces"] = ["replacement.*"]
+        self.rehash_lock(namespace_changed)
         result = self.compare(lock, snapshots, namespace_changed, snapshots)
         self.assertIn("NAMESPACE_OWNERSHIP_CHANGED", {row["code"] for row in result["reasons"]})
         adopted_with_dependency = copy.deepcopy(lock)
         adopted_with_dependency["packages"][0]["dependencies"] = [
             {"package_id": "hdm.dependency", "content_sha256": "d" * 64}
         ]
+        self.rehash_lock(adopted_with_dependency)
         result = self.compare(adopted_with_dependency, snapshots, lock, snapshots)
         self.assertIn("DEPENDENCY_CHANGED", {row["code"] for row in result["reasons"]})
 
@@ -286,6 +305,9 @@ class RulesetPackageClosureTests(unittest.TestCase):
         lock, snapshots = self.build()
         compatible = self.compare(lock, snapshots, lock, snapshots)
         validate_compatibility_result(compatible)
+        self.assertEqual(compatible["comparison_schema_version"], 2)
+        self.assertEqual(compatible["adopted_ruleset_set_digest_generation"], 1)
+        self.assertEqual(compatible["candidate_ruleset_set_digest_generation"], 1)
         invalid = copy.deepcopy(compatible)
         invalid["result"] = "BLOCKED_INCOMPATIBLE"
         with self.assertRaises(RulesetContractError):
