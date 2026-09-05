@@ -1,6 +1,6 @@
 # Engine Runtime Updates
 
-framework_module_version: 1.1.0
+framework_module_version: 1.1.1
 load_when: campaign/storage startup, explicit engine-update request, runtime mismatch, safe maintenance opportunity
 
 ## Distribution model
@@ -84,10 +84,22 @@ When all of the following are true:
 with `update_policy: ask`, offer these meanings:
 
 1. **Update now** — evaluate and, if supported, adopt target T through normal authorized maintenance/migration.
-2. **Remind later** — suppress this target-version prompt for the current environment until the existing reminder window expires, then re-evaluate at the next natural maintenance opportunity.
+2. **Remind later** — suppress this same target-version prompt for 24 hours in the current environment, then re-evaluate at the next natural maintenance opportunity.
 3. **Do not remind about this version** — suppress this target semantic version for this campaign for the lifetime of the current environment.
 
+Logical ephemeral key:
+
+```text
+(campaign_identity, target_engine_version)
+```
+
 The reminder/suppression state is ephemeral convenience state. It MUST NOT be written to campaign Git, storage Git, ChatGPT Memory, engine files or migration evidence.
+
+`Remind later` is not a background timer/automation. If no interaction occurs, nothing runs. Once at least 24 hours have elapsed, the prompt becomes eligible again at the next normal maintenance check.
+
+If the environment disappears, reminder/suppression state may disappear too. The question may then reappear; this is acceptable.
+
+Suppression is target-version-specific. Suppressing one released target does not suppress a later released target.
 
 A non-creator is never offered semantic-version migration authority for somebody else's campaign.
 
@@ -140,6 +152,27 @@ Required source/contract/accepted-work state is unsupported or required immutabl
 ### INDETERMINATE
 
 Evidence/currentness/path selection is ambiguous or insufficient. Fail closed and re-evaluate when evidence changes; do not guess.
+
+## Same-version provenance candidate ordering
+
+A package with the same semantic `engine_version` and logical `package_id` is not automatically compatible with different released bytes. The following rules are **candidate provenance/order rules only**; they never replace the compatibility classification above.
+
+Candidate provenance MUST use `RUNTIME_PACKAGE.source_commit_sha` from the candidate ZIP itself. Do not infer a candidate source SHA solely from the current position of a mutable tag.
+
+Let campaign-recorded source commit be A and candidate package source commit be B. One bounded server-side compare is sufficient to classify ancestry; do not enumerate commit history.
+
+- A == B and exact package digest matches -> exact accepted artifact.
+- A == B and digest differs -> suspicious repack/non-deterministic artifact; different released bytes still require affirmative compatibility evidence.
+- A is ancestor of B -> forward same-version provenance candidate.
+- B is ancestor of A -> downgrade candidate; do not silently use it.
+- A and B diverged -> ambiguous replacement; do not arbitrarily order it.
+- provenance ancestry unavailable -> exact accepted digest remains the only automatically exact artifact.
+
+When several same-version candidates are being considered for **compatibility evaluation**, an unambiguous newest descendant may be silently preferred as the candidate to evaluate, rather than repeatedly evaluating an older descendant. `silently prefer` here does not authorize use: different released bytes still require `DIRECT_COMPATIBLE` or another owner-permitted classification before binding.
+
+If an exact different candidate is affirmatively classified as owner-permitted `MAINTENANCE_REFRESH`/`DIRECT_COMPATIBLE` and creator-owned persistent identity does not need to change, it may be used under that classification. If creator-owned MANIFEST provenance is eligible for a coherent refresh, that refresh MUST NOT create a standalone commit merely to record cosmetic/provenance information; it joins the next otherwise-valid coherent campaign transaction.
+
+A non-creator never gains creator-owned MANIFEST/adoption authority from ancestry, direct compatibility or repository permission.
 
 ## Migration path discipline
 
@@ -210,9 +243,11 @@ If both storage and one campaign are intentionally updated, each operation repor
 
 A package mismatch is not automatically terminal. Missing extracted cache is not package mismatch: if the exact required ZIP bytes exist, cache can be reconstructed silently.
 
-### Exact currently adopted package is available
+### Required current-version package is available
 
-Validate/reuse or silently re-extract it and continue.
+If a valid exact/current supported package for `MANIFEST.engine.current.version` is available, reuse or silently re-extract its isolated cache and continue. Missing/expired local extraction requires no player prompt.
+
+If a different same-version artifact is available, it is evaluated under the exact-package compatibility rules above; ancestry alone is not permission to use different released bytes.
 
 ### Different candidate package is available
 
@@ -224,22 +259,30 @@ Do not use it merely because it has the same semantic version/package ID or a de
 - `UNSUPPORTED_INCOMPATIBLE` is rejected;
 - `INDETERMINATE` blocks until evidence/currentness is resolved.
 
-### Required current package absent; user is not creator
+### Required current-version package is absent; user is not campaign creator
 
-Do not offer semantic adoption/migration authority. Request the exact/current compatible runtime artifact required by the campaign or another exact candidate that can be affirmatively proven directly compatible without creator-owned mutation.
+The user lacks authority to change this campaign's semantic engine version. Tell them to add the matching `hedgelion-dnd-master-runtime-v<version>.zip` when that exact/current supported package is required.
 
-### Required current package absent; user is creator
+The runtime MUST NOT offer semantic-version migration of another creator's campaign. A newer ZIP being available does not itself substitute for the campaign's required current-version runtime.
 
-Present only valid alternatives supported by available exact artifacts:
+An alternative exact candidate may be used only if affirmative compatibility proves it can be used without creator-owned mutation.
 
-- restore/add the currently adopted exact/supported package and continue unchanged; or
-- evaluate an available newer target and migrate/adopt only if compatibility/migration gates support it.
+### Required current-version package is absent; user is campaign creator
 
-Never silently run a downgrade or guessed substitute.
+Offer valid recovery alternatives rather than a terminal refusal:
+
+1. **Restore/add the campaign's current runtime version** by adding its matching runtime ZIP and continue unchanged. This is preferred when one Project intentionally contains campaigns on different engine versions.
+2. **Update the campaign to an available newer semantic version** through the normal authorized compatibility/migration flow when the exact target supports it.
+
+If no valid target update path exists, only the restore/add-current-version path remains.
+
+Never silently run a downgrade, unsupported target or guessed substitute.
+
+The player-facing response MUST NOT stop at a bare terminal refusal when a valid restore/update path exists.
 
 ## Gameplay continuation after maintenance
 
-Maintenance during active gameplay is a transparent technical pause, not fictional elapsed time and not the end of the player's turn.
+Maintenance during active gameplay is a transparent pause, not fictional elapsed time and not the end of the player's turn.
 
 Before maintenance that may invalidate engine context, preserve the existing maintenance continuation frame under `SESSION.md`/recovery owners.
 
@@ -249,7 +292,10 @@ After confirmed success:
 2. invalidate the entire old engine instruction/runtime cache;
 3. rebuild the complete target CORE/RULES runtime context required by current bootstrap rules;
 4. restore the selected campaign working set from confirmed authoritative state;
-5. resume the same unresolved gameplay point without inventing events or verbatim history.
+5. remind the player who last said/did what using the strongest available evidence;
+6. return to the same unresolved gameplay point without inventing events or verbatim history.
+
+The runtime MUST NOT end the player-facing response with only a technical maintenance statement when gameplay can safely resume.
 
 Never adjudicate with mixed old/new runtime roots.
 
