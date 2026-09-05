@@ -33,4 +33,6 @@
 
 ## Версионирование
 
-`schema_version` относится к persistent campaign data и независим от версии Framework. Совместимое добавление необязательных полей может не требовать миграции; изменение семантики/типа обязательных данных требует новой версии и файла в `MIGRATIONS/`.
+Artifact-local `schema_version` относится только к конкретному persistent/protocol contract и независим от `engine_version`. Совместимое добавление необязательных полей может не требовать local schema bump; breaking изменение обязательной формы/семантики требует новой local schema version и, если released persisted data нуждается в преобразовании, явного migration edge.
+
+Campaign-wide persistent compatibility отдельно выражается через `campaign_contract_generation`; текущая new-campaign generation — `2`. Storage-repository marker/layout compatibility отдельно выражается через `storage_format_generation`; текущая storage generation — `3`. Эти поколения не заменяют local `schema_version` и не выводятся друг из друга или из engine version.
