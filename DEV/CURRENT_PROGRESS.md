@@ -6,33 +6,83 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-19 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
+GLOBAL_STATE: R2.7 WP-19 STEP 1 TARGETED PO-003 INTEGRATION — CRITIC RERUN REQUIRED
 
 CURRENT_WORKSTREAM: R2.7 WP-19 — Bootstrap / campaign creation / initial materialization
-CURRENT_SLICE: PO-001/PO-002 integrated into the WP-19 Source Manifest and Architecture Task Brief; mandatory whole-project Task-Brief critic rerun complete on expanded basis; all mechanically resolvable BLOCKING/SIGNIFICANT framing defects closed; awaiting mandatory Senior review
+CURRENT_SLICE: PO-003 historical event-time Actor decision-basis semantics published and routed; prior PO-001/PO-002 Step-1 review-ready basis is no longer complete because it predates this directly applicable retrospective/history requirement; Source Manifest / Architecture Task Brief integration and mandatory whole-project Task-Brief critic rerun not started on PO-003 basis
 
 LAST_CLOSED_UNIT: R2.7 WP-18 / Story / continuity / Dramaturg planning — final Senior re-audit PASS against audited public basis 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
-NEXT_AUTHORIZED_UNIT: NONE — mandatory Senior review of the completed expanded WP-19 Step-1 package; WP-19 Step 2 requires explicit Senior GO
-REQUIRED_GATE: Mandatory Senior review of expanded WP-19 Step 1. PO-001/PO-002 semantics are integrated; critic rerun has zero unresolved BLOCKING/SIGNIFICANT findings; HUMAN_DECISION_REQUIRED=NO and UPSTREAM_REOPEN_REQUIRED=NO. Step 2, WP-20 and implementation planning remain blocked.
+NEXT_AUTHORIZED_UNIT: NONE — complete targeted WP-19 Step-1 PO-003 framing/evidence integration and mandatory whole-project Task-Brief critic rerun, then return the complete package to mandatory Senior review
+REQUIRED_GATE: PO-003 materially affects the active retrospective/history consumer. Current Step 1 must determine NEW CONSUMER / EXTENSION / MATERIAL INSUFFICIENCY and any evidence-required upstream reopen before Senior review can resume. Step 2, WP-20 and implementation planning remain blocked.
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md
-KNOWN_BLOCKERS: NONE
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-po-003-arrival-integration-checkpoint.md
+KNOWN_BLOCKERS: NONE — current stop is incomplete mandatory Step-1 PO-003 integration/evidence gate, not a Product Owner decision blocker
 ```
 
-## WP-19 Product Owner input integration — completed Step-1 checkpoint
+## WP-19 PO-003 historical Actor decision-basis integration — current checkpoint
+
+Accepted product-semantic owner:
+
+- `DEV/docs/superpowers/specs/2026-09-05-hdm-historical-actor-decision-basis-owner-decision.md`.
+
+Product Owner ledger:
+
+- `DEV/PRODUCT_OWNER_INPUT.md` — `PO-003` is `PARTIALLY_INCORPORATED` with the current WP-19 route active/pending.
+
+Current task-local checkpoint:
+
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-po-003-arrival-integration-checkpoint.md`.
+
+Current gate state:
+
+```text
+PRE_PO003_REVIEW_READY_BASIS_SHA:     4cb19b178fcfcc08ef8f5bcf24e9f241cc0749fb
+PO003_PRODUCT_SEMANTICS:              OWNER-APPROVED / INCORPORATED
+PO003_WP19_STEP1_FRAMING:             PENDING
+PO003_WHOLE_PROJECT_CRITIC:           PENDING / NOT STARTED
+CURRENT_STEP1_REVIEW_READY:           NO
+CURRENT_SENIOR_REVIEW:                INTERRUPTED BY NEW APPLICABLE PO INPUT / NOT CURRENTLY ACTIONABLE
+HUMAN_DECISION_REQUIRED:              NO
+NEEDS_PO:                             NONE
+UPSTREAM_REOPEN_REQUIRED:             UNDETERMINED — EVIDENCE WORK REQUIRED
+ARCHITECTURE_REOPENED:                NO
+WP19_STEP2_AUTHORIZED:                NO
+STEP2_STARTED:                        NO
+WP20_STARTED:                         NO
+IMPLEMENTATION_PLANNING_STARTED:      NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED:   NO
+```
+
+Owner-approved product constraint:
+
+```text
+NO FULL NPC-PSYCHOLOGY HISTORY
+NO PER-TURN FULL ACTOR SNAPSHOT
+
+MATERIAL ACTOR DECISION / MATERIAL COGNITIVE TRANSITION
+    -> retain bounded event-time decision basis when later explanation/replay may depend on mutable Actor-private or epistemic state
+```
+
+The relevant basis is situation-specific rather than one fixed universal field list. The LLM may identify which eligible values materially formed the decision basis at event time; exact validation, native owner, serialization, trigger policy and schema remain architecture work. Historical evidence must not become a second current Actor-cognition or `world.knowledge` owner and must not retain hidden chain-of-thought.
+
+A later authorized Master or Commentator must use the event-time basis and associated history for material claims about why an NPC acted then rather than silently substituting the NPC's later current state. Existing player/principal/PC disclosure/no-spoiler eligibility remains controlling.
+
+The targeted Step-1 evidence pass must determine whether current history/event/record-family architecture already satisfies this consumer or whether a real material insufficiency/reopen exists. No upstream architecture is reopened merely by this Product Owner input.
+
+## Historical WP-19 Product Owner input integration — PO-001/PO-002 review-ready checkpoint
 
 Accepted semantic owner:
 
 - `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md`.
 
-Integrated Step-1 artifacts:
+Integrated Step-1 artifacts on that basis:
 
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-source-manifest.md`;
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief.md`;
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief-critic.md`;
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md`.
 
-Execution basis and gate state:
+Historical execution basis and gate state before PO-003 arrived:
 
 ```text
 PRE_INPUT_STEP1_RECOVERY_SHA:         6be4db0f4e68b91009f41462e6cb1d2eee790b19
@@ -41,25 +91,24 @@ PO19_A_RETROSPECTIVE_GAMEPLAY:        STEP-1 FRAMING INCORPORATED / DOWNSTREAM R
 PO19_B_SAVE_AND_EXIT_NAVIGATION:      STEP-1 FRAMING INCORPORATED / DOWNSTREAM REALIZATION ROUTED
 PREVIOUS_F19_S1_FINDINGS:             RETAINED / CLOSED
 SR19_01:                              RETAINED / CLOSED
-CURRENT_CRITIC_RERUN:                 COMPLETE
+CURRENT_CRITIC_RERUN:                 COMPLETE ON PRE-PO-003 BASIS
 PO_INTEGRATION_BLOCKING:              1
 PO_INTEGRATION_SIGNIFICANT:           4
 PO_INTEGRATION_MINOR:                 1
 UNRESOLVED_BLOCKING:                  0
 UNRESOLVED_SIGNIFICANT:               0
-CURRENT_STEP1_REVIEW_READY:           YES
-CURRENT_SENIOR_REVIEW:                NOT STARTED
+CURRENT_STEP1_REVIEW_READY:           YES ON PRE-PO-003 BASIS ONLY
 WP19_STEP2_AUTHORIZED:                NO
 STEP2_STARTED:                        NO
 WP20_STARTED:                         NO
 IMPLEMENTATION_PLANNING_STARTED:      NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED:   NO
 HUMAN_DECISION_REQUIRED:              NO
-UPSTREAM_REOPEN_REQUIRED:             NO
+UPSTREAM_REOPEN_REQUIRED:             NO ON THAT BASIS
 ARCHITECTURE_REOPENED:                NO
 ```
 
-The expanded Step-1 package now fixes these owner-approved interaction contracts:
+The PO-001/PO-002 package fixed these owner-approved interaction contracts:
 
 ```text
 active + gameplay allowed       -> ordinary gameplay
@@ -69,7 +118,7 @@ completed + readable            -> read-only Commentator
 
 For an authorized active player, retrospective/history questions remain ordinary D&D Master interaction. Story/history is bounded retrieval/orientation evidence only and cannot widen current player/PC knowledge/disclosure/no-spoiler eligibility or become a new memory/history owner.
 
-Explicit save-and-exit is now framed as:
+Explicit save-and-exit was framed as:
 
 ```text
 existing explicit-save durability promise
@@ -82,9 +131,9 @@ existing explicit-save durability promise
 
 Exit alone does not imply `paused`, `completed`, `archived`, multiplayer leave, PLAYER deactivation, PC-control transfer, mode/join-policy change or global multiplayer/live stop. Existing `save and stop` semantics remain current for a separately expressed stop/pause intent and are not generalized to exit-to-menu.
 
-The rerun critic found one BLOCKING and four SIGNIFICANT expanded-basis framing omissions plus one MINOR direct-acceptance gap. All BLOCKING/SIGNIFICANT findings were repaired in the current Source Manifest/Task Brief. Direct end-to-end PO-001/PO-002 acceptance cases remain a downstream verification obligation; no test/runtime/schema/template files were changed by Step 1.
+The prior rerun critic found one BLOCKING and four SIGNIFICANT expanded-basis framing omissions plus one MINOR direct-acceptance gap. All BLOCKING/SIGNIFICANT findings were repaired on the PO-001/PO-002 basis. Direct end-to-end PO-001/PO-002 acceptance cases remain a downstream verification obligation; no test/runtime/schema/template files were changed by Step 1.
 
-No `NEEDS_PO` route remains. The Product Owner already supplied the material semantics; remaining exact consumer placement/realization is agent-owned after later gates.
+PO-003 does not invalidate those resolved findings merely by overlap; it invalidates only the claim that this earlier evidence basis is sufficient for the current Senior gate.
 
 ## Historical WP-19 Step-1 targeted Senior recovery checkpoint — pre-PO-input basis
 
@@ -262,10 +311,11 @@ DEV_UNIT_TESTS_STEP: success
 
 - Roadmaps own intended sequencing/scope; `DEV/CURRENT_PROGRESS.md` owns actual current state/gate.
 - `DEV/PROJECT_MAP.md` and canonical indexes are routing aids; current WP-19 conclusions follow actual Product Owner/canonical/runtime/test owners.
-- Applicable PO inputs are now integrated into the Step-1 evidence basis; the ledger itself remains intent/routing evidence, not runtime authority.
-- Closed upstream architecture reopens only for demonstrated contradiction/new unsatisfied owner/material insufficiency. The current PO inputs are compatible new consumer/navigation requirements and require no upstream reopen.
-- WP-18 is closed / final Senior re-audit PASS.
-- WP-19 is **STEP 1 COMPLETE — MANDATORY SENIOR REVIEW**.
+- PO-001/PO-002 remain incorporated. PO-003 is now the active additional Step-1 input and must be integrated before current Senior review can resume.
+- The Product Owner ledger itself remains intent/routing evidence, not runtime authority.
+- Closed upstream architecture reopens only for demonstrated contradiction/new unsatisfied owner/material insufficiency. PO-003 requires this classification to be established by current evidence work; no reopen is presumed.
+- WP-18 remains closed / final Senior re-audit PASS unless the targeted evidence pass establishes a real reopen criterion.
+- WP-19 is **STEP 1 TARGETED PO-003 INTEGRATION — CRITIC RERUN REQUIRED**.
 - `WP19_STEP2_AUTHORIZED: NO`; `STEP2_STARTED: NO`.
 - WP-20 is not started.
 - Implementation planning and substantive implementation are not started/authorized.
