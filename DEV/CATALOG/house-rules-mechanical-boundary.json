@@ -8,7 +8,7 @@
     "compatibility_generation": 1,
     "catalog_generation": 2,
     "ruleset_set_digest_generation": 1,
-    "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
+    "ruleset_set_sha256": "4d63deb1998213854f690708767fe03570ce143300fc655a460f6a2d892c6295",
     "runtime_selection_state": "ACTIVE_VERIFIED_MACHINE_CONTRACT"
   },
   "route_profiles": {
