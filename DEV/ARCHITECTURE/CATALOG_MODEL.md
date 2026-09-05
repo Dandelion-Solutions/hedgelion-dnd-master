@@ -14,7 +14,7 @@ Actor data model: `ARCHITECTURE/ACTOR_MODEL.md`
 
 Asset data model: `ARCHITECTURE/ASSET_MODEL.md`
 
-Machine-readable registry: `CATALOG/core-catalog.json` version `1.2.0`
+Machine-readable registry: `CATALOG/core-catalog.json`, coordinated `catalog_generation: 2`, local schema `2`
 
 ## 1. Purpose
 
@@ -174,7 +174,7 @@ provide its mechanics.
 > defined by `CATALOG_INVENTORY.md` and `core-catalog.json`. Sections 7–18 below
 > retain design explanation and examples, not a second registry. An identifier
 > written here is executable/selectable only when it also exists in catalog
-> version 1.2.0 (or in the selected validated definition package). Runtime and
+> generation `2` (or in the selected validated definition package). Runtime and
 > the LLM must never recover an obsolete ID from this derivation document.
 
 ### 7.1 Content-definition kinds
@@ -632,7 +632,7 @@ A missing capability or useful reusable definition may produce a bounded
 ```json
 {
   "schema_version": 1,
-  "engine_version": "0.7",
+  "engine_version": "1.0-alpha",
   "category": "activity_primitive",
   "summary": "Support unarmed attack profiles",
   "observed_phrase": "отвешиваю ему тумака",
@@ -649,12 +649,12 @@ explicit user/host action and must remove campaign secrets or personal data.
 
 `CATALOG/core-catalog.json` is the initial engine seed. It contains IDs and
 descriptive routing metadata, not executable Python. A loader may import it into
-SQLite reference tables keyed by `(catalog_version, registry, id)`.
+SQLite reference tables keyed by `(catalog_generation, registry, id)`.
 
 Startup behavior:
 
 1. validate the catalog against `SCHEMAS/core-catalog.schema.json`;
-2. verify supported catalog version;
+2. verify supported integer catalog generation;
 3. import/upsert the immutable engine registry transactionally;
 4. compile selected ruleset/campaign definitions separately;
 5. reject unknown capability references before gameplay.
