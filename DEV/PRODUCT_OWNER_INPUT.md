@@ -23,15 +23,11 @@ Text inside any of these blocks is Product Owner-authored evidence and MUST NOT 
 - `Product Owner amendment`;
 - explicitly marked shared Product Owner context.
 
-If the Product Owner later corrects or changes an earlier input, preserve the original block and append a new verbatim correction/amendment block with its own date and integrity hash. Do not rewrite history to make the original text look as if it always contained the later correction.
+If the Product Owner later corrects or changes an earlier input, preserve the original block and append a new verbatim correction/amendment block with its own date. Do not rewrite history to make the original text look as if it always contained the later correction.
 
 Agent-owned fields such as interpretation, classification, routing, statuses, triggers, affected owners, current/future impact and incorporation evidence MAY be updated as repository state evolves.
 
-### Integrity hashes
-
-When an immutable Product Owner block carries `SHA256`, the hash is calculated over the exact UTF-8 block body using LF line endings, excluding the Markdown fence and excluding a trailing newline after the final character.
-
-An agent MUST NOT change the preserved text and then update the hash to conceal the edit. A mismatch is an integrity defect requiring recovery from the authoritative conversation/source evidence.
+Git history provides the normal audit trail for changes to this ledger; no additional integrity machinery is required.
 
 ### Public-repository safety exception
 
@@ -90,8 +86,7 @@ This table is an agent-maintained navigation index only. The full entry controls
 ## 4. Shared Product Owner context for PO-001 and PO-002
 
 Date: 2026-09-05  
-Source: direct Product Owner conversation  
-SHA256: `303983557e8b35ddbb69d2ef25391811dcb43462ec8af47e5ad2018fa1f67ebc`
+Source: direct Product Owner conversation
 
 ### Shared Product Owner context — VERBATIM / IMMUTABLE
 
@@ -121,8 +116,7 @@ Current accepted semantic owner:
 
 Date: 2026-09-05  
 Kind: REQUIREMENT  
-Status: PARTIALLY_INCORPORATED  
-PO_INPUT_SHA256: `b8a334c392780363bddb77640a624ea83985eda777b3751794b4d0d5c0d65c1d`
+Status: PARTIALLY_INCORPORATED
 
 ### PO input — VERBATIM / IMMUTABLE
 
@@ -191,8 +185,7 @@ Future runtime/test realization must consume the accepted public owner decision 
 
 Date: 2026-09-05  
 Kind: REQUIREMENT  
-Status: PARTIALLY_INCORPORATED  
-PO_INPUT_SHA256: `b2c60e9c668a90e94341a13df547bf3539a0a402994e41fec776dc29b2959e1a`
+Status: PARTIALLY_INCORPORATED
 
 ### PO input — VERBATIM / IMMUTABLE
 
