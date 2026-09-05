@@ -3,14 +3,17 @@
   "$id": "https://hedgelion.invalid/schemas/domain-rules-coverage-binding.schema.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["profile_id", "package_id", "package_version", "catalog_generation", "gameplay_spine_member", "package_content_sha256", "ruleset_set_sha256"],
+  "required": ["profile_id", "package_id", "package_revision", "compatibility_family", "compatibility_generation", "catalog_generation", "gameplay_spine_member", "package_content_sha256", "ruleset_set_digest_generation", "ruleset_set_sha256"],
   "properties": {
     "profile_id": {"const": "gameplay_spine.mvp.v1"},
     "package_id": {"const": "hdm.rules.dnd2024-srd52-core"},
-    "package_version": {"const": "0.1.0-mvp"},
-    "catalog_generation": {"const": "2.0.0"},
+    "package_revision": {"const": 1},
+    "compatibility_family": {"const": "hdm.rules.dnd2024-srd52"},
+    "compatibility_generation": {"const": 1},
+    "catalog_generation": {"const": 2},
     "gameplay_spine_member": {"const": "gameplay-spine-seed.json"},
     "package_content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ruleset_set_digest_generation": {"const": 1},
     "ruleset_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
   }
 }
