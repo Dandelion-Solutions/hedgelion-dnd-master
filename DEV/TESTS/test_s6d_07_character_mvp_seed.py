@@ -127,6 +127,7 @@ class CharacterMvpSeedTests(unittest.TestCase):
     def test_readiness_returns_exact_blocker_and_preserves_provisional_play(self):
         expected_identity = {
             "catalog_generation": self.manifest["catalog_generation"],
+            "ruleset_set_digest_generation": self.resolved["ruleset_set_digest_generation"],
             "ruleset_set_sha256": self.resolved["ruleset_set_sha256"],
         }
         fighter = evaluate_ready_pc(self.actors["fighter_ready"], self.resolved, self.actors["readiness_evidence"]["fighter"])
@@ -137,6 +138,13 @@ class CharacterMvpSeedTests(unittest.TestCase):
         self.assertFalse(result["ready"])
         self.assertIn("advancement.fighter.level_1.style", result["blockers"])
         self.assertTrue(self.seed["ready_pc"]["provisional_gameplay_before_ready_pc"])
+
+    def test_readiness_rejects_stale_digest_generation(self):
+        evidence = json.loads(json.dumps(self.actors["readiness_evidence"]["fighter"]))
+        evidence["ruleset_set_digest_generation"] = 2
+        result = evaluate_ready_pc(self.actors["fighter_ready"], self.resolved, evidence)
+        self.assertFalse(result["ready"])
+        self.assertIn("readiness_catalog_identity", result["blockers"])
 
     def test_advancement_trace_has_existing_owner_boundaries_and_retry_evidence(self):
         receipts = {}
