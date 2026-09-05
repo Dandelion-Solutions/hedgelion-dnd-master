@@ -65,9 +65,7 @@ preserve original immutable block
 + update agent-owned disposition/routing
 ```
 
-Do not rewrite the original to manufacture a cleaner historical narrative.
-
-Optional fixed SHA-256 integrity hashes may be stored for immutable blocks as defined by the ledger. A hash mismatch is an integrity defect, not permission to recompute the hash around edited Product Owner text.
+Do not rewrite the original to manufacture a cleaner historical narrative. Normal Git history is sufficient audit history; no extra integrity mechanism is required.
 
 Public-material/privacy/legal rules override verbatim persistence where necessary. Never commit secrets, credentials, sensitive personal data, unlawful confidential material or prohibited third-party proprietary text just because it appeared in a Product Owner conversation.
 
