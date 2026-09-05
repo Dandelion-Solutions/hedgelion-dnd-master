@@ -159,7 +159,7 @@ A package with the same semantic `engine_version` and logical `package_id` is no
 
 Candidate provenance MUST use `RUNTIME_PACKAGE.source_commit_sha` from the candidate ZIP itself. Do not infer a candidate source SHA solely from the current position of a mutable tag.
 
-Let campaign-recorded source commit be A and candidate package source commit be B. One bounded server-side compare is sufficient to classify ancestry; do not enumerate commit history.
+Let campaign-recorded source commit be A and candidate package source commit be B. Use one bounded server-side compare to classify ancestry; do not enumerate commit history.
 
 - A == B and exact package digest matches -> exact accepted artifact.
 - A == B and digest differs -> suspicious repack/non-deterministic artifact; different released bytes still require affirmative compatibility evidence.
