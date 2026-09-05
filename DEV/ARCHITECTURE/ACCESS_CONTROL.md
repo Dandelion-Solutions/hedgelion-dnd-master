@@ -11,13 +11,15 @@ Framework maintainer GitHub login: `dkolyada`
 D&D Master distinguishes repository role before interpreting a default branch:
 
 - In canonical public engine repository, `main` is engine-maintainer-only. Only authenticated GitHub identity `dkolyada` may publish framework/runtime/schema/install/release/repository-policy changes there.
-- In campaign storage, default branch is storage-owner-only and may be changed by D&D Master only for storage initialization or baseline metadata maintenance. Storage v2 baseline maintenance does not copy engine files.
+- In campaign storage, default branch is storage-owner-only and may be changed by D&D Master only for storage initialization, baseline metadata maintenance, or an explicitly supported storage-format migration under the storage owner contract. Storage baseline maintenance does not copy engine files.
 - Repository Admin/Write permission, organization membership, collaborator status, campaign ownership, PLAYER binding, or ChatGPT/GitHub authorization do not by themselves grant authority to either kind of default branch.
 - A guest Master MUST NOT initialize/fix another owner's storage marker, perform routine owner release maintenance, change storage baseline, or migrate the owner's campaign engine merely because repository writes are technically possible.
 - A campaign creator may publish gameplay state only to their own `campaign/*` scope according to campaign rules. Creating a campaign does not grant engine-maintainer or storage-main authority.
 - A multiplayer participant may publish only within campaign/live scope authorized by active `PLAYER_` binding.
 - GitHub repository permission is necessary infrastructure permission but is insufficient gameplay/engine authorization.
-- Campaign engine maintenance is storage-owner maintenance and may apply defined data/schema migrations, but it must preserve campaign agency/canon. A migration requiring creator/player decision is deferred.
+- Storage maintenance and existing-campaign migration are separate authority domains. The storage owner may evolve storage-default metadata/layout and `storage_format_generation` under the storage contract. Any existing-campaign engine/ruleset adoption or migration that changes creator-controlled current identity or transforms authoritative campaign semantic/native state is creator-only. Storage ownership does not grant campaign migration authority; campaign creation does not grant storage-default migration authority.
+- If a storage-format transition and a campaign migration are both required, each uses its own currentness/publication contract and success domain. A required storage state may be a campaign prerequisite, but one transaction does not silently authorize or roll back the other.
+- A migration must preserve campaign agency/canon and existing owner semantics. Any genuinely unresolved creator/player/product decision remains deferred to its native decision authority rather than being guessed by maintenance code.
 - This is D&D Master application/runtime policy, not a claim of server-side GitHub branch protection.
 
 Before any publication, resolve exact repository and target ref, then apply `CORE/RUNTIME.md` write routing. If required identity/repository role cannot be established reliably, deny the write. Never test authority with a probe commit.
@@ -32,7 +34,7 @@ Before an owner-only campaign operation, resolve creator login + current authent
 
 Creator identity is immutable for the campaign. Once authoritatively resolved for an applicable session/authority operation, it may be retained as session-local derived authorization evidence; ordinary gameplay does not reread Git history per turn merely to rediscover the same creator.
 
-Owner-only campaign operations include switching singleplayer/multiplayer, changing join policy, deactivating/reactivating another player's binding, campaign-wide engine update-policy changes, explicit engine or ruleset adoption/migration, persistence of campaign engine/ruleset identity changes, explicit access/global maintenance, and granting/revoking another PLAYER's mechanical-override policy-adoption authority. A non-creator's immediate use of a proven compatible forward same-version runtime under `GAME/CORE/ENGINE_UPDATES.md` is not adoption authority and does not authorize a MANIFEST write.
+Owner-only campaign operations include switching singleplayer/multiplayer, changing join policy, deactivating/reactivating another player's binding, campaign-wide engine update-policy changes, explicit engine or ruleset adoption/migration, persistence of campaign engine/ruleset identity changes, migration of authoritative campaign semantic/native state, explicit access/global maintenance, and granting/revoking another PLAYER's mechanical-override policy-adoption authority. A non-creator's immediate use of an exact runtime that is affirmatively proven directly compatible under `GAME/CORE/ENGINE_UPDATES.md` is not adoption authority and does not authorize a MANIFEST write.
 
 In singleplayer the creator check applies to every gameplay-state write. Other collaborators may read/observe but not publish gameplay changes.
 
@@ -85,7 +87,7 @@ Only the campaign creator may grant or revoke this PLAYER field. A participant c
 
 Grant/revoke is prospective access-control state. Existing accepted Resolution generations and already-established historical consequences are not reinterpreted when the grant later changes.
 
-Neither policy authority class bypasses information eligibility, deterministic realization, RNG integrity, native owner validation, currentness, CAS, or any other constitutional runtime boundary.
+Neither policy authority class bypasses information eligibility, deterministic realization, RNG integrity, native owner validation, currentness, CAS, migration compatibility, or any other constitutional runtime boundary.
 
 The structured House-Rules policy sidecar records adoption basis/provenance/current policy identity; it is not a new ACL subsystem. Existing identity resolution and publication/CAS enforce the selected semantic authority.
 
