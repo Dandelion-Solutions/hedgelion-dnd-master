@@ -24,8 +24,8 @@ from validate_domain_rules_coverage import build_binding, build_contract, valida
 
 PACKAGE_ID = "hdm.rules.dnd2024-srd52-core"
 PACKAGE = ROOT / "GAME" / "RULES" / "packages" / PACKAGE_ID
-CURRENT_PACKAGE_SHA256 = "5ea6bd490c052b4ee8cde6a29d9f6444f3e4e49151cab766849678aa81ee9d6f"
-CURRENT_RULESET_SET_SHA256 = "4d63deb1998213854f690708767fe03570ce143300fc655a460f6a2d892c6295"
+CURRENT_PACKAGE_SHA256 = "57c77802744619fa4d35a21bab38d133589f21de72f80044dc4d7bb58cb06d34"
+CURRENT_RULESET_SET_SHA256 = "0700d3ccf367ade9ff56f620c4330bd5b4544fb9e22031f9d1eac3718a88ef2d"
 
 
 class RulesetPackageClosureTests(unittest.TestCase):
