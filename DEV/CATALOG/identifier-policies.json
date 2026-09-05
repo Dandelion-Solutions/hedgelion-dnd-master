@@ -1,6 +1,6 @@
 {
-  "catalog_version": "2.0.0",
-  "schema_version": 1,
+  "catalog_generation": 2,
+  "schema_version": 2,
   "world": {
     "world.actor": {"strategy": "sequential", "prefix": "actor", "minimum_width": 4, "scope": "campaign", "local": {"prefix": "local-actor", "minimum_width": 3, "scope": "session"}},
     "world.actor_group": {"strategy": "sequential", "prefix": "group", "minimum_width": 3, "scope": "campaign", "local": {"prefix": "local-group", "minimum_width": 3, "scope": "session"}},
