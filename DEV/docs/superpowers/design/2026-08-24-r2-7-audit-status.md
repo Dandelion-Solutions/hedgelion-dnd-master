@@ -43,9 +43,9 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-18
 CURRENT_DOMAIN: WP-19
 CURRENT_DOMAIN_TOPIC: Bootstrap / campaign creation / initial materialization
-CURRENT_SLICE: WP-19 STEP 1 COMPLETE — TARGETED SENIOR RECOVERY SR19-01 CLOSED; recovered Source Manifest + Architecture Task Brief + whole-project critic published; mandatory Senior re-review pending; Step 2 blocked
+CURRENT_SLICE: WP-19 STEP 1 COMPLETE — PO-001/PO-002 INTEGRATED; EXPANDED WHOLE-PROJECT TASK-BRIEF CRITIC COMPLETE; MANDATORY SENIOR REVIEW PENDING
 NEXT_DOMAIN: WP-20
-OWNER_GATE: REQUIRED — recovered WP-19 Step 1 awaits mandatory Senior re-review; Step 2 requires explicit Senior GO
+OWNER_GATE: REQUIRED — expanded WP-19 Step 1 awaits mandatory Senior review; Step 2 requires explicit Senior GO
 FINAL_RECONCILIATION: NOT_STARTED
 
 HOUSE_RULES_WORKSTREAM: COMPLETE / CANONICAL
@@ -55,7 +55,7 @@ MACHINE_REALIZATION_VERIFIED: TRUE
 S6D_FINAL_CLOSURE_AUTHORIZED: TRUE
 S6D_FINAL_CLOSURE: PASS
 
-R2_7_STATUS: WP-19 STEP 1 COMPLETE — MANDATORY SENIOR RE-REVIEW
+R2_7_STATUS: WP-19 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 R2_7_WP06: COMPLETE / SENIOR REVIEW PASS
 R2_7_WP07: STEPS 1-8 COMPLETE — SENIOR REVIEW PASS
 R2_7_WP08: COMPLETE
@@ -69,12 +69,12 @@ R2_7_WP15: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP16: CLOSED / FINAL SENIOR AUDIT PASS
 R2_7_WP17: CLOSED / FINAL SENIOR RE-AUDIT PASS
 R2_7_WP18: CLOSED / FINAL SENIOR RE-AUDIT PASS
-R2_7_WP19: STEP 1 COMPLETE — MANDATORY SENIOR RE-REVIEW
+R2_7_WP19: STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 ```
 
-WP-19 Step 1 targeted Senior recovery is complete and re-review-ready. Step 2 is not authorized. The mandatory Senior re-review must inspect the recovered Source Manifest, Architecture Task Brief and whole-project Task-Brief critic before any Step-2 work begins.
+Expanded WP-19 Step 1 is complete and ready for the mandatory Senior review. `PO-001` / `PO-002` are integrated into the current Source Manifest and Architecture Task Brief, and the mandatory whole-project Task-Brief critic has been rerun on that expanded basis with zero unresolved BLOCKING/SIGNIFICANT findings. Step 2 remains unauthorized and unstarted.
 
-The recovery Product Owner watch found no residual human-owned decision. Accepted owners already settle the relevant product semantics, canonical authority, current pre-release compatibility policy, lifecycle boundaries and quality direction. `SR19-01` was an evidence/reverse-conformance completeness defect and is now closed.
+The earlier SR19-01 recovery remains valid historical provenance for its pre-PO basis. It is not the current WP-19 gate. `SR19-02` repairs only this durable-cursor status propagation and does not reopen `F19-S1-*`, `SR19-01`, or `F19-PO-*`.
 
 ---
 
@@ -94,7 +94,7 @@ The recovery Product Owner watch found no residual human-owned decision. Accepte
 | WP-16 | CLOSED / FINAL SENIOR AUDIT PASS |
 | WP-17 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
 | WP-18 | CLOSED / FINAL SENIOR RE-AUDIT PASS |
-| WP-19 | STEP 1 COMPLETE — MANDATORY SENIOR RE-REVIEW |
+| WP-19 | STEP 1 COMPLETE — MANDATORY SENIOR REVIEW |
 | WP-20..WP-27 | NOT STARTED |
 
 ---
@@ -362,7 +362,7 @@ DEV_UNIT_TESTS_STEP: success
 
 ---
 
-## WP-19 Step-1 completed / targeted Senior recovery
+## Historical WP-19 Step-1 targeted Senior recovery — pre-PO basis
 
 Domain:
 
@@ -418,7 +418,7 @@ Recovery independently reconstructed the directly implicated `DEV/TESTS` subgrap
 
 Material stale/qualified expectations are itemized in the recovered Source Manifest and critic. Primary examples are B12 Storage v2, B22 tag-derived provenance, B23 visible setup stages, B25 checkpoint qualifier, Campaign Card C12 paused icon, generic T13 manifest-only discovery, qualified storage-main/guest access wording, WP-20-owned update cases and historical pre-release evidence.
 
-Recovery disposition:
+Historical recovery disposition:
 
 ```text
 SR19_01:                            CLOSED
@@ -437,14 +437,53 @@ IMPLEMENTATION_PLANNING_STARTED:    NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 ```
 
-No test/scenario files were changed. Their synchronization remains later authorized design-realization work; Step-1 recovery fixes the evidence/framing claim and prevents stale expectations from becoming implementation authority.
+No test/scenario files were changed during SR19-01 recovery. Its verification expansion remains valid historical/current evidence for the pre-PO basis, but its former Senior re-review routing is superseded by the later PO-integrated expanded Step-1 package.
+
+---
+
+## WP-19 expanded Step-1 result — current gate
+
+PO integration basis:
+
+```text
+WP19_PO_INPUT_INTEGRATION_BASIS_SHA: e7bd748d17572a57db308850424c1a505691e7f4
+```
+
+Current expanded result:
+
+```text
+PREVIOUS_F19_S1_FINDINGS:       RETAINED / CLOSED
+SR19_01:                        RETAINED / CLOSED
+
+F19_PO_01: BLOCKING    — CLOSED
+F19_PO_02: SIGNIFICANT — CLOSED
+F19_PO_03: SIGNIFICANT — CLOSED
+F19_PO_04: SIGNIFICANT — CLOSED
+F19_PO_05: SIGNIFICANT — CLOSED
+F19_PO_06: MINOR       — CLOSED AS ROUTING / DOWNSTREAM OBLIGATION
+
+UNRESOLVED_BLOCKING:            0
+UNRESOLVED_SIGNIFICANT:         0
+HUMAN_DECISION_REQUIRED:        NO
+NEEDS_PO:                       NONE
+UPSTREAM_REOPEN_REQUIRED:       NO
+ARCHITECTURE_REOPENED:          NO
+
+WP19_STEP2_AUTHORIZED:          NO
+STEP2_STARTED:                  NO
+WP20_STARTED:                   NO
+IMPLEMENTATION_PLANNING_STARTED:NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED:NO
+```
+
+`SR19-02 / SIGNIFICANT` is CLOSED by synchronizing this task-local durable cursor to the already-published expanded Step-1 state. No Source Manifest research, Task-Brief critic rerun, architecture reopen, Product Owner input mutation, Step 2, WP-20, implementation planning or substantive implementation was performed by this repair.
 
 ---
 
 ## Forward obligations
 
 - **WP-18** — CLOSED / final Senior re-audit PASS.
-- **WP-19** — Step 1 COMPLETE / targeted Senior recovery complete / mandatory Senior re-review pending. Step 2 requires explicit Senior GO and has not started.
+- **WP-19** — Step 1 COMPLETE / PO-001/PO-002 integrated / expanded whole-project Task-Brief critic complete / mandatory Senior review pending. Step 2 requires explicit Senior GO and has not started.
 - **WP-20** — engine update/schema evolution/migration remains downstream and not started.
 - **WP-21..WP-26** — remain downstream audit domains.
 - **WP-27** — implementation-planning readiness remains the final R2.7 domain.
@@ -489,21 +528,28 @@ WP18_UNRESOLVED_SIGNIFICANT:             0
 WP19_STEP1_START_BASIS_SHA:              39d12e5b1c1d4b890cfcc4b4c64e5cab16e0d7ca
 WP19_STEP1_EXECUTION_BASIS_SHA:          5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053
 WP19_SENIOR_RECOVERY_BASIS_SHA:          df5fe6441c2b85e9cbffcb6f83caa885501da794
+WP19_PO_INPUT_INTEGRATION_BASIS_SHA:     e7bd748d17572a57db308850424c1a505691e7f4
 WP19_OWNER_TRANSITION_AUTHORIZED:        YES — 2026-09-05
 WP19_SOURCE_MANIFEST:                    DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-source-manifest.md
 WP19_STEP1_TASK_BRIEF:                   DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief.md
 WP19_STEP1_CRITIC:                       DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief-critic.md
-WP19_STEP1_STATUS:                       COMPLETE — MANDATORY SENIOR RE-REVIEW
-WP19_STEP1_BLOCKING:                     2
-WP19_STEP1_SIGNIFICANT:                  5
-WP19_STEP1_MINOR:                        1
-WP19_SR19_01:                            CLOSED
-WP19_SENIOR_RECOVERY_SIGNIFICANT:        1
+WP19_PO_INTEGRATION_CHECKPOINT:          DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md
+WP19_STEP1_STATUS:                       COMPLETE — MANDATORY SENIOR REVIEW
+WP19_PREVIOUS_F19_S1_FINDINGS:           RETAINED / CLOSED
+WP19_SR19_01:                            RETAINED / CLOSED
+WP19_F19_PO_01:                          BLOCKING — CLOSED
+WP19_F19_PO_02:                          SIGNIFICANT — CLOSED
+WP19_F19_PO_03:                          SIGNIFICANT — CLOSED
+WP19_F19_PO_04:                          SIGNIFICANT — CLOSED
+WP19_F19_PO_05:                          SIGNIFICANT — CLOSED
+WP19_F19_PO_06:                          MINOR — CLOSED AS ROUTING / DOWNSTREAM OBLIGATION
+WP19_SR19_02:                            SIGNIFICANT — CLOSED
 WP19_UNRESOLVED_BLOCKING:                0
 WP19_UNRESOLVED_SIGNIFICANT:             0
 WP19_STEP2_AUTHORIZED:                   NO
-WP19_PRODUCT_OWNER_WATCH:                COMPLETE — no residual human-owned decision identified after recovery
+WP19_PRODUCT_OWNER_WATCH:                COMPLETE — no residual human-owned decision identified after expanded PO-input integration
 HUMAN_DECISION_REQUIRED:                 NO
+NEEDS_PO:                                NONE
 ARCHITECTURE_REOPENED:                   NO
 UPSTREAM_REOPEN_REQUIRED:                NO
 WP19_STARTED:                            YES
@@ -511,8 +557,8 @@ STEP2_STARTED:                           NO
 WP20_STARTED:                            NO
 IMPLEMENTATION_PLANNING_STARTED:         NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED:      NO
-CURRENT_VERIFICATION_STATE:              Recovered Step-1 design/evidence/status artifacts published; final recovery checkpoint remote read-back/diff/hosted verification required before worker completion report
-NEXT_EXACT_TASK_OR_SLICE:                 Mandatory Senior re-review of recovered WP-19 Step 1; do not begin Step 2 without explicit Senior GO
+CURRENT_VERIFICATION_STATE:              SR19-02 narrow status-propagation repair published; final remote read-back/diff/hosted verification required before worker completion report
+NEXT_EXACT_TASK_OR_SLICE:                 Mandatory Senior review of expanded WP-19 Step 1; do not begin Step 2 without explicit Senior GO
 KNOWN_BLOCKERS:                           NONE
 UNPUBLISHED_WORK:                         NONE
 ```
