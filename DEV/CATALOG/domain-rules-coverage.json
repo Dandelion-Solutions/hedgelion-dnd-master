@@ -7381,7 +7381,7 @@
       "route_id": "route.generic_check",
       "family": "check",
       "scenario": "bounded ability/skill uncertainty",
-      "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
+      "applicability": "hdm.rules.dnd2024-srd52-core/package-revision-1/compatibility-generation-1/catalog-generation-2/gameplay_spine.mvp.v1",
       "consumer_ids": [
         "activity.check.generic"
       ],
@@ -7422,7 +7422,7 @@
       "route_id": "route.generic_save",
       "family": "save",
       "scenario": "bounded saving throw",
-      "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
+      "applicability": "hdm.rules.dnd2024-srd52-core/package-revision-1/compatibility-generation-1/catalog-generation-2/gameplay_spine.mvp.v1",
       "consumer_ids": [
         "activity.save.generic"
       ],
@@ -7463,7 +7463,7 @@
       "route_id": "route.procedure_movement",
       "family": "procedure/movement",
       "scenario": "initiative, turn/action control, within-location budget spend and durable location transition",
-      "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
+      "applicability": "hdm.rules.dnd2024-srd52-core/package-revision-1/compatibility-generation-1/catalog-generation-2/gameplay_spine.mvp.v1",
       "consumer_ids": [
         "transition.location_change"
       ],
@@ -7504,7 +7504,7 @@
       "route_id": "route.spatial_target_applicability",
       "family": "spatial applicability",
       "scenario": "seven exact TargetSpec/AreaSpec consumers",
-      "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
+      "applicability": "hdm.rules.dnd2024-srd52-core/package-revision-1/compatibility-generation-1/catalog-generation-2/gameplay_spine.mvp.v1",
       "consumer_ids": [
         "activity.attack.ranged_weapon",
         "activity.spell.fire_bolt",
@@ -7549,7 +7549,7 @@
       "route_id": "route.asset_transfer",
       "family": "asset",
       "scenario": "exclusive significant Asset transfer",
-      "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
+      "applicability": "hdm.rules.dnd2024-srd52-core/package-revision-1/compatibility-generation-1/catalog-generation-2/gameplay_spine.mvp.v1",
       "consumer_ids": [
         "transition.asset_transfer"
       ],
@@ -7588,7 +7588,7 @@
       "route_id": "route.asset_equip",
       "family": "asset",
       "scenario": "owned Asset held or worn",
-      "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
+      "applicability": "hdm.rules.dnd2024-srd52-core/package-revision-1/compatibility-generation-1/catalog-generation-2/gameplay_spine.mvp.v1",
       "consumer_ids": [
         "transition.asset_status"
       ],
@@ -7627,7 +7627,7 @@
       "route_id": "route.asset_use",
       "family": "asset",
       "scenario": "validate significant Asset use",
-      "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
+      "applicability": "hdm.rules.dnd2024-srd52-core/package-revision-1/compatibility-generation-1/catalog-generation-2/gameplay_spine.mvp.v1",
       "consumer_ids": [],
       "definition_ids": [],
       "input_provenance": "ENGINE_BOUND Asset/owner/revision + admitted Activity",
@@ -7664,7 +7664,7 @@
       "route_id": "route.mechanical_null",
       "family": "resolution",
       "scenario": "valid result without durable world-state change",
-      "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
+      "applicability": "hdm.rules.dnd2024-srd52-core/package-revision-1/compatibility-generation-1/catalog-generation-2/gameplay_spine.mvp.v1",
       "consumer_ids": [
         "activity.check.generic",
         "activity.save.generic"
@@ -7704,7 +7704,7 @@
       "route_id": "route.inherited_s6d07",
       "family": "character/combat/spell",
       "scenario": "exact S6D-07 seed routes",
-      "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
+      "applicability": "hdm.rules.dnd2024-srd52-core/package-revision-1/compatibility-generation-1/catalog-generation-2/gameplay_spine.mvp.v1",
       "consumer_ids": [],
       "definition_ids": [],
       "input_provenance": "EXACT S6D-07 OWNER",
@@ -7741,7 +7741,7 @@
       "route_id": "route.inherited_s6d08",
       "family": "health/effect/recovery",
       "scenario": "exact S6D-08 routes",
-      "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
+      "applicability": "hdm.rules.dnd2024-srd52-core/package-revision-1/compatibility-generation-1/catalog-generation-2/gameplay_spine.mvp.v1",
       "consumer_ids": [],
       "definition_ids": [],
       "input_provenance": "EXACT S6D-08 OWNER",
@@ -7778,7 +7778,7 @@
       "route_id": "route.out_of_scope",
       "family": "excluded",
       "scenario": "explicit decision-C exclusion",
-      "applicability": "hdm.rules.dnd2024-srd52-core@0.1.0-mvp/catalog-2.0.0/gameplay_spine.mvp.v1",
+      "applicability": "hdm.rules.dnd2024-srd52-core/package-revision-1/compatibility-generation-1/catalog-generation-2/gameplay_spine.mvp.v1",
       "consumer_ids": [],
       "definition_ids": [],
       "input_provenance": "NOT_APPLICABLE",
