@@ -125,8 +125,14 @@ class CharacterMvpSeedTests(unittest.TestCase):
                 self.assertTrue(binding["selection_basis"].startswith("choice_basis."))
 
     def test_readiness_returns_exact_blocker_and_preserves_provisional_play(self):
-        self.assertTrue(evaluate_ready_pc(self.actors["fighter_ready"], self.resolved, self.actors["readiness_evidence"]["fighter"])["ready"])
-        self.assertTrue(evaluate_ready_pc(self.actors["sorcerer_ready"], self.resolved, self.actors["readiness_evidence"]["sorcerer"])["ready"])
+        expected_identity = {
+            "catalog_generation": self.manifest["catalog_generation"],
+            "ruleset_set_sha256": self.resolved["ruleset_set_sha256"],
+        }
+        fighter = evaluate_ready_pc(self.actors["fighter_ready"], self.resolved, self.actors["readiness_evidence"]["fighter"])
+        self.assertTrue(fighter["ready"], {"result": fighter, "expected_identity": expected_identity, "evidence": self.actors["readiness_evidence"]["fighter"]})
+        sorcerer = evaluate_ready_pc(self.actors["sorcerer_ready"], self.resolved, self.actors["readiness_evidence"]["sorcerer"])
+        self.assertTrue(sorcerer["ready"], {"result": sorcerer, "expected_identity": expected_identity, "evidence": self.actors["readiness_evidence"]["sorcerer"]})
         result = evaluate_ready_pc(self.actors["fighter_unresolved_style"], self.resolved, self.actors["readiness_evidence"]["fighter"])
         self.assertFalse(result["ready"])
         self.assertIn("advancement.fighter.level_1.style", result["blockers"])
