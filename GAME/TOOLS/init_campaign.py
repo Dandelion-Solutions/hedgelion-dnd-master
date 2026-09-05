@@ -84,8 +84,10 @@ def main() -> int:
         "\nruleset:\n"
         "  created_with:\n"
         "    ruleset_set_sha256: null\n"
+        "    ruleset_set_digest_generation: 1\n"
         "  current:\n"
         "    ruleset_set_sha256: null\n"
+        "    ruleset_set_digest_generation: 1\n"
         "    adopted_at: null"
     )
     new_engine = (
@@ -104,8 +106,10 @@ def main() -> int:
         "\nruleset:\n"
         "  created_with:\n"
         f"    ruleset_set_sha256: {yaml_string(args.ruleset_set_sha256.lower())}\n"
+        "    ruleset_set_digest_generation: 1\n"
         "  current:\n"
         f"    ruleset_set_sha256: {yaml_string(args.ruleset_set_sha256.lower())}\n"
+        "    ruleset_set_digest_generation: 1\n"
         f"    adopted_at: {yaml_string(args.created_at)}"
     )
     manifest = replace_once(manifest, old_engine, new_engine, manifest_path)
