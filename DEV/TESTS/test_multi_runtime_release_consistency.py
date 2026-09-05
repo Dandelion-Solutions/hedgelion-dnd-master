@@ -34,11 +34,13 @@ class MultiRuntimeReleaseConsistencyTests(unittest.TestCase):
         ):
             self.assertIn(token, checklist)
 
-    def test_new_campaign_template_and_storage_schema_are_both_v3(self):
+    def test_new_campaign_template_and_storage_schema_use_current_local_schemas(self):
         manifest = yaml.safe_load((GAME / "CAMPAIGN" / "MANIFEST.yaml").read_text(encoding="utf-8"))
         storage_schema = yaml.safe_load((GAME / "SCHEMA" / "dnd_storage.schema.yaml").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["schema_version"], 3)
-        self.assertEqual(storage_schema["schema_version"], 3)
+        self.assertEqual(manifest["schema_version"], 4)
+        self.assertEqual(manifest["campaign_contract"], {"created_with": 2, "current": 2})
+        self.assertEqual(storage_schema["schema_version"], 4)
+        self.assertEqual(storage_schema["fields"]["storage_format_generation"], "integer")
         self.assertIn("current", manifest["engine"])
         self.assertIn("baseline", storage_schema["fields"]["engine"])
 
