@@ -1,11 +1,11 @@
 schema_name: dnd_storage
-schema_version: 3
+schema_version: 4
 required:
-  - storage_format_version
+  - storage_format_generation
   - repository_role
   - engine
 fields:
-  storage_format_version: integer
+  storage_format_generation: integer
   repository_role: enum[campaign_storage]
   engine:
     baseline:
@@ -18,7 +18,7 @@ invariants:
   - file MUST exist at repository root on the campaign-storage repository default branch
   - file MUST NOT exist in the canonical public engine repository
   - exact root-file existence is sufficient for storage discovery before semantic validation
-  - storage_format_version 3 stores portable runtime identity and MUST NOT require a copied engine tree
+  - storage_format_generation 3 stores portable runtime identity and MUST NOT require a copied engine tree
   - engine.baseline identifies the storage-owner-approved default runtime for NEW campaigns only
   - engine.baseline MUST NOT select, mutate, or override an existing campaign runtime
   - source_commit_sha and package_sha256 record provenance of the accepted baseline artifact
