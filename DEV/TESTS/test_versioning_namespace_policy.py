@@ -191,6 +191,7 @@ class VersionNamespacePolicyTests(unittest.TestCase):
                 for token in forbidden:
                     if token in text:
                         bad.append(f"{rel}: {token}")
+        print("VERSION_LEGACY_HITS=" + json.dumps(bad, ensure_ascii=False))
         self.assertEqual(bad, [])
 
     def test_ruleset_manifest_uses_normalized_identity_axes(self):
