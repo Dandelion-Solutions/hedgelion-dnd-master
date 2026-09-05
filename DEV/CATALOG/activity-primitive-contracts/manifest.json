@@ -1,7 +1,7 @@
 {
   "schema_name": "hdm_activity_primitive_contracts",
-  "schema_version": 1,
-  "catalog_generation": "2.0.0",
+  "schema_version": 2,
+  "catalog_generation": 2,
   "owner": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md",
   "laws": {
     "compiler_policy": "EXACT_PRIMITIVE_ID_ARGUMENT_RESULT_AND_DEPENDENCY_CONTRACT",
