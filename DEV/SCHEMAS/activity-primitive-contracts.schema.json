@@ -7,8 +7,8 @@
   "required": ["schema_name", "schema_version", "catalog_generation", "owner", "laws", "value_contracts", "read_contracts", "primitive_validation_matrix", "contracts"],
   "properties": {
     "schema_name": {"const": "hdm_activity_primitive_contracts"},
-    "schema_version": {"const": 1},
-    "catalog_generation": {"type": "string", "minLength": 1},
+    "schema_version": {"const": 2},
+    "catalog_generation": {"const": 2},
     "owner": {"const": "DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md"},
     "laws": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string", "minLength": 1}},
     "value_contracts": {
@@ -156,4 +156,3 @@
     }
   }
 }
-
