@@ -53,7 +53,7 @@ Current pre-release structural rule:
 
 ```text
 EXISTING USER CAMPAIGNS REQUIRING COMPATIBILITY: NONE
-CURRENT v2.0.0-GENERATION STRUCTURES: NOT A COMPATIBILITY FREEZE
+CURRENT CATALOG GENERATION: 2 — NOT A COMPATIBILITY FREEZE
 STRUCTURAL/MACHINE-CONTRACT REPLACEMENT: AUTHORIZED WHEN ARCHITECTURE REQUIRES
 SHIPPED GAME SEMANTICS/PACKAGING/DEPLOYMENT: NOT GENERALLY AUTHORIZED BY THAT RULE
 ```
@@ -223,7 +223,7 @@ Post-realization closure record:
 
 S6D-08 stale identity prose reconciliation:
 
-- `DEV/ARCHITECTURE/HEALTH_EFFECTS_RECOVERY.md` now routes package/set identity exclusively through the canonical S6D-11 manifest -> package snapshot -> resolved lock -> `ruleset_set_sha256` chain and owns no aggregate content-set identity.
+- `DEV/ARCHITECTURE/HEALTH_EFFECTS_RECOVERY.md` now routes package/set identity exclusively through the canonical S6D-11 manifest -> package snapshot -> resolved lock -> typed `ruleset_set_digest_generation` + `ruleset_set_sha256` identity chain and owns no aggregate content-set identity.
 
 B′ carry-in authority remains:
 
