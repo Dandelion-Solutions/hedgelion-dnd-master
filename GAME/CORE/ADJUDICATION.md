@@ -1,6 +1,6 @@
 # Action Adjudication
 
-framework_module_version: 0.2.2
+framework_module_version: 1.0.2
 load_when: uncertain action, skill use, social check, environmental challenge, improvised ruling
 
 ## Resolve intent before mechanics
