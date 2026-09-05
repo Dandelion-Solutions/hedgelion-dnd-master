@@ -2,161 +2,137 @@
 
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
-This is the sole authority for the project's current global position, active work, next authorized unit and global gate. It does not decide architecture semantics, replace a roadmap, or absorb historical task-local execution provenance.
+This is the sole authority for the project's current global position, active work, next authorized unit and global gate. It does not replace semantic owners or the sequencing roadmap.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-19 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
+GLOBAL_STATE: R2.7 WP-19 STEPS 2–8 COMPLETE — CANONICALIZATION COMPLETE — MANDATORY SENIOR REVIEW
 
 CURRENT_WORKSTREAM: R2.7 WP-19 — Bootstrap / campaign creation / initial materialization
-CURRENT_SLICE: targeted PO-003 Step-1 integration complete; evidence basis expanded across Actor/knowledge/history/record-family/chronology/persistence/Story/context/retrospective/performance/test boundaries; mandatory whole-project Task-Brief critic rerun complete; package awaits mandatory Senior review
+CURRENT_SLICE: WP-19 Steps 2–8 complete; whole-project candidate critic resolved; final canonical architecture published; mandatory Senior review pending
 
-LAST_CLOSED_UNIT: R2.7 WP-18 / Story / continuity / Dramaturg planning — final Senior re-audit PASS against audited public basis 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
-NEXT_AUTHORIZED_UNIT: NONE — mandatory Senior review of the current WP-19 Step-1 package; Step 2 requires explicit Senior GO
-REQUIRED_GATE: mandatory Senior review. Do not begin Step 2, WP-20, implementation planning or substantive implementation.
+LAST_CLOSED_UNIT: R2.7 WP-18 / Story / continuity / Dramaturg planning — final Senior re-audit PASS
+NEXT_AUTHORIZED_UNIT: NONE — MANDATORY SENIOR REVIEW of canonical WP-19 architecture
+REQUIRED_GATE: mandatory Senior review. Do not begin WP-20, implementation planning or substantive implementation.
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief-critic.md
-KNOWN_BLOCKERS: NONE — current stop is the mandatory Senior gate, not a Product Owner decision blocker
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-canonicalization.md
+KNOWN_BLOCKERS: NONE — current stop is the mandatory Senior gate
 ```
 
-## WP-19 Step-1 current package
+## WP-19 current canonical package
 
-Current artifacts:
+Current implementation-facing owner:
 
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-source-manifest.md`;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief.md`;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief-critic.md`.
+- `DEV/docs/superpowers/specs/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-canonical-spec.md`.
 
-Applicable Product Owner authorities:
+Current Steps 2–8 provenance:
 
-- `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md` — PO-001/PO-002;
-- `DEV/docs/superpowers/specs/2026-09-05-hdm-historical-actor-decision-basis-owner-decision.md` — PO-003.
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-steps-2-8-source-manifest-refinement.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-research-architecture-draft.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-decision-brief.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-decision-resolution.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-candidate-specification.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-whole-project-adversarial-review.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-resolution-propagation.md`;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-canonicalization.md`.
 
-PO-003 arrival provenance remains historical:
+Step-1 Source Manifest / Task Brief / Task-Brief critic and PO-arrival/recovery checkpoints remain historical design provenance for the evidence they inspected.
 
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-po-003-arrival-integration-checkpoint.md`.
+Applicable Product Owner authorities remain:
 
-Current classification:
+- `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md`;
+- `DEV/docs/superpowers/specs/2026-09-05-hdm-historical-actor-decision-basis-owner-decision.md`;
+- immutable PO-003 latency/interactivity amendment in `DEV/PRODUCT_OWNER_INPUT.md`.
+
+## Selected architecture
+
+WP-19 uses a composition-first design over existing owners:
 
 ```text
-PO003_CLASSIFICATION:                     NEW CONSUMER + EXTENSION
-CLOSED_ARCHITECTURE_MATERIAL_INSUFFICIENCY: NO
-CURRENT_MACHINE_TEST_REALIZATION_GAP:     YES
-HISTORICAL_EVIDENCE_OWNER:                Step-4 LOG / runtime.semantic_event
-DURABLE_RECORD_FAMILY:                    existing WP-10 history/delivery SemanticEvent family
+explicit campaign/New Game selection
+ -> exact creation envelope
+ -> exact generator
+ -> one from-scratch blank-scaffold publication
+ -> initializing
+ -> progressive PROVISIONAL_IDENTITY / locally-sufficient play
+ -> READY_PC
+ -> PLAY_READY
+ -> active iff READY_PC + PLAY_READY
 ```
 
-Owner conclusion:
+Adjacent Product Owner consumers are canonicalized as:
 
-- R2.2 remains the current source-Actor non-epistemic cognition/intent/directed-relationship owner;
-- Step-4 `world.knowledge` remains the current epistemic-stance owner;
-- Step-4 `LOG/runtime.semantic_event` already owns compact durable semantic history / causal evidence and is the correct durable historical-evidence boundary for PO-003;
-- WP-10 already allocates the needed history record family;
-- WP-15 chronology remains supporting typed order/time/causal evidence, not motive/cognition authority;
-- WP-13 persistence/publication can carry required history through normal native batching;
-- R2.1/WP-18 Story remains noncanonical retrospective projection/orientation, not historical motive authority;
-- R2.3/R2.4/WP-08/WP-09 preserve bounded role-context eligibility and single-context logical execution.
+- PO-001: authorized active-player retrospective remains ordinary Master gameplay under bounded context/disclosure rules;
+- PO-002: save success -> clear selected gameplay session context -> same-chat campaign menu, with no implicit pause/leave/control/global-stop side effects;
+- PO-003: bounded event-time Actor decision basis extends existing Step-4 `LOG/runtime.semantic_event` / WP-10 SemanticEvent history family; no new psychology/current-state owner.
 
-The current exact event schema/test realization does not directly prove the new decision-basis obligation. This is a downstream realization/verification gap under the existing owner; it does not require a new semantic owner or upstream architecture reopen.
-
-## PO-003 performance boundary
-
-The Step-1 candidate baseline is:
+## PO-003 performance law
 
 ```text
-ADDITIONAL_SEQUENTIAL_LLM_CALLS:                 0
-ADDITIONAL_SERIAL_REMOTE_TOOL_READS_FOR_CAPTURE: 0
-ADDITIONAL_SEPARATE_REMOTE_PUBLICATIONS:         0
-ADDITIONAL_CONTEXT/OUTPUT:                       bounded typed material then-values/source refs only
-IRRELEVANT_TURN_WORK:                             0
+ADDITIONAL_SEQUENTIAL_LLM_CALLS_SOLELY_FOR_CAPTURE: 0
+ADDITIONAL_SERIAL_REMOTE_TOOL_READS_WHEN_T0_DATA_ALREADY_ADMITTED: 0
+ADDITIONAL_SEPARATE_REMOTE_PUBLICATIONS_SOLELY_FOR_BASIS: 0
+IRRELEVANT_TURN_BASIS_WORK: 0
+ADDITIONAL_CONTEXT_OUTPUT: bounded typed material basis only
 ```
 
-A qualifying material Actor decision should retain its bounded event-time basis as part of already-required Actor/Master decision work and ordinary SemanticEvent/native persistence batching. Full Actor snapshots, per-turn psychology history, later reconstruction from mutable current state and a dedicated post-decision LLM rationale pass are not baseline directions.
+Any future evidence that correctness requires an extra serial LLM/tool round-trip on ordinary gameplay critical path is a material architecture/performance issue and must not be silently accepted.
 
-If future evidence shows that correctness truly requires an extra serial LLM/tool round-trip on the critical gameplay path, that must be treated as a material architecture/performance problem and compared explicitly; it is not silently assumed.
-
-## Direct downstream acceptance obligation
-
-Later authorized realization must directly prove:
+## Step-6 / Step-7 result
 
 ```text
-T0: NPC decision D depends on material eligible K0/R0/G0/... current basis
-    -> bounded event-time basis is retained
+STEP6_BLOCKING:    0
+STEP6_SIGNIFICANT: 7
+STEP6_MINOR:       1
 
-T1: current knowledge/relationship/objective/etc. legitimately changes to K1/R1/G1/...
+F19-S6-01: CLOSED — exact ruleset identity canonical / runtime prose realization deferred
+F19-S6-02: CLOSED — stale BRANCH_MODEL current projection repaired
+F19-S6-03: CLOSED — progressive readiness canon / stale runtime-schema-test vocabulary deferred
+F19-S6-04: CLOSED — PO-001 architecture complete / direct runtime-test realization deferred
+F19-S6-05: CLOSED — PO-002 architecture complete / direct runtime-test realization deferred
+F19-S6-06: CLOSED — PO-003 logical SemanticEvent contract complete / physical schema-index realization deferred
+F19-S6-07: CLOSED — zero-extra-serial law complete / direct performance verification deferred
+F19-S6-08: MINOR — stale scenario maintenance routed downstream
 
-retrospective:
-    -> authorized Master/Commentator uses T0 basis
-    -> does not substitute T1 current state
-    -> preserves current player/PC/disclosure/no-spoiler eligibility
-    -> does not invent exact motive when T0 evidence is insufficient
+UNRESOLVED_BLOCKING:    0
+UNRESOLVED_SIGNIFICANT: 0
 ```
 
-It must also prove no extra serial model call solely for capture, no extra serial remote read solely to snapshot already-loaded state, no separate remote publication solely for the basis, and no unrelated-turn bookkeeping.
+## Deferred realization — not authorized work
 
-Current Actor, regression, performance/context/latency, persistence and chronology tests are supporting evidence only; no current direct case proves the entire sequence.
+After final Senior approval and normal implementation-planning/execution gates, realization must align:
 
-## Current gate state
+- creation runtime prose with `ruleset_set_sha256` propagation;
+- stale hard `pre-live/true-live` runtime/schema/test vocabulary;
+- PO-001 runtime consumer/direct acceptance;
+- PO-002 save/session/menu direct composition/acceptance;
+- PO-003 SemanticEvent schema/validator/minimum derived discovery support;
+- direct PO-003 T0->T1 retrospective and zero-extra-serial performance verification;
+- previously classified stale scenario expectations.
+
+These are not current TODOs for this architecture gate and do not activate implementation planning.
+
+## Current terminal state
 
 ```text
-WP19_STEP1_COMPLETE:                       YES
-WP19_STEP1_PO_003_INTEGRATION_REQUIRED:    NO
-WP19_STEP1_PO_003_INTEGRATION_COMPLETE:    YES
-WP19_STEP1_WHOLE_PROJECT_CRITIC_RERUN_REQUIRED: NO
-WP19_STEP1_WHOLE_PROJECT_CRITIC_RERUN_COMPLETE: YES
-WP19_STEP1_SENIOR_REVIEW:                  PENDING
+WP19_STEP1: COMPLETE / SENIOR GO RECEIVED
+WP19_STEPS_2_8: COMPLETE
+WP19_CANONICALIZATION: COMPLETE
 
-PREVIOUS_F19_S1_FINDINGS:                  RETAINED / CLOSED
-SR19_01:                                   RETAINED / CLOSED
-PREVIOUS_F19_PO_FINDINGS:                  RETAINED / CLOSED
-PO003_RERUN_BLOCKING:                      1
-PO003_RERUN_SIGNIFICANT:                   6
-PO003_RERUN_MINOR:                         0
-UNRESOLVED_BLOCKING:                       0
-UNRESOLVED_SIGNIFICANT:                    0
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
 
-HUMAN_DECISION_REQUIRED:                   NO
-NEEDS_PO:                                  NONE
-UPSTREAM_REOPEN_REQUIRED:                  NO
-ARCHITECTURE_REOPENED:                     NO
+HUMAN_DECISION_REQUIRED: NO
+NEEDS_PO: NONE
+UPSTREAM_REOPEN_REQUIRED: NO
+ARCHITECTURE_REOPENED: NO
 
-WP19_STEP2_AUTHORIZED:                     NO
-STEP2_STARTED:                             NO
-WP20_STARTED:                              NO
-IMPLEMENTATION_PLANNING_STARTED:           NO
-SUBSTANTIVE_IMPLEMENTATION_STARTED:        NO
+WP20_STARTED: NO
+IMPLEMENTATION_PLANNING_STARTED: NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
+REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
+
+NEXT_AUTHORIZED_UNIT: NONE — MANDATORY SENIOR REVIEW
 ```
 
-No Senior review was performed by this Step-1 integration unit and no Senior GO is implied.
-
-## Historical WP-19 checkpoints
-
-Historical pre-PO and PO-001/PO-002 checkpoints remain valid provenance for the evidence they actually inspected. They are not the current Senior-review basis after PO-003.
-
-Key historical bases:
-
-```text
-WP19_STEP1_EXECUTION_BASIS_SHA:      5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053
-WP19_SENIOR_RECOVERY_BASIS_SHA:      df5fe6441c2b85e9cbffcb6f83caa885501da794
-PO001_PO002_INTEGRATION_BASIS_SHA:   4b7411b10b30cc191141826aacb3b0c88e7eeb37
-PO003_ARRIVAL_ROUTING_BASIS_SHA:     341cc592fbc53247d0d7f8d38eb07ec4297cd45d
-```
-
-The earlier original/SR19-01/PO-001/PO-002 findings remain retained and closed as recorded in the current Source Manifest and critic. PO-003 does not retroactively alter what those historical checkpoints knew.
-
-## Closed upstream continuity
-
-- WP-16 — CLOSED / final Senior audit PASS.
-- WP-17 — CLOSED / final Senior re-audit PASS.
-- WP-18 — CLOSED / final Senior re-audit PASS.
-- No upstream architecture has been reopened by this unit.
-
-## Scope boundary
-
-- `DEV/CURRENT_PROGRESS.md` owns actual global state/gate.
-- `DEV/PROJECT_MAP.md` and indexes are routing aids, not semantic owners.
-- Product Owner ledger is intent/routing evidence; accepted owner decisions carry canonical semantics.
-- WP-19 is **STEP 1 COMPLETE — MANDATORY SENIOR REVIEW**.
-- Step 2 is unauthorized/unstarted.
-- WP-20 is unstarted.
-- Implementation planning and substantive implementation are unauthorized/unstarted.
+No final Senior PASS or WP-20 authorization is implied.
