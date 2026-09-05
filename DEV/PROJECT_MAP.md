@@ -2,7 +2,7 @@
 
 Status: **NON-NORMATIVE INTERNAL NAVIGATION INDEX**
 
-Last structural inventory: 2026-08-29
+Last structural inventory: 2026-09-05
 
 ## 1. Purpose
 
@@ -24,6 +24,7 @@ current remote ref/state
 -> DEV/ARCHITECTURE/DESIGN_PROCESS.md
 -> DEV/PROJECT_MAP.md
 -> DEV/CURRENT_PROGRESS.md
+-> applicable active/routed DEV/PRODUCT_OWNER_INPUT.md entries
 -> DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md when sequencing/scope detail matters
 -> concern route below
 -> task-specific Source Manifest
@@ -33,12 +34,15 @@ current remote ref/state
 
 Do not preload the whole repository merely because it is large. Use this map to construct the relevant dependency subgraph and then inspect that subgraph deeply enough for the claims being made.
 
-**HARD CRITIC ROUTE:** both the Step-1 Task-Brief critic and the Step-6 adversarial/candidate critic reconstruct the task-specific direct-and-indirect dependency subgraph from this map and inspect actual owners, accepted/superseding decisions, schemas, tests and consumers. A module-local critique is incomplete.
+Product Owner input is also task-scoped. Use `DEV/PRODUCT_OWNER_INPUT.md` and its active routing index only for entries whose routes, owners or activation triggers intersect the current task. `DEV/ARCHITECTURE/PRODUCT_OWNER_INPUT_PROCESS.md` governs capture/routing. The ledger preserves Product Owner intent; accepted owners/specifications still control architecture semantics.
+
+**HARD CRITIC ROUTE:** both the Step-1 Task-Brief critic and the Step-6 adversarial/candidate critic reconstruct the task-specific direct-and-indirect dependency subgraph from this map and inspect actual owners, accepted/superseding decisions, applicable Product Owner inputs, schemas, tests and consumers. A module-local critique is incomplete.
 
 ### 1.2 Source-role legend
 
 - **CANONICAL / OWNING** — current semantic authority.
 - **CANONICAL AMENDMENT / OWNER DECISION** — accepted final change/decision that may supersede earlier wording.
+- **PRODUCT OWNER INTENT / REQUIREMENT INPUT** — preserved Product Owner intent and routing evidence; not architecture authority until incorporated by an owning decision/specification.
 - **DERIVATIVE LOCATOR / INDEX** — navigation/integration aid only.
 - **RESEARCH INPUT** — durable evidence/findings/experiments/ideas; not architecture authority by retention alone.
 - **DESIGN PROVENANCE** — process/history explaining how a result was reached; not default implementation-planning authority.
@@ -67,6 +71,7 @@ Default implementation-planning discovery is:
 
 ```text
 DEV/CURRENT_PROGRESS.md
+-> applicable active/routed DEV/PRODUCT_OWNER_INPUT.md entries
 -> DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md when sequencing/scope detail matters
 -> current durable DEV/ARCHITECTURE owners
 -> final accepted DEV/docs/superpowers/specs/
@@ -97,7 +102,8 @@ repository root
 
 | Concern | Primary surfaces | Frequent neighbors |
 |---|---|---|
-| Architecture process / current stage | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, `DEV/CURRENT_PROGRESS.md` | `NEAR_TERM_ROADMAP.md` for sequencing/scope, `CANONICAL_ARCHITECTURE_INDEX.md`, final accepted `specs/`, task-specific design/research only when required |
+| Architecture process / current stage | `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/PRODUCT_OWNER_INPUT_PROCESS.md`, `DEV/PRODUCT_OWNER_INPUT.md`, `DEV/CURRENT_PROGRESS.md` | `NEAR_TERM_ROADMAP.md` for sequencing/scope, `CANONICAL_ARCHITECTURE_INDEX.md`, final accepted `specs/`, task-specific design/research only when required |
+| Product Owner requirements / cross-stage ideas | `DEV/PRODUCT_OWNER_INPUT.md`, `DEV/ARCHITECTURE/PRODUCT_OWNER_INPUT_PROCESS.md` | current/future owning WPs, accepted owner decisions/specs, `CURRENT_PROGRESS.md` only when current gate actually changes |
 | Implementation execution | `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`, approved spec + implementation plan | affected architecture owners, tests, machine contracts, execution-status file |
 | Integrated accepted architecture lookup | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | actual owning architecture documents + final accepted `specs/` + current roadmap |
 | Architecture research / Round-2 idea pool | `DEV/docs/superpowers/research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` | current roadmap, accepted owners/decisions, applicable runtime/schema/test owners |
@@ -141,6 +147,8 @@ The table is a discovery aid. Correctness-sensitive work follows actual owners a
 
 - `DEV/DESIGN_PROCESS.md` — canonical generic architecture/deep-work process.
 - `DEV/ARCHITECTURE/DESIGN_PROCESS.md` — HDM-specific adapter/review gates.
+- `DEV/ARCHITECTURE/PRODUCT_OWNER_INPUT_PROCESS.md` — HDM process addendum for durable Product Owner input capture, multi-stage routing, trigger/defer handling and hard `NEEDS_PO` semantics.
+- `DEV/PRODUCT_OWNER_INPUT.md` — durable Product Owner intent/routing ledger; authoritative for preserved Product Owner input, not accepted architecture.
 - `DEV/DEVELOPMENT_EXECUTION_PROCESS.md` — canonical implementation-execution process after approved design.
 - `DEV/AGENT_RUNTIMES/` — environment-specific transport and verification overlays; read the applicable one with `AGENTS.md`.
 - `DEV/ENGINE_DEVELOPMENT.yaml` — development/release metadata.
@@ -346,13 +354,14 @@ For substantive repository work:
 1. inspect current remote ref/tree;
 2. use this map to identify likely owners and neighboring dependency surfaces;
 3. read `DEV/CURRENT_PROGRESS.md`; read the roadmap only when sequencing/scope detail matters;
-4. build the task-specific Source Manifest;
-5. use derivative indexes only to locate owning accepted sources;
-6. read actual owners/contracts/schemas/tests and, where needed, research/design provenance to the depth required by the claim;
-7. search concrete symbols/paths for consumers and stale references after structural discovery;
-8. treat zero-result keyword search as non-evidence of absence until the relevant tree/local indexes are checked;
-9. run the evidence/synthesis completeness gate before roadmap/specification/coverage claims;
-10. for either architecture critic, record direct and indirect owners/routes checked;
-11. update this map when a responsibility/primary-entry/dependency/taxonomy change would make future discovery materially misleading.
+4. inspect the `DEV/PRODUCT_OWNER_INPUT.md` active routing index and full applicable entries whose routes/triggers intersect the current task;
+5. build the task-specific Source Manifest, including applicable Product Owner inputs as requirement evidence distinct from architecture authority;
+6. use derivative indexes only to locate owning accepted sources;
+7. read actual owners/contracts/schemas/tests and, where needed, research/design provenance to the depth required by the claim;
+8. search concrete symbols/paths for consumers and stale references after structural discovery;
+9. treat zero-result keyword search as non-evidence of absence until the relevant tree/local indexes are checked;
+10. run the evidence/synthesis completeness gate before roadmap/specification/coverage claims;
+11. for either architecture critic, record direct and indirect owners/routes checked, including applicable Product Owner routes;
+12. update this map when a responsibility/primary-entry/dependency/taxonomy change would make future discovery materially misleading.
 
-A file move/addition/deletion inside an already covered homogeneous family does not require a per-file map edit. Do not place a correctness rule only in this map; put it in its owning contract/spec/schema and link/summarize here.
+A file move/addition/deletion inside an already covered homogeneous family does not require a per-file map edit. Do not place a correctness rule only in this map; put it in its owning contract/spec/schema/process and link/summarize here.
