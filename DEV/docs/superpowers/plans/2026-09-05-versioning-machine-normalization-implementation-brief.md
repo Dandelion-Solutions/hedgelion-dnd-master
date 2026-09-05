@@ -272,7 +272,7 @@ Add failing tests that require at minimum:
 2. shared release manifest projections agree.
 3. all versioned CORE modules use `framework_module_version`.
 4. no current CORE module declares engine line `0.9` or a future line above current `1.0`.
-5. known corrected module versions resolve to the values in section 7 below.
+5. known corrected module versions resolve to the values in Task 3.3 below.
 6. catalog coordinated generation is integer `2` everywhere current and coordinated.
 7. machine catalog fields use `catalog_generation`, not `catalog_version`, when they represent the coordinated generation.
 8. ruleset package uses `package_revision`, `compatibility_family`, `compatibility_generation`; current legacy `package_version` and version-bearing `compatibility_id` are rejected.
@@ -333,6 +333,26 @@ launcher_revision: 19
 ```
 
 and update all current consumers/tests. The value remains `19`; field renaming alone does not increment it.
+
+## Expected DEV bookkeeping revision bumps
+
+This implementation materially changes several concerns already tracked by `DEV/ENGINE_DEVELOPMENT.yaml`. In the same coherent normalization, expected bookkeeping changes are:
+
+```text
+storage_format_revision:     4 -> 5
+persistence_revision:        8 -> 9
+campaign_identity_revision:  2 -> 3
+consistency_audit_revision:  5 -> 6
+```
+
+Rationale:
+
+- storage format contract/naming/schema changes materially;
+- persistent campaign compatibility projections and affected serialized schemas change materially;
+- campaign MANIFEST compatibility identity gains explicit created/current contract-generation provenance;
+- maintenance audit gains a new version-taxonomy enforcement surface.
+
+Other current DEV `*_revision` counters remain unchanged unless the execution census proves that their own named concern is materially changed by this task. Do not bump unrelated counters merely because files were touched. If an additional counter is bumped, record the exact owner/change justification in the completion report.
 
 ---
 
@@ -489,7 +509,7 @@ dnd_storage.schema_version: 3 -> 4
 
 Update template/current marker examples accordingly.
 
-`DEV/ENGINE_DEVELOPMENT.yaml` development bookkeeping field `storage_format_revision` remains an independent integer and is **not** renamed to generation or tied to engine version.
+`DEV/ENGINE_DEVELOPMENT.yaml` development bookkeeping field `storage_format_revision` remains an independent integer and is **not** renamed to generation or tied to engine version; Task 2 bumps it once because this implementation materially changes the storage-format concern.
 
 No pre-release storage migration script is required. Current obsolete marker shape is recreated.
 
@@ -879,7 +899,16 @@ schema_version: 3
 ruleset_set_digest_generation: 1
 ```
 
-Independent DEV `*_revision` counters remain integers with their current values unless the owning concern itself materially changes as part of this implementation and its established bookkeeping law requires a bump.
+Expected DEV bookkeeping after this implementation, unless the execution census proves an additional named concern changed materially:
+
+```text
+storage_format_revision:     5
+persistence_revision:        9
+campaign_identity_revision:  3
+consistency_audit_revision:  6
+```
+
+All other DEV `*_revision` values remain at their current values by default.
 
 Dynamic state/currentness revisions remain untouched except for schema wiring mechanically required to preserve their existing semantics.
 
@@ -893,7 +922,7 @@ This implementation must preserve the approved policy rather than inventing migr
 | --- | --- | --- |
 | Engine release | keep `1.0-alpha` | engine number alone never proves compatibility |
 | CORE module version | correct metadata/history only | no campaign migration; module consumed inside exact runtime package |
-| DEV `*_revision` | retain independent integer | no migration semantics |
+| DEV `*_revision` | retain independent integer; bump only named concerns materially changed by this implementation | no migration semantics |
 | Persistent family schema | bump only affected local serialized contract | explicit reader support; breaking persisted change needs explicit migration edge |
 | Campaign contract generation | establish current generation `2` | different released generations require explicit campaign migration/adoption or unsupported |
 | Storage format generation | rename current generation `3`; storage schema becomes `4` | explicit storage migration edge; independent of campaign migration |
@@ -917,6 +946,7 @@ Return a concise evidence-backed report containing:
 - changed-file count grouped by `GAME`, `DEV`, root infrastructure/docs;
 - final version namespace census;
 - complete CORE old -> new version table with historical justification for every changed module;
+- DEV bookkeeping old -> new revision table and justification for every bumped counter;
 - local schema-version bumps and why each bumped;
 - catalog field/value normalization summary;
 - ruleset package/lock/protocol old -> new field/value summary;
