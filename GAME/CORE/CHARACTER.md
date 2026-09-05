@@ -1,6 +1,6 @@
 # Character Creation and Onboarding
 
-framework_module_version: 0.6.0
+framework_module_version: 1.0.1
 load_when: new campaign, new PC, replacement PC, level-up choices requiring onboarding
 
 ## Goal
