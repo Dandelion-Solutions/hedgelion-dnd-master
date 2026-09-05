@@ -1,15 +1,15 @@
 # HDM Ruleset Package and Resolved Catalog Identity
 
-Status: **CANONICAL S6D-01 ARCHITECTURE — VERSIONING REPRESENTATION AMENDED 2026-09-05**
+Status: **CANONICAL S6D-01 ARCHITECTURE — VERSIONING REPRESENTATION AMENDED AND REALIZED 2026-09-05**
 
 Canonicalized: 2026-08-25
 
 Versioning representation amendment:
 
-- `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md` supersedes the pre-release representation of ruleset package update/compatibility fields and digest-domain generation spelling;
+- `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md` supersedes the original pre-release representation of ruleset package update/compatibility fields and digest-domain generation spelling;
 - the identity/authority/content-addressing semantics in this document remain canonical;
-- target representation separates `package_revision`, `compatibility_family`, `compatibility_generation`, integer `catalog_generation`, and typed digest/canonicalization generation;
-- current pre-release machine artifacts that still use `package_version`, version-bearing `compatibility_id`, `catalog_generation: 2.0.0` or `_V1` domain literals are realization debt and do not create compatibility obligations.
+- the current machine representation separates `package_revision`, `compatibility_family`, `compatibility_generation`, integer `catalog_generation`, and typed digest/canonicalization generation;
+- pre-normalization aliases and hidden digest-generation spellings are not compatibility surfaces and are rejected by current machine validation.
 
 Design chain:
 
@@ -64,7 +64,7 @@ content_files[]
 
 `compatibility_family` is the stable semantic family identity. `compatibility_generation` is the integer semantic compatibility line inside that family.
 
-The current pre-release machine manifest still carries `package_version` and version-bearing `compatibility_id`; the later normalization pass replaces those fields without preserving their legacy spelling.
+The current built-in pre-release machine manifest uses this normalized representation directly; no compatibility alias is retained for the earlier pre-normalization spelling.
 
 `content_files[]` is an explicit set of normalized package-relative semantic files. Baseline S6D-01 does not admit wildcard/root expansion, symlinks, external paths or filesystem-enumeration semantics.
 
@@ -80,11 +80,25 @@ One exact, dependency-closed, cycle-free set of snapshots satisfying engine/cata
 
 The resolved-set exact identity is content-addressed and generation-aware. A bare hexadecimal digest is meaningful only under the digest/canonicalization contract that produced it.
 
-Current field spelling `ruleset_set_sha256` remains pre-release machine realization; future released persistence MUST retain enough typed generation/context to interpret the exact identity across digest-contract evolution.
+Current escaping representation carries the sibling fields:
+
+```text
+ruleset_set_digest_generation
+ruleset_set_sha256
+```
+
+Released persistence MUST retain enough typed generation/context to interpret the exact identity across digest-contract evolution.
 
 ### catalog_context_fingerprint
 
-Derived identity of engine capability, exact resolved ruleset set and exact owner-local campaign/session definition frontiers. It is not sufficient reconstruction authority by itself and likewise remains generation-aware if its canonicalization contract evolves.
+Derived identity of engine capability, exact resolved ruleset set and exact owner-local campaign/session definition frontiers. It is not sufficient reconstruction authority by itself.
+
+Any escaping/persisted occurrence carries the sibling generation context:
+
+```text
+catalog_context_fingerprint_generation
+catalog_context_fingerprint
+```
 
 ## 3. Non-equivalent axes
 
@@ -109,7 +123,7 @@ catalog_context_fingerprint            derived composed-context identity
 
 ### Package digest
 
-Package snapshot exact identity is SHA-256 over one canonical payload under an explicit package-snapshot digest contract generation.
+Package snapshot exact identity is SHA-256 over one canonical payload under explicit package-snapshot digest contract generation `1`.
 
 The payload contains fixed member names and the sorted sequence of:
 
@@ -122,15 +136,19 @@ The manifest bytes are one declared content file and therefore participate. The 
 
 Canonical JSON has no insignificant whitespace; object member ordering is fixed by the owning schema/serializer. Paths are unique, traversal-free, normalized UTF-8 package-relative paths and are ordered by Unicode code point. Timestamps, permissions, archive metadata, YAML presentation order and filesystem enumeration order do not participate.
 
-The current pre-release implementation spells its domain generation inside an `_V1` byte literal. That spelling is superseded as architecture: digest/canonicalization generation must be explicit/typed under the canonical versioning policy and may be implied by an enclosing schema only when unambiguous.
+The implementation exposes the digest generation through named constants and generation-qualified domain separators rather than inferring it from an opaque suffix. Package-snapshot generation `1` uses the `HDM_RULESET_PACKAGE_SNAPSHOT/1` domain.
 
 ### Resolved-set digest
 
-The resolved-set exact identity is SHA-256 over the canonical resolved lock under an explicit resolved-set digest contract generation.
+The resolved-set exact identity is SHA-256 over the canonical resolved lock under explicit resolved-set digest contract generation `1`.
 
 The lock is sorted by `package_id`. Each entry contains at least package ID/revision, compatibility family/generation, exact content identity, catalog generation and exact dependency `package_id -> exact content identity` edges. Discovery/input order has no meaning.
 
+Resolved-set generation `1` uses the `HDM_RESOLVED_RULESET_SET/1` domain and is serialized with `ruleset_set_digest_generation: 1` wherever the exact set identity escapes its enclosing producer.
+
 A digest generated under a different digest-contract generation is a different exact-identity domain and is not directly compared as if both values came from one canonicalization contract.
+
+The same explicit generation law applies to semantic-entry, compatibility-evidence, engine-contract-inventory and conformance-attestation domains.
 
 ## 5. Admission and namespace laws
 
@@ -146,7 +164,7 @@ A digest generated under a different digest-contract generation is a different e
 
 ### Runtime package
 
-Builder-generated runtime package provenance SHALL advertise the exact embedded resolved ruleset lock and exact typed resolved-set identity. The runtime ZIP SHA-256 remains its separate external artifact identity over complete archive bytes.
+Builder-generated runtime package provenance SHALL advertise the exact embedded resolved ruleset lock and exact typed resolved-set identity. `RUNTIME_PACKAGE.yaml` schema `3` carries `ruleset_set_digest_generation` beside `ruleset_set_sha256`. The runtime ZIP SHA-256 remains its separate external artifact identity over complete archive bytes.
 
 ### Campaign
 
@@ -157,9 +175,11 @@ Conceptually:
 ```text
 ruleset:
   created_with:
-    exact resolved-set identity + required identity-generation context
+    ruleset_set_digest_generation
+    ruleset_set_sha256
   current:
-    exact resolved-set identity + required identity-generation context
+    ruleset_set_digest_generation
+    ruleset_set_sha256
 ```
 
 Machine realization may add bounded diagnostic package IDs only when a proved consumer needs them. `ruleset.created_with` is immutable. `ruleset.current` changes only through authorized coherent adoption/refresh. Engine and ruleset identities may update in one transaction but neither owns the other.
@@ -167,6 +187,8 @@ Machine realization may add bounded diagnostic package IDs only when a proved co
 ### Accepted execution
 
 Accepted Resolution and Continuation generations SHALL retain the exact resolved ruleset-set identity and catalog-context fingerprint with enough typed generation/context to interpret them across released digest-contract evolution.
+
+The current serialized contracts require `ruleset_set_digest_generation` and `catalog_context_fingerprint_generation` beside their corresponding exact identities.
 
 Owner-local dependency refs retain any campaign/session definitions required for retry/resume. Ordinary world/definition records do not repeat package identity solely for reconstruction.
 
@@ -240,7 +262,7 @@ S6D-02/S6D-11 may admit exact machine failure IDs or map them to an existing typ
 
 S6D-01 does not create the actual seed package before S6D-02 establishes its contents/namespaces, and it does not claim executable closure before S6D-11.
 
-Current machine realization predates the 2026-09-05 versioning-representation amendment. The later separately authorized normalization pass must update manifest/lock/result schemas, field names, typed digest-generation context and all affected hashes/fixtures atomically enough for audit/build to reject mixed representations.
+The 2026-09-05 normalization pass realized the versioning amendment across manifest/lock/result schemas, field names, typed digest-generation context and all affected current pre-release hashes/fixtures. Current build/audit reject mixed pre-normalization representations rather than preserving compatibility aliases.
 
 ## 12. Required S6D-11 verification semantics retained
 
@@ -262,12 +284,12 @@ At minimum, the realized architecture continues to require:
 14. absence of per-record package-version proliferation;
 15. identical-owner reconstruction and incomplete-evidence rejection.
 
-The versioning normalization pass must preserve these semantics while replacing obsolete pre-release field/value spelling.
+Versioning normalization preserves these semantics while using the current namespace and generation representation.
 
 ## 13. S6D-11 machine realization status
 
-S6D-11 originally closed this owner through `RULESET_PACKAGE_MACHINE_CLOSURE.md`, strict package manifest/lock/result schemas and `validate_ruleset_package_closure.py`.
+S6D-11 closes this owner through `RULESET_PACKAGE_MACHINE_CLOSURE.md`, strict package manifest/lock/result schemas and `validate_ruleset_package_closure.py`.
 
-Those machine artifacts are now **semantically accepted but version-representation stale** relative to the 2026-09-05 canonical amendment. Their current pre-release `package_version`, version-bearing `compatibility_id`, `2.0.0` catalog spelling and `_V1` digest-domain representation are not future architecture authority.
+Those machine artifacts are version-representation current relative to the 2026-09-05 canonical amendment: built-in manifest schema `2`, resolved lock schema `2`, comparison/inventory/attestation schema `2`, integer catalog generation, explicit package revision plus compatibility family/generation, and typed digest-generation context for escaping exact identities.
 
 The accepted compatibility principle remains: a changed same-engine-version set is eligible for silent forward use only after independent adopted/candidate loading and a COMPLETE monotonic canonical semantic-entry comparison returns compatible/additive. Every adopted package line, namespace, exact dependency and definition/capability/active primitive/selector/accessor/fact/value/schema entry must remain present with identical kind and semantic hash under the applicable typed digest contract. Candidate-only entries must independently validate and avoid collisions. Incompatible or insufficient evidence prevents context use. Ancestry, labels and standalone load success are not this proof.
