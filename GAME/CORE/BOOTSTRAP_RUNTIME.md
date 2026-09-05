@@ -1,6 +1,6 @@
 # Runtime Bootstrap
 
-runtime_bootstrap_version: 0.8.8
+framework_module_version: 0.8.8
 storage_marker: DND_STORAGE.yaml
 load_when: project/campaign bootstrap, storage discovery, campaign selection, exact runtime routing
 
@@ -138,10 +138,10 @@ Do not use global code search or broad repository scans for storage discovery.
 
 ## Storage metadata
 
-New storage uses marker v3:
+New storage uses storage format generation 3:
 
 ```yaml
-storage_format_version: 3
+storage_format_generation: 3
 repository_role: campaign_storage
 engine:
   baseline:
