@@ -80,7 +80,7 @@ This table is an agent-maintained navigation index only. The full entry controls
 |---|---|---|---|---|---|
 | `PO-001` | REQUIREMENT | INCORPORATED | Accepted semantic owner + current WP-19 Step-1 framing incorporated; exact runtime/test realization explicitly deferred to later authorized gates | accepted gameplay/navigation owner decision; WP-19; ordinary gameplay history consumer; later tests/realization | NONE |
 | `PO-002` | REQUIREMENT | INCORPORATED | Accepted semantic owner + current WP-19 Step-1 framing incorporated; exact runtime/test realization explicitly deferred to later authorized gates | accepted gameplay/navigation owner decision; WP-19; save/session/bootstrap/menu/multiplayer consumers; later tests/realization | NONE |
-| `PO-003` | REQUIREMENT | PARTIALLY_INCORPORATED | Product semantics formalized; new event-time historical decision-basis requirement materially affects active WP-19 retrospective framing and invalidates the prior Step-1 review basis | historical Actor decision-basis owner decision; WP-19; R2.2/Step-4/history-event reconciliation; R2.1/WP-18 retrospective consumers; durability/context/test routes | NONE |
+| `PO-003` | REQUIREMENT | INCORPORATED | Accepted semantic owner + PO-003-expanded WP-19 Step-1 framing/critic incorporated; latency/interactivity amendment preserved; exact runtime/schema/test realization explicitly deferred to authorized downstream gates | historical Actor decision-basis owner decision; WP-19; Step-4 LOG/SemanticEvent extension; R2.2/world.knowledge current-owner boundaries; retrospective consumers; durability/context/performance/test realization | NONE |
 
 ---
 
@@ -157,15 +157,15 @@ Existing information/continuity owners remain controlling. The delta is an expli
 | Route | State | Trigger / obligation | Evidence / current owner |
 |---|---|---|---|
 | Product semantics formalization | INCORPORATED | Immediate | `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md` |
-| R2.7 WP-19 Step-1 framing | INCORPORATED | Complete on PO-001/PO-002 basis; PO-003 now requires another targeted expansion before current Senior gate can resume | WP-19 Source Manifest + Architecture Task Brief + prior rerun critic + integration checkpoint |
-| Existing Story/continuity/information owners | INCORPORATED AS INPUT / NO REOPEN | Reopen only on demonstrated contradiction/material insufficiency; none found for PO-001 alone | Step-4 truth/knowledge/disclosure/role-context; Step-5.12; R2.1; R2.3; R2.4; final WP-18 Story/continuity owner |
+| R2.7 WP-19 Step-1 framing | INCORPORATED | PO-003 targeted expansion and critic rerun are now complete; current package awaits mandatory Senior review | current WP-19 Source Manifest + Architecture Task Brief + Task-Brief critic |
+| Existing Story/continuity/information owners | INCORPORATED AS INPUT / NO REOPEN | Reopen only on demonstrated contradiction/material insufficiency; none found for PO-001 | Step-4 truth/knowledge/disclosure/role-context; Step-5.12; R2.1; R2.3; R2.4; final WP-18 Story/continuity owner |
 | Ordinary gameplay interaction/runtime consumer | DEFERRED | Trigger: explicit Senior GO authorizing WP-19 Step 2; then prove exact instruction/consumer placement | `GAME/CORE/RUNTIME.md`, `PLAY_POLICY.md`, `INFORMATION.md`, `NARRATIVE.md` plus context/history owners |
 | Verification / acceptance mapping | DEFERRED | Trigger: later authorized WP-19 design-realization / implementation-planning execution; direct PO-001 acceptance gap is already recorded | current supporting `REGRESSION_CASES:T04/T08`, `AI_DM_CRAFT_CASES:ADC08`; exact additions not authorized yet |
 | Substantive implementation | DEFERRED | Trigger: approved architecture + implementation-plan gate | no implementation authorized by this input |
 
 ### Current impact
 
-PO-001 remains incorporated. PO-003 is a later related requirement that changes the historical evidence available to this consumer and therefore requires a new targeted WP-19 Step-1 evidence-basis expansion; this does not alter the preserved PO-001 semantics.
+PO-001 remains incorporated. PO-003 is a later related requirement that strengthens the historical evidence available to this consumer; its targeted WP-19 Step-1 evidence-basis expansion and critic rerun are now complete. This does not alter the preserved PO-001 semantics.
 
 ### Deferred / future impact
 
@@ -178,10 +178,10 @@ Later authorized WP-19 architecture/runtime/test realization must consume the ac
 ### Resolution evidence
 
 - accepted semantic owner: `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md`;
-- integrated WP-19 Source Manifest;
-- integrated WP-19 Architecture Task Brief;
-- prior rerun WP-19 whole-project Task-Brief critic;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md`.
+- current WP-19 Source Manifest;
+- current WP-19 Architecture Task Brief;
+- current WP-19 whole-project Task-Brief critic;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md` remains historical PO-001/PO-002 integration provenance.
 
 ---
 
@@ -226,7 +226,7 @@ The requested exit is a current gameplay-session/context navigation transition. 
 | Route | State | Trigger / obligation | Evidence / current owner |
 |---|---|---|---|
 | Product semantics formalization | INCORPORATED | Immediate | `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md` |
-| R2.7 WP-19 Step-1 framing | INCORPORATED | Complete for PO-002; PO-003 separately reopens the current Step-1 evidence basis but does not alter save-and-exit semantics | WP-19 Source Manifest + Architecture Task Brief + prior rerun critic + integration checkpoint |
+| R2.7 WP-19 Step-1 framing | INCORPORATED | PO-003 targeted expansion and critic rerun are now complete; save-and-exit semantics remain unchanged | current WP-19 Source Manifest + Architecture Task Brief + Task-Brief critic |
 | Explicit save/persistence composition | DEFERRED | Trigger: explicit Senior GO authorizing WP-19 Step 2; then prove exact consumer composition | Step-5.5 canonical durability, `GAME/CORE/SAVE_CONTRACT.md`, `PERSISTENCE.md`, `DURABILITY_GUARD.md` |
 | Session/gameplay-context closure | DEFERRED | Trigger: explicit Senior GO; prove save-success-before-context-clear and exact session-local state release | `GAME/CORE/SESSION.md`, `GAME/CORE/RUNTIME.md` |
 | Campaign-selection re-entry | DEFERRED | Trigger: explicit Senior GO; prove reuse of current card-first menu/explicit choice gate in same chat | `GAME/CORE/BOOTSTRAP_RUNTIME.md`, `GAME/INSTALL/00_DND_BOOTSTRAP.md`, `CAMPAIGN_CARD.md`, access owners |
@@ -236,7 +236,7 @@ The requested exit is a current gameplay-session/context navigation transition. 
 
 ### Current impact
 
-PO-002 remains incorporated. The newly arrived PO-003 requirement does not change the save-and-exit product semantics, although later persistence design must ensure any required historical decision-basis evidence is included in the applicable durability guarantee rather than lost on save/exit.
+PO-002 remains incorporated. PO-003 integration is now complete and does not change the save-and-exit product semantics. Later persistence design must still ensure any required historical decision-basis evidence is included in the applicable durability guarantee rather than lost on save/exit.
 
 ### Deferred / future impact
 
@@ -249,10 +249,10 @@ Later architecture/runtime/test realization must consume the accepted owner deci
 ### Resolution evidence
 
 - accepted semantic owner: `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md`;
-- integrated WP-19 Source Manifest;
-- integrated WP-19 Architecture Task Brief;
-- prior rerun WP-19 whole-project Task-Brief critic;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md`.
+- current WP-19 Source Manifest;
+- current WP-19 Architecture Task Brief;
+- current WP-19 whole-project Task-Brief critic;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md` remains historical PO-001/PO-002 integration provenance.
 
 ---
 
@@ -260,12 +260,20 @@ Later architecture/runtime/test realization must consume the accepted owner deci
 
 Date: 2026-09-05  
 Kind: REQUIREMENT  
-Status: PARTIALLY_INCORPORATED
+Status: INCORPORATED
 
 ### PO input — VERBATIM / IMMUTABLE
 
 ```text
 Значит, смотри. Хранить всю историю психики всех NPC — мы сами себя закопаем. А вот сохранять decision basis со всеми (или минимально необходимым набором - Причем я даже не утверждаю, что этот набор должен быть фиксированный. Он может быть абсолютно разный в разных ситуациях - пусть решает LLM на момент события) релевантными полями — это хорошее решение, как мне кажется. своего рода компромисс. Я думаю, что это нужно включать уже сейчас, потому что и мастер, и комментатор при возврате либо проигрывании исторических событий должны пользоваться как раз-таки информацией на момент события.
+```
+
+### Product Owner amendment — VERBATIM / IMMUTABLE
+
+Date: 2026-09-05
+
+```text
+Это всё чудесно, но не забывай про эффективность и скорость ответа. Я боюсь, что всеми этими дополнительными действиями мы окончательно угробим интерактивность. И это будет слайд-шоу по пять минут ожидания. Никто в это играть не будет.
 ```
 
 ### Agent interpretation / classification
@@ -278,42 +286,77 @@ NO FULL NPC-PSYCHOLOGY HISTORY
 NO PER-TURN FULL ACTOR SNAPSHOT
 NO HIDDEN CHAIN-OF-THOUGHT RETENTION
 CURRENT R2.2 / WORLD.KNOWLEDGE OWNERSHIP PRESERVED
-EXACT NEW-CONSUMER VS MATERIAL-INSUFFICIENCY CLASSIFICATION: PENDING CURRENT WP-19 EVIDENCE WORK
+CLASSIFICATION: NEW CONSUMER + EXTENSION
+EXISTING HISTORICAL-EVIDENCE OWNER: STEP-4 LOG / runtime.semantic_event
+CLOSED-ARCHITECTURE MATERIAL INSUFFICIENCY: NO
+UPSTREAM REOPEN REQUIRED: NO
+LATENCY / INTERACTIVITY: MANDATORY PRODUCT CONSTRAINT
+STEP-1 PERFORMANCE FRAMING: SATISFIED BY CURRENT ZERO-EXTRA-SERIAL ANALYSIS
+CURRENT MACHINE / TEST REALIZATION GAP: YES — DEFERRED TO AUTHORIZED DOWNSTREAM GATES
 ```
 
 The requirement is to preserve bounded historical evidence sufficient to explain or replay a material NPC decision using the Actor's relevant knowledge/cognition/relationship state as it existed at that event, rather than substituting the NPC's later current state. The relevant field set is intentionally not universal: the LLM may identify which eligible values materially formed the decision basis for that situation, subject to later architecture-defined boundedness/source-validation rules.
+
+The Product Owner amendment makes latency/interactivity a mandatory product constraint on this requirement. The current WP-19 Step-1 performance analysis already satisfies the present framing obligation by requiring a zero-extra-serial baseline: no additional sequential LLM call solely for decision-basis capture; no additional serial remote/tool read solely for capture when required data is already in the decision context; no separate remote publication solely for the basis; and no work on irrelevant turns. Exact runtime/schema/test realization and proof remain downstream and require their normal authorization gates.
 
 ### Routing / affected owners
 
 | Route | State | Trigger / obligation | Evidence / current owner |
 |---|---|---|---|
-| Product semantics formalization | INCORPORATED | Immediate | `DEV/docs/superpowers/specs/2026-09-05-hdm-historical-actor-decision-basis-owner-decision.md` |
-| R2.7 WP-19 Step-1 framing | ACTIVE / PENDING | Immediate; prior review/critic basis did not include PO-003 and is no longer current-review complete | Source Manifest + Architecture Task Brief + mandatory whole-project critic must be expanded/rerun on PO-003 basis |
-| R2.2 current Actor continuity | ROUTED / RECONCILE | Current WP-19 evidence pass must distinguish current-state ownership from historical evidence consumer need; do not reopen merely for overlap | `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-canonical-spec.md`, `GAME/CORE/NPC.md` |
-| Step-4 current knowledge + transition history | ROUTED / RECONCILE | Prove whether existing SemanticEvent/log transition evidence is sufficient for event-time epistemic basis and how mutable current stance is avoided | Step-4 truth/knowledge/role-context canonical spec + SemanticEvent/log owners |
-| Durable history / record-family allocation | ROUTED / RECONCILE | Determine NEW CONSUMER vs MATERIAL INSUFFICIENCY and exact native owner; reopen closed allocation/history architecture only if evidence requires it | R2.1 continuity/history; Step-5.9 chronology/history; WP-10 durable record-family completeness; relevant event schemas/contracts |
-| Story / retrospective Master / Commentator consumers | ROUTED | Current WP-19 framing must require event-time basis for material historical motive claims while retaining disclosure/no-spoiler boundaries | R2.1, R2.3/R2.4, final WP-18 Story/continuity owner, PO-001 ordinary gameplay retrospective owner |
-| Durability / publication | DEFERRED AFTER ARCHITECTURE PLACEMENT | Trigger: once native historical-evidence owner/form is accepted, prove required evidence receives applicable save/publication durability without full-Actor snapshots | Step-5.5, WP-13, save/persistence owners |
-| Verification / acceptance mapping | DEFERRED | Trigger: later authorized design-realization / implementation planning; require cases where current NPC motives/knowledge differ from event-time basis | relevant continuity/history/NPC/Story/context tests and scenario catalogs |
+| Product semantics formalization | INCORPORATED | Immediate | `DEV/docs/superpowers/specs/2026-09-05-hdm-historical-actor-decision-basis-owner-decision.md` + immutable PO-003 amendment in this ledger |
+| R2.7 WP-19 Step-1 framing | INCORPORATED | PO-003 dependency expansion and mandatory whole-project critic rerun are complete; package is at mandatory Senior review | current WP-19 Source Manifest + Architecture Task Brief + Task-Brief critic |
+| R2.2 current Actor continuity | INCORPORATED / NO REOPEN | Current-state ownership is preserved; historical evidence is not stored as a second writable Actor owner | `DEV/docs/superpowers/specs/2026-08-24-r2-2-actor-continuity-canonical-spec.md`, `GAME/CORE/NPC.md` |
+| Step-4 current knowledge + transition history | INCORPORATED / EXTENSION | `world.knowledge` remains current epistemic owner; bounded historical decision basis extends existing LOG/SemanticEvent history ownership | Step-4 truth/knowledge/role-context canonical spec + SemanticEvent/log owners |
+| Durable history / record-family allocation | INCORPORATED / NO REOPEN | Existing Step-4 LOG/runtime.semantic_event + WP-10 SemanticEvent/history family is sufficient; no material closed-architecture insufficiency found | WP-10 durable record-family completeness + current event/history owners |
+| Story / retrospective Master / Commentator consumers | INCORPORATED IN STEP-1 FRAMING | Event-time basis is required for material historical motive claims; current disclosure/no-spoiler boundaries remain controlling | R2.1, R2.3/R2.4, final WP-18 Story/continuity owner, PO-001 ordinary gameplay retrospective owner |
+| Latency / interactivity constraint | INCORPORATED IN STEP-1 FRAMING | Current obligation satisfied by zero-extra-serial performance analysis; any future correctness claim requiring a new serial round-trip must be treated as a material architecture/performance problem | current WP-19 Source Manifest performance section + Task Brief performance criterion + critic F19-PO003-04 |
+| Exact runtime/schema realization | DEFERRED | Trigger: explicit Senior GO for WP-19 Step 2 for exact design placement; substantive realization still requires later approved architecture/implementation gate | existing SemanticEvent/history, context, runtime and persistence owners |
+| Durability / publication realization | DEFERRED | Trigger: explicit Senior GO and later authorized realization; required basis must join ordinary native history/persistence batching, not create a separate publication path | Step-5.5, WP-13, save/persistence owners |
+| Verification / acceptance mapping | DEFERRED | Trigger: later authorized design-realization / implementation-planning/execution; prove T0 basis survives T1 current-state change and prove zero-extra-serial behavior | current supporting Actor/history/context/performance/persistence/chronology tests; direct PO-003 case remains downstream |
 | Substantive implementation | DEFERRED | Trigger: approved architecture + implementation-plan gate | no schema/runtime/test implementation authorized by this input |
 
 ### Current impact
 
-PO-003 materially affects the active WP-19 retrospective/history evidence basis. The previous `WP-19 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW` claim was established before PO-003 existed and is therefore no longer a complete current review basis. The active unit returns only as far as necessary: targeted Step-1 PO-003 integration, whole-project critic rerun and mechanically resolvable framing repair.
+PO-003 is incorporated for the current WP-19 Step-1 gate. Product semantics are accepted; the Step-1 Source Manifest/Task Brief/critic expansion is complete; classification is `NEW CONSUMER + EXTENSION`; Step-4 `LOG/runtime.semantic_event` is the existing historical-evidence owner; no closed-architecture material insufficiency or upstream reopen was found; and direct machine/test realization remains explicitly downstream.
+
+The Product Owner amendment adds a durable latency/interactivity constraint without reopening the completed Step-1 framing. The existing performance analysis already encodes the required current baseline and therefore satisfies the present framing obligation. The package remains at mandatory Senior review; no Step-2 authorization is implied.
 
 PO-001 and PO-002 remain valid and are not reopened by this requirement. The previous Step-1 findings remain closed unless new evidence directly contradicts them.
 
 ### Deferred / future impact
 
-Later architecture must preserve an event-time basis sparse enough to avoid exhaustive psychological history while strong enough for faithful retrospective/replay. The historical basis must remain evidence, not a second current cognition/knowledge owner, and must not retain hidden chain-of-thought.
+Later authorized architecture/runtime/test realization must preserve an event-time basis sparse enough to avoid exhaustive psychological history while strong enough for faithful retrospective/replay. It must also preserve the mandatory interactivity constraint by keeping capture on the zero-extra-serial baseline unless future correctness evidence demonstrates that this is impossible and the resulting material performance trade-off is explicitly handled through the normal architecture process.
 
-The exact physical representation, trigger policy, validation boundary, record owner and schema remain architecture work. A later save operation must not manufacture full Actor snapshots; it only has to preserve already-required historical evidence under the applicable durability contract.
+The historical basis remains evidence, not a second current cognition/knowledge owner, and must not retain hidden chain-of-thought. Exact physical representation, trigger policy, validation boundary, schema/runtime realization and direct acceptance tests remain deferred to their explicit authorization gates.
 
 ### Product Owner decision still required
 
-`NONE` — the Product Owner explicitly chose the product trade-off: sparse event-time decision basis rather than exhaustive NPC psychological history, with a situation-specific relevant field set that need not be fixed globally. Exact architecture ownership, validation and storage realization are agent-owned evidence/design questions unless they expose a new material product trade-off.
+`NONE` — the Product Owner explicitly chose the product trade-off: sparse event-time decision basis rather than exhaustive NPC psychological history, with a situation-specific relevant field set that need not be fixed globally, and explicitly made latency/interactivity mandatory. Exact architecture realization remains agent-owned unless later evidence exposes a new genuine Product Owner trade-off.
 
 ### Resolution evidence
 
 - accepted product-semantic owner: `DEV/docs/superpowers/specs/2026-09-05-hdm-historical-actor-decision-basis-owner-decision.md`;
-- current WP-19 integration/critic evidence: PENDING.
+- current WP-19 Source Manifest: PO-003 owner classification + mandatory performance/latency evidence;
+- current WP-19 Architecture Task Brief: PO-003 classification + mandatory performance/latency criterion;
+- current WP-19 whole-project Task-Brief critic: `F19-PO003-04` closes the Step-1 latency/performance framing defect and records downstream verification;
+- `DEV/CURRENT_PROGRESS.md` and `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md`: current Step-1 complete / mandatory Senior review state;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-po-003-arrival-integration-checkpoint.md`: historical arrival provenance only.
+
+### Senior-gate recovery disposition
+
+```text
+SR19_03: CLOSED — PO-003 entry-level and route states synchronized to the current incorporated Step-1 package; future runtime/schema/test work remains safely DEFERRED with explicit triggers.
+SR19_04: CLOSED — Product Owner latency/interactivity amendment preserved verbatim; current zero-extra-serial Step-1 framing recognized as satisfying the present obligation; exact realization remains downstream.
+
+WP19_STEP1: COMPLETE — MANDATORY SENIOR REVIEW
+HUMAN_DECISION_REQUIRED: NO
+NEEDS_PO: NONE
+UPSTREAM_REOPEN_REQUIRED: NO
+ARCHITECTURE_REOPENED: NO
+
+WP19_STEP2_AUTHORIZED: NO
+STEP2_STARTED: NO
+WP20_STARTED: NO
+IMPLEMENTATION_PLANNING_STARTED: NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
+```
