@@ -1,7 +1,8 @@
 schema_name: campaign_manifest
-schema_version: 3
+schema_version: 4
 required:
   - schema_version
+  - campaign_contract
   - campaign_id
   - branch
   - status
@@ -11,6 +12,9 @@ required:
   - storage
 fields:
   schema_version: integer
+  campaign_contract:
+    created_with: integer
+    current: integer
   campaign_id: string
   campaign_name: string|null
   campaign_name_origin: enum[auto, player]|null
@@ -32,8 +36,10 @@ fields:
   ruleset:
     created_with:
       ruleset_set_sha256: string
+      ruleset_set_digest_generation: integer
     current:
       ruleset_set_sha256: string
+      ruleset_set_digest_generation: integer
       adopted_at: string
   rules:
     baseline: string
@@ -55,6 +61,9 @@ fields:
   last_checkpoint_id: string|null
   created_at: string
 invariants:
+  - campaign_contract.created_with MUST be 2 for newly created campaigns and is immutable creation provenance
+  - campaign_contract.current MUST be 2 for the current supported campaign contract generation and changes only under accepted campaign adoption law
+  - ruleset.created_with.ruleset_set_digest_generation and ruleset.current.ruleset_set_digest_generation MUST be 1
   - branch MUST match campaign/YYYYMMDD or campaign/YYYYMMDD-NN where NN >= 02
   - branch name MUST NOT encode lore, mode, player count or owner
   - force_push_allowed MUST be false for live campaigns
