@@ -78,8 +78,8 @@ This table is an agent-maintained navigation index only. The full entry controls
 
 | ID | Kind | Status | Current trigger / reason | Primary routes | Open PO decision |
 |---|---|---|---|---|---|
-| `PO-001` | REQUIREMENT | PARTIALLY_INCORPORATED | Arrived while WP-19 Step-1 expanded framing is active; current critic predates the input | accepted gameplay/navigation owner decision; WP-19; ordinary gameplay history consumer; later tests/realization | NONE |
-| `PO-002` | REQUIREMENT | PARTIALLY_INCORPORATED | Arrived while WP-19 Step-1 expanded framing is active; current critic predates the input | accepted gameplay/navigation owner decision; WP-19; save/session/bootstrap/menu/multiplayer consumers; later tests/realization | NONE |
+| `PO-001` | REQUIREMENT | PARTIALLY_INCORPORATED | Product semantics accepted and WP-19 Step-1 framing/critic integration complete; exact downstream runtime/test realization remains behind later gates | accepted gameplay/navigation owner decision; WP-19; ordinary gameplay history consumer; later tests/realization | NONE |
+| `PO-002` | REQUIREMENT | PARTIALLY_INCORPORATED | Product semantics accepted and WP-19 Step-1 framing/critic integration complete; exact downstream runtime/test realization remains behind later gates | accepted gameplay/navigation owner decision; WP-19; save/session/bootstrap/menu/multiplayer consumers; later tests/realization | NONE |
 
 ---
 
@@ -156,19 +156,19 @@ Existing information/continuity owners remain controlling. The delta is an expli
 | Route | State | Trigger / obligation | Evidence / current owner |
 |---|---|---|---|
 | Product semantics formalization | INCORPORATED | Immediate | `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md` |
-| R2.7 WP-19 Step-1 framing | ACTIVE / PENDING | Current: input arrived before the mandatory Senior gate on expanded WP-19 basis | `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md` |
-| Existing Story/continuity/information owners | INCORPORATED AS INPUT / NO REOPEN PRESUMED | Reopen only on demonstrated contradiction or material insufficiency | Step-4 truth/knowledge/disclosure/role-context; R2.1 continuity; R2.3 Context Runtime; final WP-18 Story/continuity owner |
-| Ordinary gameplay interaction/runtime consumer | ROUTED | WP-19 architecture must identify the exact instruction/consumer destination before closure | `GAME/CORE/RUNTIME.md` plus applicable information/narration/context-routing consumers |
-| Verification / acceptance mapping | ROUTED | When WP-19 architecture maps current requirement to verification and later realization | applicable DEV tests/scenario families; exact additions/repairs not yet authorized |
+| R2.7 WP-19 Step-1 framing | INCORPORATED | Completed on expanded Step-1 basis; mandatory Senior review is next gate | WP-19 Source Manifest + Architecture Task Brief + rerun whole-project critic + integration checkpoint |
+| Existing Story/continuity/information owners | INCORPORATED AS INPUT / NO REOPEN | Reopen only on demonstrated contradiction/material insufficiency; none found in Step-1 integration | Step-4 truth/knowledge/disclosure/role-context; Step-5.12; R2.1; R2.3; R2.4; final WP-18 Story/continuity owner |
+| Ordinary gameplay interaction/runtime consumer | ROUTED / STEP-2 AUDIT | Exact runtime instruction/consumer destination must be proven only after Senior GO | `GAME/CORE/RUNTIME.md`, `PLAY_POLICY.md`, `INFORMATION.md`, `NARRATIVE.md` plus context/history owners |
+| Verification / acceptance mapping | ROUTED / ACCEPTANCE GAP RECORDED | Direct end-to-end PO-001 acceptance is missing; later authorized realization must add/repair it | current supporting `REGRESSION_CASES:T04/T08`, `AI_DM_CRAFT_CASES:ADC08`; exact additions not authorized yet |
 | Substantive implementation | DEFERRED | Only after architecture and implementation-planning gates | no implementation authorized by this input |
 
 ### Current impact
 
-The previously recovered WP-19 Step-1 critic predates this input and cannot clear the expanded current Step-1 gate. WP-19 must incorporate the new consumer route before its Step-1 package can again be review-ready.
+The expanded WP-19 Step-1 Source Manifest and Task Brief now incorporate PO-001, and the mandatory whole-project Task-Brief critic has been rerun on the expanded basis. The requirement is framed for mandatory Senior review; Step 2 remains unauthorized.
 
 ### Deferred / future impact
 
-Future runtime/test realization must consume the accepted public owner decision rather than treating this ledger as runtime architecture authority.
+Later authorized WP-19 architecture/runtime/test realization must consume the accepted public owner decision rather than treating this ledger as runtime authority. Direct acceptance coverage remains a downstream obligation.
 
 ### Product Owner decision still required
 
@@ -177,7 +177,10 @@ Future runtime/test realization must consume the accepted public owner decision 
 ### Resolution evidence
 
 - accepted semantic owner: `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md`;
-- current WP-19 routing checkpoint: `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md`.
+- integrated WP-19 Source Manifest;
+- integrated WP-19 Architecture Task Brief;
+- rerun WP-19 whole-project Task-Brief critic;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md`.
 
 ---
 
@@ -222,21 +225,21 @@ The requested exit is a current gameplay-session/context navigation transition. 
 | Route | State | Trigger / obligation | Evidence / current owner |
 |---|---|---|---|
 | Product semantics formalization | INCORPORATED | Immediate | `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md` |
-| R2.7 WP-19 Step-1 framing | ACTIVE / PENDING | Current: lifecycle/navigation belongs to the active bootstrap/campaign-selection audit surface | `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md` |
-| Explicit save/persistence composition | ROUTED | WP-19 must consume existing save/persistence authority rather than invent another path | `GAME/CORE/SAVE_CONTRACT.md`, `GAME/CORE/PERSISTENCE.md`, durability owners |
-| Session/gameplay-context closure | ROUTED | WP-19 must define the consumer/navigation composition and failure boundary | `GAME/CORE/SESSION.md`, `GAME/CORE/RUNTIME.md` |
-| Campaign-selection re-entry | ROUTED | WP-19 must establish same-chat return to current menu/selection route | `GAME/CORE/BOOTSTRAP_RUNTIME.md`, `GAME/INSTALL/00_DND_BOOTSTRAP.md`, campaign-card/menu/access owners |
-| Multiplayer/live non-interference | ROUTED | Applicable when departing session participates in multiplayer/live state | `GAME/CORE/MULTIPLAYER.md`, live/session/concurrency owners; exit != membership deactivation |
-| Verification / acceptance mapping | ROUTED | When WP-19 maps the requirement to verification and later realization | applicable save/session/bootstrap/menu/multiplayer test/scenario families |
+| R2.7 WP-19 Step-1 framing | INCORPORATED | Completed on expanded Step-1 basis; mandatory Senior review is next gate | WP-19 Source Manifest + Architecture Task Brief + rerun whole-project critic + integration checkpoint |
+| Explicit save/persistence composition | ROUTED / STEP-2 AUDIT | Exact current consumer composition must be proven after Senior GO | Step-5.5 canonical durability, `GAME/CORE/SAVE_CONTRACT.md`, `PERSISTENCE.md`, `DURABILITY_GUARD.md` |
+| Session/gameplay-context closure | ROUTED / STEP-2 AUDIT | Prove save-success-before-context-clear and exact session-local state release | `GAME/CORE/SESSION.md`, `GAME/CORE/RUNTIME.md` |
+| Campaign-selection re-entry | ROUTED / STEP-2 AUDIT | Prove reuse of current card-first menu/explicit choice gate in same chat | `GAME/CORE/BOOTSTRAP_RUNTIME.md`, `GAME/INSTALL/00_DND_BOOTSTRAP.md`, `CAMPAIGN_CARD.md`, access owners |
+| Multiplayer/live non-interference | ROUTED / STEP-2 AUDIT | Prove exit != leave/deactivation/control transfer/global stop and only native-required live consolidation occurs | `GAME/CORE/MULTIPLAYER.md`, `LIVE_SCENE.md`, session/concurrency owners |
+| Verification / acceptance mapping | ROUTED / ACCEPTANCE GAP RECORDED | Direct end-to-end PO-002 acceptance is missing; later authorized realization must add/repair it | `EXPLICIT_SAVE_CASES:S07/S08/S15/S16`, membership/menu cases; exact additions not authorized yet |
 | Substantive implementation | DEFERRED | Only after architecture and implementation-planning gates | no implementation authorized by this input |
 
 ### Current impact
 
-The current WP-19 Step-1 package must explicitly distinguish gameplay-context exit from campaign lifecycle (`paused`, `completed`, `archived`) and membership/control transitions, and must route the user back to campaign selection after successful requested durability/session closure.
+The expanded WP-19 Step-1 package now explicitly distinguishes exit-to-menu from `save and stop`, pause/completion/archive, PLAYER leave/deactivation, PC-control transfer and global multiplayer/live termination. The rerun critic closes the framing omissions; mandatory Senior review is the next gate.
 
 ### Deferred / future impact
 
-Future runtime/test realization must consume the accepted public owner decision. A new chat remains an alternative way to reach campaign selection; it is not the only supported navigation path.
+Later architecture/runtime/test realization must consume the accepted owner decision. A new chat remains an alternate route to campaign selection; it is not the only supported navigation path.
 
 ### Product Owner decision still required
 
@@ -245,4 +248,7 @@ Future runtime/test realization must consume the accepted public owner decision.
 ### Resolution evidence
 
 - accepted semantic owner: `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md`;
-- current WP-19 routing checkpoint: `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md`.
+- integrated WP-19 Source Manifest;
+- integrated WP-19 Architecture Task Brief;
+- rerun WP-19 whole-project Task-Brief critic;
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md`.
