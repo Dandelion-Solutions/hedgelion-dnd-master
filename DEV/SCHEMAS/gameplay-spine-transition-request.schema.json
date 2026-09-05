@@ -10,14 +10,14 @@
     "revision": {"type": "integer", "minimum": 0},
     "base": {
       "type": "object",
-      "properties": {"idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"}}
+      "properties": {"idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": 2}}
     },
     "procedureMovement": {
       "type": "object", "additionalProperties": false,
       "required": ["transition_kind", "profile_id", "idempotency_key", "catalog_generation", "procedure_id", "procedure_revision", "actor_id", "actor_revision", "destination_location_id", "destination_location_revision", "movement_cost"],
       "properties": {
         "transition_kind": {"const": "transition.location_change"}, "profile_id": {"const": "location_change.procedure_movement"},
-        "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"},
+        "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": 2},
         "procedure_id": {"$ref": "#/$defs/id"}, "procedure_revision": {"$ref": "#/$defs/revision"},
         "actor_id": {"$ref": "#/$defs/id"}, "actor_revision": {"$ref": "#/$defs/revision"},
         "destination_location_id": {"$ref": "#/$defs/id"}, "destination_location_revision": {"$ref": "#/$defs/revision"}, "movement_cost": {"type": "integer", "minimum": 0}
@@ -28,7 +28,7 @@
       "required": ["transition_kind", "profile_id", "idempotency_key", "catalog_generation", "actor_id", "actor_revision", "destination_location_id", "destination_location_revision", "movement_cost"],
       "properties": {
         "transition_kind": {"const": "transition.location_change"}, "profile_id": {"const": "location_change.outside_procedure"},
-        "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"},
+        "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": 2},
         "actor_id": {"$ref": "#/$defs/id"}, "actor_revision": {"$ref": "#/$defs/revision"},
         "destination_location_id": {"$ref": "#/$defs/id"}, "destination_location_revision": {"$ref": "#/$defs/revision"}, "movement_cost": {"const": "NOT_APPLICABLE_OUTSIDE_PROCEDURE"}
       }
@@ -42,7 +42,7 @@
       "required": ["transition_kind", "profile_id", "idempotency_key", "catalog_generation", "asset_id", "asset_revision", "from_placement", "to_placement"],
       "properties": {
         "transition_kind": {"const": "transition.asset_transfer"}, "profile_id": {"const": "asset.transfer"},
-        "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"},
+        "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": 2},
         "asset_id": {"$ref": "#/$defs/id"}, "asset_revision": {"$ref": "#/$defs/revision"},
         "from_placement": {"$ref": "#/$defs/placement"}, "to_placement": {"$ref": "#/$defs/placement"}
       }
@@ -52,7 +52,7 @@
       "required": ["transition_kind", "profile_id", "idempotency_key", "catalog_generation", "asset_id", "asset_revision", "owner_actor_id", "mode"],
       "properties": {
         "transition_kind": {"const": "transition.asset_status"}, "profile_id": {"const": "asset.equip"},
-        "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"},
+        "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": 2},
         "asset_id": {"$ref": "#/$defs/id"}, "asset_revision": {"$ref": "#/$defs/revision"},
         "owner_actor_id": {"$ref": "#/$defs/id"}, "mode": {"enum": ["held", "worn"]}
       }
@@ -61,7 +61,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["profile_id", "idempotency_key", "catalog_generation", "asset_id", "asset_revision", "owner_actor_id", "consequence_profile"],
       "properties": {
-        "profile_id": {"const": "asset.use"}, "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": "2.0.0"},
+        "profile_id": {"const": "asset.use"}, "idempotency_key": {"$ref": "#/$defs/id"}, "catalog_generation": {"const": 2},
         "asset_id": {"$ref": "#/$defs/id"}, "asset_revision": {"$ref": "#/$defs/revision"},
         "owner_actor_id": {"$ref": "#/$defs/id"}, "consequence_profile": {"enum": ["NONE", "EXACT_ADMITTED_ACTIVITY"]},
         "activity_id": {"type": "string", "pattern": "^activity\\.[a-z][a-z0-9_.]*$"}
@@ -70,4 +70,3 @@
     }
   }
 }
-
