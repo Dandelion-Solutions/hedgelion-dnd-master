@@ -4,9 +4,9 @@
   "package_root": "GAME/RULES/packages/hdm.rules.dnd2024-srd52-core",
   "derived_current_identity": {
     "authority": "DERIVED_NONAUTHORITATIVE_VERIFICATION_EVIDENCE",
-    "package_content_sha256": "5ea6bd490c052b4ee8cde6a29d9f6444f3e4e49151cab766849678aa81ee9d6f",
+    "package_content_sha256": "57c77802744619fa4d35a21bab38d133589f21de72f80044dc4d7bb58cb06d34",
     "ruleset_set_digest_generation": 1,
-    "ruleset_set_sha256": "4d63deb1998213854f690708767fe03570ce143300fc655a460f6a2d892c6295"
+    "ruleset_set_sha256": "0700d3ccf367ade9ff56f620c4330bd5b4544fb9e22031f9d1eac3718a88ef2d"
   },
   "transitional_package_identity": [
     {
