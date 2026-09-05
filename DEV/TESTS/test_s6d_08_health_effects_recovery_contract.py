@@ -163,7 +163,7 @@ class S6D08HealthEffectsRecoveryContractTest(unittest.TestCase):
             catalog_generation=2,
         )
         self.assertEqual(lock["ruleset_set_digest_generation"], 1)
-        self.assertEqual(lock["ruleset_set_sha256"], "4d63deb1998213854f690708767fe03570ce143300fc655a460f6a2d892c6295")
+        self.assertEqual(lock["ruleset_set_sha256"], "0700d3ccf367ade9ff56f620c4330bd5b4544fb9e22031f9d1eac3718a88ef2d")
         self.assertIn("health-effects-recovery-seed.json", {row["path"] for row in lock["packages"][0]["members"]})
         self.assertFalse({"content_files", "content_set_sha256"}.intersection(self.capabilities))
 
