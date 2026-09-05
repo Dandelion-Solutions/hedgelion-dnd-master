@@ -61,7 +61,7 @@ These subtypes are not interchangeable merely because all are integers.
 
 ## 2. Engine releases
 
-The engine release version uses two numeric components with an optional prerelease suffix, for example `v0.8`, `v0.9-RC`, or `v1.5`.
+The engine release version uses two numeric components with an optional prerelease suffix, for example `v0.8`, `v1.0-alpha`, or `v1.5`.
 
 `DEV/ENGINE_DEVELOPMENT.yaml` is the canonical development/release bookkeeping record. `GAME/ENGINE_VERSION.yaml` is the installed-package projection; all shared fields must match and are enforced by builder/audit.
 
@@ -121,7 +121,7 @@ Old consumers do not optimistically read unsupported newer schemas. New consumer
 
 ### Campaign-wide persistent contract generation
 
-The ambiguous aggregate `ENGINE_VERSION.schema_version` representation is superseded by the target semantic axis:
+The aggregate persistent campaign compatibility axis is:
 
 ```text
 campaign_contract_generation: N
@@ -137,7 +137,7 @@ Different released campaign-contract generations require an explicit migration/a
 
 ### Storage format generation
 
-The target storage compatibility field is:
+The storage compatibility field is:
 
 ```text
 storage_format_generation: N
@@ -163,7 +163,7 @@ Catalog uses one coordinated independent integer:
 catalog_generation: N
 ```
 
-The current pre-release machine-contract generation represented as `2.0.0` is normalized conceptually to generation `2` under the canonical amendment.
+The current coordinated machine-contract generation is integer generation `2`.
 
 All coordinated catalog projections MUST equal the canonical catalog generation. Mixed coordinated generations are invalid and fail build/audit/admission.
 
@@ -177,7 +177,7 @@ Different catalog generations are not silently compatible; cross-generation move
 
 Ruleset package update order, semantic compatibility and exact content identity are distinct axes.
 
-Target representation separates them as:
+The current representation separates them as:
 
 ```text
 package_revision: N
@@ -192,7 +192,7 @@ content_sha256 / ruleset_set_sha256: exact identities under their owning digest 
 
 `compatibility_generation` is the semantic compatibility line. Same generation makes a candidate eligible for the applicable semantic compatibility proof; it does not prove compatibility by itself. Different generation requires explicit adoption/migration or is unsupported.
 
-The current pre-release `package_version: 0.1.0-mvp` and version-bearing `compatibility_id: ...v1` representation is superseded as a target representation by package revision plus compatibility family/generation. Exact ruleset identity semantics remain owned by `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` and the canonical versioning amendment.
+The normalized pre-release machine representation uses package revision plus compatibility family/generation and integer catalog generation. Exact ruleset identity semantics remain owned by `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` and the canonical versioning amendment.
 
 ## 7. Package/protocol schema versions
 
@@ -208,13 +208,15 @@ HDM-owned custom hashes/fingerprints are exact identities under one explicit dig
 
 A generation change is required when participating fields, canonical serialization, ordering, normalization, domain separation or digest algorithm changes.
 
-Digest-contract generation MUST NOT exist only as an unexplained `_V1` suffix hidden inside a magic byte string/opaque ID.
+Digest-contract generation MUST NOT exist only as an unexplained suffix hidden inside a magic byte string/opaque ID.
 
 A digest generation may be implied by an enclosing typed schema/generation only when that enclosing contract unambiguously fixes the full digest semantics. A digest persisted independently across releases must carry enough typed context to identify its digest contract.
 
 Hashes produced under different digest-contract generations are not directly comparable as the same exact-identity space.
 
-Current pre-release normalization may recompute all affected HDM-owned derived hashes/fingerprints without compatibility shims. After v1.0 release, old typed exact identities remain meaningful evidence and are migrated/recomputed only from admitted source bytes/evidence.
+The current HDM-owned ruleset digest/canonicalization domains use explicit generation `1`. Escaping resolved-set and catalog-context identities carry `ruleset_set_digest_generation` and `catalog_context_fingerprint_generation` respectively. Named producer constants and generation-qualified domain separators make the generation mechanically visible.
+
+Current pre-release normalization recomputed all affected HDM-owned derived hashes/fingerprints without compatibility shims. After v1.0 release, old typed exact identities remain meaningful evidence and are migrated/recomputed only from admitted source bytes/evidence.
 
 ## 9. Global compatibility/migration laws
 
@@ -243,16 +245,18 @@ Checkpoint existence never creates generic rollback support.
 
 ## 11. Machine enforcement obligation
 
-After the separately authorized normalization/realization pass, builder/audit/validators MUST enforce:
+Builder/audit/validators enforce:
 
 - every HDM-owned version field is classified and correctly named;
 - CORE module versions obey engine-bound component rules and never claim future engine lines;
-- coordinated catalog generation projections are equal;
+- shared DEV/GAME `campaign_contract_generation` is equal and the engine manifests carry no aggregate local-schema alias;
+- coordinated catalog generation projections are equal integer values;
 - unsupported newer schemas/generations fail closed;
 - package revision is never treated as semantic compatibility;
-- digest/canonicalization generation is explicit and validated;
+- ruleset package/compatibility fields use revision plus stable family/generation axes;
+- digest/canonicalization generation is explicit and validated for escaping exact identities;
 - development-only revisions do not leak into runtime metadata;
-- ambiguous obsolete fields such as aggregate `ENGINE_VERSION.schema_version` are removed/superseded;
-- pre-release legacy representations are not preserved solely for backward compatibility.
+- runtime-package, campaign, storage, ruleset-lock/inventory/comparison/attestation schemas match their normalized shapes;
+- pre-release legacy representations are rejected rather than preserved solely for backward compatibility.
 
-The current machine tree is not yet normalized to this policy. Machine renumbering/field renaming/hash recalculation remains a separate later task and is not authorized by this documentation change alone.
+The current pre-release machine tree is normalized to this policy. Maintenance audit and focused version-policy tests guard against reintroducing the superseded namespace spellings or mixed generation representations.
