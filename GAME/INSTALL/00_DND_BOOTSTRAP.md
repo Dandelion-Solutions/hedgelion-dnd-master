@@ -1,6 +1,6 @@
 # D&D Master Bootstrap
 
-launcher_version: 19
+launcher_revision: 19
 storage_marker: DND_STORAGE.yaml
 
 This bootstrap runs from a validated local runtime package. Engine installation is NOT a GitHub operation.
@@ -133,10 +133,10 @@ For a completely empty repository, current Connector Git-data commit creation ca
 
 If step 1 succeeded but step 2 failed/interrupted, a retry may recognize the exact standard README and create only the missing marker. Do not create a second README.
 
-Marker v3:
+Storage format generation 3:
 
 ```yaml
-storage_format_version: 3
+storage_format_generation: 3
 repository_role: campaign_storage
 engine:
   baseline:
@@ -304,10 +304,11 @@ Pass exact validated runtime identity to the generator:
 - `--package-id <RUNTIME_PACKAGE.package_id>`;
 - `--source-commit-sha <RUNTIME_PACKAGE.source_commit_sha>` only when non-null;
 - `--package-sha256 <exact ZIP sha256>`;
+- `--ruleset-set-sha256 <resolved ruleset set sha256>`;
 - `--created-at <timestamp>`;
 - authenticated creator through `--creator-github-login`.
 
-The new `MANIFEST.engine.created_with` and `MANIFEST.engine.current` start equal; `created_with` is immutable creation provenance and `current` is the campaign's portable current runtime identity.
+The new `MANIFEST.engine.created_with` and `MANIFEST.engine.current` start equal; `created_with` is immutable creation provenance and `current` is the campaign's portable current runtime identity. `MANIFEST.campaign_contract.created_with` and `.current` start at campaign contract generation 2; the created-with value remains immutable. Ruleset-set digests are explicitly tagged with digest generation 1.
 
 `CAMPAIGN_CARD.yaml` starts as a compact projection:
 - singleplayer: protagonist placeholders, no participant-login list;
