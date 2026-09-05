@@ -113,6 +113,7 @@ read current published HEAD and plan/task state
 -> re-run focused verification
 -> run task-local integration/contract checks required by the plan
 -> compare actual impact with the Impact Envelope
+-> run the mandatory Version Impact Gate and synchronize required bumps/projections
 -> code/spec review for the task
 -> resolve local findings
 -> coherent checkpoint commit
@@ -132,6 +133,25 @@ A worker does not stop merely because:
 - a reviewer finds a local code-quality/spec-compliance defect that can be repaired without changing architecture.
 
 Those are normal implementation events. Resolve them through TDD, systematic debugging, review and the governing spec.
+
+### 4.1 Mandatory Version Impact Gate
+
+The repository-wide Version Impact Gate in `AGENTS.md` applies to **every implementation task and coherent checkpoint**, including tasks whose final result is `VERSION_IMPACT: NONE`.
+
+Use `DEV/RELEASE/VERSIONING.md` and its referenced detailed canonical owner to classify the actual changed owner/consumer set.
+
+For each task/checkpoint:
+
+1. identify affected HDM-owned version/revision/schema/generation namespaces and their owners/projections;
+2. classify each relevant edit against the namespace-specific bump rule;
+3. apply every required bump exactly once for the logical change;
+4. synchronize every required projection/consumer in the same coherent checkpoint;
+5. when no bump is required, verify that the edit is non-material under the owning rule rather than inferring this from filename, file type, diff size or passing CI;
+6. record `VERSION_IMPACT: NONE` or the affected namespace old -> new transitions in task review/completion evidence.
+
+A task is not checkpoint-ready while required version metadata or a required projection is stale. Machine checks are supporting evidence, not a substitute for the semantic classification.
+
+If determining the correct bump would require changing an architectural compatibility/migration rule not already settled by the approved design and versioning owners, that is a System-Impact Gate event. Ordinary mechanically implied bumps and projection synchronization are not Senior escalation events.
 
 ---
 
@@ -167,6 +187,7 @@ COMPLETED_TASKS:
   Task N -> <sha>
 
 CURRENT_VERIFICATION_STATE:
+VERSION_IMPACT: NONE | concise affected namespaces / transitions
 SYSTEM_IMPACT: NONE | SENIOR_REVIEW_REQUIRED
 NEXT_EXACT_TASK:
 KNOWN_BLOCKERS:
@@ -223,7 +244,8 @@ Do not escalate merely for:
 - local refactors preserving the approved interface/ownership/semantics;
 - implementation details that the approved spec settles unambiguously;
 - code-review findings repairable within the existing contract;
-- mechanical schema/catalog/generated-artifact synchronization already required by the approved design.
+- mechanical schema/catalog/generated-artifact synchronization already required by the approved design;
+- version/revision/schema/generation bumps and projection synchronization mechanically required by the current versioning owners.
 
 Use systematic debugging and normal review for those cases.
 
@@ -284,7 +306,7 @@ implementation Task N
 -> Task N+1
 ```
 
-The task reviewer should check both ordinary spec/code quality and **Impact Envelope drift**.
+The task reviewer should check ordinary spec/code quality, **Impact Envelope drift**, and the task's **Version Impact Gate** result.
 
 Reviewer findings that remain inside approved architecture are resolved autonomously. A reviewer finding becomes a Senior event only when it satisfies a system-impact trigger or another existing mandatory human/safety stop.
 
@@ -304,6 +326,7 @@ Examples may include:
 - schema/catalog/currentness mismatch;
 - generated artifact drift;
 - duplicate identity projections;
+- missing or inconsistent mechanically enforceable version/generation projections;
 - forbidden `GAME -> DEV` runtime dependency;
 - undeclared protocol/catalog expansion;
 - package/currentness/provenance mismatch.
@@ -323,6 +346,7 @@ Before reporting a substantial implementation complete, the worker must obtain f
 - maintenance audit;
 - build/package checks when in scope;
 - final code review;
+- completed Version Impact Gate with required bumps/projections synchronized;
 - hosted CI when it is an acceptance surface;
 - remote publication/read-back of the final ref.
 
@@ -334,6 +358,7 @@ FINAL_SHA:
 COMPLETED_TASKS:
 VERIFICATION EVIDENCE:
 FINAL REVIEW EVIDENCE:
+VERSION_IMPACT: NONE | affected namespaces / transitions
 SYSTEM_IMPACT EVENTS / RULINGS:
 KNOWN REMAINING DEBT / FORWARD WORK:
 UNPUBLISHED_WORK: NONE
@@ -362,6 +387,7 @@ The audit asks especially:
 
 - Did implementation conform to the accepted design?
 - Did the actual blast radius remain within or receive explicit rulings against the Impact Envelope?
+- Was version impact assessed against the actual changed owner/consumer set, and were every required bump/projection synchronized?
 - Did any implementation convenience create hidden new architecture or duplicate authority?
 - Were system-impact events surfaced before the disputed change rather than normalized after the fact?
 - Are all required machine contracts, tests, catalogs/schemas and runtime consumers synchronized?
