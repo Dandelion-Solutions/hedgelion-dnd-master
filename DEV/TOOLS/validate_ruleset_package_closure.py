@@ -96,28 +96,50 @@ def current_identity_projection_mismatches(repo_root: Path) -> list[str]:
     closure = load_json_bytes((repo_root / "DEV/CATALOG/ruleset-package-closure.json").read_bytes())
     if closure.get("derived_current_identity") != {
         "authority": "DERIVED_NONAUTHORITATIVE_VERIFICATION_EVIDENCE",
-        "package_content_sha256": package_hash, "ruleset_set_sha256": set_hash,
+        "package_content_sha256": package_hash,
+        "ruleset_set_digest_generation": RULESET_SET_DIGEST_GENERATION,
+        "ruleset_set_sha256": set_hash,
     }:
         mismatches.append("DEV/CATALOG/ruleset-package-closure.json")
     binding = load_json_bytes((repo_root / "DEV/CATALOG/domain-rules-coverage-binding.json").read_bytes())
     expected_binding = {
-        "profile_id": "gameplay_spine.mvp.v1", "package_id": manifest["package_id"],
-        "package_version": manifest["package_version"], "catalog_generation": manifest["catalog_generation"],
-        "gameplay_spine_member": "gameplay-spine-seed.json", "package_content_sha256": package_hash,
+        "profile_id": "gameplay_spine.mvp.v1",
+        "package_id": manifest["package_id"],
+        "package_revision": manifest["package_revision"],
+        "compatibility_family": manifest["compatibility_family"],
+        "compatibility_generation": manifest["compatibility_generation"],
+        "catalog_generation": manifest["catalog_generation"],
+        "gameplay_spine_member": "gameplay-spine-seed.json",
+        "package_content_sha256": package_hash,
+        "ruleset_set_digest_generation": RULESET_SET_DIGEST_GENERATION,
         "ruleset_set_sha256": set_hash,
     }
     if binding != expected_binding or "gameplay-spine-seed.json" not in {row["path"] for row in snapshot.members}:
         mismatches.append("DEV/CATALOG/domain-rules-coverage-binding.json")
     actors = load_json_bytes((repo_root / "DEV/TESTS/fixtures/s6d-07-character-mvp-actors.json").read_bytes())
-    if any(row.get("ruleset_set_sha256") != set_hash for row in actors.get("readiness_evidence", {}).values()):
+    if any(
+        row.get("ruleset_set_digest_generation") != RULESET_SET_DIGEST_GENERATION
+        or row.get("ruleset_set_sha256") != set_hash
+        for row in actors.get("readiness_evidence", {}).values()
+    ):
         mismatches.append("DEV/TESTS/fixtures/s6d-07-character-mvp-actors.json")
     boundary = load_json_bytes((repo_root / "DEV/CATALOG/house-rules-mechanical-boundary.json").read_bytes())
     identity = boundary.get("resolved_ruleset_identity", {})
-    if (identity.get("package_id"), identity.get("package_version"), identity.get("catalog_generation"), identity.get("ruleset_set_sha256")) != (manifest["package_id"], manifest["package_version"], manifest["catalog_generation"], set_hash):
+    expected_identity = {
+        "package_id": manifest["package_id"],
+        "package_revision": manifest["package_revision"],
+        "compatibility_family": manifest["compatibility_family"],
+        "compatibility_generation": manifest["compatibility_generation"],
+        "catalog_generation": manifest["catalog_generation"],
+        "ruleset_set_digest_generation": RULESET_SET_DIGEST_GENERATION,
+        "ruleset_set_sha256": set_hash,
+        "runtime_selection_state": "ACTIVE_VERIFIED_MACHINE_CONTRACT",
+    }
+    if identity != expected_identity:
         mismatches.append("DEV/CATALOG/house-rules-mechanical-boundary.json")
     for rel in CURRENT_IDENTITY_LITERAL_CARRIERS:
         text = (repo_root / rel).read_text(encoding="utf-8")
-        if set_hash not in text or package_hash not in text and rel.endswith("test_s6d_11_ruleset_package_closure.py"):
+        if set_hash not in text or (package_hash not in text and rel.endswith("test_s6d_11_ruleset_package_closure.py")):
             mismatches.append(rel)
     return sorted(mismatches)
 
@@ -159,8 +181,9 @@ def derive_engine_contract_inventory(
             "semantic_sha256": sha256(ENTRY_DOMAIN + canonical_json(payloads)),
         })
     core = {
-        "inventory_schema_version": 1,
+        "inventory_schema_version": 2,
         "engine_version": engine_version,
+        "ruleset_set_digest_generation": RULESET_SET_DIGEST_GENERATION,
         "ruleset_set_sha256": ruleset_set_sha256,
         "items": sorted(items, key=lambda row: row["family"]),
     }
@@ -248,7 +271,7 @@ def validate_integrated_ruleset_package(
     *,
     root_package_ids: list[str],
     engine_version: str,
-    catalog_generation: str,
+    catalog_generation: int,
 ) -> tuple[dict[str, Any], dict[str, PackageSnapshot], dict[str, Any], list[dict[str, str]]]:
     repo_root = Path(repo_root).resolve()
     package_dirs = [repo_root / "GAME/RULES/packages" / package_id for package_id in root_package_ids]
