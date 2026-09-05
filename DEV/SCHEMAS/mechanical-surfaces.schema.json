@@ -5,7 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "catalog_version",
+    "catalog_generation",
     "context_facts",
     "accessors",
     "selectors",
@@ -14,614 +14,156 @@
     "consumer_permission_contract"
   ],
   "properties": {
-    "catalog_version": {
-      "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-    },
+    "catalog_generation": {"const": 2},
     "context_facts": {
       "type": "object",
-      "propertyNames": {
-        "$ref": "#/$defs/machineId"
-      },
-      "additionalProperties": {
-        "$ref": "#/$defs/contextFactMetadata"
-      }
+      "propertyNames": {"$ref": "#/$defs/machineId"},
+      "additionalProperties": {"$ref": "#/$defs/contextFactMetadata"}
     },
     "accessors": {
       "type": "object",
-      "propertyNames": {
-        "$ref": "#/$defs/machineId"
-      },
-      "additionalProperties": {
-        "$ref": "#/$defs/accessorMetadata"
-      }
+      "propertyNames": {"$ref": "#/$defs/machineId"},
+      "additionalProperties": {"$ref": "#/$defs/accessorMetadata"}
     },
     "selectors": {
       "type": "object",
-      "propertyNames": {
-        "$ref": "#/$defs/machineId"
-      },
-      "additionalProperties": {
-        "$ref": "#/$defs/selectorMetadata"
-      }
+      "propertyNames": {"$ref": "#/$defs/machineId"},
+      "additionalProperties": {"$ref": "#/$defs/selectorMetadata"}
     },
     "derived_nodes": {
       "type": "object",
       "minProperties": 1,
-      "propertyNames": {
-        "enum": [
-          "effect_availability",
-          "effect_arbitration",
-          "condition_aggregation",
-          "condition_intrinsic"
-        ]
-      },
-      "additionalProperties": {
-        "$ref": "#/$defs/derivedNodeMetadata"
-      }
+      "propertyNames": {"enum": ["effect_availability", "effect_arbitration", "condition_aggregation", "condition_intrinsic"]},
+      "additionalProperties": {"$ref": "#/$defs/derivedNodeMetadata"}
     },
-    "dependency_graph_contract": {
-      "$ref": "#/$defs/dependencyGraphContract"
-    },
-    "consumer_permission_contract": {
-      "$ref": "#/$defs/consumerPermissionContract"
-    }
+    "dependency_graph_contract": {"$ref": "#/$defs/dependencyGraphContract"},
+    "consumer_permission_contract": {"$ref": "#/$defs/consumerPermissionContract"}
   },
   "$defs": {
-    "machineId": {
-      "type": "string",
-      "minLength": 1,
-      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
-    },
-    "idSet": {
-      "type": "array",
-      "uniqueItems": true,
-      "items": {
-        "$ref": "#/$defs/machineId"
-      }
-    },
-    "dependencyRef": {
-      "type": "string",
-      "pattern": "^(?:selector|accessor|derived):[A-Za-z][A-Za-z0-9_.:-]*$"
-    },
-    "dependencyKindSet": {
-      "type": "array",
-      "uniqueItems": true,
-      "items": {
-        "enum": [
-          "selector",
-          "accessor",
-          "derived"
-        ]
-      }
-    },
-    "inputClassSet": {
-      "type": "array",
-      "minItems": 1,
-      "uniqueItems": true,
-      "items": {
-        "enum": [
-          "ENGINE_STATE",
-          "INVOCATION_ADJUDICATED"
-        ]
-      }
-    },
+    "machineId": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/machineId"}},
+    "dependencyRef": {"type": "string", "pattern": "^(?:selector|accessor|derived):[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "dependencyKindSet": {"type": "array", "uniqueItems": true, "items": {"enum": ["selector", "accessor", "derived"]}},
+    "inputClassSet": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["ENGINE_STATE", "INVOCATION_ADJUDICATED"]}},
     "contextFactMetadata": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "disposition",
-        "source_class",
-        "value_type",
-        "producer",
-        "acceptance_authority",
-        "occurrence_scope",
-        "provenance_policy",
-        "missing_policy",
-        "permitted_consumer_ids",
-        "retention_policy",
-        "portable_realization_owner",
-        "activation_trigger",
-        "binding_policy",
-        "optional_boundary_context"
-      ],
+      "required": ["disposition", "source_class", "value_type", "producer", "acceptance_authority", "occurrence_scope", "provenance_policy", "missing_policy", "permitted_consumer_ids", "retention_policy", "portable_realization_owner", "activation_trigger", "binding_policy", "optional_boundary_context"],
       "properties": {
-        "disposition": {
-          "enum": [
-            "ACTIVE_ADMITTED",
-            "DORMANT_RESERVED"
-          ]
-        },
-        "source_class": {
-          "const": "INVOCATION_ADJUDICATED"
-        },
-        "value_type": {
-          "const": "boolean"
-        },
-        "producer": {
-          "const": "HOST_LLM_BOUNDARY"
-        },
-        "acceptance_authority": {
-          "const": "ACTIVITY_INVOCATION_VALIDATOR"
-        },
-        "occurrence_scope": {
-          "const": "ACTIVITY_RESOLUTION_GENERATION"
-        },
-        "provenance_policy": {
-          "const": "STABLE_REF_AND_FINGERPRINT_REQUIRED"
-        },
-        "missing_policy": {
-          "const": "TYPED_MISSING_INPUT"
-        },
-        "permitted_consumer_ids": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "$ref": "#/$defs/contextFactConsumerId"
-          }
-        },
-        "retention_policy": {
-          "const": "FIXED_CAUSAL_INPUT_WHILE_ACCEPTED_WORK_LIVE"
-        },
-        "portable_realization_owner": {
-          "const": "DEV/SCHEMAS/invocation-fact.schema.json"
-        },
-        "activation_trigger": {
-          "enum": [
-            "S6D-07_TO_09_EXACT_COMPILED_CONSUMER",
-            "SATISFIED_BY_S6D_09_EXACT_SPATIAL_CONSUMERS"
-          ]
-        },
-        "binding_policy": {
-          "const": "EXACT_COMPILED_CONSUMER_ROLES"
-        },
-        "optional_boundary_context": {
-          "const": "ONLY_WHEN_INVOCATION_ARISES_FROM_BOUNDARY"
-        }
+        "disposition": {"enum": ["ACTIVE_ADMITTED", "DORMANT_RESERVED"]},
+        "source_class": {"const": "INVOCATION_ADJUDICATED"},
+        "value_type": {"const": "boolean"},
+        "producer": {"const": "HOST_LLM_BOUNDARY"},
+        "acceptance_authority": {"const": "ACTIVITY_INVOCATION_VALIDATOR"},
+        "occurrence_scope": {"const": "ACTIVITY_RESOLUTION_GENERATION"},
+        "provenance_policy": {"const": "STABLE_REF_AND_FINGERPRINT_REQUIRED"},
+        "missing_policy": {"const": "TYPED_MISSING_INPUT"},
+        "permitted_consumer_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/contextFactConsumerId"}},
+        "retention_policy": {"const": "FIXED_CAUSAL_INPUT_WHILE_ACCEPTED_WORK_LIVE"},
+        "portable_realization_owner": {"const": "DEV/SCHEMAS/invocation-fact.schema.json"},
+        "activation_trigger": {"enum": ["S6D-07_TO_09_EXACT_COMPILED_CONSUMER", "SATISFIED_BY_S6D_09_EXACT_SPATIAL_CONSUMERS"]},
+        "binding_policy": {"const": "EXACT_COMPILED_CONSUMER_ROLES"},
+        "optional_boundary_context": {"const": "ONLY_WHEN_INVOCATION_ARISES_FROM_BOUNDARY"}
       },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "disposition": {
-                "const": "ACTIVE_ADMITTED"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "permitted_consumer_ids": {
-                "minItems": 1
-              },
-              "activation_trigger": {
-                "const": "SATISFIED_BY_S6D_09_EXACT_SPATIAL_CONSUMERS"
-              }
-            }
-          },
-          "else": {
-            "properties": {
-              "permitted_consumer_ids": {
-                "maxItems": 0
-              },
-              "activation_trigger": {
-                "const": "S6D-07_TO_09_EXACT_COMPILED_CONSUMER"
-              }
-            }
-          }
-        }
-      ]
+      "allOf": [{"if": {"properties": {"disposition": {"const": "ACTIVE_ADMITTED"}}}, "then": {"properties": {"permitted_consumer_ids": {"minItems": 1}, "activation_trigger": {"const": "SATISFIED_BY_S6D_09_EXACT_SPATIAL_CONSUMERS"}}}, "else": {"properties": {"permitted_consumer_ids": {"maxItems": 0}, "activation_trigger": {"const": "S6D-07_TO_09_EXACT_COMPILED_CONSUMER"}}}}]
     },
     "accessorMetadata": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "source_class",
-        "value_type",
-        "subject_kinds",
-        "dependencies",
-        "disposition",
-        "input_class",
-        "argument_kinds",
-        "implicit_binding_kinds",
-        "missing_policy",
-        "permitted_consumer_kinds",
-        "state_view_policy",
-        "cache_policy",
-        "permitted_consumer_ids"
-      ],
+      "required": ["source_class", "value_type", "subject_kinds", "dependencies", "disposition", "input_class", "argument_kinds", "implicit_binding_kinds", "missing_policy", "permitted_consumer_kinds", "state_view_policy", "cache_policy", "permitted_consumer_ids"],
       "properties": {
-        "source_class": {
-          "enum": [
-            "DIRECT_AUTHORITY",
-            "DERIVED_MECHANICAL"
-          ]
-        },
-        "value_type": {
-          "enum": [
-            "boolean",
-            "integer",
-            "number",
-            "machine_id",
-            "scalar"
-          ]
-        },
-        "subject_kinds": {
-          "$ref": "#/$defs/idSet"
-        },
-        "dependencies": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "$ref": "#/$defs/dependencyRef"
-          }
-        },
-        "disposition": {
-          "enum": [
-            "ACTIVE_ADMITTED",
-            "DORMANT_RESERVED"
-          ]
-        },
-        "input_class": {
-          "const": "ENGINE_STATE"
-        },
-        "argument_kinds": {
-          "type": "array",
-          "uniqueItems": true,
-          "minItems": 1,
-          "items": {
-            "enum": [
-              "subject",
-              "condition_definition",
-              "resource_definition",
-              "parameter_definition"
-            ]
-          }
-        },
-        "implicit_binding_kinds": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "enum": [
-              "owner_effect_application"
-            ]
-          }
-        },
-        "missing_policy": {
-          "enum": [
-            "TYPED_HYDRATION_REQUIRED",
-            "FALSE_WHEN_NO_EFFECTIVE_APPLICATION",
-            "ABSENT_WHEN_NO_EFFECTIVE_VALUE",
-            "INVALID_OWNER_BINDING_OR_DECLARATION"
-          ]
-        },
-        "permitted_consumer_kinds": {
-          "type": "array",
-          "uniqueItems": true,
-          "minItems": 1,
-          "items": {
-            "enum": [
-              "mechanical_predicate",
-              "accessor",
-              "derived"
-            ]
-          }
-        },
-        "state_view_policy": {
-          "const": "COMMITTED_OR_PROSPECTIVE_PINNED"
-        },
-        "cache_policy": {
-          "const": "VIEW_BINDING_CATALOG_REVISION_KEYED"
-        },
-        "activation_trigger": {
-          "const": "S6D-08_VALUED_CONDITION_AGGREGATION"
-        },
-        "permitted_consumer_ids": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "$ref": "#/$defs/consumerRef"
-          }
-        }
+        "source_class": {"enum": ["DIRECT_AUTHORITY", "DERIVED_MECHANICAL"]},
+        "value_type": {"enum": ["boolean", "integer", "number", "machine_id", "scalar"]},
+        "subject_kinds": {"$ref": "#/$defs/idSet"},
+        "dependencies": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/dependencyRef"}},
+        "disposition": {"enum": ["ACTIVE_ADMITTED", "DORMANT_RESERVED"]},
+        "input_class": {"const": "ENGINE_STATE"},
+        "argument_kinds": {"type": "array", "uniqueItems": true, "minItems": 1, "items": {"enum": ["subject", "condition_definition", "resource_definition", "parameter_definition"]}},
+        "implicit_binding_kinds": {"type": "array", "uniqueItems": true, "items": {"enum": ["owner_effect_application"]}},
+        "missing_policy": {"enum": ["TYPED_HYDRATION_REQUIRED", "FALSE_WHEN_NO_EFFECTIVE_APPLICATION", "ABSENT_WHEN_NO_EFFECTIVE_VALUE", "INVALID_OWNER_BINDING_OR_DECLARATION"]},
+        "permitted_consumer_kinds": {"type": "array", "uniqueItems": true, "minItems": 1, "items": {"enum": ["mechanical_predicate", "accessor", "derived"]}},
+        "state_view_policy": {"const": "COMMITTED_OR_PROSPECTIVE_PINNED"},
+        "cache_policy": {"const": "VIEW_BINDING_CATALOG_REVISION_KEYED"},
+        "activation_trigger": {"const": "S6D-08_VALUED_CONDITION_AGGREGATION"},
+        "permitted_consumer_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/consumerRef"}}
       }
     },
     "selectorMetadata": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "allowed_operations",
-        "operation_contracts",
-        "contribution_type",
-        "result_type",
-        "result_constraints",
-        "subject_kinds",
-        "binding_kinds",
-        "allowed_dependency_kinds",
-        "allowed_input_classes",
-        "permitted_context_fact_ids",
-        "static_dependencies",
-        "combination_policy",
-        "resolution_owner",
-        "trace_policy"
-      ],
+      "required": ["allowed_operations", "operation_contracts", "contribution_type", "result_type", "result_constraints", "subject_kinds", "binding_kinds", "allowed_dependency_kinds", "allowed_input_classes", "permitted_context_fact_ids", "static_dependencies", "combination_policy", "resolution_owner", "trace_policy"],
       "properties": {
-        "allowed_operations": {
-          "$ref": "#/$defs/idSet"
-        },
-        "operation_contracts": {
-          "type": "object",
-          "propertyNames": {
-            "$ref": "#/$defs/machineId"
-          },
-          "additionalProperties": {
-            "$ref": "#/$defs/operationContract"
-          }
-        },
-        "contribution_type": {
-          "enum": [
-            "numeric",
-            "applicability",
-            "roll_modifier"
-          ]
-        },
-        "result_type": {
-          "enum": [
-            "integer",
-            "boolean",
-            "roll_modifier_set"
-          ]
-        },
-        "result_constraints": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "minimum": {
-              "type": "integer"
-            }
-          }
-        },
-        "subject_kinds": {
-          "$ref": "#/$defs/idSet"
-        },
-        "binding_kinds": {
-          "type": "array",
-          "items": {
-            "enum": [
-              "subject",
-              "ability_definition",
-              "activity_definition",
-              "condition_definition",
-              "damage_definition",
-              "resource_definition",
-              "spellcasting_definition"
-            ]
-          },
-          "minItems": 1,
-          "uniqueItems": true
-        },
-        "allowed_dependency_kinds": {
-          "$ref": "#/$defs/dependencyKindSet"
-        },
-        "allowed_input_classes": {
-          "$ref": "#/$defs/inputClassSet"
-        },
-        "permitted_context_fact_ids": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/machineId"
-          },
-          "uniqueItems": true
-        },
-        "static_dependencies": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/dependencyRef"
-          },
-          "uniqueItems": true
-        },
-        "combination_policy": {
-          "enum": [
-            "integer_additive_v1",
-            "immunity_any_true_v1",
-            "roll_advantage_cancellation_v1"
-          ]
-        },
-        "resolution_owner": {
-          "const": "SELECTOR_METADATA"
-        },
-        "trace_policy": {
-          "const": "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
-        }
+        "allowed_operations": {"$ref": "#/$defs/idSet"},
+        "operation_contracts": {"type": "object", "propertyNames": {"$ref": "#/$defs/machineId"}, "additionalProperties": {"$ref": "#/$defs/operationContract"}},
+        "contribution_type": {"enum": ["numeric", "applicability", "roll_modifier"]},
+        "result_type": {"enum": ["integer", "boolean", "roll_modifier_set"]},
+        "result_constraints": {"type": "object", "additionalProperties": false, "properties": {"minimum": {"type": "integer"}}},
+        "subject_kinds": {"$ref": "#/$defs/idSet"},
+        "binding_kinds": {"type": "array", "items": {"enum": ["subject", "ability_definition", "activity_definition", "condition_definition", "damage_definition", "resource_definition", "spellcasting_definition"]}, "minItems": 1, "uniqueItems": true},
+        "allowed_dependency_kinds": {"$ref": "#/$defs/dependencyKindSet"},
+        "allowed_input_classes": {"$ref": "#/$defs/inputClassSet"},
+        "permitted_context_fact_ids": {"type": "array", "items": {"$ref": "#/$defs/machineId"}, "uniqueItems": true},
+        "static_dependencies": {"type": "array", "items": {"$ref": "#/$defs/dependencyRef"}, "uniqueItems": true},
+        "combination_policy": {"enum": ["integer_additive_v1", "immunity_any_true_v1", "roll_advantage_cancellation_v1"]},
+        "resolution_owner": {"const": "SELECTOR_METADATA"},
+        "trace_policy": {"const": "RETAIN_ACCEPTED_REJECTED_PROVENANCE"}
       }
     },
     "derivedNodeMetadata": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "allowed_dependency_kinds",
-        "allowed_input_classes",
-        "dependencies",
-        "disposition",
-        "result_role",
-        "permitted_consumer_ids",
-        "permitted_context_fact_ids",
-        "state_view_policy",
-        "missing_policy",
-        "cache_policy"
-      ],
+      "required": ["allowed_dependency_kinds", "allowed_input_classes", "dependencies", "disposition", "result_role", "permitted_consumer_ids", "permitted_context_fact_ids", "state_view_policy", "missing_policy", "cache_policy"],
       "properties": {
-        "allowed_dependency_kinds": {
-          "$ref": "#/$defs/dependencyKindSet"
-        },
-        "allowed_input_classes": {
-          "$ref": "#/$defs/inputClassSet"
-        },
-        "dependencies": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "$ref": "#/$defs/dependencyRef"
-          }
-        },
-        "disposition": {
-          "const": "ACTIVE_INTERNAL"
-        },
-        "result_role": {
-          "enum": [
-            "effect_member_set",
-            "condition_aggregate",
-            "rule_element_set"
-          ]
-        },
-        "permitted_consumer_ids": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "$ref": "#/$defs/consumerRef"
-          }
-        },
-        "permitted_context_fact_ids": {
-          "type": "array",
-          "maxItems": 0,
-          "items": {
-            "$ref": "#/$defs/machineId"
-          }
-        },
-        "state_view_policy": {
-          "const": "COMMITTED_OR_PROSPECTIVE_PINNED"
-        },
-        "missing_policy": {
-          "const": "PROPAGATE_TYPED_INPUT_FAILURE"
-        },
-        "cache_policy": {
-          "const": "DISPOSABLE_VIEW_BINDING_CATALOG_REVISION_KEYED"
-        }
+        "allowed_dependency_kinds": {"$ref": "#/$defs/dependencyKindSet"},
+        "allowed_input_classes": {"$ref": "#/$defs/inputClassSet"},
+        "dependencies": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/dependencyRef"}},
+        "disposition": {"const": "ACTIVE_INTERNAL"},
+        "result_role": {"enum": ["effect_member_set", "condition_aggregate", "rule_element_set"]},
+        "permitted_consumer_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/consumerRef"}},
+        "permitted_context_fact_ids": {"type": "array", "maxItems": 0, "items": {"$ref": "#/$defs/machineId"}},
+        "state_view_policy": {"const": "COMMITTED_OR_PROSPECTIVE_PINNED"},
+        "missing_policy": {"const": "PROPAGATE_TYPED_INPUT_FAILURE"},
+        "cache_policy": {"const": "DISPOSABLE_VIEW_BINDING_CATALOG_REVISION_KEYED"}
       }
     },
     "operationContract": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "value_kind",
-        "normalization",
-        "constraints"
-      ],
+      "required": ["value_kind", "normalization", "constraints"],
       "properties": {
-        "value_kind": {
-          "enum": [
-            "numeric_scalar",
-            "boolean_constant"
-          ]
-        },
-        "normalization": {
-          "enum": [
-            "SUM",
-            "ANY_TRUE"
-          ]
-        },
-        "constraints": {
-          "type": "array",
-          "items": {
-            "enum": [
-              "finite_integer",
-              "literal_true",
-              "effect.innate_sorcery_source_only",
-              "bound_activity_family.activity.spell_attack_only"
-            ]
-          },
-          "minItems": 1,
-          "uniqueItems": true
-        },
-        "fixed_value": {
-          "type": [
-            "string",
-            "number",
-            "integer",
-            "boolean"
-          ]
-        }
+        "value_kind": {"enum": ["numeric_scalar", "boolean_constant"]},
+        "normalization": {"enum": ["SUM", "ANY_TRUE"]},
+        "constraints": {"type": "array", "items": {"enum": ["finite_integer", "literal_true", "effect.innate_sorcery_source_only", "bound_activity_family.activity.spell_attack_only"]}, "minItems": 1, "uniqueItems": true},
+        "fixed_value": {"type": ["string", "number", "integer", "boolean"]}
       }
     },
     "dependencyGraphContract": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "scope",
-        "node_kinds",
-        "edge_sources",
-        "cycle_policy",
-        "input_permission_policy",
-        "state_view_policy",
-        "cache_restore_policy"
-      ],
+      "required": ["scope", "node_kinds", "edge_sources", "cycle_policy", "input_permission_policy", "state_view_policy", "cache_restore_policy"],
       "properties": {
-        "scope": {
-          "const": "HYDRATED_BOUND_INSTANCE_DAG"
-        },
-        "node_kinds": {
-          "type": "array",
-          "const": [
-            "selector",
-            "accessor",
-            "derived"
-          ]
-        },
-        "edge_sources": {
-          "type": "array",
-          "const": [
-            "registered_static",
-            "definition_bound",
-            "prospective_bound"
-          ]
-        },
-        "cycle_policy": {
-          "const": "REJECT_IF_ACYCLICITY_UNPROVEN"
-        },
-        "input_permission_policy": {
-          "const": "TRANSITIVE_EXACT"
-        },
-        "state_view_policy": {
-          "const": "ONE_PINNED_COMMITTED_OR_PROSPECTIVE_VIEW"
-        },
-        "cache_restore_policy": {
-          "const": "REBUILD_NEVER_AUTHORITY"
-        }
+        "scope": {"const": "HYDRATED_BOUND_INSTANCE_DAG"},
+        "node_kinds": {"type": "array", "const": ["selector", "accessor", "derived"]},
+        "edge_sources": {"type": "array", "const": ["registered_static", "definition_bound", "prospective_bound"]},
+        "cycle_policy": {"const": "REJECT_IF_ACYCLICITY_UNPROVEN"},
+        "input_permission_policy": {"const": "TRANSITIVE_EXACT"},
+        "state_view_policy": {"const": "ONE_PINNED_COMMITTED_OR_PROSPECTIVE_VIEW"},
+        "cache_restore_policy": {"const": "REBUILD_NEVER_AUTHORITY"}
       }
     },
     "consumerPermissionContract": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "policy",
-        "dormant_policy",
-        "dynamic_consumer_policy",
-        "binding_policy",
-        "structural_schema_policy"
-      ],
+      "required": ["policy", "dormant_policy", "dynamic_consumer_policy", "binding_policy", "structural_schema_policy"],
       "properties": {
-        "policy": {
-          "const": "EXACT_ID_AND_BINDING_REQUIRED"
-        },
-        "dormant_policy": {
-          "const": "REJECT_BEFORE_INPUT_CLASS_CHECK"
-        },
-        "dynamic_consumer_policy": {
-          "const": "COMPILED_ID_MUST_APPEAR_IN_ITEM_ALLOWLIST"
-        },
-        "binding_policy": {
-          "const": "SUBJECT_DEFINITION_OWNER_AND_VIEW_MUST_MATCH"
-        },
-        "structural_schema_policy": {
-          "const": "SHAPE_ONLY_NOT_EXECUTION_AUTHORITY"
-        }
+        "policy": {"const": "EXACT_ID_AND_BINDING_REQUIRED"},
+        "dormant_policy": {"const": "REJECT_BEFORE_INPUT_CLASS_CHECK"},
+        "dynamic_consumer_policy": {"const": "COMPILED_ID_MUST_APPEAR_IN_ITEM_ALLOWLIST"},
+        "binding_policy": {"const": "SUBJECT_DEFINITION_OWNER_AND_VIEW_MUST_MATCH"},
+        "structural_schema_policy": {"const": "SHAPE_ONLY_NOT_EXECUTION_AUTHORITY"}
       }
     },
-    "contextFactConsumerId": {
-      "type": "string",
-      "pattern": "^activity\\.[A-Za-z][A-Za-z0-9_.:-]*$"
-    },
-    "consumerRef": {
-      "type": "string",
-      "pattern": "^(?:selector|accessor|derived|activity|predicate):[A-Za-z][A-Za-z0-9_.:#-]*$"
-    }
+    "contextFactConsumerId": {"type": "string", "pattern": "^activity\\.[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "consumerRef": {"type": "string", "pattern": "^(?:selector|accessor|derived|activity|predicate):[A-Za-z][A-Za-z0-9_.:#-]*$"}
   }
 }
