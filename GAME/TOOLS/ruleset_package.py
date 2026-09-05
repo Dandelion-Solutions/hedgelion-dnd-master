@@ -14,12 +14,19 @@ from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
 
 
-PACKAGE_DOMAIN = b"HDM_RULESET_PACKAGE_SNAPSHOT_V1\n"
-SET_DOMAIN = b"HDM_RESOLVED_RULESET_SET_V1\n"
-ENTRY_DOMAIN = b"HDM_RULESET_SEMANTIC_ENTRY_V1\n"
-EVIDENCE_DOMAIN = b"HDM_RULESET_COMPATIBILITY_EVIDENCE_V1\n"
-INVENTORY_DOMAIN = b"HDM_RULESET_ENGINE_CONTRACT_INVENTORY_V1\n"
-ATTESTATION_DOMAIN = b"HDM_RULESET_CONFORMANCE_ATTESTATION_V1\n"
+PACKAGE_SNAPSHOT_DIGEST_GENERATION = 1
+RULESET_SET_DIGEST_GENERATION = 1
+SEMANTIC_ENTRY_DIGEST_GENERATION = 1
+COMPATIBILITY_EVIDENCE_DIGEST_GENERATION = 1
+ENGINE_CONTRACT_INVENTORY_DIGEST_GENERATION = 1
+CONFORMANCE_ATTESTATION_DIGEST_GENERATION = 1
+
+PACKAGE_DOMAIN = b"HDM_RULESET_PACKAGE_SNAPSHOT/1\n"
+SET_DOMAIN = b"HDM_RESOLVED_RULESET_SET/1\n"
+ENTRY_DOMAIN = b"HDM_RULESET_SEMANTIC_ENTRY/1\n"
+EVIDENCE_DOMAIN = b"HDM_RULESET_COMPATIBILITY_EVIDENCE/1\n"
+INVENTORY_DOMAIN = b"HDM_RULESET_ENGINE_CONTRACT_INVENTORY/1\n"
+ATTESTATION_DOMAIN = b"HDM_RULESET_CONFORMANCE_ATTESTATION/1\n"
 MANIFEST_NAME = "ruleset-package-manifest.json"
 
 LOAD_FAILURE_REASONS = (
@@ -81,6 +88,10 @@ def sha256(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def _valid_digest(value: Any) -> bool:
+    return isinstance(value, str) and len(value) == 64 and all(ch in "0123456789abcdef" for ch in value)
+
+
 def _require_exact_keys(value: Any, expected: set[str], label: str) -> dict[str, Any]:
     if not isinstance(value, dict) or set(value) != expected:
         actual = sorted(value) if isinstance(value, dict) else type(value).__name__
@@ -101,19 +112,27 @@ def _normalize_member_path(value: Any) -> str:
     return value
 
 
-def validate_manifest(value: Any, *, engine_version: str, catalog_generation: str) -> dict[str, Any]:
-    expected = {"manifest_schema_version", "package_id", "package_version", "compatibility_id", "engine_requirement", "catalog_generation", "owned_namespaces", "dependencies", "content_files"}
+def validate_manifest(value: Any, *, engine_version: str, catalog_generation: int) -> dict[str, Any]:
+    expected = {
+        "manifest_schema_version", "package_id", "package_revision",
+        "compatibility_family", "compatibility_generation", "engine_requirement",
+        "catalog_generation", "owned_namespaces", "dependencies", "content_files",
+    }
     manifest = _require_exact_keys(value, expected, "manifest")
-    if manifest["manifest_schema_version"] != 1:
+    if manifest["manifest_schema_version"] != 2:
         raise RulesetContractError("invalid_manifest", "unsupported manifest_schema_version")
-    for key in ("package_id", "compatibility_id"):
+    for key in ("package_id", "compatibility_family"):
         if not _valid_id(manifest[key]):
             raise RulesetContractError("invalid_manifest", f"invalid {key}")
-    if not isinstance(manifest["package_version"], str) or not manifest["package_version"]:
-        raise RulesetContractError("invalid_manifest", "invalid package_version")
+    if not isinstance(manifest["package_revision"], int) or isinstance(manifest["package_revision"], bool) or manifest["package_revision"] < 1:
+        raise RulesetContractError("invalid_manifest", "invalid package_revision")
+    if not isinstance(manifest["compatibility_generation"], int) or isinstance(manifest["compatibility_generation"], bool) or manifest["compatibility_generation"] < 1:
+        raise RulesetContractError("invalid_manifest", "invalid compatibility_generation")
     req = _require_exact_keys(manifest["engine_requirement"], {"engine_version"}, "engine_requirement")
     if req["engine_version"] != engine_version:
         raise RulesetContractError("engine_incompatibility", f"requires {req['engine_version']!r}, engine is {engine_version!r}")
+    if not isinstance(catalog_generation, int) or isinstance(catalog_generation, bool):
+        raise RulesetContractError("catalog_incompatibility", "caller catalog_generation must be integer")
     if manifest["catalog_generation"] != catalog_generation:
         raise RulesetContractError("catalog_incompatibility", "catalog_generation mismatch")
     claims = manifest["owned_namespaces"]
@@ -125,7 +144,7 @@ def validate_manifest(value: Any, *, engine_version: str, catalog_generation: st
     seen_dep: set[str] = set()
     for dep in dependencies:
         dep = _require_exact_keys(dep, {"package_id", "content_sha256"}, "dependency")
-        if not _valid_id(dep["package_id"]) or not isinstance(dep["content_sha256"], str) or len(dep["content_sha256"]) != 64:
+        if not _valid_id(dep["package_id"]) or not _valid_digest(dep["content_sha256"]):
             raise RulesetContractError("invalid_manifest", "invalid dependency identity")
         if dep["package_id"] in seen_dep:
             raise RulesetContractError("ambiguous_dependency", f"duplicate dependency {dep['package_id']}")
@@ -140,9 +159,9 @@ def validate_manifest(value: Any, *, engine_version: str, catalog_generation: st
         raise RulesetContractError("invalid_manifest", "case-fold-colliding content file")
     if MANIFEST_NAME not in normalized:
         raise RulesetContractError("invalid_manifest", "manifest must include itself in content_files")
-    forbidden = {"content_sha256", "content_set_sha256", "sha256"}
+    forbidden = {"content_sha256", "content_set_sha256", "sha256", "package_version", "compatibility_id"}
     if forbidden.intersection(manifest):
-        raise RulesetContractError("invalid_manifest", "manifest may not claim snapshot/member digest authority")
+        raise RulesetContractError("invalid_manifest", "manifest may not carry obsolete or snapshot/member digest authority")
     return manifest
 
 
@@ -160,6 +179,7 @@ def _entry_hash(value: Any) -> str:
 
 
 def _stable_row_key(row: dict[str, Any], index: int) -> str | None:
+    del index
     for key in ("id", "policy_id", "transition_id", "route_id", "edge_key", "key", "name"):
         value = row.get(key)
         if isinstance(value, str) and value:
@@ -215,13 +235,17 @@ def semantic_entries(package_id: str, path: str, value: Any) -> dict[str, dict[s
     return entries
 
 
-def build_snapshot(package_dir: Path, *, engine_version: str, catalog_generation: str) -> PackageSnapshot:
+def build_snapshot(package_dir: Path, *, engine_version: str, catalog_generation: int) -> PackageSnapshot:
     package_dir = Path(package_dir).resolve()
     manifest_path = package_dir / MANIFEST_NAME
     if not manifest_path.is_file() or manifest_path.is_symlink():
         raise RulesetContractError("invalid_manifest", f"missing or symlink manifest: {manifest_path}")
     manifest_raw = manifest_path.read_bytes()
-    manifest = validate_manifest(load_json_bytes(manifest_raw, failure_reason="invalid_manifest"), engine_version=engine_version, catalog_generation=catalog_generation)
+    manifest = validate_manifest(
+        load_json_bytes(manifest_raw, failure_reason="invalid_manifest"),
+        engine_version=engine_version,
+        catalog_generation=catalog_generation,
+    )
     members: list[dict[str, str]] = []
     entries: dict[str, dict[str, str]] = {}
     for rel in sorted(manifest["content_files"]):
@@ -243,6 +267,7 @@ def build_snapshot(package_dir: Path, *, engine_version: str, catalog_generation
 def _detect_cycle(graph: dict[str, list[str]]) -> None:
     visiting: set[str] = set()
     visited: set[str] = set()
+
     def visit(node: str) -> None:
         if node in visiting:
             raise RulesetContractError("dependency_cycle", f"cycle at {node}")
@@ -253,11 +278,15 @@ def _detect_cycle(graph: dict[str, list[str]]) -> None:
             visit(dep)
         visiting.remove(node)
         visited.add(node)
+
     for node in sorted(graph):
         visit(node)
 
 
-def build_resolved_lock(package_dirs: Iterable[Path], *, root_package_ids: Iterable[str], engine_version: str, catalog_generation: str) -> tuple[dict[str, Any], dict[str, PackageSnapshot]]:
+def build_resolved_lock(
+    package_dirs: Iterable[Path], *, root_package_ids: Iterable[str],
+    engine_version: str, catalog_generation: int,
+) -> tuple[dict[str, Any], dict[str, PackageSnapshot]]:
     snapshots: dict[str, PackageSnapshot] = {}
     for package_dir in package_dirs:
         snap = build_snapshot(package_dir, engine_version=engine_version, catalog_generation=catalog_generation)
@@ -309,88 +338,113 @@ def build_resolved_lock(package_dirs: Iterable[Path], *, root_package_ids: Itera
                 if "." in semantic_id:
                     namespace_claim = semantic_id.split(".", 1)[0] + ".*"
                     if namespace_claim not in snap.manifest["owned_namespaces"]:
-                        raise RulesetContractError(
-                            "namespace_conflict",
-                            f"{semantic_id} is not covered by a namespace owned by {package_id}",
-                        )
+                        raise RulesetContractError("namespace_conflict", f"{semantic_id} is not covered by a namespace owned by {package_id}")
     packages: list[dict[str, Any]] = []
     for package_id in sorted(closure):
         snap = snapshots[package_id]
         packages.append({
             "package_id": package_id,
-            "package_version": snap.manifest["package_version"],
-            "compatibility_id": snap.manifest["compatibility_id"],
+            "package_revision": snap.manifest["package_revision"],
+            "compatibility_family": snap.manifest["compatibility_family"],
+            "compatibility_generation": snap.manifest["compatibility_generation"],
             "content_sha256": snap.content_sha256,
             "catalog_generation": snap.manifest["catalog_generation"],
             "owned_namespaces": sorted(snap.manifest["owned_namespaces"]),
             "dependencies": sorted(snap.manifest["dependencies"], key=lambda row: row["package_id"]),
             "members": list(snap.members),
         })
-    core = {"lock_schema_version": 1, "root_package_ids": roots, "packages": packages}
+    core = {
+        "lock_schema_version": 2,
+        "ruleset_set_digest_generation": RULESET_SET_DIGEST_GENERATION,
+        "root_package_ids": roots,
+        "packages": packages,
+    }
     lock = dict(core)
     lock["ruleset_set_sha256"] = sha256(SET_DOMAIN + canonical_json(core))
     return lock, snapshots
 
 
+def validate_resolved_lock(value: Any) -> dict[str, Any]:
+    expected = {"lock_schema_version", "ruleset_set_digest_generation", "root_package_ids", "packages", "ruleset_set_sha256"}
+    lock = _require_exact_keys(value, expected, "resolved ruleset lock")
+    if lock["lock_schema_version"] != 2 or lock["ruleset_set_digest_generation"] != RULESET_SET_DIGEST_GENERATION:
+        raise RulesetContractError("resolved_set_mismatch", "unsupported ruleset lock/digest generation")
+    if not isinstance(lock["root_package_ids"], list) or not isinstance(lock["packages"], list):
+        raise RulesetContractError("resolved_set_mismatch", "invalid resolved ruleset lock collections")
+    for row in lock["packages"]:
+        row = _require_exact_keys(row, {
+            "package_id", "package_revision", "compatibility_family", "compatibility_generation",
+            "content_sha256", "catalog_generation", "owned_namespaces", "dependencies", "members",
+        }, "resolved package row")
+        if not _valid_id(row["package_id"]) or not _valid_id(row["compatibility_family"]):
+            raise RulesetContractError("resolved_set_mismatch", "invalid resolved package identity")
+        if not isinstance(row["package_revision"], int) or isinstance(row["package_revision"], bool) or row["package_revision"] < 1:
+            raise RulesetContractError("resolved_set_mismatch", "invalid package_revision")
+        if not isinstance(row["compatibility_generation"], int) or isinstance(row["compatibility_generation"], bool) or row["compatibility_generation"] < 1:
+            raise RulesetContractError("resolved_set_mismatch", "invalid compatibility_generation")
+        if not isinstance(row["catalog_generation"], int) or isinstance(row["catalog_generation"], bool) or row["catalog_generation"] < 1:
+            raise RulesetContractError("resolved_set_mismatch", "invalid catalog_generation")
+        if not _valid_digest(row["content_sha256"]):
+            raise RulesetContractError("resolved_set_mismatch", "invalid content_sha256")
+    core = {key: lock[key] for key in ("lock_schema_version", "ruleset_set_digest_generation", "root_package_ids", "packages")}
+    expected_digest = sha256(SET_DOMAIN + canonical_json(core))
+    if not _valid_digest(lock["ruleset_set_sha256"]) or lock["ruleset_set_sha256"] != expected_digest:
+        raise RulesetContractError("resolved_set_mismatch", "ruleset set digest mismatch")
+    return lock
+
+
 def _validated_engine_contract_entries(
-    inventory: dict[str, Any], *, engine_version: str, ruleset_set_sha256: str
+    inventory: dict[str, Any], *, engine_version: str, ruleset_set_sha256: str,
+    ruleset_set_digest_generation: int = RULESET_SET_DIGEST_GENERATION,
 ) -> dict[str, dict[str, str]]:
     if not isinstance(inventory, dict) or set(inventory) != {
-        "inventory_schema_version", "engine_version", "ruleset_set_sha256",
-        "items", "inventory_sha256",
+        "inventory_schema_version", "engine_version", "ruleset_set_digest_generation",
+        "ruleset_set_sha256", "items", "inventory_sha256",
     }:
         raise RulesetContractError("unreconstructable_context", "invalid engine contract inventory shape")
     items = inventory["items"]
     if (
-        inventory["inventory_schema_version"] != 1
+        inventory["inventory_schema_version"] != 2
         or inventory["engine_version"] != engine_version
+        or inventory["ruleset_set_digest_generation"] != ruleset_set_digest_generation
+        or inventory["ruleset_set_digest_generation"] != RULESET_SET_DIGEST_GENERATION
         or inventory["ruleset_set_sha256"] != ruleset_set_sha256
         or not isinstance(items, list)
     ):
         raise RulesetContractError("unreconstructable_context", "stale engine contract inventory")
     sources = {row.get("family"): row for row in items if isinstance(row, dict)}
     if len(sources) != len(items) or set(sources) != REQUIRED_ENGINE_CONTRACT_FAMILIES:
-        raise RulesetContractError(
-            "unreconstructable_context",
-            "engine contract families differ",
-        )
+        raise RulesetContractError("unreconstructable_context", "engine contract families differ")
     entries: dict[str, dict[str, str]] = {}
     for family, row in sorted(sources.items()):
         if set(row) != {"family", "contract_id", "semantic_sha256"}:
             raise RulesetContractError("unreconstructable_context", f"invalid {family} contract evidence")
         digest = row["semantic_sha256"]
-        if (
-            row["contract_id"] != f"engine_contract.{family}.v1"
-            or not isinstance(digest, str) or len(digest) != 64
-            or any(ch not in "0123456789abcdef" for ch in digest)
-        ):
+        if row["contract_id"] != f"engine_contract.{family}.v1" or not _valid_digest(digest):
             raise RulesetContractError("unreconstructable_context", f"stale {family} contract evidence")
-        entries[row["contract_id"]] = {
-            "kind": f"engine_contract.{family}",
-            "semantic_sha256": digest,
-        }
-    core = {key: inventory[key] for key in ("inventory_schema_version","engine_version","ruleset_set_sha256","items")}
-    if inventory["inventory_sha256"] != sha256(INVENTORY_DOMAIN + canonical_json(core)):
+        entries[row["contract_id"]] = {"kind": f"engine_contract.{family}", "semantic_sha256": digest}
+    core = {key: inventory[key] for key in (
+        "inventory_schema_version", "engine_version", "ruleset_set_digest_generation", "ruleset_set_sha256", "items"
+    )}
+    if not _valid_digest(inventory["inventory_sha256"]) or inventory["inventory_sha256"] != sha256(INVENTORY_DOMAIN + canonical_json(core)):
         raise RulesetContractError("unreconstructable_context", "engine contract inventory digest mismatch")
     return entries
 
 
 def compare_resolved_sets(
-    adopted_lock: dict[str, Any],
-    adopted_snapshots: dict[str, PackageSnapshot],
-    adopted_engine_contract_inventory: dict[str, Any],
-    candidate_lock: dict[str, Any],
-    candidate_snapshots: dict[str, PackageSnapshot],
-    candidate_engine_contract_inventory: dict[str, Any],
-    *,
-    engine_version: str,
-    dependency_frontier: dict[str, Any],
+    adopted_lock: dict[str, Any], adopted_snapshots: dict[str, PackageSnapshot],
+    adopted_engine_contract_inventory: dict[str, Any], candidate_lock: dict[str, Any],
+    candidate_snapshots: dict[str, PackageSnapshot], candidate_engine_contract_inventory: dict[str, Any],
+    *, engine_version: str, dependency_frontier: dict[str, Any],
 ) -> dict[str, Any]:
+    validate_resolved_lock(adopted_lock)
+    validate_resolved_lock(candidate_lock)
     reasons: list[dict[str, str]] = []
     try:
         adopted_engine_entries = _validated_engine_contract_entries(
             adopted_engine_contract_inventory, engine_version=engine_version,
             ruleset_set_sha256=adopted_lock["ruleset_set_sha256"],
+            ruleset_set_digest_generation=adopted_lock["ruleset_set_digest_generation"],
         )
     except (RulesetContractError, TypeError):
         adopted_engine_entries = {}
@@ -399,6 +453,7 @@ def compare_resolved_sets(
         candidate_engine_entries = _validated_engine_contract_entries(
             candidate_engine_contract_inventory, engine_version=engine_version,
             ruleset_set_sha256=candidate_lock["ruleset_set_sha256"],
+            ruleset_set_digest_generation=candidate_lock["ruleset_set_digest_generation"],
         )
     except (RulesetContractError, TypeError):
         candidate_engine_entries = {}
@@ -406,18 +461,15 @@ def compare_resolved_sets(
     if reasons:
         adopted_engine_entries = {}
         candidate_engine_entries = {}
-    adopted_entries = combined_semantic_entries(
-        adopted_snapshots, adopted_engine_entries,
-    )
-    candidate_entries = combined_semantic_entries(
-        candidate_snapshots, candidate_engine_entries,
-    )
+    adopted_entries = combined_semantic_entries(adopted_snapshots, adopted_engine_entries)
+    candidate_entries = combined_semantic_entries(candidate_snapshots, candidate_engine_entries)
     frontier_valid = False
     if isinstance(dependency_frontier, dict) and set(dependency_frontier) == {"owner", "state_revision", "required_entry_keys"}:
         required_keys = dependency_frontier["required_entry_keys"]
         frontier_valid = (
             isinstance(dependency_frontier["owner"], str)
             and isinstance(dependency_frontier["state_revision"], int)
+            and not isinstance(dependency_frontier["state_revision"], bool)
             and isinstance(required_keys, list)
             and len(required_keys) == len(set(required_keys))
             and all(isinstance(key, str) and key for key in required_keys)
@@ -426,11 +478,7 @@ def compare_resolved_sets(
         required_keys = []
     if not frontier_valid:
         reasons.append({"code":"EVIDENCE_MISSING","key":"campaign.dependency_frontier","detail":"durable-state and accepted-work dependency frontier is incomplete"})
-    evidence = {
-        "adopted": adopted_entries,
-        "candidate": candidate_entries,
-        "dependency_frontier": dependency_frontier,
-    }
+    evidence = {"adopted": adopted_entries, "candidate": candidate_entries, "dependency_frontier": dependency_frontier}
     evidence_digest = sha256(EVIDENCE_DOMAIN + canonical_json(evidence))
     adopted_packages = {row["package_id"]: row for row in adopted_lock.get("packages", [])}
     candidate_packages = {row["package_id"]: row for row in candidate_lock.get("packages", [])}
@@ -439,18 +487,16 @@ def compare_resolved_sets(
         if new is None:
             reasons.append({"code": "PACKAGE_REMOVED", "key": package_id, "detail": "adopted package absent from candidate"})
             continue
-        if old.get("compatibility_id") != new.get("compatibility_id") or old.get("catalog_generation") != new.get("catalog_generation"):
+        if (
+            old.get("compatibility_family") != new.get("compatibility_family")
+            or old.get("compatibility_generation") != new.get("compatibility_generation")
+            or old.get("catalog_generation") != new.get("catalog_generation")
+        ):
             reasons.append({"code": "DEPENDENCY_CHANGED", "key": package_id, "detail": "compatibility/catalog line changed"})
         if old.get("owned_namespaces") != new.get("owned_namespaces"):
             reasons.append({"code": "NAMESPACE_OWNERSHIP_CHANGED", "key": package_id, "detail": "owned namespace claims changed"})
-        old_dependencies = {
-            (row.get("package_id"), row.get("content_sha256"))
-            for row in old.get("dependencies", [])
-        }
-        new_dependencies = {
-            (row.get("package_id"), row.get("content_sha256"))
-            for row in new.get("dependencies", [])
-        }
+        old_dependencies = {(row.get("package_id"), row.get("content_sha256")) for row in old.get("dependencies", [])}
+        new_dependencies = {(row.get("package_id"), row.get("content_sha256")) for row in new.get("dependencies", [])}
         if not old_dependencies.issubset(new_dependencies):
             reasons.append({"code": "DEPENDENCY_CHANGED", "key": package_id, "detail": "an adopted exact dependency was removed or replaced"})
     for key, old in sorted(adopted_entries.items()):
@@ -471,8 +517,10 @@ def compare_resolved_sets(
     else:
         result = "COMPATIBLE_ADDITIVE"
     result_row = {
-        "comparison_schema_version": 1,
+        "comparison_schema_version": 2,
+        "adopted_ruleset_set_digest_generation": adopted_lock["ruleset_set_digest_generation"],
         "adopted_ruleset_set_sha256": adopted_lock["ruleset_set_sha256"],
+        "candidate_ruleset_set_digest_generation": candidate_lock["ruleset_set_digest_generation"],
         "candidate_ruleset_set_sha256": candidate_lock["ruleset_set_sha256"],
         "evidence_inventory_sha256": evidence_digest,
         "result": result,
@@ -484,20 +532,20 @@ def compare_resolved_sets(
 
 def validate_compatibility_result(value: Any) -> None:
     expected = {
-        "comparison_schema_version", "adopted_ruleset_set_sha256",
-        "candidate_ruleset_set_sha256", "evidence_inventory_sha256",
-        "result", "reasons",
+        "comparison_schema_version", "adopted_ruleset_set_digest_generation", "adopted_ruleset_set_sha256",
+        "candidate_ruleset_set_digest_generation", "candidate_ruleset_set_sha256",
+        "evidence_inventory_sha256", "result", "reasons",
     }
-    if not isinstance(value, dict) or set(value) != expected or value["comparison_schema_version"] != 1:
+    if not isinstance(value, dict) or set(value) != expected or value["comparison_schema_version"] != 2:
         raise RulesetContractError("unreconstructable_context", "invalid compatibility result shape")
+    if value["adopted_ruleset_set_digest_generation"] != RULESET_SET_DIGEST_GENERATION or value["candidate_ruleset_set_digest_generation"] != RULESET_SET_DIGEST_GENERATION:
+        raise RulesetContractError("unreconstructable_context", "unsupported ruleset set digest generation")
     for field in ("adopted_ruleset_set_sha256", "candidate_ruleset_set_sha256", "evidence_inventory_sha256"):
-        digest = value[field]
-        if not isinstance(digest, str) or len(digest) != 64 or any(ch not in "0123456789abcdef" for ch in digest):
+        if not _valid_digest(value[field]):
             raise RulesetContractError("unreconstructable_context", f"invalid compatibility digest: {field}")
     reasons = value["reasons"]
     if not isinstance(reasons, list) or any(
-        not isinstance(row, dict)
-        or set(row) != {"code", "key", "detail"}
+        not isinstance(row, dict) or set(row) != {"code", "key", "detail"}
         or row["code"] not in COMPATIBILITY_REASON_CODES
         or not isinstance(row["key"], str) or not row["key"]
         or not isinstance(row["detail"], str) or not row["detail"]
@@ -518,27 +566,27 @@ def validate_compatibility_result(value: Any) -> None:
 
 
 def compile_conformance_attestation(
-    inventory: dict[str, Any],
-    validator_results: list[dict[str, str]],
-    *,
-    lock: dict[str, Any],
-    engine_version: str,
+    inventory: dict[str, Any], validator_results: list[dict[str, str]], *,
+    lock: dict[str, Any], engine_version: str,
 ) -> dict[str, Any]:
+    validate_resolved_lock(lock)
     _validated_engine_contract_entries(
         inventory, engine_version=engine_version,
         ruleset_set_sha256=lock["ruleset_set_sha256"],
+        ruleset_set_digest_generation=lock["ruleset_set_digest_generation"],
     )
     observed = {row.get("validator_id") for row in validator_results if isinstance(row, dict)}
     if (
         len(validator_results) != len(REQUIRED_VALIDATOR_IDS)
         or observed != REQUIRED_VALIDATOR_IDS
-        or any(set(row) != {"validator_id","result"} or row["result"] != "PASS" for row in validator_results)
+        or any(set(row) != {"validator_id", "result"} or row["result"] != "PASS" for row in validator_results)
     ):
         raise RulesetContractError("unreconstructable_context", "integrated validator results incomplete")
     core = {
-        "attestation_schema_version": 1,
+        "attestation_schema_version": 2,
         "validator_suite_id": "ruleset.integrated_closure.v1",
         "engine_version": engine_version,
+        "ruleset_set_digest_generation": lock["ruleset_set_digest_generation"],
         "ruleset_set_sha256": lock["ruleset_set_sha256"],
         "engine_contract_inventory_sha256": inventory["inventory_sha256"],
         "validator_results": sorted(validator_results, key=lambda row: row["validator_id"]),
@@ -549,19 +597,18 @@ def compile_conformance_attestation(
 
 
 def validate_runtime_conformance_evidence(
-    inventory: dict[str, Any],
-    attestation: dict[str, Any],
-    *,
-    lock: dict[str, Any],
-    engine_version: str,
+    inventory: dict[str, Any], attestation: dict[str, Any], *,
+    lock: dict[str, Any], engine_version: str,
 ) -> None:
+    validate_resolved_lock(lock)
     _validated_engine_contract_entries(
         inventory, engine_version=engine_version,
         ruleset_set_sha256=lock["ruleset_set_sha256"],
+        ruleset_set_digest_generation=lock["ruleset_set_digest_generation"],
     )
     if not isinstance(attestation, dict) or set(attestation) != {
         "attestation_schema_version", "validator_suite_id", "engine_version",
-        "ruleset_set_sha256", "engine_contract_inventory_sha256",
+        "ruleset_set_digest_generation", "ruleset_set_sha256", "engine_contract_inventory_sha256",
         "validator_results", "attestation_sha256",
     }:
         raise RulesetContractError("unreconstructable_context", "invalid conformance attestation shape")
@@ -572,7 +619,10 @@ def validate_runtime_conformance_evidence(
         raise RulesetContractError("unreconstructable_context", "conformance attestation binding mismatch")
 
 
-def combined_semantic_entries(snapshots: dict[str, PackageSnapshot], active_contract_entries: dict[str, dict[str, str]] | None = None) -> dict[str, dict[str, str]]:
+def combined_semantic_entries(
+    snapshots: dict[str, PackageSnapshot],
+    active_contract_entries: dict[str, dict[str, str]] | None = None,
+) -> dict[str, dict[str, str]]:
     out: dict[str, dict[str, str]] = {}
     for package_id in sorted(snapshots):
         for key, value in snapshots[package_id].semantic_entries.items():
