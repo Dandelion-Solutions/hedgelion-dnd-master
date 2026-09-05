@@ -52,9 +52,9 @@ class Step3ExecutionCatalogContractTest(unittest.TestCase):
         self.assertNotIn("runtime.execution_segment", registries["runtime_record_kinds"])
         self.assertNotIn("runtime.resolution_chain", registries["runtime_record_kinds"])
 
-    def test_catalogs_move_as_one_version(self):
-        versions = {
-            load_json(CATALOG / name)["catalog_version"]
+    def test_catalogs_move_as_one_generation(self):
+        generations = {
+            load_json(CATALOG / name)["catalog_generation"]
             for name in (
                 "core-catalog.json",
                 "entity-structures.json",
@@ -62,9 +62,7 @@ class Step3ExecutionCatalogContractTest(unittest.TestCase):
                 "identifier-policies.json",
             )
         }
-        self.assertEqual(len(versions), 1)
-        version = next(iter(versions))
-        self.assertGreaterEqual(tuple(map(int, version.split("."))), (1, 4, 0))
+        self.assertEqual(generations, {2})
 
     def test_core_catalog_schema_accepts_updated_catalog(self):
         Draft202012Validator(self.schema).validate(self.core)
