@@ -20,7 +20,14 @@ if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from DEV.TOOLS.validate_ruleset_package_closure import validate_integrated_ruleset_package
-from GAME.TOOLS.ruleset_package import build_resolved_lock, compile_conformance_attestation, validate_runtime_conformance_evidence, REQUIRED_ENGINE_CONTRACT_FAMILIES
+from GAME.TOOLS.ruleset_package import (
+    RULESET_SET_DIGEST_GENERATION,
+    REQUIRED_ENGINE_CONTRACT_FAMILIES,
+    build_resolved_lock,
+    compile_conformance_attestation,
+    validate_resolved_lock,
+    validate_runtime_conformance_evidence,
+)
 
 
 class BuildError(RuntimeError):
@@ -33,7 +40,7 @@ GAME_FIELDS = {
     'repository',
     'engine_owner_login',
     'rules_baseline',
-    'schema_version',
+    'campaign_contract_generation',
     'campaign_update',
     'recommended_tag',
 }
@@ -43,7 +50,7 @@ SHARED_FIELDS = (
     'repository',
     'engine_owner_login',
     'rules_baseline',
-    'schema_version',
+    'campaign_contract_generation',
     'recommended_tag',
 )
 RUNTIME_PACKAGE_FIELDS = {
@@ -53,6 +60,7 @@ RUNTIME_PACKAGE_FIELDS = {
     'source_state',
     'source_ref',
     'source_commit_sha',
+    'ruleset_set_digest_generation',
     'ruleset_set_sha256',
     'resolved_ruleset_lock',
     'ruleset_engine_contract_inventory',
@@ -92,6 +100,9 @@ def validate_game_manifest_shape(data: dict) -> None:
         extra = sorted(keys - GAME_FIELDS)
         missing = sorted(GAME_FIELDS - keys)
         raise BuildError(f'invalid GAME manifest fields; extra={extra} missing={missing}')
+    generation = data.get('campaign_contract_generation')
+    if not isinstance(generation, int) or isinstance(generation, bool) or generation < 1:
+        raise BuildError('GAME campaign_contract_generation must be a positive integer')
     campaign_update = data.get('campaign_update')
     if not isinstance(campaign_update, dict) or set(campaign_update) != {'compatibility'}:
         raise BuildError('GAME campaign_update must contain only compatibility')
@@ -104,8 +115,8 @@ def validate_runtime_package_metadata(data: dict) -> None:
         extra = sorted(set(data) - RUNTIME_PACKAGE_FIELDS)
         missing = sorted(RUNTIME_PACKAGE_FIELDS - set(data))
         raise BuildError(f'invalid RUNTIME_PACKAGE fields; extra={extra} missing={missing}')
-    if data.get('schema_version') != 2:
-        raise BuildError('RUNTIME_PACKAGE schema_version must be 2')
+    if data.get('schema_version') != 3:
+        raise BuildError('RUNTIME_PACKAGE schema_version must be 3')
     state = data.get('source_state')
     if state not in RUNTIME_PACKAGE_STATES:
         raise BuildError(f'invalid RUNTIME_PACKAGE source_state: {state!r}')
@@ -113,12 +124,21 @@ def validate_runtime_package_metadata(data: dict) -> None:
         raise BuildError('RUNTIME_PACKAGE engine_version must be a non-empty string')
     if not isinstance(data.get('package_id'), str) or not data['package_id']:
         raise BuildError('RUNTIME_PACKAGE package_id must be a non-empty string')
+    if data.get('ruleset_set_digest_generation') != RULESET_SET_DIGEST_GENERATION:
+        raise BuildError('RUNTIME_PACKAGE ruleset_set_digest_generation mismatch')
     ruleset_sha = data.get('ruleset_set_sha256')
     lock = data.get('resolved_ruleset_lock')
     if not isinstance(ruleset_sha, str) or len(ruleset_sha) != 64 or any(ch not in '0123456789abcdef' for ch in ruleset_sha):
         raise BuildError('RUNTIME_PACKAGE ruleset_set_sha256 must be lower-case SHA-256')
-    if not isinstance(lock, dict) or lock.get('ruleset_set_sha256') != ruleset_sha or set(lock) != {'lock_schema_version','root_package_ids','packages','ruleset_set_sha256'}:
-        raise BuildError('RUNTIME_PACKAGE resolved_ruleset_lock is missing or disagrees with set identity')
+    try:
+        validate_resolved_lock(lock)
+    except Exception as exc:
+        raise BuildError(f'RUNTIME_PACKAGE resolved ruleset lock invalid: {exc}') from exc
+    if (
+        lock.get('ruleset_set_digest_generation') != data['ruleset_set_digest_generation']
+        or lock.get('ruleset_set_sha256') != ruleset_sha
+    ):
+        raise BuildError('RUNTIME_PACKAGE resolved_ruleset_lock disagrees with set identity')
     try:
         validate_runtime_conformance_evidence(
             data.get('ruleset_engine_contract_inventory'),
@@ -210,6 +230,22 @@ def _git_rev_parse(repo_root: Path, revision: str) -> str:
     return value
 
 
+def _runtime_metadata_base(*, version: str, package_id: str, source_state: str, source_ref: str | None, source_commit_sha: str | None, resolved_lock: dict, engine_contract_inventory: dict, conformance_attestation: dict) -> dict:
+    return {
+        'schema_version': 3,
+        'engine_version': version,
+        'package_id': package_id,
+        'source_state': source_state,
+        'source_ref': source_ref,
+        'source_commit_sha': source_commit_sha,
+        'ruleset_set_digest_generation': RULESET_SET_DIGEST_GENERATION,
+        'ruleset_set_sha256': resolved_lock['ruleset_set_sha256'],
+        'resolved_ruleset_lock': resolved_lock,
+        'ruleset_engine_contract_inventory': engine_contract_inventory,
+        'ruleset_conformance_attestation': conformance_attestation,
+    }
+
+
 def build_runtime_package_metadata(repo_root: Path, intended_tag: str, tag_mode: bool = False) -> dict:
     repo_root = repo_root.resolve()
     _dev, game = load_and_validate_manifests(
@@ -221,10 +257,9 @@ def build_runtime_package_metadata(repo_root: Path, intended_tag: str, tag_mode:
     release_status = game.get('release_status')
     development_package_id = f'dev-v{version}'
     ruleset_package_id = 'hdm.rules.dnd2024-srd52-core'
-    ruleset_package_dir = repo_root / 'GAME' / 'RULES' / 'packages' / ruleset_package_id
     resolved_lock, _snapshots, engine_contract_inventory, validator_results = validate_integrated_ruleset_package(
         repo_root, root_package_ids=[ruleset_package_id],
-        engine_version=version, catalog_generation='2.0.0',
+        engine_version=version, catalog_generation=2,
     )
     conformance_attestation = compile_conformance_attestation(
         engine_contract_inventory, validator_results,
@@ -232,18 +267,14 @@ def build_runtime_package_metadata(repo_root: Path, intended_tag: str, tag_mode:
     )
 
     if not (repo_root / '.git').exists():
-        data = {
-            'schema_version': 2,
-            'engine_version': version,
-            'package_id': development_package_id if release_status == 'development' else intended_tag,
-            'source_state': 'non_git',
-            'source_ref': None,
-            'source_commit_sha': None,
-            'ruleset_set_sha256': resolved_lock['ruleset_set_sha256'],
-            'resolved_ruleset_lock': resolved_lock,
-            'ruleset_engine_contract_inventory': engine_contract_inventory,
-            'ruleset_conformance_attestation': conformance_attestation,
-        }
+        data = _runtime_metadata_base(
+            version=version,
+            package_id=development_package_id if release_status == 'development' else intended_tag,
+            source_state='non_git', source_ref=None, source_commit_sha=None,
+            resolved_lock=resolved_lock,
+            engine_contract_inventory=engine_contract_inventory,
+            conformance_attestation=conformance_attestation,
+        )
         validate_runtime_package_metadata(data)
         return data
 
@@ -256,18 +287,13 @@ def build_runtime_package_metadata(repo_root: Path, intended_tag: str, tag_mode:
                 f'tag-mode package must be built from exact tagged commit: '
                 f'{intended_tag}={tag_commit} HEAD={head_commit}'
             )
-        data = {
-            'schema_version': 2,
-            'engine_version': version,
-            'package_id': intended_tag,
-            'source_state': 'tagged',
-            'source_ref': intended_tag,
-            'source_commit_sha': tag_commit,
-            'ruleset_set_sha256': resolved_lock['ruleset_set_sha256'],
-            'resolved_ruleset_lock': resolved_lock,
-            'ruleset_engine_contract_inventory': engine_contract_inventory,
-            'ruleset_conformance_attestation': conformance_attestation,
-        }
+        data = _runtime_metadata_base(
+            version=version, package_id=intended_tag,
+            source_state='tagged', source_ref=intended_tag, source_commit_sha=tag_commit,
+            resolved_lock=resolved_lock,
+            engine_contract_inventory=engine_contract_inventory,
+            conformance_attestation=conformance_attestation,
+        )
         validate_runtime_package_metadata(data)
         return data
 
@@ -277,31 +303,21 @@ def build_runtime_package_metadata(repo_root: Path, intended_tag: str, tag_mode:
         raise BuildError(f'cannot inspect Git worktree state: {detail}')
     package_id = development_package_id if release_status == 'development' else intended_tag
     if status.stdout.strip():
-        data = {
-            'schema_version': 2,
-            'engine_version': version,
-            'package_id': package_id,
-            'source_state': 'dirty_worktree',
-            'source_ref': None,
-            'source_commit_sha': None,
-            'ruleset_set_sha256': resolved_lock['ruleset_set_sha256'],
-            'resolved_ruleset_lock': resolved_lock,
-            'ruleset_engine_contract_inventory': engine_contract_inventory,
-            'ruleset_conformance_attestation': conformance_attestation,
-        }
+        data = _runtime_metadata_base(
+            version=version, package_id=package_id,
+            source_state='dirty_worktree', source_ref=None, source_commit_sha=None,
+            resolved_lock=resolved_lock,
+            engine_contract_inventory=engine_contract_inventory,
+            conformance_attestation=conformance_attestation,
+        )
     else:
-        data = {
-            'schema_version': 2,
-            'engine_version': version,
-            'package_id': package_id,
-            'source_state': 'clean_head',
-            'source_ref': 'HEAD',
-            'source_commit_sha': _git_rev_parse(repo_root, 'HEAD'),
-            'ruleset_set_sha256': resolved_lock['ruleset_set_sha256'],
-            'resolved_ruleset_lock': resolved_lock,
-            'ruleset_engine_contract_inventory': engine_contract_inventory,
-            'ruleset_conformance_attestation': conformance_attestation,
-        }
+        data = _runtime_metadata_base(
+            version=version, package_id=package_id,
+            source_state='clean_head', source_ref='HEAD', source_commit_sha=_git_rev_parse(repo_root, 'HEAD'),
+            resolved_lock=resolved_lock,
+            engine_contract_inventory=engine_contract_inventory,
+            conformance_attestation=conformance_attestation,
+        )
     validate_runtime_package_metadata(data)
     return data
 
@@ -417,9 +433,13 @@ def validate_extracted_package_root(root: Path) -> Path:
             [root / 'RULES' / 'packages' / ruleset_package_id],
             root_package_ids=[ruleset_package_id],
             engine_version=str(_load_yaml(root / 'ENGINE_VERSION.yaml')['engine_version']),
-            catalog_generation='2.0.0',
+            catalog_generation=2,
         )
-        if runtime_metadata['resolved_ruleset_lock'] != computed_lock or runtime_metadata['ruleset_set_sha256'] != computed_lock['ruleset_set_sha256']:
+        if (
+            runtime_metadata['ruleset_set_digest_generation'] != computed_lock['ruleset_set_digest_generation']
+            or runtime_metadata['resolved_ruleset_lock'] != computed_lock
+            or runtime_metadata['ruleset_set_sha256'] != computed_lock['ruleset_set_sha256']
+        ):
             raise BuildError('runtime package resolved ruleset lock does not match embedded semantic bytes')
     except BuildError as exc:
         raise BuildError(f'invalid runtime package provenance: {exc}') from exc
