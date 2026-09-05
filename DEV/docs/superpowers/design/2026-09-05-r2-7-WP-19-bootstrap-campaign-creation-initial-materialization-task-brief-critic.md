@@ -1,6 +1,6 @@
 # R2.7 WP-19 — Bootstrap / Campaign Creation / Initial Materialization — Whole-Project Task-Brief Critic
 
-Status: **STEP 1 CRITIC RE-RUN COMPLETE — PO INPUT INTEGRATED — MANDATORY SENIOR REVIEW CANDIDATE**
+Status: **STEP 1 PO-003 WHOLE-PROJECT CRITIC RERUN COMPLETE — MANDATORY SENIOR REVIEW CANDIDATE**
 
 Date: 2026-09-05
 
@@ -8,359 +8,71 @@ Original critic basis: `5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053`
 
 Senior-recovery basis: `df5fe6441c2b85e9cbffcb6f83caa885501da794`
 
-Expanded Product-Owner integration basis: `4b7411b10b30cc191141826aacb3b0c88e7eeb37`
+PO-001/PO-002 expanded basis: `4b7411b10b30cc191141826aacb3b0c88e7eeb37`
 
-This is the mandatory whole-project Step-1 Task-Brief critic rerun required after `PO-001` and `PO-002` arrived after the prior recovered critic basis. The rerun follows `DEV/ARCHITECTURE/PRODUCT_OWNER_INPUT_PROCESS.md`: pre-input findings remain valid for their basis, but the old critic cannot clear a package containing later Product Owner requirements until those routes are independently inspected and incorporated.
+PO-003 rerun basis: `341cc592fbc53247d0d7f8d38eb07ec4297cd45d`
 
-The rerun used current `DEV/PROJECT_MAP.md`, the PO ledger/process/accepted owner decision, current canonical owners, runtime consumers and directly implicated tests/scenario catalogs. It did not treat the PO integration checkpoint or prior critic as an answer key.
+This is the mandatory whole-project Step-1 Task-Brief critic rerun required after PO-003 invalidated the prior review basis. It follows `DEV/ARCHITECTURE/PRODUCT_OWNER_INPUT_PROCESS.md` and independently reconstructs the current Actor/knowledge/history/record-family/chronology/persistence/Story/context/retrospective/performance/test subgraph rather than treating the arrival checkpoint or prior critic as an answer key.
+
+The critic does not perform Senior review, grant Senior GO, begin Step 2, reopen architecture, or implement the resulting downstream realization obligations.
 
 ---
 
-## 1. Independent reconstruction method
+## 1. Independent reconstruction
 
-The pre-input bootstrap/materialization and SR19-01 verification graph was retained. The critic independently added two consumer legs.
-
-### PO-001 leg
+The critic retained the already-closed bootstrap/materialization, SR19-01 verification and PO-001/PO-002 consumer legs, then independently added:
 
 ```text
-selected campaign
-    -> lifecycle + access authority
-    -> active + gameplay allowed
-    -> ordinary gameplay / OOC Master interaction
-    -> retrospective/history intent
-    -> R2.3 purpose/player/PC eligibility + bounded retrieval
-    -> R2.1 / WP-18 Story-history orientation when eligible
-    -> stronger native/current owner escalation when required
-    -> Step-4 world.knowledge/runtime.disclosure
-    -> Step-5.12 player-visible eligibility
-    -> R2.4 ordinary Narrator-visible response
+PO-003 product-semantic owner
+    -> material Actor decision/transition
+         -> R2.2 current Actor-private continuity
+         -> R2.2 directed relationships
+         -> Step-4 current world.knowledge
+         -> other native current constraints/resources as applicable
+         -> R2.3/WP-09 eligible bounded role context
+         -> R2.4/WP-08 material Actor phase
+    -> accepted decision/transition
+    -> Step-4 LOG/runtime.semantic_event history owner
+         -> WP-10 existing history record-family allocation
+         -> WP-15 chronology evidence where applicable
+         -> WP-13 ordinary native durability/publication
+    -> R2.1/WP-18 Story/continuity projection/orientation
+    -> PO-001 ordinary Master retrospective OR authorized Commentator
+         -> bounded historical retrieval
+         -> current player/PC/disclosure/no-spoiler eligibility
+         -> truthful explanation/replay
 ```
 
-The critic separately followed the read-only branch:
+The critic separately inspected the negative paths:
 
 ```text
-active + readable but gameplay denied -> Commentator
-completed + readable                  -> Commentator
+full Actor snapshots
+per-turn psychology history
+second world.knowledge history owner
+Story-as-motive-authority
+mutable-current-ref substitution
+separate post-decision LLM rationale pass
+per-decision remote publication
+unrelated-turn bookkeeping/history scans
 ```
-
-This establishes that Commentator is not an extra history mode for an authorized active player.
-
-### PO-002 leg
-
-```text
-explicit save-and-exit
-    -> Step-5.5 / SAVE_CONTRACT explicit save promise
-    -> PERSISTENCE / DURABILITY_GUARD
-    -> SESSION + applicable LIVE_SCENE closure/consolidation
-    -> save success established
-    -> RUNTIME selected gameplay context termination
-    -> clear selected-campaign working binding
-    -> BOOTSTRAP_RUNTIME / install campaign-menu re-entry
-    -> CAMPAIGN_CARD presentation + ACCESS_CONTROL revalidation
-    -> next explicit campaign choice
-```
-
-The critic also followed negative neighbors:
-
-```text
-save-and-stop/pause
-multiplayer leave/deactivation
-PC control transfer
-campaign completion/archive
-live epoch close/global multiplayer stop
-```
-
-These remain independently owned operations and are not implied by exit-to-menu.
 
 ---
 
 ## 2. Findings summary
 
-The original Step-1 findings and SR19-01 remain closed. No new evidence contradicts their dispositions.
+Previously closed findings remain closed unless explicitly contradicted; none was contradicted.
 
-Expanded PO-input critic findings:
-
-```text
-PO_INTEGRATION_BLOCKING:       1
-PO_INTEGRATION_SIGNIFICANT:    4
-PO_INTEGRATION_MINOR:          1
-
-UNRESOLVED_BLOCKING:           0
-UNRESOLVED_SIGNIFICANT:        0
-HUMAN_DECISION_REQUIRED:       NO
-UPSTREAM_REOPEN_REQUIRED:      NO
-ARCHITECTURE_REOPENED:         NO
-STEP2_STARTED:                 NO
-WP19_STEP2_AUTHORIZED:         NO
-WP20_STARTED:                  NO
-IMPLEMENTATION_PLANNING_STARTED: NO
-SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
-```
-
-All BLOCKING/SIGNIFICANT defects below were mechanically resolvable framing/consumer-routing defects and are repaired in the Source Manifest and Task Brief. No genuine `NEEDS_PO` remained.
-
----
-
-## 3. Previously closed findings — retained, not reopened
+PO-003 rerun findings:
 
 ```text
-F19-S1-01 BLOCKING    CLOSED — exact ruleset-set propagation framing
-F19-S1-02 BLOCKING    CLOSED — scaffold/provisional/READY_PC/PLAY_READY separation
-F19-S1-03 SIGNIFICANT CLOSED — branch/storage/access/stale-v2 reconciliation
-F19-S1-04 SIGNIFICANT CLOSED — identity/card/config/current projections
-F19-S1-05 SIGNIFICANT CLOSED — first-publication vs later durability/session/resume
-F19-S1-06 SIGNIFICANT CLOSED — multiplayer initial authority
-F19-S1-07 SIGNIFICANT CLOSED — bidirectional machine/template/schema/test audit
-F19-S1-08 MINOR       CLOSED — WP-20/dormant-neighbor boundary
-SR19-01   SIGNIFICANT CLOSED — verification/scenario reverse-conformance evidence expansion
-```
+PO003_RERUN_BLOCKING:        1
+PO003_RERUN_SIGNIFICANT:     6
+PO003_RERUN_MINOR:           0
 
-PO-001/PO-002 add consumers around the existing owners. They do not establish a contradiction that would reopen those findings.
-
----
-
-## 4. Expanded-basis finding dispositions
-
-### F19-PO-01 — BLOCKING — applicable accepted Product Owner semantics absent from the pre-input Step-1 frame
-
-**Defect**
-
-The pre-input Source Manifest/Task Brief/critic were valid for their inspected basis but did not contain the later accepted owner decision for:
-
-1. retrospective/history interaction inside ordinary active gameplay;
-2. save-and-exit navigation back to campaign selection;
-3. the explicit campaign routing table separating ordinary gameplay from read-only Commentator.
-
-A Step-1 package that omitted an applicable current owner decision could not safely authorize Step-2 research because the Step-2 problem statement itself would be incomplete.
-
-**Resolution**
-
-CLOSED. The Source Manifest now treats the PO ledger as intent evidence, the Product Owner Input Process as process authority, and `2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md` as the accepted semantic owner. The Task Brief contains the exact interaction and exit contracts and new evidence questions.
-
-**Human decision required:** NO — the Product Owner already supplied the semantics.
-
----
-
-### F19-PO-02 — SIGNIFICANT — retrospective consumer could be misrouted to Commentator or use Story as disclosure authority
-
-**Defect**
-
-Without an explicit consumer binding, older role topology could be read as “history => Commentator”, and a weak implementation could answer directly from Story/repository-visible history without current player/PC disclosure eligibility.
-
-That would violate the new product requirement and existing Step-4/R2.1/R2.3/WP-18 ownership:
-
-- authorized active-player retrospective is ordinary gameplay;
-- Story is noncanonical orientation/routing, not truth/currentness/knowledge/disclosure;
-- eligibility precedes retrieval/use;
-- material/current/source-specific claims escalate to stronger owners;
-- player-visible output remains disclosure-filtered.
-
-`R2.4` saying Commentator is a separate mode is not a contradiction. It remains correct for spectator/read-only serving and is now explicitly qualified so it cannot become a mandatory history transition for an authorized active player.
-
-**Resolution**
-
-CLOSED. The manifest/brief now route PO-001 through `RUNTIME`/OOC Master interaction, R2.3 bounded context retrieval, R2.1/WP-18 Story orientation, Step-4 knowledge/disclosure, Step-5.12 delivery and ordinary Narrator-visible output. They explicitly forbid a new memory/history owner and forbid Story availability from creating disclosure authority.
-
-**Upstream reopen:** NO.
-
----
-
-### F19-PO-03 — SIGNIFICANT — post-selection interaction routing was under-specified
-
-**Defect**
-
-The pre-input WP-19 frame strongly specified campaign discovery/selection but not the newly owner-approved interaction route after selection:
-
-```text
-active + gameplay allowed       -> ordinary gameplay
-active + readable/non-playable  -> read-only Commentator
-completed + readable            -> read-only Commentator
-```
-
-Without this route, a future consumer could infer ordinary gameplay merely from `active`, or treat completed/read-only campaigns as resumable, or add an unnecessary extra mode-selection hierarchy.
-
-**Resolution**
-
-CLOSED. The routing table is now a Task-Brief invariant. Lifecycle and access owners provide authoritative facts; card status/login fields remain presentation hints requiring authoritative revalidation after selection. No additional mode hierarchy is admitted.
-
-**Human decision required:** NO.
-
----
-
-### F19-PO-04 — SIGNIFICANT — save-and-exit ordering/failure boundary was missing
-
-**Defect**
-
-The existing save stack proves what `save` means and how durability/publication works, but the pre-input frame did not define the new ordered navigation composition. A weak implementation could clear selected gameplay context before required save closure succeeds, then either lose promised state or falsely claim save/exit success.
-
-**Resolution**
-
-CLOSED in framing:
-
-```text
-explicit save-and-exit
-    -> establish existing save promise across applicable native domains
-    -> perform applicable session/live closure/consolidation
-    -> only after successful required closure terminate selected gameplay context
-    -> clear selected-campaign working binding
-    -> enter the existing campaign-selection/menu gate
-```
-
-Failure preserves/adopts the strongest truthful recovery-safe context/frontier and may not report the combined operation successful.
-
-No new persistence authority is created.
-
----
-
-### F19-PO-05 — SIGNIFICANT — exit, stop/pause, membership leave and live closure could be conflated
-
-**Defect**
-
-Current Step-5.5 §4.4 and `EXPLICIT_SAVE_CASES:S08` correctly define `save and stop` as save plus a separately intended stop/pause lifecycle/session action. `MULTIPLAYER_MEMBERSHIP_CASES:M01/M10` separately define membership leave/removal and its live consequences.
-
-The new product command “save and exit to campaign selection” is different. Without an explicit qualifier, future work could incorrectly:
-
-- set `paused` merely because the player exits to menu;
-- deactivate PLAYER membership;
-- transfer/relinquish PC control;
-- close/stop a campaign or still-needed live epoch for other participants.
-
-`LIVE_SCENE.md` provides decisive negative evidence: do not close an epoch merely because one player's chat ended while differently controlled PCs still share the actionable scene.
-
-**Resolution**
-
-CLOSED. The Task Brief now distinguishes the intents and forbids all listed implicit side effects. Applicable save-driven live consolidation remains native-owner-controlled; exit itself does not create membership/lifecycle/global-live authority.
-
-**Upstream reopen:** NO — the later Product Owner decision composes/qualifies consumers without contradicting the existing owners.
-
----
-
-### F19-PO-06 — MINOR — direct end-to-end acceptance cases for PO-001/PO-002 are absent
-
-**Evidence**
-
-Current tests/scenarios cover important pieces:
-
-- `REGRESSION_CASES:T04/T08` — knowledge separation and bounded old-history retrieval;
-- `EXPLICIT_SAVE_CASES:S07/S15/S16` — save does not pause, failure is not success, dirty state clears after successful save;
-- `S08` — true save+stop intent;
-- `MULTIPLAYER_MEMBERSHIP_CASES:M01/M10` — explicit leave/removal distinct from ordinary session exit;
-- campaign-card/install cases — menu/choice presentation and read-only hints.
-
-But no current case directly verifies the whole new PO-001 or PO-002 flow.
-
-**Disposition:** CLOSED AS STEP-1 ROUTING / DOWNSTREAM VERIFICATION OBLIGATION. The Source Manifest explicitly records the gap and the Task Brief requires later acceptance mapping. Tests are not rewritten in Step 1 because that would be premature design realization/implementation-adjacent work.
-
----
-
-## 5. Verification/scenario item-level PO dispositions
-
-### PO-001
-
-| Evidence | Disposition |
-|---|---|
-| `REGRESSION_CASES:T04` | CURRENT SUPPORTING — prevents knowledge leak; not full retrospective routing proof. |
-| `REGRESSION_CASES:T08` | CURRENT SUPPORTING — bounded old-NPC history retrieval; not full disclosure/interaction proof. |
-| `AI_DM_CRAFT_CASES:ADC08` | CURRENT SUPPORTING — eligible known context may be stated directly. |
-| direct active-player retrospective/no-Commentator acceptance | MISSING / ROUTED DOWNSTREAM. |
-
-### PO-002
-
-| Evidence | Disposition |
-|---|---|
-| `EXPLICIT_SAVE_CASES:S07` | CURRENT — save alone does not pause. |
-| `EXPLICIT_SAVE_CASES:S08` | CURRENT WITH QUALIFIER — only when stop/pause intent is separately present; not exit-to-menu semantics. |
-| `EXPLICIT_SAVE_CASES:S15/S16` | CURRENT — no false success; successful save adopts durable frontier/clears dirty set. |
-| `MULTIPLAYER_MEMBERSHIP_CASES:M01` | CURRENT — membership leave is an explicit distinct transition. |
-| `MULTIPLAYER_MEMBERSHIP_CASES:M10` | CURRENT — live freeze/compaction belongs to actual membership removal, not ordinary exit. |
-| card/install menu cases | CURRENT SUPPORTING — existing menu/choice contract; same-chat exit re-entry is a new consumer. |
-| direct save-success -> context-clear -> same-chat menu with no side effects acceptance | MISSING / ROUTED DOWNSTREAM. |
-
-The earlier SR19-01 stale scenario dispositions remain unchanged and closed.
-
----
-
-## 6. Product Owner boundary rerun
-
-The expanded critic explicitly retested all human-owned categories.
-
-### Product semantics
-
-Already supplied by `PO-001`/`PO-002` and the accepted owner decision. No residual alternative remains for the agent to choose.
-
-### Canonical authority / ownership
-
-No new owner allocation is required:
-
-- Story/continuity/history remain existing R2.1/WP-18 projection/retrieval concerns;
-- truth/knowledge/disclosure remain Step-4/Step-5.12 owners;
-- context retrieval remains R2.3;
-- ordinary gameplay role execution remains R2.4/runtime;
-- save/durability/publication/session remain existing Step-5.5/CORE owners;
-- access/membership/control/live concurrency remain their existing owners;
-- menu/card remains existing bootstrap/projection authority.
-
-### Meaningful compatibility policy
-
-No change. WP-20 remains future released-campaign migration/evolution.
-
-### Hard-to-reverse lifecycle/product behavior
-
-The Product Owner explicitly settled the material distinction: exit-to-menu is context navigation and does not itself mutate campaign lifecycle/membership/control/global multiplayer state.
-
-### Material quality trade-off
-
-No unresolved trade-off remains. Natural retrospective interaction and explicit safe return-to-menu are required product semantics, not optional optimization choices.
-
-### Explicit risk acceptance
-
-No new risk acceptance is required.
-
-```text
-HUMAN_DECISION_REQUIRED: NO
-NEEDS_PO: NONE
-```
-
----
-
-## 7. Closed-upstream review
-
-The critic found no real contradiction/material insufficiency requiring upstream reopen:
-
-- PO-001 is compatible with R2.1/R2.3/WP-18 because Story was already designed as bounded nonauthoritative orientation and stronger-source routing;
-- PO-001 is compatible with Step-4/Step-5.12 because disclosure eligibility remains controlling;
-- R2.4 Commentator separation is qualified by consumer routing, not invalidated;
-- PO-002 is compatible with Step-5.5/SAVE_CONTRACT because save remains unchanged and navigation occurs after it;
-- `save and stop` remains valid for a true stop/pause intent and is not redefined;
-- membership/live owners already distinguish explicit leave/removal from chat/session termination;
-- existing menu/selection owners can be reused as the return destination without creating a second authority.
-
-```text
-UPSTREAM_REOPEN_REQUIRED: NO
-ARCHITECTURE_REOPENED: NO
-```
-
----
-
-## 8. Expanded Step-1 critic gate
-
-```text
-PREVIOUS F19-S1-*:           RETAINED / CLOSED
-SR19-01:                     RETAINED / CLOSED
-
-F19-PO-01 BLOCKING:          CLOSED — accepted PO semantics integrated into current Step-1 basis
-F19-PO-02 SIGNIFICANT:       CLOSED — ordinary retrospective consumer + eligibility/no-Commentator route framed
-F19-PO-03 SIGNIFICANT:       CLOSED — campaign selection interaction routing made explicit
-F19-PO-04 SIGNIFICANT:       CLOSED — save-before-exit ordering/failure boundary framed
-F19-PO-05 SIGNIFICANT:       CLOSED — exit separated from pause/leave/control/global live effects
-F19-PO-06 MINOR:             CLOSED AS ROUTING — direct acceptance gaps recorded downstream
-
-PO_INTEGRATION_BLOCKING:     1
-PO_INTEGRATION_SIGNIFICANT:  4
-PO_INTEGRATION_MINOR:        1
 UNRESOLVED_BLOCKING:         0
 UNRESOLVED_SIGNIFICANT:      0
 HUMAN_DECISION_REQUIRED:     NO
+NEEDS_PO:                    NONE
 UPSTREAM_REOPEN_REQUIRED:    NO
 ARCHITECTURE_REOPENED:       NO
 WP19_STEP2_AUTHORIZED:       NO
@@ -370,8 +82,333 @@ IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 ```
 
+Every BLOCKING/SIGNIFICANT finding below was mechanically resolvable as Step-1 evidence/framing/status work and is closed in the current Source Manifest/Task Brief/status package. No runtime/schema/test implementation was used to hide a framing defect.
+
+---
+
+## 3. Retained closed findings
+
+```text
+F19-S1-01 BLOCKING    CLOSED
+F19-S1-02 BLOCKING    CLOSED
+F19-S1-03 SIGNIFICANT CLOSED
+F19-S1-04 SIGNIFICANT CLOSED
+F19-S1-05 SIGNIFICANT CLOSED
+F19-S1-06 SIGNIFICANT CLOSED
+F19-S1-07 SIGNIFICANT CLOSED
+F19-S1-08 MINOR       CLOSED
+SR19-01   SIGNIFICANT CLOSED
+
+F19-PO-01 BLOCKING    CLOSED
+F19-PO-02 SIGNIFICANT CLOSED
+F19-PO-03 SIGNIFICANT CLOSED
+F19-PO-04 SIGNIFICANT CLOSED
+F19-PO-05 SIGNIFICANT CLOSED
+F19-PO-06 MINOR       CLOSED AS ROUTING / DOWNSTREAM VERIFICATION OBLIGATION
+```
+
+PO-003 adds a new consumer/evidence obligation. Topic overlap alone does not reopen these findings.
+
+---
+
+## 4. PO-003 finding dispositions
+
+### F19-PO003-01 — BLOCKING — current Step-1 basis omitted an applicable canonical Product Owner requirement
+
+**Defect**
+
+The PO-001/PO-002 Source Manifest/Task Brief/critic were review-ready only before PO-003 arrived. PO-003 directly changes the evidence needed to support the existing retrospective “why did the NPC act that way?” consumer. Continuing to Senior review on the old basis would omit a current canonical product requirement.
+
+**Resolution**
+
+CLOSED. The Source Manifest and Task Brief now include the PO-003 semantic owner, the entire current dependency subgraph, evidence classification, live-turn performance matrix, direct acceptance obligation and Product Owner/reopen result. The critic has been rerun on that expanded basis.
+
+**Human decision required:** NO — semantics were already owner-approved.
+
+---
+
+### F19-PO003-02 — SIGNIFICANT — owner sufficiency and machine realization were at risk of being conflated
+
+**Defect**
+
+A weak audit could make either opposite error:
+
+1. declare SemanticEvent fully sufficient merely because `event.schema.yaml` contains generic `factual_changes[]` / `knowledge_changes[]`; or
+2. declare an upstream history owner missing merely because the current schema lacks an explicit decision-basis field.
+
+Both ignore semantic ownership.
+
+Current Step-4 already allocates `LOG/runtime.semantic_event` as compact durable semantic history / causal evidence and routes full `world.knowledge` transition history to it. WP-10 already allocates SemanticEvent in the durable history/delivery namespace. The owner therefore exists and can satisfy the consumer.
+
+Current machine realization still lacks direct proof that a qualifying decision retains all material mutable T0 evidence. Generic physical extensibility is not acceptance evidence.
+
+**Resolution**
+
+CLOSED. The Task Brief now classifies PO-003 as:
+
+```text
+NEW CONSUMER + EXTENSION
+CLOSED_ARCHITECTURE_MATERIAL_INSUFFICIENCY: NO
+CURRENT_MACHINE_TEST_REALIZATION_GAP: YES
+```
+
+Exact schema/test realization remains downstream. No upstream reopen is declared.
+
+---
+
+### F19-PO003-03 — SIGNIFICANT — current-state owners could be duplicated or substituted for historical evidence
+
+**Defect**
+
+Without explicit separation, future work could:
+
+- turn R2.2 Actor continuity into a psychology log;
+- store a duplicate writable knowledge stance inside history;
+- reference only a mutable current Actor/knowledge row and later resolve it at T1;
+- restore current Actor state from historical evidence during replay.
+
+That would violate R2.2, Step-4 and PO-003.
+
+**Resolution**
+
+CLOSED. The current framing requires:
+
+- R2.2 remains current non-epistemic Actor-private authority;
+- `world.knowledge` remains current epistemic authority;
+- directed relationships remain source-Actor current views;
+- SemanticEvent/history retains only bounded event-time evidence for qualifying material decisions;
+- then-values or immutable historical refs must be sufficient to recover T0 semantics;
+- retrospective evidence cannot mutate current owners.
+
+---
+
+### F19-PO003-04 — SIGNIFICANT — latency/performance could regress through an implicit second reasoning or I/O path
+
+**Defect**
+
+PO-003 can be implemented badly by adding:
+
+- a serial post-decision LLM “why did you do that?” pass;
+- rereads of Actor/knowledge state already loaded for the decision;
+- a separate Git publication for each retained basis;
+- bookkeeping/history work on unrelated turns.
+
+This would violate R2.4 role!=call, R2.3/WP-09 bounded retrieval, `PLAY_POLICY.md` latency policy and current persistence batching expectations.
+
+**Resolution**
+
+CLOSED in framing. Candidate A is explicitly evaluated as the baseline:
+
+```text
+additional sequential LLM calls:                    0
+additional serial remote/tool reads solely for basis: 0
+additional separate remote publications:            0
+additional context/output: bounded typed evidence only
+irrelevant-turn work:                                0
+```
+
+The basis is captured as a typed byproduct of already-required material Actor/Master decision work and joins ordinary history persistence batching.
+
+Full snapshots, later current-state reconstruction and a dedicated serial rationale pass are explicitly compared and rejected as baseline. If future correctness evidence requires a new serial round-trip, Step 2 must treat it as a material architecture/performance problem.
+
+---
+
+### F19-PO003-05 — SIGNIFICANT — no direct T0 -> T1 -> retrospective acceptance case exists
+
+**Defect**
+
+Current tests cover pieces but not the defining failure mode. In particular:
+
+- `test_r2_7_wp04_actor_asset_conformance.py` protects sparse current Actor ownership and directed relationships;
+- `REGRESSION_CASES:T04` prevents current NPC knowledge leakage;
+- `T08` protects bounded old-NPC retrieval;
+- performance/context/latency cases protect bounded/local work;
+- persistence transaction cases protect zero-I/O ordinary turns and coherent batches;
+- chronology cases protect lawful source ordering/locality.
+
+None directly proves that an NPC decision made with K0/R0/G0 remains explainable from K0/R0/G0 after current owners become K1/R1/G1.
+
+**Resolution**
+
+CLOSED AS STEP-1 ROUTING / DOWNSTREAM VERIFICATION OBLIGATION. The Task Brief now requires an explicit acceptance case that mutates current state after T0 and verifies the retrospective answer/replay uses retained T0 basis, not current state. It also must test the zero-extra-serial performance contract.
+
+Tests are not implemented in Step 1.
+
+---
+
+### F19-PO003-06 — SIGNIFICANT — private historical evidence could bypass current disclosure/no-spoiler eligibility
+
+**Defect**
+
+A correctly retained NPC motive/belief/relationship basis may itself be private. An implementation that equates “historically available to Master/Story” with “visible to current player/PC/Commentator session” would create a spoiler/knowledge leak.
+
+Story also cannot establish an exact motive merely through derived prose when admitted historical evidence is insufficient.
+
+**Resolution**
+
+CLOSED. The current frame routes retrospective evidence through R2.3/WP-09 role/purpose/player/PC eligibility and current Step-4 knowledge/disclosure rules before visible output. Story remains orientation/projection; material historical claims escalate to admitted history. Missing basis produces a supported-limit answer rather than an invented exact motive.
+
+---
+
+### F19-PO003-07 — SIGNIFICANT — current cursor/status surfaces could return Senior to the pre-PO-003 package
+
+**Defect**
+
+`DEV/CURRENT_PROGRESS.md` correctly reopened Step 1 for PO-003, while the task-local durable audit cursor still identified the earlier PO-001/PO-002 package as the current Senior-review basis. Leaving any current locator in that state after integration would make the project cursor self-contradictory.
+
+**Resolution**
+
+CLOSED. Current WP-19 status surfaces are synchronized to:
+
+```text
+WP19 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
+PO-003 INTEGRATED
+WHOLE-PROJECT CRITIC RERUN COMPLETE
+HUMAN_DECISION_REQUIRED: NO
+NEEDS_PO: NONE
+UPSTREAM_REOPEN_REQUIRED: NO
+ARCHITECTURE_REOPENED: NO
+```
+
+Historical checkpoints remain historical and are not rewritten to pretend PO-003 existed earlier.
+
+---
+
+## 5. Owner and reopen analysis
+
+### R2.2 Actor / directed relationships
+
+Current owner is sufficient. PO-003 explicitly does not ask R2.2 to become history. No reopen.
+
+### Step-4 `world.knowledge`
+
+Current owner is sufficient; Step-4 already assigns full epistemic transition history to LOG/SemanticEvents. No reopen.
+
+### Step-4 LOG / SemanticEvent
+
+This is the natural existing historical-evidence owner. Its current semantic scope includes durable semantic history and causal evidence. PO-003 adds a conditional bounded retention obligation for a new retrospective consumer. This is an **EXTENSION**, not a contradiction or material semantic-owner insufficiency.
+
+### WP-10 record-family allocation
+
+Already has the required history family. No new family and no reopen.
+
+### WP-15 chronology
+
+Supporting causal/order/time evidence only; no motive/cognition authority. No reopen.
+
+### WP-13 persistence/publication
+
+Existing owner can carry required history through normal durability batching. No new publication authority and no reopen.
+
+### R2.1 / WP-18 Story
+
+Projection/orientation consumer only. No new Story authority and no reopen.
+
+### R2.3/R2.4/WP-08/WP-09
+
+Existing bounded context and single-context logical-role execution can carry the required Actor decision result/evidence without requiring role=call. No reopen.
+
+### Current machine/test realization
+
+Needs downstream alignment under the existing owner. This does not reopen semantic architecture in Step 1.
+
+```text
+UPSTREAM_REOPEN_REQUIRED: NO
+ARCHITECTURE_REOPENED: NO
+```
+
+---
+
+## 6. Product Owner boundary rerun
+
+### Product semantics
+
+Settled by PO-003: retain bounded event-time basis for qualifying material decisions; no full psychology archive; no current-state substitution; no invented exact motive when evidence is insufficient.
+
+### Canonical authority / ownership
+
+Evidence resolves placement to the existing historical-evidence owner family without a new owner.
+
+### Compatibility policy
+
+Unchanged. Future released-campaign schema/engine/ruleset migration remains WP-20.
+
+### Hard-to-reverse lifecycle/product behavior
+
+No new lifecycle state or mode is introduced.
+
+### Material quality/performance trade-off
+
+Current evidence supports the zero-extra-serial baseline. No product preference is required to choose between an unnecessary second model call and the existing decision path.
+
+### Explicit risk acceptance
+
+None.
+
+```text
+HUMAN_DECISION_REQUIRED: NO
+NEEDS_PO: NONE
+```
+
+---
+
+## 7. Verification/scenario dispositions
+
+| Evidence | Disposition for PO-003 |
+|---|---|
+| `DEV/TESTS/test_r2_7_wp04_actor_asset_conformance.py` | CURRENT SUPPORTING — sparse current Actor/relationship owner and no hidden reasoning; not history proof. |
+| `DEV/TESTS/REGRESSION_CASES.md:T04` | CURRENT SUPPORTING — NPC knowledge eligibility; not historical then-state proof. |
+| `REGRESSION_CASES.md:T08` | CURRENT SUPPORTING — bounded old-NPC retrieval. |
+| `DEV/TESTS/PERFORMANCE_CASES.md:P01/P03/P07/P10` | CURRENT SUPPORTING — bounded reasoning without flattening nuance/correctness. |
+| `DEV/TESTS/RUNTIME_CONTEXT_RESEARCH_CASES.md:C04/C07` | CURRENT SUPPORTING — no irrelevant retrieval; lazy campaign data. |
+| `DEV/TESTS/RUNTIME_SCOPE_LATENCY_CASES.md:RL03/RL05` | CURRENT SUPPORTING — targeted operations/no maintenance leakage. |
+| `DEV/TESTS/PERSISTENCE_TRANSACTION_CASES.md:PT01/PT02/PT14/PT15` | CURRENT SUPPORTING — zero remote I/O when no durability edge; coherent batching when one exists. |
+| `DEV/TESTS/CHRONOLOGY_CASES.md:C03/C15` | CURRENT SUPPORTING — source-aware/local chronology. |
+| `GAME/SCHEMA/event.schema.yaml` | CURRENT PHYSICAL SUPPORT / NOT COMPLETE SEMANTIC PROOF — append-only event can carry generic changes/refs but explicit decision-basis contract is not proven. |
+| Step-3 mechanical-event executable tests | OUTSIDE DIRECT PO-003 ACCEPTANCE. |
+| Story-retirement executable test | OUTSIDE DIRECT PO-003 ACCEPTANCE. |
+| direct T0 decision -> T1 mutable-state change -> retrospective T0-basis test | MISSING / ROUTED DOWNSTREAM. |
+| direct zero-extra-serial capture test | MISSING / ROUTED DOWNSTREAM. |
+
+No test/schema file is changed by this Step-1 critic rerun.
+
+---
+
+## 8. Final critic gate
+
+```text
+PREVIOUS_F19_S1_FINDINGS:       RETAINED / CLOSED
+SR19_01:                        RETAINED / CLOSED
+PREVIOUS_F19_PO_FINDINGS:       RETAINED / CLOSED
+
+F19_PO003_01 BLOCKING:          CLOSED — PO-003 integrated into current basis
+F19_PO003_02 SIGNIFICANT:       CLOSED — semantic owner sufficiency separated from machine realization gap
+F19_PO003_03 SIGNIFICANT:       CLOSED — current owners separated from historical basis / no T1 substitution
+F19_PO003_04 SIGNIFICANT:       CLOSED — explicit zero-extra-serial performance baseline and alternatives
+F19_PO003_05 SIGNIFICANT:       CLOSED AS ROUTING — direct T0/T1 acceptance obligation recorded downstream
+F19_PO003_06 SIGNIFICANT:       CLOSED — disclosure/no-spoiler/history-source escalation framed
+F19_PO003_07 SIGNIFICANT:       CLOSED — current status/cursor surfaces synchronized
+
+PO003_RERUN_BLOCKING:           1
+PO003_RERUN_SIGNIFICANT:        6
+PO003_RERUN_MINOR:              0
+UNRESOLVED_BLOCKING:            0
+UNRESOLVED_SIGNIFICANT:         0
+HUMAN_DECISION_REQUIRED:        NO
+NEEDS_PO:                       NONE
+UPSTREAM_REOPEN_REQUIRED:       NO
+ARCHITECTURE_REOPENED:          NO
+WP19_STEP2_AUTHORIZED:          NO
+STEP2_STARTED:                  NO
+WP20_STARTED:                   NO
+IMPLEMENTATION_PLANNING_STARTED:NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED:NO
+```
+
 ### Critic recommendation to Senior
 
-The expanded Step-1 package now incorporates `PO-001`/`PO-002`, independently covers their current owner/consumer/test graph, distinguishes all material intent/authority boundaries, and has no unresolved BLOCKING/SIGNIFICANT framing defect or human-owned decision.
+The current WP-19 Step-1 package now includes PO-003, its complete directly affected owner/consumer/performance/test graph, explicit owner-versus-realization classification, the mandatory T0/T1 retrospective acceptance obligation, and zero unresolved BLOCKING/SIGNIFICANT framing defects.
 
-**Recommendation:** return the completed expanded WP-19 Step-1 package to the mandatory Senior review gate. This critic does not grant Step-2 GO and does not perform Senior review itself.
+**Recommendation:** return the package to the mandatory Senior review gate.
+
+This critic does not grant Senior GO and does not perform Senior review itself.
