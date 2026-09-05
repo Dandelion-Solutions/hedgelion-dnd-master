@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-CATALOG_VERSION = "2.0.0"
+CATALOG_GENERATION = 2
 
 
 class R27WP03CatalogConformanceTests(unittest.TestCase):
@@ -12,13 +12,13 @@ class R27WP03CatalogConformanceTests(unittest.TestCase):
         return json.loads((ROOT / relative).read_text(encoding="utf-8"))
 
     def test_catalog_generation_is_coherent(self):
-        versions = {
-            self.load_json("DEV/CATALOG/core-catalog.json")["catalog_version"],
-            self.load_json("DEV/CATALOG/entity-structures.json")["catalog_version"],
-            self.load_json("DEV/CATALOG/identifier-policies.json")["catalog_version"],
-            self.load_json("DEV/CATALOG/mechanical-surfaces.json")["catalog_version"],
+        generations = {
+            self.load_json("DEV/CATALOG/core-catalog.json")["catalog_generation"],
+            self.load_json("DEV/CATALOG/entity-structures.json")["catalog_generation"],
+            self.load_json("DEV/CATALOG/identifier-policies.json")["catalog_generation"],
+            self.load_json("DEV/CATALOG/mechanical-surfaces.json")["catalog_generation"],
         }
-        self.assertEqual(versions, {CATALOG_VERSION})
+        self.assertEqual(generations, {CATALOG_GENERATION})
 
     def test_accepted_record_classes_replace_stale_generic_owners(self):
         core = self.load_json("DEV/CATALOG/core-catalog.json")["registries"]
