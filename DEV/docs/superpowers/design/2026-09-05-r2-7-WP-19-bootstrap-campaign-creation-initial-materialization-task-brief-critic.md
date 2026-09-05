@@ -1,6 +1,6 @@
 # R2.7 WP-19 — Bootstrap / Campaign Creation / Initial Materialization — Whole-Project Task-Brief Critic
 
-Status: **STEP 1 SENIOR RECOVERY COMPLETE — SR19-01 CLOSED — MANDATORY SENIOR RE-REVIEW CANDIDATE**
+Status: **STEP 1 CRITIC RE-RUN COMPLETE — PO INPUT INTEGRATED — MANDATORY SENIOR REVIEW CANDIDATE**
 
 Date: 2026-09-05
 
@@ -8,81 +8,82 @@ Original critic basis: `5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053`
 
 Senior-recovery basis: `df5fe6441c2b85e9cbffcb6f83caa885501da794`
 
-This is the mandatory Step-1 whole-project Task-Brief critic required by `DEV/DESIGN_PROCESS.md` and `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, recovered after Senior review identified `SR19-01 / SIGNIFICANT`.
+Expanded Product-Owner integration basis: `4b7411b10b30cc191141826aacb3b0c88e7eeb37`
 
-The recovery independently reconstructed the verification/scenario subgraph from current `DEV/PROJECT_MAP.md`, actual owners and the full current `DEV/TESTS/` directory. The Senior-provided minimum file list was treated as evidence to verify, not as an answer key.
+This is the mandatory whole-project Step-1 Task-Brief critic rerun required after `PO-001` and `PO-002` arrived after the prior recovered critic basis. The rerun follows `DEV/ARCHITECTURE/PRODUCT_OWNER_INPUT_PROCESS.md`: pre-input findings remain valid for their basis, but the old critic cannot clear a package containing later Product Owner requirements until those routes are independently inspected and incorporated.
 
-Companion artifacts:
-
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-source-manifest.md`;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief.md`.
+The rerun used current `DEV/PROJECT_MAP.md`, the PO ledger/process/accepted owner decision, current canonical owners, runtime consumers and directly implicated tests/scenario catalogs. It did not treat the PO integration checkpoint or prior critic as an answer key.
 
 ---
 
 ## 1. Independent reconstruction method
 
-Original Step-1 reconstruction followed:
+The pre-input bootstrap/materialization and SR19-01 verification graph was retained. The critic independently added two consumer legs.
+
+### PO-001 leg
 
 ```text
-Project Instructions / install bootstrap
-    -> explicit campaign-choice barrier
-    -> storage discovery / storage v3 baseline
-    -> exact runtime package selection
-    -> ruleset package identity / release metadata
-    -> branch ancestry / creator / access authority
-    -> New Campaign fast path / Campaign Setup
-    -> init_campaign materializer
-    -> GAME/CAMPAIGN template tree
-    -> MANIFEST / CONFIG / CARD / CURRENT schemas
-    -> initial from-scratch publication
-    -> normal persistence/currentness boundary
-    -> campaign identity/card projections
-    -> PLAYER / PC / provisional onboarding
-    -> READY_PC / PLAY_READY / lifecycle active
-    -> session/resume / first true live scene
-    -> multiplayer mode/join policy/PLAYER authorization
-    -> House-Rules default materialization
-    -> release-builder + integration-test consumer
-    -> future migration/evolution boundary in WP-20
+selected campaign
+    -> lifecycle + access authority
+    -> active + gameplay allowed
+    -> ordinary gameplay / OOC Master interaction
+    -> retrospective/history intent
+    -> R2.3 purpose/player/PC eligibility + bounded retrieval
+    -> R2.1 / WP-18 Story-history orientation when eligible
+    -> stronger native/current owner escalation when required
+    -> Step-4 world.knowledge/runtime.disclosure
+    -> Step-5.12 player-visible eligibility
+    -> R2.4 ordinary Narrator-visible response
 ```
 
-SR19-01 recovery expanded the last machine/verification leg independently:
+The critic separately followed the read-only branch:
 
 ```text
-DEV/PROJECT_MAP verification route
-    -> enumerate DEV/TESTS
-    -> bootstrap/storage/install/menu scenario catalogs
-    -> package/provenance/build/integration executable tests
-    -> campaign identity/card scenario catalogs
-    -> character readiness / diegetic onboarding / durability / explicit-save cases
-    -> persistence/access/multiplayer/runtime-latency cases
-    -> S6D READY_PC + ruleset-package executable evidence
-    -> engine-update/mismatch neighbors
-    -> historical pre-release evidence
-    -> item-level expectation -> current owner -> disposition
+active + readable but gameplay denied -> Commentator
+completed + readable                  -> Commentator
 ```
 
-The critic applies this rule:
+This establishes that Commentator is not an extra history mode for an authorized active player.
+
+### PO-002 leg
 
 ```text
-TEST OR SCENARIO IS A CONSUMER / EVIDENCE SURFACE
-NOT A SEMANTIC OWNER BY EXISTENCE OR PASS STATUS
+explicit save-and-exit
+    -> Step-5.5 / SAVE_CONTRACT explicit save promise
+    -> PERSISTENCE / DURABILITY_GUARD
+    -> SESSION + applicable LIVE_SCENE closure/consolidation
+    -> save success established
+    -> RUNTIME selected gameplay context termination
+    -> clear selected-campaign working binding
+    -> BOOTSTRAP_RUNTIME / install campaign-menu re-entry
+    -> CAMPAIGN_CARD presentation + ACCESS_CONTROL revalidation
+    -> next explicit campaign choice
 ```
+
+The critic also followed negative neighbors:
+
+```text
+save-and-stop/pause
+multiplayer leave/deactivation
+PC control transfer
+campaign completion/archive
+live epoch close/global multiplayer stop
+```
+
+These remain independently owned operations and are not implied by exit-to-menu.
 
 ---
 
 ## 2. Findings summary
 
-Senior independently confirmed the original findings. They remain closed and are not reopened.
+The original Step-1 findings and SR19-01 remain closed. No new evidence contradicts their dispositions.
+
+Expanded PO-input critic findings:
 
 ```text
-ORIGINAL_STEP1_BLOCKING:       2
-ORIGINAL_STEP1_SIGNIFICANT:    5
-ORIGINAL_STEP1_MINOR:          1
-
-SENIOR_RECOVERY_BLOCKING:      0
-SENIOR_RECOVERY_SIGNIFICANT:   1   # SR19-01
-SENIOR_RECOVERY_MINOR:         0
+PO_INTEGRATION_BLOCKING:       1
+PO_INTEGRATION_SIGNIFICANT:    4
+PO_INTEGRATION_MINOR:          1
 
 UNRESOLVED_BLOCKING:           0
 UNRESOLVED_SIGNIFICANT:        0
@@ -90,287 +91,249 @@ HUMAN_DECISION_REQUIRED:       NO
 UPSTREAM_REOPEN_REQUIRED:      NO
 ARCHITECTURE_REOPENED:         NO
 STEP2_STARTED:                 NO
-STEP2_AUTHORIZED:              NO
+WP19_STEP2_AUTHORIZED:         NO
+WP20_STARTED:                  NO
 IMPLEMENTATION_PLANNING_STARTED: NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 ```
 
-No additional independent BLOCKING or SIGNIFICANT architecture defect was found beyond `SR19-01`. The stale expectations found during recovery are item-level verification-consumer defects routed under SR19-01 and existing current owners; they do not create new semantic owners or human decisions.
+All BLOCKING/SIGNIFICANT defects below were mechanically resolvable framing/consumer-routing defects and are repaired in the Source Manifest and Task Brief. No genuine `NEEDS_PO` remained.
 
 ---
 
-## 3. Original finding dispositions — confirmed
-
-### F19-S1-01 — BLOCKING — CLOSED
-
-Exact ruleset-set identity was missing from bootstrap framing. Current owner chain remains:
+## 3. Previously closed findings — retained, not reopened
 
 ```text
-selected validated runtime package
-    -> RUNTIME_PACKAGE.ruleset_set_sha256
-    -> init_campaign --ruleset-set-sha256
-    -> MANIFEST.ruleset.created_with/current
+F19-S1-01 BLOCKING    CLOSED — exact ruleset-set propagation framing
+F19-S1-02 BLOCKING    CLOSED — scaffold/provisional/READY_PC/PLAY_READY separation
+F19-S1-03 SIGNIFICANT CLOSED — branch/storage/access/stale-v2 reconciliation
+F19-S1-04 SIGNIFICANT CLOSED — identity/card/config/current projections
+F19-S1-05 SIGNIFICANT CLOSED — first-publication vs later durability/session/resume
+F19-S1-06 SIGNIFICANT CLOSED — multiplayer initial authority
+F19-S1-07 SIGNIFICANT CLOSED — bidirectional machine/template/schema/test audit
+F19-S1-08 MINOR       CLOSED — WP-20/dormant-neighbor boundary
+SR19-01   SIGNIFICANT CLOSED — verification/scenario reverse-conformance evidence expansion
 ```
 
-Senior review confirmed the finding. Recovery found additional current executable support (`test_release_builder.py`, `test_release_integration.py`, S6D package closure) and no contradiction.
-
-### F19-S1-02 — BLOCKING — CLOSED
-
-Scaffold, PROVISIONAL_IDENTITY, READY_PC and PLAY_READY remain distinct states. Readiness/onboarding/durability executable/scenario evidence confirms rather than contradicts the accepted lifecycle owners.
-
-### F19-S1-03 — SIGNIFICANT — CLOSED
-
-Branch/storage/access and stale-v2 reconciliation remains required. SR19-01 adds concrete reverse-conformance evidence: `BOOTSTRAP_STORAGE_REGRESSION_CASES.md:B12` is stale v2 while current executable/schema evidence is v3.
-
-### F19-S1-04 — SIGNIFICANT — CLOSED
-
-Campaign identity/card/config/current projections remain in scope. SR19-01 adds `CAMPAIGN_CARD_CASES.md:C12` as a stale projection expectation against current fixed icon/status semantics.
-
-### F19-S1-05 — SIGNIFICANT — CLOSED
-
-Initial from-scratch publication versus later setup/durability/session/resume remains correctly separated. Persistence/durability/save cases confirm the distinction; no new owner conflict found.
-
-### F19-S1-06 — SIGNIFICANT — CLOSED
-
-Initial multiplayer authority remains creator/PLAYER controlled. Access/membership test expansion found stale/qualified wording but no new unsatisfied authority consumer requiring WP-16 reopen.
-
-### F19-S1-07 — SIGNIFICANT — CLOSED, EVIDENCE PROOF RECOVERED BY SR19-01
-
-The original finding correctly required machine/template/schema/test reverse audit, but the published evidence proof was incomplete because it named only a narrow executable subset and did not independently inspect the directly relevant scenario/test graph.
-
-SR19-01 closes that **evidence-completeness defect** without reopening the original architecture finding.
-
-### F19-S1-08 — MINOR — CLOSED
-
-WP-20/dormant neighbor boundary remains explicit. Engine-update/mismatch test families inspected during recovery confirm why update/evolution cases must not become current WP-19 work.
+PO-001/PO-002 add consumers around the existing owners. They do not establish a contradiction that would reopen those findings.
 
 ---
 
-## 4. SR19-01 — SIGNIFICANT — verification/test reverse-conformance evidence incomplete
+## 4. Expanded-basis finding dispositions
 
-### Defect
+### F19-PO-01 — BLOCKING — applicable accepted Product Owner semantics absent from the pre-input Step-1 frame
 
-The original Source Manifest and critic claimed machine/template/schema/test coverage after inspecting the materializer/package producer and a narrow integration-test slice. That was insufficient for a whole-project reverse-conformance claim because `DEV/PROJECT_MAP.md` routes verification through both executable `test_*.py` and scenario/regression `*_CASES.md`, and those consumers can themselves be stale.
+**Defect**
 
-The defect is material because future implementation could follow a current-looking test expectation that contradicts a later/current owner even while the executable CI suite remains green.
+The pre-input Source Manifest/Task Brief/critic were valid for their inspected basis but did not contain the later accepted owner decision for:
 
-### Independently expanded verification families
+1. retrospective/history interaction inside ordinary active gameplay;
+2. save-and-exit navigation back to campaign selection;
+3. the explicit campaign routing table separating ordinary gameplay from read-only Commentator.
 
-Recovery directly inspected these material families:
+A Step-1 package that omitted an applicable current owner decision could not safely authorize Step-2 research because the Step-2 problem statement itself would be incomplete.
 
-**Bootstrap / storage / install / menu**
-- `DEV/TESTS/BOOTSTRAP_STORAGE_REGRESSION_CASES.md`;
-- `DEV/TESTS/INSTALL_ONBOARDING_CASES.md`;
-- `DEV/TESTS/CAMPAIGN_CARD_CASES.md`;
-- `DEV/TESTS/CAMPAIGN_IDENTITY_CASES.md`;
-- `DEV/TESTS/GM_TONE_ONBOARDING_CASES.md`;
-- WP-19-relevant `DEV/TESTS/REGRESSION_CASES.md` cases.
+**Resolution**
 
-**Readiness / onboarding / durability / save**
-- `DEV/TESTS/CHARACTER_READINESS_CASES.md`;
-- `DEV/TESTS/DIEGETIC_ONBOARDING_CASES.md`;
-- `DEV/TESTS/DURABILITY_BOUNDARY_CASES.md`;
-- `DEV/TESTS/EXPLICIT_SAVE_CASES.md`;
-- `DEV/TESTS/ENGINE_CONSISTENCY_CASES.md`;
-- `DEV/TESTS/test_s6d_07_character_mvp_seed.py`.
+CLOSED. The Source Manifest now treats the PO ledger as intent evidence, the Product Owner Input Process as process authority, and `2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md` as the accepted semantic owner. The Task Brief contains the exact interaction and exit contracts and new evidence questions.
 
-**Runtime/package/provenance/release**
-- `DEV/TESTS/test_multi_runtime_bootstrap_contract.py`;
-- `DEV/TESTS/test_multi_runtime_release_consistency.py`;
-- `DEV/TESTS/test_runtime_identity_schema.py`;
-- `DEV/TESTS/test_runtime_package_provenance.py`;
-- `DEV/TESTS/test_release_builder.py`;
-- `DEV/TESTS/test_release_integration.py`;
-- `DEV/TESTS/test_release_game_passthrough.py`;
-- `DEV/TESTS/test_destination_template_boundary.py`;
-- `DEV/TESTS/test_game_dev_layout.py`;
-- `DEV/TESTS/test_s6d_11_ruleset_package_closure.py`.
+**Human decision required:** NO — the Product Owner already supplied the semantics.
 
-**Publication / access / multiplayer / runtime-boundary**
-- `DEV/TESTS/PERSISTENCE_TRANSACTION_CASES.md`;
-- `DEV/TESTS/ACCESS_CONTROL_CASES.md`;
-- `DEV/TESTS/MULTIPLAYER_MEMBERSHIP_CASES.md`;
-- `DEV/TESTS/RUNTIME_SCOPE_LATENCY_CASES.md`.
+---
 
-**Downstream/historical routing**
-- `DEV/TESTS/ENGINE_UPDATE_CASES.md`;
-- `DEV/TESTS/test_engine_mismatch_recovery_contract.py`;
-- `DEV/TESTS/test_engine_update_policy_contract.py`;
-- `DEV/TESTS/PRE_RELEASE_AUDIT_0.1.0.md`.
+### F19-PO-02 — SIGNIFICANT — retrospective consumer could be misrouted to Commentator or use Story as disclosure authority
 
-### Material item-level dispositions
+**Defect**
 
-#### V19-01 — `BOOTSTRAP_STORAGE_REGRESSION_CASES.md:B12`
+Without an explicit consumer binding, older role topology could be read as “history => Commentator”, and a weak implementation could answer directly from Story/repository-visible history without current player/PC disclosure eligibility.
 
-**Expectation:** fresh storage initialization creates a “v2 DND_STORAGE.yaml”.
+That would violate the new product requirement and existing Step-4/R2.1/R2.3/WP-18 ownership:
 
-**Current owner:** `GAME/SCHEMA/dnd_storage.schema.yaml` schema v3; current bootstrap/storage owners use exact `engine.baseline` package identity. `test_multi_runtime_release_consistency.py` explicitly proves storage schema v3 and absence of retired `baseline_version` in active runtime contracts.
+- authorized active-player retrospective is ordinary gameplay;
+- Story is noncanonical orientation/routing, not truth/currentness/knowledge/disclosure;
+- eligibility precedes retrieval/use;
+- material/current/source-specific claims escalate to stronger owners;
+- player-visible output remains disclosure-filtered.
 
-**Disposition:** **STALE / SUPERSEDED**.
+`R2.4` saying Commentator is a separate mode is not a contradiction. It remains correct for spectator/read-only serving and is now explicitly qualified so it cannot become a mandatory history transition for an authorized active player.
 
-**Routing:** existing F19-S1-03 / WP-19 storage-currentness reconciliation. No compatibility or Product Owner decision.
+**Resolution**
 
-#### V19-02 — `BOOTSTRAP_STORAGE_REGRESSION_CASES.md:B22`
+CLOSED. The manifest/brief now route PO-001 through `RUNTIME`/OOC Master interaction, R2.3 bounded context retrieval, R2.1/WP-18 Story orientation, Step-4 knowledge/disclosure, Step-5.12 delivery and ordinary Narrator-visible output. They explicitly forbid a new memory/history owner and forbid Story availability from creating disclosure authority.
 
-**Expectation:** normal release package resolves its published tag to exact commit SHA before new campaign/migration.
+**Upstream reopen:** NO.
 
-**Current owner:** selected ZIP `RUNTIME_PACKAGE.source_commit_sha` owns built-artifact source provenance. Current bootstrap/engine-update contracts explicitly prohibit inferring an old package's source SHA solely from the current position of a mutable tag.
+---
 
-**Disposition:** **STALE / SUPERSEDED**.
+### F19-PO-03 — SIGNIFICANT — post-selection interaction routing was under-specified
 
-**Routing:** WP-19 creation provenance; migration aspect remains WP-20. No new identity policy.
+**Defect**
 
-#### V19-03 — `BOOTSTRAP_STORAGE_REGRESSION_CASES.md:B23`
-
-**Expectation:** after scaffold publication tell player setup has visible character -> minimal world -> first scene stages.
-
-**Current owner:** `GAME/CORE/NEW_CAMPAIGN_FAST_PATH.md` has precedence for scaffold ordering/player handoff and explicitly requires successful infrastructure to remain invisible; do not expose internal setup stages/installation progress by default. `GM_TONE_ONBOARDING_CASES.md:GT01-GT07` supports the human opening.
-
-**Disposition:** **STALE / SUPERSEDED**.
-
-**Routing:** existing low-friction product semantics; no Product Owner decision.
-
-#### V19-04 — `BOOTSTRAP_STORAGE_REGRESSION_CASES.md:B25`
-
-**Expectation:** once PC/minimal situation are ready, create first scene/**checkpoint** and begin play.
-
-**Current owner:** campaign setup/durability owners make checkpoint optional unless recovery policy independently requires it; launch requires READY_PC + PLAY_READY semantics.
-
-**Disposition:** **CURRENT WITH QUALIFIER**.
-
-**Routing:** WP-19 launch/readiness composition; do not turn checkpoint into ceremony.
-
-#### V19-05 — `CAMPAIGN_CARD_CASES.md:C12`
-
-**Expectation:** paused or initializing candidate renders 🟡.
-
-**Current owner:** `GAME/CORE/CAMPAIGN_CARD.md` fixed mapping: initializing 🟡, paused ⏸️.
-
-**Disposition:** **STALE / SUPERSEDED**.
-
-**Routing:** existing F19-S1-04 projection consistency; no lifecycle reopen.
-
-#### V19-06 — `REGRESSION_CASES.md:T13`
-
-**Expectation:** new-game discovery scans `campaign/*` and reads manifests only.
-
-**Current owner:** bootstrap/card owners use card-first menu discovery, MANIFEST only as fallback.
-
-**Disposition:** **STALE / SUPERSEDED**.
-
-**Routing:** current menu/latency path; no product decision.
-
-#### V19-07 — `ACCESS_CONTROL_CASES.md:A26/A27/A29/A30`
-
-**Expectation:** storage-main owner separation.
-
-**Current owner:** storage default branch remains storage-owner-only for storage initialization/baseline metadata. Campaign engine/ruleset adoption authority is independent and creator-controlled.
-
-**Disposition:** **CURRENT WITH QUALIFIER**. Authority boundary is current; old wording that suggests copied-engine/campaign-engine maintenance on storage main is not a current semantic owner.
-
-**Routing:** existing F19-S1-03 + current `ENGINE_UPDATES.md`/access owners.
-
-#### V19-08 — `ACCESS_CONTROL_CASES.md:A28`
-
-**Expectation:** guest performs no release discovery/storage-main upgrade/campaign integration and uses a “campaign-integrated engine”.
-
-**Current owner:** guest lacks storage-baseline and creator-only adoption authority, but runtime package discovery/use, missing-package recovery and compatible same-version behavior follow current `ENGINE_UPDATES.md`; engine bytes are local runtime package bytes, not integrated into campaign storage.
-
-**Disposition:** **SUPERSEDED IN PART / CURRENT WITH QUALIFIER**.
-
-**Routing:** current access + runtime identity owners; future semantic migration remains WP-20.
-
-#### V19-09 — `ENGINE_UPDATE_CASES.md`
-
-**Expectation family:** update/migration policy.
-
-**Disposition:** **OWNED DOWNSTREAM / WP-20** except creation-adjacent package identity boundaries. In particular old U04/U08/U10 wording must not be imported into WP-19 as current authority (`Always update automatically`, `baseline_version`, old tag-resolution provenance style).
-
-#### V19-10 — `PRE_RELEASE_AUDIT_0.1.0.md`
-
-**Expectation family:** old 0.1.0 bootstrap/skeleton snapshot.
-
-**Disposition:** **HISTORICAL ONLY**. The file explicitly marks itself non-normative.
-
-### Current verification evidence confirmed
-
-The expansion also confirmed substantial current evidence:
-
-- `INSTALL_ONBOARDING_CASES.md:I01-I08` — CURRENT;
-- `CHARACTER_READINESS_CASES.md:C01-C17` — CURRENT for current readiness/onboarding semantics, with legacy-repair cases not implying compatibility preservation;
-- `DIEGETIC_ONBOARDING_CASES.md:DO01-DO14` — CURRENT;
-- creation-relevant `DURABILITY_BOUNDARY_CASES.md` — CURRENT;
-- creation-relevant `EXPLICIT_SAVE_CASES.md` — CURRENT;
-- `ENGINE_CONSISTENCY_CASES.md:EC07/08/10/14/15` — CURRENT;
-- `PERSISTENCE_TRANSACTION_CASES.md:PT30` and related non-force/currentness cases — CURRENT;
-- `RUNTIME_SCOPE_LATENCY_CASES.md:RL04` and negative maintenance leakage cases — CURRENT;
-- executable multi-runtime/package/release/readiness/ruleset tests listed above — CURRENT or current supporting evidence under their natural owner.
-
-A key reverse-conformance result is therefore:
+The pre-input WP-19 frame strongly specified campaign discovery/selection but not the newly owner-approved interaction route after selection:
 
 ```text
-EXECUTABLE CURRENTNESS: substantially current for v3/package/readiness contracts
-SCENARIO CATALOG CURRENTNESS: mixed; explicit stale items remain
+active + gameplay allowed       -> ordinary gameplay
+active + readable/non-playable  -> read-only Commentator
+completed + readable            -> read-only Commentator
 ```
 
-### Resolution
+Without this route, a future consumer could infer ordinary gameplay merely from `active`, or treat completed/read-only campaigns as resumable, or add an unnecessary extra mode-selection hierarchy.
 
-**SR19-01: CLOSED.**
+**Resolution**
 
-Recovery actions:
-
-1. Source Manifest now contains the independently reconstructed verification/test subgraph.
-2. Material expectations receive item-level current/stale/qualified/downstream/historical disposition.
-3. Task Brief now requires Step-2 verification reverse-conformance across both executable tests and scenario catalogs.
-4. Stale scenarios are explicitly barred from acting as future implementation truth.
-5. No test/scenario files were rewritten because Step-1 evidence recovery does not require design-realization changes and Step 2 is unauthorized.
-6. Product Owner boundary was rerun; no human-owned decision was found.
+CLOSED. The routing table is now a Task-Brief invariant. Lifecycle and access owners provide authoritative facts; card status/login fields remain presentation hints requiring authoritative revalidation after selection. No additional mode hierarchy is admitted.
 
 **Human decision required:** NO.
 
 ---
 
-## 5. Product Owner boundary re-review
+### F19-PO-04 — SIGNIFICANT — save-and-exit ordering/failure boundary was missing
+
+**Defect**
+
+The existing save stack proves what `save` means and how durability/publication works, but the pre-input frame did not define the new ordered navigation composition. A weak implementation could clear selected gameplay context before required save closure succeeds, then either lose promised state or falsely claim save/exit success.
+
+**Resolution**
+
+CLOSED in framing:
+
+```text
+explicit save-and-exit
+    -> establish existing save promise across applicable native domains
+    -> perform applicable session/live closure/consolidation
+    -> only after successful required closure terminate selected gameplay context
+    -> clear selected-campaign working binding
+    -> enter the existing campaign-selection/menu gate
+```
+
+Failure preserves/adopts the strongest truthful recovery-safe context/frontier and may not report the combined operation successful.
+
+No new persistence authority is created.
+
+---
+
+### F19-PO-05 — SIGNIFICANT — exit, stop/pause, membership leave and live closure could be conflated
+
+**Defect**
+
+Current Step-5.5 §4.4 and `EXPLICIT_SAVE_CASES:S08` correctly define `save and stop` as save plus a separately intended stop/pause lifecycle/session action. `MULTIPLAYER_MEMBERSHIP_CASES:M01/M10` separately define membership leave/removal and its live consequences.
+
+The new product command “save and exit to campaign selection” is different. Without an explicit qualifier, future work could incorrectly:
+
+- set `paused` merely because the player exits to menu;
+- deactivate PLAYER membership;
+- transfer/relinquish PC control;
+- close/stop a campaign or still-needed live epoch for other participants.
+
+`LIVE_SCENE.md` provides decisive negative evidence: do not close an epoch merely because one player's chat ended while differently controlled PCs still share the actionable scene.
+
+**Resolution**
+
+CLOSED. The Task Brief now distinguishes the intents and forbids all listed implicit side effects. Applicable save-driven live consolidation remains native-owner-controlled; exit itself does not create membership/lifecycle/global-live authority.
+
+**Upstream reopen:** NO — the later Product Owner decision composes/qualifies consumers without contradicting the existing owners.
+
+---
+
+### F19-PO-06 — MINOR — direct end-to-end acceptance cases for PO-001/PO-002 are absent
+
+**Evidence**
+
+Current tests/scenarios cover important pieces:
+
+- `REGRESSION_CASES:T04/T08` — knowledge separation and bounded old-history retrieval;
+- `EXPLICIT_SAVE_CASES:S07/S15/S16` — save does not pause, failure is not success, dirty state clears after successful save;
+- `S08` — true save+stop intent;
+- `MULTIPLAYER_MEMBERSHIP_CASES:M01/M10` — explicit leave/removal distinct from ordinary session exit;
+- campaign-card/install cases — menu/choice presentation and read-only hints.
+
+But no current case directly verifies the whole new PO-001 or PO-002 flow.
+
+**Disposition:** CLOSED AS STEP-1 ROUTING / DOWNSTREAM VERIFICATION OBLIGATION. The Source Manifest explicitly records the gap and the Task Brief requires later acceptance mapping. Tests are not rewritten in Step 1 because that would be premature design realization/implementation-adjacent work.
+
+---
+
+## 5. Verification/scenario item-level PO dispositions
+
+### PO-001
+
+| Evidence | Disposition |
+|---|---|
+| `REGRESSION_CASES:T04` | CURRENT SUPPORTING — prevents knowledge leak; not full retrospective routing proof. |
+| `REGRESSION_CASES:T08` | CURRENT SUPPORTING — bounded old-NPC history retrieval; not full disclosure/interaction proof. |
+| `AI_DM_CRAFT_CASES:ADC08` | CURRENT SUPPORTING — eligible known context may be stated directly. |
+| direct active-player retrospective/no-Commentator acceptance | MISSING / ROUTED DOWNSTREAM. |
+
+### PO-002
+
+| Evidence | Disposition |
+|---|---|
+| `EXPLICIT_SAVE_CASES:S07` | CURRENT — save alone does not pause. |
+| `EXPLICIT_SAVE_CASES:S08` | CURRENT WITH QUALIFIER — only when stop/pause intent is separately present; not exit-to-menu semantics. |
+| `EXPLICIT_SAVE_CASES:S15/S16` | CURRENT — no false success; successful save adopts durable frontier/clears dirty set. |
+| `MULTIPLAYER_MEMBERSHIP_CASES:M01` | CURRENT — membership leave is an explicit distinct transition. |
+| `MULTIPLAYER_MEMBERSHIP_CASES:M10` | CURRENT — live freeze/compaction belongs to actual membership removal, not ordinary exit. |
+| card/install menu cases | CURRENT SUPPORTING — existing menu/choice contract; same-chat exit re-entry is a new consumer. |
+| direct save-success -> context-clear -> same-chat menu with no side effects acceptance | MISSING / ROUTED DOWNSTREAM. |
+
+The earlier SR19-01 stale scenario dispositions remain unchanged and closed.
+
+---
+
+## 6. Product Owner boundary rerun
+
+The expanded critic explicitly retested all human-owned categories.
 
 ### Product semantics
 
-Stale B23/C12/T13 expectations conflict with already accepted current owners for invisible setup, fixed card status presentation and card-first menu discovery. There is no unresolved choice between viable product semantics.
+Already supplied by `PO-001`/`PO-002` and the accepted owner decision. No residual alternative remains for the agent to choose.
 
 ### Canonical authority / ownership
 
-Storage v3, package provenance, creator/PLAYER/PC/readiness/persistence and projection owners are already allocated. Tests/scenario catalogs cannot become semantic owners by age, naming or pass status.
+No new owner allocation is required:
+
+- Story/continuity/history remain existing R2.1/WP-18 projection/retrieval concerns;
+- truth/knowledge/disclosure remain Step-4/Step-5.12 owners;
+- context retrieval remains R2.3;
+- ordinary gameplay role execution remains R2.4/runtime;
+- save/durability/publication/session remain existing Step-5.5/CORE owners;
+- access/membership/control/live concurrency remain their existing owners;
+- menu/card remains existing bootstrap/projection authority.
 
 ### Meaningful compatibility policy
 
-Current unreleased scaffold remains clean-slate by owner decision; WP-20 owns future released-campaign evolution. Legacy/test references do not recreate a compatibility requirement.
+No change. WP-20 remains future released-campaign migration/evolution.
 
 ### Hard-to-reverse lifecycle/product behavior
 
-Readiness/onboarding/durability evidence confirms the accepted scaffold -> provisional -> READY_PC -> PLAY_READY distinction.
+The Product Owner explicitly settled the material distinction: exit-to-menu is context navigation and does not itself mutate campaign lifecycle/membership/control/global multiplayer state.
 
 ### Material quality trade-off
 
-Low-friction invisible setup, bounded I/O and card-first menu are already accepted. Recovery exposed stale verification consumers, not an open trade-off.
+No unresolved trade-off remains. Natural retrospective interaction and explicit safe return-to-menu are required product semantics, not optional optimization choices.
 
 ### Explicit risk acceptance
 
-No new material risk requires Product Owner acceptance.
+No new risk acceptance is required.
 
 ```text
 HUMAN_DECISION_REQUIRED: NO
+NEEDS_PO: NONE
 ```
 
 ---
 
-## 6. Closed-upstream architecture review after recovery
+## 7. Closed-upstream review
 
-No current evidence requires upstream reopen:
+The critic found no real contradiction/material insufficiency requiring upstream reopen:
 
-- stale Storage-v2/test expectations lose to current storage v3 owners;
-- stale tag-derived package provenance loses to package-owned `RUNTIME_PACKAGE.source_commit_sha`;
-- stale setup/menu/card expectations lose to current runtime projection/fast-path owners;
-- readiness/durability tests confirm accepted owners;
-- multiplayer/access qualifiers are mechanically routed to current closed owners;
-- update/migration tests remain downstream rather than becoming WP-19 work.
+- PO-001 is compatible with R2.1/R2.3/WP-18 because Story was already designed as bounded nonauthoritative orientation and stronger-source routing;
+- PO-001 is compatible with Step-4/Step-5.12 because disclosure eligibility remains controlling;
+- R2.4 Commentator separation is qualified by consumer routing, not invalidated;
+- PO-002 is compatible with Step-5.5/SAVE_CONTRACT because save remains unchanged and navigation occurs after it;
+- `save and stop` remains valid for a true stop/pause intent and is not redefined;
+- membership/live owners already distinguish explicit leave/removal from chat/session termination;
+- existing menu/selection owners can be reused as the return destination without creating a second authority.
 
 ```text
 UPSTREAM_REOPEN_REQUIRED: NO
@@ -379,35 +342,36 @@ ARCHITECTURE_REOPENED: NO
 
 ---
 
-## 7. Recovered Step-1 critic gate
+## 8. Expanded Step-1 critic gate
 
 ```text
-F19-S1-01 BLOCKING    CLOSED — exact ruleset-set propagation framing confirmed
-F19-S1-02 BLOCKING    CLOSED — scaffold/provisional/READY_PC/PLAY_READY separation confirmed
-F19-S1-03 SIGNIFICANT CLOSED — branch/storage/access/stale-v2 reconciliation retained
-F19-S1-04 SIGNIFICANT CLOSED — identity/card/config/current projections retained
-F19-S1-05 SIGNIFICANT CLOSED — publication/durability/session/resume route retained
-F19-S1-06 SIGNIFICANT CLOSED — multiplayer initial authority route retained
-F19-S1-07 SIGNIFICANT CLOSED — machine/template/schema/test reverse-audit requirement retained; evidence proof expanded by SR19-01
-F19-S1-08 MINOR       CLOSED — WP-20/dormant-neighbor boundary retained
-SR19-01   SIGNIFICANT CLOSED — verification/scenario reverse-conformance evidence expanded and itemized
+PREVIOUS F19-S1-*:           RETAINED / CLOSED
+SR19-01:                     RETAINED / CLOSED
 
-NEW_BLOCKING:              0
-NEW_SIGNIFICANT:           1   # SR19-01 only
-NEW_MINOR:                 0
-UNRESOLVED_BLOCKING:       0
-UNRESOLVED_SIGNIFICANT:    0
-HUMAN_DECISION_REQUIRED:   NO
-UPSTREAM_REOPEN_REQUIRED:  NO
-STEP2_STARTED:             NO
-STEP2_AUTHORIZED:          NO
-WP20_STARTED:              NO
+F19-PO-01 BLOCKING:          CLOSED — accepted PO semantics integrated into current Step-1 basis
+F19-PO-02 SIGNIFICANT:       CLOSED — ordinary retrospective consumer + eligibility/no-Commentator route framed
+F19-PO-03 SIGNIFICANT:       CLOSED — campaign selection interaction routing made explicit
+F19-PO-04 SIGNIFICANT:       CLOSED — save-before-exit ordering/failure boundary framed
+F19-PO-05 SIGNIFICANT:       CLOSED — exit separated from pause/leave/control/global live effects
+F19-PO-06 MINOR:             CLOSED AS ROUTING — direct acceptance gaps recorded downstream
+
+PO_INTEGRATION_BLOCKING:     1
+PO_INTEGRATION_SIGNIFICANT:  4
+PO_INTEGRATION_MINOR:        1
+UNRESOLVED_BLOCKING:         0
+UNRESOLVED_SIGNIFICANT:      0
+HUMAN_DECISION_REQUIRED:     NO
+UPSTREAM_REOPEN_REQUIRED:    NO
+ARCHITECTURE_REOPENED:       NO
+WP19_STEP2_AUTHORIZED:       NO
+STEP2_STARTED:               NO
+WP20_STARTED:                NO
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 ```
 
 ### Critic recommendation to Senior
 
-The recovered Step-1 package now supports its claimed verification/test reverse-conformance framing. `SR19-01` is closed with explicit evidence and item-level dispositions. No residual blocking/significant framing omission, Product Owner decision, or upstream reopen is currently identified.
+The expanded Step-1 package now incorporates `PO-001`/`PO-002`, independently covers their current owner/consumer/test graph, distinguishes all material intent/authority boundaries, and has no unresolved BLOCKING/SIGNIFICANT framing defect or human-owned decision.
 
-**Recommendation:** mandatory Senior **re-review** may grant or withhold GO for WP-19 Step 2. This critic does not grant GO itself.
+**Recommendation:** return the completed expanded WP-19 Step-1 package to the mandatory Senior review gate. This critic does not grant Step-2 GO and does not perform Senior review itself.
