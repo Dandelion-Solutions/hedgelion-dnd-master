@@ -1,9 +1,12 @@
 {
   "profile_id": "gameplay_spine.mvp.v1",
   "package_id": "hdm.rules.dnd2024-srd52-core",
-  "package_version": "0.1.0-mvp",
-  "catalog_generation": "2.0.0",
+  "package_revision": 1,
+  "compatibility_family": "hdm.rules.dnd2024-srd52",
+  "compatibility_generation": 1,
+  "catalog_generation": 2,
   "gameplay_spine_member": "gameplay-spine-seed.json",
   "package_content_sha256": "0ad0e9368f30d5aaa0f22392a83f7e19b6bff8ac4d6e6a19f5aa5f4ad3932d6f",
+  "ruleset_set_digest_generation": 1,
   "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143"
 }
