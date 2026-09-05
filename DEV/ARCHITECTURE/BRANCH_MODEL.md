@@ -25,6 +25,7 @@ engine_version
 package_id
 source_commit_sha | null
 package_sha256
+ruleset_set_digest_generation
 ruleset_set_sha256
 ```
 
@@ -34,12 +35,12 @@ Engine files никогда не копируются в campaign storage.
 
 ## Campaign-storage default branch
 
-Storage определяется root `DND_STORAGE.yaml` schema v3.
+Storage определяется root `DND_STORAGE.yaml` local schema v4 и storage-format generation 3.
 
 Current portable baseline shape conceptually:
 
 ```yaml
-storage_format_version: 3
+storage_format_generation: 3
 repository_role: campaign_storage
 engine:
   baseline:
@@ -75,6 +76,14 @@ Branch создаётся/публикуется с neutral technical name; им
 
 Generator copies contents of package `CAMPAIGN/` to campaign branch root. Current campaign root содержит directly `README.md`, `MANIFEST.yaml`, `CONFIG.yaml`, `STATE/`, `INDEX/`, `WORLD/`, `LOG/`, `CHECKPOINTS/`, `RULES/` и другие campaign-data paths; wrapper `CAMPAIGN/` не создаётся.
 
+Current campaign MANIFEST uses local schema v4 and records campaign compatibility epoch explicitly:
+
+```yaml
+campaign_contract:
+  created_with: 2
+  current: 2
+```
+
 Historical legacy nested campaign layouts могут существовать только по совместимым legacy rules. Их наличие не меняет current-layout creation law.
 
 ## Campaign creator и gameplay authority
@@ -97,7 +106,9 @@ New campaign materializes exact creation identity into MANIFEST:
 ```text
 engine.created_with
 engine.current
+ruleset.created_with.ruleset_set_digest_generation
 ruleset.created_with.ruleset_set_sha256
+ruleset.current.ruleset_set_digest_generation
 ruleset.current.ruleset_set_sha256
 ```
 
