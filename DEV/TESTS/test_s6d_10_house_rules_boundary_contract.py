@@ -46,13 +46,24 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
             "identity_source": "ruleset-package-manifest.json", "profile_id": "test.profile",
         })
         self.write_json(root, package_root + "ruleset-package-manifest.json", {
-            "manifest_schema_version": 1, "package_id": "hdm.rules.dnd2024-srd52-core", "package_version": "0.1.0-mvp",
-            "compatibility_id": "hdm.rules.dnd2024-srd52.v1", "engine_requirement": {"engine_version": "1.0-alpha"},
-            "catalog_generation": "2.0.0", "owned_namespaces": ["activity.*"], "dependencies": [],
+            "manifest_schema_version": 2,
+            "package_id": "hdm.rules.dnd2024-srd52-core",
+            "package_revision": 1,
+            "compatibility_family": "hdm.rules.dnd2024-srd52",
+            "compatibility_generation": 1,
+            "engine_requirement": {"engine_version": "1.0-alpha"},
+            "catalog_generation": 2,
+            "owned_namespaces": ["activity.*"],
+            "dependencies": [],
             "content_files": ["ruleset-package-manifest.json", "character-capabilities.json", "gameplay.json"],
         })
         package_dir = root / package_root
-        lock, _ = VALIDATOR.build_resolved_lock([package_dir], root_package_ids=["hdm.rules.dnd2024-srd52-core"], engine_version="1.0-alpha", catalog_generation="2.0.0")
+        lock, _ = VALIDATOR.build_resolved_lock(
+            [package_dir],
+            root_package_ids=["hdm.rules.dnd2024-srd52-core"],
+            engine_version="1.0-alpha",
+            catalog_generation=2,
+        )
         consumers = [
             "activity.attack.ranged_weapon",
             "activity.spell.fire_bolt",
@@ -74,9 +85,18 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
             for consumer in consumers
         ]
         self.write_json(root, "DEV/CATALOG/house-rules-mechanical-boundary.json", {
-            "schema_version": 1,
+            "schema_version": 2,
             "identity_bound_package_capabilities_path": package_root + "character-capabilities.json",
-            "resolved_ruleset_identity": {"package_id": "hdm.rules.dnd2024-srd52-core", "package_version": "0.1.0-mvp", "catalog_generation": "2.0.0", "ruleset_set_sha256": lock["ruleset_set_sha256"], "runtime_selection_state": "ACTIVE_VERIFIED_MACHINE_CONTRACT"},
+            "resolved_ruleset_identity": {
+                "package_id": "hdm.rules.dnd2024-srd52-core",
+                "package_revision": 1,
+                "compatibility_family": "hdm.rules.dnd2024-srd52",
+                "compatibility_generation": 1,
+                "catalog_generation": 2,
+                "ruleset_set_digest_generation": lock["ruleset_set_digest_generation"],
+                "ruleset_set_sha256": lock["ruleset_set_sha256"],
+                "runtime_selection_state": "ACTIVE_VERIFIED_MACHINE_CONTRACT",
+            },
             "route_profiles": {key: {"policy_revision_and_lifecycle":"x","authority_and_eligibility":"x","consumer_and_value_contract":"x","provenance_and_freeze":"x","catalog_and_native_validation":"x","rng_and_mutation":"x","execution_and_failure":"x","retry_recovery_and_publication":"x","proof_ids": ([row["edge_key"] for row in rows if row["input_kind"]=="ACTIVITY_PARAMETER"] if key.endswith("parameter_to_mechanics") else [row["edge_key"] for row in rows if row["input_kind"]=="INVOCATION_FACT"] if key.endswith("fact_to_mechanics") else ["valid-link","missing-link","quarantined-link"]),"revisit_trigger":"x"} for key in ("route.adjudicated_parameter_to_mechanics","route.invocation_fact_to_mechanics","route.policy_realization_link_conformance")},
             "active_adjudicated_consumers": rows,
             "current_supported_policy_realizations": [],
@@ -87,8 +107,8 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
             ],
         })
         self.write_json(root, "DEV/CATALOG/activity-primitive-contracts/manifest.json", {
-            "schema_name": "hdm_activity_primitive_contracts", "schema_version": 1,
-            "catalog_generation": "test", "owner": "test", "laws": {"test_law": "x"},
+            "schema_name": "hdm_activity_primitive_contracts", "schema_version": 2,
+            "catalog_generation": 2, "owner": "test", "laws": {"test_law": "x"},
             "primitive_shards": ["op.request_choice"],
         })
         self.write_json(root, "DEV/CATALOG/activity-primitive-contracts/shared/value_contracts.json", {
@@ -105,8 +125,8 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
         failures = sorted(VALIDATOR.POLICY_FAILURES)
         self.write_json(root, "DEV/CATALOG/core-catalog.json", {"registries": {"execution_failure_codes": failures, "activity_primitives": ["op.request_choice"]}})
         self.write_json(root, "DEV/CATALOG/catalog-admission-ledger/manifest.json", {
-            "schema_name": "hdm_catalog_admission_ledger", "schema_version": 1,
-            "catalog_generation": "test", "source_registry": "DEV/CATALOG/core-catalog.json",
+            "schema_name": "hdm_catalog_admission_ledger", "schema_version": 2,
+            "catalog_generation": 2, "source_registry": "DEV/CATALOG/core-catalog.json",
             "decision_owner": "test", "laws": {}, "ruleset_package_admission": {},
             "retired_reference_audit": [], "family_shards": ["execution_failure_codes", "activity_primitives"],
         })
@@ -259,16 +279,22 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
             resolution = {
                 "root_command_id": f"cmd-{index}", "initiating_command_id": f"cmd-{index}",
                 "activity_id": activity_id, "actor_id": "actor-1",
-                "parameter_bindings": parameter_bindings, "catalog_context_fingerprint": "catalog-A",
-                "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
+                "parameter_bindings": parameter_bindings,
+                "catalog_context_fingerprint_generation": 1,
+                "catalog_context_fingerprint": "catalog-A",
+                "ruleset_set_digest_generation": 1,
+                "ruleset_set_sha256": "4d63deb1998213854f690708767fe03570ce143300fc655a460f6a2d892c6295",
                 "status": "RUNNING", "next_segment_sequence": 1, "invocation_facts": invocation_facts,
                 "fixed_rng_results": [], "prior_step_exports": {}, "child_resolution_ids": [], "segments": [],
             }
             continuation = {
                 "generation": 1, "root_command_id": f"cmd-{index}", "resolution_id": f"resolution-{index}",
                 "activity_id": activity_id, "actor_id": "actor-1",
-                "parameter_bindings": parameter_bindings, "catalog_context_fingerprint": "catalog-A",
-                "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
+                "parameter_bindings": parameter_bindings,
+                "catalog_context_fingerprint_generation": 1,
+                "catalog_context_fingerprint": "catalog-A",
+                "ruleset_set_digest_generation": 1,
+                "ruleset_set_sha256": "4d63deb1998213854f690708767fe03570ce143300fc655a460f6a2d892c6295",
                 "execution_cursor": "step.accepted-inputs", "safe_recompute_phase": "determine",
                 "invocation_facts": invocation_facts, "fixed_rng_results": [], "prior_step_exports": {},
                 "committed_segment_refs": [], "dependency_frontier_refs": [],
