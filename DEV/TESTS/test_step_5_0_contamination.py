@@ -26,16 +26,14 @@ class Step50ContaminationRetirementTests(unittest.TestCase):
         self.assertNotIn("runtime.dirty_record", runtime)
         self.assertNotIn("runtime.publication_batch", runtime)
 
-    def test_catalog_version_advances_coherently(self):
-        versions = {
-            self.load_json("DEV/CATALOG/core-catalog.json")["catalog_version"],
-            self.load_json("DEV/CATALOG/entity-structures.json")["catalog_version"],
-            self.load_json("DEV/CATALOG/identifier-policies.json")["catalog_version"],
-            self.load_json("DEV/CATALOG/mechanical-surfaces.json")["catalog_version"],
+    def test_catalog_generation_is_coherent(self):
+        generations = {
+            self.load_json("DEV/CATALOG/core-catalog.json")["catalog_generation"],
+            self.load_json("DEV/CATALOG/entity-structures.json")["catalog_generation"],
+            self.load_json("DEV/CATALOG/identifier-policies.json")["catalog_generation"],
+            self.load_json("DEV/CATALOG/mechanical-surfaces.json")["catalog_generation"],
         }
-        self.assertEqual(len(versions), 1)
-        version = versions.pop()
-        self.assertRegex(version, r"^[0-9]+\.[0-9]+\.[0-9]+$")
+        self.assertEqual(generations, {2})
 
     def test_retired_record_policies_are_absent(self):
         structures = self.load_json("DEV/CATALOG/entity-structures.json")
