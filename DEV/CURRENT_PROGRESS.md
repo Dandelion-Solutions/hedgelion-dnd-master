@@ -6,17 +6,85 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-19 CLOSED — FINAL SENIOR REVIEW PASS
+GLOBAL_STATE: R2.7 WP-20 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-19 closed after final Senior PASS; WP-20 Step 1 is the next authorized architecture unit and has not started
+CURRENT_SLICE: WP-20 Step 1 complete and review-ready; mandatory Senior review pending; Step 2 is not authorized
 
 LAST_CLOSED_UNIT: R2.7 WP-19 — Bootstrap / campaign creation / initial materialization — FINAL SENIOR REVIEW PASS on audited basis 6abee95ce1c19ab2d208fbd44f472814ca35a3c9
-NEXT_AUTHORIZED_UNIT: R2.7 WP-20 STEP 1 — engine update / schema evolution / migration
-REQUIRED_GATE: complete WP-20 Step 1 Source Manifest + Architecture Task Brief + mandatory whole-project Task-Brief critic, repair mechanically resolvable BLOCKING/SIGNIFICANT framing defects, then stop for mandatory Senior review before Step 2
+NEXT_AUTHORIZED_UNIT: NONE — MANDATORY SENIOR REVIEW
+REQUIRED_GATE: Senior review of the complete WP-20 Step-1 Source Manifest + Architecture Task Brief + whole-project Task-Brief critic; Step 2 requires explicit Senior GO
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-final-senior-review.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-task-brief-critic.md
 KNOWN_BLOCKERS: NONE
+```
+
+## WP-20 Step-1 review package
+
+Source Manifest:
+
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-source-manifest.md`.
+
+Architecture Task Brief:
+
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-architecture-task-brief.md`.
+
+Mandatory whole-project Task-Brief critic:
+
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-task-brief-critic.md`.
+
+Controlling Product Owner compatibility input:
+
+- `DEV/PRODUCT_OWNER_INPUT.md` — `PO-004`;
+- `DEV/docs/superpowers/specs/2026-09-05-hdm-v1-clean-slate-compatibility-owner-decision.md`.
+
+Step-1 framing result:
+
+- compatibility horizon begins at released v1.0+; v0.8/pre-release compatibility is outside the required surface;
+- compatibility is multi-axis and cannot be inferred from semantic engine version alone;
+- exact runtime/package provenance, exact/compatible ruleset identity, persistent schema/storage-format identity and accepted-work interpretation context are distinct inputs where applicable;
+- same-version compatible refresh remains inherited current architecture; incompatible released evolution is the WP-20 problem;
+- migration must preserve stable native identity, ownership, canon, accepted execution/history/chronology/currentness/recovery semantics and compose with existing publication/LIVE authority;
+- local transformation is not authoritative success before confirmed campaign publication; confirmed rejection and indeterminate publication require distinct handling;
+- checkpoint existence does not imply rollback support;
+- active/current LIVE ownership cannot be bypassed by campaign-base migration;
+- current migration/update/schema/test scaffold has no presumption of correctness; pre-release legacy compatibility assumptions are non-binding under PO-004;
+- current `ACCESS_CONTROL.md` creator-vs-storage-owner migration wording is explicitly routed for Step-2 owner reconciliation rather than silently choosing a new authority;
+- no genuine Product Owner decision is required to complete Step 1.
+
+Critic disposition:
+
+```text
+BLOCKING_FOUND: 0
+SIGNIFICANT_FOUND: 11
+MINOR_FOUND: 0
+
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+
+HUMAN_DECISION_REQUIRED: NO
+NEEDS_PO: NONE
+UPSTREAM_REOPEN_REQUIRED: NO
+ARCHITECTURE_REOPENED: NO
+```
+
+Current gate:
+
+```text
+WP20_STEP1: COMPLETE — MANDATORY SENIOR REVIEW
+SOURCE_MANIFEST: COMPLETE
+ARCHITECTURE_TASK_BRIEF: COMPLETE
+TASK_BRIEF_CRITIC: COMPLETE
+
+WP20_STEP2_AUTHORIZED: NO
+WP20_STEP2_STARTED: NO
+WP21_STARTED: NO
+IMPLEMENTATION_PLANNING_STARTED: NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
+RUNTIME_MIGRATION_EXECUTED: NO
+REAL_CAMPAIGN_MIGRATED: NO
+
+NEXT_AUTHORIZED_UNIT: NONE — MANDATORY SENIOR REVIEW
 ```
 
 ## WP-19 closed canonical package
@@ -107,20 +175,8 @@ WP-19 leaves explicit downstream realization obligations for the later implement
 
 These obligations remain blocked from implementation until the R2.7 WP-01..WP-27 sequence and final reconciliation permit implementation planning, followed by the normal implementation-plan/execution gates.
 
-## Next architecture unit
+## WP-20 boundary
 
-WP-20 owns **engine update / schema evolution / migration**, including future released-campaign engine/ruleset/schema evolution, compatibility and migration. It must not reopen WP-19 creation architecture merely because update/migration touches the same identity fields.
+WP-20 owns **engine update / schema evolution / migration** for released v1.0+ campaign evolution. It must not reopen WP-19 creation architecture merely because update/migration consumes the same identity fields, and it must not manufacture compatibility work for obsolete pre-release state.
 
-Current authorization:
-
-```text
-WP20_STEP1_AUTHORIZED: YES
-WP20_STARTED: NO
-WP20_STEP2_AUTHORIZED: NO
-
-IMPLEMENTATION_PLANNING_STARTED: NO
-SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
-REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
-```
-
-The next worker may begin **WP-20 Step 1 only**. Step 2 requires a new mandatory Senior GO after the complete Step-1 package and critic.
+No Step-2 research, WP-21 work, implementation planning, substantive implementation, runtime migration or real campaign migration has started. The only current continuation is the mandatory Senior review of the Step-1 package.
