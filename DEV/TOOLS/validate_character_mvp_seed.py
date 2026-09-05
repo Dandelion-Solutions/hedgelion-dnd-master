@@ -287,7 +287,16 @@ def resolve_package(package_dir, primitive_catalog):
     for primitive_id, consumers in actual_consumers.items():
         if set(contracts[primitive_id]["exact_seed_consumer_ids"]) != consumers:
             raise ValueError(f"primitive consumer closure mismatch for {primitive_id}: catalog={sorted(contracts[primitive_id]['exact_seed_consumer_ids'])} actual={sorted(consumers)}")
-    return {"capability": capability, "manifest": manifest, "ruleset_set_sha256": lock["ruleset_set_sha256"], "seed": seed, "gameplay_seed": gameplay_seed, "resolved_catalog": resolved, "value_ids": set(value_ids)}
+    return {
+        "capability": capability,
+        "manifest": manifest,
+        "ruleset_set_digest_generation": lock["ruleset_set_digest_generation"],
+        "ruleset_set_sha256": lock["ruleset_set_sha256"],
+        "seed": seed,
+        "gameplay_seed": gameplay_seed,
+        "resolved_catalog": resolved,
+        "value_ids": set(value_ids),
+    }
 
 
 def evaluate_ready_pc(actor, resolved_package, evidence=None):
@@ -304,7 +313,11 @@ def evaluate_ready_pc(actor, resolved_package, evidence=None):
     required_provenance = {"assets": "ASSET_STATE", "proficiencies": "RESOLVED_DEFINITION_GRANTS", "selectors": "MECHANICAL_CONTEXT", "activities": "CATALOG_ADMISSION_LEDGER"}
     if evidence.get("actor_id") != actor.get("id") or evidence.get("actor_state_revision") != actor.get("state_revision"):
         blockers.append("readiness_actor_identity_or_revision")
-    if evidence.get("catalog_generation") != manifest["catalog_generation"] or evidence.get("ruleset_set_sha256") != resolved_package["ruleset_set_sha256"]:
+    if (
+        evidence.get("catalog_generation") != manifest["catalog_generation"]
+        or evidence.get("ruleset_set_digest_generation") != resolved_package["ruleset_set_digest_generation"]
+        or evidence.get("ruleset_set_sha256") != resolved_package["ruleset_set_sha256"]
+    ):
         blockers.append("readiness_catalog_identity")
     if evidence.get("provenance") != required_provenance:
         blockers.append("readiness_evidence_provenance")
