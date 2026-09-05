@@ -6,32 +6,72 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-19 STEP 1 COMPLETE — MANDATORY SENIOR RE-REVIEW
+GLOBAL_STATE: R2.7 WP-19 STEP 1 TARGETED PO-INPUT INTEGRATION — CRITIC RE-RUN PENDING
 
 CURRENT_WORKSTREAM: R2.7 WP-19 — Bootstrap / campaign creation / initial materialization
-CURRENT_SLICE: WP-19 Step 1 targeted Senior recovery complete — SR19-01 verification/test reverse-conformance evidence expanded and closed; recovered Source Manifest, Architecture Task Brief and whole-project Task-Brief critic published; awaiting mandatory Senior re-review
+CURRENT_SLICE: Owner-approved retrospective-gameplay and save-and-exit product semantics published; WP-19 integration checkpoint published; prior recovered Task-Brief critic is valid only for its pre-input basis and no longer clears the current Step-1 gate; critic re-run not started
 
 LAST_CLOSED_UNIT: R2.7 WP-18 / Story / continuity / Dramaturg planning — final Senior re-audit PASS against audited public basis 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
-NEXT_AUTHORIZED_UNIT: NONE — WP-19 Step 2 requires explicit Senior GO after re-review of the recovered Step-1 package
-REQUIRED_GATE: Mandatory Senior re-review of recovered WP-19 Step 1. Step 2 remains blocked. SR19-01 is CLOSED; HUMAN_DECISION_REQUIRED=NO and UPSTREAM_REOPEN_REQUIRED=NO. Implementation planning remains unauthorized until later R2.7 sequencing permits it.
+NEXT_AUTHORIZED_UNIT: NONE — complete WP-19 Step-1 PO-input framing integration and mandatory whole-project Task-Brief critic re-run, then return the complete package to mandatory Senior review
+REQUIRED_GATE: Expanded WP-19 Step 1 must pass its rerun whole-project Task-Brief critic and mechanically resolvable framing repairs before mandatory Senior review. Step 2 remains blocked. SR19-01 remains CLOSED; no unresolved Product Owner decision is currently open. Implementation planning remains unauthorized until later R2.7 sequencing permits it.
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
-KNOWN_BLOCKERS: NONE
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md
+KNOWN_BLOCKERS: NONE — current stop is an incomplete mandatory Step-1 process gate, not a human-decision blocker
 ```
 
-## WP-19 Step-1 targeted Senior recovery checkpoint
+## WP-19 Product Owner input integration checkpoint
+
+New current Product Owner authority:
+
+- `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md`.
+
+Current task-local integration checkpoint:
+
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-product-owner-input-integration-checkpoint.md`.
+
+Publication basis:
+
+```text
+PO_INPUT_PUBLICATION_SHA:            82fc90448066537a5ccaaf1d45c847eb6fdbebb4
+PRE_INPUT_STEP1_RECOVERY_SHA:        6be4db0f4e68b91009f41462e6cb1d2eee790b19
+PO19_A_RETROSPECTIVE_GAMEPLAY:       OWNER-APPROVED / ROUTED
+PO19_B_SAVE_AND_EXIT_NAVIGATION:     OWNER-APPROVED / ROUTED
+PREVIOUS_F19_S1_FINDINGS:            RETAINED / NOT REOPENED
+SR19_01:                             CLOSED / NOT REOPENED
+PREVIOUS_TASK_BRIEF_CRITIC:          PRE-INPUT BASIS ONLY
+CURRENT_STEP1_REVIEW_READY:          NO
+CURRENT_CRITIC_RERUN:                PENDING / NOT STARTED
+CURRENT_SENIOR_REVIEW:               NOT STARTED
+REPAIR_BRIEF:                        NOT AUTHORED
+WP19_STEP2_AUTHORIZED:               NO
+STEP2_STARTED:                       NO
+WP20_STARTED:                        NO
+IMPLEMENTATION_PLANNING_STARTED:     NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED:  NO
+```
+
+The owner decision adds two explicit current consumers without creating new authority classes:
+
+1. an authorized active player may ask the ordinary D&D Master retrospective/history questions inside gameplay, with current player/PC knowledge/disclosure/no-spoiler eligibility and proper-source escalation;
+2. an explicit save-and-exit intent composes the existing explicit-save/session/live contracts with gameplay-context exit and campaign-selection re-entry, without automatically pausing the campaign or leaving multiplayer membership.
+
+The existing WP-19 Source Manifest, Architecture Task Brief and Task-Brief critic remain valid historical/current evidence for their pre-input basis. They must be expanded/reconciled against the new owner decision before Step 1 can again be declared review-ready. The existing critic cannot be reused as if it had inspected the new consumer graph.
+
+Per the Product Owner's requested stop point, no critic rerun, Senior review or repair assignment has been performed after this input publication.
+
+## Historical WP-19 Step-1 targeted Senior recovery checkpoint — pre-PO-input basis
 
 Domain:
 
 > **Bootstrap / campaign creation / initial materialization**
 
-Recovery state:
+Recovery state at the pre-input checkpoint:
 
 ```text
 WP19_STEP1_EXECUTION_BASIS_SHA:      5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053
 WP19_SENIOR_RECOVERY_BASIS_SHA:      df5fe6441c2b85e9cbffcb6f83caa885501da794
 OWNER_TRANSITION_AUTHORIZED:         YES — 2026-09-05
-WP19_STEP1_COMPLETE:                 YES
+WP19_STEP1_COMPLETE:                 YES   # historical pre-input basis only
 SR19_01:                             CLOSED
 WP19_STEP1_SENIOR_RE_REVIEW:         PENDING
 WP19_STEP2_AUTHORIZED:               NO
@@ -47,7 +87,7 @@ Recovered Step-1 artifacts:
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief.md`;
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief-critic.md`.
 
-Recovery critic disposition:
+Recovery critic disposition on that basis:
 
 ```text
 ORIGINAL_STEP1_BLOCKING:       2
@@ -65,9 +105,9 @@ ARCHITECTURE_REOPENED:         NO
 
 Senior independently confirmed the original Step-1 findings. Recovery did not reopen them. `SR19-01 / SIGNIFICANT` identified that the published machine/template/schema/test coverage claim had not directly inspected enough of the verification/scenario consumer graph.
 
-The recovered Source Manifest and critic now independently cover the directly implicated bootstrap/storage/install/menu, package/provenance/release, campaign-card/identity, readiness/diegetic/durability/save, persistence/access/multiplayer/runtime-latency, S6D READY_PC/ruleset and update/historical routing families.
+The recovered Source Manifest and critic independently covered the directly implicated bootstrap/storage/install/menu, package/provenance/release, campaign-card/identity, readiness/diegetic/durability/save, persistence/access/multiplayer/runtime-latency, S6D READY_PC/ruleset and update/historical routing families for the pre-input basis.
 
-Material stale/qualified expectations are explicit rather than treated as current by file existence or CI pass. Confirmed examples include:
+Material stale/qualified expectations were explicit rather than treated as current by file existence or CI pass. Confirmed examples include:
 
 - `BOOTSTRAP_STORAGE_REGRESSION_CASES.md:B12` — **STALE** Storage-v2 initialization; current owner is storage schema v3;
 - `B22` — **STALE** tag-derived package provenance; current owner is selected package `RUNTIME_PACKAGE.source_commit_sha`;
@@ -79,7 +119,7 @@ Material stale/qualified expectations are explicit rather than treated as curren
 - `ENGINE_UPDATE_CASES.md` migration family — **OWNED DOWNSTREAM / WP-20** except narrow creation-side identity evidence;
 - `PRE_RELEASE_AUDIT_0.1.0.md` — **HISTORICAL ONLY**.
 
-No test/scenario files were rewritten during Step-1 recovery. Passing CI is verification evidence but does not promote stale Markdown scenario expectations into semantic authority. The Product Owner boundary was repeated after expansion and found no genuine unresolved human-owned decision.
+No test/scenario files were rewritten during Step-1 recovery. Passing CI is verification evidence but does not promote stale Markdown scenario expectations into semantic authority. The Product Owner boundary at that earlier checkpoint found no unresolved human-owned decision; the later owner decision above is new input rather than a defect in that historical statement.
 
 ## Closed WP-16 canonical result
 
@@ -216,8 +256,6 @@ UPSTREAM_REOPEN_REQUIRED: NO
 
 ### Final owner allocation
 
-WP-18 preserves these boundaries:
-
 ```text
 Story
     = durable layer-local noncanonical retrospective projection
@@ -302,9 +340,9 @@ IMPLEMENTATION_PLANNING_STARTED:     NO
 
 - Roadmaps own intended sequencing, scope and dependencies; `DEV/CURRENT_PROGRESS.md` owns actual current state/gate.
 - `DEV/PROJECT_MAP.md` and `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` are derivative routing aids; correctness-sensitive WP-19 framing follows actual current owners and machine/runtime/test consumers.
-- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; SR19-01 recovery found none.
+- Closed upstream architecture reopens only for demonstrated contradiction, newly unsatisfied consumer or material insufficiency; the new Product Owner decision is currently classified as explicit new consumer/product requirements, not an established upstream contradiction.
 - WP-18 is **closed / final Senior re-audit PASS**.
-- WP-19 Step 1 is **COMPLETE — MANDATORY SENIOR RE-REVIEW**. Step 2 is not authorized and has not started.
+- WP-19 Step 1 is **TARGETED PO-INPUT INTEGRATION — CRITIC RE-RUN PENDING**. The prior critic is pre-input-basis evidence only. Step 2 is not authorized and has not started.
 - WP-20 is not started.
 - Implementation planning remains unauthorized.
-- No substantive runtime/schema/template/test implementation was performed by WP-19 targeted Senior recovery; only design/evidence/status artifacts were changed.
+- No substantive runtime/schema/template/test implementation was performed by this Product Owner input publication; only owner-decision/design/status artifacts were changed.
