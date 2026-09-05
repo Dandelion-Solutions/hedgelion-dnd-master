@@ -3,22 +3,22 @@ release_status: development
 repository: Dandelion-Solutions/hedgelion-dnd-master
 engine_owner_login: dkolyada
 rules_baseline: D&D 2024 / SRD 5.2.1
-schema_version: 2
+campaign_contract_generation: 2
 ai_reasoning_revision: 3
 gm_craft_revision: 7
 install_layout_revision: 14
 branch_id_revision: 1
 access_control_revision: 5
-storage_format_revision: 4
+storage_format_revision: 5
 presentation_revision: 12
-persistence_revision: 8
+persistence_revision: 9
 campaign_card_revision: 4
 mechanics_integrity_revision: 1
 character_readiness_revision: 4
 save_contract_revision: 3
-campaign_identity_revision: 2
+campaign_identity_revision: 3
 runtime_scope_revision: 3
-consistency_audit_revision: 5
+consistency_audit_revision: 6
 campaign_update:
   compatibility: maintenance_required
 recommended_tag: v1.0-alpha
