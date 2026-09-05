@@ -5,17 +5,14 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "catalog_version",
+    "catalog_generation",
     "details_field",
     "details_semantics",
     "definitions",
     "world_records"
   ],
   "properties": {
-    "catalog_version": {
-      "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-    },
+    "catalog_generation": {"const": 2},
     "details_field": {"const": "details"},
     "details_semantics": {"type": "string", "minLength": 1},
     "definitions": {
