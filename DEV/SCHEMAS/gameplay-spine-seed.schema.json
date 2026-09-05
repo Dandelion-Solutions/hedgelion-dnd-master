@@ -3,11 +3,12 @@
   "$id": "https://hedgelion.invalid/schemas/gameplay-spine-seed.schema.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_name", "schema_version", "profile_id", "package_id", "package_version", "catalog_generation", "activity_definitions", "procedure_profile", "spatial_profile", "transition_profiles", "downstream_consequence_profiles", "unsupported_policy"],
+  "required": ["schema_name", "schema_version", "profile_id", "package_id", "package_revision", "compatibility_family", "compatibility_generation", "catalog_generation", "activity_definitions", "procedure_profile", "spatial_profile", "transition_profiles", "downstream_consequence_profiles", "unsupported_policy"],
   "properties": {
-    "schema_name": {"const": "hdm_gameplay_spine_seed"}, "schema_version": {"const": 1},
+    "schema_name": {"const": "hdm_gameplay_spine_seed"}, "schema_version": {"const": 2},
     "profile_id": {"const": "gameplay_spine.mvp.v1"}, "package_id": {"const": "hdm.rules.dnd2024-srd52-core"},
-    "package_version": {"const": "0.1.0-mvp"}, "catalog_generation": {"const": "2.0.0"},
+    "package_revision": {"const": 1}, "compatibility_family": {"const": "hdm.rules.dnd2024-srd52"},
+    "compatibility_generation": {"const": 1}, "catalog_generation": {"const": 2},
     "activity_definitions": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/$defs/activity"}},
     "procedure_profile": {"$ref": "#/$defs/procedure"}, "spatial_profile": {"$ref": "#/$defs/spatial"},
     "transition_profiles": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "#/$defs/transition"}},
@@ -65,4 +66,3 @@
     }
   }
 }
-
