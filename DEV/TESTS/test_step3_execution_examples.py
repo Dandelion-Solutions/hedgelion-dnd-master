@@ -8,6 +8,7 @@ from referencing import Registry, Resource
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
 WP05_TEST = ROOT / "DEV" / "TESTS" / "test_r2_7_wp05_execution_conformance.py"
+RULESET_SET_SHA256 = "0700d3ccf367ade9ff56f620c4330bd5b4544fb9e22031f9d1eac3718a88ef2d"
 
 
 def load(name):
@@ -65,8 +66,10 @@ def resolution(status="COMPLETED"):
         "activity_id": "activity.attack.basic",
         "actor_id": "actor-1",
         "target_ids": ["actor-2"],
+        "catalog_context_fingerprint_generation": 1,
         "catalog_context_fingerprint": "ctx",
-        "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
+        "ruleset_set_digest_generation": 1,
+        "ruleset_set_sha256": RULESET_SET_SHA256,
         "status": status,
         "next_segment_sequence": 2,
         "invocation_facts": [],
@@ -93,8 +96,10 @@ def continuation():
         "activity_id": "activity.attack.basic",
         "actor_id": "actor-1",
         "target_ids": ["actor-2"],
+        "catalog_context_fingerprint_generation": 1,
         "catalog_context_fingerprint": "ctx",
-        "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
+        "ruleset_set_digest_generation": 1,
+        "ruleset_set_sha256": RULESET_SET_SHA256,
         "procedure_id": "procedure-1",
         "execution_cursor": "step.attack.resolve",
         "safe_recompute_phase": "determine",
@@ -242,8 +247,10 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
             "causal_invocation_key": "offer-1:activity.shield",
             "activity_id": "activity.shield",
             "actor_id": "actor-2",
+            "catalog_context_fingerprint_generation": 1,
             "catalog_context_fingerprint": "ctx",
-            "ruleset_set_sha256": "fa0a0794e75a9e0a4343b6394f9d52677e123cd3f01d9b380dd0481bba8fa143",
+            "ruleset_set_digest_generation": 1,
+            "ruleset_set_sha256": RULESET_SET_SHA256,
             "procedure_id": "procedure-1",
             "status": "COMPLETED",
             "next_segment_sequence": 2,
