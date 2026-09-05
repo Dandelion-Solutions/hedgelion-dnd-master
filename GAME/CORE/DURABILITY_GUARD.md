@@ -1,6 +1,6 @@
 # Durability Boundary Guard
 
-framework_module_version: 0.5.0
+framework_module_version: 1.0.1
 load_policy: ALWAYS_DURING_GAMEPLAY
 precedence: authoritative for deciding WHEN campaign state must become durable; SAVE_CONTRACT adds explicit save semantics; PERSISTENCE owns HOW publication is transported
 
