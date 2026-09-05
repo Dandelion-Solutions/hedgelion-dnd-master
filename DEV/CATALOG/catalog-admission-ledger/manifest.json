@@ -1,7 +1,7 @@
 {
   "schema_name": "hdm_catalog_admission_ledger",
-  "schema_version": 1,
-  "catalog_generation": "2.0.0",
+  "schema_version": 2,
+  "catalog_generation": 2,
   "source_registry": "DEV/CATALOG/core-catalog.json",
   "decision_owner": "DEV/ARCHITECTURE/CATALOG_ADMISSION.md",
   "laws": {
@@ -33,8 +33,9 @@
     "status": "RESERVED_TOPOLOGY_AND_NAMESPACES",
     "selectable_now": false,
     "activation_gate": "S6D-07 through S6D-09 seed content plus S6D-11 manifest/lock/builder/loader verification",
-    "compatibility_id": "hdm.rules.dnd2024-srd52.v1",
-    "catalog_generation": "2.0.0",
+    "compatibility_family": "hdm.rules.dnd2024-srd52",
+    "compatibility_generation": 1,
+    "catalog_generation": 2,
     "namespace_claims": [
       "ability.*",
       "skill.*",
