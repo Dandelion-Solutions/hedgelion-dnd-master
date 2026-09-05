@@ -1,6 +1,6 @@
 {
-    "catalog_version": "2.0.0",
-    "schema_version": 1,
+    "catalog_generation": 2,
+    "schema_version": 2,
     "registries": {
         "content_definition_kinds": [
             "definition.ability",
