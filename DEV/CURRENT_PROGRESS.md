@@ -35,8 +35,8 @@ WP19_STEP1_COMPLETE:                 YES
 SR19_01:                             CLOSED
 WP19_STEP1_SENIOR_RE_REVIEW:         PENDING
 WP19_STEP2_AUTHORIZED:               NO
-WP20_STARTED:                        NO
 STEP2_STARTED:                       NO
+WP20_STARTED:                        NO
 IMPLEMENTATION_PLANNING_STARTED:     NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED:  NO
 ```
@@ -67,7 +67,7 @@ Senior independently confirmed the original Step-1 findings. Recovery did not re
 
 The recovered Source Manifest and critic now independently cover the directly implicated bootstrap/storage/install/menu, package/provenance/release, campaign-card/identity, readiness/diegetic/durability/save, persistence/access/multiplayer/runtime-latency, S6D READY_PC/ruleset and update/historical routing families.
 
-Material stale/qualified expectations are explicit. Confirmed examples include:
+Material stale/qualified expectations are explicit rather than treated as current by file existence or CI pass. Confirmed examples include:
 
 - `BOOTSTRAP_STORAGE_REGRESSION_CASES.md:B12` — **STALE** Storage-v2 initialization; current owner is storage schema v3;
 - `B22` — **STALE** tag-derived package provenance; current owner is selected package `RUNTIME_PACKAGE.source_commit_sha`;
@@ -111,7 +111,6 @@ Final Senior re-audit closure:
 ```text
 WP17_FINAL_SHA:                     6855c79190e6bb087c8039a1adf2bf71deec2c70
 WP17_FINAL_SENIOR_RE_AUDIT:         PASS
-WP17_CLOSURE:                       AUTHORIZED
 STEP_6_BLOCKING:                    2
 STEP_6_SIGNIFICANT:                 4
 SUBSTANTIVE_UNRESOLVED_BLOCKING:    0
@@ -186,7 +185,7 @@ The eight itemized findings are:
 2. **F18-02 / SIGNIFICANT** — retained planning publication/currentness boundary was incomplete;
 3. **F18-03 / SIGNIFICANT** — multiplayer disable semantics covered shared planning incompletely and did not symmetrically retire player-local retained planning;
 4. **F18-04 / SIGNIFICANT** — player-local membership/control/role eligibility invalidation was under-specified;
-5. **F18-05 / SIGNIFICANT** — generic `source_basis[]` risked inventing a universal revision/currentness vector;
+5. **F18-05 / SIGNIFICANT** — generic `source_basis[]` risked inventing a universal currentness vector;
 6. **F18-06 / SIGNIFICANT** — multiplayer planning physical root/routing was ambiguous;
 7. **F18-07 / SIGNIFICANT** — current catalog admission provenance for planning entry classes was stale;
 8. **F18-08 / SIGNIFICANT** — the expanded Source Manifest retained a false claim about current `DEV/PROJECT_MAP.md` routing Story through a legacy absent `GAME/CORE/STORY.md` path.
