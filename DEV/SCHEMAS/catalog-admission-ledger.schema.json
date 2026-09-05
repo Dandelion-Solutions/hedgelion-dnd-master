@@ -22,11 +22,10 @@
       "const": "hdm_catalog_admission_ledger"
     },
     "schema_version": {
-      "const": 1
+      "const": 2
     },
     "catalog_generation": {
-      "type": "string",
-      "minLength": 1
+      "const": 2
     },
     "source_registry": {
       "type": "string",
@@ -91,7 +90,8 @@
         "status",
         "selectable_now",
         "activation_gate",
-        "compatibility_id",
+        "compatibility_family",
+        "compatibility_generation",
         "catalog_generation",
         "namespace_claims",
         "semantic_content_root",
@@ -114,13 +114,16 @@
           "type": "string",
           "minLength": 1
         },
-        "compatibility_id": {
+        "compatibility_family": {
           "type": "string",
           "minLength": 1
         },
+        "compatibility_generation": {
+          "type": "integer",
+          "minimum": 1
+        },
         "catalog_generation": {
-          "type": "string",
-          "minLength": 1
+          "const": 2
         },
         "namespace_claims": {
           "type": "array",
