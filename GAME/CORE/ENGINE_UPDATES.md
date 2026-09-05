@@ -1,6 +1,6 @@
 # Engine Runtime Updates
 
-framework_module_version: 1.1.1
+framework_module_version: 1.0.3
 load_when: campaign/storage startup, explicit engine-update request, runtime mismatch, safe maintenance opportunity
 
 ## Distribution model
