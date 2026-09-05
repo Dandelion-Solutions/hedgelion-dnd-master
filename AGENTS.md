@@ -228,7 +228,9 @@ The required outcome is environment-independent: a correctness-sensitive reposit
 - A verification result is valid only for the execution surface that actually ran it. Do not claim a hosted-CI, local-test or remote-read-back result that the current runtime could not obtain.
 - When a required transport or execution surface is unavailable, report that as unavailable evidence; do not silently substitute a weaker source or fabricate PASS.
 
-## Version metadata
+## Version metadata and mandatory Version Impact Gate
+
+`DEV/RELEASE/VERSIONING.md` is the compact canonical versioning policy projection; its detailed semantic owner is the versioning specification it references.
 
 - `DEV/ENGINE_DEVELOPMENT.yaml` is the complete development/release bookkeeping record.
 - `GAME/ENGINE_VERSION.yaml` is the minimal installed-package/runtime projection.
@@ -236,6 +238,21 @@ The required outcome is environment-independent: a correctness-sensitive reposit
 - `ENGINE_VERSION.yaml` must remain unique in the tracked repository so runtime package-root discovery is unambiguous.
 
 Runtime GAME files read package metadata only from package-root `ENGINE_VERSION.yaml`; they never read DEV metadata.
+
+**Every repository change MUST perform a Version Impact Gate before the change is treated as checkpoint-ready or complete.** This applies even when the final result is `VERSION_IMPACT: NONE`.
+
+For the actual changed owner/consumer set, the worker must:
+
+1. identify every changed current semantic/machine/runtime/schema/catalog/protocol/module owner or projection that belongs to, carries, or consumes an HDM-owned version/revision/schema/generation namespace;
+2. classify the change under the owning bump rule in `DEV/RELEASE/VERSIONING.md` and its detailed canonical owner;
+3. determine whether a bump is required for each affected namespace;
+4. when a bump is required, update the owning value and every required projection/consumer atomically in the same coherent checkpoint;
+5. when no bump is required, verify that the edit is non-material under that namespace's bump rule rather than assuming "no version change" from file type or diff size;
+6. include the result in review/completion evidence as `VERSION_IMPACT: NONE` or a concise list of affected namespaces and old -> new values.
+
+A version-bearing change is **not complete** while a required version/revision/schema/generation bump or required projection synchronization is stale. Updating a version header/value is part of the same logical change and does not itself create an additional bump.
+
+Machine validation is a backstop, not a substitute for this semantic assessment: CI can detect many stale/mixed projections but cannot reliably infer whether every human-authored semantic edit was material.
 
 ## Development tools
 
