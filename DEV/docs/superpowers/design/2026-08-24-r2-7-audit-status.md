@@ -72,9 +72,9 @@ R2_7_WP18: CLOSED / FINAL SENIOR RE-AUDIT PASS
 R2_7_WP19: STEP 1 COMPLETE — MANDATORY SENIOR RE-REVIEW
 ```
 
-WP-19 Step 1 targeted Senior recovery is complete and re-review-ready. Step 2 is not authorized. The mandatory Senior re-review must inspect the recovered Source Manifest, Architecture Task Brief and whole-project critic before any Step-2 work begins.
+WP-19 Step 1 targeted Senior recovery is complete and re-review-ready. Step 2 is not authorized. The mandatory Senior re-review must inspect the recovered Source Manifest, Architecture Task Brief and whole-project Task-Brief critic before any Step-2 work begins.
 
-The recovery Product Owner watch found no residual human-owned decision. Accepted owners already settle the relevant product semantics, canonical authority, current pre-release compatibility policy, lifecycle boundaries and quality direction. `SR19-01` is an evidence/reverse-conformance defect and is now closed.
+The recovery Product Owner watch found no residual human-owned decision. Accepted owners already settle the relevant product semantics, canonical authority, current pre-release compatibility policy, lifecycle boundaries and quality direction. `SR19-01` was an evidence/reverse-conformance completeness defect and is now closed.
 
 ---
 
@@ -151,9 +151,9 @@ Domain:
 Original Step-1 start and Senior-recovery basis:
 
 ```text
-WP18_STEP1_START_BASIS_SHA:                 0b6cde38eb188713ac50ab7690f73eeab524e693
-WP18_STEP1_SENIOR_RECOVERY_BASIS_SHA:       e35d96a08c73a818b62b0e799bc9d9fc3fc3e54e
-WP18_STEPS_2_8_START_SHA:                   1db145712632aca7b2e89c655d468192e1004a86
+WP18_STEP1_START_SHA:                 0b6cde38eb188713ac50ab7690f73eeab524e693
+WP18_STEP1_SENIOR_RECOVERY_BASIS_SHA: e35d96a08c73a818b62b0e799bc9d9fc3fc3e54e
+WP18_STEPS_2_8_START_SHA:             1db145712632aca7b2e89c655d468192e1004a86
 ```
 
 Recovered Step-1 artifacts:
@@ -196,10 +196,6 @@ Step-8 self-review:
 
 - `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-step-8-canonicalization-self-review.md`.
 
-Step-7 finding-resolution / propagation gate:
-
-- `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-step-7-finding-resolution-propagation-gate.md`.
-
 Published design/evidence chain includes:
 
 - Step-2 research / architecture draft;
@@ -237,7 +233,7 @@ Correct item-level Step-6 provenance:
 5. **F18-05 / SIGNIFICANT** — generic `source_basis[]` risked a universal currentness vector; resolved by native-owner-typed source basis and owner-local currentness evidence only where the owner defines it.
 6. **F18-06 / SIGNIFICANT** — physical planning root ambiguous; resolved by fixed baseline routes `DRAMATURG/SHARED.yaml` and `DRAMATURG/PLAYERS/<player_id>.yaml`, with no planning registry/index/root selector authority.
 7. **F18-07 / SIGNIFICANT** — catalog admission provenance stale; resolved architecturally by preserving vocabulary and recording owner-provenance alignment through R2.5 + final WP-18 owner; final Senior recovery additionally closes the previously omitted current machine synchronization.
-8. **F18-08 / SIGNIFICANT** — Source Manifest retained a false claim about current Project-Map routing Story through a legacy absent `GAME/CORE/STORY.md` path; resolved by correcting routing.
+8. **F18-08 / SIGNIFICANT** — Source Manifest retained a false current Project-Map negative; resolved by correcting current routing and retaining legacy absence only as historical nonauthority evidence.
 
 All eight findings are architecturally resolved/propagated. No material human decision or upstream reopen remains.
 
@@ -272,38 +268,147 @@ PREPARATION HAS NO ENTITLEMENT TO OCCUR
 CANON INVALIDATES PREPARATION
 ```
 
-### Final Senior recovery / re-audit
+Only successfully published retained planning generations are eligible as cross-context retained basis. Player-local horizons explicitly record whether they consumed retained shared planning and, when bound, the exact shared generation/bounded identity. Source dependencies remain native-owner typed; planning never creates a global revision/currentness vector.
 
-`SR18-FINAL-01 / SIGNIFICANT` was closed by catalog-admission provenance synchronization and a focused regression guard. Final re-audit against public basis `3fe5784a452e6a7eb4a3da7fa21a721aa39a4506` passed with hosted `Validate engine source` run `33909858743` success.
+### Downstream realization obligations
+
+Later implementation must align Story schemas/topology, retained Dramaturg schema/routes, eligibility/currentness/CAS/rebase, multiplayer mode lifecycle, current CORE/instruction mapping and required regression/host-containment evaluation.
+
+Canonical §13 item 10 (`planning_entry_classes` catalog/admission provenance) is mechanically synchronized now; the full behavioral acceptance suite under item 12 remains downstream except for the focused provenance regression guarding item 10.
+
+No runtime/schema/template implementation changed in WP-18 final Senior recovery.
+
+---
+
+## WP-18 final Senior recovery
+
+Senior finding:
 
 ```text
-WP18_FINAL_SENIOR_RE_AUDIT:         PASS
-WP18_CLOSURE:                       AUTHORIZED
-RESIDUAL_SENIOR_BLOCKING:           0
-RESIDUAL_SENIOR_SIGNIFICANT:        0
-HUMAN_DECISION_REQUIRED:            NO
-ARCHITECTURE_REOPENED:              NO
-UPSTREAM_REOPEN_REQUIRED:           NO
+SR18_FINAL_01: SIGNIFICANT
+```
+
+Confirmed defect:
+
+- `planning_entry_classes` machine-readable semantic/downstream/evidence provenance still pointed to stale R2.1 / Step-5.10 Story-continuity owners despite accepted R2.5 + final WP-18 planning ownership.
+
+Recovery completed:
+
+1. the catalog-admission machine contract family-level and both item-level provenance fields use the exact accepted R2.5 + final WP-18 owner chain;
+2. planning vocabulary remains exactly `planning.source_anchored_constraint` and `planning.provisional_dramaturgic_direction`;
+3. `DEV/TESTS/test_wp18_final_senior_recovery.py` guards exact vocabulary and provenance through the canonical catalog-admission loader;
+4. `DEV/docs/superpowers/design/2026-09-04-r2-7-WP-18-final-senior-recovery.md` records the 13-duty downstream machine/runtime re-audit;
+5. `DEV/docs/superpowers/specs/2026-09-04-r2-7-WP-18-final-senior-recovery-canonical-amendment.md` supersedes the old blanket machine-defer interpretation without reopening WP-18 semantics.
+
+Downstream classification:
+
+```text
+MECHANICAL_SYNC_NOW:
+  canonical §13 item 10 — COMPLETE
+  focused item-10 provenance regression — COMPLETE
+
+SUBSTANTIVE_IMPLEMENTATION_LATER:
+  canonical §13 items 1-9 and 11-13
+  item 12 full behavioral acceptance suite remains downstream
+```
+
+Recovery disposition:
+
+```text
+SR18_FINAL_01:                       CLOSED
+NEW_BLOCKING:                        0
+NEW_SIGNIFICANT:                     1
+UNRESOLVED_BLOCKING:                 0
+UNRESOLVED_SIGNIFICANT:              0
+HUMAN_DECISION_REQUIRED:             NO
+ARCHITECTURE_REOPENED:               NO
+UPSTREAM_REOPEN_REQUIRED:            NO
+WP19_STARTED:                        NO
+IMPLEMENTATION_PLANNING_STARTED:     NO
 ```
 
 ---
 
-## WP-19 Step-1 targeted Senior recovery
+## WP-18 final Senior re-audit closure
 
-Original Step-1 basis:
+Final re-audit basis:
 
 ```text
-WP19_STEP1_EXECUTION_BASIS_SHA: 5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053
-WP19_SENIOR_RECOVERY_BASIS_SHA: df5fe6441c2b85e9cbffcb6f83caa885501da794
+WP18_FINAL_AUDITED_PUBLIC_BASIS_SHA: 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
+WP18_FINAL_SENIOR_RE_AUDIT:          PASS
+WP18_CLOSURE:                        AUTHORIZED
+RESIDUAL_SENIOR_BLOCKING:            0
+RESIDUAL_SENIOR_SIGNIFICANT:         0
+HUMAN_DECISION_REQUIRED:             NO
+ARCHITECTURE_REOPENED:               NO
+UPSTREAM_REOPEN_REQUIRED:            NO
 ```
 
-Recovered artifacts:
+The final re-audit checked the recovered canonical owner/amendment, current machine provenance and focused regression, intervening DEV-only catalog/tooling refactors, and whether any new current downstream consumer requires reopening the accepted Story/continuity/Dramaturg ownership boundary.
+
+No contradiction, newly unsatisfied current consumer or material insufficiency was found. Intervening structural refactors preserve the exact planning vocabulary and accepted R2.5 + WP-18 provenance chain.
+
+Hosted verification on the exact audited public basis:
+
+```text
+WORKFLOW: Validate engine source
+RUN_ID: 33909858743
+HEAD_SHA: 3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
+STATUS: completed
+CONCLUSION: success
+FULL_MAINTENANCE_AUDIT_STEP: success
+DEV_UNIT_TESTS_STEP: success
+```
+
+---
+
+## WP-19 Step-1 completed / targeted Senior recovery
+
+Domain:
+
+> **Bootstrap / campaign creation / initial materialization**
+
+Original Step-1 execution basis and Senior-recovery basis:
+
+```text
+WP19_STEP1_EXECUTION_BASIS_SHA:      5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053
+WP19_SENIOR_RECOVERY_BASIS_SHA:      df5fe6441c2b85e9cbffcb6f83caa885501da794
+```
+
+Recovered Step-1 artifacts:
 
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-source-manifest.md`;
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief.md`;
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-task-brief-critic.md`.
 
-Senior finding:
+Original independent whole-project critic disposition, confirmed by Senior:
+
+```text
+STEP1_BLOCKING:                 2
+STEP1_SIGNIFICANT:              5
+STEP1_MINOR:                    1
+UNRESOLVED_BLOCKING:            0
+UNRESOLVED_SIGNIFICANT:         0
+HUMAN_DECISION_REQUIRED:        NO
+UPSTREAM_REOPEN_REQUIRED:       NO
+ARCHITECTURE_REOPENED:          NO
+STEP2_STARTED:                  NO
+STEP2_AUTHORIZED:               NO
+IMPLEMENTATION_PLANNING_STARTED: NO
+```
+
+Original finding summary remains unchanged:
+
+1. `F19-S1-01 / BLOCKING` — exact `ruleset_set_sha256` propagation was missing from bootstrap prose framing although required by the materializer and current package/test contracts; framing repaired to require exact `RUNTIME_PACKAGE -> init_campaign -> MANIFEST.ruleset` reconciliation.
+2. `F19-S1-02 / BLOCKING` — scaffold, provisional onboarding, READY_PC and PLAY_READY could be collapsed into one readiness state; framing repaired with explicit lifecycle/authority transitions.
+3. `F19-S1-03 / SIGNIFICANT` — branch/storage/access owners and stale storage-v2 projections were not safe to omit; framing requires current v3/supersession reconciliation under existing pre-release canonicalization authority.
+4. `F19-S1-04 / SIGNIFICANT` — campaign identity/card/config/current projections were under-scoped; actual owners/schemas/templates added.
+5. `F19-S1-05 / SIGNIFICANT` — initial from-scratch publication versus later setup durability/session/resume path was under-scoped; transaction classes and failure cases added.
+6. `F19-S1-06 / SIGNIFICANT` — multiplayer initial mode/join-policy/PLAYER authority was not guaranteed by a singleplayer-shaped frame; current closed access owners added without reopen.
+7. `F19-S1-07 / SIGNIFICANT` — prose-only audit would miss the R2.7 machine->architecture direction; template/schema/materializer/release/test consumers added as first-class evidence.
+8. `F19-S1-08 / MINOR` — future WP-20 compatibility and dormant neighboring work could bleed into WP-19; explicit non-activation/defer boundaries added.
+
+Senior recovery finding:
 
 ```text
 SR19_01: SIGNIFICANT — verification/test reverse-conformance evidence incomplete
@@ -316,26 +421,23 @@ Material stale/qualified expectations are itemized in the recovered Source Manif
 Recovery disposition:
 
 ```text
-SR19_01:                         CLOSED
-ORIGINAL_STEP1_BLOCKING:         2
-ORIGINAL_STEP1_SIGNIFICANT:      5
-ORIGINAL_STEP1_MINOR:            1
-SENIOR_RECOVERY_BLOCKING:        0
-SENIOR_RECOVERY_SIGNIFICANT:     1
-SENIOR_RECOVERY_MINOR:           0
-UNRESOLVED_BLOCKING:             0
-UNRESOLVED_SIGNIFICANT:          0
-HUMAN_DECISION_REQUIRED:         NO
-ARCHITECTURE_REOPENED:           NO
-UPSTREAM_REOPEN_REQUIRED:        NO
-STEP2_STARTED:                   NO
-WP19_STEP2_AUTHORIZED:           NO
-WP20_STARTED:                    NO
-IMPLEMENTATION_PLANNING_STARTED: NO
+SR19_01:                            CLOSED
+SENIOR_RECOVERY_BLOCKING:           0
+SENIOR_RECOVERY_SIGNIFICANT:        1
+SENIOR_RECOVERY_MINOR:              0
+UNRESOLVED_BLOCKING:                0
+UNRESOLVED_SIGNIFICANT:             0
+HUMAN_DECISION_REQUIRED:            NO
+ARCHITECTURE_REOPENED:              NO
+UPSTREAM_REOPEN_REQUIRED:           NO
+STEP2_STARTED:                      NO
+WP19_STEP2_AUTHORIZED:              NO
+WP20_STARTED:                       NO
+IMPLEMENTATION_PLANNING_STARTED:    NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 ```
 
-No test/scenario files were changed. Their synchronization remains later authorized design-realization work; Step-1 recovery only fixes the evidence/framing claim and prevents stale expectations from becoming implementation authority.
+No test/scenario files were changed. Their synchronization remains later authorized design-realization work; Step-1 recovery fixes the evidence/framing claim and prevents stale expectations from becoming implementation authority.
 
 ---
 
@@ -377,6 +479,12 @@ WP18_CATALOG_PROVENANCE_SYNC_SHA:        bbf0b6ad04a78f5df701197957e751fde19b146
 WP18_FINAL_AUDITED_PUBLIC_BASIS_SHA:      3fe5784a452e6a7eb4a3da7fa21a721aa39a4506
 WP18_FINAL_SENIOR_RE_AUDIT:              PASS
 WP18_CLOSURE:                            AUTHORIZED
+
+WP18_STEP6_BLOCKING:                     1
+WP18_STEP6_SIGNIFICANT:                  7
+WP18_SR18_FINAL_01:                      CLOSED
+WP18_UNRESOLVED_BLOCKING:                0
+WP18_UNRESOLVED_SIGNIFICANT:             0
 
 WP19_STEP1_START_BASIS_SHA:              39d12e5b1c1d4b890cfcc4b4c64e5cab16e0d7ca
 WP19_STEP1_EXECUTION_BASIS_SHA:          5fc24905be5c9e1b47929ee9e7b49ea8b9f2a053
