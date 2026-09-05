@@ -1,4 +1,7 @@
-schema_version: 3
+schema_version: 4
+campaign_contract:
+  created_with: 2
+  current: 2
 campaign_id: null
 campaign_name: null
 campaign_name_origin: null
@@ -20,8 +23,10 @@ engine:
 ruleset:
   created_with:
     ruleset_set_sha256: null
+    ruleset_set_digest_generation: 1
   current:
     ruleset_set_sha256: null
+    ruleset_set_digest_generation: 1
     adopted_at: null
 rules:
   baseline: "D&D 2024 / SRD 5.2.1"
