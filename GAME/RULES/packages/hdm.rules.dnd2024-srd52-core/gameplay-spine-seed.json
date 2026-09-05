@@ -1,10 +1,12 @@
 {
   "schema_name": "hdm_gameplay_spine_seed",
-  "schema_version": 1,
+  "schema_version": 2,
   "profile_id": "gameplay_spine.mvp.v1",
   "package_id": "hdm.rules.dnd2024-srd52-core",
-  "package_version": "0.1.0-mvp",
-  "catalog_generation": "2.0.0",
+  "package_revision": 1,
+  "compatibility_family": "hdm.rules.dnd2024-srd52",
+  "compatibility_generation": 1,
+  "catalog_generation": 2,
   "activity_definitions": [
     {
       "id": "activity.check.generic",
@@ -136,4 +138,3 @@
   "downstream_consequence_profiles": ["NONE", "EXACT_DAMAGE", "EXACT_LOCATION_CHANGE", "EXACT_ASSET_TRANSFER"],
   "unsupported_policy": "ABSENT_NONSELECTABLE"
 }
-
