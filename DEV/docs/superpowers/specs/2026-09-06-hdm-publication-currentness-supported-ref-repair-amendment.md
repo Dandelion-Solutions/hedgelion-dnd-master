@@ -1,10 +1,14 @@
 # HDM Publication Currentness — Supported Ref Monotonicity Repair Amendment
 
-Status: **CANONICAL REPAIR CANDIDATE — MANDATORY SENIOR REPAIR REVIEW PENDING**
+Status: **CANONICAL — FINAL SENIOR REVIEW PASS**
 
 Date: 2026-09-06
 
 Scope: bounded whole-project audit repair for publication/currentness realization only.
+
+Final independent Senior review:
+
+- `DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-senior-review.md` — **FINAL SENIOR REVIEW PASS**.
 
 This amendment reconciles the accepted publication/currentness architecture with the ref-transition capability actually available in the supported ChatGPT Work / GitHub Connector profile. It does not reopen gameplay semantics, authority ownership, creator-login policy, durability product policy, migration compatibility policy, LIVE ownership, or the versioning taxonomy.
 
