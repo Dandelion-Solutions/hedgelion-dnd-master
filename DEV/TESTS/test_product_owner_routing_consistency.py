@@ -52,6 +52,16 @@ class ProductOwnerRoutingConsistencyTests(unittest.TestCase):
         progress = PROGRESS.read_text(encoding="utf-8")
         self.assertEqual(_active_pending_closed_routes(ledger, progress), [])
 
+    def test_completed_repair_is_not_projected_as_still_in_progress(self):
+        ledger = LEDGER.read_text(encoding="utf-8")
+        progress = PROGRESS.read_text(encoding="utf-8")
+        if "WHOLE_PROJECT_AUDIT_REPAIR_COMPLETE: YES" in progress:
+            self.assertNotIn(
+                "WHOLE_PROJECT_AUDIT_REPAIR: EXECUTION / VERIFICATION IN PROGRESS",
+                ledger,
+            )
+            self.assertIn("WHOLE_PROJECT_AUDIT_REPAIR: COMPLETE", ledger)
+
     def test_po004_is_closed_against_final_wp20_architecture(self):
         src = LEDGER.read_text(encoding="utf-8")
         self.assertIn("| `PO-004` | COMPATIBILITY POLICY | INCORPORATED |", src)
