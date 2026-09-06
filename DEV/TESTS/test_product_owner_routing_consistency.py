@@ -62,7 +62,7 @@ class ProductOwnerRoutingConsistencyTests(unittest.TestCase):
         ledger = LEDGER.read_text(encoding="utf-8")
         decision = CREATOR_DECISION.read_text(encoding="utf-8")
         decision_block = _verbatim_block_after(
-            decision, "### Product Owner decision — VERBATIM / IMMUTABLE"
+            decision, "## Product Owner input — VERBATIM / IMMUTABLE"
         )
         self.assertIn(decision_block, ledger)
         self.assertIn("## PO-005 — Creator-login continuity and takeover prevention", ledger)
