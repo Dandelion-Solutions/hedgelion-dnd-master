@@ -6,18 +6,48 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-20 FINAL SENIOR REVIEW PASS — WP-20 CLOSED
+GLOBAL_STATE: WHOLE-PROJECT AUDIT REPAIR AUTHORIZED / NOT STARTED — WP-21 HOLD
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-20 engine-update / schema-evolution / migration architecture completed through Steps 1–8 and passed mandatory final Senior review; no implementation or real migration started
+CURRENT_SLICE: WP-20 remains closed after final Senior PASS; a post-WP-20 whole-project integration checkpoint exposed a bounded repair set that must close before WP-21
 
 LAST_CLOSED_UNIT: R2.7 WP-20 — Engine update / schema evolution / migration — FINAL SENIOR REVIEW PASS
-NEXT_ELIGIBLE_UNIT: R2.7 WP-21 STEP 1
-NEXT_AUTHORIZED_UNIT: NONE — standing Product Owner policy requires WP-21 goals/tasks to be explained and explicitly launched before work begins
-REQUIRED_GATE: explicit Product Owner launch of WP-21 after decision-ready explanation; do not start WP-21 before that launch
+NEXT_ELIGIBLE_UNIT: whole-project audit repair task
+NEXT_AUTHORIZED_UNIT: DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-task.md
+REQUIRED_GATE: complete the authorized bounded repair task, stop at mandatory Senior repair review, and do not start WP-21 before repair PASS
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-06-r2-7-WP-20-final-senior-review.md
-KNOWN_BLOCKERS: NONE
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-task.md
+KNOWN_BLOCKERS: publication exact-source/currentness proof is not yet established for the actual supported host/ref-update realization
+```
+
+---
+
+## Whole-project audit repair checkpoint
+
+Current repair owner:
+
+- `DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-task.md`.
+
+Accepted Product Owner authority established during reconciliation:
+
+- `DEV/docs/superpowers/specs/2026-09-06-hdm-creator-login-continuity-owner-decision.md`.
+
+Repair roots:
+
+```text
+R1 publication exact-source/currentness proof          -> BLOCKING
+R2 Product Owner routing closure                       -> SIGNIFICANT
+R3 version census fail-closed completeness             -> SIGNIFICANT
+R4 WP-20 canonical status synchronization              -> MINOR
+```
+
+Creator-login rename continuity is not a repair target. Product Owner policy is fail-closed: automatic rename continuity/stable-ID substitution/silent ownership transfer are not supported.
+
+```text
+REPAIR_TASK_AUTHORIZED: YES
+REPAIR_TASK_STARTED: NO
+WP21_STARTED: NO
+NEXT_GATE: MANDATORY SENIOR REPAIR REVIEW AFTER REPAIR EXECUTION
 ```
 
 ---
@@ -92,8 +122,8 @@ Principal laws:
 - storage-format/default-baseline evolution is storage-owner authority and separate from creator-owned existing-campaign migration/adoption;
 - campaign migration requires no active LIVE authority and no CLOSED-unabsorbed LIVE state;
 - preserved accepted/resumable work must remain interpretable under frozen causal/ruleset/package/RNG semantics;
-- successful local transformation is only PREPARED; durable success is existing one-commit/non-force campaign-ref CAS publication plus required read-back semantics;
-- rejected publication leaves old authority unchanged;
+- successful local transformation is only PREPARED; durable success uses the existing one-commit/non-force campaign publication boundary plus required currentness/read-back semantics; the exact host proof for that boundary is the active R1 repair;
+- rejected publication leaves old authority unchanged under the accepted publication/currentness owner;
 - reverse/downgrade requires a separate explicit reverse edge and new forward publication; no ref rewind/checkpoint rollback authority;
 - branch-persistent derived projections may rebuild in prepared target transaction; local HOT/runtime caches rebuild only after confirmed authoritative success;
 - unsupported newer contracts fail closed;
@@ -136,7 +166,7 @@ F20-08 pre-release implication in legacy layout regression wording
 
 ## Final Senior review / Version Impact repair
 
-Senior review found no architecture blocker or upstream reopen requirement. It found two mechanically repairable version-impact misses in the Step-8 current-owner synchronization and repaired them before final PASS:
+Senior review found no WP-20 semantic architecture blocker or upstream reopen requirement. It found two mechanically repairable version-impact misses in the Step-8 current-owner synchronization and repaired them before final PASS:
 
 ```text
 GAME/CORE/ENGINE_UPDATES.md
@@ -151,47 +181,26 @@ No other Step-8 changed owner required an additional version/revision/schema/gen
 ```text
 WP20_FINAL_SENIOR_REVIEW: PASS
 WP20_FINAL_CLOSURE: PASS
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
-HUMAN_DECISION_REQUIRED: NO
-NEEDS_PO: NONE
-UPSTREAM_REOPEN_REQUIRED: NO
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
----
-
-## Current-owner synchronization
-
-Synchronized current surfaces:
-
-- `DEV/ARCHITECTURE/ACCESS_CONTROL.md`;
-- `GAME/CORE/ENGINE_UPDATES.md`;
-- `GAME/MIGRATIONS/README.md`;
-- `DEV/TESTS/ENGINE_UPDATE_CASES.md`.
-
-Historical 2026-08-18 update/provenance design artifacts remain history. Their storage-baseline separation and package-provenance principles survive where not otherwise superseded; their same-version Git-ancestry compatibility inference does not govern released v1.0+ behavior.
-
-The roadmap was not changed because sequencing/scope/dependencies did not change. `DEV/PROJECT_MAP.md` already routes this concern to the same owner families and does not require structural repair.
+The later whole-project integration checkpoint does not revoke WP-20 wholesale acceptance; it creates the bounded repair task above.
 
 ---
 
 ## Current authorization
 
 ```text
-WP20_STEP1: COMPLETE / SENIOR REVIEW PASS
-WP20_STEP2: COMPLETE
-WP20_STEP3: COMPLETE
-WP20_STEP4: COMPLETE
-WP20_STEP5: COMPLETE
-WP20_STEP6: COMPLETE
-WP20_STEP7: COMPLETE
-WP20_STEP8: COMPLETE
 WP20_FINAL_SENIOR_REVIEW: PASS
+WP20_CLOSED: YES
+
+WHOLE_PROJECT_AUDIT_REPAIR_AUTHORIZED: YES
+WHOLE_PROJECT_AUDIT_REPAIR_STARTED: NO
+WHOLE_PROJECT_AUDIT_REPAIR_COMPLETE: NO
 
 HUMAN_DECISION_REQUIRED: NO
 NEEDS_PO: NONE
-UPSTREAM_REOPEN_REQUIRED: NO
+UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
 VERSIONING_TAXONOMY_REOPENED: NO
 
 WP21_STARTED: NO
@@ -200,7 +209,7 @@ SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RUNTIME_MIGRATION_EXECUTED: NO
 REAL_CAMPAIGN_MIGRATED: NO
 
-NEXT_ELIGIBLE_UNIT: R2.7 WP-21 STEP 1
-NEXT_AUTHORIZED_UNIT: NONE — EXPLICIT PRODUCT OWNER LAUNCH REQUIRED
-KNOWN_BLOCKERS: NONE
+NEXT_AUTHORIZED_UNIT: DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-task.md
+KNOWN_BLOCKERS: R1 publication exact-source/currentness proof
+NEXT_GATE: MANDATORY SENIOR REPAIR REVIEW
 ```
