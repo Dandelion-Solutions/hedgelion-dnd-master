@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-21 STEP 1 AUTHORIZED — TASK BRIEF / WHOLE-PROJECT CRITIC NOT YET PUBLISHED
+GLOBAL_STATE: R2.7 WP-21 STEP 1 PACKAGE COMPLETE — MANDATORY INDEPENDENT SENIOR REVIEW PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-21 — Diagnostics, observability, cleanup and retirement — Step 1 framing authorized only
+CURRENT_SLICE: WP-21 — Diagnostics, observability, cleanup and retirement — Step 1 worker package complete
 
 LAST_CLOSED_UNIT: post-WP-20 whole-project audit repair R1-R4 — FINAL SENIOR REVIEW PASS
-NEXT_ELIGIBLE_UNIT: R2.7 WP-21 Step 1
-NEXT_AUTHORIZED_UNIT: WP-21 Step 1 Task Brief + Source Manifest + whole-project critic only
-REQUIRED_GATE: mandatory Senior review of the completed WP-21 Step-1 package before Step 2; WP-22 and implementation planning remain forbidden
+NEXT_ELIGIBLE_UNIT: mandatory independent Senior WP-21 Step-1 review
+NEXT_AUTHORIZED_UNIT: NONE
+REQUIRED_GATE: mandatory independent Senior review of the completed WP-21 Step-1 framing/Source-Manifest/critic package before Step 2; WP-22 and implementation planning remain forbidden
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-senior-review.md
-KNOWN_BLOCKERS: NONE
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-06-r2-7-WP-21-task-brief-source-manifest.md
+KNOWN_BLOCKERS: NONE — mandatory Senior gate pending
 ```
 
 ---
@@ -42,7 +42,7 @@ Fixed Product Owner authority:
 
 Publication/currentness realization repair:
 
-- `DEV/docs/superpowers/specs/2026-09-06-hdm-publication-currentness-supported-ref-repair-amendment.md`.
+- `DEV/docs/superpowers/specs/2026-09-06-hdm-publication-currentness-supported-ref-repair-amendment.md` — CANONICAL / FINAL SENIOR REVIEW PASS.
 
 Repair dispositions:
 
@@ -221,11 +221,50 @@ WP-21 domain:
 Diagnostics, observability, cleanup and retirement
 ```
 
-Only Step 1 is authorized. The Step-1 package must reconstruct the whole-project dependency subgraph, build its Source Manifest, frame exact scope/non-goals and run the mandatory whole-project critic. It must not begin Step 2 before Senior review.
+Step 1 worker package is published:
 
-WP-21 must consume current owners rather than reopening closed cleanup/retention/diagnostic architecture merely because it overlaps the domain. Any new Product Owner input whose routes intersect this domain must be captured and incorporated into the Step-1 evidence basis before the package claims completeness.
+- `DEV/docs/superpowers/design/2026-09-06-r2-7-WP-21-task-brief-source-manifest.md`.
 
-WP-22, implementation planning and substantive implementation remain unauthorized.
+Its whole-project critic established two repair findings:
+
+```text
+F21-01: Step-5.13 physical ref-delete assumptions conflict with fixed Product Owner policy
+F21-02: R1 publication/currentness amendment carried stale pre-Senior status metadata
+```
+
+Worker-side repair disposition:
+
+```text
+F21-01: REPAIRED — SENIOR CONFIRMATION REQUIRED
+F21-02: REPAIRED — STATUS ONLY
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+NEEDS_PO: NONE
+```
+
+F21-01 is reconciled by:
+
+- `DEV/docs/superpowers/specs/2026-09-06-step-5-13-logical-ref-retirement-canonical-amendment.md`;
+- `DEV/TESTS/test_branch_ref_retirement_policy.py`.
+
+Fixed ref-retirement policy:
+
+```text
+HDM AUTOMATIC BRANCH/REF DELETION: FORBIDDEN / NOT A CAPABILITY
+CAPABILITY PROBE FOR DELETE: FORBIDDEN
+DELETE INVOCATION/RETRY: FORBIDDEN
+MANUAL/NATIVE-GIT/PRIVATE-HTTP FALLBACK: FORBIDDEN
+REF RETIREMENT: LOGICAL DE-AUTHORIZATION / DE-ROUTING ONLY
+PHYSICAL RETIRED REF MAY REMAIN INDEFINITELY: YES
+PHYSICAL REF EXISTENCE IMPLIES AUTHORITY: NO
+```
+
+F21-02 synchronized the R1 amendment to its already-established independent Senior PASS without semantic change.
+
+The other mandatory WP-21 routes — no-CoT diagnostics, retirement coverage, blocker/currentness proof, derivative Story/planning/index/cache rebuildability and privilege-safe non-authoritative support surfaces — are satisfied by existing owners and were not reopened.
+
+WP-21 Step 2 is not authorized until independent Senior review of the Step-1 package. WP-22, implementation planning and substantive implementation remain unauthorized.
 
 ---
 
@@ -255,7 +294,10 @@ CREATOR_LOGIN_RENAME_CONTINUITY: NOT SUPPORTED / NOT REOPENED
 
 WP21_STARTED: YES
 WP21_STEP1_AUTHORIZED: YES
-WP21_STEP1_PACKAGE_PUBLISHED: NO
+WP21_STEP1_PACKAGE_PUBLISHED: YES
+WP21_STEP1_CRITIC_COMPLETE: YES
+WP21_STEP1_REPAIRS_COMPLETE: YES
+WP21_STEP1_SENIOR_REVIEW: PENDING
 WP21_STEP2_AUTHORIZED: NO
 WP22_STARTED: NO
 
@@ -265,6 +307,6 @@ RUNTIME_MIGRATION_EXECUTED: NO
 REAL_CAMPAIGN_MIGRATED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
-NEXT_AUTHORIZED_UNIT: WP-21 STEP 1 TASK BRIEF + SOURCE MANIFEST + WHOLE-PROJECT CRITIC ONLY
-NEXT_GATE: MANDATORY SENIOR WP-21 STEP-1 REVIEW
+NEXT_AUTHORIZED_UNIT: NONE
+NEXT_GATE: MANDATORY INDEPENDENT SENIOR WP-21 STEP-1 REVIEW
 ```
