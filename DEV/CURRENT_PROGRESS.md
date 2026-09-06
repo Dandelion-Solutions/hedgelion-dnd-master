@@ -6,16 +6,17 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-20 STEP 8 COMPLETE — MANDATORY SENIOR REVIEW PENDING
+GLOBAL_STATE: R2.7 WP-20 FINAL SENIOR REVIEW PASS — WP-20 CLOSED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-20 Steps 2–8 completed after mandatory Step-1 Senior GO; engine-update / schema-evolution / migration architecture is canonicalized as a review checkpoint; implementation is not authorized; mandatory post-Step-8 Senior review is the next gate
+CURRENT_SLICE: WP-20 engine-update / schema-evolution / migration architecture completed through Steps 1–8 and passed mandatory final Senior review; no implementation or real migration started
 
-LAST_CLOSED_UNIT: R2.7 WP-19 — Bootstrap / campaign creation / initial materialization — FINAL SENIOR REVIEW PASS
-NEXT_AUTHORIZED_UNIT: NONE — R2.7 WP-20 mandatory post-Step-8 Senior review must PASS/GO before WP-21 or any later continuation
-REQUIRED_GATE: independent mandatory Senior review of the complete WP-20 Step-8 package, including Step-6 finding propagation and current-owner synchronization; do not start WP-21, implementation planning, substantive implementation or real migration before that review authorizes continuation
+LAST_CLOSED_UNIT: R2.7 WP-20 — Engine update / schema evolution / migration — FINAL SENIOR REVIEW PASS
+NEXT_ELIGIBLE_UNIT: R2.7 WP-21 STEP 1
+NEXT_AUTHORIZED_UNIT: NONE — standing Product Owner policy requires WP-21 goals/tasks to be explained and explicitly launched before work begins
+REQUIRED_GATE: explicit Product Owner launch of WP-21 after decision-ready explanation; do not start WP-21 before that launch
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-step-8-canonicalization.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-06-r2-7-WP-20-final-senior-review.md
 KNOWN_BLOCKERS: NONE
 ```
 
@@ -56,9 +57,13 @@ The accepted versioning taxonomy remains unchanged and was not reopened.
 - Step 7 — `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-step-7-resolution-propagation.md`;
 - Step 8 — `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-step-8-canonicalization.md`.
 
-Final implementation-facing review checkpoint:
+Final implementation-facing architecture owner:
 
 - `DEV/docs/superpowers/specs/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-canonical-spec.md`.
+
+Final Senior review:
+
+- `DEV/docs/superpowers/design/2026-09-06-r2-7-WP-20-final-senior-review.md` — PASS.
 
 Upstream product/version authority:
 
@@ -92,7 +97,7 @@ Principal laws:
 - reverse/downgrade requires a separate explicit reverse edge and new forward publication; no ref rewind/checkpoint rollback authority;
 - branch-persistent derived projections may rebuild in prepared target transaction; local HOT/runtime caches rebuild only after confirmed authoritative success;
 - unsupported newer contracts fail closed;
-- same semantic version/package ID or Git source ancestry is provenance, not released compatibility proof for different bytes.
+- same semantic version/package ID or Git source ancestry is provenance/candidate-order evidence only, not released compatibility proof for different bytes.
 
 ---
 
@@ -129,7 +134,34 @@ F20-08 pre-release implication in legacy layout regression wording
 
 ---
 
-## Current-owner synchronization in the Step-8 checkpoint
+## Final Senior review / Version Impact repair
+
+Senior review found no architecture blocker or upstream reopen requirement. It found two mechanically repairable version-impact misses in the Step-8 current-owner synchronization and repaired them before final PASS:
+
+```text
+GAME/CORE/ENGINE_UPDATES.md
+  framework_module_version: 1.0.3 -> 1.0.4
+
+DEV/ENGINE_DEVELOPMENT.yaml
+  access_control_revision: 5 -> 6
+```
+
+No other Step-8 changed owner required an additional version/revision/schema/generation bump.
+
+```text
+WP20_FINAL_SENIOR_REVIEW: PASS
+WP20_FINAL_CLOSURE: PASS
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+NEEDS_PO: NONE
+UPSTREAM_REOPEN_REQUIRED: NO
+VERSIONING_TAXONOMY_REOPENED: NO
+```
+
+---
+
+## Current-owner synchronization
 
 Synchronized current surfaces:
 
@@ -155,8 +187,8 @@ WP20_STEP5: COMPLETE
 WP20_STEP6: COMPLETE
 WP20_STEP7: COMPLETE
 WP20_STEP8: COMPLETE
+WP20_FINAL_SENIOR_REVIEW: PASS
 
-WP20_FINAL_SENIOR_REVIEW: PENDING
 HUMAN_DECISION_REQUIRED: NO
 NEEDS_PO: NONE
 UPSTREAM_REOPEN_REQUIRED: NO
@@ -168,6 +200,7 @@ SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RUNTIME_MIGRATION_EXECUTED: NO
 REAL_CAMPAIGN_MIGRATED: NO
 
-NEXT_AUTHORIZED_UNIT: NONE — MANDATORY WP-20 POST-STEP-8 SENIOR REVIEW
+NEXT_ELIGIBLE_UNIT: R2.7 WP-21 STEP 1
+NEXT_AUTHORIZED_UNIT: NONE — EXPLICIT PRODUCT OWNER LAUNCH REQUIRED
 KNOWN_BLOCKERS: NONE
 ```
