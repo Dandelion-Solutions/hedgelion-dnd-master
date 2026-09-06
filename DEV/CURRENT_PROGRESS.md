@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-21 STEP 1 PACKAGE COMPLETE — MANDATORY INDEPENDENT SENIOR REVIEW PENDING
+GLOBAL_STATE: R2.7 WP-21 STEP 1 SENIOR REVIEW HOLD — BOUNDED STEP-1 RECOVERY AUTHORIZED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-21 — Diagnostics, observability, cleanup and retirement — Step 1 worker package complete
+CURRENT_SLICE: WP-21 — Diagnostics, observability, cleanup and retirement — Step 1 Senior recovery
 
 LAST_CLOSED_UNIT: post-WP-20 whole-project audit repair R1-R4 — FINAL SENIOR REVIEW PASS
-NEXT_ELIGIBLE_UNIT: mandatory independent Senior WP-21 Step-1 review
-NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: mandatory independent Senior review of the completed WP-21 Step-1 framing/Source-Manifest/critic package before Step 2; WP-22 and implementation planning remain forbidden
+NEXT_ELIGIBLE_UNIT: WP-21 Step-1 bounded recovery for SR21-01..SR21-03
+NEXT_AUTHORIZED_UNIT: WP-21 Step-1 recovery only; repair Source Manifest/critic/evidence package and directly implicated Step-1 artifacts as required by the Senior HOLD
+REQUIRED_GATE: mandatory independent Senior re-review of the repaired WP-21 Step-1 package before Step 2; WP-22 and implementation planning remain forbidden
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-06-r2-7-WP-21-task-brief-source-manifest.md
-KNOWN_BLOCKERS: NONE — mandatory Senior gate pending
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-06-r2-7-WP-21-step-1-senior-review.md
+KNOWN_BLOCKERS: SR21-01 BLOCKER; SR21-02 SIGNIFICANT; SR21-03 SIGNIFICANT
 ```
 
 ---
@@ -225,22 +225,18 @@ Step 1 worker package is published:
 
 - `DEV/docs/superpowers/design/2026-09-06-r2-7-WP-21-task-brief-source-manifest.md`.
 
-Its whole-project critic established two repair findings:
+Its whole-project critic established two worker repair findings:
 
 ```text
 F21-01: Step-5.13 physical ref-delete assumptions conflict with fixed Product Owner policy
 F21-02: R1 publication/currentness amendment carried stale pre-Senior status metadata
 ```
 
-Worker-side repair disposition:
+Worker-side repair disposition remains:
 
 ```text
 F21-01: REPAIRED — SENIOR CONFIRMATION REQUIRED
 F21-02: REPAIRED — STATUS ONLY
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
-HUMAN_DECISION_REQUIRED: NO
-NEEDS_PO: NONE
 ```
 
 F21-01 is reconciled by:
@@ -248,7 +244,7 @@ F21-01 is reconciled by:
 - `DEV/docs/superpowers/specs/2026-09-06-step-5-13-logical-ref-retirement-canonical-amendment.md`;
 - `DEV/TESTS/test_branch_ref_retirement_policy.py`.
 
-Fixed ref-retirement policy:
+Fixed ref-retirement policy remains:
 
 ```text
 HDM AUTOMATIC BRANCH/REF DELETION: FORBIDDEN / NOT A CAPABILITY
@@ -262,9 +258,43 @@ PHYSICAL REF EXISTENCE IMPLIES AUTHORITY: NO
 
 F21-02 synchronized the R1 amendment to its already-established independent Senior PASS without semantic change.
 
-The other mandatory WP-21 routes — no-CoT diagnostics, retirement coverage, blocker/currentness proof, derivative Story/planning/index/cache rebuildability and privilege-safe non-authoritative support surfaces — are satisfied by existing owners and were not reopened.
+Mandatory independent Step-1 Senior review:
 
-WP-21 Step 2 is not authorized until independent Senior review of the Step-1 package. WP-22, implementation planning and substantive implementation remain unauthorized.
+- `DEV/docs/superpowers/design/2026-09-06-r2-7-WP-21-step-1-senior-review.md` — **HOLD**.
+
+Senior recovery findings:
+
+```text
+SR21-01: BLOCKER — Source Manifest/critic lacks required machine/runtime/support dependency coverage
+SR21-02: SIGNIFICANT — maintenance/debug authorization + disclosure safety asserted but not proven against the real support surface
+SR21-03: SIGNIFICANT — obsolete/terminal/replaceable record-family coverage is not item-level complete, especially for later WP-17/WP-18 families
+```
+
+Current disposition:
+
+```text
+WP21_STEP1_SENIOR_REVIEW: HOLD
+STEP1_RECOVERY_REQUIRED: YES
+UNRESOLVED_BLOCKING: 1
+UNRESOLVED_SIGNIFICANT: 2
+HUMAN_DECISION_REQUIRED_NOW: NO
+NEEDS_PO_NOW: NONE
+UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
+```
+
+The recovery is bounded to Step 1. It must expand the dependency subgraph to actual maintenance/tool/runtime/schema/test consumers, prove maintenance authorization/disclosure composition or isolate a genuine human-owned residual decision, and produce item-level retirement/rebuild dispositions for relevant obsolete/terminal/replaceable families. Existing F21-01/F21-02 repairs remain accepted unless new current evidence proves a contradiction.
+
+No generic observability/GC/support-authority subsystem is authorized. PO-006 remains fixed: HDM never deletes Git branches/refs.
+
+After the repaired Step-1 package is published and exact-head verification is recorded, stop again for mandatory independent Senior re-review. WP-21 Step 2 remains unauthorized.
+
+Version Impact for the Senior review/status checkpoint itself:
+
+```text
+VERSION_IMPACT: VERIFIED
+VERSION_BUMP_REQUIRED: NO
+VERSION_IMPACT_DISPOSITION: NONE
+```
 
 ---
 
@@ -296,8 +326,10 @@ WP21_STARTED: YES
 WP21_STEP1_AUTHORIZED: YES
 WP21_STEP1_PACKAGE_PUBLISHED: YES
 WP21_STEP1_CRITIC_COMPLETE: YES
-WP21_STEP1_REPAIRS_COMPLETE: YES
-WP21_STEP1_SENIOR_REVIEW: PENDING
+WP21_STEP1_REPAIRS_COMPLETE: NO — SENIOR RECOVERY REQUIRED
+WP21_STEP1_SENIOR_REVIEW: HOLD
+WP21_STEP1_RECOVERY_AUTHORIZED: YES
+WP21_STEP1_RECOVERY_COMPLETE: NO
 WP21_STEP2_AUTHORIZED: NO
 WP22_STARTED: NO
 
@@ -307,6 +339,6 @@ RUNTIME_MIGRATION_EXECUTED: NO
 REAL_CAMPAIGN_MIGRATED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
-NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY INDEPENDENT SENIOR WP-21 STEP-1 REVIEW
+NEXT_AUTHORIZED_UNIT: WP-21 STEP-1 BOUNDED SENIOR RECOVERY — SR21-01..SR21-03 ONLY
+NEXT_GATE: MANDATORY INDEPENDENT SENIOR RE-REVIEW OF REPAIRED WP-21 STEP-1 PACKAGE
 ```
