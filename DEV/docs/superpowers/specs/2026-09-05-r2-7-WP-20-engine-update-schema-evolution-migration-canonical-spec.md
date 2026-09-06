@@ -1,10 +1,10 @@
 # R2.7 WP-20 — Engine Update / Schema Evolution / Migration — Canonical Specification
 
-Status: **CANONICALIZATION CANDIDATE — STEP 8 COMPLETE / MANDATORY SENIOR REVIEW PENDING**
+Status: **CANONICAL — FINAL SENIOR REVIEW PASS / WP-20 CLOSED**
 
 Date: 2026-09-05
 
-This specification is the final implementation-facing WP-20 architecture owner produced by Steps 2–8. It composes existing HDM owners rather than replacing their native semantics. It becomes the operative WP-20 result subject to the mandatory post-Step-8 Senior review gate.
+This specification is the final implementation-facing WP-20 architecture owner produced by Steps 2–8 and accepted by the mandatory final Senior review on 2026-09-06. It composes existing HDM owners rather than replacing their native semantics. The later whole-project publication/currentness repair clarifies the supported ref-transition realization without reopening WP-20 compatibility or migration semantics.
 
 Design provenance:
 
@@ -18,13 +18,15 @@ Design provenance:
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-step-5-candidate-specification.md`;
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-step-6-whole-project-adversarial-review.md`;
 - `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-step-7-resolution-propagation.md`;
-- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-step-8-canonicalization.md`.
+- `DEV/docs/superpowers/design/2026-09-05-r2-7-WP-20-step-8-canonicalization.md`;
+- `DEV/docs/superpowers/design/2026-09-06-r2-7-WP-20-final-senior-review.md` — PASS / WP-20 CLOSED.
 
 Product / upstream law:
 
 - `DEV/docs/superpowers/specs/2026-09-05-hdm-v1-clean-slate-compatibility-owner-decision.md`;
 - `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md`;
-- `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-machine-realization-status-amendment.md`.
+- `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-machine-realization-status-amendment.md`;
+- `DEV/docs/superpowers/specs/2026-09-06-hdm-publication-currentness-supported-ref-repair-amendment.md` — publication/currentness realization clarification only; mandatory Senior repair review pending.
 
 ---
 
@@ -409,8 +411,10 @@ A campaign migration/adoption publishes through the existing campaign publicatio
 ```text
 one complete prepared tree
 -> one commit parented to pinned H
--> one non-force campaign-ref CAS/update
+-> one non-force campaign-ref transition under the supported publication fence
 ```
+
+For the current Git-backed Connector realization, `parent(C)=H` plus `force=false` fast-forward-only ref selection supplies the logical exact-source fence under the supported monotonic-ref contract. WP-20 does not require a separate expected-old-ref API argument.
 
 No migration-specific second currentness/publication authority is introduced.
 
@@ -422,15 +426,32 @@ Target runtime binding and post-publication local cache rebuild occur only after
 
 ### WP20-L31 — Rejected publication
 
-If the ref moved/CAS is rejected, the current ref remains authority. Prepared commit/objects have no campaign authority. Re-evaluate from current authority; do not force or blind-merge.
+If the prepared ref transition is confirmed rejected/stale, the current ref remains authority. Prepared commit/objects have no campaign authority. Re-evaluate from current authority; do not force or blind-merge.
 
 ### WP20-L32 — Ambiguous publication
 
-If transport result is unknown, use the existing bounded authoritative ref read-back:
+If transport result is unknown, use the existing bounded authoritative ref read-back plus lineage/current-closure semantics owned by WP-13 and the publication-currentness repair amendment.
 
-- ref equals prepared commit -> accepted;
-- ref proves another current successor/head -> rejected/stale;
-- outcome still cannot be proven -> indeterminate/recovery state.
+Given intended migration commit `C` and current authoritative head `D`:
+
+```text
+D == C
+    -> prove required current closure at C
+
+C proven reachable ancestor of D
+    -> C is durable lineage evidence
+    -> inspect bounded D-vs-C intersection with required closure/dependency/authorization footprint
+    -> treat migration publication/current promise as satisfied only if current D supplies compatible current required closure
+
+C proven absent from D lineage
+    -> C does not prove current migration closure
+    -> repin/revalidate from D
+
+bounded evidence unavailable
+    -> remain INDETERMINATE / recovery-required
+```
+
+A lawful successor of `C` is not automatically “rejected/stale” merely because `D != C`. Conversely, ancestry alone is not current compatibility proof.
 
 Never blind-retry authority-changing migration publication.
 
@@ -522,7 +543,7 @@ Later realization must decide/implement, without changing these laws unless arch
 - executable migration/update/recovery tests;
 - implementation plan and TDD execution.
 
-WP-20 Steps 2–8 do not authorize those changes.
+WP-20 closure does not authorize those changes.
 
 ---
 
@@ -543,7 +564,7 @@ At minimum, later implementation/testing must cover:
 11. accepted-work interpretation incompatibility blocks migration;
 12. branch ref movement invalidates prepared migration;
 13. rejected publication leaves old authority unchanged;
-14. ambiguous publication uses bounded read-back, not blind retry;
+14. ambiguous publication uses bounded lineage/current-closure read-back, not blind retry or equality-only inference;
 15. reverse/downgrade requires explicit reverse edge and new forward publication;
 16. branch-persistent derived projection rebuild versus local HOT post-publication rebuild;
 17. unrelated canon/stable IDs/history preserved;
@@ -557,8 +578,10 @@ At minimum, later implementation/testing must cover:
 SELECTED_ARCHITECTURE:
   IMMUTABLE EXACT-TARGET PACKAGE-SCOPED COMPATIBILITY EVIDENCE
   + EXPLICIT DIRECTED MIGRATION-EDGE GRAPH
-  + EXISTING CREATOR / STORAGE / LIVE / RECOVERY / CAS OWNERS
+  + EXISTING CREATOR / STORAGE / LIVE / RECOVERY / PUBLICATION OWNERS
 
+WP20_FINAL_SENIOR_REVIEW: PASS
+WP20_CLOSED: YES
 MUTABLE_GLOBAL_MIGRATION_REGISTRY: NO
 VERSION_ORDER_AS_COMPATIBILITY: NO
 GIT_ANCESTRY_AS_RELEASED_COMPATIBILITY: NO

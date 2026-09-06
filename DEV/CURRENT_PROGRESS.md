@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: WHOLE-PROJECT AUDIT REPAIR AUTHORIZED / NOT STARTED — WP-21 HOLD
+GLOBAL_STATE: WHOLE-PROJECT AUDIT REPAIR EXECUTED / VERIFICATION PENDING — WP-21 HOLD
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-20 remains closed after final Senior PASS; a post-WP-20 whole-project integration checkpoint exposed a bounded repair set that must close before WP-21
+CURRENT_SLICE: authorized post-WP-20 repair set R1-R4 is executed; hosted verification and reverse-audit closure remain before mandatory Senior repair review
 
 LAST_CLOSED_UNIT: R2.7 WP-20 — Engine update / schema evolution / migration — FINAL SENIOR REVIEW PASS
-NEXT_ELIGIBLE_UNIT: whole-project audit repair task
-NEXT_AUTHORIZED_UNIT: DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-task.md
-REQUIRED_GATE: complete the authorized bounded repair task, stop at mandatory Senior repair review, and do not start WP-21 before repair PASS
+NEXT_ELIGIBLE_UNIT: whole-project audit repair verification/closure
+NEXT_AUTHORIZED_UNIT: verify the published R1-R4 repair checkpoint, create the bounded repair-closure record, then stop at mandatory Senior repair review
+REQUIRED_GATE: full maintenance audit + full DEV unit suite + exact-head hosted verification + reverse audit of R1-R4; WP-21 remains forbidden
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-task.md
-KNOWN_BLOCKERS: publication exact-source/currentness proof is not yet established for the actual supported host/ref-update realization
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-task.md — verification/closure phase
+KNOWN_BLOCKERS: NONE KNOWN — verification pending
 ```
 
 ---
@@ -32,23 +32,99 @@ Accepted Product Owner authority established during reconciliation:
 
 - `DEV/docs/superpowers/specs/2026-09-06-hdm-creator-login-continuity-owner-decision.md`.
 
+Publication/currentness realization repair:
+
+- `DEV/docs/superpowers/specs/2026-09-06-hdm-publication-currentness-supported-ref-repair-amendment.md`.
+
 Repair roots:
 
 ```text
-R1 publication exact-source/currentness proof          -> BLOCKING
-R2 Product Owner routing closure                       -> SIGNIFICANT
-R3 version census fail-closed completeness             -> SIGNIFICANT
-R4 WP-20 canonical status synchronization              -> MINOR
+R1 publication exact-source/currentness proof          -> REPAIRED / VERIFICATION PENDING
+R2 Product Owner routing closure                       -> REPAIRED / VERIFICATION PENDING
+R3 version census fail-closed completeness             -> REPAIRED / VERIFICATION PENDING
+R4 WP-20 canonical status synchronization              -> REPAIRED / VERIFICATION PENDING
 ```
 
-Creator-login rename continuity is not a repair target. Product Owner policy is fail-closed: automatic rename continuity/stable-ID substitution/silent ownership transfer are not supported.
+Creator-login rename continuity is not a repair target. Product Owner policy remains fixed fail-closed authority: automatic rename continuity/stable-ID substitution/silent ownership transfer are not supported.
 
 ```text
 REPAIR_TASK_AUTHORIZED: YES
-REPAIR_TASK_STARTED: NO
+REPAIR_TASK_STARTED: YES
+REPAIR_TASK_EXECUTED: YES
+REPAIR_TASK_VERIFIED: NO
 WP21_STARTED: NO
-NEXT_GATE: MANDATORY SENIOR REPAIR REVIEW AFTER REPAIR EXECUTION
+NEXT_GATE: COMPLETE VERIFICATION/CLOSURE, THEN MANDATORY SENIOR REPAIR REVIEW
 ```
+
+---
+
+## R1 publication/currentness realization
+
+The supported Git-backed publication proof is now explicit:
+
+```text
+existing authoritative ref at pinned H
+-> prepare one single-parent commit C(parent=H)
+-> update ref -> C with force=false / fast-forward-only semantics
+```
+
+The current Connector ref-update capability does not expose a separate expected-old-ref argument. Exact-source safety is therefore realized by single-parent ancestry plus the non-force monotonic ref invariant already accepted by Step-5.6.
+
+Consequences:
+
+- intervening accepted movement `H -> A` makes stale sibling `C(parent=H)` non-fast-forward and rejectable;
+- further descendants do not make that stale sibling valid;
+- initial ref creation is create-if-absent and cannot overwrite an existing ref;
+- force rewrite, rewind, deletion/recreation or other non-monotonic authority-ref movement is outside the supported automatic publication model and triggers fail-closed integrity/currentness recovery;
+- indeterminate outcomes preserve WP-13 lineage + current-closure epistemics and are not reduced to `current_ref == intended_commit`.
+
+WP-17 and WP-19 require no semantic rewrite: they consume the repaired campaign publication owner. WP-16 logical exact-source LIVE fencing and WP-20 migration publication consume the same supported-ref realization through the repair amendment.
+
+---
+
+## R2 Product Owner routing closure
+
+`DEV/PRODUCT_OWNER_INPUT.md` now projects closed architecture state rather than the stale pre-WP-20 cursor:
+
+```text
+PO-004: INCORPORATED — WP-20 FINAL SENIOR PASS
+PO-005: INCORPORATED — FIXED CREATOR-LOGIN FAIL-CLOSED AUTHORITY
+```
+
+Only genuine future runtime/tool/test realization routes remain deferred behind explicit implementation-planning/execution authorization.
+
+Executable routing consistency guards reject an `ACTIVE`/`PENDING` PO route whose current consumer is a WP marked closed by `DEV/CURRENT_PROGRESS.md`, unless a row explicitly identifies a distinct open route.
+
+---
+
+## R3 version census completeness
+
+The version census no longer has a catch-all `NON_VERSION_SEMANTIC_IDENTIFIER` fallback.
+
+Current policy:
+
+```text
+recognized current/historical/external/test/machine path rule
+OR exact reviewed NON_VERSION_SEMANTIC_IDENTIFIER path/token allowlist
+OR UNCLASSIFIED
+```
+
+An unknown root version-like hit is therefore a reachable fail state. Existing forbidden-legacy guards remain active. Full census result is pending hosted verification for this checkpoint.
+
+---
+
+## R4 WP-20 status synchronization
+
+The WP-20 canonical specification now records:
+
+```text
+FINAL SENIOR REVIEW: PASS
+WP-20: CLOSED
+```
+
+and cites `DEV/docs/superpowers/design/2026-09-06-r2-7-WP-20-final-senior-review.md` as final review provenance.
+
+Its migration ambiguity wording is also reconciled with the existing WP-13 lineage/current-closure owner as part of R1, without reopening compatibility/migration semantics.
 
 ---
 
@@ -97,7 +173,7 @@ Final Senior review:
 
 Upstream product/version authority:
 
-- `DEV/PRODUCT_OWNER_INPUT.md` — PO-004;
+- `DEV/PRODUCT_OWNER_INPUT.md` — PO-004 / PO-005 routing ledger;
 - `DEV/docs/superpowers/specs/2026-09-05-hdm-v1-clean-slate-compatibility-owner-decision.md`;
 - `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md`;
 - `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-machine-realization-status-amendment.md`;
@@ -110,7 +186,7 @@ Upstream product/version authority:
 ```text
 IMMUTABLE EXACT-TARGET PACKAGE-SCOPED COMPATIBILITY EVIDENCE
 + EXPLICIT DIRECTED MIGRATION-EDGE GRAPH
-+ EXISTING CREATOR / STORAGE / LIVE / RECOVERY / CAS OWNERS
++ EXISTING CREATOR / STORAGE / LIVE / RECOVERY / PUBLICATION OWNERS
 ```
 
 Principal laws:
@@ -122,8 +198,8 @@ Principal laws:
 - storage-format/default-baseline evolution is storage-owner authority and separate from creator-owned existing-campaign migration/adoption;
 - campaign migration requires no active LIVE authority and no CLOSED-unabsorbed LIVE state;
 - preserved accepted/resumable work must remain interpretable under frozen causal/ruleset/package/RNG semantics;
-- successful local transformation is only PREPARED; durable success uses the existing one-commit/non-force campaign publication boundary plus required currentness/read-back semantics; the exact host proof for that boundary is the active R1 repair;
-- rejected publication leaves old authority unchanged under the accepted publication/currentness owner;
+- successful local transformation is only PREPARED; durable success uses the existing one-commit/non-force campaign publication boundary plus repaired monotonic-ref/lineage/current-closure semantics;
+- rejected publication leaves current authority unchanged under the accepted publication/currentness owner;
 - reverse/downgrade requires a separate explicit reverse edge and new forward publication; no ref rewind/checkpoint rollback authority;
 - branch-persistent derived projections may rebuild in prepared target transaction; local HOT/runtime caches rebuild only after confirmed authoritative success;
 - unsupported newer contracts fail closed;
@@ -195,13 +271,21 @@ WP20_FINAL_SENIOR_REVIEW: PASS
 WP20_CLOSED: YES
 
 WHOLE_PROJECT_AUDIT_REPAIR_AUTHORIZED: YES
-WHOLE_PROJECT_AUDIT_REPAIR_STARTED: NO
+WHOLE_PROJECT_AUDIT_REPAIR_STARTED: YES
+WHOLE_PROJECT_AUDIT_REPAIR_EXECUTED: YES
 WHOLE_PROJECT_AUDIT_REPAIR_COMPLETE: NO
+WHOLE_PROJECT_AUDIT_REPAIR_VERIFICATION: PENDING
+
+R1_REPAIRED: YES
+R2_REPAIRED: YES
+R3_REPAIRED: YES
+R4_REPAIRED: YES
 
 HUMAN_DECISION_REQUIRED: NO
 NEEDS_PO: NONE
 UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
 VERSIONING_TAXONOMY_REOPENED: NO
+CREATOR_LOGIN_RENAME_CONTINUITY: NOT SUPPORTED / NOT REOPENED
 
 WP21_STARTED: NO
 IMPLEMENTATION_PLANNING_STARTED: NO
@@ -209,7 +293,7 @@ SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RUNTIME_MIGRATION_EXECUTED: NO
 REAL_CAMPAIGN_MIGRATED: NO
 
-NEXT_AUTHORIZED_UNIT: DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-task.md
-KNOWN_BLOCKERS: R1 publication exact-source/currentness proof
-NEXT_GATE: MANDATORY SENIOR REPAIR REVIEW
+NEXT_AUTHORIZED_UNIT: VERIFY R1-R4 REPAIR CHECKPOINT AND CREATE REPAIR-CLOSURE RECORD
+KNOWN_BLOCKERS: NONE KNOWN — VERIFICATION PENDING
+NEXT_GATE: MANDATORY SENIOR REPAIR REVIEW AFTER VERIFIED CLOSURE
 ```

@@ -20,10 +20,30 @@ For multi-file or structural changes, prefer Connector Git-data publication:
 read current ref
 -> create UTF-8 blobs / reuse existing blob+tree SHAs
 -> create tree from verified parent tree
--> create commit with expected parent
+-> create commit with verified parent
 -> non-force update ref
 -> verify ref/tree
 ```
+
+### Current ref-transition capability note
+
+The currently exposed Connector ref-update action accepts a target branch/ref, a new commit SHA and a `force` boolean. It does **not** expose a separate expected-old/current-ref SHA argument.
+
+Therefore a preceding ref read is not an atomic compare-and-swap by itself. For HDM-owned append-only refs, correctness-sensitive publication uses the already-accepted monotonic fence:
+
+```text
+pin H
+-> create intended commit C with parent(C) = H
+-> request ref -> C with force=false
+```
+
+If the ref has advanced from `H` to an intervening accepted descendant/sibling lineage, stale `C(parent=H)` must not be made current by force or history rewrite. A non-fast-forward rejection is a stale/currentness conflict, not authority to retry blindly.
+
+Any observed force rewrite, rewind, deletion/recreation or other non-monotonic authority-ref movement is outside this supported automatic publication model. In that case invalidate prepared work crossing the discontinuity and fail closed into bounded currentness/integrity recovery before another authority-changing attempt.
+
+Initial ref creation is create-if-absent. A racing/existing ref is a creation conflict, never permission to overwrite it.
+
+Canonical gameplay/publication interpretation is owned by `DEV/docs/superpowers/specs/2026-09-06-hdm-publication-currentness-supported-ref-repair-amendment.md`; this development overlay records the current tool capability and does not independently redefine gameplay semantics.
 
 For repository text files, use Connector UTF-8 text interfaces directly. Do not manually Base64-encode/decode Markdown, JSON, YAML, Python, configuration or other semantic text for transport.
 

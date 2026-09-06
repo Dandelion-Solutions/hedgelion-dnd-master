@@ -31,6 +31,10 @@ SUPERSEDED
 
 `INCORPORATED` means current product semantics have an accepted owner and every known route is either incorporated or safely deferred with an explicit future trigger. It does not mean implementation is complete.
 
+### Routing consistency invariant
+
+An agent-owned route marked `ACTIVE` or `PENDING` must not name a work package that `DEV/CURRENT_PROGRESS.md` marks closed as its current pending consumer. A genuinely distinct open route through the same historical WP may remain only when the route row explicitly identifies `DISTINCT OPEN ROUTE` and states the still-open trigger. `DEV/TESTS/test_product_owner_routing_consistency.py` guards this bounded invariant.
+
 ---
 
 ## 2. Active routing index
@@ -40,7 +44,8 @@ SUPERSEDED
 | `PO-001` | REQUIREMENT | INCORPORATED | WP-19 final Senior PASS accepted the ordinary active-player retrospective composition; runtime/test realization remains deferred until R2.7 final reconciliation plus approved implementation planning/execution | accepted gameplay/navigation owner decision; WP-19 canonical spec; ordinary Master history consumer; later runtime/tests | NONE |
 | `PO-002` | REQUIREMENT | INCORPORATED | WP-19 final Senior PASS accepted save-success -> session-local clear -> same-chat campaign-menu composition; runtime/test realization remains deferred until R2.7 final reconciliation plus approved implementation planning/execution | accepted gameplay/navigation owner decision; WP-19 canonical spec; save/session/menu/live consumers; later runtime/tests | NONE |
 | `PO-003` | REQUIREMENT | INCORPORATED | WP-19 final Senior PASS accepted the bounded SemanticEvent historical-decision-basis composition and mandatory zero-extra-serial performance law; physical schema/runtime/test realization remains deferred until R2.7 final reconciliation plus approved implementation planning/execution | historical Actor decision-basis owner decision; WP-19 canonical spec; Step-4 LOG/SemanticEvent extension; R2.2/world.knowledge boundaries; retrospective/performance consumers | NONE |
-| `PO-004` | COMPATIBILITY POLICY | PARTIALLY_INCORPORATED | Product semantics are formalized; WP-20 Step 1 is the active pending consumer and must frame compatibility from the released v1.0 baseline rather than obsolete pre-release state | v1 clean-slate compatibility owner decision; WP-20; engine/runtime/schema migration/update/release/test consumers | NONE |
+| `PO-004` | COMPATIBILITY POLICY | INCORPORATED | WP-20 final Senior PASS accepted the released-v1.0+ clean-slate compatibility horizon; only downstream implementation/test realization remains deferred behind its future explicit authorization gate | v1 clean-slate compatibility owner decision; final WP-20 canonical spec; later engine/runtime/schema migration/update/release tests | NONE |
+| `PO-005` | AUTHORITY / SECURITY POLICY | INCORPORATED | creator-login continuity policy is fixed fail-closed authority; no current architecture reopen; downstream runtime/test realization must preserve it when implementation is explicitly authorized | creator-login continuity owner decision; access/bootstrap/migration/recovery consumers; later runtime/tests | NONE |
 
 ---
 
@@ -241,7 +246,7 @@ Those recovery records remain historical provenance; the current architecture re
 
 Date: 2026-09-05  
 Kind: COMPATIBILITY POLICY  
-Status: PARTIALLY_INCORPORATED
+Status: INCORPORATED
 
 ### PO input — VERBATIM / IMMUTABLE
 
@@ -257,7 +262,7 @@ PRE-RELEASE COMPATIBILITY OBLIGATION: NONE
 V0.8 -> V1.0 MIGRATION OBLIGATION: NONE
 PRE-RELEASE STRUCTURAL FREEZE: NONE
 PRE-RELEASE SCHEMA/MODEL/INSTRUCTION PRESERVATION: NOT REQUIRED
-CURRENT WP-20 CONSUMER: YES
+CURRENT WP-20 CONSUMER: CLOSED / INCORPORATED
 ```
 
 ### Current routing
@@ -265,17 +270,63 @@ CURRENT WP-20 CONSUMER: YES
 | Route | State | Trigger / obligation | Current evidence / owner |
 |---|---|---|---|
 | Product semantics | INCORPORATED | complete | `DEV/docs/superpowers/specs/2026-09-05-hdm-v1-clean-slate-compatibility-owner-decision.md` |
-| WP-20 Step-1 framing | ACTIVE / PENDING | must be included in Source Manifest, Architecture Task Brief and mandatory Task-Brief critic | R2.7 WP-20 — engine update / schema evolution / migration |
+| WP-20 architecture | INCORPORATED / FINAL SENIOR PASS | WP-20 closed | `DEV/docs/superpowers/specs/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-canonical-spec.md` + `DEV/docs/superpowers/design/2026-09-06-r2-7-WP-20-final-senior-review.md` |
 | Pre-release `0.8 -> 1.0` migration | NOT APPLICABLE BY OWNER DECISION | no compatibility layer/migrator required solely for pre-release state | owner decision above |
 | Pre-release structures/models/instructions | NO COMPATIBILITY FREEZE | may be replaced when current accepted architecture requires it | current owners + WP-20 reverse audit |
-| Released v1.0+ compatibility/update/migration policy | ROUTED / CURRENT WP-20 | define future released-campaign behavior without importing pre-release baggage | WP-20 |
-| Runtime/schema/tool/test realization | DEFERRED | after complete R2.7 final reconciliation + approved implementation planning/execution | later implementation consumers |
+| Released v1.0+ compatibility/update/migration policy | INCORPORATED | final WP-20 architecture accepted | WP-20 canonical spec |
+| Runtime/schema/tool/test realization | DEFERRED | when the owning implementation-planning/execution gate is explicitly authorized; not active during the current whole-project repair/WP-21 hold | later implementation consumers |
 
 ### Current impact
 
-PO-004 narrows WP-20 materially. The architecture must begin its compatibility horizon at the released v1.0 baseline. It must not create migration or compatibility machinery merely to preserve obsolete v0.8/pre-release scaffolds.
+PO-004 is fully incorporated at the architecture level. Final Senior review passed WP-20 with the compatibility horizon beginning at released v1.0+, with no v0.8/pre-release compatibility or migration obligation.
 
-WP-20 still owns future released-campaign engine/ruleset/schema evolution from v1.0 onward, including explicit compatibility, safe migration/update failure behavior, recovery and release/test consequences.
+The only remaining route is downstream realization under a future explicit implementation-planning/execution gate. That deferred route does not make WP-20 a current pending consumer and does not reopen the Product Owner decision.
+
+Product Owner decision still required: `NONE`.
+
+---
+
+## PO-005 — Creator-login continuity and takeover prevention
+
+Date: 2026-09-06  
+Kind: AUTHORITY / SECURITY POLICY  
+Status: INCORPORATED
+
+Accepted owner decision:
+- `DEV/docs/superpowers/specs/2026-09-06-hdm-creator-login-continuity-owner-decision.md`.
+
+### Product Owner input — VERBATIM / IMMUTABLE
+
+```text
+Переименование GH юзера мы не будем поддерживать. Тут 2 риска: кража сессии игры под видом "я переименовал пользователя" с одной стороны и получение R/O игры с другой стороны. Я выбираю второе! в крайнем случае, если это действительно хозяин репозитория - он может вручную создать копию этой ветки со всей историей и тогда владелец новой ветки-сессии будет новый юзер. Игра тут стоит на своём и ничего менять не будет. Правила есть правила.
+```
+
+### Agent interpretation / classification
+
+```text
+PRODUCT / AUTHORITY / SECURITY POLICY
+AUTOMATIC LOGIN-RENAME CONTINUITY: NOT SUPPORTED
+UNRESOLVABLE CREATOR LOGIN: FAIL CLOSED
+READ-ONLY CONSEQUENCE: ACCEPTED
+STABLE-ID SUBSTITUTION FOR CREATOR AUTHORITY: FORBIDDEN
+SILENT OWNER TRANSFER: FORBIDDEN
+AUTOMATIC RECOVERY CLAIM: NONE
+CURRENT ARCHITECTURE REOPEN: NO
+```
+
+### Current routing
+
+| Route | State | Trigger / obligation | Current evidence / owner |
+|---|---|---|---|
+| Product semantics | INCORPORATED | complete / fixed authority | `DEV/docs/superpowers/specs/2026-09-06-hdm-creator-login-continuity-owner-decision.md` |
+| Access/bootstrap/migration/recovery architecture | INCORPORATED / BINDING INPUT | current owners must preserve fail-closed creator provenance; no rename substitution | current access/bootstrap/WP-20/recovery owners + accepted decision |
+| Runtime/tool/test realization | DEFERRED | only when the owning implementation-planning/execution gate is explicitly authorized | prove unresolvable creator login blocks creator-only writes while read-only remains available and stable PLAYER ID/repository permission do not transfer creator authority |
+
+### Current impact
+
+This decision is fixed authority for the current whole-project repair. The repair does not reopen creator identity semantics and does not add automatic rename continuity, stable-ID creator substitution or silent authority transfer.
+
+Manual repository-owner recovery/copy remains outside HDM's automatic creator-continuity guarantee exactly as stated by the accepted owner decision.
 
 Product Owner decision still required: `NONE`.
 
@@ -283,11 +334,14 @@ Product Owner decision still required: `NONE`.
 
 ## 4. Current ledger terminal state
 
+This is a routing-ledger projection only; `DEV/CURRENT_PROGRESS.md` remains the sole global cursor authority.
+
 ```text
 PO-001: INCORPORATED
 PO-002: INCORPORATED
 PO-003: INCORPORATED
-PO-004: PARTIALLY_INCORPORATED — WP-20 STEP-1 CONSUMER ACTIVE/PENDING
+PO-004: INCORPORATED — WP-20 FINAL SENIOR PASS / NO CURRENT PENDING WP-20 ROUTE
+PO-005: INCORPORATED — FIXED CREATOR-LOGIN FAIL-CLOSED AUTHORITY
 
 HUMAN_DECISION_REQUIRED: NO
 NEEDS_PO: NONE
@@ -295,13 +349,14 @@ UPSTREAM_REOPEN_REQUIRED: NO
 ARCHITECTURE_REOPENED: NO
 
 WP19_FINAL_SENIOR_REVIEW: PASS
-WP19_CLOSURE: AUTHORIZED
-WP20_STEP1_AUTHORIZED: YES
-WP20_STARTED: NO
+WP20_FINAL_SENIOR_REVIEW: PASS
+WP20_CLOSED: YES
+WHOLE_PROJECT_AUDIT_REPAIR: EXECUTION / VERIFICATION IN PROGRESS
+WP21_STARTED: NO
 
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-The next architecture unit is WP-20 Step 1. PO-004 is mandatory input to its framing. Implementation realization remains deferred until the complete R2.7 architecture sequence and final reconciliation permit implementation planning.
+No Product Owner route currently authorizes WP-21 or implementation. The current whole-project repair and its mandatory Senior repair review remain governed by `DEV/CURRENT_PROGRESS.md`.

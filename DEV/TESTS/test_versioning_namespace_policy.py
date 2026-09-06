@@ -52,13 +52,31 @@ HISTORICAL_DOC_PREFIXES = (
     "DEV/docs/superpowers/plans/",
 )
 EXTERNAL_PATHS = {
-    ".github/workflows/release-runtime.yml",
-    ".github/workflows/validate.yml",
+    ".gitignore",
+    "LICENSE",
+    "NOTICE",
+    "THIRD_PARTY_NOTICES.md",
+    "CLAUDE.md",
+    "opencode.json",
+    "pyproject.toml",
+    "requirements.txt",
+    "requirements-dev.txt",
 }
+EXTERNAL_PATH_PREFIXES = (
+    ".github/",
+    "LICENSES/",
+)
 INTENTIONAL_NEGATIVE_GUARDS = {
     ("GAME/TOOLS/ruleset_package.py", "package_version"),
     ("GAME/TOOLS/ruleset_package.py", "compatibility_id"),
     ("DEV/TOOLS/audit_engine.py", "storage_format_version"),
+}
+
+# NON_VERSION_SEMANTIC_IDENTIFIER is never a catch-all. Every such disposition
+# must be an exact reviewed path/token pair. The synthetic fixture proves that
+# the allowlist mechanism is reachable without exempting any current repo hit.
+NON_VERSION_SEMANTIC_ALLOWLIST = {
+    ("__policy_fixture__/semantic-label.txt", "v1"),
 }
 
 
@@ -88,18 +106,24 @@ def _is_intentional_negative_guard(rel: str, token: str, text: str) -> bool:
     return False
 
 
-def _classify(rel: str, text: str, start: int, end: int) -> str:
+def _is_non_version_semantic_identifier(rel: str, token: str) -> bool:
+    return (rel, token) in NON_VERSION_SEMANTIC_ALLOWLIST
+
+
+def _classify(rel: str, text: str, start: int, end: int) -> str | None:
     context = text[max(0, start - 100): min(len(text), end + 100)].lower()
     token = text[start:end]
     if _is_intentional_negative_guard(rel, token, text):
         return "INTENTIONAL_NEGATIVE_GUARD"
+    if _is_non_version_semantic_identifier(rel, token):
+        return "NON_VERSION_SEMANTIC_IDENTIFIER"
     if rel.startswith(HISTORICAL_DOC_PREFIXES):
         return "HISTORICAL_PROVENANCE"
     if rel.startswith("DEV/TESTS/"):
         if any(word in context for word in ("legacy", "invalid", "reject", "negative", "stale", "wrong", "old_")):
             return "INTENTIONAL_NEGATIVE_FIXTURE"
         return "CURRENT_TEST_OR_FIXTURE"
-    if rel in EXTERNAL_PATHS or rel in {"pyproject.toml", "requirements.txt", "requirements-dev.txt"}:
+    if rel in EXTERNAL_PATHS or rel.startswith(EXTERNAL_PATH_PREFIXES):
         return "EXTERNAL_VERSION_NAMESPACE"
     if rel.startswith(("DEV/CATALOG/", "DEV/SCHEMAS/", "DEV/TOOLS/")) or rel in {
         "DEV/ENGINE_DEVELOPMENT.yaml",
@@ -114,7 +138,7 @@ def _classify(rel: str, text: str, start: int, end: int) -> str:
         return "CURRENT_NORMATIVE_DOCUMENTATION"
     if rel.startswith("DEV/"):
         return "CURRENT_NORMATIVE_DOCUMENTATION"
-    return "NON_VERSION_SEMANTIC_IDENTIFIER"
+    return None
 
 
 def path_is_machine(rel: str) -> bool:
@@ -141,9 +165,35 @@ def census():
 
 
 class VersionNamespacePolicyTests(unittest.TestCase):
+    def test_unclassified_is_reachable_for_unknown_version_like_hit(self):
+        text = "schema_version: 77"
+        match = SEARCH_RE.search(text)
+        self.assertIsNotNone(match)
+        assert match is not None
+        self.assertIsNone(_classify("UNEXPECTED_ROOT_FILE.md", text, match.start(), match.end()))
+
+    def test_non_version_semantic_identifier_requires_exact_allowlist(self):
+        text = "v1"
+        match = SEARCH_RE.search(text)
+        self.assertIsNotNone(match)
+        assert match is not None
+        self.assertEqual(
+            _classify(
+                "__policy_fixture__/semantic-label.txt",
+                text,
+                match.start(),
+                match.end(),
+            ),
+            "NON_VERSION_SEMANTIC_IDENTIFIER",
+        )
+        self.assertIsNone(
+            _classify("__policy_fixture__/other.txt", text, match.start(), match.end())
+        )
+
     def test_census_has_zero_unclassified_hits(self):
         counts, examples, unclassified = census()
         print("VERSION_CENSUS=" + json.dumps({"counts": counts, "examples": examples}, sort_keys=True))
+        print("VERSION_UNCLASSIFIED=" + json.dumps(unclassified, ensure_ascii=False))
         self.assertEqual(unclassified, [])
 
     def test_release_manifests_project_campaign_contract_generation(self):
