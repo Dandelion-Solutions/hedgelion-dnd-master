@@ -1,6 +1,6 @@
 # Persistence Transport and Transaction Discipline
 
-framework_module_version: 0.2.1
+framework_module_version: 1.0.2
 load_when: a campaign/live/storage publication boundary has already been decided, explicit save transport, checkpoint publication, campaign migration
 precedence: authoritative for HOW GitHub writes are sequenced; it does not create ordinary gameplay save boundaries
 
@@ -24,6 +24,16 @@ Use this even for one dirty campaign file. Do not mix `create_file`, `update_fil
 
 ### STORAGE_METADATA_SINGLE — storage default branch
 Rare root storage metadata maintenance may use Contents API. It is a separate transaction from campaign publication.
+
+## Branch/ref deletion prohibition
+
+Branch/ref deletion is not an HDM transport profile or maintenance capability.
+
+Never invoke a branch/ref-delete operation, command, endpoint, tool or wrapper under any condition, including cleanup, repair, migration, absorbed live-state retirement, orphan handling, storage pressure or repository-owner operations performed through HDM.
+
+A branch/ref that is no longer authoritative remains a non-authoritative transport artifact. Its continued physical existence does not restore authority; routing/currentness owners decide authority. If a ref is found missing because of out-of-band human/repository administration or another external condition, observe and handle that state through the existing integrity/recovery contracts. Do not attribute the deletion to HDM, do not recreate old authority from a stale cached branch name, and do not attempt a compensating delete elsewhere.
+
+This prohibition is distinct from semantic file/path deletion inside a validated campaign-tree transaction. A campaign record/path may still be retired when its native cleanup contract permits it; host-managed reclamation of unreachable Git objects also remains outside HDM runtime control.
 
 ## Text payload transport discipline
 

@@ -211,7 +211,17 @@ A remote branch may be created only when the repository owner has explicitly req
 
 Before any remote branch-creation action, the agent must state the exact intended branch name and base ref and obtain explicit owner approval. A general request to modify files, continue development, work on the current branch, or inspect repository state is not branch-creation approval.
 
-If the connected GitHub interface does not expose remote ref deletion, branch creation must be treated as effectively irreversible for the session. This makes branch creation an especially high-risk write and never an acceptable experiment or discovery operation.
+Branch creation is effectively irreversible for HDM automation because branch/ref deletion is prohibited by policy, independent of tool availability. This makes branch creation an especially high-risk write and never an acceptable experiment or discovery operation.
+
+### Absolute branch/ref deletion prohibition
+
+Branch/ref deletion is **prohibited absolutely** for all HDM development agents and automation.
+
+Never invoke a branch/ref-delete command, API, Connector action, native Git operation, script, wrapper or equivalent capability. This prohibition applies to cleanup, testing, migration, repair, stale/orphan refs, absorbed live refs, repository maintenance and every other HDM-controlled operation, regardless of repository permissions or technical tool availability.
+
+A later task instruction, write authorization, branch ownership or repository Admin/Write permission does not override this prohibition. Only a later explicit Product Owner policy decision that supersedes `DEV/docs/superpowers/specs/2026-09-06-hdm-branch-ref-deletion-prohibition-owner-decision.md` may change it.
+
+Use routing/currentness to make a branch non-authoritative; leave the ref physically present. Out-of-band human repository administration is outside HDM automation.
 
 Use read-only operations for branch/ref discovery and verification, including branch search, current-file reads on a named ref, commit/ref comparison, and other Connector read surfaces. A create/write operation must never be used to answer a read-only question.
 

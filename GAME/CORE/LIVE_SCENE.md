@@ -1,6 +1,6 @@
 # Multiplayer Live Scene Runtime
 
-framework_module_version: 0.1.2
+framework_module_version: 1.0.3
 load_when: multiplayer scene has an active live epoch OR PCs controlled by different bound players share one actionable scene
 
 ## Purpose
@@ -45,6 +45,14 @@ The only runtime-mutated file on a live branch is:
 
 Do not edit normal campaign entity files directly on the live branch. This one-file discipline is what makes live synchronization cheap.
 
+## Retained live-branch policy
+
+Never delete a live branch/ref. HDM has no branch/ref-delete operation, including for closed, absorbed, orphaned, stale or otherwise non-authoritative live epochs.
+
+Authority ends through the durable scene routing/currentness contract. Once a live branch is no longer selected as current authority, it may remain physically present indefinitely as a non-authoritative transport artifact. Its existence does not restore authority and must not be used as a reason to adopt an old epoch.
+
+If a previously known live ref is missing because of out-of-band human/repository administration or another external condition, follow the normal integrity/recovery rules. Do not attempt a compensating deletion and do not recreate old authority from a cached branch name.
+
 ## Opening an epoch
 
 Opening is a boundary operation and may use several GitHub calls; do not repeat it per turn.
@@ -59,7 +67,7 @@ Opening is a boundary operation and may use several GitHub calls; do not repeat 
 
 Concurrent attempts to open the same scene from the same base should converge on the same branch identity. If another session wins creation/publication, fetch and adopt its valid live state rather than creating a parallel epoch.
 
-A branch created before the durable scene pointer is successfully published is an orphan and is not authoritative. It may be cleaned up later.
+A branch created before the durable scene pointer is successfully published is an orphan and is not authoritative. Retain it as a non-authoritative transport artifact; never delete the branch/ref.
 
 ## Live state contents
 
@@ -207,7 +215,7 @@ Compaction protocol:
 7. if overlapping, fetch only the affected durable records and perform semantic reconciliation; never blind-merge;
 8. publish one coherent campaign persistence batch containing the durable scene/entity/event/knowledge results, clear the old scene live pointer, and set `last_absorbed_live_head_sha: L`;
 9. use a human-readable commit message such as `live: compact <scene_id> <epoch_id>` or, when the shared scene will continue, `live: rollover <scene_id> <epoch_id>`. The message is audit/help text only; runtime correctness must never depend on parsing it;
-10. after the campaign batch succeeds, the old live branch is non-authoritative and may be deleted/cleaned up when ref deletion is available;
+10. after the campaign batch succeeds, the old live branch is non-authoritative and remains retained as a transport artifact; never delete the branch/ref;
 11. if differently controlled PCs still share the actionable scene, immediately use the normal opening protocol from the new campaign HEAD to create/adopt a fresh live epoch. This is a technical rollover, not a fictional scene transition.
 
 The Master performing rollover keeps its safe local conversational/working context while replacing the authoritative shared-state snapshot with the newly compacted campaign base and successor live state.
@@ -230,16 +238,16 @@ The next relevant player message is a natural retry point; no autonomous timer o
 
 `last_absorbed_live_head_sha` prevents duplicate compaction.
 
-If a retry sees that the exact final closed live HEAD has already been absorbed into the durable scene, do not apply its deltas again; only finish routing/cleanup or open/adopt the successor epoch when required.
+If a retry sees that the exact final closed live HEAD has already been absorbed into the durable scene, do not apply its deltas again; only finish routing or open/adopt the successor epoch when required. Never delete the old branch/ref.
 
 Recovery cases:
 - durable scene points to an active live branch: resume from that branch;
 - durable scene still points to a closed live branch whose final HEAD is not absorbed: compaction is pending; do not resume ordinary gameplay in that epoch;
-- durable scene records the closed final HEAD as absorbed: the old branch is non-authoritative; adopt/open successor only if the shared scene still requires live mode;
+- durable scene records the closed final HEAD as absorbed: the old branch is non-authoritative and retained; adopt/open successor only if the shared scene still requires live mode;
 - durable scene points to a missing/invalid live branch or invalid live state: raise `CANON_SUSPECT` and use `INTEGRITY.md`;
-- live branch exists but no durable scene points to it: it is not authoritative; if its head equals `last_absorbed_live_head_sha`, it is a harmless post-compaction leftover; otherwise treat it as an orphan pending cleanup, not as gameplay truth.
+- live branch exists but no durable scene points to it: it is not authoritative; if its head equals `last_absorbed_live_head_sha`, it is a harmless retained post-compaction ref; otherwise treat it as a retained orphan/non-authoritative ref, not as gameplay truth.
 
-Never force-push a live or campaign branch to repair concurrency.
+Never force-push a live or campaign branch to repair concurrency. Never delete a live branch/ref.
 
 ## Performance invariants
 

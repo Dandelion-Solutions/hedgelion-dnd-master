@@ -86,6 +86,17 @@ campaign_contract:
 
 Historical legacy nested campaign layouts могут существовать только по совместимым legacy rules. Их наличие не меняет current-layout creation law.
 
+## Branch/ref deletion policy
+
+HDM automation никогда не удаляет Git branches/refs. Это абсолютная owner-approved policy из `DEV/docs/superpowers/specs/2026-09-06-hdm-branch-ref-deletion-prohibition-owner-decision.md`.
+
+- campaign/live/development branch после создания может физически существовать неограниченно долго;
+- окончание authority определяется native routing/currentness/lifecycle owner, а не удалением ref;
+- absorbed/orphan/stale live refs остаются non-authoritative transport artifacts;
+- никакой HDM development/runtime agent не вызывает delete-branch/delete-ref capability независимо от permissions или доступности API/tool;
+- отсутствие ref из-за внешнего human/repository administration обрабатывается как наблюдаемое external state, но не как разрешение HDM удалять или восстанавливать старую authority;
+- semantic delete campaign file/path внутри валидной campaign-tree transaction остаётся отдельной операцией и этим запретом не отменяется.
+
 ## Campaign creator и gameplay authority
 
 Campaign creator = `author.login` первого campaign-specific initialization commit.
