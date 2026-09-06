@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: WHOLE-PROJECT AUDIT REPAIR COMPLETE — MANDATORY SENIOR REPAIR REVIEW PENDING — WP-21 HOLD
+GLOBAL_STATE: R2.7 WP-21 STEP 1 AUTHORIZED — TASK BRIEF / WHOLE-PROJECT CRITIC NOT YET PUBLISHED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: post-WP-20 whole-project audit repair R1-R4 is executed, verified and closed by repair record; no later work is authorized before independent Senior repair review
+CURRENT_SLICE: WP-21 — Diagnostics, observability, cleanup and retirement — Step 1 framing authorized only
 
-LAST_CLOSED_UNIT: R2.7 WP-20 — Engine update / schema evolution / migration — FINAL SENIOR REVIEW PASS
-NEXT_ELIGIBLE_UNIT: mandatory Senior repair review
-NEXT_AUTHORIZED_UNIT: NONE — independent Senior repair review must PASS/GO before any later continuation
-REQUIRED_GATE: mandatory Senior repair review of the complete R1-R4 repair closure; WP-21 remains forbidden until that gate passes and later work is explicitly authorized
+LAST_CLOSED_UNIT: post-WP-20 whole-project audit repair R1-R4 — FINAL SENIOR REVIEW PASS
+NEXT_ELIGIBLE_UNIT: R2.7 WP-21 Step 1
+NEXT_AUTHORIZED_UNIT: WP-21 Step 1 Task Brief + Source Manifest + whole-project critic only
+REQUIRED_GATE: mandatory Senior review of the completed WP-21 Step-1 package before Step 2; WP-22 and implementation planning remain forbidden
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-closure.md
-KNOWN_BLOCKERS: NONE — mandatory Senior repair review pending
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-senior-review.md
+KNOWN_BLOCKERS: NONE
 ```
 
 ---
@@ -32,6 +32,10 @@ Repair closure record:
 
 - `DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-closure.md`.
 
+Final independent Senior review:
+
+- `DEV/docs/superpowers/design/2026-09-06-whole-project-audit-repair-senior-review.md` — PASS.
+
 Fixed Product Owner authority:
 
 - `DEV/docs/superpowers/specs/2026-09-06-hdm-creator-login-continuity-owner-decision.md`.
@@ -43,10 +47,10 @@ Publication/currentness realization repair:
 Repair dispositions:
 
 ```text
-R1_PUBLICATION_CURRENTNESS_PROOF: CLOSED
-R2_PO_ROUTING_CLOSURE: CLOSED
-R3_VERSION_CENSUS_FAIL_CLOSED: CLOSED
-R4_WP20_STATUS_SYNC: CLOSED
+R1_PUBLICATION_CURRENTNESS_PROOF: CLOSED / SENIOR PASS
+R2_PO_ROUTING_CLOSURE: CLOSED / SENIOR PASS
+R3_VERSION_CENSUS_FAIL_CLOSED: CLOSED / SENIOR PASS
+R4_WP20_STATUS_SYNC: CLOSED / SENIOR PASS
 
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
@@ -69,7 +73,7 @@ PRODUCT_OWNER_REOPEN: NO
 
 ## R1 publication/currentness result
 
-The supported Git-backed publication proof is now explicit:
+The supported Git-backed publication proof is explicit:
 
 ```text
 existing authoritative ref at pinned H
@@ -93,22 +97,23 @@ WP-17 and WP-19 consume the repaired campaign publication owner without semantic
 
 ## R2 Product Owner routing result
 
-`DEV/PRODUCT_OWNER_INPUT.md` now projects current closed architecture state:
+`DEV/PRODUCT_OWNER_INPUT.md` projects current closed architecture state and no longer projects the already-complete whole-project repair as still in progress.
 
 ```text
 PO-004: INCORPORATED — WP-20 FINAL SENIOR PASS
 PO-005: INCORPORATED — FIXED CREATOR-LOGIN FAIL-CLOSED AUTHORITY
+WHOLE_PROJECT_AUDIT_REPAIR: COMPLETE
 ```
 
 Only genuine future runtime/tool/test realization routes remain deferred behind explicit later implementation authorization.
 
-`DEV/TESTS/test_product_owner_routing_consistency.py` rejects an `ACTIVE`/`PENDING` Product Owner route naming a WP already marked closed here unless the row explicitly identifies a distinct open route.
+`DEV/TESTS/test_product_owner_routing_consistency.py` rejects an `ACTIVE`/`PENDING` Product Owner route naming a WP already marked closed here unless the row explicitly identifies a distinct open route, and rejects projection of a completed repair as still in progress.
 
 ---
 
 ## R3 version census result
 
-The version census no longer has a blanket `NON_VERSION_SEMANTIC_IDENTIFIER` fallback.
+The version census has no blanket `NON_VERSION_SEMANTIC_IDENTIFIER` fallback.
 
 Current classification law:
 
@@ -118,17 +123,13 @@ OR exact reviewed NON_VERSION_SEMANTIC_IDENTIFIER allowlist entry
 OR UNCLASSIFIED / test failure
 ```
 
-The fail-closed classifier is executable, an unknown root version-like hit reaches `UNCLASSIFIED`, the explicit non-version allowlist is exact, independent forbidden-legacy checks remain active, and the full hosted DEV unit suite passed with current unclassified hit set:
-
-```text
-[]
-```
+The fail-closed classifier is executable, an unknown root version-like hit reaches `UNCLASSIFIED`, the explicit non-version allowlist is exact, independent forbidden-legacy checks remain active, and the hosted DEV unit suite passes with no current unclassified hit.
 
 ---
 
 ## R4 WP-20 status result
 
-The WP-20 canonical specification now records the already-established final state:
+The WP-20 canonical specification records the already-established final state:
 
 ```text
 WP20_FINAL_SENIOR_REVIEW: PASS
@@ -145,7 +146,7 @@ R4 is metadata/status synchronization. The R1 publication/currentness reconcilia
 
 ## Verification and Version Impact
 
-Repair-bearing checkpoint verified before closure publication:
+Repair-bearing checkpoint before closure publication:
 
 ```text
 HEAD: 68f186f86dc3154312d4f08f77b4e594fee56708
@@ -157,9 +158,19 @@ MAINTENANCE_AUDIT: PASS
 DEV_UNIT_SUITE: PASS
 ```
 
-The closure/status publication itself must receive fresh hosted verification at its exact final public HEAD; that external delivery evidence is intentionally not self-embedded through another status-only commit.
+Exact final Senior repair-review basis after the narrow R2 status recovery:
 
-Version Impact Gate for the complete repair delta:
+```text
+HEAD: d1434f039da2fc09f5ad66dcdc16b2a2b0bfcb7d
+WORKFLOW: Validate engine source
+RUN_ID: 34047259929
+RUN_NUMBER: 1801
+CONCLUSION: SUCCESS
+MAINTENANCE_AUDIT: PASS
+DEV_UNIT_SUITE: PASS
+```
+
+Version Impact Gate for the repair and its status-only final recovery:
 
 ```text
 VERSION_IMPACT: VERIFIED
@@ -168,13 +179,13 @@ VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-No `GAME/CORE` module, runtime persistent/protocol schema, engine release identity, campaign/storage/catalog generation, ruleset package/compatibility identity or existing development revision owner changed semantic contract as part of R1-R4.
+No `GAME/CORE` module, runtime persistent/protocol schema, engine release identity, campaign/storage/catalog generation, ruleset package/compatibility identity or existing development revision owner changed semantic contract as part of R1-R4 or its final status correction.
 
 ---
 
 ## WP-20 state
 
-WP-20 remains closed and was not wholesale reopened by the post-WP-20 repair.
+WP-20 is closed and was not wholesale reopened by the post-WP-20 repair.
 
 Compatibility horizon remains:
 
@@ -202,6 +213,22 @@ Final Senior review:
 
 ---
 
+## WP-21 state
+
+WP-21 domain:
+
+```text
+Diagnostics, observability, cleanup and retirement
+```
+
+Only Step 1 is authorized. The Step-1 package must reconstruct the whole-project dependency subgraph, build its Source Manifest, frame exact scope/non-goals and run the mandatory whole-project critic. It must not begin Step 2 before Senior review.
+
+WP-21 must consume current owners rather than reopening closed cleanup/retention/diagnostic architecture merely because it overlaps the domain. Any new Product Owner input whose routes intersect this domain must be captured and incorporated into the Step-1 evidence basis before the package claims completeness.
+
+WP-22, implementation planning and substantive implementation remain unauthorized.
+
+---
+
 ## Current authorization
 
 ```text
@@ -213,6 +240,7 @@ WHOLE_PROJECT_AUDIT_REPAIR_STARTED: YES
 WHOLE_PROJECT_AUDIT_REPAIR_EXECUTED: YES
 WHOLE_PROJECT_AUDIT_REPAIR_COMPLETE: YES
 WHOLE_PROJECT_AUDIT_REPAIR_VERIFICATION: PASS
+WHOLE_PROJECT_AUDIT_REPAIR_SENIOR_REVIEW: PASS
 
 R1_REPAIRED: YES
 R2_REPAIRED: YES
@@ -225,14 +253,18 @@ UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
 VERSIONING_TAXONOMY_REOPENED: NO
 CREATOR_LOGIN_RENAME_CONTINUITY: NOT SUPPORTED / NOT REOPENED
 
-WP21_STARTED: NO
+WP21_STARTED: YES
+WP21_STEP1_AUTHORIZED: YES
+WP21_STEP1_PACKAGE_PUBLISHED: NO
+WP21_STEP2_AUTHORIZED: NO
+WP22_STARTED: NO
+
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RUNTIME_MIGRATION_EXECUTED: NO
 REAL_CAMPAIGN_MIGRATED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
-NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY SENIOR REPAIR REVIEW
-WP21_AUTHORIZED: NO
+NEXT_AUTHORIZED_UNIT: WP-21 STEP 1 TASK BRIEF + SOURCE MANIFEST + WHOLE-PROJECT CRITIC ONLY
+NEXT_GATE: MANDATORY SENIOR WP-21 STEP-1 REVIEW
 ```
