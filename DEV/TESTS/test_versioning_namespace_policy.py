@@ -181,7 +181,7 @@ class VersionNamespacePolicyTests(unittest.TestCase):
             "CHARACTER_READINESS.md": "1.0.3",
             "DIEGETIC_ONBOARDING.md": "1.0.2",
             "DURABILITY_GUARD.md": "1.0.1",
-            "ENGINE_UPDATES.md": "1.0.3",
+            "ENGINE_UPDATES.md": "1.0.4",
         }
         actual = {}
         for name in expected:
