@@ -33,23 +33,21 @@ field and existing useful values may be migrated.
 The universal definition/world envelopes and canonical class-admission rule are
 owned by `ARCHITECTURE/CATALOG_CONTRACTS.md`.
 
-## 2. Research basis and exclusions
+## 2. HDM model boundary and exclusions
 
-The structures were compared with:
+HDM admits domain fields only when they represent rules-bearing state,
+persistent fiction, authority/currentness, or another accepted engine
+requirement. Presentation, sheet/UI, token, icon, ownership-display and derived
+roll-display concerns do not become persistent entity authority merely because
+a host or tool can represent them.
 
-- D&D SRD 5.2.1 rules terminology and stat blocks;
-- Foundry D&D5e actor, item, activity, resource, effect, and encounter data
-  models;
-- Avrae character/combat/initiative capabilities.
-
-HDM adopts domain fields that represent game rules or persistent fiction. It
-does not copy VTT presentation, token, sheet, icon, ownership-UI, or derived
-roll-display fields. D&D has no standard storage model for organizations,
-contracts, missions, lore, and abstract chronology; those structures are derived
-from HDM requirements. Literary narrative records and Chapter grouping are not
-world state: they belong to non-canonical `STORY/NARRATIVE` and its index under
-the canonical Step-4 Story contract. Chronology ordering values/frontiers are
-not promoted to a standalone world-record owner merely for bookkeeping.
+Structures without a native game-system storage form — organizations,
+contracts, missions, lore, chronology and other HDM concerns — are derived from
+HDM ownership requirements rather than imported document hierarchies. Literary
+narrative records and Chapter grouping are not world state: they belong to the
+non-canonical `STORY/NARRATIVE` projection and its index under the canonical
+Step-4 Story contract. Chronology ordering values/frontiers are not promoted to
+a standalone world-record owner merely for bookkeeping.
 
 ## 3. Definition kinds
 
