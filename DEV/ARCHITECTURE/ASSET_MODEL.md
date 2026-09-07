@@ -31,22 +31,17 @@ Facets classify an asset but never execute mechanics. Damage, healing, checks,
 activation, transfer, resource spending, effects, and transformations are
 performed through Activities and registered runtime operations.
 
-### 1.1 Research basis
+### 1.1 HDM model boundary
 
-The model was checked against:
+The model is defined by the accepted HDM catalog, entity, Activity, Resource,
+Effect and ruleset contracts. It retains only rules-bearing distinctions and
+persistent-fiction state needed by those contracts; presentation, sheet/UI,
+compendium and product-specific document hierarchies are outside this owner.
 
-- [D&D SRD 5.2.1](https://media.dndbeyond.com/compendium-images/srd/5.2/SRD_CC_v5.2.1.pdf),
-  especially equipment, weapons and weapon properties, armor, tools,
-  adventuring gear, containers, mounts and vehicles, magic-item activation,
-  attunement, charges, improvised weapons, and breaking objects;
-- the current [Foundry D&D5e](https://github.com/foundryvtt/dnd5e) item and
-  Activity design, including weapon, equipment, consumable, tool, loot, and
-  container records;
-- the already accepted HDM catalog inventory and universal record contracts.
-
-HDM retains D&D rules-bearing distinctions but does not copy VTT sheet,
-presentation, compendium, or item-subclass structures. SRD content used by a
-future ruleset seed remains subject to its CC-BY-4.0 attribution requirement.
+Rules/content admitted into an HDM ruleset remain subject to the repository's
+required legal/approved attribution boundary. That attribution is owned by the
+current legal payload and ruleset packaging contracts, not by development-source
+history in this architecture document.
 
 ## 2. Definition and instance boundary
 
