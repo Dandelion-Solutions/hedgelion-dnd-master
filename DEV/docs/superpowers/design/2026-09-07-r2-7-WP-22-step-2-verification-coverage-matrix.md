@@ -19,6 +19,23 @@ Out of scope:
 - a surrogate or parallel MVP;
 - activation of dormant/deferred architecture merely to make it testable.
 
+## Post-review supersession notice
+
+This file preserves the original Step-2 matrix as **historical design evidence**. The mandatory Step-6 adversarial review materially corrected two classes of formulation preserved below:
+
+- `SR22-06-01` — semantic-owner contamination in affected source-role cells;
+- `SR22-06-02` — ambiguous composite primary proof-state representations in affected rows.
+
+The corresponding historical `Current semantic owner(s)` cells and composite `Proof state` strings are intentionally left unchanged so that Step-2 provenance remains faithful to what was actually reviewed. They are **non-current representations and MUST NOT be used as the current canonical WP-22 mapping**.
+
+For the finding evidence and current interpretation, read:
+
+- Step 6 — `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-22-step-6-whole-project-adversarial-review.md`;
+- Step 7 — `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-22-step-7-resolution-propagation.md`;
+- final current owner — `DEV/docs/superpowers/specs/2026-09-07-r2-7-WP-22-verification-test-evaluation-completeness-canonical-spec.md`.
+
+The final canonical WP-22 specification controls all current source-role separation and single-primary-verification-state semantics.
+
 ---
 
 ## 1. Verification model used by this matrix

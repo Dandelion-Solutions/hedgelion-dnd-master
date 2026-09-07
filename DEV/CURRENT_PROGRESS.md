@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-22 STEPS 2–8 CANONICALIZATION COMPLETE — MANDATORY INDEPENDENT FINAL SENIOR REVIEW PENDING
+GLOBAL_STATE: R2.7 WP-22 TARGETED FINAL SENIOR REPAIR COMPLETE — REPEAT MANDATORY INDEPENDENT FINAL SENIOR REVIEW PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-22 — Verification / test / evaluation completeness — canonical Step-8 result published / final Senior review pending
+CURRENT_SLICE: WP-22 — Verification / test / evaluation completeness — SR22-FINAL-01 targeted traceability repair complete / final Senior re-review pending
 
 LAST_CLOSED_UNIT: WP-21 mandatory independent final Senior review — PASS / WP-21 CLOSED
-NEXT_ELIGIBLE_UNIT: mandatory independent WP-22 final Senior review
+NEXT_ELIGIBLE_UNIT: repeat mandatory independent WP-22 final Senior review
 NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: mandatory independent final Senior review of complete WP-22 Steps 2–8 package
+REQUIRED_GATE: repeat mandatory independent final Senior review of repaired complete WP-22 Steps 2–8 package
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-07-r2-7-WP-22-step-8-canonicalization-checkpoint.md
-KNOWN_BLOCKERS: NONE IN WORKER VIEW — FINAL SENIOR REVIEW PENDING
+KNOWN_BLOCKERS: NONE IN WORKER VIEW — REPEAT FINAL SENIOR REVIEW PENDING
 ```
 
 ---
@@ -136,6 +136,26 @@ Material repairs were mechanical and did not change upstream architecture:
 2. every bounded law slice has exactly one primary verification state; independently realized sub-slices are split rather than encoded as ambiguous composite states;
 3. actual CI/audit/evaluation routes are checkpoint-currentness evidence and must be read fresh for future completeness claims.
 
+Mandatory independent final Senior review then returned:
+
+```text
+WP22_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD — SR22-FINAL-01
+SR22-FINAL-01 — SIGNIFICANT — Mandatory Step-6 finding propagation is not self-identifying in affected historical artifacts.
+```
+
+The targeted final Senior repair is now complete:
+
+```text
+SR22_FINAL_01_TARGETED_REPAIR_COMPLETE: YES
+STEP2_ARTIFACT_LOCAL_SUPERSESSION_NOTICE: PRESENT
+STEP5_ARTIFACT_LOCAL_SUPERSESSION_NOTICE: PRESENT
+STEP7_PROPAGATION_STATUS_SYNCHRONIZED: YES
+STEP8_CHECKPOINT_STATUS_SYNCHRONIZED: YES
+WP22_FINAL_SENIOR_REREVIEW: REQUIRED / PENDING
+```
+
+Step 2 and Step 5 preserve their reviewed historical wording, explicitly identify the `SR22-06-01` / `SR22-06-02` qualifications as non-current, and route readers to the Step-6 finding evidence, Step-7 resolution and final canonical WP-22 specification. The canonical specification itself is unchanged; no architecture law was added or reopened.
+
 ---
 
 ## WP-22 canonical verification model
@@ -220,7 +240,7 @@ VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-WP-22 changes only DEV architecture/traceability. No shipped GAME behavior, machine schema/catalog/template format, engine release identity, campaign/storage version, ruleset semantics, migration behavior or executable implementation changed.
+The targeted repair changes only DEV design-provenance/status traceability. No shipped GAME behavior, version-bearing CORE/runtime module, machine schema/catalog/template format, engine release identity, campaign/storage version, ruleset/protocol generation, migration behavior or executable implementation changed.
 
 ---
 
@@ -232,7 +252,9 @@ WP22_STARTED: YES
 WP22_STEP1_SENIOR_REREVIEW: GO
 WP22_STEPS_2_8_COMPLETE: YES
 WP22_CANONICAL_SPEC_PUBLISHED: YES
-WP22_FINAL_SENIOR_REVIEW: REQUIRED / PENDING
+WP22_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD — SR22-FINAL-01
+WP22_TARGETED_FINAL_SENIOR_REPAIR_COMPLETE: YES
+WP22_FINAL_SENIOR_REREVIEW: REQUIRED / PENDING
 WP22_CLOSED: NO
 
 WP23_NOT_STARTED: YES
@@ -249,7 +271,7 @@ NEEDS_PO: NONE
 UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
 
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY INDEPENDENT FINAL SENIOR REVIEW OF WP-22
+NEXT_GATE: REPEAT MANDATORY INDEPENDENT FINAL SENIOR REVIEW OF WP-22
 ```
 
-Hosted verification for the final exact HEAD is the remaining mechanical closure evidence before handing this checkpoint to the independent final Senior review. No repository write may follow a claimed exact-head hosted verification without obtaining new exact-head evidence.
+Hosted verification must pass on the exact final targeted-repair HEAD before repeat Senior-review handoff. That run is exact-head execution evidence; a documentation-only write solely to record the green result is not required, because such a write would create a new HEAD needing fresh verification.

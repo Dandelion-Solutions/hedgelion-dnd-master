@@ -1,6 +1,6 @@
 # R2.7 WP-22 Step 8 — Canonicalization Checkpoint
 
-Status: **STEP 8 CANONICALIZATION PUBLISHED — MANDATORY INDEPENDENT FINAL SENIOR REVIEW NEXT**
+Status: **STEP 8 CANONICALIZATION PUBLISHED — TARGETED FINAL SENIOR REPAIR COMPLETE / REPEAT FINAL SENIOR REVIEW NEXT**
 
 Date: 2026-09-07
 
@@ -108,6 +108,8 @@ The mandatory propagation sweep is owned by:
 
 Step-2/3/4/5 artifacts remain design provenance. Where Step-2 or Step-5 shorthand conflicts with Step-7 repairs, the final canonical WP-22 spec controls.
 
+Targeted final Senior repair `SR22-FINAL-01` completed the missing artifact-local propagation in Step 2 and Step 5. Both artifacts now name `SR22-06-01` / `SR22-06-02`, preserve the original reviewed formulations as history, explicitly prohibit treating those qualified formulations as the current WP-22 mapping, and route readers to Step 6, Step 7 and the final canonical WP-22 owner.
+
 `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` was re-evaluated for propagation. No edit is required at this checkpoint: it explicitly remains a derivative/non-normative locator, its R2.7 registry routes current state through `DEV/CURRENT_PROGRESS.md`, and accepted final `specs/` plus current-progress routing remain the default authoritative discovery path. Adding WP-22 semantic law to that derivative index is not required for correctness and would not change current routing.
 
 The near-term roadmap is unchanged because WP-22 introduces no sequence/scope/dependency rebaseline.
@@ -125,7 +127,7 @@ VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-Reason: WP-22 publishes DEV architecture/traceability only. No shipped GAME behavior, schema/catalog/template format, release identity, campaign/storage version, ruleset semantic, migration behavior or executable implementation is changed.
+Reason: the targeted Senior repair changes DEV design-provenance/status traceability only. No shipped GAME behavior, version-bearing CORE/runtime module, schema/catalog/template format, release identity, campaign/storage version, ruleset/protocol generation, migration behavior or executable implementation is changed.
 
 ---
 
@@ -150,18 +152,28 @@ DEV/TOOLS/run_maintenance_audit.py
 .hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v
 ```
 
-Per canonical WP22 law, green CI is accepted only as evidence that those admitted checks ran successfully on the exact final published HEAD. Exact-head hosted run evidence is obtained after the coherent publication commit set and is not itself a semantic-completeness oracle.
+Per canonical WP22 law, green CI is accepted only as evidence that the admitted checks ran successfully on the exact published HEAD. The targeted-repair publication must therefore obtain hosted-run evidence against its exact final HEAD before repeat Senior-review handoff. That hosted run is external execution evidence and does not require a follow-up repository write merely to restate its result.
 
 ---
 
 ## 8. Final gate
 
+The first mandatory independent final Senior review returned:
+
 ```text
-WP22_STEPS_2_8_COMPLETE: YES — architecture/canonicalization publication
-WP22_FINAL_SENIOR_REVIEW: REQUIRED / PENDING
-WP22_CLOSED: NO — pending independent final Senior review
+WP22_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD — SR22-FINAL-01
+SR22_FINAL_01: TARGETED REPAIR COMPLETE
+```
+
+Current gate:
+
+```text
+WP22_STEPS_2_8_COMPLETE: YES — architecture/canonicalization publication retained
+WP22_TARGETED_FINAL_SENIOR_REPAIR_COMPLETE: YES
+WP22_FINAL_SENIOR_REREVIEW: REQUIRED / PENDING
+WP22_CLOSED: NO — pending repeat independent final Senior review
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY INDEPENDENT FINAL SENIOR REVIEW OF WP-22
+NEXT_GATE: REPEAT MANDATORY INDEPENDENT FINAL SENIOR REVIEW OF WP-22
 ```
 
 Do not begin WP-23 or implementation planning before that gate is satisfied.

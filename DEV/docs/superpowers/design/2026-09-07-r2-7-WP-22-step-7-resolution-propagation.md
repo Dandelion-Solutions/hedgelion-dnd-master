@@ -189,17 +189,19 @@ because `.github/workflows/validate.yml` currently declares those commands. Futu
 |---|---|---|---|---|
 | Step-1 Task Brief / Source Manifest | not affected; already distinguishes source roles | not affected; vocabulary requirement preserved | not affected | retained current Step-1 provenance |
 | Step-1 critic | not affected | not affected | not affected | retained historical gate evidence |
-| Step-2 Verification Coverage Matrix | **affected** | **affected** | route wording affected | retained as design evidence with this Step-7 correction ledger controlling the identified rows/shorthand; not final semantic authority |
+| Step-2 Verification Coverage Matrix | **affected** | **affected** | route wording affected | retained as historical Step-2 design evidence with an artifact-local supersession notice naming `SR22-06-01` / `SR22-06-02` and routing to Step 6, Step 7 and the final canonical owner; historical cells remain unchanged and non-current |
 | Step-3 Decision Brief | recommendation remains valid; source-role wording interpreted under repair | layered recommendation remains valid | not materially affected | retained design provenance; no rewrite required |
 | Step-4 Collaborative Review | CR22-01 principle remains valid but Step-6 found mechanical leakage in Step 2 | partial-realization review remains valid but representation is normalized here | not materially affected | retained design provenance; Step-6/7 provides later correction |
-| Step-5 Candidate Specification | **affected** by missing explicit source-role split | **affected** by ambiguous mapping representation | bounded wording affected | candidate is superseded by the final canonical WP-22 specification produced in Step 8 |
+| Step-5 Candidate Specification | **affected** by missing explicit source-role split | **affected** by ambiguous mapping representation | bounded wording affected | retained as historical candidate design provenance with an artifact-local supersession notice; materially qualified candidate wording is non-current, final canonical WP-22 spec controls, and the candidate is not implementation-planning authority |
 | Step-6 critic | owns finding evidence | owns finding evidence | owns finding evidence | current design-provenance finding owner |
 | Step-7 resolution | owns repair/propagation | owns repair/propagation | owns repair/propagation | current design-provenance resolution owner |
-| Final canonical WP-22 spec | SHALL incorporate corrected source roles | SHALL incorporate single-primary-state model | SHALL incorporate fresh-route rule | one final semantic owner for WP-22 |
-| `DEV/CURRENT_PROGRESS.md` | update only at Step-8 closure gate | same | same | pending Step 8 |
-| `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | derivative routing update after final spec | same | same | pending Step 8 |
+| Final canonical WP-22 spec | incorporates corrected source roles | incorporates single-primary-state model | incorporates fresh-route rule | one final semantic owner for WP-22 |
+| `DEV/CURRENT_PROGRESS.md` | synchronized at Step-8/final-repair gate | same | same | current status routes to repeat final Senior review |
+| `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | no routing change | same | same | no update required |
 | Near-term roadmap | no sequence/scope change | no sequence/scope change | no sequence/scope change | no update required |
 | Deferred/debt state | no new activation | existing future verification obligations retain their triggers | no new debt | no new backlog/debt artifact required |
+
+Targeted final Senior repair `SR22-FINAL-01` completed the required artifact-local propagation for Step 2 and Step 5. Both affected historical artifacts now self-identify the `SR22-06-01` / `SR22-06-02` qualification, preserve the reviewed historical wording, prohibit current use of those formulations, and route directly to Step 6, this Step-7 resolution, and the final canonical WP-22 owner.
 
 No rejected formulation remains as current normative law. Step-2/3/4/5 documents are design provenance; implementation planning must route from the final accepted spec plus actual current semantic owners, not from those historical shorthand cells.
 
@@ -226,6 +228,7 @@ No further adversarial loop is required because the Step-6 significant findings 
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
 UNRESOLVED_MINOR: 0
+SR22_FINAL_01_TARGETED_PROPAGATION_REPAIR: COMPLETE
 HUMAN_DECISION_REQUIRED: NO
 UPSTREAM_REOPEN_REQUIRED: NO
 READY_FOR_STEP8_CANONICALIZATION: YES

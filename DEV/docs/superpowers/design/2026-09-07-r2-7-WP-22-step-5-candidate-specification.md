@@ -15,6 +15,23 @@ Basis:
 
 This candidate specifies verification ownership and completeness semantics. It does not implement tests/runtime, execute Protocol 4, begin implementation planning, or activate WP-23.
 
+## Post-review supersession notice
+
+This Step-5 candidate is retained as **historical design provenance**. The mandatory Step-6 adversarial review materially qualified this candidate through:
+
+- `SR22-06-01` — semantic-owner/source-role separation;
+- `SR22-06-02` — single primary verification state and explicit bounded-split representation.
+
+Step 7 resolved both findings. Any Step-5 formulation materially qualified by those findings is therefore **non-current and MUST NOT be used as the current canonical WP-22 mapping**. The candidate text below is intentionally preserved as the formulation that was actually reviewed; it is not rewritten as though it originally contained the later repairs.
+
+Current routing:
+
+- finding evidence — `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-22-step-6-whole-project-adversarial-review.md`;
+- resolution/propagation — `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-22-step-7-resolution-propagation.md`;
+- current normative owner — `DEV/docs/superpowers/specs/2026-09-07-r2-7-WP-22-verification-test-evaluation-completeness-canonical-spec.md`.
+
+This file remains design provenance and is **not implementation-planning authority**.
+
 ---
 
 ## 1. Central invariant
