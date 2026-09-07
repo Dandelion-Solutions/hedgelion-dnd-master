@@ -6,30 +6,43 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-21 FINAL SENIOR REVIEW PASS — WP-21 CLOSED / WP-22 NOT STARTED
+GLOBAL_STATE: R2.7 WP-22 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-21 — Diagnostics, observability, cleanup and retirement — CLOSED / FINAL SENIOR PASS
+CURRENT_SLICE: WP-22 — Verification / test / evaluation completeness — Step 1 complete / Senior review pending
 
-LAST_CLOSED_UNIT: WP-21 mandatory independent final Senior review — PASS
-NEXT_ELIGIBLE_UNIT: R2.7 WP-22 Step 1 — subject to explicit Product Owner launch
-NEXT_AUTHORIZED_UNIT: NONE — WP-22 is not started or authorized by WP-21 closure
-REQUIRED_GATE: present the next R2.7 work package to the Product Owner and obtain explicit launch before its Step 1 begins
+LAST_CLOSED_UNIT: WP-21 mandatory independent final Senior review — PASS / WP-21 CLOSED
+NEXT_ELIGIBLE_UNIT: mandatory independent WP-22 Step-1 Senior review
+NEXT_AUTHORIZED_UNIT: NONE — Step 2 is not authorized before independent Senior PASS/GO
+REQUIRED_GATE: mandatory independent Senior review of the complete WP-22 Step-1 Task Brief / Source Manifest / critic / mechanical repair checkpoint
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-final-senior-review.md
-KNOWN_BLOCKERS: NONE
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-07-r2-7-WP-22-step-1-whole-project-critic.md
+KNOWN_BLOCKERS: NONE IN WORKER VIEW — MANDATORY SENIOR REVIEW PENDING
 ```
 
 ---
 
-## Closed pre-WP-21 authority
+## Closed predecessor authority
 
 WP-20 remains closed / final Senior PASS:
 
 - canonical owner: `DEV/docs/superpowers/specs/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-canonical-spec.md`;
 - final review: `DEV/docs/superpowers/design/2026-09-06-r2-7-WP-20-final-senior-review.md`.
 
-Post-WP-20 whole-project audit repair R1-R4 remains closed / Senior PASS.
+WP-21 remains closed / final Senior PASS:
+
+- accepted owner: `DEV/docs/superpowers/specs/2026-09-07-r2-7-WP-21-diagnostics-observability-cleanup-retirement-canonical-spec.md`;
+- final review: `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-final-senior-review.md`.
+
+```text
+WP20_FINAL_SENIOR_REVIEW: PASS
+WP20_CLOSED: YES
+WP21_FINAL_SENIOR_REVIEW: PASS
+WP21_FINAL_CLOSURE: PASS
+WP21_CLOSED: YES
+```
+
+Post-WP-20 whole-project publication/currentness repair remains closed / independent Senior PASS.
 
 Creator-login continuity remains fixed fail closed:
 
@@ -43,7 +56,7 @@ SILENT_CREATOR_TRANSFER: FORBIDDEN
 
 ---
 
-## Fixed branch/ref policy
+## Fixed branch/ref repository-operation policy
 
 PO-006 remains incorporated and not reopened:
 
@@ -60,205 +73,166 @@ PHYSICAL REF EXISTENCE IMPLIES AUTHORITY: NO
 
 ---
 
-## WP-21 Step 1 closure
+## WP-22 launch and Step-1 authority
+
+Product Owner explicitly authorized launch of:
+
+```text
+R2.7 WP-22 — Verification / test / evaluation completeness
+```
+
+on 2026-09-07 after WP-21 final closure. This is work-package execution authorization, not a new product-semantic owner decision.
+
+Controlling scope owner:
+
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-scope-discovery.md`.
 
 Step-1 package:
 
-- `DEV/docs/superpowers/design/2026-09-06-r2-7-WP-21-task-brief-source-manifest.md`.
+- `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-22-task-brief-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-22-step-1-whole-project-critic.md`.
 
-Repeat independent Senior review:
+The Step-1 package reconstructs current verification/test/evaluation routes across:
 
-- `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-step-1-senior-rereview.md` — PASS / Step 1 closed / Steps 2–8 authorized.
-
-Closed Step-1 findings:
-
-```text
-F21-01: CLOSED
-F21-02: CLOSED
-SR21-01: PASS / CLOSED
-SR21-02: PASS / CLOSED
-SR21-03: PASS / CLOSED
-```
-
-Step-1 constraints preserved through final closure:
-
-- diagnostics do not require hidden CoT authority;
-- maintenance operation routing != authorization;
-- campaign-global maintenance composes existing creator authorization;
-- human-visible diagnostics remain recipient-filtered;
-- maintenance output remains diagnostic projection only;
-- uncertain cleanup eligibility -> RETAIN;
-- semantic ref retirement never implies physical Git branch/ref deletion;
-- WP-17/WP-18 machine debt remains explicit/deferred;
-- no generic observability/GC/support-admin subsystem is admitted.
+- current accepted architecture owners;
+- GAME runtime/schema/catalog/template/tool targets;
+- `DEV/TESTS/test_*.py` executable regressions;
+- `DEV/TESTS/*_CASES.md` and related scenario catalogs;
+- `DEV/TOOLS/run_maintenance_audit.py` / `audit_engine.py`;
+- `.github/workflows/validate.yml`;
+- current empirical Role-Context Protocol evidence and deferred evaluation obligations.
 
 ---
 
-## WP-21 Steps 2–8 result
+## WP-22 Step-1 mandatory proof model
 
-Design provenance:
-
-- Step 2: `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-step-2-research-architecture-draft.md`;
-- Step 3: `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-step-3-decision-brief.md`;
-- Step 4: `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-step-4-collaborative-review.md`;
-- Step 5: `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-step-5-candidate-specification.md`;
-- Step 6: `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-step-6-whole-project-adversarial-review.md`;
-- Step 7: `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-step-7-resolution-propagation.md`;
-- Step 8: `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-step-8-canonicalization.md`.
-
-Accepted implementation-facing WP-21 owner after final Senior PASS:
-
-- `DEV/docs/superpowers/specs/2026-09-07-r2-7-WP-21-diagnostics-observability-cleanup-retirement-canonical-spec.md`.
-
-Final independent Senior review:
-
-- `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-final-senior-review.md` — PASS / WP-21 closed.
-
-Selected architecture:
+Verification evidence is classified rather than conflated:
 
 ```text
-BOUNDED OWNER-COMPOSED DIAGNOSTIC EVIDENCE
-+ OWNER-GATED RETIREMENT / REBUILD
-+ EXPLICIT LATE-FAMILY CLEANUP ENROLLMENT
-+ LOGICAL-ONLY GIT REF RETIREMENT
+EXECUTABLE_CURRENT
+STATIC_AUDIT_CURRENT
+SCENARIO_ACCEPTANCE_CURRENT
+EMPIRICAL_EVALUATION_CURRENT
+DEFERRED_UNTIL_REALIZATION
+VERIFICATION_GAP
+SUPERSEDED_OR_HISTORICAL
+NOT_MACHINE_CHECKABLE
 ```
 
-No new global observability store, universal GC graph/frontier, cleanup queue, generic support/admin authority, recovery/currentness owner or maintenance dispatcher is created.
-
-### Diagnostic composition
+Before any final whole-project completeness claim, Step 2 must build an item-level Verification Coverage Matrix from current semantic owners with:
 
 ```text
-concrete maintenance question
-+ authorized principal under existing access owner
-+ owner-qualified currentness/evidence
-+ recipient information eligibility
--> bounded diagnostic projection
+law / bounded law family
+owner
+positive/negative/failure/indeterminate/performance/behavioral polarity
+machine-realization state
+proof class
+exact verification artifact
+actual CI/audit route
+stale/supersession status
+remaining gap
+defer/revisit trigger
 ```
 
-Diagnostic output is evidence only and never gameplay/recovery/publication/disclosure/migration authority. No universal diagnostic frontier is inferred across independently writable owners.
-
-### Retirement composition
-
-```text
-candidate family/representation
-+ native owner lifecycle/currentness
-+ blocker/protection closure
-+ required survivor/rebuild evidence
--> RETAIN | LOGICAL_RETIRE | COMPACT_OR_REPLACE |
-   PHYSICAL_REMOVE_IF_NATIVE_OWNER_ALLOWS | REBUILD_OR_RECOMPUTE
-```
-
-Git branch/ref is a hard exclusion from physical removal. If cleanup eligibility is incomplete/ambiguous: `RETAIN`.
-
-### Late-family result
-
-WP-17 collaboration obligations:
-
-- `OPEN/CLOSED` remain active under WP-17;
-- terminal `RESOLVED/OBSOLETE` removes current PLAYER route companions as WP-17 requires;
-- terminality does not authorize obligation-record deletion;
-- automatic physical obligation-record cleanup remains retained until explicit machine-realized enrollment/protection semantics exist;
-- exact obligation/PLAYER route schemas remain deferred.
-
-WP-18 planning/horizons:
-
-- ephemeral drafts remain disposable local noncanonical state;
-- retained shared/player horizons use native current generation + mode/membership/control/source/shared-basis validity;
-- physical residue is not semantic activity;
-- source invalidation causes planning invalidation/recompute, never canon reconstruction;
-- exact retained-horizon schemas remain deferred.
+CI success is evidence that current admitted audit/tests executed at an exact head. It is not a standalone verification-completeness oracle.
 
 ---
 
-## Step-6 / Step-7 critic result
+## Step-1 whole-project critic
 
-Whole-project adversarial review found:
+Initial critic result:
 
 ```text
-BLOCKING: 0
-SIGNIFICANT: 6
-MINOR: 2
+BLOCKING: 1
+SIGNIFICANT: 5
+MINOR: 1
 ```
 
-All findings are closed by Step 7 and independently verified closed by the final Senior review:
+Findings and dispositions:
 
 ```text
-F21-201: CLOSED — maintenance authorization vs recipient disclosure
-F21-202: CLOSED — false universal diagnostic frontier
-F21-203: CLOSED — Git ref deletion leakage through generic physical-remove mode
-F21-204: CLOSED — WP-17 terminal route removal vs obligation retention
-F21-205: CLOSED — WP-18 retained-horizon cleanup/recompute boundary
-F21-206: CLOSED — stale dry-run/report as cleanup authority
-F21-207: CLOSED — enrollment does not require global registry
-F21-208: CLOSED — architecture coverage != machine implementation
-```
+F22-S1-01: CLOSED — law→verification completeness structure repaired with mandatory Step-2 Verification Coverage Matrix
+F22-S1-02: CLOSED — executable/static/scenario/empirical/deferred proof classes separated
+F22-S1-03: CLOSED FOR STEP-1 FRAMING — Protocol-4 source absence made explicit; Step-2 source recovery remains mandatory
+F22-S1-04: CLOSED — stale engine-update executable regression repaired against current owner semantics
+F22-S1-05: CLOSED — negative/failure/indeterminate law inventory made mandatory for Step 2
+F22-S1-06: CLOSED — CI/maintenance-audit evidence boundary made explicit
+F22-S1-07: CLOSED — historical/deferred/current evidence classification made explicit
 
-```text
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
 UNRESOLVED_MINOR: 0
-MATERIAL_REDESIGN: NO
-REPEAT_STEP_6_REQUIRED: NO
-UPSTREAM_SEMANTIC_OWNER_EDIT_REQUIRED: NO
 ```
+
+No runtime owner was changed to satisfy a test.
 
 ---
 
-## WP-21 final Senior closure
+## Mechanical Step-1 repair
 
-Independent Senior review accepted the complete Step-2–8 package and current final owner without targeted semantic repair.
+`DEV/TESTS/test_engine_update_policy_contract.py` was the one current executable regression found to preserve a superseded semantic implication.
 
-Verified:
-
-- Step-6 findings are fully propagated into the final WP-21 owner and affected current owner composition;
-- maintenance authorization remains distinct from recipient eligibility;
-- diagnostic currentness remains owner-qualified with no invented universal frontier;
-- Step-5.13 conservative cleanup law remains intact;
-- PO-006 is preserved as an absolute hard exclusion from physical Git branch/ref removal;
-- WP-17 and WP-18 late-family semantics match their native owners and their exact machine debt remains deferred;
-- no current machine/runtime surface is falsely claimed implemented;
-- no current native owner requires wholesale reopening;
-- no genuine Product Owner decision remains.
-
-The WP-21 canonical candidate's historical `FINAL SENIOR REVIEW PENDING` metadata is superseded for gate/current-progress purposes by the final Senior review and this file; normative content is accepted unchanged.
-
-The logical-ref-retirement amendment's older Step-1-era `SENIOR REVIEW PENDING` metadata was already superseded by the Step-1 repeat Senior PASS; its normative reconciliation remains current.
-
-Exact worker checkpoint verification reviewed by Senior:
+The old test framed same-version descendant ancestry as a silent refresh. Current `GAME/CORE/ENGINE_UPDATES.md` instead requires:
 
 ```text
-HEAD: d4e3a180665296eb68bcca83053c9b0b5967b7e1
-WORKFLOW: Validate engine source
-RUN_ID: 34104643481
-RUN_NUMBER: 1814
-STATUS: completed
-CONCLUSION: success
-FULL_MAINTENANCE_AUDIT: PASS
-DEV_UNIT_TESTS: PASS
+ancestry -> provenance/order evidence only
+silent preference -> candidate to evaluate only
+different released bytes -> affirmative compatibility classification still required
 ```
+
+The regression is repaired to assert those current semantics plus the existing no-standalone-cosmetic-commit and non-creator constraints.
+
+`GAME/CORE/ENGINE_UPDATES.md` is unchanged.
+
+`DEV/TESTS/ENGINE_UPDATE_CASES.md` was independently checked and is already aligned to current released-v1+ clean-slate/compatibility law.
 
 ---
 
-## Routed machine debt
+## Protocol-4 / post-implementation evaluation status
 
-The following remain deferred behind explicit future implementation planning/execution:
+The WP-22 scope owner explicitly requires reconciliation of Protocol-4-derived MVP evaluations.
 
-1. installed maintenance command registration/dispatcher and exact result enums;
-2. executable maintenance authorization/disclosure/redaction coverage;
-3. exact diagnostic/export serialization, if required;
-4. family-specific automated cleanup/blocker/protection tooling where absent;
-5. WP-17 exact collaboration-obligation schema/fields + PLAYER route-field realization;
-6. WP-18 exact retained shared/player horizon schemas/value contracts;
-7. automated cleanup dry-run/execution tooling if selected later;
-8. retained-ref operational/performance measurement; WP-24 may assess cost but cannot re-enable deletion.
+Current repository evidence establishes:
 
-These are not activated by WP-21 closure.
+```text
+ROLE_CONTEXT_PROTOCOL_1: PRESENT
+ROLE_CONTEXT_PROTOCOL_2: PRESENT
+ROLE_CONTEXT_PROTOCOL_3: PRESENT
+PROTOCOL_4_SOURCE: NOT FOUND / INCOMPLETE SURFACE
+WP08_MVP_ACCEPTANCE_OBLIGATIONS: PRESENT AS SUPPORTING CURRENT REQUIREMENTS
+```
+
+Protocol 3 remains completed empirical evidence with explicit applicability limits and deferred gameplay-quality dimensions. WP-08 retains additional MVP verification obligations. Neither is silently relabeled as Protocol 4.
+
+```text
+STEP2_PROTOCOL4_SOURCE_RECOVERY_REQUIRED: YES
+PO_DECISION_REQUIRED_NOW: NO
+```
+
+If later evidence recovery cannot establish the intended evaluation semantics without inventing new product criteria, that exact unresolved question must be routed to the human/Product Owner at that time.
+
+---
+
+## Step-2 evidence obligations — not authorized yet
+
+After mandatory independent Senior PASS/GO only, Step 2 must:
+
+1. build the complete Verification Coverage Matrix;
+2. reconcile current tests against current owners, not filenames;
+3. inventory important negative/failure/indeterminate laws separately;
+4. distinguish executable tests, static audit, scenario cases and empirical evaluation;
+5. recover/reconcile the Protocol-4-derived evaluation source/meaning;
+6. preserve post-implementation behavioral/performance acceptance as deferred where runtime realization/measurement does not yet exist;
+7. identify machine-checkable architecture invariants suitable for CI/audit without converting semantic/product evaluation into fake deterministic tests;
+8. preserve WP-23 release/package/legal readiness as not started.
+
+No Step-2 work is authorized by the worker checkpoint itself.
 
 ---
 
 ## Product Owner / Version Impact
 
-Final Senior review found no unresolved Product Owner decision.
+Current Step-1 evidence exposes no genuine unresolved Product Owner decision.
 
 ```text
 HUMAN_DECISION_REQUIRED: NO
@@ -267,7 +241,7 @@ NEEDS_PO: NONE
 UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
 ```
 
-WP-21 Steps 2–8 and final review/status closure change DEV design/spec/status artifacts only; no current GAME runtime module/schema or version-bearing shipped identity is changed.
+Step-1 publication changes only DEV design/status plus one DEV regression test synchronized to already-current runtime law. No shipped GAME module/schema/tool identity changes.
 
 ```text
 VERSION_IMPACT: VERIFIED
@@ -281,33 +255,26 @@ VERSIONING_TAXONOMY_REOPENED: NO
 ## Current authorization
 
 ```text
-WP20_FINAL_SENIOR_REVIEW: PASS
-WP20_CLOSED: YES
+WP22_LAUNCH_AUTHORIZED_BY_PO: YES
+WP22_STARTED: YES
+WP22_STEP1_TASK_BRIEF_COMPLETE: YES
+WP22_STEP1_SOURCE_MANIFEST_COMPLETE: YES
+WP22_STEP1_CRITIC_COMPLETE: YES
+WP22_STEP1_MECHANICAL_REPAIRS_COMPLETE: YES
+WP22_STEP1_COMPLETE: YES
 
-WP21_STARTED: YES
-WP21_STEP1_REPEAT_SENIOR_REVIEW: PASS
-WP21_STEP1_CLOSED: YES
-WP21_STEP2_COMPLETE: YES
-WP21_STEP3_COMPLETE: YES
-WP21_STEP4_COMPLETE: YES
-WP21_STEP5_COMPLETE: YES
-WP21_STEP6_COMPLETE: YES
-WP21_STEP7_COMPLETE: YES
-WP21_STEP8_COMPLETE: YES
-WP21_FINAL_SENIOR_REVIEW_PENDING: NO
-WP21_FINAL_SENIOR_REVIEW: PASS
-WP21_FINAL_CLOSURE: PASS
-WP21_CLOSED: YES
+WP22_STEP1_SENIOR_REVIEW_PENDING: YES
+WP22_STEP1_SENIOR_REVIEW: REQUIRED / PENDING
+WP22_STEP2_STARTED: NO
 
-WP22_NOT_STARTED: YES
-WP22_STARTED: NO
+WP23_NOT_STARTED: YES
+WP23_STARTED: NO
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RUNTIME_MIGRATION_EXECUTED: NO
 REAL_CAMPAIGN_MIGRATED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
-NEXT_ELIGIBLE_UNIT: R2.7 WP-22 STEP 1 — SUBJECT TO EXPLICIT PRODUCT OWNER LAUNCH
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: PRODUCT OWNER LAUNCH OF THE NEXT R2.7 WORK PACKAGE
+NEXT_GATE: MANDATORY INDEPENDENT WP-22 STEP-1 SENIOR REVIEW
 ```

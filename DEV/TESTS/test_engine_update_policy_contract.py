@@ -21,17 +21,22 @@ class EngineUpdatePolicyContractTests(unittest.TestCase):
         self.assertIn("MUST NOT be written to campaign Git", src)
         self.assertIn("storage owner", src.lower())
 
-    def test_same_version_descendant_refresh_is_silent_and_does_not_force_manifest_commit(self):
+    def test_same_version_descendant_only_prioritizes_candidate_evaluation(self):
         src = POLICY.read_text(encoding="utf-8")
-        self.assertIn("same-version", src.lower())
+        lower = src.lower()
+        self.assertIn("same-version", lower)
         self.assertIn("one bounded server-side compare", src)
         self.assertIn("RUNTIME_PACKAGE.source_commit_sha", src)
-        self.assertIn("silently prefer", src.lower())
-        self.assertIn("ancestor", src.lower())
-        self.assertIn("downgrade", src.lower())
-        self.assertIn("diverged", src.lower())
+        self.assertIn("candidate provenance/order rules only", lower)
+        self.assertIn("never replace the compatibility classification above", lower)
+        self.assertIn("silently preferred as the candidate to evaluate", lower)
+        self.assertIn("does not authorize use", lower)
+        self.assertIn("different released bytes still require", lower)
+        self.assertIn("DIRECT_COMPATIBLE", src)
+        self.assertIn("downgrade candidate", lower)
+        self.assertIn("diverged", lower)
         self.assertIn("MUST NOT create a standalone", src)
-        self.assertIn("non-creator", src.lower())
+        self.assertIn("non-creator", lower)
 
     def test_storage_baseline_and_campaign_engine_authority_are_independent(self):
         src = POLICY.read_text(encoding="utf-8")
