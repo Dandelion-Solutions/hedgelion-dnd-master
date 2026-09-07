@@ -1,6 +1,6 @@
 # R2.7 WP-22 Step 1 — Whole-Project Task-Brief Critic
 
-Status: **STEP-1 CRITIC COMPLETE — MECHANICAL REPAIRS APPLIED / MANDATORY SENIOR REVIEW PENDING**
+Status: **STEP-1 TARGETED RECOVERY CRITIC RE-RUN COMPLETE — MANDATORY SENIOR RE-REVIEW PENDING**
 
 Date: 2026-09-07
 
@@ -10,9 +10,16 @@ Reviewed artifact:
 
 - `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-22-task-brief-source-manifest.md`.
 
+Senior review trigger:
+
+```text
+SR22-S1-01 — SIGNIFICANT — Protocol-4 source recovery falsely reported unresolved
+checkpoint reviewed: a21df28fdc61d1a01c7e962d617ae7e17902fb46
+```
+
 Review stance:
 
-> Assume the Step-1 brief can still overclaim completeness, mistake test presence for proof, preserve superseded semantics, turn deferred evaluations into fake implementation, or omit a verification consumer. Reconstruct the verification dependency graph independently and find concrete failure mechanisms before Step 2 is authorized.
+> Assume the Step-1 brief can still overclaim completeness, mistake test presence for proof, preserve superseded semantics, turn deferred evaluations into fake implementation, or omit a verification consumer. Reconstruct the verification dependency graph independently and follow every current semantic owner into the material verification/evaluation provenance before Step 2 is authorized.
 
 This critic does not authorize Step 2 or implementation.
 
@@ -26,11 +33,11 @@ This critic does not authorize Step 2 or implementation.
 current accepted semantic owner
 -> current machine/runtime realization or explicit deferred realization
 -> appropriate proof class
--> exact verification artifact
+-> exact verification/evaluation artifact
 -> actual execution/review route
 ```
 
-The critic checked that a test filename or passing workflow is not accepted as a substitute for the first two links.
+The critic checks that a test filename, passing workflow or repository-search result is not accepted as a substitute for the current semantic owner.
 
 ### 1.2 Machine/runtime -> owner route
 
@@ -55,22 +62,23 @@ and
 -> unittest discover -s DEV/TESTS -v
 ```
 
-The critic inspected what these routes really execute rather than treating “CI green” as a whole-project proof statement.
+The critic inspects what these routes really execute rather than treating “CI green” as a whole-project proof statement.
 
 ### 1.4 Scenario/evaluation route
 
 ```text
-*_CASES.md / TODO / historical audit artifacts
-+ role-context empirical protocols/research
--> applicability classification
--> architecture-stage evidence OR future post-implementation evaluation
+current semantic owner
+-> current evaluation-design / fixture owner(s)
+-> scenario/fixture applicability
+-> executed empirical result, if any
+-> deferred post-implementation execution, if target not yet meaningfully realizable
 ```
 
-The critic checked that scenarios, historical snapshots, future TODOs and empirical measurements remain distinct.
+This route is the one the original Step-1 critic failed to follow correctly for R2.6 Protocol 4.
 
 ### 1.5 Negative-law route
 
-Representative high-risk current negative/fail-closed owners were traced to regressions where available:
+Representative high-risk current negative/fail-closed owners remain traced to regressions where available:
 
 - branch/ref deletion prohibition;
 - logical ref retirement;
@@ -80,233 +88,202 @@ Representative high-risk current negative/fail-closed owners were traced to regr
 - PO routing to closed WPs;
 - released-v1+ compatibility not inferred from ancestry/version order.
 
-Representative success does not establish completeness; the Step-2 negative-law inventory remains mandatory.
+Representative success does not establish completeness; the later Step-2 negative-law inventory remains mandatory if Senior authorizes Step 2.
 
 ---
 
-## 2. Findings
+## 2. Original Step-1 findings and targeted correction
 
 ### F22-S1-01 — BLOCKER — No law-to-verification completeness proof structure
 
-**Mechanism**
-
-The repository contains many executable tests, static audits and scenario catalogs, but no current whole-project structure proving which important accepted law owns which verification, whether the target behavior is already realized, whether the proof is current, and what is safely deferred.
-
-A file-count/test-count approach could therefore declare WP-22 complete while:
-
-- important laws have no proof;
-- several tests prove the same narrow surface;
-- a test targets a superseded assumption;
-- architecture-only future work is incorrectly marked missing implementation;
-- one semantic law needs both deterministic and empirical proof but receives only one.
-
-**Required repair**
-
-The Step-1 brief must require an item-level Verification Coverage Matrix with current owner, polarity, realization status, proof class, exact verification artifacts, execution route, stale/supersession disposition and defer trigger.
-
-**Disposition:** `REPAIRED_IN_STEP1`. The repaired Task Brief makes the matrix a mandatory Step-2 evidence gate and forbids final coverage claims before it exists.
-
----
+**Disposition:** `CLOSED`. The Verification Coverage Matrix remains mandatory before any final completeness claim.
 
 ### F22-S1-02 — SIGNIFICANT — Proof-class conflation can turn scenarios/static checks into executable behavioral evidence
 
-**Mechanism**
+**Disposition:** `CLOSED`. Proof classes remain separated.
 
-Current verification surfaces mix:
+### F22-S1-03 — SIGNIFICANT — Protocol-4 provenance was misclassified as absent
 
-- Python executable unit/contract tests;
-- static maintenance audit rules;
-- Markdown scenario/adversarial cases;
-- empirical LLM evaluation research;
-- deferred operational/performance TODOs.
+**Original incorrect mechanism**
 
-`audit_engine.py` also inspects selected Markdown test files for sentinel content and checks case-ID uniqueness. Without explicit classification, this can be misreported as execution of those scenarios.
+The original Step-1 critic asserted that no Protocol-4 source existed in current repository evidence and routed Protocol-4 as a Step-2 source-recovery problem.
 
-**Required repair**
+That assertion was false.
 
-Introduce explicit proof classes and state what each class can and cannot prove. Green CI means the currently admitted audit and unit tests executed at that head; it does not prove semantic completeness or empirical product quality.
+**Root cause**
 
-**Disposition:** `REPAIRED_IN_STEP1` by the verification proof taxonomy and CI/audit boundary in the repaired brief.
+The original critic used repository-level discovery/search as if it were authority and failed to traverse the current R2.6 canonical owner:
 
----
+- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md`.
 
-### F22-S1-03 — SIGNIFICANT — Protocol-4-derived evaluation source is not present in current repository evidence
+That current owner explicitly includes in its canonicalization basis:
 
-**Mechanism**
+- `DEV/docs/superpowers/design/2026-08-24-r2-6-production-like-assurance-protocol.md`;
+- `DEV/docs/superpowers/design/2026-08-24-r2-6-protocol-4-frozen-fixture-contract.md`;
+- `DEV/docs/superpowers/design/2026-08-24-r2-6-mvp-behavioral-assurance-owner-clarification.md`.
 
-The controlling WP-22 scope explicitly asks whether “Protocol-4-derived MVP evaluations” are retained as post-implementation acceptance. Current repository discovery establishes Protocols 1–3 and supporting WP-08 MVP obligations, but no current Protocol-4 artifact or commit match was found.
+The same canonical owner explicitly states that architecture-stage host assurance closes without claiming downstream MVP acceptance has executed.
 
-Silently treating Protocol 3 as Protocol 4 would fabricate provenance and could lose the actual intended evaluation dimensions or applicability limits.
-
-**Required repair**
-
-The Source Manifest must mark the exact Protocol-4 source as `INCOMPLETE_SURFACE / NOT FOUND`, preserve Protocols 1–3 and WP-08 as supporting evidence only, and make source recovery/reconciliation mandatory before a final behavioral-evaluation completeness claim.
-
-**Disposition:** `REPAIRED_IN_STEP1 AS SOURCE-MANIFEST DISCIPLINE`; the source gap itself remains an explicit **Step-2 evidence obligation**, not a product decision and not a Step-1 blocker after honest routing.
+The owner clarification is material because it fixes the sequencing law:
 
 ```text
-PROTOCOL_4_SOURCE_RECOVERED: NO
-STEP2_SOURCE_RECOVERY_REQUIRED: YES
+R2.6 architecture assurance
+-> R2.7 machine/instruction/test mapping
+-> implementation planning
+-> MVP implementation (TDD)
+-> production-like Protocol-4-derived acceptance/evaluation on the real MVP
+```
+
+It also classifies Protocol 4 as a **test-design inventory and acceptance corpus source**, not as a completed pre-implementation execution campaign.
+
+The Protocol-4 design artifact itself is statused:
+
+```text
+PROTOCOL DESIGN — EXECUTION EVIDENCE NOT YET CLAIMED
+```
+
+The frozen fixture is statused:
+
+```text
+RESEARCH FIXTURE CONTRACT — NO EXECUTION RESULTS CLAIMED
+```
+
+**Correct classification**
+
+```text
+PROTOCOL_4_DESIGN_SOURCE: PRESENT / CURRENT
+PROTOCOL_4_FROZEN_FIXTURE_SOURCE: PRESENT / CURRENT
+PROTOCOL_4_CURRENT_PROOF_CLASS: SCENARIO_ACCEPTANCE_CURRENT
+PROTOCOL_4_EXECUTED_EMPIRICAL_ACCEPTANCE: NO
+PROTOCOL_4_POST_IMPLEMENTATION_EXECUTION: DEFERRED_UNTIL_REALIZATION
+STEP2_PROTOCOL4_SOURCE_RECOVERY_REQUIRED: NO
+STEP2_PROTOCOL4_ACCEPTANCE_MAPPING_REQUIRED: YES
 PO_DECISION_REQUIRED: NO
 ```
+
+**Required repair**
+
+1. Add the current R2.6 owner chain to the WP-22 Source Manifest.
+2. Remove every current projection that says Protocol 4 is missing/not found or requires source recovery.
+3. Preserve the distinction between current protocol/fixture design evidence and not-yet-executed post-implementation MVP acceptance.
+4. Re-run the whole-project Step-1 critic against the corrected source set.
+
+**Disposition:** `REPAIRED_IN_TARGETED_STEP1_RECOVERY`.
 
 ---
 
 ### F22-S1-04 — SIGNIFICANT — Current engine-update executable test preserves an obsolete semantic implication
 
-Affected artifact:
-
-- `DEV/TESTS/test_engine_update_policy_contract.py`.
-
-Current test name before repair:
-
-```text
-test_same_version_descendant_refresh_is_silent_and_does_not_force_manifest_commit
-```
-
-**Mechanism**
-
-The test only checked broad lexical tokens such as `same-version`, `silently prefer` and `ancestor`. Current `GAME/CORE/ENGINE_UPDATES.md` still contains those words but now uses them under a materially different law:
-
-```text
-ancestry -> provenance/order evidence only
-silent preference -> candidate to evaluate only
-different released bytes -> affirmative compatibility classification still required
-```
-
-Therefore the old test could remain green while its name and assertion set implied the superseded pre-WP20 rule that ancestry itself authorizes silent refresh/use.
-
-**Required repair**
-
-Synchronize the executable regression with the existing current runtime owner. Assert specifically that provenance/order rules never replace compatibility classification, silent preference is only candidate selection, and different bytes still require affirmative compatibility. Preserve the “no standalone cosmetic commit” and non-creator constraints.
-
-Do **not** change `GAME/CORE/ENGINE_UPDATES.md`; current runtime law is already correct.
-
-**Disposition:** `REPAIRED_IN_STEP1` by a mechanical test-only edit to `DEV/TESTS/test_engine_update_policy_contract.py`.
-
-Negative finding: `DEV/TESTS/ENGINE_UPDATE_CASES.md` is already aligned with released-v1+ clean-slate and ancestry-as-provenance semantics; no repair there.
-
----
+**Disposition:** `CLOSED`. The previously published mechanical regression repair remains unchanged; `GAME/CORE/ENGINE_UPDATES.md` remains unchanged.
 
 ### F22-S1-05 — SIGNIFICANT — Existing negative-law regressions do not prove negative-law completeness
 
-**Mechanism**
-
-The project has strong individual negative-law guards, but no current evidence that every materially regression-prone rejection/fail-closed law has appropriate protection. Particularly dangerous omissions would include:
-
-- duplicate/alternate authority paths;
-- stale/currentness guessing;
-- unsupported compatibility/migration inference;
-- hidden data/knowledge/disclosure promotion;
-- mechanics replay/reroll/rebinding;
-- force/ref-rewind publication shortcuts;
-- Story/planning/cache becoming native authority;
-- ambiguous/unsupported state being optimistically interpreted.
-
-**Required repair**
-
-Step 2 must inventory important current `NEGATIVE`, `FAILURE` and `INDETERMINATE` laws separately and map each to executable/static/scenario/deferred proof. A positive happy-path test does not automatically cover its forbidden dual.
-
-**Disposition:** `REPAIRED_IN_STEP1` as a mandatory Step-2 evidence obligation. No broad regression implementation is started in Step 1.
-
----
+**Disposition:** `CLOSED FOR STEP1 FRAMING`. The later item-level inventory remains a Step-2 evidence obligation if authorized.
 
 ### F22-S1-06 — SIGNIFICANT — CI/maintenance-audit success can be overclaimed as architecture completeness
 
-**Mechanism**
-
-Current hosted validation is real and valuable:
-
-```text
-Run full maintenance audit
-Run DEV unit tests
-```
-
-But the maintenance audit is a bounded structural/source/schema/catalog/test-sentinel verifier and unittest discovery runs only the admitted executable suite. Neither independently answers whether:
-
-- all important laws have proof ownership;
-- tests are semantically current;
-- deferred implementation obligations are correctly deferred;
-- LLM behavior/performance acceptance has been measured.
-
-**Required repair**
-
-The brief must define CI as an execution route for admitted machine-checkable proofs, not a completeness oracle. Step 2 must separately decide which additional architecture invariants are honestly machine-checkable and which remain scenario/human/empirical evaluation concerns.
-
-**Disposition:** `REPAIRED_IN_STEP1`.
-
----
+**Disposition:** `CLOSED`. CI remains an execution route for admitted machine-checkable proofs, not a completeness oracle.
 
 ### F22-S1-07 — MINOR — Historical, deferred and current test artifacts need explicit status discipline
 
-**Mechanism**
-
-Without provenance/status classification:
-
-- `PRE_RELEASE_AUDIT_0.1.0.md` could be mistaken for current policy;
-- `TODO_LONG_CAMPAIGN_SCALE.md` could be counted as current scale proof;
-- `PERFORMANCE_CASES.md` could be counted as measured performance evidence;
-- old version strings inside intentional negative fixtures could be mechanically flagged as stale even when the test is correct.
-
-**Required repair**
-
-Classify by semantics and applicability, not filename/token age. Preserve explicitly historical/deferred artifacts without making them current acceptance authority.
-
-**Disposition:** `REPAIRED_IN_STEP1` in the Source Manifest.
+**Disposition:** `CLOSED`. Classification remains semantic/applicability-based.
 
 ---
 
-## 3. Severity / post-repair disposition
+## 3. Whole-project critic re-run after Protocol-4 recovery
 
-Initial critic result:
+The corrected re-run starts from the same five mandatory WP-22 scope questions but rebuilds the source graph with an explicit rule:
+
+> **Current semantic owner first. Repository search/discovery may find candidate evidence, but cannot override or replace owner-linked provenance.**
+
+### 3.1 R2.6 owner-chain re-walk
+
+Current canonicalization basis was rechecked for verification/evaluation-specific sources.
+
+Material current chain now included directly in WP-22:
+
+1. R2.6 canonical spec — current semantic owner;
+2. MVP Behavioral Assurance / Post-Implementation Evaluation Owner Clarification — owner sequencing/acceptance law;
+3. Production-Like Assurance Protocol — Protocol-4 evaluation design;
+4. Protocol-4 Frozen Fixture Contract — frozen scenario/control/scoring contract;
+5. Protocols 1–3 — completed pre-implementation empirical evidence within their applicability.
+
+Supporting non-normative provenance also rechecked:
+
+- `2026-08-24-r2-6-chatgpt-plus-assurance-evidence-ledger.md` — explicitly non-normative pre-decision research;
+- `2026-08-24-r2-6-current-host-assurance-synthesis.md` — explicitly non-canonical pre-probe synthesis and explicitly not a Protocol-4 execution claim.
+
+These supporting sources do not supersede or compete with the canonical R2.6 owner.
+
+### 3.2 Additional omission exposed by SR22-S1-01
+
+The re-walk found one additional material omission in the original WP-22 Source Manifest:
 
 ```text
-BLOCKING: 1
-SIGNIFICANT: 5
-MINOR: 1
+DEV/docs/superpowers/design/2026-08-24-r2-6-mvp-behavioral-assurance-owner-clarification.md
 ```
 
-After the bounded Step-1 repairs:
+Why material: without it, a future reader could correctly find the Protocol-4 protocol/fixture but still misclassify them as a pre-implementation execution requirement. The clarification is the owner-approved source that moves production-like execution to the implemented MVP.
+
+Disposition: `ADDED_TO_SOURCE_MANIFEST`.
+
+### 3.3 Other R2.6 canonicalization-basis artifacts
+
+The remaining task brief, candidate-spec, adversarial-review and routing artifacts are design provenance already resolved into the current canonical owner. The re-run found no unique current verification owner, execution-result artifact or acceptance law in that remainder that must be separately promoted into the WP-22 current Source Manifest.
+
+Disposition:
 
 ```text
-F22-S1-01: CLOSED — Verification Coverage Matrix is mandatory before completeness claim
-F22-S1-02: CLOSED — proof taxonomy separates executable/static/scenario/empirical/deferred evidence
-F22-S1-03: CLOSED FOR STEP-1 FRAMING — Protocol-4 source absence is explicit; Step-2 recovery remains mandatory
-F22-S1-04: CLOSED — stale engine-update regression repaired against current owner
-F22-S1-05: CLOSED — negative-law inventory is mandatory Step-2 evidence
-F22-S1-06: CLOSED — CI/audit evidence boundary is explicit
-F22-S1-07: CLOSED — historical/deferred/current evidence classification is explicit
-
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
-UNRESOLVED_MINOR: 0
+OTHER_MATERIAL_CURRENT_SOURCE_MANIFEST_OMISSIONS_FOUND: NO
 ```
 
-`F22-S1-03` closure means the **Step-1 omission/overclaim risk is repaired**, not that a Protocol-4 source was magically recovered. The source-recovery obligation remains deliberately visible for Step 2.
+### 3.4 Five mandatory WP-22 routes after correction
+
+1. **law -> verification ownership** — still requires the Step-2 Verification Coverage Matrix; Step 1 framing remains sufficient;
+2. **stale tests** — engine-update stale regression remains repaired; no new stale executable assumption was exposed by Protocol-4 recovery;
+3. **Protocol-4-derived MVP evaluation** — source/design is present and current; integrated empirical execution remains correctly deferred until implemented MVP;
+4. **negative/failure laws** — later item-level inventory remains mandatory; no new Step-1 architecture repair exposed;
+5. **CI/audit boundary** — unchanged; no deterministic CI claim can substitute for Protocol-4 production-like execution.
+
+### 3.5 Re-run finding result
+
+```text
+NEW_BLOCKING: 0
+NEW_SIGNIFICANT: 0
+NEW_MINOR: 0
+
+SR22_S1_01_ROOT_CAUSE_CONFIRMED: YES
+SR22_S1_01_REPAIRED: YES
+ADDITIONAL_MATERIAL_OMISSION_FOUND: 1
+ADDITIONAL_MATERIAL_OMISSION_REPAIRED: 1
+UNRESOLVED_MATERIAL_SOURCE_MANIFEST_OMISSIONS: 0
+```
+
+This is a worker critic re-run, not an independent Senior PASS.
 
 ---
 
-## 4. Challenges that did not become findings
+## 4. Challenges that did not become new findings
 
-### N22-S1-01 — Do not add broad missing tests in Step 1
+### N22-S1-R1 — Do not claim Protocol-4 PASS
 
-Most verification gaps cannot be implemented honestly until Step 2 establishes the exact current law and machine-realization state. Adding tests now would risk testing architecture prose rather than realized behavior or activating deferred work.
+Finding the design/fixture sources does not create execution results. No production-like Protocol-4 MVP run is claimed.
 
-### N22-S1-02 — Do not change current engine-update runtime law
+### N22-S1-R2 — Do not convert deferred acceptance into architecture implementation
 
-`GAME/CORE/ENGINE_UPDATES.md` already has the correct released-v1+ compatibility semantics. The stale executable test was the defect.
+The R2.6 owner explicitly moved production-like integrated evaluation after MVP implementation because a pre-implementation harness would recreate the MVP. Targeted recovery preserves that sequencing.
 
-### N22-S1-03 — Do not treat every old version fixture as stale
+### N22-S1-R3 — Do not promote non-normative R2.6 research to semantic ownership
 
-Intentional negative fixtures and migration/version boundary tests may need old version values. Staleness is semantic, not lexical.
+The evidence ledger and current-host synthesis remain supporting provenance. The canonical R2.6 spec and owner clarification own current semantics.
 
-### N22-S1-04 — Do not create a global test-coverage percentage
+### N22-S1-R4 — Do not start Step 2 through “mapping” language
 
-Raw statement/line/test percentages do not show semantic ownership, failure-law coverage or evaluation applicability. The Verification Coverage Matrix is the required architecture evidence shape.
+The targeted recovery identifies what Step 2 must later map if Senior authorizes it. It does not build the Verification Coverage Matrix or execute Protocol-4 acceptance now.
 
-### N22-S1-05 — Do not start WP-23 through release-related verification
+### N22-S1-R5 — Do not start WP-23
 
-WP-22 may inspect release-builder/version/package tests as verification consumers. Whether the release package is actually ready, complete and legally correct remains WP-23.
+Release/package/legal readiness remains outside WP-22 Step-1 recovery.
 
 ---
 
@@ -314,7 +291,7 @@ WP-22 may inspect release-builder/version/package tests as verification consumer
 
 No current finding requires Product Owner semantics, risk acceptance or material trade-off.
 
-The absent Protocol-4 source is first an evidence-recovery problem. If later recovery fails and current accepted requirements are insufficient to reconstruct the intended evaluation contract without inventing criteria, Step 2 must route that exact unresolved decision rather than guessing.
+Protocol-4 provenance is resolved from existing current authority; no new criteria need to be invented.
 
 ```text
 HUMAN_DECISION_REQUIRED: NO
@@ -324,29 +301,31 @@ NEEDS_PO: NONE
 
 ---
 
-## 6. Version Impact of repairs
+## 6. Version Impact of targeted recovery
 
-The only machine-executable change is a DEV regression test synchronized to already-current runtime law. No shipped/runtime/versioned machine owner changes.
+The targeted recovery changes only DEV design/status documentation. It changes no shipped/runtime/versioned machine owner and does not modify the previously repaired DEV engine-update test.
 
 ```text
 VERSION_IMPACT: VERIFIED
 VERSION_BUMP_REQUIRED: NO
 VERSION_IMPACT_DISPOSITION: NONE
+VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
 ---
 
 ## 7. Exact next gate
 
-The Step-1 package is review-ready after coherent publication and exact-head verification/read-back.
+The targeted Step-1 recovery is review-ready only after coherent publication, exact-head read-back and hosted verification.
 
 ```text
-WP22_STEP1_CRITIC_COMPLETE: YES
-WP22_STEP1_MECHANICAL_REPAIRS_COMPLETE: YES
-WP22_STEP1_COMPLETE: YES
+WP22_STEP1_SOURCE_MANIFEST_RECOVERY_COMPLETE: YES
+WP22_STEP1_CRITIC_RERUN_COMPLETE: YES
+WP22_STEP1_TARGETED_RECOVERY_COMPLETE: YES
 
+WP22_STEP1_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD — SR22-S1-01
+WP22_STEP1_SENIOR_REREVIEW: REQUIRED / PENDING
 STEP2_AUTHORIZED_BY_WORKER: NO
-WP22_STEP1_SENIOR_REVIEW: REQUIRED / PENDING
 NEXT_AUTHORIZED_UNIT: NONE
 WP22_STEP2_STARTED: NO
 WP23_STARTED: NO

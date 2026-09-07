@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-22 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW PENDING
+GLOBAL_STATE: R2.7 WP-22 STEP 1 TARGETED RECOVERY COMPLETE — MANDATORY SENIOR RE-REVIEW PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-22 — Verification / test / evaluation completeness — Step 1 complete / Senior review pending
+CURRENT_SLICE: WP-22 — Verification / test / evaluation completeness — Step-1 Senior HOLD SR22-S1-01 repaired / re-review pending
 
 LAST_CLOSED_UNIT: WP-21 mandatory independent final Senior review — PASS / WP-21 CLOSED
-NEXT_ELIGIBLE_UNIT: mandatory independent WP-22 Step-1 Senior review
+NEXT_ELIGIBLE_UNIT: mandatory independent WP-22 Step-1 Senior re-review
 NEXT_AUTHORIZED_UNIT: NONE — Step 2 is not authorized before independent Senior PASS/GO
-REQUIRED_GATE: mandatory independent Senior review of the complete WP-22 Step-1 Task Brief / Source Manifest / critic / mechanical repair checkpoint
+REQUIRED_GATE: mandatory independent Senior re-review of corrected WP-22 Step-1 Task Brief / Source Manifest / critic checkpoint
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-07-r2-7-WP-22-step-1-whole-project-critic.md
-KNOWN_BLOCKERS: NONE IN WORKER VIEW — MANDATORY SENIOR REVIEW PENDING
+KNOWN_BLOCKERS: NONE IN WORKER VIEW — PRIOR SENIOR HOLD FINDING REPAIRED / SENIOR RE-REVIEW PENDING
 ```
 
 ---
@@ -92,21 +92,21 @@ Step-1 package:
 - `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-22-task-brief-source-manifest.md`;
 - `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-22-step-1-whole-project-critic.md`.
 
-The Step-1 package reconstructs current verification/test/evaluation routes across:
+Original Step-1 checkpoint:
 
-- current accepted architecture owners;
-- GAME runtime/schema/catalog/template/tool targets;
-- `DEV/TESTS/test_*.py` executable regressions;
-- `DEV/TESTS/*_CASES.md` and related scenario catalogs;
-- `DEV/TOOLS/run_maintenance_audit.py` / `audit_engine.py`;
-- `.github/workflows/validate.yml`;
-- current empirical Role-Context Protocol evidence and deferred evaluation obligations.
+```text
+HEAD: a21df28fdc61d1a01c7e962d617ae7e17902fb46
+SENIOR_REVIEW: HOLD
+FINDING: SR22-S1-01 — SIGNIFICANT — Protocol-4 source recovery falsely reported unresolved
+```
+
+The targeted recovery is limited to Step-1 provenance/classification/status repair and critic re-run. It does not authorize Step 2.
 
 ---
 
 ## WP-22 Step-1 mandatory proof model
 
-Verification evidence is classified rather than conflated:
+Verification evidence remains classified rather than conflated:
 
 ```text
 EXECUTABLE_CURRENT
@@ -138,9 +138,9 @@ CI success is evidence that current admitted audit/tests executed at an exact he
 
 ---
 
-## Step-1 whole-project critic
+## Step-1 original whole-project critic and Senior HOLD
 
-Initial critic result:
+Original worker critic result:
 
 ```text
 BLOCKING: 1
@@ -148,31 +148,93 @@ SIGNIFICANT: 5
 MINOR: 1
 ```
 
-Findings and dispositions:
+The original worker closed all seven findings for Step-1 framing, but independent Senior review found one material error in that closure:
 
 ```text
-F22-S1-01: CLOSED — law→verification completeness structure repaired with mandatory Step-2 Verification Coverage Matrix
-F22-S1-02: CLOSED — executable/static/scenario/empirical/deferred proof classes separated
-F22-S1-03: CLOSED FOR STEP-1 FRAMING — Protocol-4 source absence made explicit; Step-2 source recovery remains mandatory
-F22-S1-04: CLOSED — stale engine-update executable regression repaired against current owner semantics
-F22-S1-05: CLOSED — negative/failure/indeterminate law inventory made mandatory for Step 2
-F22-S1-06: CLOSED — CI/maintenance-audit evidence boundary made explicit
-F22-S1-07: CLOSED — historical/deferred/current evidence classification made explicit
-
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
-UNRESOLVED_MINOR: 0
+SR22-S1-01: HOLD / SIGNIFICANT
+CAUSE: F22-S1-03 falsely reported Protocol-4 source as missing/unresolved
 ```
 
-No runtime owner was changed to satisfy a test.
+The targeted recovery confirms the Senior finding and repairs its root cause rather than preserving the false source-recovery route.
 
 ---
 
-## Mechanical Step-1 repair
+## Protocol-4 corrected provenance / acceptance status
 
-`DEV/TESTS/test_engine_update_policy_contract.py` was the one current executable regression found to preserve a superseded semantic implication.
+The current R2.6 canonical owner is:
 
-The old test framed same-version descendant ancestry as a silent refresh. Current `GAME/CORE/ENGINE_UPDATES.md` instead requires:
+- `DEV/docs/superpowers/specs/2026-08-24-r2-6-mvp-host-assurance-canonical-spec.md`.
+
+Its canonicalization/provenance chain directly includes:
+
+- `DEV/docs/superpowers/design/2026-08-24-r2-6-production-like-assurance-protocol.md`;
+- `DEV/docs/superpowers/design/2026-08-24-r2-6-protocol-4-frozen-fixture-contract.md`;
+- `DEV/docs/superpowers/design/2026-08-24-r2-6-mvp-behavioral-assurance-owner-clarification.md`.
+
+Correct current status:
+
+```text
+ROLE_CONTEXT_PROTOCOL_1: PRESENT / COMPLETED PRE-IMPLEMENTATION EVIDENCE WITH APPLICABILITY LIMITS
+ROLE_CONTEXT_PROTOCOL_2: PRESENT / COMPLETED PRE-IMPLEMENTATION EVIDENCE WITH APPLICABILITY LIMITS
+ROLE_CONTEXT_PROTOCOL_3: PRESENT / COMPLETED PRE-IMPLEMENTATION EVIDENCE WITH APPLICABILITY LIMITS
+
+PROTOCOL_4_DESIGN_SOURCE: PRESENT / CURRENT
+PROTOCOL_4_FROZEN_FIXTURE_SOURCE: PRESENT / CURRENT
+PROTOCOL_4_DESIGN_CLASS: SCENARIO_ACCEPTANCE_CURRENT
+PROTOCOL_4_EXECUTION_RESULTS: NOT CLAIMED / NOT YET EXECUTED ON IMPLEMENTED MVP
+PROTOCOL_4_POST_IMPLEMENTATION_EXECUTION: DEFERRED_UNTIL_REALIZATION
+
+STEP2_PROTOCOL4_SOURCE_RECOVERY_REQUIRED: NO
+STEP2_PROTOCOL4_ACCEPTANCE_MAPPING_REQUIRED: YES
+PO_DECISION_REQUIRED_NOW: NO
+```
+
+The owner-approved sequencing remains:
+
+```text
+R2.6 architecture assurance
+-> R2.7 machine/instruction/test mapping
+-> implementation planning
+-> MVP implementation (TDD)
+-> production-like Protocol-4-derived acceptance/evaluation on the real MVP
+```
+
+Finding the existing Protocol-4 design/fixture sources does **not** mean the post-implementation MVP acceptance has executed or passed.
+
+---
+
+## Targeted Source-Manifest recovery / critic re-run
+
+The corrected Source Manifest now directly includes the material R2.6 assurance chain and keeps non-normative research as supporting provenance rather than current semantic ownership.
+
+The owner-chain re-walk exposed one additional material omission:
+
+- `DEV/docs/superpowers/design/2026-08-24-r2-6-mvp-behavioral-assurance-owner-clarification.md`.
+
+It is material because it owns the decision to defer full Protocol-4 production-like execution until the real MVP exists and classifies Protocol 4 as test-design/acceptance-corpus source.
+
+The repeated Step-1 critic found no further material current Source-Manifest omission after this recovery:
+
+```text
+SR22_S1_01_ROOT_CAUSE_CONFIRMED: YES
+SR22_S1_01_REPAIRED: YES
+ADDITIONAL_MATERIAL_OMISSION_FOUND: 1
+ADDITIONAL_MATERIAL_OMISSION_REPAIRED: 1
+NEW_BLOCKING: 0
+NEW_SIGNIFICANT: 0
+NEW_MINOR: 0
+UNRESOLVED_MATERIAL_SOURCE_MANIFEST_OMISSIONS: 0
+```
+
+This is worker evidence only. Independent Senior re-review remains mandatory.
+
+---
+
+## Mechanical Step-1 repair already retained
+
+`DEV/TESTS/test_engine_update_policy_contract.py` remains the prior Step-1 executable regression repair.
+
+Current `GAME/CORE/ENGINE_UPDATES.md` law remains:
 
 ```text
 ancestry -> provenance/order evidence only
@@ -180,36 +242,7 @@ silent preference -> candidate to evaluate only
 different released bytes -> affirmative compatibility classification still required
 ```
 
-The regression is repaired to assert those current semantics plus the existing no-standalone-cosmetic-commit and non-creator constraints.
-
-`GAME/CORE/ENGINE_UPDATES.md` is unchanged.
-
-`DEV/TESTS/ENGINE_UPDATE_CASES.md` was independently checked and is already aligned to current released-v1+ clean-slate/compatibility law.
-
----
-
-## Protocol-4 / post-implementation evaluation status
-
-The WP-22 scope owner explicitly requires reconciliation of Protocol-4-derived MVP evaluations.
-
-Current repository evidence establishes:
-
-```text
-ROLE_CONTEXT_PROTOCOL_1: PRESENT
-ROLE_CONTEXT_PROTOCOL_2: PRESENT
-ROLE_CONTEXT_PROTOCOL_3: PRESENT
-PROTOCOL_4_SOURCE: NOT FOUND / INCOMPLETE SURFACE
-WP08_MVP_ACCEPTANCE_OBLIGATIONS: PRESENT AS SUPPORTING CURRENT REQUIREMENTS
-```
-
-Protocol 3 remains completed empirical evidence with explicit applicability limits and deferred gameplay-quality dimensions. WP-08 retains additional MVP verification obligations. Neither is silently relabeled as Protocol 4.
-
-```text
-STEP2_PROTOCOL4_SOURCE_RECOVERY_REQUIRED: YES
-PO_DECISION_REQUIRED_NOW: NO
-```
-
-If later evidence recovery cannot establish the intended evaluation semantics without inventing new product criteria, that exact unresolved question must be routed to the human/Product Owner at that time.
+The targeted Senior-HOLD recovery does not change that test or any GAME runtime owner.
 
 ---
 
@@ -220,19 +253,19 @@ After mandatory independent Senior PASS/GO only, Step 2 must:
 1. build the complete Verification Coverage Matrix;
 2. reconcile current tests against current owners, not filenames;
 3. inventory important negative/failure/indeterminate laws separately;
-4. distinguish executable tests, static audit, scenario cases and empirical evaluation;
-5. recover/reconcile the Protocol-4-derived evaluation source/meaning;
-6. preserve post-implementation behavioral/performance acceptance as deferred where runtime realization/measurement does not yet exist;
+4. distinguish executable tests, static audit, scenario/evaluation design and executed empirical evaluation;
+5. map the **existing** Protocol-4 design + frozen-fixture obligations through current R2.6 law into post-implementation MVP acceptance coverage;
+6. preserve post-implementation behavioral/performance acceptance as deferred where integrated runtime realization/measurement does not yet exist;
 7. identify machine-checkable architecture invariants suitable for CI/audit without converting semantic/product evaluation into fake deterministic tests;
 8. preserve WP-23 release/package/legal readiness as not started.
 
-No Step-2 work is authorized by the worker checkpoint itself.
+No Step-2 work is authorized by this targeted recovery checkpoint.
 
 ---
 
 ## Product Owner / Version Impact
 
-Current Step-1 evidence exposes no genuine unresolved Product Owner decision.
+Current targeted recovery exposes no genuine unresolved Product Owner decision.
 
 ```text
 HUMAN_DECISION_REQUIRED: NO
@@ -241,7 +274,7 @@ NEEDS_PO: NONE
 UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
 ```
 
-Step-1 publication changes only DEV design/status plus one DEV regression test synchronized to already-current runtime law. No shipped GAME module/schema/tool identity changes.
+Targeted recovery changes only DEV design/status artifacts. No shipped GAME module/schema/tool identity changes and no new machine-executable behavior is introduced.
 
 ```text
 VERSION_IMPACT: VERIFIED
@@ -258,13 +291,12 @@ VERSIONING_TAXONOMY_REOPENED: NO
 WP22_LAUNCH_AUTHORIZED_BY_PO: YES
 WP22_STARTED: YES
 WP22_STEP1_TASK_BRIEF_COMPLETE: YES
-WP22_STEP1_SOURCE_MANIFEST_COMPLETE: YES
-WP22_STEP1_CRITIC_COMPLETE: YES
-WP22_STEP1_MECHANICAL_REPAIRS_COMPLETE: YES
-WP22_STEP1_COMPLETE: YES
+WP22_STEP1_SOURCE_MANIFEST_RECOVERY_COMPLETE: YES
+WP22_STEP1_CRITIC_RERUN_COMPLETE: YES
+WP22_STEP1_TARGETED_RECOVERY_COMPLETE: YES
 
-WP22_STEP1_SENIOR_REVIEW_PENDING: YES
-WP22_STEP1_SENIOR_REVIEW: REQUIRED / PENDING
+WP22_STEP1_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD — SR22-S1-01
+WP22_STEP1_SENIOR_REREVIEW: REQUIRED / PENDING
 WP22_STEP2_STARTED: NO
 
 WP23_NOT_STARTED: YES
@@ -276,5 +308,5 @@ REAL_CAMPAIGN_MIGRATED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY INDEPENDENT WP-22 STEP-1 SENIOR REVIEW
+NEXT_GATE: MANDATORY INDEPENDENT WP-22 STEP-1 SENIOR RE-REVIEW
 ```
