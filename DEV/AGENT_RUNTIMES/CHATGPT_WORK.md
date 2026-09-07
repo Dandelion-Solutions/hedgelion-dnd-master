@@ -10,6 +10,20 @@ Do not use native Git/GitHub CLI/direct HTTP as a fallback for remote transport 
 
 If the Connector lacks a required capability, report that specific capability gap rather than bypassing it.
 
+## ChatGPT branch-creation tool admission
+
+The repository-wide branch-creation policy in `AGENTS.md` is authoritative. This section adds a ChatGPT/Codex-specific admission guard for the Connector action itself.
+
+Treat `create_branch` as a quarantined action. It is **not an admissible tool call by default**.
+
+A `create_branch` call is admissible only when the current user authorization explicitly requires creation of a **new** remote branch and the exact repository, exact new branch name, and exact base ref or base commit are all established for that creation. When `AGENTS.md` requires explicit owner approval for those exact values, obtain that approval before invoking the action.
+
+Never invoke `create_branch` for bootstrap, ref/HEAD inspection, branch existence checks, probing, discovery, no-op work, publication to an existing branch, verification, currentness checks, recovery, retry logic, tool testing, or uncertainty resolution. Use read-only ref/branch operations for inspection and the ordinary existing-ref update path for authorized publication.
+
+If the intended target branch already exists, `create_branch` is categorically the wrong action. An existing branch must be read and, when publication is authorized, updated through the existing-ref path. A `422 Reference already exists` response is evidence that the wrong action was attempted; it is not a benign existence check and must not be used as one.
+
+Do not invent placeholder, defensive, sentinel, or self-warning branch names such as `do-not-create`, `noop`, `oops`, `scratch`, `temp`, `stop`, or equivalents. If branch-creation authorization is absent or ambiguous, fail closed and continue only with non-creation operations permitted by the current task.
+
 ## Fresh state and publication
 
 Before a correctness-sensitive remote write, read the current target ref through the Connector. Construct the intended commit from that verified parent, update the ref without force unless explicitly required, then verify the remote ref/tree again.
