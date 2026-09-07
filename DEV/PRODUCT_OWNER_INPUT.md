@@ -46,7 +46,7 @@ An agent-owned route marked `ACTIVE` or `PENDING` must not name a work package t
 | `PO-003` | REQUIREMENT | INCORPORATED | WP-19 final Senior PASS accepted the bounded SemanticEvent historical-decision-basis composition and mandatory zero-extra-serial performance law; physical schema/runtime/test realization remains deferred until R2.7 final reconciliation plus approved implementation planning/execution | historical Actor decision-basis owner decision; WP-19 canonical spec; Step-4 LOG/SemanticEvent extension; R2.2/world.knowledge boundaries; retrospective/performance consumers | NONE |
 | `PO-004` | COMPATIBILITY POLICY | INCORPORATED | WP-20 final Senior PASS accepted the released-v1.0+ clean-slate compatibility horizon; only downstream implementation/test realization remains deferred behind its future explicit authorization gate | v1 clean-slate compatibility owner decision; final WP-20 canonical spec; later engine/runtime/schema migration/update/release tests | NONE |
 | `PO-005` | AUTHORITY / SECURITY POLICY | INCORPORATED | creator-login continuity policy is fixed fail-closed authority; no current architecture reopen; downstream runtime/test realization must preserve it when implementation is explicitly authorized | creator-login continuity owner decision; access/bootstrap/migration/recovery consumers; later runtime/tests | NONE |
-| `PO-006` | AUTHORITY / SAFETY / REPOSITORY POLICY | INCORPORATED | branch/ref deletion is forbidden for every HDM development/runtime agent; WP-21 Step 1 must consume the rule and WP-24 may later assess retained-ref operational cost without re-enabling deletion | branch/ref deletion owner decision; `AGENTS.md`; `GAME/CORE/PERSISTENCE.md`; `GAME/CORE/LIVE_SCENE.md`; WP-21/WP-24 | NONE |
+| `PO-006` | AUTHORITY / SAFETY / REPOSITORY POLICY | INCORPORATED | branch/ref deletion is forbidden for every HDM development/runtime agent; WP-21 final Senior PASS consumed the rule and WP-24 may later assess retained-ref operational cost without re-enabling deletion | branch/ref deletion owner decision; `AGENTS.md`; `GAME/CORE/PERSISTENCE.md`; `GAME/CORE/LIVE_SCENE.md`; final WP-21 canonical spec/review; WP-24 | NONE |
 
 ---
 
@@ -358,7 +358,7 @@ STEP-5 OPTIONAL REF-DELETION CAPABILITY: SUPERSEDED
 CURRENT-TREE / PATH CLEANUP: UNAFFECTED
 HOST-MANAGED UNREACHABLE-OBJECT GC: OUTSIDE HDM
 WHOLESALE STEP-5 REOPEN: NO
-CURRENT WP-21 CONSUMER: ACTIVE
+CURRENT WP-21 CONSUMER: CLOSED / INCORPORATED
 FUTURE WP-24 OPERATIONAL CONSUMER: DEFERRED
 ```
 
@@ -370,7 +370,7 @@ FUTURE WP-24 OPERATIONAL CONSUMER: DEFERRED
 | Development-agent core | INCORPORATED | every HDM development runtime must obey it regardless of tool availability | `AGENTS.md` |
 | GAME persistence/live runtime | INCORPORATED | no runtime branch/ref deletion; absorbed/orphan refs remain non-authoritative retained transport artifacts | `GAME/CORE/PERSISTENCE.md`, `GAME/CORE/LIVE_SCENE.md` |
 | Step-5 cleanup/recovery | INCORPORATED / TARGETED SUPERSESSION | replace only optional ref-delete semantics; retain all other native-owner cleanup/survivor/currentness laws | owner decision above supersedes Step-5.13 laws 4/71..73 and Step-5.14 SD-6 |
-| WP-21 architecture | ACTIVE / MUST CONSUME IN STEP 1 | diagnostics/cleanup/retirement framing must treat retained refs as non-authoritative and must not reintroduce delete capability | current WP-21 Step-1 package |
+| WP-21 architecture | INCORPORATED / FINAL SENIOR PASS | WP-21 closed; diagnostics/cleanup/retirement framing treats retained refs as non-authoritative and does not reintroduce delete capability | final WP-21 canonical spec + final Senior review |
 | WP-24 operational budget | DEFERRED | when WP-24 opens, assess accumulation/observability cost of retained refs without re-enabling deletion | WP-24 scope |
 | Regression protection | INCORPORATED | machine guard rejects executable branch/ref-delete invocations and stale core projections | `DEV/TESTS/test_branch_ref_deletion_prohibition.py` |
 
@@ -378,7 +378,7 @@ FUTURE WP-24 OPERATIONAL CONSUMER: DEFERRED
 
 The Product Owner decision is complete and requires no further human choice. It narrows previous cleanup capability rather than introducing a new subsystem: authority is still ended by existing routing/currentness owners, while non-authoritative branches may remain indefinitely.
 
-WP-21 Step 1 must include this entry and accepted owner decision in its Source Manifest and whole-project critic. WP-21 Step 2 remains behind its normal mandatory Senior gate.
+WP-21 final Senior PASS consumed this entry and accepted owner decision without reopening deletion capability. The only named future architecture consumer is the deferred WP-24 operational-cost route, which may measure retained-ref cost but may not re-enable deletion.
 
 Product Owner decision still required: `NONE`.
 
@@ -394,7 +394,7 @@ PO-002: INCORPORATED
 PO-003: INCORPORATED
 PO-004: INCORPORATED — WP-20 FINAL SENIOR PASS / NO CURRENT PENDING WP-20 ROUTE
 PO-005: INCORPORATED — FIXED CREATOR-LOGIN FAIL-CLOSED AUTHORITY
-PO-006: INCORPORATED — BRANCH/REF DELETION PROHIBITED
+PO-006: INCORPORATED — BRANCH/REF DELETION PROHIBITED / WP-21 FINAL SENIOR PASS
 
 HUMAN_DECISION_REQUIRED: NO
 NEEDS_PO: NONE
@@ -406,8 +406,11 @@ WP20_FINAL_SENIOR_REVIEW: PASS
 WP20_CLOSED: YES
 WHOLE_PROJECT_AUDIT_REPAIR: COMPLETE / SENIOR PASS
 WP21_STARTED: YES
-WP21_STEP1_AUTHORIZED: YES
-WP21_STEP2_AUTHORIZED: NO
+WP21_STEP1_REPEAT_SENIOR_REVIEW: PASS
+WP21_STEP8_COMPLETE: YES
+WP21_FINAL_SENIOR_REVIEW: PASS
+WP21_CLOSED: YES
+WP22_STARTED: NO
 
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
