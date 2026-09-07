@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-22 CLOSED — FINAL SENIOR REVIEW PASS
+GLOBAL_STATE: R2.7 WP-23 STEP 1 COMPLETE — MANDATORY SENIOR REVIEW / PO PROVENANCE DECISION PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-22 — Verification / test / evaluation completeness — CLOSED / final Senior PASS
+CURRENT_SLICE: WP-23 — Release/package/version/legal readiness — Step-1 framing published / Senior review pending
 
 LAST_CLOSED_UNIT: WP-22 mandatory independent final Senior review — PASS / CLOSED
-NEXT_ELIGIBLE_UNIT: WP-23 — Release/package/version/legal readiness
+NEXT_ELIGIBLE_UNIT: WP-23 Step 2 only after required Product Owner decision and independent Senior GO
 NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: explicit Product Owner authorization to launch WP-23
+REQUIRED_GATE: mandatory independent WP-23 Step-1 Senior review + Product Owner decision on release-facing provenance boundary
 
-TASK_LOCAL_CURSOR: NONE — WP-22 CLOSED / WP-23 NOT STARTED
-KNOWN_BLOCKERS: NONE — WP-23 awaits explicit Product Owner launch authorization
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-task-brief-source-manifest.md
+KNOWN_BLOCKERS: WP23-S1-F01 — release-facing provenance policy is human-owned and unresolved
 ```
 
 ---
@@ -48,6 +48,62 @@ WP-22 canonical owner:
 - `DEV/docs/superpowers/specs/2026-09-07-r2-7-WP-22-verification-test-evaluation-completeness-canonical-spec.md`.
 
 Post-WP-20 publication/currentness repair remains closed / independent Senior PASS.
+
+---
+
+## WP-23 Step-1 gate
+
+WP-23 was launched by explicit Product Owner authorization after WP-22 closure.
+
+Step-1 artifacts:
+
+- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-task-brief-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-1-whole-project-critic.md`.
+
+Step-1 reconstructed one coupled release chain across:
+
+```text
+Lane A — package / installation integrity
+Lane B — version / upgrade / release integrity
+Lane C — legal / provenance hygiene
+```
+
+Mandatory whole-project Task-Brief critic result after mechanical repairs:
+
+```text
+CR23-S1-01: SIGNIFICANT / CLOSED — release-facing provenance surface added
+CR23-S1-02: SIGNIFICANT / CLOSED — version realization status supersession corrected
+CR23-S1-03: SIGNIFICANT / CLOSED — actual release workflow consumer added
+CR23-S1-04: MINOR / CLOSED — all-GAME passthrough expansion rule made explicit
+
+CRITIC_UNRESOLVED_BLOCKING: 0
+CRITIC_UNRESOLVED_SIGNIFICANT: 0
+CRITIC_UNRESOLVED_MINOR: 0
+```
+
+Step-1 evidence nevertheless exposes one material cross-lane issue:
+
+```text
+WP23-S1-F01: SIGNIFICANT
+CLASS: HUMAN_OWNED_MATERIAL_DECISION / CROSS_LANE ARCHITECTURE GAP
+SUBJECT: release-facing provenance policy for source-specific development/research provenance shipped under GAME/
+```
+
+Current evidence shows that all valid `GAME/` files are automatically package-facing, while `GAME/CORE/SOURCES.md` carries source-specific development provenance and maintenance audit currently protects selected provenance anchors. Formal root/GAME legal-copy parity therefore does not by itself settle the release-facing provenance boundary.
+
+Exact Product Owner decision boundary:
+
+```text
+For public distributable runtime content, may HDM retain source-specific named
+external development/research provenance beyond license/notice-required or
+otherwise explicitly approved attribution, or must such development provenance
+be sanitized/removed/kept outside the shipped runtime while preserving only
+approved attribution and independently stated HDM semantics?
+```
+
+No new licensing policy or external legal conclusion was invented by Step 1. No new WP/workstream was created.
+
+Step-1 framing is complete enough for independent Senior judgment, but Step 2 is not authorized until the Product Owner decision and Senior GO are both present.
 
 ---
 
@@ -279,22 +335,33 @@ WP22_FINAL_SENIOR_REREVIEW: PASS / GO
 WP22_FINAL_CLOSURE: PASS
 WP22_CLOSED: YES
 
-WP23_NEXT_ELIGIBLE: YES
-WP23_NOT_STARTED: YES
-WP23_STARTED: NO
+WP23_LAUNCH_AUTHORIZED_BY_PO: YES
+WP23_STARTED: YES
+WP23_STEP1_COMPLETE: YES
+WP23_STEP1_CRITIC_COMPLETE: YES
+WP23_STEP1_CRITIC_UNRESOLVED_BLOCKING: 0
+WP23_STEP1_CRITIC_UNRESOLVED_SIGNIFICANT: 0
+WP23_STEP1_CRITIC_UNRESOLVED_MINOR: 0
+WP23_STEP1_EVIDENCE_SIGNIFICANT_OPEN: 1 — WP23-S1-F01
+WP23_STEP1_SENIOR_REVIEW: REQUIRED / PENDING
+WP23_STEP2_STARTED: NO
+WP23_STEPS_2_8_STARTED: NO
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
+RUNTIME_RELEASE_EXECUTED: NO
 RUNTIME_MIGRATION_EXECUTED: NO
 REAL_CAMPAIGN_MIGRATED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
-HUMAN_DECISION_REQUIRED: WP-23 LAUNCH AUTHORIZATION ONLY
-PO_DECISION_REQUIRED: WP-23 LAUNCH AUTHORIZATION ONLY
-NEEDS_PO: explicit Product Owner authorization to launch WP-23
+HUMAN_DECISION_REQUIRED: YES — WP23-S1-F01 release-facing provenance boundary
+PO_DECISION_REQUIRED: YES — exact release-facing provenance policy for non-license source-specific development/research provenance shipped under GAME/
+NEEDS_PO: decide retain vs sanitize/remove/keep-outside-runtime boundary while preserving approved attribution and independently stated HDM semantics
 UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
+WP20_REOPEN_REQUIRED: NO
+NEW_WORKSTREAM_CREATED: NO
 
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: EXPLICIT PRODUCT OWNER AUTHORIZATION TO LAUNCH WP-23
+NEXT_GATE: MANDATORY INDEPENDENT WP-23 STEP-1 SENIOR REVIEW + PRODUCT OWNER PROVENANCE DECISION
 ```
 
-WP-23 scope is `Release/package/version/legal readiness` under the R2.7 whole-project audit inventory. Eligibility does not activate the stage; its Step 1 begins only after explicit Product Owner launch authorization.
+WP-23 Step 2, Decision Brief, later Steps 2–8, implementation planning, release/tag/publication/deployment, real migration and gameplay bootstrap remain unauthorized.
