@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-21 STEPS 2–8 COMPLETE — MANDATORY FINAL SENIOR REVIEW PENDING
+GLOBAL_STATE: R2.7 WP-21 FINAL SENIOR REVIEW PASS — WP-21 CLOSED / WP-22 NOT STARTED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-21 — Diagnostics, observability, cleanup and retirement — Step 8 complete / final Senior review pending
+CURRENT_SLICE: WP-21 — Diagnostics, observability, cleanup and retirement — CLOSED / FINAL SENIOR PASS
 
-LAST_CLOSED_UNIT: WP-21 Step 1 mandatory repeat Senior review — PASS
-NEXT_ELIGIBLE_UNIT: mandatory independent WP-21 final Senior review
-NEXT_AUTHORIZED_UNIT: NONE — no WP-22, implementation planning or implementation before final Senior PASS/GO
-REQUIRED_GATE: mandatory independent final Senior review of the complete WP-21 Steps 2–8 package
+LAST_CLOSED_UNIT: WP-21 mandatory independent final Senior review — PASS
+NEXT_ELIGIBLE_UNIT: R2.7 WP-22 Step 1 — subject to explicit Product Owner launch
+NEXT_AUTHORIZED_UNIT: NONE — WP-22 is not started or authorized by WP-21 closure
+REQUIRED_GATE: present the next R2.7 work package to the Product Owner and obtain explicit launch before its Step 1 begins
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-step-8-canonicalization.md
-KNOWN_BLOCKERS: NONE IN WORKER VIEW — FINAL SENIOR REVIEW PENDING
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-final-senior-review.md
+KNOWN_BLOCKERS: NONE
 ```
 
 ---
@@ -80,7 +80,7 @@ SR21-02: PASS / CLOSED
 SR21-03: PASS / CLOSED
 ```
 
-Step-1 constraints preserved through Steps 2–8:
+Step-1 constraints preserved through final closure:
 
 - diagnostics do not require hidden CoT authority;
 - maintenance operation routing != authorization;
@@ -106,9 +106,13 @@ Design provenance:
 - Step 7: `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-step-7-resolution-propagation.md`;
 - Step 8: `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-step-8-canonicalization.md`.
 
-Final worker-produced implementation-facing candidate:
+Accepted implementation-facing WP-21 owner after final Senior PASS:
 
 - `DEV/docs/superpowers/specs/2026-09-07-r2-7-WP-21-diagnostics-observability-cleanup-retirement-canonical-spec.md`.
+
+Final independent Senior review:
+
+- `DEV/docs/superpowers/design/2026-09-07-r2-7-WP-21-final-senior-review.md` — PASS / WP-21 closed.
 
 Selected architecture:
 
@@ -176,7 +180,7 @@ SIGNIFICANT: 6
 MINOR: 2
 ```
 
-All findings are closed by Step 7:
+All findings are closed by Step 7 and independently verified closed by the final Senior review:
 
 ```text
 F21-201: CLOSED — maintenance authorization vs recipient disclosure
@@ -200,6 +204,41 @@ UPSTREAM_SEMANTIC_OWNER_EDIT_REQUIRED: NO
 
 ---
 
+## WP-21 final Senior closure
+
+Independent Senior review accepted the complete Step-2–8 package and current final owner without targeted semantic repair.
+
+Verified:
+
+- Step-6 findings are fully propagated into the final WP-21 owner and affected current owner composition;
+- maintenance authorization remains distinct from recipient eligibility;
+- diagnostic currentness remains owner-qualified with no invented universal frontier;
+- Step-5.13 conservative cleanup law remains intact;
+- PO-006 is preserved as an absolute hard exclusion from physical Git branch/ref removal;
+- WP-17 and WP-18 late-family semantics match their native owners and their exact machine debt remains deferred;
+- no current machine/runtime surface is falsely claimed implemented;
+- no current native owner requires wholesale reopening;
+- no genuine Product Owner decision remains.
+
+The WP-21 canonical candidate's historical `FINAL SENIOR REVIEW PENDING` metadata is superseded for gate/current-progress purposes by the final Senior review and this file; normative content is accepted unchanged.
+
+The logical-ref-retirement amendment's older Step-1-era `SENIOR REVIEW PENDING` metadata was already superseded by the Step-1 repeat Senior PASS; its normative reconciliation remains current.
+
+Exact worker checkpoint verification reviewed by Senior:
+
+```text
+HEAD: d4e3a180665296eb68bcca83053c9b0b5967b7e1
+WORKFLOW: Validate engine source
+RUN_ID: 34104643481
+RUN_NUMBER: 1814
+STATUS: completed
+CONCLUSION: success
+FULL_MAINTENANCE_AUDIT: PASS
+DEV_UNIT_TESTS: PASS
+```
+
+---
+
 ## Routed machine debt
 
 The following remain deferred behind explicit future implementation planning/execution:
@@ -213,13 +252,13 @@ The following remain deferred behind explicit future implementation planning/exe
 7. automated cleanup dry-run/execution tooling if selected later;
 8. retained-ref operational/performance measurement; WP-24 may assess cost but cannot re-enable deletion.
 
-These are not activated by WP-21.
+These are not activated by WP-21 closure.
 
 ---
 
 ## Product Owner / Version Impact
 
-No Steps 2–8 evidence exposes a genuine unresolved Product Owner decision.
+Final Senior review found no unresolved Product Owner decision.
 
 ```text
 HUMAN_DECISION_REQUIRED: NO
@@ -228,7 +267,7 @@ NEEDS_PO: NONE
 UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
 ```
 
-Steps 2–8 change DEV design/spec/status artifacts only; no current GAME runtime module/schema or version-bearing shipped identity is changed.
+WP-21 Steps 2–8 and final review/status closure change DEV design/spec/status artifacts only; no current GAME runtime module/schema or version-bearing shipped identity is changed.
 
 ```text
 VERSION_IMPACT: VERIFIED
@@ -236,8 +275,6 @@ VERSION_BUMP_REQUIRED: NO
 VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
-
-Exact-head hosted verification is obtained after coherent publication and is not self-embedded by a later status-only commit.
 
 ---
 
@@ -257,9 +294,10 @@ WP21_STEP5_COMPLETE: YES
 WP21_STEP6_COMPLETE: YES
 WP21_STEP7_COMPLETE: YES
 WP21_STEP8_COMPLETE: YES
-
-WP21_FINAL_SENIOR_REVIEW_PENDING: YES
-WP21_FINAL_SENIOR_REVIEW: REQUIRED / PENDING
+WP21_FINAL_SENIOR_REVIEW_PENDING: NO
+WP21_FINAL_SENIOR_REVIEW: PASS
+WP21_FINAL_CLOSURE: PASS
+WP21_CLOSED: YES
 
 WP22_NOT_STARTED: YES
 WP22_STARTED: NO
@@ -269,6 +307,7 @@ RUNTIME_MIGRATION_EXECUTED: NO
 REAL_CAMPAIGN_MIGRATED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
+NEXT_ELIGIBLE_UNIT: R2.7 WP-22 STEP 1 — SUBJECT TO EXPLICIT PRODUCT OWNER LAUNCH
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY INDEPENDENT WP-21 FINAL SENIOR REVIEW
+NEXT_GATE: PRODUCT OWNER LAUNCH OF THE NEXT R2.7 WORK PACKAGE
 ```
