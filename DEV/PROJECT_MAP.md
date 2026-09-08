@@ -306,7 +306,7 @@ accepted shared-state architecture
 
 ### 8.5 LLM information / continuity / role context / Story
 
-Implementation-facing integration entry: [Story producer, persistence and retrospective consumer contract](docs/superpowers/specs/2026-09-07-story-producer-persistence-retrospective-consumer-contract.md). Read it with its composed Story, native-evidence, Context Runtime, publication and chronology owners; it does not replace them.
+Implementation-facing integration entry: [Story producer, persistence and retrospective consumer contract](docs/superpowers/specs/2026-09-07-story-producer-persistence-retrospective-consumer-contract.md). Read it with its composed Story, native-evidence, Context Runtime, publication and chronology owners; it does not replace them. Its [baseline projection source contracts](docs/superpowers/specs/2026-09-08-story-baseline-projection-source-contracts.md) fix production candidates, required retained material, source-local codecs and coverage for all four Story layers.
 
 ```text
 Step-4 final truth/knowledge/context spec

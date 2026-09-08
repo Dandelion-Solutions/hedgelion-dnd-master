@@ -125,7 +125,9 @@ Local source keys match `[A-Za-z][A-Za-z0-9_-]*`. They are names inside one reco
 
 ### Example convention
 
-The records and logical values below describe a **fictional validation fixture**, not an existing campaign or observed runtime result. IDs and opaque handle strings are fixture values. Native references without selectors use their owner's complete-record identity semantics. Native material is a bounded owner-provided view, not a new serialized native schema. The examples use one admitted `campaign.semantic_events` source domain; production domain enumeration/basis codecs must satisfy §11.
+The records and logical values below describe a **fictional validation fixture**, not an existing campaign or observed runtime result. IDs and opaque handle strings are fixture values. Native references without selectors use their owner's complete-record identity semantics. Native material is a bounded owner-provided view, not a new serialized native schema. The examples use one admitted `fixture.semantic_events` source domain; production domain enumeration/basis codecs must satisfy §11.
+
+Examples use `fixture.*` source domains and illustrative native IDs/representations. These demonstrate the envelope/exchange composition only; they are not production registrations or reusable production coverage. Production domains, generation-1 codecs and required material are defined by the linked baseline source-contract companion.
 
 ## 6. TRANSCRIPT persisted schema
 
@@ -152,7 +154,7 @@ sources:
       family: runtime.message
       identity: [message-00000001]
 projection_basis:
-  - source_domain: campaign.participant_messages
+  - source_domain: fixture.participant_messages
     semantic_contract_generation: 1
     candidate_ids: [message-00000001]
 entity_refs:
@@ -194,7 +196,7 @@ sources:
       family: runtime.semantic_event
       identity: [event-00000001]
 projection_basis:
-  - source_domain: campaign.semantic_events
+  - source_domain: fixture.semantic_events
     semantic_contract_generation: 1
     candidate_ids: [event-00000001]
 entity_refs:
@@ -227,7 +229,7 @@ sources:
       family: runtime.mechanical_event
       identity: [mechanical-event-00000001]
 projection_basis:
-  - source_domain: campaign.mechanical_episodes
+  - source_domain: fixture.mechanical_episodes
     semantic_contract_generation: 1
     candidate_ids: [mechanical-event-00000001]
 entity_refs:
@@ -268,7 +270,7 @@ sources:
       family: runtime.semantic_event
       identity: [event-00000002]
 projection_basis:
-  - source_domain: campaign.semantic_events
+  - source_domain: fixture.semantic_events
     semantic_contract_generation: 1
     candidate_ids: [event-00000001, event-00000002]
 cross_refs: [E000001, E000002]
@@ -315,7 +317,7 @@ schema_version: 1
 layer: EVENTS
 story_id_allocator_high_water: 2
 coverage_by_source_domain:
-  campaign.semantic_events:
+  fixture.semantic_events:
     semantic_contract_generation: 1
     terminal_coverage:
       kind: CONTIGUOUS
@@ -354,7 +356,7 @@ A registered `(layer, source_domain, semantic_contract_generation)` contract mus
 
 These are engine contract registrations, not a new campaign registry, queue or ledger. Source-domain IDs may identify campaign or selected native epoch scopes; the codec must retain native source identity and must not collapse independently moving scopes into a global sequence.
 
-The default eligible mappings are accepted participant communications to TRANSCRIPT, compact SemanticEvent history to EVENTS, meaningful native mechanical episodes to MECHANICS, and accepted historical evidence to NARRATIVE. A mapping must explicitly declare its disposition policy when activated. An ordinary optional candidate may be omitted; an admitted archival/materialization obligation is `MUST_MATERIALIZE`. This specification does not turn every native event, mechanic or conversation into mandatory Story.
+The production registrations are fixed by [Story baseline projection source contracts](2026-09-08-story-baseline-projection-source-contracts.md). They define eight layer/domain registrations: participant messages and accepted exact-archival requests for TRANSCRIPT; native SemanticEvents and historical relations independently for EVENTS and NARRATIVE; committed segment facts and terminal gameplay outcomes for MECHANICS. That companion owns their exact candidate identities, native-origin scopes, cursor codecs, initial semantic generations, closed omission predicates, required material and retention/correction rules. Implementations must not invent another materiality filter or defer those decisions until activation. Story preserves the accepted semantic campaign account as a navigable corpus across chats; bounded reads do not impose a corpus-size limit. Selective Exact remains in force for ordinary participant prose.
 
 The publisher validates the whole selected bounded window. `MATERIALIZED` references compatible existing/new output satisfying the candidate's cardinality; `OMITTED` is terminal only for a candidate whose contract allows the supplied omission. Generation failure, malformed output, unavailable required evidence and failed publication leave the candidate unconsidered. A smaller valid prefix requires a newly selected window; the model cannot silently truncate the bundle's obligation.
 
@@ -400,7 +402,7 @@ The fixture starts before any EVENTS allocation. Its native event view establish
   "campaign_pin": "published-campaign-pin-1",
   "expected_layer_representation": "events-state-empty",
   "windows": [{
-    "source_domain": "campaign.semantic_events",
+    "source_domain": "fixture.semantic_events",
     "semantic_contract_generation": 1,
     "source_basis": "semantic-event-position-1",
     "expected_coverage": {"kind": "CONTIGUOUS", "through": null},
@@ -460,13 +462,13 @@ Mapped records must actually retain the candidate's projection contribution and 
     "unit": {
       "content": {"title": "The gate opens", "body": "The guard opened the northern gate for the party."},
       "sources": {"event": {"ref": {"family": "runtime.semantic_event", "identity": ["event-00000001"]}}},
-      "projection_basis": [{"source_domain": "campaign.semantic_events", "semantic_contract_generation": 1, "candidate_ids": ["event-00000001"]}],
+      "projection_basis": [{"source_domain": "fixture.semantic_events", "semantic_contract_generation": 1, "candidate_ids": ["event-00000001"]}],
       "entity_refs": [{"family": "world.actor", "identity": ["actor-0042"]}],
       "availability": {"requires_story_refs": []},
       "payload": {"event_source_keys": ["event"]}
     }
   }],
-  "candidate_results": [{"source_domain": "campaign.semantic_events", "candidate_id": "event-00000001", "outcome": "MATERIALIZED", "record_keys": ["opening"]}],
+  "candidate_results": [{"source_domain": "fixture.semantic_events", "candidate_id": "event-00000001", "outcome": "MATERIALIZED", "record_keys": ["opening"]}],
   "retirements": []
 }
 ```
@@ -727,7 +729,7 @@ An uninitialized optional Story layer is not automatically corruption. Its absen
 | StoryLayerProjectionState `schema_version` | `1`; separately serialized control/lookup/editorial state | Independent of unit payload evolution; preserve allocator/coverage/editorial semantics across migration |
 | `exchange_schema_version` | `1`; transient SourceBundle/Draft pair can cross process/language boundaries independently of stored files | A changed exchange must have explicit paired producer/transformer support; no campaign migration solely for exchange version |
 | `read_schema_version` | `1`; typed acquisition/result/basis/continuation contract is independent of file layout and producer exchange | Explicit provider/caller support; incompatible continuations expire; no implicit coercion to older evidence kinds |
-| `(layer, source_domain).semantic_contract_generation` | Existing Step-5.10 namespace; domain-defined positive integer, fixture uses `1` | Change only for material projection meaning; compatible migration/reprojection/reset before reusing coverage |
+| `(layer, source_domain).semantic_contract_generation` | Existing Step-5.10 namespace; baseline production registrations start at `1` under the companion; fixture generations are separate | Change only for material projection meaning; compatible migration/reprojection/reset before reusing coverage |
 
 Four structural namespaces are sufficient. Layer, query-kind, bundle and draft versions are not separately multiplied. No Story-wide revision, model/prompt coverage epoch, custom content digest or independent index schema is introduced.
 
@@ -790,7 +792,7 @@ The first example is CR's internal acquisition after it has admitted a retrospec
         "story_id": "E000001",
         "content": {"title": "The gate opens", "body": "The guard opened the northern gate for the party."},
         "sources": {"event": {"ref": {"family": "runtime.semantic_event", "identity": ["event-00000001"]}}},
-        "projection_basis": [{"source_domain": "campaign.semantic_events", "semantic_contract_generation": 1, "candidate_ids": ["event-00000001"]}],
+        "projection_basis": [{"source_domain": "fixture.semantic_events", "semantic_contract_generation": 1, "candidate_ids": ["event-00000001"]}],
         "entity_refs": [{"family": "world.actor", "identity": ["actor-0042"]}],
         "availability": {"requires_story_refs": []},
         "payload": {"event_source_keys": ["event"]}
@@ -816,7 +818,7 @@ The handle `read-basis-1` resolves internally to this descriptor. The fixture so
       "transport_pin": "published-story-pin-1",
       "representation": "events-closure-opening",
       "layer": "EVENTS",
-      "source_basis": {"source_domain": "campaign.semantic_events", "semantic_contract_generation": 1, "through": "semantic-event-position-1"}
+      "source_basis": {"source_domain": "fixture.semantic_events", "semantic_contract_generation": 1, "through": "semantic-event-position-1"}
     }
   }
 }
