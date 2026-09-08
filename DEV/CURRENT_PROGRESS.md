@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-24 STEP-1 SR24-S1-04 REPAIR PUBLISHED — MANDATORY INDEPENDENT SENIOR RE-REVIEW PENDING
+GLOBAL_STATE: R2.7 WP-24 STEP-1 SENIOR RE-REVIEW PASS / GO — STEPS 2–8 AUTHORIZED / STEP 2 ACTIVE
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-24 — Performance / scale / operational budget — SR24-S1-04 Step-1 repair / Senior re-review pending
+CURRENT_SLICE: WP-24 — Performance / scale / operational budget — Step 2 evidence reconciliation
 
-LAST_CLOSED_UNIT: WP-23 mandatory independent final Senior re-review — PASS / CLOSED
-NEXT_ELIGIBLE_UNIT: mandatory independent WP-24 Step-1 SR24-S1-04 Senior re-review
-NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: mandatory independent Senior re-review of SR24-S1-04 repair package
+LAST_CLOSED_UNIT: WP-24 Step-1 mandatory independent Senior re-review — PASS / GO
+NEXT_ELIGIBLE_UNIT: WP-24 Step 2 evidence reconciliation
+NEXT_AUTHORIZED_UNIT: WP-24 STEP 2
+REQUIRED_GATE: complete WP-24 Steps 2–8, then mandatory independent final Senior review
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-task-brief-source-manifest.md
-KNOWN_BLOCKERS: NONE IN WORKER REPAIR VIEW — SR24-S1-04 REPAIR CANDIDATE PENDING INDEPENDENT SENIOR RE-REVIEW
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-2-evidence-reconciliation.md
+KNOWN_BLOCKERS: NONE
 ```
 
 ---
@@ -217,155 +217,130 @@ PUBLIC HDM SEMANTICS: INDEPENDENTLY STATED IN HDM TERMS
 
 ---
 
-## WP-24 Step-1 authority and recovery chain
+## WP-24 authority and Step-1 Senior closure
 
-WP-24 was launched by explicit Product Owner authorization on 2026-09-08. Authorization remains limited to Step 1.
+WP-24 was launched by explicit Product Owner authorization on 2026-09-08.
 
 Step-1 artifacts:
 
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-task-brief-source-manifest.md`;
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-1-whole-project-critic.md`.
 
-Initial mandatory independent Senior review returned HOLD with bounded recovery:
+Initial mandatory independent Senior review returned HOLD with bounded recovery. The recovery chain closed four findings through independent Senior re-review:
 
 ```text
-WP24_STEP1_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
-RECOVERY_SCOPE: BOUNDED STEP-1 FRAMING REPAIR
-SR24-S1-01: BLOCKING
-SR24-S1-02: SIGNIFICANT
-HUMAN_DECISION_REQUIRED_NOW: NO
-WP24_STEP2_AUTHORIZED: NO
-```
-
-Current independent Senior state entering SR24-S1-04 repair:
-
-```text
+WP24_STEP1_SENIOR_RE_REVIEW: PASS / GO
 SR24-S1-01: PASS / CLOSED
 SR24-S1-02: PASS / CLOSED
 SR24-S1-03: PASS / CLOSED
-SR24-S1-04: SIGNIFICANT / OPEN
-WP24_STEP2_AUTHORIZED: NO
+SR24-S1-04: PASS / CLOSED
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+WP24_STEP2_AUTHORIZED: YES
+IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 ```
 
-SR24-S1-04 is a narrow propagation/completeness repair over the current Story persistence-growth owner:
-
-- `DEV/docs/superpowers/specs/2026-09-08-story-persistence-growth-sharding-consumer-decoupling-owner-decision.md`.
-
-Current worker repair state:
+### Closed Step-1 constraints carried into Steps 2–8
 
 ```text
-WP24_LAUNCH_AUTHORIZED_BY_PO: YES
-WP24_STARTED: YES
-WP24_STEP1_TASK_BRIEF_COMPLETE: YES
-WP24_STEP1_SOURCE_MANIFEST_COMPLETE_FOR_CURRENT_FRAMING: YES
-WP24_STEP1_EVIDENCE_EXTRACTION_SUFFICIENT_FOR_FRAMING: YES
-WP24_STEP1_WHOLE_PROJECT_CRITIC_COMPLETE: YES
-SR24-S1-01: PASS / CLOSED
-SR24-S1-02: PASS / CLOSED
-SR24-S1-03: PASS / CLOSED
-SR24-S1-04_REPAIR_APPLIED: YES / PENDING INDEPENDENT SENIOR RE-REVIEW
-WP24_STEP1_REPAIR_CRITIC_RERUN_COMPLETE: YES
-WP24_STEP1_REPAIR_NEW_BLOCKING_FOUND: 0
-WP24_STEP1_REPAIR_NEW_SIGNIFICANT_FOUND: 0
-WP24_STEP1_UNRESOLVED_BLOCKING_IN_WORKER_VIEW: 0
-WP24_STEP1_UNRESOLVED_SIGNIFICANT_IN_WORKER_VIEW: 0
-WP24_STEP1_SENIOR_RE_REVIEW: REQUIRED / PENDING
-HUMAN_DECISION_REQUIRED: NO
-```
+PO-003 / WP-19:
+    zero extra sequential LLM calls solely for historical-basis capture
+    zero extra serial remote/tool reads when required T0 is already admitted
+    zero separate publications solely for basis capture
+    zero basis work on irrelevant/trivial/NO_CHANGE turns
+    bounded typed material only
+    extra serial LLM/tool round trip on ordinary gameplay critical path => material escalation
 
-### SR24-S1-01 current disposition
+TURN-TIME LAW:
+    no accepted 120-second SLA
+    no fixed token/time/step/complexity turn ceiling
 
-```text
-SR24-S1-01: PASS / CLOSED
-```
+ENGINE INSTRUCTION CACHE:
+    new chat/substantial setup => full exact-package CORE + RULES preload
+    package switch => invalidate + full target rebuild
+    verified instruction-context loss => full rehydrate
+    ordinary turn => already-loaded CORE / zero CORE reread merely for activation
 
-No current owner establishes the previously asserted `120 seconds` / `T_budget=120s` Product Owner turn law. The actual PO-003/WP-19 zero-extra-serial basis-capture law remains controlling in its stated scope, and `RUNTIME.md` rejects a fixed token/time/step/complexity reasoning ceiling.
+WP-22:
+    structural/specification evidence != current physical measurement
+    != realized implementation benchmark != production-like supported-host empirical acceptance
 
-### SR24-S1-02 current disposition
+STORY:
+    8 baseline registrations
+    EVENTS/NARRATIVE SemanticEvent and relation projection obligations independent
+    LOCAL + selected LIVE origin/domain/lane cursor fan-out
+    bounded window/read != bounded total Story corpus
+    no corpus-wide size quota
+    native-source survivor retention until required projection/equivalent survivor
+    required Story-output retention after compatible coverage
+    backlog/catch-up may lag and stays outside ordinary gameplay critical path
+    unprovable source-scope completeness => UNKNOWN/defer, not global scan
+    no mandatory Chronicler queue/worker/heartbeat
 
-```text
-SR24-S1-02: PASS / CLOSED
-```
+STORY PERSISTENCE OPERABILITY:
+    10 KiB mutable runtime text cap = hard per-file invariant, not corpus quota
+    every plausibly unbounded collection requires deterministic bounded partition path
+    physical topology is not semantic authority
+    no concrete shard/page/layout/count/threshold selected without evidence/trigger
 
-WP-24 framing continues to distinguish full CORE+RULES initial preload, package-switch cache rebuild, verified-loss rehydration and ordinary-turn zero CORE reread. The `370,728 B` current physical-source measurement remains Class A only and is not a production forecast/sizing baseline.
-
-### SR24-S1-03 current disposition
-
-```text
-SR24-S1-03: PASS / CLOSED
-```
-
-The Source Manifest directly consumes the baseline Story source-contract companion and current Story persistence-growth/sharding owner, preserving the eight-registration and corpus/backlog/retention/fan-out implications accepted by independent Senior review.
-
-### SR24-S1-04 current disposition
-
-```text
-SR24-S1-04: REPAIR CANDIDATE / PENDING INDEPENDENT SENIOR RE-REVIEW
-```
-
-Propagation/completeness repair now records:
-
-```text
-PROJECT_MAP STORY PERSISTENCE/OPERABILITY ROUTING:
-    integration contract
-    + baseline projection source contracts
-    + Story persistence growth/sharding/consumer-decoupling owner
-
-DIRECT LLM-FACING STORY SHAPE POLICY:
+DIRECT LLM-FACING STORY SHAPE:
     ~250 lines = preferred design ceiling
     251–300 = review zone
-    >300 = not acceptable normal steady-state without explicit owner-required safe reason
-
-LINE-COUNT POLICY CLASS:
-    LLM/tooling ergonomics + operability guidance
-    NOT token SLA
-    NOT latency SLA
-    NOT replacement for 10 KiB per-file hard cap
+    >300 = not acceptable normal steady state without explicit owner-required safe reason
+    line-count policy = ergonomics/operability guidance, not token/latency SLA or 10 KiB substitute
 
 EXACT ARCHIVAL EDGE:
     exact material cannot be truncated/paraphrased for file-size compliance
-    potentially oversized indivisible exact scope requires owner/schema
-    bounded partition/reconstruction semantics BEFORE ADMISSION
+    if an accepted exact archival scope may exceed one indivisible file,
+    owner/schema must define bounded exact partition/reconstruction semantics BEFORE ADMISSION
 
-CONCRETE STORY SHARD LAYOUT: NOT SELECTED
-STORY REDESIGN/IMPLEMENTATION: NOT ACTIVATED
+PO-006:
+    HDM automatic branch/ref deletion forbidden
+    physical retained refs may be measured but cannot become authority or require ordinary all-ref scans
 ```
 
-A Story integration-contract edit was not required: repaired `DEV/PROJECT_MAP.md` now supplies direct forward discovery of the supplemental growth/sharding owner, whose own authority statement already says it supplements and preserves the integration contract.
+A Story integration-contract edit was not required during SR24-S1-04: `DEV/PROJECT_MAP.md` supplies direct forward discovery of the supplemental growth/sharding owner, whose own authority statement supplements and preserves the integration contract.
 
-### Current repaired Step-1 framing result
+---
 
-WP-24 now has a current repair package covering:
-
-- new-chat/setup full instruction preload versus ordinary-turn zero-reread fast path;
-- package-switch and verified-context-loss full cache rebuild paths;
-- realistic normal-turn and special-operation hot paths;
-- record/file/index/Story/ref/instruction-corpus growth dimensions;
-- eight baseline Story projection registrations and layer/origin/domain/cursor fan-out;
-- bounded Story catch-up/read operations versus campaign-growing total Story corpus;
-- native pre-projection survivor retention and post-coverage Story-output retention as distinct pressures;
-- deterministic bounded partitionability for plausibly unbounded Story collections;
-- current forward routing to the Story persistence growth/sharding owner;
-- direct-LLM-facing ~250/251–300/>300 owner ergonomics classification;
-- exact-archive non-truncation and pre-admission bounded partition/reconstruction edge;
-- source-scope `UNKNOWN/defer` rather than global scans;
-- bounded discovery/hydration/context/materialization/publication paths;
-- serial LLM/tool/Connector round-trip amplification;
-- retry/conflict and multi-chat contention amplification;
-- supported-host fallback/degradation assumptions;
-- background polling/worker/heartbeat negative dependency census;
-- correctness/resource laws versus optional optimizations and revisit triggers;
-- proof classification between current measurements, realized benchmarks and real-MVP empirical evaluation.
-
-Current accepted architecture inspected by the repair does not require an always-running background polling/worker/heartbeat service for correctness. Future realized/production-like evaluation remains required where owner/evidence class demands it.
-
-PO-006 remains unchanged:
+## WP-24 Steps 2–8 current execution state
 
 ```text
-HDM AUTOMATIC BRANCH/REF DELETION: FORBIDDEN / NOT A CAPABILITY
-REF RETIREMENT: LOGICAL DE-AUTHORIZATION / DE-ROUTING ONLY
-WP24 MAY ASSESS RETAINED-REF OPERATIONAL COST: YES
-WP24 MAY REINTRODUCE REF DELETION AS OPTIMIZATION: NO
+WP24_STEP1_COMPLETE: YES
+WP24_STEP1_SENIOR_RE_REVIEW: PASS / GO
+WP24_STEP2_AUTHORIZED: YES
+WP24_STEPS_2_8_STARTED: YES
+WP24_STEP2_STATUS: ACTIVE
+WP24_STEP3_STATUS: NOT STARTED
+WP24_STEP4_STATUS: NOT STARTED
+WP24_STEP5_STATUS: NOT STARTED
+WP24_STEP6_STATUS: NOT STARTED
+WP24_STEP7_STATUS: NOT STARTED
+WP24_STEP8_STATUS: NOT STARTED
+WP24_CANONICAL_SPEC_PUBLISHED: NO
+WP24_FINAL_SENIOR_REVIEW: NOT STARTED
+WP24_CLOSED: NO
+
+HUMAN_DECISION_REQUIRED: NO
+PO_DECISION_REQUIRED: NO
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
+WP20_REOPEN_REQUIRED: NO
+NEW_WORKSTREAM_CREATED: NO
+
+IMPLEMENTATION_PLANNING_AUTHORIZED: NO
+IMPLEMENTATION_PLANNING_STARTED: NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
+PERFORMANCE_OPTIMIZATION_IMPLEMENTATION_STARTED: NO
+STORY_REDESIGN_STARTED: NO
+RUNTIME_RELEASE_EXECUTED: NO
+RUNTIME_MIGRATION_EXECUTED: NO
+REAL_CAMPAIGN_MIGRATED: NO
+REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
+
+NEXT_AUTHORIZED_UNIT: WP-24 STEP 2
+NEXT_GATE: COMPLETE WP-24 STEPS 2–8, THEN MANDATORY INDEPENDENT FINAL SENIOR REVIEW
 ```
 
 ---
@@ -379,56 +354,6 @@ VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-This SR24-S1-04 repair changes only development routing/design/status documentation. It changes no version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime implementation.
+The Senior-gate synchronization is development status only. It changes no version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime implementation.
 
-## Current authorization / scope fence
-
-```text
-WP23_LAUNCH_AUTHORIZED_BY_PO: YES
-WP23_STARTED: YES
-WP23_STEP1_SENIOR_REVIEW: PASS / GO
-WP23_STEPS_2_8_COMPLETE: YES
-WP23_CANONICAL_SPEC_PUBLISHED: YES
-WP23_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD — SR23-FINAL-01
-SR23_FINAL_01_TARGETED_REPAIR_COMPLETE: YES
-WP23_FINAL_SENIOR_RE_REVIEW: PASS / GO
-WP23_FINAL_CLOSURE: PASS
-WP23_CLOSED: YES
-
-WP24_LAUNCH_AUTHORIZED_BY_PO: YES
-WP24_STARTED: YES
-WP24_STEP1_COMPLETE: YES / SR24-S1-04 WORKER REPAIR CANDIDATE
-WP24_STEP1_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
-SR24-S1-01: PASS / CLOSED
-SR24-S1-02: PASS / CLOSED
-SR24-S1-03: PASS / CLOSED
-SR24-S1-04: REPAIR CANDIDATE / PENDING INDEPENDENT SENIOR RE-REVIEW
-WP24_STEP1_REPAIR_CRITIC_RERUN_COMPLETE: YES
-WP24_STEP1_SENIOR_RE_REVIEW: REQUIRED / PENDING
-WP24_STEP2_AUTHORIZED: NO
-WP24_STEPS_2_8_STARTED: NO
-WP24_CANONICAL_SPEC_PUBLISHED: NO
-WP24_CLOSED: NO
-
-HUMAN_DECISION_REQUIRED: NO
-PO_DECISION_REQUIRED: NO
-UNRESOLVED_BLOCKING_IN_WORKER_VIEW: 0
-UNRESOLVED_SIGNIFICANT_IN_WORKER_VIEW: 0
-UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
-WP20_REOPEN_REQUIRED: NO
-NEW_WORKSTREAM_CREATED: NO
-
-IMPLEMENTATION_PLANNING_STARTED: NO
-SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
-PERFORMANCE_OPTIMIZATION_IMPLEMENTATION_STARTED: NO
-STORY_REDESIGN_STARTED: NO
-RUNTIME_RELEASE_EXECUTED: NO
-RUNTIME_MIGRATION_EXECUTED: NO
-REAL_CAMPAIGN_MIGRATED: NO
-REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
-
-NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY INDEPENDENT SENIOR RE-REVIEW OF SR24-S1-04 REPAIR PACKAGE
-```
-
-Do not begin WP-24 Step 2, Steps 2–8, implementation planning, substantive implementation, performance optimization implementation, Story redesign, release/tag/deployment, migration or gameplay bootstrap before the mandatory independent Senior re-review and subsequent applicable authorization.
+Do not begin implementation planning, substantive implementation, performance optimization implementation, Story redesign, release/tag/deployment, migration or gameplay bootstrap during WP-24 Steps 2–8. After Step 8, stop for mandatory independent Senior final review.
