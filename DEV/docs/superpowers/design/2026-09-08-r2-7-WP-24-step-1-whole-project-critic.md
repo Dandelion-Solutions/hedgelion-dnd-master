@@ -1,6 +1,6 @@
 # R2.7 WP-24 Step 1 — Mandatory Whole-Project Critic
 
-Status: **SR24-S1-03 MICRO-RECOVERY CRITIC COMPLETE — SR24-S1-01 / SR24-S1-02 PASS/CLOSED — MANDATORY INDEPENDENT SENIOR RE-REVIEW PENDING**
+Status: **SR24-S1-04 REPAIR CRITIC COMPLETE — SR24-S1-01 / SR24-S1-02 / SR24-S1-03 PASS/CLOSED — MANDATORY INDEPENDENT SENIOR RE-REVIEW PENDING**
 
 Date: 2026-09-08
 
@@ -10,17 +10,19 @@ Primary Senior-recovery evidence basis: `80649df2ff16f791d2abbeb0403e74bff8cf1d1
 
 SR24-S1-03 micro-recovery evidence basis: `83d018e42db9fa35a900f3b961f69edbee2a3d8e`.
 
+SR24-S1-04 repair evidence basis: `ac111c0d61da7e0bcf4226783eb34f7b0c43c0f7`.
+
 Reviewed artifact:
 
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-task-brief-source-manifest.md`.
 
-This file is the mandatory Step-1 whole-project framing critic required by `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, including the rerun after the new current Story baseline projection and persistence-growth owners entered the dependency graph. It is not a Step-6 candidate-spec adversarial review and does not authorize Step 2.
+This file is the mandatory Step-1 whole-project framing critic required by `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, including the rerun after the current Story persistence growth/sharding owner exposed propagation/completeness gaps. It is not a Step-6 candidate-spec adversarial review and does not authorize Step 2.
 
 ---
 
 ## 1. Critic method
 
-The critic does not accept the Task Brief's dependency list as authority. The current rerun reconstructs the WP-24 dependency subgraph from current `DEV/PROJECT_MAP.md` and actual owners/consumers, including owners published after the earlier recovery checkpoint.
+The critic does not accept the Task Brief's dependency list as authority. The current rerun reconstructs the WP-24 dependency subgraph from current `DEV/PROJECT_MAP.md` and actual owners/consumers.
 
 The four canonical WP-24 questions are routed through:
 
@@ -30,15 +32,16 @@ The four canonical WP-24 questions are routed through:
 - storage/routing/HOT/publication owners;
 - LIVE/multiplayer/collaboration owners;
 - Story/continuity/planning/retrospective consumers;
-- the Story integration contract plus its current baseline projection-source companion;
+- the Story integration contract plus its baseline projection-source companion;
 - the Story persistence-growth/sharding/consumer-decoupling owner decision;
+- exact-archive retention/admission owners implicated by the Story operability edge;
 - diagnostics/cleanup/retention/ref-lifecycle owners;
 - current CORE consumers and the exact current CORE/RULES physical corpus;
 - schema/scaffold/tool/test/CI surfaces;
 - WP-22 proof classification;
 - explicit closed decisions and revisit triggers.
 
-The rerun searches for scope omissions, duplicated/reopened authority, hidden unbounded hot paths, unsupported host assumptions, non-equivalent measurements, premature optimization, unsafe deferral, misclassified empirical obligations, unsupported numeric budgets and accepted constraints weakened by framing.
+The rerun searches for scope omissions, stale routing, lost item-level owner requirements, duplicated/reopened authority, hidden unbounded hot paths, unsupported host assumptions, non-equivalent measurements, premature optimization, unsafe deferral, misclassified empirical obligations, unsupported numeric budgets and accepted constraints weakened by framing.
 
 Finding severity means **framing risk for WP-24 Step 1**, not a claim that final architecture contains the defect.
 
@@ -65,21 +68,22 @@ HUMAN_DECISION_REQUIRED_NOW: NO
 WP24_STEP2_AUTHORIZED: NO
 ```
 
-The bounded recovery repaired those two findings. Current Senior disposition entering this micro-recovery is:
+Subsequent bounded recoveries were independently accepted through SR24-S1-03. Current Senior state entering this repair is:
 
 ```text
 SR24-S1-01: PASS / CLOSED
 SR24-S1-02: PASS / CLOSED
-SR24-S1-03: MICRO-RECOVERY REQUIRED
+SR24-S1-03: PASS / CLOSED
+SR24-S1-04: SIGNIFICANT / OPEN
 WP24_STEP2_AUTHORIZED: NO
 ```
 
-Current micro-recovery rerun result:
+Current SR24-S1-04 repair/rerun result:
 
 ```text
-SR24-S1-03_REPAIR_APPLIED: YES
-MICRO_RECOVERY_RERUN_NEW_BLOCKING_FOUND: 0
-MICRO_RECOVERY_RERUN_NEW_SIGNIFICANT_FOUND: 0
+SR24-S1-04_REPAIR_APPLIED: YES
+REPAIR_RERUN_NEW_BLOCKING_FOUND: 0
+REPAIR_RERUN_NEW_SIGNIFICANT_FOUND: 0
 UNRESOLVED_BLOCKING_IN_WORKER_VIEW: 0
 UNRESOLVED_SIGNIFICANT_IN_WORKER_VIEW: 0
 HUMAN_DECISION_REQUIRED: NO
@@ -87,7 +91,7 @@ UPSTREAM_ARCHITECTURE_REOPEN_REQUIRED: NO
 STEP2_AUTHORIZED: NO
 ```
 
-This is a worker micro-recovery disposition pending independent Senior re-review; it is not a Senior PASS claim for SR24-S1-03.
+This is a worker repair disposition pending independent Senior re-review; it is not a Senior PASS claim for SR24-S1-04.
 
 ---
 
@@ -101,8 +105,6 @@ The earlier recovery established that no current owner defines a `120 seconds` /
 
 **Current Senior disposition:** **PASS / CLOSED**.
 
-The micro-recovery found no new Story owner that changes this result.
-
 ---
 
 ### SR24-S1-02 — Full-CORE preload / cache rebuild omitted
@@ -113,48 +115,52 @@ The earlier recovery split initial full CORE+RULES preload, package-switch cache
 
 **Current Senior disposition:** **PASS / CLOSED**.
 
-The micro-recovery found no new Story owner that changes this result.
-
 ---
 
 ### SR24-S1-03 — Current Story baseline scale/performance owner omitted
 
-**Finding:** After the main recovery, current Story authority changed materially for WP-24 framing. `DEV/PROJECT_MAP.md` and the Story integration contract now route production projection semantics through `DEV/docs/superpowers/specs/2026-09-08-story-baseline-projection-source-contracts.md`. Current HEAD additionally contains `DEV/docs/superpowers/specs/2026-09-08-story-persistence-growth-sharding-consumer-decoupling-owner-decision.md`. The prior WP-24 Source Manifest referenced only the older integration contract at this scale boundary and therefore under-specified concrete corpus/backlog/retention/fan-out obligations.
+The prior micro-recovery directly incorporated the baseline projection source contracts and current Story persistence-growth/sharding owner into WP-24 framing, preserving eight registrations, EVENTS/NARRATIVE independent obligations, LOCAL/LIVE origin/domain/cursor fan-out, bounded-window versus total-corpus separation, native-source and Story-output retention pressure, `UNKNOWN/defer` source-scope completeness, and the 10 KiB per-file rather than corpus-wide invariant.
 
-**Current-owner reconstruction:** the baseline companion fixes eight registrations:
+**Current Senior disposition:** **PASS / CLOSED**.
+
+---
+
+### SR24-S1-04 — Story growth/sharding propagation and owner-item completeness gap
+
+**Severity:** SIGNIFICANT
+
+**Finding:** The SR24-S1-03 package consumed the current growth/sharding owner in the WP-24 artifacts but left two propagation/completeness defects:
+
+1. current `DEV/PROJECT_MAP.md` did not explicitly route Story persistence/operability through `DEV/docs/superpowers/specs/2026-09-08-story-persistence-growth-sharding-consumer-decoupling-owner-decision.md`;
+2. WP-24 framing did not explicitly preserve the owner-defined direct-LLM-facing artifact-shape policy and exact-archival oversize pre-admission edge.
+
+**Owner reconstruction:** current exact owner text establishes:
 
 ```text
-T-MSG  TRANSCRIPT / participant messages
-T-ARCH TRANSCRIPT / accepted exact-archival requests
-E-EVT  EVENTS / SemanticEvents
-E-REL  EVENTS / historical relations
-M-SEG  MECHANICS / committed segment facts
-M-OUT  MECHANICS / terminal gameplay outcomes
-N-EVT  NARRATIVE / SemanticEvents
-N-REL  NARRATIVE / historical relations
+DIRECT LLM-FACING ARTIFACTS
+~250 lines: preferred design ceiling
+251–300 lines: review zone; prefer safe partitioning/smaller semantic unit
+>300 lines: not acceptable normal steady-state unless an explicit reason shows
+            bounded alternate retrieval is safe and semantic partitioning would be worse
+
+CLASSIFICATION
+line count = LLM/tooling ergonomics signal
+line count != 10 KiB replacement
+line count != byte measurement
+line count != token-pressure proof
+line count != latency SLA
+
+EXACT ARCHIVAL EDGE
+exact material must never be truncated/paraphrased merely to satisfy storage size
+if an accepted exact archival scope can exceed one indivisible file,
+owner/schema must define safe bounded partition/reconstruction semantics before admission
 ```
 
-The same native SemanticEvent candidates feed E-EVT and N-EVT but their Story progress is independent. Historical relations likewise feed E-REL and N-REL independently. Native origin is `LOCAL` or `LIVE:<native live epoch id>` and each lane/origin has its own append-monotonic cursor. Source routing must prove the requested scope complete; inability to do so returns `UNKNOWN/defer`, not all-LIVE/all-Story enumeration and not a false caught-up declaration.
+**Routing repair:** `DEV/PROJECT_MAP.md` now names the integration contract, baseline source-contract companion and growth/sharding owner together in the Story concern route and dependency hot path. This makes the growth/sharding owner discoverable from current routing without making the Project Map a semantic owner.
 
-The baseline companion also establishes that:
+A Story integration-contract edit was considered and rejected as unnecessary propagation: the repaired Project Map now supplies the direct forward route, while the growth/sharding owner already states that it supplements the integration contract and preserves its semantics. Adding a duplicate normative pointer inside the integration contract is not required for discovery correctness and would broaden the write set without changing ownership.
 
-- bounded candidate windows cap one operation, not campaign-lifetime Story growth;
-- every admitted nontechnical SemanticEvent and historical relation is retained in both EVENTS and NARRATIVE subject to their independent obligations;
-- there is no corpus-wide Story size quota or requirement to minimize Story record count;
-- MUST candidates create native-source survivor/protection pressure until required output exists or an admitted equivalent survivor is present;
-- once required output establishes compatible coverage, the required Story account remains retained unless compatible replacement/migration/end-of-promise semantics preserve the contract;
-- catch-up may lag and does not block gameplay responses, SAVE or recovery.
-
-The new Story persistence-growth owner further establishes:
-
-- `RUNTIME_MUTABLE_GITHUB_TEXT_FILE_MAX_BYTES = 10240` remains a **per-file** hard invariant, not a corpus quota;
-- no campaign-growing mutable Story collection may rely on an ever-growing singleton as its only supported representation;
-- every plausibly unbounded collection requires a deterministic bounded partition path before the current form becomes a dead end;
-- physical sharding must preserve known-ID direct routing, bounded discovery, publication/currentness, reference closure and projection-coverage semantics;
-- retrospective consumers remain storage-topology-neutral;
-- concrete shard/page/count/layout choices remain later implementation/performance evidence work and are not selected by this recovery.
-
-**Repair applied:** the Task Brief now includes both Story owners directly, adds the eight-registration/origin-domain/cursor geometry, separates bounded per-operation windows from total corpus growth, separates native pre-projection retention from post-coverage Story retention, treats catch-up as outside ordinary gameplay critical path, preserves `UNKNOWN/defer` rather than global scan, and carries the new partitionability owner without selecting a Story redesign.
+**Task-Brief repair:** the current Source Manifest now preserves the line-count policy as **owner-supplied ergonomics/operability guidance**, not a token/latency SLA and not a substitute for the 10 KiB hard per-file cap. It also carries exact-material non-truncation and pre-admission bounded partition/reconstruction as a correctness requirement, without selecting a concrete representation.
 
 **Worker disposition:** **REPAIR CANDIDATE / PENDING INDEPENDENT SENIOR RE-REVIEW**.
 
@@ -166,7 +172,7 @@ The new Story persistence-growth owner further establishes:
 
 **Severity:** SIGNIFICANT
 
-Current framing keeps owner classes distinct: the 10,240-byte mutable runtime artifact cap is a per-file hard invariant; PO-003/WP-19 is a zero-extra-serial critical-path law; `RUNTIME.md` rejects a fixed turn time/token/step/complexity ceiling; Story partitionability is a required future realization property while concrete partition thresholds/layouts remain evidence-driven.
+Current framing keeps owner classes distinct: the 10,240-byte mutable runtime artifact cap is a per-file hard invariant; PO-003/WP-19 is a zero-extra-serial critical-path law; `RUNTIME.md` rejects a fixed turn time/token/step/complexity ceiling; Story partitionability and exact-archive pre-admission safety are required properties; direct-LLM-facing line thresholds are owner ergonomics guidance rather than a performance SLA.
 
 **Disposition:** REPAIRED.
 
@@ -174,7 +180,7 @@ Current framing keeps owner classes distinct: the 10,240-byte mutable runtime ar
 
 **Severity:** SIGNIFICANT
 
-Existing scaffold/index sizes, physical CORE bytes, DEV tool timings or Connector probes remain non-equivalent to long-campaign gameplay latency/context/Story catch-up/contended publication behavior. The current Story registration/sharding documents are specification law, not realized Story corpus measurements.
+Existing scaffold/index sizes, physical CORE bytes, DEV tool timings or Connector probes remain non-equivalent to long-campaign gameplay latency/context/Story catch-up/contended publication behavior. The Story line-count policy is owner guidance, not measured token/latency evidence.
 
 **Disposition:** REPAIRED.
 
@@ -190,7 +196,7 @@ Retained refs remain an explicit scaling dimension; ordinary authority lookup mu
 
 **Severity:** SIGNIFICANT
 
-Current accepted Context/SAVE/collaboration/Story/cleanup owners expose no autonomous worker/heartbeat baseline. The new Story baseline explicitly retains bounded turn-local catch-up without queue/worker/global cursor, and the Story growth owner introduces no scheduler/queue/heartbeat.
+Current accepted Context/SAVE/collaboration/Story/cleanup owners expose no autonomous worker/heartbeat baseline. The Story growth owner introduces no scheduler, queue, lease or heartbeat.
 
 **Disposition:** REPAIRED.
 
@@ -206,7 +212,7 @@ Remote round trips, publication attempts, retry/conflict amplification and multi
 
 **Severity:** SIGNIFICANT
 
-Current owners can require bounded partitionability and bounded source windows while concrete shard layout, file fan-out, catch-up latency and production corpus size remain unrealized evidence questions. These are not conflated.
+Current owners can require bounded partitionability, direct-LLM-facing shape guidance and exact-archive pre-admission reconstruction safety while concrete shard layout, file fan-out, catch-up latency and production corpus size remain unrealized evidence questions. These are not conflated.
 
 **Disposition:** REPAIRED.
 
@@ -228,13 +234,56 @@ Producer catch-up/publication, retained corpus growth and consumer retrospective
 
 ---
 
-## 6. SR24-S1-03 whole-project critic rerun
+## 6. SR24-S1-04 whole-project critic rerun
 
-After applying the micro-recovery framing repair, the critic re-routed the complete Step-1 horizon through current `DEV/PROJECT_MAP.md`, current Story integration/baseline/growth owners and neighboring accepted consumers rather than checking only the new paragraphs.
+After applying the propagation/completeness repair, the critic re-routed the complete Step-1 horizon through current `DEV/PROJECT_MAP.md`, current Story integration/baseline/growth owners and neighboring accepted consumers rather than checking only the named paragraphs.
 
-### 6.1 Hidden-unbounded-path sweep
+### 6.1 Current routing / discoverability audit
 
-| Path | Current owner result | Micro-recovery critic disposition |
+The repaired `DEV/PROJECT_MAP.md` now provides two direct discovery surfaces for Story persistence/operability:
+
+- a dedicated `Story / retrospective continuity / persistence operability` concern row naming the integration contract, baseline projection source contracts and growth/sharding owner;
+- the Story dependency hot path, which explicitly routes persistence scale/operability through the growth/sharding owner.
+
+Result:
+
+```text
+GROWTH_SHARDING_OWNER_DISCOVERABLE_FROM_CURRENT_PROJECT_MAP: YES
+PROJECT_MAP_TREATED_AS_SEMANTIC_OWNER: NO
+INTEGRATION_CONTRACT_FORWARD_REFERENCE_REQUIRED_FOR_DISCOVERY: NO
+```
+
+The integration contract remains unchanged because its semantic integration role remains correct and the current routing now points directly to the supplemental operability owner.
+
+### 6.2 Growth/sharding owner item-level operability audit
+
+The critic checked material owner requirements individually rather than accepting a thematic “sharding covered” statement:
+
+| Owner requirement | Current WP-24 framing result |
+|---|---|
+| 10 KiB mutable Story file hard cap remains controlling | preserved as per-file hard invariant, not corpus quota |
+| direct LLM-facing ~250 preferred design ceiling | preserved as owner ergonomics guidance |
+| 251–300 direct LLM-facing review zone | preserved; safe partition/smaller semantic unit preferred where appropriate |
+| >300 not normal steady state without explicit bounded-alternate-retrieval / anti-partition reason | preserved without converting to SLA |
+| line count does not replace byte/token/host evidence | explicit |
+| machine-facing structures may be denser when deterministic runtime consumption justifies it | not contradicted; no universal line rule is applied to machine-only structures |
+| no unbounded campaign-growing mutable singleton as sole representation | preserved |
+| deterministic bounded partition/rollover/compaction/root+subordinate path must exist | preserved as realization requirement; no concrete option selected |
+| physical partition keys are not Story/native identity, chronology, eligibility, coverage or currentness | preserved through no-semantic-topology rule |
+| known-ID direct routing / bounded discovery / no whole-corpus enumeration | preserved |
+| partition transition must preserve publication/currentness/reference closure/coverage | retained as owner constraint; not redesigned here |
+| compatibility-bearing physical changes must use Version Impact/migration law | not weakened; activation remains future realization work |
+| direct retrospective consumer remains storage-topology-neutral | preserved |
+| Story backlog remains derived/bounded per operation, with no worker/queue/heartbeat | preserved |
+| exact material cannot be truncated/paraphrased for storage limit | explicit |
+| potentially oversized indivisible exact scope requires bounded partition/reconstruction semantics before admission | explicit carried-forward requirement |
+| concrete PROJECTION_STATE shard layout/index partition count/chapter layout/rollover threshold | **not selected** |
+
+No item-level owner requirement material to WP-24 scale/operability was found missing after the repair.
+
+### 6.3 Hidden-unbounded-path sweep
+
+| Path | Current owner result | Repair critic disposition |
 |---|---|---|
 | new chat / substantial setup engine cache | complete exact-package CORE + two RULES routing files loaded once | finite current corpus; physical size measurement remains supporting-only |
 | package switch engine cache | full invalidation + exact-target rebuild | event-driven bounded-to-package corpus; not ordinary-turn path |
@@ -247,59 +296,53 @@ After applying the micro-recovery framing repair, the critic re-routed the compl
 | collaboration lookup | direct known-ID + completeness-protected companions; no global scheduler/index | bounded by accepted design |
 | Story source-scope discovery | LOCAL plus selected LIVE origin/domain routing must prove requested scope complete | `UNKNOWN/defer` on unprovable completeness; global LIVE/Story scan forbidden |
 | Story candidate enumeration | fixed registration + origin/lane/generation cursor; bounded frozen window | per-operation bounded; does not bound total backlog/corpus |
-| Story E/N semantic event projection | E-EVT and N-EVT independently cover same native candidate stream | two separate projection obligations; no E coverage substitution for N |
-| Story E/N relation projection | E-REL and N-REL independently cover same native relation stream | two separate projection obligations; no lower-layer substitution |
 | Story backlog/catch-up | derived from source cursors vs coverage, bounded one window at a time | campaign-lifetime backlog may grow; catch-up outside gameplay critical path |
-| native pre-projection retention | minimum sufficient native source/anchor or admitted equivalent survivor retained for MUST candidates | typed growth/cleanup pressure until projection; no whole-record retention by default |
+| native pre-projection retention | minimum sufficient native source/anchor or admitted equivalent survivor retained for MUST candidates | typed growth/cleanup pressure until projection |
 | post-coverage Story retention | required Story account preserved while compatible coverage promise remains | corpus growth dimension distinct from native-source retention |
+| direct LLM-facing Story file | independently retrievable semantic unit with owner line-count ergonomics | line guidance is shape/operability signal; not token/latency proof |
+| exact archival scope | cannot be truncated/paraphrased for file cap | potentially oversized indivisible scope requires pre-admission bounded partition/reconstruction contract |
 | Story physical growth collections | no campaign-growing singleton may lack bounded partition path | structural partitionability required; concrete layout deferred |
 | retrospective read | Context Runtime typed bounded acquisition; no catch-up mutation/whole-history preload | read boundedness does not imply corpus boundedness |
 | diagnostic operation | bounded to concrete question | bounded by accepted design |
 | retained refs | authority lookup must not depend on all-ref scan; residue may grow | operational-scale surface remains |
-| monolithic native family index | expected family index baseline | measured WP-24 partition trigger remains; no current activation inferred |
 
-No current owner requires a whole-campaign, whole-WORLD, all-ref, all-LIVE or whole-Story scan for ordinary correctness. The newly explicit Story corpus can be unbounded in **total retained cardinality** while all individual acquisition/catch-up operations remain bounded; that is now represented as a first-class WP-24 scale property rather than hidden behind the word “bounded.”
+No current owner requires a whole-campaign, whole-WORLD, all-ref, all-LIVE or whole-Story scan for ordinary correctness.
 
-### 6.2 Story fan-out / retention audit
+### 6.4 Direct-LLM shape / SLA classification audit
 
-The critic checked the user-visible “eight registrations” statement against the current baseline companion and found exactly eight fixed production dispatch registrations. That number is a contract inventory, not a throughput/cardinality SLA.
-
-Fan-out is not merely eight static files:
+The line-count policy is preserved exactly in class, not only in numbers:
 
 ```text
-registration
-× native origin (LOCAL or selected LIVE epoch)
-× lane/domain generation
-× independent coverage cursor
+~250 lines   = preferred design ceiling
+251–300      = review zone
+>300         = exceptional / not acceptable normal steady-state without owner-required reason
+
+OWNER CLASS = LLM/tooling ergonomics + operability guidance
+!= hard 10 KiB byte cap
+!= token budget
+!= latency SLA
+!= throughput SLA
+!= context-window guarantee
+!= empirical host acceptance
 ```
 
-E-EVT/N-EVT and E-REL/N-REL intentionally duplicate projection obligation over shared native enumeration because EVENTS and NARRATIVE have independent readable outputs/coverage. This may increase backlog/publication/storage pressure but cannot be optimized away by treating one layer as satisfying the other.
+The critic found no new numerical SLA introduced by the repair.
 
-Retention pressure is two-phase:
+### 6.5 Exact-archival edge audit
+
+The repaired framing now distinguishes two non-substitutable constraints:
 
 ```text
-before required projection:
-    native minimum sufficient source/anchor or admitted equivalent survivor must remain
+per-file storage constraint
+    -> never authorizes truncation/paraphrase of exact material
 
-after compatible coverage:
-    required Story output/account must remain or be compatibly replaced/migrated/ended
+possible exact scope > one indivisible file
+    -> owner/schema must define bounded exact partition + reconstruction semantics BEFORE ADMISSION
 ```
 
-The critic therefore rejects any framing that treats successful projection as automatic total storage release, or native compaction as permission to lose required projection material before coverage.
+This is not a request to choose a shard layout now. It is an admission-safety dependency that later Story physical realization/schema work must satisfy before accepting such a representation.
 
-### 6.3 Per-file cap / corpus-growth audit
-
-```text
-10 KiB mutable runtime text invariant
-    = per-file publication constraint
-    != total Story corpus quota
-```
-
-The baseline source-contract owner explicitly permits retained Story corpus growth with campaign history. The Story growth/sharding owner closes the corresponding physical-operability hole by requiring deterministic bounded partitionability for every plausibly unbounded collection, while leaving concrete partition mechanics to later evidence/realization work.
-
-This is not permission to choose a shard layout in Step 1 and not evidence that current Story implementation has already met the requirement.
-
-### 6.4 Critical-path / background-service audit
+### 6.6 Critical-path / background-service audit
 
 Current accepted Story laws preserve:
 
@@ -310,37 +353,25 @@ Current accepted Story laws preserve:
 - Story lag does not block gameplay responses, SAVE or native recovery;
 - retrospective reads do not trigger projection catch-up.
 
-Therefore backlog/catch-up cost is a separate WP-24 operational path, not an implicit ordinary-turn tax. Later implementation may still need performance evidence for explicit catch-up invocations/publications, but Step 1 does not invent an autonomous service to pay that cost.
+The direct-LLM file-shape and exact-archive pre-admission rules add no runtime liveness service and do not activate implementation.
 
-### 6.5 Source-scope completeness audit
-
-The current baseline companion explicitly closes a prior temptation toward broad discovery:
-
-```text
-if native campaign/live routing proves requested source-scope set complete:
-    operate over that finite declared scope
-else:
-    UNKNOWN/defer the completeness claim
-```
-
-It is invalid to recover completeness by scanning all LIVE refs, all Story records or an incomplete source set and calling it caught up. This composes with WP-11/WP-16 no-global-enumeration laws rather than reopening them.
-
-### 6.6 Numerical/structural budget audit
+### 6.7 Numerical/structural budget audit
 
 | Value / constraint | Basis | Current classification |
 |---|---|---|
 | 120 seconds | no current owner | unsupported prior assertion removed; SR24-S1-01 PASS/CLOSED |
 | PO-003 extra serial basis-capture work = 0 in stated L38 scope | WP-19 `WP19-L38/L39` | accepted structural critical-path law |
 | 10,240 bytes | runtime mutable GitHub artifact owner + Story growth owner | accepted **per-file** hard invariant; not corpus quota |
-| 8 Story registrations | Story baseline projection source contracts | fixed source-contract inventory; not a corpus-size/throughput limit |
+| ~250 lines | Story growth/sharding owner | preferred direct-LLM-facing design ceiling; ergonomics guidance, not SLA |
+| 251–300 lines | Story growth/sharding owner | review zone; ergonomics guidance, not SLA |
+| >300 lines | Story growth/sharding owner | not acceptable normal direct-LLM-facing steady-state absent explicit owner-required safe reason; not SLA |
+| 8 Story registrations | Story baseline projection source contracts | fixed source-contract inventory; not corpus-size/throughput limit |
 | 65,536 route buckets | WP-11 route geometry | structural selector property, not performance budget |
 | 370,728 B current CORE+RULES preload source corpus | exact earlier recovery measurement | narrow Class-A current-source measurement only; not production forecast |
 
-The Story growth owner also supplies direct-LLM-facing line-count ergonomics, but those are consumer-shape design signals under that owner, not a replacement for byte/token/latency evidence and not a corpus quota.
-
 No new latency, throughput, token, Story-record-count, corpus-size, shard-count, API-call or retry-count SLA is introduced.
 
-### 6.7 Authority-reopen audit
+### 6.8 Authority/reopen/activation audit
 
 ```text
 R2.3 CONTEXT ARCHITECTURE REOPEN: NO
@@ -354,16 +385,19 @@ WP18 STORY/DRAMATURG SEMANTICS REOPEN: NO
 STORY BASELINE REGISTRATIONS REOPEN: NO
 STORY RETROSPECTIVE CONSUMER SEMANTICS REOPEN: NO
 STORY PHYSICAL SHARD LAYOUT SELECTED: NO
+STORY IMPLEMENTATION ACTIVATED: NO
+STORY REDESIGN ACTIVATED: NO
+WP24 STEP2 ACTIVATED: NO
 WP21 CLEANUP/RETIREMENT OWNER REOPEN: NO
 PO-003 ZERO-EXTRA-SERIAL LAW REOPEN: NO
 PO-006 REF-DELETION POLICY REOPEN: NO
 ```
 
-The micro-recovery consumes new current Story owners without redesigning them.
+The repair consumes and routes current owners without redesigning them.
 
-### 6.8 Open-world rerun result
+### 6.9 Open-world rerun result
 
-The critic did not stop at the named finding. It rechecked the current dependency graph for additional BLOCKING/SIGNIFICANT framing defects created or exposed by the new Story owners.
+The critic did not stop at the named finding. It rechecked the current dependency graph for additional BLOCKING/SIGNIFICANT framing defects created or exposed by the propagation repair.
 
 ```text
 NEW_BLOCKING_FINDINGS: 0
@@ -387,8 +421,10 @@ The repaired Task Brief now covers all materially necessary Step-1 owner classes
 - multiplayer/LIVE/collaboration owners;
 - Story integration and retrospective consumers;
 - Story baseline projection source-contract registrations directly;
-- Story persistence growth/sharding/consumer-decoupling owner directly;
+- Story persistence growth/sharding/consumer-decoupling owner directly and discoverably from `DEV/PROJECT_MAP.md`;
 - Story backlog, origin/domain/cursor fan-out and two-phase retention pressure;
+- direct-LLM-facing artifact-shape ergonomics;
+- exact-archive oversized-scope pre-admission safety;
 - diagnostics/retention/ref residue;
 - current CORE/RULES physical consumers;
 - schema/scaffold/tool/test/CI routes;
@@ -399,23 +435,24 @@ This does not claim repository-global semantic completeness or replace later Ste
 
 ---
 
-## 8. Final worker micro-recovery verdict
+## 8. Final worker repair verdict
 
 ```text
 SR24-S1-01: PASS / CLOSED
 SR24-S1-02: PASS / CLOSED
-SR24-S1-03: REPAIR CANDIDATE / PENDING INDEPENDENT SENIOR RE-REVIEW
-MICRO_RECOVERY_WHOLE_PROJECT_CRITIC_RERUN_COMPLETE: YES
-MICRO_RECOVERY_RERUN_NEW_BLOCKING: 0
-MICRO_RECOVERY_RERUN_NEW_SIGNIFICANT: 0
-SOURCE_MANIFEST_COMPLETE_FOR_CURRENT_STEP1_MICRO_RECOVERY: YES
+SR24-S1-03: PASS / CLOSED
+SR24-S1-04: REPAIR CANDIDATE / PENDING INDEPENDENT SENIOR RE-REVIEW
+REPAIR_WHOLE_PROJECT_CRITIC_RERUN_COMPLETE: YES
+REPAIR_RERUN_NEW_BLOCKING: 0
+REPAIR_RERUN_NEW_SIGNIFICANT: 0
+SOURCE_MANIFEST_COMPLETE_FOR_CURRENT_STEP1_REPAIR: YES
 UNRESOLVED_BLOCKING_IN_WORKER_VIEW: 0
 UNRESOLVED_SIGNIFICANT_IN_WORKER_VIEW: 0
 HUMAN_DECISION_REQUIRED: NO
 STEP2_AUTHORIZED: NO
-NEXT_GATE: MANDATORY INDEPENDENT SENIOR RE-REVIEW OF SR24-S1-03 MICRO-RECOVERY PACKAGE
+NEXT_GATE: MANDATORY INDEPENDENT SENIOR RE-REVIEW OF SR24-S1-04 REPAIR PACKAGE
 ```
 
-This is a worker micro-recovery result, **not** an independent Senior PASS for SR24-S1-03.
+This is a worker repair result, **not** an independent Senior PASS for SR24-S1-04.
 
 **STOP FOR MANDATORY INDEPENDENT SENIOR RE-REVIEW.**
