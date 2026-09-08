@@ -13,7 +13,7 @@ Accepted specifications remain architecture authority. `DEV/CURRENT_PROGRESS.md`
 
 ## 1. Immutability and status rules
 
-Text inside `PO input`, `Product Owner correction`, `Product Owner amendment`, or explicitly marked shared Product Owner context is immutable to agents: do not polish, translate, normalize, shorten, expand or silently correct it.
+Text inside `PO input`, Product Owner correction, Product Owner amendment, or explicitly marked shared Product Owner context is immutable to agents: do not polish, translate, normalize, shorten, expand or silently correct it.
 
 Agent-owned interpretation/routing/status may change as the repository changes.
 
@@ -48,6 +48,7 @@ An agent-owned route marked `ACTIVE` or `PENDING` must not name a work package t
 | `PO-005` | AUTHORITY / SECURITY POLICY | INCORPORATED | creator-login continuity policy is fixed fail-closed authority; no current architecture reopen; downstream runtime/test realization must preserve it when implementation is explicitly authorized | creator-login continuity owner decision; access/bootstrap/migration/recovery consumers; later runtime/tests | NONE |
 | `PO-006` | AUTHORITY / SAFETY / REPOSITORY POLICY | INCORPORATED | branch/ref deletion is forbidden for every HDM development/runtime agent; WP-21 final Senior PASS consumed the rule and WP-24 may later assess retained-ref operational cost without re-enabling deletion | branch/ref deletion owner decision; `AGENTS.md`; `GAME/CORE/PERSISTENCE.md`; `GAME/CORE/LIVE_SCENE.md`; final WP-21 canonical spec/review; WP-24 | NONE |
 | `PO-007` | PUBLIC PROVENANCE / ATTRIBUTION POLICY | INCORPORATED | WP-23 final Senior re-review accepted the repository-wide public provenance reconciliation and closed the architecture consumer; future enforcement remains under the accepted owner and current machine guards | public provenance owner decision; final WP-23 canonical spec; current public `DEV/` + `GAME/`; legal/notice owners; relevant audits/tests | NONE |
+| `PO-008` | FAILURE / DEGRADATION / DURABILITY-RISK PRODUCT DIRECTION | PARTIALLY_INCORPORATED | Product Owner accepted the WP-25 severity/gameplay-impact/risk model direction and clarified proactive durability preservation before probable host incapacity; WP-25 Step 1 is the active architecture consumer | accepted WP-25 owner-direction; Step 5.5/WP-13 durability risk; WP-25; later runtime/tests/empirical host acceptance | NONE |
 
 ---
 
@@ -435,6 +436,74 @@ Product Owner decision still required: `NONE`.
 
 ---
 
+## PO-008 — Failure/degradation severity and proactive durability-risk protection
+
+Date: 2026-09-08  
+Kind: FAILURE / DEGRADATION / DURABILITY-RISK PRODUCT DIRECTION  
+Status: PARTIALLY_INCORPORATED
+
+Accepted direction:
+- `DEV/docs/superpowers/specs/2026-09-08-hdm-wp25-failure-degradation-durability-risk-owner-direction.md`.
+
+### Product Owner input — VERBATIM / IMMUTABLE
+
+```text
+ну.... ты всё правильно рассуждаешь! поручаю тебе ответственно подойти к проектированию этого блока! раздели ошибки по severity, и тому как они влияют на геймплей и насколько рискованно продолжать их игнорировать (ждать пока они исправятся), и так далее. Подключай  всю мощь superpowers и не жалей критики и whole-project аудита!
+```
+
+### Product Owner amendment — VERBATIM / IMMUTABLE
+
+```text
+"каждый час" - это было условность. Потому что лимиты чата не бесконечны и в какой-то момент он не дает сказать/сделать вообще ничего! И не хотелось бы оказаться в этой точке с огромным накопленными HOT/SOFT который фиг знает как теперь сохранить в репо....
+```
+
+### Product Owner approval / publication direction — VERBATIM / IMMUTABLE
+
+```text
+да, вот теперь я согласен с всем твоим массивом рассуждений и предложений.
+предлагаю всё это не прятать в Lab  а наоборот, зафиксировать как направление разработки. Мы тут много чего выяснили и уточнили - это должно стать основой дальнейшей работы. Ну а в Lab ты всё равно можешь записать, какие неочевидные whole-project риски надо будет проверить после встроенного критика. Фиксируй все документы и пиши промпт Агенту.
+```
+
+### Agent interpretation / classification
+
+```text
+PRODUCT DIRECTION + ACTIVE WP-25 ARCHITECTURE INPUT
+CONTEXT-DERIVED EFFECTIVE SEVERITY, NOT INTRINSIC ERROR SEVERITY
+GAMEPLAY IMPACT / AFFECTED SCOPE / IGNORE-RISK / TEMPORAL-TOLERANCE ARE DISTINCT AXES
+UNSUPPORTED IS AN ORTHOGONAL DISPOSITION
+SELECTED DIRECTION: OWNER-LOCAL NATIVE OUTCOMES + EPHEMERAL CROSS-OWNER FAILURE DISPOSITION
+PROACTIVE DURABILITY INTENT: PRESERVE ESTABLISHED HOT/SOFT BEFORE PROBABLE HOST INCAPACITY
+HOURLY AUTOSAVE AS PRODUCT LAW: REJECTED
+CAPACITY HEURISTIC AS SEMANTIC AUTHORITY: REJECTED
+DANGEROUS SINGLE-COPY LOSS EXPOSURE MAY CREATE OPERABILITY / LOSS-PROTECTION FENCE
+OPERABILITY FENCE != GENERIC CORRECTNESS HARD
+WHOLE-PROJECT CRITIC: MANDATORY / AGGRESSIVE
+LAB ROLE: PRIVATE ADVERSARIAL RISK CHECKLIST ONLY, NOT ARCHITECTURE AUTHORITY
+NEEDS_PO: NONE
+```
+
+### Current routing
+
+| Route | State | Trigger / obligation | Current evidence / owner |
+|---|---|---|---|
+| Product / architecture direction | INCORPORATED | accepted direction published | `DEV/docs/superpowers/specs/2026-09-08-hdm-wp25-failure-degradation-durability-risk-owner-direction.md` |
+| Step 5.5 / WP-13 durability-risk semantics | BINDING RECONCILIATION INPUT | WP-25 must preserve scope-relative `MAY_DEFER` semantics while preventing unlimited product willingness to accumulate dangerous single-copy loss exposure | Step 5.5 canonical durability spec + WP-13 + accepted direction |
+| WP-25 Step 1 | ACTIVE / AUTHORIZED | construct open-world Source Manifest + Task Brief + whole-project critic and repair all mechanically resolvable BLOCKING/SIGNIFICANT framing gaps | active R2.7 consumer |
+| WP-25 Steps 2–8 | GATED | only after mandatory independent Senior Step-1 GO | `DEV/ARCHITECTURE/DESIGN_PROCESS.md` |
+| Runtime/schema/test realization | DEFERRED | after R2.7 final reconciliation + explicit implementation-planning/execution authorization | later implementation consumers |
+| Production-like host/capacity acceptance | DEFERRED | run only on realized supported target where empirical evidence is required | R2.6 + WP-22 + WP-24 |
+| Private Senior adversarial checklist | ACTIVE SUPPORT / NON-AUTHORITATIVE | preserve non-obvious risks for independent post-worker review without becoming public architecture authority | HDM Lab Senior audit workspace |
+
+### Current impact
+
+PO-008 is incorporated as an accepted product/architecture direction and is now a mandatory Source-Manifest input to WP-25. WP-25 itself remains open: the direction constrains framing but does not replace Source Manifest reconstruction, Step-1 critic, mandatory Senior review, Steps 2–8 or final canonicalization.
+
+No generic global error state machine, hourly autosave requirement, exact remaining-context contract or background durability worker is authorized.
+
+Product Owner decision still required: `NONE`.
+
+---
+
 ## 4. Current ledger terminal state
 
 This is a routing-ledger projection only; `DEV/CURRENT_PROGRESS.md` remains the sole global cursor authority.
@@ -447,11 +516,7 @@ PO-004: INCORPORATED — WP-20 FINAL SENIOR PASS / NO CURRENT PENDING WP-20 ROUT
 PO-005: INCORPORATED — FIXED CREATOR-LOGIN FAIL-CLOSED AUTHORITY
 PO-006: INCORPORATED — BRANCH/REF DELETION PROHIBITED / WP-21 FINAL SENIOR PASS
 PO-007: INCORPORATED — PUBLIC DEV/GAME RESEARCH-PROVENANCE POLICY / WP-23 FINAL SENIOR RE-REVIEW PASS
-
-HUMAN_DECISION_REQUIRED: WP-24 LAUNCH AUTHORIZATION ONLY
-NEEDS_PO: WP-24 LAUNCH AUTHORIZATION ONLY
-UPSTREAM_REOPEN_REQUIRED: NO
-ARCHITECTURE_REOPENED: NO
+PO-008: PARTIALLY INCORPORATED — PRODUCT DIRECTION PUBLISHED / WP-25 STEP 1 ACTIVE CONSUMER
 
 WP19_FINAL_SENIOR_REVIEW: PASS
 WP20_FINAL_SENIOR_REVIEW: PASS
@@ -461,15 +526,20 @@ WP21_FINAL_SENIOR_REVIEW: PASS
 WP21_CLOSED: YES
 WP22_FINAL_SENIOR_REVIEW: PASS
 WP22_CLOSED: YES
-WP23_STARTED: YES
-WP23_STEP1_COMPLETE: YES
-WP23_STEP1_SENIOR_REVIEW: PASS / GO
-WP23_STEPS_2_8_COMPLETE: YES
 WP23_FINAL_SENIOR_RE_REVIEW: PASS / GO
 WP23_CLOSED: YES
-WP24_NEXT_ELIGIBLE: YES
-WP24_STARTED: NO
-NEXT_AUTHORIZED_UNIT: NONE
+WP24_FINAL_SENIOR_RE_REVIEW: PASS / GO
+WP24_CLOSED: YES
+
+WP25_STEP1_AUTHORIZED: YES
+WP25_STEP1_COMPLETE: NO
+WP25_STEP1_SENIOR_REVIEW: PENDING AFTER WORKER COMPLETION
+WP25_STEPS_2_8_AUTHORIZED: NO
+NEXT_AUTHORIZED_UNIT: WP-25 STEP 1 ONLY
+
+HUMAN_DECISION_REQUIRED: NONE
+NEEDS_PO: NONE
+UPSTREAM_REOPEN_REQUIRED: NO
 
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
