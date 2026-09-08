@@ -319,15 +319,8 @@ The remaining Activity work is deliberately narrow:
    completion;
 4. measured composition limits.
 
-## 10. Design basis
+## 10. HDM model boundary
 
-- D&D SRD 5.2.1: action, Bonus Action, Reaction, movement, tests, attacks, and
-  GM adjudication;
-- Foundry D&D5e Activities: multiple activities per source plus activation,
-  consumption, targeting, and effect separation;
-- Avrae Automation Reference: typed mechanical nodes, target scopes, and
-  result-dependent branches.
+The Activity architecture is justified by current HDM requirements: bounded declarative procedures, closed registered operation semantics, typed requests/results, explicit state ownership, deterministic execution, finite composition, fixed causal inputs across suspension, and fail-closed validation.
 
-These are design references. HDM does not copy their UI, command language,
-document model, recursive automation surface, or implementation code.
-
+This owner intentionally carries no development-source or prior-art trail. No external project, command language, document model or implementation is selected by this architecture. Future implementation components must be chosen only through authorized implementation planning against the current HDM contracts and licensing requirements.

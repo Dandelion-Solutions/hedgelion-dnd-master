@@ -107,7 +107,7 @@ repository root
 | Implementation execution | `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`, approved spec + implementation plan | affected architecture owners, tests, machine contracts, execution-status file |
 | Integrated accepted architecture lookup | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | actual owning architecture documents + final accepted `specs/` + current roadmap |
 | Architecture research / Round-2 idea pool | `DEV/docs/superpowers/research/HDM_External_Architecture_Idea_Dossier_2026-08-21.md` | current roadmap, accepted owners/decisions, applicable runtime/schema/test owners |
-| Host/platform feasibility / LLM orchestration | durable feasibility/validation research under `research/` | Step-4 owner/amendment, R2.3/R2.4/R2.6 accepted specs, runtime role-context consumers |
+| Host/platform feasibility / LLM orchestration | accepted R2.3/R2.4/R2.6 owners plus current roadmap | retained source-neutral/internal feasibility evidence under `research/` only when applicability/revalidation is needed; runtime role-context consumers |
 | Catalog/class ownership | `CATALOG_CONTRACTS.md`, `CATALOG_INVENTORY.md`, `ENTITY_STRUCTURES.md`, `CATALOG_RESOLUTION.md`, `RULESET_PACKAGE_IDENTITY.md`, `DEV/CATALOG/` | `DEV/SCHEMAS/`, ruleset package provenance, Actor/Asset/Activity/Rule Element models, catalog tests |
 | Deterministic mechanics/execution | `ACTIVITY_MODEL.md`, `RULE_ELEMENT_MODEL.md`, `ACTIVITY_PRIMITIVE_CONTRACTS.md`, Step-3 final spec | `RUNTIME.md`, `MECHANICS_INTEGRITY.md`, `RANDOMNESS.md`, runtime/value schemas/tests |
 | Character progression / READY_PC | `CHARACTER_PROGRESSION_READY_PC_SEED.md` | Actor/Asset/Effect owners, character readiness/runtime modules, package seeds/schemas/tests |

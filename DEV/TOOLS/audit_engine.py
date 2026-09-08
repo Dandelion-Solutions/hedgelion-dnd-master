@@ -186,7 +186,6 @@ def audit_gm_guidance() -> None:
     lore = game_text("CORE/LORE.md")
     ops = game_text("CORE/CAMPAIGN_OPERATIONS.md")
     policy = game_text("CORE/PLAY_POLICY.md")
-    sources = game_text("CORE/SOURCES.md")
     require("Я — Мастер этой игры" in setup and "Кем хочешь играть?" in setup, "campaign setup must retain human Master introduction before protagonist prompt")
     require("This is an invitation, NOT a required genre/tone question" in setup, "campaign setup must keep genre/tone invitation optional")
     require("Do NOT require every player to rate mechanics" in setup and "Do NOT require the player to rate lore fidelity" in setup, "campaign setup must not regress into mandatory preference scales")
@@ -201,8 +200,49 @@ def audit_gm_guidance() -> None:
     require("Broad expectation disclosure without spoilers" in safety, "SAFETY must keep targeted heavy-theme expectation disclosure")
     require("Out-of-character Master channel" in runtime and "Мастер" in runtime and "Master" in runtime, "RUNTIME must preserve explicit Master OOC channel")
     require("GM craft guidance is local runtime knowledge" in policy and "do NOT browse D&D Beyond" in policy, "PLAY_POLICY must keep GM-advice web lookup out of runtime")
-    require("D&D Beyond — Session Zero" in sources and "929-how-to-run-a-session-0" in sources and "881-creating-terror" in sources, "SOURCES must retain audited tone/onboarding provenance")
-    require("160-improvisation-in-d-d-for-new-dungeon-masters" in sources and "769-worldbuilding-through-encounters" in sources, "SOURCES must retain audited improvisation/worldbuilding provenance")
+
+
+def audit_public_provenance_hygiene() -> None:
+    sources = game_text("CORE/SOURCES.md")
+    require("RULES/OFFICIAL_SOURCES.md" in sources, "SOURCES must route exact rules lookups through RULES/OFFICIAL_SOURCES.md")
+    require("LICENSES/" in sources and "RUNTIME_PACKAGE.yaml" in sources, "SOURCES must preserve legal and technical provenance routing")
+
+    forbidden_by_surface = {
+        "GAME/CORE/SOURCES.md": (
+            "Justin Alexander", "Sly Flourish", "Callison-Burch", "aclanthology.org", "slyflourish.com", "thealexandrian.net",
+        ),
+        "DEV/ARCHITECTURE/ASSET_MODEL.md": ("### 1.1 Research basis", "Foundry D&D5e"),
+        "DEV/ARCHITECTURE/ACTIVITY_MODEL.md": ("## 10. Design basis", "Foundry D&D5e", "Avrae Automation Reference"),
+        "DEV/ARCHITECTURE/ENTITY_STRUCTURES.md": ("## 2. Research basis", "Foundry D&D5e", "Avrae character"),
+        "DEV/ARCHITECTURE/CRITICAL_ARCHITECTURE_AUDIT.md": ("Primary references:", "dndbeyond.com/sources/dnd/br-2024"),
+        "DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md": ("Prior art and what is reused", "preferred implementation candidate", "avrae/"),
+        "DEV/TESTS/PRE_RELEASE_AUDIT_0.1.0.md": ("## Research integration", "Alexandrian", "Sly Flourish"),
+    }
+    for where, tokens in forbidden_by_surface.items():
+        src = repo_text(where)
+        for token in tokens:
+            forbid(src, token, where)
+
+    retired = (
+        "DEV/docs/superpowers/research/2026-08-22-platform-feasibility-comparative-research.md",
+        "DEV/docs/superpowers/research/2026-08-22-platform-feasibility-economic-profile-amendment.md",
+        "DEV/docs/superpowers/research/2026-08-22-private-hosted-inference-economics.md",
+        "DEV/docs/superpowers/research/2026-08-24-chatgpt-plus-host-evidence.md",
+        "DEV/docs/superpowers/research/2026-08-20-step-6-repository-port-transport-feasibility-spike.md",
+    )
+    for rel in retired:
+        require(not (REPO_ROOT / rel).exists(), f"retired source-history research must be absent from current public tree: {rel}")
+
+    topology = dev_text("docs/superpowers/research/2026-08-22-infrastructure-topology-options.md")
+    require("platform-feasibility-comparative-research.md" not in topology, "topology research must not live-route retired source-history comparative research")
+    require("Source-Neutral Research Snapshot" in topology, "topology research must declare its source-neutral retained role")
+
+    for rel in ("LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md", "LICENSES/SRD-5.2.1-ATTRIBUTION.md"):
+        require((REPO_ROOT / rel).is_file(), f"required legal/attribution owner missing: {rel}")
+
+    updates = game_text("CORE/ENGINE_UPDATES.md")
+    for marker in ("RUNTIME_PACKAGE.yaml", "source_commit_sha", "package_sha256"):
+        require(marker in updates, f"technical artifact provenance must remain represented in ENGINE_UPDATES: {marker}")
 
 
 def audit_no_stale_policy() -> None:
@@ -471,6 +511,7 @@ def main() -> int:
     audit_core_activation()
     audit_runtime_scope()
     audit_gm_guidance()
+    audit_public_provenance_hygiene()
     audit_no_stale_policy()
     audit_persistence_ownership()
     audit_onboarding_and_identity()

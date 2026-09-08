@@ -2,7 +2,6 @@
 
 > Historical snapshot: this file records the 0.1.0 audit and is not current normative runtime policy. Later releases preload the complete local CORE instruction set once and use semantic activation; old lazy-CORE observations below are retained only as history.
 
-
 Дата: 2026-08-13
 Цель: проверить `main` как чистую базу до первой campaign-ветки.
 
@@ -58,14 +57,10 @@ PASS — `main` содержит пустые MANIFEST/CONFIG/CURRENT, scene/tac
 PASS — конкретных PC/NPC/location/world facts в `main` нет.
 PASS — экспериментальные tavern/wizard данные не импортированы.
 
-## Research integration
+## Public provenance note
 
-PASS — официальный DMG 2024 используется как источник campaign/session/encounter craft, но защищённый текст не копируется.
-PASS — Alexandrian используется для situation-based design, clue redundancy, nodes, smart prep и exposition drip.
-PASS — Sly Flourish используется для strong starts, secrets/clues, spiral development и compact campaign/session preparation.
-PASS — cross-system GM principles используются только там, где они не заменяют D&D mechanics.
-PASS — research on structured D&D state, role-play persona drift and LLM sycophancy отражён в `AI_REASONING.md`/`NPC.md` architecture.
+Historical regression and integration outcomes above remain in HDM terms. The current public tree does not retain the source-specific development/research trail that informed the old audit. Required legal attribution, operational source routing and HDM technical artifact provenance remain in their current dedicated owners. Git history is unchanged.
 
 ## Remaining external step
 
-Tag `engine-v0.1.0` должен быть создан только после финального commit этого расширенного pre-release pass. Старый release SHA `9cb19a79...` больше не является рекомендуемой точкой tag.
+Tag `engine-v0.1.0` должен был создаваться только после финального commit этого расширенного pre-release pass. Старый release SHA `9cb19a79...` больше не являлся рекомендуемой точкой tag. Это историческая запись, не current release instruction.
