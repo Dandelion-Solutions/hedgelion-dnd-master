@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-24 FINAL SENIOR REVIEW HOLD — SR24-FINAL-01 PROPAGATION REPAIR PUBLISHED / INDEPENDENT FINAL SENIOR RE-REVIEW PENDING
+GLOBAL_STATE: R2.7 WP-25 STEP 1 AUTHORIZED — FAILURE / DEGRADATION / DURABILITY-RISK PRODUCT DIRECTION PUBLISHED / WORKER STEP 1 NOT YET COMPLETED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-24 — Performance / scale / operational budget — targeted SR24-FINAL-01 propagation repair complete / final Senior re-review pending
+CURRENT_SLICE: WP-25 — Error / degradation / failure semantics — Step 1 Source Manifest + Architecture Task Brief + mandatory whole-project critic
 
-LAST_CLOSED_UNIT: WP-24 SR24-FINAL-01 worker propagation repair publication
-NEXT_ELIGIBLE_UNIT: mandatory independent WP-24 final Senior re-review
-NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: mandatory independent WP-24 final Senior re-review
+LAST_CLOSED_UNIT: WP-24 mandatory independent final Senior re-review — PASS / GO — WP-24 CLOSED
+NEXT_ELIGIBLE_UNIT: WP-25 Step 1
+NEXT_AUTHORIZED_UNIT: WP-25 STEP 1 ONLY
+REQUIRED_GATE: complete Step 1 + whole-project critic + mechanical BLOCKING/SIGNIFICANT framing repairs, then mandatory independent Senior Step-1 review
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-7-finding-resolution-propagation.md
-KNOWN_BLOCKERS: SR24-FINAL-01 REMAINS SENIOR-OPEN UNTIL INDEPENDENT FINAL RE-REVIEW; WORKER REPAIR HAS 0 BLOCKING / 0 SIGNIFICANT FINDINGS
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/specs/2026-09-08-hdm-wp25-failure-degradation-durability-risk-owner-direction.md
+KNOWN_BLOCKERS: NONE BEFORE STEP 1; WP-25 STEP 2 REMAINS UNAUTHORIZED UNTIL INDEPENDENT SENIOR STEP-1 GO
 ```
 
 ---
@@ -36,6 +36,9 @@ WP22_CLOSED: YES
 WP23_FINAL_SENIOR_RE_REVIEW: PASS / GO
 WP23_FINAL_CLOSURE: PASS
 WP23_CLOSED: YES
+WP24_FINAL_SENIOR_RE_REVIEW: PASS / GO
+WP24_FINAL_CLOSURE: PASS
+WP24_CLOSED: YES
 ```
 
 Canonical predecessor owners:
@@ -43,7 +46,8 @@ Canonical predecessor owners:
 - WP-20 — `DEV/docs/superpowers/specs/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-canonical-spec.md`;
 - WP-21 — `DEV/docs/superpowers/specs/2026-09-07-r2-7-WP-21-diagnostics-observability-cleanup-retirement-canonical-spec.md`;
 - WP-22 — `DEV/docs/superpowers/specs/2026-09-07-r2-7-WP-22-verification-test-evaluation-completeness-canonical-spec.md`;
-- WP-23 — `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-23-release-package-version-legal-readiness-canonical-spec.md`.
+- WP-23 — `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-23-release-package-version-legal-readiness-canonical-spec.md`;
+- WP-24 — `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-24-performance-scale-operational-budget-canonical-spec.md`.
 
 Post-WP-20 publication/currentness repair remains closed / independent Senior PASS.
 
@@ -362,7 +366,7 @@ checkpoint remains optional acceleration/evidence, not scale/currentness authori
 chronology remains typed/bounded; no global timeline reconstruction
 ```
 
-Mandatory independent final Senior review then returned:
+Mandatory independent final Senior review initially returned:
 
 ```text
 WP24_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
@@ -370,10 +374,9 @@ SR24-FINAL-01: SIGNIFICANT / OPEN
 UNRESOLVED_BLOCKING_AT_SENIOR_REVIEW: 0
 UNRESOLVED_SIGNIFICANT_AT_SENIOR_REVIEW: 1
 CANONICAL_ARCHITECTURE_SEMANTIC_REPAIR_REQUIRED: NO
-WP25_AUTHORIZED: NO
 ```
 
-The canonical semantics of `F24-06-01..05` were accepted. The HOLD is a mandatory finding-propagation/traceability defect only.
+The canonical semantics of `F24-06-01..05` were accepted. The HOLD was a mandatory finding-propagation/traceability defect only.
 
 Targeted worker repair:
 
@@ -395,47 +398,103 @@ NEW_BLOCKING_FOUND_BY_PROPAGATION_AUDIT: 0
 NEW_SIGNIFICANT_FOUND_BY_PROPAGATION_AUDIT: 0
 ```
 
-Current worker gate:
+Mandatory independent final Senior re-review after the targeted repair returned:
 
 ```text
-WP24_STEP1_COMPLETE: YES
-WP24_STEP1_SENIOR_RE_REVIEW: PASS / GO
-WP24_STEPS_2_8_STARTED: YES
-WP24_STEP2_STATUS: COMPLETE / HISTORICALLY QUALIFIED
-WP24_STEP3_STATUS: COMPLETE / SAFE HISTORICAL
-WP24_STEP4_STATUS: COMPLETE / SAFE HISTORICAL
-WP24_STEP5_STATUS: COMPLETE / HISTORICALLY QUALIFIED
-WP24_STEP6_STATUS: COMPLETE / SAFE HISTORICAL FINDING SOURCE
-WP24_STEP7_STATUS: COMPLETE / SR24-FINAL-01 PROPAGATION LEDGER REPAIRED
-WP24_STEP8_STATUS: COMPLETE / SR24-FINAL-01 STATUS SYNCHRONIZED
-WP24_CANONICAL_SPEC_PUBLISHED: YES
-WP24_CANONICAL_SEMANTIC_CHANGE_FOR_SR24_FINAL_01: NO
-WP24_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
-SR24-FINAL-01: REPAIR APPLIED / PENDING INDEPENDENT FINAL SENIOR RE-REVIEW
-WP24_FINAL_SENIOR_RE_REVIEW: REQUIRED / PENDING
-WP24_CLOSED: NO
-
+WP24_FINAL_SENIOR_RE_REVIEW: PASS / GO
+SR24-FINAL-01: PASS / CLOSED
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
 HUMAN_DECISION_REQUIRED: NO
 PO_DECISION_REQUIRED: NO
-UNRESOLVED_BLOCKING_IN_WORKER_REPAIR: 0
-UNRESOLVED_SIGNIFICANT_IN_WORKER_REPAIR: 0
 UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
-WP20_REOPEN_REQUIRED: NO
-NEW_WORKSTREAM_CREATED: NO
-
+WP24_FINAL_CLOSURE: PASS
+WP24_CLOSED: YES
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
-IMPLEMENTATION_PLANNING_STARTED: NO
-SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
-PERFORMANCE_OPTIMIZATION_IMPLEMENTATION_STARTED: NO
-STORY_REDESIGN_STARTED: NO
-RUNTIME_RELEASE_EXECUTED: NO
-RUNTIME_MIGRATION_EXECUTED: NO
-REAL_CAMPAIGN_MIGRATED: NO
-REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
-WP25_AUTHORIZED: NO
+```
 
-NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY INDEPENDENT WP-24 FINAL SENIOR RE-REVIEW
+WP-24 is therefore closed. The previous worker/Senior-HOLD cursor is historical only and must not be used as current routing authority.
+
+---
+
+## WP-25 Product Owner direction and Step-1 authorization
+
+The Product Owner has explicitly authorized responsible architecture work on WP-25 and approved the failure/degradation/durability-risk direction published at:
+
+- `DEV/docs/superpowers/specs/2026-09-08-hdm-wp25-failure-degradation-durability-risk-owner-direction.md`;
+- `DEV/PRODUCT_OWNER_INPUT.md` — `PO-008`.
+
+Binding direction entering Step 1 includes:
+
+```text
+FAILURE CAUSE != EFFECTIVE SEVERITY != GAMEPLAY DISPOSITION != RETRY POLICY
+
+EFFECTIVE SEVERITY:
+    S0 NOTICE
+    S1 DEGRADED
+    S2 GUARDED
+    S3 QUARANTINED
+    S4 CRITICAL
+
+ORTHOGONAL AXES:
+    gameplay impact
+    affected scope / blast radius
+    risk if ignored
+    semantic temporal tolerance / fence
+    truthful frontier
+    recoverability / retry semantics
+    user visibility
+    future proof obligations
+
+UNSUPPORTED:
+    orthogonal deployment/capability disposition, not simply highest severity
+
+SELECTED ARCHITECTURE DIRECTION:
+    owner-local native outcomes
+    + ephemeral cross-owner FailureDisposition-like composition
+    + scope-aware continuation
+    + risk-trajectory-aware durability protection
+
+DURABILITY PRODUCT INTENT:
+    "one hour" was a rough proxy, not product law
+    avoid accumulating a large single-copy established HOT/SOFT frontier until host/context incapacity prevents preservation
+    risk policy follows still-relevant unpublished-loss exposure and host-survivability risk
+    approximate capacity signals may trigger proactive preservation but are not semantic authority
+    NORMAL / ELEVATED / DANGER distinction must survive, exact machine thresholds remain open
+    DANGER may guard further materially state-growing gameplay until preservation/repair
+    operability/loss-protection fence != generic correctness HARD
+    occasional early coherent persistence is preferred to large avoidable loss of established progress
+
+WHOLE-PROJECT CRITIC:
+    aggressive / mandatory
+    must reconstruct actual current owners and stale/superseded runtime projections
+```
+
+Known audit targets that Step 1 must not blindly inherit as current authority include the historical `GAME/CORE/DURABILITY_GUARD.md` one-hour/`durable_frontier_time` wording where superseded by Step-5.5/WP-13 semantics and stale LIVE runtime realization where later WP-16 owner law controls.
+
+### WP-25 Step-1 gate
+
+Authorized work is exactly:
+
+1. construct the task-specific open-world Source Manifest using `DEV/PROJECT_MAP.md` and actual owning artifacts;
+2. include PO-008 / the accepted owner direction as Product Owner requirement input, distinct from native canonical owners;
+3. produce the complete WP-25 Architecture Task Brief;
+4. run the mandatory whole-project Step-1 critic;
+5. inspect owners/dependencies exposed by that critic;
+6. mechanically repair every resolvable `BLOCKING` / `SIGNIFICANT` framing defect;
+7. preserve any genuine human decision as `NEEDS_PO` rather than silently choosing it;
+8. publish/read back the coherent Step-1 package and obtain exact-head verification evidence available to the current runtime;
+9. STOP for mandatory independent Senior Step-1 review.
+
+Not authorized:
+
+```text
+WP25 STEP 2: NO
+WP25 STEPS 2-8: NO
+IMPLEMENTATION PLANNING: NO
+SUBSTANTIVE IMPLEMENTATION: NO
+RUNTIME/SCHEMA/TEST REALIZATION: NO
+REAL GAMEPLAY BOOTSTRAP: NO
 ```
 
 ---
@@ -443,12 +502,12 @@ NEXT_GATE: MANDATORY INDEPENDENT WP-24 FINAL SENIOR RE-REVIEW
 ## Version Impact
 
 ```text
-VERSION_IMPACT: VERIFIED
+VERSION_IMPACT: VERIFIED FOR CURRENT DOCUMENTATION / ARCHITECTURE-DIRECTION PUBLICATION
 VERSION_BUMP_REQUIRED: NO
 VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-The `SR24-FINAL-01` repair changes design provenance/traceability/status documentation only. It changes no version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, Story semantic generation, package/release format, migration law or executable gameplay/runtime implementation.
+The WP-24 status synchronization and WP-25 product/architecture-direction publication change development architecture/status documentation only. They do not modify a version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime implementation.
 
-Do not begin WP-25, implementation planning, substantive implementation, performance optimization implementation, Story redesign, release/tag/deployment, migration or gameplay bootstrap. The current next gate is mandatory independent WP-24 final Senior re-review.
+Current next gate: **complete WP-25 Step 1 only, then mandatory independent Senior Step-1 review.**
