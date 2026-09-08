@@ -1,6 +1,6 @@
 # R2.7 WP-23 — Step 7 Finding Resolution and Propagation
 
-Status: **STEP 7 COMPLETE — ALL STEP-6 FINDINGS RESOLVED / PROPAGATED**
+Status: **STEP 7 COMPLETE — STEP-6 FINDINGS RESOLVED / SR23-FINAL-01 TARGETED REPAIR PROPAGATED / FINAL SENIOR RE-REVIEW REQUIRED**
 
 Date: 2026-09-08
 
@@ -8,9 +8,9 @@ Step-6 source:
 
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-6-whole-project-adversarial-review.md`.
 
-This checkpoint records mechanical resolution of the whole-project critic under the already accepted Product Owner provenance decision. It creates no new licensing, product, compatibility or authority policy.
+This checkpoint records mechanical resolution of the whole-project critic under the already accepted Product Owner provenance decision and the later targeted final-Senior repair `SR23-FINAL-01`. It creates no new licensing, product, compatibility or authority policy.
 
-## 1. Finding dispositions
+## 1. Step-6 finding dispositions
 
 | Finding | Severity | Final disposition |
 |---|---|---|
@@ -47,13 +47,13 @@ Root/runtime legal payload remains untouched and the maintenance/release checks 
 
 ### Technical artifact provenance preserved
 
-Version/package/digest/currentness/update provenance remains in its owning release/runtime surfaces. The new bounded audit explicitly requires representative technical provenance markers from `ENGINE_UPDATES.md` rather than treating provenance as globally forbidden.
+Version/package/digest/currentness/update provenance remains in its owning release/runtime surfaces. The bounded audit explicitly requires representative technical provenance markers from `ENGINE_UPDATES.md` rather than treating provenance as globally forbidden.
 
 ### Operational references preserved
 
 Current rules-source routing remains through `GAME/RULES/OFFICIAL_SOURCES.md`. Current host/repository/product facts may remain where they are operational architecture facts rather than development-source trails.
 
-## 4. Mandatory propagation sweep
+## 4. Original mandatory propagation sweep
 
 Material Step-6 corrections were propagated to:
 
@@ -62,9 +62,9 @@ Material Step-6 corrections were propagated to:
 - affected current owners/routing/check/test surfaces;
 - this Step-7 resolution record.
 
-The final canonical WP-23 spec and Step-8 checkpoint must consume this resolved state rather than the pre-Step-6 inventory.
+The final canonical WP-23 spec and Step-8 checkpoint consume this resolved state rather than the pre-Step-6 inventory.
 
-## 5. Resolution counts
+## 5. Original Step-6/Step-7 resolution counts
 
 ```text
 STEP6_BLOCKING_FOUND: 0
@@ -80,11 +80,102 @@ WP20_REOPEN_REQUIRED: NO
 NEW_WORKSTREAM_REQUIRED: NO
 ```
 
-## 6. Step-7 gate
+These counts remain the historical Step-6/Step-7 counts. `SR23-FINAL-01` was found later by the mandatory final Senior review and is therefore accounted separately below rather than retroactively renumbered as a Step-6 finding.
+
+## 6. Final Senior verdict — SR23-FINAL-01
+
+Mandatory final Senior review result:
 
 ```text
-STEP7_COMPLETE: YES
-PROPAGATION_SWEEP_COMPLETE: YES
-CURRENT_TREE_RECONCILIATION_APPLIED: YES
-NEXT_PROCESS_UNIT: STEP 8 CANONICALIZATION / FINAL SELF-REVIEW / STATUS + VERIFICATION
+WP23_FINAL_SENIOR_REVIEW: HOLD
+SR23-FINAL-01: SIGNIFICANT
+HUMAN_DECISION_REQUIRED: NO
+WP20_REOPEN_REQUIRED: NO
+WHOLESALE_WP23_REOPEN_REQUIRED: NO
+TARGETED_REPAIR_REQUIRED: YES
+```
+
+### Defect
+
+`DEV/RELEASE/CHECKLIST.md` owns two distinct fresh-Project acceptance boundaries:
+
+1. a pre-tag candidate built from the final version-coherent tree is accepted in a fresh Project before immutable tagging;
+2. after tag-triggered publication, the exact uploaded runtime asset is independently accepted in a fresh Project before release announcement.
+
+WP-23 synthesis compressed those two obligations into one post-publication fresh-environment gate. That compression was materially incomplete but did not change the underlying release owner.
+
+### Repaired current law
+
+The single current final normative owner must preserve this sequence:
+
+```text
+final version-coherent source tree
+-> build/validation evidence
+-> pre-tag candidate artifact
+-> fresh-Project acceptance of that pre-tag candidate
+-> immutable release tag / tag-triggered publication
+-> exact uploaded runtime asset + checksum/provenance verification
+-> fresh-Project acceptance of the exact uploaded asset
+-> release may be announced when all applicable release-owner obligations pass
+```
+
+The two fresh-Project checks are temporally and evidentially distinct. They do **not** require different physical Project instances.
+
+Current exact-head source CI/build verification satisfies neither empirical fresh-Project gate.
+
+No actual tag, GitHub Release, uploaded runtime asset or fresh-Project release acceptance is executed by this repair.
+
+## 7. SR23-FINAL-01 affected-artifact / propagation ledger
+
+| Artifact | Disposition |
+|---|---|
+| `DEV/RELEASE/CHECKLIST.md` | `CURRENT OWNER / NO CHANGE REQUIRED` — already contained both acceptance gates. |
+| Step-1 Task Brief / Source Manifest | `HISTORICAL / RETAINED` — it included the release checklist as owner but compressed its acceptance inventory; not a current final owner and not rewritten retroactively. |
+| Step-1 critic + Step-1 Senior review | `HISTORICAL / RETAINED` — records of the gate actually performed; no current normative release law. |
+| Step 2 evidence reconciliation | `UPDATED / SELF-IDENTIFYING QUALIFICATION` — historical single-gate shorthand marked materially incomplete and routed here + canonical owner. |
+| Step 3 Decision Brief | `HISTORICAL / SUPERSEDED SHORTHAND` — selected owner-composed architecture remains valid; its one-line fresh-environment tail is not current law and is superseded by this finding + canonical owner. |
+| Step 4 cross-system review | `HISTORICAL / SUPERSEDED SHORTHAND` — its proof-class analysis remains useful, but its one-gate release-acceptance shorthand is not current law. |
+| Step 5 candidate specification | `UPDATED / SELF-IDENTIFYING QUALIFICATION` — affected L31/L32/release-time shorthand explicitly marked incomplete and routed to canonical owner. |
+| Step 6 adversarial critic | `HISTORICAL / RETAINED` — remains the record of Step-6 findings; `SR23-FINAL-01` was found later and is not retroactively inserted into Step-6 numbering. |
+| Step 7 | `UPDATED / CURRENT RESOLUTION LEDGER` — this record owns targeted-repair traceability, not release semantics. |
+| Step 8 checkpoint | `UPDATED` — closure state and proof classes distinguish both gates; final Senior re-review required. |
+| canonical WP-23 spec | `UPDATED / SINGLE CURRENT FINAL NORMATIVE OWNER` — repaired release-readiness law. |
+| `DEV/CURRENT_PROGRESS.md` | `UPDATED` — HOLD, targeted repair, unresolved counts and re-review gate synchronized. |
+| roadmap / canonical architecture index / PROJECT_MAP | `NO CHANGE REQUIRED` — no sequence, ownership or routing rebaseline introduced by this targeted repair. |
+
+No additional `BLOCKING` or `SIGNIFICANT` defect was identified while repairing this finding.
+
+## 8. Verification and re-review requirement
+
+Applicable verification for the targeted repair is:
+
+- current maintenance audit;
+- full DEV unit-test discovery through the current hosted validation route;
+- exact-final-HEAD GitHub Actions evidence;
+- Connector read-back of final branch HEAD, canonical WP-23 spec and `DEV/CURRENT_PROGRESS.md`.
+
+Those source/static checks prove only their admitted source checks. They do not satisfy either fresh-Project empirical release gate.
+
+Exact-final-HEAD hosted verification is external execution evidence; no follow-up repository write is required merely to restate a successful run, because such a write would create a new unverified HEAD.
+
+## 9. Current gate
+
+```text
+SR23-FINAL-01: TARGETED REPAIR APPLIED / RESOLUTION PUBLISHED
+FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
+FINAL_SENIOR_RE_REVIEW: REQUIRED / PENDING
+
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+WP20_REOPEN_REQUIRED: NO
+WHOLESALE_WP23_REOPEN_REQUIRED: NO
+
+WP23_CLOSED: NO
+WP24_NOT_STARTED: YES
+IMPLEMENTATION_PLANNING_STARTED: NO
+RUNTIME_RELEASE_EXECUTED: NO
+
+NEXT_AUTHORIZED_UNIT: NONE
+NEXT_GATE: MANDATORY INDEPENDENT FINAL SENIOR RE-REVIEW OF WP-23
 ```

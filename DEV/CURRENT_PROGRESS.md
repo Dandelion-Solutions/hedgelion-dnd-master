@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-23 STEPS 2–8 CANONICALIZATION COMPLETE — MANDATORY INDEPENDENT FINAL SENIOR REVIEW PENDING
+GLOBAL_STATE: R2.7 WP-23 FINAL SENIOR HOLD — SR23-FINAL-01 TARGETED REPAIR COMPLETE / FINAL SENIOR RE-REVIEW PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-23 — Release/package/version/legal readiness — canonical Step-8 result published / final Senior review pending
+CURRENT_SLICE: WP-23 — Release/package/version/legal readiness — SR23-FINAL-01 targeted repair published / final Senior re-review pending
 
-LAST_CLOSED_UNIT: WP-23 Step 8 canonicalization/self-review — COMPLETE / PUBLISHED
-NEXT_ELIGIBLE_UNIT: mandatory independent WP-23 final Senior review
+LAST_CLOSED_UNIT: WP-23 targeted repair of SR23-FINAL-01 — COMPLETE / PUBLISHED
+NEXT_ELIGIBLE_UNIT: mandatory independent WP-23 final Senior re-review
 NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: mandatory independent final Senior review of complete WP-23 Steps 2–8 package
+REQUIRED_GATE: mandatory independent final Senior re-review of repaired WP-23 package
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-8-canonicalization-checkpoint.md
-KNOWN_BLOCKERS: NONE IN WORKER VIEW — FINAL SENIOR REVIEW PENDING
+KNOWN_BLOCKERS: NONE IN WORKER VIEW — FINAL SENIOR RE-REVIEW PENDING
 ```
 
 ---
@@ -73,7 +73,7 @@ Canonical WP-23 owner:
 
 - `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-23-release-package-version-legal-readiness-canonical-spec.md`.
 
-## WP-23 result
+## WP-23 result before final Senior review
 
 WP-23 remains one coupled release chain:
 
@@ -83,7 +83,7 @@ Lane B — version / upgrade / release integrity
 Lane C — legal / public provenance hygiene
 ```
 
-Core proof separations:
+Original proof separations retained:
 
 ```text
 SUCCESSFUL_ZIP_BUILD != RELEASE_READINESS
@@ -92,7 +92,7 @@ SEMANTIC_VERSION != EXACT_PACKAGE_PROVENANCE != FINAL_ARCHIVE_DIGEST
 ARCHITECTURE_CLOSURE != PRODUCT PRODUCTION-RELEASE-READY
 ```
 
-Step-6 / Step-7 result:
+Step-6 / Step-7 result remains:
 
 ```text
 STEP6_BLOCKING_FOUND: 0
@@ -105,7 +105,7 @@ STEP7_UNRESOLVED_MINOR: 0
 PROPAGATION_SWEEP_COMPLETE: YES
 ```
 
-Repository-wide current public provenance reconciliation for the WP-23 audited `DEV/` + `GAME/` frontier:
+Repository-wide current public provenance reconciliation for the WP-23 audited `DEV/` + `GAME/` frontier remains:
 
 ```text
 PUBLIC SOURCE-SPECIFIC DEVELOPMENT/RESEARCH PROVENANCE: RECONCILED / PROHIBITED BY CURRENT POLICY
@@ -118,14 +118,54 @@ GLOBAL EXTERNAL-NAME/URL BLACKLIST: NOT USED / NOT AUTHORITY
 GIT HISTORY REWRITE: NOT PERFORMED / NOT REQUIRED
 ```
 
-Package/version/update result:
+---
+
+## WP-23 final Senior verdict and targeted repair
+
+Mandatory final Senior review returned:
+
+```text
+WP23_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
+SR23-FINAL-01: SIGNIFICANT
+HUMAN_DECISION_REQUIRED: NO
+WP20_REOPEN_REQUIRED: NO
+WHOLESALE_WP23_REOPEN_REQUIRED: NO
+TARGETED_REPAIR_REQUIRED: YES
+```
+
+Finding: final WP-23 synthesis preserved the post-publication fresh-Project acceptance boundary but omitted the independent pre-tag fresh-Project candidate gate already required by `DEV/RELEASE/CHECKLIST.md`.
+
+The targeted repair restores the current owner-required sequence:
+
+```text
+final version-coherent source tree
+-> build/validation evidence
+-> pre-tag candidate artifact
+-> fresh-Project acceptance of that pre-tag candidate
+-> immutable release tag / tag-triggered publication
+-> exact uploaded runtime asset + checksum/provenance verification
+-> fresh-Project acceptance of the exact uploaded asset
+-> release may be announced when all applicable release-owner obligations pass
+```
+
+The two fresh-Project checks are temporally/evidentially distinct; they do not require two different physical Project instances.
+
+Current exact-head CI/build verification satisfies neither empirical fresh-Project gate.
+
+Affected-artifact accounting and historical-artifact dispositions are recorded in Step 7. Step 2 and Step 5 carry direct self-identifying qualification; the canonical spec is the single current final normative owner.
+
+No additional `BLOCKING` or `SIGNIFICANT` defect was identified during the targeted repair.
+
+Package/version/update status after repair:
 
 ```text
 CURRENT_PACKAGE_BUILD/INSTALL ARCHITECTURE: RECONCILED
 CURRENT VERSION NAMESPACE ARCHITECTURE: RECONCILED
 WP20_REOPEN_REQUIRED: NO
+PRE_TAG_CANDIDATE_FRESH_PROJECT_ACCEPTANCE: NOT EXECUTED / RELEASE-TIME OBLIGATION
 ACTUAL RELEASE/TAG/PUBLICATION: NOT EXECUTED
-FRESH PUBLISHED-ASSET ACCEPTANCE: NOT EXECUTED / RELEASE-TIME OBLIGATION
+EXACT_UPLOADED_ASSET_VERIFICATION: NOT EXECUTED / RELEASE-TIME OBLIGATION
+POST_UPLOAD_FRESH_PROJECT_ACCEPTANCE: NOT EXECUTED / RELEASE-TIME OBLIGATION
 PRODUCTION_RELEASE_READY CLAIM: NOT MADE
 ```
 
@@ -149,7 +189,7 @@ REF RETIREMENT: LOGICAL DE-AUTHORIZATION / DE-ROUTING ONLY
 PHYSICAL REF EXISTENCE IMPLIES AUTHORITY: NO
 ```
 
-WP-23 public provenance policy:
+WP-23 public provenance policy remains:
 
 ```text
 PUBLIC DEV/GAME SOURCE-SPECIFIC DEVELOPMENT/RESEARCH PROVENANCE: FORBIDDEN BY DEFAULT
@@ -168,7 +208,7 @@ VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-The realized WP-23 delta changes source-neutral documentation/routing/provenance hygiene and maintenance verification. `GAME/CORE/SOURCES.md` is non-versioned runtime documentation/routing. No engine release identity, version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, digest contract, package format/provenance schema, compatibility/migration law or executable gameplay/runtime implementation changed.
+The targeted `SR23-FINAL-01` repair changes only WP-23 design/canonical/status documentation by restoring an obligation already present in `DEV/RELEASE/CHECKLIST.md`. No engine release identity, version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, digest contract, package format/provenance schema, compatibility/migration law or executable gameplay/runtime implementation changes.
 
 ## Current authorization / scope fence
 
@@ -178,7 +218,9 @@ WP23_STARTED: YES
 WP23_STEP1_SENIOR_REVIEW: PASS / GO
 WP23_STEPS_2_8_COMPLETE: YES
 WP23_CANONICAL_SPEC_PUBLISHED: YES
-WP23_FINAL_SENIOR_REVIEW: REQUIRED / PENDING
+WP23_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD — SR23-FINAL-01
+SR23_FINAL_01_TARGETED_REPAIR_COMPLETE: YES
+WP23_FINAL_SENIOR_RE_REVIEW: REQUIRED / PENDING
 WP23_CLOSED: NO
 
 HUMAN_DECISION_REQUIRED: NO
@@ -198,7 +240,7 @@ REAL_CAMPAIGN_MIGRATED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY INDEPENDENT FINAL SENIOR REVIEW OF COMPLETE WP-23 STEPS 2–8 PACKAGE
+NEXT_GATE: MANDATORY INDEPENDENT FINAL SENIOR RE-REVIEW OF REPAIRED WP-23 PACKAGE
 ```
 
-Do not begin WP-24, implementation planning, substantive implementation, release/tag/deployment, migration or gameplay bootstrap before the mandatory independent final Senior gate is resolved.
+Do not begin WP-24, implementation planning, substantive implementation, release/tag/deployment, migration or gameplay bootstrap before the mandatory independent final Senior re-review resolves the gate.

@@ -1,6 +1,6 @@
 # R2.7 WP-23 Step 8 — Canonicalization Checkpoint
 
-Status: **STEP 8 CANONICALIZATION PUBLISHED — MANDATORY FINAL SENIOR REVIEW NEXT**
+Status: **STEP 8 CANONICALIZATION RETAINED — SR23-FINAL-01 TARGETED REPAIR COMPLETE / MANDATORY FINAL SENIOR RE-REVIEW NEXT**
 
 Date: 2026-09-08
 
@@ -18,9 +18,12 @@ Design chain:
 6. Step 5 — candidate specification;
 7. Step 6 — mandatory whole-project adversarial review;
 8. Step 7 — finding resolution + mandatory propagation/current-tree reconciliation;
-9. this Step-8 canonicalization checkpoint.
+9. Step 8 — canonicalization checkpoint;
+10. mandatory final Senior review — `HOLD` on `SR23-FINAL-01`;
+11. targeted repair of `SR23-FINAL-01` + propagation;
+12. mandatory final Senior re-review — pending.
 
-## 1. Final self-review
+## 1. Final self-review after targeted repair
 
 ```text
 NO_ACCIDENTAL_NORMATIVE_TODO_TBD: YES
@@ -29,6 +32,7 @@ INTERNAL_CONTRADICTIONS_UNRESOLVED: 0
 ACCEPTED_PO_PROVENANCE_DECISION_REPRESENTED: YES
 PACKAGE_VERSION_UPDATE_LEGAL_OWNERS_COMPOSED: YES
 PROOF_CLASSES_SEPARATED: YES
+PRE_TAG_AND_POST_UPLOAD_FRESH_PROJECT_GATES_DISTINCT: YES
 LEGAL_ATTRIBUTION_PRESERVED: YES
 TECHNICAL_ARTIFACT_PROVENANCE_PRESERVED: YES
 PUBLIC_DEVELOPMENT_RESEARCH_PROVENANCE_BOUNDARY_RECONCILED: YES
@@ -58,11 +62,43 @@ Step-7 resolution owner:
 
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-7-finding-resolution-propagation.md`.
 
-Material corrections were propagated into Step 2 and Step 5 as required.
+The historical Step-6 counts remain unchanged. `SR23-FINAL-01` was found later by the final Senior review and is tracked separately.
 
-## 3. Repository-wide public provenance reconciliation
+## 3. Final Senior HOLD and targeted repair
 
-Current WP-23 audited public `DEV/` + `GAME/` frontier is reconciled under the Product Owner policy:
+```text
+WP23_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
+SR23-FINAL-01: SIGNIFICANT
+HUMAN_DECISION_REQUIRED: NO
+WP20_REOPEN_REQUIRED: NO
+WHOLESALE_WP23_REOPEN_REQUIRED: NO
+TARGETED_REPAIR_REQUIRED: YES
+```
+
+Defect: WP-23 final synthesis preserved the post-publication fresh-Project acceptance of the exact uploaded asset but lost the independent pre-tag fresh-Project acceptance gate already required by `DEV/RELEASE/CHECKLIST.md`.
+
+Targeted repair restores the owner-required sequence without creating another release authority:
+
+```text
+final version-coherent source tree
+-> build/validation evidence
+-> pre-tag candidate artifact
+-> fresh-Project acceptance of that pre-tag candidate
+-> immutable release tag / tag-triggered publication
+-> exact uploaded runtime asset + checksum/provenance verification
+-> fresh-Project acceptance of the exact uploaded asset
+-> release may be announced when all applicable release-owner obligations pass
+```
+
+The two fresh-Project acceptance boundaries are temporally and evidentially distinct. They do not require two different physical Project instances.
+
+Current exact-head source CI/build verification satisfies neither empirical gate.
+
+Propagation details and affected-artifact dispositions are recorded in Step 7. Step 2 and Step 5 contain self-identifying qualification; other historical Step artifacts remain historical/non-current and are explicitly dispositioned in the Step-7 ledger rather than rewritten retroactively.
+
+## 4. Repository-wide public provenance reconciliation
+
+Current WP-23 audited public `DEV/` + `GAME/` frontier remains reconciled under the Product Owner policy:
 
 ```text
 PROHIBITED_SOURCE_SPECIFIC_DEVELOPMENT_RESEARCH_PROVENANCE: REMOVED FROM CONFIRMED CURRENT WP-23 SURFACES
@@ -76,9 +112,9 @@ BOUNDED_MACHINE_REGRESSION_GUARD: PRESENT
 UNIVERSAL_SEMANTIC_PROVENANCE_CLASSIFIER: NOT CLAIMED
 ```
 
-Key current-tree dispositions are recorded in the canonical spec and Step-7 record. `DEV/PROJECT_MAP.md` routing was reconciled while preserving the concurrent Story integration entry.
+`DEV/PROJECT_MAP.md` routing remains reconciled; no route change is introduced by the targeted final-Senior repair.
 
-## 4. Package / version / release result
+## 5. Package / version / release result
 
 ```text
 GAME_SHIPPED_BOUNDARY: CURRENT / REALIZED
@@ -87,26 +123,30 @@ GENERATED_RUNTIME_PACKAGE_PROVENANCE: CURRENT / REALIZED
 FINAL_ARCHIVE_DIGEST_ROUTE: CURRENT / REALIZED
 INSTALL_EXACT_ROOT_RULE: CURRENT / REALIZED
 RELEASE_WORKFLOW_DEFINITION: CURRENT / REALIZED
+PRE_TAG_CANDIDATE_FRESH_PROJECT_ACCEPTANCE: NOT PERFORMED / RELEASE-TIME OBLIGATION
 ACTUAL_RELEASE_EXECUTION: NOT PERFORMED / RELEASE-TIME OBLIGATION
-FRESH_PUBLISHED_ASSET_ACCEPTANCE: NOT PERFORMED / RELEASE-TIME OBLIGATION
+EXACT_UPLOADED_ASSET_VERIFICATION: NOT PERFORMED / RELEASE-TIME OBLIGATION
+POST_UPLOAD_FRESH_PROJECT_ACCEPTANCE: NOT PERFORMED / RELEASE-TIME OBLIGATION
 WP20_COMPATIBILITY_ARCHITECTURE: CONSUMED / NOT REOPENED
 DORMANT_RELEASED_V1_MIGRATION_REALIZATION_ABSENCE: NOT A CURRENT PRERELEASE DEFECT
 ```
 
 No production release-ready claim is made.
 
-## 5. Proof-class separation
+## 6. Proof-class separation
 
 ```text
-SUCCESSFUL_ZIP_BUILD != RELEASE_READINESS
-GREEN_SOURCE_CI != PUBLISHED_RELEASE_ACCEPTANCE
-SEMANTIC_VERSION != EXACT_PACKAGE_PROVENANCE != FINAL_ARCHIVE_DIGEST
+SUCCESSFUL_ZIP_BUILD != PRE_TAG_FRESH_PROJECT_ACCEPTANCE
+GREEN_SOURCE_CI != PRE_TAG_FRESH_PROJECT_ACCEPTANCE
+PRE_TAG_FRESH_PROJECT_ACCEPTANCE != POST_UPLOAD_FRESH_PROJECT_ACCEPTANCE
 SOURCE/BUILD_VERIFICATION != ACTUAL RELEASE PUBLICATION
-ACTUAL RELEASE PUBLICATION != FRESH-ENVIRONMENT ACCEPTANCE
+ACTUAL RELEASE PUBLICATION != EXACT_UPLOADED_ASSET_VERIFICATION
+EXACT_UPLOADED_ASSET_VERIFICATION != POST_UPLOAD_FRESH_PROJECT_ACCEPTANCE
+SEMANTIC_VERSION != EXACT_PACKAGE_PROVENANCE != FINAL_ARCHIVE_DIGEST
 ARCHITECTURE_CLOSURE != PRODUCT PRODUCTION-RELEASE-READY
 ```
 
-## 6. Version Impact
+## 7. Version Impact
 
 ```text
 VERSION_IMPACT: VERIFIED
@@ -115,32 +155,36 @@ VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-Reason: the realized delta changes source-neutral documentation/routing/provenance hygiene and maintenance verification. `GAME/CORE/SOURCES.md` is non-versioned runtime documentation/routing. No engine release identity, version-bearing runtime semantic module, schema/generation, digest contract, package format, compatibility/migration law or executable gameplay/runtime implementation changed.
+Reason: `SR23-FINAL-01` restores in WP-23 synthesis a release-owner obligation already present in `DEV/RELEASE/CHECKLIST.md`. The targeted repair changes only design/canonical/status documentation. It changes no engine release identity, version-bearing runtime semantic module, schema/generation, digest contract, package format/provenance schema, compatibility/migration law or executable gameplay/runtime implementation.
 
-## 7. Traceability / derivative surfaces
+## 8. Traceability / derivative surfaces
 
-`DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` was re-evaluated. No edit is required: it is derivative/non-normative, current state routes through `DEV/CURRENT_PROGRESS.md`, and accepted implementation-facing results are discovered from `specs/` plus owning architecture.
+`DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` remains derivative/non-normative and requires no edit. Current state routes through `DEV/CURRENT_PROGRESS.md`, and accepted implementation-facing results are discovered from `specs/` plus owning architecture.
 
-`DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` is unchanged because WP-23 does not rebaseline sequence/scope/dependencies.
+`DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` remains unchanged because the targeted repair does not rebaseline sequence/scope/dependencies.
 
-Root `README.md` was not rewritten; its current editorial contract was respected.
+Root `README.md` remains untouched.
 
 No new debt/backlog/workstream was created.
 
-## 8. Verification obligation
+## 9. Verification obligation
 
-The current hosted source-validation route remains `.github/workflows/validate.yml`, which runs the maintenance audit and DEV unit-test discovery on admitted branch pushes.
+Applicable source verification remains the current hosted `.github/workflows/validate.yml` route, which runs the maintenance audit and DEV unit-test discovery on admitted branch pushes.
 
-After this exact Step-8 publication, hosted evidence must be read against the exact final HEAD before final Senior-review handoff. A green exact-head run, if obtained, is evidence only that those admitted source checks executed successfully. It is not GitHub Release/fresh-Project acceptance.
+The targeted-repair publication must obtain hosted evidence against the exact final HEAD before final Senior re-review handoff. A green exact-head run proves only those admitted source checks; it does not satisfy either empirical fresh-Project release gate.
 
-Connector remote read-back of this exact final HEAD and canonical artifacts is publication/currentness evidence, not executable test evidence.
+Connector read-back of the final branch HEAD, canonical WP-23 spec and `DEV/CURRENT_PROGRESS.md` is publication/currentness evidence, not fresh-Project acceptance.
 
-## 9. Final gate
+Exact-final-HEAD hosted evidence is external execution evidence; no follow-up repository write is required merely to restate a successful run.
+
+## 10. Final gate
 
 ```text
 WP23_STEPS_2_8_COMPLETE: YES
 WP23_CANONICAL_SPEC_PUBLISHED: YES
-WP23_FINAL_SENIOR_REVIEW: REQUIRED / PENDING
+WP23_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD — SR23-FINAL-01
+SR23_FINAL_01_TARGETED_REPAIR_COMPLETE: YES
+WP23_FINAL_SENIOR_RE_REVIEW: REQUIRED / PENDING
 WP23_CLOSED: NO
 
 HUMAN_DECISION_REQUIRED: NO
@@ -148,6 +192,7 @@ PO_DECISION_REQUIRED: NO
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
 WP20_REOPEN_REQUIRED: NO
+WHOLESALE_WP23_REOPEN_REQUIRED: NO
 NEW_WORKSTREAM_REQUIRED: NO
 
 WP24_NOT_STARTED: YES
@@ -159,5 +204,5 @@ REAL_CAMPAIGN_MIGRATED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY INDEPENDENT FINAL SENIOR REVIEW OF WP-23
+NEXT_GATE: MANDATORY INDEPENDENT FINAL SENIOR RE-REVIEW OF WP-23
 ```

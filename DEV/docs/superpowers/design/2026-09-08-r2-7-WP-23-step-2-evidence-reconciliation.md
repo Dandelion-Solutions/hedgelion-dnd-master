@@ -336,3 +336,39 @@ STEP7_PROPAGATION_APPLIED: YES
 ```
 
 This remains evidence, not a product release-readiness verdict.
+
+---
+
+## 9. Final-Senior qualification — SR23-FINAL-01
+
+The mandatory final Senior review performed after Step 8 found one `SIGNIFICANT` synthesis defect not identified in the historical Step-2 evidence compression:
+
+```text
+SR23-FINAL-01: SIGNIFICANT
+DEFECT: the historical Step-2 chain, A-06, B-06 and completeness-matrix shorthand collapse two separate fresh-Project acceptance boundaries into one post-publication/fresh-environment obligation.
+```
+
+Those historical formulations above are retained as reviewed Step-2 provenance and are **materially incomplete for current release law**. They must not be used as the current WP-23 release sequence.
+
+The current release owner `DEV/RELEASE/CHECKLIST.md` requires two temporally and evidentially distinct acceptance boundaries:
+
+```text
+final version-coherent source tree
+-> build/validation evidence
+-> pre-tag candidate artifact
+-> fresh-Project acceptance of that pre-tag candidate
+-> immutable release tag / tag-triggered publication
+-> exact uploaded runtime asset + checksum/provenance verification
+-> fresh-Project acceptance of the exact uploaded asset
+-> release may be announced when all applicable release-owner obligations pass
+```
+
+The two acceptance boundaries do not require two different physical Project instances. They require distinct evidence tied to the pre-tag candidate and to the exact uploaded asset respectively.
+
+Current exact-head source CI/build verification satisfies neither empirical fresh-Project gate.
+
+Current final normative owner after targeted repair:
+
+- `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-23-release-package-version-legal-readiness-canonical-spec.md`.
+
+Resolution and propagation are recorded in Step 7 under `SR23-FINAL-01`. WP-23 remains open pending mandatory final Senior re-review.

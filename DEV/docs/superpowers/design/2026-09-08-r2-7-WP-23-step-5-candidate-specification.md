@@ -328,3 +328,42 @@ ACTUAL_RELEASE_REQUIRED_FOR_ARCHITECTURE_CLOSURE: NO
 ACTUAL_RELEASE_REQUIRED_FOR_PRODUCTION_RELEASE_ACCEPTANCE: YES
 NEXT_PROCESS_UNIT: STEP 8 CANONICALIZATION / FINAL SELF-REVIEW / STATUS + VERIFICATION
 ```
+
+---
+
+## 12. Final-Senior qualification — SR23-FINAL-01
+
+The mandatory final Senior review after Step 8 returned `HOLD` on one `SIGNIFICANT` defect in this historical candidate synthesis:
+
+```text
+SR23-FINAL-01: SIGNIFICANT
+HUMAN_DECISION_REQUIRED: NO
+WP20_REOPEN_REQUIRED: NO
+WHOLESALE_WP23_REOPEN_REQUIRED: NO
+TARGETED_REPAIR_REQUIRED: YES
+```
+
+The historical central-model tail, `WP23-L31`, `WP23-L32`, the release-time-obligations paragraph and related shorthand above are **materially incomplete for current release law** because they preserve only the post-publication fresh-Project acceptance boundary and omit the separate pre-tag fresh-Project candidate gate already required by `DEV/RELEASE/CHECKLIST.md`.
+
+The repaired current sequence is:
+
+```text
+final version-coherent source tree
+-> build/validation evidence
+-> pre-tag candidate artifact
+-> fresh-Project acceptance of that pre-tag candidate
+-> immutable release tag / tag-triggered publication
+-> exact uploaded runtime asset + checksum/provenance verification
+-> fresh-Project acceptance of the exact uploaded asset
+-> release may be announced when all applicable release-owner obligations pass
+```
+
+The two fresh-Project checks are separate acceptance/evidence boundaries. They do not imply that two different physical Project instances are required.
+
+Current exact-head CI/build verification satisfies neither empirical gate. No actual tag, GitHub Release, asset upload or fresh-Project acceptance is executed by this repair.
+
+This candidate remains historical/non-current. The single current final normative owner after the targeted repair is:
+
+- `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-23-release-package-version-legal-readiness-canonical-spec.md`.
+
+Resolution/affected-artifact accounting is recorded in Step 7. WP-23 remains open pending mandatory final Senior re-review.
