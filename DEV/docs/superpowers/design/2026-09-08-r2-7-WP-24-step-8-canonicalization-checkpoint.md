@@ -1,6 +1,6 @@
 # R2.7 WP-24 Step 8 — Canonicalization Checkpoint
 
-Status: **STEP 8 COMPLETE — CANONICAL RESULT PUBLISHED — MANDATORY INDEPENDENT FINAL SENIOR REVIEW PENDING**
+Status: **STEP 8 COMPLETE — CANONICAL RESULT PUBLISHED — SR24-FINAL-01 PROPAGATION REPAIR APPLIED / MANDATORY INDEPENDENT FINAL SENIOR RE-REVIEW PENDING**
 
 Date: 2026-09-08
 
@@ -20,6 +20,17 @@ Design chain:
 8. Step 6 independent whole-project adversarial review;
 9. Step 7 finding resolution / propagation;
 10. this Step-8 canonicalization checkpoint + canonical specification.
+
+Post-Step-8 mandatory independent Senior review returned:
+
+```text
+WP24_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
+SR24-FINAL-01: SIGNIFICANT / OPEN
+CANONICAL_ARCHITECTURE_SEMANTIC_REPAIR_REQUIRED: NO
+WP25_AUTHORIZED: NO
+```
+
+`SR24-FINAL-01` concerns the mandatory finding-propagation ledger only. The semantic repairs `F24-06-01..05` in the canonical specification were accepted by Senior. The targeted worker repair adds per-finding affected-artifact accounting in Step 7 plus self-identifying historical qualification in Step 2 and Step 5; it does not change canonical WP-24 semantics.
 
 ---
 
@@ -52,7 +63,7 @@ Every significant finding is incorporated into the canonical result:
 - bounded stale-base changed-path fallback to direct current-footprint revalidation;
 - explicit bounded recovery/checkpoint/chronology special path.
 
-No unresolved blocking/significant issue prevents canonicalization.
+No unresolved blocking/significant semantic issue prevents canonicalization.
 
 ---
 
@@ -139,7 +150,52 @@ Only architecture/design/status artifacts are created/updated. No runtime module
 
 ---
 
-## 6. Step-8 gate result
+## 6. SR24-FINAL-01 propagation-repair completion
+
+Step 7 now contains a per-finding affected-artifact ledger for every `F24-06-01..05`, explicitly accounting for:
+
+- Step-1 Task Brief / Source Manifest;
+- Step 2 evidence reconciliation;
+- Step 3 Decision Brief;
+- Step 4 review;
+- Step 5 candidate;
+- Step 6 critic;
+- Step 8 checkpoint;
+- canonical WP-24 specification;
+- `DEV/CURRENT_PROGRESS.md`;
+- `DEV/PROJECT_MAP.md` / roadmap;
+- deferred obligations.
+
+Each entry is classified `UPDATED`, `EXPLICITLY SUPERSEDED`, `SAFE HISTORICAL`, or `NOT APPLICABLE` and names the current final canonical owner.
+
+Historical-artifact repair is intentionally minimal:
+
+```text
+STEP 2: EXPLICITLY SUPERSEDED / SELF-IDENTIFYING QUALIFICATION ADDED
+STEP 5: EXPLICITLY SUPERSEDED / SELF-IDENTIFYING QUALIFICATION ADDED
+STEP 1: SAFE HISTORICAL / NO EDIT REQUIRED
+STEP 3: SAFE HISTORICAL / NO EDIT REQUIRED
+STEP 4: SAFE HISTORICAL / NO EDIT REQUIRED
+STEP 6: SAFE HISTORICAL FINDING SOURCE / NO EDIT REQUIRED
+PROJECT_MAP_ROADMAP_CHANGE_REQUIRED: NO
+```
+
+Propagation audit result:
+
+```text
+PROPAGATION_LEDGER_STATUS: COMPLETE
+CANONICAL_SEMANTIC_MISMATCH_FOUND: NO
+CANONICAL_SEMANTIC_CHANGE: NO
+NEW_BLOCKING_FOUND: 0
+NEW_SIGNIFICANT_FOUND: 0
+SR24-FINAL-01_DISPOSITION: REPAIR APPLIED / PENDING INDEPENDENT FINAL SENIOR RE-REVIEW
+```
+
+This repair does not self-declare Senior closure.
+
+---
+
+## 7. Step-8 gate result
 
 ```text
 WP24_STEP1_SENIOR_RE_REVIEW: PASS / GO
@@ -147,8 +203,8 @@ WP24_STEPS_2_8: COMPLETE
 WP24_CANONICAL_SPEC_PUBLISHED: YES
 WP24_STEP8_COMPLETE: YES
 
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
+UNRESOLVED_BLOCKING_IN_WORKER_REPAIR: 0
+UNRESOLVED_SIGNIFICANT_IN_WORKER_REPAIR: 0
 HUMAN_DECISION_REQUIRED: NO
 PO_DECISION_REQUIRED: NO
 
@@ -156,11 +212,14 @@ IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 PERFORMANCE_OPTIMIZATION_IMPLEMENTATION_STARTED: NO
+WP25_AUTHORIZED: NO
 
-WP24_FINAL_SENIOR_REVIEW: REQUIRED / PENDING
+WP24_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
+SR24-FINAL-01: REPAIR APPLIED / PENDING INDEPENDENT FINAL SENIOR RE-REVIEW
+WP24_FINAL_SENIOR_RE_REVIEW: REQUIRED / PENDING
 WP24_CLOSED: NO
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY INDEPENDENT WP-24 FINAL SENIOR REVIEW
+NEXT_GATE: MANDATORY INDEPENDENT WP-24 FINAL SENIOR RE-REVIEW
 ```
 
 This checkpoint does not self-declare Senior PASS and does not authorize WP-25.
