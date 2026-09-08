@@ -6,7 +6,7 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-25 STEP 1 SENIOR HOLD — BOUNDED RECOVERY COMPLETE / PUBLICATION PENDING — INDEPENDENT SENIOR STEP-1 RE-REVIEW REQUIRED
+GLOBAL_STATE: R2.7 WP-25 STEP 1 SENIOR HOLD — BOUNDED RECOVERY PUBLISHED — INDEPENDENT SENIOR STEP-1 RE-REVIEW REQUIRED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
 CURRENT_SLICE: WP-25 — Error / degradation / failure semantics — bounded Step-1 recovery for SR25-S1-01..03 complete at worker level / Senior re-review pending
