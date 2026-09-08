@@ -1,18 +1,20 @@
 # R2.7 WP-23 — Step 5 Candidate Specification
 
-Status: **STEP 5 CANDIDATE — WHOLE-PROJECT ADVERSARIAL REVIEW REQUIRED**
+Status: **STEP 5 CANDIDATE — STEP-7 PROPAGATION APPLIED / STEP-8 CANONICALIZATION PENDING**
 
 Date: 2026-09-08
 
-This candidate is implementation-facing architecture for the coupled WP-23 release/package/version/legal-readiness boundary. It is not canonical until Step 6–8 complete. It does not authorize a tag, GitHub Release, deployment, campaign migration, implementation planning, WP-24 or gameplay bootstrap.
+This candidate is implementation-facing architecture for the coupled WP-23 release/package/version/legal-readiness boundary. It is not canonical until Step 8 completes and the mandatory final Senior review later accepts the completed package. It does not authorize a tag, GitHub Release, deployment, campaign migration, implementation planning, WP-24 or gameplay bootstrap.
 
 Design basis:
 
 - approved Step-1 framing and Senior GO;
 - Product Owner public-provenance decision;
-- Step-2 evidence reconciliation;
+- Step-2 evidence reconciliation, including Step-7 propagation;
 - Step-3 selected owner-composed release chain;
-- Step-4 cross-system review.
+- Step-4 cross-system review;
+- Step-6 whole-project adversarial review;
+- Step-7 current-tree reconciliation.
 
 ---
 
@@ -161,12 +163,7 @@ Technical provenance needed to identify or validate HDM artifacts remains permit
 
 ### WP23-L21 — CURRENT OPERATIONAL FACTS ARE NOT AUTOMATICALLY PROHIBITED
 
-An external name/reference may remain when it is a current operational/product/legal fact rather than a development-source trail, for example:
-
-- the actual supported host/product boundary;
-- actual repository/release transport;
-- official runtime rules-source routing;
-- licensor/material identification required by attribution.
+An external name/reference may remain when it is a current operational/product/legal fact rather than a development-source trail, for example actual supported host/product boundaries, repository/release transport, official runtime rules-source routing or licensor/material identification required by attribution.
 
 No global external-name/URL blacklist is architecture authority.
 
@@ -216,7 +213,7 @@ The current release-integration route may prove source build reproducibility, fl
 
 ### WP23-L30 — PUBLIC-PROVENANCE MACHINE CHECKS ARE BOUNDED REGRESSION EVIDENCE
 
-Machine checks should prevent known prohibited current-tree source-history regressions and stale machine requirements for such provenance. They must not claim to solve semantic classification through a naive global external-name/URL blacklist.
+Machine checks prevent known prohibited current-tree source-history regressions and stale machine requirements for such provenance. They do not claim semantic classification through a naive global external-name/URL blacklist.
 
 A future new ambiguous public artifact still requires owner-aware classification.
 
@@ -230,9 +227,7 @@ Where the release checklist requires testing an actually published runtime asset
 
 ---
 
-## 8. Current realization classification
-
-At candidate time:
+## 8. Current realization classification after Step 7
 
 ### Current architecture requirements
 
@@ -240,7 +235,7 @@ Defined by current accepted package/version/update/legal/provenance owners and t
 
 ### Current machine/build realization
 
-Already present for:
+Present for:
 
 - DEV/GAME release metadata projection;
 - runtime builder/launcher;
@@ -250,18 +245,21 @@ Already present for:
 - release workflow definition;
 - legal-copy parity;
 - source CI and release/version tests;
-- runtime update/package-selection laws.
+- runtime update/package-selection laws;
+- bounded public-provenance regression verification.
 
-### Current architecture-stage consistency gaps
+### Current architecture-stage consistency reconciliation
 
-Finite sanitation/reconciliation remains for:
+Applied to exact known current-tree WP-23 surfaces:
 
-- shipped development-source narrative;
-- source-specific sections in retained architecture/proposal material;
-- source-history platform research retained in current public tree;
-- mixed topology/transport research;
-- stale maintenance-audit requirements that protect prohibited source-history markers;
-- routing made stale by any retirement.
+- `GAME/CORE/SOURCES.md` source-neutralized while retaining semantic/legal/technical routing;
+- `ASSET_MODEL.md`, `ACTIVITY_MODEL.md`, `ENTITY_STRUCTURES.md` source-history sections removed without changing their HDM model law;
+- historical `CRITICAL_ARCHITECTURE_AUDIT.md`, `MECHANICAL_RUNTIME_PROPOSAL.md`, `PRE_RELEASE_AUDIT_0.1.0.md` retained in source-neutral form;
+- four platform/economic source-history research files retired;
+- repository-port source-history spike retired with publication/currentness law preserved by its current canonical owner;
+- infrastructure topology research retained source-neutral because its HDM constraints/options/revisit triggers remain useful;
+- `PROJECT_MAP.md` host/platform routing repaired;
+- maintenance audit opposite-policy checks replaced with bounded policy-conforming regression guards.
 
 ### Implementation-only obligations
 
@@ -299,29 +297,34 @@ The release architecture must not:
 
 ---
 
-## 10. Candidate realization actions
+## 10. Step-7 realization actions completed
 
-Before Step-8 canonicalization, current-tree consistency should converge by:
+1. shipped runtime source-history surface reconciled;
+2. stale maintenance-audit source-history anchors removed and bounded provenance-hygiene checks added;
+3. exact-head confirmed architecture/history surfaces sanitized item-by-item;
+4. source-history platform/economic research retired where current owners already retain material conclusions;
+5. mixed topology/transport evidence given item-specific preserve/retire dispositions;
+6. routing reconciled;
+7. historical test/audit surface added to the inventory and sanitized;
+8. Step-2 and this Step-5 artifact received mandatory propagation.
 
-1. source-neutralizing the shipped runtime provenance/source-history surface while retaining current semantic/legal/technical routing;
-2. replacing stale maintenance-audit source-history anchors with HDM behavior + bounded provenance-hygiene checks;
-3. removing source-history sections from confirmed retained architecture documents without changing their accepted HDM semantics;
-4. removing current-tree source-history platform/economic research whose durable decisions are already owned elsewhere;
-5. rewriting/narrowing mixed topology/transport evidence to preserve source-neutral HDM conclusions, limitations and revisit triggers;
-6. reconciling references/routing after those changes;
-7. re-running current source verification on exact final HEAD;
-8. applying the Version Impact Gate to the actual realized delta.
+Final source verification and Version Impact classification remain Step-8 obligations.
 
 ---
 
-## 11. Candidate gate
+## 11. Candidate gate after Step 7
 
 ```text
-CANDIDATE_READY_FOR_STEP6: YES
+STEP6_BLOCKING_FOUND: 0
+STEP6_SIGNIFICANT_FOUND: 5
+STEP6_MINOR_FOUND: 2
+STEP7_UNRESOLVED_BLOCKING: 0
+STEP7_UNRESOLVED_SIGNIFICANT: 0
+STEP7_UNRESOLVED_MINOR: 0
 HUMAN_DECISION_REQUIRED: NO
 WP20_REOPEN_REQUIRED: NO
 BROAD_RUNTIME_IMPLEMENTATION_REQUIRED: NO
 ACTUAL_RELEASE_REQUIRED_FOR_ARCHITECTURE_CLOSURE: NO
 ACTUAL_RELEASE_REQUIRED_FOR_PRODUCTION_RELEASE_ACCEPTANCE: YES
-NEXT_PROCESS_UNIT: STEP 6 WHOLE-PROJECT ADVERSARIAL REVIEW
+NEXT_PROCESS_UNIT: STEP 8 CANONICALIZATION / FINAL SELF-REVIEW / STATUS + VERIFICATION
 ```

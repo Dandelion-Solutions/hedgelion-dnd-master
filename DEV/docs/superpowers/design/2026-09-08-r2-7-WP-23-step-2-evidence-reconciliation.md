@@ -1,6 +1,6 @@
 # R2.7 WP-23 — Step 2 Evidence Extraction and Reconciliation
 
-Status: **STEP 2 COMPLETE — EVIDENCE / OWNER RECONCILIATION**
+Status: **STEP 2 COMPLETE — EVIDENCE / OWNER RECONCILIATION — STEP-7 PROPAGATION APPLIED**
 
 Date: 2026-09-08
 
@@ -220,80 +220,57 @@ This evidence is not source-specific research provenance merely because it recor
 
 ### 5.4 Runtime development-source narrative
 
-**Finding C-01 — SIGNIFICANT / MECHANICALLY RESOLVABLE.**
+**Finding C-01 — SIGNIFICANT / RESOLVED BY STEP 7.**
 
-`GAME/CORE/SOURCES.md` is shipped by the all-`GAME` package rule and currently carries source-specific development/research history rather than only current HDM semantics/routing.
-
-Current semantic owners already contain the derived HDM behavior. Therefore sanitation must not delete those semantics. The runtime file can be reduced to a source-neutral HDM provenance/routing boundary that points to:
-
-- current HDM CORE/RULES owners for semantics;
-- `GAME/RULES/OFFICIAL_SOURCES.md` only for current operational rules-source routing;
-- runtime legal files for required attribution;
-- package/version/digest markers for technical artifact provenance.
+`GAME/CORE/SOURCES.md` was shipped by the all-`GAME` package rule and carried source-specific development/research history. Step 7 replaced it with an HDM-native current source/provenance boundary that routes current semantics, operational rules-source lookup, legal attribution and technical artifact provenance without preserving the development-source trail.
 
 ### 5.5 Stale machine protection of prohibited provenance
 
-**Finding C-02 — SIGNIFICANT / MECHANICALLY RESOLVABLE.**
+**Finding C-02 — SIGNIFICANT / RESOLVED BY STEP 7.**
 
-`DEV/TOOLS/audit_engine.py` currently requires source-specific development-reference markers from `GAME/CORE/SOURCES.md` as part of GM-guidance auditing.
+`DEV/TOOLS/audit_engine.py` previously required source-specific development-reference markers from `GAME/CORE/SOURCES.md`. Step 7 removed those opposite-policy assertions while preserving GM-craft semantic assertions and added bounded regression checks over exact known provenance surfaces/retirements. The guard explicitly preserves legal attribution and HDM technical artifact provenance and is not a universal external-name classifier.
 
-That machine check now contradicts the Product Owner decision. It must be replaced by checks of the independently stated HDM behavior plus explicit public-provenance-hygiene checks. Removing the stale anchors must not weaken actual GM-craft/runtime semantic tests.
+### 5.6 Current architecture/history documents
 
-### 5.6 Current architecture documents with source-history sections
+**Finding C-03 — SIGNIFICANT / RESOLVED BY STEP 7.**
 
-**Finding C-03 — SIGNIFICANT / MECHANICALLY RESOLVABLE.**
+Exact current-tree reconciliation includes:
 
-Exact-head review confirms source-specific design/research basis sections in current public architecture artifacts including:
+- `DEV/ARCHITECTURE/ASSET_MODEL.md` — source-history section replaced by HDM model/legal boundary;
+- `DEV/ARCHITECTURE/ACTIVITY_MODEL.md` — design-source section replaced by HDM model/implementation-selection boundary;
+- `DEV/ARCHITECTURE/ENTITY_STRUCTURES.md` — source-history section replaced by HDM model/exclusion boundary;
+- `DEV/ARCHITECTURE/CRITICAL_ARCHITECTURE_AUDIT.md` — historical findings retained in source-neutral HDM form;
+- `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md` — noncanonical proposal reduced to source-neutral HDM constraints; no external implementation preference retained;
+- `DEV/TESTS/PRE_RELEASE_AUDIT_0.1.0.md` — historical regression/integration evidence retained while its source-specific research-integration section was removed.
 
-- `DEV/ARCHITECTURE/ASSET_MODEL.md`;
-- `DEV/ARCHITECTURE/ACTIVITY_MODEL.md`;
-- `DEV/ARCHITECTURE/ENTITY_STRUCTURES.md`;
-- `DEV/ARCHITECTURE/CRITICAL_ARCHITECTURE_AUDIT.md`;
-- `DEV/ARCHITECTURE/MECHANICAL_RUNTIME_PROPOSAL.md`.
-
-Their independently stated HDM laws/decisions remain useful. The disposition is targeted sanitation of source-history/prior-art narrative while retaining HDM-native conclusions, exclusions, negative requirements and defer boundaries.
-
-`MECHANICAL_RUNTIME_PROPOSAL.md` additionally contains an external implementation-candidate preference. Because it is noncanonical and source-specific, sanitation must not let that preference become a hidden implementation requirement.
+`DEV/ARCHITECTURE/CATALOG_INVENTORY.md` was exact-head checked during Step 6 and was not a current finding; stale default-branch search excerpts were not modified.
 
 ### 5.7 External platform research documents
 
-**Finding C-04 — SIGNIFICANT / MECHANICALLY RESOLVABLE.**
+**Finding C-04 — SIGNIFICANT / RESOLVED BY STEP 7.**
 
-Current public research directory contains source-specific platform/economic research documents whose purpose is to retain external development research history:
+The following source-history research artifacts were retired from the current public tree because their current product/architecture conclusions are already owned elsewhere and Git history remains intact:
 
 - `DEV/docs/superpowers/research/2026-08-22-platform-feasibility-comparative-research.md`;
 - `DEV/docs/superpowers/research/2026-08-22-platform-feasibility-economic-profile-amendment.md`;
 - `DEV/docs/superpowers/research/2026-08-22-private-hosted-inference-economics.md`;
 - `DEV/docs/superpowers/research/2026-08-24-chatgpt-plus-host-evidence.md`.
 
-Current host/product requirements are already owned by current roadmap/R2.6 architecture. These development-source histories do not need to remain in the current public tree. Git history remains intact.
-
 ### 5.8 Mixed topology / transport evidence
 
-**Finding C-05 — SIGNIFICANT / MECHANICALLY RESOLVABLE.**
+**Finding C-05 — SIGNIFICANT / RESOLVED BY STEP 7.**
 
-Two research artifacts mix durable HDM constraints/evidence with source-specific development research/routing:
-
-- `DEV/docs/superpowers/research/2026-08-22-infrastructure-topology-options.md`;
-- `DEV/docs/superpowers/research/2026-08-20-step-6-repository-port-transport-feasibility-spike.md`.
-
-They must not be deleted blindly. Source-neutral HDM conclusions, explicit limitations, safe defer/revisit triggers and deterministic HDM publication/currentness findings must be retained where still useful. Source-specific development narrative, external comparison trails and private-workspace provenance must not remain in current public material.
+- `DEV/docs/superpowers/research/2026-08-20-step-6-repository-port-transport-feasibility-spike.md` was retired; current publication/currentness law remains in the accepted supported-ref monotonicity amendment.
+- `DEV/docs/superpowers/research/2026-08-22-infrastructure-topology-options.md` was retained in source-neutral form because it carries distinct HDM product constraints, topology alternatives and revisit triggers.
+- `DEV/PROJECT_MAP.md` now routes host/platform work first to accepted R2.3/R2.4/R2.6 owners/current roadmap and consults retained source-neutral/internal evidence only when applicability/revalidation needs it.
 
 ### 5.9 Source-neutral/internal research remains valid
 
-**Negative finding:** research-path placement itself is not prohibited.
-
-Current files that retain internal HDM experiment/evidence, owner reconciliation, version inventory or independently rewritten source-neutral idea inventories may remain when they do not preserve source-specific development provenance.
-
-For example, the source-neutral architecture-idea dossier explicitly avoids external project/source histories and records HDM-formulated items/revisit triggers; it is not removed merely because its filename says `External`.
+**Negative finding preserved:** research-path placement itself is not prohibited. Internal HDM evidence, owner reconciliation, version inventory and independently written HDM research may remain when they do not preserve source-specific development provenance.
 
 ### 5.10 Operational external references are not automatically research provenance
 
-**Negative finding:** external names/URLs are not globally forbidden.
-
-`GAME/RULES/OFFICIAL_SOURCES.md` serves current runtime rules-source routing. Current host/platform names in accepted architecture may identify actual deployment dependencies. Legal files may identify licensors/material. These must be classified by current function, not removed by string matching.
-
-Any historical-development phrasing inside an otherwise operational current owner should be rewritten to current operational semantics rather than deleting the owner.
+**Negative finding preserved:** external names/URLs are not globally forbidden. Operational rules-source routing, current deployment dependencies, legal identification and technical transport facts are classified by function. The Step-7 machine guard is intentionally bounded to known source-history surfaces rather than a global blacklist.
 
 ---
 
@@ -301,31 +278,23 @@ Any historical-development phrasing inside an otherwise operational current owne
 
 ### X-01 — all-GAME passthrough x public provenance
 
-Before sanitation, the release builder correctly packages `GAME/`, but that correctness makes prohibited runtime development provenance automatically distributable. Lane A can therefore be locally correct while the composed release chain is not public-provenance compliant.
-
-**Disposition:** repair Lane-C source boundary and machine checks; do not weaken all-GAME passthrough.
+The release builder's all-`GAME` rule remains unchanged. Step 7 repaired the release-facing content rather than weakening package passthrough.
 
 ### X-02 — legal parity x provenance sanitation
 
-Removing source-specific development provenance must not remove mandatory legal/approved attribution copied and validated into the runtime package.
-
-**Disposition:** preserve explicit legal payload as a separate class.
+Required legal/approved attribution remains present and explicitly protected by release/audit checks.
 
 ### X-03 — technical provenance x research provenance
 
-A naive provenance scrub could remove exact package/currentness evidence required by Lane B.
-
-**Disposition:** explicit allow/required class for HDM technical artifact provenance.
+Package/currentness/version/digest evidence remains present and explicitly protected.
 
 ### X-04 — version/currentness x release acceptance
 
 Correct semantic version and exact package provenance still do not prove a published asset exists or installs in a fresh environment.
 
-**Disposition:** preserve release-time acceptance obligations as future proof, not current defect and not current PASS claim.
-
 ### X-05 — WP-20 overlap
 
-Current release/update consumers are satisfied by accepted WP-20 semantics. No release-specific contradiction was found.
+No contradiction, unsatisfied current release consumer or owner insufficiency was found.
 
 **Disposition:** `WP20_REOPEN_REQUIRED: NO`.
 
@@ -333,7 +302,7 @@ Current release/update consumers are satisfied by accepted WP-20 semantics. No r
 
 ## 7. Step-2 completeness matrix
 
-| Item family | Current disposition |
+| Item family | Current disposition after Step-7 propagation |
 |---|---|
 | package source boundary | already satisfied / realized |
 | generated package provenance | already satisfied / realized |
@@ -345,21 +314,17 @@ Current release/update consumers are satisfied by accepted WP-20 semantics. No r
 | version namespace separation | already satisfied / realized |
 | released-v1.0+ compatibility law | already satisfied architecture; future realization conditional |
 | WP-20 reopen | not justified |
-| required legal attribution | preserve / realized |
-| required technical artifact provenance | preserve / realized |
-| prohibited current public research provenance | current consistency gap; finite sanitation required |
-| provenance-hygiene machine verification | current consistency gap; stale opposite check exists |
+| required legal attribution | preserve / realized / bounded guard present |
+| required technical artifact provenance | preserve / realized / bounded guard present |
+| prohibited current public research provenance | exact known WP-23 current-tree reconciliation applied |
+| provenance-hygiene machine verification | bounded current regression guard realized |
 | new licensing policy | out of scope / not needed |
 | root README rewrite | out of scope without explicit PO approval |
-| actual production-release readiness | not claimable at Step 2 |
+| actual production-release readiness | not claimable from architecture/source verification alone |
 
 ---
 
 ## 8. Human-decision / decomposition gate
-
-The Product Owner has already resolved the only material provenance-policy choice found by Step 1.
-
-Step-2 reconciliation found no new material product/licensing/authority/compatibility choice. The remaining Lane-C work is implementation of the accepted public boundary within the architecture-stage canonicalization/consistency allowance.
 
 ```text
 HUMAN_DECISION_REQUIRED: NO
@@ -367,7 +332,7 @@ NEW_WORKSTREAM_REQUIRED: NO
 WP23_REMAINS_ONE_COUPLED_WORK_PACKAGE: YES
 WP20_REOPEN_REQUIRED: NO
 STEP2_COMPLETENESS_GATE: PASS
-NEXT_PROCESS_UNIT: STEP 3 DECISION BRIEF
+STEP7_PROPAGATION_APPLIED: YES
 ```
 
-This is not a product release-readiness verdict.
+This remains evidence, not a product release-readiness verdict.
