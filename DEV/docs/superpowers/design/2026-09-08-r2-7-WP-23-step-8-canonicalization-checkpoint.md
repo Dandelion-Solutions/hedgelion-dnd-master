@@ -1,6 +1,6 @@
 # R2.7 WP-23 Step 8 — Canonicalization Checkpoint
 
-Status: **STEP 8 CANONICALIZATION RETAINED — SR23-FINAL-01 TARGETED REPAIR COMPLETE / MANDATORY FINAL SENIOR RE-REVIEW NEXT**
+Status: **STEP 8 CLOSED — SR23-FINAL-01 TARGETED REPAIR ACCEPTED / FINAL SENIOR RE-REVIEW PASS**
 
 Date: 2026-09-08
 
@@ -21,7 +21,8 @@ Design chain:
 9. Step 8 — canonicalization checkpoint;
 10. mandatory final Senior review — `HOLD` on `SR23-FINAL-01`;
 11. targeted repair of `SR23-FINAL-01` + propagation;
-12. mandatory final Senior re-review — pending.
+12. mandatory final Senior re-review — `PASS / GO`;
+13. WP-23 closure/status synchronization.
 
 ## 1. Final self-review after targeted repair
 
@@ -96,6 +97,8 @@ Current exact-head source CI/build verification satisfies neither empirical gate
 
 Propagation details and affected-artifact dispositions are recorded in Step 7. Step 2 and Step 5 contain self-identifying qualification; other historical Step artifacts remain historical/non-current and are explicitly dispositioned in the Step-7 ledger rather than rewritten retroactively.
 
+The repeat mandatory independent final Senior review accepted the targeted repair with `PASS / GO`; `SR23-FINAL-01` is closed and no unresolved `BLOCKING` or `SIGNIFICANT` finding remains.
+
 ## 4. Repository-wide public provenance reconciliation
 
 Current WP-23 audited public `DEV/` + `GAME/` frontier remains reconciled under the Product Owner policy:
@@ -106,7 +109,7 @@ REQUIRED_LEGAL_ATTRIBUTION: PRESERVED
 EXPLICIT_PO_APPROVED_ATTRIBUTION: PRESERVE BY POLICY
 HDM_TECHNICAL_ARTIFACT_PROVENANCE: PRESERVED
 SOURCE_NEUTRAL_INTERNAL_HDM_EVIDENCE: MAY REMAIN
-OPERATIONAL_EXTERNAL_REFERENCES: FUNCTIONALLY CLASSIFIED / NOT GLOBALLY BANNED
+OPERATIONAL_EXTERNAL_REFERENCES: FUNCTIONALLY_CLASSIFIED / NOT GLOBALLY BANNED
 GIT_HISTORY_REWRITE: NOT PERFORMED / NOT REQUIRED
 BOUNDED_MACHINE_REGRESSION_GUARD: PRESENT
 UNIVERSAL_SEMANTIC_PROVENANCE_CLASSIFIER: NOT CLAIMED
@@ -143,7 +146,7 @@ SOURCE/BUILD_VERIFICATION != ACTUAL RELEASE PUBLICATION
 ACTUAL RELEASE PUBLICATION != EXACT_UPLOADED_ASSET_VERIFICATION
 EXACT_UPLOADED_ASSET_VERIFICATION != POST_UPLOAD_FRESH_PROJECT_ACCEPTANCE
 SEMANTIC_VERSION != EXACT_PACKAGE_PROVENANCE != FINAL_ARCHIVE_DIGEST
-ARCHITECTURE_CLOSURE != PRODUCT PRODUCTION-RELEASE-READY
+ARCHITECTURE_CLOSURE != PRODUCT_PRODUCTION_RELEASE_READY
 ```
 
 ## 7. Version Impact
@@ -161,41 +164,40 @@ Reason: `SR23-FINAL-01` restores in WP-23 synthesis a release-owner obligation a
 
 `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` remains derivative/non-normative and requires no edit. Current state routes through `DEV/CURRENT_PROGRESS.md`, and accepted implementation-facing results are discovered from `specs/` plus owning architecture.
 
-`DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` remains unchanged because the targeted repair does not rebaseline sequence/scope/dependencies.
+`DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` remains unchanged because the targeted repair and closure do not rebaseline sequence/scope/dependencies.
 
 Root `README.md` remains untouched.
 
 No new debt/backlog/workstream was created.
 
-## 9. Verification obligation
+## 9. Verification boundary
 
-Applicable source verification remains the current hosted `.github/workflows/validate.yml` route, which runs the maintenance audit and DEV unit-test discovery on admitted branch pushes.
+The targeted-repair publication obtained hosted exact-head validation before the final Senior re-review. That source/static/build evidence proved only its admitted checks and did not satisfy either empirical fresh-Project release gate.
 
-The targeted-repair publication must obtain hosted evidence against the exact final HEAD before final Senior re-review handoff. A green exact-head run proves only those admitted source checks; it does not satisfy either empirical fresh-Project release gate.
+The closure/status synchronization itself is documentation-only but still requires current hosted validation and remote read-back under repository publication discipline before claiming exact closure HEAD verification.
 
-Connector read-back of the final branch HEAD, canonical WP-23 spec and `DEV/CURRENT_PROGRESS.md` is publication/currentness evidence, not fresh-Project acceptance.
-
-Exact-final-HEAD hosted evidence is external execution evidence; no follow-up repository write is required merely to restate a successful run.
-
-## 10. Final gate
+## 10. Final closure gate
 
 ```text
 WP23_STEPS_2_8_COMPLETE: YES
 WP23_CANONICAL_SPEC_PUBLISHED: YES
 WP23_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD — SR23-FINAL-01
 SR23_FINAL_01_TARGETED_REPAIR_COMPLETE: YES
-WP23_FINAL_SENIOR_RE_REVIEW: REQUIRED / PENDING
-WP23_CLOSED: NO
+WP23_FINAL_SENIOR_RE_REVIEW: PASS / GO
+WP23_FINAL_CLOSURE: PASS
+WP23_CLOSED: YES
 
-HUMAN_DECISION_REQUIRED: NO
-PO_DECISION_REQUIRED: NO
+HUMAN_DECISION_REQUIRED_FOR_WP23_CLOSURE: NO
+PO_DECISION_REQUIRED_FOR_WP23_CLOSURE: NO
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
 WP20_REOPEN_REQUIRED: NO
 WHOLESALE_WP23_REOPEN_REQUIRED: NO
 NEW_WORKSTREAM_REQUIRED: NO
 
+WP24_NEXT_ELIGIBLE: YES
 WP24_NOT_STARTED: YES
+WP24_STARTED: NO
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RUNTIME_RELEASE_EXECUTED: NO
@@ -204,5 +206,5 @@ REAL_CAMPAIGN_MIGRATED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY INDEPENDENT FINAL SENIOR RE-REVIEW OF WP-23
+NEXT_GATE: EXPLICIT PRODUCT OWNER AUTHORIZATION TO LAUNCH WP-24
 ```
