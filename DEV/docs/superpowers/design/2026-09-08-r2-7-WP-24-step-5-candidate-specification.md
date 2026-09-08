@@ -8,6 +8,8 @@ Selected direction: **OWNER-COMPOSED BOUNDED OPERATIONS / GROWTH-AWARE RETENTION
 
 This candidate is implementation-facing architecture only after successful Step-6/7/8 closure and final Senior acceptance. It does not authorize implementation planning or implementation.
 
+**Historical qualification after Step 6/7 and canonicalization:** the Step-6 adversarial review found `F24-06-01..05`, which materially qualify/supersede this candidate in five areas: campaign-menu discovery cardinality; 10 KiB hard mandatory representation activation; Story service-opportunity work across growing origin/domain fan-out; stale-base changed-path fallback; and recovery/checkpoint/chronology special-path boundedness. This file remains Step-5 candidate provenance and must not be used as the current final wording for those areas. Read `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-6-whole-project-adversarial-review.md`, `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-7-finding-resolution-propagation.md`, and the final owner `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-24-performance-scale-operational-budget-canonical-spec.md`.
+
 ---
 
 ## 1. Scope and authority
