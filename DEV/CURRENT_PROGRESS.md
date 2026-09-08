@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-24 STEP-1 SENIOR HOLD RECOVERY PUBLISHED — MANDATORY INDEPENDENT SENIOR RE-REVIEW PENDING
+GLOBAL_STATE: R2.7 WP-24 STEP-1 SR24-S1-03 MICRO-RECOVERY PUBLISHED — MANDATORY INDEPENDENT SENIOR RE-REVIEW PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-24 — Performance / scale / operational budget — Step-1 bounded Senior-HOLD recovery / re-review pending
+CURRENT_SLICE: WP-24 — Performance / scale / operational budget — SR24-S1-03 Step-1 micro-recovery / Senior re-review pending
 
 LAST_CLOSED_UNIT: WP-23 mandatory independent final Senior re-review — PASS / CLOSED
-NEXT_ELIGIBLE_UNIT: mandatory independent WP-24 Step-1 Senior re-review
+NEXT_ELIGIBLE_UNIT: mandatory independent WP-24 Step-1 SR24-S1-03 Senior re-review
 NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: mandatory independent Senior re-review of repaired WP-24 Step-1 package
+REQUIRED_GATE: mandatory independent Senior re-review of SR24-S1-03 micro-recovery package
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-task-brief-source-manifest.md
-KNOWN_BLOCKERS: NONE IN WORKER RECOVERY VIEW — SR24-S1-01 / SR24-S1-02 REPAIRS PENDING INDEPENDENT SENIOR RE-REVIEW
+KNOWN_BLOCKERS: NONE IN WORKER MICRO-RECOVERY VIEW — SR24-S1-03 REPAIR CANDIDATE PENDING INDEPENDENT SENIOR RE-REVIEW
 ```
 
 ---
@@ -217,7 +217,7 @@ PUBLIC HDM SEMANTICS: INDEPENDENTLY STATED IN HDM TERMS
 
 ---
 
-## WP-24 Step-1 authority and Senior-HOLD recovery chain
+## WP-24 Step-1 authority and recovery chain
 
 WP-24 was launched by explicit Product Owner authorization on 2026-09-08. Authorization remains limited to Step 1.
 
@@ -226,7 +226,7 @@ Step-1 artifacts:
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-task-brief-source-manifest.md`;
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-1-whole-project-critic.md`.
 
-Mandatory independent Senior review returned HOLD with bounded recovery:
+Initial mandatory independent Senior review returned HOLD with bounded recovery:
 
 ```text
 WP24_STEP1_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
@@ -237,102 +237,99 @@ HUMAN_DECISION_REQUIRED_NOW: NO
 WP24_STEP2_AUTHORIZED: NO
 ```
 
-Current worker recovery state:
+The main recovery repaired both findings. Current Senior state entering this micro-recovery is:
+
+```text
+SR24-S1-01: PASS / CLOSED
+SR24-S1-02: PASS / CLOSED
+SR24-S1-03: MICRO-RECOVERY REQUIRED
+WP24_STEP2_AUTHORIZED: NO
+```
+
+SR24-S1-03 exists because a new current Story baseline companion and Story persistence-growth owner entered the current dependency graph after the main recovery:
+
+- `DEV/docs/superpowers/specs/2026-09-08-story-baseline-projection-source-contracts.md`;
+- `DEV/docs/superpowers/specs/2026-09-08-story-persistence-growth-sharding-consumer-decoupling-owner-decision.md`.
+
+Current worker micro-recovery state:
 
 ```text
 WP24_LAUNCH_AUTHORIZED_BY_PO: YES
 WP24_STARTED: YES
 WP24_STEP1_TASK_BRIEF_COMPLETE: YES
-WP24_STEP1_SOURCE_MANIFEST_COMPLETE_FOR_FRAMING: YES
+WP24_STEP1_SOURCE_MANIFEST_COMPLETE_FOR_CURRENT_FRAMING: YES
 WP24_STEP1_EVIDENCE_EXTRACTION_SUFFICIENT_FOR_FRAMING: YES
 WP24_STEP1_WHOLE_PROJECT_CRITIC_COMPLETE: YES
-WP24_STEP1_ORIGINAL_CRITIC_BLOCKING_FOUND: 0
-WP24_STEP1_ORIGINAL_CRITIC_SIGNIFICANT_FOUND: 6
-WP24_STEP1_ORIGINAL_CRITIC_MINOR_FOUND: 3
-SR24-S1-01_REPAIR_APPLIED: YES / PENDING INDEPENDENT SENIOR RE-REVIEW
-SR24-S1-02_REPAIR_APPLIED: YES / PENDING INDEPENDENT SENIOR RE-REVIEW
-WP24_STEP1_RECOVERY_CRITIC_RERUN_COMPLETE: YES
-WP24_STEP1_RECOVERY_NEW_BLOCKING_FOUND: 0
-WP24_STEP1_RECOVERY_NEW_SIGNIFICANT_FOUND: 0
-WP24_STEP1_UNRESOLVED_BLOCKING_IN_WORKER_RECOVERY: 0
-WP24_STEP1_UNRESOLVED_SIGNIFICANT_IN_WORKER_RECOVERY: 0
+SR24-S1-01: PASS / CLOSED
+SR24-S1-02: PASS / CLOSED
+SR24-S1-03_REPAIR_APPLIED: YES / PENDING INDEPENDENT SENIOR RE-REVIEW
+WP24_STEP1_MICRO_RECOVERY_CRITIC_RERUN_COMPLETE: YES
+WP24_STEP1_MICRO_RECOVERY_NEW_BLOCKING_FOUND: 0
+WP24_STEP1_MICRO_RECOVERY_NEW_SIGNIFICANT_FOUND: 0
+WP24_STEP1_UNRESOLVED_BLOCKING_IN_WORKER_VIEW: 0
+WP24_STEP1_UNRESOLVED_SIGNIFICANT_IN_WORKER_VIEW: 0
 WP24_STEP1_SENIOR_RE_REVIEW: REQUIRED / PENDING
 HUMAN_DECISION_REQUIRED: NO
 ```
 
 ### SR24-S1-01 current disposition
 
-Recovery current-owner inspection found **no current owner** for the previously asserted `120 seconds` / `T_budget=120s` Product Owner turn law. The unsupported assertion and PO-003/`PLAY_POLICY.md` attribution are removed from current WP-24 Step-1 framing.
-
-The actual accepted PO-003/WP-19 performance law is preserved:
-
 ```text
-PO003_BASIS_CAPTURE_ADDITIONAL_SEQUENTIAL_LLM_CALLS: 0
-PO003_BASIS_CAPTURE_ADDITIONAL_SERIAL_REMOTE_TOOL_READS_WHEN_T0_ALREADY_ADMITTED: 0
-PO003_BASIS_CAPTURE_ADDITIONAL_SEPARATE_PUBLICATIONS: 0
-PO003_BASIS_CAPTURE_WORK_ON_IRRELEVANT_TRIVIAL_NO_CHANGE_TURNS: 0
-PO003_BASIS_CAPTURE_ADDITIONAL_CONTEXT_OUTPUT: BOUNDED TYPED MATERIAL ITEMS ONLY
-PO003_EXTRA_SERIAL_CRITICAL_PATH_REALIZATION: MATERIAL ARCHITECTURE/PERFORMANCE ESCALATION
-RUNTIME_FIXED_TURN_TIME_TOKEN_STEP_COMPLEXITY_CAP: NOT ADMITTED / RUNTIME PROHIBITS SUCH A REASONING CEILING
+SR24-S1-01: PASS / CLOSED
 ```
 
-No replacement numerical latency SLA is introduced.
-
-The independent 10 KiB runtime mutable-file law remains unchanged:
-
-```text
-RUNTIME_MUTABLE_GITHUB_TEXT_FILE_MAX_BYTES: 10240
-```
+No current owner establishes the previously asserted `120 seconds` / `T_budget=120s` Product Owner turn law. The actual PO-003/WP-19 zero-extra-serial basis-capture law remains controlling in its stated scope, and `RUNTIME.md` rejects a fixed token/time/step/complexity reasoning ceiling.
 
 ### SR24-S1-02 current disposition
 
-WP-24 framing now distinguishes the physical engine instruction-cache paths:
-
 ```text
-NEW CHAT / SUBSTANTIAL SETUP:
-    exact package -> full CORE/*.md + RULES/INDEX.md + RULES/README.md preload
-
-ENGINE PACKAGE SWITCH:
-    invalidate old cache -> full exact-target cache rebuild before adjudication
-
-VERIFIED CONTEXT LOSS / COMPACTION:
-    full exact-package cache rehydration
-
-ORDINARY TURN:
-    already-loaded CORE -> zero CORE reread merely for activation
+SR24-S1-02: PASS / CLOSED
 ```
 
-Class-A current physical corpus measurement at recovery basis `80649df2ff16f791d2abbeb0403e74bff8cf1d1b`:
+WP-24 framing continues to distinguish full CORE+RULES initial preload, package-switch cache rebuild, verified-loss rehydration and ordinary-turn zero CORE reread. The `370,728 B` current physical-source measurement remains Class A only and is not a production forecast/sizing baseline.
+
+### SR24-S1-03 current disposition
 
 ```text
-CORE_MD_FILE_COUNT: 45
-CORE_MD_AGGREGATE_BYTES: 364844
-RULES_INDEX_BYTES: 1752
-RULES_README_BYTES: 4132
-PRELOAD_SOURCE_FILE_COUNT: 47
-PRELOAD_SOURCE_TOTAL_BYTES: 370728
+SR24-S1-03: REPAIR CANDIDATE / PENDING INDEPENDENT SENIOR RE-REVIEW
 ```
 
-Qualification:
+The current Source Manifest now directly consumes the baseline Story source-contract companion and the current Story persistence-growth/sharding owner.
+
+Material WP-24 implications now in framing:
 
 ```text
-CURRENT PHYSICAL CORPUS MEASUREMENT ONLY
-NOT MODEL TOKEN OCCUPANCY
-NOT PROMPT-PRESSURE PROOF
-NOT USER-VISIBLE LATENCY BENCHMARK
-NOT REAL-MVP EMPIRICAL ACCEPTANCE
+BASELINE STORY PROJECTION REGISTRATIONS: 8
+EVENTS/NARRATIVE SEMANTIC EVENT COVERAGE: INDEPENDENT
+EVENTS/NARRATIVE RELATION COVERAGE: INDEPENDENT
+NATIVE ORIGINS: LOCAL + SELECTED LIVE EPOCHS
+ORIGIN/LANE/DOMAIN CURSORS: INDEPENDENT
+BOUNDED CANDIDATE WINDOW: PER-OPERATION BOUND ONLY
+TOTAL STORY CORPUS: NOT BOUNDED BY WINDOW / NO CORPUS-WIDE SIZE QUOTA
+MUST-PROJECTION NATIVE SOURCE RETENTION: REQUIRED UNTIL OUTPUT OR ADMITTED EQUIVALENT SURVIVOR
+POST-COVERAGE REQUIRED STORY OUTPUT RETENTION: REQUIRED UNDER COMPATIBLE COVERAGE PROMISE
+STORY BACKLOG/CATCH-UP: MAY LAG / SEPARATE FROM GAMEPLAY CRITICAL PATH
+UNPROVABLE SOURCE-SCOPE COMPLETENESS: UNKNOWN/DEFER, NOT GLOBAL SCAN
+10 KIB MUTABLE ARTIFACT CAP: PER-FILE, NOT STORY CORPUS QUOTA
+PLAUSIBLY UNBOUNDED STORY COLLECTION: DETERMINISTIC BOUNDED PARTITION PATH REQUIRED
+CONCRETE STORY SHARD LAYOUT: NOT SELECTED
 ```
 
-If full physical CORE preload remains the intended production realization, real implemented/supported-target production-like behavioral/context/latency/gameplay-quality evaluation remains an explicit future obligation under the R2.4/R2.6/WP-22 boundary. No preimplementation surrogate was created and Step-1 recovery does not select a replacement loading strategy.
+The micro-recovery does not redesign Story semantics, activate Story implementation or move Story catch-up onto the gameplay critical path.
 
 ### Current repaired Step-1 framing result
 
-WP-24 now has a re-review-ready worker package covering:
+WP-24 now has a current micro-recovery package covering:
 
 - new-chat/setup full instruction preload versus ordinary-turn zero-reread fast path;
 - package-switch and verified-context-loss full cache rebuild paths;
 - realistic normal-turn and special-operation hot paths;
 - record/file/index/Story/ref/instruction-corpus growth dimensions;
+- eight baseline Story projection registrations and layer/origin/domain/cursor fan-out;
+- bounded Story catch-up/read operations versus campaign-growing total Story corpus;
+- native pre-projection survivor retention and post-coverage Story-output retention as distinct pressures;
+- deterministic bounded partitionability for plausibly unbounded Story collections;
+- source-scope `UNKNOWN/defer` rather than global scans;
 - bounded discovery/hydration/context/materialization/publication paths;
 - serial LLM/tool/Connector round-trip amplification;
 - retry/conflict and multi-chat contention amplification;
@@ -341,7 +338,7 @@ WP-24 now has a re-review-ready worker package covering:
 - correctness/resource laws versus optional optimizations and revisit triggers;
 - proof classification between current measurements, realized benchmarks and real-MVP empirical evaluation.
 
-Current accepted architecture inspected by recovery does not require an always-running background polling/worker/heartbeat service for correctness. Future realized/production-like evaluation remains required where owner/evidence class demands it.
+Current accepted architecture inspected by the micro-recovery does not require an always-running background polling/worker/heartbeat service for correctness. Future realized/production-like evaluation remains required where owner/evidence class demands it.
 
 PO-006 remains unchanged:
 
@@ -363,7 +360,7 @@ VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-This bounded WP-24 Step-1 recovery changes only design/status documentation and records Class-A measurements of existing source files. It does not change any version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime implementation.
+This SR24-S1-03 micro-recovery changes only WP-24 design/status documentation. It consumes current accepted Story owner decisions but changes no version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime implementation.
 
 ## Current authorization / scope fence
 
@@ -381,11 +378,12 @@ WP23_CLOSED: YES
 
 WP24_LAUNCH_AUTHORIZED_BY_PO: YES
 WP24_STARTED: YES
-WP24_STEP1_COMPLETE: YES / WORKER RECOVERY CANDIDATE
+WP24_STEP1_COMPLETE: YES / SR24-S1-03 WORKER MICRO-RECOVERY CANDIDATE
 WP24_STEP1_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
-SR24-S1-01: REPAIR APPLIED / PENDING INDEPENDENT SENIOR RE-REVIEW
-SR24-S1-02: REPAIR APPLIED / PENDING INDEPENDENT SENIOR RE-REVIEW
-WP24_STEP1_RECOVERY_CRITIC_RERUN_COMPLETE: YES
+SR24-S1-01: PASS / CLOSED
+SR24-S1-02: PASS / CLOSED
+SR24-S1-03: REPAIR CANDIDATE / PENDING INDEPENDENT SENIOR RE-REVIEW
+WP24_STEP1_MICRO_RECOVERY_CRITIC_RERUN_COMPLETE: YES
 WP24_STEP1_SENIOR_RE_REVIEW: REQUIRED / PENDING
 WP24_STEP2_AUTHORIZED: NO
 WP24_STEPS_2_8_STARTED: NO
@@ -394,8 +392,8 @@ WP24_CLOSED: NO
 
 HUMAN_DECISION_REQUIRED: NO
 PO_DECISION_REQUIRED: NO
-UNRESOLVED_BLOCKING_IN_WORKER_RECOVERY: 0
-UNRESOLVED_SIGNIFICANT_IN_WORKER_RECOVERY: 0
+UNRESOLVED_BLOCKING_IN_WORKER_VIEW: 0
+UNRESOLVED_SIGNIFICANT_IN_WORKER_VIEW: 0
 UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
 WP20_REOPEN_REQUIRED: NO
 NEW_WORKSTREAM_CREATED: NO
@@ -403,13 +401,14 @@ NEW_WORKSTREAM_CREATED: NO
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 PERFORMANCE_OPTIMIZATION_IMPLEMENTATION_STARTED: NO
+STORY_REDESIGN_STARTED: NO
 RUNTIME_RELEASE_EXECUTED: NO
 RUNTIME_MIGRATION_EXECUTED: NO
 REAL_CAMPAIGN_MIGRATED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: MANDATORY INDEPENDENT SENIOR RE-REVIEW OF REPAIRED WP-24 STEP 1
+NEXT_GATE: MANDATORY INDEPENDENT SENIOR RE-REVIEW OF SR24-S1-03 MICRO-RECOVERY PACKAGE
 ```
 
-Do not begin WP-24 Step 2, Steps 2–8, implementation planning, substantive implementation, performance optimization implementation, release/tag/deployment, migration or gameplay bootstrap before the mandatory independent Senior re-review and subsequent applicable authorization.
+Do not begin WP-24 Step 2, Steps 2–8, implementation planning, substantive implementation, performance optimization implementation, Story redesign, release/tag/deployment, migration or gameplay bootstrap before the mandatory independent Senior re-review and subsequent applicable authorization.
