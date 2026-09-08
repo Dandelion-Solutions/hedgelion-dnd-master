@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-24 STEP-1 SENIOR RE-REVIEW PASS / GO — STEPS 2–8 AUTHORIZED / STEP 2 ACTIVE
+GLOBAL_STATE: R2.7 WP-24 STEPS 2–8 COMPLETE / CANONICAL RESULT PUBLISHED — MANDATORY INDEPENDENT FINAL SENIOR REVIEW PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-24 — Performance / scale / operational budget — Step 2 evidence reconciliation
+CURRENT_SLICE: WP-24 — Performance / scale / operational budget — Step 8 complete / final Senior review pending
 
-LAST_CLOSED_UNIT: WP-24 Step-1 mandatory independent Senior re-review — PASS / GO
-NEXT_ELIGIBLE_UNIT: WP-24 Step 2 evidence reconciliation
-NEXT_AUTHORIZED_UNIT: WP-24 STEP 2
-REQUIRED_GATE: complete WP-24 Steps 2–8, then mandatory independent final Senior review
+LAST_CLOSED_UNIT: WP-24 Step 8 worker canonicalization checkpoint
+NEXT_ELIGIBLE_UNIT: mandatory independent WP-24 final Senior review
+NEXT_AUTHORIZED_UNIT: NONE
+REQUIRED_GATE: mandatory independent WP-24 final Senior review
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-2-evidence-reconciliation.md
-KNOWN_BLOCKERS: NONE
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-24-performance-scale-operational-budget-canonical-spec.md
+KNOWN_BLOCKERS: NONE IN WORKER VIEW — FINAL SENIOR REVIEW PENDING
 ```
 
 ---
@@ -303,22 +303,80 @@ A Story integration-contract edit was not required during SR24-S1-04: `DEV/PROJE
 
 ---
 
-## WP-24 Steps 2–8 current execution state
+## WP-24 Steps 2–8 final worker result
+
+Design chain:
+
+- Step 2 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-2-evidence-reconciliation.md`;
+- Step 3 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-3-decision-brief.md`;
+- Step 4 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-4-cross-system-review.md`;
+- Step 5 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-5-candidate-specification.md`;
+- Step 6 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-6-whole-project-adversarial-review.md`;
+- Step 7 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-7-finding-resolution-propagation.md`;
+- Step 8 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-8-canonicalization-checkpoint.md`.
+
+Canonical WP-24 owner:
+
+- `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-24-performance-scale-operational-budget-canonical-spec.md`.
+
+Selected architecture:
+
+```text
+OWNER-COMPOSED BOUNDED OPERATIONS
++ GROWTH-AWARE RETENTION
++ TRIGGER-GATED PHYSICAL OPTIMIZATION
++ STAGED REAL-TARGET PERFORMANCE PROOF
+```
+
+Step-6 / Step-7 result:
+
+```text
+STEP6_BLOCKING_FOUND: 0
+STEP6_SIGNIFICANT_FOUND: 5
+STEP6_MINOR_FOUND: 2
+
+F24-06-01: campaign-menu discovery cardinality
+F24-06-02: 10 KiB hard-cap activation semantics
+F24-06-03: Story service-opportunity origin/domain fan-out
+F24-06-04: long-stale changed-path synchronization
+F24-06-05: recovery/checkpoint/chronology special-path coverage
+F24-06-M1: runtime-package count dormant trigger
+F24-06-M2: initial scaffold publication future benchmark
+
+STEP7_UNRESOLVED_BLOCKING: 0
+STEP7_UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+PO_DECISION_REQUIRED: NO
+```
+
+Canonical final additions from Step-6/7 repair include:
+
+```text
+campaign menu/preselection discovery is bounded per operation; no required exhaustive all-campaign-ref traversal
+10 KiB hard cap is decisive mandatory representation trigger, while earlier partitioning remains evidence-driven
+Story service-opportunity detection itself is bounded across growing origin/domain/lane fan-out
+unproved broader Story source-scope completeness => UNKNOWN/DEFER, never global scan/false caught-up
+stale-base changed-path comparison has bounded direct-current-footprint fallback
+cold recovery/temporal rebuild follows bounded current roots + correctness-required closure, not campaign-history scans
+checkpoint remains optional acceleration/evidence, not scale/currentness authority
+chronology remains typed/bounded; no global timeline reconstruction
+```
+
+Current worker gate:
 
 ```text
 WP24_STEP1_COMPLETE: YES
 WP24_STEP1_SENIOR_RE_REVIEW: PASS / GO
-WP24_STEP2_AUTHORIZED: YES
 WP24_STEPS_2_8_STARTED: YES
-WP24_STEP2_STATUS: ACTIVE
-WP24_STEP3_STATUS: NOT STARTED
-WP24_STEP4_STATUS: NOT STARTED
-WP24_STEP5_STATUS: NOT STARTED
-WP24_STEP6_STATUS: NOT STARTED
-WP24_STEP7_STATUS: NOT STARTED
-WP24_STEP8_STATUS: NOT STARTED
-WP24_CANONICAL_SPEC_PUBLISHED: NO
-WP24_FINAL_SENIOR_REVIEW: NOT STARTED
+WP24_STEP2_STATUS: COMPLETE
+WP24_STEP3_STATUS: COMPLETE
+WP24_STEP4_STATUS: COMPLETE
+WP24_STEP5_STATUS: COMPLETE
+WP24_STEP6_STATUS: COMPLETE
+WP24_STEP7_STATUS: COMPLETE
+WP24_STEP8_STATUS: COMPLETE
+WP24_CANONICAL_SPEC_PUBLISHED: YES
+WP24_FINAL_SENIOR_REVIEW: REQUIRED / PENDING
 WP24_CLOSED: NO
 
 HUMAN_DECISION_REQUIRED: NO
@@ -339,8 +397,8 @@ RUNTIME_MIGRATION_EXECUTED: NO
 REAL_CAMPAIGN_MIGRATED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
-NEXT_AUTHORIZED_UNIT: WP-24 STEP 2
-NEXT_GATE: COMPLETE WP-24 STEPS 2–8, THEN MANDATORY INDEPENDENT FINAL SENIOR REVIEW
+NEXT_AUTHORIZED_UNIT: NONE
+NEXT_GATE: MANDATORY INDEPENDENT WP-24 FINAL SENIOR REVIEW
 ```
 
 ---
@@ -354,6 +412,8 @@ VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-The Senior-gate synchronization is development status only. It changes no version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime implementation.
+WP-24 Steps 2–8 change architecture/design/status documentation only. They change no version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, Story semantic generation, package/release format, migration law or executable gameplay/runtime implementation.
 
-Do not begin implementation planning, substantive implementation, performance optimization implementation, Story redesign, release/tag/deployment, migration or gameplay bootstrap during WP-24 Steps 2–8. After Step 8, stop for mandatory independent Senior final review.
+A later implementation that changes a compatibility-bearing physical layout/schema/generation must perform its own Version Impact Gate.
+
+Do not begin WP-25, implementation planning, substantive implementation, performance optimization implementation, Story redesign, release/tag/deployment, migration or gameplay bootstrap until the applicable future authorization gate is explicitly satisfied. The current next gate is mandatory independent WP-24 final Senior review.
