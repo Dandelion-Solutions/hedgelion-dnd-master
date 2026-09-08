@@ -10,6 +10,8 @@ Step-1 gate: **mandatory independent Senior re-review PASS / GO**. `SR24-S1-01..
 
 This artifact is evidence/design provenance. It does not supersede any semantic owner and does not select implementation details.
 
+**Historical qualification after Step 6/7 and canonicalization:** this Step-2 reconciliation predates `F24-06-01..05` and is materially incomplete for those five later-discovered scale paths. It is retained as historical evidence/design provenance, not current normative WP-24 performance law. For the repaired/current dispositions, read the Step-6 critic, Step-7 finding-resolution/propagation ledger, and `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-24-performance-scale-operational-budget-canonical-spec.md`. The later canonical result adds/qualifies bounded campaign-menu discovery, the 10 KiB hard mandatory representation trigger, bounded Story opportunity detection across origin/domain fan-out, bounded stale-base direct-footprint fallback, and the bounded recovery/checkpoint/chronology special path. The historical `SOURCE_MANIFEST_COMPLETENESS_GATE: PASS FOR STEP 2` below is a Step-2-stage statement; it must not be read as claiming that the later Step-6 adversarial sweep found no additional significant gaps.
+
 ---
 
 ## 1. Question being reconciled
