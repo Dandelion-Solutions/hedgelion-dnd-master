@@ -2,7 +2,7 @@
 
 Status: **NON-NORMATIVE INTERNAL NAVIGATION INDEX**
 
-Last structural inventory: 2026-09-05
+Last structural inventory: 2026-09-08
 
 ## 1. Purpose
 
@@ -116,6 +116,7 @@ repository root
 | Campaign House Rules / rulings | `CAMPAIGN_HOUSE_RULES.md`, `HOUSE_RULES_MECHANICAL_BOUNDARY.md`, `GAME/CAMPAIGN/RULES/HOUSE_RULES.*` | `ACCESS_CONTROL.md`, `ADJUDICATION.md`, Context Runtime, publication/recovery/currentness, policy schemas/tests |
 | Ruleset package machine closure | `RULESET_PACKAGE_MACHINE_CLOSURE.md`, `RULESET_PACKAGE_IDENTITY.md` | catalog admission/resolution, package manifest/lock, validators/build/load paths/tests |
 | Persistence / durability / recovery | `GAME/CORE/STORAGE.md`, `PERSISTENCE.md`, `DURABILITY_GUARD.md`, `SAVE_CONTRACT.md`, `SESSION.md`, `INTEGRITY.md` | `RUNTIME.md`, `RANDOMNESS.md`, live/multiplayer/chronology, checkpoint/current/session schemas, Step-5 final specs |
+| Failure / degradation / `FailureDisposition` / durability-risk composition | `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-25-error-degradation-failure-semantics-canonical-spec.md` | applicable native owners for the concrete focus, including Step-5.5/WP-13/WP-14 durability/publication/recovery, Context Runtime, access/LIVE/multiplayer, mechanics/RNG, WP-20 compatibility/migration, Story/planning, diagnostics and WP-24 proof/budget owners; runtime/tests are realization consumers, not replacement semantic owners |
 | Story / retrospective continuity / persistence operability | `DEV/docs/superpowers/specs/2026-09-07-story-producer-persistence-retrospective-consumer-contract.md`, `DEV/docs/superpowers/specs/2026-09-08-story-baseline-projection-source-contracts.md`, `DEV/docs/superpowers/specs/2026-09-08-story-persistence-growth-sharding-consumer-decoupling-owner-decision.md` | WP-18, R2.3/WP-09 Context Runtime, WP-11 physical routing, WP-13 publication/currentness, Step-5.11/5.13 retention, mutable-artifact size owner, WP-24 performance/scale results |
 | Multiplayer / shared mutable state | `GAME/CORE/MULTIPLAYER.md`, `LIVE_SCENE.md` | chronology, persistence, access control, live/session/player schemas, Step-5 + R2.5 final specs |
 | Chronology / temporal continuity | `GAME/CORE/CHRONOLOGY.md`, accepted temporal architecture | runtime/randomness/live/multiplayer, temporal schemas, Step-5.1/5.3/5.9 final specs |

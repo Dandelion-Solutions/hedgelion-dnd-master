@@ -1,14 +1,14 @@
 # Durability Boundary Guard
 
-framework_module_version: 1.0.1
+framework_module_version: 1.0.2
 load_policy: ALWAYS_DURING_GAMEPLAY
 precedence: authoritative for deciding WHEN campaign state must become durable; SAVE_CONTRACT adds explicit save semantics; PERSISTENCE owns HOW publication is transported
 
 ## Purpose
 
-Singleplayer should spend long stretches with zero GitHub traffic without allowing irreplaceable setup/play state to exist only in chat. This module is a zero-I/O boundary classifier: merely checking for a boundary performs no repository read.
+Singleplayer should spend long stretches with zero GitHub traffic without allowing irreplaceable setup/play state to remain exposed to avoidable loss. This module is a zero-I/O boundary and durability-exposure classifier: merely checking a boundary or exposure state performs no repository read.
 
-Durable facts become true in the hot working set immediately. Most are SOFT and are flushed later. Only the boundaries below force publication in ordinary singleplayer.
+Durable facts become true in the hot working set immediately. Most are SOFT and are flushed later. Stronger owner-defined HARD edges below still require publication before their named continuation edge. Separately, deferrable dirty state follows the `NORMAL / ELEVATED / DANGER` loss-protection trajectory defined here; that trajectory does not create correctness HARD.
 
 ## Readiness and onboarding
 
@@ -46,7 +46,7 @@ Once a mechanical commitment has been relied upon or crosses READY_PC, later sit
 
 ## Singleplayer forced boundaries
 
-Normal forced publication boundaries are:
+Normal owner-defined forced publication boundaries are:
 1. `PROVISIONAL_IDENTITY` — early stable protagonist/Actor establishment under `DIEGETIC_ONBOARDING.md`;
 2. READY_PC establishment when the initial mechanical commitment frontier would otherwise cross another player-turn boundary only in RAM, unless the same response will publish PLAY_READY;
 3. PLAY_READY / campaign activation frontier;
@@ -54,8 +54,7 @@ Normal forced publication boundaries are:
 5. campaign lifecycle transition (active/paused/completed/archived/reactivated as valid for the phase);
 6. explicit save/session boundary (`SAVE_CONTRACT.md` / intentional pause/end);
 7. rare catastrophic continuity boundary whose loss would make resume fundamentally wrong, such as permanent PC death/replacement;
-8. concrete safety flush when verified context loss/maintenance suspension would otherwise destroy the hot dirty set;
-9. the one-hour dirty durability ceiling defined below.
+8. concrete safety flush when verified context loss/maintenance suspension would otherwise destroy the hot dirty set.
 
 Domain-specific multiplayer/live/access modules may require earlier shared publication. Their explicit boundary overrides the sparse singleplayer cadence only for that scope.
 
@@ -77,37 +76,68 @@ Several SOFT domains being dirty at once does not automatically create a boundar
 
 A focal-location boundary is coarse: tavern -> market square may count; table -> stairs inside the same tavern normally does not. When a forced boundary fires, flush all causally valid accumulated SOFT state in the same coherent transaction.
 
-## One-hour dirty durability ceiling
+## Durability exposure trajectory
 
-The one-hour rule protects canonical HOT/SOFT state from remaining solely in an ephemeral chat/environment for too long. It is **additive** to every stronger/immediate boundary above; it never delays a boundary that should already have fired.
-
-Track the time of the latest known durable campaign frontier as `durable_frontier_time` in the current working set. Reuse already-known commit/frontier metadata; merely evaluating this timer should not require a repository read.
-
-The forced-boundary condition is:
+For owner-permitted deferrable dirty HOT/SOFT state, classify the affected durability scope as:
 
 ```text
-dirty_hot_or_soft == true
-AND now - durable_frontier_time >= 1 hour
-=> forced durability boundary
+NORMAL
+ELEVATED
+DANGER
 ```
 
-`dirty_hot_or_soft` means at least one canonical/current campaign owner has a material unpublished change in the current HOT/SOFT working set. EPHEMERAL conversational material that is not canon does not count.
+This is an operability/loss-protection trajectory over still-relevant unpublished established state. It is not a durability status, corruption state, correctness HARD edge, global campaign health value, timer or scheduler.
 
-When the condition is true, publish the complete causally coherent dirty campaign batch at the next available authoritative interaction/persistence point before allowing additional ordinary gameplay to extend the stale dirty frontier. Use `PERSISTENCE.md` for transport; this guard owns only the WHEN decision.
+Use only owner-valid evidence already lawfully available for the affected scope. Relevant signals may include:
+- materiality/amount of still-relevant unpublished established state;
+- severity of losing that state;
+- increasing difficulty of later coherent durability closure;
+- repeated publication/preservation failure;
+- available safe low-cost preservation opportunities;
+- weak age/time evidence;
+- advisory host/context pressure;
+- whether the next operation would materially enlarge the same exposed dirty scope.
 
-A shorter normal boundary may flush the dirty set earlier. A critical/HARD boundary remains immediate under its own rule. Successful publication resets the dirty set and advances `durable_frontier_time` to the new known durable frontier.
+No single signal is currentness/durability authority. Exact token/message/context limits, exact elapsed-time thresholds and empirical calibration are not defined here.
+
+### NORMAL
+
+Ordinary sparse persistence continues. SOFT dirty state may remain batched until an owner-defined boundary or a later exposure transition.
+
+### ELEVATED
+
+At the next suitable safe established-state opportunity, proactive preservation of the affected dirty scope should outrank optional Story service, planning/enrichment and other nonessential work. ELEVATED does not by itself block gameplay or create HARD.
+
+### DANGER
+
+At the current admitted execution opportunity, before accepting another operation that would materially enlarge the same exposed dirty scope, request **one owner-valid bounded preservation/recovery attempt**.
+
+If that attempt remains unavailable or unsuccessful, guard that state-growing operation in the affected scope and expose the applicable owner-native/external-action disposition. Operations proven not to use or enlarge that affected dirty scope may remain available under their own owners.
+
+DANGER alone MUST NOT:
+- create `MUST_BE_DURABLE_BEFORE(edge)` as a correctness law;
+- declare coherent HOT state false/corrupt;
+- create rollback/rewind;
+- create an exact wall-clock trigger;
+- create a background scheduler/worker/heartbeat/polling loop;
+- create automatic retry;
+- invent an exact retry count or host-capacity threshold.
+
+Approximate host/context pressure may contribute to exposure assessment or request conservative proactive preservation, but **cannot alone create a gameplay-affecting DANGER guard**. Such a guard additionally requires owner-valid still-relevant unpublished-state/loss-exposure evidence for the affected scope.
+
+Successful publication clears the published dirty set and the exposure trajectory is re-evaluated from the remaining actual state; do not maintain a synthetic global durability timer/frontier merely to drive this classifier.
 
 ### No heartbeat commits
 
-If there is **no dirty canonical/current state**, elapsed wall-clock time alone is not a persistence reason. The one-hour rule MUST NOT create an empty/no-op commit, timestamp-only mutation, checkpoint, or other heartbeat merely to make the latest Git commit appear recent.
+If there is **no dirty canonical/current state**, elapsed time, chat age, host pressure or exposure re-evaluation alone is not a persistence reason. The guard MUST NOT create an empty/no-op commit, timestamp-only mutation, checkpoint or other heartbeat merely to make repository activity look recent.
 
-The invariant is protection of unpublished accepted state, not continuous repository activity.
+The invariant is protection of actual unpublished accepted state, not continuous repository activity.
 
 ### Inactive chat
 
-This runtime does not execute in the background while the user is absent. It cannot promise a commit exactly one hour after the last interaction.
+This runtime does not execute in the background while the user is absent. Inactivity alone creates no timed save promise and no durability boundary.
 
-After a long inactive gap, if the current chat/environment still retains dirty HOT/SOFT working state, evaluate the ceiling at the next user interaction before applying a new gameplay action. If the condition is already true, create the required coherent publication first, subject to normal authorization/concurrency checks.
+At the next user interaction, if current-chat/environment state still retains dirty HOT/SOFT working state, evaluate the current owner-valid exposure evidence before a new operation that would materially enlarge the same scope. A long gap or approximate context pressure may be advisory evidence but cannot by itself establish gameplay-affecting DANGER.
 
 If the environment lost that unpublished dirty state entirely, there are no truthful bytes to reconstruct. Recover only the latest durable campaign frontier and never invent the missing unpublished canon/current state.
 
@@ -132,7 +162,7 @@ Repair before further dependent play if any is true:
 - a later value is chosen with situational knowledge even though it should have been committed before READY_PC;
 - a live focal-location transition completed but durable card/current routing still describes the old focal location with no corresponding transaction;
 - explicit save/pause/end was acknowledged while promised dirty state was not published;
-- retained dirty HOT/SOFT state has exceeded the one-hour ceiling and ordinary gameplay is continuing without the required durability boundary.
+- DANGER is established from owner-valid unpublished-state/loss-exposure evidence and another operation is materially enlarging that same dirty scope without the required one bounded preservation/recovery attempt or applicable guard.
 
 A durable gameplay onboarding sequence with provisional PC and lifecycle `initializing` is valid.
 
@@ -146,9 +176,9 @@ scaffold
     -> gameplay + rapid baseline materialization
     -> READY_PC / PLAY_READY
     -> many zero-I/O turns
-    -> focal-location/lifecycle/session/save/hourly-dirty boundary
-    -> one coherent flush
+    -> ordinary owner-defined boundary or risk-trajectory preservation opportunity
+    -> one coherent flush when publication is required/requested
     -> many zero-I/O turns
 ```
 
-The one-hour ceiling is a safety maximum for dirty state, not the normal desired commit frequency. After successful own publication continue from known hot state without confirmation rereads.
+Sparse persistence remains the normal rhythm. NORMAL/ELEVATED/DANGER protects exposed dirty state without introducing a fixed autosave cadence.

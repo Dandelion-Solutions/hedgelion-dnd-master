@@ -1,6 +1,6 @@
 # Durability Boundary Regression Cases
 
-These cases protect sparse low-latency singleplayer saves while separating pre-live onboarding from READY_PC/PLAY_READY live play.
+These cases protect sparse low-latency singleplayer saves while separating pre-live onboarding from READY_PC/PLAY_READY live play and preserving the settled owner-valid durability-risk trajectory.
 
 ## D01 — Scaffold is not play-ready
 Pass: setup may begin, but true live play cannot begin while scaffold is the only durable campaign commit.
@@ -27,10 +27,10 @@ Pass: no mechanically capable live scene with empty/incomplete PC mechanics/inde
 Pass: contract/payment/NPC changes alone create no transaction.
 
 ## D09 — Solo recurring companion may stay SOFT
-Pass: companion/relationship becomes dirty and waits for next forced boundary.
+Pass: companion/relationship becomes dirty and waits for next owner-defined boundary or applicable durability-risk preservation opportunity.
 
 ## D10 — No per-turn autosave
-Pass: multiple ordinary meaningful turns may accumulate dirty state with zero GitHub traffic.
+Pass: multiple ordinary meaningful turns may accumulate dirty state with zero GitHub traffic while exposure remains lawfully deferrable.
 
 ## D11 — Dirty-domain count is not a boundary
 Pass: quest + item + NPC + relationship dirty together still do not force save by count.
@@ -56,14 +56,29 @@ Pass: remain initializing; paused requires prior PLAY_READY/normal play.
 ## D18 — Active requires READY_PC + PLAY_READY
 Pass: active + provisional/incomplete PC is invariant violation and must be repaired.
 
-## D19 — Boundary check is zero-I/O
-Pass: classification uses hot state only; transport starts only after yes.
+## D19 — Boundary/exposure check is zero-I/O
+Pass: classification uses already-available owner-valid hot evidence; transport starts only after an actual boundary or bounded preservation opportunity is established.
 
 ## D20 — Concrete context-loss risk may force safety flush
-Pass: verified compaction/maintenance suspension may flush dirty state; fixed message/timer/count autosave is forbidden.
+Pass: verified compaction/maintenance suspension that would otherwise destroy the hot dirty set may create its existing stronger safety boundary. Fixed message/timer/count autosave remains forbidden.
 
-## D21 — Multiplayer may publish earlier
+## D21 — ELEVATED prioritizes preservation without blocking play
+SOFT dirty state has increasing owner-valid loss exposure but has not reached DANGER. Pass: at the next suitable safe established-state opportunity preservation outranks optional Story/planning/enrichment; no correctness HARD or automatic gameplay block is created.
+
+## D22 — DANGER gets one bounded preservation attempt before same-scope growth
+Owner-valid still-relevant unpublished-state/loss-exposure evidence establishes DANGER and the next operation would materially enlarge that dirty scope. Pass: request one owner-valid bounded preservation/recovery attempt; if it remains unavailable/unsuccessful, guard that state-growing operation in the affected scope. Independent operations outside that scope remain eligible under their owners.
+
+## D23 — DANGER is not HARD, corruption, timer or retry loop
+Pass: DANGER alone does not create a named correctness durability edge, rollback, exact wall-clock trigger, background worker/heartbeat/polling or automatic retry.
+
+## D24 — Advisory host pressure alone cannot create gameplay DANGER
+Only approximate context/token/message/chat-age/capacity pressure is available; no owner-valid still-relevant unpublished-state/loss-exposure evidence establishes the affected scope. Pass: conservative proactive preservation may be requested, but no gameplay-affecting DANGER guard is established from that advisory signal alone.
+
+## D25 — Clean state never creates heartbeat persistence
+No canonical/current dirty state exists. Pass: time/chat/context pressure or exposure reevaluation creates no empty/no-op commit, timestamp mutation or checkpoint.
+
+## D26 — Multiplayer may publish earlier
 Pass: shared visibility/access/live synchronization may override sparse solo cadence for that scope.
 
-## D22 — Successful persistence stays invisible
+## D27 — Successful persistence stays invisible
 Pass: no commit/HEAD/YAML narration unless user asks or failure/conflict needs action.

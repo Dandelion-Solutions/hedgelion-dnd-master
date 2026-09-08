@@ -1,6 +1,6 @@
 # R2.7 WP-25 — Error / Degradation / Failure Semantics — Canonical Specification
 
-Status: **CANONICAL WP-25 WORKER RESULT — STEPS 2–8 COMPLETE / MANDATORY INDEPENDENT FINAL SENIOR REVIEW PENDING**
+Status: **CANONICAL WP-25 SEMANTIC OWNER — FINAL SENIOR HOLD RECOVERY APPLIED AT WORKER LEVEL / MANDATORY INDEPENDENT FINAL SENIOR RE-REVIEW PENDING**
 
 Date: 2026-09-08
 
@@ -18,11 +18,14 @@ Design chain:
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-5-candidate-specification.md`;
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-6-whole-project-adversarial-review.md`;
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-6-propagation-qualification-addendum.md`;
-- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-7-finding-resolution-propagation.md`.
+- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-7-finding-resolution-propagation.md`;
+- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-8-canonicalization-checkpoint.md`.
 
 Where earlier Step-3/4/5 wording differs from the Step-6/7 qualifications incorporated here, this canonical specification controls.
 
-This specification does not authorize implementation planning, implementation, runtime/schema/test realization, release/migration execution, gameplay bootstrap or WP-26.
+Mandatory independent final Senior review of baseline `f3c2c978cd150dbc1be510def34d14fe61067c7c` returned HOLD with three bounded realization/traceability findings and explicitly required no canonical WP-25 architecture reopen. Sections 1–22 below therefore remain semantically unchanged; Sections 23–25 record only the mechanically synchronized realization/debt/version/gate state.
+
+This specification does not authorize implementation planning, generic FailureDisposition implementation, release/migration execution, gameplay bootstrap or WP-26. The bounded final-Senior recovery recorded here authorizes only the mechanically implied runtime/test/traceability synchronization required to remove contradictions with already-settled law.
 
 ---
 
@@ -876,57 +879,137 @@ Green source CI proves only the checks it actually executes on the exact head.
 
 ---
 
-# 23. Current realization/debt map
+# 23. Current realization/debt map after final-Senior bounded recovery
 
-WP-25 architecture is closed at worker level but implementation is not authorized.
+Mandatory independent final Senior review identified three significant closure defects in then-current realization/traceability, with no canonical architecture reopen and no human decision required. The bounded recovery synchronizes only those mechanically implied surfaces.
 
-Current known debt/obligations include:
+## SR25-FINAL-01 — retired fixed-time durability realization
+
+Worker status: **REPAIRED / FINAL SENIOR RE-REVIEW PENDING**.
+
+Current active/current surfaces synchronized include:
 
 ```text
 GAME/CORE/DURABILITY_GUARD.md
 GAME/CORE/SESSION.md
 GAME/CORE/STORAGE.md
-DEV/TESTS/test_hourly_durability_contract.py
-    -> stale one-hour durability projection
-
-DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md
-    -> semantic contract exists; installed runtime command surface not established
-
-focus-scoped FailureDisposition evaluator/adapters
-    -> architecture-only / not realized
-
-cross-owner failure/cascade verification
-    -> future realization/verification obligation
-
-DANGER exact host-risk thresholds/calibration
-    -> deferred to realized/empirical evidence
-
-GAME/CORE/MECHANICS_INTEGRITY.md correction wording
-    -> valid for pre-acceptance mechanically unsupported narration;
-       must not be reused as accepted-work replay authority
+GAME/CORE/RUNTIME.md
+GAME/CORE/PERSISTENCE.md
+GAME/CORE/CAMPAIGN_SETUP.md
+DEV/RELEASE/CHECKLIST.md
+DEV/TESTS/test_durability_risk_contract.py
+DEV/TESTS/DURABILITY_BOUNDARY_CASES.md
+DEV/TESTS/test_multi_runtime_release_consistency.py
 ```
 
-No item above is implementation-authorized by this specification.
+The prior exact fixed-time forced/HARD/autosave realization and `durable_frontier_time`-only state are no longer current runtime authority. Current realization now reflects only the already-settled `NORMAL / ELEVATED / DANGER` loss-protection trajectory needed for internal consistency:
+
+```text
+DANGER -> one owner-valid bounded preservation/recovery attempt
+          before another operation materially enlarges the same exposed dirty scope
+failure/unavailability -> guard that state-growing operation in affected scope
+DANGER != correctness HARD
+no exact wall-clock replacement
+no exact token/message/context thresholds
+no background scheduler/worker/heartbeat/polling
+no automatic retry loop
+advisory host/context pressure alone != gameplay-affecting DANGER
+clean state -> no heartbeat/no-op persistence
+```
+
+Stronger owner-defined HARD edges remain unchanged. Historical occurrences of the old fixed-time policy remain only as provenance, supersession/negative evidence or historical design state where retention is appropriate.
+
+## SR25-FINAL-02 — mechanics replay boundary
+
+Worker status: **REPAIRED / FINAL SENIOR RE-REVIEW PENDING**.
+
+`GAME/CORE/MECHANICS_INTEGRITY.md`, `DEV/TESTS/MECHANICS_INTEGRITY_CASES.md` and `DEV/TESTS/test_mechanics_replay_boundary_contract.py` now distinguish:
+
+```text
+genuinely mechanically unsupported pre-acceptance narration
+AND no valid accepted mechanics/RNG consequence ever existed
+    -> honest re-resolution may use fresh legitimate RNG
+
+accepted mechanics/RNG/IDs/semantic consequence exists
+AND downstream trace/persistence/publication/presentation/Context/diagnostic/recovery evidence fails
+    -> preserve accepted mechanics/RNG/IDs/consequences
+    -> NO replay / reroll / reallocation
+```
+
+Missing/corrupt/unavailable resolution trace alone does not prove that accepted mechanics never existed.
+
+## SR25-FINAL-03 — routing / traceability
+
+Worker status: **REPAIRED / FINAL SENIOR RE-REVIEW PENDING**.
+
+```text
+DEV/PROJECT_MAP.md: REQUIRED / UPDATED
+DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md: REQUIRED / UPDATED
+Step-7 propagation ledger: UPDATED WITH POST-STEP-8 SENIOR RECOVERY ACCOUNTING
+Step-8 canonicalization checkpoint: UPDATED / ORIGINAL NO-EDIT DISPOSITION CORRECTED
+DEV/CURRENT_PROGRESS.md: UPDATED / FINAL RE-REVIEW GATE
+DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md: NO EDIT REQUIRED
+```
+
+Project Map/index remain derivative routing surfaces and do not duplicate native owner law.
+
+## Remaining deferred obligations
+
+The following remain deferred and are not authorized by this recovery:
+
+```text
+focus-scoped FailureDisposition evaluator/adapters
+exact common FailureDisposition machine type/enum representation
+new persisted failure schema/registry
+global health state / generic ACL or operation registry
+universal retry engine
+installed maintenance command realization
+exact DANGER / host-risk thresholds and host-capacity estimator
+real-target DANGER calibration / empirical acceptance
+broad cross-owner failure/cascade/scope-isolation machine realization beyond focused Senior repairs
+WP-26
+implementation plan
+release execution
+gameplay bootstrap
+```
+
+Architecture coverage, focused mechanical synchronization, verification realization and empirical acceptance remain separate proof classes.
 
 ---
 
-# 24. Version impact
+# 24. Version impact — final-Senior recovery
 
-This WP changes architecture/design/status/routing documentation only.
+The original Steps 2–8 architecture/design/status publication was document-only and correctly carried `VERSION_IMPACT: NONE` at that time. The later bounded final-Senior recovery materially changes version-bearing CORE/runtime modules, so a fresh gate applies.
 
-It does not change a version-bearing runtime module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, runtime package/release format or migration contract.
+Current engine semantic version remains `1.0-alpha`.
+
+Under current Category-B component law, materially changed version-bearing modules use engine prefix `1.0` and increment component-local revision exactly once:
 
 ```text
-VERSION_IMPACT: NONE
-VERSION_BUMP_REQUIRED: NO
+GAME/CORE/DURABILITY_GUARD.md      1.0.1 -> 1.0.2
+GAME/CORE/SESSION.md               0.4.0 -> 1.0.1
+GAME/CORE/STORAGE.md               0.7.0 -> 1.0.1
+GAME/CORE/RUNTIME.md               0.8.0 -> 1.0.1
+GAME/CORE/PERSISTENCE.md           1.0.2 -> 1.0.3
+GAME/CORE/CAMPAIGN_SETUP.md        0.8.1 -> 1.0.2
+GAME/CORE/MECHANICS_INTEGRITY.md   0.1.0 -> 1.0.1
+```
+
+```text
+VERSION_IMPACT: CATEGORY_B_MODULE_REVISIONS
+VERSION_BUMP_REQUIRED: YES — COMPONENT-LOCAL framework_module_version ONLY
+ENGINE_VERSION_BUMP_REQUIRED: NO
+PERSISTENT_SCHEMA_OR_GENERATION_BUMP_REQUIRED: NO
+MIGRATION_REQUIRED_BY_THIS_RECOVERY: NO
+RELEASE_EXECUTION_REQUIRED: NO
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-Future implementation of WP-25 must run its own fresh Version Impact Gate.
+No `GAME/ENGINE_VERSION.yaml`, campaign/storage/catalog/ruleset generation, persistent protocol shape, migration law or release format is changed by this bounded recovery.
 
 ---
 
-# 25. Final worker disposition
+# 25. Final worker disposition after bounded recovery
 
 ```text
 SELECTED_ARCHITECTURE:
@@ -950,14 +1033,30 @@ STEP7_UNRESOLVED_SIGNIFICANT: 0
 STEP7_UNRESOLVED_MINOR: 0
 FINDING_PROPAGATION_SWEEP_COMPLETE: YES
 
+FINAL_SENIOR_REVIEW_BASELINE: f3c2c978cd150dbc1be510def34d14fe61067c7c
+FINAL_SENIOR_VERDICT: HOLD — BOUNDED FINAL-CLOSURE RECOVERY REQUIRED
+FINAL_SENIOR_UNRESOLVED_BLOCKING: 0
+FINAL_SENIOR_UNRESOLVED_SIGNIFICANT: 3
+
+SR25_FINAL_01: REPAIRED AT WORKER LEVEL / RE-REVIEW PENDING
+SR25_FINAL_02: REPAIRED AT WORKER LEVEL / RE-REVIEW PENDING
+SR25_FINAL_03: REPAIRED AT WORKER LEVEL / RE-REVIEW PENDING
+UNRESOLVED_BLOCKING_AT_WORKER_RECOVERY: 0
+UNRESOLVED_SIGNIFICANT_AT_WORKER_RECOVERY: 0
+
 HUMAN_DECISION_REQUIRED: NO
 PO_DECISION_REQUIRED: NO
 NEEDS_PO: NONE
+CANONICAL_WP25_ARCHITECTURE_REOPEN_REQUIRED: NO
+WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
 
 WP25_STEPS_2_8_COMPLETE_AT_WORKER_LEVEL: YES
-WP25_FINAL_SENIOR_REVIEW: REQUIRED / PENDING
+WP25_FINAL_SENIOR_HOLD_RECOVERY: COMPLETE AT WORKER LEVEL
+WP25_FINAL_SENIOR_RE_REVIEW: REQUIRED / PENDING
+WP25_CLOSED: NO
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 NEXT_WP_AUTHORIZED: NO
+NEXT_AUTHORIZED_UNIT: NONE
 ```
 
-Next mandatory gate: **independent WP-25 final Senior review**.
+Next mandatory gate: **independent WP-25 final Senior re-review**.

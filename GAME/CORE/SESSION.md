@@ -1,7 +1,7 @@
 # Session Lifecycle
 
-framework_module_version: 0.4.0
-load_when: new chat/session, session end, pause/resume, checkpoint creation, maintenance continuation, inactive-gap durability check
+framework_module_version: 1.0.1
+load_when: new chat/session, session end, pause/resume, checkpoint creation, maintenance continuation, durability exposure check
 
 Use `CAMPAIGN_OPERATIONS.md` for organization and `PERSISTENCE.md` for write transport/transaction semantics.
 
@@ -32,11 +32,12 @@ A new singleplayer chat or explicit resync refreshes HEAD and the smallest relev
 
 ### After a long inactive gap
 
-The runtime does not run in the background while the user is absent. It does not promise a timed save at exactly the one-hour mark without an interaction.
+The runtime does not run in the background while the user is absent. Inactivity alone creates no timed save promise, persistence boundary or gameplay-affecting DANGER state.
 
-At the **next user interaction** after a long inactive gap, before applying a new gameplay action, inspect the working set that actually survived in the current chat/environment:
-- if dirty HOT/SOFT canonical state still exists, evaluate the one-hour dirty durability ceiling from `DURABILITY_GUARD.md` against the known durable frontier;
-- if the ceiling has fired, publish the coherent dirty batch before applying the new gameplay action, subject to ordinary authority/concurrency checks;
+At the **next user interaction**, inspect only the working set that actually survived in the current chat/environment when a new operation would use or materially enlarge dirty HOT/SOFT state:
+- if dirty canonical state still exists, let `DURABILITY_GUARD.md` evaluate current owner-valid `NORMAL / ELEVATED / DANGER` exposure evidence for that affected scope;
+- if DANGER is established from owner-valid unpublished-state/loss-exposure evidence, request its one bounded preservation/recovery attempt before another operation materially enlarges that same scope, then guard only that state-growing operation if preservation remains unavailable/unsuccessful;
+- elapsed inactivity, chat age or advisory host/context pressure alone cannot establish a gameplay-affecting DANGER guard;
 - if no canonical state is dirty, do not create a heartbeat/no-op write;
 - if unpublished state was lost with the old environment/context, recovery starts from durable canon rather than guessing what vanished.
 
@@ -48,9 +49,9 @@ Use the gameplay fast path from `RUNTIME.md`.
 
 Once current scene state is loaded, ordinary actions should not refresh HEAD, reread unchanged records, reload CORE or publish merely because another player message arrived.
 
-Apply consequences to the hot working set and mark durable records dirty. SOFT changes may remain dirty across turns, but `DURABILITY_GUARD.md`'s one-hour ceiling is the safety maximum for retaining unpublished canonical HOT/SOFT state.
+Apply consequences to the hot working set and mark durable records dirty. SOFT changes may remain dirty across turns. `DURABILITY_GUARD.md` owns owner-defined boundaries plus the separate NORMAL/ELEVATED/DANGER loss-protection trajectory; DANGER is not correctness HARD and does not introduce a fixed autosave cadence.
 
-Do not create session-local save rules. During play, `DURABILITY_GUARD.md` decides ordinary singleplayer boundaries; `SAVE_CONTRACT.md` handles explicit save; multiplayer/live modules handle shared synchronization. Scene/encounter/action completion alone is not automatically a boundary.
+Do not create session-local save rules. During play, `DURABILITY_GUARD.md` decides ordinary singleplayer boundaries/exposure protection; `SAVE_CONTRACT.md` handles explicit save; multiplayer/live modules handle shared synchronization. Scene/encounter/action completion alone is not automatically a boundary.
 
 Race-sensitive multiplayer live changes follow `LIVE_SCENE.md` promptly.
 

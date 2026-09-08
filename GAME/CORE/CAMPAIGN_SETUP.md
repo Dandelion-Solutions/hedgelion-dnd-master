@@ -1,6 +1,6 @@
 # Campaign Setup and Branch Initialization
 
-framework_module_version: 0.8.1
+framework_module_version: 1.0.2
 load_when: create new campaign, bind player, initialize campaign branch
 
 ## Discover before creating
@@ -225,7 +225,7 @@ If trustworthy external material would materially improve this horizon, one boun
 
 Do not research merely because sources exist. Do not build continent encyclopedia, full faction network, distant history or unused NPC roster before play. Undefined distant details may remain undefined.
 
-Keep the starting-world delta in the hot working set until a `DURABILITY_GUARD.md` boundary requires publication. Normally it joins the character/PLAY_READY launch transaction rather than creating its own commit. When published, refresh `CAMPAIGN_CARD.current_location` in the SAME transaction when the coarse focal location is known. Give player only orientation their PC legitimately knows.
+Keep the starting-world delta in the hot working set until a `DURABILITY_GUARD.md` boundary or applicable bounded durability-preservation opportunity requires publication. Normally it joins the character/PLAY_READY launch transaction rather than creating its own commit. When published, refresh `CAMPAIGN_CARD.current_location` in the SAME transaction when the coarse focal location is known. Give player only orientation their PC legitimately knows.
 
 ## Stage 3 — First scene
 
@@ -282,7 +282,7 @@ Use `WORLDGEN.md`. Create only the starting horizon required for the first true 
 
 Scaffold commit establishes campaign identity/creator but not completed Session Zero state.
 
-Subsequent setup persistence follows `DURABILITY_GUARD.md`: optional PROVISIONAL_IDENTITY, accepted READY_PC/character stage when it would otherwise cross a player-turn boundary, PLAY_READY, explicit save/session/safety/one-hour dirty boundaries. Starting-world details alone do not require an extra commit when they can join another required batch.
+Subsequent setup persistence follows `DURABILITY_GUARD.md`: optional PROVISIONAL_IDENTITY, accepted READY_PC/character stage when it would otherwise cross a player-turn boundary, PLAY_READY, explicit save/session/safety boundaries, plus the guard's separate owner-valid NORMAL/ELEVATED/DANGER durability-exposure protection for deferrable dirty state. Starting-world details alone do not require an extra commit when they can join another required/requested batch.
 
 Each batch includes corresponding card projection changes; card is never saved separately. Do not create a commit for every question/subchoice.
 

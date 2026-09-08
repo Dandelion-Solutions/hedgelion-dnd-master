@@ -19,7 +19,7 @@ class MultiRuntimeReleaseConsistencyTests(unittest.TestCase):
         self.assertIn("in-memory ZIP entry", checklist)
         self.assertIn("all valid files under `GAME/` plus exactly one", checklist)
 
-    def test_release_checklist_covers_multi_runtime_and_portable_identity(self):
+    def test_release_checklist_covers_multi_runtime_portable_identity_and_current_durability(self):
         checklist = (DEV / "RELEASE" / "CHECKLIST.md").read_text(encoding="utf-8")
         for token in (
             "multiple runtime ZIPs",
@@ -28,7 +28,7 @@ class MultiRuntimeReleaseConsistencyTests(unittest.TestCase):
             "MANIFEST.engine.current",
             "same-version",
             "campaign creator",
-            "one-hour",
+            "NORMAL / ELEVATED / DANGER",
             "heartbeat",
             "continuation frame",
         ):

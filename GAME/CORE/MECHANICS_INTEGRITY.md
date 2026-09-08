@@ -1,6 +1,6 @@
 # Mechanical Resolution Integrity
 
-framework_module_version: 0.1.0
+framework_module_version: 1.0.1
 load_policy: ALWAYS_DURING_GAMEPLAY
 precedence: authoritative for proving that a mechanical outcome actually exists before narration
 
@@ -85,7 +85,7 @@ For each material mechanical step retain enough to answer an immediate audit req
 
 This trace is operational hot state, not a requirement to persist every die roll to GitHub. It may be compacted/dropped at a safe scene/encounter boundary once durable consequences are represented elsewhere and no audit/recovery need remains.
 
-At low mechanics presentation detail, keep the trace hidden. Do not omit it.
+At low mechanics presentation detail, keep the trace hidden. Do not omit it while the trace is still required by the active resolution/audit scope.
 
 ## Explicit audit request overrides display suppression
 
@@ -93,20 +93,32 @@ If the player asks to see the actual rolls/calculations for recent actions, show
 
 Do not fabricate a retrospective table, roll, modifier or HP value merely to satisfy the request.
 
-If the required trace does not exist because mechanics were skipped, say so plainly and enter correction behavior below.
+If the trace is missing/corrupt/unavailable, first determine whether mechanics themselves were genuinely skipped before acceptance or whether an already accepted mechanics/RNG/ID/consequence basis exists elsewhere. Trace loss alone does not decide that question.
 
-## Correction: never backfill fake mechanics
+## Correction: distinguish mechanically unsupported narration from downstream trace loss
 
-If the runtime discovers that an uncertain narrated outcome was produced without a valid resolution trace:
+A missing, corrupt or unavailable resolution trace **alone does not prove that accepted mechanics never existed** and does not invalidate an already accepted mechanical consequence.
 
-1. stop propagating the mechanically unsupported outcome;
-2. identify the last mechanically valid frontier;
-3. preserve only facts/state that were established independently of the invalid outcome;
-4. do NOT invent retrospective dice or numbers;
-5. replay/re-resolve the affected action sequence from the valid frontier using real mechanics and fresh legitimate RNG;
-6. repair/persist canon only if unsupported consequences had already become durable.
+If accepted mechanics/RNG/stable IDs/consequences can be established from the applicable accepted native basis, preserve them through downstream trace, persistence, publication, presentation, Context, diagnostic or recovery failure:
 
-Narrative continuity is subordinate to honest mechanics. Do not keep a false result merely because replay is inconvenient.
+- do NOT replay or re-resolve the accepted action;
+- do NOT reroll or replace accepted RNG;
+- do NOT reallocate or replace accepted stable IDs;
+- do NOT rewrite accepted consequences merely to repair evidence projection;
+- diagnose/recover the missing downstream artifact under its native owner while carrying the accepted basis forward.
+
+Pre-acceptance correction is permitted only when evidence establishes that an uncertain narrated outcome was **genuinely mechanically unsupported** and that **no valid accepted mechanics/RNG consequence ever existed** for that affected action sequence.
+
+Only in that case:
+
+1. stop propagating the mechanically unsupported narrated outcome;
+2. identify the last mechanically valid frontier preceding the unsupported sequence;
+3. preserve facts/state established independently of the unsupported outcome;
+4. do NOT invent retrospective dice, numbers, IDs or accepted results;
+5. replay/re-resolve only the genuinely unsupported affected action sequence from that valid frontier using real mechanics and fresh legitimate RNG;
+6. repair/persist only canon that was based on genuinely unsupported mechanics.
+
+Narrative continuity is subordinate to honest mechanics, but accepted mechanics are also continuity. Do not keep a mechanically unsupported result merely because correction is inconvenient, and do not destroy an accepted result merely because a later evidence projection degraded.
 
 ## Presentation separation
 

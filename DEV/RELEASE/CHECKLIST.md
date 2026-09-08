@@ -61,9 +61,12 @@
 - [ ] Runtime maintenance during active gameplay preserves an ephemeral **continuation frame** containing the selected campaign/frontier, scene/location, last meaningful player action, last meaningful Master/NPC utterance/outcome and unresolved decision point.
 - [ ] After successful maintenance/runtime switch, gameplay returns to the same unresolved point. Exact dialogue is repeated only from current-chat evidence; otherwise use durable semantic summary and never fabricate verbatim history.
 - [ ] Maintenance itself does not advance fictional time or invent NPC/player actions.
-- [ ] `DURABILITY_GUARD.md` owns the **one-hour** dirty HOT/SOFT durability ceiling: dirty canonical state with a durable frontier at least one hour old forces a coherent publication boundary.
-- [ ] Clean state never creates a **heartbeat**/empty/no-op commit merely because wall-clock time elapsed.
-- [ ] No background save is promised while a chat is inactive; on the next interaction, surviving dirty state is checked before applying a new gameplay action.
+- [ ] `DURABILITY_GUARD.md` owns the `NORMAL / ELEVATED / DANGER` operability/loss-protection trajectory for owner-permitted deferrable dirty HOT/SOFT state in addition to stronger owner-defined durability boundaries.
+- [ ] DANGER may request one owner-valid bounded preservation/recovery attempt before another operation materially enlarges the same exposed dirty scope; if preservation remains unavailable/unsuccessful, guard that state-growing operation in the affected scope.
+- [ ] DANGER does not create correctness HARD, corruption, an exact wall-clock trigger, background scheduler/worker/heartbeat/polling or automatic retry; exact host-risk thresholds/calibration are not defined by the runtime contract.
+- [ ] Advisory host/context pressure alone cannot create a gameplay-affecting DANGER guard; owner-valid still-relevant unpublished-state/loss-exposure evidence for the affected scope is additionally required.
+- [ ] Clean state never creates a **heartbeat**/empty/no-op commit merely because time, chat age or host/context pressure changed.
+- [ ] No background save is promised while a chat is inactive; on the next interaction, surviving dirty state may be evaluated for current owner-valid durability exposure before a new operation materially enlarges that same scope.
 - [ ] If unpublished HOT/SOFT state itself was lost with the environment/context, recover only from durable canon and never invent the missing unpublished changes.
 
 ## Maintenance regression

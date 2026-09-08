@@ -2,7 +2,7 @@
 
 Status: **DERIVATIVE / NON-NORMATIVE NAVIGATION AND INTEGRATION INDEX**
 
-Date: 2026-08-29
+Date: 2026-09-08
 
 Global current progress is owned only by `DEV/CURRENT_PROGRESS.md`. This index
 does not state the active stage, current slice, next unit or current gate.
@@ -11,7 +11,7 @@ does not state the active stage, current slice, next unit or current gate.
 
 # 1. Purpose and authority
 
-This document is the fast integration map over accepted HDM mechanical architecture through Step 5.14. The canonical design is intentionally distributed across model contracts, owner decisions, canonical specifications, amendments and final assurance/review artifacts.
+This document is the fast integration map over accepted HDM mechanical architecture through Step 5.14 and later canonical additions. The canonical design is intentionally distributed across model contracts, owner decisions, canonical specifications, amendments and final assurance/review artifacts.
 
 Use this file to answer quickly:
 
@@ -20,7 +20,7 @@ Use this file to answer quickly:
 - which neighboring specs must be read together?
 - which older abstraction is superseded/demoted?
 - which integrated recovery/concurrency invariant is relevant?
-- which Step-6 feasibility gate depends on the rule?
+- which later feasibility/realization gate depends on the rule?
 
 It is **not** a semantic source of truth. It creates no owners, schemas, lifecycle states, persistence edges or product promises.
 
@@ -137,6 +137,7 @@ These are locator summaries; open the owning source for exact law text.
 | GI-24 | Cross-source cleanup protection must precede/participate in consumer acceptance unless consumer is self-contained or source fenced. | 5.14-2 + 5.13 |
 | GI-25 | `runtime.disclosure` monotonic merge is owner-specific; never generalize to arbitrary mutable owners or transport last-writer-wins. | 5.14-3 + 5.12 |
 | GI-26 | Partial multi-live prerequisite freeze is technical currentness, not partial fictional establishment. | 5.14-4 + 5.8 |
+| GI-27 | For one owner-proven bounded focus, WP-25 composes owner-local native outcomes into an ephemeral `FailureDisposition`; the projection is non-authoritative and scope-local. Deferrable durability exposure uses `NORMAL / ELEVATED / DANGER`; DANGER does not become correctness HARD, a timer/scheduler or retry authority. | WP-25 + applicable native owners |
 
 ---
 
@@ -309,6 +310,8 @@ HARD = MUST_BE_DURABLE_BEFORE(named edge)
 Never infer `SOFT = unimportant`, `HARD = permanent`, or `SAVE = snapshot of everything`.
 
 SAVE selects established dirty gameplay-significant roots plus compatible recovery/reference/interpretation closure. Clean SAVE needs no heartbeat/no-op commit.
+
+For owner-permitted deferrable dirty state, WP-25 additionally composes a scope-local loss-protection trajectory `NORMAL / ELEVATED / DANGER`. That trajectory is not another durability axis: DANGER may request one bounded owner-valid preservation/recovery attempt before further material growth in the same exposed scope, but it does not create correctness HARD, a fixed timer, a scheduler/heartbeat or automatic retry.
 
 ## 7.2 Campaign publication
 
@@ -506,7 +509,7 @@ Open the listed primary source after locating a concern here.
 | Can an LLM establish mechanical consequence directly? | Step 3 | deterministic execution authority |
 | What is accepted action/idempotency unit? | Step 3 | Interaction / RuntimeCommand |
 | Does identical text mean same command? | Step 3 | retry identity vs new Interaction |
-| Can retry/recovery reroll accepted RNG? | 3 + 5.6 + 5.8 | fixed RNG / no replay |
+| Can retry/recovery reroll accepted RNG? | 3 + 5.6 + 5.8 + WP-25 | fixed RNG / no replay |
 | Who owns Procedure state? | 3 | Procedure sole ResourceState owner |
 | What survives suspended execution? | 3 + 5.2 | Continuation + pinned dependencies |
 | Can Narrator prose create truth? | 4 | promotion / no LLM canon |
@@ -526,6 +529,8 @@ Open the listed primary source after locating a concern here.
 | What does controlled handoff promise? | 5.4 | scoped durable RRC before ack |
 | What does SOFT mean? | 5.5 | established + volatile dirty + may defer |
 | What makes something HARD? | 5.5 | named durability edge |
+| How is deferrable dirty-state loss exposure guarded without a fixed autosave timer? | WP-25 + 5.5 + native durability owner | NORMAL / ELEVATED / DANGER |
+| How are failure/degradation semantics composed for one bounded focus? | WP-25 canonical + applicable native owner | FailureDisposition / focus closure / native outcomes |
 | Does SAVE require Story catch-up? | 5.5 + 5.10 | no |
 | How is campaign state published? | 5.6 | Python-owned single-ref CAS |
 | Does prepared commit establish state? | 5.6 | no |
@@ -568,7 +573,7 @@ Open the listed primary source after locating a concern here.
 | `CURRENT.world_time.frontier` as global chronology authority | superseded/noncanonical | 5.1 + 5.9 |
 | singleton `scene.chronology_frontier_event_id` as universal history edge | superseded by scoped ActiveExtensionFrontier; singleton only optimization | 5.9 |
 | `world_order.sequence` as cross-domain fictional order | invalid absent explicit owner domain semantics | 5.1 + 5.9 |
-| one-hour / `durable_frontier_time` durability contract | noncanonical debt | 5.5 |
+| one-hour / `durable_frontier_time` durability contract | retired/noncanonical fixed-timer realization; current deferrable exposure uses WP-25 `NORMAL / ELEVATED / DANGER` without timer authority | 5.5 + WP-25 |
 | checkpoint-first recovery / checkpoint snapshot authority | rejected | 5.2 + 5.7 |
 | universal RecoveryCut/snapshot owner | rejected | 5.1–5.2 + 5.7 |
 | generic durable scheduler/pending queue/firing authority | rejected | 5.3 |
@@ -747,6 +752,10 @@ Per-slice canon + Step-5.14 integration clarifications supersede older agenda wo
 
 - `DEV/docs/superpowers/specs/2026-09-01-r2-7-WP-11-physical-storage-topology-identity-indexing-canonical-spec.md` — physical campaign-record routes, stable-ID routing and bounded non-authoritative indexes; WP-11 is closed by Senior review.
 
+## 15.6 R2.7 WP-25
+
+- `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-25-error-degradation-failure-semantics-canonical-spec.md` — focus-scoped ephemeral failure disposition over owner-local native outcomes, scope-aware continuation and risk-trajectory-aware durability protection. Open applicable native owners for the concrete focus; this index does not duplicate their outcome/currentness/authorization/recovery law.
+
 ---
 
 # 16. Search anchors / glossary
@@ -779,6 +788,8 @@ Per-slice canon + Step-5.14 integration clarifications supersede older agenda wo
 | SafeRetirementAssessment | ephemeral deterministic cleanup proof working value | 5.13 |
 | domain-composed role-context basis | current exact source composition for one role invocation, not campaign-HEAD-only | 5.14 |
 | protection-before-acceptance | cross-source cleanup registration safety ordering | 5.14 |
+| FailureDisposition | ephemeral, focus-scoped composition of owner-local outcomes; never authorization/currentness/global health | WP-25 |
+| NORMAL / ELEVATED / DANGER | scope-local loss-protection trajectory for deferrable dirty established state; not HARD/timer authority | WP-25 + 5.5 |
 
 ---
 
@@ -788,7 +799,7 @@ Use this for later implementation/adversarial verification, not as a substitute 
 
 1. identify every semantic owner touched;
 2. identify independently mutable durability/current sources;
-3. locate governing rules in Sections 6, 11 and 14;
+3. locate governing rules in Sections 6, 11 and 14 plus WP-25 when failure/degradation composition is material;
 4. open exact primary specs;
 5. write pre-failure current-authority/source composition;
 6. distinguish `prospective`, `ESTABLISHED`, `DURABLE`, `current authority`, `projection`, `evidence`, `transport state`;
@@ -800,12 +811,12 @@ Use this for later implementation/adversarial verification, not as a substitute 
 ```text
 ARCHITECTURE BLOCKER
 IMPLEMENTATION DEBT
-STEP-6 FEASIBILITY DEPENDENCY
+FEASIBILITY DEPENDENCY
 ACCEPTED PRODUCT LIMITATION / RISK
 NO DEFECT
 ```
 
-A closed Step-5 slice should reopen only when integrated evidence proves a real contradiction/unsatisfied invariant. Implementation inconvenience or preference for a central abstraction is not enough.
+A closed architecture slice should reopen only when integrated evidence proves a real contradiction/unsatisfied invariant. Implementation inconvenience or preference for a central abstraction is not enough.
 
 ---
 
@@ -818,6 +829,6 @@ Update this index when:
 - canonical amendment changes a cross-slice seam;
 - historical/current authority status changes;
 - a later stage establishes physical realizations that materially change navigation/supersession;
-- later implementation review exposes a real Step-5 reopen condition.
+- later implementation review exposes a real Step-5 or later canonical reopen condition.
 
 Do not copy every schema field/implementation detail here. The index is valuable as a compact **semantic locator + integration map + adversarial router**, not as a parallel specification corpus.

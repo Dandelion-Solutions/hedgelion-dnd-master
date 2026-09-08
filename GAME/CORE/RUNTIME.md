@@ -1,6 +1,6 @@
 # DM Runtime Invariants
 
-framework_module_version: 0.8.0
+framework_module_version: 1.0.1
 load_policy: ALWAYS_DURING_GAMEPLAY
 
 `AI_REASONING.md`, `PLAY_POLICY.md`, `DURABILITY_GUARD.md`, `MECHANICS_INTEGRITY.md` and `CHARACTER_READINESS.md` are also always active during gameplay. RUNTIME defines the turn loop; those guard modules own their narrow correctness domains.
@@ -26,7 +26,7 @@ STATE -> INTENT -> RULES -> RANDOMNESS -> CONSEQUENCES -> PERSISTENCE -> NARRATI
 3. RULES: determine whether the action is automatic, impossible, uncertain, or governed by an exact mechanic.
 4. RANDOMNESS: when needed, fix stakes/mechanics before using actual RNG.
 5. CONSEQUENCES: derive changes from state + action + rules + random result.
-6. PERSISTENCE: update the hot dirty working set, then let `DURABILITY_GUARD.md` decide whether a publication boundary exists now; if publication is required, `PERSISTENCE.md` owns transport.
+6. PERSISTENCE: update the hot dirty working set, then let `DURABILITY_GUARD.md` decide whether a publication boundary or bounded durability-preservation opportunity exists now; if publication is required/requested, `PERSISTENCE.md` owns transport.
 7. NARRATION: present the resulting situation through the PC's legitimate information channel.
 
 Narration is last. It may not rewrite earlier layers for dramatic convenience.
@@ -55,16 +55,18 @@ After maintenance succeeds, the turn pipeline resumes from the same unresolved g
 
 ## Persistence durability and boundary ownership
 
-`DURABILITY_GUARD.md` is authoritative for **WHEN** campaign state becomes durable. `PERSISTENCE.md` is authoritative for **HOW** a decided publication is transported. `SAVE_CONTRACT.md` adds the explicit-save boundary when the player asks to save.
+`DURABILITY_GUARD.md` is authoritative for **WHEN** campaign state becomes durable and for the separate `NORMAL / ELEVATED / DANGER` operability/loss-protection trajectory over owner-permitted deferrable dirty state. `PERSISTENCE.md` is authoritative for **HOW** a decided/requested publication is transported. `SAVE_CONTRACT.md` adds the explicit-save boundary when the player asks to save.
 
 During the turn pipeline classify state as:
-- `HARD`: only a commitment that an active authoritative module explicitly defines as requiring publication before ordinary play continues (for example PROVISIONAL_IDENTITY, PLAY_READY, an explicit save/session/lifecycle boundary, multiplayer synchronization/access boundary, rare catastrophic continuity boundary, or the one-hour dirty ceiling once it fires);
+- `HARD`: only a commitment that an active authoritative module explicitly defines as requiring publication before ordinary play continues (for example PROVISIONAL_IDENTITY, PLAY_READY, an explicit save/session/lifecycle boundary, multiplayer synchronization/access boundary, or rare catastrophic continuity boundary);
 - `SOFT`: durable canon that is true immediately in the hot working set but may be batched until the next boundary defined by `DURABILITY_GUARD.md` or another explicit domain authority;
 - `EPHEMERAL`: current-chat material that is not intended to survive unless later promoted.
 
 In singleplayer, durable does **not** imply HARD. A quest, reward, new NPC, relationship change, ordinary item/resource change, ordinary scene/encounter completion, or generic "meaningful action" does not create a save merely because it matters. Those changes are normally SOFT unless a specific guard rule says otherwise.
 
-Do not invent extra persistence boundaries from prose in transport/storage/session modules. If no authoritative boundary fires, continue from hot state without GitHub traffic.
+`DANGER` is not another HARD class. When owner-valid unpublished-state/loss-exposure evidence establishes DANGER, the guard may request one bounded owner-valid preservation/recovery attempt before another operation materially enlarges the same exposed dirty scope; if preservation remains unavailable/unsuccessful, guard only that state-growing operation. Advisory host/context pressure alone cannot establish a gameplay-affecting DANGER guard.
+
+Do not invent extra persistence boundaries from prose in transport/storage/session modules. If no authoritative boundary or applicable DANGER preservation opportunity applies, continue from hot state without GitHub traffic.
 
 ### Lost ephemeral dirty state
 
@@ -72,7 +74,7 @@ Extracted runtime cache and campaign dirty state have different recovery semanti
 
 If environment/context loss causes **lost ephemeral dirty state**, recover only from the latest durable campaign frontier plus other already-persisted canon. The runtime **MUST NOT invent unpublished canon**, reconstruct supposed player choices from plausibility, or pretend that lost HOT/SOFT mutations were committed.
 
-When surviving current-chat evidence still contains the dirty HOT/SOFT working set, `DURABILITY_GUARD.md` decides whether the one-hour ceiling requires publishing it before further ordinary play. When that working set itself is gone, the durable frontier is the truthful recovery boundary.
+When surviving current-chat evidence still contains the dirty HOT/SOFT working set, `DURABILITY_GUARD.md` evaluates owner-defined boundaries and current durability-exposure evidence. Elapsed inactivity, message count, token estimate or approximate host pressure alone does not manufacture currentness, a save boundary or gameplay-affecting DANGER. When the working set itself is gone, the durable frontier is the truthful recovery boundary.
 
 ## Campaign lifecycle gate
 

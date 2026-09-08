@@ -1,6 +1,6 @@
 # Canonical Storage and Persistence
 
-framework_module_version: 0.7.0
+framework_module_version: 1.0.1
 load_when: session startup, state retrieval, persistence boundary, resync, canon conflict
 
 The engine package and campaign storage are separate.
@@ -78,11 +78,11 @@ Each active campaign working set maintains:
 - `known_tree_sha` when resolved;
 - the exact loaded canonical records at that known frontier;
 - dirty in-memory records not yet durably published;
-- the known durable-frontier time required by `DURABILITY_GUARD.md` for the one-hour dirty-state ceiling.
+- only the bounded owner-valid durability-exposure evidence already needed by `DURABILITY_GUARD.md` for the affected dirty scope (for example materiality/loss exposure or observed publication failure), without a synthetic global durability timer/frontier.
 
 Startup/resync pins HEAD. Tree SHA may be resolved lazily at first save.
 
-A successful own campaign publication updates known HEAD/tree/frontier time directly from the created commit/tree. Do not immediately refetch records the runtime just wrote. A later sync is required only for an explicit/external/concurrency/missing-canon reason under `RUNTIME.md` and `PERSISTENCE.md`.
+A successful own campaign publication updates known HEAD/tree directly from the created commit/tree and clears the published dirty set. Do not immediately refetch records the runtime just wrote. A later sync is required only for an explicit/external/concurrency/missing-canon reason under `RUNTIME.md` and `PERSISTENCE.md`.
 
 ## Lightweight repository reads
 
@@ -112,11 +112,11 @@ Do not use a temporary live file as staging for ordinary campaign commits.
 
 ## Working set and durability
 
-`DURABILITY_GUARD.md` is authoritative for HARD/SOFT/EPHEMERAL classification and ordinary singleplayer save boundaries, including the one-hour ceiling for retained dirty HOT/SOFT canon. This storage module does not invent additional timing rules.
+`DURABILITY_GUARD.md` is authoritative for HARD/SOFT/EPHEMERAL classification, ordinary singleplayer save boundaries and the separate `NORMAL / ELEVATED / DANGER` operability/loss-protection trajectory for owner-permitted deferrable dirty state. This storage module does not invent timing, threshold or retry rules.
 
-Keep relevant canonical records plus dirty paths/final contents in memory. Do not write GitHub files as soon as each thought/consequence is discovered. Ordinary singleplayer quest/NPC/item/resource/relationship/scene changes may remain SOFT until a guard-defined boundary.
+Keep relevant canonical records plus dirty paths/final contents in memory. Do not write GitHub files as soon as each thought/consequence is discovered. Ordinary singleplayer quest/NPC/item/resource/relationship/scene changes may remain SOFT until a guard-defined boundary or bounded preservation opportunity applies.
 
-When a boundary fires, publish the complete causally valid dirty delta through `PERSISTENCE.md`; HARD never means per-file publication. Clean state never creates a heartbeat commit merely because the durable frontier is old.
+When a boundary requires publication, publish the complete causally valid dirty delta through `PERSISTENCE.md`; HARD never means per-file publication. When DANGER requests one bounded owner-valid preservation attempt, use the same coherent transport without promoting DANGER to HARD or creating automatic retry. Clean state never creates a heartbeat commit merely because time/chat/context signals changed.
 
 ## Concurrency
 

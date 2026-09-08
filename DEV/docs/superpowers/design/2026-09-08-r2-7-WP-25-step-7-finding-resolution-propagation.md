@@ -1,6 +1,6 @@
 # R2.7 WP-25 Step 7 — Finding Resolution and Propagation
 
-Status: **STEP 7 COMPLETE — ALL STEP-6 FINDINGS RESOLVED / PROPAGATION SWEEP COMPLETE**
+Status: **STEP 7 COMPLETE — ALL STEP-6 FINDINGS RESOLVED / PROPAGATION SWEEP COMPLETE / FINAL-SENIOR RECOVERY ACCOUNTING APPENDED**
 
 Date: 2026-09-08
 
@@ -15,7 +15,7 @@ Inputs:
 - Step-5 candidate specification;
 - current native owners and downstream consumers.
 
-No implementation planning, runtime/schema/test implementation or next-WP work is authorized by this artifact.
+No implementation planning, runtime/schema/test implementation or next-WP work is authorized by this artifact. The later bounded final-Senior recovery recorded in Section 7 is a mechanically implied synchronization of already-settled WP-25 architecture and does not redesign `FailureDisposition`.
 
 ---
 
@@ -104,7 +104,7 @@ Propagation:
 
 - Step-5 candidate: qualified by addendum Q4;
 - final canonical owner: incorporate directly;
-- no runtime realization edit authorized.
+- runtime realization was deferred at original Step 7 and is later synchronized mechanically by the bounded final-Senior recovery in Section 7.
 
 ### F25-06-05 — Advisory host pressure cannot alone create semantic/gameplay authority
 
@@ -182,29 +182,31 @@ Support/capability/compatibility disposition remains owner-native first-class ev
 | Step-5 candidate specification | QUALIFIED / SUPERSEDED FOR FINAL NORMATIVE USE BY ADDENDUM + STEP-8 OWNER | F25-06-01..06/M1..M3 materially qualify final candidate law |
 | Step-6 adversarial review | FINDING SOURCE / HISTORICAL | findings remain unchanged as review evidence |
 | Step-6 propagation qualification addendum | CURRENT DESIGN REPAIR | explicit post-review repair without rewriting history |
-| Step-7 this ledger | CURRENT RESOLUTION PROVENANCE | item-level closure + propagation accounting |
+| Step-7 this ledger | CURRENT RESOLUTION PROVENANCE | item-level closure + propagation accounting; later final-Senior recovery accounting appended without backdating |
 | Step-8 canonical spec | REQUIRED | incorporates all repaired law as final worker-produced owner |
 | `DEV/CURRENT_PROGRESS.md` | REQUIRED AT STEP 8 | final worker status / next gate |
-| `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | REQUIRED AT STEP 8 | add locator for final WP-25 owner; derivative only |
+| `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | REQUIRED AT STEP 8 | add durable locator for final WP-25 owner; derivative only |
 | `DEV/PROJECT_MAP.md` | REQUIRED AT STEP 8 | add direct concern route so future failure/degradation work discovers final owner |
 | `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | NO SEMANTIC EDIT REQUIRED | sequencing already routes R2.7 through current-progress authority; no new stage/dependency introduced |
-| runtime / schemas / tests | DEFERRED / NO EDIT AUTHORIZED | architecture-only WP; stale realization remains machine debt |
+| runtime / schemas / tests | DEFERRED AT ORIGINAL STEP 7 | architecture-only authorization at original Step 7; bounded final-Senior recovery later authorizes only mechanically implied synchronization described in Section 7 |
+
+The original Step-7 ledger intentionally records what Step 7 required at that time. It is not rewritten to pretend the later final-Senior review was already known.
 
 ---
 
-## 4. Deferred realization/debt after finding closure
+## 4. Deferred realization/debt after original Step-7 finding closure
 
-The following remain explicit machine/verification/empirical obligations, not unresolved Step-7 architecture findings:
+At original Step-7 closure, the following were explicitly deferred machine/verification/empirical obligations rather than unresolved architecture findings:
 
-1. focus-scoped disposition evaluator/adapters are not realized;
-2. no generic WP-25 persisted schema/registry is required;
-3. one-hour durability projections remain stale in `DURABILITY_GUARD.md`, `SESSION.md`, `STORAGE.md`, `test_hourly_durability_contract.py`;
-4. installed maintenance command surface remains unrealized;
-5. DANGER exact calibration/host-risk heuristic behavior remains unselected until appropriate realization/empirical evidence;
-6. integrated failure/cascade/scope-isolation verification remains future implementation work;
-7. `MECHANICS_INTEGRITY.md` pre-acceptance correction wording must not be used to replay already accepted mechanics/RNG.
+1. focus-scoped disposition evaluator/adapters were not realized;
+2. no generic WP-25 persisted schema/registry was required;
+3. fixed one-hour durability projections remained stale in then-known runtime/test consumers;
+4. installed maintenance command surface remained unrealized;
+5. DANGER exact calibration/host-risk heuristic behavior remained unselected until appropriate realization/empirical evidence;
+6. integrated failure/cascade/scope-isolation verification remained future implementation work;
+7. `MECHANICS_INTEGRITY.md` pre-acceptance correction wording was not to be used to replay already accepted mechanics/RNG.
 
-These items do not authorize current implementation work and do not create a Step-7 HOLD.
+These statements describe original Step-7 state. Section 7 records the later bounded synchronization of items specifically identified by final Senior review.
 
 ---
 
@@ -221,13 +223,13 @@ candidate law
 -> deferred machine/test/empirical debt
 ```
 
-No finding requires an upstream semantic owner change, Product Owner decision, versioning-policy reopen, migration/release action or implementation-plan creation.
+No Step-6 finding required an upstream semantic owner change, Product Owner decision, versioning-policy reopen, migration/release action or implementation-plan creation.
 
 Historical provenance is preserved explicitly rather than retroactively rewritten.
 
 ---
 
-## 6. Step-7 result
+## 6. Original Step-7 result
 
 ```text
 STEP7_UNRESOLVED_BLOCKING: 0
@@ -242,4 +244,112 @@ UPSTREAM_OWNER_REOPEN_REQUIRED: NO
 VERSION_IMPACT: NONE
 ```
 
-Step 8 may canonicalize the repaired architecture. No implementation planning or implementation is authorized.
+The `VERSION_IMPACT: NONE` above applies to the original architecture/design-only Step-7 publication. It does not describe the later final-Senior runtime synchronization.
+
+Step 8 was allowed to canonicalize the repaired architecture. No implementation planning or implementation was authorized by original Step 7.
+
+---
+
+## 7. Post-Step-8 final Senior HOLD recovery accounting
+
+Mandatory independent WP-25 final Senior review was performed on `f3c2c978cd150dbc1be510def34d14fe61067c7c` and returned:
+
+```text
+SENIOR_FINAL_VERDICT: HOLD — BOUNDED FINAL-CLOSURE RECOVERY REQUIRED
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 3
+HUMAN_DECISION_REQUIRED_NOW: NO
+CANONICAL_WP25_ARCHITECTURE_REOPEN_REQUIRED: NO
+WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
+IMPLEMENTATION_PLANNING_AUTHORIZED: NO
+WP26_AUTHORIZED: NO
+```
+
+The accepted WP-25 semantic architecture remains unchanged. The following later findings are mechanically synchronized only because final Senior review established that current realization/traceability contradicted already-settled law.
+
+### SR25-FINAL-01 — retired fixed-time durability realization
+
+Worker recovery disposition: **REPAIRED / FINAL SENIOR RE-REVIEW PENDING**.
+
+Concrete current-tree consumer sweep expanded the originally recorded four-file debt. Active/current surfaces synchronized include:
+
+- `GAME/CORE/DURABILITY_GUARD.md`;
+- `GAME/CORE/SESSION.md`;
+- `GAME/CORE/STORAGE.md`;
+- `GAME/CORE/RUNTIME.md`;
+- `GAME/CORE/PERSISTENCE.md`;
+- `GAME/CORE/CAMPAIGN_SETUP.md`;
+- `DEV/RELEASE/CHECKLIST.md`;
+- durability release/regression tests and scenario cases.
+
+The retired exact fixed-time forced/HARD/autosave realization and `durable_frontier_time`-only state are no longer current runtime authority. Current runtime prose consumes only the already-settled `NORMAL / ELEVATED / DANGER` loss-protection trajectory, preserves stronger native HARD edges, preserves clean-state no-heartbeat, defines no exact replacement thresholds/timers/retry counts and does not create a worker/scheduler/automatic retry loop.
+
+Historical design/spec/review occurrences of the retired fixed-time rule remain as provenance or explicit negative/supersession evidence rather than being erased.
+
+### SR25-FINAL-02 — mechanics replay boundary
+
+Worker recovery disposition: **REPAIRED / FINAL SENIOR RE-REVIEW PENDING**.
+
+`GAME/CORE/MECHANICS_INTEGRITY.md` and directly implicated regression contracts now distinguish:
+
+```text
+genuinely mechanically unsupported pre-acceptance narration
+AND no accepted mechanics/RNG consequence ever existed
+    -> honest re-resolution may use fresh legitimate RNG
+
+accepted mechanics/RNG/IDs/consequence already exists
+AND downstream trace/persistence/publication/presentation/Context/recovery evidence degrades
+    -> preserve accepted basis
+    -> NO replay / reroll / reallocation
+```
+
+Loss/corruption/unavailability of a resolution trace alone no longer proves that accepted mechanics never existed.
+
+### SR25-FINAL-03 — routing / traceability
+
+Worker recovery disposition: **REPAIRED / FINAL SENIOR RE-REVIEW PENDING**.
+
+The original Step-7 requirement was correct. Final Senior review rejected Step 8's later `NO EDIT REQUIRED` override. Recovery therefore performs the originally required minimal derivative synchronization:
+
+- `DEV/PROJECT_MAP.md` gains a direct non-normative failure/degradation/FailureDisposition/durability-risk route to the WP-25 canonical owner and applicable native neighbors;
+- `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` gains a compact durable WP-25 locator/invariant and fixed-timer supersession routing;
+- Step 8 and `DEV/CURRENT_PROGRESS.md` record this correction and the final-Senior re-review gate.
+
+`DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` remains unchanged because no stage/dependency/sequence semantics changed.
+
+### Current post-recovery debt map
+
+Still deferred and not authorized by this recovery:
+
+1. generic/focus-scoped `FailureDisposition` evaluator/adapters or exact common machine enum/type representation;
+2. generic persisted failure schema/registry or global health state — still not architecture requirements;
+3. installed maintenance command realization;
+4. exact DANGER/host-risk thresholds, host-capacity estimation and real-target calibration/empirical acceptance;
+5. broader cross-owner failure/cascade/scope-isolation realization beyond the focused synchronization/regressions required by these Senior findings;
+6. WP-26 and implementation planning.
+
+The fixed-time current runtime/test realization and overbroad `MECHANICS_INTEGRITY` replay predicate are no longer carried as unresolved post-recovery debt at worker level; independent final Senior re-review still controls closure.
+
+### Final-recovery Version Impact Gate
+
+Current engine release identity remains `1.0-alpha`. Under Category-B component law, every materially changed version-bearing CORE module increments its component-local revision exactly once and uses current engine prefix `1.0`:
+
+```text
+DURABILITY_GUARD.md      1.0.1 -> 1.0.2
+SESSION.md               0.4.0 -> 1.0.1
+STORAGE.md               0.7.0 -> 1.0.1
+RUNTIME.md               0.8.0 -> 1.0.1
+PERSISTENCE.md           1.0.2 -> 1.0.3
+CAMPAIGN_SETUP.md        0.8.1 -> 1.0.2
+MECHANICS_INTEGRITY.md   0.1.0 -> 1.0.1
+```
+
+```text
+VERSION_IMPACT: CATEGORY_B_MODULE_REVISIONS
+ENGINE_VERSION_BUMP_REQUIRED: NO
+PERSISTENT_SCHEMA_OR_GENERATION_BUMP_REQUIRED: NO
+MIGRATION_OR_RELEASE_EXECUTION_REQUIRED: NO
+VERSIONING_TAXONOMY_REOPENED: NO
+```
+
+No semantic WP-25 architecture, persistent protocol shape, campaign/storage/catalog/ruleset generation or engine release identity is changed by this bounded recovery.

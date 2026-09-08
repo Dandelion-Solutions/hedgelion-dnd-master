@@ -1,6 +1,6 @@
 # Mechanical Integrity Regression Cases
 
-These cases protect the distinction between hidden mechanics and skipped mechanics.
+These cases protect the distinction between hidden mechanics, genuinely skipped pre-acceptance mechanics, and downstream loss/degradation of evidence for mechanics that were already accepted.
 
 ## M01 — mechanics_detail 0 hides output, not rules
 Player preference is `mechanics_detail: 0`.
@@ -35,9 +35,9 @@ Pass: hot working set still tracks participants/order, HP/defenses, conditions/r
 After several hidden-mechanics actions, player says `покажи честные расчёты за последние ходы`.
 Pass: show existing non-secret raw rolls/modifiers/comparisons/state deltas for the requested recent scope. Do not answer that no table exists if those actions were validly resolved.
 
-## M09 — no retrospective fabrication
-Player requests audit and runtime discovers that previous uncertain outcomes had no actual rolls/trace.
-Pass: admit mechanics were skipped; do not manufacture old dice or values. Mark affected sequence invalid and replay/re-resolve from last mechanically valid frontier.
+## M09 — genuine skipped mechanics permit pre-acceptance correction
+Player requests audit and evidence establishes that previous uncertain narration was produced without actual mechanics, no valid accepted mechanics/RNG consequence ever existed, and no downstream evidence merely went missing.
+Pass: admit mechanics were skipped; do not manufacture old dice or values. Mark only the genuinely unsupported affected sequence invalid and replay/re-resolve from the last mechanically valid frontier using real mechanics and fresh legitimate RNG.
 
 ## M10 — cinematic phrase does not grant success
 Player says an evocative action such as `разбегаюсь и выбиваю ему два зуба`.
@@ -63,14 +63,22 @@ Pass: they may be generated in one local RNG operation for latency, while preser
 A roll must remain hidden because revealing it leaks secret state.
 Pass: use actual RNG and trace internally; suppress only disclosure, not resolution.
 
-## M16 — correction does not preserve fake combat
-Several narrated combat beats are discovered to have no mechanical trace.
-Pass: stop propagating them, return to the last mechanically valid frontier, retain only independently established facts, and replay affected actions honestly. If invalid consequences were persisted, perform an explicit repair rather than inventing justification.
+## M16 — correction repairs only canon based on genuinely unsupported mechanics
+Several narrated combat beats are proven never to have had valid accepted mechanics/RNG consequences.
+Pass: stop propagating those unsupported beats, return to the last mechanically valid frontier, retain independently established facts, and replay only the unsupported actions honestly. If unsupported consequences were persisted, explicitly repair only canon derived from those unsupported mechanics.
 
 ## M17 — mechanics gate adds no network ritual
 Normal action has all state/rules locally loaded and uses local RNG.
-Pass: no GitHub read, web lookup or D&D Beyond call merely to satisfy mechanical integrity.
+Pass: no GitHub read or web lookup merely to satisfy mechanical integrity.
 
 ## M18 — persistence stays separate from resolution
 A combat roll changes SOFT singleplayer state but no durability boundary fires.
 Pass: mechanics resolve honestly now; GitHub save may remain deferred under DURABILITY_GUARD. Hidden mechanics and sparse persistence are independent concerns.
+
+## M19 — missing downstream trace does not erase accepted mechanics
+An accepted mechanics/RNG consequence already exists, but its resolution trace is later missing, corrupt or unavailable.
+Pass: missing/corrupt/unavailable downstream trace alone does not invalidate the accepted result. Preserve accepted mechanics, RNG, stable IDs and consequences; recover/diagnose the trace projection under its native owner. NO replay / reroll / reallocation.
+
+## M20 — downstream persistence/presentation/recovery failure cannot rerun accepted action
+Accepted mechanics/RNG/IDs exist, then persistence, publication, presentation, Context, diagnostics or recovery fails.
+Pass: preserve the accepted causal basis and handle the downstream failure separately. NO replay / reroll / reallocation of accepted work merely to regenerate a trace or presentation artifact.
