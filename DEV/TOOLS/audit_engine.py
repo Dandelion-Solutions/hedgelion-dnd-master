@@ -241,7 +241,7 @@ def audit_public_provenance_hygiene() -> None:
         require((REPO_ROOT / rel).is_file(), f"required legal/attribution owner missing: {rel}")
 
     updates = game_text("CORE/ENGINE_UPDATES.md")
-    for marker in ("RUNTIME_PACKAGE.yaml", "source_commit_sha", "package_sha256"):
+    for marker in ("RUNTIME_PACKAGE.yaml", "source_commit_sha", "final ZIP SHA-256"):
         require(marker in updates, f"technical artifact provenance must remain represented in ENGINE_UPDATES: {marker}")
 
 
@@ -409,7 +409,7 @@ def audit_tests() -> None:
     ad = dev_text("TESTS/AI_DM_CRAFT_CASES.md")
     require("PT30" in pt and "Narrow race after commit" in pt and "README guide" in pt, "persistence regressions must cover concurrency + path preservation")
     require("DO14" in do and "Explicit save during onboarding" in do, "diegetic onboarding regression coverage incomplete")
-    require("CI13" in ci and "Card never invents" in ci, "campaign identity regression coverage incomplete")
+    require("CI13" in ci and "Card never invents" in ci, "campaign identity regression must not demand zero writes through adopted identity")
     require("adopted identity" in bs.lower() or "PROVISIONAL_IDENTITY" in bs, "bootstrap regression must not demand zero writes through adopted identity")
     require("EC15" in ec and "maintenance-only" in ec.lower(), "engine consistency cases must protect gameplay/maintenance separation")
     require("GT01" in gt and "GT13" in gt and "GM advice is local" in gt, "GM tone/onboarding regressions must cover human opening and local guidance")
