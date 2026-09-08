@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-25 STEP 1 SENIOR RE-REVIEW HOLD — SECOND BOUNDED RECOVERY COMPLETE AT WORKER LEVEL — INDEPENDENT SENIOR STEP-1 RE-RE-REVIEW REQUIRED
+GLOBAL_STATE: R2.7 WP-25 STEP 1 SENIOR RE-RE-REVIEW GO — STEPS 2–8 AUTHORIZED / IN PROGRESS
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-25 — Error / degradation / failure semantics — second bounded Step-1 recovery for SR25-S1-01 / SR25-S1-03 + Senior maintenance-naming minor complete at worker level / Senior re-re-review pending
+CURRENT_SLICE: WP-25 — Error / degradation / failure semantics — Steps 2–8 architecture cycle authorized after mandatory independent Step-1 Senior GO
 
-LAST_CLOSED_UNIT: WP-25 second bounded Step-1 worker recovery after Senior re-review HOLD
-NEXT_ELIGIBLE_UNIT: mandatory independent WP-25 Step-1 Senior re-re-review
-NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: mandatory independent WP-25 Step-1 Senior re-re-review
+LAST_CLOSED_UNIT: WP-25 mandatory independent Step-1 Senior re-re-review — GO WITH REQUIRED NON-BLOCKING SOURCE-ROLE CORRECTION
+NEXT_ELIGIBLE_UNIT: WP-25 Step 2 research/evidence reconciliation
+NEXT_AUTHORIZED_UNIT: WP-25 STEPS 2–8
+REQUIRED_GATE: mandatory independent WP-25 final Senior review after complete Step 8
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-task-brief-source-manifest.md
-KNOWN_BLOCKERS: SR25-S1-01 AND SR25-S1-03 + SENIOR MINOR REMAIN SENIOR-OPEN UNTIL INDEPENDENT STEP-1 RE-RE-REVIEW; SR25-S1-02 PASS/CLOSED; WORKER RECOVERY HAS 0 UNRESOLVED BLOCKING / 0 UNRESOLVED SIGNIFICANT; WP-25 STEP 2 UNAUTHORIZED
+KNOWN_BLOCKERS: NONE FOR AUTHORIZED WP-25 STEPS 2–8; IMPLEMENTATION PLANNING / IMPLEMENTATION / NEXT WP REMAIN UNAUTHORIZED
 ```
 
 ---
@@ -417,9 +417,9 @@ WP-24 is therefore closed. The previous worker/Senior-HOLD cursor is historical 
 
 ---
 
-## WP-25 Product Owner direction, Senior HOLDs and second bounded Step-1 recovery
+## WP-25 Product Owner direction, Step-1 Senior closure and Steps 2–8 authorization
 
-The Product Owner explicitly authorized WP-25 Step 1 and approved the failure/degradation/durability-risk direction at:
+The Product Owner explicitly authorized WP-25 and approved the failure/degradation/durability-risk direction at:
 
 - `DEV/docs/superpowers/specs/2026-09-08-hdm-wp25-failure-degradation-durability-risk-owner-direction.md`;
 - `DEV/PRODUCT_OWNER_INPUT.md` — `PO-008`.
@@ -581,36 +581,71 @@ ACCEPTED_SEMANTIC_OWNER_CONFLICT_FOUND: NO
 WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
 ```
 
+### Mandatory independent Step-1 Senior re-re-review — GO
+
+Senior re-re-review of exact HEAD `18fcf6efcada8a01c559362494291700ec4b637e` returned:
+
+```text
+SENIOR_RE_RE_REVIEW_VERDICT: GO WITH REQUIRED NON-BLOCKING SOURCE-ROLE CORRECTION
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED_NOW: NO
+
+WP25_STEP2_AUTHORIZED: YES
+WP25_STEPS_2_8_AUTHORIZED: YES
+IMPLEMENTATION_PLANNING_AUTHORIZED: NO
+NEXT_WP_AUTHORIZED: NO
+
+NEXT_MANDATORY_GATE: independent WP-25 final Senior review after complete Step 8
+```
+
+Required non-blocking correction was applied to the current Step-1 Source Manifest before substantive Step 2:
+
+```text
+DEV/docs/superpowers/specs/2026-08-18-runtime-selection-and-storage-baseline-amendment.md
+    = HISTORICAL / PARTIALLY SUPERSEDED DESIGN AMENDMENT / PROVENANCE
+    current only for storage-baseline / three-runtime-identity semantics incorporated by later current owners
+    not current compatibility authority
+
+CURRENT COMPATIBILITY AUTHORITY:
+    DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md
+    + DEV/docs/superpowers/specs/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-canonical-spec.md
+
+source ancestry / same-version equality alone != compatibility proof
+```
+
 Current gate:
 
 ```text
-WP25_STEP1_SECOND_BOUNDED_RECOVERY: COMPLETE AT WORKER LEVEL
-WP25_STEP1_SENIOR_RE_RE_REVIEW: REQUIRED / PENDING
-WP25_STEP2_AUTHORIZED: NO
+WP25_STEP1_SENIOR_RE_RE_REVIEW: PASS / GO WITH REQUIRED NON-BLOCKING SOURCE-ROLE CORRECTION
+WP25_STEP1_SOURCE_ROLE_CORRECTION: COMPLETE
+WP25_STEP2_AUTHORIZED: YES
+WP25_STEPS_2_8_AUTHORIZED: YES
 
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RUNTIME_SCHEMA_TEST_REALIZATION_STARTED: NO
 RELEASE_MIGRATION_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
+NEXT_WP_AUTHORIZED: NO
 
-NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: mandatory independent WP-25 Step-1 Senior re-re-review
+NEXT_AUTHORIZED_UNIT: WP-25 STEPS 2–8
+NEXT_GATE: mandatory independent WP-25 final Senior review after complete Step 8
 ```
 
-Do not begin WP-25 Step 2 or any later architecture/implementation unit until the mandatory independent Step-1 Senior re-re-review returns GO.
+The worker may continue automatically through Steps 2–8 unless a genuine human-owned product/authority/risk decision appears. There is no routine Senior stop between Steps 2 and 8.
 
 ---
 
 ## Version Impact
 
 ```text
-VERSION_IMPACT: VERIFIED FOR WP-25 STEP-1 SECOND BOUNDED RECOVERY DESIGN/STATUS PUBLICATION
+VERSION_IMPACT: VERIFIED FOR WP-25 STEP-1 POST-SENIOR SOURCE-ROLE/STATUS CORRECTION
 VERSION_BUMP_REQUIRED: NO
 VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-The WP-25 second bounded recovery changes design provenance and global progress routing only. It does not modify a version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime implementation.
+This pre-Step-2 checkpoint changes design source-role provenance and global progress routing only. It does not modify a version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime implementation.
 
-Current next gate: **mandatory independent WP-25 Step-1 Senior re-re-review**.
+Current next gate: **mandatory independent WP-25 final Senior review after complete Step 8**.
