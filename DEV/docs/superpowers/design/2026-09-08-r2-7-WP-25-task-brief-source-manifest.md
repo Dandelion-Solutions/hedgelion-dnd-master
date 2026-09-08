@@ -1,18 +1,19 @@
 # R2.7 WP-25 Step 1 — Error / Degradation / Failure Semantics — Architecture Task Brief + Source Manifest
 
-Status: **SECOND BOUNDED STEP-1 RECOVERY COMPLETE AT WORKER LEVEL — PENDING MANDATORY INDEPENDENT SENIOR STEP-1 RE-RE-REVIEW**
+Status: **SECOND BOUNDED STEP-1 RECOVERY COMPLETE AT WORKER LEVEL — MANDATORY INDEPENDENT SENIOR STEP-1 RE-RE-REVIEW GO / STEPS 2–8 AUTHORIZED**
 
 Date: 2026-09-08
 
 Senior re-review baseline: `865b4b16cfcca4f27104eaeb3eb13e72de87b750`
+Senior re-re-review baseline: `18fcf6efcada8a01c559362494291700ec4b637e`
 
-This artifact is design-process provenance for **R2.7 WP-25 Step 1 only**. It is not a canonical WP-25 specification, does not authorize Step 2, and does not replace any native failure, ruleset identity, catalog/admission, readiness, storage, persistence, recovery, maintenance, compatibility, multiplayer, disclosure, Story or verification owner.
+This artifact is design-process provenance for **R2.7 WP-25 Step 1 only**. It is not a canonical WP-25 specification and does not replace any native failure, ruleset identity, catalog/admission, readiness, storage, persistence, recovery, maintenance, compatibility, multiplayer, disclosure, Story or verification owner.
 
-The mandatory independent Senior Step-1 re-review of the first bounded-recovery checkpoint returned **HOLD — second bounded Step-1 recovery required** with 0 BLOCKING, 2 SIGNIFICANT and 1 MINOR unresolved findings. This revision performs only the requested evidence/source-manifest/framing recovery, reruns the whole-project Step-1 critic on the full dependency graph, and stops for independent Senior re-re-review.
+The mandatory independent Senior Step-1 re-review of the first bounded-recovery checkpoint returned **HOLD — second bounded Step-1 recovery required** with 0 BLOCKING, 2 SIGNIFICANT and 1 MINOR unresolved findings. The second recovery below performed only the requested evidence/source-manifest/framing recovery and reran the whole-project Step-1 critic. Mandatory independent Senior Step-1 re-re-review of `18fcf6efcada8a01c559362494291700ec4b637e` subsequently returned **GO WITH REQUIRED NON-BLOCKING SOURCE-ROLE CORRECTION**, with 0 unresolved BLOCKING/SIGNIFICANT findings and WP-25 Steps 2–8 authorized. The source-role correction is incorporated in this artifact without rewriting historical Step-1 analysis as though the later review result had been known earlier.
 
 ## 1. Authorization and hard stop
 
-Authorized work is limited to:
+Historical second-recovery work was limited to:
 
 ```text
 WP-25 Step 1 second bounded recovery
@@ -26,10 +27,19 @@ WP-25 Step 1 second bounded recovery
     -> STOP for mandatory independent Senior Step-1 re-re-review
 ```
 
-Not authorized:
+Current post-review authorization is now:
 
 ```text
-Step 2 or Steps 2–8
+WP25_STEP2_AUTHORIZED: YES
+WP25_STEPS_2_8_AUTHORIZED: YES
+IMPLEMENTATION_PLANNING_AUTHORIZED: NO
+NEXT_WP_AUTHORIZED: NO
+NEXT_MANDATORY_GATE: independent WP-25 final Senior review after complete Step 8
+```
+
+Still not authorized:
+
+```text
 implementation planning
 substantive implementation
 runtime/schema/test realization
@@ -124,8 +134,7 @@ Step 1 does not:
 - create generic retry counts, schedulers, queues, heartbeats or workers;
 - implement or repair runtime/schema/test realization;
 - implement the proposed maintenance command surface;
-- perform migration/release/runtime execution;
-- start Step 2.
+- perform migration/release/runtime execution.
 
 ## 6. Existing invariants carried into WP-25
 
@@ -279,7 +288,7 @@ ruleset package/set load/reconstruction failure
 
 Accepted Resolution/Continuation state pins `ruleset_set_digest_generation`, `ruleset_set_sha256`, `catalog_context_fingerprint_generation` and `catalog_context_fingerprint`. If accepted work's exact typed ruleset-set identity cannot be reconstructed, the current owner requires a **finite compatibility/prerequisite failure**. It forbids fuzzy substitution, current-package reinterpretation, mixed partial context and hidden migration.
 
-Compatibility/migration remains separately owned: package revision/order is not compatibility; same compatibility generation is only eligibility for semantic proof; different generation/incompatible/diverged/ambiguous evidence routes through explicit adoption/migration/unsupported owners.
+Compatibility/migration remains separately owned: package revision/order is not compatibility; same compatibility generation is only eligibility for semantic proof; different generation/incompatible/diverged/ambiguous evidence routes through explicit adoption/migration/unsupported owners. Source ancestry, same-version equality or version labels are never standalone compatibility proof.
 
 ## 10. Deterministic execution / House Rules distinctions retained
 
@@ -381,7 +390,7 @@ current_runtime_root
 
 Only the authenticated storage owner may persist storage baseline changes. Singleplayer gameplay writes remain creator-authorized; multiplayer gameplay publication remains under its own PLAYER/LIVE authority; campaign engine adoption remains creator-authorized. Repository permission alone is insufficient application authority.
 
-Storage baseline/current campaign identity semantics are also projected by the current runtime-selection/storage-baseline amendment, `BOOTSTRAP_RUNTIME.md`, `ENGINE_UPDATES.md`, `dnd_storage.schema.yaml`, campaign manifest/runtime identity schemas and executable tests.
+Storage-baseline and three-runtime-identity semantics are current only where incorporated by later current owners such as `STORAGE.md`, `BOOTSTRAP_RUNTIME.md`, `ENGINE_UPDATES.md`, `dnd_storage.schema.yaml`, campaign manifest/runtime identity schemas and executable tests. `DEV/docs/superpowers/specs/2026-08-18-runtime-selection-and-storage-baseline-amendment.md` is retained as **HISTORICAL / PARTIALLY SUPERSEDED DESIGN AMENDMENT / PROVENANCE**. Its older same-version runtime-refresh and ancestry/equality compatibility assumptions are not current compatibility authority after the 2026-09-05 versioning policy and final WP-20.
 
 ### 12.2 Bootstrap/save-exit semantics retained
 
@@ -481,7 +490,7 @@ Inspection vocabulary:
 | `DEV/ARCHITECTURE/DESIGN_PROCESS.md` | HDM process adapter | whole-project critic + Senior stop | FULL |
 | `DEV/ARCHITECTURE/PRODUCT_OWNER_INPUT_PROCESS.md` | PO-input process | PO direction vs semantic ownership | FULL |
 | `DEV/PROJECT_MAP.md` | dependency locator | full open-world graph reconstruction | FULL |
-| `DEV/CURRENT_PROGRESS.md` | global status authority | second Senior HOLD/recovery gate | FULL |
+| `DEV/CURRENT_PROGRESS.md` | global status authority | second Senior HOLD/recovery gate + post-review GO routing | FULL |
 | `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` | sequencing | WP-25 placement | TARGETED |
 | `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | derivative owner locator | routing only | TARGETED |
 | `DEV/RELEASE/VERSIONING.md` | version-impact projection | Step-1 docs/status => no bump | FULL |
@@ -579,7 +588,7 @@ Inspection vocabulary:
 | `DEV/TOOLS/validate_character_mvp_seed.py` | machine conformance tool | package compiler vs readiness evaluator | TARGETED |
 | `DEV/TESTS/test_s6d_07_character_mvp_seed.py` | executable consumer | exact blockers, provisional play, stale identity, package closure | FULL MATERIAL TESTS |
 | `GAME/CORE/STORAGE.md` | **current storage/bootstrap persistence owner** | baseline/current runtime/authority separation; stale timer debt | FULL |
-| runtime-selection/storage-baseline amendment | current amendment | NEW-only baseline + three identity layers | FULL |
+| `DEV/docs/superpowers/specs/2026-08-18-runtime-selection-and-storage-baseline-amendment.md` | **HISTORICAL / PARTIALLY SUPERSEDED DESIGN AMENDMENT / PROVENANCE** | current only for storage-baseline / three-runtime-identity semantic portions incorporated by later current owners; **not current compatibility authority** | FULL / CURRENT PORTIONS RECONCILED |
 | `GAME/SCHEMA/dnd_storage.schema.yaml` | persistent schema | NEW-only baseline/storage-owner writes | FULL |
 | `DEV/TESTS/test_runtime_identity_schema.py` | executable consumer | storage baseline schema + campaign current identity | FULL |
 | `DEV/TESTS/test_engine_update_policy_contract.py` | executable consumer | baseline/campaign authority independence | FULL |
@@ -592,6 +601,7 @@ Inspection vocabulary:
 
 | Source | Role | Relevance | Inspection |
 |---|---|---|---|
+| `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md` | current canonical compatibility/versioning owner | compatibility identity axes; ancestry/equality are not standalone compatibility proof | FULL |
 | WP-20 engine update/schema evolution/migration spec | canonical owner | compatibility/migration/currentness | FULL |
 | `GAME/CORE/ENGINE_UPDATES.md` | runtime consumer | exact campaign runtime/mismatch recovery | FULL |
 | WP-23 package/version/release readiness spec | canonical owner | exact package/provenance/proof | FULL |
@@ -612,22 +622,23 @@ Inspection vocabulary:
 ## 16. Source-role reconciliation / current-owner rules
 
 1. `RULESET_PACKAGE_IDENTITY.md` owns package/set identity semantics; machine closure realizes them and cannot replace the owner.
-2. The 2026-09-05 versioning policy amends representation/version namespaces but preserves exact identity/content-addressing semantics.
-3. The closed 11 load/reconstruction reasons remain native machine reason evidence even when surfaced through `failure.catalog_context_incompatible`.
-4. WP-20 compatibility/migration outcomes are downstream/orthogonal to successful exact-set reconstruction and must not be collapsed into loader failure reasons.
-5. Accepted Resolution/Continuation exact ruleset identity is fixed causal evidence; finite recovery failure is required if it cannot be reconstructed.
-6. `CHARACTER_PROGRESSION_READY_PC_SEED.md` + `CHARACTER_READINESS.md` own progressive readiness distinctions; local dependency blocking does not imply global campaign failure.
-7. `STORAGE.md` owns storage topology/baseline/current working-set semantics while `PERSISTENCE.md` owns write transport/transactions.
-8. Storage baseline is NEW-only and storage-owner-controlled; existing campaigns use `MANIFEST.engine.current` under campaign authority.
-9. `STORAGE.md` one-hour wording joins `DURABILITY_GUARD.md`, `SESSION.md` and the hourly test as stale realization debt under Step-5.5/WP-13/WP-25.
-10. `MAINTENANCE_COMMANDS.md` labels are semantic outcomes/categories; future machine enum spelling remains open. `SR25-S1-02` remains closed.
-11. Product Owner WP-25 direction constrains composition but does not replace native owners.
-12. WP-16/live, access/disclosure, Story/diagnostics and proof-strength owners retain their prior precedence.
-13. Stale/incomplete/unrealized realization is not automatically architecture conflict.
+2. The 2026-09-05 versioning policy amends representation/version namespaces but preserves exact identity/content-addressing semantics and is current compatibility authority together with final WP-20 where update/migration semantics apply.
+3. The 2026-08-18 runtime-selection/storage-baseline amendment is **HISTORICAL / PARTIALLY SUPERSEDED DESIGN AMENDMENT / PROVENANCE**. Only its storage-baseline / three-runtime-identity portions that are incorporated by later current owners remain applicable. Its same-version refresh, ancestry and equality assumptions do not independently prove compatibility.
+4. The closed 11 load/reconstruction reasons remain native machine reason evidence even when surfaced through `failure.catalog_context_incompatible`.
+5. WP-20 compatibility/migration outcomes are downstream/orthogonal to successful exact-set reconstruction and must not be collapsed into loader failure reasons.
+6. Accepted Resolution/Continuation exact ruleset identity is fixed causal evidence; finite recovery failure is required if it cannot be reconstructed.
+7. `CHARACTER_PROGRESSION_READY_PC_SEED.md` + `CHARACTER_READINESS.md` own progressive readiness distinctions; local dependency blocking does not imply global campaign failure.
+8. `STORAGE.md` owns storage topology/baseline/current working-set semantics while `PERSISTENCE.md` owns write transport/transactions.
+9. Storage baseline is NEW-only and storage-owner-controlled; existing campaigns use `MANIFEST.engine.current` under campaign authority.
+10. `STORAGE.md` one-hour wording joins `DURABILITY_GUARD.md`, `SESSION.md` and the hourly test as stale realization debt under Step-5.5/WP-13/WP-25.
+11. `MAINTENANCE_COMMANDS.md` labels are semantic outcomes/categories; future machine enum spelling remains open. `SR25-S1-02` remains closed.
+12. Product Owner WP-25 direction constrains composition but does not replace native owners.
+13. WP-16/live, access/disclosure, Story/diagnostics and proof-strength owners retain their prior precedence.
+14. Stale/incomplete/unrealized realization is not automatically architecture conflict.
 
 ## 17. Step-2 research questions prepared by Step 1
 
-If and only if mandatory Senior Step-1 re-re-review later gives GO, later Step 2 must answer with evidence:
+Mandatory Senior Step-1 re-re-review has now given GO. Step 2 must answer with evidence, without limiting itself to this prepared list:
 
 1. What minimal ephemeral cross-owner disposition composes native outcomes without becoming a second authority?
 2. Which inputs derive `S0..S4` contextually and which remain owner-specific?
@@ -698,11 +709,13 @@ Reopen/revise only if evidence shows, for example:
 
 Implementation inconvenience, dormant/unrealized capability and stale projections alone are not reopen evidence.
 
-## 20. Step-1 second-recovery handoff
+## 20. Step-1 second-recovery handoff and final Senior gate result
+
+Historical second-recovery handoff at `18fcf6efcada8a01c559362494291700ec4b637e` was:
 
 ```text
 WP25_STEP1_SENIOR_RE_REVIEW_PREVIOUS_RESULT: HOLD — SECOND BOUNDED STEP-1 RECOVERY REQUIRED
-WP25_STEP1_SECOND_BOUNDED_RECOVERY: COMPLETE AT WORKER LEVEL / PUBLISHED WHEN THIS PACKAGE IS COMMITTED
+WP25_STEP1_SECOND_BOUNDED_RECOVERY: COMPLETE AT WORKER LEVEL
 WP25_STEP1_SENIOR_RE_RE_REVIEW: REQUIRED / PENDING
 WP25_STEP2_AUTHORIZED: NO
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
@@ -713,7 +726,22 @@ NEXT_AUTHORIZED_UNIT: NONE
 NEXT_GATE: mandatory independent WP-25 Step-1 Senior re-re-review
 ```
 
-No Step 2 authority is implied.
+Mandatory independent Senior Step-1 re-re-review of that exact checkpoint returned:
+
+```text
+SENIOR_RE_RE_REVIEW_VERDICT: GO WITH REQUIRED NON-BLOCKING SOURCE-ROLE CORRECTION
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED_NOW: NO
+WP25_STEP2_AUTHORIZED: YES
+WP25_STEPS_2_8_AUTHORIZED: YES
+IMPLEMENTATION_PLANNING_AUTHORIZED: NO
+NEXT_WP_AUTHORIZED: NO
+NEXT_MANDATORY_GATE: independent WP-25 final Senior review after complete Step 8
+SOURCE_ROLE_CORRECTION: APPLIED IN §12.1 / §15.8 / §15.9 / §16
+```
+
+No additional Step-1 Senior stop is required.
 
 ## 21. Version Impact
 
@@ -721,4 +749,4 @@ No Step 2 authority is implied.
 VERSION_IMPACT: NONE
 ```
 
-This second bounded recovery changes Step-1 design provenance and current-progress routing only. It does not modify any version-bearing runtime module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime realization.
+This non-blocking source-role correction changes design provenance/source authority classification only. It does not modify any version-bearing runtime module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime realization.
