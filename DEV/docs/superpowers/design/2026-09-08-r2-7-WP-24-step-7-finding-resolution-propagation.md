@@ -1,6 +1,6 @@
 # R2.7 WP-24 Step 7 — Finding Resolution / Propagation
 
-Status: **STEP 7 COMPLETE — ALL BLOCKING/SIGNIFICANT STEP-6 FINDINGS RESOLVED**
+Status: **STEP 7 COMPLETE — ALL BLOCKING/SIGNIFICANT STEP-6 FINDINGS RESOLVED — SR24-FINAL-01 PROPAGATION LEDGER REPAIRED / FINAL SENIOR RE-REVIEW PENDING**
 
 Date: 2026-09-08
 
@@ -22,6 +22,8 @@ HUMAN_DECISION_REQUIRED: NO
 This step resolves and propagates every finding into the final canonicalization contract. It does not authorize implementation planning, implementation, optimization implementation, release, migration or gameplay bootstrap.
 
 The Step-5 candidate remains design provenance. Where Step-7 repairs differ from Step-5 wording, the Step-8 canonical result must incorporate the repairs and will control after final Senior acceptance.
+
+Post-Step-8 Senior review returned `SR24-FINAL-01: SIGNIFICANT / OPEN` solely because the mandatory per-finding affected-artifact accounting was incomplete. Senior accepted the canonical semantics of `F24-06-01..05`; this targeted repair adds the required propagation ledger and historical self-identification without changing canonical WP-24 semantics.
 
 ---
 
@@ -295,7 +297,7 @@ new global cursor/frontier/scheduler: NONE
 
 ---
 
-## 8. Finding propagation table
+## 8. Finding propagation summary
 
 | Finding | Final canonical propagation | Verification/defer propagation | Result |
 |---|---|---|---|
@@ -306,6 +308,129 @@ new global cursor/frontier/scheduler: NONE
 | F24-06-05 | bounded recovery/temporal rebuild path | B/C recovery + owner tests | RESOLVED |
 | F24-06-M1 | no current change | dormant package-count trigger | SAFE DEFERRED |
 | F24-06-M2 | no current change | future Class-B scaffold benchmark | SAFE DEFERRED |
+
+### 8.1 Mandatory per-finding affected-artifact ledger — SR24-FINAL-01 repair
+
+Disposition vocabulary is exactly:
+
+```text
+UPDATED
+EXPLICITLY SUPERSEDED
+SAFE HISTORICAL
+NOT APPLICABLE
+```
+
+`SAFE HISTORICAL` means the artifact remains valid as dated process/provenance evidence but is not the current final owner for the repaired statement. `EXPLICITLY SUPERSEDED` means the artifact now carries an in-file qualification routing readers to Step 6, Step 7 and the canonical result. `UPDATED` may refer either to the original Step-7/8 canonical propagation or to this targeted `SR24-FINAL-01` traceability/status repair; it does not imply a new semantic law.
+
+#### F24-06-01 — campaign-menu discovery cardinality
+
+Current final owner: canonical `LAW WP24-11` (bounded campaign discovery), with retained-ref interaction in `LAW WP24-36` and proof obligations in canonical §20.
+
+| Affected artifact/surface | Disposition | Accounting / current final owner |
+|---|---|---|
+| Step-1 Task Brief / Source Manifest | SAFE HISTORICAL | Framed discovery/file/ref growth as an audit horizon but did not own the later menu-cardinality repair. Current final owner: canonical `LAW WP24-11` / `LAW WP24-36`. |
+| Step 2 evidence reconciliation | EXPLICITLY SUPERSEDED | Historical reconciliation lacked the explicit bounded preselection/menu operation law; self-identifying qualification now routes to `F24-06-01`, Step 7 and canonical. Current final owner: `LAW WP24-11`. |
+| Step 3 Decision Brief | SAFE HISTORICAL | Alternative-B decision remains valid; its path inventory was pre-adversarial and did not finalize campaign-menu cardinality. Current final owner: `LAW WP24-11`. |
+| Step 4 cross-system review | SAFE HISTORICAL | Dated owner-reconciliation provenance; no final menu-cardinality law was claimed. Current final owner: `LAW WP24-11`. |
+| Step 5 candidate | EXPLICITLY SUPERSEDED | Candidate omitted the explicit bounded campaign-menu/preselection law; in-file qualification now marks `F24-06-01..05` as later material qualifications. Current final owner: `LAW WP24-11`. |
+| Step 6 critic | SAFE HISTORICAL | This is the originating adversarial finding record and intentionally preserves the defect as found. Current final owner after resolution: `LAW WP24-11` / `LAW WP24-36`. |
+| Step 8 checkpoint | UPDATED | Step 8 already records bounded campaign-menu discovery among canonical additions and is updated again for the completed propagation ledger. Current final owner: canonical `LAW WP24-11`. |
+| Canonical WP-24 spec | UPDATED | Already contains the accepted semantic repair; no semantic edit required by `SR24-FINAL-01`. Current final owner: `LAW WP24-11`, plus `LAW WP24-36`. |
+| `DEV/CURRENT_PROGRESS.md` | UPDATED | Current status records the accepted Step-6/7 repair and now the final-Senior propagation repair/re-review gate. Normative owner remains canonical `LAW WP24-11`. |
+| `DEV/PROJECT_MAP.md` / roadmap | NOT APPLICABLE | No discovery route, stage sequence or dependency changed. Project Map already routes relevant Story/scale research to WP-24 results; roadmap has no WP-24 semantic claim to repair. Current final owner: canonical `LAW WP24-11`. |
+| Deferred obligations | UPDATED | Canonical §20 preserves deterministic bounded menu-discovery verification, Class-B card/call fan-out, and Class-C new-chat/menu responsiveness. Current final owner: canonical §20 under `LAW WP24-11`. |
+
+#### F24-06-02 — 10 KiB hard-cap activation semantics
+
+Current final owner: canonical `LAW WP24-13` (hard mandatory representation trigger), reinforced by `LAW WP24-32`; proof obligations are in canonical §20.
+
+| Affected artifact/surface | Disposition | Accounting / current final owner |
+|---|---|---|
+| Step-1 Task Brief / Source Manifest | SAFE HISTORICAL | Correctly carried the 10 KiB per-file owner law and partitionability horizon but did not own the later hard-trigger synthesis. Current final owner: canonical `LAW WP24-13`. |
+| Step 2 evidence reconciliation | EXPLICITLY SUPERSEDED | Historical text treated safe partitioning/activation too generally and did not state the decisive hard-publication trigger as the final integration rule. Qualification now routes forward. Current final owner: `LAW WP24-13` / `LAW WP24-32`. |
+| Step 3 Decision Brief | SAFE HISTORICAL | Alternative B and the 10 KiB hard constraint remain valid; pre-adversarial optimization wording is not the final trigger law. Current final owner: `LAW WP24-13`. |
+| Step 4 cross-system review | SAFE HISTORICAL | Correctly preserved the hard file cap/exactness boundary but did not finalize the later mandatory-activation distinction. Current final owner: `LAW WP24-13`. |
+| Step 5 candidate | EXPLICITLY SUPERSEDED | Candidate `LAW WP24-23/25` was materially qualified because “evidence-driven activation” cannot delay representation change past the hard cap. Qualification now says so. Current final owner: canonical `LAW WP24-13` / `LAW WP24-32`. |
+| Step 6 critic | SAFE HISTORICAL | Originating finding record; intentionally preserves why candidate wording was insufficient. Current final owner after resolution: `LAW WP24-13`. |
+| Step 8 checkpoint | UPDATED | Already records “10 KiB hard-cap mandatory representation activation” and now records ledger completion. Current final owner: `LAW WP24-13`. |
+| Canonical WP-24 spec | UPDATED | Already contains accepted hard-trigger semantics; unchanged by this traceability repair. Current final owner: `LAW WP24-13`, with `LAW WP24-32`. |
+| `DEV/CURRENT_PROGRESS.md` | UPDATED | Records the accepted hard-trigger repair and final-Senior propagation state. Normative owner remains canonical `LAW WP24-13`. |
+| `DEV/PROJECT_MAP.md` / roadmap | NOT APPLICABLE | No owner-routing or sequencing change. Existing mutable-artifact/Story operability routes remain sufficient. Current final owner: canonical `LAW WP24-13`. |
+| Deferred obligations | UPDATED | Canonical §20.1 retains deterministic 10,240-byte prepublication verification; Class-B/Class-C effects remain claim-specific. Current final owner: canonical §20 under `LAW WP24-13`. |
+
+#### F24-06-03 — Story opportunity detection over growing origin/domain fan-out
+
+Current final owner: canonical `LAW WP24-26`, in the context of `LAW WP24-25/27`; future verification/benchmark/empirical obligations are in canonical §20.
+
+| Affected artifact/surface | Disposition | Accounting / current final owner |
+|---|---|---|
+| Step-1 Task Brief / Source Manifest | SAFE HISTORICAL | Correctly required Story fan-out/backlog/catch-up analysis but did not own the later per-envelope bounded source-domain nomination law. Current final owner: canonical `LAW WP24-26`. |
+| Step 2 evidence reconciliation | EXPLICITLY SUPERSEDED | Historical Step-2 said the opportunity decision is compact/bounded but did not close growth across all historical origin/domain/lane fan-out. Qualification now routes to the later finding/resolution. Current final owner: `LAW WP24-26`. |
+| Step 3 Decision Brief | SAFE HISTORICAL | P7/P8 decision classification remains valid but predates the explicit bounded-domain nomination/`UNKNOWN-DEFER` repair. Current final owner: `LAW WP24-26`. |
+| Step 4 cross-system review | SAFE HISTORICAL | Correctly distinguished opportunity from catch-up and preserved fan-out geometry; later critic added the missing scaling law. Current final owner: `LAW WP24-26`. |
+| Step 5 candidate | EXPLICITLY SUPERSEDED | Candidate bounded the opportunity decision but not explicitly against exhaustively walking all historical source domains/origins/lanes. Qualification now routes forward. Current final owner: `LAW WP24-26`. |
+| Step 6 critic | SAFE HISTORICAL | Originating finding record; intentionally shows the missing fan-out guarantee. Current final owner after resolution: `LAW WP24-26`. |
+| Step 8 checkpoint | UPDATED | Already records bounded Story service-opportunity work across growing origin/domain fan-out and is updated for ledger completion. Current final owner: `LAW WP24-26`. |
+| Canonical WP-24 spec | UPDATED | Already contains accepted bounded nomination + `UNKNOWN/DEFER` repair; no semantic edit required now. Current final owner: `LAW WP24-26`. |
+| `DEV/CURRENT_PROGRESS.md` | UPDATED | Records the accepted Story fan-out repair and current Senior propagation gate. Normative owner remains canonical `LAW WP24-26`. |
+| `DEV/PROJECT_MAP.md` / roadmap | NOT APPLICABLE | Project Map already routes Story persistence/operability to baseline source/growth owners and WP-24 results; roadmap sequence is unchanged. Current final owner: canonical `LAW WP24-26`. |
+| Deferred obligations | UPDATED | Canonical §20 preserves bounded opportunity verification, Class-B source-domain fan-out/catch-up measurement and Class-C anti-starvation behavior. Current final owner: canonical §20 under `LAW WP24-26`. |
+
+#### F24-06-04 — long-stale changed-path synchronization
+
+Current final owner: canonical `LAW WP24-18`; future verification/measurement obligations are in canonical §20.
+
+| Affected artifact/surface | Disposition | Accounting / current final owner |
+|---|---|---|
+| Step-1 Task Brief / Source Manifest | SAFE HISTORICAL | Framed publication/currentness/conflict amplification but did not own the later stale-interval fallback. Current final owner: canonical `LAW WP24-18`. |
+| Step 2 evidence reconciliation | EXPLICITLY SUPERSEDED | Historical reconciliation covered conflict/currentness amplification without the explicit bounded direct-current-footprint fallback for oversized/unavailable compare. Qualification now routes forward. Current final owner: `LAW WP24-18`. |
+| Step 3 Decision Brief | SAFE HISTORICAL | Alternative-B durability/currentness decision remains valid; exact stale-base fallback was not yet synthesized. Current final owner: `LAW WP24-18`. |
+| Step 4 cross-system review | SAFE HISTORICAL | Correctly preserved WP-13 currentness and bounded failure but did not finalize stale-interval compare fallback. Current final owner: `LAW WP24-18`. |
+| Step 5 candidate | EXPLICITLY SUPERSEDED | Candidate measured conflict amplification but omitted the explicit bounded stale-base compare/direct-footprint fallback. Qualification now routes forward. Current final owner: `LAW WP24-18`. |
+| Step 6 critic | SAFE HISTORICAL | Originating finding record; intentionally preserves the missing fallback defect. Current final owner after resolution: `LAW WP24-18`. |
+| Step 8 checkpoint | UPDATED | Already records bounded stale-base changed-path fallback to direct current-footprint revalidation and is updated for ledger completion. Current final owner: `LAW WP24-18`. |
+| Canonical WP-24 spec | UPDATED | Already contains the accepted fallback semantics; unchanged by this traceability repair. Current final owner: `LAW WP24-18`. |
+| `DEV/CURRENT_PROGRESS.md` | UPDATED | Records the accepted stale-base repair and final-Senior propagation status. Normative owner remains canonical `LAW WP24-18`. |
+| `DEV/PROJECT_MAP.md` / roadmap | NOT APPLICABLE | No routing, owner location, sequence or dependency changed. Current final owner: canonical `LAW WP24-18`. |
+| Deferred obligations | UPDATED | Canonical §20 preserves bounded compare/direct-footprint verification and Class-B stale-base fallback/contention measurement. Current final owner: canonical §20 under `LAW WP24-18`. |
+
+#### F24-06-05 — recovery / checkpoint / chronology special path
+
+Current final owner: canonical `LAW WP24-22..24`; future verification/measurement obligations are in canonical §20.
+
+| Affected artifact/surface | Disposition | Accounting / current final owner |
+|---|---|---|
+| Step-1 Task Brief / Source Manifest | SAFE HISTORICAL | Step 1 included recovery/chronology owners in the audit horizon but did not own the later explicit workload-path synthesis. Current final owner: canonical `LAW WP24-22..24`. |
+| Step 2 evidence reconciliation | EXPLICITLY SUPERSEDED | Historical workload reconciliation omitted recovery/checkpoint/chronology as a distinct explicit path. Qualification now routes to `F24-06-05`, Step 7 and canonical. Current final owner: `LAW WP24-22..24`. |
+| Step 3 Decision Brief | SAFE HISTORICAL | Selected Alternative B remains valid; its P1–P10 path list was pre-adversarial and did not include the final recovery path. Current final owner: `LAW WP24-22..24`. |
+| Step 4 cross-system review | SAFE HISTORICAL | Dated cross-system review did not separately close recovery/checkpoint/chronology scale; Step 6 subsequently exposed that omission. Current final owner: `LAW WP24-22..24`. |
+| Step 5 candidate | EXPLICITLY SUPERSEDED | Candidate omitted explicit recovery/checkpoint/chronology scale laws; in-file qualification now marks the later material repair. Current final owner: `LAW WP24-22..24`. |
+| Step 6 critic | SAFE HISTORICAL | Originating finding record and owner reconstruction; intentionally preserved as adversarial provenance. Current final owner after resolution: `LAW WP24-22..24`. |
+| Step 8 checkpoint | UPDATED | Already records the bounded recovery/checkpoint/chronology special path and is updated for propagation-ledger completion. Current final owner: `LAW WP24-22..24`. |
+| Canonical WP-24 spec | UPDATED | Already contains the accepted recovery/checkpoint/chronology repair; no semantic edit required now. Current final owner: `LAW WP24-22..24`. |
+| `DEV/CURRENT_PROGRESS.md` | UPDATED | Records the accepted recovery-path repair and current final-Senior propagation gate. Normative owner remains canonical `LAW WP24-22..24`. |
+| `DEV/PROJECT_MAP.md` / roadmap | NOT APPLICABLE | Project Map already exposes persistence/recovery and chronology owner routes; no sequence/dependency claim changed. Current final owner: canonical `LAW WP24-22..24`. |
+| Deferred obligations | UPDATED | Canonical §20 preserves bounded current-source recovery/root hydration, temporal enrollment/Agenda verification, Class-B recovery cardinality/latency and Class-C recovery experience. Current final owner: canonical §20 under `LAW WP24-22..24`. |
+
+### 8.2 Ledger completion result
+
+```text
+SR24-FINAL-01_WORKER_REPAIR: COMPLETE
+PER_FINDING_AFFECTED_ARTIFACT_LEDGER: COMPLETE
+STEP2_SELF_IDENTIFYING_QUALIFICATION: ADDED
+STEP5_SELF_IDENTIFYING_QUALIFICATION: ADDED
+STEP1: SAFE HISTORICAL / NO EDIT REQUIRED
+STEP3: SAFE HISTORICAL / NO EDIT REQUIRED
+STEP4: SAFE HISTORICAL / NO EDIT REQUIRED
+STEP6: SAFE HISTORICAL FINDING SOURCE / NO EDIT REQUIRED
+PROJECT_MAP_ROADMAP_CHANGE_REQUIRED: NO
+CANONICAL_SEMANTIC_MISMATCH_FOUND: NO
+CANONICAL_SEMANTIC_CHANGE_REQUIRED: NO
+NEW_BLOCKING_FOUND_BY_PROPAGATION_AUDIT: 0
+NEW_SIGNIFICANT_FOUND_BY_PROPAGATION_AUDIT: 0
+```
+
+The five semantic repairs remain exactly those already accepted in the canonical WP-24 specification. This ledger closes worker-side propagation accounting only; it does not self-declare `SR24-FINAL-01` Senior-closed.
 
 ---
 
@@ -331,4 +456,9 @@ NEW_NUMERIC_SLA_SELECTED: NO
 STEP8_CANONICALIZATION_ELIGIBLE: YES
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 SUBSTANTIVE_IMPLEMENTATION_AUTHORIZED: NO
+
+SR24_FINAL_01_DISPOSITION: REPAIR APPLIED / PENDING INDEPENDENT FINAL SENIOR RE-REVIEW
+PROPAGATION_LEDGER_STATUS: COMPLETE
+CANONICAL_SEMANTIC_CHANGE: NO
+NEXT_AUTHORIZED_UNIT: NONE
 ```
