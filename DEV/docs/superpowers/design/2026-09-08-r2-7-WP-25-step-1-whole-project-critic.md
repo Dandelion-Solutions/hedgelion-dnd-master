@@ -1,121 +1,137 @@
 # R2.7 WP-25 Step 1 — Mandatory Whole-Project Task-Brief Critic
 
-Status: **BOUNDED RECOVERY RERUN COMPLETE — SR25-S1-01..03 WORKER-REPAIRED / PENDING INDEPENDENT SENIOR STEP-1 RE-REVIEW**
+Status: **SECOND BOUNDED RECOVERY RERUN COMPLETE — PENDING MANDATORY INDEPENDENT SENIOR STEP-1 RE-RE-REVIEW**
 
 Date: 2026-09-08
 
-Reviewed baseline: `ec1b8602840acf0c28b38cf2ab24fb1d3feee557`
+Senior re-review baseline: `865b4b16cfcca4f27104eaeb3eb13e72de87b750`
 
-Scope: mandatory whole-project rerun of the WP-25 Step-1 framing/Source Manifest after independent Senior HOLD. This is design provenance only. It is not a canonical WP-25 specification and does not authorize Step 2.
+Scope: mandatory whole-project rerun of WP-25 Step-1 framing and open-world Source Manifest after the independent Senior re-review returned HOLD. This artifact is design provenance only. It does not authorize Step 2 or create a canonical WP-25 specification.
 
 ## 1. Recovery trigger
 
-The independent Senior Step-1 review of the reviewed baseline returned:
+Senior re-review verdict supplied for the baseline:
 
 ```text
-HOLD — BOUNDED STEP-1 RECOVERY REQUIRED
+HOLD — SECOND BOUNDED STEP-1 RECOVERY REQUIRED
 UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 3
+UNRESOLVED_SIGNIFICANT: 2
+UNRESOLVED_MINOR: 1
 HUMAN_DECISION_REQUIRED_NOW: NO
 WP25_STEP2_AUTHORIZED: NO
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
 ```
 
-Confirmed Senior findings:
+Senior finding state entering this rerun:
 
 ```text
-SR25-S1-01 — deterministic rules/admission/House-Rules failure owners omitted
-SR25-S1-02 — actual maintenance/diagnostics consumer omitted
-SR25-S1-03 — bootstrap/initial-materialization/save-exit failure path omitted
+SR25-S1-01: OPEN / SIGNIFICANT
+    canonical ruleset-package identity owner omitted from deterministic rules graph
+
+SR25-S1-02: PASS / CLOSED
+    maintenance/support route accepted
+
+SR25-S1-03: OPEN / SIGNIFICANT
+    READY_PC owner + primary STORAGE owner omitted from bootstrap/readiness/storage graph
+
+SENIOR_MINOR: OPEN / MINOR
+    maintenance semantic outcomes were described too strongly as exact runtime vocabulary
 ```
 
-The rerun did not assume these findings were exhaustive. It reconstructed the whole WP-25 graph again through current `DEV/PROJECT_MAP.md`, current owning references and selected machine/schema/test consumers.
+The critic did not assume those findings were exhaustive.
 
-## 2. Critic method and full open-world graph
+## 2. Critic method
 
-The rerun used this general chain for every material failure family:
+For every material native failure family the rerun reconstructed:
 
 ```text
-native owner outcome
+native owner outcome/reason
     -> exact authority/currentness/evidence basis
     -> truthful surviving frontier
-    -> effective severity inputs
-    -> affected/dependent scope
+    -> severity inputs
+    -> gameplay impact / affected scope
     -> legal continuation
     -> semantic fence / temporal tolerance
-    -> recovery/retry/idempotency
-    -> recipient-safe user disposition
+    -> bounded recovery / retry / idempotency
+    -> prohibited fallback
+    -> recipient-safe visible disposition
     -> verification / empirical obligation
 ```
 
-Primary routes independently checked:
+Primary dependency routes independently rechecked:
 
 ```text
 persistence/durability
     -> Step-5.5
     -> WP-13
-    -> publication-ref amendment
+    -> publication-currentness amendment
     -> WP-14
     -> Step-5.14
-    -> GAME persistence/save/session/integrity projections
-    -> durability/publication/save tests
+    -> STORAGE / PERSISTENCE / SAVE / SESSION / INTEGRITY
+    -> durability/publication/save/storage tests
 
 host/context
     -> R2.3 Context Runtime
     -> R2.4 single-context execution
     -> R2.6 host assurance
     -> WP-08 instruction/package cache
-    -> WP-09 bounded context realization
-    -> WP-24 proof/operational constraints
+    -> WP-09 resource bounds
+    -> WP-22/WP-24 proof and scale constraints
 
-multiplayer/LIVE/agency/disclosure
+authority/LIVE/agency/disclosure
     -> ACCESS_CONTROL
     -> WP-16
     -> WP-17
     -> Step-5.12
-    -> branch/ref owner decisions
+    -> creator/ref owner decisions
     -> LIVE/MULTIPLAYER/CHRONOLOGY projections/tests
 
-deterministic rules/admission
+ruleset exact identity
+    -> RULESET_PACKAGE_IDENTITY
+    -> versioning representation amendment
+    -> RULESET_PACKAGE_MACHINE_CLOSURE
+    -> ruleset manifest / resolved lock
+    -> Resolution + Continuation exact-set projections
+    -> shipped loader / conformance orchestrator
+    -> ruleset closure tests
+
+catalog/deterministic execution
     -> CATALOG_ADMISSION
     -> CATALOG_RESOLUTION
-    -> RULESET_PACKAGE_MACHINE_CLOSURE
     -> ACTIVITY_MODEL
     -> ACTIVITY_PRIMITIVE_CONTRACTS
     -> RULE_ELEMENT_MODEL
-    -> catalog/primitive/ruleset machine projections and tests
+    -> catalog/primitive/execution machine/tests
 
 House Rules/adjudication
     -> CAMPAIGN_HOUSE_RULES
     -> HOUSE_RULES_MECHANICAL_BOUNDARY
     -> ACCESS_CONTROL
     -> ADJUDICATION
-    -> house-rules policy + adjudicated-input schemas
-    -> exact machine boundary + tests
+    -> policy/binding schemas + tests
 
 maintenance/support
     -> MAINTENANCE_COMMANDS
     -> ACCESS_CONTROL
-    -> Step-5.12 disclosure
+    -> Step-5.12
     -> PLAY_POLICY / RUNTIME / SESSION / INTEGRITY
-    -> maintenance continuation/access tests
+    -> maintenance/access tests
 
-bootstrap/creation/save-exit
+bootstrap/readiness/storage/save-exit
     -> WP-19
-    -> campaign-exit owner decision
-    -> INSTALL bootstrap
-    -> BOOTSTRAP_RUNTIME
-    -> NEW_CAMPAIGN_FAST_PATH
-    -> CAMPAIGN_SETUP
-    -> init_campaign.py
-    -> SAVE_CONTRACT / SESSION / PERSISTENCE
-    -> bootstrap/storage/save/readiness tests
+    -> campaign-exit decision
+    -> CHARACTER_PROGRESSION_READY_PC_SEED
+    -> CHARACTER_READINESS
+    -> STORAGE
+    -> runtime-selection/storage-baseline amendment
+    -> INSTALL/BOOTSTRAP/NEW_CAMPAIGN/CAMPAIGN_SETUP
+    -> generator / dnd_storage schema / runtime identity schemas
+    -> character seed + bootstrap/storage/save tests
 
 accepted mechanics -> persistence/presentation
     -> MECHANICS_INTEGRITY / RANDOMNESS / ADJUDICATION
-    -> Step-5.12
-    -> Step-5.14
+    -> Step-5.12 / Step-5.14
 
 update/package
     -> WP-20
@@ -123,248 +139,84 @@ update/package
     -> ENGINE_UPDATES
     -> WP-23
 
-Story/derived/diagnostics
+Story/diagnostics
     -> WP-18
     -> Story integration contract
     -> WP-21
-    -> WP-22
-    -> WP-24
+    -> WP-22/WP-24
 ```
 
-The rerun preserves:
+The critic keeps these categories distinct:
 
 ```text
 accepted semantic-owner conflict
-!= stale/incomplete machine realization
+!= stale/incomplete realization
 != intentionally dormant/nonselectable capability
-!= current semantic contract whose runtime command surface is not realized
+!= semantic contract whose runtime command surface is not realized
+!= local READY_PC/dependency incompleteness
+!= package/set reconstruction failure
 ```
 
-## 3. Full owner/consumer coverage checked
+## 3. Owner/consumer evidence expansion
 
-### Process/current authority
+### 3.1 SR25-S1-01 — exact ruleset identity owner
 
-- `AGENTS.md`;
-- `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md`;
-- `DEV/DESIGN_PROCESS.md`;
-- `DEV/ARCHITECTURE/DESIGN_PROCESS.md`;
-- `DEV/ARCHITECTURE/PRODUCT_OWNER_INPUT_PROCESS.md`;
-- `DEV/PROJECT_MAP.md`;
-- `DEV/CURRENT_PROGRESS.md`;
-- `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md`;
-- `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md`;
-- `DEV/RELEASE/VERSIONING.md`.
+The first recovery included `RULESET_PACKAGE_MACHINE_CLOSURE.md` but omitted the owner to which that document explicitly delegates package/set identity semantics:
 
-### Product Owner direction
+- `DEV/ARCHITECTURE/RULESET_PACKAGE_IDENTITY.md` — canonical package snapshot/resolved-set/catalog-context identity owner;
+- `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md` — superseding representation/version-namespace amendment while preserving exact identity semantics;
+- `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md` — machine realization/closure owner;
+- `GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/ruleset-package-manifest.json` — current package declaration;
+- `GAME/TOOLS/ruleset_package.py` — shipped exact builder/loader;
+- `DEV/TOOLS/validate_ruleset_package_closure.py` — build/conformance orchestration;
+- `DEV/SCHEMAS/resolved-ruleset-lock.schema.json` — typed exact-set evidence;
+- `DEV/SCHEMAS/runtime-resolution-state.schema.json` and `runtime-continuation-state.schema.json` — accepted-work carriers of exact typed ruleset set and catalog-context identity;
+- `DEV/TESTS/test_s6d_11_ruleset_package_closure.py` — exact identity/load/compatibility/reconstruction executable evidence.
 
-- `DEV/docs/superpowers/specs/2026-09-08-hdm-wp25-failure-degradation-durability-risk-owner-direction.md`;
-- full `PO-008` in `DEV/PRODUCT_OWNER_INPUT.md`.
-
-### Previously covered semantic routes rechecked
-
-- Step-5.5 durability;
-- WP-13 durability/publication/currentness;
-- WP-14 recovery/checkpoint/session repair;
-- supported-ref publication/currentness amendment;
-- Step-5.14 integrated recovery/concurrency;
-- R2.3 Context Runtime;
-- R2.4 single-context execution;
-- R2.6 host assurance;
-- WP-08 instruction/role-context realization;
-- WP-09 Context resource bounds;
-- `ACCESS_CONTROL.md`;
-- creator-login continuity owner decision;
-- branch/ref deletion prohibition;
-- WP-16 multiplayer/LIVE;
-- WP-17 collaboration/agency;
-- Step-5.12 host delivery/disclosure;
-- WP-18 Story;
-- Story producer/persistence/retrospective contract;
-- WP-20 compatibility/migration;
-- WP-21 diagnostics/cleanup;
-- WP-22 verification/evaluation completeness;
-- WP-23 package/version/release readiness;
-- WP-24 performance/scale/operational budget.
-
-### SR25-S1-01 deterministic rules/admission/House-Rules route
-
-Current semantic owners inspected:
-
-- `DEV/ARCHITECTURE/CATALOG_ADMISSION.md`;
-- `DEV/ARCHITECTURE/CATALOG_RESOLUTION.md`;
-- `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md`;
-- `DEV/ARCHITECTURE/ACTIVITY_MODEL.md`;
-- `DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md`;
-- `DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md`;
-- `DEV/ARCHITECTURE/CAMPAIGN_HOUSE_RULES.md`;
-- `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md`.
-
-Runtime/machine/schema consumers inspected:
-
-- `GAME/CORE/ADJUDICATION.md`;
-- `GAME/CORE/PLAY_POLICY.md`;
-- `DEV/CATALOG/catalog-admission-ledger/manifest.json`;
-- `DEV/CATALOG/activity-primitive-contracts/manifest.json`;
-- `DEV/CATALOG/house-rules-mechanical-boundary.json`;
-- `GAME/SCHEMA/house_rules_policy.schema.yaml`;
-- `DEV/SCHEMAS/activity-parameter-binding.schema.json`.
-
-Executable/scenario consumers routed and selected material tests inspected:
-
-- catalog admission/ledger tests;
-- Activity primitive/execution/rules conformance tests;
-- House Rules adjudicated-input/policy-authority/boundary tests;
-- ruleset package closure tests;
-- specifically `DEV/TESTS/test_s6d_10_house_rules_boundary_contract.py` for missing/quarantined realization references and exact policy/ruleset basis.
-
-### SR25-S1-02 maintenance/support route
-
-Inspected:
-
-- `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md`;
-- `DEV/ARCHITECTURE/ACCESS_CONTROL.md`;
-- Step-5.12 disclosure owner;
-- `GAME/CORE/PLAY_POLICY.md`;
-- `GAME/CORE/RUNTIME.md`;
-- `GAME/CORE/SESSION.md`;
-- `GAME/CORE/INTEGRITY.md`;
-- current development maintenance tooling route `DEV/TOOLS/run_maintenance_audit.py` / `DEV/TOOLS/audit_engine.py` as support tooling rather than campaign maintenance authority;
-- `DEV/TESTS/test_maintenance_continuation_contract.py`;
-- `DEV/TESTS/ACCESS_CONTROL_CASES.md`;
-- maintenance-audit test family.
-
-### SR25-S1-03 bootstrap/creation/save-exit route
-
-Inspected:
-
-- `DEV/docs/superpowers/specs/2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-canonical-spec.md`;
-- `DEV/docs/superpowers/specs/2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md`;
-- `GAME/INSTALL/00_DND_BOOTSTRAP.md`;
-- `GAME/CORE/BOOTSTRAP_RUNTIME.md`;
-- `GAME/CORE/NEW_CAMPAIGN_FAST_PATH.md`;
-- `GAME/CORE/CAMPAIGN_SETUP.md`;
-- `GAME/TOOLS/init_campaign.py`;
-- `GAME/CORE/SAVE_CONTRACT.md`;
-- `GAME/CORE/SESSION.md`;
-- `GAME/CORE/PERSISTENCE.md`;
-- `DEV/TESTS/BOOTSTRAP_STORAGE_REGRESSION_CASES.md`;
-- `DEV/TESTS/test_multi_runtime_bootstrap_contract.py`;
-- `DEV/TESTS/EXPLICIT_SAVE_CASES.md`;
-- structural onboarding/readiness/card test neighbors.
-
-### General machine/test coverage retained
-
-- `GAME/SCHEMA/*.schema.yaml` structural inventory;
-- selected LIVE/checkpoint/current/manifest schemas;
-- `DEV/TESTS/` structural inventory;
-- stale hourly durability test;
-- publication ref-fence test;
-- engine mismatch recovery test;
-- relevant persistence/LIVE/integrity/chronology/access/mechanics/multiplayer/performance scenario families;
-- `.github/workflows/validate.yml`.
-
-## 4. Rerun finding summary
-
-The rerun independently rediscovered the three material omissions corresponding to the Senior findings and found no additional BLOCKING/SIGNIFICANT framing defect.
+The shipped loader's current closed load/reconstruction reasons are exactly:
 
 ```text
-RERUN_CRITIC_BLOCKING_FOUND: 0
-RERUN_CRITIC_SIGNIFICANT_FOUND: 3
-RERUN_CRITIC_MINOR_FOUND: 0
-
-RERUN_NEW_BLOCKING_BEYOND_SR25_S1_01_03: 0
-RERUN_NEW_SIGNIFICANT_BEYOND_SR25_S1_01_03: 0
-
-UNRESOLVED_BLOCKING_AFTER_WORKER_REPAIR: 0
-UNRESOLVED_SIGNIFICANT_AFTER_WORKER_REPAIR: 0
-HUMAN_DECISION_REQUIRED: NO
-ACCEPTED_SEMANTIC_OWNER_CONFLICT_FOUND: NO
-WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
+invalid_manifest
+content_mismatch
+missing_dependency
+ambiguous_dependency
+dependency_cycle
+package_id_ambiguity
+namespace_conflict
+engine_incompatibility
+catalog_incompatibility
+resolved_set_mismatch
+unreconstructable_context
 ```
 
-## 5. SR25-S1-01 — deterministic rules/admission/House-Rules owners omitted
+`test_closed_load_failure_taxonomy` mechanically asserts that exact set.
 
-Severity: **SIGNIFICANT — CONFIRMED BY RERUN**
+The canonical identity owner further requires accepted Resolution/Continuation to retain the exact typed resolved-set identity. If that accepted set cannot be reconstructed, recovery terminates in a finite compatibility/prerequisite failure rather than substituting current package bytes, fuzzy matching, hidden migration or mixed partial context.
 
-### Problem
-
-The reviewed Step-1 Source Manifest jumped from generic mechanics/RNG to presentation/persistence and did not reconstruct the deterministic capability/admission path. That omission could have caused later WP-25 work to flatten materially different native conditions into one generic system failure.
-
-### Evidence recovered
-
-Current catalog/admission law distinguishes:
+Reconciliation result:
 
 ```text
-failure.catalog_context_incompatible
-    -> exact resolved-context/package/admission failure with typed reason
+native ruleset load/reconstruction reason
+    may map through failure.catalog_context_incompatible
+    but reason semantics remain preserved
 
-runtime.catalog_gap_report
-    -> bounded evidence that a requested capability is truly unsupported
-    -> not a synonym for search miss
-
-DORMANT_NONSELECTABLE / quarantined realization
-    -> known registered capability with no current execution authority
-    -> not an unsupported search gap
+ruleset load/reconstruction failure
+    != catalog capability gap
+    != dormant capability
+    != compiler/primitive validation rejection
+    != ordinary gameplay outcome
+    != compatibility/migration result
 ```
 
-The catalog admission machine manifest explicitly carries `ACTIVE_ADMITTED`, `EMBEDDED_NONOWNER`, `DORMANT_NONSELECTABLE`, `STALE_REMOVE`, typed ruleset-package incompatibility reasons and the separate `runtime.catalog_gap_report` surface.
+No duplicate package/global error authority is required.
 
-Activity/primitive/Rule-Element owners separately define deterministic validation/compilation failure: unknown primitive/field/argument/result/dependency, invalid input class/binding/dependency or mutation validation failure rejects the relevant candidate/segment rather than inventing semantics or partially committing mutation.
+### 3.2 SR25-S1-02 — maintenance remains closed
 
-House Rules/adjudication further distinguishes:
+No contradictory evidence was found. `SR25-S1-02` remains PASS/CLOSED.
 
-```text
-failure.policy_conflict
-failure.policy_realization_gap
-failure.adjudication_input_missing
-failure.adjudication_input_unauthorized
-failure.adjudication_input_invalid
-failure.adjudication_context_stale
-missing/stale/incompatible/dormant realization reference
-```
+The current owner remains `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md`, with independent access/disclosure authority and no installed runtime parser/dispatcher command realization.
 
-`GAME/SCHEMA/house_rules_policy.schema.yaml` and the machine boundary confirm that `realization_refs` are links, never execution authority; missing/stale/incompatible refs yield finite gap behavior. `test_s6d_10_house_rules_boundary_contract.py` rejects a missing definition or quarantined primitive that attempts to claim a valid realization link.
-
-`GAME/CORE/ADJUDICATION.md` separately treats failed checks/attacks/saves and `IMPOSSIBLE`/resolved failure consequences as ordinary gameplay resolution. A failed gameplay attempt therefore must not be promoted to system failure merely because failure vocabulary exists nearby.
-
-### Mechanical repair
-
-The Task Brief now:
-
-- adds the full catalog/ruleset/Activity/primitive/Rule-Element/House-Rules owner graph;
-- lists machine/schema/test consumers;
-- adds deterministic rules/admission families to the failure horizon and cascading attacks;
-- carries the native outcome distinctions into later research questions;
-- explicitly forbids converting ordinary gameplay failure into a WP-25 system failure;
-- preserves no-global-error-owner discipline.
-
-Disposition:
-
-```text
-SR25-S1-01: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-REVIEW
-```
-
-## 6. SR25-S1-02 — actual maintenance/diagnostics consumer omitted
-
-Severity: **SIGNIFICANT — CONFIRMED BY RERUN**
-
-### Problem
-
-The reviewed Step-1 framing covered generic diagnostics/cleanup but omitted the current maintenance/support semantic contract. That omission could have caused later user-visible failure composition to conflate route recognition, authorization, disclosure and runtime capability realization.
-
-### Evidence recovered
-
-`DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` is the current DEV maintenance semantic/support contract and explicitly says the installed GAME command registration/parser/dispatcher surface is **not currently established**.
-
-It preserves:
-
-```text
-exact token / operation routing != authorization
-authorization != recipient disclosure eligibility
-diagnostic/error text != gameplay/recovery/currentness authority
-```
-
-Its native typed outcomes include:
+The second-recovery MINOR correction is precise: the owner says a future realization may choose exact machine enum names. Therefore:
 
 ```text
 NOT_AUTHORIZED
@@ -373,223 +225,315 @@ WITHHELD_OR_REDACTED
 UNAVAILABLE_NOT_REALIZED
 ```
 
-The contract requires unresolved creator/principal/currentness to fail closed before mutation/sensitive disclosure. Authorization does not entitle a recipient to all diagnostic material; recipient-ineligible detail is withheld/redacted under access/disclosure owners.
+are required **semantic outcome categories / semantic outcomes**, not frozen exact runtime enum vocabulary.
 
-A maintenance request/denial does not itself create a gameplay turn, Interaction, Action, Resolution, semantic event, fictional chronology/resource/RNG transition or durable campaign mutation merely to record denial/error. Diagnostic text is explanatory output, not campaign truth or recovery/currentness authority.
+This correction changes no maintenance semantics and does not reopen SR25-S1-02.
 
-`GAME/CORE/PLAY_POLICY.md` keeps explicit maintenance outside ordinary gameplay. `SESSION.md` and `test_maintenance_continuation_contract.py` preserve a truthful continuation point and forbid invented fictional progression during maintenance.
+### 3.3 SR25-S1-03 — READY_PC + storage owners
 
-### Mechanical repair
+Missing canonical/current owners recovered:
 
-The Task Brief now:
+- `DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md` — canonical S6D-07 character/READY_PC owner;
+- `GAME/CORE/CHARACTER_READINESS.md` — current runtime readiness owner;
+- current package `character-capabilities.json` — bounded supported content projection with `ABSENT_NONSELECTABLE` policy and no identity authority;
+- `DEV/TOOLS/validate_character_mvp_seed.py` — package compiler + readiness evaluator realization;
+- `DEV/TESTS/test_s6d_07_character_mvp_seed.py` — exact readiness blocker/provisional-play/package closure evidence;
+- `GAME/CORE/STORAGE.md` — current primary storage/bootstrap persistence surface;
+- `DEV/docs/superpowers/specs/2026-08-18-runtime-selection-and-storage-baseline-amendment.md` — current baseline/runtime-identity amendment;
+- `GAME/SCHEMA/dnd_storage.schema.yaml`;
+- `DEV/TESTS/test_runtime_identity_schema.py`;
+- `DEV/TESTS/test_engine_update_policy_contract.py`;
+- existing bootstrap/generator/save owners and tests from the first recovery.
 
-- adds `MAINTENANCE_COMMANDS.md` and access/disclosure/runtime/test neighbors;
-- carries authorization/currentness/redaction/unrealized-capability outcomes separately;
-- adds maintenance cascading attacks and Step-2 questions;
-- explicitly prevents recipient-ineligible leakage and fictional/canonical mutation merely to record denial/error;
-- preserves the fact that current command realization is unavailable rather than inventing an installed surface.
+Recovered readiness distinction:
+
+```text
+provisional gameplay + sufficient exact local dependencies
+    -> bounded outcome may proceed
+
+attempted mechanic lacks exact local dependency
+    -> only that mechanic boundary is blocked
+
+READY_PC false
+    -> initial mechanical commitment frontier is not yet closed
+    -> does not prohibit all provisional gameplay
+
+package compilation fail-closed
+    -> package/definition/primitive/reference closure failed
+    -> not merely READY_PC false
+```
+
+Tests confirm exact blockers such as unresolved material choice, stale ruleset digest generation, spell binding mismatch, missing transitive readiness evidence and forged/unbound readiness evidence while preserving provisional play where locally supported.
+
+Recovered storage distinction:
+
+```text
+DND_STORAGE.engine.baseline
+    = storage-owner-approved runtime identity for NEW campaigns only
+
+MANIFEST.engine.current
+    = runtime currently adopted by an existing campaign
+
+current_runtime_root
+    = ephemeral local validated package path
+```
+
+And authority separation:
+
+```text
+storage-owner authority
+!= campaign creator authority
+!= gameplay publication authority
+```
+
+`dnd_storage.schema.yaml` and runtime identity/update tests mechanically preserve that separation.
+
+The critic also found a stale realization omission: `GAME/CORE/STORAGE.md` still names the retired one-hour dirty-state ceiling in hot-frontier/working-set wording. It belongs with `DURABILITY_GUARD.md`, `SESSION.md` and `test_hourly_durability_contract.py` as stale realization debt under current Step-5.5/WP-13/WP-25 durability semantics.
+
+No new campaign lifecycle/error authority is needed.
+
+## 4. Full-graph rerun finding summary
+
+The critic independently reconstructed the whole graph rather than checking only the Senior deltas.
+
+Result:
+
+```text
+RERUN_CRITIC_BLOCKING_FOUND: 0
+RERUN_CRITIC_SIGNIFICANT_FOUND: 2
+RERUN_CRITIC_MINOR_FOUND: 1
+
+NEW_BLOCKING_BEYOND_SENIOR_FINDINGS: 0
+NEW_SIGNIFICANT_BEYOND_SENIOR_FINDINGS: 0
+
+UNRESOLVED_BLOCKING_AFTER_WORKER_REPAIR: 0
+UNRESOLVED_SIGNIFICANT_AFTER_WORKER_REPAIR: 0
+HUMAN_DECISION_REQUIRED: NO
+NEEDS_PO: NONE
+ACCEPTED_SEMANTIC_OWNER_CONFLICT_FOUND: NO
+WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
+```
+
+The two SIGNIFICANT findings are the two still-open Senior findings. The MINOR is the Senior maintenance naming correction. No additional BLOCKING/SIGNIFICANT omission was found.
+
+## 5. Finding dispositions
+
+### SR25-S1-01 — ruleset identity graph incomplete
+
+Severity: **SIGNIFICANT — CONFIRMED**
+
+Mechanical repair:
+
+- canonical `RULESET_PACKAGE_IDENTITY.md` added as identity owner;
+- versioning representation amendment and machine closure precedence reconciled;
+- exact loader reason vocabulary and machine/test consumers added;
+- accepted Resolution/Continuation exact set identity added to recovery horizon;
+- finite reconstruction failure added;
+- load/reconstruction vs catalog gap/dormancy/compiler/gameplay/compatibility distinctions added.
 
 Disposition:
 
 ```text
-SR25-S1-02: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-REVIEW
+SR25-S1-01: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-RE-REVIEW
 ```
 
-## 7. SR25-S1-03 — bootstrap / initial-materialization / save-exit path omitted
+### SR25-S1-02 — maintenance/support
 
-Severity: **SIGNIFICANT — CONFIRMED BY RERUN**
-
-### Problem
-
-The reviewed Step-1 graph did not include WP-19 bootstrap/creation/initial materialization or save-exit composition. That omission could have caused generic recovery/error handling to continue against partial scaffolds, infer campaign selection, invent readiness state or clear selected context before durable save closure.
-
-### Evidence recovered
-
-WP-19 is a composition owner; it does not replace generator, publication, readiness/lifecycle, persistence or campaign-selection native owners.
-
-Current creation law is fail closed:
-
-```text
-explicit New Game
--> exact selected runtime/package
--> run exact local TOOLS/init_campaign.py once
--> validate complete generated scaffold
--> one initialization tree/commit
--> non-force create-if-absent publication
--> only confirmed success permits setup against that campaign scaffold
-```
-
-If the generator is unavailable/fails, generated output is incomplete, bulk publication cannot be performed, or initial ref publication fails, the runtime must not reconstruct the scaffold with LLM prose/schema guessing/per-file GitHub writes. Prepared/unpublished objects are not campaign authority. Setup does not continue against a partial scaffold.
-
-Fresh-chat campaign selection is an explicit barrier even when exactly one plausible campaign exists. Before selection, only bounded menu/preselection evidence is admitted; no gameplay HEAD pin, campaign-state preload, recovery, migration/update or recap is authorized merely by a generic request to play.
-
-Unresolved readiness/mechanics keeps the campaign honestly `initializing` and blocks only the dependent capability; the runtime must not invent character/mechanical/world state to force PLAY_READY.
-
-Save-and-exit is composition:
-
-```text
-save closure first
--> only confirmed durable save closure permits clearing selected gameplay context
--> then return to campaign selection/menu
-```
-
-Rejected/failed/indeterminate persistence does not permit claiming both saved and exited and does not permit clearing the strongest truthful recovery-safe selected-campaign context. `EXPLICIT_SAVE_CASES.md` also forbids false `saved` claims on partial failure and fake mechanics during repair.
-
-### Mechanical repair
-
-The Task Brief now:
-
-- adds WP-19, campaign-exit owner decision, bootstrap/install/runtime/generator/setup/save/persistence owners;
-- adds actual bootstrap/storage/save machine/test consumers;
-- adds selection/generator/initial-publication/readiness/save-exit families to the failure horizon;
-- adds cascade attacks for ambiguous initial publication and save-exit publication;
-- preserves bounded preselection and strongest truthful selected context;
-- explicitly avoids a new campaign lifecycle/error authority.
+No new contradictory evidence.
 
 Disposition:
 
 ```text
-SR25-S1-03: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-REVIEW
+SR25-S1-02: PASS / CLOSED — RETAINED / NOT REOPENED
 ```
 
-## 8. Full-graph regression against original Step-1 findings
+### SR25-S1-03 — READY_PC/storage graph incomplete
 
-The rerun rechecked the original repaired Step-1 concerns, not only the Senior deltas:
+Severity: **SIGNIFICANT — CONFIRMED**
 
-1. **Second-authority risk:** still closed. Native outcomes remain owner-local; cross-owner disposition remains ephemeral.
-2. **Durability timer supersession/host proof:** still closed. Historical one-hour GAME/test realization remains stale debt; NORMAL/ELEVATED/DANGER exact thresholds remain unchosen.
-3. **Post-accepted mechanics/RNG chain:** still closed. Accepted mechanics/RNG are not rerolled to repair persistence/presentation; unsupported narrated-mechanics correction remains a separate realization reconciliation issue.
-4. **LIVE/ref currentness:** still closed under WP-13/publication amendment/WP-16/access/no-ref-delete routing.
-5. **Package/instruction/migration exact basis:** still closed under WP-20/WP-08/WP-23.
-6. **Derived state/diagnostics nonauthority and boundedness:** still closed; new maintenance route strengthens rather than contradicts it.
-7. **Host-capacity proof strength:** still closed under R2.6/WP-22/WP-24.
-8. **Ordinary collaboration waiting:** remains non-failure unless its native dependency owner says required work blocks a dependent scope.
-9. **No global pending/error bucket:** remains intact; current/checkpoint schemas do not become a global failure store.
+Mechanical repair:
 
-The added deterministic-rules route also confirms that ordinary failed gameplay resolution must not be conflated with system failure.
+- canonical READY_PC owner and runtime/machine/test consumers added;
+- provisional-local-sufficiency vs local mechanic block vs READY_PC false vs package compilation failure explicitly separated;
+- `STORAGE.md` added as current storage/bootstrap owner;
+- NEW-only baseline vs existing campaign current runtime vs ephemeral local root separated;
+- storage-owner/campaign-creator/gameplay-publication authority separation added;
+- `STORAGE.md` one-hour wording classified as stale realization debt;
+- failure horizon/cascades/later questions updated without global campaign failure semantics.
 
-## 9. Cascading/negative-invariant rerun
+Disposition:
 
-The repaired Step-1 framing prevents WP-25 from legalizing:
+```text
+SR25-S1-03: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-RE-REVIEW
+```
+
+### Senior MINOR — maintenance outcome naming
+
+Severity: **MINOR — CONFIRMED**
+
+Mechanical repair:
+
+Task Brief and critic now explicitly call the four maintenance labels semantic outcome categories/outcomes and record that exact machine enum names remain a future authorized realization choice.
+
+Disposition:
+
+```text
+SENIOR_MINOR: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-RE-REVIEW
+```
+
+## 6. Regression against all prior Step-1 concerns
+
+The rerun rechecked the original Step-1 critic and first bounded recovery:
+
+1. **Second semantic authority risk:** closed; composition remains ephemeral and owner-local outcomes authoritative.
+2. **Durability timer supersession:** closed and strengthened; `STORAGE.md` joins the known stale one-hour surfaces.
+3. **Post-accepted mechanics/RNG:** closed; no reroll/replay for persistence/presentation repair.
+4. **LIVE/ref currentness:** closed under WP-13/currentness amendment/WP-16/access/ref-deletion law.
+5. **Package/instruction/migration basis:** closed and strengthened by exact ruleset identity owner inclusion.
+6. **Derived state/diagnostics nonauthority:** closed.
+7. **Host-capacity proof strength:** closed under R2.6/WP-22/WP-24.
+8. **Deterministic catalog/admission/House Rules:** closed after exact identity owner repair; ordinary gameplay failure remains separate.
+9. **Maintenance route:** remains closed; only naming precision changed.
+10. **Bootstrap/scaffold/save-exit:** remains closed and strengthened by explicit READY_PC/storage owners.
+11. **Ordinary collaboration waiting:** remains non-failure unless native dependent scope requires blocking.
+12. **No global pending/error bucket:** remains intact.
+
+## 7. Cascading/negative-invariant attack rerun
+
+The repaired framing still forbids:
 
 ```text
 guessing missing required evidence
-silent authority/source substitution
+silent source/authority substitution
 chat/model memory as campaign authority
-replay/reroll of accepted mechanics/RNG
-replacement accepted IDs for recovery
+replacement accepted IDs or ruleset-set identity
+reroll/replay of accepted mechanics/RNG
 blind retry after ambiguous authority-changing publication
-force push / ref rewind
-branch/ref deletion
+force push / ref rewind / branch-ref deletion
 forbidden alternate repository transport
-last-writer-wins / Git order / arrival order as fictional authority
+Git/LWW/arrival order as fictional authority
 invented voluntary player action/consent/pass/speech
-information/disclosure promotion from physical visibility
+disclosure promotion from physical visibility
 Story/planning/checkpoint/index/cache/diagnostics as missing-canon substitute
-ordinary unbounded WORLD/history/all-ref/all-LIVE scans
+unbounded WORLD/history/all-ref/all-LIVE recovery scans
 infinite retry/reassembly loops
-background worker/heartbeat correctness dependency absent from supported product
-silent activation of dormant/nonselectable/quarantined executable capability
+hidden background correctness worker/heartbeat
+silent activation of dormant/nonselectable capability
+current-package reinterpretation of accepted work when exact historical ruleset set is unavailable
+collapsing exact ruleset loader reason into capability gap or gameplay failure
+collapsing successful exact-set load into compatibility/adoption success
 LLM fallback for catalog/ruleset/compiler/adjudication evidence
-classification of ordinary failed attack/check/save as generic system failure
+classifying failed attack/check/save as generic system failure
 maintenance routing as authorization
 maintenance authorization as disclosure eligibility
 recipient-ineligible diagnostics leakage
-fictional/canonical mutation merely to record maintenance denial/error
-LLM/per-file reconstruction after generator/scaffold failure
-setup against a partial/unpublished initial scaffold
-implicit campaign selection from sole/recent/active campaign
-invented readiness/mechanics to force continuation
-clearing selected recovery-safe campaign context after failed/rejected/indeterminate save-exit publication
+fictional state mutation merely to record maintenance denial/error
+inventing exact maintenance enum vocabulary before realization owns it
+LLM/per-file scaffold reconstruction after generator failure
+setup against partial/unpublished initial scaffold
+implicit campaign selection
+inventing readiness/mechanics to force READY_PC
+turning one blocked local mechanic into global campaign failure
+using storage baseline to override existing MANIFEST.engine.current
+using storage ownership as campaign creator/gameplay publication authority
+reviving STORAGE/DURABILITY_GUARD/SESSION one-hour wording as current product law
+clearing recovery-safe selected context after failed/rejected/indeterminate save-exit publication
 ```
 
 No current owner requires relaxing these invariants.
 
-## 10. Accepted owner conflict vs realization state
+## 8. Accepted owner conflict vs realization debt
 
-### Accepted semantic-owner conflicts
+Accepted semantic-owner conflicts found:
 
 ```text
-FOUND: 0
+0
 ```
 
-The Senior recovery additions extend the owner graph without contradicting accepted WP-25 Product Owner direction.
+Current stale/incomplete/intentionally unavailable realization debt/state relevant to WP-25 includes:
 
-### Stale/incomplete/intentionally unavailable realization state
+1. `GAME/CORE/DURABILITY_GUARD.md` — retired one-hour proxy.
+2. `GAME/CORE/SESSION.md` — consumes retired one-hour proxy.
+3. `GAME/CORE/STORAGE.md` — also contains retired one-hour proxy wording while remaining current for storage semantics.
+4. `DEV/TESTS/test_hourly_durability_contract.py` — executable stale timer projection.
+5. selected older LIVE/error/retry/presentation wording predating later owners.
+6. maintenance semantic contract with no installed GAME parser/dispatcher realization.
+7. deliberately dormant/nonselectable/quarantined catalog/primitive/House-Rule surfaces.
 
-Still relevant later realization debt/state includes:
+None of these is by itself accepted-architecture conflict. Step 1 does not repair realization.
 
-1. `GAME/CORE/DURABILITY_GUARD.md`, `SESSION.md`, `test_hourly_durability_contract.py` retain the retired one-hour proxy.
-2. selected `GAME/CORE/LIVE_SCENE.md` wording predates current WP-16 owner law.
-3. selected local error/retry/presentation wording may predate WP-13/WP-14/Step-5.12/Step-5.14 composition.
-4. `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` explicitly has no established installed GAME parser/dispatcher command realization; this is an admitted `UNAVAILABLE_NOT_REALIZED` state, not permission to invent one.
-5. catalog/primitive/House-Rule machine surfaces deliberately contain dormant/nonselectable/quarantined or conformance-only states; their physical presence is not execution authority.
+## 9. Human judgment check
 
-Step 1 performs no realization repair.
-
-## 11. Human judgment check
-
-The rerun found no residual Step-1 question requiring Product Owner judgment.
-
-Current owners already decide the distinctions needed to repair SR25-S1-01..03. Later Steps may surface material choices, but this recovery must not manufacture one.
+All second-recovery corrections are mechanically determined by current owners and current Senior findings.
 
 ```text
 HUMAN_DECISION_REQUIRED: NO
 NEEDS_PO: NONE
 ```
 
-## 12. Completeness gate
+No artificial Product Owner gate is created.
+
+## 10. Completeness gate
 
 ```text
-[x] Current remote HEAD matched the Senior-reviewed baseline before recovery work.
-[x] Project Map used to reconstruct the full dependency graph, not only the three listed files.
-[x] Mandatory Product Owner direction + PO-008 remain included.
-[x] Prior Step-1 owner routes were rechecked.
-[x] Deterministic catalog/ruleset/Activity/primitive/Rule-Element/House-Rules owners added.
-[x] Deterministic machine/schema/test consumers traced.
-[x] Ordinary gameplay failure explicitly separated from system failure.
-[x] Maintenance semantic contract plus access/disclosure/runtime/test neighbors added.
-[x] Routing/auth/disclosure/diagnostic-authority separations preserved.
-[x] Bootstrap/WP-19/creation/generator/selection/readiness/save-exit route added.
-[x] Bootstrap/save machine/test consumers traced.
-[x] Cascading attacks extended for all three Senior findings.
-[x] Step-2 research questions extended without beginning Step 2.
-[x] Stale/incomplete/unrealized realization distinguished from accepted architecture conflict.
-[x] No new BLOCKING/SIGNIFICANT defect beyond SR25-S1-01..03 found.
-[x] All three mechanically resolvable Senior findings repaired in the Task Brief/Manifest.
+[x] Fresh remote HEAD matched Senior re-review baseline before substantive recovery.
+[x] Current process owners and CURRENT_PROGRESS restored.
+[x] PROJECT_MAP used for open-world reconstruction.
+[x] Prior Step-1/first-recovery owner routes rechecked.
+[x] RULESET_PACKAGE_IDENTITY canonical owner inspected and added.
+[x] Superseding versioning representation amendment reconciled.
+[x] Shipped ruleset loader, resolved-lock, Resolution/Continuation carriers and tests inspected.
+[x] Closed native 11-reason load/reconstruction set preserved.
+[x] Accepted-work finite exact-set recovery failure captured.
+[x] Load/reconstruction vs compatibility/migration/capability/compiler/gameplay distinctions preserved.
+[x] SR25-S1-02 maintenance finding left closed absent contradictory evidence.
+[x] Maintenance labels corrected to semantic outcomes/categories, not frozen exact machine enum names.
+[x] CHARACTER_PROGRESSION_READY_PC_SEED canonical owner inspected and added.
+[x] CHARACTER_READINESS runtime owner + validator/capability/test consumers inspected.
+[x] Provisional/local-block/READY_PC/package-compile distinctions preserved.
+[x] STORAGE current owner + storage baseline amendment/schema/tests inspected.
+[x] Storage-owner/campaign-creator/gameplay-publication authority separation preserved.
+[x] Existing campaign MANIFEST.engine.current remains independent from NEW-only storage baseline.
+[x] STORAGE one-hour wording classified with stale realization debt.
+[x] Full failure horizon/cascading attacks/later questions repaired only where materially required.
+[x] Full-graph critic rerun found no new BLOCKING/SIGNIFICANT beyond Senior findings.
+[x] All mechanically resolvable Step-1 Senior findings repaired at worker level.
 [x] No human-owned decision remains.
 ```
 
-## 13. Rerun critic verdict
+## 11. Rerun critic verdict
 
 ```text
 RERUN_CRITIC_BLOCKING_FOUND: 0
-RERUN_CRITIC_SIGNIFICANT_FOUND: 3
-RERUN_CRITIC_MINOR_FOUND: 0
+RERUN_CRITIC_SIGNIFICANT_FOUND: 2
+RERUN_CRITIC_MINOR_FOUND: 1
+NEW_BLOCKING_BEYOND_SENIOR_FINDINGS: 0
+NEW_SIGNIFICANT_BEYOND_SENIOR_FINDINGS: 0
 
-SR25-S1-01: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-REVIEW
-SR25-S1-02: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-REVIEW
-SR25-S1-03: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-REVIEW
+SR25-S1-01: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-RE-REVIEW
+SR25-S1-02: PASS / CLOSED — RETAINED / NOT REOPENED
+SR25-S1-03: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-RE-REVIEW
+SENIOR_MINOR: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-RE-REVIEW
 
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
 HUMAN_DECISION_REQUIRED: NO
 WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
 
-WP25_STEP1_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
-WP25_STEP1_BOUNDED_RECOVERY: COMPLETE / PUBLISHED WHEN THIS PACKAGE IS COMMITTED
-WP25_STEP1_SENIOR_RE_REVIEW: REQUIRED / PENDING
+WP25_STEP1_SENIOR_RE_REVIEW_PREVIOUS_RESULT: HOLD — SECOND BOUNDED STEP-1 RECOVERY REQUIRED
+WP25_STEP1_SECOND_BOUNDED_RECOVERY: COMPLETE AT WORKER LEVEL / PUBLISHED WHEN THIS PACKAGE IS COMMITTED
+WP25_STEP1_SENIOR_RE_RE_REVIEW: REQUIRED / PENDING
 WP25_STEP2_AUTHORIZED: NO
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: mandatory independent WP-25 Step-1 Senior re-review
+NEXT_GATE: mandatory independent WP-25 Step-1 Senior re-re-review
 ```
 
-This is a worker recovery verdict only. It is **not** an independent Senior PASS.
+This is a worker recovery verdict only, not independent Senior PASS.
 
-## 14. Version Impact
+## 12. Version Impact
 
 ```text
 VERSION_IMPACT: NONE
 ```
 
-This rerun and repaired Task Brief are design/status provenance only. No version-bearing runtime/schema/catalog/protocol/package/migration or executable gameplay surface is changed.
+This critic and repaired Task Brief change Step-1 design/status provenance only. No version-bearing runtime/schema/catalog/protocol/package/migration or executable gameplay surface is changed.
