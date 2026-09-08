@@ -47,7 +47,7 @@ An agent-owned route marked `ACTIVE` or `PENDING` must not name a work package t
 | `PO-004` | COMPATIBILITY POLICY | INCORPORATED | WP-20 final Senior PASS accepted the released-v1.0+ clean-slate compatibility horizon; only downstream implementation/test realization remains deferred behind its future explicit authorization gate | v1 clean-slate compatibility owner decision; final WP-20 canonical spec; later engine/runtime/schema migration/update/release tests | NONE |
 | `PO-005` | AUTHORITY / SECURITY POLICY | INCORPORATED | creator-login continuity policy is fixed fail-closed authority; no current architecture reopen; downstream runtime/test realization must preserve it when implementation is explicitly authorized | creator-login continuity owner decision; access/bootstrap/migration/recovery consumers; later runtime/tests | NONE |
 | `PO-006` | AUTHORITY / SAFETY / REPOSITORY POLICY | INCORPORATED | branch/ref deletion is forbidden for every HDM development/runtime agent; WP-21 final Senior PASS consumed the rule and WP-24 may later assess retained-ref operational cost without re-enabling deletion | branch/ref deletion owner decision; `AGENTS.md`; `GAME/CORE/PERSISTENCE.md`; `GAME/CORE/LIVE_SCENE.md`; final WP-21 canonical spec/review; WP-24 | NONE |
-| `PO-007` | PUBLIC PROVENANCE / ATTRIBUTION POLICY | INCORPORATED | WP-23 Step-1 evidence exposed the public research-provenance boundary; Product Owner fixed the policy and independent Senior review gave Step-1 GO | public provenance owner decision; WP-23 Lane C; current public `DEV/` + `GAME/`; legal/notice owners; relevant audits/tests | NONE |
+| `PO-007` | PUBLIC PROVENANCE / ATTRIBUTION POLICY | INCORPORATED | WP-23 final Senior re-review accepted the repository-wide public provenance reconciliation and closed the architecture consumer; future enforcement remains under the accepted owner and current machine guards | public provenance owner decision; final WP-23 canonical spec; current public `DEV/` + `GAME/`; legal/notice owners; relevant audits/tests | NONE |
 
 ---
 
@@ -410,7 +410,7 @@ SEPARATELY EXPLICITLY PRODUCT-OWNER-APPROVED ATTRIBUTION: PRESERVE
 PUBLIC HDM SEMANTICS: INDEPENDENTLY STATED IN HDM TERMINOLOGY
 TECHNICAL ARTIFACT/RELEASE/VERSION/MIGRATION PROVENANCE: UNAFFECTED / PRESERVE WHERE OWNED
 GIT HISTORY REWRITE: NOT REQUIRED
-CURRENT WP-23 CONSUMER: ACTIVE / STEP-1 SENIOR GO
+CURRENT WP-23 CONSUMER: CLOSED / FINAL SENIOR RE-REVIEW PASS
 NEW WORKSTREAM: NO
 ```
 
@@ -419,16 +419,16 @@ NEW WORKSTREAM: NO
 | Route | State | Trigger / obligation | Current evidence / owner |
 |---|---|---|---|
 | Product semantics / public provenance boundary | INCORPORATED | complete / fixed policy | `DEV/docs/superpowers/specs/2026-09-08-hdm-public-research-provenance-attribution-owner-decision.md` |
-| WP-23 architecture | ACTIVE / STEP-1 SENIOR GO | Steps 2–8 must reconcile the public `DEV/` + `GAME/` provenance-hygiene universe under this policy | WP-23 Step-1 Senior review + current progress |
+| WP-23 architecture | INCORPORATED / FINAL SENIOR RE-REVIEW PASS | WP-23 closed; package/version/legal/provenance composition accepted | final WP-23 canonical spec + Step-7/Step-8 closure |
 | Required legal attribution | INCORPORATED / PRESERVE | license/notice owners remain controlling | root/GAME legal/notice/license surfaces |
 | Technical package/version provenance | INCORPORATED / UNAFFECTED | preserve release/update/migration integrity evidence | runtime package provenance/version/update owners |
-| Current public provenance surfaces and machine checks | ACTIVE WP-23 REALIZATION | identify and reconcile independently; examples in Step 1 are not exhaustive | WP-23 Lane C, affected public sources/tests/audits |
+| Current public provenance surfaces and machine checks | INCORPORATED / RECONCILED | audited current frontier reconciled; future ambiguous artifacts remain owner-aware classification under the fixed policy | final WP-23 canonical spec; affected public sources/tests/audits |
 
 ### Current impact
 
 `WP23-S1-F01` is closed. The policy is broader than runtime packaging alone: public `DEV/` and `GAME/` are both in scope. Required or explicitly approved attribution remains, technical HDM artifact provenance remains, and source-specific research/development narratives are not a public HDM authority or default public artifact.
 
-The mandatory independent WP-23 Step-1 Senior review passed after incorporation of this decision and authorized Step 2. No new workstream and no WP-20 reopen are required.
+The mandatory independent WP-23 final Senior re-review passed after the targeted `SR23-FINAL-01` repair. WP-23 is closed with no new workstream and no WP-20 reopen required. Future enforcement of PO-007 remains under its accepted owner plus current legal/release/provenance checks rather than an active WP-23 route.
 
 Product Owner decision still required: `NONE`.
 
@@ -445,10 +445,10 @@ PO-003: INCORPORATED
 PO-004: INCORPORATED — WP-20 FINAL SENIOR PASS / NO CURRENT PENDING WP-20 ROUTE
 PO-005: INCORPORATED — FIXED CREATOR-LOGIN FAIL-CLOSED AUTHORITY
 PO-006: INCORPORATED — BRANCH/REF DELETION PROHIBITED / WP-21 FINAL SENIOR PASS
-PO-007: INCORPORATED — PUBLIC DEV/GAME RESEARCH-PROVENANCE POLICY / WP-23 STEP-1 SENIOR GO
+PO-007: INCORPORATED — PUBLIC DEV/GAME RESEARCH-PROVENANCE POLICY / WP-23 FINAL SENIOR RE-REVIEW PASS
 
-HUMAN_DECISION_REQUIRED: NO
-NEEDS_PO: NONE
+HUMAN_DECISION_REQUIRED: WP-24 LAUNCH AUTHORIZATION ONLY
+NEEDS_PO: WP-24 LAUNCH AUTHORIZATION ONLY
 UPSTREAM_REOPEN_REQUIRED: NO
 ARCHITECTURE_REOPENED: NO
 
@@ -463,8 +463,12 @@ WP22_CLOSED: YES
 WP23_STARTED: YES
 WP23_STEP1_COMPLETE: YES
 WP23_STEP1_SENIOR_REVIEW: PASS / GO
-WP23_STEP2_AUTHORIZED: YES
-WP23_STEP2_STARTED: NO
+WP23_STEPS_2_8_COMPLETE: YES
+WP23_FINAL_SENIOR_RE_REVIEW: PASS / GO
+WP23_CLOSED: YES
+WP24_NEXT_ELIGIBLE: YES
+WP24_STARTED: NO
+NEXT_AUTHORIZED_UNIT: NONE
 
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
