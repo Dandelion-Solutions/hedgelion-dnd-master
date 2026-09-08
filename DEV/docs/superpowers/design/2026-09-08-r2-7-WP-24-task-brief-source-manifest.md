@@ -93,7 +93,7 @@ WP-24 preserves the WP-22 proof boundary.
 
 Permitted now when a concrete machine/tool/runtime surface already exists. Examples include current file sizes/counts, physical instruction-corpus bytes, current index/scaffold fan-out, a current tool's runtime, current bounded/unbounded scans, currently defined publication operations and structurally inspectable cardinality/growth characteristics.
 
-A Class-A measurement proves only the measured surface under the stated basis.
+A Class-A measurement proves only the measured surface under the stated basis. It does **not**, by itself, assert that the measured surface is complete, mature, production-representative, or suitable as a forecast or sizing baseline for the eventual production surface.
 
 ### Class B — future benchmark of realized implementation
 
@@ -406,11 +406,16 @@ Classification:
 
 ```text
 CURRENT PHYSICAL CORPUS MEASUREMENT ONLY
+!= forecast of eventual production CORE size
+!= sizing baseline for eventual production CORE
+!= representativeness claim for eventual production CORE corpus
 != model token occupancy
 != prompt-pressure proof
 != user-visible latency benchmark
 != real-MVP empirical acceptance
 ```
+
+The current `370,728 B` result is therefore **not** a forecast, sizing baseline, or representativeness claim for the eventual production CORE corpus. Material corpus growth remains an explicit WP-24 scaling variable, and any later sizing claim must be re-measured against the then-current realized/production-relevant corpus under the appropriate evidence class.
 
 No bytes-to-token conversion is made because no current owner supplies a stable exact codec/capacity contract that would justify one.
 
