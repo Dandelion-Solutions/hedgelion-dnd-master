@@ -2,22 +2,24 @@
 
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
-This is the sole authority for the project's current global position, active work, next authorized unit and global gate. It does not replace semantic owners, task briefs or the sequencing roadmap.
+This is the sole authority for the project's current global position, active work, next authorized unit and global gate. It does not replace semantic owners, task briefs, design provenance or the sequencing roadmap.
+
+Detailed historical review/recovery evidence remains in the owning WP design/spec artifacts. This file keeps the current routing state and the predecessor closure facts needed to recover the active program position without turning prior design prose into a second semantic owner.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-25 STEP 1 SENIOR RE-RE-REVIEW GO — STEPS 2–8 AUTHORIZED / IN PROGRESS
+GLOBAL_STATE: R2.7 WP-25 STEPS 2–8 COMPLETE AT WORKER LEVEL — CANONICAL OWNER PUBLISHED — MANDATORY INDEPENDENT FINAL SENIOR REVIEW PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-25 — Error / degradation / failure semantics — Steps 2–8 architecture cycle authorized after mandatory independent Step-1 Senior GO
+CURRENT_SLICE: WP-25 — Error / degradation / failure semantics — worker canonicalization complete / final Senior gate pending
 
-LAST_CLOSED_UNIT: WP-25 mandatory independent Step-1 Senior re-re-review — GO WITH REQUIRED NON-BLOCKING SOURCE-ROLE CORRECTION
-NEXT_ELIGIBLE_UNIT: WP-25 Step 2 research/evidence reconciliation
-NEXT_AUTHORIZED_UNIT: WP-25 STEPS 2–8
-REQUIRED_GATE: mandatory independent WP-25 final Senior review after complete Step 8
+LAST_CLOSED_UNIT: WP-25 Step 8 worker canonicalization checkpoint
+NEXT_ELIGIBLE_UNIT: mandatory independent WP-25 final Senior review
+NEXT_AUTHORIZED_UNIT: NONE
+REQUIRED_GATE: mandatory independent WP-25 final Senior review
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-task-brief-source-manifest.md
-KNOWN_BLOCKERS: NONE FOR AUTHORIZED WP-25 STEPS 2–8; IMPLEMENTATION PLANNING / IMPLEMENTATION / NEXT WP REMAIN UNAUTHORIZED
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-25-error-degradation-failure-semantics-canonical-spec.md
+KNOWN_BLOCKERS: WP-25 IS NOT CLOSED UNTIL INDEPENDENT FINAL SENIOR REVIEW; IMPLEMENTATION PLANNING / IMPLEMENTATION / WP-26 / RELEASE EXECUTION / GAMEPLAY BOOTSTRAP REMAIN UNAUTHORIZED
 ```
 
 ---
@@ -51,167 +53,19 @@ Canonical predecessor owners:
 
 Post-WP-20 publication/currentness repair remains closed / independent Senior PASS.
 
----
-
-## WP-23 authority and design chain
-
-WP-23 was launched by explicit Product Owner authorization after WP-22 closure.
-
-Step-1 artifacts:
-
-- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-task-brief-source-manifest.md`;
-- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-1-whole-project-critic.md`;
-- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-1-senior-review.md` — `PASS / GO`.
-
-Product Owner provenance decision:
-
-- `DEV/docs/superpowers/specs/2026-09-08-hdm-public-research-provenance-attribution-owner-decision.md`.
-
-Steps 2–8:
-
-- Step 2 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-2-evidence-reconciliation.md`;
-- Step 3 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-3-decision-brief.md`;
-- Step 4 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-4-cross-system-review.md`;
-- Step 5 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-5-candidate-specification.md`;
-- Step 6 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-6-whole-project-adversarial-review.md`;
-- Step 7 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-7-finding-resolution-propagation.md`;
-- Step 8 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-23-step-8-canonicalization-checkpoint.md`.
-
-Canonical WP-23 owner:
-
-- `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-23-release-package-version-legal-readiness-canonical-spec.md`.
-
-## WP-23 final architecture result
-
-WP-23 remains one coupled release chain:
-
-```text
-Lane A — package / installation integrity
-Lane B — version / upgrade / release integrity
-Lane C — legal / public provenance hygiene
-```
-
-Final proof separations retained:
-
-```text
-SUCCESSFUL_ZIP_BUILD != RELEASE_READINESS
-GREEN_SOURCE_CI != PUBLISHED_RELEASE_ACCEPTANCE
-SEMANTIC_VERSION != EXACT_PACKAGE_PROVENANCE != FINAL_ARCHIVE_DIGEST
-ARCHITECTURE_CLOSURE != PRODUCT PRODUCTION-RELEASE-READY
-```
-
-Step-6 / Step-7 result:
-
-```text
-STEP6_BLOCKING_FOUND: 0
-STEP6_SIGNIFICANT_FOUND: 5
-STEP6_MINOR_FOUND: 2
-
-STEP7_UNRESOLVED_BLOCKING: 0
-STEP7_UNRESOLVED_SIGNIFICANT: 0
-STEP7_UNRESOLVED_MINOR: 0
-PROPAGATION_SWEEP_COMPLETE: YES
-```
-
-Repository-wide current public provenance reconciliation for the WP-23 audited `DEV/` + `GAME/` frontier:
-
-```text
-PUBLIC SOURCE-SPECIFIC DEVELOPMENT/RESEARCH PROVENANCE: RECONCILED / PROHIBITED BY CURRENT POLICY
-REQUIRED LEGAL ATTRIBUTION: PRESERVED
-EXPLICIT PO-APPROVED ATTRIBUTION: PRESERVE BY POLICY
-TECHNICAL HDM ARTIFACT PROVENANCE: PRESERVED WHERE OWNED
-SOURCE-NEUTRAL INTERNAL HDM EVIDENCE: MAY REMAIN
-BOUNDED MACHINE REGRESSION GUARD: PRESENT
-GLOBAL EXTERNAL-NAME/URL BLACKLIST: NOT USED / NOT AUTHORITY
-GIT HISTORY REWRITE: NOT PERFORMED / NOT REQUIRED
-```
-
----
-
-## WP-23 final Senior verdict and targeted repair
-
-Initial mandatory final Senior review returned:
-
-```text
-WP23_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
-SR23-FINAL-01: SIGNIFICANT
-HUMAN_DECISION_REQUIRED: NO
-WP20_REOPEN_REQUIRED: NO
-WHOLESALE_WP23_REOPEN_REQUIRED: NO
-TARGETED_REPAIR_REQUIRED: YES
-```
-
-Finding: final WP-23 synthesis preserved the post-publication fresh-Project acceptance boundary but omitted the independent pre-tag fresh-Project candidate gate already required by `DEV/RELEASE/CHECKLIST.md`.
-
-The targeted repair restored the current owner-required sequence:
-
-```text
-final version-coherent source tree
--> build/validation evidence
--> pre-tag candidate artifact
--> fresh-Project acceptance of that pre-tag candidate
--> immutable release tag / tag-triggered publication
--> exact uploaded runtime asset + checksum/provenance verification
--> fresh-Project acceptance of the exact uploaded asset
--> release may be announced when all applicable release-owner obligations pass
-```
-
-The two fresh-Project checks are temporally/evidentially distinct; they do not require two different physical Project instances.
-
-Current exact-head CI/build verification satisfies neither empirical fresh-Project gate.
-
-Affected-artifact accounting and historical-artifact dispositions are recorded in Step 7. Step 2 and Step 5 carry direct self-identifying qualification; the canonical spec is the single current final normative owner.
-
-Repeat mandatory independent final Senior review accepted the targeted repair:
-
-```text
-WP23_FINAL_SENIOR_RE_REVIEW: PASS / GO
-SR23-FINAL-01: CLOSED / REPAIRED
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
-HUMAN_DECISION_REQUIRED_FOR_WP23_CLOSURE: NO
-WP20_REOPEN_REQUIRED: NO
-WHOLESALE_WP23_REOPEN_REQUIRED: NO
-WP23_FINAL_CLOSURE: PASS
-WP23_CLOSED: YES
-```
-
-Package/version/update status at closure:
-
-```text
-CURRENT_PACKAGE_BUILD/INSTALL ARCHITECTURE: RECONCILED
-CURRENT VERSION NAMESPACE ARCHITECTURE: RECONCILED
-WP20_REOPEN_REQUIRED: NO
-PRE_TAG_CANDIDATE_FRESH_PROJECT_ACCEPTANCE: NOT EXECUTED / RELEASE-TIME OBLIGATION
-ACTUAL RELEASE/TAG/PUBLICATION: NOT EXECUTED
-EXACT_UPLOADED_ASSET_VERIFICATION: NOT EXECUTED / RELEASE-TIME OBLIGATION
-POST_UPLOAD_FRESH_PROJECT_ACCEPTANCE: NOT EXECUTED / RELEASE-TIME OBLIGATION
-PRODUCTION_RELEASE_READY CLAIM: NOT MADE
-```
-
-## Fixed Product Owner boundaries retained
-
-Creator-login continuity remains fail closed:
+Fixed Product Owner boundaries retained from predecessor work include:
 
 ```text
 CREATOR_LOGIN_RENAME_SUPPORT: NOT SUPPORTED
 UNRESOLVABLE_CREATOR_LOGIN: FAIL CLOSED
 STABLE_ID_SUBSTITUTION_FOR_CREATOR: FORBIDDEN
 SILENT_CREATOR_TRANSFER: FORBIDDEN
-```
 
-PO-006 branch/ref policy remains unchanged:
-
-```text
 REMOTE BRANCH CREATION: PROHIBITED BY DEFAULT; EXACT OWNER APPROVAL REQUIRED
 HDM AUTOMATIC BRANCH/REF DELETION: FORBIDDEN / NOT A CAPABILITY
 REF RETIREMENT: LOGICAL DE-AUTHORIZATION / DE-ROUTING ONLY
 PHYSICAL REF EXISTENCE IMPLIES AUTHORITY: NO
-```
 
-WP-23 public provenance policy remains:
-
-```text
 PUBLIC DEV/GAME SOURCE-SPECIFIC DEVELOPMENT/RESEARCH PROVENANCE: FORBIDDEN BY DEFAULT
 REQUIRED LEGAL ATTRIBUTION: PRESERVED
 EXPLICIT PO-APPROVED ATTRIBUTION: PRESERVED
@@ -221,213 +75,63 @@ PUBLIC HDM SEMANTICS: INDEPENDENTLY STATED IN HDM TERMS
 
 ---
 
-## WP-24 authority and Step-1 Senior closure
+## WP-24 retained predecessor constraints material to WP-25
 
-WP-24 was launched by explicit Product Owner authorization on 2026-09-08.
-
-Step-1 artifacts:
-
-- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-task-brief-source-manifest.md`;
-- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-1-whole-project-critic.md`.
-
-Initial mandatory independent Senior review returned HOLD with bounded recovery. The recovery chain closed four findings through independent Senior re-review:
-
-```text
-WP24_STEP1_SENIOR_RE_REVIEW: PASS / GO
-SR24-S1-01: PASS / CLOSED
-SR24-S1-02: PASS / CLOSED
-SR24-S1-03: PASS / CLOSED
-SR24-S1-04: PASS / CLOSED
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
-WP24_STEP2_AUTHORIZED: YES
-IMPLEMENTATION_PLANNING_AUTHORIZED: NO
-```
-
-### Closed Step-1 constraints carried into Steps 2–8
-
-```text
-PO-003 / WP-19:
-    zero extra sequential LLM calls solely for historical-basis capture
-    zero extra serial remote/tool reads when required T0 is already admitted
-    zero separate publications solely for basis capture
-    zero basis work on irrelevant/trivial/NO_CHANGE turns
-    bounded typed material only
-    extra serial LLM/tool round trip on ordinary gameplay critical path => material escalation
-
-TURN-TIME LAW:
-    no accepted 120-second SLA
-    no fixed token/time/step/complexity turn ceiling
-
-ENGINE INSTRUCTION CACHE:
-    new chat/substantial setup => full exact-package CORE + RULES preload
-    package switch => invalidate + full target rebuild
-    verified instruction-context loss => full rehydrate
-    ordinary turn => already-loaded CORE / zero CORE reread merely for activation
-
-WP-22:
-    structural/specification evidence != current physical measurement
-    != realized implementation benchmark != production-like supported-host empirical acceptance
-
-STORY:
-    8 baseline registrations
-    EVENTS/NARRATIVE SemanticEvent and relation projection obligations independent
-    LOCAL + selected LIVE origin/domain/lane cursor fan-out
-    bounded window/read != bounded total Story corpus
-    no corpus-wide size quota
-    native-source survivor retention until required projection/equivalent survivor
-    required Story-output retention after compatible coverage
-    backlog/catch-up may lag and stays outside ordinary gameplay critical path
-    unprovable source-scope completeness => UNKNOWN/defer, not global scan
-    no mandatory Chronicler queue/worker/heartbeat
-
-STORY PERSISTENCE OPERABILITY:
-    10 KiB mutable runtime text cap = hard per-file invariant, not corpus quota
-    every plausibly unbounded collection requires deterministic bounded partition path
-    physical topology is not semantic authority
-    no concrete shard/page/layout/count/threshold selected without evidence/trigger
-
-DIRECT LLM-FACING STORY SHAPE:
-    ~250 lines = preferred design ceiling
-    251–300 = review zone
-    >300 = not acceptable normal steady state without explicit owner-required safe reason
-    line-count policy = ergonomics/operability guidance, not token/latency SLA or 10 KiB substitute
-
-EXACT ARCHIVAL EDGE:
-    exact material cannot be truncated/paraphrased for file-size compliance
-    if an accepted exact archival scope may exceed one indivisible file,
-    owner/schema must define bounded exact partition/reconstruction semantics BEFORE ADMISSION
-
-PO-006:
-    HDM automatic branch/ref deletion forbidden
-    physical retained refs may be measured but cannot become authority or require ordinary all-ref scans
-```
-
-A Story integration-contract edit was not required during SR24-S1-04: `DEV/PROJECT_MAP.md` supplies direct forward discovery of the supplemental growth/sharding owner, whose own authority statement supplements and preserves the integration contract.
-
----
-
-## WP-24 Steps 2–8 final worker result and final-Senior propagation repair
-
-Design chain:
-
-- Step 2 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-2-evidence-reconciliation.md`;
-- Step 3 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-3-decision-brief.md`;
-- Step 4 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-4-cross-system-review.md`;
-- Step 5 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-5-candidate-specification.md`;
-- Step 6 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-6-whole-project-adversarial-review.md`;
-- Step 7 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-7-finding-resolution-propagation.md`;
-- Step 8 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-8-canonicalization-checkpoint.md`.
-
-Canonical WP-24 owner:
-
-- `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-24-performance-scale-operational-budget-canonical-spec.md`.
-
-Selected architecture:
+WP-24 is closed. The following accepted constraints remain active inputs where applicable:
 
 ```text
 OWNER-COMPOSED BOUNDED OPERATIONS
 + GROWTH-AWARE RETENTION
 + TRIGGER-GATED PHYSICAL OPTIMIZATION
 + STAGED REAL-TARGET PERFORMANCE PROOF
+
+no universal latency/token/context/retry/campaign-size SLA
+ordinary correctness work scales with current semantic scope, not campaign age
+no whole-campaign / whole-Story / all-ref / all-LIVE / full-history fallback
+10 KiB mutable runtime-text cap remains a per-file hard representation trigger
+structural boundedness != physical measurement != realized benchmark != empirical acceptance
+no hidden background correctness worker/heartbeat
 ```
 
-Step-6 / Step-7 semantic result:
+WP-24 Step-6/7 result remains:
 
 ```text
 STEP6_BLOCKING_FOUND: 0
 STEP6_SIGNIFICANT_FOUND: 5
 STEP6_MINOR_FOUND: 2
-
-F24-06-01: campaign-menu discovery cardinality
-F24-06-02: 10 KiB hard-cap activation semantics
-F24-06-03: Story service-opportunity origin/domain fan-out
-F24-06-04: long-stale changed-path synchronization
-F24-06-05: recovery/checkpoint/chronology special-path coverage
-F24-06-M1: runtime-package count dormant trigger
-F24-06-M2: initial scaffold publication future benchmark
-
 STEP7_UNRESOLVED_BLOCKING: 0
 STEP7_UNRESOLVED_SIGNIFICANT: 0
-HUMAN_DECISION_REQUIRED: NO
-PO_DECISION_REQUIRED: NO
-```
-
-Canonical final additions from Step-6/7 repair include:
-
-```text
-campaign menu/preselection discovery is bounded per operation; no required exhaustive all-campaign-ref traversal
-10 KiB hard cap is decisive mandatory representation trigger, while earlier partitioning remains evidence-driven
-Story service-opportunity detection itself is bounded across growing origin/domain/lane fan-out
-unproved broader Story source-scope completeness => UNKNOWN/DEFER, never global scan/false caught-up
-stale-base changed-path comparison has bounded direct-current-footprint fallback
-cold recovery/temporal rebuild follows bounded current roots + correctness-required closure, not campaign-history scans
-checkpoint remains optional acceleration/evidence, not scale/currentness authority
-chronology remains typed/bounded; no global timeline reconstruction
-```
-
-Mandatory independent final Senior review initially returned:
-
-```text
-WP24_FINAL_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD
-SR24-FINAL-01: SIGNIFICANT / OPEN
-UNRESOLVED_BLOCKING_AT_SENIOR_REVIEW: 0
-UNRESOLVED_SIGNIFICANT_AT_SENIOR_REVIEW: 1
-CANONICAL_ARCHITECTURE_SEMANTIC_REPAIR_REQUIRED: NO
-```
-
-The canonical semantics of `F24-06-01..05` were accepted. The HOLD was a mandatory finding-propagation/traceability defect only.
-
-Targeted worker repair:
-
-```text
-PER_FINDING_AFFECTED_ARTIFACT_LEDGER: COMPLETE IN STEP 7
-STEP2_SELF_IDENTIFYING_QUALIFICATION: ADDED
-STEP5_SELF_IDENTIFYING_QUALIFICATION: ADDED
-STEP1: SAFE HISTORICAL / NO EDIT REQUIRED
-STEP3: SAFE HISTORICAL / NO EDIT REQUIRED
-STEP4: SAFE HISTORICAL / NO EDIT REQUIRED
-STEP6: SAFE HISTORICAL FINDING SOURCE / NO EDIT REQUIRED
-STEP8: UPDATED
-CURRENT_PROGRESS: UPDATED
-PROJECT_MAP_ROADMAP_CHANGE_REQUIRED: NO
-DEFERRED_OBLIGATIONS: ACCOUNTED PER FINDING IN STEP 7 / CANONICAL §20
-CANONICAL_SEMANTIC_MISMATCH_FOUND: NO
-CANONICAL_SEMANTIC_CHANGE: NO
-NEW_BLOCKING_FOUND_BY_PROPAGATION_AUDIT: 0
-NEW_SIGNIFICANT_FOUND_BY_PROPAGATION_AUDIT: 0
-```
-
-Mandatory independent final Senior re-review after the targeted repair returned:
-
-```text
 WP24_FINAL_SENIOR_RE_REVIEW: PASS / GO
-SR24-FINAL-01: PASS / CLOSED
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
-HUMAN_DECISION_REQUIRED: NO
-PO_DECISION_REQUIRED: NO
-UPSTREAM_WHOLESALE_REOPEN_REQUIRED: NO
-WP24_FINAL_CLOSURE: PASS
 WP24_CLOSED: YES
-IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 ```
-
-WP-24 is therefore closed. The previous worker/Senior-HOLD cursor is historical only and must not be used as current routing authority.
 
 ---
 
-## WP-25 Product Owner direction, Step-1 Senior closure and Steps 2–8 authorization
+# WP-25 — Error / degradation / failure semantics
 
-The Product Owner explicitly authorized WP-25 and approved the failure/degradation/durability-risk direction at:
+## Product Owner direction
+
+Binding Product Owner input:
 
 - `DEV/docs/superpowers/specs/2026-09-08-hdm-wp25-failure-degradation-durability-risk-owner-direction.md`;
 - `DEV/PRODUCT_OWNER_INPUT.md` — `PO-008`.
 
-Binding direction remains:
+Accepted direction:
 
 ```text
-FAILURE CAUSE != EFFECTIVE SEVERITY != GAMEPLAY DISPOSITION != RETRY POLICY
+OWNER-LOCAL NATIVE OUTCOMES
++ EPHEMERAL CROSS-OWNER FAILURE DISPOSITION
++ SCOPE-AWARE CONTINUATION
++ RISK-TRAJECTORY-AWARE DURABILITY PROTECTION
+
+FAILURE CAUSE
+!= EFFECTIVE SEVERITY
+!= GAMEPLAY IMPACT
+!= AFFECTED SCOPE
+!= RISK IF IGNORED
+!= TEMPORAL TOLERANCE
+!= RETRY/RECOVERY SEMANTICS
+!= USER-VISIBLE DISPOSITION
 
 EFFECTIVE SEVERITY:
     S0 NOTICE
@@ -439,20 +143,21 @@ EFFECTIVE SEVERITY:
 UNSUPPORTED:
     orthogonal capability/deployment/compatibility disposition
 
-SELECTED DIRECTION:
-    owner-local native outcomes
-    + ephemeral cross-owner FailureDisposition-like composition
-    + scope-aware continuation
-    + risk-trajectory-aware durability protection
-
-DURABILITY INTENT:
-    one-hour rule was a rough proxy, not product law
-    NORMAL / ELEVATED / DANGER remains conceptual
-    exact machine thresholds remain open
+DURABILITY:
+    historical one-hour rule = rough proxy, not product law
+    NORMAL / ELEVATED / DANGER retained conceptually
     operability/loss-protection fence != correctness HARD
+    exact host-risk thresholds/calibration remain downstream realization/empirical work
 ```
 
-### Initial Step-1 worker package
+---
+
+## Step-1 closure and mandatory source-role correction
+
+Step-1 artifacts:
+
+- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-task-brief-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-1-whole-project-critic.md`.
 
 Initial worker critic:
 
@@ -460,151 +165,29 @@ Initial worker critic:
 STEP1_CRITIC_BLOCKING_FOUND: 0
 STEP1_CRITIC_SIGNIFICANT_FOUND: 7
 STEP1_CRITIC_MINOR_FOUND: 2
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
-HUMAN_DECISION_REQUIRED: NO
 ```
 
-Mandatory independent Senior Step-1 review returned HOLD with three SIGNIFICANT omissions:
+The Step-1 Senior recovery chain ultimately closed the deterministic-rules/House-Rules, maintenance, exact ruleset identity, bootstrap/READY_PC/storage and maintenance-naming omissions.
 
-```text
-SR25-S1-01 — deterministic rules/admission/House-Rules graph
-SR25-S1-02 — maintenance/support contract
-SR25-S1-03 — bootstrap/initial-materialization/save-exit graph
-```
-
-First bounded worker recovery was published at `865b4b16cfcca4f27104eaeb3eb13e72de87b750` and reported:
-
-```text
-RERUN_CRITIC_BLOCKING_FOUND: 0
-RERUN_CRITIC_SIGNIFICANT_FOUND: 3
-RERUN_CRITIC_MINOR_FOUND: 0
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
-HUMAN_DECISION_REQUIRED: NO
-```
-
-### Mandatory Senior re-review HOLD
-
-Independent Senior re-review of `865b4b16cfcca4f27104eaeb3eb13e72de87b750` returned:
-
-```text
-SENIOR_RE_REVIEW_VERDICT: HOLD — SECOND BOUNDED STEP-1 RECOVERY REQUIRED
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 2
-UNRESOLVED_MINOR: 1
-HUMAN_DECISION_REQUIRED_NOW: NO
-WP25_STEP2_AUTHORIZED: NO
-IMPLEMENTATION_PLANNING_AUTHORIZED: NO
-WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
-
-SR25-S1-01: SIGNIFICANT / OPEN
-    missing canonical RULESET_PACKAGE_IDENTITY owner and exact identity/recovery chain
-
-SR25-S1-02: PASS / CLOSED
-
-SR25-S1-03: SIGNIFICANT / OPEN
-    missing CHARACTER_PROGRESSION_READY_PC_SEED + STORAGE owner routes
-
-SENIOR_MINOR: OPEN
-    maintenance labels must be semantic outcomes/categories, not frozen exact runtime enums
-```
-
-### Second bounded worker recovery result
-
-The second recovery expanded the open-world graph through current owners and machine/test consumers and reran the whole-project Step-1 critic.
-
-Recovered distinctions include:
-
-```text
-RULESET IDENTITY:
-    canonical RULESET_PACKAGE_IDENTITY exact package/set identity
-    + versioning representation amendment
-    + machine closure/loader/lock/Resolution/Continuation consumers
-
-    invalid_manifest / content_mismatch / missing_dependency /
-    ambiguous_dependency / dependency_cycle / package_id_ambiguity /
-    namespace_conflict / engine_incompatibility / catalog_incompatibility /
-    resolved_set_mismatch / unreconstructable_context
-
-    ruleset reconstruction failure
-    != capability gap
-    != dormant capability
-    != compiler rejection
-    != compatibility/migration result
-    != ordinary gameplay failure
-
-READY_PC:
-    provisional gameplay with sufficient exact local dependencies
-    != attempted mechanic blocked by exact local dependency
-    != READY_PC not yet satisfied
-    != package compilation fail-closed
-
-STORAGE:
-    DND_STORAGE.engine.baseline = storage-owner-approved NEW-only runtime identity
-    storage-owner authority != campaign creator authority != gameplay publication authority
-    existing campaign runtime = MANIFEST.engine.current != storage baseline
-
-MAINTENANCE:
-    NOT_AUTHORIZED / NOT_CURRENT_OR_UNRESOLVED /
-    WITHHELD_OR_REDACTED / UNAVAILABLE_NOT_REALIZED
-    are semantic outcome categories; exact future machine enum names remain realization-owned
-```
-
-Stale one-hour realization debt now explicitly includes:
-
-```text
-GAME/CORE/DURABILITY_GUARD.md
-GAME/CORE/SESSION.md
-GAME/CORE/STORAGE.md
-DEV/TESTS/test_hourly_durability_contract.py
-```
-
-Second-recovery critic result:
-
-```text
-RERUN_CRITIC_BLOCKING_FOUND: 0
-RERUN_CRITIC_SIGNIFICANT_FOUND: 2
-RERUN_CRITIC_MINOR_FOUND: 1
-NEW_BLOCKING_BEYOND_SENIOR_FINDINGS: 0
-NEW_SIGNIFICANT_BEYOND_SENIOR_FINDINGS: 0
-
-SR25-S1-01: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-RE-REVIEW
-SR25-S1-02: PASS / CLOSED — RETAINED / NOT REOPENED
-SR25-S1-03: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-RE-REVIEW
-SENIOR_MINOR: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-RE-REVIEW
-
-UNRESOLVED_BLOCKING_IN_WORKER_RECOVERY: 0
-UNRESOLVED_SIGNIFICANT_IN_WORKER_RECOVERY: 0
-HUMAN_DECISION_REQUIRED: NO
-ACCEPTED_SEMANTIC_OWNER_CONFLICT_FOUND: NO
-WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
-```
-
-### Mandatory independent Step-1 Senior re-re-review — GO
-
-Senior re-re-review of exact HEAD `18fcf6efcada8a01c559362494291700ec4b637e` returned:
+Mandatory independent Step-1 Senior re-re-review of `18fcf6efcada8a01c559362494291700ec4b637e` returned:
 
 ```text
 SENIOR_RE_RE_REVIEW_VERDICT: GO WITH REQUIRED NON-BLOCKING SOURCE-ROLE CORRECTION
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
 HUMAN_DECISION_REQUIRED_NOW: NO
-
 WP25_STEP2_AUTHORIZED: YES
 WP25_STEPS_2_8_AUTHORIZED: YES
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 NEXT_WP_AUTHORIZED: NO
-
-NEXT_MANDATORY_GATE: independent WP-25 final Senior review after complete Step 8
 ```
 
-Required non-blocking correction was applied to the current Step-1 Source Manifest before substantive Step 2:
+Required pre-Step-2 source-role correction is complete:
 
 ```text
 DEV/docs/superpowers/specs/2026-08-18-runtime-selection-and-storage-baseline-amendment.md
     = HISTORICAL / PARTIALLY SUPERSEDED DESIGN AMENDMENT / PROVENANCE
-    current only for storage-baseline / three-runtime-identity semantics incorporated by later current owners
+    current only for storage-baseline / three-runtime-identity semantic portions incorporated by later owners
     not current compatibility authority
 
 CURRENT COMPATIBILITY AUTHORITY:
@@ -614,13 +197,180 @@ CURRENT COMPATIBILITY AUTHORITY:
 source ancestry / same-version equality alone != compatibility proof
 ```
 
-Current gate:
+---
+
+## WP-25 Steps 2–8 design chain
+
+- Step 2 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-2-evidence-reconciliation.md`;
+- Step 3 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-3-decision-brief.md`;
+- Step 4 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-4-cross-system-review.md`;
+- Step 5 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-5-candidate-specification.md`;
+- Step 6 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-6-whole-project-adversarial-review.md`;
+- Step-6 propagation qualification — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-6-propagation-qualification-addendum.md`;
+- Step 7 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-7-finding-resolution-propagation.md`;
+- Step 8 — `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-8-canonicalization-checkpoint.md`.
+
+Canonical WP-25 owner:
+
+- `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-25-error-degradation-failure-semantics-canonical-spec.md`.
+
+Step-3/4/5 remain historical design provenance. Their later Step-6 qualifications are recorded explicitly in the propagation addendum rather than backdated into the original design narrative. The canonical spec is the current final worker-produced normative owner.
+
+---
+
+## WP-25 final worker architecture
+
+```text
+SELECTED_ARCHITECTURE:
+    FOCUS-SCOPED EPHEMERAL FAILURE DISPOSITION
+    + OWNER-LOCAL NATIVE OUTCOMES
+    + SCOPE-AWARE CONTINUATION
+    + RISK-TRAJECTORY-AWARE DURABILITY PROTECTION
+
+PERSISTED_GLOBAL_ERROR_AUTHORITY: NO
+GLOBAL_HEALTH_STATE: NO
+UNIVERSAL_RETRY_ENGINE: NO
+GENERIC_WP25_ACL: NO
+CAMPAIGN_WIDE_ERROR_LIFECYCLE: NO
+BACKGROUND_FAILURE_MONITOR: NO
+```
+
+Core final constraints include:
+
+```text
+one disposition == one concrete bounded focus, never campaign health
+focus closure completeness must be owner/consumer-contract proven
+caller omission != healthy empty closure
+FailureDisposition != authorization/currentness/eligibility/permission lease
+continuation classifications != global ACL/operation registry
+truthful basis is owner-qualified; no scalar cross-domain frontier
+partial/accepted native success remains real through downstream failure
+no campaign/session max severity or max risk over unrelated scopes
+UNSUPPORTED remains orthogonal to severity and generic failure-family shorthand
+DANGER requests at most one owner-valid bounded preservation opportunity at an admitted execution point
+DANGER != HARD != corruption != scheduler/worker/retry loop
+advisory host/context pressure alone cannot create a gameplay-affecting DANGER fence
+accepted mechanics/RNG/IDs/publication are never replayed to repair downstream work
+ordinary waiting/silence is not system failure
+user-visible failure explanation grants no disclosure authority
+Story/planning/checkpoint/index/cache/diagnostics remain nonauthority
+no global scan / force / rewind / ref deletion / alternate transport / generic LWW
+```
+
+Owner-native distinctions retained include:
+
+```text
+publication: CONFIRMED_ACCEPTED != CONFIRMED_REJECTED != INDETERMINATE
+recovery: READY != RETRY != BLOCKED
+Context: ASSEMBLED != ASSEMBLED_DEGRADED != UNSATISFIABLE
+compatibility: DIRECT_COMPATIBLE != MAINTENANCE_REFRESH != MIGRATION_REQUIRED != UNSUPPORTED_INCOMPATIBLE != INDETERMINATE
+ruleset reconstruction reasons remain exact native evidence
+catalog gap != search miss != dormant capability != compiler rejection
+House-Rule policy conflict != realization gap != adjudication input failures
+provisional local mechanic sufficiency != local mechanic block != READY_PC false != package compilation failure
+storage baseline NEW-only != existing campaign MANIFEST.engine.current != ephemeral local runtime root
+Story/planning/diagnostics/checkpoint remain nonauthority
+accepted mechanics/RNG no-replay preserved
+```
+
+---
+
+## Step-6 adversarial findings and Step-7 resolution
+
+Step-6 result:
+
+```text
+STEP6_BLOCKING_FOUND: 0
+STEP6_SIGNIFICANT_FOUND: 6
+STEP6_MINOR_FOUND: 3
+HUMAN_DECISION_REQUIRED: NO
+PO_DECISION_REQUIRED: NO
+SELECTED_ARCHITECTURE_CHANGED: NO
+```
+
+Significant findings:
+
+```text
+F25-06-01 focus input completeness must be owner-proven
+F25-06-02 disposition/continuation output cannot become authorization/currentness lease
+F25-06-03 no generic WP-25 ACL/operation registry
+F25-06-04 DANGER cannot create scheduler/background/automatic retry loop
+F25-06-05 advisory host pressure cannot alone establish gameplay-affecting DANGER
+F25-06-06 accepted/partial native success must survive successor dispositions
+```
+
+Minor findings:
+
+```text
+F25-06-M1 ordinary waiting remains non-failure
+F25-06-M2 user-visible failure projection remains non-authoritative/disclosure-safe
+F25-06-M3 UNSUPPORTED remains orthogonal to generic failure-family shorthand
+```
+
+Step-7 result:
+
+```text
+STEP7_UNRESOLVED_BLOCKING: 0
+STEP7_UNRESOLVED_SIGNIFICANT: 0
+STEP7_UNRESOLVED_MINOR: 0
+FINDING_PROPAGATION_SWEEP_COMPLETE: YES
+HUMAN_DECISION_REQUIRED: NO
+PO_DECISION_REQUIRED: NO
+UPSTREAM_OWNER_REOPEN_REQUIRED: NO
+```
+
+No Step-6 finding required an upstream semantic-owner change or a new Product Owner decision.
+
+---
+
+## Current realization / verification / empirical status
+
+Architecture coverage does not imply machine realization.
+
+Explicitly deferred until future separately authorized implementation planning/execution:
+
+1. focus-scoped FailureDisposition evaluator/adapters;
+2. any exact machine type/enum representation selected for the common integration projection;
+3. cross-owner failure/cascade/scope-isolation executable/scenario verification;
+4. stale one-hour durability realization repair in:
+   - `GAME/CORE/DURABILITY_GUARD.md`;
+   - `GAME/CORE/SESSION.md`;
+   - `GAME/CORE/STORAGE.md`;
+   - `DEV/TESTS/test_hourly_durability_contract.py`;
+5. installed maintenance command realization;
+6. exact DANGER/host-risk calibration and real-target false-positive/false-negative acceptance;
+7. downstream reconciliation ensuring `MECHANICS_INTEGRITY.md` pre-acceptance correction wording is never used as accepted-work replay authority.
+
+Proof dimensions remain separate:
+
+```text
+ARCHITECTURE COVERAGE
+!= MACHINE REALIZATION
+!= VERIFICATION REALIZATION
+!= EMPIRICAL ACCEPTANCE
+```
+
+No production-like empirical host acceptance is claimed by WP-25 architecture closure.
+
+---
+
+## Step-8 status and gate
 
 ```text
 WP25_STEP1_SENIOR_RE_RE_REVIEW: PASS / GO WITH REQUIRED NON-BLOCKING SOURCE-ROLE CORRECTION
 WP25_STEP1_SOURCE_ROLE_CORRECTION: COMPLETE
-WP25_STEP2_AUTHORIZED: YES
-WP25_STEPS_2_8_AUTHORIZED: YES
+WP25_STEP2_STATUS: COMPLETE
+WP25_STEP3_STATUS: COMPLETE
+WP25_STEP4_STATUS: COMPLETE
+WP25_STEP5_STATUS: COMPLETE
+WP25_STEP6_STATUS: COMPLETE
+WP25_STEP7_STATUS: COMPLETE
+WP25_STEP8_STATUS: COMPLETE AT WORKER LEVEL
+
+WP25_STEPS_2_8_COMPLETE_AT_WORKER_LEVEL: YES
+WP25_CANONICAL_OWNER_PUBLISHED: YES
+WP25_FINAL_SENIOR_REVIEW: REQUIRED / PENDING
+WP25_CLOSED: NO
 
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
@@ -629,23 +379,23 @@ RELEASE_MIGRATION_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 NEXT_WP_AUTHORIZED: NO
 
-NEXT_AUTHORIZED_UNIT: WP-25 STEPS 2–8
-NEXT_GATE: mandatory independent WP-25 final Senior review after complete Step 8
+NEXT_AUTHORIZED_UNIT: NONE
+NEXT_GATE: mandatory independent WP-25 final Senior review
 ```
 
-The worker may continue automatically through Steps 2–8 unless a genuine human-owned product/authority/risk decision appears. There is no routine Senior stop between Steps 2 and 8.
+Do not begin implementation planning, implementation, WP-26, release execution or gameplay bootstrap before the next applicable explicit authorization after the mandatory independent WP-25 final Senior review.
 
 ---
 
 ## Version Impact
 
 ```text
-VERSION_IMPACT: VERIFIED FOR WP-25 STEP-1 POST-SENIOR SOURCE-ROLE/STATUS CORRECTION
+VERSION_IMPACT: VERIFIED FOR WP-25 STEPS 2–8 ARCHITECTURE/DESIGN/STATUS PUBLICATION
 VERSION_BUMP_REQUIRED: NO
 VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-This pre-Step-2 checkpoint changes design source-role provenance and global progress routing only. It does not modify a version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime implementation.
+WP-25 changes architecture/design/status/routing documentation only. It does not modify a version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime implementation.
 
-Current next gate: **mandatory independent WP-25 final Senior review after complete Step 8**.
+Future WP-25 implementation work must run a fresh Version Impact Gate under its own authorization.
