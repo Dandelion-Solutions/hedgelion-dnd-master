@@ -6,18 +6,18 @@ This is the sole authority for the project's current global position, active wor
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-25 STEP 1 COMPLETE — TASK BRIEF / OPEN-WORLD SOURCE MANIFEST / WHOLE-PROJECT CRITIC PUBLISHED — INDEPENDENT SENIOR STEP-1 REVIEW PENDING
+GLOBAL_STATE: R2.7 WP-25 STEP 1 SENIOR HOLD — BOUNDED RECOVERY COMPLETE / PUBLICATION PENDING — INDEPENDENT SENIOR STEP-1 RE-REVIEW REQUIRED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-25 — Error / degradation / failure semantics — Step 1 complete / mandatory independent Senior Step-1 review pending
+CURRENT_SLICE: WP-25 — Error / degradation / failure semantics — bounded Step-1 recovery for SR25-S1-01..03 complete at worker level / Senior re-review pending
 
-LAST_CLOSED_UNIT: WP-25 worker Step-1 framing/source-manifest/critic package
-NEXT_ELIGIBLE_UNIT: mandatory independent WP-25 Step-1 Senior review
+LAST_CLOSED_UNIT: WP-25 bounded Step-1 worker recovery of SR25-S1-01..03
+NEXT_ELIGIBLE_UNIT: mandatory independent WP-25 Step-1 Senior re-review
 NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: mandatory independent WP-25 Step-1 Senior review
+REQUIRED_GATE: mandatory independent WP-25 Step-1 Senior re-review
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-task-brief-source-manifest.md
-KNOWN_BLOCKERS: WP-25 STEP 2 REMAINS UNAUTHORIZED UNTIL INDEPENDENT SENIOR STEP-1 GO
+KNOWN_BLOCKERS: SR25-S1-01..03 REMAIN SENIOR-OPEN UNTIL INDEPENDENT STEP-1 RE-REVIEW; WORKER RECOVERY HAS 0 UNRESOLVED BLOCKING / 0 UNRESOLVED SIGNIFICANT; WP-25 STEP 2 UNAUTHORIZED
 ```
 
 ---
@@ -417,14 +417,14 @@ WP-24 is therefore closed. The previous worker/Senior-HOLD cursor is historical 
 
 ---
 
-## WP-25 Product Owner direction and Step-1 completion
+## WP-25 Product Owner direction, Senior HOLD and bounded Step-1 recovery
 
 The Product Owner explicitly authorized WP-25 Step 1 and approved the failure/degradation/durability-risk direction published at:
 
 - `DEV/docs/superpowers/specs/2026-09-08-hdm-wp25-failure-degradation-durability-risk-owner-direction.md`;
 - `DEV/PRODUCT_OWNER_INPUT.md` — `PO-008`.
 
-Binding direction entering Step 1 remains:
+Binding direction remains:
 
 ```text
 FAILURE CAUSE != EFFECTIVE SEVERITY != GAMEPLAY DISPOSITION != RETRY POLICY
@@ -463,39 +463,96 @@ DURABILITY PRODUCT INTENT:
     NORMAL / ELEVATED / DANGER distinction must survive, exact machine thresholds remain open
     DANGER may guard further materially state-growing gameplay until preservation/repair
     operability/loss-protection fence != generic correctness HARD
-    occasional early coherent persistence is preferred to large avoidable loss of established progress
-
-WHOLE-PROJECT CRITIC:
-    aggressive / mandatory
-    must reconstruct actual current owners and stale/superseded runtime projections
 ```
 
-Step-1 worker artifacts:
+Initial worker Step-1 artifacts were published at Senior-reviewed HEAD:
 
-- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-task-brief-source-manifest.md` — complete post-critic repaired Architecture Task Brief + open-world Source Manifest;
-- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-1-whole-project-critic.md` — mandatory independent whole-project framing critic.
+- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-task-brief-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-1-whole-project-critic.md`.
 
-Critic result:
+Initial worker critic result:
 
 ```text
 STEP1_CRITIC_BLOCKING_FOUND: 0
 STEP1_CRITIC_SIGNIFICANT_FOUND: 7
 STEP1_CRITIC_MINOR_FOUND: 2
-
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+```
+
+Mandatory independent Senior Step-1 review then returned:
+
+```text
+WP25_STEP1_SENIOR_REVIEW_PREVIOUS_RESULT: HOLD — BOUNDED STEP-1 RECOVERY REQUIRED
+UNRESOLVED_BLOCKING_AT_SENIOR_REVIEW: 0
+UNRESOLVED_SIGNIFICANT_AT_SENIOR_REVIEW: 3
+HUMAN_DECISION_REQUIRED_NOW: NO
+WP25_STEP2_AUTHORIZED: NO
+IMPLEMENTATION_PLANNING_AUTHORIZED: NO
+WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
+
+SR25-S1-01: SIGNIFICANT / OPEN — deterministic rules/admission/House-Rules owner graph omitted
+SR25-S1-02: SIGNIFICANT / OPEN — actual maintenance/diagnostics support contract omitted
+SR25-S1-03: SIGNIFICANT / OPEN — bootstrap/initial-materialization/save-exit failure path omitted
+```
+
+Bounded worker recovery independently traced and incorporated the current owners plus machine/schema/test consumers for all three routes, then reran the whole-project Step-1 critic over the full graph.
+
+Worker recovery result:
+
+```text
+SR25-S1-01: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-REVIEW
+SR25-S1-02: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-REVIEW
+SR25-S1-03: REPAIRED / WORKER-CLOSED / PENDING INDEPENDENT SENIOR RE-REVIEW
+
+RERUN_CRITIC_BLOCKING_FOUND: 0
+RERUN_CRITIC_SIGNIFICANT_FOUND: 3
+RERUN_CRITIC_MINOR_FOUND: 0
+RERUN_NEW_BLOCKING_BEYOND_SR25_S1_01_03: 0
+RERUN_NEW_SIGNIFICANT_BEYOND_SR25_S1_01_03: 0
+
+UNRESOLVED_BLOCKING_IN_WORKER_RECOVERY: 0
+UNRESOLVED_SIGNIFICANT_IN_WORKER_RECOVERY: 0
 HUMAN_DECISION_REQUIRED: NO
 ACCEPTED_SEMANTIC_OWNER_CONFLICT_FOUND: NO
 WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
 ```
 
-All mechanically resolvable `SIGNIFICANT` framing/source-manifest gaps were repaired before publication. The package explicitly distinguishes accepted semantic-owner law from stale/incomplete runtime/schema/test realization. Known stale realization debt includes the retired one-hour durability rule still carried by `GAME/CORE/DURABILITY_GUARD.md`, `GAME/CORE/SESSION.md` and `DEV/TESTS/test_hourly_durability_contract.py`, plus older LIVE/local error wording that must be judged against later accepted owners during authorized realization work.
-
-Current Step-1 gate:
+Recovered owner distinctions now explicitly covered by Step-1 framing include:
 
 ```text
-WP25_STEP1_COMPLETE: YES
-WP25_STEP1_SENIOR_REVIEW: PENDING
+catalog-context incompatibility
+!= bounded unsupported-capability/gap evidence
+!= dormant/nonselectable/quarantined executable capability
+!= compiler/primitive validation rejection
+!= ordinary failed gameplay action/check/save
+
+House-Rule policy conflict
+!= policy realization gap
+!= missing/unauthorized/invalid/stale adjudication input
+!= missing/stale/incompatible/dormant realization reference
+
+maintenance operation routing
+!= authorization
+!= recipient disclosure eligibility
+and diagnostic/error text != gameplay/recovery/currentness authority
+
+explicit campaign selection
+!= generic desire to play
+prepared/partial scaffold
+!= successfully created campaign
+save-and-exit local intent/completeness
+!= confirmed durable save closure
+```
+
+Known realization debt/state remains realization work only: stale one-hour durability GAME/test projections, selected older LIVE/error wording, deliberately dormant/quarantined catalog/primitive surfaces, and the maintenance semantic contract whose installed GAME command surface is explicitly not realized. No runtime/schema/test repair is authorized or performed by this recovery.
+
+Current gate:
+
+```text
+WP25_STEP1_BOUNDED_RECOVERY: COMPLETE AT WORKER LEVEL
+WP25_STEP1_SENIOR_RE_REVIEW: REQUIRED / PENDING
 WP25_STEP2_AUTHORIZED: NO
 
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
@@ -505,22 +562,22 @@ RELEASE_MIGRATION_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: mandatory independent WP-25 Step-1 Senior review
+NEXT_GATE: mandatory independent WP-25 Step-1 Senior re-review
 ```
 
-Do not begin WP-25 Step 2 or any later architecture/implementation unit until the mandatory independent Step-1 Senior review returns GO.
+Do not begin WP-25 Step 2 or any later architecture/implementation unit until the mandatory independent Step-1 Senior re-review returns GO.
 
 ---
 
 ## Version Impact
 
 ```text
-VERSION_IMPACT: VERIFIED FOR WP-25 STEP-1 DESIGN/STATUS PUBLICATION
+VERSION_IMPACT: VERIFIED FOR WP-25 STEP-1 BOUNDED RECOVERY DESIGN/STATUS PUBLICATION
 VERSION_BUMP_REQUIRED: NO
 VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-The WP-25 Step-1 package changes design provenance and global progress routing only. It does not modify a version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime implementation.
+The WP-25 bounded recovery changes design provenance and global progress routing only. It does not modify a version-bearing runtime semantic module, persistent/protocol schema, campaign/storage/catalog/ruleset generation, package/release format, migration law or executable gameplay/runtime implementation.
 
-Current next gate: **mandatory independent WP-25 Step-1 Senior review**.
+Current next gate: **mandatory independent WP-25 Step-1 Senior re-review**.
