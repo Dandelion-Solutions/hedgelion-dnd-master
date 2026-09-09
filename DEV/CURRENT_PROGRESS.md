@@ -8,18 +8,18 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-25 FINAL SENIOR RE-REVIEW PASS / GO — CLOSURE PUBLICATION VERIFICATION PENDING
+GLOBAL_STATE: R2.7 WP-25 CLOSED — FINAL SENIOR RE-REVIEW PASS / CLOSURE PUBLICATION VERIFIED — WP-26 NEXT ELIGIBLE
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-25 — Error / degradation / failure semantics — independent final Senior re-review PASS / closure publication verification pending
+CURRENT_SLICE: WP-25 closed / awaiting explicit Product Owner stage entry for WP-26
 
-LAST_CLOSED_UNIT: WP-25 mandatory independent final Senior re-review
-NEXT_ELIGIBLE_UNIT: WP-25 closure publication verification
+LAST_CLOSED_UNIT: WP-25 — Error / degradation / failure semantics
+NEXT_ELIGIBLE_UNIT: WP-26 Step 1 — documentation / routing / supersession consistency
 NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: exact-head closure-publication hosted CI + remote readback before WP25_CLOSED
+REQUIRED_GATE: explicit Product Owner stage-entry authorization before substantive WP-26 work
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-09-r2-7-WP-25-final-senior-rereview.md
-KNOWN_BLOCKERS: WP-25 SEMANTICS/RECOVERY PASSED FINAL SENIOR RE-REVIEW, BUT GLOBAL WP25_CLOSED MUST WAIT FOR THE CLOSURE-PUBLICATION EXACT-HEAD VERIFICATION; WP-26 / IMPLEMENTATION PLANNING / RELEASE EXECUTION / GAMEPLAY BOOTSTRAP REMAIN UNAUTHORIZED
+KNOWN_BLOCKERS: NONE FOR WP-25; WP-26 / IMPLEMENTATION PLANNING / RELEASE EXECUTION / GAMEPLAY BOOTSTRAP REMAIN UNAUTHORIZED UNTIL THEIR APPLICABLE GATES
 ```
 
 ---
@@ -41,6 +41,9 @@ WP23_CLOSED: YES
 WP24_FINAL_SENIOR_RE_REVIEW: PASS / GO
 WP24_FINAL_CLOSURE: PASS
 WP24_CLOSED: YES
+WP25_FINAL_SENIOR_RE_REVIEW: PASS / GO
+WP25_FINAL_CLOSURE: PASS
+WP25_CLOSED: YES
 ```
 
 Canonical predecessor owners:
@@ -49,7 +52,8 @@ Canonical predecessor owners:
 - WP-21 — `DEV/docs/superpowers/specs/2026-09-07-r2-7-WP-21-diagnostics-observability-cleanup-retirement-canonical-spec.md`;
 - WP-22 — `DEV/docs/superpowers/specs/2026-09-07-r2-7-WP-22-verification-test-evaluation-completeness-canonical-spec.md`;
 - WP-23 — `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-23-release-package-version-legal-readiness-canonical-spec.md`;
-- WP-24 — `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-24-performance-scale-operational-budget-canonical-spec.md`.
+- WP-24 — `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-24-performance-scale-operational-budget-canonical-spec.md`;
+- WP-25 — `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-25-error-degradation-failure-semantics-canonical-spec.md`.
 
 Fixed Product Owner boundaries retained from predecessor work include:
 
@@ -73,29 +77,20 @@ PUBLIC HDM SEMANTICS: INDEPENDENTLY STATED IN HDM TERMS
 
 ---
 
-# WP-25 — Error / degradation / failure semantics
+# WP-25 final closure
 
-Canonical owner:
-
-- `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-25-error-degradation-failure-semantics-canonical-spec.md`.
-
-Accepted Product Owner direction:
-
-```text
-OWNER-LOCAL NATIVE OUTCOMES
-+ EPHEMERAL CROSS-OWNER FAILURE DISPOSITION
-+ SCOPE-AWARE CONTINUATION
-+ RISK-TRAJECTORY-AWARE DURABILITY PROTECTION
-```
-
-Final selected architecture:
+Canonical direction:
 
 ```text
 FOCUS-SCOPED EPHEMERAL FAILURE DISPOSITION
 + OWNER-LOCAL NATIVE OUTCOMES
 + SCOPE-AWARE CONTINUATION
 + RISK-TRAJECTORY-AWARE DURABILITY PROTECTION
+```
 
+Final negative architecture boundaries:
+
+```text
 PERSISTED_GLOBAL_ERROR_AUTHORITY: NO
 GLOBAL_HEALTH_STATE: NO
 UNIVERSAL_RETRY_ENGINE: NO
@@ -105,61 +100,13 @@ BACKGROUND_FAILURE_MONITOR: NO
 GLOBAL_FAILURE_SCAN: NO
 ```
 
-Retained architecture boundaries include:
+Final Senior chain:
 
 ```text
-one disposition == one concrete owner-proven bounded focus, never campaign health
-FailureDisposition != authorization/currentness/eligibility/permission lease
-truthful basis is owner-qualified; no scalar cross-domain frontier
-partial/accepted native success remains real through downstream failure
-UNSUPPORTED remains orthogonal to severity
-effective severity S0..S4 is focus-derived
-risk R0..R4 is focus/scope-relative
-DANGER != HARD != corruption != timer/scheduler/retry loop
-advisory host/context pressure alone cannot create gameplay-affecting DANGER
-accepted mechanics/RNG/IDs/publication are never replayed for downstream repair
-ordinary waiting/silence is not system failure
-user-visible failure explanation grants no disclosure authority
-Story/planning/checkpoint/index/cache/diagnostics remain nonauthority
-no global scan / force / rewind / ref deletion / alternate transport / generic LWW
-```
+INITIAL_FINAL_SENIOR_REVIEW_BASELINE: f3c2c978cd150dbc1be510def34d14fe61067c7c
+INITIAL_FINAL_SENIOR_RESULT: HOLD — 3 BOUNDED SIGNIFICANT CLOSURE FINDINGS
 
-## Step-6/7 closure
-
-```text
-STEP6_BLOCKING_FOUND: 0
-STEP6_SIGNIFICANT_FOUND: 6
-STEP6_MINOR_FOUND: 3
-STEP7_UNRESOLVED_BLOCKING: 0
-STEP7_UNRESOLVED_SIGNIFICANT: 0
-STEP7_UNRESOLVED_MINOR: 0
-FINDING_PROPAGATION_SWEEP_COMPLETE: YES
-HUMAN_DECISION_REQUIRED: NO
-PO_DECISION_REQUIRED: NO
-UPSTREAM_OWNER_REOPEN_REQUIRED: NO
-```
-
-## Final Senior chain
-
-Initial final Senior review of `f3c2c978cd150dbc1be510def34d14fe61067c7c` returned bounded HOLD with three significant closure findings:
-
-```text
-SR25-FINAL-01 retired fixed-time durability current realization
-SR25-FINAL-02 overbroad mechanics replay predicate
-SR25-FINAL-03 missing durable WP-25 routing/traceability
-```
-
-The bounded recovery plus verifier synchronization was independently re-reviewed at:
-
-`e894385909738b127a6a69d12284ecfb1571a3c6`
-
-Public review evidence:
-
-- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-25-final-senior-rereview.md`.
-
-Final Senior re-review verdict:
-
-```text
+RECOVERY_REVIEWED_HEAD: e894385909738b127a6a69d12284ecfb1571a3c6
 WP25_FINAL_SENIOR_RE_REVIEW: PASS / GO
 SR25_FINAL_01: PASS / CLOSED
 SR25_FINAL_02: PASS / CLOSED
@@ -172,7 +119,11 @@ CANONICAL_WP25_ARCHITECTURE_REOPEN_REQUIRED: NO
 WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
 ```
 
-Exact reviewed-head verification:
+Independent public review evidence:
+
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-25-final-senior-rereview.md`.
+
+Reviewed recovery exact-head verification:
 
 ```text
 WORKFLOW: Validate engine source
@@ -185,9 +136,22 @@ VERSION_UNCLASSIFIED: []
 VERSION_LEGACY_HITS: []
 ```
 
+Senior-PASS closure-candidate publication verification:
+
+```text
+WORKFLOW: Validate engine source
+RUN_ID: 34312695963
+RUN_NUMBER: 1900
+HEAD_SHA: 5b4497083fa9d259559d1c5573340142f10e4fe9
+FULL_MAINTENANCE_AUDIT: PASS
+DEV_UNIT_TESTS: PASS
+```
+
+The final closed-cursor publication must itself remain green on its exact HEAD before completion is reported externally; that verification is publication evidence, not another architecture gate.
+
 ## Realization / deferred proof state
 
-Mechanically synchronized by the bounded Senior recovery:
+Mechanically synchronized by the bounded final-Senior recovery:
 
 1. retired fixed-time durability current runtime/release/test projections;
 2. `MECHANICS_INTEGRITY.md` accepted-work replay boundary and focused regressions;
@@ -219,7 +183,7 @@ MIGRATION_REQUIRED_BY_THIS_RECOVERY: NO
 RELEASE_EXECUTION_REQUIRED: NO
 ```
 
-Module revisions:
+Accepted component revisions:
 
 ```text
 GAME/CORE/DURABILITY_GUARD.md      1.0.1 -> 1.0.2
@@ -233,17 +197,15 @@ GAME/CORE/MECHANICS_INTEGRITY.md   0.1.0 -> 1.0.1
 
 ---
 
-## Current status and gate
+## Current gate
 
 ```text
-WP25_STEP1_SENIOR_RE_REVIEW: PASS / GO WITH REQUIRED NON-BLOCKING SOURCE-ROLE CORRECTION
 WP25_STEP1_SOURCE_ROLE_CORRECTION: COMPLETE
 WP25_STEPS_2_8: COMPLETE
 WP25_CANONICAL_OWNER_PUBLISHED: YES
-WP25_FINAL_SENIOR_REVIEW: HOLD — BOUNDED RECOVERY REQUIRED
 WP25_FINAL_SENIOR_HOLD_RECOVERY: COMPLETE
 WP25_FINAL_SENIOR_RE_REVIEW: PASS / GO
-WP25_CLOSED: NO — CLOSURE PUBLICATION VERIFICATION PENDING
+WP25_CLOSED: YES
 
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 SUBSTANTIVE_GENERIC_IMPLEMENTATION_STARTED: NO
@@ -251,10 +213,11 @@ GENERIC_FAILUREDISPOSITION_REALIZATION_STARTED: NO
 PERSISTENT_FAILURE_SCHEMA_REALIZATION_STARTED: NO
 RELEASE_MIGRATION_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
-WP26_AUTHORIZED: NO
 
+WP26_ELIGIBLE: YES
+WP26_AUTHORIZED: NO
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: exact-head closure-publication hosted CI + remote readback
+NEXT_GATE: explicit Product Owner stage-entry authorization before substantive WP-26 work
 ```
 
-After that gate succeeds, synchronize this file to `WP25_CLOSED: YES`. WP-26 then becomes the next eligible R2.7 architecture block; substantive WP-26 work still requires explicit Product Owner stage entry.
+WP-26 is the next eligible R2.7 architecture block according to the current roadmap. Eligibility is not authorization.

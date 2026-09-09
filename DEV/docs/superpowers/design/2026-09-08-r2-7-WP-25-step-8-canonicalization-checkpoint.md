@@ -1,18 +1,18 @@
 # R2.7 WP-25 Step 8 — Canonicalization Checkpoint
 
-Status: **STEP 8 CANONICAL OWNER RETAINED — FINAL SENIOR HOLD RECOVERY COMPLETE AT WORKER LEVEL / MANDATORY INDEPENDENT FINAL SENIOR RE-REVIEW PENDING**
+Status: **STEP 8 COMPLETE — FINAL SENIOR RE-REVIEW PASS / WP-25 CLOSURE SYNCHRONIZED**
 
-Date: 2026-09-08
+Date: 2026-09-09
 
 Canonical owner:
 
 - `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-25-error-degradation-failure-semantics-canonical-spec.md`.
 
-This checkpoint records the worker Steps 2–8 architecture cycle plus the later bounded final-Senior closure recovery. It does not declare WP-25 independently accepted/closed and does not authorize implementation planning, generic FailureDisposition realization, WP-26, release execution or gameplay bootstrap.
+This checkpoint records the worker Steps 2–8 architecture cycle, the later bounded final-Senior closure recovery, and the independent final Senior re-review PASS. Global closure/current work remains owned only by `DEV/CURRENT_PROGRESS.md`. This checkpoint does not authorize implementation planning, generic FailureDisposition realization, WP-26 substantive work, release execution or gameplay bootstrap.
 
 ---
 
-## 1. Step completion and final Senior gate
+## 1. Step completion and Senior review chain
 
 ```text
 STEP2_STATUS: COMPLETE
@@ -30,10 +30,10 @@ STEP7_UNRESOLVED_SIGNIFICANT: 0
 STEP7_UNRESOLVED_MINOR: 0
 FINDING_PROPAGATION_SWEEP_COMPLETE: YES
 
-STEP8_STATUS: COMPLETE AT WORKER LEVEL
+STEP8_STATUS: COMPLETE
 ```
 
-Mandatory independent final Senior review of baseline `f3c2c978cd150dbc1be510def34d14fe61067c7c` later returned:
+Mandatory independent final Senior review of baseline `f3c2c978cd150dbc1be510def34d14fe61067c7c` returned:
 
 ```text
 SENIOR_FINAL_VERDICT: HOLD — BOUNDED FINAL-CLOSURE RECOVERY REQUIRED
@@ -42,11 +42,40 @@ UNRESOLVED_SIGNIFICANT: 3
 HUMAN_DECISION_REQUIRED_NOW: NO
 CANONICAL_WP25_ARCHITECTURE_REOPEN_REQUIRED: NO
 WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
-IMPLEMENTATION_PLANNING_AUTHORIZED: NO
-WP26_AUTHORIZED: NO
 ```
 
-The bounded recovery for those three findings is complete at worker level in the current publication. Final Senior re-review remains mandatory.
+The bounded recovery and two mechanically necessary verifier synchronizations were completed through reviewed head `e894385909738b127a6a69d12284ecfb1571a3c6`.
+
+Mandatory independent final Senior re-review then returned:
+
+```text
+WP25_FINAL_SENIOR_RE_REVIEW: PASS / GO
+SR25_FINAL_01: PASS / CLOSED
+SR25_FINAL_02: PASS / CLOSED
+SR25_FINAL_03: PASS / CLOSED
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+PO_DECISION_REQUIRED: NO
+CANONICAL_WP25_ARCHITECTURE_REOPEN_REQUIRED: NO
+WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
+```
+
+Public review evidence:
+
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-25-final-senior-rereview.md`.
+
+Reviewed-head verification:
+
+```text
+RUN_ID: 34312274026
+RUN_NUMBER: 1899
+HEAD_SHA: e894385909738b127a6a69d12284ecfb1571a3c6
+FULL_MAINTENANCE_AUDIT: PASS
+DEV_UNIT_TESTS: 447 / 447 PASS
+```
+
+The coherent Senior-PASS closure-candidate publication `5b4497083fa9d259559d1c5573340142f10e4fe9` was also independently verified by hosted `Validate engine source` run `34312695963` / #1900 with maintenance and DEV unit-test steps passing before the final closed cursor was published.
 
 ---
 
@@ -83,7 +112,7 @@ Material Step-6 repairs incorporated into the canonical owner remain:
 8. user-facing failure explanation remains recipient-safe nonauthority;
 9. `UNSUPPORTED` remains orthogonal to severity and generic failure-family shorthand.
 
-The final-Senior recovery changes realization/traceability only; it does not change these laws.
+The final-Senior recovery changed realization/traceability only; it did not change these laws.
 
 ---
 
@@ -110,7 +139,7 @@ same-version equality / source ancestry alone != compatibility proof
 
 Original Step-3/4/5 artifacts remain historical design provenance. They were not rewritten as though Step-6 findings were known originally.
 
-Their current post-review qualification is explicit at:
+Their post-review qualification is explicit at:
 
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-6-propagation-qualification-addendum.md`.
 
@@ -118,19 +147,17 @@ Item-level finding resolution/affected-artifact accounting is at:
 
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-25-step-7-finding-resolution-propagation.md`.
 
-That Step-7 artifact now appends a distinct post-Step-8 final-Senior recovery section rather than rewriting the earlier historical reasoning as though the later findings were known then.
-
 The canonical spec contains the repaired final normative law directly and supersedes the Step-5 candidate for implementation-facing normative use.
 
 ---
 
-## 5. Routing / derivative artifact audit — corrected by final Senior review
+## 5. Routing / derivative artifact audit — closed
 
 At original Step 7, `DEV/PROJECT_MAP.md` and `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` were correctly marked `REQUIRED AT STEP 8`.
 
-Original Step 8 later concluded `NO EDIT REQUIRED` for both based on the temporary `DEV/CURRENT_PROGRESS.md` cursor. Mandatory final Senior review rejected that disposition because current-progress routing is temporary and will move when later work advances.
+Original Step 8 later concluded `NO EDIT REQUIRED` for both based on the temporary `DEV/CURRENT_PROGRESS.md` cursor. Mandatory final Senior review rejected that disposition because current-progress routing is temporary and moves as later work advances.
 
-Final recovery disposition:
+Final disposition:
 
 ```text
 DEV/CURRENT_PROGRESS.md: UPDATED / REQUIRED
@@ -139,23 +166,21 @@ DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md: UPDATED / REQUIRED
 DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md: NO EDIT REQUIRED
 ```
 
-The recovery is intentionally minimal:
+The synchronization is intentionally minimal:
 
-- Project Map remains explicitly non-normative and adds one direct concern route for failure/degradation/`FailureDisposition`/durability-risk composition to the WP-25 canonical spec, with material neighboring native owners rather than duplicated WP-25 law;
+- Project Map remains explicitly non-normative and adds one direct concern route for failure/degradation/`FailureDisposition`/durability-risk composition to the WP-25 canonical spec, with material native owners rather than duplicated WP-25 law;
 - Canonical Architecture Index remains derivative/non-current-progress authority and adds a compact durable WP-25 locator/invariant, practical route and fixed-timer supersession classification;
-- roadmap sequencing is unchanged because no stage/dependency or next-work semantics changed.
-
-This section records the later correction; it does not rewrite the fact that original Step 8 made a different routing judgment.
+- roadmap sequencing is unchanged because no stage/dependency semantics changed.
 
 ---
 
-## 6. Final-Senior bounded realization recovery
+## 6. Final-Senior bounded realization recovery — accepted
 
 ### SR25-FINAL-01 — retired fixed-time durability realization
 
-Status: **REPAIRED AT WORKER LEVEL / FINAL SENIOR RE-REVIEW PENDING**.
+Status: **PASS / CLOSED BY FINAL SENIOR RE-REVIEW**.
 
-Current-tree consumer sweep identified and synchronized active/current surfaces beyond the original debt list:
+Current-tree consumer sweep synchronized active/current surfaces including:
 
 - `GAME/CORE/DURABILITY_GUARD.md`;
 - `GAME/CORE/SESSION.md`;
@@ -168,7 +193,7 @@ Current-tree consumer sweep identified and synchronized active/current surfaces 
 
 Current runtime no longer treats a fixed one-hour ceiling, `durable_frontier_time`, fixed timer autosave or time-derived HARD boundary as active semantics.
 
-The mechanically synchronized runtime preserves only already-settled law:
+Current realization preserves only the already-settled law:
 
 ```text
 NORMAL / ELEVATED / DANGER
@@ -183,15 +208,13 @@ advisory host/context pressure alone != gameplay-affecting DANGER
 clean state -> no heartbeat/no-op persistence
 ```
 
-Stronger owner-defined HARD edges remain intact.
-
-Historical occurrences of the retired fixed-time rule remain where they are provenance/negative evidence and are not current runtime authority.
+Stronger owner-defined HARD edges remain intact. Historical occurrences of the retired fixed-time rule remain only where they are provenance/negative evidence.
 
 ### SR25-FINAL-02 — mechanics replay boundary
 
-Status: **REPAIRED AT WORKER LEVEL / FINAL SENIOR RE-REVIEW PENDING**.
+Status: **PASS / CLOSED BY FINAL SENIOR RE-REVIEW**.
 
-`GAME/CORE/MECHANICS_INTEGRITY.md` and implicated regression contracts now require proof of genuinely unsupported pre-acceptance mechanics before re-resolution with fresh RNG.
+`GAME/CORE/MECHANICS_INTEGRITY.md` and implicated regression contracts require proof of genuinely unsupported pre-acceptance mechanics before re-resolution with fresh RNG.
 
 ```text
 missing/corrupt/unavailable downstream resolution trace alone
@@ -206,15 +229,15 @@ Persistence/publication/presentation/Context/diagnostic/recovery failure after a
 
 ### SR25-FINAL-03 — routing / traceability
 
-Status: **REPAIRED AT WORKER LEVEL / FINAL SENIOR RE-REVIEW PENDING**.
+Status: **PASS / CLOSED BY FINAL SENIOR RE-REVIEW**.
 
-Project Map/index synchronization is performed as required by original Step 7; this Step-8 checkpoint, Step-7 ledger and current-progress status now agree on that fact.
+Project Map/index synchronization is present and discoverable after the global current cursor advances beyond WP-25.
 
 ---
 
-## 7. Current realization / debt state after recovery
+## 7. Deferred realization after WP-25 architecture closure
 
-The following remain deferred and are **not** authorized by this recovery:
+The following remain deferred and are **not** authorized merely because WP-25 closes:
 
 ```text
 focus-scoped FailureDisposition evaluator/adapters
@@ -227,13 +250,12 @@ exact DANGER thresholds/calibration
 host-capacity estimator
 background scheduler/worker
 broad cross-owner failure evaluator realization beyond focused Senior repairs
-WP-26
-implementation plan
+implementation plan / implementation execution
 release execution
 gameplay bootstrap
 ```
 
-The retired fixed-time runtime/test realization and overbroad `MECHANICS_INTEGRITY` downstream replay predicate are no longer carried as unresolved worker debt after this recovery. Independent final Senior re-review controls whether the recovery is accepted.
+The rejected baseline mechanisms above remain rejected unless a future approved architecture change explicitly reopens them.
 
 Proof dimensions remain separate:
 
@@ -244,17 +266,13 @@ ARCHITECTURE COVERAGE
 != EMPIRICAL ACCEPTANCE
 ```
 
-The focused synchronization does not claim generic FailureDisposition realization or production-like DANGER host calibration.
-
 ---
 
-## 8. Version Impact — fresh final-recovery gate
+## 8. Version Impact — accepted final recovery gate
 
 Current engine semantic version remains `1.0-alpha`.
 
-The final recovery materially changes version-bearing CORE/runtime semantic modules, so original architecture-only `VERSION_IMPACT: NONE` does **not** apply to this later recovery.
-
-Category-B component revisions under the current versioning policy:
+Category-B component revisions accepted by final Senior re-review:
 
 ```text
 DURABILITY_GUARD.md      1.0.1 -> 1.0.2
@@ -280,30 +298,31 @@ No `GAME/ENGINE_VERSION.yaml`, campaign/storage/catalog/ruleset generation or mi
 
 ---
 
-## 9. Current gate after bounded final-Senior recovery
+## 9. Final gate result
 
 ```text
-WP25_STEPS_2_8_COMPLETE_AT_WORKER_LEVEL: YES
+WP25_STEPS_2_8: COMPLETE
 WP25_CANONICAL_OWNER_PUBLISHED: YES
-WP25_FINAL_SENIOR_REVIEW: HOLD — BOUNDED FINAL-CLOSURE RECOVERY REQUIRED
-WP25_FINAL_SENIOR_HOLD_RECOVERY: COMPLETE AT WORKER LEVEL
-WP25_FINAL_SENIOR_RE_REVIEW: REQUIRED / PENDING
-WP25_CLOSED: NO
+WP25_FINAL_SENIOR_REVIEW: HOLD — HISTORICAL / REPAIRED
+WP25_FINAL_SENIOR_HOLD_RECOVERY: COMPLETE
+WP25_FINAL_SENIOR_RE_REVIEW: PASS / GO
+WP25_CLOSED: YES — GLOBAL AUTHORITY IS DEV/CURRENT_PROGRESS.md
 
-UNRESOLVED_BLOCKING_AT_WORKER_RECOVERY: 0
-UNRESOLVED_SIGNIFICANT_AT_WORKER_RECOVERY: 0
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
 HUMAN_DECISION_REQUIRED: NO
 CANONICAL_WP25_ARCHITECTURE_REOPEN_REQUIRED: NO
 WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
 
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 IMPLEMENTATION_AUTHORIZED: NO
+WP26_ELIGIBLE: YES
 WP26_AUTHORIZED: NO
 RELEASE_EXECUTION_AUTHORIZED: NO
 GAMEPLAY_BOOTSTRAP_AUTHORIZED: NO
 
 NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: mandatory independent WP-25 final Senior re-review
+NEXT_GATE: explicit Product Owner stage-entry authorization before substantive WP-26 work
 ```
 
-**STOP after exact-head publication verification / remote readback / hosted CI. Do not self-declare final Senior PASS.**
+WP-25 is closed. Later implementation planning must consume the final canonical owner plus native owners and retained deferred proof obligations rather than reopening this design by convenience.

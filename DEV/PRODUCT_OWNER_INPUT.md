@@ -48,7 +48,7 @@ An agent-owned route marked `ACTIVE` or `PENDING` must not name a work package t
 | `PO-005` | AUTHORITY / SECURITY POLICY | INCORPORATED | creator-login continuity policy is fixed fail-closed authority; no current architecture reopen; downstream runtime/test realization must preserve it when implementation is explicitly authorized | creator-login continuity owner decision; access/bootstrap/migration/recovery consumers; later runtime/tests | NONE |
 | `PO-006` | AUTHORITY / SAFETY / REPOSITORY POLICY | INCORPORATED | branch/ref deletion is forbidden for every HDM development/runtime agent; WP-21 final Senior PASS consumed the rule and WP-24 may later assess retained-ref operational cost without re-enabling deletion | branch/ref deletion owner decision; `AGENTS.md`; `GAME/CORE/PERSISTENCE.md`; `GAME/CORE/LIVE_SCENE.md`; final WP-21 canonical spec/review; WP-24 | NONE |
 | `PO-007` | PUBLIC PROVENANCE / ATTRIBUTION POLICY | INCORPORATED | WP-23 final Senior re-review accepted the repository-wide public provenance reconciliation and closed the architecture consumer; future enforcement remains under the accepted owner and current machine guards | public provenance owner decision; final WP-23 canonical spec; current public `DEV/` + `GAME/`; legal/notice owners; relevant audits/tests | NONE |
-| `PO-008` | FAILURE / DEGRADATION / DURABILITY-RISK PRODUCT DIRECTION | PARTIALLY_INCORPORATED | Product Owner accepted the WP-25 severity/gameplay-impact/risk model direction and clarified proactive durability preservation before probable host incapacity; WP-25 Step 1 is the active architecture consumer | accepted WP-25 owner-direction; Step 5.5/WP-13 durability risk; WP-25; later runtime/tests/empirical host acceptance | NONE |
+| `PO-008` | FAILURE / DEGRADATION / DURABILITY-RISK PRODUCT DIRECTION | INCORPORATED | WP-25 final Senior re-review PASS accepted the severity/gameplay-impact/risk model and proactive durability-risk direction; downstream generic realization and production-like host calibration remain safely deferred behind explicit future gates | accepted WP-25 owner-direction; final WP-25 canonical spec; Step 5.5/WP-13 native durability owners; later runtime/tests/empirical host acceptance | NONE |
 
 ---
 
@@ -440,7 +440,7 @@ Product Owner decision still required: `NONE`.
 
 Date: 2026-09-08  
 Kind: FAILURE / DEGRADATION / DURABILITY-RISK PRODUCT DIRECTION  
-Status: PARTIALLY_INCORPORATED
+Status: INCORPORATED
 
 Accepted direction:
 - `DEV/docs/superpowers/specs/2026-09-08-hdm-wp25-failure-degradation-durability-risk-owner-direction.md`.
@@ -467,7 +467,7 @@ Accepted direction:
 ### Agent interpretation / classification
 
 ```text
-PRODUCT DIRECTION + ACTIVE WP-25 ARCHITECTURE INPUT
+PRODUCT DIRECTION + CLOSED WP-25 ARCHITECTURE INPUT
 CONTEXT-DERIVED EFFECTIVE SEVERITY, NOT INTRINSIC ERROR SEVERITY
 GAMEPLAY IMPACT / AFFECTED SCOPE / IGNORE-RISK / TEMPORAL-TOLERANCE ARE DISTINCT AXES
 UNSUPPORTED IS AN ORTHOGONAL DISPOSITION
@@ -486,19 +486,18 @@ NEEDS_PO: NONE
 
 | Route | State | Trigger / obligation | Current evidence / owner |
 |---|---|---|---|
-| Product / architecture direction | INCORPORATED | accepted direction published | `DEV/docs/superpowers/specs/2026-09-08-hdm-wp25-failure-degradation-durability-risk-owner-direction.md` |
-| Step 5.5 / WP-13 durability-risk semantics | BINDING RECONCILIATION INPUT | WP-25 must preserve scope-relative `MAY_DEFER` semantics while preventing unlimited product willingness to accumulate dangerous single-copy loss exposure | Step 5.5 canonical durability spec + WP-13 + accepted direction |
-| WP-25 Step 1 | ACTIVE / AUTHORIZED | construct open-world Source Manifest + Task Brief + whole-project critic and repair all mechanically resolvable BLOCKING/SIGNIFICANT framing gaps | active R2.7 consumer |
-| WP-25 Steps 2–8 | GATED | only after mandatory independent Senior Step-1 GO | `DEV/ARCHITECTURE/DESIGN_PROCESS.md` |
+| Product / architecture direction | INCORPORATED | accepted direction published and consumed | `DEV/docs/superpowers/specs/2026-09-08-hdm-wp25-failure-degradation-durability-risk-owner-direction.md` |
+| Step 5.5 / WP-13 durability-risk semantics | INCORPORATED / RECONCILED / NO REOPEN | final WP-25 preserves scope-relative `MAY_DEFER` semantics while adding bounded loss-protection trajectory without converting risk into generic correctness HARD | Step 5.5 canonical durability spec + WP-13 + final WP-25 canonical spec |
+| WP-25 architecture | INCORPORATED / FINAL SENIOR RE-REVIEW PASS | WP-25 closed | `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-25-error-degradation-failure-semantics-canonical-spec.md` + final independent Senior review |
 | Runtime/schema/test realization | DEFERRED | after R2.7 final reconciliation + explicit implementation-planning/execution authorization | later implementation consumers |
-| Production-like host/capacity acceptance | DEFERRED | run only on realized supported target where empirical evidence is required | R2.6 + WP-22 + WP-24 |
-| Private Senior adversarial checklist | ACTIVE SUPPORT / NON-AUTHORITATIVE | preserve non-obvious risks for independent post-worker review without becoming public architecture authority | HDM Lab Senior audit workspace |
+| Production-like host/capacity acceptance | DEFERRED | run only on realized supported target where empirical evidence is required | R2.6 + WP-22 + WP-24 + WP-25 proof contract |
+| Independent Senior adversarial support | HISTORICAL / NON-AUTHORITATIVE | retained only as review evidence; public/current architecture comes from accepted owners | final WP-25 review chain |
 
 ### Current impact
 
-PO-008 is incorporated as an accepted product/architecture direction and is now a mandatory Source-Manifest input to WP-25. WP-25 itself remains open: the direction constrains framing but does not replace Source Manifest reconstruction, Step-1 critic, mandatory Senior review, Steps 2–8 or final canonicalization.
+PO-008 is fully incorporated at the architecture level. WP-25 final Senior re-review passed with the Product Owner severity/gameplay-impact/risk separation and proactive durability-risk direction preserved. The retired hourly proxy is not product law; current durability protection uses scope-local `NORMAL / ELEVATED / DANGER`, with DANGER remaining distinct from correctness HARD and from any timer/scheduler/retry authority.
 
-No generic global error state machine, hourly autosave requirement, exact remaining-context contract or background durability worker is authorized.
+Remaining generic `FailureDisposition` realization, exact host-risk calibration and production-like empirical acceptance are safely deferred behind explicit future implementation/empirical gates. Those deferred routes do not make PO-008 partially incorporated and do not reopen WP-25.
 
 Product Owner decision still required: `NONE`.
 
@@ -516,7 +515,7 @@ PO-004: INCORPORATED — WP-20 FINAL SENIOR PASS / NO CURRENT PENDING WP-20 ROUT
 PO-005: INCORPORATED — FIXED CREATOR-LOGIN FAIL-CLOSED AUTHORITY
 PO-006: INCORPORATED — BRANCH/REF DELETION PROHIBITED / WP-21 FINAL SENIOR PASS
 PO-007: INCORPORATED — PUBLIC DEV/GAME RESEARCH-PROVENANCE POLICY / WP-23 FINAL SENIOR RE-REVIEW PASS
-PO-008: PARTIALLY INCORPORATED — PRODUCT DIRECTION PUBLISHED / WP-25 STEP 1 ACTIVE CONSUMER
+PO-008: INCORPORATED — WP-25 FINAL SENIOR RE-REVIEW PASS / DOWNSTREAM REALIZATION AND EMPIRICAL ACCEPTANCE DEFERRED
 
 WP19_FINAL_SENIOR_REVIEW: PASS
 WP20_FINAL_SENIOR_REVIEW: PASS
@@ -530,12 +529,8 @@ WP23_FINAL_SENIOR_RE_REVIEW: PASS / GO
 WP23_CLOSED: YES
 WP24_FINAL_SENIOR_RE_REVIEW: PASS / GO
 WP24_CLOSED: YES
-
-WP25_STEP1_AUTHORIZED: YES
-WP25_STEP1_COMPLETE: NO
-WP25_STEP1_SENIOR_REVIEW: PENDING AFTER WORKER COMPLETION
-WP25_STEPS_2_8_AUTHORIZED: NO
-NEXT_AUTHORIZED_UNIT: WP-25 STEP 1 ONLY
+WP25_FINAL_SENIOR_RE_REVIEW: PASS / GO
+WP25_CLOSED: YES
 
 HUMAN_DECISION_REQUIRED: NONE
 NEEDS_PO: NONE
