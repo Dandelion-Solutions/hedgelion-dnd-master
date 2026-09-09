@@ -6,17 +6,19 @@ Date: 2026-09-07
 
 **Scope:** the HDM-native boundary from admitted native history through optional Story transformation, deterministic publication, durable Story, correction, and bounded retrospective evidence acquisition.
 
-**Composed owners:** Step 4; Steps 5.10 and 5.11; R2.1 and R2.3; WP-09, WP-10, WP-11, WP-13, WP-15, WP-18 and WP-19; the publication/currentness and versioning amendments linked below.
+**Composed owners:** Step 4; Steps 5.10 and 5.11; R2.1 and R2.3; WP-09, WP-10, WP-11, WP-13, WP-15, WP-18 and WP-19; the publication/currentness and versioning amendments linked below; and the later PO-009 baseline Commentator self-contained-corpus amendment.
 
 **Authority boundaries:** this specification **COMPOSES** these owners. It owns the integration representations and capability distinctions defined here. It does not replace native truth/history, Context Runtime, disclosure, chronology, mechanics, retention or transport owners.
 
 **Non-goals:** runtime implementation, implementation planning, a new numbered work package, campaign migration, a new global progress cursor, and changes to consumer implementations. Publication of this document does not claim an independent Senior PASS or activate the next program stage.
 
+**Current PO-009 amendment.** `2026-09-09-story-commentator-self-contained-corpus-owner-decision.md` narrowly supersedes the earlier baseline Commentator native-fallback assumption. For the **baseline Commentator**, every WP-19-required retained material T0 decision-basis factor promised by Story must be recoverable from a **Story-local** source-bound representation, together with the self-contained Commentator eligibility/control projection. A native-only `ACTOR_DECISION_BASIS` pointer/call is therefore not a baseline Commentator dependency for those promised factors. Native owners remain authoritative, and the native capability remains valid for ordinary Master, diagnostics/maintenance and separately admitted deep-source consumers. Exact persisted Story fields, schema/cache/control topology and machine realization of PO-009 remain deferred.
+
 ## 1. Purpose and selected architecture
 
 Native accepted history supplies projection candidates. An optional Chronicler transforms a bounded source bundle into a non-authoritative draft. Deterministic HDM control validates the draft, allocates final IDs and publishes a coherent Story change. Context Runtime uses typed Story/history/current-evidence capabilities to assemble context for a registered retrospective consumer.
 
-Ordinary Master and Commentator share the capability family. Their registrations, purposes, subjects, recipients, representation floors and eligibility remain R2.3-owned. Neither role gains direct access to an unpublished draft. Chronicler output never becomes factual authority by publication.
+Ordinary Master and Commentator share the capability family. Their registrations, purposes, subjects, recipients, representation floors and eligibility remain R2.3-owned. PO-009 narrows only the baseline Commentator support locality for promised retained T0 material: that support is Story-local rather than a required native fallback. Neither role gains direct access to an unpublished draft. Chronicler output never becomes factual authority by publication.
 
 Two viable integration realizations were considered:
 
@@ -45,11 +47,12 @@ Links in this table are relative to this specification's directory. Concern-spec
 | Sparse chronology | [WP-15](2026-09-03-r2-7-WP-15-temporal-owners-processes-chronology-canonical-spec.md), laws 30–39 | References to temporal/causal evidence; no temporal owner |
 | Story/continuity/planning integration | [WP-18](2026-09-04-r2-7-WP-18-story-continuity-dramaturg-planning-canonical-spec.md), §§1–4, 9–13; [final recovery amendment](2026-09-04-r2-7-WP-18-final-senior-recovery-canonical-amendment.md) | Layer-local realization; preserve no same-envelope feedback and deferred implementation |
 | Ordinary retrospective and Actor T0 evidence | [WP-19](2026-09-05-r2-7-WP-19-bootstrap-campaign-creation-initial-materialization-canonical-spec.md), laws 20–23, 29–39; [retrospective owner decision](2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md); [Actor basis decision](2026-09-05-hdm-historical-actor-decision-basis-owner-decision.md) | Shared registered consumer edge and historical-basis capability |
+| Baseline Commentator self-contained corpus | [PO-009](2026-09-09-story-commentator-self-contained-corpus-owner-decision.md) | Baseline Commentator gets promised retained T0 support and eligibility/control from Story-local representations; native authority remains separate; concrete representation remains deferred |
 | Entitlement / native information boundaries | [Access Control](../../../ARCHITECTURE/ACCESS_CONTROL.md), Step 4 and R2.3 | Current admitted access only; preference can narrow it |
 | Version namespaces | [Versioning policy](2026-09-05-hdm-versioning-namespace-compatibility-policy.md), §§4–5, 9–12, 17–20; [compact policy](../../../RELEASE/VERSIONING.md) | Four justified serialized-contract namespaces; existing semantic generation |
 | Proof classification | [WP-22](2026-09-07-r2-7-WP-22-verification-test-evaluation-completeness-canonical-spec.md), §§2–8, 11, 13.5 | Separate specification/scenario evidence from executable realization and empirical acceptance |
 
-Existing machine/instruction evidence was checked at the integration boundary: `GAME/SCHEMA/event.schema.yaml`, `GAME/SCHEMA/campaign_manifest.schema.yaml`, `GAME/CAMPAIGN/MANIFEST.yaml`, `GAME/CORE/CHRONOLOGY.md`, `NARRATIVE.md`, `INFORMATION.md`, `DEV/SCHEMAS/resolution-receipt.schema.json`, `temporal-binding.schema.json`, and `DEV/TESTS/test_step4_story_retirement_contract.py`. These do not yet realize this Story contract. Their current incomplete/pre-release shapes do not override their semantic owners. In particular, a receipt is an embedded native execution value, and TemporalBinding is not a universal historical chronology record.
+Existing machine/instruction evidence was checked at the integration boundary: `GAME/SCHEMA/event.schema.yaml`, `GAME/SCHEMA/campaign_manifest.schema.yaml`, `GAME/CAMPAIGN/MANIFEST.yaml`, `GAME/CORE/CHRONOLOGY.md`, `NARRATIVE.md`, `INFORMATION.md`, `DEV/SCHEMAS/resolution-receipt.schema.json`, `temporal-binding.schema.json`, and `DEV/TESTS/test_step4_story_retirement_contract.py`. These do not yet realize this Story contract or PO-009's exact Story-local T0/control projection. Their current incomplete/pre-release shapes do not override their semantic owners. In particular, a receipt is an embedded native execution value, and TemporalBinding is not a universal historical chronology record.
 
 ## 3. Terms, types and invariants
 
@@ -89,12 +92,13 @@ Owner codecs must expose validation, bounded resolution, compatibility and reten
 8. Spoiler preference can only reduce the HDM entitlement ceiling. Story availability cannot grant access or create disclosure.
 9. Reader-dependent eligibility/currentness/exactness are evaluated at use time; no persisted `eligible_for_reader`, `current`, `truth_verified` or `is_exact` flag is admitted.
 10. Retrospective reading never requires campaign mutation, projection catch-up, persisted index repair, disclosure writes or retaining a new historical snapshot.
+11. Baseline Commentator support promised by PO-009 cannot depend on a native-only retained-T0 fallback; qualifying material and eligibility/control support must be Story-local while native ownership remains authoritative.
 
 ## 4. End-to-end lifecycle
 
 Native owners first admit the evidence and establish its relevant durable/publication boundary. Deterministic projection control selects a bounded candidate window under a source-domain contract and builds `StorySourceBundle`. Optional generation returns `StoryProjectionDraft`. HDM validates source dependencies, candidate dispositions, content shape, availability and reference closure, then allocates IDs and constructs one coherent write-set. Successful native publication makes the Story representation durable and advances the corresponding coverage.
 
-Later Context Runtime routes an admitted retrospective request to the capabilities in §20. It checks owner currentness and eligibility, escalates from Story to stronger sources where the task requires, and owns final packet assembly. Correction uses the same deterministic publication boundary. A read never implicitly performs correction or catch-up.
+Later Context Runtime routes an admitted retrospective request to the capabilities in §20. It checks owner currentness and eligibility, uses Story-local support where the consumer contract promises it, and escalates to stronger sources only where the registered consumer/capability still permits or requires that route. Correction uses the same deterministic publication boundary. A read never implicitly performs correction or catch-up.
 
 Unaccepted prospective preparation, un-emitted Narrator drafts, hidden reasoning and unpublished HOT/LIVE-only material are outside the retrospective evidence boundary. A persisted LIVE source is admissible only when the native routing/publication owner selects it; branch presence is insufficient. Ordinary Master may separately use its existing gameplay current-state capabilities under their own contracts, but must not relabel volatile gameplay state as the committed NOW capability defined here.
 
@@ -572,6 +576,8 @@ Consumer presentation state may contain reveal anchors, focus and spoiler prefer
 
 Read-only Commentator output does not persist `runtime.disclosure`, change fictional knowledge or become an accepted world event. New Story cannot feed the same gameplay/Narrator envelope just because it has been generated or committed; ordinary fresh role binding and eligibility remain necessary. Existing gameplay disclosure behavior, where independently required, remains with its original owner.
 
+PO-009 requires a self-contained Commentator eligibility/control projection sufficient to decide baseline Story-unit allocation without first acquiring native mutable control solely to decide Story eligibility. That is a consumer-control projection, not a permanent disclosure grant or new gameplay authority. Its exact persisted representation remains deferred.
+
 ## 20. Retrospective semantic read capabilities
 
 The consumer-facing entry remains the existing registered `RoleContextRequest`. This specification does not introduce a competing role/purpose/need-profile/packet API. Context Runtime resolves that request, admits typed targets and budgets, and calls the following **internal HDM acquisition boundary**. A host facade may package these operations, but it must preserve that ownership.
@@ -609,6 +615,8 @@ Every query has required `kind` and exactly the corresponding fields. References
 | `MECHANICAL_EVIDENCE` | R `evidence_ref: NativeRef` | `MECHANICAL_EVIDENCE` |
 | `TEMPORAL_EVIDENCE` | R `anchor_refs: NativeRef[]`, `relation_kind: CAUSES or PRECEDES or SAME_COORDINATE or ELAPSED or POSITION`; O `domain_ref: NativeRef` when native relation semantics require it | `TEMPORAL_EVIDENCE` |
 | `CURRENT_COMMITTED_STATE` | R `owner_ref: NativeRef` | `CURRENT_COMMITTED_STATE` |
+
+`ACTOR_DECISION_BASIS` remains a native capability, but PO-009 removes it as a required **baseline Commentator fallback** for a qualifying WP-19 retained T0 basis that Story promises to support. Baseline Commentator resolves that promised basis through Story-local evidence. The capability remains valid for ordinary Master, diagnostics/maintenance and separately admitted deep-source consumers, and for claims outside the baseline Story promise when their own registration permits it.
 
 `ID_ASC` compares numeric ID suffixes as integers, reversed by BACKWARD; lexical string order is invalid once width expands. It is never fictional chronology. `EDITORIAL` uses the NARRATIVE chapter list and explicit member order, and is legal only for NARRATIVE. Duplicate chapter appearances are deduplicated at first occurrence for that navigation window. A `chapter_position` is legal only for EDITORIAL and selects one chapter under the pinned layer metadata. `after` must resolve within the admitted window/order; an invalid/ineligible anchor is not an existence oracle. Missing editorial metadata reports insufficient orientation rather than inventing chapter order.
 
@@ -650,7 +658,7 @@ A comparison may combine an `ACTOR_DECISION_BASIS`/`HISTORICAL_OCCURRENCE` item 
 
 Consumer composition must distinguish recorded/established claims, supported interpretation and speculation. Provenance must remain attached to material claims within the consumer's bounded composition contract, even if citations are hidden by normal presentation. Interpretation cannot be relabeled as recorded motive, nor a Transcript statement as objective fact. Visible provenance is itself eligibility-filtered.
 
-This is a narrow explicit extension of the older Step-4 Commentator default: a registered retrospective purpose may ask **Context Runtime** for the named bounded native capabilities when Story is insufficient. It does not grant Commentator unrestricted WORLD/STATE or arbitrary provenance traversal. The older Story-first default remains; the explicit deep-source/debug mode remains a separate future concern. Ordinary Master retrospective uses the same evidence distinctions through its existing registration.
+The earlier narrow native-escalation extension remains available for ordinary Master and other separately admitted non-baseline-Commentator retrospective/deep-source purposes. Under PO-009, however, the baseline Commentator's promised retained WP-19 T0 material is obtained through Story-local source-bound support and must not require native-only `ACTOR_DECISION_BASIS` acquisition. This does not grant Commentator unrestricted WORLD/STATE access, does not transfer native authority to Story, and does not eliminate native escalation for claims outside that baseline promise. The explicit deep-source/debug mode remains a separate future concern.
 
 ## 22. Basis and coherent-read model
 
@@ -735,7 +743,7 @@ Four structural namespaces are sufficient. Layer, query-kind, bundle and draft v
 
 Unknown incompatible newer structures fail closed. Additive optional changes may keep a schema version only when the version policy's compatibility conditions and actual reader support hold. Numerical equality across namespaces establishes no semantic relation. Existing external Git hashes retain their external identity semantics.
 
-**Version Impact for this publication: NONE to existing machine/release values.** This DEV-only document specifies initial contracts; it does not change any serialized campaign, executable schema, catalog, runtime module or shipped engine value. First machine realization must conduct its own Version Impact Gate. A breaking released persistent change requiring campaign migration also bumps `campaign_contract_generation`; storage layout/marker incompatibility independently affects `storage_format_generation`. No pre-release compatibility shim is required merely to preserve an obsolete unshipped shape.
+**Version Impact for this publication: NONE to existing machine/release values.** This DEV-only document specifies/reconciles contracts; it does not change any serialized campaign, executable schema, catalog, runtime module or shipped engine value. First machine realization, including concrete PO-009 Story-local T0 and eligibility/control representation, must conduct its own Version Impact Gate. A breaking released persistent change requiring campaign migration also bumps `campaign_contract_generation`; storage layout/marker incompatibility independently affects `storage_format_generation`. No pre-release compatibility shim is required merely to preserve an obsolete unshipped shape.
 
 ## 26. Physical topology and derived-state discipline
 
@@ -824,9 +832,9 @@ The handle `read-basis-1` resolves internally to this descriptor. The fixture so
 }
 ```
 
-### 28.2 Historical escalation and separate NOW
+### 28.2 Historical escalation and separate NOW — non-baseline-Commentator example
 
-After Story proves insufficient for the registered motive question, CR may acquire a native T0 basis; a different query obtains NOW. These are two actual typed requests, not two histories or a mandatory two-provider implementation.
+The native T0 escalation example below remains valid for ordinary Master or another separately admitted deep-source/diagnostic consumer. It is **not** the baseline Commentator path for a qualifying WP-19 retained basis under PO-009; that baseline Commentator support is Story-local. A different query may still obtain NOW where the consumer contract needs current committed state. These are typed requests, not two histories or a mandatory two-provider implementation.
 
 ```json
 {
@@ -846,7 +854,7 @@ After Story proves insufficient for the registered motive question, CR may acqui
 }
 ```
 
-The first successful item must be `ACTOR_DECISION_BASIS` with WP-19-valid native factors; the second must be `CURRENT_COMMITTED_STATE`. In the fixture, a retained T0 goal to admit the party and a current T1 goal to keep the gate closed can both be valid. The native basis carries the actual factor identities, values and provenance. The consumer cannot infer missing factors or rewrite T0 from T1.
+For a consumer that legitimately uses this native route, the first successful item must be `ACTOR_DECISION_BASIS` with WP-19-valid native factors; the second must be `CURRENT_COMMITTED_STATE`. In the fixture, a retained T0 goal to admit the party and a current T1 goal to keep the gate closed can both be valid. The native basis carries the actual factor identities, values and provenance. The consumer cannot infer missing factors or rewrite T0 from T1.
 
 ### 28.3 Failure and continuation
 
@@ -900,8 +908,8 @@ These are design/scenario acceptance specifications, **not executed runtime test
 | 6 | Same-ID editorial revision | Expected representation checked; ID unchanged; availability/exactness/index revalidated; coverage normally unchanged |
 | 7 | Structural split | Fresh replacement IDs, contributions retain source candidate; all inbound refs/reveal/chapter entries updated in one bounded closure |
 | 8 | Structural merge | Fresh merged ID and combined native provenance; retirement updates all affected closure; no ID reuse or automatic universal redirect |
-| 9 | Current Actor T1 differs from historical T0 | ACTOR_DECISION_BASIS resolves retained event-time factors; T1 cannot fill missing historical support |
-| 10 | Story insufficient; native escalation needed | CR names the registered unresolved dependency and finite native query; provider returns proper evidence kind; CR alone assembles |
+| 9 | Current Actor T1 differs from historical T0 | Retained T0 support cannot be filled from T1. Baseline Commentator uses the PO-009 Story-local retained basis; a consumer registered for native ACTOR_DECISION_BASIS may use the native route |
+| 10 | Story insufficient; native escalation needed outside baseline Commentator promise | CR names the registered unresolved dependency and finite native query; provider returns proper evidence kind; CR alone assembles |
 | 11 | THEN compared with latest committed NOW | Separately typed/bound components; current NOW reacquired before composed use; no fabricated common snapshot |
 | 12 | Events have no total temporal order | Preserve partial/incomparable relation; no ordering from IDs, Git, page or prose order |
 | 13 | Story exists, reader ineligible | No unit/metadata allocated; outward result does not reveal protected existence, ID or counts |
@@ -921,9 +929,9 @@ Additional adversarial obligations: conflicting source generation during allocat
 
 | Class | Required disposition |
 |---|---|
-| A — Already accepted architecture, not yet fully machine-realized | Story scaffold/static manifest selector; layer IDs/coverage/publication; Step-5.11 message/exact-retention codecs; R2.3 bounded assembly; WP-19 T0 SemanticEvent factors and ordinary retrospective binding. WP-18 final recovery item 10 provenance is already realized; obligations 1–9 and 11–13 remain substantive implementation later. |
-| B — New concrete realization specified here | StoryUnit/state validation and serialization; transient bundle/draft union and deterministic remapping; exact lookup projection; correction closure; typed read/result/basis/continuation validation and owner-specific adapters. Values and behaviors are specified here; executable validators/runtime are not delivered by this document. |
-| C — Downstream adapter work | Map consumer controls to registered R2.3 purposes, translate typed evidence while preserving provenance/claim kinds, implement ephemeral continuation handling and currentness reacquisition, remove assumptions of a global frontier/single history basis. Adapt existing consumer APIs when necessary; their present class names do not constrain HDM. |
+| A — Already accepted architecture, not yet fully machine-realized | Story scaffold/static manifest selector; layer IDs/coverage/publication; Step-5.11 message/exact-retention codecs; R2.3 bounded assembly; WP-19 T0 SemanticEvent factors and ordinary retrospective binding; PO-009 baseline Commentator Story-local support and self-contained eligibility/control requirement. WP-18 final recovery item 10 provenance is already realized; obligations 1–9 and 11–13 remain substantive implementation later. |
+| B — New concrete realization specified here | StoryUnit/state validation and serialization; transient bundle/draft union and deterministic remapping; exact lookup projection; correction closure; typed read/result/basis/continuation validation and owner-specific adapters. PO-009's exact persisted T0/control representation is deliberately **not** selected here and remains downstream realization. |
+| C — Downstream adapter work | Map consumer controls to registered R2.3 purposes, translate typed evidence while preserving provenance/claim kinds, implement ephemeral continuation handling and currentness reacquisition, remove assumptions of a global frontier/single history basis, and ensure baseline Commentator does not require native-only retrieval for PO-009-promised T0 support. Adapt existing consumer APIs when necessary; their present class names do not constrain HDM. |
 | D — Optional optimization | In-process hydration/cache, faster derived source/inbound-ref lookup, deterministic projection instead of LLM, batching physical reads. Must be semantically transparent and rebuildable. |
 | E — Dormant future work | Index partitioning only on existing measured-scale/tool-limit trigger; external transport only with a concrete deployment need; asynchronous workers only under existing projection law; explicit deep-source/debug consumer mode only under its own admission decision. No default activation. |
 
@@ -937,11 +945,11 @@ Machine implementations must validate the schemas and owner codecs, enforce the 
 | Layer state contains coverage, compact lookup and optional editorial chapters | REALIZES Step 5.10/WP-11 | No extra topology; one layer-state compatibility boundary; metadata remains monolithic |
 | Native-ref routing envelope with owner-specific selectors/bases | REALIZES R2.1/WP-10/WP-19 | No universal historical ontology; native codec work stays explicitly owned |
 | Typed capabilities below Context Runtime | EXTENDS integration, preserves R2.3 authority | A provider cannot decide assembly/eligibility policy or collapse evidence kinds |
-| Narrow registered native escalation for Commentator | EXTENDS older Step-4 default consumer edge under this task's accepted retrospective requirements | Story-first retained; no unrestricted WORLD/STATE or direct role-to-role protocol |
+| Story-local retained T0 support for baseline Commentator; native escalation retained for other admitted consumers/claims | PO-009 TARGETED SUPERSESSION of earlier Commentator fallback; EXTENDS integration without authority transfer | Baseline Commentator is self-contained for promised retained T0 facts; ordinary Master/deep-source native capability remains; no unrestricted WORLD/STATE or direct role-to-role protocol |
 | Transient multi-component basis and protected continuation | REALIZES currentness composition and EXTENDS concrete read protocol | No durable global snapshot; permission and NOW are rechecked |
 | Internal detailed failures plus reader-safe projection | REALIZES existing disclosure/CR constraints | Debuggability without a source-existence oracle |
 
-These decisions do not supersede the listed semantic owners or reopen their settled product laws. New native families, universal scans, different retention promises or any ownership transfer would require an explicit separately justified architecture decision.
+These decisions do not supersede the listed semantic owners except for PO-009's explicit targeted Commentator support-locality amendment, and they do not reopen settled product laws. New native families, universal scans, different retention promises or any ownership transfer would require an explicit separately justified architecture decision.
 
 ### 29.3 Risks, confidence and reopen triggers
 
@@ -949,16 +957,17 @@ These decisions do not supersede the listed semantic owners or reopen their sett
 |---|---|
 | Monolithic layer metadata may reach an operational host limit | Use existing finite envelopes; exact reads remain direct; measure under WP-24 before introducing partitioning |
 | Native codec realization may be incomplete | Fail the specific unsupported capability; owner-specific codecs are an explicit implementation obligation, not a guessed default |
+| PO-009 concrete Story-local T0/control representation is not yet selected | Treat architecture decision as accepted but machine realization as deferred; choose persisted fields/control topology only under later authorized implementation design with Version Impact Gate |
 | Cross-layer structural rewrite may exceed bounded closure | Keep existing structure/exclude incompatible units; authorize scoped maintenance only after completeness can be proved |
-| Generated prose may be wrong despite structural validity | Noncanonical status, typed native escalation, repair lifecycle and later behavioral/empirical evaluation |
+| Generated prose may be wrong despite structural validity | Noncanonical status, typed native escalation where admitted, repair lifecycle and later behavioral/empirical evaluation |
 | Historical exact/editorial fidelity may be lost after lawful compaction or destructive loss | Preserve only existing retention promises; no regeneration claim without surviving evidence |
 
 Recommendation confidence is high for ownership/semantic boundaries. Implementation cost and large-campaign performance are not measured. Revisit the selected design if a real registered consumer cannot obtain its required finite evidence without global scanning, if native owners cannot supply a compatible bounded basis, or if a new product promise requires perpetual exact history. Do not weaken ownership/type guarantees merely to fit a current consumer API.
 
-**Product Owner decision required: NO.** No new material product trade-off remains within this contract's stated scope. Native codec/storage details can be realized under their existing owners. Independent review and future implementation authorization remain governed by the existing program process; this document changes neither global stage state nor those gates.
+**Product Owner decision required: NO.** PO-009 already supplies the material Commentator locality decision. Native codec/storage details and the exact Story-local control representation can be realized under their existing owners after the proper gate. Independent review and future implementation authorization remain governed by the existing program process; this document changes neither global stage state nor those gates.
 
 ## 30. Explicit non-goals and completion boundary
 
 No second truth authority, Context Runtime, native history owner or generic memory database is introduced. There is no mandatory RAG/vector subsystem, universal query/graph traversal, global Story revision, global fictional chronology, durable projection queue/lease/worker registry, mandatory Chronicler LLM or Commentator write capability. Public contracts have no private consumer-runtime dependency.
 
-The delivered artifact is this integration specification and its navigation reference. Story machine/runtime implementation and downstream adaptation are subsequent independent work, after their applicable gates. The document provides schemas, concrete logical exchanges, lifecycle/failure rules and scenario obligations needed to begin that work without redefining the fundamental producer/persistence/read boundaries.
+The delivered artifact is this integration specification and its navigation reference, now reconciled with PO-009. Story machine/runtime implementation and downstream adaptation are subsequent independent work, after their applicable gates. In particular, current `GAME/SCHEMA/event.schema.yaml` does not yet realize PO-009-specific `commentator_eligibility_projection` or `commentator_control_projection`, and no such fields/topology are selected by this documentation repair. The document provides schemas, concrete logical exchanges, lifecycle/failure rules and scenario obligations needed to begin later work without redefining the fundamental producer/persistence/read boundaries.
