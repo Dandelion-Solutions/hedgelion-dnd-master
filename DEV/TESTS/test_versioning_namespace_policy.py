@@ -230,7 +230,7 @@ class VersionNamespacePolicyTests(unittest.TestCase):
             "CHARACTER.md": "1.0.1",
             "CHARACTER_READINESS.md": "1.0.3",
             "DIEGETIC_ONBOARDING.md": "1.0.2",
-            "DURABILITY_GUARD.md": "1.0.1",
+            "DURABILITY_GUARD.md": "1.0.2",
             "ENGINE_UPDATES.md": "1.0.4",
         }
         actual = {}
