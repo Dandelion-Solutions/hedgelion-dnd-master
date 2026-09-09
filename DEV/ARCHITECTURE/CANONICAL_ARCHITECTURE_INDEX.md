@@ -140,6 +140,7 @@ These are locator summaries; open the owning source for exact law text.
 | GI-27 | For one owner-proven bounded focus, WP-25 composes owner-local native outcomes into an ephemeral `FailureDisposition`; the projection is non-authoritative and scope-local. Deferrable durability exposure uses `NORMAL / ELEVATED / DANGER`; DANGER does not become correctness HARD, a timer/scheduler or retry authority. | WP-25 + applicable native owners |
 | GI-28 | Baseline Commentator retrospective use is satisfied from an imported self-contained Story corpus: qualifying retained WP-19 T0 decision-basis meaning is Story-local recoverable and eligibility/control information is supplied as a derived Commentator projection; native gameplay/history/knowledge/disclosure/access owners remain authoritative and ordinary Master/deep-source capabilities may still use native evidence. | `2026-09-09-story-commentator-self-contained-corpus-owner-decision.md` + Story producer/source contracts + Step 4/R2.3/WP-19 |
 | GI-29 | Mutable GitHub-backed runtime text uses owner-approved sizing bands (about 10–12 KiB preferred, 13–16 KiB review, above about 16 KiB review/partition expectation); the former universal 10,240-byte publication hard stop is superseded. Semantic integrity, atomicity, identity and no-truncation law remain controlling, and concrete partition/rollover topology is not selected by the sizing decision. | `2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` + WP-24/native storage owners |
+| GI-30 | Current routing and machine guards follow current semantic owners/amendments; supersession is local, historical provenance remains historical, and accepted architecture must not be reported as machine-complete when representation is still deferred. | WP-26 + applicable native owners/amendments |
 
 ---
 
@@ -284,6 +285,7 @@ Campaign HEAD is transport/current-tree pin only; it is not Story source waterma
 | Story | Story layer projection state | Story records/indexes/coverage | Chronicler draft | gameplay truth/recovery authority | 4 + 5.10 |
 | Baseline Commentator historical corpus | accepted PO-009 self-containment contract over Story projection | Story-local factual account + retained qualifying T0 meaning + derived eligibility/control projection sufficient for supported Commentator use | Commentator-local read cache/index may optimize navigation | native-only T0 fallback as required baseline Commentator dependency; Commentator cache as gameplay authority | PO-009 + Story producer/source contracts + Step 4/R2.3/WP-19 |
 | Mutable GitHub-backed runtime text sizing | PO-010 sizing-bands decision composed with native owner semantics | owner-specific bounded representation | partition/rollover/compaction only where owner-valid | former universal 10,240-byte reject rule; truncation to hit a size target | PO-010 + WP-24/native storage owners |
+| Documentation / routing / supersession consistency | current native owners/amendments composed by WP-26 | current owner text + synchronized current projections/guards | Project Map / Canonical Architecture Index / focused regression | filename recency, stale guard, derivative index or chat memory as authority; accepted architecture presented as machine-complete without evidence | WP-26 + applicable native owners/amendments |
 | Accepted communication evidence | `runtime.message` | stable envelope; exact/compacted payload | Story Transcript | mutable chat history | 5.11 |
 | Verified exact historical Transcript | Story Transcript + certification basis | noncanonical Story record | digest/provenance | objective truth | 5.11 |
 | Cleanup eligibility | native owner terminality/replacement + cleanup proof | no generic owner | candidate index/SafeRetirementAssessment | age/refcount/global GC | 5.13 + 5.14 |
@@ -560,6 +562,8 @@ Open the listed primary source after locating a concern here.
 | Can model/prompt change force Story replay? | 5.10 | projection contract generation, not model version |
 | What mutable GitHub text sizing threshold is current? | PO-010 + WP-24 | target/review/review-and-partition sizing bands; no universal exact hard stop |
 | Is 10,240 bytes still a universal publication reject threshold? | PO-010 | no; 2026-09-04 hard cutoff is superseded in threshold scope |
+| How should later accepted owners be reconciled with stale current-looking docs/guards? | WP-26 + affected native owners | owner-first routing / local supersession / targeted machine reconciliation |
+| Does accepted PO-009/PO-010 architecture mean its deferred schema/topology already exists? | WP-26 + PO-009/PO-010 | no; architecture status and realization status are separate |
 | Is visible ChatGPT history durable transcript authority? | 5.11 | no |
 | Exact old quote after compaction? | 5.11 | only if exact evidence survives |
 | Can exact Transcript become world truth? | 4 + 5.11 | no |
@@ -600,6 +604,8 @@ Open the listed primary source after locating a concern here.
 | baseline Commentator native-only T0 fallback for qualifying retained decision basis | superseded; required historical factor meaning is Story-local recoverable for baseline Commentator while native authority remains unchanged | PO-009 + Story producer/source contracts |
 | shared Master/Commentator cache format or Commentator cache as gameplay authority | rejected | PO-009 |
 | universal 10,240-byte mutable-text publication hard stop | superseded by approximate target/review/review-and-partition sizing bands; no-truncation and owner-valid bounded representation remain | PO-010 + WP-24 |
+| current machine guard enforcing a superseded owner law | realization defect; repair when current owner uniquely determines correction | WP-26 + current semantic owner |
+| accepted architecture status treated as proof of deferred schema/topology realization | rejected; architecture and realization status remain separate | WP-26 |
 | visible ChatGPT history as immutable transcript | rejected | 5.11 |
 | universal exact transcript forever | rejected by Selective Exact owner decision | 5.11 |
 | Story Transcript as objective truth | rejected | 4 + 5.11 |
@@ -777,6 +783,10 @@ Per-slice canon + Step-5.14 integration clarifications supersede older agenda wo
 - `DEV/docs/superpowers/specs/2026-09-09-story-commentator-self-contained-corpus-owner-decision.md` — current PO-009 owner for baseline Commentator corpus sufficiency. Read with `2026-09-07-story-producer-persistence-retrospective-consumer-contract.md`, `2026-09-08-story-baseline-projection-source-contracts.md`, WP-19 historical Actor basis and Step-4/R2.3 knowledge/disclosure/access owners. It requires Story-local recoverability of qualifying retained T0 meaning and a derived sufficient Commentator control projection, but does not choose persisted Story snapshot fields or Commentator cache topology.
 - `DEV/docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` — current PO-010 mutable-text sizing owner. It narrowly supersedes the threshold semantics of `2026-09-04-runtime-mutable-github-artifact-size-owner-decision.md` and corresponding WP-24/Story hard-cap prose. Concrete writer partition/rollover topology remains downstream realization work.
 
+## 15.8 R2.7 WP-26
+
+- `DEV/docs/superpowers/specs/2026-09-09-r2-7-WP-26-documentation-routing-supersession-consistency-canonical-spec.md` — owner-first routing, local supersession and targeted machine-guard reconciliation. Read it with the current native semantic owners and applicable later amendments; accepted architecture and concrete machine realization remain separate, and deferred PO-009/PO-010 representation is not claimed as implemented.
+
 ---
 
 # 16. Search anchors / glossary
@@ -804,6 +814,8 @@ Per-slice canon + Step-5.14 integration clarifications supersede older agenda wo
 | MAY_OMIT | candidate may be terminally considered without Story output | 5.10 |
 | self-contained Commentator Story corpus | baseline Commentator can satisfy supported factual retrospective use from imported Story-local evidence/control projection without native-only T0 fallback | PO-009 + Story producer/source contracts |
 | sizing bands | mutable GitHub-backed text uses approximate target/review/review-and-partition ranges, not a universal exact byte hard stop | PO-010 + WP-24 |
+| owner-first supersession reconciliation | current semantic owners/amendments outrank derivative routers/history/recency; uniquely determined stale current guards are repaired without rewriting provenance | WP-26 |
+| architecture vs realization status | accepted/closed semantic decision does not prove deferred schema/topology/code already exists | WP-26 |
 | `runtime.message` | stable accepted communication evidence identity | 5.11 |
 | EMISSION_COMMIT | validated/frozen supported outbound representation committed to player-visible path | 5.12 |
 | OutboundEmissionClosure | HOT outbound message + material disclosure/provenance closure | 5.12 |
