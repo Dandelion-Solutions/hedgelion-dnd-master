@@ -279,7 +279,7 @@ def audit_persistence_ownership() -> None:
     require("does not create ordinary gameplay save boundaries" in pers, "PERSISTENCE must explicitly be HOW-only")
     require("does not invent additional timing rules" in storage, "STORAGE must defer timing to DURABILITY_GUARD")
     require("does not automatically" in session or "not automatically" in session, "SESSION must not invent per-scene boundaries")
-    require(("unfinished pre-live setup" in save or "unfinished pre-live onboarding" in save) and "`initializing`" in save, "SAVE_CONTRACT must preserve initializing during unfinished onboarding")
+    require(("pre-PLAY_READY" in save or "before PLAY_READY" in save) and "`initializing`" in save, "SAVE_CONTRACT must preserve initializing during unfinished pre-PLAY_READY onboarding/provisional gameplay")
     require("`paused` is reserved" in dur, "DURABILITY_GUARD must define paused as post-PLAY_READY")
 
 
