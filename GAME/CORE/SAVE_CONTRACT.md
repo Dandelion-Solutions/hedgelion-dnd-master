@@ -1,6 +1,6 @@
 # Explicit Save Contract
 
-framework_module_version: 0.2.0
+framework_module_version: 0.2.1
 load_when: player explicitly asks to save, save-and-stop, or a save completeness check is required
 precedence: authoritative for the semantic meaning and completeness of an explicit player save request; PERSISTENCE.md remains authoritative for HOW the resulting batch is published
 
@@ -31,9 +31,9 @@ Do not downgrade an established entity, relationship, objective, resource change
 
 ## Save preserves readiness/lifecycle semantics
 
-`save` is a durability command, not a readiness command. During unfinished pre-live onboarding, materialize the honest provisional setup state and keep MANIFEST/CAMPAIGN_CARD `initializing`. Do not set `active` merely because scene/location/PC records now exist. Only READY_PC + PLAY_READY authorize activation.
+`save` is a durability command, not a readiness command. During unfinished pre-PLAY_READY onboarding or provisional gameplay, materialize the honest provisional setup/gameplay state and keep MANIFEST/CAMPAIGN_CARD `initializing`. Do not set `active` merely because scene/location/PC records now exist or because bounded provisional gameplay has begun. Only READY_PC + PLAY_READY authorize activation.
 
-If legitimate normal live play already exists, do not leave lifecycle `initializing`.
+If legitimate fully active mechanics-capable play already exists, do not leave lifecycle `initializing`.
 
 ## Materialization checklist
 
@@ -66,7 +66,7 @@ If there is dirty durable state and the planned save changes only a summary/note
 
 ## Missing-record materialization
 
-A fact already established in live play does not remain optional merely because its entity file/index was never created earlier.
+A fact already established in gameplay does not remain optional merely because its entity file/index was never created earlier.
 
 At explicit save, missing normal records must be created now from the established hot state.
 
@@ -75,7 +75,7 @@ Examples:
 - a recurring named companion with no NPC record -> materialize companion/NPC relationship state;
 - an accepted job with no thread -> materialize the active thread and current routing;
 - a known focal location with a blank campaign card -> materialize authoritative location/current state and refresh the card;
-- a live scene represented only in narration -> materialize the minimum resumable scene state.
+- a scene represented only in narration -> materialize the minimum resumable scene state.
 
 Do not broaden the world beyond established/currently needed facts merely because save is happening.
 
@@ -99,7 +99,7 @@ A save may preserve an honest recovery frontier without pretending an invalid co
 
 Only explicit `pause`, `stop`, `end session`, or equivalent intent should create the corresponding pause/session boundary/status change.
 
-If the player says `save and stop`, both intents apply coherently. Unfinished pre-live setup remains `initializing`; `paused` is reserved for a campaign that already reached PLAY_READY/normal play.
+If the player says `save and stop`, both intents apply coherently. Unfinished pre-PLAY_READY setup/provisional play remains `initializing`; `paused` is reserved for a campaign that already reached PLAY_READY/normal fully active play.
 
 ## One coherent transaction
 
@@ -119,9 +119,9 @@ At minimum assert as applicable:
 - current focal location is represented consistently and campaign-card projection is not knowingly stale;
 - current resumable scene/thread routing is represented in `STATE/CURRENT.yaml` and direct records;
 - if lifecycle will be `active`, READY_PC + PLAY_READY are actually satisfied;
-- if READY_PC is incomplete and campaign is still pre-live, lifecycle remains `initializing`;
+- if READY_PC is incomplete or PLAY_READY has not been reached, lifecycle remains `initializing` while owner-valid provisional gameplay may still exist;
 - unfinished setup is not marked `paused`;
-- legitimate post-PLAY_READY live play is not left `initializing`;
+- legitimate post-PLAY_READY fully active play is not left `initializing`;
 - CAMPAIGN_CARD campaign name equals MANIFEST campaign name, including null;
 - every changed path is semantically dirty under `PERSISTENCE.md`; unrelated template/README-guide/HOUSE_RULES rewrites are forbidden;
 - no dirty durable fact survives only inside a prose summary/note;
