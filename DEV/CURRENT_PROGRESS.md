@@ -8,18 +8,18 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-26 STEP 1 COMPLETE AT WORKER LEVEL — MANDATORY INDEPENDENT STEP-1 SENIOR REVIEW PENDING
+GLOBAL_STATE: R2.7 WP-26 STEPS 2–8 AUTHORIZED / IN PROGRESS — STEP-1 SENIOR PASS / GO
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-26 Step 1 — documentation / routing / supersession consistency — worker package complete / Senior gate pending
+CURRENT_SLICE: WP-26 Steps 2–8 — documentation / routing / supersession consistency
 
 LAST_CLOSED_UNIT: WP-25 — Error / degradation / failure semantics
-NEXT_ELIGIBLE_UNIT: mandatory independent WP-26 Step-1 Senior review
-NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: mandatory independent Senior review of the completed/repaired WP-26 Step-1 package before Step 2
+NEXT_ELIGIBLE_UNIT: WP-26 Step 2 — research & architecture draft
+NEXT_AUTHORIZED_UNIT: WP-26 STEPS 2–8 — execute continuously unless a genuine human-owned decision gate appears
+REQUIRED_GATE: mandatory independent final WP-26 Senior review after completed Step 8
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-task-brief-source-manifest.md
-KNOWN_BLOCKERS: WP-26 STEP 2 / IMPLEMENTATION PLANNING / IMPLEMENTATION / RELEASE EXECUTION / GAMEPLAY BOOTSTRAP REMAIN UNAUTHORIZED UNTIL THE MANDATORY STEP-1 SENIOR GATE RETURNS GO
+KNOWN_BLOCKERS: NONE; implementation planning / WP-27 / release execution / gameplay bootstrap remain unauthorized
 ```
 
 ---
@@ -199,7 +199,7 @@ GAME/CORE/MECHANICS_INTEGRITY.md   0.1.0 -> 1.0.1
 
 ## Cross-cutting Product Owner inputs entering WP-26
 
-WP-26 Step 1 must treat current applicable Product Owner routes as part of its open-world Source Manifest. In particular:
+WP-26 must treat current applicable Product Owner routes as part of its open-world Source Manifest. In particular:
 
 - `PO-009` / `DEV/docs/superpowers/specs/2026-09-09-story-commentator-self-contained-corpus-owner-decision.md` — Story-local retained T0 basis plus self-contained Commentator eligibility/control projection; current routing/supersession surfaces must not leave native-fallback-only baseline Commentator semantics discoverable as current law.
 - `PO-010` / `DEV/docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` — the former absolute 10 KiB mutable-file cap is superseded by target/review/review-and-partition sizing bands; current implementation-facing routing must not preserve the retired hard cutoff as current law.
@@ -265,6 +265,26 @@ The Step-1 package changes only development design/current-progress bookkeeping.
 
 ---
 
+# WP-26 Step-1 Senior GO and Steps 2–8 authorization
+
+The independent Senior review result supplied by the Product Owner for the published Step-1 package is:
+
+```text
+WP26_STEP1_SENIOR_REVIEW: PASS / GO
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
+```
+
+Product Owner authorization on 2026-09-09:
+
+```text
+WP26_STEPS_2_8_AUTHORIZED: YES
+```
+
+This authorizes continuous execution of WP-26 Steps 2–8 under the accepted Step-1 Task Brief and current process. It does not authorize WP-27, implementation planning, implementation beyond mechanically determined design-realization reconciliation already required by WP-26 policy, release/migration execution, or gameplay bootstrap.
+
 ## Current gate
 
 ```text
@@ -279,16 +299,18 @@ WP26_STEP1_SOURCE_MANIFEST: COMPLETE
 WP26_STEP1_TASK_BRIEF: COMPLETE / REPAIRED
 WP26_STEP1_WHOLE_PROJECT_CRITIC: COMPLETE
 WP26_STEP1_WORKER_COMPLETE: YES
-WP26_STEP1_SENIOR_REVIEW: REQUIRED / PENDING
-WP26_STEP2_AUTHORIZED: NO
+WP26_STEP1_SENIOR_REVIEW: PASS / GO
+WP26_STEPS_2_8_AUTHORIZED: YES
+WP26_WORKER_CLOSURE: NOT YET
 
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
-SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
+WP27_AUTHORIZED: NO
+SUBSTANTIVE_GENERIC_IMPLEMENTATION_STARTED: NO
 RELEASE_MIGRATION_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
-NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: mandatory independent WP-26 Step-1 Senior review
+NEXT_AUTHORIZED_UNIT: WP-26 Step 2 — research & architecture draft
+NEXT_GATE: mandatory independent final WP-26 Senior review after completed Step 8
 ```
 
-Do not begin WP-26 Step 2, implementation planning, implementation, release execution or gameplay bootstrap until the mandatory independent WP-26 Step-1 Senior review returns GO.
+Do not begin WP-27, implementation planning, release execution or gameplay bootstrap after WP-26 Step 8. Stop for the mandatory independent final WP-26 Senior review.
