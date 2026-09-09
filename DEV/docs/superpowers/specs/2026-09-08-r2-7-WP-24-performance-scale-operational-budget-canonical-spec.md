@@ -1,6 +1,6 @@
 # R2.7 WP-24 — Performance / Scale / Operational Budget — Canonical Specification
 
-Status: **CANONICAL WP-24 RESULT — STEPS 1–8 COMPLETE / MANDATORY FINAL SENIOR REVIEW PENDING**
+Status: **CANONICAL WP-24 RESULT — FINAL SENIOR PASS / CLOSED — CURRENT AS AMENDED BY 2026-09-09 SIZING-BANDS OWNER**
 
 Date: 2026-09-08
 
@@ -20,7 +20,7 @@ Canonicalization basis:
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-6-whole-project-adversarial-review.md`;
 - `DEV/docs/superpowers/design/2026-09-08-r2-7-WP-24-step-7-finding-resolution-propagation.md`.
 
-This file is the single final worker-produced implementation-facing WP-24 architecture owner, subject to mandatory independent final Senior review. Earlier design artifacts remain provenance. Where Step-6/7 repairs differ from the Step-5 candidate, this canonical result contains the repaired wording and controls after final Senior acceptance.
+This file is the single final implementation-facing WP-24 architecture owner. Mandatory independent final Senior review has passed and WP-24 is closed. Earlier design/review artifacts remain provenance. The later Product Owner decision `DEV/docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` supersedes only WP24-13/WP24-32's former universal 10 KiB hard-cutoff semantics; all unaffected boundedness, evidence, partitionability and semantic-preservation laws remain current.
 
 This specification does **not** authorize implementation planning, implementation, performance-optimization implementation, release, migration or gameplay bootstrap.
 
@@ -251,7 +251,7 @@ Physically retained/archived refs remain non-authoritative and branch/ref deleti
 
 ---
 
-# 8. Family indexes and mutable-file limits
+# 8. Family indexes and mutable-file sizing
 
 ## LAW WP24-12 — Monolithic family indexes remain baseline only while safely operable
 
@@ -267,31 +267,33 @@ Any future index partitioning must preserve:
 - bounded discovery;
 - no index-absence semantic proof.
 
-## LAW WP24-13 — The 10 KiB cap is a hard mandatory representation trigger
+## LAW WP24-13 — Mutable artifact sizing uses target / review / review-and-partition bands
 
-Every runtime-authored mutable GitHub-backed textual artifact remains subject to:
+Current threshold semantics are owned by `DEV/docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` and supersede WP-24's former universal `10240` hard publication cutoff.
 
-```text
-RUNTIME_MUTABLE_GITHUB_TEXT_FILE_MAX_BYTES = 10240
-```
-
-Distinguish:
+For growth-bearing runtime-authored mutable GitHub-backed textual artifacts, measure the projected final serialized UTF-8 payload before publication and apply:
 
 ```text
-EARLY OPTIMIZATION TRIGGER
-    measured size/latency/parse/conflict/tool behavior may justify bounded partitioning earlier
+PREFERRED TARGET BAND
+    approximately 10–12 KiB or smaller where owner-valid
 
-HARD PUBLICATION TRIGGER
-    final serialized UTF-8 payload > 10,240 bytes
-    -> publication forbidden
-    -> owner-valid bounded representation MUST activate before publication
+REVIEW BAND
+    materially above target through approximately 16 KiB
+    with 13–16 KiB as the normal explicit review zone
+
+REVIEW / PARTITION / ROLLOVER BAND
+    above approximately 16 KiB
+    -> owner-valid bounded representation is the default expectation
+       before indefinite further growth
 ```
 
-A mutable monolithic index, Story control artifact, retained planning/collaboration record or equivalent cannot wait for another optimization signal once the hard cap would be violated.
+These are decision bands, not validity enums and not a universal byte-hard-stop. A file in the review zone is not automatically invalid. One indivisible owner unit may remain intact when splitting would break identity, atomicity, provenance, exactness or another accepted semantic law. Required material must never be truncated or falsely split to meet a target number.
 
-This is a per-file project invariant, not a total campaign/Story corpus quota or a vendor hard-limit claim.
+A mutable monolithic index, Story control artifact, retained planning/collaboration record or equivalent must have a deterministic owner-valid bounded partition/rollover path before it becomes an operational dead end. Earlier optimization may be justified by measured size/latency/parse/conflict/tool behavior.
 
-WP-24 selects no concrete shard/page/rollover layout.
+This is per-file operational policy, not a total campaign/Story corpus quota or vendor hard-limit claim.
+
+WP-24 selects no concrete shard/page/rollover layout or exact universal rollover threshold.
 
 ---
 
@@ -529,12 +531,12 @@ WP-24 selects no:
 - Story partition count;
 - chapter-file layout;
 - family-index partition scheme;
-- rollover threshold;
+- exact universal rollover threshold;
 - universal shard width.
 
 Earlier activation may be justified by measured size, whole-file replacement cost, transfer/parse latency, Git amplification, conflict pressure or supported-tool behavior.
 
-The 10 KiB hard cap is not optional evidence: once a pending mutable artifact would violate it, owner-valid bounded representation is mandatory before publication.
+Current `2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` policy is also an activation input: 13–16 KiB is the normal explicit review zone and above approximately 16 KiB is the default review/partition/rollover zone for growth-bearing mutable artifacts. Those bands are not a universal semantic hard stop; owner identity, atomicity, exactness, provenance and safe reconstruction remain controlling.
 
 ---
 
@@ -649,7 +651,7 @@ The final implementation plan, when separately authorized, must route the follow
 
 Verify as applicable:
 
-1. 10,240-byte serialized prepublication cap;
+1. current mutable-artifact target/review/review-and-partition sizing bands with exact serialized UTF-8 measurement, no universal `10240` rejection, and owner-valid no-truncation/partition semantics;
 2. direct known-ID route without directory/index enumeration;
 3. bounded campaign-menu discovery/continuation behavior;
 4. bounded Context Runtime required closure and finite failure;
@@ -706,7 +708,7 @@ Do not build a parallel preimplementation MVP to execute these obligations.
 | Finding | Severity | Final disposition |
 |---|---|---|
 | `F24-06-01` campaign-menu cardinality | SIGNIFICANT | RESOLVED by LAW WP24-11 / WP24-36 |
-| `F24-06-02` 10 KiB hard activation trigger | SIGNIFICANT | RESOLVED by LAW WP24-13 / WP24-32 |
+| `F24-06-02` former 10 KiB hard activation trigger | SIGNIFICANT | RESOLVED by original LAW WP24-13 / WP24-32, then threshold semantics SUPERSEDED by `2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` while bounded partitionability remains current |
 | `F24-06-03` Story opportunity domain fan-out | SIGNIFICANT | RESOLVED by LAW WP24-26 / future B/C proof |
 | `F24-06-04` stale-base changed-path scale | SIGNIFICANT | RESOLVED by LAW WP24-18 |
 | `F24-06-05` recovery/chronology omitted path | SIGNIFICANT | RESOLVED by LAW WP24-22..24 |
@@ -731,7 +733,7 @@ VERSION_IMPACT_DISPOSITION: NONE
 VERSIONING_TAXONOMY_REOPENED: NO
 ```
 
-Reason: WP-24 Steps 2–8 publish architecture/design/status material only. They do not alter a version-bearing runtime module, persistent schema, Story semantic generation, storage generation, protocol, package/release format or executable gameplay implementation.
+Reason: WP-24 Steps 2–8 and the later WP-26 documentation/supersession reconciliation alter architecture/design/status prose and tests only. They do not by themselves alter a version-bearing runtime module, persistent schema, Story semantic generation, storage generation, protocol, package/release format or executable gameplay implementation.
 
 A later optimization implementation that changes a compatibility-bearing physical layout/schema/generation must perform its own Version Impact Gate.
 
@@ -751,6 +753,9 @@ WP24_STEPS_2_8: COMPLETE
 WP24_STEP6_COMPLETE: YES
 WP24_STEP7_COMPLETE: YES
 WP24_STEP8_CANONICALIZATION: COMPLETE
+WP24_FINAL_SENIOR_RE_REVIEW: PASS / GO
+WP24_FINAL_CLOSURE: PASS
+WP24_CLOSED: YES
 
 STEP6_BLOCKING_FOUND: 0
 STEP6_SIGNIFICANT_FOUND: 5
@@ -772,7 +777,4 @@ BRANCH_REF_DELETION: FORBIDDEN
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 SUBSTANTIVE_IMPLEMENTATION_AUTHORIZED: NO
 PERFORMANCE_OPTIMIZATION_IMPLEMENTATION_AUTHORIZED: NO
-
-WP24_FINAL_SENIOR_REVIEW: REQUIRED / PENDING
-NEXT_AUTHORIZED_UNIT: NONE
 ```
