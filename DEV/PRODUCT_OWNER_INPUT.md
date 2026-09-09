@@ -49,8 +49,8 @@ An agent-owned route marked `ACTIVE` or `PENDING` must not name a work package t
 | `PO-006` | AUTHORITY / SAFETY / REPOSITORY POLICY | INCORPORATED | branch/ref deletion is forbidden for every HDM development/runtime agent; WP-21 and WP-24 final Senior closure consumed the rule, including retained-ref operability, without re-enabling deletion | branch/ref deletion owner decision; `AGENTS.md`; `GAME/CORE/PERSISTENCE.md`; `GAME/CORE/LIVE_SCENE.md`; final WP-21 and WP-24 canonical specs/reviews | NONE |
 | `PO-007` | PUBLIC PROVENANCE / ATTRIBUTION POLICY | INCORPORATED | WP-23 final Senior re-review accepted the repository-wide public provenance reconciliation and closed the architecture consumer; future enforcement remains under the accepted owner and current machine guards | public provenance owner decision; final WP-23 canonical spec; current public `DEV/` + `GAME/`; legal/notice owners; relevant audits/tests | NONE |
 | `PO-008` | FAILURE / DEGRADATION / DURABILITY-RISK PRODUCT DIRECTION | INCORPORATED | WP-25 final Senior re-review PASS accepted the severity/gameplay-impact/risk model and proactive durability-risk direction; downstream generic realization and production-like host calibration remain safely deferred behind explicit future gates | accepted WP-25 owner-direction; final WP-25 canonical spec; Step 5.5/WP-13 native durability owners; later runtime/tests/empirical host acceptance | NONE |
-| `PO-009` | COMMENTATOR / STORY CORPUS SUFFICIENCY | INCORPORATED | accepted owner decision requires Story-local retained T0 basis plus a self-contained Commentator eligibility/control projection; WP-26 reconciled current Story routing/consumer prose while physical Story/snapshot/cache realization remains deferred | Story producer/source contracts; historical Actor basis; Step-4 knowledge/disclosure/access; WP-26 reconciliation; future Commentator/Story realization | NONE |
-| `PO-010` | MUTABLE FILE SIZE / OPERABILITY POLICY | INCORPORATED | accepted superseding owner decision replaces the former absolute 10 KiB publication cap with target/review/review-and-partition sizing bands; WP-26 current-prose/routing/test reconciliation is incorporated and WP-27 later derives realization work | sizing-bands owner decision; superseded former 10 KiB owner; WP-24; Story growth/sharding owner; WP-26 reconciliation; WP-27/later runtime/Story writers/tests | NONE |
+| `PO-009` | COMMENTATOR / STORY CORPUS SUFFICIENCY | INCORPORATED | WP-26 final Senior PASS closed routing/supersession reconciliation; WP-27 Step-1 now classifies the deferred Story/snapshot/control realization boundary while physical realization remains unauthorized | Story producer/source contracts; historical Actor basis; Step-4 knowledge/disclosure/access; closed WP-26 reconciliation; active WP-27 readiness route; future Commentator/Story realization | NONE |
+| `PO-010` | MUTABLE FILE SIZE / OPERABILITY POLICY | INCORPORATED | WP-26 final Senior PASS closed current-prose/routing/test reconciliation; WP-27 Step-1 now classifies writer/rollover/schema/test realization without activating a universal partition topology | sizing-bands owner decision; superseded former 10 KiB owner; WP-24; Story growth/sharding owner; closed WP-26 reconciliation; active WP-27 readiness route; later runtime/Story writers/tests | NONE |
 
 ---
 
@@ -574,14 +574,17 @@ NEEDS_PO: NONE
 | Step-4 knowledge/disclosure/access | INCORPORATED / OWNERS PRESERVED | future Commentator snapshot must export a derived sufficient control projection without creating a second owner | Step-4, R2.3, Access Control, PO-009 |
 | Commentator local read cache | DOWNSTREAM INTERNAL / OUTSIDE MASTER HOT | implementation may choose campaign-local SQL schema/indexes optimized for history/search/retelling; no compatibility with Master HOT required | PO-009 public boundary only; exact consumer implementation remains downstream |
 | Content/access currentness | INCORPORATED | content finality may freeze content but not access/knowledge/disclosure projection; refresh control basis when those owners change | PO-009 `SCC-9/SCC-10` |
-| Story/snapshot schema, sharding, validator and tests | DEFERRED | next explicitly authorized Story/Commentator realization/planning gate; WP-26 does not select the concrete schema/topology | PO-009 + existing Story sharding/versioning/test owners + WP-27 handoff |
-| R2.7 WP-26 routing/supersession | INCORPORATED / WORKER PROPAGATION COMPLETE | current Story contracts and durable routers are reconciled; final WP-26 Senior review remains the external closure gate | WP-26 Step-7/Step-8 closure artifacts and current routing indexes |
+| Story/snapshot schema, sharding, validator and tests | DEFERRED / WP-27 READINESS CLASSIFICATION ACTIVE | active WP-27 must determine whether exact HDM-side representation is implementation-selectable or a bounded architecture blocker; physical realization remains behind later implementation authorization | PO-009 + Story sharding/versioning/test owners + WP-27 Step-1 Task Brief/critic |
+| R2.7 WP-26 routing/supersession | INCORPORATED / CLOSED / FINAL SENIOR PASS | current Story contracts and durable routers are reconciled; WP-26 closure is complete | WP-26 canonical spec + final independent Senior review |
+| R2.7 WP-27 readiness | ACTIVE / STEP-1 | classify future Story/control workstreams, dependencies, Version Impact/proof routes and any representation blocker without implementing them | WP-27 Step-1 Task Brief/critic + current progress |
 
 ### Current impact
 
 The prior Story design was sufficient for a consumer allowed to escalate from Story into native historical evidence, but it was insufficient for the now-explicit baseline Commentator requirement that the imported Story corpus be self-contained for supported factual explanation and secret-safe filtering.
 
-WP-26 has now reconciled the current implementation-facing Story producer/source contracts and durable routing surfaces with that correction. Native SemanticEvent/history ownership remains unchanged, qualifying retained T0 factor meaning is Story-local for baseline Commentator use, and the Commentator-importable snapshot still requires enough derived knowledge/disclosure/access state to evaluate Story eligibility locally. Exact snapshot fields, validators, sharding and Commentator-cache topology remain deliberately deferred rather than being fabricated by documentation reconciliation.
+WP-26 final Senior PASS closed the routing/supersession reconciliation. Native SemanticEvent/history ownership remains unchanged, qualifying retained T0 factor meaning is Story-local for baseline Commentator use, and the Commentator-importable snapshot still requires enough derived knowledge/disclosure/access state to evaluate Story eligibility locally. Exact snapshot fields, validators, sharding and Commentator-cache topology remain deliberately deferred rather than being fabricated by documentation reconciliation.
+
+WP-27 Step-1 is now active only as the implementation-planning-readiness classifier for that deferred HDM-side realization boundary. It does not authorize the physical Story/snapshot/cache implementation.
 
 Product Owner decision still required: `NONE`.
 
@@ -627,15 +630,15 @@ NEEDS_PO: NONE
 | Former 10 KiB hard-cap decision | INCORPORATED / TARGETED SUPERSESSION | preserve provenance and unaffected partition/no-truncation laws; old exact hard cutoff is not current | `2026-09-04-runtime-mutable-github-artifact-size-owner-decision.md` as historical/superseded in threshold scope |
 | WP-24 performance/scale | INCORPORATED / NARROW SUPERSESSION / CLOSED | WP-24 remains closed; hard-cutoff prose and future verification were reconciled to current sizing bands without reopening its architecture | WP-24 canonical spec + current owner decision + WP-26 propagation |
 | Story persistence/growth | INCORPORATED / NARROW SUPERSESSION | bounded partitionability remains; absolute 10 KiB Story cap is replaced by the same bands | Story growth/sharding owner + current sizing owner + WP-26 propagation |
-| WP-26 routing/supersession | INCORPORATED / WORKER RECONCILIATION COMPLETE | stale current hard-cap wording, tests and durable routers are reconciled to the current sizing owner; final WP-26 Senior review remains the closure gate | WP-26 Step-7 propagation + affected current owners/tests/routers |
-| WP-27 implementation-planning readiness | DEFERRED | derive concrete writer/rollover/schema/test workstreams only after WP-26 final closure and explicit authorization | WP-27 |
+| WP-26 routing/supersession | INCORPORATED / CLOSED / FINAL SENIOR PASS | stale hard-cap wording, tests and durable routers are reconciled to the current sizing owner; WP-26 closure is complete | WP-26 canonical spec + final independent Senior review |
+| WP-27 implementation-planning readiness | ACTIVE / STEP-1 | classify concrete writer/rollover/schema/test workstreams, activation state and delegated topology choices without creating universal partition work | WP-27 Step-1 Task Brief/critic + current progress |
 | Runtime/Story machine realization and tests | DEFERRED | future approved implementation planning/execution; run Version Impact Gate for material persisted/module changes | relevant writers/schemas/tests |
 
 ### Current impact
 
 The Product Owner input is fully incorporated and does not remain as an unresolved requirement. The project may continue using “about 10 KiB” as shorthand, but implementation-facing logic now uses the target/review/review-and-partition model rather than rejecting every payload above 10,240 bytes.
 
-WP-26 has reconciled the stale current hard-cap prose, verification expectations and durable routing surfaces without selecting a concrete writer partition/rollover topology. That downstream realization remains routed to WP-27/later implementation work after the required final WP-26 gate.
+WP-26 final Senior PASS closed the stale hard-cap prose, verification and durable-routing reconciliation without selecting a concrete writer partition/rollover topology. WP-27 Step-1 is now active only to derive/classify future writer, schema, rollover and test workstreams and to preserve coverage-not-activation semantics. Runtime/Story realization remains separately unauthorized.
 
 Product Owner decision still required: `NONE`.
 
@@ -654,8 +657,8 @@ PO-005: INCORPORATED — FIXED CREATOR-LOGIN FAIL-CLOSED AUTHORITY
 PO-006: INCORPORATED — BRANCH/REF DELETION PROHIBITED / WP-21 + WP-24 CONSUMERS CLOSED
 PO-007: INCORPORATED — PUBLIC DEV/GAME RESEARCH-PROVENANCE POLICY / WP-23 FINAL SENIOR RE-REVIEW PASS
 PO-008: INCORPORATED — WP-25 FINAL SENIOR RE-REVIEW PASS / DOWNSTREAM REALIZATION AND EMPIRICAL ACCEPTANCE DEFERRED
-PO-009: INCORPORATED — STORY-LOCAL T0 + SELF-CONTAINED COMMENTATOR ELIGIBILITY PROJECTION / WP-26 ROUTING RECONCILED / REALIZATION DEFERRED
-PO-010: INCORPORATED — 10 KIB HARD CAP SUPERSEDED BY TARGET / REVIEW / REVIEW-AND-PARTITION SIZING BANDS / WP-26 ROUTING RECONCILED
+PO-009: INCORPORATED — STORY-LOCAL T0 + SELF-CONTAINED COMMENTATOR ELIGIBILITY PROJECTION / WP-26 CLOSED / WP-27 READINESS ACTIVE / REALIZATION DEFERRED
+PO-010: INCORPORATED — 10 KIB HARD CAP SUPERSEDED BY TARGET / REVIEW / REVIEW-AND-PARTITION SIZING BANDS / WP-26 CLOSED / WP-27 READINESS ACTIVE
 
 WP19_FINAL_SENIOR_REVIEW: PASS
 WP20_FINAL_SENIOR_REVIEW: PASS
@@ -671,12 +674,16 @@ WP24_FINAL_SENIOR_RE_REVIEW: PASS / GO
 WP24_CLOSED: YES
 WP25_FINAL_SENIOR_RE_REVIEW: PASS / GO
 WP25_CLOSED: YES
+WP26_FINAL_SENIOR_REVIEW: PASS / GO
+WP26_CLOSED: YES
+WP27_STEP1_AUTHORIZED: YES
+WP27_STEP1_ACTIVE: YES
 
 HUMAN_DECISION_REQUIRED: NONE
 NEEDS_PO: NONE
 UPSTREAM_REOPEN_REQUIRED: NO
-TARGETED_STORY_CONSUMER_SUPERSESSION: YES / PO-009 OWNER DECISION PUBLISHED / WP-26 ROUTING RECONCILED
-TARGETED_SIZE_POLICY_SUPERSESSION: YES / PO-010 OWNER DECISION PUBLISHED / WP-26 ROUTING RECONCILED
+TARGETED_STORY_CONSUMER_SUPERSESSION: YES / PO-009 OWNER DECISION PUBLISHED / WP-26 CLOSED / WP-27 READINESS CLASSIFICATION ACTIVE
+TARGETED_SIZE_POLICY_SUPERSESSION: YES / PO-010 OWNER DECISION PUBLISHED / WP-26 CLOSED / WP-27 READINESS CLASSIFICATION ACTIVE
 
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
