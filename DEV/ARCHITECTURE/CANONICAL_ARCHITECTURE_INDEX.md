@@ -2,7 +2,7 @@
 
 Status: **DERIVATIVE / NON-NORMATIVE NAVIGATION AND INTEGRATION INDEX**
 
-Date: 2026-09-08
+Date: 2026-09-09
 
 Global current progress is owned only by `DEV/CURRENT_PROGRESS.md`. This index
 does not state the active stage, current slice, next unit or current gate.
@@ -138,6 +138,8 @@ These are locator summaries; open the owning source for exact law text.
 | GI-25 | `runtime.disclosure` monotonic merge is owner-specific; never generalize to arbitrary mutable owners or transport last-writer-wins. | 5.14-3 + 5.12 |
 | GI-26 | Partial multi-live prerequisite freeze is technical currentness, not partial fictional establishment. | 5.14-4 + 5.8 |
 | GI-27 | For one owner-proven bounded focus, WP-25 composes owner-local native outcomes into an ephemeral `FailureDisposition`; the projection is non-authoritative and scope-local. Deferrable durability exposure uses `NORMAL / ELEVATED / DANGER`; DANGER does not become correctness HARD, a timer/scheduler or retry authority. | WP-25 + applicable native owners |
+| GI-28 | Baseline Commentator retrospective use is satisfied from an imported self-contained Story corpus: qualifying retained WP-19 T0 decision-basis meaning is Story-local recoverable and eligibility/control information is supplied as a derived Commentator projection; native gameplay/history/knowledge/disclosure/access owners remain authoritative and ordinary Master/deep-source capabilities may still use native evidence. | `2026-09-09-story-commentator-self-contained-corpus-owner-decision.md` + Story producer/source contracts + Step 4/R2.3/WP-19 |
+| GI-29 | Mutable GitHub-backed runtime text uses owner-approved sizing bands (about 10–12 KiB preferred, 13–16 KiB review, above about 16 KiB review/partition expectation); the former universal 10,240-byte publication hard stop is superseded. Semantic integrity, atomicity, identity and no-truncation law remain controlling, and concrete partition/rollover topology is not selected by the sizing decision. | `2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` + WP-24/native storage owners |
 
 ---
 
@@ -280,6 +282,8 @@ Campaign HEAD is transport/current-tree pin only; it is not Story source waterma
 | Recovery basis | current campaign + resolved routes | exact pinned source composition | checkpoint | checkpoint/newest branch | 5.7 + 5.14 |
 | Role-context source basis | receiving role + current routing/accepted pinned inputs | ephemeral exact domain-composed source basis | Context Assembler | campaign HEAD as universal current frontier | 4 + 5.14 |
 | Story | Story layer projection state | Story records/indexes/coverage | Chronicler draft | gameplay truth/recovery authority | 4 + 5.10 |
+| Baseline Commentator historical corpus | accepted PO-009 self-containment contract over Story projection | Story-local factual account + retained qualifying T0 meaning + derived eligibility/control projection sufficient for supported Commentator use | Commentator-local read cache/index may optimize navigation | native-only T0 fallback as required baseline Commentator dependency; Commentator cache as gameplay authority | PO-009 + Story producer/source contracts + Step 4/R2.3/WP-19 |
+| Mutable GitHub-backed runtime text sizing | PO-010 sizing-bands decision composed with native owner semantics | owner-specific bounded representation | partition/rollover/compaction only where owner-valid | former universal 10,240-byte reject rule; truncation to hit a size target | PO-010 + WP-24/native storage owners |
 | Accepted communication evidence | `runtime.message` | stable envelope; exact/compacted payload | Story Transcript | mutable chat history | 5.11 |
 | Verified exact historical Transcript | Story Transcript + certification basis | noncanonical Story record | digest/provenance | objective truth | 5.11 |
 | Cleanup eligibility | native owner terminality/replacement + cleanup proof | no generic owner | candidate index/SafeRetirementAssessment | age/refcount/global GC | 5.13 + 5.14 |
@@ -381,6 +385,8 @@ truth != knowledge != disclosure != communication evidence != Story
 
 Role-context source basis must respect current live/native authority as required by LAW 5.14-1.
 
+For baseline Commentator use, PO-009 adds a consumer-specific sufficiency rule without changing those native owners: supported Commentator factual explanation must be satisfiable from the imported Story corpus, including Story-local retained qualifying T0 decision-basis meaning and a derived sufficient eligibility/control projection. This local Commentator corpus/read model is not gameplay canon and does not turn Story into native authority.
+
 ---
 
 # 9. Temporal / chronology locator
@@ -417,7 +423,6 @@ EXACT(v)
 BOUNDED(lo,hi)
 UNKNOWN
 ```
-
 Derived due state:
 
 ```text
@@ -441,6 +446,10 @@ backlog = accepted candidate basis - compatible coverage
 Coverage is typed by layer + source domain + projection-contract generation.
 
 No global Story frontier, mandatory background worker or durable Story job queue. Chronicler may generate; deterministic core owns final validation/IDs/indexes/coverage/publication.
+
+PO-009 narrows the baseline Commentator consumer route: retained qualifying WP-19 T0 basis cannot remain only behind a native reference for supported Commentator explanation; its required meaning must be recoverable inside the Story corpus, and the Commentator-importable snapshot/control projection must be sufficient to evaluate current allowed Story visibility without creating a second `world.knowledge`, `runtime.disclosure` or access authority. Exact persisted fields, snapshot schema and Commentator cache topology remain downstream realization choices.
+
+Long-lived mutable Story artifacts follow the current PO-010 sizing bands rather than the superseded universal 10,240-byte hard publication cutoff. Owner-valid partitionability/no-truncation obligations remain; no concrete shard/page/rollover topology is selected here.
 
 ## 10.2 Selective exact memory
 
@@ -516,6 +525,8 @@ Open the listed primary source after locating a concern here.
 | Does player disclosure imply PC knowledge? | 4 | disclosure vs knowledge |
 | Does PC knowledge imply player disclosure? | 4 | knowledge vs disclosure |
 | Can Story be current world truth? | 4 + 5.10 | noncanonical Story |
+| What must baseline Commentator Story contain for historical T0 explanation? | PO-009 + Story producer/source contracts + WP-19 | self-contained Commentator / Story-local T0 basis |
+| May baseline Commentator depend on native-only T0 fallback? | PO-009 + Story producer/source contracts | no; native capability remains for other admitted consumers |
 | What current sources may Context Assembler use? | 4 + 5.7 + 5.8 + 5.14 | domain-composed role-context basis |
 | Can campaign HEAD alone stand for all current truth? | 5.1 + 5.7 + 5.8 + 5.14 | no; live/native sources may own scopes |
 | Can Git order establish fictional order? | 5.1 + 5.9 | no implicit cross-domain order |
@@ -547,6 +558,8 @@ Open the listed primary source after locating a concern here.
 | Can Story failure block canon? | 5.10 | no |
 | Is campaign HEAD Story cursor? | 5.10 | no |
 | Can model/prompt change force Story replay? | 5.10 | projection contract generation, not model version |
+| What mutable GitHub text sizing threshold is current? | PO-010 + WP-24 | target/review/review-and-partition sizing bands; no universal exact hard stop |
+| Is 10,240 bytes still a universal publication reject threshold? | PO-010 | no; 2026-09-04 hard cutoff is superseded in threshold scope |
 | Is visible ChatGPT history durable transcript authority? | 5.11 | no |
 | Exact old quote after compaction? | 5.11 | only if exact evidence survives |
 | Can exact Transcript become world truth? | 4 + 5.11 | no |
@@ -584,6 +597,9 @@ Open the listed primary source after locating a concern here.
 | campaign-global Story frontier | rejected | 5.10 |
 | campaign HEAD as Story source watermark | rejected | 5.10 |
 | durable Story job queue/worker lease baseline | rejected | 5.10 |
+| baseline Commentator native-only T0 fallback for qualifying retained decision basis | superseded; required historical factor meaning is Story-local recoverable for baseline Commentator while native authority remains unchanged | PO-009 + Story producer/source contracts |
+| shared Master/Commentator cache format or Commentator cache as gameplay authority | rejected | PO-009 |
+| universal 10,240-byte mutable-text publication hard stop | superseded by approximate target/review/review-and-partition sizing bands; no-truncation and owner-valid bounded representation remain | PO-010 + WP-24 |
 | visible ChatGPT history as immutable transcript | rejected | 5.11 |
 | universal exact transcript forever | rejected by Selective Exact owner decision | 5.11 |
 | Story Transcript as objective truth | rejected | 4 + 5.11 |
@@ -756,6 +772,11 @@ Per-slice canon + Step-5.14 integration clarifications supersede older agenda wo
 
 - `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-25-error-degradation-failure-semantics-canonical-spec.md` — focus-scoped ephemeral failure disposition over owner-local native outcomes, scope-aware continuation and risk-trajectory-aware durability protection. Open applicable native owners for the concrete focus; this index does not duplicate their outcome/currentness/authorization/recovery law.
 
+## 15.7 Cross-cutting Product Owner decisions entering final reconciliation
+
+- `DEV/docs/superpowers/specs/2026-09-09-story-commentator-self-contained-corpus-owner-decision.md` — current PO-009 owner for baseline Commentator corpus sufficiency. Read with `2026-09-07-story-producer-persistence-retrospective-consumer-contract.md`, `2026-09-08-story-baseline-projection-source-contracts.md`, WP-19 historical Actor basis and Step-4/R2.3 knowledge/disclosure/access owners. It requires Story-local recoverability of qualifying retained T0 meaning and a derived sufficient Commentator control projection, but does not choose persisted Story snapshot fields or Commentator cache topology.
+- `DEV/docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` — current PO-010 mutable-text sizing owner. It narrowly supersedes the threshold semantics of `2026-09-04-runtime-mutable-github-artifact-size-owner-decision.md` and corresponding WP-24/Story hard-cap prose. Concrete writer partition/rollover topology remains downstream realization work.
+
 ---
 
 # 16. Search anchors / glossary
@@ -781,6 +802,8 @@ Per-slice canon + Step-5.14 integration clarifications supersede older agenda wo
 | StoryLayerProjectionState | layer-local allocator/coverage/index state | 5.10 |
 | MUST_MATERIALIZE | Story candidate cannot be covered without required durable layer output | 5.10 |
 | MAY_OMIT | candidate may be terminally considered without Story output | 5.10 |
+| self-contained Commentator Story corpus | baseline Commentator can satisfy supported factual retrospective use from imported Story-local evidence/control projection without native-only T0 fallback | PO-009 + Story producer/source contracts |
+| sizing bands | mutable GitHub-backed text uses approximate target/review/review-and-partition ranges, not a universal exact byte hard stop | PO-010 + WP-24 |
 | `runtime.message` | stable accepted communication evidence identity | 5.11 |
 | EMISSION_COMMIT | validated/frozen supported outbound representation committed to player-visible path | 5.12 |
 | OutboundEmissionClosure | HOT outbound message + material disclosure/provenance closure | 5.12 |
