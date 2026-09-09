@@ -112,7 +112,7 @@ Do not use a temporary live file as staging for ordinary campaign commits.
 
 ## Working set and durability
 
-`DURABILITY_GUARD.md` is authoritative for HARD/SOFT/EPHEMERAL classification, ordinary singleplayer save boundaries and the separate `NORMAL / ELEVATED / DANGER` operability/loss-protection trajectory for owner-permitted deferrable dirty state. This storage module does not invent timing, threshold or retry rules.
+`DURABILITY_GUARD.md` is authoritative for HARD/SOFT/EPHEMERAL classification, ordinary singleplayer save boundaries and the separate `NORMAL / ELEVATED / DANGER` operability/loss-protection trajectory for owner-permitted deferrable dirty state. This storage module does not invent additional timing rules, exact thresholds or retry rules.
 
 Keep relevant canonical records plus dirty paths/final contents in memory. Do not write GitHub files as soon as each thought/consequence is discovered. Ordinary singleplayer quest/NPC/item/resource/relationship/scene changes may remain SOFT until a guard-defined boundary or bounded preservation opportunity applies.
 
