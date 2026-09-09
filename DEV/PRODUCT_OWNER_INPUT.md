@@ -49,6 +49,7 @@ An agent-owned route marked `ACTIVE` or `PENDING` must not name a work package t
 | `PO-006` | AUTHORITY / SAFETY / REPOSITORY POLICY | INCORPORATED | branch/ref deletion is forbidden for every HDM development/runtime agent; WP-21 final Senior PASS consumed the rule and WP-24 may later assess retained-ref operational cost without re-enabling deletion | branch/ref deletion owner decision; `AGENTS.md`; `GAME/CORE/PERSISTENCE.md`; `GAME/CORE/LIVE_SCENE.md`; final WP-21 canonical spec/review; WP-24 | NONE |
 | `PO-007` | PUBLIC PROVENANCE / ATTRIBUTION POLICY | INCORPORATED | WP-23 final Senior re-review accepted the repository-wide public provenance reconciliation and closed the architecture consumer; future enforcement remains under the accepted owner and current machine guards | public provenance owner decision; final WP-23 canonical spec; current public `DEV/` + `GAME/`; legal/notice owners; relevant audits/tests | NONE |
 | `PO-008` | FAILURE / DEGRADATION / DURABILITY-RISK PRODUCT DIRECTION | INCORPORATED | WP-25 final Senior re-review PASS accepted the severity/gameplay-impact/risk model and proactive durability-risk direction; downstream generic realization and production-like host calibration remain safely deferred behind explicit future gates | accepted WP-25 owner-direction; final WP-25 canonical spec; Step 5.5/WP-13 native durability owners; later runtime/tests/empirical host acceptance | NONE |
+| `PO-009` | COMMENTATOR / STORY CORPUS SUFFICIENCY | INCORPORATED | accepted owner decision now requires Story-local retained T0 basis plus a self-contained Commentator eligibility/control projection; physical Story/snapshot/cache realization remains deferred behind its future explicit architecture/implementation gate | Story producer/source contracts; historical Actor basis; Step-4 knowledge/disclosure/access; future Commentator/Story realization | NONE |
 
 ---
 
@@ -220,7 +221,7 @@ LATENCY / INTERACTIVITY: MANDATORY PRODUCT CONSTRAINT
 | R2.2 current Actor continuity | INCORPORATED / NO REOPEN | current-state owner preserved | R2.2 canonical spec |
 | Step-4 current knowledge + history | INCORPORATED / EXTENSION | `world.knowledge` remains current; bounded T0 basis is SemanticEvent history | Step-4 canonical spec |
 | Durable record-family allocation | INCORPORATED / NO REOPEN | existing SemanticEvent/history family is sufficient | WP-10 |
-| Story / Master / Commentator consumption | INCORPORATED AS ARCHITECTURE | event-time evidence + current disclosure/no-spoiler boundaries | PO-001, R2.3/R2.4, WP-18, WP-19 canonical spec |
+| Story / Master / Commentator consumption | INCORPORATED AS ARCHITECTURE | event-time evidence + current disclosure/no-spoiler boundaries; later Story-local self-containment refinement is owned by PO-009 decision | PO-001, R2.3/R2.4, WP-18, WP-19 canonical spec, `2026-09-09-story-commentator-self-contained-corpus-owner-decision.md` |
 | Latency/interactivity | INCORPORATED AS NORMATIVE ARCHITECTURE LAW | zero-extra-serial baseline is mandatory; extra serial critical-path work requires architecture/performance re-evaluation | WP-19 `WP19-L38/L39`, `PLAY_POLICY.md` |
 | Exact runtime/schema/validator/index realization | DEFERRED | after R2.7 final reconciliation + approved implementation plan/execution gate | existing SemanticEvent/history/context/persistence owners |
 | Direct T0->T1 retrospective acceptance | DEFERRED | same implementation authorization | prove retained T0 basis is used after mutable current state changes |
@@ -228,7 +229,7 @@ LATENCY / INTERACTIVITY: MANDATORY PRODUCT CONSTRAINT
 
 ### Current impact
 
-PO-003 is fully incorporated at the architecture level. Final Senior review passed WP-19 with event-time historical basis bounded and situation-specific, using the existing SemanticEvent owner/family, preserving current Actor/knowledge ownership, and keeping latency/interactivity as a hard product constraint.
+PO-003 is fully incorporated at the architecture level. Final Senior review passed WP-19 with event-time historical basis bounded and situation-specific, using the existing SemanticEvent owner/family, preserving current Actor/knowledge ownership, and keeping latency/interactivity as a hard product constraint. PO-009 later refines only the Commentator projection/consumption route: retained qualifying T0 factors must also be Story-local rather than remaining native-only behind a reference.
 
 Physical runtime/schema/test realization remains deferred; this does not make the entry partially incorporated because every known current route is either incorporated or safely deferred behind an explicit authorization trigger.
 
@@ -241,7 +242,7 @@ SR19_03: CLOSED
 SR19_04: CLOSED
 ```
 
-Those recovery records remain historical provenance; the current architecture result is the final Senior-approved WP-19 canonical spec.
+Those recovery records remain historical provenance; the current architecture result is the final Senior-approved WP-19 canonical spec plus later explicit accepted owner decisions for their narrower scopes.
 
 ---
 
@@ -309,12 +310,12 @@ Accepted owner decision:
 ```text
 PRODUCT / AUTHORITY / SECURITY POLICY
 AUTOMATIC LOGIN-RENAME CONTINUITY: NOT SUPPORTED
-UNRESOLVABLE CREATOR LOGIN: FAIL CLOSED
+UNRESOLVABLE_CREATOR_LOGIN: FAIL CLOSED
 READ-ONLY CONSEQUENCE: ACCEPTED
-STABLE-ID SUBSTITUTION FOR CREATOR AUTHORITY: FORBIDDEN
-SILENT OWNER TRANSFER: FORBIDDEN
-AUTOMATIC RECOVERY CLAIM: NONE
-CURRENT ARCHITECTURE REOPEN: NO
+STABLE-ID_SUBSTITUTION_FOR_CREATOR_AUTHORITY: FORBIDDEN
+SILENT_OWNER_TRANSFER: FORBIDDEN
+AUTOMATIC_RECOVERY_CLAIM: NONE
+CURRENT_ARCHITECTURE_REOPEN: NO
 NEEDS_PO: NONE
 ```
 
@@ -503,6 +504,88 @@ Product Owner decision still required: `NONE`.
 
 ---
 
+## PO-009 — Self-contained Commentator Story corpus, historical T0 basis and eligibility projection
+
+Date: 2026-09-09  
+Kind: COMMENTATOR / STORY CORPUS SUFFICIENCY  
+Status: INCORPORATED
+
+Accepted owner decision:
+- `DEV/docs/superpowers/specs/2026-09-09-story-commentator-self-contained-corpus-owner-decision.md`.
+
+### Product Owner context — VERBATIM / IMMUTABLE
+
+```text
+Во-первых, не путай SQLite файлы мастера с SQLite файлами комментатора. Это два разных режима, хоть и работающих в одном чате для соседних игровых веток. То есть можно создавать SQLite кэши под каждую кампанию свой. При этом надо понимать, что даже если сейчас эта кампания read-only и пользователь может зайти в него только как комментатор, он может через пять минут получить инвайт и перезайти в кампанию уже как игрок, и тогда ему нужен будет совершенно другой SQLite файл с другим форматом данных, таблицами и все остальное, который предназначен для работы мастера, а не комментатора. То есть здесь я тебе хотел сказать, что SQLite база комментатора для тебя — это совершенно другое окружение. HDM мастер к нему не имеет никакого отношения. И, соответственно, мы будем разрабатывать SQL cache в формате, удобном для быстрой навигации, поиска и пересказа истории комментаторам. Это его внутренняя кухня. Пусть там и остается.
+```
+
+### Product Owner local-canon clarification — VERBATIM / IMMUTABLE
+
+```text
+Во-вторых, это для HDM-мастера каноном является текущая игра, а стори является не канонической. А вот для комментатора, который видит только стори, уже она является локальным каноном. Так что всё правильно он написал.
+```
+
+### Product Owner secrets/snapshot clarification — VERBATIM / IMMUTABLE
+
+```text
+Что касается секретов, разумеется, их надо все хранить в том же самом месте/хранилище. единственное, что стори снапшот должен в том числе содержать и эту информацию: кому что доступно, кто что знает. Но я думаю, что это уже и так реализовано.
+```
+
+### Product Owner T0 correction — VERBATIM / IMMUTABLE
+
+```text
+Видимо, в какой-то момент произошло недопонимание. Потому что я всегда считал, что bounded historical decision basis будет в том числе попадать в историю вместе с самим событием или действием.
+```
+
+### Product Owner required change — VERBATIM / IMMUTABLE
+
+```text
+В общем да, твои выводы верны и нужно вносить изменения в HDM (снапшоты и/или летописца), чтобы обеспечить целостность и достаточность информации для комментатора.
+```
+
+### Agent interpretation / classification
+
+```text
+PRODUCT / CONSUMER CORRECTION + MATERIAL INSUFFICIENCY IN PRIOR STORY PROJECTION
+COMMENTATOR LOCAL FACTUAL CANON: STORY CORPUS WITH COMMENTATOR CONTROL PROJECTION
+HDM GAMEPLAY CANON / CURRENT NATIVE AUTHORITY: UNCHANGED
+COMMENTATOR CACHE != MASTER HOT / WP-12 SQLITE
+COMMENTATOR CACHE PHYSICAL SCHEMA: DOWNSTREAM INTERNAL / NOT PUBLIC HDM CONTRACT
+QUALIFYING WP-19 T0 BASIS: MUST BE STORY-LOCAL, NOT NATIVE-REF-ONLY
+PRIVATE/OFF-SCREEN T0 MATERIAL: RETAIN WITH PROTECTION, DO NOT OMIT
+SELF-CONTAINED COMMENTATOR ELIGIBILITY/CONTROL PROJECTION: REQUIRED
+WORLD.KNOWLEDGE / RUNTIME.DISCLOSURE / ACCESS OWNERSHIP: PRESERVED
+CONTENT_FINAL != ACCESS_FINAL
+BASELINE COMMENTATOR NATIVE FALLBACK FOR REQUIRED T0: NOT REQUIRED / NOT A DEPENDENCY
+NEW STORY LAYER: NO
+NEW HISTORY OR ACL AUTHORITY: NO
+MASTER/COMMENTATOR SHARED SQLITE FORMAT: NO
+NEEDS_PO: NONE
+```
+
+### Current routing
+
+| Route | State | Trigger / obligation | Current evidence / owner |
+|---|---|---|---|
+| Product semantics | INCORPORATED | complete | `DEV/docs/superpowers/specs/2026-09-09-story-commentator-self-contained-corpus-owner-decision.md` |
+| PO-003 historical Actor basis | INCORPORATED / NARROW CONSUMER SUPERSESSION | SemanticEvent remains native historical owner; Story must also carry the already-retained bounded factor meaning for Commentator | PO-003 owner decision + WP-19 + new PO-009 owner decision |
+| Story producer / Chronicler / source contracts | INCORPORATED AS BINDING FUTURE REQUIREMENT | when Story realization/design is next activated, native-only T0 pointers no longer satisfy Commentator corpus completeness | Story integration + baseline projection contracts as narrowed/superseded by PO-009 |
+| Step-4 knowledge/disclosure/access | INCORPORATED / OWNERS PRESERVED | future Commentator snapshot must export a derived sufficient control projection without creating a second owner | Step-4, R2.3, Access Control, PO-009 |
+| Commentator local read cache | DOWNSTREAM INTERNAL / OUTSIDE MASTER HOT | implementation may choose campaign-local SQL schema/indexes optimized for history/search/retelling; no compatibility with Master HOT required | PO-009 public boundary only; exact consumer implementation remains downstream |
+| Content/access currentness | INCORPORATED | content finality may freeze content but not access/knowledge/disclosure projection; refresh control basis when those owners change | PO-009 `SCC-9/SCC-10` |
+| Story/snapshot schema, sharding, validator and tests | DEFERRED | next explicit Story/Commentator architecture/implementation gate | PO-009 + existing Story sharding/versioning/test owners |
+| Current R2.7 program cursor | NOT ACTIVATED | this cross-cutting owner decision does not authorize WP-26 or implementation planning | `DEV/CURRENT_PROGRESS.md` |
+
+### Current impact
+
+The prior Story design was sufficient for a consumer allowed to escalate from Story into native historical evidence, but it was insufficient for the now-explicit baseline Commentator requirement that the imported Story corpus be self-contained for supported factual explanation and secret-safe filtering.
+
+The correction is targeted: native SemanticEvent/history ownership remains unchanged, while qualifying retained T0 factors must also be projected into Story and the Commentator-importable snapshot must include enough derived knowledge/disclosure/access state to evaluate Story eligibility locally. The Commentator cache remains an independent downstream read model and is never reused as Master HOT or gameplay authority.
+
+Product Owner decision still required: `NONE`.
+
+---
+
 ## 4. Current ledger terminal state
 
 This is a routing-ledger projection only; `DEV/CURRENT_PROGRESS.md` remains the sole global cursor authority.
@@ -510,12 +593,13 @@ This is a routing-ledger projection only; `DEV/CURRENT_PROGRESS.md` remains the 
 ```text
 PO-001: INCORPORATED
 PO-002: INCORPORATED
-PO-003: INCORPORATED
+PO-003: INCORPORATED — COMMENTATOR STORY ROUTE REFINED BY PO-009
 PO-004: INCORPORATED — WP-20 FINAL SENIOR PASS / NO CURRENT PENDING WP-20 ROUTE
 PO-005: INCORPORATED — FIXED CREATOR-LOGIN FAIL-CLOSED AUTHORITY
 PO-006: INCORPORATED — BRANCH/REF DELETION PROHIBITED / WP-21 FINAL SENIOR PASS
 PO-007: INCORPORATED — PUBLIC DEV/GAME RESEARCH-PROVENANCE POLICY / WP-23 FINAL SENIOR RE-REVIEW PASS
 PO-008: INCORPORATED — WP-25 FINAL SENIOR RE-REVIEW PASS / DOWNSTREAM REALIZATION AND EMPIRICAL ACCEPTANCE DEFERRED
+PO-009: INCORPORATED — STORY-LOCAL T0 + SELF-CONTAINED COMMENTATOR ELIGIBILITY PROJECTION / REALIZATION DEFERRED
 
 WP19_FINAL_SENIOR_REVIEW: PASS
 WP20_FINAL_SENIOR_REVIEW: PASS
@@ -534,7 +618,8 @@ WP25_CLOSED: YES
 
 HUMAN_DECISION_REQUIRED: NONE
 NEEDS_PO: NONE
-UPSTREAM_REOPEN_REQUIRED: NO
+WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
+TARGETED_STORY_CONSUMER_SUPERSESSION: YES / PO-009 OWNER DECISION PUBLISHED
 
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
