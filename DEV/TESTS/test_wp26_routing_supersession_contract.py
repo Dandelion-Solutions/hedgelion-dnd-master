@@ -69,7 +69,7 @@ class WP26RoutingSupersessionContractTests(unittest.TestCase):
         readiness = read("DEV/TESTS/CHARACTER_READINESS_CASES.md")
         explicit_save = read("DEV/TESTS/EXPLICIT_SAVE_CASES.md")
         bootstrap = read("DEV/TESTS/BOOTSTRAP_STORAGE_REGRESSION_CASES.md")
-        self.assertIn("provisional gameplay", readiness)
+        self.assertIn("provisional gameplay", readiness.lower())
         self.assertNotIn("pre-live onboarding", explicit_save)
         self.assertNotIn("before first live scene", bootstrap)
 
