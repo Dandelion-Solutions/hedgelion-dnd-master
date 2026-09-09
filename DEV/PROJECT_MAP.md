@@ -2,7 +2,7 @@
 
 Status: **NON-NORMATIVE INTERNAL NAVIGATION INDEX**
 
-Last structural inventory: 2026-09-08
+Last structural inventory: 2026-09-09
 
 ## 1. Purpose
 
@@ -117,7 +117,8 @@ repository root
 | Ruleset package machine closure | `RULESET_PACKAGE_MACHINE_CLOSURE.md`, `RULESET_PACKAGE_IDENTITY.md` | catalog admission/resolution, package manifest/lock, validators/build/load paths/tests |
 | Persistence / durability / recovery | `GAME/CORE/STORAGE.md`, `PERSISTENCE.md`, `DURABILITY_GUARD.md`, `SAVE_CONTRACT.md`, `SESSION.md`, `INTEGRITY.md` | `RUNTIME.md`, `RANDOMNESS.md`, live/multiplayer/chronology, checkpoint/current/session schemas, Step-5 final specs |
 | Failure / degradation / `FailureDisposition` / durability-risk composition | `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-25-error-degradation-failure-semantics-canonical-spec.md` | applicable native owners for the concrete focus, including Step-5.5/WP-13/WP-14 durability/publication/recovery, Context Runtime, access/LIVE/multiplayer, mechanics/RNG, WP-20 compatibility/migration, Story/planning, diagnostics and WP-24 proof/budget owners; runtime/tests are realization consumers, not replacement semantic owners |
-| Story / retrospective continuity / persistence operability | `DEV/docs/superpowers/specs/2026-09-07-story-producer-persistence-retrospective-consumer-contract.md`, `DEV/docs/superpowers/specs/2026-09-08-story-baseline-projection-source-contracts.md`, `DEV/docs/superpowers/specs/2026-09-08-story-persistence-growth-sharding-consumer-decoupling-owner-decision.md` | WP-18, R2.3/WP-09 Context Runtime, WP-11 physical routing, WP-13 publication/currentness, Step-5.11/5.13 retention, mutable-artifact size owner, WP-24 performance/scale results |
+| Story / retrospective continuity / Commentator self-containment / persistence operability | `DEV/docs/superpowers/specs/2026-09-09-story-commentator-self-contained-corpus-owner-decision.md`, `DEV/docs/superpowers/specs/2026-09-07-story-producer-persistence-retrospective-consumer-contract.md`, `DEV/docs/superpowers/specs/2026-09-08-story-baseline-projection-source-contracts.md`, `DEV/docs/superpowers/specs/2026-09-08-story-persistence-growth-sharding-consumer-decoupling-owner-decision.md` | WP-18, R2.3/WP-09 Context Runtime, WP-11 physical routing, WP-13 publication/currentness, Step-4 knowledge/disclosure/access, Step-5.11/5.13 retention, `2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md`, WP-24 performance/scale results; concrete Story/snapshot/cache schema and topology remain downstream realization work |
+| Mutable GitHub-backed runtime text sizing / partition triggers | `DEV/docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` | WP-24, Story growth/sharding, runtime/Story writers and validators; `2026-09-04-runtime-mutable-github-artifact-size-owner-decision.md` is retained provenance but superseded for the former absolute 10 KiB threshold |
 | Multiplayer / shared mutable state | `GAME/CORE/MULTIPLAYER.md`, `LIVE_SCENE.md` | chronology, persistence, access control, live/session/player schemas, Step-5 + R2.5 final specs |
 | Chronology / temporal continuity | `GAME/CORE/CHRONOLOGY.md`, accepted temporal architecture | runtime/randomness/live/multiplayer, temporal schemas, Step-5.1/5.3/5.9 final specs |
 | Campaign bootstrap / creation | `GAME/INSTALL/00_DND_BOOTSTRAP.md`, `BOOTSTRAP_RUNTIME.md`, `NEW_CAMPAIGN_FAST_PATH.md`, `CAMPAIGN_SETUP.md`, `GAME/TOOLS/init_campaign.py` | `GAME/CAMPAIGN/`, campaign schemas, branch/access/persistence owners |
@@ -308,16 +309,18 @@ accepted shared-state architecture
 
 ### 8.5 LLM information / continuity / role context / Story
 
-Implementation-facing integration entry: [Story producer, persistence and retrospective consumer contract](docs/superpowers/specs/2026-09-07-story-producer-persistence-retrospective-consumer-contract.md). Read it with its composed Story, native-evidence, Context Runtime, publication and chronology owners; it does not replace them. Its [baseline projection source contracts](docs/superpowers/specs/2026-09-08-story-baseline-projection-source-contracts.md) fix production candidates, required retained material, source-local codecs and coverage for all four Story layers. For long-lived Story persistence/operability, also read the [Story persistence growth, sharding and consumer-decoupling owner decision](docs/superpowers/specs/2026-09-08-story-persistence-growth-sharding-consumer-decoupling-owner-decision.md); it owns per-artifact operability guidance, campaign-growing collection partitionability and storage-topology-neutral retrospective consumption without selecting a concrete shard layout.
+Implementation-facing integration entry: [Story producer, persistence and retrospective consumer contract](docs/superpowers/specs/2026-09-07-story-producer-persistence-retrospective-consumer-contract.md). Read it with its composed Story, native-evidence, Context Runtime, publication and chronology owners; it does not replace them. Its [baseline projection source contracts](docs/superpowers/specs/2026-09-08-story-baseline-projection-source-contracts.md) fix production candidates, required retained material, source-local codecs and coverage for all four Story layers. The accepted [self-contained Commentator Story corpus owner decision](docs/superpowers/specs/2026-09-09-story-commentator-self-contained-corpus-owner-decision.md) narrowly supersedes any baseline Commentator route that would require native-only T0 fallback: qualifying retained WP-19 decision-basis meaning must be Story-local recoverable and the Commentator snapshot must carry a sufficient derived eligibility/control projection, while native gameplay/history/knowledge/disclosure/access owners remain authoritative. For long-lived Story persistence/operability, also read the [Story persistence growth, sharding and consumer-decoupling owner decision](docs/superpowers/specs/2026-09-08-story-persistence-growth-sharding-consumer-decoupling-owner-decision.md) together with the current [mutable GitHub artifact sizing-bands owner decision](docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md). The earlier 2026-09-04 10 KiB hard-cap decision is retained provenance only for the superseded threshold semantics. None of these routing updates selects a concrete Story snapshot/cache schema, shard layout or rollover topology.
 
 ```text
 Step-4 final truth/knowledge/context spec
     -> accepted single-context amendment
     -> final Step-5 Story/transcript/disclosure specs
     -> final R2.1/R2.2/R2.3/R2.4 specs
+    -> PO-009 self-contained Commentator Story owner decision
     -> Story integration contract
     -> Story baseline projection source contracts
     -> Story persistence growth/sharding/consumer-decoupling owner decision when persistence scale/operability is implicated
+    -> PO-010 current sizing-bands owner decision for mutable GitHub-backed text
     -> research protocols only when evidence/applicability must be inspected
     -> AI_REASONING / INFORMATION / LORE / NPC / NARRATIVE / PREP / GM_CRAFT
     -> current schemas/tests where machine realization is implicated
