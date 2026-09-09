@@ -1,10 +1,10 @@
 # R2.7 WP-26 — Documentation / Routing / Supersession Consistency — Canonical Specification
 
-Status: **STEP-8 WORKER CANONICALIZATION COMPLETE — MANDATORY INDEPENDENT FINAL SENIOR REVIEW PENDING**
+Status: **CANONICAL WP-26 RESULT — FINAL INDEPENDENT SENIOR PASS / CLOSED**
 
 Date: 2026-09-09
 
-This specification is the Step-8 canonical integration owner for WP-26. It reconciles current routing and current machine-facing projections with already accepted owners/amendments. It does not replace the native semantic owners named below and it does not claim the mandatory independent final Senior review has passed.
+This specification is the canonical integration owner for WP-26. It reconciles current routing and current machine-facing projections with already accepted owners/amendments. It does not replace the native semantic owners named below. The mandatory independent final Senior review passed on the reviewed Step-8 head; public review evidence is `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-final-senior-review.md`.
 
 Primary provenance:
 
@@ -12,7 +12,9 @@ Primary provenance:
 - `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-3-decision-brief.md`;
 - `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-5-candidate-specification.md`;
 - `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-6-whole-project-adversarial-review.md`;
-- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-7-finding-resolution-and-propagation.md`.
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-7-finding-resolution-and-propagation.md`;
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-8-canonicalization-self-review.md`;
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-final-senior-review.md`.
 
 Accepted cross-cutting amendments integrated here:
 
@@ -21,7 +23,7 @@ Accepted cross-cutting amendments integrated here:
 
 ## 1. Canonical result
 
-WP-26 selects and closes at worker level:
+WP-26 selects and closes:
 
 ```text
 OWNER-FIRST ROUTING
@@ -122,7 +124,7 @@ WP-26 does **not** select or claim realization of:
 - concrete pre-LLM filtering machinery;
 - Commentator cache/SQLite topology.
 
-Current `GAME/SCHEMA/event.schema.yaml` intentionally contains no invented `commentator_eligibility_projection` or `commentator_control_projection` fields from WP-26. These are downstream planning/realization inputs after the required final WP-26 closure gate.
+Current `GAME/SCHEMA/event.schema.yaml` intentionally contains no invented `commentator_eligibility_projection` or `commentator_control_projection` fields from WP-26. These are downstream planning/realization inputs after WP-26 closure.
 
 ## 4. PO-010 — mutable GitHub-backed text sizing
 
@@ -198,11 +200,11 @@ Audit/test guards SHALL assert this semantic condition directly rather than requ
 
 A current canonical owner already closed after its mandatory Senior PASS SHALL NOT continue to present itself as pending that same review. Historical review/Step artifacts remain unchanged.
 
-This rule was applied to the current headers for WP-21, WP-22 and WP-24 without rewriting their historical provenance.
+This rule was applied to the current headers for WP-21, WP-22 and WP-24 during Step 7 and to WP-26 itself by the final closure publication.
 
 ### LAW WP26-19 — Derivative locators route through current owners/amendments
 
-`DEV/PROJECT_MAP.md` and `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` remain non-normative. They SHALL route material current concerns through applicable current semantic owners/amendments, including PO-009, PO-010 and this final WP-26 reconciliation owner after Step-8 publication.
+`DEV/PROJECT_MAP.md` and `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` remain non-normative. They SHALL route material current concerns through applicable current semantic owners/amendments, including PO-009, PO-010 and this final WP-26 reconciliation owner.
 
 The locators never override the linked owner.
 
@@ -220,7 +222,7 @@ Specifically:
 
 - PO-009 semantic architecture is accepted/incorporated while concrete Story/control/cache representation remains deferred;
 - PO-010 sizing law is accepted/incorporated while concrete writer-specific partition/rollover topology may remain deferred;
-- WP-26 architecture reconciliation may reach worker Step-8 completion without falsely claiming either physical realization.
+- WP-26 is closed without falsely claiming either physical realization.
 
 ## 7. Step-6 findings incorporated
 
@@ -282,9 +284,9 @@ GAME/CORE/CORE_INDEX.md                 0.3.0 -> 0.3.1
 
 Tests, audit code, development routers and documentation receive no synthetic module/schema version solely because their current wording/routing changed.
 
-## 9. Downstream planning handoff after final WP-26 closure
+## 9. Downstream planning handoff
 
-This section records planning-readiness inputs only. It does not authorize WP-27 or implementation planning.
+This section records planning-readiness inputs only. WP-26 closure makes WP-27 eligible according to the R2.7 sequence; it does not authorize WP-27 or implementation planning.
 
 ### PO-009 realization inputs
 
@@ -339,7 +341,7 @@ WP-26 does not:
 - edit the root README without separate Product Owner authorization;
 - execute release/migration/gameplay bootstrap.
 
-## 12. Worker Step-8 canonicalization result
+## 12. Final closure result
 
 ```text
 WP26_SELECTED_DIRECTION:
@@ -352,18 +354,35 @@ STEP6_SIGNIFICANT_FOUND: 10
 STEP7_SIGNIFICANT_RESOLVED: 10 / 10
 UNRESOLVED_BLOCKING_AT_WORKER_STEP8: 0
 UNRESOLVED_SIGNIFICANT_AT_WORKER_STEP8: 0
+UNRESOLVED_BLOCKING_AT_FINAL_SENIOR: 0
+UNRESOLVED_SIGNIFICANT_AT_FINAL_SENIOR: 0
 HUMAN_DECISION_REQUIRED: NO
 PRODUCT_OWNER_DECISION_REQUIRED: NO
 
-ARCHITECTURE_RECONCILIATION: WORKER COMPLETE
+ARCHITECTURE_RECONCILIATION: COMPLETE
 PO009_CONCRETE_MACHINE_REALIZATION: DEFERRED
 PO010_CONCRETE_PARTITION_TOPOLOGY: DEFERRED WHERE NOT ALREADY OWNER-DEFINED
-WP26_FINAL_SENIOR_REVIEW: PENDING
-WP26_CLOSED: NO
+WP26_FINAL_SENIOR_REVIEW: PASS / GO
+WP26_CLOSED: YES
+WP27_ELIGIBLE: YES
 WP27_AUTHORIZED: NO
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 RELEASE_EXECUTION_AUTHORIZED: NO
 GAMEPLAY_BOOTSTRAP_AUTHORIZED: NO
 ```
 
-The next and only gate after full Step-8 publication/verification is the mandatory independent final WP-26 Senior review.
+Reviewed Step-8 exact-head evidence:
+
+```text
+REVIEWED_HEAD: d9ea286e8d80067c606acff0840939fca6d24a06
+WORKFLOW: Validate engine source
+RUN_ID: 34357466924
+RUN_NUMBER: 1942
+CONCLUSION: success
+FULL_MAINTENANCE_AUDIT: PASS
+DEV_UNIT_TESTS: 458 / 458 PASS
+VERSION_UNCLASSIFIED: []
+VERSION_LEGACY_HITS: []
+```
+
+The final closure-publication HEAD must itself remain green before closure is reported externally. That exact-head verification is publication evidence, not another architecture gate.
