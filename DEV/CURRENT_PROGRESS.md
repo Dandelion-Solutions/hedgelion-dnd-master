@@ -8,18 +8,18 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-26 STEPS 2–8 AUTHORIZED / IN PROGRESS — STEP-1 SENIOR PASS / GO
+GLOBAL_STATE: R2.7 WP-26 STEP 8 WORKER COMPLETE — MANDATORY INDEPENDENT FINAL SENIOR REVIEW PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-26 Steps 2–8 — documentation / routing / supersession consistency
+CURRENT_SLICE: WP-26 Step 8 complete — documentation / routing / supersession consistency
 
 LAST_CLOSED_UNIT: WP-25 — Error / degradation / failure semantics
-NEXT_ELIGIBLE_UNIT: WP-26 Step 2 — research & architecture draft
-NEXT_AUTHORIZED_UNIT: WP-26 STEPS 2–8 — execute continuously unless a genuine human-owned decision gate appears
-REQUIRED_GATE: mandatory independent final WP-26 Senior review after completed Step 8
+NEXT_ELIGIBLE_UNIT: mandatory independent final WP-26 Senior review
+NEXT_AUTHORIZED_UNIT: NONE
+REQUIRED_GATE: mandatory independent final WP-26 Senior review
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-task-brief-source-manifest.md
-KNOWN_BLOCKERS: NONE; implementation planning / WP-27 / release execution / gameplay bootstrap remain unauthorized
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-8-canonicalization-self-review.md
+KNOWN_BLOCKERS: WP-26 IS NOT CLOSED; FINAL SENIOR REVIEW REQUIRED; WP-27 / implementation planning / release execution / gameplay bootstrap remain unauthorized
 ```
 
 ---
@@ -249,7 +249,7 @@ CLASSIFICATION: MINOR PATH/NAVIGATION MISMATCH
 README EDIT AUTHORIZED: NO
 ```
 
-No Product Owner decision is required by Step-1 evidence. The proven corpus/realization cleanup obligations remain pending later WP-26 Steps 2–8 and are not evidence that Step 1 is incomplete.
+No Product Owner decision is required by Step-1 evidence.
 
 ## Version Impact — WP-26 Step 1 framing package
 
@@ -283,25 +283,126 @@ Product Owner authorization on 2026-09-09:
 WP26_STEPS_2_8_AUTHORIZED: YES
 ```
 
-This authorizes continuous execution of WP-26 Steps 2–8 under the accepted Step-1 Task Brief and current process. It does not authorize WP-27, implementation planning, implementation beyond mechanically determined design-realization reconciliation already required by WP-26 policy, release/migration execution, or gameplay bootstrap.
+This authorized continuous execution of WP-26 Steps 2–8 under the accepted Step-1 Task Brief. It did not authorize WP-27, implementation planning, release/migration execution or gameplay bootstrap.
+
+---
+
+# WP-26 Steps 2–8 worker completion
+
+Published architecture/provenance chain:
+
+- Step 2 — `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-2-evidence-reconciliation.md`;
+- Step 3 — `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-3-decision-brief.md`;
+- Step 4 — `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-4-cross-system-review.md`;
+- Step 5 — `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-5-candidate-specification.md`;
+- Step 6 — `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-6-whole-project-adversarial-review.md`;
+- Step 7 — `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-7-finding-resolution-and-propagation.md`;
+- Step 8 self-review — `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-8-canonicalization-self-review.md`.
+
+Canonical WP-26 owner:
+
+- `DEV/docs/superpowers/specs/2026-09-09-r2-7-WP-26-documentation-routing-supersession-consistency-canonical-spec.md`.
+
+Canonical direction:
+
+```text
+OWNER-FIRST ROUTING
++ LOCAL SUPERSESSION
++ TARGETED MACHINE-GUARD RECONCILIATION
+```
+
+Step-6 / Step-7 closure:
+
+```text
+STEP6_BLOCKING_FOUND: 0
+STEP6_SIGNIFICANT_FOUND: 10
+STEP6_MINOR_FOUND: 1
+STEP6_NEGATIVE_FINDINGS: 1
+STEP7_SIGNIFICANT_FINDINGS_ACCOUNTED: 10 / 10
+UNRESOLVED_BLOCKING_AFTER_STEP7: 0
+UNRESOLVED_SIGNIFICANT_AFTER_STEP7: 0
+HUMAN_DECISION_REQUIRED: NO
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
+```
+
+Step-8 canonicalization state:
+
+```text
+WP26_STEP8_CANONICAL_OWNER_PUBLISHED: YES
+WP26_STEP8_ROUTER_PROPAGATION: COMPLETE
+WP26_STEP8_SELF_REVIEW: COMPLETE
+WP26_STEP8_ROADMAP_REVIEW: COMPLETE / NO CHANGE REQUIRED
+UNRESOLVED_BLOCKING_AT_WORKER_STEP8: 0
+UNRESOLVED_SIGNIFICANT_AT_WORKER_STEP8: 0
+WP26_FINAL_SENIOR_REVIEW: PENDING
+WP26_CLOSED: NO
+```
+
+Realization boundary retained:
+
+```text
+PO009_ARCHITECTURE: ACCEPTED / INCORPORATED
+PO009_CONCRETE_STORY_CONTROL_CACHE_REALIZATION: DEFERRED
+PO010_ARCHITECTURE: ACCEPTED / INCORPORATED
+PO010_CONCRETE_PARTITION_TOPOLOGY: DEFERRED WHERE NOT ALREADY OWNER-DEFINED
+```
+
+Version Impact:
+
+```text
+ENGINE_VERSION: 1.0-alpha
+VERSION_IMPACT: CATEGORY_B_MODULE_REVISIONS
+ENGINE_VERSION_BUMP_REQUIRED: NO
+MODULE_PATCH_REVISIONS_REQUIRED: YES — five materially changed CORE modules
+PERSISTENT_SCHEMA_OR_GENERATION_BUMP_REQUIRED: NO
+MIGRATION_REQUIRED: NO
+RELEASE_EXECUTION_REQUIRED: NO
+```
+
+Accepted component revisions:
+
+```text
+GAME/CORE/RUNTIME.md                    1.0.1 -> 1.0.2
+GAME/CORE/CAMPAIGN_SETUP.md             1.0.2 -> 1.0.3
+GAME/CORE/NEW_CAMPAIGN_FAST_PATH.md     0.7.3 -> 0.7.4
+GAME/CORE/SAVE_CONTRACT.md              0.2.0 -> 0.2.1
+GAME/CORE/CORE_INDEX.md                 0.3.0 -> 0.3.1
+```
+
+Pre-final Step-8 publication verification before the self-review/cursor-only commits:
+
+```text
+HEAD: 66a401cb1f9fc07e1e5c71e2c12de48006fdae5c
+WORKFLOW: Validate engine source
+RUN_ID: 34353714500
+RUN_NUMBER: 1940
+CONCLUSION: success
+```
+
+The exact final cursor HEAD must itself remain green before Step-8 completion is reported externally. That verification is publication evidence, not another architecture decision gate.
 
 ## Current gate
 
 ```text
-WP25_STEP1_SOURCE_ROLE_CORRECTION: COMPLETE
-WP25_STEPS_2_8: COMPLETE
-WP25_CANONICAL_OWNER_PUBLISHED: YES
-WP25_FINAL_SENIOR_HOLD_RECOVERY: COMPLETE
-WP25_FINAL_SENIOR_RE_REVIEW: PASS / GO
 WP25_CLOSED: YES
 
 WP26_STEP1_SOURCE_MANIFEST: COMPLETE
 WP26_STEP1_TASK_BRIEF: COMPLETE / REPAIRED
 WP26_STEP1_WHOLE_PROJECT_CRITIC: COMPLETE
-WP26_STEP1_WORKER_COMPLETE: YES
 WP26_STEP1_SENIOR_REVIEW: PASS / GO
 WP26_STEPS_2_8_AUTHORIZED: YES
-WP26_WORKER_CLOSURE: NOT YET
+WP26_STEP2: COMPLETE
+WP26_STEP3: COMPLETE
+WP26_STEP4: COMPLETE
+WP26_STEP5: COMPLETE
+WP26_STEP6: COMPLETE
+WP26_STEP7: COMPLETE
+WP26_STEP8: WORKER COMPLETE
+WP26_CANONICAL_OWNER_PUBLISHED: YES
+WP26_WORKER_CLOSURE: STEP 8 COMPLETE / FINAL SENIOR REVIEW PENDING
+WP26_FINAL_SENIOR_REVIEW: PENDING
+WP26_CLOSED: NO
 
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 WP27_AUTHORIZED: NO
@@ -309,8 +410,8 @@ SUBSTANTIVE_GENERIC_IMPLEMENTATION_STARTED: NO
 RELEASE_MIGRATION_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
-NEXT_AUTHORIZED_UNIT: WP-26 Step 2 — research & architecture draft
-NEXT_GATE: mandatory independent final WP-26 Senior review after completed Step 8
+NEXT_AUTHORIZED_UNIT: NONE
+NEXT_GATE: mandatory independent final WP-26 Senior review
 ```
 
-Do not begin WP-27, implementation planning, release execution or gameplay bootstrap after WP-26 Step 8. Stop for the mandatory independent final WP-26 Senior review.
+Do not begin WP-27, implementation planning, release execution or gameplay bootstrap. Stop for the mandatory independent final WP-26 Senior review.
