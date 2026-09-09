@@ -50,6 +50,7 @@ An agent-owned route marked `ACTIVE` or `PENDING` must not name a work package t
 | `PO-007` | PUBLIC PROVENANCE / ATTRIBUTION POLICY | INCORPORATED | WP-23 final Senior re-review accepted the repository-wide public provenance reconciliation and closed the architecture consumer; future enforcement remains under the accepted owner and current machine guards | public provenance owner decision; final WP-23 canonical spec; current public `DEV/` + `GAME/`; legal/notice owners; relevant audits/tests | NONE |
 | `PO-008` | FAILURE / DEGRADATION / DURABILITY-RISK PRODUCT DIRECTION | INCORPORATED | WP-25 final Senior re-review PASS accepted the severity/gameplay-impact/risk model and proactive durability-risk direction; downstream generic realization and production-like host calibration remain safely deferred behind explicit future gates | accepted WP-25 owner-direction; final WP-25 canonical spec; Step 5.5/WP-13 native durability owners; later runtime/tests/empirical host acceptance | NONE |
 | `PO-009` | COMMENTATOR / STORY CORPUS SUFFICIENCY | INCORPORATED | accepted owner decision now requires Story-local retained T0 basis plus a self-contained Commentator eligibility/control projection; physical Story/snapshot/cache realization remains deferred behind its future explicit architecture/implementation gate | Story producer/source contracts; historical Actor basis; Step-4 knowledge/disclosure/access; future Commentator/Story realization | NONE |
+| `PO-010` | MUTABLE FILE SIZE / OPERABILITY POLICY | INCORPORATED | accepted superseding owner decision replaces the former absolute 10 KiB publication cap with target/review/review-and-partition sizing bands; WP-26 must reconcile stale routing/current prose and WP-27 must derive later realization work | sizing-bands owner decision; former 10 KiB owner; WP-24; Story growth/sharding owner; WP-26; WP-27; later runtime/Story writers/tests | NONE |
 
 ---
 
@@ -586,6 +587,60 @@ Product Owner decision still required: `NONE`.
 
 ---
 
+## PO-010 — Mutable GitHub-backed text file sizing bands
+
+Date: 2026-09-09  
+Kind: MUTABLE FILE SIZE / OPERABILITY POLICY  
+Status: INCORPORATED
+
+Accepted owner decision:
+- `DEV/docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md`.
+
+### Product Owner input — VERBATIM / IMMUTABLE
+
+```text
+По поводу размера файлов в репозитории. Я вижу, что везде фигурирует 10 килобайт, но это была нижняя граница с большим запасом. То есть можно везде говорить 10 килобайт для простоты, но в реальности тот, кто будет это решать, пора ли начинать новый файл или можно писать в текущий, должен иметь следующие ориентиры: 10–12 килобайт — это целевой размер, 13–16 килобайт — зона пересмотра, 16 плюс килобайт — зона пересмотра/деления.
+```
+
+### Agent interpretation / classification
+
+```text
+PRODUCT / RUNTIME OPERABILITY POLICY CORRECTION
+OLD 10 KIB ABSOLUTE PUBLICATION CAP: SUPERSEDED
+10 KIB SHORTHAND: ALLOWED FOR SIMPLE CONSERVATIVE HUMAN GUIDANCE
+PREFERRED STEADY-STATE TARGET: APPROXIMATELY 10–12 KIB OR SMALLER
+NORMAL REVIEW ZONE: APPROXIMATELY 13–16 KIB
+ABOVE APPROXIMATELY 16 KIB: REVIEW / PARTITION / ROLLOVER DEFAULT EXPECTATION
+UNIVERSAL EXACT BYTE HARD-STOP: NO
+SEMANTIC INTEGRITY / ATOMICITY / IDENTITY: PRESERVED
+NO TRUNCATION TO HIT SIZE TARGET
+WP24 WHOLESALE REOPEN: NO
+STORY WHOLESALE REOPEN: NO
+NEEDS_PO: NONE
+```
+
+### Current routing
+
+| Route | State | Trigger / obligation | Current evidence / owner |
+|---|---|---|---|
+| Product/runtime sizing semantics | INCORPORATED | complete / current owner published | `DEV/docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` |
+| Former 10 KiB hard-cap decision | INCORPORATED / TARGETED SUPERSESSION | preserve provenance and unaffected partition/no-truncation laws; old exact hard cutoff is not current | `2026-09-04-runtime-mutable-github-artifact-size-owner-decision.md` as historical/superseded in threshold scope |
+| WP-24 performance/scale | INCORPORATED / NARROW SUPERSESSION | WP-24 remains closed; only LAW WP24-13 absolute 10 KiB trigger is superseded by the new bands | WP-24 canonical spec + current owner decision |
+| Story persistence/growth | INCORPORATED / NARROW SUPERSESSION | bounded partitionability remains; absolute 10 KiB Story cap is replaced by the same bands | Story growth/sharding owner + current sizing owner |
+| WP-26 routing/supersession | ACTIVE / CURRENT AUTHORIZED STEP-1 INPUT | identify stale current hard-cap wording and route readers to the current sizing owner without rewriting safe history | WP-26 Step 1 Source Manifest/brief/critic |
+| WP-27 implementation-planning readiness | DEFERRED | derive concrete writer/rollover/schema/test workstreams after WP-26 closure | WP-27 |
+| Runtime/Story machine realization and tests | DEFERRED | future approved implementation planning/execution; run Version Impact Gate for any material persisted/module changes | relevant writers/schemas/tests |
+
+### Current impact
+
+The Product Owner input is fully incorporated and does not remain as an unresolved requirement. The project may continue using “about 10 KiB” as shorthand, but implementation-facing logic must use the target/review/review-and-partition model rather than rejecting every payload above 10,240 bytes.
+
+The correction is cross-cutting but narrow: it changes the sizing trigger policy, not semantic ownership, partition identity, publication atomicity, Story authority or transport authority. WP-26 must reconcile stale current routing/prose; WP-27 later derives realization work.
+
+Product Owner decision still required: `NONE`.
+
+---
+
 ## 4. Current ledger terminal state
 
 This is a routing-ledger projection only; `DEV/CURRENT_PROGRESS.md` remains the sole global cursor authority.
@@ -600,6 +655,7 @@ PO-006: INCORPORATED — BRANCH/REF DELETION PROHIBITED / WP-21 FINAL SENIOR PAS
 PO-007: INCORPORATED — PUBLIC DEV/GAME RESEARCH-PROVENANCE POLICY / WP-23 FINAL SENIOR RE-REVIEW PASS
 PO-008: INCORPORATED — WP-25 FINAL SENIOR RE-REVIEW PASS / DOWNSTREAM REALIZATION AND EMPIRICAL ACCEPTANCE DEFERRED
 PO-009: INCORPORATED — STORY-LOCAL T0 + SELF-CONTAINED COMMENTATOR ELIGIBILITY PROJECTION / REALIZATION DEFERRED
+PO-010: INCORPORATED — 10 KIB HARD CAP SUPERSEDED BY TARGET / REVIEW / REVIEW-AND-PARTITION SIZING BANDS
 
 WP19_FINAL_SENIOR_REVIEW: PASS
 WP20_FINAL_SENIOR_REVIEW: PASS
@@ -620,6 +676,7 @@ HUMAN_DECISION_REQUIRED: NONE
 NEEDS_PO: NONE
 UPSTREAM_REOPEN_REQUIRED: NO
 TARGETED_STORY_CONSUMER_SUPERSESSION: YES / PO-009 OWNER DECISION PUBLISHED
+TARGETED_SIZE_POLICY_SUPERSESSION: YES / PO-010 OWNER DECISION PUBLISHED
 
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
