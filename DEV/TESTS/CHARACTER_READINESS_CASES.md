@@ -1,6 +1,6 @@
 # Character Readiness Regression Cases
 
-These cases prevent a character concept from entering live D&D play without an actual playable character sheet.
+These cases distinguish provisional gameplay from the READY_PC + PLAY_READY frontier required for fully active mechanics-capable play. They prevent unresolved PC mechanics from being invented or silently treated as ready while preserving locally sufficient real gameplay during onboarding.
 
 ## C01 — Concept is not a sheet
 Player says `Бдыр, гном-варвар`.
