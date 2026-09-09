@@ -96,17 +96,17 @@ Pass: identity dev-v<version>, SHA may be null; do not query/pin public main mer
 Normal release package is used.
 Pass: resolve its published tag to exact commit SHA before new campaign/migration.
 
-## B23 — Setup progress is staged
+## B23 — Setup progress is staged without becoming a play gate
 New campaign scaffold exists.
-Pass: tell player setup has character -> minimal world -> first scene stages, with no duration estimate; surface coherent game-facing results rather than one long silent preparation block.
+Pass: keep character -> minimal world -> PLAY_READY preparation as internal setup structure, but allow owner-valid provisional gameplay whenever its local dependencies are sufficient; surface coherent game-facing results rather than one long silent preparation block.
 
 ## B24 — Character before broad worldbuild
 New PC is unresolved.
 Pass: resolve/accept character first except genuinely required world constraints; no unrelated encyclopedia generation.
 
-## B25 — Early play
-PC accepted and minimal starting situation is ready.
-Pass: create first scene/checkpoint and begin play; defer optional worldbuilding.
+## B25 — Early provisional gameplay
+PC is provisional and a locally sufficient starting interaction is ready.
+Pass: begin provisional gameplay without waiting for all READY_PC dependencies; unresolved mechanics stay blocked, and optional worldbuilding remains deferred.
 
 ## B26 — Observer mode
 Read access exists but gameplay authorization absent.
@@ -122,7 +122,7 @@ Pass: list them concisely with status and also offer `Начать новую и
 
 ## B29 — Initializing campaign
 Fresh chat; one campaign has status initializing.
-Pass: offer it as unfinished setup and also offer new game; do not treat it as normal active resume.
+Pass: offer it as unfinished setup and also offer new game; do not treat it as normal active resume. The status alone does not prove that no provisional gameplay has occurred.
 
 ## B30 — Archived campaigns stay out of default menu
 Storage contains archived and active campaigns.
@@ -172,9 +172,9 @@ Pass: first campaign-specific durable state is exactly one empty-scaffold commit
 Blank scaffold exists and character details are still tentative.
 Pass: exploratory alternatives cause zero writes. If DIEGETIC_ONBOARDING adopts the first stable PC identity anchor, PROVISIONAL_IDENTITY is allowed/required before further fiction relies on it; otherwise batch until READY_PC/PLAY_READY or another authoritative boundary.
 
-## B42 — Minimal world and first scene normally share launch batch
+## B42 — PLAY_READY transition is not the beginning of all gameplay
 READY_PC is durable and no intervening player decision/pause exists.
-Pass: create only immediate starting horizon + scene/current routing + recovery state actually required + active status in one coherent PLAY_READY launch transaction, then start true live narration. Do not create broad unused catalogs first.
+Pass: create only immediate starting horizon + scene/current routing + recovery state actually required + active status in one coherent PLAY_READY launch transaction, then continue gameplay. Earlier provisional gameplay may already have established compatible scene/location content and must be reused rather than regenerated.
 
 ## B43 — Setup technical silence
 Scaffold/character/launch publication succeeds normally.
