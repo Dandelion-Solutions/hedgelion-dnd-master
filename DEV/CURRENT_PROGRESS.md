@@ -8,18 +8,18 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-27 STEP 1 IN PROGRESS — SOURCE MANIFEST / TASK BRIEF / MANDATORY WIDE-ANGLE CRITIC
+GLOBAL_STATE: R2.7 WP-27 STEP 1 CLOSED / SENIOR SELF-RE-REVIEW PASS — STEP 2 ACTIVE
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-27 Step 1 — final implementation-planning-readiness framing
+CURRENT_SLICE: WP-27 Step 2 — owner/evidence extraction into item-level implementation-planning-readiness accounting
 
-LAST_CLOSED_UNIT: WP-26 — Documentation / routing / supersession consistency
-NEXT_ELIGIBLE_UNIT: WP-27 Step 1 — Final implementation-planning readiness
-NEXT_AUTHORIZED_UNIT: WP-27 Step 1 — Source Manifest / Task Brief / mandatory Wide-Angle Critic
-REQUIRED_GATE: mandatory independent Senior review after repaired WP-27 Step-1 package
+LAST_CLOSED_UNIT: WP-27 Step 1 — Source Manifest / Task Brief / mandatory Wide-Angle Critic / Senior gate
+NEXT_ELIGIBLE_UNIT: WP-27 Step 2 — item-level evidence extraction and readiness accounting
+NEXT_AUTHORIZED_UNIT: WP-27 Step 2 — AUTO_CONTINUE under existing Product Owner WP-27 stage-entry authorization
+REQUIRED_GATE: stop only for a genuine human-owned decision; otherwise mandatory Step-8 Senior review after Steps 2–8
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
-KNOWN_BLOCKERS: implementation planning / release execution / gameplay bootstrap remain unauthorized; WP-27 Steps 2–8 require the Step-1 Senior gate
+KNOWN_BLOCKERS: implementation planning / release execution / gameplay bootstrap remain unauthorized; R2.7 final reconciliation remains mandatory after WP-27 closure
 ```
 
 ---
@@ -168,23 +168,75 @@ README EDIT AUTHORIZED: NO
 
 ---
 
-# WP-27 active entry
+# WP-27 active state
 
 WP-27 is the final numbered R2.7 implementation-planning-readiness audit before mandatory R2.7 final reconciliation.
 
-Product Owner stage-entry authorization was supplied explicitly on 2026-09-09. It authorizes substantive WP-27 Step-1 architecture/audit framing only under the normal Source Manifest / Task Brief / mandatory Wide-Angle Critic process. It does not authorize implementation planning, implementation, release/migration execution or gameplay bootstrap.
+Product Owner stage-entry authorization was supplied explicitly on 2026-09-09. The mandatory Step-1 whole-project framing gate is now closed under the Product-Owner-directed same-session Senior self-review exception.
+
+Step-1 package:
+
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-27-task-brief-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-27-step-1-whole-project-critic.md`;
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-27-step-1-critic-closure.md`;
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-27-step-1-senior-self-review.md`;
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-27-task-brief-senior-repair-amendment.md`;
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-27-step-1-senior-self-rereview.md`;
+- `DEV/docs/superpowers/research/2026-09-09-r2-7-WP-27-final-implementation-planning-readiness-mini-report.md`.
+
+Step-1 final accounting:
+
+```text
+WORKER_STEP1_BLOCKING_FOUND: 0
+WORKER_STEP1_SIGNIFICANT_FOUND: 11
+WORKER_STEP1_MINOR_FOUND: 1
+WORKER_FINDINGS_REPAIRED: 12 / 12
+
+SENIOR_STEP1_BLOCKING_FOUND: 0
+SENIOR_STEP1_SIGNIFICANT_FOUND: 4
+SENIOR_STEP1_MINOR_FOUND: 0
+SENIOR_FINDINGS_REPAIRED: 4 / 4
+
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+ARCHITECTURE_REOPEN_REQUIRED: NO
+WP27_STEP1_SENIOR_SELF_REREVIEW: PASS / GO
+WP27_STEP1_CLOSED: YES
+```
+
+The accepted Step-1 framing requires:
+
+```text
+OWNER-DERIVED IMPLEMENTATION GRAPH
++ BIDIRECTIONAL READINESS COVERAGE
++ EXPLICIT ACTIVATION / DEFER / EMPIRICAL CLASSIFICATION
++ BLOCKER-ONLY BOUNDED ARCHITECTURE REOPEN
+```
+
+It explicitly preserves:
+
+- item-level obligations from WP-01..WP-26 and foundational/Round-2 owners;
+- all 82 R2.1-R2.6 DIAMOND/STRONG dispositions plus S14/S53/D15 changes;
+- PO-001..PO-010 future realization/proof routes;
+- current GAME/DEV reverse-conformance families including `GAME/TEMPLATE/*`, `GAME/ENGINE_VERSION.yaml` and `DEV/ENGINE_DEVELOPMENT.yaml`;
+- separate deterministic/scenario/empirical/release-time proof channels;
+- high-risk blocker probes for PO-003/009, WP-25 deferred-vs-rejected, PO-010 partition activation and WP-20 migration/version realization.
+
+Current authorization boundary:
 
 ```text
 WP27_ELIGIBLE: YES
 WP27_AUTHORIZED: YES
-WP27_STEP1_STARTED: YES
-WP27_STEPS_2_8_AUTHORIZED: NO — MANDATORY STEP-1 SENIOR GATE FIRST
+WP27_STEP1_CLOSED: YES
+WP27_STEPS_2_8_AUTHORIZED: YES — EXISTING STAGE AUTHORIZATION RESUMES / AUTO_CONTINUE
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RELEASE_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-WP-27 must prove that implementation workstreams, dependency/migration order, test-first obligations, publication/release consequences and remaining unknown classifications are derivable from accepted owners without reopening closed architecture merely because downstream realization is still deferred.
+Step 2 must now extract item-level owner/evidence obligations and realization/proof/activation classifications. No separate Product Owner approval is required for this mechanical/deep-work continuation unless a genuine human-owned decision is discovered.
 
-The immediate worker unit is the repaired Step-1 package. After publication it requires mandatory independent Senior review before Steps 2–8 can proceed.
+WP-27 closure will still require the mandatory Step-8 Senior gate. R2.7 remains open after WP-27 closure until final reconciliation completes the global matrices, forward obligations, 82-item recheck, whole-project adversarial composition, 24 exit criteria and implementation-planning entry resolution.
