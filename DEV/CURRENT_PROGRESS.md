@@ -8,18 +8,18 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-25 CLOSED — FINAL SENIOR RE-REVIEW PASS / CLOSURE PUBLICATION VERIFIED — WP-26 NEXT ELIGIBLE
+GLOBAL_STATE: R2.7 WP-25 CLOSED — WP-26 STEP 1 PRODUCT-OWNER AUTHORIZED / TASK BRIEF + SOURCE MANIFEST + CRITIC PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-25 closed / awaiting explicit Product Owner stage entry for WP-26
+CURRENT_SLICE: WP-26 Step 1 — documentation / routing / supersession consistency
 
 LAST_CLOSED_UNIT: WP-25 — Error / degradation / failure semantics
 NEXT_ELIGIBLE_UNIT: WP-26 Step 1 — documentation / routing / supersession consistency
-NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: explicit Product Owner stage-entry authorization before substantive WP-26 work
+NEXT_AUTHORIZED_UNIT: WP-26 STEP 1 ONLY — Source Manifest -> complete Task Brief -> mandatory whole-project Step-1 critic -> mechanical repairs -> STOP
+REQUIRED_GATE: mandatory independent Senior review of the completed/repaired WP-26 Step-1 package before Step 2
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-09-r2-7-WP-25-final-senior-rereview.md
-KNOWN_BLOCKERS: NONE FOR WP-25; WP-26 / IMPLEMENTATION PLANNING / RELEASE EXECUTION / GAMEPLAY BOOTSTRAP REMAIN UNAUTHORIZED UNTIL THEIR APPLICABLE GATES
+TASK_LOCAL_CURSOR: WP-26 Step-1 Task Brief not yet published
+KNOWN_BLOCKERS: NONE KNOWN BEFORE STEP-1 EVIDENCE WORK; STEP 2 / IMPLEMENTATION PLANNING / RELEASE EXECUTION / GAMEPLAY BOOTSTRAP REMAIN UNAUTHORIZED
 ```
 
 ---
@@ -197,6 +197,17 @@ GAME/CORE/MECHANICS_INTEGRITY.md   0.1.0 -> 1.0.1
 
 ---
 
+## Cross-cutting Product Owner inputs entering WP-26
+
+WP-26 Step 1 must treat current applicable Product Owner routes as part of its open-world Source Manifest. In particular:
+
+- `PO-009` / `DEV/docs/superpowers/specs/2026-09-09-story-commentator-self-contained-corpus-owner-decision.md` — Story-local retained T0 basis plus self-contained Commentator eligibility/control projection; current routing/supersession surfaces must not leave native-fallback-only baseline Commentator semantics discoverable as current law.
+- `PO-010` / `DEV/docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` — the former absolute 10 KiB mutable-file cap is superseded by target/review/review-and-partition sizing bands; current implementation-facing routing must not preserve the retired hard cutoff as current law.
+
+These inputs do not reopen unrelated closed WPs. WP-26 owns their documentation/routing/supersession reconciliation; WP-27 later owns implementation-planning-readiness derivation.
+
+---
+
 ## Current gate
 
 ```text
@@ -215,9 +226,9 @@ RELEASE_MIGRATION_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
 WP26_ELIGIBLE: YES
-WP26_AUTHORIZED: NO
-NEXT_AUTHORIZED_UNIT: NONE
-NEXT_GATE: explicit Product Owner stage-entry authorization before substantive WP-26 work
+WP26_AUTHORIZED: YES — STEP 1 ONLY
+NEXT_AUTHORIZED_UNIT: WP-26 STEP 1 — SOURCE MANIFEST + TASK BRIEF + WHOLE-PROJECT CRITIC + MECHANICAL REPAIRS
+NEXT_GATE: mandatory independent Senior review of completed WP-26 Step 1 before Step 2
 ```
 
-WP-26 is the next eligible R2.7 architecture block according to the current roadmap. Eligibility is not authorization.
+Product Owner stage-entry authorization for WP-26 Step 1 was given on 2026-09-09. This authorization does not authorize Steps 2–8, implementation planning, implementation, release execution or gameplay bootstrap.
