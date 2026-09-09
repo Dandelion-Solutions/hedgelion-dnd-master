@@ -1,6 +1,6 @@
 # New Campaign Fast Path
 
-framework_module_version: 0.7.3
+framework_module_version: 0.7.4
 load_when: user explicitly selected New Game, before character/world setup
 precedence: authoritative for new-campaign scaffold ordering, publication, and early-start latency
 
@@ -92,7 +92,7 @@ There are explicit exceptions:
 - an explicit player save/session/maintenance safety boundary may flush honest provisional setup state;
 - another authoritative HARD rule may require publication.
 
-A PROVISIONAL_IDENTITY save is not character acceptance or activation. PC remains `provisional`, campaign remains `initializing`, and the same PC ID is later promoted when READY_PC is complete.
+A PROVISIONAL_IDENTITY save is not character acceptance or activation. PC remains `provisional`, campaign remains `initializing`, and the same PC ID is later promoted when READY_PC is complete. Owner-valid provisional gameplay may nevertheless proceed when the attempted interaction's committed local dependencies are sufficient.
 
 Outside those exceptions, batch character setup. Once READY_PC is semantically accepted, persist the coherent character/PLAY_READY state according to `DURABILITY_GUARD.md`.
 
@@ -119,7 +119,7 @@ Do not make the player type `и?` to make the Master resume its job.
 
 ## Fast launch after character acceptance
 
-After the READY_PC is semantically accepted/durable (possibly after an earlier provisional onboarding checkpoint), prepare only the minimum horizon required for the first true live scene.
+After READY_PC is semantically accepted/durable (possibly after earlier provisional gameplay/onboarding), prepare only the minimum horizon required for the campaign to enter fully active mechanics-capable PLAY_READY state.
 
 Do not create broad unused NPC/faction/location catalogs merely because schemas exist.
 
@@ -130,11 +130,11 @@ Normally combine:
 - initial recovery checkpoint when required for reliable resume;
 - campaign/card transition to active;
 
-into ONE coherent **launch batch** and then begin the first scene immediately.
+into ONE coherent **launch batch** and then continue play immediately.
 
 Use separate world and first-scene persistence batches only when a real player decision, pause, external dependency, or recovery requirement falls between them.
 
-Nonessential worldbuilding remains undefined until it becomes relevant. It is created later at normal preparation boundaries; do not delay the first scene to prebuild it.
+Nonessential worldbuilding remains undefined until it becomes relevant. It is created later at normal preparation boundaries; do not delay play to prebuild it.
 
 ## Player-facing technical silence
 
