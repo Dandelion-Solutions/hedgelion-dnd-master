@@ -1,6 +1,6 @@
 # R2.7 WP-27 Step 1 — Final Implementation-Planning Readiness — Task Brief + Open-World Source Manifest
 
-Status: **WORKER STEP-1 FRAMING / MANDATORY WIDE-ANGLE CRITIC REQUIRED / IMPLEMENTATION PLANNING NOT AUTHORIZED**
+Status: **WORKER STEP-1 CRITIC-REPAIRED / MANDATORY INDEPENDENT SENIOR REVIEW PENDING / IMPLEMENTATION PLANNING NOT AUTHORIZED**
 
 Date: 2026-09-09
 
@@ -18,6 +18,12 @@ Source Manifest
 -> mandatory independent Senior Step-1 review
 -> STOP
 ```
+
+The mandatory Wide-Angle Critic is published at:
+
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-27-step-1-whole-project-critic.md`.
+
+Worker repair has closed all blocking/significant Step-1 framing findings. The mandatory independent Senior gate remains unsatisfied.
 
 It does **not** authorize:
 
@@ -576,7 +582,25 @@ WP27_STEP2_STARTED: NO
 IMPLEMENTATION_PLANNING_STARTED: NO
 ```
 
-Then the process must stop at:
+Worker result after critic repair:
+
+```text
+SOURCE_MANIFEST_OPEN_WORLD: YES
+TASK_BRIEF_OWNER_DERIVED: YES
+MANDATORY_WIDE_ANGLE_CRITIC_COMPLETE: YES
+STEP1_BLOCKING_FOUND: 0
+STEP1_SIGNIFICANT_FOUND: 11
+STEP1_MINOR_FOUND: 1
+ALL_BLOCKING_FRAMING_FINDINGS_REPAIRED: YES
+ALL_SIGNIFICANT_FRAMING_FINDINGS_REPAIRED: YES
+ALL_MINOR_FRAMING_FINDINGS_REPAIRED: YES
+HUMAN_DECISION_REQUIRED_FOR_STEP1_FRAMING: NO
+PRODUCT_OWNER_DECISION_REQUIRED_FOR_STEP1_FRAMING: NO
+WP27_STEP2_STARTED: NO
+IMPLEMENTATION_PLANNING_STARTED: NO
+```
+
+The process is now stopped at:
 
 ```text
 NEXT_GATE: MANDATORY INDEPENDENT WP-27 STEP-1 SENIOR REVIEW
