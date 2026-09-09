@@ -1,12 +1,14 @@
 # Runtime Mutable GitHub Artifact Size — Product Owner Decision
 
-Status: **OWNER-APPROVED PRODUCT / RUNTIME OPERABILITY CONSTRAINT**
+Status: **SUPERSEDED FOR FILE-SIZE THRESHOLD SEMANTICS — RETAINED HISTORICAL PRODUCT-DECISION PROVENANCE**
 
 Date: 2026-09-04
 
 Target branch: `v1/engine-rearchitecture`
 
 Decision origin: explicit Product Owner direction received during R2.7 WP-18 final Senior recovery.
+
+> **Current-law supersession (2026-09-09).** `DEV/docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` supersedes this document's former universal `10240` / 10 KiB hard-cutoff semantics. The text below is retained as historical provenance and must not be used as the current publication-validity rule. Current law uses approximate 10–12 KiB preferred, 13–16 KiB review, and above-approximately-16 KiB review/partition/rollover decision bands, with exact serialized UTF-8 measurement, no truncation and owner-valid partition/currentness semantics preserved.
 
 ## 1. Purpose
 
