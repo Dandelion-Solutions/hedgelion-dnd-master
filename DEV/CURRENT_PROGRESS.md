@@ -8,18 +8,18 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-25 CLOSED — WP-26 STEP 1 PRODUCT-OWNER AUTHORIZED / TASK BRIEF + SOURCE MANIFEST + CRITIC PENDING
+GLOBAL_STATE: R2.7 WP-26 STEP 1 COMPLETE AT WORKER LEVEL — MANDATORY INDEPENDENT STEP-1 SENIOR REVIEW PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-26 Step 1 — documentation / routing / supersession consistency
+CURRENT_SLICE: WP-26 Step 1 — documentation / routing / supersession consistency — worker package complete / Senior gate pending
 
 LAST_CLOSED_UNIT: WP-25 — Error / degradation / failure semantics
-NEXT_ELIGIBLE_UNIT: WP-26 Step 1 — documentation / routing / supersession consistency
-NEXT_AUTHORIZED_UNIT: WP-26 STEP 1 ONLY — Source Manifest -> complete Task Brief -> mandatory whole-project Step-1 critic -> mechanical repairs -> STOP
+NEXT_ELIGIBLE_UNIT: mandatory independent WP-26 Step-1 Senior review
+NEXT_AUTHORIZED_UNIT: NONE
 REQUIRED_GATE: mandatory independent Senior review of the completed/repaired WP-26 Step-1 package before Step 2
 
-TASK_LOCAL_CURSOR: WP-26 Step-1 Task Brief not yet published
-KNOWN_BLOCKERS: NONE KNOWN BEFORE STEP-1 EVIDENCE WORK; STEP 2 / IMPLEMENTATION PLANNING / RELEASE EXECUTION / GAMEPLAY BOOTSTRAP REMAIN UNAUTHORIZED
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-task-brief-source-manifest.md
+KNOWN_BLOCKERS: WP-26 STEP 2 / IMPLEMENTATION PLANNING / IMPLEMENTATION / RELEASE EXECUTION / GAMEPLAY BOOTSTRAP REMAIN UNAUTHORIZED UNTIL THE MANDATORY STEP-1 SENIOR GATE RETURNS GO
 ```
 
 ---
@@ -208,6 +208,63 @@ These inputs do not reopen unrelated closed WPs. WP-26 owns their documentation/
 
 ---
 
+# WP-26 Step 1 — worker framing package
+
+Published Step-1 artifacts:
+
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-task-brief-source-manifest.md`;
+- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-step-1-whole-project-critic.md`.
+
+Worker result:
+
+```text
+STEP1_SOURCE_MANIFEST: COMPLETE / OPEN-WORLD / ROLE-CLASSIFIED
+STEP1_TASK_BRIEF: COMPLETE / CRITIC-REPAIRED
+STEP1_CRITIC: COMPLETE
+STEP1_CRITIC_BLOCKING_FOUND: 0
+STEP1_CRITIC_SIGNIFICANT_FOUND: 7
+STEP1_CRITIC_MINOR_FOUND: 1
+UNRESOLVED_BLOCKING_AFTER_WORKER_REPAIR: 0
+UNRESOLVED_SIGNIFICANT_AFTER_WORKER_REPAIR: 0
+HUMAN_DECISION_REQUIRED: NO
+WHOLESALE_UPSTREAM_REOPEN_REQUIRED: NO
+```
+
+The Step-1 critic established several real WP-26 cleanup obligations without executing them prematurely:
+
+1. PO-009 targeted supersession must remove baseline Commentator dependence on native Master T0/control fallback while preserving native gameplay authority and Story nonauthority;
+2. PO-010 targeted threshold supersession must prevent the old universal `>10240 bytes => reject` law from remaining discoverable as current implementation authority while preserving no-truncation/owner-valid partition/currentness rules;
+3. current readiness/onboarding law conflicts with stale `pre-live` / `true live` wording in current CORE surfaces plus tests/audit guards;
+4. derivative routing/current-looking status/transient branch metadata require owner-first supersession reconciliation;
+5. Product Owner route aging must be reconciled while all still-deferred PO consumers survive into WP-27;
+6. accepted PO-009/010 semantics remain distinct from still-deferred machine/schema/test realization;
+7. WP-26 coverage must remain bidirectional across owners and runtime/schema/template/test/audit consumers rather than documentation-only.
+
+Known root README mismatch is report-only under the current editorial contract:
+
+```text
+README: DEV/TOOLS/run_release_build
+CURRENT CANONICAL PATH: DEV/TOOLS/run_release_build.py
+CLASSIFICATION: MINOR PATH/NAVIGATION MISMATCH
+README EDIT AUTHORIZED: NO
+```
+
+No Product Owner decision is required by Step-1 evidence. The proven corpus/realization cleanup obligations remain pending later WP-26 Steps 2–8 and are not evidence that Step 1 is incomplete.
+
+## Version Impact — WP-26 Step 1 framing package
+
+```text
+VERSION_IMPACT: NONE
+ENGINE_VERSION_BUMP_REQUIRED: NO
+MODULE_VERSION_BUMP_REQUIRED: NO
+PERSISTENT_SCHEMA_OR_GENERATION_BUMP_REQUIRED: NO
+MIGRATION_REQUIRED: NO
+```
+
+The Step-1 package changes only development design/current-progress bookkeeping. It does not change a version-bearing runtime semantic module, persistent/protocol schema, catalog/ruleset generation, package/release format or migration law.
+
+---
+
 ## Current gate
 
 ```text
@@ -218,17 +275,20 @@ WP25_FINAL_SENIOR_HOLD_RECOVERY: COMPLETE
 WP25_FINAL_SENIOR_RE_REVIEW: PASS / GO
 WP25_CLOSED: YES
 
+WP26_STEP1_SOURCE_MANIFEST: COMPLETE
+WP26_STEP1_TASK_BRIEF: COMPLETE / REPAIRED
+WP26_STEP1_WHOLE_PROJECT_CRITIC: COMPLETE
+WP26_STEP1_WORKER_COMPLETE: YES
+WP26_STEP1_SENIOR_REVIEW: REQUIRED / PENDING
+WP26_STEP2_AUTHORIZED: NO
+
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
-SUBSTANTIVE_GENERIC_IMPLEMENTATION_STARTED: NO
-GENERIC_FAILUREDISPOSITION_REALIZATION_STARTED: NO
-PERSISTENT_FAILURE_SCHEMA_REALIZATION_STARTED: NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RELEASE_MIGRATION_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 
-WP26_ELIGIBLE: YES
-WP26_AUTHORIZED: YES — STEP 1 ONLY
-NEXT_AUTHORIZED_UNIT: WP-26 STEP 1 — SOURCE MANIFEST + TASK BRIEF + WHOLE-PROJECT CRITIC + MECHANICAL REPAIRS
-NEXT_GATE: mandatory independent Senior review of completed WP-26 Step 1 before Step 2
+NEXT_AUTHORIZED_UNIT: NONE
+NEXT_GATE: mandatory independent WP-26 Step-1 Senior review
 ```
 
-Product Owner stage-entry authorization for WP-26 Step 1 was given on 2026-09-09. This authorization does not authorize Steps 2–8, implementation planning, implementation, release execution or gameplay bootstrap.
+Do not begin WP-26 Step 2, implementation planning, implementation, release execution or gameplay bootstrap until the mandatory independent WP-26 Step-1 Senior review returns GO.
