@@ -41,3 +41,16 @@ Pass: reasoning remains bounded while narration and NPC behavior reflect the dis
 ## P10 — Settled ruling terminates deliberation
 All material state, rules, randomness and consequences for a turn are resolved and correctness gates pass.
 Pass: proceed to persistence/narration. Do not continue rechecking the same ruling, searching for a better dramatic outcome, or exploring irrelevant counterfactuals.
+
+## P11 — Mutable artifact preferred sizing target
+Current owner: `DEV/docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md`.
+A growth-bearing mutable GitHub-backed text artifact remains at or below the approximate 10–12 KiB preferred steady-state band after the pending write.
+Pass: measure exact serialized UTF-8 bytes and keep the owner-valid representation; do not add padding or split solely to approach a target number.
+
+## P12 — Review band is not automatic rejection
+A growth-bearing mutable artifact projects into the normal 13–16 KiB review zone.
+Pass: perform the owning representation's bounded size/shape review. Continuing with the same file is legal when owner semantics, currentness and expected growth remain safe; the review band is not a universal validity failure.
+
+## P13 — Above-target growth expects owner-valid partition or rollover review
+A growth-bearing mutable artifact projects above approximately 16 KiB.
+Pass: default to review/partition/rollover under the artifact's owning contract before indefinite further growth. Preserve exact UTF-8 measurement, required material, identity, provenance, atomicity and currentness; never truncate or invent a semantically false split to satisfy a size target. Read-only engine/reference artifacts and DEV prose are outside this mutable-growth rule unless their own owner says otherwise.
