@@ -1,6 +1,6 @@
 # CORE Index
 
-framework_module_version: 0.3.0
+framework_module_version: 0.3.1
 rules_baseline: D&D 2024 / SRD 5.2.1
 
 ## Context model
@@ -25,7 +25,7 @@ All other modules remain present but dormant until their domain is relevant. In 
 - `ENGINE_UPDATES.md` — release discovery and safe campaign integration; activate only at update opportunities.
 - `NEW_CAMPAIGN_FAST_PATH.md` — authoritative ordering/transport/latency contract for creating a new campaign scaffold and reaching the first scene quickly.
 - `CAMPAIGN_SETUP.md` — substantive character/world setup after the fast-path scaffold exists.
-- `DIEGETIC_ONBOARDING.md` — pre-live story-first onboarding and PROVISIONAL_IDENTITY.
+- `DIEGETIC_ONBOARDING.md` — story-first provisional gameplay/onboarding and PROVISIONAL_IDENTITY before full PLAY_READY capability.
 - `CAMPAIGN_IDENTITY.md` — evolving campaign title and protected README overview.
 - `CAMPAIGN_CARD.md` — fast campaign menu projection, emoji/access hints and card-refresh discipline.
 - `GM_CRAFT.md` — setup/prep/design/audit craft.
@@ -61,7 +61,7 @@ All other modules remain present but dormant until their domain is relevant. In 
 
 ## Activation examples
 
-`new campaign` -> always-active guards already apply; activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD, and activate DIEGETIC_ONBOARDING/CAMPAIGN_IDENTITY only if their conditions arise. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; before the first true live scene CHARACTER_READINESS requires READY_PC and DURABILITY_GUARD requires a post-scaffold PLAY_READY durable frontier.
+`new campaign` -> always-active guards already apply; activate NEW_CAMPAIGN_FAST_PATH FIRST + CAMPAIGN_SETUP + CAMPAIGN_CARD, and activate DIEGETIC_ONBOARDING/CAMPAIGN_IDENTITY only if their conditions arise. Scaffold publication obeys NEW_CAMPAIGN_FAST_PATH before character/world questions; provisional gameplay may begin when its local dependencies are sufficient, while CHARACTER_READINESS requires READY_PC and DURABILITY_GUARD requires a durable PLAY_READY frontier before the campaign enters fully active mechanics-capable state.
 
 `campaign menu/discovery` -> activate BOOTSTRAP_RUNTIME + CAMPAIGN_CARD; prefer card-only presentation reads and defer authoritative/deep campaign loading until selection.
 
@@ -98,6 +98,6 @@ Do NOT automatically browse the web or D&D Beyond as step 5. External RAW resear
 
 Whatever ruling is chosen, `MECHANICS_INTEGRITY.md` still requires the ruling to be actually executed. A quick local ruling is not permission to skip its roll/math.
 
-Character creation is different from a live-turn lookup loop: if exact durable PC mechanics are missing during setup, `CHARACTER_READINESS.md` permits/requires one bounded official-source setup pass so the complete sheet can be stored before play.
+Character creation is different from a live-turn lookup loop: if exact durable PC mechanics are missing during setup, `CHARACTER_READINESS.md` permits/requires one bounded official-source setup pass so the complete sheet can be stored before unrestricted mechanics-capable play.
 
 Setup/prep/worldbuilding may use bounded trustworthy source research under `PLAY_POLICY.md`; that is a different mode from live-turn rules checking.
