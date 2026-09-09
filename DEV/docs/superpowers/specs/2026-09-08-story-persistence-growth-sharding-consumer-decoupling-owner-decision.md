@@ -1,6 +1,6 @@
 # Story Persistence Growth, Sharding and Consumer-Decoupling — Product Owner Decision
 
-Status: **OWNER-APPROVED PRODUCT / RUNTIME OPERABILITY CONSTRAINT — IMPLEMENTATION NOT ACTIVATED**
+Status: **OWNER-APPROVED PRODUCT / RUNTIME OPERABILITY CONSTRAINT — CURRENT AS AMENDED BY 2026-09-09 SIZING-BANDS OWNER — IMPLEMENTATION NOT ACTIVATED**
 
 Date: 2026-09-08
 
@@ -8,20 +8,23 @@ Date: 2026-09-08
 
 This decision supplements:
 
-- `2026-09-04-runtime-mutable-github-artifact-size-owner-decision.md`;
+- `2026-09-04-runtime-mutable-github-artifact-size-owner-decision.md` (**historical threshold owner; superseded for threshold semantics by the current sizing-bands owner below**);
+- `2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` (**current mutable-artifact sizing owner**);
 - `2026-09-01-r2-7-WP-11-physical-storage-topology-identity-indexing-canonical-spec.md`;
 - `2026-09-07-story-producer-persistence-retrospective-consumer-contract.md`;
 - `2026-09-08-story-baseline-projection-source-contracts.md`.
 
 It preserves the accepted Story/Chronicler/retrospective-consumer semantics and adds an operability requirement for long-lived GitHub-backed Story persistence. It does not create a new Story layer, history owner, consumer API, global cursor, scheduler, queue, or current architecture stage.
 
-The existing hard runtime invariant remains controlling:
+The former absolute 10 KiB publication cutoff is **SUPERSEDED**. Current threshold semantics come from `2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md`:
 
 ```text
-RUNTIME_MUTABLE_GITHUB_TEXT_FILE_MAX_BYTES = 10240
+PREFERRED TARGET: approximately 10–12 KiB serialized UTF-8
+REVIEW: normally 13–16 KiB
+REVIEW / PARTITION / ROLLOVER: above approximately 16 KiB
 ```
 
-This decision does not weaken or replace that cap.
+These are decision bands, not universal validity enums or one exact hard stop. Exact serialized UTF-8 measurement, bounded growth, no truncation, owner-valid partitionability and publication/currentness guarantees remain controlling.
 
 ## 2. Consumer-aware file-size policy
 
@@ -37,13 +40,13 @@ For such artifacts:
 - 251–300 lines is a review zone where partitioning or a smaller semantic unit should be preferred when safe;
 - more than 300 lines is not an acceptable normal steady-state shape without an explicit reason why bounded alternate retrieval is safe and why semantic partitioning would be worse.
 
-Line count is an LLM/tooling ergonomics signal, not a substitute for the 10 KiB hard mutable-file cap, byte measurement, token pressure, or actual host/tool evidence. A very large single serialized line is not made acceptable by a low line count.
+Line count is an LLM/tooling ergonomics signal, not a substitute for the current mutable-artifact sizing bands, exact byte measurement, token pressure, or actual host/tool evidence. A very large single serialized line is not made acceptable by a low line count.
 
 ### 2.2 Machine-facing structured artifacts
 
 A structured artifact consumed primarily through deterministic runtime code may be packed more densely when that materially reduces file fan-out, reconstruction work, atomicity complexity, or Git operations.
 
-Machine-facing status does **not** authorize indefinite single-file growth. The 10 KiB mutable-file cap still applies to GitHub-backed runtime text, and measured Git/transport/update cost may justify partitioning earlier.
+Machine-facing status does **not** authorize indefinite single-file growth. The current sizing bands still apply to GitHub-backed runtime mutable text: target roughly 10–12 KiB or smaller where owner-valid, review normal growth in the 13–16 KiB zone, and normally activate owner-valid partition/rollover above roughly 16 KiB. Measured Git/transport/update cost may justify partitioning earlier.
 
 ## 3. No unbounded campaign-growing singleton
 
@@ -57,7 +60,7 @@ For every plausibly unbounded collection, physical realization must define or pr
 - owner-valid compaction where semantics permit it;
 - a compact stable root plus bounded subordinate partitions.
 
-The partition path must exist before the current representation becomes an architectural dead end. Activation may remain measurement-driven while the monolithic form is safely below its operational trigger.
+The partition path must exist before the current representation becomes an architectural dead end. Activation may remain measurement-driven while the monolithic form remains safely within current operational bands.
 
 This rule forbids accidental append-only singleton growth. It does not require premature fragmentation of every small machine-facing collection.
 
@@ -85,17 +88,17 @@ Sharding, rollover or repartitioning must preserve the accepted publication/curr
 
 If activating a partition changes a compatibility-bearing physical layout, Story projection-state representation, persisted schema, or storage-generation meaning, the implementation must use the applicable Version Impact Gate and migration/adoption law. Physical optimization is not permission for an unversioned semantic reinterpretation.
 
-The 10 KiB hard cap is an absolute pre-publication constraint. Earlier partitioning may be selected from measured size, whole-file replacement cost, Git diff/commit amplification, transfer latency, host/tool behavior, conflict pressure, or other valid operational evidence under the applicable performance/scale owner.
+Current sizing policy is prospective and owner-valid rather than an absolute 10 KiB rejection rule. A producer/writer measures the projected final serialized UTF-8 size before publication: roughly 10–12 KiB is the preferred working band, 13–16 KiB normally triggers explicit review, and above roughly 16 KiB normally triggers partition/rollover selection before indefinite further growth. Earlier partitioning may be selected from measured whole-file replacement cost, Git diff/commit amplification, transfer latency, host/tool behavior, conflict pressure, or other valid operational evidence under the applicable performance/scale owner.
 
 ## 6. Story-specific realization requirements
 
 `STORY/<layer>/PROJECTION_STATE.yaml` may remain a compact fixed control/root artifact while that representation satisfies all applicable bounds. Its accepted route does not imply that every growth-bearing lookup, coverage, editorial, chapter, or future auxiliary collection must remain embedded in one unbounded file forever.
 
-Future Story physical realization must explicitly inspect every field or subordinate collection whose cardinality grows with campaign history. If the growth-bearing material cannot remain within the controlling mutable-file and operational budgets, realization must select a deterministic bounded representation without changing Story semantic identity or retrospective meaning.
+Future Story physical realization must explicitly inspect every field or subordinate collection whose cardinality grows with campaign history. If the growth-bearing material cannot remain within the current sizing bands and operational budgets, realization must select a deterministic bounded representation without changing Story semantic identity or retrospective meaning.
 
-Individual Story units are also subject to the existing 10 KiB mutable-file invariant. Semantic records should be split only where the layer contract permits independent units. Exact material must never be truncated or paraphrased merely to satisfy storage size. If an accepted exact archival scope can exceed one indivisible file, its owner/schema must define safe bounded partition/reconstruction semantics before such a representation is admitted.
+Individual Story units are also subject to the current mutable-artifact sizing policy. Semantic records should be split only where the layer contract permits independent units. A unit entering the review or review/partition band is not automatically invalid: the owner must preserve exact archival requirements, reference closure, identity and atomicity, and choose the safest valid representation. Exact material must never be truncated or paraphrased merely to reduce storage size. If an accepted exact archival scope can exceed one indivisible file, its owner/schema must define safe bounded partition/reconstruction semantics before such a representation is admitted.
 
-This decision does not select a concrete `PROJECTION_STATE` shard layout, index partition count, chapter-file layout, or rollover threshold. Those choices remain implementation/performance evidence work under their existing owners.
+This decision does not select a concrete `PROJECTION_STATE` shard layout, index partition count, chapter-file layout, or exact rollover threshold. Those choices remain implementation/performance evidence work under their existing owners.
 
 ## 7. Retrospective-consumer decoupling
 
@@ -115,23 +118,24 @@ Therefore a later physical Story repartition, by itself, MUST NOT require a sema
 
 ## 8. Relationship to WP-11 and WP-24
 
-WP-11's accepted monolithic family-index baseline and its measured WP-24 partition trigger remain in force. This decision does not prematurely select index partitioning.
+WP-11's accepted monolithic family-index baseline and its measured WP-24 partition trigger remain in force except for the superseded absolute 10 KiB threshold semantics. This decision does not prematurely select index partitioning.
 
-WP-24 and later physical-realization work must, however, treat bounded partitionability as a design requirement for every plausibly unbounded GitHub-backed Story collection. Measurement decides **when and how** a larger machine-facing structure should partition; it does not permit a representation with no safe partition path at all.
+WP-24 and later physical-realization work must, however, treat bounded partitionability as a design requirement for every plausibly unbounded GitHub-backed Story collection. Measurement and the current sizing bands decide **when and how** a larger machine-facing structure should partition; they do not permit a representation with no safe partition path at all.
 
 Story backlog remains derived and bounded per operation. This requirement does not introduce background Chronicler workers, queues, leases, heartbeats, or whole-campaign preload.
 
 ## 9. Required downstream consumption
 
-When Story/Chronicler persistence is planned or implemented, the Source Manifest must include this decision together with the Story integration contract, baseline projection source contracts, WP-11 physical topology, the mutable-artifact size owner decision, publication/currentness owners, and applicable WP-24 performance/scale results.
+When Story/Chronicler persistence is planned or implemented, the Source Manifest must include this decision together with the Story integration contract, baseline projection source contracts, WP-11 physical topology, `2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md`, publication/currentness owners, and applicable WP-24 performance/scale results.
 
 Implementation acceptance must verify at least:
 
-1. no mutable Story file can be published above 10 KiB;
+1. growth-bearing mutable Story files apply the current target/review/review-and-partition sizing bands using exact serialized UTF-8 measurement rather than a universal 10 KiB rejection cutoff;
 2. direct LLM-facing Story material remains bounded and independently retrievable;
 3. every campaign-growing machine-facing collection has a deterministic bounded partition path;
 4. partitioning preserves identity, publication/currentness, reference closure and coverage semantics;
-5. retrospective consumers do not bind to physical Story shard topology.
+5. retrospective consumers do not bind to physical Story shard topology;
+6. required Story material is never truncated or semantically falsified merely to satisfy a target size.
 
 ## 10. Version and current-stage impact
 
@@ -139,6 +143,6 @@ Implementation acceptance must verify at least:
 VERSION_IMPACT: NONE
 ```
 
-This decision changes no implemented machine value, persistent schema, storage generation, Story schema version, projection semantic generation, runtime module version, engine version or package protocol. It constrains future physical realization. Any later implementation that changes a version-bearing layout or schema must perform its own Version Impact Gate.
+This documentation reconciliation changes no implemented machine value, persistent schema, storage generation, Story schema version, projection semantic generation, runtime module version, engine version or package protocol. It constrains future physical realization. Any later implementation that changes a version-bearing layout or schema must perform its own Version Impact Gate.
 
-Recording this decision does not modify the active R2.7 WP-24 gate, authorize WP-24 Step 2, activate Story implementation, start implementation planning, or reopen accepted Story semantics.
+Recording this decision does not activate Story implementation, start implementation planning, authorize WP-27, release execution or gameplay bootstrap. Concrete writer partition topology remains downstream realization work.
