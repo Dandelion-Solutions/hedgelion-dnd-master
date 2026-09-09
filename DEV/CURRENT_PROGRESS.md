@@ -8,18 +8,18 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-26 CLOSED — FINAL INDEPENDENT SENIOR PASS / CLOSURE PUBLICATION
+GLOBAL_STATE: R2.7 WP-27 STEP 1 IN PROGRESS — SOURCE MANIFEST / TASK BRIEF / MANDATORY WIDE-ANGLE CRITIC
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-26 closed — documentation / routing / supersession consistency; awaiting explicit Product Owner stage entry for WP-27
+CURRENT_SLICE: WP-27 Step 1 — final implementation-planning-readiness framing
 
 LAST_CLOSED_UNIT: WP-26 — Documentation / routing / supersession consistency
 NEXT_ELIGIBLE_UNIT: WP-27 Step 1 — Final implementation-planning readiness
-NEXT_AUTHORIZED_UNIT: NONE
-REQUIRED_GATE: explicit Product Owner stage-entry authorization before substantive WP-27 work
+NEXT_AUTHORIZED_UNIT: WP-27 Step 1 — Source Manifest / Task Brief / mandatory Wide-Angle Critic
+REQUIRED_GATE: mandatory independent Senior review after repaired WP-27 Step-1 package
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-final-senior-review.md
-KNOWN_BLOCKERS: NONE FOR WP-26; WP-27 / implementation planning / release execution / gameplay bootstrap remain unauthorized
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
+KNOWN_BLOCKERS: implementation planning / release execution / gameplay bootstrap remain unauthorized; WP-27 Steps 2–8 require the Step-1 Senior gate
 ```
 
 ---
@@ -102,6 +102,19 @@ VERSION_UNCLASSIFIED: []
 VERSION_LEGACY_HITS: []
 ```
 
+Final closed-cursor publication verification:
+
+```text
+WORKFLOW: Validate engine source
+RUN_ID: 34363161606
+RUN_NUMBER: 1946
+HEAD_SHA: ad26f55f9e424c5ce7a0b72991b6b9c9a1da8711
+FULL_MAINTENANCE_AUDIT: PASS
+DEV_UNIT_TESTS: 458 / 458 PASS
+VERSION_UNCLASSIFIED: []
+VERSION_LEGACY_HITS: []
+```
+
 Step-6 / Step-7 accounting:
 
 ```text
@@ -155,20 +168,23 @@ README EDIT AUTHORIZED: NO
 
 ---
 
-# WP-27 entry boundary
+# WP-27 active entry
 
-WP-27 is the final R2.7 implementation-planning-readiness audit. Its eligibility follows WP-26 closure; eligibility is not activation.
+WP-27 is the final numbered R2.7 implementation-planning-readiness audit before mandatory R2.7 final reconciliation.
+
+Product Owner stage-entry authorization was supplied explicitly on 2026-09-09. It authorizes substantive WP-27 Step-1 architecture/audit framing only under the normal Source Manifest / Task Brief / mandatory Wide-Angle Critic process. It does not authorize implementation planning, implementation, release/migration execution or gameplay bootstrap.
 
 ```text
 WP27_ELIGIBLE: YES
-WP27_AUTHORIZED: NO
-WP27_STEP1_STARTED: NO
+WP27_AUTHORIZED: YES
+WP27_STEP1_STARTED: YES
+WP27_STEPS_2_8_AUTHORIZED: NO — MANDATORY STEP-1 SENIOR GATE FIRST
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RELEASE_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-Before substantive WP-27 work, perform the normal fresh Source Manifest / Task Brief / mandatory Wide-Angle Critic cycle after explicit Product Owner stage entry. WP-27 must prove that implementation workstreams, dependency/migration order, test-first obligations, release consequences and remaining unknown classifications are derivable from accepted owners without reopening closed architecture merely because downstream realization is still deferred.
+WP-27 must prove that implementation workstreams, dependency/migration order, test-first obligations, publication/release consequences and remaining unknown classifications are derivable from accepted owners without reopening closed architecture merely because downstream realization is still deferred.
 
-The final closed-cursor publication must itself remain green on its exact HEAD before WP-26 closure is reported externally; that verification is publication evidence, not another architecture gate.
+The immediate worker unit is the repaired Step-1 package. After publication it requires mandatory independent Senior review before Steps 2–8 can proceed.
