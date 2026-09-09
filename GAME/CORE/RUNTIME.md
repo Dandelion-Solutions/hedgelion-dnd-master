@@ -1,6 +1,6 @@
 # DM Runtime Invariants
 
-framework_module_version: 1.0.1
+framework_module_version: 1.0.2
 load_policy: ALWAYS_DURING_GAMEPLAY
 
 `AI_REASONING.md`, `PLAY_POLICY.md`, `DURABILITY_GUARD.md`, `MECHANICS_INTEGRITY.md` and `CHARACTER_READINESS.md` are also always active during gameplay. RUNTIME defines the turn loop; those guard modules own their narrow correctness domains.
@@ -79,13 +79,13 @@ When surviving current-chat evidence still contains the dirty HOT/SOFT working s
 ## Campaign lifecycle gate
 
 Use lifecycle states consistently:
-- `initializing`: setup is unfinished. It may already contain durable pre-live onboarding fiction, a provisional PC, current setup scene and location;
-- `active`: normal mechanics-capable play, only after a valid READY_PC and durable PLAY_READY frontier exist;
-- `paused`: an intentionally stopped campaign that has already reached PLAY_READY/normal play;
+- `initializing`: PLAY_READY is unfinished. It may already contain durable diegetic/provisional gameplay, a provisional PC, current setup scene and location;
+- `active`: normal fully mechanics-capable play, only after a valid READY_PC and durable PLAY_READY frontier exist;
+- `paused`: an intentionally stopped campaign that has already reached PLAY_READY/normal fully active play;
 - `completed`: the campaign/story has actually concluded;
 - `archived`: retained but hidden from the normal menu.
 
-An unfinished setup that is saved or stopped remains `initializing`; do not use `paused` to imply that it once reached playable readiness. A pre-live onboarding vignette is not a true live scene. In CORE text, unqualified `live play` / `live scene` should mean mechanics-capable post-PLAY_READY play unless the text explicitly says pre-live/onboarding.
+An unfinished campaign that is saved or stopped remains `initializing`; do not use `paused` to imply that it once reached full playable readiness. `initializing` is a lifecycle/readiness state, not a no-gameplay state: bounded provisional gameplay may already be real play whenever the attempted interaction's committed dependencies are sufficient. PLAY_READY is the transition to fully active mechanics-capable play, not the beginning of all gameplay.
 
 ## Mechanical model and presentation
 
