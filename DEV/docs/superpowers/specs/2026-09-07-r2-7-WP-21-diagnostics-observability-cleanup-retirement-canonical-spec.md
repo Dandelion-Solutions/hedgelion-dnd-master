@@ -1,10 +1,10 @@
 # R2.7 WP-21 — Diagnostics / Observability / Cleanup / Retirement — Canonical Specification
 
-Status: **CANONICAL CANDIDATE — STEP 8 COMPLETE / FINAL SENIOR REVIEW PENDING**
+Status: **CANONICAL WP-21 RESULT — FINAL SENIOR PASS / CLOSED**
 
 Date: 2026-09-07
 
-This is the final worker-produced implementation-facing WP-21 architecture owner after Steps 2–8. It composes existing HDM owners; it does not replace native lifecycle/currentness, access control, disclosure, persistence, recovery, LIVE, Story/planning, migration or repository policy. It becomes final accepted WP-21 authority only after the mandatory independent final Senior review.
+This is the final implementation-facing WP-21 architecture owner after Steps 2–8 and mandatory independent final Senior review. It composes existing HDM owners; it does not replace native lifecycle/currentness, access control, disclosure, persistence, recovery, LIVE, Story/planning, migration or repository policy. WP-21 is closed; earlier design/review artifacts remain provenance.
 
 Design provenance:
 
@@ -344,7 +344,7 @@ Exact test layout belongs to later implementation planning.
 
 ---
 
-## 11. Final worker disposition
+## 11. Final disposition
 
 ```text
 SELECTED_ARCHITECTURE:
@@ -364,8 +364,9 @@ PO_DECISION_REQUIRED: NO
 NEEDS_PO: NONE
 
 WP21_STEP8_COMPLETE: YES
-WP21_FINAL_SENIOR_REVIEW: REQUIRED / PENDING
-WP22_STARTED: NO
+WP21_FINAL_SENIOR_REVIEW: PASS
+WP21_FINAL_CLOSURE: PASS
+WP21_CLOSED: YES
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 ```
