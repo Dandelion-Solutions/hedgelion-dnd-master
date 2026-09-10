@@ -1,6 +1,6 @@
 # R2.7 WP-27 — Final implementation-planning readiness — mini-report
 
-Статус: **IN_PROGRESS — STEP 1 CLOSED / SENIOR SELF-RE-REVIEW PASS / STEP 2 NEXT**
+Статус: **IN_PROGRESS — STEP 2 S2-A CLOSED / S2-B NEXT**
 
 Дата: 2026-09-09
 
@@ -294,13 +294,32 @@ IMPLEMENTATION_PLANNING_STARTED: NO
 
 ---
 
+## Step-2 durable checkpoints
+
+### S2-A — control plane and inventory initialization
+
+Создан отдельный Step-2 evidence ledger:
+
+- `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-2-evidence-ledger.md`.
+
+Он явно разделяет source-item, readiness/future-work composition и
+machine-to-owner reverse-conformance ledger; фиксирует admitted source families,
+включая `GAME/TEMPLATE/*`, `GAME/ENGINE_VERSION.yaml` и
+`DEV/ENGINE_DEVELOPMENT.yaml`; и инициализирует обязательные completion counters
+без ложного закрытия domain.
+
+```text
+S2_A_CONTROL_PLANE: COMPLETE
+VERSION_IMPACT: NONE
+NEXT_SLICE: S2-B — WP-01..WP-07 bounded owner-chain recovery
+```
+
 ## Точка продолжения
 
 ```text
-WP-27 STEP 2
--> extract owner/evidence obligations item-wise into readiness accounting
--> preserve R27-E01..E07 and high-risk probes
--> derive architecture->machine and machine->architecture realization state
--> auto-continue under existing WP-27 authorization
--> stop only for a genuine human-owned decision or the mandatory Step-8 Senior gate
+WP-27 STEP 2 / S2-B
+-> recover WP-01..WP-07 through their asymmetric owner chains
+-> extract surviving material items without filename-symmetry archaeology
+-> map each item to an explicit terminal readiness/no-work route
+-> publish the next durable slice checkpoint
 ```
