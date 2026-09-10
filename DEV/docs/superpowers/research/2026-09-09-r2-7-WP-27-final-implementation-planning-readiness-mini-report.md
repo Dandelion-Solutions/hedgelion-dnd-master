@@ -1,6 +1,6 @@
 # R2.7 WP-27 — Final implementation-planning readiness — mini-report
 
-Статус: **IN_PROGRESS — STEP 2 S2-H CLOSED / S2-I NEXT**
+Статус: **IN_PROGRESS — STEP 2 S2-I CLOSED / S2-J NEXT**
 
 Дата: 2026-09-09
 
@@ -442,11 +442,30 @@ VERSION_IMPACT: NONE
 NEXT_SLICE: S2-I — Step-2 internal completeness audit
 ```
 
+### S2-I — Step-2 internal completeness audit
+
+Internal admission gate independently rechecked every S2-I predicate against the
+complete source, readiness and machine ledgers. No unresolved human-owned
+architecture or Product Owner decision was discovered.
+
+```text
+SOURCE_ITEM_COUNT: 224
+READINESS_RECORD_COUNT: 146
+MATERIAL_MACHINE_RESPONSIBILITIES: 59 / 59
+MACHINE_EXCEPTIONS: 14 / 31 MEMBERS
+HIGH_RISK_PROBES: 8 / 8 PASS
+S2_I_PREDICATES: 17 / 17 PASS
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+VERSION_IMPACT: NONE
+NEXT_SLICE: S2-J — durable Step-2 closure checkpoint
+```
+
 ## Точка продолжения
 
 ```text
-WP-27 STEP 2 / S2-I
--> mechanically and semantically audit every Step-2 admission criterion
--> repair any evidence gap before a completion claim
--> publish only a passing S2-I gate, then perform S2-J closure
+WP-27 STEP 2 / S2-J
+-> publish final exact counts/lists and verified closure state
+-> keep WP27_STEP3: NOT_STARTED
+-> stop for independent review; do not begin Step 3
 ```

@@ -1,6 +1,6 @@
 # R2.7 WP-27 Step 2 — Evidence Ledger
 
-Status: **IN PROGRESS — S2-H COMPLETE / S2-I NEXT**
+Status: **IN PROGRESS — S2-I COMPLETE / S2-J NEXT**
 
 Date: 2026-09-10
 
@@ -16,7 +16,7 @@ Current canonical owners and accepted amendments remain controlling.
 
 ```text
 WP27_STEP2: IN_PROGRESS
-CURRENT_SLICE: S2-I — Step-2 internal completeness audit
+CURRENT_SLICE: S2-J — durable Step-2 closure checkpoint
 WP27_STEP3: NOT_STARTED
 IMPLEMENTATION_PLANNING: NOT_STARTED
 IMPLEMENTATION: NOT_STARTED
@@ -124,7 +124,7 @@ public owner/decision route.
 
 ```text
 WP01_07: 64 / 64 COMPLETE — S2-B owner-chain accounting complete; readiness composition remains prohibited until S2-F
-WP08_26: 0 / PENDING
+WP08_26: 68 / 68 COMPLETE — S2-C canonical-owner accounting complete; readiness composition remains prohibited until S2-F
 PO001_010: 10 / 10 COMPLETE — S2-D; readiness composition remains prohibited until S2-F
 ROUND2_D_S_82: 82 / 82 COMPLETE — S2-E item-level reconciliation; readiness composition remains prohibited until S2-F
 ARCH_TO_READINESS: 146 / 146 COMPLETE — one lossless readiness record per pending source item
@@ -2899,5 +2899,95 @@ MIGRATION_EXECUTION_STARTED: NO
 RELEASE_EXECUTION_STARTED: NO
 S2_I: NOT RUN
 S2_J: NOT RUN
+CURSOR_OR_MINI_REPORT_UPDATED: NO
+```
+
+## 13. S2-I internal completeness audit
+
+Audit baseline: `34647296c767b518d62cda1bee37bc675ad09524`.
+
+This is the S2-I evidence-admission result for the controlling S2-I predicates
+in the execution amendment lines 542-560. It neither marks Step 2 complete nor
+starts S2-J. Section 12.6 remains the historical S2-H close snapshot; the
+task-local cursor and mini-report are intentionally unchanged.
+
+### 13.1 Mechanical evidence repair
+
+The completion-counter entry for `WP08_26` was stale (`0 / PENDING`) despite
+the complete S2-C item ledger. It is corrected above to `68 / 68 COMPLETE`.
+No semantic owner, machine contract, cursor, mini-report, version value or
+runtime artifact changed.
+
+### 13.2 Exact audited sets
+
+```text
+SOURCE_ITEMS: 224 / 224
+  WP01_07: 64 / 64
+    [WP01=6, WP02=12, WP03=12, WP04=10, WP05=15, WP06=2, WP07=7]
+  WP08_26: 68 / 68
+    [WP08=4, WP09=4, WP10=5, WP11=2, WP12=3, WP13=3, WP14=3,
+     WP15=3, WP16=3, WP17=3, WP18=4, WP19=3, WP20=4, WP21=3,
+     WP22=4, WP23=3, WP24=5, WP25=5, WP26=4]
+  PO: 10 / 10
+    [PO001-01, PO002-01, PO003-01, PO004-01, PO005-01, PO006-01,
+     PO007-01, PO008-01, PO009-01, PO010-01]
+  ROUND2: 82 / 82 exactly once
+    [D01..D24, S01..S58; duplicates=[]]
+
+READINESS: 146 / 146
+  [R27-R001..R27-R146; duplicates=[]; source backreferences=146 / 146]
+  accepted-owner refs=146 / 146
+  Version Impact fields=146 / 146
+  migration/update consequence fields=146 / 146
+  deterministic/scenario/empirical proof fields=146 / 146
+  architecture-blocker results=146 / 146 PASS
+
+MACHINE: 59 / 59 material responsibilities classified
+  [R27-M01..R27-M19]
+  exceptions: 14 / 14 records; 31 / 31 members
+  [R27-X01..R27-X14]
+  unowned/unclassified=[]
+  mixed groups without breakdown=[]
+
+NO_WORK_TERMINALS: 78 / 78
+  exact source-ID list: Section 10.2 (`WP01-F04` through `S58` as enumerated
+  there); trigger loss=0.
+
+HIGH_RISK_PROBES: 8 / 8 PASS
+  [R27-P01, R27-P02, R27-P03, R27-P04, R27-P05, R27-P06, R27-P07, R27-P08]
+
+ROUND2_DELTAS: 3 / 3 reconciled
+  [S14 -> R27-R131, S53 -> NO_WORK_ALREADY_REALIZED, D15 -> NO_WORK_DEFERRED]
+```
+
+### 13.3 Predicate results
+
+| Controlling predicate | Result | Audit evidence |
+|---|---|---|
+| WP01_07 source items complete | PASS | 64/64; per-WP list in section 13.2; source records in section 6 |
+| WP08_26 source items complete | PASS | 68/68; per-WP list in section 13.2; source records in section 7 |
+| PO001_010 individually routed | PASS | `PO001-01..PO010-01`, each with accepted owner, terminal route and disposition in section 8 |
+| 82/82 D/S records present exactly once | PASS | `D01..D24`, `S01..S58`; duplicates `[]` |
+| S14/S53/D15 changes reconciled | PASS | `S14 -> R27-R131`; `S53 -> NO_WORK_ALREADY_REALIZED`; `D15 -> NO_WORK_DEFERRED`; section 9.2 preserves their current deltas |
+| all material source items have readiness/no-work terminal route | PASS | 224/224 terminal routes; 146 readiness routes plus 78 explicit no-work terminals; missing `[]` |
+| all readiness records have accepted owner(s) | PASS | 146/146 nonempty `source_owner_refs[]`; missing `[]` |
+| all material machine responsibilities have owner/class | PASS | 59/59 over `R27-M01..R27-M19`; unowned/unclassified `[]` |
+| all mixed machine groups have exception breakdown | PASS | 14/14 `R27-X01..R27-X14` records covering 31/31 members; missing breakdowns `[]` |
+| all version/migration consequences classified | PASS | 146/146 future Version Impact Gate and migration/update fields; no bump or migration selected by this evidence audit |
+| all proof channels classified without over-credit | PASS | 146/146 readiness proof fields; probe `R27-P05` confirms source-CI, deterministic, scenario, empirical and release channels remain non-substitutable |
+| all defer/dormant/rejected triggers preserved | PASS | 78/78 explicit no-work terminals; trigger loss=0; section 12.4 retains the exact activation classes |
+| all high-risk probes completed | PASS | `R27-P01..R27-P08`: 8/8 PASS with linked source/readiness/machine records |
+| no closed already-realized repair reintroduced as future work | PASS | `CLOSED_REPAIRS_REINTRODUCED_AS_WORK: 0`; all 34 `NO_WORK_ALREADY_REALIZED` records retain empty readiness IDs |
+| no private/external evidence promoted to public owner without accepted public route | PASS | `WP01-F05 -> R27-R004` preserves the prohibition; `PO007-01` retains the accepted public-provenance route; `R27-M18` is policy-enforcement support, not authority |
+| no unresolved architecture-blocker candidate hidden as implementation detail | PASS | all 146 readiness blocker results PASS; `R27-P01..R27-P08` report zero blockers; candidate lists in sections 10-12 are `[]` |
+
+```text
+S2_I: PASS — EVIDENCE ADMISSION ONLY
+S2_J: NOT STARTED
+WP27_STEP2: IN_PROGRESS
+WP27_STEP3: NOT_STARTED
+VERSION_IMPACT: NONE — evidence-ledger audit and one stale-counter repair only;
+  no version-bearing semantic, machine, runtime, schema, catalog, protocol, or
+  metadata owner changed.
 CURSOR_OR_MINI_REPORT_UPDATED: NO
 ```
