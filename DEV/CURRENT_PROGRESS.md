@@ -8,14 +8,14 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-27 STEP 1 CLOSED / SENIOR SELF-RE-REVIEW PASS — STEP 2 ACTIVE
+GLOBAL_STATE: R2.7 WP-27 STEP 2 COMPLETE — STEP 3 NOT STARTED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-27 Step 2 — owner/evidence extraction into item-level implementation-planning-readiness accounting
+CURRENT_SLICE: WP-27 Step 2 / S2-J — durable closure complete; Step 3 not started
 
-LAST_CLOSED_UNIT: WP-27 Step 1 — Source Manifest / Task Brief / mandatory Wide-Angle Critic / Senior gate
-NEXT_ELIGIBLE_UNIT: WP-27 Step 2 — item-level evidence extraction and readiness accounting
-NEXT_AUTHORIZED_UNIT: WP-27 Step 2 — AUTO_CONTINUE under existing Product Owner WP-27 stage-entry authorization
+LAST_CLOSED_UNIT: WP-27 Step 2 — item-level source/readiness/machine accounting and S2-J durable closure
+NEXT_ELIGIBLE_UNIT: WP-27 Step 3 — Decision Brief
+NEXT_AUTHORIZED_UNIT: WP-27 Step 3 — AUTO_CONTINUE under existing Product Owner WP-27 stage-entry authorization
 REQUIRED_GATE: stop only for a genuine human-owned decision; otherwise mandatory Step-8 Senior review after Steps 2–8
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
@@ -237,6 +237,50 @@ RELEASE_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-Step 2 must now extract item-level owner/evidence obligations and realization/proof/activation classifications. No separate Product Owner approval is required for this mechanical/deep-work continuation unless a genuine human-owned decision is discovered.
+Step 2 is closed by its S2-J durable checkpoint using the complete item-level
+owner/evidence obligations and realization/proof/activation classifications. No
+separate Product Owner approval was required because no genuine human-owned
+decision was discovered. The current assignment stops here: Step 3 is not
+started.
+
+Step-2 closure report:
+
+```text
+STEP2_FINAL_HEAD: UNCOMMITTED — current committed checkpoint
+  309fc3ac63e87a9d89f7436149c005c589b0b196; no closure commit or remote
+  publication was made by explicit task instruction
+SOURCE_ITEM_COUNT: 224
+WP01_07_ITEM_COUNT: 64
+WP08_26_ITEM_COUNT: 68
+PO001_010: 10/10
+ROUND2_82: 82/82
+ROUND2_MISSING: []
+ROUND2_DUPLICATES: []
+READINESS_RECORD_COUNT: 146
+SOURCE_ITEMS_WITHOUT_TERMINAL_ROUTE: []
+MACHINE_GROUP_OR_RECORD_COUNT: 19 groups / 59 material responsibilities
+MACHINE_EXCEPTIONS_COUNT: 14 exception records / 31 exception members
+MACHINE_UNOWNED_OR_UNCLASSIFIED: []
+MIXED_GROUPS_WITHOUT_BREAKDOWN: []
+HIGH_RISK_PROBES: 8/8 PASS
+ARCHITECTURE_BLOCKER_CANDIDATES: []
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+VERSION_IMPACT_OF_STEP2_DOCUMENTATION: NONE
+VERIFICATION_EVIDENCE:
+  fresh remote currentness: `git fetch --prune origin`; local HEAD and
+    `origin/v1/engine-rearchitecture` both
+    `309fc3ac63e87a9d89f7436149c005c589b0b196`
+  `DEV/TOOLS/run_maintenance_audit.py`: PASS
+  full DEV unit suite: 456/458 PASS; 2 expected out-of-scope failures:
+    dirty-worktree provenance assertion and unclassified tracked `.agents/`
+    version-census hits
+  `git diff --check`: PASS
+  remote read-back: NOT APPLICABLE — no commit or publication was permitted
+WP27_STEP2: COMPLETE
+WP27_STEP3: NOT_STARTED
+```
 
 WP-27 closure will still require the mandatory Step-8 Senior gate. R2.7 remains open after WP-27 closure until final reconciliation completes the global matrices, forward obligations, 82-item recheck, whole-project adversarial composition, 24 exit criteria and implementation-planning entry resolution.

@@ -1,6 +1,6 @@
 # R2.7 WP-27 Step 2 — Evidence Ledger
 
-Status: **IN PROGRESS — S2-I COMPLETE / S2-J NEXT**
+Status: **COMPLETE — S2-J DURABLE STEP-2 CLOSURE RECORDED**
 
 Date: 2026-09-10
 
@@ -15,8 +15,8 @@ Current canonical owners and accepted amendments remain controlling.
 ## 1. Scope and hard boundary
 
 ```text
-WP27_STEP2: IN_PROGRESS
-CURRENT_SLICE: S2-J — durable Step-2 closure checkpoint
+WP27_STEP2: COMPLETE
+CURRENT_SLICE: S2-J — durable Step-2 closure checkpoint complete
 WP27_STEP3: NOT_STARTED
 IMPLEMENTATION_PLANNING: NOT_STARTED
 IMPLEMENTATION: NOT_STARTED
@@ -2983,11 +2983,65 @@ ROUND2_DELTAS: 3 / 3 reconciled
 
 ```text
 S2_I: PASS — EVIDENCE ADMISSION ONLY
-S2_J: NOT STARTED
-WP27_STEP2: IN_PROGRESS
+S2_J: NOT STARTED AT S2-I AUDIT
+WP27_STEP2: IN_PROGRESS AT S2-I AUDIT
 WP27_STEP3: NOT_STARTED
 VERSION_IMPACT: NONE — evidence-ledger audit and one stale-counter repair only;
   no version-bearing semantic, machine, runtime, schema, catalog, protocol, or
   metadata owner changed.
-CURSOR_OR_MINI_REPORT_UPDATED: NO
+CURSOR_OR_MINI_REPORT_UPDATED: NO AT S2-I AUDIT
 ```
+
+## 14. S2-J durable Step-2 closure checkpoint
+
+S2-I passed all controlling predicates. This section is the required durable
+closure report under the Step-2 execution amendment. The task explicitly
+prohibits a commit or push, so the final committed checkpoint remains the
+baseline and the S2-J documentation updates are intentionally uncommitted.
+
+```text
+STEP2_FINAL_HEAD: UNCOMMITTED — current committed checkpoint
+  309fc3ac63e87a9d89f7436149c005c589b0b196; no closure commit or remote
+  publication was made by explicit task instruction
+SOURCE_ITEM_COUNT: 224
+WP01_07_ITEM_COUNT: 64
+WP08_26_ITEM_COUNT: 68
+PO001_010: 10/10
+ROUND2_82: 82/82
+ROUND2_MISSING: []
+ROUND2_DUPLICATES: []
+READINESS_RECORD_COUNT: 146
+SOURCE_ITEMS_WITHOUT_TERMINAL_ROUTE: []
+MACHINE_GROUP_OR_RECORD_COUNT: 19 groups / 59 material responsibilities
+MACHINE_EXCEPTIONS_COUNT: 14 exception records / 31 exception members
+MACHINE_UNOWNED_OR_UNCLASSIFIED: []
+MIXED_GROUPS_WITHOUT_BREAKDOWN: []
+HIGH_RISK_PROBES: 8/8 PASS
+ARCHITECTURE_BLOCKER_CANDIDATES: []
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+VERSION_IMPACT_OF_STEP2_DOCUMENTATION: NONE — evidence-ledger, mini-report,
+  task-local cursor and current-progress bookkeeping only; no version-bearing
+  semantic, machine, runtime, schema, catalog, protocol, or metadata owner changed
+VERIFICATION_EVIDENCE:
+  fresh remote currentness: `git fetch --prune origin`; local HEAD and
+    `origin/v1/engine-rearchitecture` both
+    `309fc3ac63e87a9d89f7436149c005c589b0b196`
+  `DEV/TOOLS/run_maintenance_audit.py`: PASS
+  `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m unittest
+    discover -s DEV/TESTS -v`: 456/458 PASS; 2 expected out-of-scope failures:
+    `test_clean_checkout_metadata_records_exact_head` sees this explicitly
+    uncommitted documentation worktree as `dirty_worktree`; and
+    `test_census_has_zero_unclassified_hits` has 1,077 tracked `.agents/`
+    version-like hits with no classifier
+  `git diff --check`: PASS
+  remote read-back: NOT APPLICABLE — no commit or publication was permitted
+WP27_STEP2: COMPLETE
+WP27_STEP3: NOT_STARTED
+```
+
+S2-J changes only the evidence/cursor state. It does not start Step 3,
+implementation planning, implementation, release execution, migration execution
+or gameplay bootstrap.
