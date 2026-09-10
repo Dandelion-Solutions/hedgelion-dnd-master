@@ -25,14 +25,14 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-26
 CURRENT_DOMAIN: WP-27
 CURRENT_DOMAIN_TOPIC: Final implementation-planning readiness
-CURRENT_SLICE: WP-27 STEP 2 — OWNER / EVIDENCE EXTRACTION INTO ITEM-LEVEL READINESS ACCOUNTING
+CURRENT_SLICE: WP-27 STEP 8 — FINAL CANONICALIZATION COMPLETE / MANDATORY SENIOR REVIEW PENDING
 NEXT_DOMAIN: R2.7 FINAL RECONCILIATION — ONLY AFTER WP-27 CLOSURE
-OWNER_GATE: NONE CURRENTLY; AUTO_CONTINUE UNLESS A GENUINE HUMAN-OWNED DECISION APPEARS
+OWNER_GATE: MANDATORY WP-27 SENIOR REVIEW PENDING
 FINAL_RECONCILIATION: NOT_STARTED
 
-R2_7_STATUS: WP-26 CLOSED / WP-27 STEP 1 CLOSED / STEP 2 ACTIVE
+R2_7_STATUS: WP-26 CLOSED / WP-27 STEPS 1-8 COMPLETE / STEP-8 SENIOR REVIEW PENDING
 R2_7_WP26: CLOSED / FINAL INDEPENDENT SENIOR PASS
-R2_7_WP27: AUTHORIZED / STEP 1 SENIOR SELF-RE-REVIEW PASS / STEP 2 ACTIVE
+R2_7_WP27: STEPS 1-8 COMPLETE / FINAL SENIOR REVIEW PENDING
 ```
 
 ---
@@ -145,7 +145,7 @@ POST-STEP1 CONTINUATION: AUTO_CONTINUE under existing stage authorization; no ar
 
 ---
 
-## WP-27 current Step 2
+## WP-27 completed Steps 2-8
 
 Owning WP-27 questions remain:
 
@@ -154,7 +154,12 @@ Owning WP-27 questions remain:
 3. every remaining unknown classified as implementation detail, verification/empirical/release obligation, safe deferred trigger, stale debt, rejected/out-of-scope or owner-resolved trade-off;
 4. no unresolved architecture question whose answer could materially change implementation topology, persistent data model, interfaces, authority or migration strategy.
 
-Step-2 evidence contract is `R27-E01..R27-E07` from the Task Brief plus Senior repair amendment.
+Step-2 evidence contract `R27-E01..R27-E07` is complete. The durable result and
+42-record composite ledger are:
+
+- `DEV/docs/superpowers/research/2026-09-10-r2-7-WP-27-step-2-bounded-wp01-07-owner-extraction.md`;
+- `DEV/docs/superpowers/research/2026-09-10-r2-7-WP-27-step-2-evidence-reconciliation.md`;
+- `DEV/docs/superpowers/research/2026-09-10-r2-7-WP-27-step-2-readiness-ledger.md`.
 
 Required high-risk probes remain:
 
@@ -174,8 +179,10 @@ Current authorization boundary:
 WP27_ELIGIBLE: YES
 WP27_AUTHORIZED: YES
 WP27_STEP1_CLOSED: YES
-WP27_STEP2_ACTIVE: YES
-WP27_STEPS_2_8_AUTHORIZED: YES — EXISTING STAGE AUTHORIZATION / AUTO_CONTINUE
+WP27_STEP2_CLOSED: YES
+WP27_STEPS_2_8_COMPLETE: YES
+WP27_STEP8_COMPLETE: YES
+WP27_FINAL_SENIOR_REVIEW: PENDING
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RELEASE_EXECUTION_STARTED: NO
@@ -187,9 +194,9 @@ REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ## Current gate
 
 ```text
-NEXT_ELIGIBLE_UNIT: WP-27 Step 2 — owner/evidence extraction
-NEXT_AUTHORIZED_UNIT: WP-27 Step 2 — AUTO_CONTINUE
-REQUIRED_GATE: genuine human-owned decision only if discovered; otherwise mandatory Step-8 Senior review
+NEXT_ELIGIBLE_UNIT: Mandatory WP-27 Senior review
+NEXT_AUTHORIZED_UNIT: Mandatory WP-27 Senior review; no automatic continuation before GO
+REQUIRED_GATE: Senior review before R2.7 final reconciliation
 FINAL_RECONCILIATION_AFTER_WP27: REQUIRED
 IMPLEMENTATION_PLANNING_BEFORE_FINAL_RECONCILIATION: FORBIDDEN
 ```

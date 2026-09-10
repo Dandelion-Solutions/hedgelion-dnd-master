@@ -1,8 +1,8 @@
 # R2.7 WP-27 — Final implementation-planning readiness — mini-report
 
-Статус: **IN_PROGRESS — STEP 1 CLOSED / SENIOR SELF-RE-REVIEW PASS / STEP 2 NEXT**
+Статус: **STEP 8 COMPLETE — MANDATORY SENIOR REVIEW PENDING**
 
-Дата: 2026-09-09
+Дата: 2026-09-10
 
 Глобальный current-progress owner: `DEV/CURRENT_PROGRESS.md`.
 
@@ -36,7 +36,9 @@ Worker Wide-Angle Critic первоначально нашёл 11 significant + 
 
 Whole-Project Senior self-review по прямому указанию Product Owner затем нашёл ещё 4 significant framing defects. Все четыре были механически исправлены без изменения accepted architecture. Senior self-re-review повторно проверил cross-system seams и дал `PASS / GO`.
 
-Step 1 закрыт. Existing WP-27 stage-entry authorization возобновляет нормальный `AUTO_CONTINUE` в Step 2; implementation planning по-прежнему запрещён до полного WP-27 closure и последующего R2.7 final reconciliation.
+Step 1 закрыт. Steps 2-8 now complete under the existing WP-27 stage authorization;
+implementation planning remains forbidden until the mandatory WP-27 Senior review
+and subsequent R2.7 final reconciliation.
 
 ---
 
@@ -86,7 +88,7 @@ all 82 R2.1-R2.6 DIAMOND / STRONG dispositions
 WP-26: CLOSED / FINAL SENIOR PASS
 WP-27: AUTHORIZED
 WP-27 STEP 1: CLOSED / SENIOR SELF-RE-REVIEW PASS
-WP-27 STEP 2: NEXT ACTIVE SLICE UNDER EXISTING STAGE AUTHORIZATION
+WP-27 STEPS 2-8: COMPLETE / STEP-8 SENIOR REVIEW PENDING
 IMPLEMENTATION_PLANNING: NOT STARTED
 IMPLEMENTATION: NOT STARTED
 RELEASE/MIGRATION EXECUTION: NOT STARTED
@@ -97,13 +99,22 @@ R2.7 owner clarification требует whole-project coverage, а не Round-2-
 
 R2.7 execution protocol требует отдельный mini-report для каждого WP и использует current WP mini-report как часть fresh-session recovery. Этот файл является WP-27 domain-local checkpoint.
 
-После Step-1 Senior GO нормальный process — `AUTO_CONTINUE`; отдельный approval pause не создаётся, если не обнаружено реального human-owned decision.
+Current WP-27 evidence/canonical package:
+
+- `DEV/docs/superpowers/research/2026-09-10-r2-7-WP-27-step-2-bounded-wp01-07-owner-extraction.md`;
+- `DEV/docs/superpowers/research/2026-09-10-r2-7-WP-27-step-2-evidence-reconciliation.md`;
+- `DEV/docs/superpowers/research/2026-09-10-r2-7-WP-27-step-2-readiness-ledger.md`;
+- `DEV/docs/superpowers/specs/2026-09-10-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`;
+- `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-8-canonicalization.md`.
+
+The Step-1 `AUTO_CONTINUE` rule was applied through Steps 2-8 without an
+artificial approval pause. The current mandatory gate is the final Senior review.
 
 ---
 
 ## Architecture -> machine
 
-Step 1 не выполнял Step-2 item-level mapping, но зафиксировал обязательный формат дальнейшего доказательства:
+Step 2 completed the required item-level mapping. The durable evidence format is:
 
 ```text
 accepted owner obligation
@@ -214,7 +225,9 @@ NO README opportunistic edit
 
 ## Implementation obligations
 
-Step 1 не активировал конкретные implementation workstreams. Step 2 должен item-wise классифицировать surviving obligations across WP-01..26 + Round-1/Round-2 owners/PO routes/current machine.
+Step 2 classified surviving obligations across WP-01..26, Round-1/Round-2 owners,
+PO routes and current machine responsibilities. The 42-record composite ledger is
+the detailed item-level expansion; it does not authorize implementation.
 
 High-risk probes обязательно сохраняются:
 
@@ -288,7 +301,9 @@ WP27_STEP1_SENIOR_SELF_REVIEW: HOLD / 4 SIGNIFICANT
 WP27_STEP1_SENIOR_REPAIRS: 4 / 4 CLOSED
 WP27_STEP1_SENIOR_SELF_REREVIEW: PASS / GO
 WP27_STEP1_CLOSED: YES
-WP27_STEP2_STARTED: NO AT THIS CHECKPOINT
+WP27_STEP2: CLOSED
+WP27_STEPS3_8: COMPLETE
+WP27_FINAL_SENIOR_REVIEW: PENDING
 IMPLEMENTATION_PLANNING_STARTED: NO
 ```
 
@@ -297,10 +312,7 @@ IMPLEMENTATION_PLANNING_STARTED: NO
 ## Точка продолжения
 
 ```text
-WP-27 STEP 2
--> extract owner/evidence obligations item-wise into readiness accounting
--> preserve R27-E01..E07 and high-risk probes
--> derive architecture->machine and machine->architecture realization state
--> auto-continue under existing WP-27 authorization
--> stop only for a genuine human-owned decision or the mandatory Step-8 Senior gate
+MANDATORY WP-27 SENIOR REVIEW
+-> if GO, begin R2.7 final reconciliation
+-> do not begin implementation planning before the final reconciliation entry gate
 ```

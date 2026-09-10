@@ -8,18 +8,18 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-27 STEP 1 CLOSED / SENIOR SELF-RE-REVIEW PASS — STEP 2 ACTIVE
+GLOBAL_STATE: R2.7 WP-27 STEPS 1-8 COMPLETE — MANDATORY SENIOR REVIEW PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-27 Step 2 — owner/evidence extraction into item-level implementation-planning-readiness accounting
+CURRENT_SLICE: WP-27 Step 8 — canonicalization complete; mandatory Senior review pending
 
-LAST_CLOSED_UNIT: WP-27 Step 1 — Source Manifest / Task Brief / mandatory Wide-Angle Critic / Senior gate
-NEXT_ELIGIBLE_UNIT: WP-27 Step 2 — item-level evidence extraction and readiness accounting
-NEXT_AUTHORIZED_UNIT: WP-27 Step 2 — AUTO_CONTINUE under existing Product Owner WP-27 stage-entry authorization
-REQUIRED_GATE: stop only for a genuine human-owned decision; otherwise mandatory Step-8 Senior review after Steps 2–8
+LAST_CLOSED_UNIT: WP-27 Step 8 — final readiness canonicalization and self-review
+NEXT_ELIGIBLE_UNIT: Mandatory WP-27 Senior review
+NEXT_AUTHORIZED_UNIT: Mandatory WP-27 Senior review; no automatic continuation before GO
+REQUIRED_GATE: mandatory Senior review; R2.7 final reconciliation only after WP-27 GO
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
-KNOWN_BLOCKERS: implementation planning / release execution / gameplay bootstrap remain unauthorized; R2.7 final reconciliation remains mandatory after WP-27 closure
+KNOWN_BLOCKERS: mandatory WP-27 Senior review; implementation planning / release execution / gameplay bootstrap remain unauthorized; R2.7 final reconciliation remains mandatory after WP-27 closure
 ```
 
 ---
@@ -230,13 +230,57 @@ Current authorization boundary:
 WP27_ELIGIBLE: YES
 WP27_AUTHORIZED: YES
 WP27_STEP1_CLOSED: YES
-WP27_STEPS_2_8_AUTHORIZED: YES — EXISTING STAGE AUTHORIZATION RESUMES / AUTO_CONTINUE
+WP27_STEPS_2_8_COMPLETE: YES
+WP27_STEP8_COMPLETE: YES
+WP27_FINAL_SENIOR_REVIEW: PENDING
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 RELEASE_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-Step 2 must now extract item-level owner/evidence obligations and realization/proof/activation classifications. No separate Product Owner approval is required for this mechanical/deep-work continuation unless a genuine human-owned decision is discovered.
+Steps 2-8 extracted and resolved item-level owner/evidence obligations and
+realization/proof/activation classifications. No separate Product Owner approval
+was required; no genuine human-owned decision was discovered.
 
-WP-27 closure will still require the mandatory Step-8 Senior gate. R2.7 remains open after WP-27 closure until final reconciliation completes the global matrices, forward obligations, 82-item recheck, whole-project adversarial composition, 24 exit criteria and implementation-planning entry resolution.
+WP-27 closure now requires the mandatory final Senior review. R2.7 remains open
+until final reconciliation completes the global matrices, forward obligations,
+82-item recheck, whole-project adversarial composition, 24 exit criteria and
+implementation-planning entry resolution.
+
+## WP-27 Steps 2-8 closure checkpoint
+
+Current WP-27 package:
+
+- `DEV/docs/superpowers/research/2026-09-10-r2-7-WP-27-step-2-bounded-wp01-07-owner-extraction.md`;
+- `DEV/docs/superpowers/research/2026-09-10-r2-7-WP-27-step-2-evidence-reconciliation.md`;
+- `DEV/docs/superpowers/research/2026-09-10-r2-7-WP-27-step-2-readiness-ledger.md`;
+- `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-3-decision-brief.md`;
+- `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-4-collaborative-review.md`;
+- `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-5-candidate-readiness-spec.md`;
+- `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-6-adversarial-review.md`;
+- `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-7-resolution.md`;
+- `DEV/docs/superpowers/specs/2026-09-10-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`;
+- `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-8-canonicalization.md`.
+
+```text
+WP27_STEP2: CLOSED
+WP27_STEPS3_5: COMPLETE
+WP27_STEP6_BLOCKING_FOUND: 1 / RESOLVED
+WP27_STEP6_SIGNIFICANT_FOUND: 2 / RESOLVED
+WP27_STEP7_FINDINGS_OPEN: 0
+WP27_STEP8: COMPLETE
+WP27_FINAL_SENIOR_REVIEW: PENDING
+R2_7_FINAL_RECONCILIATION: NOT_STARTED
+HUMAN_DECISION_REQUIRED: NO
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+IMPLEMENTATION_PLANNING_STARTED: NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
+RELEASE_EXECUTION_STARTED: NO
+REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
+VERSION_IMPACT: NONE
+```
+
+The canonical WP-27 readiness specification preserves the 42-record composite
+ledger, the 459-artifact machine census, the complete WP/PO/82-item accounting,
+the PO-010 bounded-writer obligation and all negative/deferred proof boundaries.
