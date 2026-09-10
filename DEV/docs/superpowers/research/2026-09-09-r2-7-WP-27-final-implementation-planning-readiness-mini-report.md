@@ -1,6 +1,6 @@
 # R2.7 WP-27 — Final implementation-planning readiness — mini-report
 
-Статус: **IN_PROGRESS — STEP 2 S2-A CLOSED / S2-B NEXT**
+Статус: **IN_PROGRESS — STEP 2 S2-B CLOSED / S2-C NEXT**
 
 Дата: 2026-09-09
 
@@ -314,12 +314,30 @@ VERSION_IMPACT: NONE
 NEXT_SLICE: S2-B — WP-01..WP-07 bounded owner-chain recovery
 ```
 
+### S2-B — WP-01..WP-07 bounded owner-chain recovery
+
+Асимметричные ранние WP не были искусственно приведены к позднему шаблону
+"one canonical file per WP". Для каждого использован маршрут
+`closure/provenance -> current owner -> later amendment -> current consumer`.
+Созданы 64 source-item records с сохранением implementation/proof/defer/negative
+semantics и terminal route до будущего S2-F composition.
+
+```text
+WP01_07_SOURCE_ITEMS: 64 / 64 INDIVIDUALLY ACCOUNTED
+PENDING_S2_F_COMPOSITION: 54
+EXPLICIT_NO_WORK_TERMINALS: 10
+WP01_07_RESIDUAL_OWNER_GAPS: 0
+FILENAME_SYMMETRY_ARCHAEOLOGY: NO
+VERSION_IMPACT: NONE
+NEXT_SLICE: S2-C — WP-08..WP-26 canonical-owner extraction
+```
+
 ## Точка продолжения
 
 ```text
-WP-27 STEP 2 / S2-B
--> recover WP-01..WP-07 through their asymmetric owner chains
--> extract surviving material items without filename-symmetry archaeology
--> map each item to an explicit terminal readiness/no-work route
+WP-27 STEP 2 / S2-C
+-> extract every material surviving owner item from WP-08..WP-26
+-> preserve separate implementation, proof, empirical, release, defer and negative routes
+-> retain WP-26 completed repairs as ALREADY_REALIZED
 -> publish the next durable slice checkpoint
 ```
