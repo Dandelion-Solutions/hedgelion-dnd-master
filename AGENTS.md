@@ -17,6 +17,34 @@ Before external repository communication or execution work, identify the current
 
 An overlay adapts process to its environment. It may not weaken the HDM authority hierarchy, source/evidence requirements, branch guardrails, public-material rules, approval gates, or prohibition on force-pushing live refs.
 
+## Project skill stack
+
+HDM development uses one process skill layer and three complementary domain/documentation skill layers:
+
+```text
+Superpowers
+-> Clean Architecture | Prompt Optimizer | OpenAI Docs
+```
+
+The active skill set is:
+
+- **Superpowers** — the development-process skill layer. It owns skill selection and the applicable workflows for brainstorming/design, planning, TDD, systematic debugging, execution, review and verification.
+- **Clean Architecture** — project-local skill at `.agents/skills/clean-architecture/SKILL.md`. Apply it when work touches architectural boundaries, dependency direction, entities/use cases/adapters/framework details, persistence coupling, component boundaries, or architectural review.
+- **Prompt Optimizer** — project-local skill at `.agents/skills/prompt-optimizer/SKILL.md`. Apply it when creating, changing, reviewing or evaluating system/developer/agent prompts, reusable prompt templates, tool policy, examples, output contracts or prompt evals.
+- **OpenAI Docs** — the current runtime-provided `openai-docs` skill/capability and official OpenAI developer documentation route. Apply it for current OpenAI model/API/Codex/prompting facts and model-specific guidance. If the runtime does not expose the skill directly, use the runtime's permitted route to current official OpenAI documentation rather than substituting model memory for current facts.
+
+Skill authority and composition rules:
+
+1. Explicit Product Owner instructions, this `AGENTS.md`, and current canonical repository owners/specifications/process owners outrank generic skill guidance.
+2. **Superpowers owns process.** Domain skills supplement that process; they do not replace or weaken HDM approval gates, evidence/source requirements, planning rules, TDD/debugging discipline, execution controls, review gates or verification requirements.
+3. **Clean Architecture is an architectural lens, not a competing architecture authority.** It must not reopen or redesign already-authorized HDM architecture merely to improve a Clean Architecture score, satisfy a textbook pattern, or introduce additional ports/DTOs/interactors/abstractions. When its guidance conflicts with an accepted HDM decision, preserve the accepted decision, report the conflict and its practical consequence, and change architecture only through the controlling HDM process.
+4. **Prompt Optimizer owns prompt-quality methodology, not product semantics.** It may improve prompt structure, ownership clarity, model adaptation, examples and evals, but it must not silently change semantics owned by canonical HDM prompt/contract/specification owners. Material semantic changes go through the owning HDM design/change process.
+5. **OpenAI Docs is external technical evidence, not HDM product authority.** Use it to establish current OpenAI behavior, APIs and prompting/model guidance; reconcile that evidence with HDM owners rather than allowing vendor guidance to override accepted product semantics automatically.
+6. When multiple skills apply, use **Superpowers as the process frame first**, then apply the relevant domain skills inside that process. A skill being active means it is available and mandatory when its scope is relevant; do not force irrelevant skills into unrelated work.
+7. If two domain skills materially disagree and current HDM owners do not resolve the disagreement, surface the conflict explicitly. Do not invent a hidden precedence rule between domain skills.
+
+The `.agents/` tree is development-only repository infrastructure. Runtime GAME content must not depend on it or ship it as gameplay context.
+
 ## Fresh development-session bootstrap
 
 A fresh development chat/session must recover current project state from the repository before doing substantive analysis, proposing architecture, or asking the repository owner to restate information that is already recoverable from project sources.
@@ -26,6 +54,9 @@ For architecture/deep-work activity, use this bootstrap order:
 ```text
 current remote ref/state
 -> AGENTS.md
+-> applicable runtime overlay
+-> applicable Superpowers process skill(s)
+-> applicable domain skill(s): Clean Architecture / Prompt Optimizer / OpenAI Docs
 -> DEV/DESIGN_PROCESS.md
 -> DEV/ARCHITECTURE/DESIGN_PROCESS.md
 -> DEV/PROJECT_MAP.md
@@ -38,11 +69,12 @@ At minimum:
 
 1. determine the active branch/ref and current repository state using the applicable runtime overlay;
 2. read the current `AGENTS.md` and applicable runtime overlay on that state;
-3. read the current applicable design-process files rather than relying on remembered versions;
-4. read `DEV/PROJECT_MAP.md` and use it to identify the task-specific ownership/dependency route;
-5. read `DEV/CURRENT_PROGRESS.md` for global current state and the next authorized unit when the task is architectural;
-6. read `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` when sequencing, scope or dependencies need detail;
-7. inspect the actual owning artifacts and relevant neighboring consumers before making correctness-sensitive claims.
+3. load the applicable Superpowers process skill(s) and any domain skill(s) whose declared scope is relevant to the task; a runtime that does not auto-discover `.agents/skills/` must read the relevant project-local `SKILL.md` explicitly;
+4. read the current applicable design-process files rather than relying on remembered versions;
+5. read `DEV/PROJECT_MAP.md` and use it to identify the task-specific ownership/dependency route;
+6. read `DEV/CURRENT_PROGRESS.md` for global current state and the next authorized unit when the task is architectural;
+7. read `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` when sequencing, scope or dependencies need detail;
+8. inspect the actual owning artifacts and relevant neighboring consumers before making correctness-sensitive claims.
 
 Conversation history, model memory, handoff summaries, prior-agent summaries, search snippets and derivative indexes may accelerate orientation, but they are not substitutes for current repository evidence when the owning source is available.
 
@@ -100,7 +132,7 @@ The source repository has two product ownership trees:
 - `GAME/` — exact source tree of the installed runtime distribution. The release builder archives the **contents** of this directory.
 - `DEV/` — architecture, tests, release policy, development catalogs/schemas, Superpowers artifacts and developer tooling.
 
-Repository root is reserved for repository infrastructure/metadata such as `.github/`, this `AGENTS.md`, root `README.md`, `.gitignore` and canonical legal files.
+Repository root is reserved for repository infrastructure/metadata such as `.github/`, `.agents/`, this `AGENTS.md`, root `README.md`, `.gitignore` and canonical legal files.
 
 Do not recreate old repository-root product/development directories such as `CORE/`, `TESTS/`, `TOOLS/`, `ARCHITECTURE/`, `RELEASE/`, `CATALOG/`, `SCHEMA/`, `SCHEMAS/`, `CAMPAIGN/`, `TEMPLATE/`, `MIGRATIONS/`, `INSTALL/` or `docs/`.
 
