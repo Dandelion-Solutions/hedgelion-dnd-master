@@ -1,6 +1,6 @@
 # R2.7 WP-27 Step 2 — Evidence Ledger
 
-Status: **IN PROGRESS — S2-G COMPLETE / S2-H NEXT**
+Status: **IN PROGRESS — S2-H COMPLETE / S2-I NEXT**
 
 Date: 2026-09-10
 
@@ -16,7 +16,7 @@ Current canonical owners and accepted amendments remain controlling.
 
 ```text
 WP27_STEP2: IN_PROGRESS
-CURRENT_SLICE: S2-H — cross-cutting readiness dimensions and probes
+CURRENT_SLICE: S2-I — Step-2 internal completeness audit
 WP27_STEP3: NOT_STARTED
 IMPLEMENTATION_PLANNING: NOT_STARTED
 IMPLEMENTATION: NOT_STARTED
@@ -129,10 +129,10 @@ PO001_010: 10 / 10 COMPLETE — S2-D; readiness composition remains prohibited u
 ROUND2_D_S_82: 82 / 82 COMPLETE — S2-E item-level reconciliation; readiness composition remains prohibited until S2-F
 ARCH_TO_READINESS: 146 / 146 COMPLETE — one lossless readiness record per pending source item
  MACHINE_TO_OWNER: 59 / 59 MATERIAL RESPONSIBILITIES CLASSIFIED — 19 R27-M records; 14 R27-X exception records cover 31 exception members
-VERSION_MIGRATION: S2-F ROUTED — per-readiness future Version Impact Gate; no bump preselected
-PROOF_CHANNELS: 146 / 146 RETAINED IN READINESS RECORDS
-DEFER_DORMANT_REJECTED: 78 / 78 EXPLICIT NO-WORK TERMINALS RETAINED
-HIGH_RISK_PROBES: 0 / 8
+VERSION_MIGRATION: 146 / 146 READINESS RECORDS RETAIN A FUTURE VERSION IMPACT GATE; no bump or migration preselected
+PROOF_CHANNELS: 146 / 146 RETAINED IN READINESS RECORDS; S2-H channel separation reconciled
+DEFER_DORMANT_REJECTED: 78 / 78 EXPLICIT NO-WORK TERMINALS RETAINED; S2-H trigger reconciliation complete
+HIGH_RISK_PROBES: 8 / 8 S2-H COMPLETE
 ```
 
 ## 5. S2-A checkpoint result
@@ -2619,4 +2619,285 @@ VERSION_IMPACT: NONE — documentation-only Step-2 evidence composition; future 
 WP27_STEP2: IN_PROGRESS
 WP27_STEP3: NOT_STARTED
 S2_G_AND_LATER: NOT_STARTED
+```
+
+## 12. S2-H cross-cutting readiness dimensions and probes
+
+This section reconciles the already lossless source, readiness and machine
+records. It does not select an implementation order, a persistent shape, a
+version bump, a migration, a release, or a next Step-2 slice. The ledger header
+and durable cursors remain unchanged by this bounded S2-H record.
+
+### 12.1 Owner-derived dependency DAG
+
+The graph records prerequisite edges, not one universal execution sequence.
+Nodes with no path between them may be planned and realized independently after
+the required final gates.
+
+```text
+accepted semantic owner
+    -> owner-local schema / route / template / validator where required
+    -> owner-local producer and consumer
+    -> deterministic contract proof
+    -> scenario/adversarial acceptance
+    -> supported-target empirical proof where the owner requires it
+    -> release-time exact-asset proof only for a release candidate
+
+R27-R006..R022, R027..R028, R034..R040, R062..R080
+    -> native persistent/topology/currentness routes
+    -> R27-R064..R074 owner-local persistence/publication/recovery consumers
+    -> no migration node unless a released compatibility-bearing delta is selected
+
+R27-R055..R061, R105..R146
+    -> bounded role/context/runtime realization
+    -> R27-R058/R061/R088..R090 proof records
+    -> real-MVP/Protocol-4 only where those records name it
+
+R27-R099
+    -> R27-R102 (baseline Commentator Story-local T0/control consumer)
+    -> R27-R084 (Story producer/layer realization)
+    -> R27-R103/R093..R095 only when the individual writer's size trigger fires
+
+R27-R086..R087
+    -> bootstrap/selection/retrospective consumers
+    -> R27-R091..R092 only when authorized release execution creates a candidate
+
+released v1.0+ source/target compatibility obligation
+    -> WP20-01..WP20-04 explicit compatibility classification
+    -> owner-local schema/generation analysis and declared directed edge if required
+    -> existing publication/currentness proof
+```
+
+The final line is conditional: `WP20-01..WP20-04` retain
+`NO_WORK_DEFERRED` routes until a qualifying released source/target exists.
+`R27-R103` is likewise a writer-specific branch, not a universal partition
+node. No edge in this graph authorizes a global migration registry, partition
+service, failure service, scheduler, or a second state authority.
+
+### 12.2 Per-readiness Version Impact and migration classification
+
+All `R27-R001` through `R27-R146` have an explicit
+`FUTURE_VERSION_IMPACT_GATE` field in Section 10: `146 / 146` records, with
+`146 / 146` corresponding `migration_or_update_consequence` fields. This is
+the per-readiness classification, not a blanket bump: each later task must
+classify its actual changed owner/consumer set under the versioning owner before
+it is checkpoint-ready.
+
+```text
+CURRENT S2-H CHANGE:
+  VERSION_IMPACT: NONE
+  reason: evidence-ledger documentation only; no version-bearing semantic,
+          machine, runtime, schema, catalog, protocol, or metadata owner changed
+
+R27-R001..R146:
+  classification: FUTURE_VERSION_IMPACT_GATE
+  bump_selected_now: NO
+  migration_selected_now: NO
+  execution rule: select the affected namespace(s) only from the actual later
+                  owner/consumer delta, then synchronize every required owner
+                  projection in that coherent checkpoint
+```
+
+The namespace-specific outcome remains owner-derived: a material versioned
+CORE/runtime module edit can require its Category-B revision; compatible
+additive persistent changes may retain a local schema version; breaking released
+persistent semantics require the local schema and campaign-contract analysis;
+incompatible storage, catalog, ruleset, package/protocol, or digest changes use
+their own namespace rules. An engine release bump alone does not imply campaign
+migration. `WP20-01..WP20-04` and `R27-M07` preserve that concrete migration
+edges are released-v1.0+-conditional, package-scoped and explicit, never
+inferred from number order or pre-release cleanup.
+
+The representation-sensitive records are deliberately not pre-decided:
+`R27-R099`, `R27-R102`, `R27-R103`, `R27-R006..R022`, `R27-R064..R080`, and
+`R27-R086` must run the gate when a selected implementation changes a persistent
+or protocol boundary. `R27-R024`, `R27-R091` and `R27-R092` retain release
+projection/package checks, but do not select a release bump or migration here.
+
+### 12.3 Separate proof channels
+
+The following channels remain non-substitutable:
+
+```text
+CURRENT SOURCE CI / MAINTENANCE AUDIT
+  R27-M13, R27-M14, R27-M16; R27-R089
+  Proves only the checks actually executed on their exact source head.
+
+DETERMINISTIC TDD / CONTRACT / INTEGRATION
+  The per-record test_first_obligations in R27-R001..R146.
+  Proves a realized owner-local contract; it is not scenario, empirical or release proof.
+
+SCENARIO / ADVERSARIAL ACCEPTANCE
+  The per-record scenario_acceptance_obligations in R27-R001..R146,
+  especially R27-R058, R27-R061, R27-R088..R090.
+  Requires the named realized behavior and adversarial cases.
+
+SUPPORTED-TARGET / PROTOCOL-4 EMPIRICAL ACCEPTANCE
+  R27-R005, R27-R055..R061, R27-R087, R27-R090, R27-R096,
+  R27-R101 and R27-R103 where stated.
+  Deferred until the implemented supported target; a fixture or current CI is not execution evidence.
+
+RELEASE-TIME FRESH-PROJECT / EXACT-ASSET ACCEPTANCE
+  R27-R002, R27-R024, R27-R086, R27-R091 and R27-R092.
+  Requires the ordered pre-tag candidate, immutable publication, exact uploaded
+  asset, post-upload fresh-Project evidence, and only then announcement.
+```
+
+`R27-M16` and `R27-X10` explicitly classify `validate.yml` as source-CI support
+and `release-runtime.yml` as a forward release support surface. Their existence,
+or a green current source CI/audit result, is not future scenario, empirical,
+fresh-Project, exact-asset, or released-package proof.
+
+### 12.4 Deferred, dormant and rejected trigger reconciliation
+
+All `78 / 78` no-work terminals retain their source-local activation/defer
+trigger and negative law. The cross-cutting classifications are:
+
+```text
+SAFE DEFERRED / RELEASED-COMPATIBILITY ONLY
+  WP20-01..WP20-04, PO004-01, R27-M07
+  Trigger: a qualifying released-v1.0+ source/target support obligation.
+  Negative: no pre-release migration debt or global migration registry.
+
+MEASUREMENT DORMANT
+  WP24-01, WP24-05, S39, D15 and the dormant branches of R27-R032/R068/R083.
+  Trigger: realized target plus measured owner-relevant pressure/failure.
+  Negative: no speculative optimization, telemetry, background worker, or universal partition project.
+
+WRITER-SPECIFIC DEFERRED
+  R27-R093, R27-R094, R27-R095 and R27-R103.
+  Trigger: projected final UTF-8 write leaves the target/review bands, exceeds
+  approximately 16 KiB, or earlier owner-valid measured evidence fires.
+  Negative: no universal 10240-byte rejection, truncation, false split, or
+  preselected shard topology.
+
+FOCUS-SCOPED FAILURE REALIZATION / REJECTED GLOBAL BASELINES
+  R27-R042, R27-R096 and R27-R101.
+  Trigger: an approved focus-specific implementation or supported real target.
+  Negative: no persisted global failure/health registry, generic ACL, retry
+  engine, replay service, scheduler, queue, heartbeat, or global frontier.
+
+CONDITIONAL COLLABORATION / PLANNING
+  WP10-04, WP10-05, S58, R27-R021, R27-R081, R27-R085.
+  Trigger: an owner-proven durable collective dependency or applicable multiplayer
+  consumer, not ordinary waiting or a generic future wish.
+  Negative: no generic collaboration authority, registry, scheduler, heartbeat,
+  durable single-player planning, or global planning index.
+```
+
+Dormancy and rejection are terminal dispositions, not unstarted implementation
+debt. A later plan may activate only the record whose exact trigger is met.
+
+### 12.5 High-risk probe results
+
+#### R27-P01 — PO-003 + PO-009 Story-local T0/control
+
+`status`: `PASS — bounded delegated representation; no current architecture blocker`.
+`source records`: `PO003-01`, `PO009-01`, `WP19-02`; `readiness records`:
+`R27-R099`, `R27-R102`, `R27-R084`; `machine records`: `R27-M01`, `R27-M02`.
+Native SemanticEvent/history and knowledge/disclosure/access remain owners;
+baseline Commentator requires Story-local recoverable qualifying T0 plus derived
+local control before LLM exposure. Exact fields/cache/schema topology are
+delegated, but a selected persistent/interface shape must run its Version Impact
+Gate. Blockers: `0`; deferred realization: `YES`; no native-only baseline
+fallback or extra serial critical-path work is permitted.
+
+#### R27-P02 — WP-25 deferred versus rejected
+
+`status`: `PASS — focus-scoped realization distinguished from rejected global baselines`.
+`source records`: `WP25-04`, `PO008-01`; `readiness records`: `R27-R042`,
+`R27-R096`, `R27-R101`; `machine records`: `R27-M01`, `R27-M02`, `R27-M13`.
+An owner-local ephemeral disposition/evaluator and later real-target calibration
+remain deferred by their stated focus/target triggers. A persisted global failure
+registry, health authority, generic ACL, retry engine, replay service, scheduler
+and queue remain rejected. Blockers: `0`; rejected abstractions revived: `0`.
+
+#### R27-P03 — PO-010/WP-24 writer partition activation
+
+`status`: `PASS — writer-specific activation only`.
+`source records`: `PO010-01`, `WP24-02`, `WP24-03`, `WP24-04`, `WP26-03`;
+`readiness records`: `R27-R093`, `R27-R094`, `R27-R095`, `R27-R103`; `machine records`:
+`R27-M01`, `R27-M03`, `R27-M07`.
+Projected serialized UTF-8 is measured at each growth-bearing writer; review
+starts in the stated bands and partition/rollover is normally required above
+approximately 16 KiB or earlier owner-valid evidence. Concrete geometry remains
+owner-local. Blockers: `0`; global partition work activated: `0`.
+
+#### R27-P04 — WP-20 migration/version dependency order
+
+`status`: `PASS — conditional dependency branch, no migration selected`.
+`source records`: `WP20-01..WP20-04`, `PO004-01`; `readiness records`:
+`R27-R006..R022`, `R27-R064..R080`, `R27-R099`, `R27-R102`, `R27-R103`;
+`machine records`: `R27-M07`, `R27-M09`, `R27-M17`, `R27-M19`.
+Persistent/protocol shape and actual compatibility delta precede any owner-local
+schema/generation and explicit directed-edge selection; preparation/publication
+remain later native-owner work. Pre-release has no migration obligation and no
+global migration registry is admitted. Blockers: `0`; current migration execution: `NO`.
+
+#### R27-P05 — proof-channel separation
+
+`status`: `PASS — no over-credit`.
+`source records`: `WP22-01`, `WP22-02`, `WP22-03`; `readiness records`:
+`R27-R088`, `R27-R089`, `R27-R090`; `machine records`: `R27-M13`, `R27-M14`,
+`R27-M16`, `R27-X09`, `R27-X10`.
+Current source CI/audit stays bounded to executed checks; fixtures/scenarios,
+real-target Protocol-4 execution and release gates remain separate. Blockers: `0`;
+future proof obligations discharged by current CI: `0`.
+
+#### R27-P06 — release-time gates
+
+`status`: `PASS — forward release chain remains unexecuted`.
+`source records`: `WP23-01`, `WP23-02`; `readiness records`: `R27-R002`,
+`R27-R024`, `R27-R091`, `R27-R092`; `machine records`: `R27-M14`, `R27-M15`,
+`R27-M16`, `R27-M17`, `R27-M19`, `R27-X10`.
+Pre-tag fresh-Project, immutable tag/publication, exact uploaded-asset proof and
+post-upload fresh-Project remain ordered independent gates. Blockers: `0`;
+release execution performed by S2-H: `NO`.
+
+#### R27-P07 — dormant scale and host triggers
+
+`status`: `PASS — trigger-gated, not activated by architecture evidence`.
+`source records`: `WP24-01`, `WP24-05`, `D15`, `S39`; `readiness records`:
+`R27-R032`, `R27-R068`, `R27-R083`, `R27-R096`, `R27-R101`; `machine records`:
+`R27-M01`, `R27-M13`, `R27-M14`.
+Class-A structural support is not Class-B/C measurement or real-host calibration.
+Only a realized target and owner-relevant measured pressure may activate the
+specified optimization/host-risk work. Blockers: `0`; dormant work activated: `0`.
+
+#### R27-P08 — reverse conformance
+
+`status`: `PASS — every material responsibility has an owner/class and mixed families have exceptions`.
+`source_item IDs`: `WP01-F03`, `WP02-M01`, `WP02-M02`, `WP02-M03`, `WP02-M06`,
+`WP02-M07`, `WP02-M11`, `WP06-F02`, `WP06-F03`, `WP22-02`, `WP23-02`; `readiness IDs`:
+`R27-R003`, `R27-R006`, `R27-R007`, `R27-R008`, `R27-R010`, `R27-R011`, `R27-R015`,
+`R27-R047`, `R27-R048`, `R27-R089`, `R27-R092`; `machine records`: `R27-M01`,
+`R27-M02`, `R27-M03`, `R27-M04`, `R27-M05`, `R27-M06`, `R27-M07`, `R27-M08`,
+`R27-M09`, `R27-M10`, `R27-M11`, `R27-M12`, `R27-M13`, `R27-M14`, `R27-M15`,
+`R27-M16`, `R27-M17`, `R27-M18`, `R27-M19`, `R27-X01`, `R27-X02`, `R27-X03`,
+`R27-X04`, `R27-X05`, `R27-X06`, `R27-X07`, `R27-X08`, `R27-X09`, `R27-X10`,
+`R27-X11`, `R27-X12`, `R27-X13`, `R27-X14`.
+Counts: `59 / 59` material responsibilities classified; `31 / 31` exception
+members classified; `0` unowned/unclassified responsibilities; `0` mixed groups
+without exception breakdown. Blockers: `0`; machine artifact presence promoted
+to authority: `0`.
+
+### 12.6 S2-H bounded result
+
+```text
+S2_H: COMPLETE
+DEPENDENCY_MODEL: OWNER-DERIVED DAG / NO UNIVERSAL SEQUENCE
+READINESS_VERSION_IMPACT_FIELDS: 146 / 146
+READINESS_MIGRATION_CONSEQUENCE_FIELDS: 146 / 146
+PROOF_CHANNEL_OVER_CREDIT: 0
+NO_WORK_TRIGGER_LOSS: 0
+HIGH_RISK_PROBES: 8 / 8 PASS
+ARCHITECTURE_BLOCKER_CANDIDATES_FROM_S2_H: []
+VERSION_IMPACT: NONE
+IMPLEMENTATION_PLANNING_STARTED: NO
+IMPLEMENTATION_STARTED: NO
+MIGRATION_EXECUTION_STARTED: NO
+RELEASE_EXECUTION_STARTED: NO
+S2_I: NOT RUN
+S2_J: NOT RUN
+CURSOR_OR_MINI_REPORT_UPDATED: NO
 ```

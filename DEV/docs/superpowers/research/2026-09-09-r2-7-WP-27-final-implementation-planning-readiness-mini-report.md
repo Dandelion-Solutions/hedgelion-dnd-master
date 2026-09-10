@@ -1,6 +1,6 @@
 # R2.7 WP-27 — Final implementation-planning readiness — mini-report
 
-Статус: **IN_PROGRESS — STEP 2 S2-G CLOSED / S2-H NEXT**
+Статус: **IN_PROGRESS — STEP 2 S2-H CLOSED / S2-I NEXT**
 
 Дата: 2026-09-09
 
@@ -425,11 +425,28 @@ VERSION_IMPACT: NONE
 NEXT_SLICE: S2-H — cross-cutting readiness dimensions and probes
 ```
 
+### S2-H — cross-cutting readiness dimensions and probes
+
+Сформирован owner-derived DAG без единой искусственной последовательности;
+Version Impact/migration classification присутствует для 146 readiness records;
+proof channels и 78 deferred/dormant/rejected terminal triggers сохранены.
+Все восемь probes дают traceable result against exact source/readiness/machine
+records.
+
+```text
+READINESS_VERSION_MIGRATION_CLASSIFIED: 146 / 146
+TERMINAL_DEFER_DORMANT_REJECTED_TRIGGERS: 78 / 78
+HIGH_RISK_PROBES: 8 / 8 PASS
+ARCHITECTURE_BLOCKER_CANDIDATES: []
+VERSION_IMPACT: NONE
+NEXT_SLICE: S2-I — Step-2 internal completeness audit
+```
+
 ## Точка продолжения
 
 ```text
-WP-27 STEP 2 / S2-H
--> reconcile DAG, Version Impact routing, proof channels, defer/dormant/rejected triggers
--> run R27-P01..P08 against exact ledger records
--> publish the next durable slice checkpoint
+WP-27 STEP 2 / S2-I
+-> mechanically and semantically audit every Step-2 admission criterion
+-> repair any evidence gap before a completion claim
+-> publish only a passing S2-I gate, then perform S2-J closure
 ```
