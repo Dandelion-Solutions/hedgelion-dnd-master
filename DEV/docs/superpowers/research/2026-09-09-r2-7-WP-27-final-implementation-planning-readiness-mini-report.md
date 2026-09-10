@@ -1,6 +1,6 @@
 # R2.7 WP-27 — Final implementation-planning readiness — mini-report
 
-Статус: **IN_PROGRESS — STEP 2 S2-C CLOSED / S2-D NEXT**
+Статус: **IN_PROGRESS — STEP 2 S2-D CLOSED / S2-E NEXT**
 
 Дата: 2026-09-09
 
@@ -351,12 +351,27 @@ VERSION_IMPACT: NONE
 NEXT_SLICE: S2-D — PO-001..PO-010 carry-forward reconciliation
 ```
 
+### S2-D — PO-001..PO-010 carry-forward reconciliation
+
+Все десять PO entries разведены от ledger-intent к их accepted semantic owners,
+source-item records, downstream implementation consumers и proof channels.
+`INCORPORATED` не был ошибочно принят за completed runtime realization.
+
+```text
+PO001_010: 10 / 10 INDIVIDUALLY ACCOUNTED
+PO_RECORDS_WITH_OPEN_PO_DECISION: 0
+ARCHITECTURE_BLOCKER_CANDIDATES: []
+MANDATORY_SEAMS: PO003+PO009, PO008+WP25, PO010+WP24/STORY PRESERVED
+VERSION_IMPACT: NONE
+NEXT_SLICE: S2-E — 82-item DIAMOND/STRONG reconciliation
+```
+
 ## Точка продолжения
 
 ```text
-WP-27 STEP 2 / S2-D
--> reconcile PO-001..PO-010 individually against accepted current owners
--> preserve PO-003/009, PO-008/WP-25 and PO-010/WP-24 seams
--> route each entry to source items, future consumers and proof without reopening PO decisions
+WP-27 STEP 2 / S2-E
+-> reconcile all D01..D24 and S01..S58 records individually
+-> preserve original disposition, current owner/supersession, trigger, consequence and terminal route
+-> explicitly reconcile S14, S53 and D15
 -> publish the next durable slice checkpoint
 ```

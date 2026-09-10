@@ -1,6 +1,6 @@
 # R2.7 WP-27 Step 2 — Evidence Ledger
 
-Status: **IN PROGRESS — S2-C COMPLETE / S2-D NEXT**
+Status: **IN PROGRESS — S2-D COMPLETE / S2-E NEXT**
 
 Date: 2026-09-10
 
@@ -16,7 +16,7 @@ Current canonical owners and accepted amendments remain controlling.
 
 ```text
 WP27_STEP2: IN_PROGRESS
-CURRENT_SLICE: S2-D — PO-001..PO-010 carry-forward reconciliation
+CURRENT_SLICE: S2-E — 82-item DIAMOND/STRONG reconciliation
 WP27_STEP3: NOT_STARTED
 IMPLEMENTATION_PLANNING: NOT_STARTED
 IMPLEMENTATION: NOT_STARTED
@@ -125,7 +125,7 @@ public owner/decision route.
 ```text
 WP01_07: 64 / 64 COMPLETE — S2-B owner-chain accounting complete; readiness composition remains prohibited until S2-F
 WP08_26: 0 / PENDING
-PO001_010: 0 / 10
+PO001_010: 10 / 10 COMPLETE — S2-D; readiness composition remains prohibited until S2-F
 ROUND2_D_S_82: 0 / 82
 ARCH_TO_READINESS: 0 / PENDING
 MACHINE_TO_OWNER: 0 / PENDING
@@ -885,7 +885,148 @@ UNRESOLVED_OWNER_GAPS: 0
 ARCHITECTURE_BLOCKER_CANDIDATES: []
 WP27_STEP3: NOT_STARTED
 S2_D: NEXT
-S2_E_AND_LATER: NOT STARTED
+S2_E: NEXT
+S2_F_AND_LATER: NOT STARTED
 S2_C_REVIEW_REPAIR: COMPLETE — LOCAL LEDGER ACCOUNTING ONLY; TOP-LEVEL CURSOR OWNED BY PARENT
+VERSION_IMPACT: NONE — evidence-ledger documentation only; no version-bearing semantic/machine/runtime/schema/catalog/protocol owner changed.
+```
+
+## 8. S2-D source-item ledger — PO-001..PO-010 carry-forward reconciliation
+
+The Product Owner ledger is preserved intent/routing evidence, not architecture
+authority. The accepted owners below control the surviving requirements. Every
+`readiness_ids[]` remains empty because S2-F alone composes `R27-R###` records.
+
+### 8.1 PO-001 — ordinary active-player retrospective
+
+#### PO001-01
+`PO id`: `PO-001`; `current incorporated owners`: `2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md` §2, WP-19 `L20-L23`, and the current Step-4/R2.3 information-eligibility owners.
+`surviving requirements`: an authorized active player uses ordinary D&D Master gameplay for bounded retrospective questions; current disclosure/no-spoiler rules remain controlling; no Commentator transition, new mode, Story authority, or history authority is created.
+`linked source_item_ids[]`: [`PO001-01`, `WP19-02`, `WP19-03`]; `future implementation consumers[]`: ordinary Master runtime/instruction, registered Context Runtime retrospective binding, Story/history orientation consumer, and direct acceptance tests.
+`proof consumers[]`: active-player ordinary-Master/no-Commentator scenario, bounded/no-whole-history-scan and disclosure-safe retrospective cases; supported-target interaction acceptance after realization.
+`activation/defer state`: `INCORPORATED / REALIZATION DEFERRED` until R2.7 final reconciliation plus approved implementation planning/execution; `terminal_route: PENDING_S2-F`.
+`representation risk`: consumer instruction/context binding remains to be realized, but accepted information owners already fix eligibility and authority boundaries.
+`architecture-blocker result`: `PASS — no unresolved human-owned choice; no new mode or authority is required.`
+`readiness_ids[]`: `[]`.
+
+### 8.2 PO-002 — save and exit to campaign selection
+
+#### PO002-01
+`PO id`: `PO-002`; `current incorporated owners`: `2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md` §3, WP-19 `L24-L28`, and native SAVE/session/LIVE/menu owners.
+`surviving requirements`: save success precedes clearing this chat's gameplay context and returning to same-chat campaign selection; preserve principal and durable campaign state; do not infer pause, completion, archive, membership leave, PC-control transfer, or campaign-wide stop.
+`linked source_item_ids[]`: [`PO002-01`, `WP19-02`, `WP19-03`, `WP13-01`]; `future implementation consumers[]`: save/persistence, session/context clearing, campaign-menu/bootstrap, and applicable LIVE/multiplayer consumers.
+`proof consumers[]`: save-success -> session-local clear -> same-chat menu case; rejected/failed/indeterminate save preserves truthful recovery-safe context; multiplayer non-interference case.
+`activation/defer state`: `INCORPORATED / REALIZATION DEFERRED` until R2.7 final reconciliation plus approved implementation planning/execution; `terminal_route: PENDING_S2-F`.
+`representation risk`: exact session/cache clear set is implementation detail only if it preserves the accepted clear/preserve contract and currentness revalidation.
+`architecture-blocker result`: `PASS — accepted composition uses existing save, session, menu, and LIVE owners; no lifecycle or membership decision remains.`
+`readiness_ids[]`: `[]`.
+
+### 8.3 PO-003 — historical Actor decision basis
+
+#### PO003-01
+`PO id`: `PO-003`; `current incorporated owners`: `2026-09-05-hdm-historical-actor-decision-basis-owner-decision.md`, WP-19 `L29-L39`, current Step-4 `LOG/runtime.semantic_event` and WP-10 SemanticEvent/history owners, with PO-009's narrow baseline Commentator consumer supersession.
+`surviving requirements`: retain sparse, situation-specific, bounded event-time T0 basis for qualifying material Actor decisions; never substitute mutable T1 state; preserve native SemanticEvent ownership and disclosure boundaries; ordinary gameplay capture has zero extra serial LLM calls, tool/remote reads, publications, or irrelevant-turn work.
+`linked source_item_ids[]`: [`PO003-01`, `WP19-02`, `WP19-03`, `WP18-01`, `WP26-02`]; `future implementation consumers[]`: SemanticEvent schema/serialization/validator, minimum owner-derived discovery support, ordinary Master retrospective, and Story projection for the PO-009 baseline Commentator route.
+`proof consumers[]`: retained T0 -> later T1 mutation -> historical explanation case; invalid/current-pointer/hidden-reasoning rejection cases; bounded lookup; zero-extra-serial performance proof and real-target critical-path observation.
+`activation/defer state`: `INCORPORATED / REALIZATION DEFERRED` until R2.7 final reconciliation plus approved implementation planning/execution; `terminal_route: PENDING_S2-F`.
+`representation risk`: retained factor encoding and minimum discovery metadata remain delegated, but must preserve event-time recoverability, boundedness, native ownership, and the PO-009 Story-local consumer seam.
+`architecture-blocker result`: `PASS — Story-local consumption is a bounded projection requirement, not a second history owner; any realization requiring extra serial critical-path work is an explicit material escalation, not a hidden default.`
+`readiness_ids[]`: `[]`.
+
+### 8.4 PO-004 — v1 clean-slate compatibility horizon
+
+#### PO004-01
+`PO id`: `PO-004`; `current incorporated owners`: `2026-09-05-hdm-v1-clean-slate-compatibility-owner-decision.md` and WP-20 `L01-L40`.
+`surviving requirements`: v0.8/pre-release formats have no compatibility, migration, adapter, dual-read/write, or preservation obligation; released v1.0+ compatibility remains exact-target, owner-composed, finite, and fail-closed.
+`linked source_item_ids[]`: [`PO004-01`, `WP20-01`, `WP20-02`, `WP20-03`, `WP20-04`]; `future implementation consumers[]`: released-campaign compatibility evaluator, package-scoped migration-edge support, owner-local transform/publisher, version/schema compatibility declarations, and migration tests.
+`proof consumers[]`: finite compatibility classification, explicit directed path/cycle/multiple-path, prerequisite/currentness, rejection/indeterminate, and no-pre-release-compatibility cases.
+`activation/defer state`: `INCORPORATED / SAFE DEFERRED` until a qualifying released-v1.0+ source/target compatibility obligation and approved implementation execution exist; `terminal_route: NO_WORK_DEFERRED`.
+`representation risk`: migration-edge serialization, transform-module format, and evaluator shape are delegated within WP-20's fixed compatibility/currentness laws.
+`architecture-blocker result`: `PASS — no pre-release migration obligation and no global migration registry are admitted; no unresolved Product Owner choice exists.`
+`readiness_ids[]`: `[]`.
+
+### 8.5 PO-005 — creator-login continuity
+
+#### PO005-01
+`PO id`: `PO-005`; `current incorporated owners`: `2026-09-06-hdm-creator-login-continuity-owner-decision.md` and current access/bootstrap/migration/recovery owners, including WP-16 principal/authorization boundaries.
+`surviving requirements`: unresolvable creator login fails closed for creator-only operations; read-only is accepted; no login-rename inference, stable-ID substitution, silent authority transfer, or automatic recovery claim is allowed.
+`linked source_item_ids[]`: [`PO005-01`, `WP16-01`, `WP20-03`]; `future implementation consumers[]`: creator authorization, bootstrap, migration/adoption, recovery, and their runtime/tool tests.
+`proof consumers[]`: unresolvable creator-login blocks creator-only writes while read-only remains available; PLAYER stable ID and repository permission do not transfer creator authority.
+`activation/defer state`: `INCORPORATED / REALIZATION DEFERRED` until approved implementation planning/execution; fixed fail-closed policy applies to every later consumer; `terminal_route: PENDING_S2-F`.
+`representation risk`: no new identity representation is required by this policy; consumers must use the accepted creator provenance rather than introduce a substitute.
+`architecture-blocker result`: `PASS — the Product Owner selected fail-closed behavior; manual repository-owner recovery remains outside automatic HDM semantics.`
+`readiness_ids[]`: `[]`.
+
+### 8.6 PO-006 — branch/ref deletion prohibition
+
+#### PO006-01
+`PO id`: `PO-006`; `current incorporated owners`: `2026-09-06-hdm-branch-ref-deletion-prohibition-owner-decision.md`, `AGENTS.md`, WP-21 `L24-L27`, and WP-24 retained-ref operability law.
+`surviving requirements`: HDM automation never deletes, probes, scripts, wraps, or recreates branches/refs as a deletion path; authority ends through native routing/currentness while non-authoritative refs remain retained transport residue.
+`linked source_item_ids[]`: [`PO006-01`, `WP21-03`, `WP24-05`]; `future implementation consumers[]`: native cleanup/currentness and retained-ref-operability consumers only; no deletion capability work is admitted.
+`proof consumers[]`: executable negative guard against branch/ref-delete invocation and regression checks that core projections preserve retained non-authoritative refs.
+`activation/defer state`: `INCORPORATED / ALREADY REALIZED` for current policy/core/guard projections; only a later explicit Product Owner supersession could revisit it; `terminal_route: NO_WORK_ALREADY_REALIZED`.
+`representation risk`: none from retained physical refs; they are not semantic authority and their operational cost may be measured without enabling deletion.
+`architecture-blocker result`: `PASS — absolute accepted prohibition; no unresolved implementation or Product Owner decision.`
+`readiness_ids[]`: `[]`.
+
+### 8.7 PO-007 — public provenance and attribution boundary
+
+#### PO007-01
+`PO id`: `PO-007`; `current incorporated owners`: `2026-09-08-hdm-public-research-provenance-attribution-owner-decision.md` and WP-23 `C01-C05` / §8 closure.
+`surviving requirements`: public `DEV/` and `GAME/` material excludes source-specific development/research provenance by default; legally required or explicitly Product-Owner-approved attribution and HDM technical artifact provenance remain preserved; no Git-history rewrite is required.
+`linked source_item_ids[]`: [`PO007-01`, `WP23-03`]; `future implementation consumers[]`: public artifact/release/documentation producers and owner-aware provenance guards; legal/notice owners remain controlling.
+`proof consumers[]`: bounded public-provenance regression classification, required/approved attribution preservation, and release/legal checks for any affected public artifact.
+`activation/defer state`: `INCORPORATED / CURRENT RECONCILIATION ALREADY REALIZED`; future public artifacts remain subject to the accepted policy and their native release/legal owners; `terminal_route: NO_WORK_ALREADY_REALIZED`.
+`representation risk`: none; this is a policy/routing constraint, not a new provenance subsystem or public research authority.
+`architecture-blocker result`: `PASS — accepted policy preserves required attribution and technical integrity evidence without a new workstream or WP-20 reopen.`
+`readiness_ids[]`: `[]`.
+
+### 8.8 PO-008 — failure/degradation and durability-risk direction
+
+#### PO008-01
+`PO id`: `PO-008`; `current incorporated owners`: `2026-09-08-hdm-wp25-failure-degradation-durability-risk-owner-direction.md`, final WP-25 Laws 1-29/63, and composed native durability/publication/recovery/currentness owners.
+`surviving requirements`: owner-local native outcomes compose through an ephemeral focus-scoped failure disposition; severity, gameplay impact, affected scope, ignore-risk, tolerance, recovery, and user visibility remain distinct; `NORMAL`/`ELEVATED`/`DANGER` protect against accumulating volatile-loss exposure without making DANGER corruption or generic durability HARD.
+`linked source_item_ids[]`: [`PO008-01`, `WP25-01`, `WP25-02`, `WP25-03`, `WP25-04`, `WP25-05`]; `future implementation consumers[]`: owner-local failure adapters/evaluator where an authorized focus requires one, native durability/publication/recovery paths, and host-risk calibration consumers.
+`proof consumers[]`: native-outcome/polarity/scope-isolation/indeterminate cases; NORMAL/ELEVATED/DANGER priority and bounded-attempt cases; no-scheduler/no-replay/no-global-abstraction regressions; real-target host-risk calibration.
+`activation/defer state`: `INCORPORATED / REALIZATION AND EMPIRICAL ACCEPTANCE DEFERRED` until an approved focus-specific implementation or supported real target; `terminal_route: PENDING_S2-F`.
+`representation risk`: exact evaluator/adapter/type shape remains deferred and may not create persisted global failure, health, ACL, retry, frontier, timeout, scan, or scheduler authority.
+`architecture-blocker result`: `PASS — accepted owner-local direction resolves the product trade-off; rejected global subsystems remain rejected rather than future debt.`
+`readiness_ids[]`: `[]`.
+
+### 8.9 PO-009 — self-contained Commentator Story corpus
+
+#### PO009-01
+`PO id`: `PO-009`; `current incorporated owners`: `2026-09-09-story-commentator-self-contained-corpus-owner-decision.md`, WP-19 `L29-L39`, current Story producer/baseline projection contracts, and WP-26 `L5-L9/L21` reconciliation.
+`surviving requirements`: qualifying retained WP-19 T0 factors are Story-local recoverable for baseline Commentator use; a self-contained derived eligibility/control projection decides retrieval locally before LLM exposure; native SemanticEvent/history, knowledge, disclosure, access, and gameplay canon remain authoritative; content basis and control basis remain distinct.
+`linked source_item_ids[]`: [`PO009-01`, `PO003-01`, `WP19-02`, `WP18-01`, `WP26-02`]; `future implementation consumers[]`: Story/Chronicler producer, EVENTS/NARRATIVE linkage, Commentator snapshot/control producer, deterministic pre-LLM filter, isolated Commentator cache, Story sharding/validation/version consumers.
+`proof consumers[]`: qualifying T0 remains explainable after T1 change without native-only fallback; protected cached material cannot enter an ineligible retrieval bundle; locally decidable eligibility/control, content-final/control-refresh, and no-second-ACL/history-owner cases.
+`activation/defer state`: `INCORPORATED / REALIZATION DEFERRED` until R2.7 final reconciliation plus approved Story/Commentator implementation planning/execution; `terminal_route: PENDING_S2-F`.
+`representation risk`: exact Story event fields, control-projection persistence/version, snapshot/cache layout, and shard topology remain writer-specific downstream choices constrained by local recoverability, source binding, filtering, currentness, and bounded-growth laws.
+`architecture-blocker result`: `PASS — the accepted consumer contract fixes required semantics; concrete representation is explicitly delegated and does not require a new Story layer, ACL, history owner, shared Master/Commentator SQLite format, or native baseline fallback.`
+`readiness_ids[]`: `[]`.
+
+### 8.10 PO-010 — mutable GitHub-backed text sizing bands
+
+#### PO010-01
+`PO id`: `PO-010`; `current incorporated owners`: `2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md`, WP-24 `L13`, current Story growth/sharding owner, and WP-26 `L10-L13` reconciliation.
+`surviving requirements`: each growth-bearing runtime/Story writer measures projected final serialized UTF-8; approximately 10–12 KiB is the preferred target, 13–16 KiB is review, and above approximately 16 KiB normally requires owner-valid review/partition/rollover before indefinite growth; no universal 10240-byte rejection, truncation, false split, or semantic shard identity is allowed.
+`linked source_item_ids[]`: [`PO010-01`, `WP24-02`, `WP24-03`, `WP24-04`, `WP26-03`]; `future implementation consumers[]`: each growth-bearing runtime/Story writer, its owner-valid bounded representation/rollover path, schema/currentness/publication/migration consumers where a selected shape changes them, and corresponding writer tests.
+`proof consumers[]`: exact UTF-8 projected-size and target/review/above-band cases; no-universal-10240/no-truncation/no-false-split cases; safe reconstruction/currentness/atomicity and measured size/latency/parse/conflict activation evidence.
+`activation/defer state`: `INCORPORATED / WRITER-SPECIFIC DEFERRED`; review activates when the pending write materially leaves target, and partition/rollover activates above approximately 16 KiB or earlier only on owner-valid measured evidence; `terminal_route: PENDING_S2-F`.
+`representation risk`: concrete shard/page/bucket/rollover topology remains writer-specific and evidence-driven; current law requires a bounded path but does not select universal geometry or activate a global partition project.
+`architecture-blocker result`: `PASS — the accepted bands and preserved identity/currentness/reconstruction laws bound later topology selection; no unresolved Product Owner or architecture choice remains.`
+`readiness_ids[]`: `[]`.
+
+### 8.11 S2-D accounting and consistency result
+
+```text
+PO001_010: 10 / 10 INDIVIDUALLY ACCOUNTED
+PO_RECORD_IDS: [PO001-01, PO002-01, PO003-01, PO004-01, PO005-01, PO006-01, PO007-01, PO008-01, PO009-01, PO010-01]
+READINESS_IDS_ASSIGNED: 0 — S2-F NOT STARTED
+PO_RECORDS_WITH_EXPLICIT_TERMINAL_ROUTE: 10 / 10
+PO_RECORDS_WITH_OPEN_PO_DECISION: 0
+ARCHITECTURE_BLOCKER_CANDIDATES: []
+MANDATORY_SEAMS_PRESERVED: PO-003+PO-009 STORY-LOCAL T0 / CONTROL / ZERO-EXTRA-SERIAL; PO-008+WP-25 NO REJECTED GLOBAL SUBSYSTEMS; PO-010+WP-24/STORY WRITER-SPECIFIC EVIDENCE-DRIVEN TOPOLOGY
+S2_E_AND_LATER: NOT STARTED
 VERSION_IMPACT: NONE — evidence-ledger documentation only; no version-bearing semantic/machine/runtime/schema/catalog/protocol owner changed.
 ```
