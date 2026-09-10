@@ -1,6 +1,6 @@
 # R2.7 WP-27 Step 2 — Evidence Ledger
 
-Status: **IN PROGRESS — S2-F COMPLETE / S2-G NEXT**
+Status: **IN PROGRESS — S2-G COMPLETE / S2-H NEXT**
 
 Date: 2026-09-10
 
@@ -16,7 +16,7 @@ Current canonical owners and accepted amendments remain controlling.
 
 ```text
 WP27_STEP2: IN_PROGRESS
-CURRENT_SLICE: S2-G — machine -> architecture reverse conformance
+CURRENT_SLICE: S2-H — cross-cutting readiness dimensions and probes
 WP27_STEP3: NOT_STARTED
 IMPLEMENTATION_PLANNING: NOT_STARTED
 IMPLEMENTATION: NOT_STARTED
@@ -128,7 +128,7 @@ WP08_26: 0 / PENDING
 PO001_010: 10 / 10 COMPLETE — S2-D; readiness composition remains prohibited until S2-F
 ROUND2_D_S_82: 82 / 82 COMPLETE — S2-E item-level reconciliation; readiness composition remains prohibited until S2-F
 ARCH_TO_READINESS: 146 / 146 COMPLETE — one lossless readiness record per pending source item
-MACHINE_TO_OWNER: 0 / PENDING
+ MACHINE_TO_OWNER: 59 / 59 MATERIAL RESPONSIBILITIES CLASSIFIED — 19 R27-M records; 14 R27-X exception records cover 31 exception members
 VERSION_MIGRATION: S2-F ROUTED — per-readiness future Version Impact Gate; no bump preselected
 PROOF_CHANNELS: 146 / 146 RETAINED IN READINESS RECORDS
 DEFER_DORMANT_REJECTED: 78 / 78 EXPLICIT NO-WORK TERMINALS RETAINED
@@ -2206,7 +2206,405 @@ The following source records retain their existing empty `readiness_ids[]` and e
 - `S34`, `S35`, `S37`, `S38`, `S39`, `S41`, `S42`, `S46`, `S47`, `S50`, `S51`, `S52`
 - `S53`, `S55`, `S56`, `S57`, `S58`
 
-### 10.3 S2-F structural accounting
+## 11. S2-G machine -> owner reverse-conformance ledger
+
+### 11.1 Method, source boundary and count discipline
+
+This is an owner-first reverse map at baseline `f4cd43c`. It starts with the
+current accepted owner route for each responsibility, then assesses the current
+machine consumer/projection. The family inventory is the Step-1 admitted set;
+the material responsibility groups below are the complete S2-G classification
+set, not a claim that every file in a group implements the named behavior.
+
+Primary owner routes actually inspected for this pass include Step-3 execution,
+Step-4 information/role-context, Step-5 persistence/recovery/currentness,
+WP-10 record allocation, WP-20 migration/versioning, WP-22 proof-channel
+separation, WP-23 release/package/legal readiness, S6D-11 package closure and
+the current versioning policy. The Project Map and Canonical Architecture Index
+were used only to route to those owners.
+
+`artifact_count` is the tracked-file count at the baseline, including only the
+specified family. It is a discovery measure, not behavior, completeness,
+semantic-authority, test-pass, package, or release evidence. A class of
+`IMPLEMENTATION_ONLY` means a machine contract/consumer exists but does not
+establish runtime behavior. `ALREADY_REALIZED_SUPPORT` establishes only the
+bounded support role stated in that record, never all downstream behavior.
+
+```text
+MANDATORY_FAMILIES: 17 / 17
+IMPLICATED_LEGAL_FAMILY: 1 / 1
+TRACKED_ARTIFACTS: 466
+MATERIAL_RESPONSIBILITIES: 59 / 59 classified
+MACHINE_RECORDS: 19
+EXCEPTION_RECORDS: 14
+EXCEPTION_MEMBERS: 31
+MATERIAL_MACHINE_RESPONSIBILITIES_WITHOUT_OWNER_OR_CLASS: []
+MIXED_GROUPS_WITHOUT_EXCEPTION_BREAKDOWN: []
+MACHINE_SURFACE_FALSE_AUTHORITY_PROMOTIONS: 0
+```
+
+### 11.2 GAME runtime and template families
+
+#### R27-M01 — `GAME/CORE/*.md`
+`artifact_count`: `45`; `material_responsibilities`: `7 / 7`.
+
+1. Turn/orchestration and LLM containment are `IMPLEMENTATION_ONLY` consumers of
+   Step-3 and R2.4; `RUNTIME.md`, `AI_REASONING.md` and `PLAY_POLICY.md` do not
+   replace deterministic execution or role-context owners.
+2. Mechanical admission, RNG and READY_PC gating are `IMPLEMENTATION_ONLY`
+   consumers of Step-3, S6D and their native model owners.
+3. Domain adjudication, combat, exploration, magic, NPC and progression modules
+   are `IMPLEMENTATION_ONLY` consumers of their native domain/ruleset owners.
+4. Storage, save, integrity, session, multiplayer, LIVE and chronology modules
+   are `IMPLEMENTATION_ONLY` consumers of Step-5/WP-13..WP-17 native owners.
+5. Bootstrap, campaign setup/card, updates and campaign operations are
+   `IMPLEMENTATION_ONLY` consumers of WP-19, WP-20 and WP-23.
+6. Information, narrative, prep, lore, sources and safety modules are
+   `IMPLEMENTATION_ONLY` consumers of Step-4/R2.1..R2.4 and native policy
+   owners.
+7. `CORE_INDEX.md` is `DERIVED_SUPPORT` only; module headers and accepted owners
+   control activation and semantics.
+
+#### R27-M02 — `GAME/SCHEMA/*`
+`artifact_count`: `21`; `material_responsibilities`: `6 / 6`.
+
+1. Campaign manifest/config/card identity and package-currentness schemas are
+   `IMPLEMENTATION_ONLY` consumers of WP-10, WP-19, WP-20 and versioning.
+2. Session/checkpoint/index/event/storage record schemas are
+   `IMPLEMENTATION_ONLY` consumers of Step-5 and WP-10..WP-14 native owners.
+3. PC/NPC/faction/item/location/lore/thread world-record schemas are
+   `IMPLEMENTATION_ONLY` consumers of Step-2/Step-4/S6D natural owners.
+4. Player/live-scene/House-Rules schemas are `IMPLEMENTATION_ONLY` consumers of
+   access, Step-5.8, R2.5 and House-Rules owners.
+5. `README.md` is `DERIVED_SUPPORT`; it is not a schema or authority owner.
+6. `current_state` is an `IMPLEMENTATION_ONLY` current-routing projection under
+   Step-5/WP-10..WP-15; its global `world_time.frontier` claim is separately
+   classified as `STALE` in `R27-X11`, not as chronology authority.
+
+#### R27-M03 — `GAME/CAMPAIGN/*`
+`artifact_count`: `29`; `material_responsibilities`: `6 / 6`.
+
+1. Manifest/config/card scaffold inputs are `IMPLEMENTATION_ONLY` projections of
+   their campaign schemas and WP-19/WP-20 owners.
+2. `STATE/CURRENT`, sessions, checkpoints and log templates are
+   `IMPLEMENTATION_ONLY` inputs to Step-5/WP-10..WP-14 record owners.
+3. World-root placeholders are `IMPLEMENTATION_ONLY` scaffold routing, not
+   entity/current-state authority.
+4. Index templates are `DERIVED_SUPPORT` consumers of native record/index
+   owners; their presence creates no discovery/currentness authority.
+5. `RULES/HOUSE_RULES.md/.yaml` are `IMPLEMENTATION_ONLY` policy projections of
+   the House-Rules owner and policy schema.
+6. Campaign `README.md` is `DERIVED_SUPPORT` scaffold documentation.
+
+#### R27-M04 — `GAME/TEMPLATE/*`
+`artifact_count`: `1`; `material_responsibilities`: `1 / 1`.
+
+`STORAGE_README.md` is `DERIVED_SUPPORT` for first storage-root materialization
+under `GAME/CORE/STORAGE.md` and WP-19. It is neither campaign identity nor
+runtime authority.
+
+#### R27-M05 — `GAME/INSTALL/*`
+`artifact_count`: `3`; `material_responsibilities`: `3 / 3`.
+
+1. Human installation instructions are `IMPLEMENTATION_ONLY` consumers of the
+   WP-23 package/install owner.
+2. `PROJECT_INSTRUCTIONS.txt` is an `IMPLEMENTATION_ONLY` packaged projection;
+   it must remain parity-checked with the owner-selected install contract.
+3. `00_DND_BOOTSTRAP.md` is an `IMPLEMENTATION_ONLY` bootstrap consumer of
+   WP-19/WP-23 and the runtime root-selection boundary.
+
+#### R27-M06 — `GAME/RULES/*`
+`artifact_count`: `9`; `material_responsibilities`: `3 / 3`.
+
+1. Package manifest/seed/capability artifacts are `ALREADY_REALIZED_SUPPORT` for
+   the S6D-11 manifest -> snapshot -> resolved-lock identity chain.
+2. Package source/routing documentation is `DERIVED_SUPPORT` for rules/source
+   policy and carries no mutable entity or campaign authority.
+3. Package notice material is `ALREADY_REALIZED_SUPPORT` for the legal payload,
+   not evidence of rules execution.
+
+#### R27-M07 — `GAME/MIGRATIONS/*`
+`artifact_count`: `1`; `material_responsibilities`: `1 / 1`.
+
+`README.md` is `INTENTIONALLY_DEFERRED` migration-convention support under
+WP-20. No released-v1.0+ qualifying source/target obligation exists, so absence
+of concrete transforms is not treated as present behavior or as a prerelease
+gap.
+
+#### R27-M08 — `GAME/TOOLS/*`
+`artifact_count`: `2`; `material_responsibilities`: `2 / 2`.
+
+1. `init_campaign.py` is an `IMPLEMENTATION_ONLY` scaffold generator consumer of
+   WP-19, campaign templates and their schemas; invocation has not been used as
+   evidence that a campaign was created correctly.
+2. `ruleset_package.py` is `ALREADY_REALIZED_SUPPORT` for the bounded S6D-11
+   manifest/lock/comparator contract, not proof of production gameplay.
+
+#### R27-M09 — `GAME/ENGINE_VERSION.yaml`
+`artifact_count`: `1`; `material_responsibilities`: `1 / 1`.
+
+The shipped release/compatibility projection is `ALREADY_REALIZED_SUPPORT` for
+the versioning owner and WP-23. It is compared with `DEV/ENGINE_DEVELOPMENT.yaml`;
+its shared-field equality does not prove package provenance, compatibility or a
+release.
+
+### 11.3 DEV machine, verification, workflow and version families
+
+#### R27-M10 — `DEV/ARCHITECTURE/*`
+`artifact_count`: `32`; `material_responsibilities`: `5 / 5`.
+
+1. Current model/catalog/domain architecture contracts are accepted semantic
+   owners where their own status and supersession routes say so.
+2. Current process/current-progress architecture controls are
+   `ALREADY_REALIZED_SUPPORT` for development governance, not runtime behavior.
+3. Canonical-spec/owner-decision routing is `DERIVED_SUPPORT`; the referenced
+   accepted owner remains controlling.
+4. Historical design/audit/status records are `HISTORICAL` unless a current owner
+   explicitly retains a bounded provenance role.
+5. Maintenance/support proposals are `IMPLEMENTATION_ONLY` or `DERIVED_SUPPORT`
+   consumers and cannot create recovery or command authority.
+
+#### R27-M11 — `DEV/CATALOG/*`
+`artifact_count`: `113`; `material_responsibilities`: `5 / 5`.
+
+1. Core catalog, entity structures and identifier policy are
+   `ALREADY_REALIZED_SUPPORT` for catalog contracts/inventory/resolution.
+2. Mechanical surfaces and portable value routes/contracts are
+   `ALREADY_REALIZED_SUPPORT` for S6D contract owners.
+3. Package closure and domain-coverage artifacts are `ALREADY_REALIZED_SUPPORT`
+   for S6D-11/B-prime, with derived bindings remaining non-authoritative.
+4. House-Rules mechanical-boundary data is `ALREADY_REALIZED_SUPPORT` for the
+   House-Rules owner.
+5. Product-promise evidence is `DERIVED_SUPPORT`, not a product-semantic owner.
+
+#### R27-M12 — `DEV/SCHEMAS/*`
+`artifact_count`: `86`; `material_responsibilities`: `5 / 5`.
+
+1. Catalog/admission/entity schemas are `IMPLEMENTATION_ONLY` contracts under
+   catalog and entity owners.
+2. Activity/primitive/value/mechanical schemas are `IMPLEMENTATION_ONLY`
+   contracts under Step-3/S6D owners.
+3. Runtime interaction/command/resolution/procedure/continuation schemas are
+   `IMPLEMENTATION_ONLY` contracts under Step-3.
+4. World-state, temporal and policy schemas are `IMPLEMENTATION_ONLY` contracts
+   under Step-2, Step-4, Step-5 and House-Rules owners.
+5. Ruleset-package/lock/coverage/compatibility schemas are `IMPLEMENTATION_ONLY`
+   contracts under S6D-11 and versioning; schema presence does not prove shipped
+   GAME parity or supported-target execution.
+
+#### R27-M13 — `DEV/TESTS/*`
+`artifact_count`: `98`; `material_responsibilities`: `3 / 3`.
+
+1. `69` executable `test_*.py` artifacts are `VERIFICATION_ONLY` consumers of
+   current owners; passing them proves only their executed checks.
+2. `25` `*_CASES.md` scenario catalogs are `VERIFICATION_ONLY` acceptance
+   artifacts, not runtime or semantic owners.
+3. The remaining four audit/TODO/fixture artifacts are `HISTORICAL`, `DEBT` or
+   `VERIFICATION_ONLY` according to their explicit role; they do not establish
+   full verification or empirical acceptance.
+
+#### R27-M14 — `DEV/TOOLS/*`
+`artifact_count`: `13`; `material_responsibilities`: `3 / 3`.
+
+1. Maintenance audit entry/engine are `VERIFICATION_ONLY` consumers of current
+   owners; a successful audit does not implement deferred machine work.
+2. Release builder/launcher and isolated tool environment are
+   `ALREADY_REALIZED_SUPPORT` for WP-23 package composition and local validation.
+3. Catalog/domain/package validators are `VERIFICATION_ONLY` consumers of S6D
+   machine contracts, not ruleset semantic authority.
+
+#### R27-M15 — `DEV/RELEASE/*`
+`artifact_count`: `2`; `material_responsibilities`: `2 / 2`.
+
+1. `VERSIONING.md` is `ALREADY_REALIZED_SUPPORT` projection of the canonical
+   versioning policy; the detailed owner controls conflicts.
+2. `CHECKLIST.md` is `VERIFICATION_ONLY` release-gate support under WP-23; it
+   cannot turn source CI/build evidence into fresh-Project or published-release
+   acceptance.
+
+#### R27-M16 — `.github/workflows/*`
+`artifact_count`: `2`; `material_responsibilities`: `2 / 2`.
+
+1. `validate.yml` is `VERIFICATION_ONLY` source CI for maintenance audit and DEV
+   tests.
+2. `release-runtime.yml` is `RELEASE_TIME_FORWARD_OBLIGATION` support for exact
+   tagged build/asset publication; workflow existence neither performs nor proves
+   the owner-required pre-tag/post-upload fresh-Project acceptance.
+
+#### R27-M17 — `DEV/ENGINE_DEVELOPMENT.yaml`
+`artifact_count`: `1`; `material_responsibilities`: `1 / 1`.
+
+The development/release bookkeeping manifest is `ALREADY_REALIZED_SUPPORT` for
+the versioning owner and the shared GAME projection. Development-only revisions
+are not runtime compatibility semantics and must not leak to `GAME`.
+
+#### R27-M18 — workflow-adjacent public legal/release payload
+`artifact_count`: `7`; `material_responsibilities`: `2 / 2`.
+
+1. Root/runtime license, notice and third-party-notice surfaces are
+   `ALREADY_REALIZED_SUPPORT` for their legal owners and WP-23 legal-copy
+   validation.
+2. Public provenance classification is `IMPLEMENTATION_ONLY` policy enforcement
+   under PO-007/WP-23; artifact presence does not prove repository-wide future
+   conformance.
+
+#### R27-M19 — cross-projection version/workflow composition
+`artifact_count`: `0` additional; `material_responsibilities`: `1 / 1`.
+
+The paired GAME/DEV manifest relationship is an `ALREADY_REALIZED_SUPPORT`
+machine check under versioning/WP-20/WP-23. It preserves distinct engine,
+module, schema, generation, catalog, ruleset and digest namespaces; no equality
+or count is treated as compatibility proof.
+
+### 11.4 Required exception breakdowns
+
+#### R27-X01 — Connector transport wording is stale across the four named consumers
+`parent_records`: `R27-M01`, `R27-M05`; `exception_members`: `4`.
+
+`GAME/INSTALL/README.md`, `GAME/INSTALL/PROJECT_INSTRUCTIONS.txt`,
+`GAME/INSTALL/00_DND_BOOTSTRAP.md` and `GAME/CORE/BOOTSTRAP_RUNTIME.md` retain
+the historical `default`/`first` transport wording. Class: `STALE`; accepted
+owner: R2.6 fixed Connector profile plus WP-13 fixed-transport boundary; route:
+`WP01-F03 -> R27-R003`. The members do not authorize a later alternate transport
+probe/fallback and their presence does not prove Connector failure behavior.
+
+#### R27-X02 — legacy writable epistemic surfaces
+`parent_record`: `R27-M02`; `exception_members`: `3`.
+
+`GAME/SCHEMA/thread.schema.yaml` `visibility.known_by_pc_ids`,
+`GAME/SCHEMA/live_scene.schema.yaml` `known_by_pc_ids`, and the legacy
+`GAME/SCHEMA/pc.schema.yaml` knowledge projection are `STALE`/`DEBT` machine
+surfaces. Accepted owners are Step-4 plus the source-Actor model; route:
+`WP02-M01 -> R27-R006`. None is a second `world.knowledge` or disclosure owner.
+
+#### R27-X03 — standalone Secret remnants
+`parent_record`: `R27-M02`; `exception_members`: `2`.
+
+`GAME/SCHEMA/item.schema.yaml` and `GAME/SCHEMA/location.schema.yaml` retain
+`secret_ids`. Class: `STALE`; accepted owner: Step-4/WP-10 truth, knowledge and
+disclosure separation; route: `WP02-M02 -> R27-R007`. They cannot establish a
+standalone Secret/secrecy authority.
+
+#### R27-X04 — combined legacy lore status
+`parent_record`: `R27-M02`; `exception_members`: `1`.
+
+`GAME/SCHEMA/lore.schema.yaml` retains `disputed_in_world` in the objective lore
+status shape. Class: `STALE`; accepted owner: Step-4 and current catalog law;
+route: `WP02-M03 -> R27-R008`. In-world dispute belongs to knowledge, not an
+objective-truth status.
+
+#### R27-X05 — campaign recovery-template carriers are not recovery authority
+`parent_record`: `R27-M03`; `exception_members`: `3`.
+
+`GAME/CAMPAIGN/CHECKPOINTS/_TEMPLATE.yaml`,
+`GAME/CAMPAIGN/SESSIONS/_TEMPLATE.yaml` and `GAME/CAMPAIGN/MANIFEST.yaml` carry
+checkpoint/session pointer fields. Class: `IMPLEMENTATION_ONLY`; accepted owner:
+Step-5.7 and WP-14. They are not a checkpoint-first recovery root, host lease or
+currentness frontier. Their template presence is not proof that the deferred
+recovery realization is complete.
+
+#### R27-X06 — derivative architecture routing surfaces
+`parent_record`: `R27-M10`; `exception_members`: `3`.
+
+`DEV/PROJECT_MAP.md`, `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` and
+`DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` are `DERIVED_SUPPORT`. They route to
+owners/current progress but cannot own semantics, current global state or
+supersession.
+
+#### R27-X07 — retained historical architecture sources
+`parent_record`: `R27-M10`; `exception_members`: `4`.
+
+`CATALOG_DESIGN_STATUS.md`, `CATALOG_MODEL.md`, `MECHANICAL_RUNTIME_PROPOSAL.md`
+and `CRITICAL_ARCHITECTURE_AUDIT.md` are `HISTORICAL`/`STALE` provenance where
+later accepted owners supersede them. They cannot reopen or override current
+architecture by filename, date or retained detail.
+
+#### R27-X08 — maintenance command material is not a parallel recovery owner
+`parent_record`: `R27-M10`; `exception_members`: `1`.
+
+`DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` is `IMPLEMENTATION_ONLY`/`DERIVED_SUPPORT`.
+Accepted recovery/currentness owners remain Step-5.7, WP-10 and native
+persistence/access contracts. The document cannot create command authority.
+
+#### R27-X09 — non-executable test-family remainder
+`parent_record`: `R27-M13`; `exception_members`: `4`.
+
+`PRE_RELEASE_AUDIT_0.1.0.md` is `HISTORICAL`,
+`TODO_LONG_CAMPAIGN_SCALE.md` and `TODO_MULTIPLAYER_LIVE_BRANCH.md` are `DEBT`,
+and `fixtures/s6d-07-character-mvp-actors.json` is `VERIFICATION_ONLY`. None is
+an executable-pass substitute, a semantic owner, or empirical/release proof.
+
+#### R27-X10 — workflow proof-boundary exception
+`parent_record`: `R27-M16`; `exception_members`: `2`.
+
+`validate.yml` and `release-runtime.yml` are `VERIFICATION_ONLY` and
+`RELEASE_TIME_FORWARD_OBLIGATION` respectively. WP-23 keeps the pre-tag and
+post-upload fresh-Project acceptance gates separate; neither workflow's presence
+or successful run proves those gates.
+
+#### R27-X11 — `current_state` global chronology frontier
+`parent_record`: `R27-M02`; `exception_members`: `1`.
+
+`GAME/SCHEMA/current_state.schema.yaml` requires `world_time.frontier` and calls
+it a compact globally reconciled chronology frontier. Class: `STALE`; accepted
+owner: Step-5.9 and WP-15 (`LAW WP15-32` retires a generic/global chronology
+authority). Readiness impact: `WP02-M06 -> R27-R010` remains a `STALE_DEBT`
+schema/current-routing realization, with no campaign-global clock/frontier or
+CURRENT-derived chronology allowed.
+
+#### R27-X12 — `location` reverse-presence field
+`parent_record`: `R27-M02`; `exception_members`: `1`.
+
+`GAME/SCHEMA/location.schema.yaml` retains `state.present_entity_ids`. Class:
+`STALE`; accepted owners: Actor Model, Catalog Contracts and WP-11. Readiness
+impact: `WP02-M11 -> R27-R015` remains an `IMPLEMENTATION_OBLIGATION` to make
+reverse presence derived/rebuildable unless a bounded owner proves a separate
+route; the field cannot become a second writable placement owner.
+
+#### R27-X13 — stale exploration spatial-record consumer
+`parent_record`: `R27-M01`; `exception_members`: `1`.
+
+`GAME/CORE/EXPLORATION.md` directs a complex tactical space to create a compact
+spatial record/map. Class: `STALE`; accepted owner: S6D domain-rules coverage
+with the WP-26 routing rule. Readiness impact: `WP06-F03 -> R27-R048` remains a
+`STALE_DEBT` CORE-prose repair constrained to bounded
+location/procedure/applicability contracts, with no generic spatial/pathfinding
+engine.
+
+#### R27-X14 — stale B-prime domain-coverage consumer
+`parent_record`: `R27-M10`; `exception_members`: `1`.
+
+`DEV/ARCHITECTURE/DOMAIN_RULES_COVERAGE.md` still states that the approved B-prime
+binding/schema are not materialized/blocked. Class: `STALE`; accepted owners:
+S6D package closure and the B-prime derived-binding owner decision. Readiness
+impact: `WP06-F02 -> R27-R047` remains a `STALE_DEBT` documentation repair only;
+the current package-binding realization controls and the stale prose cannot
+create a new package authority or reopen S6D architecture.
+
+### 11.5 S2-G closure accounting
+
+```text
+R27_M01_TO_M19_PRESENT: 19 / 19
+R27_X01_TO_X14_PRESENT: 14 / 14
+TRACKED_ARTIFACT_COUNT_BY_FAMILY: 466
+MATERIAL_RESPONSIBILITIES_CLASSIFIED: 59 / 59
+EXCEPTION_MEMBERS_CLASSIFIED: 31 / 31
+MATERIAL_MACHINE_RESPONSIBILITIES_WITHOUT_OWNER_OR_CLASS: []
+MIXED_GROUPS_WITHOUT_EXCEPTION_BREAKDOWN: []
+MACHINE_SURFACE_FALSE_AUTHORITY_PROMOTIONS: 0
+ARCHITECTURE_BLOCKER_CANDIDATES_FROM_S2_G: []
+VERSION_IMPACT: NONE — evidence-ledger only; no version-bearing semantic, machine,
+runtime, schema, catalog, protocol or metadata owner changed.
+WP27_STEP2: IN_PROGRESS
+WP27_STEP3: NOT_STARTED
+S2_H_AND_LATER: NOT STARTED
+```
+
+### 11.6 Preserved S2-F structural accounting
+
+The following counters are the historical S2-F close snapshot. The current S2-G
+state is owned by §11.5; the historical `S2_G_AND_LATER: NOT STARTED` line is
+not a current cursor or a later-slice assertion.
 
 ```text
 SOURCE_ITEM_COUNT: 224

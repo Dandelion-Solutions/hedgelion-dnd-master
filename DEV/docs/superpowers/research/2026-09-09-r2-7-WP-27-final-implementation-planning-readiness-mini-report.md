@@ -1,6 +1,6 @@
 # R2.7 WP-27 — Final implementation-planning readiness — mini-report
 
-Статус: **IN_PROGRESS — STEP 2 S2-F CLOSED / S2-G NEXT**
+Статус: **IN_PROGRESS — STEP 2 S2-G CLOSED / S2-H NEXT**
 
 Дата: 2026-09-09
 
@@ -406,12 +406,30 @@ VERSION_IMPACT: NONE
 NEXT_SLICE: S2-G — machine -> architecture reverse conformance
 ```
 
+### S2-G — machine -> architecture reverse conformance
+
+Machine audit is responsibility-based: 19 homogeneous `R27-M` groups and 14
+explicit `R27-X` exception records cover material mixed/stale/partial surfaces.
+Artifact inventory and material-responsibility accounting remain distinct.
+
+```text
+MANDATORY_MACHINE_FAMILIES: 17 / 17 + 1 LEGAL
+DISCOVERED_ARTIFACTS: 466
+MATERIAL_RESPONSIBILITIES: 59 / 59
+MACHINE_GROUPS: 19
+MACHINE_EXCEPTIONS: 14 / 31 MEMBERS
+MACHINE_UNOWNED_OR_UNCLASSIFIED: []
+MIXED_GROUPS_WITHOUT_BREAKDOWN: []
+MACHINE_SURFACE_FALSE_AUTHORITY_PROMOTIONS: 0
+VERSION_IMPACT: NONE
+NEXT_SLICE: S2-H — cross-cutting readiness dimensions and probes
+```
+
 ## Точка продолжения
 
 ```text
-WP-27 STEP 2 / S2-G
--> map each material current machine responsibility to accepted owner or explicit class
--> break mixed/partial/stale families into R27-X### exceptions
--> retain artifact and material-responsibility counts separately
+WP-27 STEP 2 / S2-H
+-> reconcile DAG, Version Impact routing, proof channels, defer/dormant/rejected triggers
+-> run R27-P01..P08 against exact ledger records
 -> publish the next durable slice checkpoint
 ```
