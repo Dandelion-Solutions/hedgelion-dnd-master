@@ -1,6 +1,6 @@
 # R2.7 WP-27 — Final implementation-planning readiness — mini-report
 
-Статус: **IN_PROGRESS — STEP 2 S2-B CLOSED / S2-C NEXT**
+Статус: **IN_PROGRESS — STEP 2 S2-C CLOSED / S2-D NEXT**
 
 Дата: 2026-09-09
 
@@ -332,12 +332,31 @@ VERSION_IMPACT: NONE
 NEXT_SLICE: S2-C — WP-08..WP-26 canonical-owner extraction
 ```
 
+### S2-C — WP-08..WP-26 canonical-owner extraction
+
+Для поздних WP извлечены отдельные material owner laws, а не по одной строке
+на WP. Сохранены WP-20 compatibility/migration boundaries, раздельные proof
+channels WP-22/23, writer-specific PO-010 bands через WP-24 и раздельные
+WP-25 `NORMAL`/`ELEVATED`/`DANGER` trajectories. Завершённые WP-26 repairs
+остались `ALREADY_REALIZED` и не превращены в future implementation work.
+
+```text
+WP08_26_SOURCE_ITEMS: 68 / 68 INDIVIDUALLY ACCOUNTED
+PENDING_S2_F_COMPOSITION: 42
+EXPLICIT_NO_WORK_TERMINALS: 26
+CLOSED_REPAIRS_REINTRODUCED_AS_WORK: 0
+UNRESOLVED_OWNER_GAPS: 0
+ARCHITECTURE_BLOCKER_CANDIDATES: []
+VERSION_IMPACT: NONE
+NEXT_SLICE: S2-D — PO-001..PO-010 carry-forward reconciliation
+```
+
 ## Точка продолжения
 
 ```text
-WP-27 STEP 2 / S2-C
--> extract every material surviving owner item from WP-08..WP-26
--> preserve separate implementation, proof, empirical, release, defer and negative routes
--> retain WP-26 completed repairs as ALREADY_REALIZED
+WP-27 STEP 2 / S2-D
+-> reconcile PO-001..PO-010 individually against accepted current owners
+-> preserve PO-003/009, PO-008/WP-25 and PO-010/WP-24 seams
+-> route each entry to source items, future consumers and proof without reopening PO decisions
 -> publish the next durable slice checkpoint
 ```
