@@ -1,6 +1,6 @@
 # R2.7 WP-27 — Final implementation-planning readiness — mini-report
 
-Статус: **IN_PROGRESS — STEP 2 S2-E CLOSED / S2-F NEXT**
+Статус: **IN_PROGRESS — STEP 2 S2-F CLOSED / S2-G NEXT**
 
 Дата: 2026-09-09
 
@@ -387,12 +387,31 @@ VERSION_IMPACT: NONE
 NEXT_SLICE: S2-F — source-item -> readiness composition
 ```
 
+### S2-F — source-item -> readiness composition
+
+Сформированы 146 `R27-R###` records с bidirectional traceability к 224
+source items. 78 items остаются explicit no-work terminals; их не превратили в
+искусственные implementation workstreams. Все proof channels, включая
+PO-derived real-target obligations, сохранены отдельно.
+
+```text
+SOURCE_ITEMS: 224
+READINESS_RECORDS: 146
+EXPLICIT_NO_WORK_TERMINALS: 78
+SOURCE_ITEMS_WITHOUT_TERMINAL_ROUTE: []
+READINESS_RECORDS_WITHOUT_OWNER: []
+AGGREGATION_QUALIFIER_LOSS: 0
+ARCHITECTURE_BLOCKER_CANDIDATES: []
+VERSION_IMPACT: NONE
+NEXT_SLICE: S2-G — machine -> architecture reverse conformance
+```
+
 ## Точка продолжения
 
 ```text
-WP-27 STEP 2 / S2-F
--> compose lossless R27-R### readiness records from all source-item ledgers
--> retain bidirectional source-item/readiness mapping and unsuppressed qualifiers
--> leave terminal no-work items explicit rather than inventing workstreams
+WP-27 STEP 2 / S2-G
+-> map each material current machine responsibility to accepted owner or explicit class
+-> break mixed/partial/stale families into R27-X### exceptions
+-> retain artifact and material-responsibility counts separately
 -> publish the next durable slice checkpoint
 ```
