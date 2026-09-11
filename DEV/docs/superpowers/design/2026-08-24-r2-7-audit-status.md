@@ -25,14 +25,14 @@ AUDIT_STATUS: IN_PROGRESS
 LAST_CLOSED_DOMAIN: WP-26
 CURRENT_DOMAIN: WP-27
 CURRENT_DOMAIN_TOPIC: Final implementation-planning readiness
-CURRENT_SLICE: WP-27 STEP 6 — independent fresh-context integrated adversarial review NOT STARTED
+CURRENT_SLICE: WP-27 STEP 7 — Run-C finding-resolution / propagation gate NOT STARTED
 NEXT_DOMAIN: R2.7 FINAL RECONCILIATION — ONLY AFTER WP-27 CLOSURE
-OWNER_GATE: NONE CURRENTLY; STEP 6 IS THE NEXT AUTHORIZED UNIT AND MUST RUN IN A SEPARATE FRESH CONTEXT
+OWNER_GATE: NONE CURRENTLY; STEP 7 IS THE NEXT AUTHORIZED UNIT
 FINAL_RECONCILIATION: NOT_STARTED
 
-R2_7_STATUS: WP-26 CLOSED / WP-27 STEPS 1-5 COMPLETE / STEP 6 NOT STARTED
+R2_7_STATUS: WP-26 CLOSED / WP-27 STEPS 1-6 COMPLETE / STEP 6 PASS / STEP 7 NOT STARTED
 R2_7_WP26: CLOSED / FINAL INDEPENDENT SENIOR PASS
-R2_7_WP27: AUTHORIZED / STEP 1 CLOSED / STEP 2 COMPLETE + INDEPENDENT RE-REVIEW PASS / STEPS 3-5 COMPLETE / STEP 6 NOT STARTED
+R2_7_WP27: AUTHORIZED / STEP 1 CLOSED / STEP 2 COMPLETE + INDEPENDENT RE-REVIEW PASS / STEPS 3-5 COMPLETE / STEP 6 COMPLETE + PASS / STEP 7 NOT STARTED
 ```
 
 ---
@@ -175,9 +175,31 @@ PRODUCT_OWNER_DECISION_REQUIRED: NO
 VERSION_IMPACT: NONE — documentation-only Run-A artifacts
 ```
 
-Run A used no nested evidence expansion: the admitted Step-2 owner/readiness/machine/probe records resolved the challenged seams without contradiction or owner ambiguity.
-
 The Step-5 workstream IDs are planning containers only. They do not replace the Step-2 readiness leaves or prior semantic/runtime/persistence/release owners. No implementation plan or implementation has been started.
+
+---
+
+## WP-27 Run B — Step 6 closure
+
+Frozen critic artifact:
+
+- `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-6-whole-project-adversarial-review.md`.
+
+```text
+STEP6_FRESH_STARTING_HEAD: f4b71035dc50fd69fe8fd0cd17c9df27d34030e8
+STEP6_REVIEWED_STEP5_CHECKPOINT: a1d6a298cee2de63811225ade51e2a51f8785d22
+STEP6_ARTIFACT_CHECKPOINT: 9367cccb0423204e5c8ea2e1256ef3e6da098421
+STEP6_RESULT: COMPLETE / PASS
+STEP6_BLOCKING_FOUND: 0
+STEP6_SIGNIFICANT_FOUND: 0
+STEP6_MINOR_FOUND: 0
+STEP6_HUMAN_DECISION_REQUIRED: NO
+STEP6_PRODUCT_OWNER_DECISION_REQUIRED: NO
+STEP6_ARCHITECTURE_REOPEN_REQUIRED: NO
+STEP6_VERSION_IMPACT: NONE
+```
+
+The fresh Run-B reviewer independently reconstructed the material dependency/owner graph through `DEV/PROJECT_MAP.md`, tested the Step-5 synthesis against native persistence/recovery/currentness/version/LLM/Story/diagnostic/scale/failure/async/repository owners and retained all required negative checks. No Step-5 repair was performed. The frozen Step-6 finding set is empty.
 
 ---
 
@@ -191,13 +213,16 @@ WP27_STEP2: COMPLETE
 WP27_STEP3: COMPLETE
 WP27_STEP4: COMPLETE
 WP27_STEP5: COMPLETE
-WP27_STEP6: NOT_STARTED
+WP27_STEP6: COMPLETE / PASS
+WP27_STEP7: NOT_STARTED
+WP27_STEP8: NOT_STARTED
 
-NEXT_ELIGIBLE_UNIT: WP-27 Step 6 — independent fresh-context integrated adversarial review
-NEXT_AUTHORIZED_UNIT: WP-27 STEP 6 — FRESH-CONTEXT WHOLE-PROJECT ADVERSARIAL REVIEW
-STEP6_REVIEWER_CONTEXT: SEPARATE FRESH CONTEXT REQUIRED
+NEXT_ELIGIBLE_UNIT: WP-27 Step 7 — finding-resolution / propagation gate
+NEXT_AUTHORIZED_UNIT: WP-27 STEP 7 — RUN-C FINDING-RESOLUTION / PROPAGATION GATE
+STEP6_FROZEN_FINDING_SET: EMPTY
+STEP7_REPAIR_WORK_FROM_STEP6: NONE
 
-REQUIRED_GATE: complete Steps 6–8 under the controlling WP-27 process; mandatory Step-8 independent Senior gate remains required
+REQUIRED_GATE: complete Steps 7–8 under the controlling WP-27 process; mandatory Step-8 independent Senior gate remains required
 FINAL_RECONCILIATION_AFTER_WP27: REQUIRED
 IMPLEMENTATION_PLANNING_BEFORE_FINAL_RECONCILIATION: FORBIDDEN
 
@@ -207,7 +232,7 @@ MIGRATION_EXECUTION_STARTED: NO
 RELEASE_EXECUTION_STARTED: NO
 GAMEPLAY_BOOTSTRAP_STARTED: NO
 
-CURRENT_ASSIGNMENT_STOP: RUN A ENDS AFTER STEP-5 RECOVERY SYNC + VERIFICATION; DO NOT BEGIN STEP 6 IN THIS CONTEXT
+CURRENT_ASSIGNMENT_STOP: RUN B ENDS AFTER STEP-6 CRITIC PUBLICATION + REQUIRED CURSOR SYNC + VERIFICATION; DO NOT BEGIN STEP 7 IN THIS CONTEXT
 ```
 
 `DEV/CURRENT_PROGRESS.md` remains the sole global authority if this task-local cursor ever drifts again.
