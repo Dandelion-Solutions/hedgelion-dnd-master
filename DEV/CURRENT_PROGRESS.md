@@ -4,22 +4,23 @@ Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 This is the sole authority for the project's current global position, active work, next authorized unit and global gate. It does not replace semantic owners, task briefs, design provenance or the sequencing roadmap.
 
-Detailed historical review/recovery evidence remains in the owning WP design/spec artifacts. This file keeps the current routing state and the predecessor closure facts needed to recover the active program position without turning prior design prose into a second semantic owner.
+Detailed historical review/recovery evidence remains in the owning WP design/spec artifacts. This file keeps only the current routing state and the predecessor closure facts required to recover the active program position.
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-27 RUN B COMPLETE — STEP 6 PASS / RUN C STEP 7 NOT STARTED
+GLOBAL_STATE: R2.7 WP-27 STEP 8 WORKER COMPLETE — MANDATORY INDEPENDENT FINAL SENIOR REVIEW PENDING
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-27 Step 7 — finding-resolution / propagation gate NOT STARTED
+CURRENT_SLICE: WP-27 Step 8 complete — final implementation-planning readiness canonicalized / independent Senior gate pending
 
-LAST_CLOSED_UNIT: WP-27 Step 6 — independent fresh-context whole-project adversarial review PASS
-NEXT_ELIGIBLE_UNIT: WP-27 Step 7 — finding-resolution / propagation gate
-NEXT_AUTHORIZED_UNIT: WP-27 STEP 7 — RUN-C FINDING-RESOLUTION / PROPAGATION GATE
-REQUIRED_GATE: account for the frozen Step-6 finding set before Step 8; current finding set is empty, so no candidate repair is authorized by Step 6; mandatory Step-8 Senior review remains required before WP-27 closure
+LAST_CLOSED_DOMAIN: WP-26
+LAST_COMPLETED_WORKER_UNIT: WP-27 Step 8 — canonicalization and self-review
+NEXT_ELIGIBLE_UNIT: mandatory independent final WP-27 Senior review
+NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: NONE — STOP AT SENIOR GATE
+REQUIRED_GATE: mandatory independent final WP-27 Senior review before WP-27 closure
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
-KNOWN_BLOCKERS: implementation planning / implementation / release / migration / gameplay bootstrap remain unauthorized; R2.7 final reconciliation remains mandatory after WP-27 closure
+KNOWN_BLOCKERS: WP-27 is not closed; R2.7 final reconciliation has not started; implementation planning / implementation / migration / release / gameplay bootstrap remain unauthorized
 ```
 
 ---
@@ -45,7 +46,7 @@ WP26_FINAL_SENIOR_REVIEW: PASS / GO
 WP26_CLOSED: YES
 ```
 
-Canonical recent owners:
+Recent canonical predecessor owners:
 
 - WP-20 — `DEV/docs/superpowers/specs/2026-09-05-r2-7-WP-20-engine-update-schema-evolution-migration-canonical-spec.md`;
 - WP-21 — `DEV/docs/superpowers/specs/2026-09-07-r2-7-WP-21-diagnostics-observability-cleanup-retirement-canonical-spec.md`;
@@ -55,34 +56,32 @@ Canonical recent owners:
 - WP-25 — `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-25-error-degradation-failure-semantics-canonical-spec.md`;
 - WP-26 — `DEV/docs/superpowers/specs/2026-09-09-r2-7-WP-26-documentation-routing-supersession-consistency-canonical-spec.md`.
 
-WP-26 final independent Senior evidence remains:
-
-- `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-26-final-senior-review.md`.
-
-WP-26 closed without activating deferred PO-009 concrete Story/control/cache realization or PO-010 writer-specific partition topology. Accepted architecture and deferred realization remain distinct.
-
 ---
 
 # WP-27 current state
 
-WP-27 is the final numbered R2.7 implementation-planning-readiness audit before mandatory R2.7 final reconciliation.
+WP-27 is the final numbered R2.7 domain before mandatory R2.7 final reconciliation.
 
-Product Owner stage-entry authorization was supplied explicitly on 2026-09-09. Step 1 is closed, Step 2 is independently closed/re-reviewed, Run A Steps 3–5 are durably published, and independent Run-B Step 6 is now complete with a zero-finding PASS.
+Current worker canonical owner:
 
-Primary WP-27 artifacts:
+- `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`.
 
-- Step-1 source/critic package under `DEV/docs/superpowers/design/2026-09-09-r2-7-WP-27-*`;
-- Step-2 execution amendment — `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-2-execution-amendment.md`;
-- Step-2 evidence ledger — `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-2-evidence-ledger.md`;
-- Step-2 independent audit — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-2-independent-audit.md`;
-- Run-A controlling task — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-steps-3-5-task.md`;
-- Run-A/Run-B/Run-C execution plan — `DEV/docs/superpowers/plans/2026-09-11-r2-7-WP-27-steps-3-8-audit-execution-plan.md`;
-- Step-3 Decision Brief — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-3-decision-brief.md`;
-- Step-4 review disposition — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-4-review-disposition.md`;
-- Step-5 candidate — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-5-candidate-readiness-spec.md`;
-- Step-6 independent critic — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-6-whole-project-adversarial-review.md`.
+Current Run-C provenance:
 
-## Step-2 admitted closure basis
+- Step 5 candidate — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-5-candidate-readiness-spec.md`;
+- Step 6 independent critic — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-6-whole-project-adversarial-review.md`;
+- Step 7 resolution/propagation — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-7-finding-resolution-and-propagation.md`;
+- Step 8 self-review — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-8-canonicalization-self-review.md`.
+
+Controlling execution plan:
+
+- `DEV/docs/superpowers/plans/2026-09-11-r2-7-WP-27-steps-3-8-audit-execution-plan.md`.
+
+Domain-local recovery mini-report:
+
+- `DEV/docs/superpowers/research/2026-09-09-r2-7-WP-27-final-implementation-planning-readiness-mini-report.md`.
+
+## Admitted Step-2 closure basis
 
 ```text
 STEP2_FINAL_HEAD: cbe15efecff6de222787ceae2c88a196e24e13e6
@@ -101,47 +100,32 @@ UNRESOLVED_SIGNIFICANT: 0
 HUMAN_DECISION_REQUIRED: NO
 PRODUCT_OWNER_DECISION_REQUIRED: NO
 VERSION_IMPACT: NONE
-WP27_STEP2: COMPLETE
 ```
 
-Step 2 remains admitted predecessor evidence for later steps; it must not be reconstructed by blind corpus scan.
+Step 2 remains admitted predecessor evidence and item-level traceability authority for WP-27 readiness classification. It is not reconstructed from derivative summaries.
 
-## Run A — Steps 3–5 durable closure
+## Run A — Steps 3–5
 
 ```text
 STEP3_CHECKPOINT: 322b44133024fc754ecb0087aba5a5dbf0333f5a
 STEP3_RESULT: COMPLETE / HIGH confidence
-STEP3_HUMAN_DECISION_REQUIRED: NO
-STEP3_PRODUCT_OWNER_DECISION_REQUIRED: NO
-STEP3_ARCHITECTURE_REOPEN_REQUIRED: NO
 
 STEP4_CHECKPOINT: 75faeeca3e65724581025715f63a673c7b5762ba
 STEP4_RESULT: COMPLETE / NO_ADDITIONAL_HUMAN_DECISION_REQUIRED
-STEP4_NEW_MATERIAL_UNKNOWN: NO
-STEP4_NESTED_EVIDENCE_EXPANSION: NONE
 
 STEP5_CHECKPOINT: a1d6a298cee2de63811225ade51e2a51f8785d22
-STEP5_RESULT: COMPLETE / CANDIDATE READY FOR FRESH-CONTEXT STEP-6 CRITIC
+STEP5_RESULT: COMPLETE
 CANDIDATE_WORKSTREAMS: 11
 READINESS_MAPPED: 145 / 145
 READINESS_MISSING: []
 READINESS_DUPLICATED: []
 NO_WORK_TERMINALS_PRESERVED: 79 / 79
 NO_WORK_ACTIVATED_BY_CANDIDATE: 0
-PO_ACCOUNTED: 10 / 10
-ROUND2_CONTINUITY: 82 / 82
-MACHINE_RESPONSIBILITIES: 59 / 59
-MACHINE_EXCEPTION_MEMBERS: 31 / 31
-HIGH_RISK_PROBES_PRESERVED: 8 / 8 PASS
-ARCHITECTURE_BLOCKER_CANDIDATES: []
-HUMAN_DECISION_REQUIRED: NO
-PRODUCT_OWNER_DECISION_REQUIRED: NO
-VERSION_IMPACT: NONE — documentation-only Run-A artifacts
 ```
 
-The Step-5 workstream IDs are planning containers only. The Step-2 `R27-R###` leaves and their accepted semantic/runtime/persistence/release owners remain authoritative. No global readiness/migration/failure/partition/routing/scheduling authority was introduced.
+Workstreams are planning containers only; exact Step-2 readiness leaves and native owners retain authority.
 
-## Run B — Step 6 independent critic closure
+## Run B — Step 6
 
 ```text
 STEP6_ARTIFACT_CHECKPOINT: 9367cccb0423204e5c8ea2e1256ef3e6da098421
@@ -155,7 +139,58 @@ STEP6_ARCHITECTURE_REOPEN_REQUIRED: NO
 STEP6_VERSION_IMPACT: NONE
 ```
 
-Step 6 independently reconstructed the material owner/dependency subgraph, attacked the Step-5 aggregation/reverse-traceability boundary, executed the required failure/currentness/version/LLM-authority/Story/cache/diagnostic/repository/async/degradation attacks, and retained important negative findings. No candidate repair was performed and no Step-7 work was started in Run B.
+The frozen Step-6 finding set is empty. Run B did not modify the Step-5 candidate.
+
+## Run C — Step 7
+
+```text
+STEP7_CHECKPOINT: c477e0350a7c304de5dc81d586c59ff7920b0487
+STEP6_FINDINGS_EXPECTED: 0
+STEP6_FINDINGS_ACCOUNTED: 0 / 0
+BLOCKING_UNRESOLVED: 0
+SIGNIFICANT_UNRESOLVED: 0
+MINOR_UNRESOLVED: 0
+STEP7_CANDIDATE_REPAIRS: NONE
+STEP7_PROPAGATION: NONE FROM STEP6
+RUN_B_CANDIDATE_REPAIR_DETECTED: NO
+RUN_B_STOP_BOUNDARY_CROSSED: NO
+HUMAN_DECISION_REQUIRED: NO
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+ARCHITECTURE_REOPEN_REQUIRED: NO
+WP27_STEP7: COMPLETE
+```
+
+## Run C — Step 8 worker result
+
+```text
+WP27_STEP8: COMPLETE
+FINAL_WP27_CANONICAL_SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
+
+SOURCE_ITEMS: 224 / 224
+READINESS_RECORDS: 145 / 145
+READINESS_MISSING: []
+READINESS_DUPLICATED: []
+EXPLICIT_NO_WORK_TERMINALS: 79 / 79
+NO_WORK_ACTIVATED: 0
+PO001_010: 10 / 10
+ROUND2_DIAMOND_STRONG: 82 / 82
+S14_S53_D15_DELTAS: PRESERVED
+MACHINE_RESPONSIBILITIES: 59 / 59
+MACHINE_EXCEPTION_MEMBERS: 31 / 31
+HIGH_RISK_PROBES: 8 / 8 PASS
+R27_R004: REMOVED / NOT RESURRECTED
+
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+HUMAN_DECISION_REQUIRED: NO
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+ARCHITECTURE_REOPEN_REQUIRED: NO
+VERSION_IMPACT: NONE
+```
+
+The final specification is implementation-facing but is not an implementation plan. It preserves dormant/deferred/rejected/no-work boundaries and distinct deterministic/scenario/empirical/release proof classes.
+
+---
 
 ## Current authorization boundary
 
@@ -168,19 +203,24 @@ WP27_STEP3: COMPLETE
 WP27_STEP4: COMPLETE
 WP27_STEP5: COMPLETE
 WP27_STEP6: COMPLETE / PASS
-WP27_STEP7: NOT_STARTED
-WP27_STEP8: NOT_STARTED
+WP27_STEP7: COMPLETE
+WP27_STEP8: COMPLETE
 
-NEXT_ELIGIBLE_UNIT: WP-27 Step 7 — finding-resolution / propagation gate
-NEXT_AUTHORIZED_UNIT: WP-27 STEP 7 — RUN-C FINDING-RESOLUTION / PROPAGATION GATE
-STEP6_FROZEN_FINDING_SET: EMPTY
-STEP7_REPAIR_WORK_FROM_STEP6: NONE
+WP27_FINAL_SENIOR_REVIEW: PENDING
+WP27_CLOSED: NO
 
+R2_7_FINAL_RECONCILIATION: NOT_STARTED
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 MIGRATION_EXECUTION_STARTED: NO
 RELEASE_EXECUTION_STARTED: NO
-REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
+GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-WP-27 closure still requires Steps 7–8, including the mandatory Step-8 Senior gate. R2.7 remains open after WP-27 closure until final reconciliation completes the global matrices, forward obligations, 82-item recheck, dormant/revisit trigger check, whole-project adversarial composition, Task-Brief-v2 exit criteria and implementation-planning entry resolution.
+Exact next gate:
+
+```text
+mandatory independent Senior review of completed WP-27 Step 8
+```
+
+The current worker must stop at this boundary. A later Senior PASS may close WP-27 and expose R2.7 final reconciliation; it does not skip that reconciliation or directly authorize implementation planning.
