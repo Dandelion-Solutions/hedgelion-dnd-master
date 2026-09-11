@@ -8,21 +8,21 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-27 STEP 8 WORKER COMPLETE — MANDATORY INDEPENDENT FINAL SENIOR REVIEW PENDING
+GLOBAL_STATE: R2.7 FINAL RECONCILIATION ACTIVE — WP-27 CLOSED / IMPLEMENTATION PLANNING NOT AUTHORIZED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-27 Step 8 complete — final implementation-planning readiness canonicalized / independent Senior gate pending
+CURRENT_SLICE: R2.7 final reconciliation — control plane and whole-project Source Manifest / owner-matrix reconciliation
 
-LAST_CLOSED_DOMAIN: WP-26
-LAST_CLOSED_UNIT: WP-26 — final independent Senior review PASS / GO
-LAST_COMPLETED_WORKER_UNIT: WP-27 Step 8 — canonicalization and self-review
-NEXT_ELIGIBLE_UNIT: mandatory independent final WP-27 Senior review
-NEXT_AUTHORIZED_UNIT: mandatory independent final WP-27 Senior review — only for an independent Senior reviewer; current Run-C worker MUST STOP
-NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: NONE — STOP AT SENIOR GATE
-REQUIRED_GATE: mandatory independent final WP-27 Senior review before WP-27 closure
+LAST_CLOSED_DOMAIN: WP-27
+LAST_CLOSED_UNIT: WP-27 — final independent Senior review PASS / GO; SR27-FINAL-M01 resolved; closure publication verified
+LAST_COMPLETED_WORKER_UNIT: WP-27 Step 8 canonicalization + final Senior closure
+NEXT_ELIGIBLE_UNIT: R2.7 final reconciliation — whole-project reconciliation package
+NEXT_AUTHORIZED_UNIT: R2.7 FINAL RECONCILIATION — reconcile Source Manifest, semantic/machine owners, unresolved/deferred/decision/version/proof/trigger/82-item coverage before implementation-planning entry resolution
+NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: R2.7 final reconciliation only
+REQUIRED_GATE: complete and verify the R2.7 final reconciliation package before implementation-planning entry may be resolved
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
-KNOWN_BLOCKERS: WP-27 is not closed; R2.7 final reconciliation has not started; implementation planning / implementation / migration / release / gameplay bootstrap remain unauthorized
+KNOWN_BLOCKERS: implementation planning / implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until R2.7 final reconciliation closes and its entry gate is resolved
 ```
 
 ---
@@ -46,6 +46,8 @@ WP25_FINAL_SENIOR_RE_REVIEW: PASS / GO
 WP25_CLOSED: YES
 WP26_FINAL_SENIOR_REVIEW: PASS / GO
 WP26_CLOSED: YES
+WP27_FINAL_SENIOR_REVIEW: PASS / GO
+WP27_CLOSED: YES
 ```
 
 Recent canonical predecessor owners:
@@ -56,117 +58,31 @@ Recent canonical predecessor owners:
 - WP-23 — `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-23-release-package-version-legal-readiness-canonical-spec.md`;
 - WP-24 — `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-24-performance-scale-operational-budget-canonical-spec.md`;
 - WP-25 — `DEV/docs/superpowers/specs/2026-09-08-r2-7-WP-25-error-degradation-failure-semantics-canonical-spec.md`;
-- WP-26 — `DEV/docs/superpowers/specs/2026-09-09-r2-7-WP-26-documentation-routing-supersession-consistency-canonical-spec.md`.
+- WP-26 — `DEV/docs/superpowers/specs/2026-09-09-r2-7-WP-26-documentation-routing-supersession-consistency-canonical-spec.md`;
+- WP-27 — `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`.
 
 ---
 
-# WP-27 current state
+# WP-27 closed state
 
-WP-27 is the final numbered R2.7 domain before mandatory R2.7 final reconciliation.
-
-Current worker canonical owner:
+Final canonical owner:
 
 - `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`.
 
-Current Run-C provenance:
+Final independent Senior review:
 
-- Step 5 candidate — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-5-candidate-readiness-spec.md`;
-- Step 6 independent critic — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-6-whole-project-adversarial-review.md`;
-- Step 7 resolution/propagation — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-7-finding-resolution-and-propagation.md`;
-- Step 8 self-review — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-8-canonicalization-self-review.md`.
+- `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-final-senior-review.md`.
 
-Controlling execution plan:
-
-- `DEV/docs/superpowers/plans/2026-09-11-r2-7-WP-27-steps-3-8-audit-execution-plan.md`.
-
-Domain-local recovery mini-report:
-
-- `DEV/docs/superpowers/research/2026-09-09-r2-7-WP-27-final-implementation-planning-readiness-mini-report.md`.
-
-## Admitted Step-2 closure basis
+Durable closure accounting:
 
 ```text
 STEP2_FINAL_HEAD: cbe15efecff6de222787ceae2c88a196e24e13e6
-WP27_STEP2_INDEPENDENT_REREVIEW: PASS
-SOURCE_ITEMS: 224 / 224
-READINESS_RECORDS: 145 / 145
-EXPLICIT_NO_WORK_TERMINALS: 79 / 79
-PO001_010: 10 / 10
-ROUND2_DIAMOND_STRONG: 82 / 82
-MACHINE_RESPONSIBILITIES: 59 / 59
-MACHINE_EXCEPTION_MEMBERS: 31 / 31
-HIGH_RISK_PROBES: 8 / 8 PASS
-R27_R004: REMOVED
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
-HUMAN_DECISION_REQUIRED: NO
-PRODUCT_OWNER_DECISION_REQUIRED: NO
-VERSION_IMPACT: NONE
-```
-
-Step 2 remains admitted predecessor evidence and item-level traceability authority for WP-27 readiness classification. It is not reconstructed from derivative summaries.
-
-## Run A — Steps 3–5
-
-```text
-STEP3_CHECKPOINT: 322b44133024fc754ecb0087aba5a5dbf0333f5a
-STEP3_RESULT: COMPLETE / HIGH confidence
-
-STEP4_CHECKPOINT: 75faeeca3e65724581025715f63a673c7b5762ba
-STEP4_RESULT: COMPLETE / NO_ADDITIONAL_HUMAN_DECISION_REQUIRED
-
 STEP5_CHECKPOINT: a1d6a298cee2de63811225ade51e2a51f8785d22
-STEP5_RESULT: COMPLETE
-CANDIDATE_WORKSTREAMS: 11
-READINESS_MAPPED: 145 / 145
-READINESS_MISSING: []
-READINESS_DUPLICATED: []
-NO_WORK_TERMINALS_PRESERVED: 79 / 79
-NO_WORK_ACTIVATED_BY_CANDIDATE: 0
-```
-
-Workstreams are planning containers only; exact Step-2 readiness leaves and native owners retain authority.
-
-## Run B — Step 6
-
-```text
 STEP6_ARTIFACT_CHECKPOINT: 9367cccb0423204e5c8ea2e1256ef3e6da098421
-STEP6_RESULT: COMPLETE / PASS
-STEP6_BLOCKING_FOUND: 0
-STEP6_SIGNIFICANT_FOUND: 0
-STEP6_MINOR_FOUND: 0
-STEP6_HUMAN_DECISION_REQUIRED: NO
-STEP6_PRODUCT_OWNER_DECISION_REQUIRED: NO
-STEP6_ARCHITECTURE_REOPEN_REQUIRED: NO
-STEP6_VERSION_IMPACT: NONE
-```
-
-The frozen Step-6 finding set is empty. Run B did not modify the Step-5 candidate.
-
-## Run C — Step 7
-
-```text
 STEP7_CHECKPOINT: c477e0350a7c304de5dc81d586c59ff7920b0487
-STEP6_FINDINGS_EXPECTED: 0
-STEP6_FINDINGS_ACCOUNTED: 0 / 0
-BLOCKING_UNRESOLVED: 0
-SIGNIFICANT_UNRESOLVED: 0
-MINOR_UNRESOLVED: 0
-STEP7_CANDIDATE_REPAIRS: NONE
-STEP7_PROPAGATION: NONE FROM STEP6
-RUN_B_CANDIDATE_REPAIR_DETECTED: NO
-RUN_B_STOP_BOUNDARY_CROSSED: NO
-HUMAN_DECISION_REQUIRED: NO
-PRODUCT_OWNER_DECISION_REQUIRED: NO
-ARCHITECTURE_REOPEN_REQUIRED: NO
-WP27_STEP7: COMPLETE
-```
-
-## Run C — Step 8 worker result
-
-```text
-WP27_STEP8: COMPLETE
-FINAL_WP27_CANONICAL_SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
+STEP8_WORKER_HEAD: b615bf5910a5c9b28ba6d8dff3d9ff5f94bf30e0
+WP27_FINAL_SENIOR_PUBLICATION_HEAD: 1ff802ab94d73c9e8c1b4d946e3d478b3f64b5b9
+WP27_FINAL_SENIOR_VALIDATE_RUN: 34628446960 / SUCCESS
 
 SOURCE_ITEMS: 224 / 224
 READINESS_RECORDS: 145 / 145
@@ -182,47 +98,78 @@ MACHINE_EXCEPTION_MEMBERS: 31 / 31
 HIGH_RISK_PROBES: 8 / 8 PASS
 R27_R004: REMOVED / NOT RESURRECTED
 
+FINAL_SENIOR_BLOCKING: 0
+FINAL_SENIOR_SIGNIFICANT: 0
+FINAL_SENIOR_MINOR_FOUND: 1
+SR27_FINAL_M01: RESOLVED — Step-2 source roles corrected; semantic delta NONE
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
 HUMAN_DECISION_REQUIRED: NO
 PRODUCT_OWNER_DECISION_REQUIRED: NO
 ARCHITECTURE_REOPEN_REQUIRED: NO
 VERSION_IMPACT: NONE
+WP27_CLOSED: YES
 ```
 
-The final specification is implementation-facing but is not an implementation plan. It preserves dormant/deferred/rejected/no-work boundaries and distinct deterministic/scenario/empirical/release proof classes.
+WP-27's 11 workstreams are planning containers only. Exact Step-2 readiness leaves and native owners retain semantics, activation, proof, defer/revisit, negative-law and future Version Impact authority.
 
 ---
 
-## Current authorization boundary
+# R2.7 final reconciliation — active state
+
+Controlling owners:
+
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-whole-project-final-audit-task-brief-v2.md`;
+- `DEV/docs/superpowers/design/2026-08-24-r2-7-audit-execution-protocol.md`;
+- `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` for sequence only;
+- `DEV/PROJECT_MAP.md` for discovery only.
+
+Current stage-entry artifact:
+
+- `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-entry-control-plane.md`.
+
+Required final-reconciliation package includes, without creating new semantic authority:
 
 ```text
-WP27_ELIGIBLE: YES
-WP27_AUTHORIZED: YES
-WP27_STEP1_CLOSED: YES
-WP27_STEP2: COMPLETE
-WP27_STEP3: COMPLETE
-WP27_STEP4: COMPLETE
-WP27_STEP5: COMPLETE
-WP27_STEP6: COMPLETE / PASS
-WP27_STEP7: COMPLETE
-WP27_STEP8: COMPLETE
+1. final whole-project Source Manifest with qualifier/currentness retention
+2. final Semantic-Owner Matrix
+3. final Machine-Owner Matrix
+4. final unresolved-classification tracker
+5. final Deferred / Debt / Backlog reconciliation
+6. final Human-Decision / Product-Owner ledger reconciliation
+7. final version / migration impact matrix
+8. machine-schema / version consistency report
+9. machine <-> documentation drift report
+10. mandatory 82-item DIAMOND / STRONG recheck
+11. dormant / revisit trigger audit
+12. whole-project adversarial composition
+13. Task-Brief-v2 exit-criteria reconciliation
+14. exact acceptance / verification package required by the resulting closure
+```
 
-WP27_FINAL_SENIOR_REVIEW: PENDING
-WP27_CLOSED: NO
+WP-27 evidence is an admitted implementation-readiness input to this reconciliation; it is not permission to skip final composition or to begin implementation planning.
 
-R2_7_FINAL_RECONCILIATION: NOT_STARTED
+```text
+R2_7_FINAL_RECONCILIATION: ACTIVE
+FINAL_RECONCILIATION_CONTROL_PLANE: INITIALIZED
+FINAL_RECONCILIATION_SOURCE_MANIFEST: ACTIVE / RECONCILIATION REQUIRED
+FINAL_RECONCILIATION_SEMANTIC_OWNER_MATRIX: PENDING
+FINAL_RECONCILIATION_MACHINE_OWNER_MATRIX: PENDING
+FINAL_RECONCILIATION_82_ITEM_RECHECK: PENDING
+FINAL_RECONCILIATION_DORMANT_TRIGGER_AUDIT: PENDING
+FINAL_RECONCILIATION_WHOLE_PROJECT_COMPOSITION: PENDING
+FINAL_RECONCILIATION_EXIT_CRITERIA: PENDING
+
 IMPLEMENTATION_PLANNING_STARTED: NO
+IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 MIGRATION_EXECUTION_STARTED: NO
 RELEASE_EXECUTION_STARTED: NO
 GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-Exact next gate:
+Exact current gate:
 
 ```text
-mandatory independent Senior review of completed WP-27 Step 8
+complete the final-reconciliation evidence/control package and resolve any genuine material human-owned decision before implementation-planning entry can be considered
 ```
-
-The current worker must stop at this boundary. A later Senior PASS may close WP-27 and expose R2.7 final reconciliation; it does not skip that reconciliation or directly authorize implementation planning.
