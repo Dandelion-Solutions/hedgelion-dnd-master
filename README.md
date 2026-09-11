@@ -102,7 +102,7 @@ Development material:
 
 `main` этого репозитория — development-состояние ядра. Для обычной игры используются опубликованные Release ZIPs соответствующей версии (tag).
 
-Канонический builder: `DEV/TOOLS/run_release_build`. Tag-triggered GitHub Action вызывает его и публикует готовый ZIP/checksum в Release Assets.
+Канонический builder: `DEV/TOOLS/run_release_build.py`. Tag-triggered GitHub Action вызывает его и публикует готовый ZIP/checksum в Release Assets.
 
 <br>
 
