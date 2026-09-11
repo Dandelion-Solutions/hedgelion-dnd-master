@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import json
 import re
+import sys
+import tempfile
 import unittest
 from collections import Counter
 from pathlib import Path
+from unittest.mock import patch
 
 import yaml
 
@@ -85,7 +88,7 @@ def _iter_text_files():
         if not path.is_file():
             continue
         rel = path.relative_to(ROOT).as_posix()
-        if rel.startswith((".git/", ".hdm-devtools/", ".pytest_cache/", "__pycache__/")):
+        if rel.startswith((".agents/", ".git/", ".hdm-devtools/", ".pytest_cache/", ".venv/", "__pycache__/")):
             continue
         if any(part == "__pycache__" for part in path.parts):
             continue
@@ -165,6 +168,22 @@ def census():
 
 
 class VersionNamespacePolicyTests(unittest.TestCase):
+    def _assert_census_excludes_workspace_path(self, relative_path: str):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            path = root / relative_path
+            path.parent.mkdir(parents=True)
+            path.write_text("schema_version: 1\n", encoding="utf-8")
+            with patch.object(sys.modules[__name__], "ROOT", root):
+                paths = {rel for rel, _text in _iter_text_files()}
+        self.assertNotIn(relative_path, paths)
+
+    def test_census_excludes_development_only_agent_infrastructure(self):
+        self._assert_census_excludes_workspace_path(".agents/skills/example/SKILL.md")
+
+    def test_census_excludes_local_virtual_environments(self):
+        self._assert_census_excludes_workspace_path(".venv/lib/example.py")
+
     def test_unclassified_is_reachable_for_unknown_version_like_hit(self):
         text = "schema_version: 77"
         match = SEARCH_RE.search(text)

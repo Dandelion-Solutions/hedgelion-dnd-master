@@ -1,6 +1,6 @@
 # R2.7 WP-27 Step 2 — Evidence Ledger
 
-Status: **COMPLETE — S2-J DURABLE STEP-2 CLOSURE RECORDED**
+Status: **HOLD — NARROW S2-J CLOSURE REPAIR PENDING PUBLICATION AND RE-REVIEW**
 
 Date: 2026-09-10
 
@@ -15,8 +15,8 @@ Current canonical owners and accepted amendments remain controlling.
 ## 1. Scope and hard boundary
 
 ```text
-WP27_STEP2: COMPLETE
-CURRENT_SLICE: S2-J — durable Step-2 closure checkpoint complete
+WP27_STEP2: HOLD — repaired S2-I accounting complete; S2-J publication evidence pending
+CURRENT_SLICE: S2-J — narrow closure repair; Step 3 remains not started
 WP27_STEP3: NOT_STARTED
 IMPLEMENTATION_PLANNING: NOT_STARTED
 IMPLEMENTATION: NOT_STARTED
@@ -127,11 +127,11 @@ WP01_07: 64 / 64 COMPLETE — S2-B owner-chain accounting complete; readiness co
 WP08_26: 68 / 68 COMPLETE — S2-C canonical-owner accounting complete; readiness composition remains prohibited until S2-F
 PO001_010: 10 / 10 COMPLETE — S2-D; readiness composition remains prohibited until S2-F
 ROUND2_D_S_82: 82 / 82 COMPLETE — S2-E item-level reconciliation; readiness composition remains prohibited until S2-F
-ARCH_TO_READINESS: 146 / 146 COMPLETE — one lossless readiness record per pending source item
+ARCH_TO_READINESS: 145 / 145 COMPLETE — one lossless readiness record per pending source item
  MACHINE_TO_OWNER: 59 / 59 MATERIAL RESPONSIBILITIES CLASSIFIED — 19 R27-M records; 14 R27-X exception records cover 31 exception members
-VERSION_MIGRATION: 146 / 146 READINESS RECORDS RETAIN A FUTURE VERSION IMPACT GATE; no bump or migration preselected
-PROOF_CHANNELS: 146 / 146 RETAINED IN READINESS RECORDS; S2-H channel separation reconciled
-DEFER_DORMANT_REJECTED: 78 / 78 EXPLICIT NO-WORK TERMINALS RETAINED; S2-H trigger reconciliation complete
+VERSION_MIGRATION: 145 / 145 READINESS RECORDS RETAIN A FUTURE VERSION IMPACT GATE; no bump or migration preselected
+PROOF_CHANNELS: 145 / 145 RETAINED IN READINESS RECORDS; S2-H channel separation reconciled
+DEFER_DORMANT_REJECTED: 79 / 79 EXPLICIT NO-WORK TERMINALS RETAINED; S2-H trigger reconciliation complete
 HIGH_RISK_PROBES: 8 / 8 S2-H COMPLETE
 ```
 
@@ -162,11 +162,13 @@ closed WP mini-report / closure evidence
 
 The source reports use historical labels such as `WP-01/F01`; their stable
 Step-2 IDs below normalize that spelling as `WP01-F01`. Current owners, not the
-historical reports, control each disposition. `readiness_ids[]` is intentionally
-empty in every S2-B record: S2-F alone may compose `R27-R###` records. A record
-whose disposition remains future realization/proof therefore has
-`terminal_route: PENDING_S2-F`; a record that has no present work has an explicit
-no-work terminal route instead.
+historical reports, control each disposition.
+
+**Historical S2-B snapshot -- not current:** at that checkpoint,
+`readiness_ids[]` was intentionally empty because S2-F alone had not yet
+composed `R27-R###` records. A record whose disposition remained future
+realization/proof therefore had `terminal_route: PENDING_S2-F`; a record with no
+present work had an explicit no-work terminal route instead.
 
 Sources read for this bounded chain:
 
@@ -205,9 +207,9 @@ current GAME/INSTALL, GAME/CORE, GAME/SCHEMA, DEV/CATALOG, DEV/TESTS consumers
 
 #### WP01-F05
 `source_item_id`: `WP01-F05`; `source_owner_or_provenance_ref`: WP-01 report §4/§9, R2.6 §9; `source_role`: `CLOSURE_PROVENANCE`.
-`actual_surviving_claim_or_boundary`: exploratory probes, prototypes, raw transcripts and instrumentation route to private HDM Lab; public HDM receives sanitized durable conclusions; `qualifiers_and_applicability`: never disclose unnecessary private provenance; `later_owner_or_supersession_ref`: R2.6 §9 and public-provenance owner decision.
-`current_disposition`: `STALE_DEBT`; `activation_state`: active governance discoverability repair; `implementation_consequence`: add a concise public governance route; `verification_or_scenario_consequence`: static governance-routing check if the route is materialized; `empirical_or_release_consequence`: N/A.
-`defer_or_revisit_trigger`: none; `negative_or_rejected_constraint`: private evidence never becomes a public semantic owner; `current_machine_realization_state`: current `AGENTS.md` has no general HDM Lab routing rule; `readiness_ids[]`: [`R27-R004`]; `notes_on_conflict_extension_or_no_delta`: `terminal_route: R27-R004`.
+`actual_surviving_claim_or_boundary`: private/external exploratory evidence is not a public semantic owner; public HDM may use only independently stated HDM conclusions under the accepted public-provenance policy; `qualifiers_and_applicability`: never disclose unnecessary private provenance; `later_owner_or_supersession_ref`: `2026-09-08-hdm-public-research-provenance-attribution-owner-decision.md` §§1,5-7 and WP-23 C01-C05/§8.
+`current_disposition`: `ALREADY_REALIZED`; `activation_state`: N/A; `implementation_consequence`: none -- the accepted owner fixes the public/private boundary and requires no separate governance route or workstream; `verification_or_scenario_consequence`: retain owner-aware public-provenance classification; `empirical_or_release_consequence`: N/A.
+`defer_or_revisit_trigger`: an accepted owner supersession or a concrete contradictory public consumer; `negative_or_rejected_constraint`: private evidence never becomes a public semantic owner, and no new public-governance workstream is manufactured; `current_machine_realization_state`: accepted public-provenance policy and WP-23 reconciliation are current; `readiness_ids[]`: `[]`; `notes_on_conflict_extension_or_no_delta`: `terminal_route: NO_WORK_ALREADY_REALIZED`; `public_owner_verdict`: no additional public governance route is mandated -- owner decision §6 assigns the policy to closed WP-23 Lane C and §7 states `NEW_WORKSTREAM_REQUIRED: NO`.
 
 #### WP01-F06
 `source_item_id`: `WP01-F06`; `source_owner_or_provenance_ref`: WP-01 report §4/§10, R2.6 §10; `source_role`: `CLOSURE_PROVENANCE`.
@@ -575,7 +577,7 @@ current GAME/INSTALL, GAME/CORE, GAME/SCHEMA, DEV/CATALOG, DEV/TESTS consumers
 `current_disposition`: `ALREADY_REALIZED`; `activation_state`: N/A; `implementation_consequence`: no new owner/path from this adversarial finding; `verification_or_scenario_consequence`: later realization retains owner-specific containment, retention and cleanup proof; `empirical_or_release_consequence`: applicable R2.6 acceptance remains separate.
 `defer_or_revisit_trigger`: a contradicting current consumer only; `negative_or_rejected_constraint`: host context, Story, trace, cache and prose never become authority; `current_machine_realization_state`: no inspected consumer contradicts the accepted boundary, but this is not an end-to-end implementation claim; `readiness_ids[]`: `[]`; `notes_on_conflict_extension_or_no_delta`: `terminal_route: NO_WORK_ALREADY_REALIZED`.
 
-### 6.9 S2-B accounting and consistency result
+### 6.9 Historical S2-B close snapshot -- not current
 
 ```text
 WP01_SOURCE_ITEMS: 6
@@ -596,7 +598,7 @@ WP27_STEP3: NOT_STARTED
 VERSION_IMPACT: NONE — evidence-ledger documentation only; no version-bearing semantic/machine/runtime/schema/catalog/protocol owner changed.
 ```
 
-### 6.10 S2-B checkpoint accounting
+### 6.10 Historical S2-B checkpoint snapshot -- not current
 
 ```text
 S2_B_WP01_07_OWNER_CHAIN: COMPLETE
@@ -611,7 +613,7 @@ VERSION_IMPACT: NONE
 
 ## 7. S2-C source-item ledger — WP-08..WP-26 canonical-owner extraction
 
-### 7.1 Route, source roles and terminal-route rule
+### 7.1 Historical S2-C route, source roles and terminal-route snapshot -- not current
 
 Each record below followed `current canonical WP owner -> named current amendment
 or final-closure evidence -> named current consumer`.  The records deliberately
@@ -853,7 +855,7 @@ DEV/RELEASE versioning/checklist and DEV/TESTS WP-26 guard
 #### WP26-04
 `source_item_id`: `WP26-04`; `source_owner_or_provenance_ref`: WP-26 Laws 14-17/§8.2; `source_role`: `CLOSURE_PROVENANCE`; `actual_surviving_claim_or_boundary`: initializing/provisional gameplay/READY_PC/PLAY_READY/current save semantics were reconciled and five Category-B CORE revisions completed; `qualifiers_and_applicability`: repair is projection consistency, not bootstrap/persistence realization; `later_owner_or_supersession_ref`: WP-19 and final WP-26 closure; `current_disposition`: `ALREADY_REALIZED`; `activation_state`: N/A; `implementation_consequence`: no future WP-26 lifecycle repair; `verification_or_scenario_consequence`: retain lifecycle routing guard; `empirical_or_release_consequence`: fresh-Project belongs to release/implementation owners; `defer_or_revisit_trigger`: new stale lifecycle consumer; `negative_or_rejected_constraint`: no READY_PC blanket gate/pre-live proxy; `current_machine_realization_state`: RUNTIME/CAMPAIGN_SETUP/NEW_CAMPAIGN_FAST_PATH/SAVE_CONTRACT/CORE_INDEX revisions present; `readiness_ids[]`: `[]`; `notes_on_conflict_extension_or_no_delta`: `terminal_route: NO_WORK_ALREADY_REALIZED`.
 
-### 7.9 S2-C accounting and consistency result
+### 7.9 Historical S2-C close snapshot -- not current
 
 ```text
 WP08_SOURCE_ITEMS: 4
@@ -1017,7 +1019,7 @@ authority. The accepted owners below control the surviving requirements. Every
 `architecture-blocker result`: `PASS — the accepted bands and preserved identity/currentness/reconstruction laws bound later topology selection; no unresolved Product Owner or architecture choice remains.`
 `readiness_ids[]`: [`R27-R103`].
 
-### 8.11 S2-D accounting and consistency result
+### 8.11 Historical S2-D close snapshot -- not current
 
 ```text
 PO001_010: 10 / 10 INDIVIDUALLY ACCOUNTED
@@ -1034,7 +1036,7 @@ VERSION_IMPACT: NONE — evidence-ledger documentation only; no version-bearing 
 
 ## 9. S2-E source-item ledger — Round-2 DIAMOND/STRONG reconciliation
 
-### 9.1 Record conventions and owner route
+### 9.1 Historical S2-E record conventions and owner-route snapshot -- not current
 
 Every record below is sourced from its identically named item in
 `2026-08-24-round-2-evidence-disposition-ledger.md` §4. That source retains
@@ -1293,7 +1295,7 @@ no-work records retain their explicit no-work terminal route.
 #### S58
 `item_id`: `S58`; `original_disposition`: `CONDITIONAL / DORMANT`; `original_claim_or_qualifier`: human/AI/delegated controller assignment is explicit if mixed control is supported; `current_owner_or_later_supersession`: multiplayer/player-agency owners; `current_disposition`: `SAFE_DEFERRED_TRIGGER`; `activation_state`: inactive; `implementation_consequence`: no mixed-controller feature now; `verification_scenario_empirical_consequence`: future support needs explicit-assignment/agency cases; `defer_or_revisit_trigger`: AI-controlled PCs, companions or explicit delegation becomes supported product feature; `negative_constraint`: no implicit controller assignment; `current_machine_realization_state`: `S2-G PENDING — no machine conclusion asserted in S2-E`; `readiness_ids[]`: `[]`; `terminal_route`: `NO_WORK_DEFERRED`.
 
-### 9.2 S2-E mechanical accounting and deltas
+### 9.2 Historical S2-E close snapshot -- not current
 
 ```text
 EXPECTED: 82
@@ -1313,6 +1315,10 @@ WP27_STEP3: NOT_STARTED
 ```
 
 ## 10. S2-F readiness / future-work composition ledger
+
+**Historical S2-F snapshot fields:** any per-record `S2-G PENDING` wording in
+this section records the state at S2-F close. It is not a current cursor or a
+claim that the later S2-G classification remains unperformed.
 
 S2-F composes one readiness record for every source record whose earlier terminal route was `PENDING_S2-F`. This deliberately does not merge unlike source items: each record preserves the source-specific owner chain, shape boundary, proof channels, activation/defer state, implementation-neutral choices and negative laws. Source-item records remain the lossless primary detail carrier; the bidirectional `readiness_ids[]` backreference and each record's `source_item_ids[]` list make the composition mechanically traceable.
 
@@ -1335,12 +1341,6 @@ S2-F composes one readiness record for every source record whose earlier termina
 `implementation_destination_families[]`: [replace active `default`/`first` wording with an absolute no-probe/no-fallback rule]; `dependency_predecessors[]`: [accepted source owner, R2.6 §8 and WP-13 fixed-transport boundary]; `required_machine_or_persistent_shape_boundary`: gameplay storage uses the fixed Connector path and must not probe or fall back to alternate Git transports; `current_realization_state`: all four named install/bootstrap consumers still contain the historical weak wording.
 `version_impact_classification`: `FUTURE_VERSION_IMPACT_GATE — classify the actual later owner/consumer delta; no bump or migration is selected by S2-F`; `migration_or_update_consequence`: source owner controls any qualifying compatibility/migration route; `test_first_obligations[]`: [negative static instruction regression and Project Instructions parity]; `scenario_acceptance_obligations[]`: [negative static instruction regression and Project Instructions parity]; `empirical_or_release_obligations[]`: [Connector failure behavior is later MVP acceptance].
 `activation_state`: active shipped instruction repair; `remaining_implementation_choices[]`: [missing Connector capability is a supported-profile failure]; `architecture_blocker_test_result`: PASS — source owner fixes the architecture boundary; no new blocker is introduced by composition; `defer_or_revisit_trigger`: none for wording; runtime failure proof waits for realization; `negative_requirements[]`: [no shell git, gh, direct HTTP/API, MCP/backend or Actions fallback].
-
-#### R27-R004
-`readiness_id`: `R27-R004`; `source_item_ids[]`: [`WP01-F05`]; `source_owner_refs[]`: [WP-01 report §4/§9, R2.6 §9; R2.6 §9 and public-provenance owner decision].
-`implementation_destination_families[]`: [add a concise public governance route]; `dependency_predecessors[]`: [accepted source owner, R2.6 §9 and public-provenance owner decision]; `required_machine_or_persistent_shape_boundary`: exploratory probes, prototypes, raw transcripts and instrumentation route to private HDM Lab; public HDM receives sanitized durable conclusions; `current_realization_state`: current `AGENTS.md` has no general HDM Lab routing rule.
-`version_impact_classification`: `FUTURE_VERSION_IMPACT_GATE — classify the actual later owner/consumer delta; no bump or migration is selected by S2-F`; `migration_or_update_consequence`: source owner controls any qualifying compatibility/migration route; `test_first_obligations[]`: [static governance-routing check if the route is materialized]; `scenario_acceptance_obligations[]`: [static governance-routing check if the route is materialized]; `empirical_or_release_obligations[]`: [N/A].
-`activation_state`: active governance discoverability repair; `remaining_implementation_choices[]`: [never disclose unnecessary private provenance]; `architecture_blocker_test_result`: PASS — source owner fixes the architecture boundary; no new blocker is introduced by composition; `defer_or_revisit_trigger`: none; `negative_requirements[]`: [private evidence never becomes a public semantic owner].
 
 #### R27-R005
 `readiness_id`: `R27-R005`; `source_item_ids[]`: [`WP01-F06`]; `source_owner_refs[]`: [WP-01 report §4/§10, R2.6 §10; WP-22 §12].
@@ -2198,7 +2198,7 @@ S2-F composes one readiness record for every source record whose earlier termina
 
 The following source records retain their existing empty `readiness_ids[]` and explicit no-work terminal route. S2-F does not resurrect them as implementation work:
 
-- `WP01-F04`, `WP02-M05`, `WP03-F01`, `WP03-F02`, `WP03-F09`, `WP03-F12`, `WP04-F01`, `WP05-F01`, `WP05-F10`, `WP07-N02`, `WP09-04`, `WP10-02`, `WP10-04`
+- `WP01-F04`, `WP01-F05`, `WP02-M05`, `WP03-F01`, `WP03-F02`, `WP03-F09`, `WP03-F12`, `WP04-F01`, `WP05-F01`, `WP05-F10`, `WP07-N02`, `WP09-04`, `WP10-02`, `WP10-04`
 - `WP10-05`, `WP18-03`, `WP18-04`, `WP19-03`, `WP20-01`, `WP20-02`, `WP20-03`, `WP20-04`, `WP21-01`, `WP21-02`, `WP21-03`, `WP22-04`
 - `WP23-03`, `WP24-01`, `WP24-05`, `WP25-01`, `WP25-02`, `WP25-03`, `WP25-05`, `WP26-01`, `WP26-02`, `WP26-03`, `WP26-04`, `PO004-01`
 - `PO006-01`, `PO007-01`, `D15`, `D17`, `D20`, `S01`, `S05`, `S06`, `S08`, `S09`, `S12`, `S13`
@@ -2581,7 +2581,7 @@ impact: `WP06-F02 -> R27-R047` remains a `STALE_DEBT` documentation repair only;
 the current package-binding realization controls and the stale prose cannot
 create a new package authority or reopen S6D architecture.
 
-### 11.5 S2-G closure accounting
+### 11.5 Historical S2-G close snapshot -- not current
 
 ```text
 R27_M01_TO_M19_PRESENT: 19 / 19
@@ -2676,10 +2676,10 @@ service, failure service, scheduler, or a second state authority.
 
 ### 12.2 Per-readiness Version Impact and migration classification
 
-All `R27-R001` through `R27-R146` have an explicit
-`FUTURE_VERSION_IMPACT_GATE` field in Section 10: `146 / 146` records, with
-`146 / 146` corresponding `migration_or_update_consequence` fields. This is
-the per-readiness classification, not a blanket bump: each later task must
+All readiness records (`R27-R001..R27-R003`, `R27-R005..R27-R146`) have an
+explicit `FUTURE_VERSION_IMPACT_GATE` field in Section 10: `145 / 145` records,
+with `145 / 145` corresponding `migration_or_update_consequence` fields. This
+is the per-readiness classification, not a blanket bump: each later task must
 classify its actual changed owner/consumer set under the versioning owner before
 it is checkpoint-ready.
 
@@ -2689,7 +2689,7 @@ CURRENT S2-H CHANGE:
   reason: evidence-ledger documentation only; no version-bearing semantic,
           machine, runtime, schema, catalog, protocol, or metadata owner changed
 
-R27-R001..R146:
+R27-R001..R003, R27-R005..R146:
   classification: FUTURE_VERSION_IMPACT_GATE
   bump_selected_now: NO
   migration_selected_now: NO
@@ -2750,7 +2750,7 @@ fresh-Project, exact-asset, or released-package proof.
 
 ### 12.4 Deferred, dormant and rejected trigger reconciliation
 
-All `78 / 78` no-work terminals retain their source-local activation/defer
+All `79 / 79` no-work terminals retain their source-local activation/defer
 trigger and negative law. The cross-cutting classifications are:
 
 ```text
@@ -2881,13 +2881,13 @@ members classified; `0` unowned/unclassified responsibilities; `0` mixed groups
 without exception breakdown. Blockers: `0`; machine artifact presence promoted
 to authority: `0`.
 
-### 12.6 S2-H bounded result
+### 12.6 Historical S2-H close snapshot -- not current
 
 ```text
 S2_H: COMPLETE
 DEPENDENCY_MODEL: OWNER-DERIVED DAG / NO UNIVERSAL SEQUENCE
-READINESS_VERSION_IMPACT_FIELDS: 146 / 146
-READINESS_MIGRATION_CONSEQUENCE_FIELDS: 146 / 146
+READINESS_VERSION_IMPACT_FIELDS: 146 / 146 AT THIS HISTORICAL SNAPSHOT
+READINESS_MIGRATION_CONSEQUENCE_FIELDS: 146 / 146 AT THIS HISTORICAL SNAPSHOT
 PROOF_CHANNEL_OVER_CREDIT: 0
 NO_WORK_TRIGGER_LOSS: 0
 HIGH_RISK_PROBES: 8 / 8 PASS
@@ -2902,21 +2902,22 @@ S2_J: NOT RUN
 CURSOR_OR_MINI_REPORT_UPDATED: NO
 ```
 
-## 13. S2-I internal completeness audit
+## 13. S2-I internal completeness audit -- repaired current pre-publication accounting
 
 Audit baseline: `34647296c767b518d62cda1bee37bc675ad09524`.
 
-This is the S2-I evidence-admission result for the controlling S2-I predicates
-in the execution amendment lines 542-560. It neither marks Step 2 complete nor
-starts S2-J. Section 12.6 remains the historical S2-H close snapshot; the
-task-local cursor and mini-report are intentionally unchanged.
+This is the repaired S2-I evidence-admission result for the controlling S2-I
+predicates in the execution amendment lines 542-560. It does not mark Step 2
+complete or start Step 3. Section 12.6 remains a historical S2-H close snapshot.
 
-### 13.1 Mechanical evidence repair
+### 13.1 Mechanical evidence repairs
 
-The completion-counter entry for `WP08_26` was stale (`0 / PENDING`) despite
-the complete S2-C item ledger. It is corrected above to `68 / 68 COMPLETE`.
-No semantic owner, machine contract, cursor, mini-report, version value or
-runtime artifact changed.
+The prior `WP08_26` completion-counter repair remains retained. This narrow
+repair also reclassifies `WP01-F05` from an unsupported `STALE_DEBT` readiness
+route to `NO_WORK_ALREADY_REALIZED`: the accepted public-provenance owner
+decision §§1,5-7 and WP-23 C01-C05/§8 preserve its negative law while explicitly
+requiring no new workstream. `R27-R004` is removed. No semantic owner, machine
+contract, version value or runtime artifact changed.
 
 ### 13.2 Exact audited sets
 
@@ -2934,13 +2935,14 @@ SOURCE_ITEMS: 224 / 224
   ROUND2: 82 / 82 exactly once
     [D01..D24, S01..S58; duplicates=[]]
 
-READINESS: 146 / 146
-  [R27-R001..R27-R146; duplicates=[]; source backreferences=146 / 146]
-  accepted-owner refs=146 / 146
-  Version Impact fields=146 / 146
-  migration/update consequence fields=146 / 146
-  deterministic/scenario/empirical proof fields=146 / 146
-  architecture-blocker results=146 / 146 PASS
+READINESS: 145 / 145
+  [R27-R001..R27-R003, R27-R005..R27-R146; duplicates=[];
+   source backreferences=145 / 145]
+  accepted-owner refs=145 / 145
+  Version Impact fields=145 / 145
+  migration/update consequence fields=145 / 145
+  deterministic/scenario/empirical proof fields=145 / 145
+  architecture-blocker results=145 / 145 PASS
 
 MACHINE: 59 / 59 material responsibilities classified
   [R27-M01..R27-M19]
@@ -2949,7 +2951,7 @@ MACHINE: 59 / 59 material responsibilities classified
   unowned/unclassified=[]
   mixed groups without breakdown=[]
 
-NO_WORK_TERMINALS: 78 / 78
+NO_WORK_TERMINALS: 79 / 79
   exact source-ID list: Section 10.2 (`WP01-F04` through `S58` as enumerated
   there); trigger loss=0.
 
@@ -2969,40 +2971,41 @@ ROUND2_DELTAS: 3 / 3 reconciled
 | PO001_010 individually routed | PASS | `PO001-01..PO010-01`, each with accepted owner, terminal route and disposition in section 8 |
 | 82/82 D/S records present exactly once | PASS | `D01..D24`, `S01..S58`; duplicates `[]` |
 | S14/S53/D15 changes reconciled | PASS | `S14 -> R27-R131`; `S53 -> NO_WORK_ALREADY_REALIZED`; `D15 -> NO_WORK_DEFERRED`; section 9.2 preserves their current deltas |
-| all material source items have readiness/no-work terminal route | PASS | 224/224 terminal routes; 146 readiness routes plus 78 explicit no-work terminals; missing `[]` |
-| all readiness records have accepted owner(s) | PASS | 146/146 nonempty `source_owner_refs[]`; missing `[]` |
+| all material source items have readiness/no-work terminal route | PASS | 224/224 terminal routes; 145 readiness routes plus 79 explicit no-work terminals; missing `[]` |
+| all readiness records have accepted owner(s) | PASS | 145/145 nonempty `source_owner_refs[]`; missing `[]` |
 | all material machine responsibilities have owner/class | PASS | 59/59 over `R27-M01..R27-M19`; unowned/unclassified `[]` |
 | all mixed machine groups have exception breakdown | PASS | 14/14 `R27-X01..R27-X14` records covering 31/31 members; missing breakdowns `[]` |
-| all version/migration consequences classified | PASS | 146/146 future Version Impact Gate and migration/update fields; no bump or migration selected by this evidence audit |
-| all proof channels classified without over-credit | PASS | 146/146 readiness proof fields; probe `R27-P05` confirms source-CI, deterministic, scenario, empirical and release channels remain non-substitutable |
-| all defer/dormant/rejected triggers preserved | PASS | 78/78 explicit no-work terminals; trigger loss=0; section 12.4 retains the exact activation classes |
+| all version/migration consequences classified | PASS | 145/145 future Version Impact Gate and migration/update fields; no bump or migration selected by this evidence audit |
+| all proof channels classified without over-credit | PASS | 145/145 readiness proof fields; probe `R27-P05` confirms source-CI, deterministic, scenario, empirical and release channels remain non-substitutable |
+| all defer/dormant/rejected triggers preserved | PASS | 79/79 explicit no-work terminals; trigger loss=0; section 12.4 retains the exact activation classes |
 | all high-risk probes completed | PASS | `R27-P01..R27-P08`: 8/8 PASS with linked source/readiness/machine records |
-| no closed already-realized repair reintroduced as future work | PASS | `CLOSED_REPAIRS_REINTRODUCED_AS_WORK: 0`; all 34 `NO_WORK_ALREADY_REALIZED` records retain empty readiness IDs |
-| no private/external evidence promoted to public owner without accepted public route | PASS | `WP01-F05 -> R27-R004` preserves the prohibition; `PO007-01` retains the accepted public-provenance route; `R27-M18` is policy-enforcement support, not authority |
-| no unresolved architecture-blocker candidate hidden as implementation detail | PASS | all 146 readiness blocker results PASS; `R27-P01..R27-P08` report zero blockers; candidate lists in sections 10-12 are `[]` |
+| no closed already-realized repair reintroduced as future work | PASS | `CLOSED_REPAIRS_REINTRODUCED_AS_WORK: 0`; all 35 `NO_WORK_ALREADY_REALIZED` records retain empty readiness IDs |
+| no private/external evidence promoted to public owner without accepted public route | PASS | `WP01-F05` is `NO_WORK_ALREADY_REALIZED`: accepted public-provenance owner decision §§1,5-7 preserves the prohibition and states `NEW_WORKSTREAM_REQUIRED: NO`; `PO007-01` retains the accepted route; `R27-M18` is policy-enforcement support, not authority |
+| no unresolved architecture-blocker candidate hidden as implementation detail | PASS | all 145 readiness blocker results PASS; `R27-P01..R27-P08` report zero blockers; candidate lists in sections 10-12 are `[]` |
 
 ```text
-S2_I: PASS — EVIDENCE ADMISSION ONLY
-S2_J: NOT STARTED AT S2-I AUDIT
-WP27_STEP2: IN_PROGRESS AT S2-I AUDIT
+S2_I: PASS — REPAIRED EVIDENCE ADMISSION ONLY
+S2_J: REPAIR CLOSURE PENDING PUBLICATION
+WP27_STEP2: HOLD PENDING S2-J REPAIR CLOSURE
 WP27_STEP3: NOT_STARTED
 VERSION_IMPACT: NONE — evidence-ledger audit and one stale-counter repair only;
   no version-bearing semantic, machine, runtime, schema, catalog, protocol, or
   metadata owner changed.
-CURSOR_OR_MINI_REPORT_UPDATED: NO AT S2-I AUDIT
+CURSOR_OR_MINI_REPORT_UPDATED: YES — current repair state is recorded without a final SHA
 ```
 
-## 14. S2-J durable Step-2 closure checkpoint
+## 14. S2-J durable Step-2 closure repair status
 
-S2-I passed all controlling predicates. This section is the required durable
-closure report under the Step-2 execution amendment. The task explicitly
-prohibits a commit or push, so the final committed checkpoint remains the
-baseline and the S2-J documentation updates are intentionally uncommitted.
+The original pre-publication S2-J snapshot is historical only and is not a
+durable closure. The repaired S2-I evidence is ready for the required later
+commit, remote read-back and hosted verification; this assignment explicitly
+does not perform those publication actions.
 
 ```text
-STEP2_FINAL_HEAD: UNCOMMITTED — current committed checkpoint
-  309fc3ac63e87a9d89f7436149c005c589b0b196; no closure commit or remote
-  publication was made by explicit task instruction
+HISTORICAL_PREPUBLICATION_SNAPSHOT: 309fc3ac63e87a9d89f7436149c005c589b0b196
+  retained for provenance only; it is not the Step-2 final head
+REPAIR_BASE_HEAD: c4ff882c143c72d7adeaafaa60466afbec6fbfcb
+REPAIRED_CLOSURE_HEAD: PENDING_COMMIT_AND_PUBLICATION — no future SHA asserted
 SOURCE_ITEM_COUNT: 224
 WP01_07_ITEM_COUNT: 64
 WP08_26_ITEM_COUNT: 68
@@ -3010,7 +3013,8 @@ PO001_010: 10/10
 ROUND2_82: 82/82
 ROUND2_MISSING: []
 ROUND2_DUPLICATES: []
-READINESS_RECORD_COUNT: 146
+READINESS_RECORD_COUNT: 145
+EXPLICIT_NO_WORK_TERMINALS: 79
 SOURCE_ITEMS_WITHOUT_TERMINAL_ROUTE: []
 MACHINE_GROUP_OR_RECORD_COUNT: 19 groups / 59 material responsibilities
 MACHINE_EXCEPTIONS_COUNT: 14 exception records / 31 exception members
@@ -3026,19 +3030,17 @@ VERSION_IMPACT_OF_STEP2_DOCUMENTATION: NONE — evidence-ledger, mini-report,
   task-local cursor and current-progress bookkeeping only; no version-bearing
   semantic, machine, runtime, schema, catalog, protocol, or metadata owner changed
 VERIFICATION_EVIDENCE:
-  fresh remote currentness: `git fetch --prune origin`; local HEAD and
+  fresh remote currentness: PASS — `git fetch --prune origin`; local HEAD and
     `origin/v1/engine-rearchitecture` both
-    `309fc3ac63e87a9d89f7436149c005c589b0b196`
-  `DEV/TOOLS/run_maintenance_audit.py`: PASS
-  `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m unittest
-    discover -s DEV/TESTS -v`: 456/458 PASS; 2 expected out-of-scope failures:
-    `test_clean_checkout_metadata_records_exact_head` sees this explicitly
-    uncommitted documentation worktree as `dirty_worktree`; and
-    `test_census_has_zero_unclassified_hits` has 1,077 tracked `.agents/`
-    version-like hits with no classifier
-  `git diff --check`: PASS
-  remote read-back: NOT APPLICABLE — no commit or publication was permitted
-WP27_STEP2: COMPLETE
+    `c4ff882c143c72d7adeaafaa60466afbec6fbfcb` before this local repair
+  focused structural accounting: PASS — 224 source records, 145 readiness
+    records, 79 no-work terminals and no `R27-R004`
+  `DEV/TOOLS/run_maintenance_audit.py`: PASS — local repair worktree
+  `git diff --check`: PASS — local repair worktree
+  full DEV unit suite: PENDING ON CLEAN COMMITTED REPAIR CANDIDATE BEFORE PUBLICATION
+  remote read-back: PENDING PUBLICATION
+  hosted `Validate engine source`: PENDING PUBLISHED REPAIRED HEAD
+WP27_STEP2: HOLD — S2-J closure verification remains incomplete until publication evidence exists
 WP27_STEP3: NOT_STARTED
 ```
 

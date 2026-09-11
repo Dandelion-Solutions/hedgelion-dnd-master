@@ -8,18 +8,18 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-27 STEP 2 COMPLETE — STEP 3 NOT STARTED
+GLOBAL_STATE: R2.7 WP-27 STEP 2 NARROW REPAIR IN PROGRESS — STEP 3 NOT STARTED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-27 Step 2 / S2-J — durable closure complete; Step 3 not started
+CURRENT_SLICE: WP-27 Step 2 / S2-J — repair publication and verification pending; Step 3 not started
 
-LAST_CLOSED_UNIT: WP-27 Step 2 — item-level source/readiness/machine accounting and S2-J durable closure
-NEXT_ELIGIBLE_UNIT: WP-27 Step 3 — Decision Brief
-NEXT_AUTHORIZED_UNIT: WP-27 Step 3 — AUTO_CONTINUE under existing Product Owner WP-27 stage-entry authorization
-REQUIRED_GATE: stop only for a genuine human-owned decision; otherwise mandatory Step-8 Senior review after Steps 2–8
+LAST_CLOSED_UNIT: WP-27 Step 1 — Senior self-re-review PASS / GO
+NEXT_ELIGIBLE_UNIT: WP-27 Step-2 repair publication/verification and independent re-review
+NEXT_AUTHORIZED_UNIT: WP-27 Step-2 repair closure only; Step 3 remains barred
+REQUIRED_GATE: exact published closure verification and independent Step-2 re-review before Step 3
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
-KNOWN_BLOCKERS: implementation planning / release execution / gameplay bootstrap remain unauthorized; R2.7 final reconciliation remains mandatory after WP-27 closure
+KNOWN_BLOCKERS: Step-2 closure publication/verification and independent re-review remain required; implementation planning / release execution / gameplay bootstrap remain unauthorized; R2.7 final reconciliation remains mandatory after WP-27 closure
 ```
 
 ---
@@ -237,18 +237,16 @@ RELEASE_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-Step 2 is closed by its S2-J durable checkpoint using the complete item-level
-owner/evidence obligations and realization/proof/activation classifications. No
-separate Product Owner approval was required because no genuine human-owned
-decision was discovered. The current assignment stops here: Step 3 is not
-started.
+The Step-2 item-level owner/evidence obligations and realization/proof/activation
+classifications remain preserved, but the S2-J durable closure is on HOLD for a
+narrow repair and fresh published verification. No separate Product Owner
+approval is required; Step 3 is not started.
 
-Step-2 closure report:
+Historical Step-2 pre-publication snapshot -- not current:
 
 ```text
-STEP2_FINAL_HEAD: UNCOMMITTED — current committed checkpoint
-  309fc3ac63e87a9d89f7436149c005c589b0b196; no closure commit or remote
-  publication was made by explicit task instruction
+HISTORICAL_PREPUBLICATION_SNAPSHOT: 309fc3ac63e87a9d89f7436149c005c589b0b196
+  retained for provenance only; it was not a final Step-2 head
 SOURCE_ITEM_COUNT: 224
 WP01_07_ITEM_COUNT: 64
 WP08_26_ITEM_COUNT: 68
@@ -279,7 +277,27 @@ VERIFICATION_EVIDENCE:
     version-census hits
   `git diff --check`: PASS
   remote read-back: NOT APPLICABLE — no commit or publication was permitted
-WP27_STEP2: COMPLETE
+WP27_STEP2: HISTORICAL PRE-PUBLICATION SNAPSHOT ONLY
+WP27_STEP3: NOT_STARTED
+```
+
+Current Step-2 repair closure state:
+
+```text
+REPAIR_BASE_HEAD: c4ff882c143c72d7adeaafaa60466afbec6fbfcb
+REPAIRED_CLOSURE_HEAD: PENDING_COMMIT_AND_PUBLICATION — no future SHA asserted
+READINESS_RECORD_COUNT: 145
+EXPLICIT_NO_WORK_TERMINALS: 79
+WP01_F05: NO_WORK_ALREADY_REALIZED — accepted public-provenance owner decision §§1,5-7; `NEW_WORKSTREAM_REQUIRED: NO`
+R27_R004: REMOVED
+FRESH_REMOTE_CURRENTNESS: PASS — origin/v1/engine-rearchitecture at repair base
+FOCUSED_STRUCTURAL_ACCOUNTING: PASS — 224 source records / 145 readiness records / 79 no-work terminals / no `R27-R004`
+MAINTENANCE_AUDIT: PASS — local repair worktree
+DIFF_CHECK: PASS — local repair worktree
+FULL_DEV_UNIT_SUITE: PENDING ON CLEAN COMMITTED REPAIR CANDIDATE BEFORE PUBLICATION
+REMOTE_READ_BACK: PENDING PUBLICATION
+HOSTED_VALIDATE_ENGINE_SOURCE: PENDING PUBLISHED REPAIRED HEAD
+WP27_STEP2: HOLD
 WP27_STEP3: NOT_STARTED
 ```
 

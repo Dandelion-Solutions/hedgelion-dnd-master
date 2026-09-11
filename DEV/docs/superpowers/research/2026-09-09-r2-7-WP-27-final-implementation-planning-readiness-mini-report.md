@@ -1,6 +1,6 @@
 # R2.7 WP-27 — Final implementation-planning readiness — mini-report
 
-Статус: **STEP 2 COMPLETE — S2-J DURABLE CLOSURE RECORDED / STEP 3 NOT STARTED**
+Статус: **STEP 2 NARROW REPAIR IN PROGRESS — S2-J PUBLICATION/VERIFICATION PENDING / STEP 3 NOT STARTED**
 
 Дата: 2026-09-09
 
@@ -80,13 +80,13 @@ all 82 R2.1-R2.6 DIAMOND / STRONG dispositions
 
 ---
 
-## Установленные факты
+## Historical Step-1 close snapshot -- not current
 
 ```text
 WP-26: CLOSED / FINAL SENIOR PASS
 WP-27: AUTHORIZED
 WP-27 STEP 1: CLOSED / SENIOR SELF-RE-REVIEW PASS
-WP-27 STEP 2: NEXT ACTIVE SLICE UNDER EXISTING STAGE AUTHORIZATION
+WP-27 STEP 2: NEXT ACTIVE SLICE UNDER EXISTING STAGE AUTHORIZATION AT THIS CHECKPOINT
 IMPLEMENTATION_PLANNING: NOT STARTED
 IMPLEMENTATION: NOT STARTED
 RELEASE/MIGRATION EXECUTION: NOT STARTED
@@ -212,9 +212,9 @@ NO README opportunistic edit
 
 ---
 
-## Implementation obligations
+## Historical Step-1 implementation-obligations snapshot -- not current
 
-Step 1 не активировал конкретные implementation workstreams. Step 2 должен item-wise классифицировать surviving obligations across WP-01..26 + Round-1/Round-2 owners/PO routes/current machine.
+Step 1 не активировал конкретные implementation workstreams. At this historical checkpoint, Step 2 должен item-wise классифицировать surviving obligations across WP-01..26 + Round-1/Round-2 owners/PO routes/current machine.
 
 High-risk probes обязательно сохраняются:
 
@@ -280,7 +280,7 @@ Product Owner separately directed that the active architect perform the Step-1 w
 
 ---
 
-## Closure verdict
+## Historical Step-1 closure snapshot -- not current
 
 ```text
 WP27_STEP1_WORKER_CRITIC: CLOSED
@@ -294,7 +294,11 @@ IMPLEMENTATION_PLANNING_STARTED: NO
 
 ---
 
-## Step-2 durable checkpoints
+## Historical Step-2 execution snapshots -- not current
+
+The S2-A through original S2-J sections below preserve their checkpoint facts.
+Their `NEXT_SLICE`, `NOT_STARTED`, 146-readiness and 78-terminal values are not
+the current recovery cursor.
 
 ### S2-A — control plane and inventory initialization
 
@@ -461,16 +465,14 @@ VERSION_IMPACT: NONE
 NEXT_SLICE: S2-J — durable Step-2 closure checkpoint
 ```
 
-### S2-J — durable Step-2 closure checkpoint
+### Historical S2-J pre-publication snapshot -- not current
 
-S2-I passed 17/17 controlling predicates. The complete source, readiness and
-machine accounting is now closed for Step 2 without activating any realization
-work.
+S2-I passed 17/17 controlling predicates at this historical checkpoint. The
+following pre-publication accounting did not establish durable closure.
 
 ```text
-STEP2_FINAL_HEAD: UNCOMMITTED — current committed checkpoint
-  309fc3ac63e87a9d89f7436149c005c589b0b196; no closure commit or remote
-  publication was made by explicit task instruction
+HISTORICAL_PREPUBLICATION_SNAPSHOT: 309fc3ac63e87a9d89f7436149c005c589b0b196
+  retained for provenance only; it was not a final Step-2 head
 SOURCE_ITEM_COUNT: 224
 WP01_07_ITEM_COUNT: 64
 WP08_26_ITEM_COUNT: 68
@@ -505,14 +507,17 @@ WP27_STEP2: COMPLETE
 WP27_STEP3: NOT_STARTED
 ```
 
-The current assignment ends at this closure checkpoint. Step 3, implementation
-planning, implementation, release execution, migration execution and gameplay
-bootstrap remain unstarted.
+This historical assignment stopped at the pre-publication snapshot. Step 3,
+implementation planning, implementation, release execution, migration execution
+and gameplay bootstrap remained unstarted.
 
-## Точка продолжения
+## Current recovery cursor
 
 ```text
-WP-27 STEP 3 — NOT STARTED
--> Step-2 closure evidence is complete
--> stop for independent review; do not begin Step 3
+GLOBAL_CURSOR_AUTHORITY: DEV/CURRENT_PROGRESS.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
+WP27_STEP2: HOLD — narrow repair resolves `WP01-F05` to no-current-work and awaits S2-J publication/verification
+REPAIRED_CLOSURE_HEAD: PENDING_COMMIT_AND_PUBLICATION — no future SHA asserted
+WP-27 STEP 3: NOT STARTED
+-> do not begin Step 3
 ```
