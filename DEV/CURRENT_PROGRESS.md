@@ -237,10 +237,11 @@ RELEASE_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-The Step-2 item-level owner/evidence obligations and realization/proof/activation
-classifications remain preserved, but the S2-J durable closure is on HOLD for a
-narrow repair and fresh published verification. No separate Product Owner
-approval is required; Step 3 is not started.
+Historical narrow-repair status -- not current: the Step-2 item-level
+owner/evidence obligations and realization/proof/activation classifications
+remained preserved while the S2-J durable closure was on HOLD for a narrow
+repair and fresh published verification. No separate Product Owner approval was
+required; Step 3 was not started.
 
 Historical Step-2 pre-publication snapshot -- not current:
 
