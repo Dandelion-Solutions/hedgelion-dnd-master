@@ -1,6 +1,6 @@
 # R2.7 WP-27 — Final implementation-planning readiness — mini-report
 
-Статус: **STEP 2 NARROW REPAIR IN PROGRESS — S2-J PUBLICATION/VERIFICATION PENDING / STEP 3 NOT STARTED**
+Статус: **STEP 2 COMPLETE — S2-J DURABLE CLOSURE VERIFIED / STEP 3 NOT STARTED**
 
 Дата: 2026-09-09
 
@@ -516,8 +516,14 @@ and gameplay bootstrap remained unstarted.
 ```text
 GLOBAL_CURSOR_AUTHORITY: DEV/CURRENT_PROGRESS.md
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
-WP27_STEP2: HOLD — narrow repair resolves `WP01-F05` to no-current-work and awaits S2-J publication/verification
-REPAIRED_CLOSURE_HEAD: PENDING_COMMIT_AND_PUBLICATION — no future SHA asserted
+WP27_STEP2: COMPLETE — narrow repair resolves `WP01-F05` to no-current-work; S2-J durable closure verified
+STEP2_FINAL_HEAD: cbe15efecff6de222787ceae2c88a196e24e13e6
+REPAIRED_CLOSURE_HEAD: cbe15efecff6de222787ceae2c88a196e24e13e6
+FULL_DEV_UNIT_SUITE: PASS — 460/460 on clean cbe15efecff6de222787ceae2c88a196e24e13e6
+REMOTE_READ_BACK: PASS — `git fetch --prune origin`, tracking ref and `git ls-remote` agree on cbe15efecff6de222787ceae2c88a196e24e13e6
+HOSTED_VALIDATE_ENGINE_SOURCE: SUCCESS — run 1991 on cbe15efecff6de222787ceae2c88a196e24e13e6; https://github.com/Dandelion-Solutions/hedgelion-dnd-master/actions/runs/34575687382
+WP27_STEP2_INDEPENDENT_REREVIEW: PASS
+VERSION_IMPACT: NONE
 WP-27 STEP 3: NOT STARTED
 -> do not begin Step 3
 ```

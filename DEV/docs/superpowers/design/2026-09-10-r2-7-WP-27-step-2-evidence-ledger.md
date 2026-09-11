@@ -1,6 +1,6 @@
 # R2.7 WP-27 Step 2 — Evidence Ledger
 
-Status: **HOLD — NARROW S2-J CLOSURE REPAIR PENDING PUBLICATION AND RE-REVIEW**
+Status: **COMPLETE — REPAIRED S2-J DURABLE CLOSURE VERIFIED / STEP 3 NOT STARTED**
 
 Date: 2026-09-10
 
@@ -15,8 +15,8 @@ Current canonical owners and accepted amendments remain controlling.
 ## 1. Scope and hard boundary
 
 ```text
-WP27_STEP2: HOLD — repaired S2-I accounting complete; S2-J publication evidence pending
-CURRENT_SLICE: S2-J — narrow closure repair; Step 3 remains not started
+WP27_STEP2: COMPLETE — repaired S2-I accounting and S2-J durable closure verified
+CURRENT_SLICE: Step 3 not started
 WP27_STEP3: NOT_STARTED
 IMPLEMENTATION_PLANNING: NOT_STARTED
 IMPLEMENTATION: NOT_STARTED
@@ -2985,8 +2985,8 @@ ROUND2_DELTAS: 3 / 3 reconciled
 
 ```text
 S2_I: PASS — REPAIRED EVIDENCE ADMISSION ONLY
-S2_J: REPAIR CLOSURE PENDING PUBLICATION
-WP27_STEP2: HOLD PENDING S2-J REPAIR CLOSURE
+S2_J: REPAIRED CLOSURE VERIFICATION PASS
+WP27_STEP2: COMPLETE
 WP27_STEP3: NOT_STARTED
 VERSION_IMPACT: NONE — evidence-ledger audit and one stale-counter repair only;
   no version-bearing semantic, machine, runtime, schema, catalog, protocol, or
@@ -2997,15 +2997,16 @@ CURSOR_OR_MINI_REPORT_UPDATED: YES — current repair state is recorded without 
 ## 14. S2-J durable Step-2 closure repair status
 
 The original pre-publication S2-J snapshot is historical only and is not a
-durable closure. The repaired S2-I evidence is ready for the required later
-commit, remote read-back and hosted verification; this assignment explicitly
-does not perform those publication actions.
+durable closure. The repaired S2-I evidence was committed, published, remotely
+read back and independently re-reviewed; the exact repair commit is recorded
+below.
 
 ```text
 HISTORICAL_PREPUBLICATION_SNAPSHOT: 309fc3ac63e87a9d89f7436149c005c589b0b196
   retained for provenance only; it is not the Step-2 final head
 REPAIR_BASE_HEAD: c4ff882c143c72d7adeaafaa60466afbec6fbfcb
-REPAIRED_CLOSURE_HEAD: PENDING_COMMIT_AND_PUBLICATION — no future SHA asserted
+STEP2_FINAL_HEAD: cbe15efecff6de222787ceae2c88a196e24e13e6
+REPAIRED_CLOSURE_HEAD: cbe15efecff6de222787ceae2c88a196e24e13e6
 SOURCE_ITEM_COUNT: 224
 WP01_07_ITEM_COUNT: 64
 WP08_26_ITEM_COUNT: 68
@@ -3030,17 +3031,21 @@ VERSION_IMPACT_OF_STEP2_DOCUMENTATION: NONE — evidence-ledger, mini-report,
   task-local cursor and current-progress bookkeeping only; no version-bearing
   semantic, machine, runtime, schema, catalog, protocol, or metadata owner changed
 VERIFICATION_EVIDENCE:
-  fresh remote currentness: PASS — `git fetch --prune origin`; local HEAD and
-    `origin/v1/engine-rearchitecture` both
-    `c4ff882c143c72d7adeaafaa60466afbec6fbfcb` before this local repair
+  fresh remote currentness: PASS — `git fetch --prune origin`;
+    `origin/v1/engine-rearchitecture` = `cbe15efecff6de222787ceae2c88a196e24e13e6`
   focused structural accounting: PASS — 224 source records, 145 readiness
     records, 79 no-work terminals and no `R27-R004`
-  `DEV/TOOLS/run_maintenance_audit.py`: PASS — local repair worktree
-  `git diff --check`: PASS — local repair worktree
-  full DEV unit suite: PENDING ON CLEAN COMMITTED REPAIR CANDIDATE BEFORE PUBLICATION
-  remote read-back: PENDING PUBLICATION
-  hosted `Validate engine source`: PENDING PUBLISHED REPAIRED HEAD
-WP27_STEP2: HOLD — S2-J closure verification remains incomplete until publication evidence exists
+  `DEV/TOOLS/run_maintenance_audit.py`: PASS — clean repair candidate
+  `git diff --check`: PASS — clean repair candidate
+  full DEV unit suite: PASS — 460/460 on clean `cbe15efecff6de222787ceae2c88a196e24e13e6`
+  remote read-back: PASS — tracking ref and `git ls-remote origin refs/heads/v1/engine-rearchitecture` = `cbe15efecff6de222787ceae2c88a196e24e13e6`
+  hosted `Validate engine source`: SUCCESS — run 1991 on exact `cbe15efecff6de222787ceae2c88a196e24e13e6`; https://github.com/Dandelion-Solutions/hedgelion-dnd-master/actions/runs/34575687382
+  independent Step-2 re-review: PASS — IA27-S2-B01 resolved; all S01/S02/M01-M03 acceptance outcomes recorded
+STEP2_CLOSURE_VERIFICATION: PASS
+IA27_S2_B01: RESOLVED
+WP27_STEP2_INDEPENDENT_REREVIEW: PASS
+VERSION_IMPACT: NONE
+WP27_STEP2: COMPLETE
 WP27_STEP3: NOT_STARTED
 ```
 

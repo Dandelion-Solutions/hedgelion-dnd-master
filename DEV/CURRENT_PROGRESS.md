@@ -8,18 +8,18 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-27 STEP 2 NARROW REPAIR IN PROGRESS — STEP 3 NOT STARTED
+GLOBAL_STATE: R2.7 WP-27 STEP 2 COMPLETE — STEP 3 NOT STARTED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-27 Step 2 / S2-J — repair publication and verification pending; Step 3 not started
+CURRENT_SLICE: WP-27 Step 3 — Decision Brief not started
 
-LAST_CLOSED_UNIT: WP-27 Step 1 — Senior self-re-review PASS / GO
-NEXT_ELIGIBLE_UNIT: WP-27 Step-2 repair publication/verification and independent re-review
-NEXT_AUTHORIZED_UNIT: WP-27 Step-2 repair closure only; Step 3 remains barred
-REQUIRED_GATE: exact published closure verification and independent Step-2 re-review before Step 3
+LAST_CLOSED_UNIT: WP-27 Step 2 — S2-J durable closure verified / independent re-review PASS
+NEXT_ELIGIBLE_UNIT: WP-27 Step 3 — Decision Brief
+NEXT_AUTHORIZED_UNIT: WP-27 Step 3 — existing stage authorization; not started by this assignment
+REQUIRED_GATE: continue the existing WP-27 process; mandatory Step-8 Senior review remains required
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
-KNOWN_BLOCKERS: Step-2 closure publication/verification and independent re-review remain required; implementation planning / release execution / gameplay bootstrap remain unauthorized; R2.7 final reconciliation remains mandatory after WP-27 closure
+KNOWN_BLOCKERS: implementation planning / release execution / gameplay bootstrap remain unauthorized; R2.7 final reconciliation remains mandatory after WP-27 closure
 ```
 
 ---
@@ -281,23 +281,28 @@ WP27_STEP2: HISTORICAL PRE-PUBLICATION SNAPSHOT ONLY
 WP27_STEP3: NOT_STARTED
 ```
 
-Current Step-2 repair closure state:
+Current Step-2 durable closure state:
 
 ```text
 REPAIR_BASE_HEAD: c4ff882c143c72d7adeaafaa60466afbec6fbfcb
-REPAIRED_CLOSURE_HEAD: PENDING_COMMIT_AND_PUBLICATION — no future SHA asserted
+STEP2_FINAL_HEAD: cbe15efecff6de222787ceae2c88a196e24e13e6
+REPAIRED_CLOSURE_HEAD: cbe15efecff6de222787ceae2c88a196e24e13e6
 READINESS_RECORD_COUNT: 145
 EXPLICIT_NO_WORK_TERMINALS: 79
 WP01_F05: NO_WORK_ALREADY_REALIZED — accepted public-provenance owner decision §§1,5-7; `NEW_WORKSTREAM_REQUIRED: NO`
 R27_R004: REMOVED
-FRESH_REMOTE_CURRENTNESS: PASS — origin/v1/engine-rearchitecture at repair base
+FRESH_REMOTE_CURRENTNESS: PASS — `git fetch --prune origin`; origin/v1/engine-rearchitecture = cbe15efecff6de222787ceae2c88a196e24e13e6
 FOCUSED_STRUCTURAL_ACCOUNTING: PASS — 224 source records / 145 readiness records / 79 no-work terminals / no `R27-R004`
-MAINTENANCE_AUDIT: PASS — local repair worktree
-DIFF_CHECK: PASS — local repair worktree
-FULL_DEV_UNIT_SUITE: PENDING ON CLEAN COMMITTED REPAIR CANDIDATE BEFORE PUBLICATION
-REMOTE_READ_BACK: PENDING PUBLICATION
-HOSTED_VALIDATE_ENGINE_SOURCE: PENDING PUBLISHED REPAIRED HEAD
-WP27_STEP2: HOLD
+MAINTENANCE_AUDIT: PASS — `DEV/TOOLS/run_maintenance_audit.py`
+DIFF_CHECK: PASS — clean repair candidate
+FULL_DEV_UNIT_SUITE: PASS — 460/460 on clean cbe15efecff6de222787ceae2c88a196e24e13e6
+REMOTE_READ_BACK: PASS — tracking ref and `git ls-remote origin refs/heads/v1/engine-rearchitecture` = cbe15efecff6de222787ceae2c88a196e24e13e6
+HOSTED_VALIDATE_ENGINE_SOURCE: SUCCESS — run 1991 on cbe15efecff6de222787ceae2c88a196e24e13e6; https://github.com/Dandelion-Solutions/hedgelion-dnd-master/actions/runs/34575687382
+STEP2_CLOSURE_VERIFICATION: PASS
+IA27_S2_B01: RESOLVED
+WP27_STEP2_INDEPENDENT_REREVIEW: PASS
+VERSION_IMPACT: NONE
+WP27_STEP2: COMPLETE
 WP27_STEP3: NOT_STARTED
 ```
 
