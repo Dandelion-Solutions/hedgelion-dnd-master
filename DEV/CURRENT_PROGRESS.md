@@ -8,18 +8,18 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 FINAL RECONCILIATION ACTIVE — WAVE 1 COMPLETE / WAVE 2 ACTIVE / IMPLEMENTATION PLANNING NOT AUTHORIZED
+GLOBAL_STATE: R2.7 FINAL RECONCILIATION ACTIVE — WAVES 1-2 COMPLETE / FR-12 FRESH INDEPENDENT CRITIC REQUIRED / IMPLEMENTATION PLANNING NOT AUTHORIZED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: R2.7 final reconciliation — Wave 2 integrated cross-system reconciliation (FR-05..FR-11)
+CURRENT_SLICE: R2.7 final reconciliation — Wave 3 entry; FR-12 whole-project adversarial composition pending in fresh independent context
 
 LAST_CLOSED_DOMAIN: WP-27
-LAST_CLOSED_UNIT: R2.7 Final Reconciliation Wave 1 — FR-01..FR-04 evidence foundation
-LAST_COMPLETED_WORKER_UNIT: Final Reconciliation Wave 1 evidence foundation / owner matrices / unresolved classification
-NEXT_ELIGIBLE_UNIT: R2.7 final reconciliation Wave 2 — FR-05..FR-11 integrated reconciliation
-NEXT_AUTHORIZED_UNIT: R2.7 FINAL RECONCILIATION WAVE 2 ONLY — reconcile deferred/debt/backlog, human decisions, version/migration, machine/schema/version, documentation drift, 82-item continuity and dormant triggers
-NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: R2.7 final reconciliation Wave 2 only; stop before FR-12 independent critic
-REQUIRED_GATE: complete and verify Wave 2, then obtain fresh independent FR-12 adversarial composition before later closure work may proceed
+LAST_CLOSED_UNIT: R2.7 Final Reconciliation Wave 2 — FR-05..FR-11 integrated cross-system reconciliation
+LAST_COMPLETED_WORKER_UNIT: Final Reconciliation Wave 2 integrated cross-system reconciliation / 82-item recheck / dormant-trigger audit
+NEXT_ELIGIBLE_UNIT: FR-12 whole-project adversarial composition
+NEXT_AUTHORIZED_UNIT: R2.7 FINAL RECONCILIATION FR-12 ONLY — fresh independent adversarial composition over current Waves 1-2 and native owners
+NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: STOP — primary architect that produced Waves 1-2 must not self-perform the required FR-12 independent critic in the same context
+REQUIRED_GATE: obtain fresh independent FR-12 result; resolve/propagate its findings before FR-13/FR-14 or implementation-planning entry can be considered
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: implementation planning / implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until R2.7 final reconciliation closes and its entry gate is resolved
@@ -128,9 +128,13 @@ Stage-entry control plane:
 
 - `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-entry-control-plane.md`.
 
-Wave-1 evidence checkpoint artifact:
+Wave-1 evidence checkpoint:
 
 - `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-wave-1-evidence-foundation.md`.
+
+Wave-2 integrated reconciliation checkpoint:
+
+- `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-wave-2-integrated-cross-system-reconciliation.md`.
 
 Required final-reconciliation package remains:
 
@@ -156,28 +160,39 @@ WP-27 evidence remains an admitted implementation-readiness input; it is not per
 ```text
 R2_7_FINAL_RECONCILIATION: ACTIVE
 FINAL_RECONCILIATION_CONTROL_PLANE: INITIALIZED
-CURRENT_WAVE: WAVE_2_INTEGRATED_CROSS_SYSTEM_RECONCILIATION
+CURRENT_WAVE: WAVE_3_FRESH_INDEPENDENT_ADVERSARIAL_COMPOSITION
 
 FR_01_SOURCE_MANIFEST: COMPLETE
 FR_02_SEMANTIC_OWNER_MATRIX: COMPLETE
 FR_03_MACHINE_OWNER_MATRIX: COMPLETE
 FR_04_UNRESOLVED_CLASSIFICATION: COMPLETE
-FR_05_DEFERRED_DEBT_BACKLOG: ACTIVE / WAVE_2
-FR_06_HUMAN_DECISION_PO_LEDGER: ACTIVE / WAVE_2
-FR_07_VERSION_MIGRATION_IMPACT: ACTIVE / WAVE_2
-FR_08_MACHINE_SCHEMA_VERSION_CONSISTENCY: ACTIVE / WAVE_2
-FR_09_MACHINE_DOCUMENTATION_DRIFT: ACTIVE / WAVE_2
-FR_10_82_ITEM_RECHECK: ACTIVE / WAVE_2
-FR_11_DORMANT_TRIGGER_AUDIT: ACTIVE / WAVE_2
-FR_12_WHOLE_PROJECT_ADVERSARIAL_COMPOSITION: PENDING FRESH INDEPENDENT CONTEXT
+FR_05_DEFERRED_DEBT_BACKLOG: COMPLETE
+FR_06_HUMAN_DECISION_PO_LEDGER: COMPLETE
+FR_07_VERSION_MIGRATION_IMPACT: COMPLETE
+FR_08_MACHINE_SCHEMA_VERSION_CONSISTENCY: COMPLETE
+FR_09_MACHINE_DOCUMENTATION_DRIFT: COMPLETE
+FR_10_82_ITEM_RECHECK: COMPLETE — 82 / 82
+FR_11_DORMANT_TRIGGER_AUDIT: COMPLETE
+FR_12_WHOLE_PROJECT_ADVERSARIAL_COMPOSITION: PENDING — FRESH INDEPENDENT CONTEXT REQUIRED
 FR_13_TO_FR_14: PENDING AFTER FR_12
 
-WAVE1_UNRESOLVED_BLOCKING: 0
-WAVE1_UNRESOLVED_SIGNIFICANT: 0
-WAVE1_HUMAN_DECISION_REQUIRED: NO
-WAVE1_PRODUCT_OWNER_DECISION_REQUIRED: NO
-WAVE1_ARCHITECTURE_REOPEN_REQUIRED: NO
-WAVE1_VERSION_IMPACT: NONE
+WAVE1_CHECKPOINT: d58de89af0cd8b75ae879fb8c0fd97c72932455f
+WAVE1_VALIDATE_RUN: 34637853992 / SUCCESS
+WAVE2_PRIMARY_ARCHITECT_RESULT:
+  UNRESOLVED_BLOCKING: 0
+  UNRESOLVED_SIGNIFICANT: 0
+  HUMAN_DECISION_REQUIRED: NO
+  PRODUCT_OWNER_DECISION_REQUIRED: NO
+  ARCHITECTURE_REOPEN_REQUIRED: NO
+  VERSION_IMPACT: NONE
+
+ROUND2_RECHECK: 82 / 82
+ROUND2_ACTIVE_READINESS: 43
+ROUND2_NO_WORK_TERMINALS: 39
+ROUND2_ALREADY_REALIZED: 17
+ROUND2_DEFERRED_OR_DORMANT: 22
+ROUND2_TRIGGER_LOSS: 0
+ROUND2_PREMATURE_ACTIVATION: 0
 
 IMPLEMENTATION_PLANNING_STARTED: NO
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
@@ -190,5 +205,5 @@ GAMEPLAY_BOOTSTRAP_STARTED: NO
 Exact current gate:
 
 ```text
-complete and verify FR-05..FR-11 as one integrated Wave-2 reconciliation pass; then obtain fresh independent FR-12 whole-project adversarial composition before later closure work or implementation-planning entry can be considered
+run FR-12 in a fresh independent adversarial context against the current remote branch and Waves 1-2; the primary architect context that produced Waves 1-2 must not count self-review as FR-12; only after FR-12 findings are resolved may FR-13/FR-14 and the implementation-planning entry gate be considered
 ```
