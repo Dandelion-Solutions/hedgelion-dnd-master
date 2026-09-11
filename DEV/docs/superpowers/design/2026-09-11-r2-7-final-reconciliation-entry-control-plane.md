@@ -79,6 +79,62 @@ FR-14 exact acceptance / verification package required by the resulting closure
 
 These IDs are reconciliation-control identifiers only. They do not create semantic/runtime entities.
 
+### 4.1 Execution waves and process classification
+
+`FR-01..FR-14` are **deliverables / coverage slices of one R2.7 Final Reconciliation**, not fourteen independent architecture stages or work packages. Do not mechanically run the generic eight-step deep-design loop once per FR identifier.
+
+Use the lightest process sufficient for each reconciliation activity, while preserving all evidence, critic, propagation, currentness and decision-rights requirements of the controlling process owners.
+
+Execute the package in four waves:
+
+```text
+WAVE 1 — EVIDENCE FOUNDATION
+  FR-01 final whole-project Source Manifest
+  FR-02 final Semantic-Owner Matrix
+  FR-03 final Machine-Owner Matrix
+  FR-04 final unresolved-classification tracker
+
+WAVE 2 — INTEGRATED CROSS-SYSTEM RECONCILIATION
+  FR-05 Deferred / Debt / Backlog reconciliation
+  FR-06 Human-Decision / Product-Owner ledger reconciliation
+  FR-07 version / migration impact matrix
+  FR-08 machine-schema / version consistency report
+  FR-09 machine <-> documentation drift report
+  FR-10 82-item DIAMOND / STRONG recheck
+  FR-11 dormant / revisit trigger audit
+
+WAVE 3 — FRESH INDEPENDENT ADVERSARIAL COMPOSITION
+  FR-12 whole-project adversarial composition
+
+WAVE 4 — CLOSURE
+  resolve / propagate FR-12 findings as applicable
+  FR-13 Task-Brief-v2 exit-criteria reconciliation
+  FR-14 exact acceptance / verification package
+  canonical final architecture / machine-realization closure
+  implementation-planning entry resolution gate
+```
+
+Wave boundaries are durable evidence checkpoints, not routine human approval gates. Mechanical or derivable reconciliation continues automatically under current owners.
+
+A full eight-step architecture/deep-work cycle is required **only** when reconciliation discovers a genuinely new material architecture question that cannot be resolved mechanically from accepted owners — for example a real authority contradiction, a missing owner boundary, a material persistent/interface choice, a meaningful compatibility/migration-policy choice, or another hard-to-reverse human-owned architectural trade-off.
+
+When that happens:
+
+```text
+isolate the material question
+-> run the full architecture/deep-work process for that question only
+-> obtain required owner/Senior gates
+-> canonicalize the result
+-> propagate it back into the affected reconciliation deliverables
+-> resume the current reconciliation wave
+```
+
+Do not manufacture separate eight-step cycles for evidence ledgers, matrices, status normalization, mechanical drift repair, traceability bookkeeping, deterministic verification mapping, or already-settled owner composition.
+
+`FR-12` must be performed in a fresh independent review context relative to the primary architect work that produced Waves 1–2. The primary architect may prepare the review package and later resolve findings, but must not count self-review in the same context as the required independent adversarial composition review.
+
+After Wave 4 publication and verification, stop at the final Senior / implementation-planning-entry gate required by the current process. Final reconciliation itself does not authorize implementation planning.
+
 ## 5. Evidence-admission rule
 
 The final reconciliation uses owner-first targeted reconstruction, not blind corpus rereading.
@@ -212,11 +268,16 @@ Concrete later reconciliation findings must run their own Version Impact classif
 ```text
 R2_7_FINAL_RECONCILIATION: ACTIVE
 FR_CONTROL_PLANE: INITIALIZED
+FR_EXECUTION_MODEL: FOUR_WAVES / SINGLE_RECONCILIATION_STAGE
+CURRENT_WAVE: WAVE_1_EVIDENCE_FOUNDATION
 FR_01_SOURCE_MANIFEST: ACTIVE
 FR_02_SEMANTIC_OWNER_MATRIX: PREPARATION / PENDING RECONCILIATION
 FR_03_MACHINE_OWNER_MATRIX: PREPARATION / PENDING RECONCILIATION
-FR_04_TO_FR_14: PENDING
+FR_04_UNRESOLVED_CLASSIFICATION: PREPARATION / PENDING RECONCILIATION
+FR_05_TO_FR_11: WAVE_2_PENDING
+FR_12: WAVE_3_FRESH_INDEPENDENT_CRITIC_PENDING
+FR_13_TO_FR_14: WAVE_4_CLOSURE_PENDING
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 ```
 
-The next substantive action is owner-first FR-01 Source Manifest reconciliation, carrying its qualifier/currentness results into FR-02/FR-03. Implementation planning remains outside the authorized boundary until the complete final reconciliation package satisfies its exit criteria and the current-progress authority explicitly advances the gate.
+The next substantive action is Wave 1 owner-first FR-01 Source Manifest reconciliation, carrying its qualifier/currentness results into FR-02/FR-03/FR-04. Implementation planning remains outside the authorized boundary until the complete final reconciliation package satisfies its exit criteria and the current-progress authority explicitly advances the gate.
