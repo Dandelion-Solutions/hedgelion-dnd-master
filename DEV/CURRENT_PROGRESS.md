@@ -8,15 +8,15 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 WP-27 RUN A COMPLETE — STEPS 3/4/5 COMPLETE / STEP 6 NOT STARTED
+GLOBAL_STATE: R2.7 WP-27 RUN B COMPLETE — STEP 6 PASS / RUN C STEP 7 NOT STARTED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: WP-27 Step 6 — independent fresh-context integrated adversarial review NOT STARTED
+CURRENT_SLICE: WP-27 Step 7 — finding-resolution / propagation gate NOT STARTED
 
-LAST_CLOSED_UNIT: WP-27 Step 5 — candidate implementation-planning-readiness specification published
-NEXT_ELIGIBLE_UNIT: WP-27 Step 6 — independent fresh-context integrated adversarial review
-NEXT_AUTHORIZED_UNIT: WP-27 STEP 6 — FRESH-CONTEXT WHOLE-PROJECT ADVERSARIAL REVIEW
-REQUIRED_GATE: Step 6 must run in a separate fresh-context reviewer; mandatory Step-8 Senior review remains required before WP-27 closure
+LAST_CLOSED_UNIT: WP-27 Step 6 — independent fresh-context whole-project adversarial review PASS
+NEXT_ELIGIBLE_UNIT: WP-27 Step 7 — finding-resolution / propagation gate
+NEXT_AUTHORIZED_UNIT: WP-27 STEP 7 — RUN-C FINDING-RESOLUTION / PROPAGATION GATE
+REQUIRED_GATE: account for the frozen Step-6 finding set before Step 8; current finding set is empty, so no candidate repair is authorized by Step 6; mandatory Step-8 Senior review remains required before WP-27 closure
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: implementation planning / implementation / release / migration / gameplay bootstrap remain unauthorized; R2.7 final reconciliation remains mandatory after WP-27 closure
@@ -67,7 +67,7 @@ WP-26 closed without activating deferred PO-009 concrete Story/control/cache rea
 
 WP-27 is the final numbered R2.7 implementation-planning-readiness audit before mandatory R2.7 final reconciliation.
 
-Product Owner stage-entry authorization was supplied explicitly on 2026-09-09. Step 1 is closed, Step 2 is independently closed/re-reviewed, and Run A Steps 3–5 are now durably published.
+Product Owner stage-entry authorization was supplied explicitly on 2026-09-09. Step 1 is closed, Step 2 is independently closed/re-reviewed, Run A Steps 3–5 are durably published, and independent Run-B Step 6 is now complete with a zero-finding PASS.
 
 Primary WP-27 artifacts:
 
@@ -76,10 +76,11 @@ Primary WP-27 artifacts:
 - Step-2 evidence ledger — `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-2-evidence-ledger.md`;
 - Step-2 independent audit — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-2-independent-audit.md`;
 - Run-A controlling task — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-steps-3-5-task.md`;
-- Run-A execution plan — `DEV/docs/superpowers/plans/2026-09-11-r2-7-WP-27-steps-3-8-audit-execution-plan.md`;
+- Run-A/Run-B/Run-C execution plan — `DEV/docs/superpowers/plans/2026-09-11-r2-7-WP-27-steps-3-8-audit-execution-plan.md`;
 - Step-3 Decision Brief — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-3-decision-brief.md`;
 - Step-4 review disposition — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-4-review-disposition.md`;
-- Step-5 candidate — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-5-candidate-readiness-spec.md`.
+- Step-5 candidate — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-5-candidate-readiness-spec.md`;
+- Step-6 independent critic — `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-6-whole-project-adversarial-review.md`.
 
 ## Step-2 admitted closure basis
 
@@ -140,7 +141,23 @@ VERSION_IMPACT: NONE — documentation-only Run-A artifacts
 
 The Step-5 workstream IDs are planning containers only. The Step-2 `R27-R###` leaves and their accepted semantic/runtime/persistence/release owners remain authoritative. No global readiness/migration/failure/partition/routing/scheduling authority was introduced.
 
-Current authorization boundary:
+## Run B — Step 6 independent critic closure
+
+```text
+STEP6_ARTIFACT_CHECKPOINT: 9367cccb0423204e5c8ea2e1256ef3e6da098421
+STEP6_RESULT: COMPLETE / PASS
+STEP6_BLOCKING_FOUND: 0
+STEP6_SIGNIFICANT_FOUND: 0
+STEP6_MINOR_FOUND: 0
+STEP6_HUMAN_DECISION_REQUIRED: NO
+STEP6_PRODUCT_OWNER_DECISION_REQUIRED: NO
+STEP6_ARCHITECTURE_REOPEN_REQUIRED: NO
+STEP6_VERSION_IMPACT: NONE
+```
+
+Step 6 independently reconstructed the material owner/dependency subgraph, attacked the Step-5 aggregation/reverse-traceability boundary, executed the required failure/currentness/version/LLM-authority/Story/cache/diagnostic/repository/async/degradation attacks, and retained important negative findings. No candidate repair was performed and no Step-7 work was started in Run B.
+
+## Current authorization boundary
 
 ```text
 WP27_ELIGIBLE: YES
@@ -150,10 +167,14 @@ WP27_STEP2: COMPLETE
 WP27_STEP3: COMPLETE
 WP27_STEP4: COMPLETE
 WP27_STEP5: COMPLETE
-WP27_STEP6: NOT_STARTED
+WP27_STEP6: COMPLETE / PASS
+WP27_STEP7: NOT_STARTED
+WP27_STEP8: NOT_STARTED
 
-NEXT_AUTHORIZED_UNIT: WP-27 STEP 6 — FRESH-CONTEXT WHOLE-PROJECT ADVERSARIAL REVIEW
-STEP6_SAME_RUN_START_ALLOWED: NO — controlling Run-A task requires a separate fresh-context reviewer
+NEXT_ELIGIBLE_UNIT: WP-27 Step 7 — finding-resolution / propagation gate
+NEXT_AUTHORIZED_UNIT: WP-27 STEP 7 — RUN-C FINDING-RESOLUTION / PROPAGATION GATE
+STEP6_FROZEN_FINDING_SET: EMPTY
+STEP7_REPAIR_WORK_FROM_STEP6: NONE
 
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
@@ -162,4 +183,4 @@ RELEASE_EXECUTION_STARTED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-WP-27 closure still requires Steps 6–8, including the mandatory Step-8 Senior gate. R2.7 remains open after WP-27 closure until final reconciliation completes the global matrices, forward obligations, 82-item recheck, dormant/revisit trigger check, whole-project adversarial composition, Task-Brief-v2 exit criteria and implementation-planning entry resolution.
+WP-27 closure still requires Steps 7–8, including the mandatory Step-8 Senior gate. R2.7 remains open after WP-27 closure until final reconciliation completes the global matrices, forward obligations, 82-item recheck, dormant/revisit trigger check, whole-project adversarial composition, Task-Brief-v2 exit criteria and implementation-planning entry resolution.
