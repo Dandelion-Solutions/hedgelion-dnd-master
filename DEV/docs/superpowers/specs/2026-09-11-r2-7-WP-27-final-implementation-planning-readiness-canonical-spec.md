@@ -1,12 +1,12 @@
 # R2.7 WP-27 — Final Implementation-Planning Readiness — Canonical Specification
 
-Status: **CANONICAL STEP-8 WORKER RESULT — MANDATORY INDEPENDENT FINAL SENIOR REVIEW PENDING**
+Status: **CANONICAL — FINAL INDEPENDENT SENIOR REVIEW PASS / GO**
 
 Date: 2026-09-11
 
 This specification is the WP-27 integration owner for the final implementation-planning-readiness result produced by Steps 2–8. It is implementation-facing architecture/readiness law. It is not an implementation plan, does not authorize implementation planning, and does not replace the native semantic/runtime/persistence/release owners referenced by the underlying readiness leaves.
 
-WP-27 remains subject to the mandatory independent final Senior review. R2.7 final reconciliation remains mandatory after WP-27 closure and before implementation-planning entry can be resolved.
+The mandatory independent final Senior review has passed. R2.7 final reconciliation remains mandatory after WP-27 closure and before implementation-planning entry can be resolved.
 
 ## 1. Primary provenance and evidence route
 
@@ -14,11 +14,11 @@ Controlling process/execution input:
 
 - `DEV/docs/superpowers/plans/2026-09-11-r2-7-WP-27-steps-3-8-audit-execution-plan.md`.
 
-Admitted Step-2 evidence owners:
+Step-2 source roles are intentionally distinct:
 
-- `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-2-execution-amendment.md`;
-- `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-2-evidence-ledger.md`;
-- `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-2-independent-audit.md`.
+- `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-2-execution-amendment.md` — Step-2 execution owner;
+- `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-2-evidence-ledger.md` — current admitted item-level evidence/traceability owner, including the repaired durable closure and independent re-review PASS;
+- `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-step-2-independent-audit.md` — historical HOLD review provenance. Its findings were subsequently repaired and independently re-reviewed; it is not the current Step-2 acceptance owner.
 
 Run-A / Run-B / Run-C provenance:
 
@@ -425,7 +425,7 @@ Future implementation checkpoints must run the Version Impact Gate against their
 
 ## 15. Readiness conclusion and remaining gates
 
-The worker Step-8 result is:
+The reviewed WP-27 result is:
 
 ```text
 WP27_STEP7: COMPLETE
@@ -451,9 +451,9 @@ HUMAN_DECISION_REQUIRED: NO
 PRODUCT_OWNER_DECISION_REQUIRED: NO
 ARCHITECTURE_REOPEN_REQUIRED: NO
 
-WP27_FINAL_SENIOR_REVIEW: PENDING
-WP27_CLOSED: NO
-R2_7_FINAL_RECONCILIATION: NOT_STARTED
+WP27_FINAL_SENIOR_REVIEW: PASS / GO
+WP27_CLOSED_STATE: SEE DEV/CURRENT_PROGRESS.md — closure publication/read-back follows the Senior gate
+R2_7_FINAL_RECONCILIATION: REQUIRED AFTER WP-27 CLOSURE
 IMPLEMENTATION_PLANNING_STARTED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 MIGRATION_EXECUTION_STARTED: NO
@@ -461,4 +461,4 @@ RELEASE_EXECUTION_STARTED: NO
 GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-The exact next gate is the mandatory independent Senior review of this completed WP-27 Step-8 result. A Senior PASS may close WP-27 and expose R2.7 final reconciliation as the next program unit; it still does not skip that reconciliation or directly authorize implementation planning.
+The mandatory independent Senior review found no blocking/significant defect. The only final-review finding, `SR27-FINAL-M01`, was a source-role wording defect in §1 and is corrected in this canonical text. After verified WP-27 closure publication, the exact next program unit is R2.7 final reconciliation; implementation planning remains unauthorized until that reconciliation resolves its own entry gate.
