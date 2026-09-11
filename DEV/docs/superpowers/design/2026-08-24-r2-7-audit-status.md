@@ -21,16 +21,16 @@ Historical/pre-resume evidence remains subordinate to current progress and ownin
 ## Current R2.7 cursor
 
 ```text
-AUDIT_STATUS: IN_PROGRESS
+AUDIT_STATUS: IN_PROGRESS — FINAL INDEPENDENT SENIOR GATE PENDING
 LAST_CLOSED_DOMAIN: WP-27
 CURRENT_DOMAIN: R2.7 FINAL RECONCILIATION
 CURRENT_DOMAIN_TOPIC: Whole-project final reconciliation / implementation-planning entry evidence
-CURRENT_SLICE: WAVES 1-2 COMPLETE — FR-12 FRESH INDEPENDENT WHOLE-PROJECT ADVERSARIAL COMPOSITION PENDING
-NEXT_DOMAIN: FR-12 WHOLE-PROJECT ADVERSARIAL COMPOSITION — FRESH INDEPENDENT CONTEXT REQUIRED
-OWNER_GATE: INDEPENDENCE GATE — PRIMARY ARCHITECT CONTEXT THAT PRODUCED WAVES 1-2 MUST STOP BEFORE FR-12
-FINAL_RECONCILIATION: ACTIVE
+CURRENT_SLICE: WAVE-4 WORKER CLOSURE COMPLETE — FR-12 PROPAGATED / FR-13 PASS / FR-14 COMPLETE
+NEXT_DOMAIN: FINAL INDEPENDENT SENIOR REVIEW / IMPLEMENTATION-PLANNING ENTRY GATE
+OWNER_GATE: MANDATORY FRESH INDEPENDENT FINAL SENIOR REVIEW OF COMPLETE WAVE-4 CLOSURE PACKAGE
+FINAL_RECONCILIATION: WORKER_CLOSURE_COMPLETE / FINAL_SENIOR_PENDING
 
-R2_7_STATUS: WP-01..WP-27 CLOSED / FINAL RECONCILIATION WAVES 1-2 COMPLETE / FR-12 PENDING
+R2_7_STATUS: WP-01..WP-27 CLOSED / FINAL RECONCILIATION WAVES 1-4 COMPLETE AT WORKER LEVEL / FINAL SENIOR PENDING
 R2_7_WP26: CLOSED / FINAL INDEPENDENT SENIOR PASS
 R2_7_WP27: CLOSED / FINAL INDEPENDENT SENIOR PASS / SR27-FINAL-M01 RESOLVED
 ```
@@ -86,7 +86,7 @@ The Step-2 item-level ledger and native owners remain the traceability basis. Th
 
 ## Final reconciliation current state
 
-Stage-entry control plane:
+Stage-entry/control plane:
 
 - `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-entry-control-plane.md`.
 
@@ -97,6 +97,18 @@ Wave-1 evidence checkpoint:
 Wave-2 integrated reconciliation checkpoint:
 
 - `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-wave-2-integrated-cross-system-reconciliation.md`.
+
+FR-12 durable propagation:
+
+- `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-fr-12-independent-adversarial-review-result.md`.
+
+Wave-4 closure:
+
+- `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-wave-4-closure.md`.
+
+Final architecture/machine-realization closure candidate:
+
+- `DEV/docs/superpowers/specs/2026-09-11-r2-7-final-architecture-machine-realization-closure-canonical-spec.md`.
 
 Required package identifiers remain:
 
@@ -120,8 +132,8 @@ FR-14 exact acceptance / verification package
 Current cursor:
 
 ```text
-FR_CONTROL_PLANE: INITIALIZED
-CURRENT_WAVE: WAVE_3_FRESH_INDEPENDENT_ADVERSARIAL_COMPOSITION
+FR_CONTROL_PLANE: WAVES_1_TO_4_COMPLETE_AT_WORKER_LEVEL
+CURRENT_WAVE: WAVE_4_CLOSURE_COMPLETE
 
 FR_01_SOURCE_MANIFEST: COMPLETE
 FR_02_SEMANTIC_OWNER_MATRIX: COMPLETE
@@ -134,11 +146,15 @@ FR_08_MACHINE_SCHEMA_VERSION_CONSISTENCY: COMPLETE
 FR_09_MACHINE_DOCUMENTATION_DRIFT: COMPLETE
 FR_10_82_ITEM_RECHECK: COMPLETE — 82 / 82
 FR_11_DORMANT_TRIGGER_AUDIT: COMPLETE
-FR_12: PENDING / FRESH INDEPENDENT CRITIC REQUIRED
-FR_13_TO_FR_14: PENDING
+FR_12: PASS / FINDINGS RESOLVED
+FR_13: PASS — 24 / 24
+FR_14: COMPLETE
 
-WAVE1_CHECKPOINT: d58de89af0cd8b75ae879fb8c0fd97c72932455f
-WAVE1_VALIDATE_RUN: 34637853992 / SUCCESS
+FR12_REPAIR_HEAD: 92dbf7302d281cff2f6b4c27d81bc687edb1e25a
+FR12_REPAIR_VALIDATE_RUN: 34649688039 / SUCCESS
+FR12_UNRESOLVED_BLOCKING: 0
+FR12_UNRESOLVED_SIGNIFICANT: 0
+FR12_UNRESOLVED_MINOR: 0
 
 WAVE2_PRIMARY_ARCHITECT_RESULT:
   ROUND2_RECHECK: 82 / 82
@@ -151,15 +167,21 @@ WAVE2_PRIMARY_ARCHITECT_RESULT:
   MACHINE_RESPONSIBILITIES: 59 / 59
   MACHINE_EXCEPTION_MEMBERS: 31 / 31
   MACHINE_UNOWNED_OR_UNCLASSIFIED: []
+
+WAVE4_WORKER_RESULT:
+  TASK_BRIEF_EXIT_CRITERIA: 24 / 24 PASS
   UNRESOLVED_BLOCKING: 0
   UNRESOLVED_SIGNIFICANT: 0
-  CURRENT_HUMAN_DECISION_REQUIRED: NO
-  CURRENT_PRODUCT_OWNER_DECISION_REQUIRED: NO
+  UNRESOLVED_MINOR: 0
+  HUMAN_DECISION_REQUIRED: NO
+  PRODUCT_OWNER_DECISION_REQUIRED: NO
   ARCHITECTURE_REOPEN_REQUIRED: NO
   VERSION_IMPACT: NONE
+  MIGRATION_REQUIRED: NO
+  IMPLEMENTATION_PLANNING_TECHNICALLY_READY: YES
 ```
 
-Wave-2 primary-architect evidence is not the FR-12 independent result. FR-12 must actively attempt to falsify the composition and cannot be credited by aggregate counts, current CI or primary-architect self-review.
+FR-12 remains an independent critic result; Wave-4 primary-architect propagation does not convert it into self-review. Historical Wave-1/Wave-2 records remain unchanged as checkpoints.
 
 ---
 
@@ -167,12 +189,13 @@ Wave-2 primary-architect evidence is not the FR-12 independent result. FR-12 mus
 
 ```text
 WP27_CLOSED: YES
-R2_7_FINAL_RECONCILIATION: ACTIVE
-NEXT_ELIGIBLE_UNIT: FR-12 fresh independent whole-project adversarial composition
-NEXT_AUTHORIZED_UNIT: FR-12 ONLY, IN A FRESH INDEPENDENT REVIEW CONTEXT
-NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: STOP BEFORE FR-12
-REQUIRED_GATE: independent FR-12 finding set -> resolve/propagate as applicable -> only then FR-13/FR-14 and implementation-planning entry resolution
+R2_7_FINAL_RECONCILIATION: WORKER_CLOSURE_COMPLETE / FINAL_INDEPENDENT_SENIOR_PENDING
+NEXT_ELIGIBLE_UNIT: fresh independent final Senior review of complete Wave-4 closure package
+NEXT_AUTHORIZED_UNIT: FINAL INDEPENDENT SENIOR REVIEW ONLY
+NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: STOP BEFORE FINAL SENIOR REVIEW
+REQUIRED_GATE: final independent Senior PASS / GO -> resolve/propagate any findings -> advance global/task-local cursor to implementation-planning entry only if no blocking gate remains
 
+IMPLEMENTATION_PLANNING_TECHNICALLY_READY: YES
 IMPLEMENTATION_PLANNING_STARTED: NO
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO

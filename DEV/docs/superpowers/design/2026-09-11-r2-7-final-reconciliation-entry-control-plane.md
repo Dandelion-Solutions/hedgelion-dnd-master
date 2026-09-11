@@ -1,10 +1,10 @@
 # R2.7 Final Reconciliation — Entry Control Plane
 
-Status: **ACTIVE — STAGE ENTRY / WHOLE-PROJECT RECONCILIATION INITIALIZED**
+Status: **ACTIVE — WAVES 1-4 COMPLETE AT WORKER LEVEL / FINAL INDEPENDENT SENIOR GATE PENDING**
 
 Date: 2026-09-11
 
-This artifact initializes the final reconciliation required after closure of R2.7 WP-01..WP-27. It is a development-process/evidence control plane, not a new semantic owner, implementation plan, runtime contract, migration plan, release plan or gameplay bootstrap.
+This artifact initializes and routes the final reconciliation required after closure of R2.7 WP-01..WP-27. It is a development-process/evidence control plane, not a new semantic owner, implementation plan, runtime contract, migration plan, release plan or gameplay bootstrap.
 
 ## 1. Entry basis
 
@@ -15,7 +15,7 @@ WP27_FINAL_SENIOR_PUBLICATION_HEAD: 1ff802ab94d73c9e8c1b4d946e3d478b3f64b5b9
 WP27_FINAL_SENIOR_VALIDATE_RUN: 34628446960 / SUCCESS
 WP27_FINAL_SENIOR_REVIEW: PASS / GO
 WP27_CLOSED: YES
-R2_7_FINAL_RECONCILIATION: ACTIVE
+R2_7_FINAL_RECONCILIATION: WORKER_CLOSURE_COMPLETE / FINAL_INDEPENDENT_SENIOR_PENDING
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 ```
 
@@ -40,7 +40,7 @@ Immediate admitted predecessor package:
 - `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-final-senior-review.md`;
 - repaired WP-27 Step-2 evidence ledger and its native owner routes.
 
-The final reconciliation must consume current owning sources and accepted closure evidence. It must not replace item-level evidence with summaries or infer currentness from filename/date order.
+The final reconciliation consumes current owning sources and accepted closure evidence. It does not replace item-level evidence with summaries or infer currentness from filename/date order.
 
 ## 3. Mission
 
@@ -85,7 +85,7 @@ These IDs are reconciliation-control identifiers only. They do not create semant
 
 Use the lightest process sufficient for each reconciliation activity, while preserving all evidence, critic, propagation, currentness and decision-rights requirements of the controlling process owners.
 
-Execute the package in four waves:
+The package is executed in four waves:
 
 ```text
 WAVE 1 — EVIDENCE FOUNDATION
@@ -152,7 +152,7 @@ Coverage never implies activation.
 
 ## 6. Initial admitted closure baseline
 
-The immediate WP-27 integration result enters final reconciliation as:
+The immediate WP-27 integration result entered final reconciliation as:
 
 ```text
 SOURCE_ITEMS: 224 / 224
@@ -173,13 +173,13 @@ WP27_PRODUCT_OWNER_DECISION_REQUIRED: NO
 WP27_ARCHITECTURE_REOPEN_REQUIRED: NO
 ```
 
-This is an admitted predecessor baseline, not proof that FR-01..FR-14 are already complete. Final reconciliation still has to test composition across the closed domains and current owners.
+This was an admitted predecessor baseline, not proof that FR-01..FR-14 were already complete. Completion evidence is now carried by Waves 1-4 and the exact FR-12 result.
 
 ## 7. Initial Source Manifest route
 
-The first active reconciliation slice is `FR-01`, with parallel owner-routing preparation for `FR-02` and `FR-03`.
+At stage entry, the first active reconciliation slice was `FR-01`, with parallel owner-routing preparation for `FR-02` and `FR-03`.
 
-Start from these source-role families:
+The admitted source-role families were:
 
 ```text
 CURRENT / PROCESS AUTHORITY
@@ -237,18 +237,19 @@ Reconciliation convenience may not create a new global readiness, migration, hea
 
 ## 9. Decision and stop rules
 
+Current Wave-4 worker result:
+
 ```text
-CURRENT_HUMAN_DECISION_REQUIRED: NO KNOWN ITEM
-CURRENT_PRODUCT_OWNER_DECISION_REQUIRED: NO KNOWN ITEM
+CURRENT_HUMAN_DECISION_REQUIRED: NO
+CURRENT_PRODUCT_OWNER_DECISION_REQUIRED: NO
+ARCHITECTURE_REOPEN_REQUIRED: NO
 ```
 
-Mechanical reconciliation continues automatically under current owners.
-
-If evidence exposes a genuine unresolved product semantic, material architecture trade-off, canonical authority decision, compatibility policy choice, explicit risk acceptance or hard-to-reverse product choice, stop only that affected path and produce a decision-ready brief. Continue all independent evidence work that does not depend on the decision.
+Mechanical reconciliation completed under current owners. Any future evidence exposing a genuine unresolved product semantic, material architecture trade-off, canonical authority decision, compatibility policy choice, explicit risk acceptance or hard-to-reverse product choice follows the normal decision/reopen process rather than being hidden in implementation.
 
 ## 10. Version Impact Gate
 
-Stage entry and this control-plane artifact change development routing/evidence only.
+The control plane and Wave-4 closure package change development routing/evidence/spec integration only.
 
 ```text
 ENGINE_VERSION: 1.0-alpha
@@ -257,27 +258,56 @@ VERSION_IMPACT: NONE
 ENGINE_VERSION_BUMP_REQUIRED: NO
 MODULE_REVISION_REQUIRED: NO
 PERSISTENT_SCHEMA_OR_GENERATION_BUMP_REQUIRED: NO
+CATALOG_OR_RULESET_GENERATION_BUMP_REQUIRED: NO
 MIGRATION_REQUIRED: NO
 RELEASE_EXECUTION_REQUIRED: NO
 ```
 
-Concrete later reconciliation findings must run their own Version Impact classification against the actual affected owner/delta.
+Concrete later implementation changes must run their own Version Impact classification against the actual affected owner/delta.
 
 ## 11. Current cursor
 
 ```text
-R2_7_FINAL_RECONCILIATION: ACTIVE
-FR_CONTROL_PLANE: INITIALIZED
+R2_7_FINAL_RECONCILIATION: WORKER_CLOSURE_COMPLETE / FINAL_INDEPENDENT_SENIOR_PENDING
+FR_CONTROL_PLANE: WAVES_1_TO_4_COMPLETE_AT_WORKER_LEVEL
 FR_EXECUTION_MODEL: FOUR_WAVES / SINGLE_RECONCILIATION_STAGE
-CURRENT_WAVE: WAVE_1_EVIDENCE_FOUNDATION
-FR_01_SOURCE_MANIFEST: ACTIVE
-FR_02_SEMANTIC_OWNER_MATRIX: PREPARATION / PENDING RECONCILIATION
-FR_03_MACHINE_OWNER_MATRIX: PREPARATION / PENDING RECONCILIATION
-FR_04_UNRESOLVED_CLASSIFICATION: PREPARATION / PENDING RECONCILIATION
-FR_05_TO_FR_11: WAVE_2_PENDING
-FR_12: WAVE_3_FRESH_INDEPENDENT_CRITIC_PENDING
-FR_13_TO_FR_14: WAVE_4_CLOSURE_PENDING
+CURRENT_WAVE: WAVE_4_CLOSURE_COMPLETE
+
+FR_01_SOURCE_MANIFEST: COMPLETE
+FR_02_SEMANTIC_OWNER_MATRIX: COMPLETE
+FR_03_MACHINE_OWNER_MATRIX: COMPLETE
+FR_04_UNRESOLVED_CLASSIFICATION: COMPLETE
+FR_05_DEFERRED_DEBT_BACKLOG: COMPLETE
+FR_06_HUMAN_DECISION_PO_LEDGER: COMPLETE
+FR_07_VERSION_MIGRATION_IMPACT: COMPLETE
+FR_08_MACHINE_SCHEMA_VERSION_CONSISTENCY: COMPLETE
+FR_09_MACHINE_DOCUMENTATION_DRIFT: COMPLETE
+FR_10_82_ITEM_RECHECK: COMPLETE — 82 / 82
+FR_11_DORMANT_TRIGGER_AUDIT: COMPLETE
+FR_12_WHOLE_PROJECT_ADVERSARIAL_COMPOSITION: PASS — FINDINGS RESOLVED
+FR_13_TASK_BRIEF_EXIT_CRITERIA: PASS — 24 / 24
+FR_14_ACCEPTANCE_VERIFICATION_PACKAGE: COMPLETE
+
+FR12_REPAIR_HEAD: 92dbf7302d281cff2f6b4c27d81bc687edb1e25a
+FR12_REPAIR_VALIDATE_RUN: 34649688039 / SUCCESS
+FR12_UNRESOLVED_BLOCKING: 0
+FR12_UNRESOLVED_SIGNIFICANT: 0
+FR12_UNRESOLVED_MINOR: 0
+
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+UNRESOLVED_MINOR: 0
+HUMAN_DECISION_REQUIRED: NO
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+ARCHITECTURE_REOPEN_REQUIRED: NO
+VERSION_IMPACT: NONE
+MIGRATION_REQUIRED: NO
+
+CANONICAL_CLOSURE_CANDIDATE:
+  DEV/docs/superpowers/specs/2026-09-11-r2-7-final-architecture-machine-realization-closure-canonical-spec.md
+IMPLEMENTATION_PLANNING_TECHNICALLY_READY: YES
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
+NEXT_REQUIRED_GATE: FRESH INDEPENDENT FINAL SENIOR REVIEW OF COMPLETE VERIFIED WAVE-4 CLOSURE PACKAGE
 ```
 
-The next substantive action is Wave 1 owner-first FR-01 Source Manifest reconciliation, carrying its qualifier/currentness results into FR-02/FR-03/FR-04. Implementation planning remains outside the authorized boundary until the complete final reconciliation package satisfies its exit criteria and the current-progress authority explicitly advances the gate.
+The primary architect context that produced Wave 4 must stop here and must not self-credit the final independent Senior gate. Only after final Senior `PASS / GO`, finding propagation as applicable, and explicit advancement of `DEV/CURRENT_PROGRESS.md` may implementation planning become authorized.
