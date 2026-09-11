@@ -14,8 +14,10 @@ CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization 
 CURRENT_SLICE: WP-27 Step 8 complete — final implementation-planning readiness canonicalized / independent Senior gate pending
 
 LAST_CLOSED_DOMAIN: WP-26
+LAST_CLOSED_UNIT: WP-26 — final independent Senior review PASS / GO
 LAST_COMPLETED_WORKER_UNIT: WP-27 Step 8 — canonicalization and self-review
 NEXT_ELIGIBLE_UNIT: mandatory independent final WP-27 Senior review
+NEXT_AUTHORIZED_UNIT: mandatory independent final WP-27 Senior review — only for an independent Senior reviewer; current Run-C worker MUST STOP
 NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: NONE — STOP AT SENIOR GATE
 REQUIRED_GATE: mandatory independent final WP-27 Senior review before WP-27 closure
 
