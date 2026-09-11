@@ -8,18 +8,18 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 FINAL RECONCILIATION ACTIVE — WP-27 CLOSED / IMPLEMENTATION PLANNING NOT AUTHORIZED
+GLOBAL_STATE: R2.7 FINAL RECONCILIATION ACTIVE — WAVE 1 COMPLETE / WAVE 2 ACTIVE / IMPLEMENTATION PLANNING NOT AUTHORIZED
 
 CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: R2.7 final reconciliation — control plane and whole-project Source Manifest / owner-matrix reconciliation
+CURRENT_SLICE: R2.7 final reconciliation — Wave 2 integrated cross-system reconciliation (FR-05..FR-11)
 
 LAST_CLOSED_DOMAIN: WP-27
-LAST_CLOSED_UNIT: WP-27 — final independent Senior review PASS / GO; SR27-FINAL-M01 resolved; closure publication verified
-LAST_COMPLETED_WORKER_UNIT: WP-27 Step 8 canonicalization + final Senior closure
-NEXT_ELIGIBLE_UNIT: R2.7 final reconciliation — whole-project reconciliation package
-NEXT_AUTHORIZED_UNIT: R2.7 FINAL RECONCILIATION — reconcile Source Manifest, semantic/machine owners, unresolved/deferred/decision/version/proof/trigger/82-item coverage before implementation-planning entry resolution
-NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: R2.7 final reconciliation only
-REQUIRED_GATE: complete and verify the R2.7 final reconciliation package before implementation-planning entry may be resolved
+LAST_CLOSED_UNIT: R2.7 Final Reconciliation Wave 1 — FR-01..FR-04 evidence foundation
+LAST_COMPLETED_WORKER_UNIT: Final Reconciliation Wave 1 evidence foundation / owner matrices / unresolved classification
+NEXT_ELIGIBLE_UNIT: R2.7 final reconciliation Wave 2 — FR-05..FR-11 integrated reconciliation
+NEXT_AUTHORIZED_UNIT: R2.7 FINAL RECONCILIATION WAVE 2 ONLY — reconcile deferred/debt/backlog, human decisions, version/migration, machine/schema/version, documentation drift, 82-item continuity and dormant triggers
+NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: R2.7 final reconciliation Wave 2 only; stop before FR-12 independent critic
+REQUIRED_GATE: complete and verify Wave 2, then obtain fresh independent FR-12 adversarial composition before later closure work may proceed
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
 KNOWN_BLOCKERS: implementation planning / implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until R2.7 final reconciliation closes and its entry gate is resolved
@@ -124,41 +124,60 @@ Controlling owners:
 - `DEV/ARCHITECTURE/NEAR_TERM_ROADMAP.md` for sequence only;
 - `DEV/PROJECT_MAP.md` for discovery only.
 
-Current stage-entry artifact:
+Stage-entry control plane:
 
 - `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-entry-control-plane.md`.
 
-Required final-reconciliation package includes, without creating new semantic authority:
+Wave-1 evidence checkpoint artifact:
+
+- `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-wave-1-evidence-foundation.md`.
+
+Required final-reconciliation package remains:
 
 ```text
-1. final whole-project Source Manifest with qualifier/currentness retention
-2. final Semantic-Owner Matrix
-3. final Machine-Owner Matrix
-4. final unresolved-classification tracker
-5. final Deferred / Debt / Backlog reconciliation
-6. final Human-Decision / Product-Owner ledger reconciliation
-7. final version / migration impact matrix
-8. machine-schema / version consistency report
-9. machine <-> documentation drift report
-10. mandatory 82-item DIAMOND / STRONG recheck
-11. dormant / revisit trigger audit
-12. whole-project adversarial composition
-13. Task-Brief-v2 exit-criteria reconciliation
-14. exact acceptance / verification package required by the resulting closure
+FR-01 final whole-project Source Manifest with qualifier/currentness retention
+FR-02 final Semantic-Owner Matrix
+FR-03 final Machine-Owner Matrix
+FR-04 final unresolved-classification tracker
+FR-05 final Deferred / Debt / Backlog reconciliation
+FR-06 final Human-Decision / Product-Owner ledger reconciliation
+FR-07 final version / migration impact matrix
+FR-08 machine-schema / version consistency report
+FR-09 machine <-> documentation drift report
+FR-10 mandatory 82-item DIAMOND / STRONG recheck
+FR-11 dormant / revisit trigger audit
+FR-12 whole-project adversarial composition
+FR-13 Task-Brief-v2 exit-criteria reconciliation
+FR-14 exact acceptance / verification package required by the resulting closure
 ```
 
-WP-27 evidence is an admitted implementation-readiness input to this reconciliation; it is not permission to skip final composition or to begin implementation planning.
+WP-27 evidence remains an admitted implementation-readiness input; it is not permission to skip final composition or to begin implementation planning.
 
 ```text
 R2_7_FINAL_RECONCILIATION: ACTIVE
 FINAL_RECONCILIATION_CONTROL_PLANE: INITIALIZED
-FINAL_RECONCILIATION_SOURCE_MANIFEST: ACTIVE / RECONCILIATION REQUIRED
-FINAL_RECONCILIATION_SEMANTIC_OWNER_MATRIX: PENDING
-FINAL_RECONCILIATION_MACHINE_OWNER_MATRIX: PENDING
-FINAL_RECONCILIATION_82_ITEM_RECHECK: PENDING
-FINAL_RECONCILIATION_DORMANT_TRIGGER_AUDIT: PENDING
-FINAL_RECONCILIATION_WHOLE_PROJECT_COMPOSITION: PENDING
-FINAL_RECONCILIATION_EXIT_CRITERIA: PENDING
+CURRENT_WAVE: WAVE_2_INTEGRATED_CROSS_SYSTEM_RECONCILIATION
+
+FR_01_SOURCE_MANIFEST: COMPLETE
+FR_02_SEMANTIC_OWNER_MATRIX: COMPLETE
+FR_03_MACHINE_OWNER_MATRIX: COMPLETE
+FR_04_UNRESOLVED_CLASSIFICATION: COMPLETE
+FR_05_DEFERRED_DEBT_BACKLOG: ACTIVE / WAVE_2
+FR_06_HUMAN_DECISION_PO_LEDGER: ACTIVE / WAVE_2
+FR_07_VERSION_MIGRATION_IMPACT: ACTIVE / WAVE_2
+FR_08_MACHINE_SCHEMA_VERSION_CONSISTENCY: ACTIVE / WAVE_2
+FR_09_MACHINE_DOCUMENTATION_DRIFT: ACTIVE / WAVE_2
+FR_10_82_ITEM_RECHECK: ACTIVE / WAVE_2
+FR_11_DORMANT_TRIGGER_AUDIT: ACTIVE / WAVE_2
+FR_12_WHOLE_PROJECT_ADVERSARIAL_COMPOSITION: PENDING FRESH INDEPENDENT CONTEXT
+FR_13_TO_FR_14: PENDING AFTER FR_12
+
+WAVE1_UNRESOLVED_BLOCKING: 0
+WAVE1_UNRESOLVED_SIGNIFICANT: 0
+WAVE1_HUMAN_DECISION_REQUIRED: NO
+WAVE1_PRODUCT_OWNER_DECISION_REQUIRED: NO
+WAVE1_ARCHITECTURE_REOPEN_REQUIRED: NO
+WAVE1_VERSION_IMPACT: NONE
 
 IMPLEMENTATION_PLANNING_STARTED: NO
 IMPLEMENTATION_PLANNING_AUTHORIZED: NO
@@ -171,5 +190,5 @@ GAMEPLAY_BOOTSTRAP_STARTED: NO
 Exact current gate:
 
 ```text
-complete the final-reconciliation evidence/control package and resolve any genuine material human-owned decision before implementation-planning entry can be considered
+complete and verify FR-05..FR-11 as one integrated Wave-2 reconciliation pass; then obtain fresh independent FR-12 whole-project adversarial composition before later closure work or implementation-planning entry can be considered
 ```
