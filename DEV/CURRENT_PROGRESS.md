@@ -8,21 +8,21 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 FINAL RECONCILIATION WAVE-4 WORKER CLOSURE COMPLETE — FINAL INDEPENDENT SENIOR / IMPLEMENTATION-PLANNING ENTRY GATE PENDING
+GLOBAL_STATE: R2.7 FINAL RECONCILIATION CLOSED — IMPLEMENTATION-PLANNING ENTRY AUTHORIZED / PLANNING NOT STARTED
 
-CURRENT_WORKSTREAM: R2.7 whole-project final architecture & machine-realization audit
-CURRENT_SLICE: R2.7 final reconciliation — FR-12 propagated; FR-13 PASS; FR-14 complete; final independent Senior review pending
+CURRENT_WORKSTREAM: implementation-planning entry
+CURRENT_SLICE: post-R2.7 implementation planning authorized; decomposition not started
 
-LAST_CLOSED_DOMAIN: WP-27
-LAST_CLOSED_UNIT: R2.7 Final Reconciliation Wave 4 worker closure — FR-12 propagation / FR-13 / FR-14 / final closure candidate
+LAST_CLOSED_DOMAIN: R2.7 whole-project final architecture & machine-realization audit
+LAST_CLOSED_UNIT: R2.7 Final Reconciliation independent Final Senior review — PASS / GO
 LAST_COMPLETED_WORKER_UNIT: Final Reconciliation Wave 4 closure package
-NEXT_ELIGIBLE_UNIT: R2.7 Final Reconciliation final independent Senior review
-NEXT_AUTHORIZED_UNIT: FINAL INDEPENDENT SENIOR REVIEW OF THE VERIFIED WAVE-4 CLOSURE PACKAGE ONLY
-NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: STOP — primary architect context must not self-perform or self-credit the final independent Senior gate
-REQUIRED_GATE: final independent Senior PASS / GO -> resolve and propagate any findings -> mechanically advance current progress to implementation-planning authorization only if no blocking gate remains
+NEXT_ELIGIBLE_UNIT: implementation-planning bootstrap and readiness-leaf/dependency-DAG decomposition
+NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING ONLY — derive bounded implementation plans from current readiness leaves and native owners; do not begin production implementation
+NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: fresh implementation-planning bootstrap + plan derivation only
+REQUIRED_GATE: complete implementation-planning package -> mandatory Senior plan review / GO -> production implementation only after GO
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
-KNOWN_BLOCKERS: implementation planning / implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until the final independent Senior gate passes and this authority is advanced
+KNOWN_BLOCKERS: production implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until the implementation plan package receives the required Senior GO
 ```
 
 ---
@@ -61,58 +61,11 @@ Recent canonical predecessor owners:
 - WP-26 — `DEV/docs/superpowers/specs/2026-09-09-r2-7-WP-26-documentation-routing-supersession-consistency-canonical-spec.md`;
 - WP-27 — `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`.
 
----
-
-# WP-27 closed state
-
-Final canonical owner:
-
-- `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`.
-
-Final independent Senior review:
-
-- `DEV/docs/superpowers/design/2026-09-11-r2-7-WP-27-final-senior-review.md`.
-
-```text
-STEP2_FINAL_HEAD: cbe15efecff6de222787ceae2c88a196e24e13e6
-STEP5_CHECKPOINT: a1d6a298cee2de63811225ade51e2a51f8785d22
-STEP6_ARTIFACT_CHECKPOINT: 9367cccb0423204e5c8ea2e1256ef3e6da098421
-STEP7_CHECKPOINT: c477e0350a7c304de5dc81d586c59ff7920b0487
-STEP8_WORKER_HEAD: b615bf5910a5c9b28ba6d8dff3d9ff5f94bf30e0
-WP27_FINAL_SENIOR_PUBLICATION_HEAD: 1ff802ab94d73c9e8c1b4d946e3d478b3f64b5b9
-WP27_FINAL_SENIOR_VALIDATE_RUN: 34628446960 / SUCCESS
-
-SOURCE_ITEMS: 224 / 224
-READINESS_RECORDS: 145 / 145
-READINESS_MISSING: []
-READINESS_DUPLICATED: []
-EXPLICIT_NO_WORK_TERMINALS: 79 / 79
-NO_WORK_ACTIVATED: 0
-PO001_010: 10 / 10
-ROUND2_DIAMOND_STRONG: 82 / 82
-S14_S53_D15_DELTAS: PRESERVED
-MACHINE_RESPONSIBILITIES: 59 / 59
-MACHINE_EXCEPTION_MEMBERS: 31 / 31
-HIGH_RISK_PROBES: 8 / 8 PASS
-R27_R004: REMOVED / NOT RESURRECTED
-FINAL_SENIOR_BLOCKING: 0
-FINAL_SENIOR_SIGNIFICANT: 0
-FINAL_SENIOR_MINOR_FOUND: 1
-SR27_FINAL_M01: RESOLVED — Step-2 source roles corrected; semantic delta NONE
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
-HUMAN_DECISION_REQUIRED: NO
-PRODUCT_OWNER_DECISION_REQUIRED: NO
-ARCHITECTURE_REOPEN_REQUIRED: NO
-VERSION_IMPACT: NONE
-WP27_CLOSED: YES
-```
-
-WP-27's 11 workstreams are planning containers only. Exact Step-2 readiness leaves and native owners retain semantics, activation, proof, defer/revisit, negative-law and future Version Impact authority.
+WP-27's 11 workstreams remain planning containers only. Exact Step-2 readiness leaves and native owners retain semantics, activation, proof, defer/revisit, negative-law and future Version Impact authority.
 
 ---
 
-# R2.7 final reconciliation — Wave-4 worker closure
+# R2.7 final reconciliation — closed
 
 Controlling owners:
 
@@ -128,14 +81,16 @@ Final Reconciliation package:
 - Wave 2 / FR-05..FR-11 — `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-wave-2-integrated-cross-system-reconciliation.md`;
 - FR-12 independent result/propagation — `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-fr-12-independent-adversarial-review-result.md`;
 - Wave 4 / FR-13..FR-14 — `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-wave-4-closure.md`;
-- final architecture/machine-realization closure candidate — `DEV/docs/superpowers/specs/2026-09-11-r2-7-final-architecture-machine-realization-closure-canonical-spec.md`.
+- final architecture/machine-realization closure — `DEV/docs/superpowers/specs/2026-09-11-r2-7-final-architecture-machine-realization-closure-canonical-spec.md`;
+- mandatory independent Final Senior review — `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-final-senior-review.md`.
 
 WP-27 evidence remains an admitted implementation-readiness input. Exact readiness leaves/native owners continue to control semantics, activation, negative laws, proof obligations and future Version Impact.
 
 ```text
-R2_7_FINAL_RECONCILIATION: WORKER_CLOSURE_COMPLETE / FINAL_INDEPENDENT_SENIOR_PENDING
-FINAL_RECONCILIATION_CONTROL_PLANE: WAVES_1_TO_4_COMPLETE_AT_WORKER_LEVEL
-CURRENT_WAVE: WAVE_4_CLOSURE_COMPLETE
+R2_7_FINAL_RECONCILIATION: CLOSED / FINAL INDEPENDENT SENIOR PASS / GO
+FINAL_RECONCILIATION_CONTROL_PLANE: WAVES_1_TO_4 COMPLETE
+FINAL_SENIOR_REVIEW_PUBLICATION_HEAD: 87ef3285ea86bb00dbd98d3684cea13de32462ff
+FINAL_SENIOR_VALIDATE_RUN: 34651946904 / SUCCESS
 
 FR_01_SOURCE_MANIFEST: COMPLETE
 FR_02_SEMANTIC_OWNER_MATRIX: COMPLETE
@@ -151,12 +106,9 @@ FR_11_DORMANT_TRIGGER_AUDIT: COMPLETE
 FR_12_WHOLE_PROJECT_ADVERSARIAL_COMPOSITION: PASS — FINDINGS RESOLVED
 FR_13_TASK_BRIEF_EXIT_CRITERIA: PASS — 24 / 24
 FR_14_ACCEPTANCE_VERIFICATION_PACKAGE: COMPLETE
-
-FR12_REPAIR_HEAD: 92dbf7302d281cff2f6b4c27d81bc687edb1e25a
-FR12_REPAIR_VALIDATE_RUN: 34649688039 / SUCCESS
-FR12_UNRESOLVED_BLOCKING: 0
-FR12_UNRESOLVED_SIGNIFICANT: 0
-FR12_UNRESOLVED_MINOR: 0
+FINAL_SENIOR_BLOCKING: 0
+FINAL_SENIOR_SIGNIFICANT: 0
+FINAL_SENIOR_MINOR: 0
 
 ROUND2_RECHECK: 82 / 82
 ROUND2_ACTIVE_READINESS: 43
@@ -179,8 +131,8 @@ VERSION_IMPACT: NONE
 MIGRATION_REQUIRED: NO
 
 IMPLEMENTATION_PLANNING_TECHNICALLY_READY: YES
+IMPLEMENTATION_PLANNING_AUTHORIZED: YES
 IMPLEMENTATION_PLANNING_STARTED: NO
-IMPLEMENTATION_PLANNING_AUTHORIZED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 MIGRATION_EXECUTION_STARTED: NO
 RELEASE_EXECUTION_STARTED: NO
@@ -190,5 +142,7 @@ GAMEPLAY_BOOTSTRAP_STARTED: NO
 Exact current gate:
 
 ```text
-perform a fresh independent final Senior review of the verified Wave-4 closure package; the primary architect context that produced Wave 4 must not self-credit that gate; on PASS / GO resolve/propagate any findings and mechanically advance this current-progress authority to implementation-planning authorization only if no blocking gate remains
+implementation planning is authorized but not started;
+a fresh planning context must perform the normal repository bootstrap, load the applicable Superpowers and specialist skills, derive multiple bounded plans from exact readiness leaves/native owners, preserve activation/negative-law/proof distinctions, and submit the resulting implementation-planning package to mandatory Senior plan review;
+production implementation remains unauthorized until that Senior review returns PASS / GO
 ```
