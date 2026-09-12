@@ -8,22 +8,50 @@ Detailed historical review/recovery evidence remains in the owning WP design/spe
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 FINAL RECONCILIATION CLOSED — IMPLEMENTATION-PLANNING ENTRY AUTHORIZED / PLANNING NOT STARTED
+GLOBAL_STATE: R2.7 FINAL RECONCILIATION CLOSED — IMPLEMENTATION PLANNING IN PROGRESS
 
-CURRENT_WORKSTREAM: implementation-planning entry
-CURRENT_SLICE: post-R2.7 implementation planning authorized; decomposition not started
+CURRENT_WORKSTREAM: implementation planning
+CURRENT_SLICE: planning-entry brief + strict whole-project critic complete; substantive readiness decomposition not started
 
 LAST_CLOSED_DOMAIN: R2.7 whole-project final architecture & machine-realization audit
 LAST_CLOSED_UNIT: R2.7 Final Reconciliation independent Final Senior review — PASS / GO
-LAST_COMPLETED_WORKER_UNIT: Final Reconciliation Wave 4 closure package
-NEXT_ELIGIBLE_UNIT: implementation-planning bootstrap and readiness-leaf/dependency-DAG decomposition
-NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING ONLY — derive bounded implementation plans from current readiness leaves and native owners; do not begin production implementation
-NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: fresh implementation-planning bootstrap + plan derivation only
+LAST_COMPLETED_WORKER_UNIT: implementation-planning entry framing — HG-01 public research closure + repaired planning brief + strict critic PASS
+NEXT_ELIGIBLE_UNIT: planning baseline/currentness pin + P1/P2 exact readiness disposition and active-set reconciliation
+NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING ONLY — continue from repaired planning brief; derive complete bounded executable plan package from exact readiness leaves/native owners; do not begin production implementation
+NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: establish planning baseline, then execute P1/P2 readiness/active-set reconciliation only as the next coherent planning slice
 REQUIRED_GATE: complete implementation-planning package -> mandatory Senior plan review / GO -> production implementation only after GO
 
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-08-24-r2-7-audit-status.md
-KNOWN_BLOCKERS: production implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until the implementation plan package receives the required Senior GO
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-13-implementation-planning-task-brief.md
+TASK_LOCAL_CRITIC: DEV/docs/superpowers/design/2026-09-13-implementation-planning-task-brief-critic.md
+HG01_PUBLIC_RESEARCH: DEV/docs/superpowers/research/2026-09-13-hg01-novel-action-hourglass-result.md
+KNOWN_BLOCKERS: production implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until the complete implementation plan package receives the required Senior GO
 ```
+
+---
+
+## Current implementation-planning framing
+
+The Product Owner requested a durable public HG-01 conclusion plus a strict critic of the implementation-planning framing before substantive decomposition.
+
+Current result:
+
+```text
+HG01_PUBLIC_RESULT: COMPLETE — PASS WITH PLANNING CONSTRAINTS
+IMPLEMENTATION_PLANNING_BRIEF: CRITICISED / REPAIRED
+IMPLEMENTATION_PLANNING_BRIEF_CRITIC: PASS — 0 UNRESOLVED BLOCKING / SIGNIFICANT / MINOR
+MANDATORY_PRE_PLAN_SENIOR_GATE: NONE — not created
+NEXT_ROUTINE_SENIOR_GATE: complete implementation-planning package review
+PRODUCT_OWNER_DECISION_REQUIRED_NOW: NO
+ARCHITECTURE_REOPEN_REQUIRED_NOW: NO
+```
+
+The repaired brief requires a complete package, not merely selection of the first coding task. It requires lossless readiness accounting, exact active-set reconciliation, a dependency DAG, bounded executable `writing-plans` artifacts with HDM Impact Envelopes, proof/version/HG-01 routing, execution waves, bidirectional coverage, currentness checks and final independent Senior plan review.
+
+A recorded ChatGPT branch-creation process incident is preserved at:
+
+- `DEV/docs/superpowers/design/2026-09-13-chatgpt-branch-creation-incident.md`.
+
+The incident refs are non-authoritative and unused. The authoritative development ref was not moved by the incident.
 
 ---
 
@@ -132,7 +160,7 @@ MIGRATION_REQUIRED: NO
 
 IMPLEMENTATION_PLANNING_TECHNICALLY_READY: YES
 IMPLEMENTATION_PLANNING_AUTHORIZED: YES
-IMPLEMENTATION_PLANNING_STARTED: NO
+IMPLEMENTATION_PLANNING_STARTED: YES
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 MIGRATION_EXECUTION_STARTED: NO
 RELEASE_EXECUTION_STARTED: NO
@@ -142,7 +170,8 @@ GAMEPLAY_BOOTSTRAP_STARTED: NO
 Exact current gate:
 
 ```text
-implementation planning is authorized but not started;
-a fresh planning context must perform the normal repository bootstrap, load the applicable Superpowers and specialist skills, derive multiple bounded plans from exact readiness leaves/native owners, preserve activation/negative-law/proof distinctions, and submit the resulting implementation-planning package to mandatory Senior plan review;
-production implementation remains unauthorized until that Senior review returns PASS / GO
+implementation planning is in progress;
+the repaired planning-entry brief is the current task-local framing authority but does not replace native semantic owners or WP-27 item-level readiness evidence;
+next planning work must pin a fresh baseline and perform lossless readiness/active-set reconciliation before deriving the complete dependency DAG and bounded executable implementation plans;
+the complete implementation-planning package must receive mandatory independent Senior plan review PASS / GO before production implementation starts.
 ```
