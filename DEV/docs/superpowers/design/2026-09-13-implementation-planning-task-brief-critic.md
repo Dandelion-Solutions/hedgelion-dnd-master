@@ -105,33 +105,12 @@ A complete DAG may expose several independent topological roots.
 
 **Required repair:** produce an `INITIAL_EXECUTION_WAVE`; select a default first task only when explicit dependency/integration-risk/review evidence justifies it.
 
-## 3. Publication/process incident
-
-### IP-I01 — SIGNIFICANT PROCESS INCIDENT — prohibited placeholder branches created
-
-During publication the agent mistakenly created three refs from `ec681d6169e10d3bfa987d360448389cbdd8cd7a`:
-
-- `do-not-create`
-- `do-not-create-2`
-- `do-not-create-3`
-
-This violated the explicit `AGENTS.md` / runtime branch-creation guardrail.
-
-The authoritative development ref was not moved; no task work was routed through the incident refs; automated deletion is prohibited by HDM policy.
-
-A durable incident record now exists at:
-
-- `DEV/docs/superpowers/design/2026-09-13-chatgpt-branch-creation-incident.md`
-
-The refs remain physically present but non-authoritative and unused.
-
-## 4. Initial verdict
+## 3. Initial verdict
 
 ```text
 BLOCKING: 1
 SIGNIFICANT: 7
 MINOR: 2
-PROCESS_INCIDENT_SIGNIFICANT: 1
 
 INITIAL_BRIEF_ACCEPTABLE_AS_WRITTEN: NO
 ARCHITECTURE_REOPEN_REQUIRED: NO
@@ -141,7 +120,7 @@ IMPLEMENTATION_AUTHORIZED: NO
 
 All brief findings were mechanically repairable from accepted process/architecture; no Product Owner decision was required.
 
-## 5. Repair re-review
+## 4. Repair re-review
 
 The repaired Task Brief was read back from the authoritative branch and checked finding-by-finding.
 
@@ -157,61 +136,59 @@ The repaired Task Brief was read back from the authoritative branch and checked 
 | `IP-C08` | RESOLVED | P2 and completion predicates require Round-2/non-Round-2 reconciliation with unexplained delta zero |
 | `IP-C09` | RESOLVED | Step-5 source role explicitly marked `DESIGN PROVENANCE / PLANNING PROJECTION ONLY` |
 | `IP-C10` | RESOLVED | P9 requires `INITIAL_EXECUTION_WAVE` and preserves parallel roots; default first task requires evidence |
-| `IP-I01` | CONTAINED / RECORDED | dedicated incident record; no incident ref used; no deletion attempted |
 
 The repaired brief also strengthens bidirectional traceability: every readiness leaf must route to plans/tasks and every planned task must reverse-route to an exact readiness/native-owner justification.
 
-## 6. Second-pass adversarial challenge
+## 5. Second-pass adversarial challenge
 
 The critic then tried to break the repaired framing on the following seams:
 
-### 6.1 Does it reactivate all 145 records as backlog?
+### 5.1 Does it reactivate all 145 records as backlog?
 
 No. P1/P2 preserve activation and terminal/no-work axes; P6 explicitly prevents future-only empirical/release obligations from becoming present tasks.
 
-### 6.2 Does it force the historical 43-item summary to be the final active set?
+### 5.2 Does it force the historical 43-item summary to be the final active set?
 
 No. It requires an exact reconciliation and permits non-Round-2 active obligations; only unexplained delta is prohibited.
 
-### 6.3 Can an umbrella workstream replace native owners?
+### 5.3 Can an umbrella workstream replace native owners?
 
 No. Step-5 containers are explicitly projection-only and every active leaf must be followed to its native owner and current machine consumers.
 
-### 6.4 Can a plan remain high-level and still claim completion?
+### 5.4 Can a plan remain high-level and still claim completion?
 
 No. P4 requires the current `writing-plans` executable standard, exact paths/interfaces/verification and no placeholders. Completion requires zero active implementation leaves without an executable plan.
 
-### 6.5 Can planning become a new architecture owner?
+### 5.5 Can planning become a new architecture owner?
 
 No. Authority precedence is explicit; delegated implementation details remain selectable only inside accepted owner boundaries; hidden human-owned/material architecture choices are completion blockers.
 
-### 6.6 Can HG-01 become a hidden new semantic authority?
+### 5.6 Can HG-01 become a hidden new semantic authority?
 
 No. It is research evidence only. Each constraint must be reconciled to public native owners before task attachment.
 
-### 6.7 Can current machine shape override accepted architecture?
+### 5.7 Can current machine shape override accepted architecture?
 
 No. Plans must freshly inspect machine consumers but use them as realization evidence under native owners; machine presence is not semantic authority.
 
-### 6.8 Can planning go stale while documentation accumulates?
+### 5.8 Can planning go stale while documentation accumulates?
 
 The baseline/currentness rule now makes this visible and requires reconciliation before final review.
 
-### 6.9 Can the stage close merely by identifying what to code first?
+### 5.9 Can the stage close merely by identifying what to code first?
 
 No. First work is derived only after the complete DAG/package. Final closure requires complete executable plan coverage plus mandatory Senior plan PASS / GO.
 
-### 6.10 Does the repaired brief create another routine human stop now?
+### 5.10 Does the repaired brief create another routine human stop now?
 
 No. Current planning authorization remains active. The next routine Senior stop is the mandatory review of the complete plan package. Product Owner/human intervention remains event-driven only for a genuine unresolved human-owned decision.
 
-## 7. Final critic verdict
+## 6. Final critic verdict
 
 ```text
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
 UNRESOLVED_MINOR: 0
-PROCESS_INCIDENT: RECORDED / CONTAINED
 
 BRIEF_FRAMING: PASS
 IMPLEMENTATION_PLANNING_MAY_PROCEED: YES
