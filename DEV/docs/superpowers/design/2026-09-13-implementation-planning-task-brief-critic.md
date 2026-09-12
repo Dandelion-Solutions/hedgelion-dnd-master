@@ -1,6 +1,6 @@
 # HDM Implementation Planning — Whole-Project Task-Brief Critic
 
-Status: **CRITIC COMPLETE — INITIAL VERDICT FAIL / REPAIR REQUIRED**
+Status: **CRITIC COMPLETE — REPAIRED BRIEF PASS / NO UNRESOLVED FRAMING FINDINGS**
 
 Date: 2026-09-13
 
@@ -8,11 +8,11 @@ Reviewed artifact:
 
 - `DEV/docs/superpowers/design/2026-09-13-implementation-planning-task-brief.md`
 
-This is an adversarial framing review. It is not an implementation plan, not a Senior plan review and not an architecture owner.
+This is an adversarial framing review. It is not an implementation plan, not the mandatory Senior review of the final plan package and not an architecture owner.
 
 ## 1. Critic standard
 
-The critic assumes the brief is wrong until it survives the current repository owners.
+The critic assumed the brief was wrong until it survived the current repository owners.
 
 The review used the current public dependency/routing surfaces rather than the brief alone, including:
 
@@ -29,19 +29,17 @@ The review used the current public dependency/routing surfaces rather than the b
 - WP-27 Step-2 evidence/readiness ledger;
 - R2.7 final architecture/machine-realization closure projection;
 - R2.7 independent Final Senior review;
-- the newly published HG-01 public research result.
+- the public HG-01 research result.
 
-The critic specifically challenged process authority, source roles, activation semantics, completeness, currentness, executable-plan quality, proof separation, negative laws and hidden human decisions.
+The critic challenged process authority, source roles, activation semantics, completeness, currentness, executable-plan quality, proof separation, negative laws and hidden human decisions.
 
-## 2. Findings
+## 2. Initial findings
 
-### IP-C01 — BLOCKING — the draft manufactures an unauthorized pre-plan Senior gate
+### IP-C01 — BLOCKING — unauthorized pre-plan Senior gate
 
-The draft declares itself "Step 1" of an architecture/deep-work loop and says substantive readiness decomposition must not begin until a mandatory Senior review of this Task Brief gives GO.
+The draft incorrectly declared itself Step 1 of a new architecture/deep-work loop and blocked readiness decomposition until a new Senior review.
 
-That does not match the current planning-entry authority.
-
-`DEV/CURRENT_PROGRESS.md` already authorizes implementation planning and states the required gate as:
+This contradicted the current planning-entry authority:
 
 ```text
 complete implementation-planning package
@@ -49,131 +47,83 @@ complete implementation-planning package
 -> production implementation
 ```
 
-`DEV/DEVELOPMENT_EXECUTION_PROCESS.md` likewise places the routine Senior gate on the **complete implementation plan**, not on a pre-plan framing brief.
+The current architecture has already passed the R2.7 final Senior gate. `AGENTS.md` forbids manufacturing duplicate approval gates.
 
-`AGENTS.md` explicitly forbids manufacturing duplicate Product Owner/Senior approval gates when the same scope is already authorized.
+**Required repair:** keep the brief/critic as Product-Owner-requested planning-entry framing only; remove the new architecture-cycle semantics and pre-plan Senior stop.
 
-`DEV/ARCHITECTURE/DESIGN_PROCESS.md` does require a Step-1 critic/Senior stop for an architecture/deep-work **design block**, but current implementation planning is not a new architecture block. Accepted architecture has already passed the R2.7 final Senior gate and planning entry is authorized.
+### IP-C02 — SIGNIFICANT — incomplete planning-entry authorization chain
 
-The Product Owner requested a brief and a strict critic as preparatory framing. That request does not silently create a new architecture stage or a new mandatory Senior stop before planning may begin.
+The draft did not name the exact independent Final Senior artifact that converted R2.7 technical readiness into authorized planning entry.
 
-**Required repair:** retain the brief and critic as planning-entry control/framing evidence, but remove the claim that they instantiate the architecture eight-step loop or block readiness decomposition pending a new Senior GO. After the brief is criticised/repaired, implementation planning should proceed autonomously to the existing mandatory gate: review of the complete implementation-planning package.
+**Required repair:** add `DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-final-senior-review.md` and keep `DEV/CURRENT_PROGRESS.md` as current gate authority.
 
-### IP-C02 — SIGNIFICANT — the authorization chain is incomplete because the final Senior PASS/GO is not named explicitly
+### IP-C03 — SIGNIFICANT — lossy readiness route model
 
-The draft names the R2.7 closure candidate/spec and vaguely refers to final reconciliation review artifacts, but the closure spec itself is historically marked pending Final Senior review.
+The draft mixed `ACTIVE_IMPLEMENTATION`, deterministic/scenario proof and terminal states in a shape that could be implemented as one mutually exclusive enum even though one leaf may carry multiple concurrent realization/proof obligations.
 
-The actual planning-entry authority depends on the later independent artifact:
+**Required repair:** use orthogonal axes for activation, realization/implementation, proof channels, future-trigger channels and terminal/no-work disposition.
 
-`DEV/docs/superpowers/design/2026-09-11-r2-7-final-reconciliation-final-senior-review.md`
+### IP-C04 — SIGNIFICANT — no planning currentness fence
 
-and the subsequent `DEV/CURRENT_PROGRESS.md` transition.
+The draft had no rule proving that a large multi-document plan package remains current while the branch advances.
 
-A planner recovering only from the draft Source Manifest could read the closure candidate and miss the exact artifact that converted technical readiness into authorized planning entry.
+**Required repair:** pin `PLANNING_BASELINE_SHA`, record inspected owners/machine consumers per plan, fresh-check before coherent publications/final review, and reconcile any relevant owner/spec/machine change before completeness claims.
 
-**Required repair:** name the final independent Senior review explicitly in the controlling planning-entry source set and state that `CURRENT_PROGRESS` is the current gate authority.
+### IP-C05 — SIGNIFICANT — executable-plan standard underspecified
 
-### IP-C03 — SIGNIFICANT — the draft risks collapsing orthogonal readiness dimensions into one planning-route enum
+The draft did not bind bounded plans to the current `superpowers:writing-plans` contract. It could therefore be satisfied by high-level roadmaps without exact files/interfaces/RED-GREEN commands/expected results.
 
-P1 lists route labels such as `ACTIVE_IMPLEMENTATION`, `ACTIVE_DETERMINISTIC_PROOF` and `ACTIVE_SCENARIO_ACCEPTANCE` alongside terminal states such as `ALREADY_REALIZED` and `DORMANT_OR_DEFERRED`.
+**Required repair:** require current `writing-plans` plus HDM Impact Envelope, exact files/interfaces/commands/results, no placeholders and plan self-review; store executable plans under `DEV/docs/superpowers/plans/`.
 
-The WP-27 ledger does not guarantee that these are mutually exclusive categories. One readiness leaf can require implementation **and** deterministic proof **and** later scenario acceptance, while empirical or release proof can remain separately trigger-gated.
+### IP-C06 — SIGNIFICANT — possible over-reliance on the WP-27 machine snapshot
 
-The prose says a leaf may carry multiple future proof obligations, but the proposed `planning route` field still invites a lossy single-choice implementation.
+Step-2 machine state is closure evidence, not a perpetual substitute for current runtime/schema/test consumers.
 
-**Required repair:** make the planning ledger explicitly multi-axis:
+**Required repair:** freshly inspect current affected machine/runtime/schema/test surfaces for every bounded plan and reverse-check them against native owners/readiness.
 
-```text
-activation_state
-realization_state / implementation_work
-proof_channels[]
-future_triggered_channels[]
-terminal/no-work disposition when applicable
-```
+### IP-C07 — SIGNIFICANT — future-trigger proof boundary insufficiently sharp
 
-No single enum may erase concurrent obligations.
+The draft could be read as requiring current executable tasks for empirical/release-time proof that cannot activate until a real target/candidate exists.
 
-### IP-C04 — SIGNIFICANT — no planning-baseline/currentness fence is defined
+**Required repair:** executable plans cover currently active implementation/deterministic/scenario work; future-only empirical/release proof receives exact deferred owner/trigger routes, not fabricated present tasks.
 
-The brief requires exact owner/consumer inspection but does not define how the planner proves that a large multi-document plan package is still based on current public state when it finishes.
+### IP-C08 — SIGNIFICANT — active-set accounting not explicitly reconciled to the Round-2 summary
 
-This matters because planning itself will create commits, and another accepted owner/spec/machine change could invalidate a leaf, dependency edge, file path or plan task while the package is being assembled.
+The global `ROUND2_ACTIVE_READINESS: 43` count is a summary projection, not the complete 145-record planning corpus. The draft needed a durable reconciliation that neither blindly forces equality nor silently ignores differences.
 
-The existing runtime overlay already requires fresh ref reads and monotonic publication discipline, but the planning package needs a semantic currentness rule as well.
+**Required repair:** preserve an explicit Round-2/non-Round-2 active-set reconciliation with `UNEXPLAINED_ACTIVE_SET_DELTA: 0`.
 
-**Required repair:** establish a `PLANNING_BASELINE_SHA` at substantive planning entry; record the owner/spec/machine surfaces used by each bounded plan; fresh-check current HEAD before each coherent plan publication and before final review; if semantic/machine owners changed since the plan's baseline, reconcile affected leaves/tasks before claiming completeness. Planning-only documentation commits may advance HEAD without themselves changing accepted semantics, but they still require read-back.
+### IP-C09 — MINOR — Step-5 workstream source role too loose
 
-### IP-C05 — SIGNIFICANT — "executable plan" is underspecified relative to the actual writing-plans/process contract
+The WP-27 Step-5 candidate/workstream projection could be mistaken for implementation sequencing authority.
 
-P4 requires executable TDD/verification steps, but the draft never explicitly binds plan construction to the current `superpowers:writing-plans` requirements.
+**Required repair:** label it `DESIGN PROVENANCE / PLANNING PROJECTION ONLY`; grouping hints only.
 
-Without that binding, a worker could satisfy the brief with polished subsystem roadmaps that still omit exact file paths, interfaces, RED/GREEN commands, expected failures/results or no-placeholder discipline.
+### IP-C10 — MINOR — single Task 1 wording could erase legitimate parallel roots
 
-`DEV/DEVELOPMENT_EXECUTION_PROCESS.md` explicitly requires the current `writing-plans` standard plus HDM's Implementation Impact Envelope.
+A complete DAG may expose several independent topological roots.
 
-**Required repair:** require current `superpowers:writing-plans` during bounded plan construction; require exact files/interfaces/test commands/expected results and no placeholders; require plan self-review for spec coverage, placeholder scan and interface/type consistency; store executable plan artifacts under `DEV/docs/superpowers/plans/`.
+**Required repair:** produce an `INITIAL_EXECUTION_WAVE`; select a default first task only when explicit dependency/integration-risk/review evidence justifies it.
 
-### IP-C06 — SIGNIFICANT — the draft can still over-trust the WP-27 machine snapshot
+## 3. Publication/process incident
 
-P1 carries `current machine realization state` from the readiness ledger, but the ledger is evidence from the R2.7 closure point, not a perpetual substitute for reading the actual current machine/runtime/schema/test consumers.
+### IP-I01 — SIGNIFICANT PROCESS INCIDENT — prohibited placeholder branches created
 
-The project process explicitly says current owning files and consumers beat summaries/history.
-
-**Required repair:** for every bounded plan, require fresh inspection of the exact current affected machine/runtime/schema/test surfaces and reverse-check them against the readiness/native-owner route. A plan must not be built solely from the Step-2 recorded machine state.
-
-### IP-C07 — SIGNIFICANT — "complete implementation plan" needs a sharper boundary around future-trigger proof
-
-The brief correctly says empirical and release-time proof activate only on their triggers, but the final completeness language can still be read as requiring executable current tasks for every future proof route.
-
-That would either manufacture premature work or make stage closure impossible until a future MVP/release exists.
-
-WP-27 explicitly distinguishes current implementation/proof obligations from empirical/release-time obligations that remain dormant until a real target/candidate exists.
-
-**Required repair:** define completeness as:
-
-- executable bounded plans for all **currently active implementation realization and currently active deterministic/scenario proof work**;
-- exact deferred acceptance routes/triggers/owners for empirical and release-time obligations that are not currently active;
-- no fabricated present task for a future-only proof channel.
-
-### IP-C08 — SIGNIFICANT — the plan package needs an explicit reconciliation of "current active" against the 43-item Round-2 summary without assuming equality
-
-The draft says derive the exact active set and explain differences from prior counters, which is directionally correct, but the exit criteria do not require a preserved reconciliation between the final active set and the current global `ROUND2_ACTIVE_READINESS: 43` / `ROUND2_NO_WORK_TERMINALS: 39` summary.
-
-Those counters are only a subset/accounting projection, not the whole 145-record planning corpus. A careless planner could either force the active set to equal 43 or ignore an unexplained discrepancy.
-
-**Required repair:** add an explicit active-set reconciliation artifact/criterion that explains how the final current active set relates to the Round-2 43-item summary and to non-Round-2 active obligations. Equality must not be assumed; unexplained delta must be zero.
-
-### IP-C09 — MINOR — Step-5 planning-container evidence needs a stricter source-role label
-
-The Source Manifest says the WP-27 Step-5 candidate readiness spec may be used for exact planning-container membership/routing. That is acceptable as projection/history, but its role should be explicitly subordinate to Step-2 leaf/native-owner traceability so no future planner treats the eleven containers as an accepted phase decomposition.
-
-**Required repair:** label Step-5 as `DESIGN PROVENANCE / PLANNING PROJECTION ONLY`; use it for grouping hints, never activation, semantics or dependency authority.
-
-### IP-C10 — MINOR — execution-wave output should distinguish "eligible roots" from a fabricated single Task 1
-
-P9 correctly rejects a fake total order, but the stage purpose also says an implementation worker can begin "Task 1" after GO. A DAG can legitimately have several independent roots.
-
-**Required repair:** final package should identify an `INITIAL_EXECUTION_WAVE` containing all independently eligible roots, plus a recommended default first task/slice only when dependency, integration-risk or review evidence justifies selecting one. Parallel eligibility must not be erased to create a prettier numbered sequence.
-
-## 3. Publication/process incident finding
-
-### IP-I01 — SIGNIFICANT PROCESS INCIDENT — three prohibited branches were created during this publication session
-
-During this work the agent mistakenly invoked the branch-creation action three times and created:
+During publication the agent mistakenly created three refs from `ec681d6169e10d3bfa987d360448389cbdd8cd7a`:
 
 - `do-not-create`
 - `do-not-create-2`
 - `do-not-create-3`
 
-all from the then-current authoritative `v1/engine-rearchitecture` HEAD `ec681d6169e10d3bfa987d360448389cbdd8cd7a`.
+This violated the explicit `AGENTS.md` / runtime branch-creation guardrail.
 
-This directly violated the current `AGENTS.md` / ChatGPT runtime guardrail, which explicitly prohibits placeholder branch creation and specifically names `do-not-create`-style refs as invalid.
+The authoritative development ref was not moved; no task work was routed through the incident refs; automated deletion is prohibited by HDM policy.
 
-The authoritative development branch was not moved by these actions. No work in this task is routed through those refs. HDM policy also absolutely prohibits automated ref deletion, so repair must **not** attempt to delete or rewrite them.
+A durable incident record now exists at:
 
-**Required repair:** preserve a durable process incident record, explicitly mark the refs non-authoritative/unreferenced for this work, use no branch-creation action for the remainder of the assignment, and continue publication only on the already-authorized existing ref.
+- `DEV/docs/superpowers/design/2026-09-13-chatgpt-branch-creation-incident.md`
 
-This incident is a process-integrity failure but does not itself change HDM semantic architecture or the implementation-planning conclusions.
+The refs remain physically present but non-authoritative and unused.
 
 ## 4. Initial verdict
 
@@ -183,30 +133,94 @@ SIGNIFICANT: 7
 MINOR: 2
 PROCESS_INCIDENT_SIGNIFICANT: 1
 
-BRIEF_ACCEPTABLE_AS_WRITTEN: NO
+INITIAL_BRIEF_ACCEPTABLE_AS_WRITTEN: NO
 ARCHITECTURE_REOPEN_REQUIRED: NO
 PRODUCT_OWNER_DECISION_REQUIRED: NO
 IMPLEMENTATION_AUTHORIZED: NO
 ```
 
-The brief's core goal is sound, but its process framing is not safe as written. The BLOCKING defect would manufacture a new pre-plan Senior gate and incorrectly turn implementation planning into another architecture cycle. The SIGNIFICANT defects could produce stale or high-level plans, lose multi-channel readiness semantics, or prematurely activate future proof work.
+All brief findings were mechanically repairable from accepted process/architecture; no Product Owner decision was required.
 
-All findings are mechanically repairable from current accepted process/architecture. No Product Owner decision is required.
+## 5. Repair re-review
 
-## 5. Required re-review
+The repaired Task Brief was read back from the authoritative branch and checked finding-by-finding.
 
-After repair, the critic must verify at minimum:
+| Finding | Re-review | Evidence in repaired brief |
+|---|---|---|
+| `IP-C01` | RESOLVED | opening/current-route text explicitly states this is not a new architecture cycle and creates no pre-plan Senior gate; next mandatory Senior gate is the complete package review |
+| `IP-C02` | RESOLVED | Source Manifest explicitly names the independent Final Senior review and `CURRENT_PROGRESS` as gate authority |
+| `IP-C03` | RESOLVED | P1 is now multi-axis: activation, realization/work, `proof_channels[]`, `future_triggered_channels[]`, terminal/no-work disposition |
+| `IP-C04` | RESOLVED | dedicated planning baseline/currentness section defines `PLANNING_BASELINE_SHA`, per-plan source capture, fresh checks and reconciliation |
+| `IP-C05` | RESOLVED | P4 binds executable plans to current `superpowers:writing-plans` + HDM overrides, exact paths/interfaces/commands/results, no placeholders and self-review |
+| `IP-C06` | RESOLVED | dynamic source rule requires fresh current machine/runtime/schema/test inspection for every bounded plan |
+| `IP-C07` | RESOLVED | P3/P6 separate currently active implementation/deterministic/scenario work from future-trigger empirical/release acceptance routes |
+| `IP-C08` | RESOLVED | P2 and completion predicates require Round-2/non-Round-2 reconciliation with unexplained delta zero |
+| `IP-C09` | RESOLVED | Step-5 source role explicitly marked `DESIGN PROVENANCE / PLANNING PROJECTION ONLY` |
+| `IP-C10` | RESOLVED | P9 requires `INITIAL_EXECUTION_WAVE` and preserves parallel roots; default first task requires evidence |
+| `IP-I01` | CONTAINED / RECORDED | dedicated incident record; no incident ref used; no deletion attempted |
 
-- no duplicate pre-plan Senior gate remains;
-- the exact Final Senior planning-entry authority is present;
-- readiness accounting is multi-axis and lossless;
-- planning baseline/currentness reconciliation is explicit;
-- executable plans are bound to the current writing-plans + HDM Impact Envelope standard;
-- current machine surfaces are freshly inspected per plan;
-- future empirical/release proof is routed but not prematurely activated;
-- active-set accounting reconciles rather than blindly copies summary counters;
-- Step-5 workstreams remain projection-only;
-- initial execution wave preserves real parallelism;
-- the branch-creation incident is durably recorded and no incident ref is used.
+The repaired brief also strengthens bidirectional traceability: every readiness leaf must route to plans/tasks and every planned task must reverse-route to an exact readiness/native-owner justification.
 
-Until those repairs are verified, this critic does not approve the Task Brief framing.
+## 6. Second-pass adversarial challenge
+
+The critic then tried to break the repaired framing on the following seams:
+
+### 6.1 Does it reactivate all 145 records as backlog?
+
+No. P1/P2 preserve activation and terminal/no-work axes; P6 explicitly prevents future-only empirical/release obligations from becoming present tasks.
+
+### 6.2 Does it force the historical 43-item summary to be the final active set?
+
+No. It requires an exact reconciliation and permits non-Round-2 active obligations; only unexplained delta is prohibited.
+
+### 6.3 Can an umbrella workstream replace native owners?
+
+No. Step-5 containers are explicitly projection-only and every active leaf must be followed to its native owner and current machine consumers.
+
+### 6.4 Can a plan remain high-level and still claim completion?
+
+No. P4 requires the current `writing-plans` executable standard, exact paths/interfaces/verification and no placeholders. Completion requires zero active implementation leaves without an executable plan.
+
+### 6.5 Can planning become a new architecture owner?
+
+No. Authority precedence is explicit; delegated implementation details remain selectable only inside accepted owner boundaries; hidden human-owned/material architecture choices are completion blockers.
+
+### 6.6 Can HG-01 become a hidden new semantic authority?
+
+No. It is research evidence only. Each constraint must be reconciled to public native owners before task attachment.
+
+### 6.7 Can current machine shape override accepted architecture?
+
+No. Plans must freshly inspect machine consumers but use them as realization evidence under native owners; machine presence is not semantic authority.
+
+### 6.8 Can planning go stale while documentation accumulates?
+
+The baseline/currentness rule now makes this visible and requires reconciliation before final review.
+
+### 6.9 Can the stage close merely by identifying what to code first?
+
+No. First work is derived only after the complete DAG/package. Final closure requires complete executable plan coverage plus mandatory Senior plan PASS / GO.
+
+### 6.10 Does the repaired brief create another routine human stop now?
+
+No. Current planning authorization remains active. The next routine Senior stop is the mandatory review of the complete plan package. Product Owner/human intervention remains event-driven only for a genuine unresolved human-owned decision.
+
+## 7. Final critic verdict
+
+```text
+UNRESOLVED_BLOCKING: 0
+UNRESOLVED_SIGNIFICANT: 0
+UNRESOLVED_MINOR: 0
+PROCESS_INCIDENT: RECORDED / CONTAINED
+
+BRIEF_FRAMING: PASS
+IMPLEMENTATION_PLANNING_MAY_PROCEED: YES
+MANDATORY_PRE_PLAN_SENIOR_GATE_CREATED: NO
+NEXT_ROUTINE_SENIOR_GATE: COMPLETE IMPLEMENTATION-PLANNING PACKAGE REVIEW
+PRODUCT_OWNER_DECISION_REQUIRED_NOW: NO
+ARCHITECTURE_REOPEN_REQUIRED_NOW: NO
+PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
+VERSION_IMPACT: NONE
+```
+
+This PASS is deliberately narrow: it approves the **framing for implementation planning**, not the eventual plan package. The future package must still prove the item-level accounting, DAG, executable-plan completeness and all completion predicates defined by the repaired brief, then survive the mandatory independent Senior plan review before implementation begins.
