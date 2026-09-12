@@ -47,12 +47,6 @@ ARCHITECTURE_REOPEN_REQUIRED_NOW: NO
 
 The repaired brief requires a complete package, not merely selection of the first coding task. It requires lossless readiness accounting, exact active-set reconciliation, a dependency DAG, bounded executable `writing-plans` artifacts with HDM Impact Envelopes, proof/version/HG-01 routing, execution waves, bidirectional coverage, currentness checks and final independent Senior plan review.
 
-A recorded ChatGPT branch-creation process incident is preserved at:
-
-- `DEV/docs/superpowers/design/2026-09-13-chatgpt-branch-creation-incident.md`.
-
-The incident refs are non-authoritative and unused. The authoritative development ref was not moved by the incident.
-
 ---
 
 ## Closed predecessor authority
