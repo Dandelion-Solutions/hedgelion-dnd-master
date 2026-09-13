@@ -1,30 +1,30 @@
 # HDM Implementation Planning Package — Index
 
-Status: **SIRR AUTHOR REPAIR COMPLETE / AWAITING GENUINELY INDEPENDENT SENIOR RE-REVIEW #2**
+Status: **AUTHOR ADVERSARIAL SELF-REVIEW REPAIR ACTIVE — INDEPENDENT RE-REVIEW #2 NOT YET READY**
 Date: 2026-09-13
 
 Global gate authority: `DEV/CURRENT_PROGRESS.md`.
-Current author repair checkpoint: `87941ed63028efea71eb38e03375573e31a70be2`.
-Current repair disposition: `2026-09-13-implementation-planning-senior-re-review-repair-disposition.md`.
-Current repair closure: `2026-09-13-implementation-planning-senior-re-review-repair-closure.md`.
-Current re-review instructions: `2026-09-13-implementation-planning-senior-re-review-2-brief.md`.
+Previous SIRR repair checkpoint: `87941ed63028efea71eb38e03375573e31a70be2`.
 Previous independent finding authority: `2026-09-13-implementation-planning-independent-senior-re-review-result.md`.
+Current author self-review findings: `2026-09-13-implementation-planning-author-self-review-findings.md`.
+Current author self-review repair overlay: `2026-09-13-implementation-planning-author-self-review-repair-addendum.md`.
 
 ## Package provenance
 
 ```text
 PB-01 control/conventions/template/Impact-TDD/index
-PB-02 source manifest + RD-01..RD-04 + closure
-PB-03 source manifest + RD-05..RD-08 + closure
-PB-04 source manifest + RD-09..RD-11 + closure
-PB-05 source manifest + RD-12..RD-14 + closure
+PB-02 RD-01..RD-04
+PB-03 RD-05..RD-08
+PB-04 RD-09..RD-11
+PB-05 RD-12..RD-14
 PB-06 execution waves/integration
 PB-07 bidirectional coverage/currentness
 first independent Senior review -> FAIL / REPAIR REQUIRED
 SIP-001..SIP-011 author repair -> COMPLETE
 first independent Senior re-review -> FAIL / REPAIR REQUIRED (SIRR-001..005)
 SIRR-001..SIRR-005 author repair -> COMPLETE at 87941ed63028efea71eb38e03375573e31a70be2
-current gate -> genuinely independent Senior re-review #2
+author adversarial pre-review -> FOUND ASR-001..ASR-003 / REPAIR ACTIVE
+current gate -> author second-pass verification before independent re-review #2
 ```
 
 ## Current RD-plan routes
@@ -47,30 +47,33 @@ RD-13 2026-09-13-RD-13-story-t0-commentator-history-plan.md
 RD-14 2026-09-13-RD-14-bootstrap-onboarding-product-plan.md
 ```
 
-Mandatory current overlay:
+Mandatory overlays, in precedence order:
 ```text
-2026-09-13-implementation-planning-sirr-repair-amendments.md
+1. 2026-09-13-implementation-planning-sirr-repair-amendments.md
+2. 2026-09-13-implementation-planning-author-self-review-repair-addendum.md
 ```
 
-Overlay applicability:
+Applicability after author self-review:
 ```text
 RD-02: SIRR-005 close/absorb integration wording/tests
-RD-06: SIRR-001/SIRR-003 proof + shipped SAVE/publication consumer cutover
+RD-04: ASR-001 WP-11 seven-selector manifest/schema/root cutover (R064)
+RD-06: SIRR-001/SIRR-003 SAVE/publication consumer cutover + proof joins
 RD-09: SIRR-005 two-phase close/absorb semantics/tests
-RD-13: SIRR-002 Dramaturg publication/admission/rebase + SIRR-004 Story selector
-RD-14: SIRR-003 exact generator consumer synchronization + Story selector scaffold proof
+RD-13: SIRR-002 Dramaturg publication/admission/rebase + Story root integration; ASR-002 ABSENT|BOUND correction
+RD-14: SIRR-003 generator identity synchronization + ASR-001 complete root/schema/bootstrap consumer synchronization
 ```
 
-For those five RDs the executable route is **base plan + mandatory overlay**. The overlay does not supersede unchanged base-plan content. Earlier RD-08/RD-10/RD-11 files without `-v2` remain superseded provenance.
+For an affected RD, the executable route is **base plan + every applicable overlay above**. Later overlay wording controls only the exact repaired detail. Earlier RD-08/RD-10/RD-11 files without `-v2` remain superseded provenance.
 
 ## Current execution scheduling
 
 ```text
 BASE: 2026-09-13-implementation-planning-execution-waves.md
-MANDATORY ADDENDUM: 2026-09-13-implementation-planning-execution-waves-sirr-repair-addendum.md
+SIRR ADDENDUM: 2026-09-13-implementation-planning-execution-waves-sirr-repair-addendum.md
+AUTHOR SELF-REVIEW ADDENDUM: 2026-09-13-implementation-planning-author-self-review-repair-addendum.md
 ```
 
-The addendum repairs R071 completion, Story-selector/generator join, E11 retained Dramaturg publication/admission and CLOSED_UNABSORBED wording without adding a whole-wave barrier.
+The self-review addendum adds one named `ROOT_SELECTOR_CUTOVER` integration checkpoint and corrects E11 player-local Dramaturg ABSENT|BOUND semantics. It does not add a whole-wave barrier or a new RD.
 
 ## Current lossless proof routes
 
@@ -81,7 +84,7 @@ The addendum repairs R071 completion, Story-selector/generator join, E11 retaine
 2026-09-13-implementation-planning-lossless-proof-ledger-wp16-wp17.md
 ```
 
-Historical `...lossless-proof-ledger.md` and `...wp12-wp13.md` are superseded for current routing. The v2 WP-12/WP-13 appendix owns exact semantic mapping of all 17/38 duties.
+The current WP-12/WP-13 v2 appendix includes the author-self-review owner/target corrections for WP12-05, WP12-11, WP13-19, WP13-20 and row-38 consumer dispositions.
 
 Planned package witness target remains:
 ```text
@@ -90,11 +93,14 @@ DEV/TESTS/test_implementation_proof_ledger.py
 
 ## Current coverage/currentness route
 
+Base reconciliation remains:
 ```text
 2026-09-13-implementation-planning-bidirectional-coverage-v2.md
 ```
 
-It preserves:
+The author-self-review addendum is a mandatory delta to that reconciliation for R064/R018 Story-root integration, retained Dramaturg basis semantics, shipped consumers and proof-target precision.
+
+Accounting remains:
 ```text
 ACTIVE_READINESS: 133
 DIRECT: 116
@@ -109,29 +115,44 @@ RD_UNITS: 14
 ## Current review/control route
 
 ```text
-FINDINGS:
+PREVIOUS INDEPENDENT FINDINGS:
   2026-09-13-implementation-planning-independent-senior-re-review-result.md
 
-AUTHOR REPAIR:
+PREVIOUS SIRR AUTHOR REPAIR:
   2026-09-13-implementation-planning-senior-re-review-repair-disposition.md
   2026-09-13-implementation-planning-senior-re-review-repair-closure.md
 
+CURRENT AUTHOR ADVERSARIAL REVIEW:
+  2026-09-13-implementation-planning-author-self-review-findings.md
+  2026-09-13-implementation-planning-author-self-review-repair-addendum.md
+
 NEXT INDEPENDENT REVIEW:
-  2026-09-13-implementation-planning-senior-re-review-2-brief.md
+  NOT AUTHORIZED UNTIL AUTHOR SECOND-PASS SELF-REVIEW CLOSURE
 ```
 
-The repair checkpoint was read back from remote state and exact-head GitHub Actions `Validate engine source` succeeded. These author-side checks do not substitute for independent Senior review.
+## Current repair findings
+
+```text
+ASR-001 SIGNIFICANT: incomplete WP-11 fixed-root selector/schema/bootstrap cutover
+ASR-002 SIGNIFICANT: Dramaturg player-local ABSENT basis incorrectly excluded
+ASR-003 SIGNIFICANT: lossless proof supporting-owner/transport-route imprecision
+```
+
+These are author findings, not new architecture. They are being repaired before the next independent review.
 
 ## Gate accounting
 
 ```text
 SIRR_FINDINGS: 5
-AUTHOR_SIRR_DISPOSITION: 5 / 5 REPAIRED FOR REVIEW
-SEMANTIC_OWNER_DRIFT_DURING_SIRR_REPAIR: NONE FOUND
+SIRR_AUTHOR_REPAIR: 5 / 5 previously dispositioned
+AUTHOR_SELF_REVIEW_FINDINGS: 3 SIGNIFICANT
+AUTHOR_SELF_REVIEW_REPAIR: PUBLISHED IN CURRENT ROUTES / SECOND PASS PENDING
+SEMANTIC_OWNER_DRIFT: NONE FOUND
 DECOMPOSITION_REOPEN: NOT REQUIRED
 HUMAN_PRODUCT_DECISION_REQUIRED: NO
-NEXT_AUTHORIZED_UNIT: GENUINELY INDEPENDENT SENIOR RE-REVIEW #2 ONLY
+NEXT_AUTHORIZED_UNIT: AUTHOR SECOND-PASS SELF-REVIEW + EXACT-HEAD VALIDATION ONLY
+INDEPENDENT_RE_REVIEW_2_READY: NO
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 ```
 
-No implementation worker may start from this index until the next independent Senior result is `PASS / GO` and `DEV/CURRENT_PROGRESS.md` advances accordingly.
+No implementation worker and no independent Senior re-review #2 should start from this index until the author second-pass closure advances the gate.

@@ -1,11 +1,11 @@
 # Implementation Planning — Lossless Proof Ledger WP-12 / WP-13 v2
 
-Status: **CURRENT AUTHOR-REPAIRED APPENDIX — EXECUTION NOT AUTHORIZED**
+Status: **CURRENT AUTHOR-REPAIRED + ADVERSARIALLY SELF-REVIEWED APPENDIX — EXECUTION NOT AUTHORIZED**
 Date: 2026-09-13
 Supersedes for current routing: `2026-09-13-implementation-planning-lossless-proof-ledger-wp12-wp13.md`.
 Canonical owners: WP-12 §14 and WP-13 §15.
 
-Purpose: bind every canonical WP-12/WP-13 proof duty to its actual semantics, implementation target and executable witness. Row counts alone are not coverage.
+Purpose: bind every canonical WP-12/WP-13 proof duty to its actual semantics, implementation target and executable witness. Row counts alone are not coverage. The author self-review corrected supporting-owner precision for WP12-05/WP12-11 and WP13-19/WP13-20 and synchronized the row-38 consumer dispositions with the complete WP-11/bootstrap repair.
 
 Primary channels:
 - `FOCUSED_BEHAVIOR` — deterministic owner-local behavior;
@@ -24,13 +24,13 @@ Package class: `Wp12HotProofTests` in planned `DEV/TESTS/test_implementation_pro
 | 2 | Campaign/context namespaces are isolated; identical local keys cannot alias across admitted scopes. | RD-04 route/HOT namespace | `test_wp12_02_campaign_context_namespace_isolation` | FOCUSED_BEHAVIOR |
 | 3 | HOT possession/cached bytes cannot bypass role, access or information eligibility. | RD-04 + RD-09 + RD-02/RD-10 eligibility | `test_wp12_03_hot_possession_does_not_bypass_eligibility` | INTEGRATION_SCENARIO |
 | 4 | SQL row identity/order is not native identity, fictional chronology, priority or mechanics. | RD-04 + RD-08 | `test_wp12_04_sql_metadata_is_nonsemantic` | INTEGRATION_SCENARIO |
-| 5 | Native edge remains atomic; pre-CAS LIVE state is prospective, exact-source CAS establishes LIVE authority, post-CAS SQLite adoption is local only. | RD-04 + RD-09 | `test_wp12_05_native_edge_atomic_live_cas_authoritative` | INTEGRATION_SCENARIO |
+| 5 | Native/accepted execution establishment edge remains atomic; pre-CAS LIVE state is prospective, exact-source CAS establishes LIVE authority, post-CAS SQLite adoption is local only. | RD-04 HOT/native edge + RD-05 accepted execution/ExecutionSegment + RD-09 LIVE exact-source CAS/currentness | `test_wp12_05_native_edge_atomic_live_cas_authoritative` | INTEGRATION_SCENARIO |
 | 6 | No SQLite transaction spans external dialogue, repository or network I/O. | RD-04 HOT transaction | `test_wp12_06_sqlite_transaction_contains_no_external_io` | FOCUSED_BEHAVIOR |
 | 7 | Accepted execution resumes only under a compatible accepted interpretation/currentness context. | RD-05 + RD-07 + RD-08 | `test_wp12_07_resume_requires_compatible_interpretation_context` | INTEGRATION_SCENARIO |
 | 8 | Known-ID hydration derives WP-11 native route without scan and validates full identity. | RD-04 route/index | `test_wp12_08_known_id_hydrates_via_native_route_without_scan` | FOCUSED_BEHAVIOR |
 | 9 | Cache/index absence is not native absence; rebuild from native authority succeeds. | RD-04 route/index/HOT | `test_wp12_09_cache_or_index_absence_is_not_native_absence` | FOCUSED_BEHAVIOR |
 | 10 | Disjoint source movement can preserve local semantics; overlapping movement invokes owner revalidation. | RD-04 + RD-06/RD-09 currentness | `test_wp12_10_disjoint_movement_preserves_overlap_revalidates` | INTEGRATION_SCENARIO |
-| 11 | Frozen publication records principal/authorization plus exact generation G; success for G cannot clear G+1. | RD-06 + RD-04 generation support | `test_wp12_11_frozen_publication_principal_and_generation_specific_clear` | INTEGRATION_SCENARIO |
+| 11 | Frozen publication records trustworthy principal/authorization plus exact generation G; success for G cannot clear G+1. | RD-06 frozen publication + RD-04 generation support + RD-09 principal/authorization evidence | `test_wp12_11_frozen_publication_principal_and_generation_specific_clear` | INTEGRATION_SCENARIO |
 | 12 | HOT/recovery introduces no generic pending-work, publication-journal or second recovery authority. | RD-04 + RD-06 + RD-07 | `test_wp12_12_no_generic_pending_or_publication_journal_authority` | INTEGRATION_SCENARIO |
 | 13 | Pre-CAS LIVE prospective state is not current/shared truth. | RD-09 LIVE currentness | `test_wp12_13_pre_cas_live_state_is_not_current` | FOCUSED_BEHAVIOR |
 | 14 | If LIVE CAS was accepted but local adoption failed, recover from accepted LIVE authority without gameplay/mechanics/RNG replay. | RD-09 + RD-07 + RD-05 | `test_wp12_14_post_cas_adoption_failure_recovers_without_replay` | INTEGRATION_SCENARIO |
@@ -42,8 +42,8 @@ Package class: `Wp12HotProofTests` in planned `DEV/TESTS/test_implementation_pro
 
 Every row above has both a positive acceptance path and a negative rejection/non-authority assertion inside the named method or its fixture matrix. In particular:
 - rows 3/4 reject authority or chronology derived merely from cached/SQL metadata;
-- rows 5/13 reject pre-CAS LIVE authority;
-- rows 11/14/15 prove crash/generation behavior without a parallel journal;
+- rows 5/13 reject pre-CAS LIVE authority while row 5 also proves the accepted execution/native establishment edge;
+- rows 11/14/15 prove principal/generation/crash behavior without a parallel journal;
 - row 16 is explicitly storage-baseline independence and must not be rewritten as a HOT/publication requirement.
 
 `R068` cannot close until all 17 methods pass through their assigned primary channel.
@@ -72,8 +72,8 @@ Package class: `Wp13DurabilityProofTests` in planned `DEV/TESTS/test_implementat
 | 16 | WP-11 native record plus required index/projection UPSERT/DELETE participate coherently in one campaign-domain publication closure. | RD-04 + RD-06 | `test_wp13_16_native_record_index_projection_delta_is_coherent` | INTEGRATION_SCENARIO |
 | 17 | Resulting-tree preflight checks the bounded touched closure for missing required path/invariant before ref transition. | RD-06 | `test_wp13_17_bounded_resulting_tree_preflight_rejects_missing_invariant` | FOCUSED_BEHAVIOR |
 | 18 | Byte-identical UPSERT and already-absent DELETE normalize to no-op and do not force publication. | RD-06 | `test_wp13_18_normalized_noop_delta_does_not_publish` | FOCUSED_BEHAVIOR |
-| 19 | Supported campaign publication transport remains the admitted Python/core -> Connector -> non-force Git-data path. | RD-06 + process transport | `test_wp13_19_supported_transport_is_connector_nonforce_path` | INTEGRATION_SCENARIO |
-| 20 | Missing Connector capability does not authorize alternate shell git/gh/direct HTTP transport. | RD-06 + process negative law | `test_wp13_20_missing_connector_capability_has_no_transport_fallback` | INTEGRATION_SCENARIO |
+| 19 | Supported gameplay campaign publication transport remains the admitted Python/core -> Connector -> non-force Git-data path. | RD-06 gameplay campaign publication + fixed R2.6/WP-13 gameplay GitHub transport contract | `test_wp13_19_supported_transport_is_connector_nonforce_path` | INTEGRATION_SCENARIO |
+| 20 | Missing gameplay Connector capability does not authorize alternate shell git/gh/direct HTTP transport. | RD-06 gameplay publication negative path + fixed R2.6/WP-13 no-alternate-gameplay-transport law | `test_wp13_20_missing_connector_capability_has_no_transport_fallback` | INTEGRATION_SCENARIO |
 | 21 | One campaign publication boundary builds one base-derived tree, one single-parent commit and one non-force target-ref transition. | RD-06 | `test_wp13_21_campaign_boundary_uses_one_tree_single_parent_nonforce_transition` | FOCUSED_BEHAVIOR |
 | 22 | Target-ref transition result is explicitly `ACCEPTED`, `REJECTED` or `INDETERMINATE`. | RD-06 | `test_wp13_22_ref_transition_has_three_epistemic_outcomes` | FOCUSED_BEHAVIOR |
 | 23 | A rejected transition is classified against current authority before retry. | RD-06 | `test_wp13_23_rejection_is_classified_before_retry` | FOCUSED_BEHAVIOR |
@@ -91,7 +91,9 @@ Package class: `Wp13DurabilityProofTests` in planned `DEV/TESTS/test_implementat
 | 35 | Storage-baseline transaction/metadata authority is independent from campaign SAVE composition. | RD-14 storage/bootstrap + RD-06 | `test_wp13_35_storage_baseline_is_independent_from_campaign_save` | INTEGRATION_SCENARIO |
 | 36 | Engine/rules maintenance uses ordinary authorized campaign publication after its own compatibility/adoption checks; SAVE does not broaden maintenance authority. | RD-06 + current ENGINE_UPDATES consumer | `test_wp13_36_engine_rules_maintenance_reuses_publication_without_authority_broadening` | INTEGRATION_SCENARIO |
 | 37 | Git commit/ref order/time never manufactures fictional chronology or semantic priority. | RD-08 + RD-06 | `test_wp13_37_git_order_and_time_do_not_define_fictional_chronology` | INTEGRATION_SCENARIO |
-| 38 | Every named stale SAVE/durability/publication regression consumer/test is explicitly repaired, owner-routed or proved non-applicable/current-conforming. | RD-06 + RD-09/RD-14 consumer joins | `test_wp13_38_stale_consumer_and_test_dispositions_are_complete` | STATIC_AUDIT + INTEGRATION_SCENARIO |
+| 38 | Every named stale SAVE/durability/publication regression consumer/test is explicitly repaired, owner-routed or proved non-applicable/current-conforming. | RD-06 + RD-04/RD-09/RD-14 consumer joins | `test_wp13_38_stale_consumer_and_test_dispositions_are_complete` | STATIC_AUDIT + INTEGRATION_SCENARIO |
+
+Development-agent GitHub Connector policy is intentionally not used as semantic proof for rows 19/20. It remains separate process discipline. The behavior proved by those rows is the fixed gameplay runtime transport contract owned by R2.6/WP-13.
 
 ## 3. WP-13 shipped-consumer disposition required by row 38
 
@@ -99,17 +101,17 @@ The implementation checkpoint must materialize this table against fresh current 
 
 | Surface | Planning-baseline disposition | Owning implementation route |
 |---|---|---|
-| `GAME/CORE/SAVE_CONTRACT.md` | **MODIFY** — remove universal campaign-only SAVE composition; express native-domain composition and exact-generation acknowledgement/clear rules | RD-06 Task 5 repair overlay |
-| `GAME/CORE/PERSISTENCE.md` | **MODIFY** — preserve valid Git-data laws; add frozen basis, transition epistemics, rejection/ambiguity reconciliation, G/G+1 and crash-currentness rules | RD-06 Task 5 repair overlay |
-| `GAME/CORE/DURABILITY_GUARD.md` | **CURRENT_CONFORMING / INSPECT** at planning baseline | RD-06 currentness test; edit only on concrete contradiction |
-| `GAME/CORE/STORAGE.md` | **CURRENT_CONFORMING / INSPECT**; storage baseline remains independent | RD-06/RD-14 integration witness |
+| `GAME/CORE/SAVE_CONTRACT.md` | **MODIFY** — remove universal campaign-only SAVE composition; express native-domain composition and exact-generation acknowledgement/clear rules | RD-06 Task 5 SIRR overlay |
+| `GAME/CORE/PERSISTENCE.md` | **MODIFY** — preserve valid Git-data laws; add frozen basis, transition epistemics, rejection/ambiguity reconciliation, G/G+1 and crash-currentness rules | RD-06 Task 5 SIRR overlay |
+| `GAME/CORE/DURABILITY_GUARD.md` | **CURRENT_CONFORMING / INSPECT** for WP-13 durability semantics at planning baseline | RD-06 currentness test; edit only on concrete contradiction |
+| `GAME/CORE/STORAGE.md` | **MODIFY for WP-11 R064 root-topology projection**; its storage-baseline/SAVE separation is otherwise current-conforming | RD-04 author-self-review addendum owns root projection; RD-06 verifies no SAVE coupling |
 | `GAME/CORE/ENGINE_UPDATES.md` | **CURRENT_CONFORMING / INSPECT**; maintenance keeps own authority and consumes ordinary campaign publication | RD-06 integration witness |
-| `GAME/CORE/MULTIPLAYER.md` | **OWNER-ROUTED** LIVE/access semantics; do not let RD-06 overwrite WP-16 authority | RD-09 current plan + repair overlay integration |
-| `GAME/CORE/LIVE_SCENE.md` | **OWNER-ROUTED** exact-source LIVE lifecycle/currentness | RD-09 current plan + repair overlay integration |
-| `GAME/CORE/BOOTSTRAP_RUNTIME.md` | **MODIFY** generator identity prose to include exact ruleset-set digest | RD-14 Task 3 repair overlay |
-| `GAME/CORE/CAMPAIGN_SETUP.md` | **MODIFY** same | RD-14 Task 3 repair overlay |
-| `GAME/INSTALL/00_DND_BOOTSTRAP.md` | **CURRENT_CONFORMING / PROTECT** at planning baseline | RD-14 `GeneratorConsumerProjectionTests` |
-| `GAME/TOOLS/init_campaign.py` | **CURRENT_CONFORMING / PROTECT** exact digest argument + MANIFEST propagation at planning baseline | RD-14 generator tests |
+| `GAME/CORE/MULTIPLAYER.md` | **OWNER-ROUTED** LIVE/access semantics; do not let RD-06 overwrite WP-16 authority | RD-09 current plan + SIRR overlay integration |
+| `GAME/CORE/LIVE_SCENE.md` | **OWNER-ROUTED** exact-source LIVE lifecycle/currentness | RD-09 current plan + SIRR overlay integration |
+| `GAME/CORE/BOOTSTRAP_RUNTIME.md` | **MODIFY** — exact ruleset-set generator identity plus complete WP-11 generated-root projection | RD-14 SIRR overlay + author-self-review addendum |
+| `GAME/CORE/CAMPAIGN_SETUP.md` | **MODIFY** — exact ruleset-set identity, current manifest schema, and complete fixed-root projection | RD-14 SIRR overlay + author-self-review addendum |
+| `GAME/INSTALL/00_DND_BOOTSTRAP.md` | **MODIFY** — generated-root list lacks SESSIONS/STORY at planning baseline; existing digest propagation remains protected | RD-14 author-self-review addendum |
+| `GAME/TOOLS/init_campaign.py` | **CURRENT_CONFORMING / PROTECT** generic template copy + exact digest argument/MANIFEST propagation at planning baseline | RD-14 generator tests; modify only if fresh evidence disproves this classification |
 | existing stale SAVE/hour/frontier/blanket-clear tests | **DISCOVER_AND_REWRITE/RETIRE BY SEMANTICS**; absence recorded, no invented retirement work | RD-06/RD-09/RD-14 focused tests |
 
 ## 4. Proof-channel and closure laws
@@ -122,4 +124,4 @@ If a future execution baseline makes a row genuinely `NOT_APPLICABLE`, the worke
 
 ## 5. Planning Version Impact
 
-This v2 appendix changes proof routing only. Planning publication Version Impact: **NONE**. Runtime/version effects are classified only when future workers implement the actual repaired deltas.
+This appendix changes proof routing only. Planning publication Version Impact: **NONE**. Runtime/version effects are classified by the owning implementation tasks; the current author-self-review addendum already records the mechanically determined future manifest/module/launcher consequences for the fixed-root cutover.
