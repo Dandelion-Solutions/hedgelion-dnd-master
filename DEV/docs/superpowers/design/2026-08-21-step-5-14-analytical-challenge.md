@@ -317,7 +317,7 @@ A deferral is legitimate only if at least one plausible physical realization exi
 
 Current evidence satisfies that threshold:
 
-- RepositoryPort has multiple plausible backend forms and current lab evidence validates exact tree/race semantics;
+- RepositoryPort has multiple plausible backend forms and current isolated feasibility evidence validates exact tree/race semantics;
 - role isolation can be realized by separate invocations or genuine reset/isolation;
 - pre-visible validation can be realized by staged internal generation/buffering/outer rendering if the host supports the topology;
 - application-level stable identities may be minted or host profiles can be restricted based on available invocation/retry metadata;
