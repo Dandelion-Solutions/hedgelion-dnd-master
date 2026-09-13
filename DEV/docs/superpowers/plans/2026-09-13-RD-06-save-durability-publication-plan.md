@@ -160,3 +160,26 @@ Version Impact Gate: classify new durability/publication API/schema generations 
 Stale proof: active GAME/DEV contains no global save frontier/heartbeat, blanket HARD timer, per-file publication path, transport fallback, force update, persistent publication journal or commit-time chronology authority.
 
 Final commit boundary: durability + publication planner/currentness semantics + direct projections/tests form an independently reviewable RD-06 result.
+
+## Fresh-worker checkpoint protocol
+
+The task sequence above is implemented as four green publication checkpoints. A RED-only diagnostic commit is not allowed.
+
+1. **DURABILITY** — `DurabilityPromiseContractTests`: exact scope/root/generation freeze, explicit-vs-automatic durability, current no-write proof, partial-domain truth, acknowledgement suppression, scope-locality, exact G/G+1 clearing. Task 1 RED and Task 2 GREEN/REFACTOR are one checkpoint.
+2. **PUBLICATION** — `PublicationPlanTests` + `PublicationOutcomeTests`: frozen base/ref/principal/path closure, normalized delta, one base-derived tree/single parent/non-force transition, conflict and indeterminate reconciliation, no alternate transport, bounded resulting-tree proof. Task 3 is one checkpoint.
+3. **EXECUTION_JOIN** — `ExecutionDurabilityJoinTests`: RD-05 accepted execution precedes freeze, partial execution excluded, exact owner generations consumed, G+1 survives G publication. Task 4 is one checkpoint.
+4. **PROJECTION_AND_PROOF** — `DurabilityProjectionTests` + `Wp13ProofTests`: Task 5 current-body corrections plus the exact R071 proof rows assigned by the package lossless-proof ledger.
+
+Focused commands are respectively:
+```bash
+python3 -m unittest DEV.TESTS.test_rd06_durability_publication.DurabilityPromiseContractTests -v
+python3 -m unittest DEV.TESTS.test_rd06_durability_publication.PublicationPlanTests DEV.TESTS.test_rd06_durability_publication.PublicationOutcomeTests -v
+python3 -m unittest DEV.TESTS.test_rd06_durability_publication.ExecutionDurabilityJoinTests -v
+python3 -m unittest DEV.TESTS.test_rd06_durability_publication.DurabilityProjectionTests DEV.TESTS.test_rd06_durability_publication.Wp13ProofTests -v
+```
+
+For every checkpoint: RED must identify only the intended missing target; GREEN implements only named files/interfaces; REFACTOR removes duplication without changing owners; focused VERIFY must PASS before commit.
+
+`R071` cannot close from Task 6's thematic list alone. The package lossless-proof ledger must enumerate every active WP-13 proof theme and attach it to one named test/scenario/channel. In particular it must explicitly witness quiescence/freeze release, owner-defined rejection/disjoint-vs-overlap handling, independent storage transaction semantics, maintenance-vs-gameplay authority, and disposition of named stale tests in addition to the cases already listed above. Missing witness is RED; `NOT_APPLICABLE` requires an owner-backed reason. Future-trigger leaves stay dormant.
+
+RD-06 completion requires all five direct leaves, `R029.DURABILITY` recorded only as a slice, every RD-06-owned R071 proof-ledger row witnessed, local Version Impact evidence, remote read-back and hosted CI.
