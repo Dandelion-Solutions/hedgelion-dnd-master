@@ -11,36 +11,39 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 FINAL RECONCILIATION CLOSED — IMPLEMENTATION PLANNING IN PROGRESS
 
 CURRENT_WORKSTREAM: implementation planning
-CURRENT_SLICE: second independent Decomposition Critic complete — FAIL / REPAIR REQUIRED; bounded decomposition-routing repair is the active gate
+CURRENT_SLICE: self-contained candidate bounded decomposition v2 published; fresh genuinely independent Decomposition Critic is the active gate
 
 LAST_CLOSED_DOMAIN: R2.7 whole-project final architecture & machine-realization audit
 LAST_CLOSED_UNIT: R2.7 Final Reconciliation independent Final Senior review — PASS / GO
-LAST_COMPLETED_WORKER_UNIT: independent implementation-planning Decomposition Critic round 2 — FAIL / REPAIR REQUIRED; 0 BLOCKING / 9 SIGNIFICANT / 0 MINOR; prior DC-001..DC-005 resolved; detailed executable planning remains unauthorized
-NEXT_ELIGIBLE_UNIT: decomposition-author repair of DC-006..DC-014, followed by a fresh genuinely independent Decomposition Critic re-review
-NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING REPAIR ONLY — decomposition author repairs DC-006..DC-014 in the repaired RD decomposition and derived dependency/coverage routing as required, preserving resolved DC-001..DC-005, republishes the repaired candidate/routing state, then a genuinely independent Decomposition Critic performs a fresh re-review; no detailed executable plans or production implementation are authorized before PASS and the later mandatory Senior plan GO
-NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: no further critic-side repair in this review; the decomposition author owns DC-006..DC-014 repair, after which a genuinely independent critic must fresh-review the published state
-REQUIRED_GATE: bounded decomposition/routing repair -> genuinely independent Decomposition Critic re-review until PASS -> detailed executable plan package -> mandatory independent Senior plan review / GO -> production implementation only after GO
+LAST_COMPLETED_WORKER_UNIT: decomposition-author bounded repair/consolidation of DC-006..DC-014 into one self-contained v2 candidate while preserving resolved DC-001..DC-005 and all prior provenance
+NEXT_ELIGIBLE_UNIT: fresh genuinely independent Decomposition Critic review of candidate bounded decomposition v2
+NEXT_AUTHORIZED_UNIT: INDEPENDENT DECOMPOSITION CRITIC RE-REVIEW ONLY — fresh reviewer independently reconstructs current owners/readiness/dependencies, reviews the self-contained v2 as the sole current candidate target, verifies DC-001..DC-014 and lossless coverage/joins/parent closure, and publishes PASS / FAIL / REJECT; no detailed executable plans or production implementation are authorized before PASS and the later mandatory Senior plan GO
+NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: no further decomposition-author repair unless the independent v2 critic returns findings; this author context must not self-issue the required independent PASS
+REQUIRED_GATE: genuinely independent Decomposition Critic PASS over v2 -> detailed executable plan package -> mandatory independent Senior plan review / GO -> production implementation only after GO
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-critic-rereview-result.md
-TASK_LOCAL_CRITIC_RESULT: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-critic-rereview-result.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-13-implementation-planning-candidate-bounded-decomposition-v2.md
+TASK_LOCAL_CURRENT_CANDIDATE_V2: DEV/docs/superpowers/design/2026-09-13-implementation-planning-candidate-bounded-decomposition-v2.md
+TASK_LOCAL_CRITIC_RESULT_ROUND2: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-critic-rereview-result.md
 TASK_LOCAL_PRIOR_CRITIC_RESULT: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-critic-result.md
-TASK_LOCAL_REPAIRED_CANDIDATE: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-repair-dc001-dc005.md
-TASK_LOCAL_CANDIDATE: DEV/docs/superpowers/design/2026-09-13-implementation-planning-candidate-bounded-decomposition.md
-TASK_LOCAL_P3: DEV/docs/superpowers/design/2026-09-13-implementation-planning-p3-dependency-dag.md
+TASK_LOCAL_REPAIR_PROVENANCE: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-repair-dc001-dc005.md
+TASK_LOCAL_ORIGINAL_CANDIDATE_PROVENANCE: DEV/docs/superpowers/design/2026-09-13-implementation-planning-candidate-bounded-decomposition.md
+TASK_LOCAL_P3_PROVENANCE: DEV/docs/superpowers/design/2026-09-13-implementation-planning-p3-dependency-dag.md
 TASK_LOCAL_P1_P2: DEV/docs/superpowers/design/2026-09-13-implementation-planning-p1-p2-readiness-active-set.md
 TASK_LOCAL_BRIEF: DEV/docs/superpowers/design/2026-09-13-implementation-planning-task-brief.md
 TASK_LOCAL_CRITIC: DEV/docs/superpowers/design/2026-09-13-implementation-planning-task-brief-critic.md
 TASK_LOCAL_PROCESS_AMENDMENT: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-critic-amendment.md
 HG01_PUBLIC_RESEARCH: DEV/docs/superpowers/research/2026-09-13-hg01-novel-action-hourglass-result.md
-KNOWN_BLOCKERS: second independent Decomposition Critic found DC-006..DC-014 SIGNIFICANT; repaired RD cut remains non-PASS until lossless composite routing, parent closure and hidden owner-consumer joins are repaired/re-reviewed; production implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until the later complete implementation plan package receives independent Senior GO
+KNOWN_BLOCKERS: independent Decomposition Critic PASS over v2 has not yet occurred; author repair claims for DC-006..DC-014 remain unverified until that fresh review; production implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until the later complete implementation plan package receives independent Senior GO
 ```
 
 ---
 
 ## Current implementation-planning state
 
-P1/P2 lossless readiness reconciliation remains complete. The initial candidate decomposition was rejected in critic round 1. The author then published a repaired `RD-01..RD-14` overlay. Independent critic round 2 confirms that the five original findings are repaired, but finds nine new significant lossless-routing/dependency defects. The repaired RD cut is therefore retained as a repairable candidate rather than rejected wholesale; detailed execution-ready plan authoring remains gated on a later independent critic PASS.
+P1/P2 lossless readiness reconciliation remains complete. The initial candidate decomposition was rejected in critic round 1. The first repair overlay resolved DC-001..DC-005 on independent round-2 re-review, but round 2 found nine additional significant routing/completion defects DC-006..DC-014. The decomposition author has now consolidated the useful original candidate content, the first repair, the P3 routing constraints and bounded repairs for DC-006..DC-014 into one self-contained `candidate-bounded-decomposition-v2.md`.
+
+The v2 document is the sole current candidate/review target. Original P3/candidate/repair artifacts and both critic results remain provenance and evidence; a fresh reviewer does not need to compute current candidate truth by layering them. Canonical/native semantic/runtime/persistence/version owners and exact WP-27 Step-2 readiness records remain authoritative over all derived planning artifacts.
 
 Current result:
 
@@ -54,25 +57,32 @@ P2_ACTIVE_SET_RECONCILIATION: COMPLETE
 PLANNING_ACTIVE_READINESS: 133
 READINESS_WITHOUT_CURRENT_EXECUTABLE_ROUTE: 12
 UNEXPLAINED_ACTIVE_SET_DELTA: 0
-P3_DEPENDENCY_DAG: DERIVED PLANNING PROVENANCE — native owners / exact Step-2 ledger control where repair overlay or critic identifies loss
+P3_DEPENDENCY_DAG: DERIVED PLANNING PROVENANCE — current v2 embeds the controlling derived routing corrections; native owners / exact Step-2 ledger remain authoritative
 P3_ACTIVE_READINESS_ACCOUNTED: 133 / 133 by canonical ID
 P3_TRIGGER_GATED_PRESERVED: 12 / 12
 P3_NO_WORK_PRESERVED: 79 / 79
 P3_UNRESOLVED_CYCLES: 0
-REPAIRED_CANDIDATE_DECOMPOSITION: RD-01..RD-14 / REPAIR REQUIRED
-REPAIRED_CANDIDATE_ARITHMETIC_ACTIVE_COVERAGE: 133 / 133 canonical IDs
-REPAIRED_CANDIDATE_TRIGGER_GATED_PREMATURE_TASKS: 0
-REPAIRED_CANDIDATE_NO_WORK_PREMATURE_TASKS: 0
-PRIOR_DC_001_TO_DC_005: RESOLVED_ON_REREVIEW
+CANDIDATE_V2: PUBLISHED / READY FOR FRESH INDEPENDENT CRITIC
+CANDIDATE_V2_PATH: DEV/docs/superpowers/design/2026-09-13-implementation-planning-candidate-bounded-decomposition-v2.md
+CANDIDATE_V2_PUBLICATION_COMMIT: f9b9902ac9538e9a2ffad674d815ffc1e172d55c
+CANDIDATE_V2_BOUNDED_UNITS: 14
+CANDIDATE_V2_CANONICAL_ACTIVE_COVERAGE: 133 / 133
+CANDIDATE_V2_DIRECT_UNIT_COVERAGE: 117
+CANDIDATE_V2_PURE_PROOF_ROUTES: 9
+CANDIDATE_V2_COMPOSITE_PARENT_ROUTES: 7
+CANDIDATE_V2_TRIGGER_GATED_PREMATURE_TASKS: 0
+CANDIDATE_V2_NO_WORK_PREMATURE_TASKS: 0
+PRIOR_DC_001_TO_DC_005: RESOLVED_ON_ROUND2_REREVIEW
+DC_006_TO_DC_014: AUTHOR_REPAIRED_IN_V2 / INDEPENDENT_VERIFICATION_PENDING
 DECOMPOSITION_CRITIC_REQUIRED: YES
-DECOMPOSITION_CRITIC_STATUS: ROUND 2 COMPLETE — FAIL / REPAIR REQUIRED
+DECOMPOSITION_CRITIC_STATUS: FRESH V2 RE-REVIEW REQUIRED / NOT YET RUN
 DECOMPOSITION_CRITIC_ROUND2_REVIEW_HEAD: 8b8fb13e77aa30130f45c74b3cbf67f5e8cfee9b
 DECOMPOSITION_CRITIC_ROUND2_BLOCKING: 0
 DECOMPOSITION_CRITIC_ROUND2_SIGNIFICANT: 9
 DECOMPOSITION_CRITIC_ROUND2_MINOR: 0
 DECOMPOSITION_CRITIC_ROUND2_RESULT: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-critic-rereview-result.md
-OPEN_DECOMPOSITION_FINDINGS: DC-006..DC-014
-DETAILED_EXECUTABLE_PLAN_AUTHORING_GATE: fresh independent Decomposition Critic PASS after repair
+OPEN_DECOMPOSITION_FINDINGS_PENDING_REREVIEW: DC-006..DC-014 author repairs require independent verification
+DETAILED_EXECUTABLE_PLAN_AUTHORING_GATE: fresh independent Decomposition Critic PASS over v2
 DETAILED_EXECUTABLE_PLAN_AUTHORING_AUTHORIZED: NO
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 MANDATORY_PRE_PLAN_SENIOR_GATE: NONE — not created
@@ -83,13 +93,11 @@ ARCHITECTURE_REOPEN_REQUIRED_NOW: NO
 
 The independently reconstructed sets remain 133 planning-active readiness leaves, 12 exact trigger-gated leaves and 79 explicit no-work terminals; `R27-R004` remains absent. Round 2 found no premature trigger activation, no no-work resurrection and no HG-01 architecture conflict.
 
-The five first-round defects are closed at their original scope: the generic schema-first root and proof-only bucket are gone, R044 and R045 are re-homed under their accepted owners, and the R078 + R086 -> R100 creator-login join is explicit.
+The five first-round defects remain closed at their original scope: the generic schema-first root and proof-only implementation bucket are absent, R044 and R045 remain re-homed under their accepted collaboration/publication owners, and the R078 + R086 -> R100 creator-login join remains explicit and acyclic.
 
-Round 2 instead finds nine significant repair obligations. Composite readiness routing omits runtime.execution portions of R016/R018/R062; planning-only slices lack an explicit canonical-parent all-slices/proof/version completion rule; R037..R040 remain primary-routed upstream of the persistence/recovery/temporal/LIVE owners needed to discharge them; R029/R030 hide provisional-persistence/bootstrap consumer joins inside RD-03; and R087 remains unsplit across its retrospective, save/session and SemanticEvent/T0 owner routes. These are decomposition/routing defects, not accepted-architecture defects.
+V2 claims bounded repairs for all second-round findings: runtime.execution slices are explicit for R016/R018/R062; every planning-sliced parent has an all-slices/proof/negative-law/Version-Impact closure rule; R037..R040 complete at owner-valid persistence/recovery/temporal/LIVE integration joins; R029 is an Actor+durability+onboarding composite parent; R030 completes under the bootstrap consumer with Actor-shape input; and R087 is explicitly split across retrospective, save/session/menu and SemanticEvent/T0 routes. These are author repair claims only until independently re-reviewed.
 
-The current gate is bounded author repair of DC-006..DC-014 followed by another genuinely independent Decomposition Critic. No Product Owner decision and no architecture reopen are required by the current findings.
-
-Full execution-ready `writing-plans` authoring remains prohibited until a fresh independent critic returns PASS with zero unresolved BLOCKING/SIGNIFICANT findings. After that PASS, the complete planning stage still requires bounded executable plans with HDM Impact Envelopes, proof/version/HG-01 routing, execution waves, bidirectional coverage, currentness checks and final independent Senior plan review.
+The current gate is therefore a fresh genuinely independent Decomposition Critic over the self-contained v2. No Product Owner decision and no architecture reopen are currently required. Full execution-ready `writing-plans` authoring remains prohibited until that critic returns PASS with zero unresolved BLOCKING/SIGNIFICANT findings. After PASS, the complete planning stage still requires bounded executable plans with HDM Impact Envelopes, proof/version/HG-01 routing, execution waves, bidirectional coverage, currentness checks and final independent Senior plan review.
 
 ---
 
@@ -175,9 +183,10 @@ Exact current gate:
 ```text
 implementation planning is in progress;
 P1/P2 remain complete with 133 exact planning-active readiness leaves, 12 exact trigger-gated readiness leaves and 79 preserved no-work terminals;
-the first Decomposition Critic rejected the original CD cut, and the author published repaired RD-01..RD-14 routing at reviewed HEAD 8b8fb13e77aa30130f45c74b3cbf67f5e8cfee9b;
-second independent Decomposition Critic result is FAIL / REPAIR REQUIRED with 0 BLOCKING, 9 SIGNIFICANT and 0 MINOR open findings; prior DC-001..DC-005 are resolved at their original scope;
-current work is bounded decomposition/routing repair of DC-006..DC-014 followed by another fresh genuinely independent Decomposition Critic;
+first critic rejected the original CD cut; round-2 critic verified DC-001..DC-005 resolved but returned FAIL / REPAIR REQUIRED for DC-006..DC-014;
+the author has published one self-contained v2 candidate consolidating the useful original decomposition/P3 content and all author repairs DC-001..DC-014;
+v2 is now the sole current candidate/review target, while earlier P3/candidate/repair/critic artifacts remain provenance;
+current work is fresh genuinely independent Decomposition Critic review of v2;
 detailed execution-ready plan authoring remains prohibited until critic PASS;
 future-only empirical/release/writer/focus-triggered work remains outside the current executable DAG until its exact trigger exists;
 the complete implementation-planning package must later receive mandatory independent Senior plan review PASS / GO before production implementation starts.
