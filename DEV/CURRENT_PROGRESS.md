@@ -11,30 +11,31 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 FINAL RECONCILIATION CLOSED — IMPLEMENTATION PLANNING IN PROGRESS
 
 CURRENT_WORKSTREAM: implementation planning
-CURRENT_SLICE: P1/P2 lossless readiness disposition + exact active-set reconciliation complete; P3 dependency DAG not started
+CURRENT_SLICE: P3 owner-derived dependency DAG complete; candidate bounded implementation decomposition not started
 
 LAST_CLOSED_DOMAIN: R2.7 whole-project final architecture & machine-realization audit
 LAST_CLOSED_UNIT: R2.7 Final Reconciliation independent Final Senior review — PASS / GO
-LAST_COMPLETED_WORKER_UNIT: implementation-planning P1/P2 — fresh baseline pinned; 145/145 readiness + 79/79 no-work accounted; exact planning-active set reconciled at 133 leaves with 12 trigger-gated readiness leaves
-NEXT_ELIGIBLE_UNIT: P3 dependency DAG over the exact current planning-active implementation/proof obligations
-NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING ONLY — execute P3 from the P1/P2 ledger and native owners; do not begin production implementation
-NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: execute P3 dependency-DAG derivation only as the next coherent planning slice unless a genuine human-owned decision is discovered
-REQUIRED_GATE: P3 dependency DAG -> candidate bounded decomposition -> mandatory independent Decomposition Critic PASS -> detailed executable plan package -> mandatory Senior plan review / GO -> production implementation only after GO
+LAST_COMPLETED_WORKER_UNIT: implementation-planning P3 — owner-derived DAG over 133/133 current active readiness leaves; 12 trigger-gated readiness leaves and 79 explicit no-work terminals preserved outside executable graph; 0 unresolved cycles/edges
+NEXT_ELIGIBLE_UNIT: candidate bounded implementation plan/task decomposition derived from P3 for independent Decomposition Critic
+NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING ONLY — produce the candidate bounded decomposition; do not author detailed executable plans before Decomposition Critic PASS and do not begin production implementation
+NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: derive and publish the candidate bounded decomposition from the P3 graph, exact readiness leaves and native owners unless a genuine human-owned decision is discovered
+REQUIRED_GATE: candidate bounded decomposition -> mandatory independent Decomposition Critic -> repair/re-decompose/re-review until PASS -> detailed executable plan package -> mandatory Senior plan review / GO -> production implementation only after GO
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-13-implementation-planning-p1-p2-readiness-active-set.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-13-implementation-planning-p3-dependency-dag.md
+TASK_LOCAL_P1_P2: DEV/docs/superpowers/design/2026-09-13-implementation-planning-p1-p2-readiness-active-set.md
 TASK_LOCAL_BRIEF: DEV/docs/superpowers/design/2026-09-13-implementation-planning-task-brief.md
 TASK_LOCAL_CRITIC: DEV/docs/superpowers/design/2026-09-13-implementation-planning-task-brief-critic.md
 TASK_LOCAL_PROCESS_AMENDMENT: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-critic-amendment.md
 HG01_PUBLIC_RESEARCH: DEV/docs/superpowers/research/2026-09-13-hg01-novel-action-hourglass-result.md
-KNOWN_BLOCKERS: detailed execution-ready plan authoring is gated on Decomposition Critic PASS after P3 + candidate decomposition; production implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until the complete implementation plan package receives the required Senior GO
+KNOWN_BLOCKERS: detailed execution-ready plan authoring is gated on Decomposition Critic PASS after candidate bounded decomposition; production implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until the complete implementation plan package receives the required Senior GO
 ```
 
 ---
 
 ## Current implementation-planning state
 
-The repaired implementation-planning brief has passed its strict whole-project critic. The first substantive planning slice is now complete. A later Product Owner process amendment adds an independent Decomposition Critic after P3 plus candidate bounded decomposition and before detailed execution-ready plan authoring; this does not reopen P1/P2 or create an extra Product Owner/Senior approval stop.
+The repaired implementation-planning brief has passed its strict whole-project critic. P1/P2 lossless readiness reconciliation and P3 owner-derived dependency-DAG derivation are complete. A Product Owner process amendment requires an independent Decomposition Critic after P3 plus candidate bounded decomposition and before detailed execution-ready plan authoring; this does not reopen P1/P2/P3 or create an extra Product Owner/Senior approval stop.
 
 Current result:
 
@@ -48,9 +49,15 @@ P2_ACTIVE_SET_RECONCILIATION: COMPLETE
 PLANNING_ACTIVE_READINESS: 133
 READINESS_WITHOUT_CURRENT_EXECUTABLE_ROUTE: 12
 UNEXPLAINED_ACTIVE_SET_DELTA: 0
+P3_DEPENDENCY_DAG: COMPLETE
+P3_ACTIVE_READINESS_ACCOUNTED: 133 / 133
+P3_TRIGGER_GATED_PRESERVED: 12 / 12
+P3_NO_WORK_PRESERVED: 79 / 79
+P3_UNRESOLVED_CYCLES: 0
+P3_UNRESOLVED_EDGES: 0
 DECOMPOSITION_CRITIC_REQUIRED: YES
 DECOMPOSITION_CRITIC_STATUS: NOT_REACHED
-DECOMPOSITION_CRITIC_TRIGGER: P3 complete + candidate bounded plan/task decomposition ready
+DECOMPOSITION_CRITIC_TRIGGER: candidate bounded plan/task decomposition ready; P3 prerequisite is complete
 DETAILED_EXECUTABLE_PLAN_AUTHORING_GATE: Decomposition Critic PASS
 MANDATORY_PRE_PLAN_SENIOR_GATE: NONE — not created
 NEXT_ROUTINE_SENIOR_GATE: complete implementation-planning package review
@@ -60,9 +67,11 @@ ARCHITECTURE_REOPEN_REQUIRED_NOW: NO
 
 P1/P2 preserves native owners and exact Step-2 item fields by reference rather than creating a new architecture owner. `ROUND2_ACTIVE_READINESS: 43` remains the exact Round-2 subset of the current 133-leaf planning-active set; the additional 90 leaves are exact non-Round-2 planning-active readiness records. Twelve non-Round-2 readiness leaves remain release-only, real-target-only, writer-triggered or focus-risk-triggered and therefore create no current executable node. All 79 explicit no-work terminals remain no-work.
 
-The next planning unit is P3: derive the dependency DAG from the 133 exact planning-active leaves and their native owner/consumer/prerequisite relationships. WP-27's eleven workstreams remain planning projections only and must not become semantic owners or an imposed implementation sequence.
+P3 derives execution dependencies only from native owner/consumer/prerequisite relationships. It does not use WP-27 workstream order, readiness numbering or file adjacency as dependency authority. The graph has no unresolved executable cycle; derived caches/indexes/Story/checkpoints/context/diagnostics remain downstream or rebuildable and never become predecessor authority for their native owners.
 
-After P3, planning must produce a candidate bounded plan/task decomposition concrete enough to challenge, then run the independent Decomposition Critic defined by the task-local amendment. All BLOCKING/SIGNIFICANT decomposition findings are repaired and independently re-reviewed until PASS. Full execution-ready `writing-plans` authoring begins only after that PASS. This critic is autonomous planning quality control; only a genuine human-owned product/architecture/risk decision creates a human stop.
+The next planning unit is the candidate bounded plan/task decomposition. It must map every exact active readiness/proof obligation to candidate implementation units/routes, show P3 roots/joins/dependencies, preserve trigger-gated/no-work routes, carry negative laws and preliminary impact boundaries, and remain rejectable/re-decomposable by the independent Decomposition Critic.
+
+All BLOCKING/SIGNIFICANT decomposition findings are repaired and independently re-reviewed until PASS. Full execution-ready `writing-plans` authoring begins only after that PASS. This critic is autonomous planning quality control; only a genuine human-owned product/architecture/risk decision creates a human stop.
 
 The complete planning stage still requires bounded executable `writing-plans` artifacts with HDM Impact Envelopes, proof/version/HG-01 routing, execution waves, bidirectional coverage, currentness checks and final independent Senior plan review.
 
@@ -184,9 +193,9 @@ Exact current gate:
 
 ```text
 implementation planning is in progress;
-P1/P2 are complete at baseline 85311db76be2e440c97baf0b0625177de2eb0774 with 133 exact planning-active readiness leaves, 12 exact trigger-gated readiness leaves and 79 preserved no-work terminals;
-next planning work is P3 dependency-DAG derivation from native owner/consumer/prerequisite relationships only;
-after P3, candidate bounded decomposition must be produced and pass the independent Decomposition Critic before detailed execution-ready plan authoring;
+P1/P2 and P3 are complete at baseline 85311db76be2e440c97baf0b0625177de2eb0774 with 133 exact planning-active readiness leaves, 12 exact trigger-gated readiness leaves and 79 preserved no-work terminals;
+next planning work is candidate bounded implementation decomposition derived from the P3 owner graph;
+that decomposition must pass the independent Decomposition Critic before detailed execution-ready plan authoring;
 future-only empirical/release/writer/focus-triggered work remains outside the current executable DAG until its exact trigger exists;
 the complete implementation-planning package must then receive mandatory independent Senior plan review PASS / GO before production implementation starts.
 ```
