@@ -179,7 +179,7 @@ writer prepared from ACTIVE @ L
 closer CAS L -> CLOSED @ Lc
 ```
 
-Lab evidence confirms a stale Contents-style expected-blob write receives conflict after close changes the source.
+Isolated feasibility evidence confirms a stale Contents-style expected-blob write receives conflict after close changes the source.
 
 Abstract requirement should be stronger and backend-independent:
 
