@@ -2,76 +2,57 @@
 
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
-This is the sole authority for current global position, active work, next authorized unit and global gate. Semantic owners/specs remain authority for their domains.
-
 ```text
 GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 FINAL RECONCILIATION CLOSED — IMPLEMENTATION PLANNING IN PROGRESS
 CURRENT_WORKSTREAM: implementation planning
-CURRENT_SLICE: PB-06 execution-wave / integration package active
+CURRENT_SLICE: PB-07 bidirectional coverage/currentness + Senior handoff active
 
-LAST_CLOSED_DOMAIN: R2.7 whole-project final architecture & machine-realization audit
-LAST_COMPLETED_WORKER_UNIT: PB-05 RD-12..RD-14 detailed executable plans complete; Source Manifest + three plans + closure published; self-review PASS; all 14 RD plans now authored
-NEXT_ELIGIBLE_UNIT: PB-06 execution-wave / integration package
-NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING PB-06 ONLY — construct dependency-safe execution waves over RD-01..RD-14, explicit cross-RD join gates, proof/version/schema/checkpoint/migration/currentness gates, coherent worker checkpoint boundaries and integration verification. Do not implement production code and do not claim package-level 133/133 closure
-NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: planner/architect owns PB-06 and may continue automatically through PB-07 unless a genuine human-owned decision gate appears
-REQUIRED_GATE: PB-06 + PB-07 bidirectional coverage/currentness closure -> mandatory independent Senior plan review / GO -> production implementation only after GO
+LAST_COMPLETED_WORKER_UNIT: PB-06 execution-wave/integration package complete; E1-E15 self-review PASS after PB-05 composite-slice repair
+NEXT_ELIGIBLE_UNIT: PB-07 bidirectional readiness-task coverage/currentness closure
+NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING PB-07 ONLY — prove canonical active readiness <-> plan/task/proof/composite bidirectional coverage, fresh-check current owners/cursor/exclusions, publish independent Senior review handoff, and stop before production implementation pending independent Senior PASS/GO
+REQUIRED_GATE: PB-07 PASS -> mandatory genuinely independent Senior plan review / GO -> production implementation only after GO
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md
 TASK_LOCAL_PACKAGE_INDEX: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md
-TASK_LOCAL_PB05_SOURCE_MANIFEST: DEV/docs/superpowers/plans/2026-09-13-PB-05-rd12-rd14-source-manifest.md
-TASK_LOCAL_PB05_CLOSURE: DEV/docs/superpowers/plans/2026-09-13-PB-05-rd12-rd14-closure.md
+TASK_LOCAL_PB06_EXECUTION_WAVES: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-execution-waves.md
+TASK_LOCAL_PB06_CLOSURE: DEV/docs/superpowers/plans/2026-09-13-PB-06-execution-waves-closure.md
 TASK_LOCAL_CURRENT_CANDIDATE_V2: DEV/docs/superpowers/design/2026-09-13-implementation-planning-candidate-bounded-decomposition-v2.md
-TASK_LOCAL_CRITIC_RESULT_ROUND4: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-critic-v2-rereview-result.md
-KNOWN_BLOCKERS: none in decomposition/PB-02..PB-05; production implementation/migration/release/gameplay bootstrap remain unauthorized until PB-06/PB-07 complete and independent Senior PASS / GO
+KNOWN_BLOCKERS: none; production implementation/migration/release/gameplay bootstrap unauthorized pending PB-07 + independent Senior PASS/GO
 ```
 
-## Current implementation-planning state
-
+## Planning accounting
 ```text
-PLANNING_ACTIVE_READINESS: 133
+ACTIVE_READINESS: 133
 DIRECT_READINESS: 116
-PURE_PROOF_ROUTES: 9
-COMPOSITE_PARENT_ROUTES: 8
-TRIGGER_GATED_READINESS: 12
+PURE_PROOF: 9
+COMPOSITE_PARENTS: 8
+TRIGGER_GATED: 12
 NO_WORK_TERMINALS: 79
 R27_R004: ABSENT
-OPEN_DECOMPOSITION_FINDINGS: NONE
-DECOMPOSITION_CRITIC_STATUS: PASS — 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR
-DETAILED_EXECUTABLE_PLAN_AUTHORING_AUTHORIZED: YES
-PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
-```
-
-Planning package:
-```text
-PB-01: COMPLETE
-PB-02: COMPLETE — RD-01..RD-04 / 38 direct leaves
-PB-03: COMPLETE — RD-05..RD-08 / 22 direct leaves
-PB-04: COMPLETE — RD-09..RD-11 / 34 direct leaves
-PB-05: COMPLETE — RD-12..RD-14 / 22 direct leaves
-PB-06: ACTIVE — execution-wave/integration package
-PB-07: NOT_STARTED — bidirectional coverage/currentness + Senior handoff
+DECOMPOSITION_CRITIC: PASS — 0/0/0
 RD_PLANS_COMPLETE: 14 / 14
-CUMULATIVE_DIRECT_LEAVES_PLANNED: 116 / 116
+DIRECT_LEAVES_PLANNED: 116 / 116
 ACTIVE_READINESS_COVERAGE_CLOSED: 0 / 133  # PB-07 only
 PB01_PROTOCOL_READBACK: PASS
 PB02_PLAN_SELF_REVIEW: PASS
 PB03_PLAN_SELF_REVIEW: PASS
 PB04_PLAN_SELF_REVIEW: PASS
-PB05_PLAN_SELF_REVIEW: PASS
+PB05_PLAN_SELF_REVIEW: PASS_AFTER_REPAIR
+PB06_EXECUTION_WAVE_SELF_REVIEW: PASS
 PRODUCT_OWNER_DECISION_REQUIRED_NOW: NO
 ARCHITECTURE_REOPEN_REQUIRED_NOW: NO
+PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 ```
 
-PB-05 closure preserved: no global active player; positive dependency before scope-local waiting; catch-up is recipient projection; one Story canon; summary non-authoritative; T0 not parallel history; Commentator read-only; bootstrap validates initial frontier before gameplay mutation; onboarding creates no knowledge/history/currentness authority; missing legacy `GAME/CORE/START.md` is not recreated.
+PB-05 repair restored decomposition-v2 composite slices before PB-06 publication: RD-12 `R016.COLLAB/R018.COLLAB/R122.COLLABORATION_BRIDGE`; RD-13 `R016.STORY/R018.STORY/R062.SEMANTIC_EVENT_HISTORY/R087.SEMANTIC_EVENT_T0`; RD-14 `R029.ONBOARDING/R087.SAVE_SESSION_MENU`.
 
-GAME rewrite policy remains explicit: `GAME/**` may be fully reconstructed for v1.0; existing layout/content is implementation evidence, not preservation authority.
+PB-06 routes all RD-01..RD-14, owner-derived E1-E15 joins, all 8 composite parents and all 9 pure-proof leaves. No authority-transfer cycle break is admitted.
 
-## Closed predecessor authority
+GAME rewrite policy: `GAME/**` may be reconstructed for v1.0; existing layout/content is evidence, not preservation authority.
 
 ```text
-WP19..WP27_CLOSED: YES / applicable FINAL SENIOR PASS / GO
 R2_7_FINAL_RECONCILIATION: CLOSED / FINAL INDEPENDENT SENIOR PASS / GO
 UNRESOLVED_BLOCKING: 0
 UNRESOLVED_SIGNIFICANT: 0
@@ -83,12 +64,4 @@ RELEASE_EXECUTION_STARTED: NO
 GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-Exact current gate:
-```text
-PB-06 execution-wave/integration planning is active;
-14 / 14 RD executable plans are authored;
-116 / 116 direct readiness leaves have executable-plan placement;
-133 active / 12 trigger-gated / 79 no-work accounting remains fixed;
-package-level 133/133 closure is still unclaimed until PB-07;
-production implementation remains prohibited until mandatory independent Senior plan review PASS / GO.
-```
+Exact gate: PB-07 active; 14/14 RD plans and 116/116 direct placements exist; package 133/133 closure is not yet claimed; production implementation remains prohibited until independent Senior plan PASS/GO.
