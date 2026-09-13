@@ -6,32 +6,36 @@ Goal: realize current-native cold recovery and bounded maintenance while demotin
 
 RD unit: `RD-07`
 Direct readiness: `R011,R012,R038,R072,R073,R074`.
-Canonical owners: Step-5.2 RRC, Step-5.7 recovery, WP-14, WP-11/12 current routes/HOT, RD-05 retained execution evidence, RD-06 publication currentness.
+Canonical owners: Step-5.2 RRC, Step-5.7 recovery, WP-14, WP-11/12 current routes/HOT, RD-05 retained execution evidence, RD-06 publication currentness; later WP-21 controls maintenance-entry/diagnostic composition and explicitly defers an installed maintenance command dispatcher.
 Dependencies/joins: consumes RD-05 accepted execution evidence and RD-06 native publication/currentness results; selected-LIVE recovery additionally consumes RD-09 current source evidence; constrains RD-08 temporal recovery without owning temporal semantics.
-Out of scope: gameplay rollback authority, LIVE authority, disclosure rewind, migration/release execution, alternate repository transport, checkpoint-as-current-state owner.
+Out of scope: gameplay rollback authority, LIVE authority, disclosure rewind, migration/release execution, alternate repository transport, checkpoint-as-current-state owner, installed maintenance command parser/dispatcher.
 
 ## Implementation Impact Envelope
 
-SPEC / APPROVED DESIGN: Step-5.2/5.7, WP-14, exact readiness R011/R012/R038/R072/R073/R074.
+SPEC / APPROVED DESIGN: Step-5.2/5.7, WP-14, WP-21 maintenance/diagnostic boundary, exact readiness R011/R012/R038/R072/R073/R074.
 BASELINE REF: fresh branch HEAD at execution.
 
 EXPECTED OWNERS TO CHANGE:
 - recovery executor/result contract;
+- bounded historical maintenance operation/audit realization;
 - checkpoint/session shipped projections;
 - active shipped `GAME/CORE/STORAGE.md` read-order wording required by R012.
 
 EXPECTED CONSUMERS TO CHANGE:
 - cold recovery/startup readers;
+- bounded maintenance tooling/callers that invoke admitted operations after authorization;
 - RD-08 temporal recovery join;
 - selected-LIVE recovery join with RD-09.
 
 ALLOWED CONTRACTS:
 - Create `GAME/TOOLS/recovery.py`;
 - Create `DEV/SCHEMAS/recovery-result.schema.json`;
+- Create `DEV/SCHEMAS/runtime-maintenance-audit-state.schema.json`;
 - Replace `GAME/SCHEMA/checkpoint.schema.yaml`;
 - Modify `GAME/CAMPAIGN/CHECKPOINTS/_TEMPLATE.yaml` (confirmed current scaffold path);
 - Modify `GAME/SCHEMA/session.schema.yaml`;
 - Modify `GAME/CORE/STORAGE.md` only for current-native recovery/read-order semantics;
+- modify the exact current catalog/admission projection only if focused RED proves `runtime.maintenance_audit` is not already admitted; name that file before write and do not create another registry;
 - modify named README/project-map/audit/test projections.
 
 PROTECTED INVARIANTS:
@@ -40,9 +44,11 @@ PROTECTED INVARIANTS:
 - checkpoint may be absent on healthy recovery;
 - no replay/reroll/re-ID of accepted execution;
 - no generic rollback/ref rewind/allocator regression/disclosure rewind;
-- selected LIVE cannot silently fall back to campaign source.
+- selected LIVE cannot silently fall back to campaign source;
+- maintenance operation routing is not authorization and maintenance evidence is not gameplay authority;
+- no installed exact-token command dispatcher is created by RD-07.
 
-Version Impact: checkpoint/session/recovery contract changes are classified at each checkpoint; no migration is inferred merely because stale v0.8 projections exist.
+Version Impact: checkpoint/session/recovery/maintenance-audit contract changes are classified at each checkpoint; no migration is inferred merely because stale v0.8 projections exist.
 
 ## Task 1 — RED: current-source recovery selection
 
@@ -217,32 +223,54 @@ python3 -m unittest DEV.TESTS.test_rd07_recovery.SessionHotAuthorityTests -v
 
 Coherent checkpoint: session/HOT recovery negatives + tests.
 
-## Task 7 — bounded historical maintenance/repair
+## Task 7 — bounded historical maintenance and `runtime.maintenance_audit`
 
 **Files**
 - Modify: `GAME/TOOLS/recovery.py`
+- Create: `DEV/SCHEMAS/runtime-maintenance-audit-state.schema.json`
+- Modify exact catalog/admission projection only if current machine admission for `runtime.maintenance_audit` is absent
 - Modify: `DEV/TESTS/test_rd07_recovery.py`
 
 **Interfaces**
 ```text
-inspect_historical_checkpoint(checkpoint_id, pinned_basis) -> MaintenanceResult
-validate_repair_candidate(candidate, current_basis) -> MaintenanceResult
+export_checkpoint_diagnostics(checkpoint_id, pinned_basis, principal_evidence) -> MaintenanceResult
+reset_last_checkpoint_reference(current_basis, retained_checkpoint_evidence, principal_evidence) -> MaintenanceResult
+validate_repair_candidate(candidate, current_basis, principal_evidence) -> MaintenanceResult
+promote_historical_repair(candidate, fresh_current_basis, domain_results) -> MaintenanceResult
+record_maintenance_audit(operation, basis, outcome, allocator_evidence, publication_evidence) -> MaintenanceAuditRecord
 ```
 
-**Cases**: explicit historical target only; no ref rewind/current promotion; no allocator regression/disclosure rewind; missing retained dependency blocks/limits honestly; diagnostics/export never become gameplay authority.
+These are bounded operation APIs called only after applicable authorization/currentness checks. They do **not** install an exact-token parser/dispatcher. `HDM_RESET_LAST_CHECKPOINT` may appear in fixtures as the WP-14 semantic operation identity, but WP-21 keeps command registration/dispatch deferred.
 
-Run:
+`runtime.maintenance_audit` uses the existing WP-11 native family/root. Its machine representation records bounded operation identity/basis/outcome plus current allocator/publication evidence needed by WP-14 and idempotency; it is audit evidence, never recovery/currentness/gameplay authority.
+
+**`HistoricalMaintenanceTests` and `MaintenanceAuditMachineTests` cover:**
+- fixed Connector/currentness/conflict/failure behavior at the maintenance boundary;
+- checkpoint export tied to exact pinned basis;
+- reset operation fails honestly when retention is unavailable, never guesses another checkpoint, and remains maintenance-isolated;
+- approved historical repair is promoted only from a fresh current basis and never by ref rewind;
+- partial multi-domain promotion/recomposition preserves truthful incomplete/indeterminate outcomes;
+- allocator never regresses and published IDs are never reused;
+- current knowledge/disclosure owners are preserved rather than rewound;
+- maintenance does not execute gameplay, emit Narrator output, consume/allocate RNG or allocate gameplay IDs;
+- `runtime.maintenance_audit` representation is native-routable, publication/currentness-aware and idempotent;
+- pinned historical reader/retention boundaries remain owner-qualified;
+- authorization/disclosure/currentness are revalidated for recovery/repair/support use;
+- stale checkpoint-at-PLAY_READY/ordinary-save assumptions remain removed.
+
+Focused verify:
 ```bash
-python3 -m unittest DEV.TESTS.test_rd07_recovery.HistoricalMaintenanceTests -v
+python3 -m unittest DEV.TESTS.test_rd07_recovery.HistoricalMaintenanceTests DEV.TESTS.test_rd07_recovery.MaintenanceAuditMachineTests -v
 ```
+Expected PASS before checkpoint publication.
 
-Coherent checkpoint: maintenance-only helpers/tests; ordinary recovery path remains unchanged.
+Coherent checkpoint: maintenance operation/audit machine + tests. No product command dispatcher, generic support principal, gameplay rollback path or branch/ref deletion capability is created.
 
-## Task 8 — temporal/selected-LIVE joins and RD-07 verification
+## Task 8 — temporal/selected-LIVE joins and R074 package proof
 
-RD-08 consumes current temporal owner/binding state and rebuilds Agenda; accepted firing identity remains RD-05 evidence. Selected-LIVE recovery additionally requires RD-09 R079/R080 exact-source evidence before this integration can close.
+RD-08 consumes current temporal owner/binding state and rebuilds Agenda; accepted firing identity remains RD-05 evidence. Selected-LIVE recovery additionally requires RD-09 exact-source/currentness evidence before integration can close.
 
-Integration tests must prove both joins without moving their authority into recovery.
+`R074` additionally requires package `Wp14RecoveryProofTests` to witness every WP-14 §15 item 13–25, including cross-RD allocator, information/disclosure, execution/emission and publication joins. RD-07 local tests cannot over-credit those sibling-owner obligations.
 
 Full verification:
 ```bash
@@ -252,8 +280,8 @@ python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
 ```
 Expected PASS.
 
-Version Impact Gate: checkpoint/session/recovery contracts and projections synchronized exactly once. System Impact Gate stops on any new recovery/currentness/rollback authority.
+Version Impact Gate: checkpoint/session/recovery/maintenance-audit contracts and projections synchronized exactly once. System Impact Gate stops on any new recovery/currentness/rollback/command-dispatch authority.
 
-Stale proof: no checkpoint/event frontier as current authority; no checkpoint commit self-reference requirement; no `latest checkpoint/hot STATE` current-source read rule; no latest-by-enumeration fallback; no session-as-current authority; no stale-HOT cold authority; no generic rollback/ref rewind or recovery replay/reroll.
+Stale proof: no checkpoint/event frontier as current authority; no checkpoint commit self-reference requirement; no `latest checkpoint/hot STATE` current-source read rule; no latest-by-enumeration fallback; no session-as-current authority; no stale-HOT cold authority; no generic rollback/ref rewind or recovery replay/reroll; no maintenance command dispatcher silently installed by recovery work.
 
-Final coherent checkpoint: recovery runtime + result schema + STORAGE projection + checkpoint/session alignment + selected joins + tests/audits, with remote read-back. R068 pure-proof closure is reconciled package-wide rather than pre-claimed here.
+Final coherent checkpoint: recovery runtime + result schema + STORAGE projection + checkpoint/session alignment + bounded maintenance-audit machine + selected joins + tests/audits, with remote read-back. Pure/composite proof closure is reconciled package-wide rather than pre-claimed here.
