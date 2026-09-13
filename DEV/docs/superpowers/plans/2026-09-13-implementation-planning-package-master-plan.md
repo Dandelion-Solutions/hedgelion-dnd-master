@@ -1,52 +1,51 @@
 # HDM Implementation Planning Package — Master Plan
 
-Status: **AUTHOR ADVERSARIAL SELF-REVIEW REPAIR ACTIVE — SECOND PASS REQUIRED BEFORE INDEPENDENT RE-REVIEW #2**
+Status: **AUTHOR SECOND-PASS REPAIR ACTIVE — THIRD PASS REQUIRED BEFORE INDEPENDENT RE-REVIEW #2**
 Date: 2026-09-13
 
 Fixed accounting: 133 active = 116 direct + 9 pure proof + 8 composite parents; 12 trigger-gated; 79 no-work; R004 absent; 14 RD units. Production implementation: **NO**.
 
 ```text
-PB-01 protocol/template                         COMPLETE
-PB-02 RD-01..RD-04                             COMPLETE / current route amended by author self-review
-PB-03 RD-05..RD-08                             COMPLETE
-PB-04 RD-09..RD-11                             COMPLETE
-PB-05 RD-12..RD-14                             COMPLETE / current route amended by author self-review
-PB-06 execution waves/integration              COMPLETE + SIRR + AUTHOR SELF-REVIEW ADDENDA
-PB-07 bidirectional coverage/currentness       COMPLETE + V2 + AUTHOR SELF-REVIEW DELTA
-
+PB-01..PB-07 planning package                  COMPLETE / current routes overlaid by accepted repairs
 first independent Senior review                FAIL / REPAIR REQUIRED
 SIP-001..SIP-011 author repair                 COMPLETE
-first independent Senior re-review             FAIL / REPAIR REQUIRED — 0 BLOCKING / 4 SIGNIFICANT / 1 MINOR
-SIRR-001..SIRR-005 author repair               COMPLETE at 87941ed63028efea71eb38e03375573e31a70be2
-author adversarial self-review                 FAIL / REPAIR REQUIRED — ASR-001..ASR-003
-current author repair                          PUBLISHED ROUTES / SECOND-PASS VERIFICATION PENDING
+first independent Senior re-review             FAIL / REPAIR REQUIRED — SIRR-001..005
+SIRR author repair                             COMPLETE / independently unconfirmed
+first author adversarial self-review           FAIL — ASR-001..003
+first author self-review repair checkpoint     db23d097abfb9a2cfdbeb88b115689566a575bed / CI PASS
+second author adversarial pass                 FAIL — ASR-004..005
+current second-pass repair                     AUTHORED / PUBLICATION+THIRD-PASS VERIFICATION REQUIRED
 independent Senior re-review #2                NOT YET READY
 ```
 
 ## Cursor
 
 ```text
-PLANNING_PACKAGE_STATE: AUTHOR_SELF_REVIEW_REPAIR_ACTIVE
-CURRENT_BLOCK: AUTHOR SECOND-PASS ADVERSARIAL VERIFICATION
-LAST_COMPLETED_BLOCK: ASR-001..ASR-003 REPAIR AUTHORING
-NEXT_AUTHORIZED_BLOCK: FRESH READ-BACK + DIFF + HOSTED VALIDATION + SECOND AUTHOR ADVERSARIAL REVIEW ONLY
-PREVIOUS_SIRR_REPAIR_CHECKPOINT: 87941ed63028efea71eb38e03375573e31a70be2
-AUTHOR_SELF_REVIEW_FINDINGS: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-author-self-review-findings.md
-AUTHOR_SELF_REVIEW_REPAIR_ADDENDUM: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-author-self-review-repair-addendum.md
+PLANNING_PACKAGE_STATE: AUTHOR_SECOND_PASS_REPAIR_ACTIVE
+CURRENT_BLOCK: ASR-004/ASR-005 REPAIR PUBLICATION AND THIRD-PASS VERIFICATION
+LAST_COMPLETED_BLOCK: SECOND AUTHOR PASS FOUND ASR-004..ASR-005
+NEXT_AUTHORIZED_BLOCK: PUBLISH CURRENT REPAIR -> FRESH READ-BACK/DIFF/HOSTED VALIDATION -> AUTHOR THIRD-PASS ADVERSARIAL REVIEW ONLY
+FIRST_SELF_REVIEW_REPAIR_CHECKPOINT: db23d097abfb9a2cfdbeb88b115689566a575bed
+FIRST_SELF_REVIEW_REPAIR_CI: Validate engine source run 34785919811 PASS
+FIRST_SELF_REVIEW_FINDINGS: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-author-self-review-findings.md
+FIRST_SELF_REVIEW_ADDENDUM: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-author-self-review-repair-addendum.md
+SECOND_PASS_FINDINGS: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-author-second-pass-findings.md
+SECOND_PASS_ADDENDUM: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-author-second-pass-repair-addendum.md
 
 RD_PLANS_BASE_COMPLETE: 14 / 14
-CURRENT_MANDATORY_OVERLAYS: SIRR repair + author-self-review repair where applicable
+CURRENT_MANDATORY_OVERLAYS: SIRR + first self-review + second-pass where applicable
 AFFECTED_RD_OVERLAY: RD-02,RD-04,RD-06,RD-09,RD-13,RD-14
 DIRECT_LEAVES_PLANNED: 116 / 116
 PURE_PROOF_ROUTES: 9 / 9
 COMPOSITE_PARENT_ROUTES: 8 / 8
-WP12_PROOF_ROWS: 17 / 17 CURRENT ROUTED; OWNER-TARGET PRECISION REPAIRED
-WP13_PROOF_ROWS: 38 / 38 CURRENT ROUTED; GAMEPLAY-TRANSPORT PRECISION REPAIRED
+WP12_PROOF_ROWS: 17 / 17 CURRENT ROUTED
+WP13_PROOF_ROWS: 38 / 38 CURRENT ROUTED
 TRIGGER_GATED_PRESERVED: 12 / 12
 NO_WORK_PRESERVED: 79 / 79
-AUTHOR_SELF_REVIEW_FINDINGS: 3 SIGNIFICANT
-AUTHOR_SELF_REVIEW_SECOND_PASS: REQUIRED / PENDING
-INDEPENDENT_SENIOR_RE_REVIEW_2: BLOCKED UNTIL AUTHOR SECOND-PASS CLOSURE
+FIRST_AUTHOR_FINDINGS: ASR-001..ASR-003
+SECOND_AUTHOR_FINDINGS: ASR-004..ASR-005
+AUTHOR_THIRD_PASS: REQUIRED / PENDING
+INDEPENDENT_SENIOR_RE_REVIEW_2: BLOCKED UNTIL AUTHOR THIRD-PASS CLOSURE
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 ```
 
@@ -54,39 +53,30 @@ PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 
 - Global gate: `DEV/CURRENT_PROGRESS.md`.
 - Worker route index: `2026-09-13-implementation-planning-package-index.md`.
-- Base RD routes: current RD-01..RD-14 files listed by the package index.
-- Mandatory SIRR overlay: `2026-09-13-implementation-planning-sirr-repair-amendments.md`.
-- Mandatory author self-review overlay: `2026-09-13-implementation-planning-author-self-review-repair-addendum.md`.
-- Base execution scheduling: `2026-09-13-implementation-planning-execution-waves.md`.
-- SIRR scheduling addendum: `2026-09-13-implementation-planning-execution-waves-sirr-repair-addendum.md`.
-- Current identity/currentness reconciliation: `2026-09-13-implementation-planning-bidirectional-coverage-v2.md` plus mandatory author self-review delta.
-- Current lossless proof control: `2026-09-13-implementation-planning-lossless-proof-ledger-v2.md`.
-- Current WP-12/WP-13 proof appendix: `2026-09-13-implementation-planning-lossless-proof-ledger-wp12-wp13-v2.md` as corrected by author self-review.
-- Current author self-review findings: `2026-09-13-implementation-planning-author-self-review-findings.md`.
+- Base RD routes: current RD-01..RD-14 listed by package index.
+- Mandatory overlays in order:
+  1. `2026-09-13-implementation-planning-sirr-repair-amendments.md`;
+  2. `2026-09-13-implementation-planning-author-self-review-repair-addendum.md`;
+  3. `2026-09-13-implementation-planning-author-second-pass-repair-addendum.md`.
+- Base scheduling: `2026-09-13-implementation-planning-execution-waves.md` plus current overlays/addenda.
+- Current coverage: `2026-09-13-implementation-planning-bidirectional-coverage-v2.md` plus both author self-review addenda.
+- Current proof control: `2026-09-13-implementation-planning-lossless-proof-ledger-v2.md` and current v2 appendices.
 
-Historical pre-current-repair artifacts remain provenance only where superseded by current overlays/routes.
+## Current repair boundaries
 
-## Current repair content
+ASR-001 remains corrected to the seven-selector WP-11 MANIFEST/schema contract with local campaign manifest schema `4 -> 5`, but ASR-005 refines that repair: static `story_root` validity does not require Story materialization at bootstrap.
 
-ASR-001 closes the incomplete WP-11 root-selector realization by requiring one coherent pre-release cutover:
-- MANIFEST/schema fixed selector set gains `sessions_root` + `story_root`;
-- local `campaign_manifest` schema `4 -> 5`;
-- Story root contents remain RD-13-owned;
-- root selector topology remains WP-11/RD-04-owned;
-- bootstrap/storage/install consumers are synchronized;
-- no pre-release compatibility shim/migration project or campaign-contract/storage-generation bump is manufactured.
+ASR-002 remains corrected: player-local Dramaturg supports `ABSENT | BOUND`; only BOUND carries an exact shared generation.
 
-ASR-002 restores WP-18 legal player-local Dramaturg basis:
-- `ABSENT` is legal without a shared generation;
-- `BOUND` requires exact accepted current shared generation;
-- dependency changes require rebuilt/new accepted generation.
+ASR-003 remains corrected: WP12/WP13 proof supporting owners and gameplay transport authority are explicit.
 
-ASR-003 makes proof routing owner-exact:
-- WP12-05 includes RD-05 accepted execution;
-- WP12-11 includes RD-09 principal/authorization;
-- WP13-19/20 bind to the gameplay runtime transport owner, not generic development process policy;
-- row-38 consumer dispositions reflect the root/bootstrap repair.
+ASR-004 pins exact Story physical routing already selected by WP-11/WP-18:
+```text
+<story_root>/<layer>/PROJECTION_STATE.yaml
+<story_root>/<layer>/<floor(sequence/1000)>/<story_id>.yaml
+```
+with no worker-selected alternative partition.
 
-No runtime behavior has been implemented or proved by these planning changes.
+ASR-005 removes the first self-review's accidental Story startup prerequisite. RD-04 may close the static selector/schema contract without Story files; RD-13 materializes Story on demand; RD-14 validates all selectors while proving blank New Game/PLAY_READY does not require Story/T0 files.
 
-The package returns to independent Senior re-review #2 only after fresh exact-head verification and a second author adversarial pass records zero unresolved author findings.
+No runtime implementation has begun. No author-side repair can substitute for the mandatory independent Senior verdict.
