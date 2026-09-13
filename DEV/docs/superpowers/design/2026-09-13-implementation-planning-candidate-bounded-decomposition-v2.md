@@ -10,11 +10,11 @@ It consolidates, without requiring layered interpretation:
 
 - the owner-derived P3 dependency semantics and material joins;
 - the complete useful content of the original candidate bounded decomposition;
-- the resolved repairs for independent-critic findings `DC-001..DC-005`;
-- the bounded repairs required by second independent-critic findings `DC-006..DC-014`;
+- the independently resolved repairs for `DC-001..DC-014`;
+- the bounded author repairs required by third independent-critic findings `DC-015..DC-019`;
 - current coverage, proof, Version Impact, Impact Envelope, HG-01 and future-trigger routing.
 
-The earlier P3, original candidate, repair overlay and both critic results remain immutable provenance and review evidence. They are no longer required to compute the current candidate state. If this v2 conflicts with an earlier derived planning artifact, this v2 controls the current decomposition only; canonical/native semantic/runtime/persistence/version owners and exact WP-27 Step-2 readiness records remain authoritative over all derived planning documents.
+The earlier P3, original candidate, repair overlay and all three critic results remain immutable provenance and review evidence. They are no longer required to compute the current candidate state. If this v2 conflicts with an earlier derived planning artifact, this v2 controls the current decomposition only; canonical/native semantic/runtime/persistence/version owners and exact WP-27 Step-2 readiness records remain authoritative over all derived planning documents.
 
 This is still a candidate. It may be rejected by the mandatory independent Decomposition Critic. It is not a detailed `writing-plans` package and authorizes no production implementation.
 
@@ -24,13 +24,15 @@ This is still a candidate. It may be rejected by the mandatory independent Decom
 
 ```text
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
-PREVIOUS_REVIEW_HEAD: 8b8fb13e77aa30130f45c74b3cbf67f5e8cfee9b
 SECOND_CRITIC_RESULT_HEAD: afad1b1ed9793d75ecbed9a8d6ba302933b68a11
+THIRD_CRITIC_REVIEWED_HEAD: 2211546ab7e086b061eb24269b07dc616749def1
+THIRD_CRITIC_RESULT_HEAD: 19b4963d28c5057cd0f1252587df872184efa8ca
 CURRENT_ACTIVE_READINESS: 133
 TRIGGER_GATED_READINESS_OUTSIDE_EXECUTION: 12
 EXPLICIT_NO_WORK_TERMINALS_OUTSIDE_EXECUTION: 79
 R27_R004: ABSENT
 CURRENT_BOUNDED_UNITS: 14
+CANDIDATE_SELF_CONTAINEDNESS_AS_CURRENT_SURFACE: PASS
 PRODUCT_OWNER_DECISION_REQUIRED: NO
 ARCHITECTURE_REOPEN_REQUIRED: NO
 VERSION_IMPACT: NONE
@@ -157,20 +159,21 @@ Numeric readiness order, file adjacency, shared directories and historical works
 
 **Direct readiness:** `R007`, `R008`, `R009`, `R017`, `R049`, `R052`.
 
-**Composite slices:** `R006.INFO`, `R016.INFO`, `R018.INFO`, `R053.INFO`, `R062.INFO`.
+**Composite slices:** `R006.INFO`, `R016.INFO`, `R018.INFO`, `R053.INFO`, `R062.KNOWLEDGE`, `R062.DISCLOSURE`, `R062.RETAINED_MESSAGE`.
 
 **Goal:** materialize information-family native contracts and remove/replace retired epistemic/schema aliases without becoming a broad schema-first foundation for unrelated owner families.
 
 **Expected owner/consumer surfaces:**
 
-- information/knowledge/disclosure/message/lore native schemas and roots;
+- information/lore/knowledge/disclosure/message native schemas and roots;
 - coordinated family catalog identifiers and direct validators;
 - source-native identity required by independently writable information records;
+- exact `world.knowledge`, Disclosure and retained Message portions of R062 under their native owners;
 - negative-regression proof for retired `Secret`/legacy epistemic fields and invalid knowledge/disclosure shortcuts.
 
-**Preliminary impact boundary:** information-family schemas/roots/catalog projections plus their direct consumers and validators. LIVE, Actor, execution, temporal, collaboration and Story projections remain in their native owner checkpoints.
+**Preliminary impact boundary:** information-family schemas/roots/catalog projections plus their direct consumers and validators. Actor/Effect, runtime execution, temporal, collaboration, Story and native SemanticEvent/history realization remain in their owner-valid checkpoints.
 
-**Dependencies:** joins RD-04 only at route/body/load integration; joins RD-09 where LIVE evidence normalizes into native information owners. Information laws constrain RD-03/RD-09/RD-13 without automatically serializing them.
+**Dependencies:** joins RD-04 only at route/body/load integration; joins RD-09 where LIVE/currentness evidence is required by an information consumer. Information laws constrain RD-03/RD-09/RD-11/RD-13 without automatically serializing them.
 
 **Protected invariants:** no `Secret`; no second epistemic/disclosure/event authority; no `truth.disputed`; no disclosure-implies-PC-knowledge rule; no false catalog-completion inference; no path/index authority; no generic state service.
 
@@ -180,9 +183,9 @@ Numeric readiness order, file adjacency, shared directories and historical works
 
 ## RD-03 — Actor/Asset/Effect runtime model and layered Actor continuity
 
-**Direct readiness:** `R025..R028`, `R104`, `R108..R111`, `R113..R116`, `R126`, `R128..R130`, `R132`, `R136`, `R139`.
+**Direct readiness:** `R025..R028`, `R104`, `R108..R111`, `R113..R116`, `R126`, `R128..R130`, `R132`, `R136`.
 
-**Composite slices:** `R006.ACTOR`, `R016.ACTOR`, `R018.ACTOR`, `R029.ACTOR`, `R062.ACTOR_HISTORY`.
+**Composite slices:** `R006.ACTOR`, `R016.ACTOR`, `R018.ACTOR`, `R029.ACTOR`, `R062.ACTOR_CONTINUITY_RELATIONS`, `R062.EFFECT_APPLICATION`.
 
 **Goal:** realize owner-local Actor/Asset/Effect machine shapes, state behavior and layered Actor/history continuity while preserving Step-4 epistemic ownership, player agency and bounded cognition.
 
@@ -191,18 +194,19 @@ Numeric readiness order, file adjacency, shared directories and historical works
 - Actor/Asset/Effect native schemas, roots, loaders/mutators and direct validators;
 - Actor foundation/continuity/transient-state logic;
 - directional relationship representation/validation;
+- natural-owner-local Effect/application representation;
 - sparse event-driven cognition and `NO_CHANGE` handling;
 - accepted-history/promotion/source-suitability and recall projection support;
 - provisional Actor shape needed by onboarding consumers;
 - tests for no-retrofit, no forced mutation, asymmetry, transient invalidation and owner separation.
 
-**Preliminary impact boundary:** native Actor family and its continuity/history consumers. Provisional durability and bootstrap lifecycle are completed through R029/R030 joins rather than by widening Actor authority.
+**Preliminary impact boundary:** native Actor/Asset/Effect family and Actor continuity/history consumers. Provisional durability and bootstrap lifecycle are completed through R029/R030 joins rather than by widening Actor authority. Context Runtime ranking remains RD-11-owned.
 
-**Dependencies:** joins RD-04 for route/index/HOT integration; supplies Actor shape to RD-14 for `R030`; participates with RD-06 and RD-14 in composite `R029`; supplies native history/continuity inputs to RD-11/RD-13 where required.
+**Dependencies:** joins RD-04 for route/index/HOT integration; supplies Actor shape to RD-14 for `R030`; participates with RD-06 and RD-14 in composite `R029`; supplies native history/continuity and epistemic evidence inputs to RD-11/RD-13 where required, including `R139` ranking completion.
 
-**Protected invariants:** no one memory blob; no second entity/knowledge authority; no symmetric relationship inference; no PC voluntary mental-state ownership; no continuous NPC simulation; no generic turn-count TTL; no human-in-the-loop gameplay requirement.
+**Protected invariants:** no one memory blob; no second entity/knowledge authority; no symmetric relationship inference; no PC voluntary mental-state ownership; no continuous NPC simulation; no generic turn-count TTL; no human-in-the-loop gameplay requirement; no Context Runtime ranking authority.
 
-**Out of scope:** persistence authority, bootstrap lifecycle authority, Context Runtime ranking/budgeting, Story canon, collaboration coordination.
+**Out of scope:** persistence authority, bootstrap lifecycle authority, Context Runtime selection/ranking/budgeting, Story canon, collaboration coordination.
 
 ---
 
@@ -233,33 +237,33 @@ Numeric readiness order, file adjacency, shared directories and historical works
 
 ---
 
-## RD-05 — Deterministic execution, fixed-RNG closure and owner-local failure/output adapters
+## RD-05 — Deterministic execution, fixed-RNG closure and owner-local failure adapters
 
-**Direct readiness:** `R034`, `R035`, `R036`, `R042`, `R046`, `R112`, `R118`, `R133`, `R137`.
+**Direct readiness:** `R034`, `R035`, `R036`, `R042`, `R046`, `R112`.
 
-**Composite slices:** `R016.EXECUTION`, `R018.EXECUTION`, `R062.EXECUTION`.
+**Composite slices:** `R016.EXECUTION`, `R018.EXECUTION`, `R062.RUNTIME_LIFECYCLE_EVIDENCE`.
 
 **Integration leaves supplied downstream:** `R037` to RD-06, `R038` to RD-07, `R039` to RD-08, `R040` to RD-09.
 
-**Goal:** realize deterministic execution/retry identity, local atomic mechanics closure, fixed-RNG retention, native failure outcomes and protected auxiliary/output behavior, while keeping persistence/recovery/temporal/LIVE integration completion under the downstream owners that can actually prove it.
+**Goal:** realize deterministic execution/retry identity, local atomic mechanics closure, fixed-RNG retention and native failure/diagnostic outcomes, while keeping persistence/recovery/temporal/LIVE integration completion and role/output containment under the downstream owners that can actually prove them.
 
 **Expected owner/consumer surfaces:**
 
 - execution/Interaction/IntentPlan/Command/Procedure/Resolution/Continuation machinery and validators;
+- runtime MechanicalEvent/Receipt/ResolutionTrace evidence under the runtime.execution owner;
 - owner-native execution IDs/segment/event/firing identity consumers;
 - local transaction boundary using RD-04 substrate;
 - fixed RNG suspension/resume retention;
 - typed native failure/validation diagnostic adapters;
-- auxiliary-phase and output fencing;
 - direct execution/retry/crash/no-reroll tests.
 
-**Preliminary impact boundary:** Step-3/runtime.execution family and direct failure/diagnostics/output seams. Cross-owner completion occurs in RD-06..RD-09 and does not transfer those owners to execution.
+**Preliminary impact boundary:** Step-3/runtime.execution family and direct failure/diagnostics seams. Cross-owner completion occurs in RD-06..RD-09; auxiliary-role work, late steering and structural emission fencing complete in RD-10. None of those responsibilities transfer to execution.
 
-**Dependencies:** consumes accepted owner shapes and RD-04 HOT substrate at integration. Supplies execution closure to publication, recovery, temporal, LIVE, collaboration and Story consumers where their exact readiness requires it.
+**Dependencies:** consumes accepted owner shapes and RD-04 HOT substrate at integration. Supplies accepted deterministic/mechanical frontier and typed results to RD-06..RD-10/RD-12/RD-13 where exact consumers require them.
 
-**Protected invariants:** no replay of accepted mechanics; no host-choice-spanning transaction; no chronology from IDs; no generic scheduler; no generic failure/health/retry owner; diagnostics never become gameplay authority; auxiliary generations never become visible history/canon; no collaboration lifecycle or publication evidence authority.
+**Protected invariants:** no replay of accepted mechanics; no host-choice-spanning transaction; no chronology from IDs; no generic scheduler; no generic failure/health/retry owner; diagnostics never become gameplay authority; no collaboration lifecycle, publication evidence, recovery, temporal, LIVE, role-containment or visible-emission authority.
 
-**Out of scope:** generic DANGER evaluator from trigger-gated `R101`; release empirical calibration; publication/currentness authority; recovery authority; temporal authority; authentication/LIVE authority.
+**Out of scope:** generic DANGER evaluator from trigger-gated `R101`; release empirical calibration; publication/currentness authority; recovery authority; temporal authority; authentication/LIVE authority; TurnEnvelope/role/output containment authority.
 
 ---
 
@@ -322,7 +326,7 @@ Numeric readiness order, file adjacency, shared directories and historical works
 
 **Direct readiness:** `R010`, `R039`, `R075`, `R076`, `R077`.
 
-**Composite slices:** `R006.THREAD_VISIBILITY`, `R016.TEMPORAL`, `R018.TEMPORAL`, `R062.TEMPORAL`.
+**Composite slices:** `R006.THREAD_VISIBILITY`, `R016.TEMPORAL`, `R018.TEMPORAL`, `R062.TEMPORAL_BINDING`, `R122.CHRONOLOGY`.
 
 **R077 classification:** **implementation + proof**.
 
@@ -332,26 +336,28 @@ Numeric readiness order, file adjacency, shared directories and historical works
 
 - `world.thread` admission/schema and typed owner-local predicates/deadlines;
 - current-state chronology representation cleanup;
+- native TemporalBinding under its temporal owner;
 - derived Agenda/dependency invalidation;
 - stable occurrence/firing/child closure;
 - chronology-provider representations and validators;
+- chronology contribution to material split-party causal bridges under R122;
 - temporal/recovery/currentness tests.
 
-**Preliminary impact boundary:** WP-15 temporal/thread/current-state projections and consumers; execution remains Step-3-owned.
+**Preliminary impact boundary:** WP-15 temporal/thread/current-state projections and consumers; execution remains Step-3-owned; split-party bridge composition does not create a global chronology authority.
 
-**Dependencies:** `R075 HARD_PRECEDES R076`; R039 completion joins RD-05 deterministic execution with RD-08 occurrence lifecycle. RD-07 recovery and RD-09 currentness participate in integrated acceptance where applicable.
+**Dependencies:** `R075 HARD_PRECEDES R076`; R039 completion joins RD-05 deterministic execution with RD-08 occurrence lifecycle. RD-07 recovery and RD-09 currentness participate in integrated acceptance where applicable. R122 parent closure consumes RD-08 chronology only when a concrete material cross-scope bridge requires it.
 
-**Protected invariants:** no campaign-global clock/frontier; no generic scheduler/global firing ledger; no chronology from CURRENT/IDs/transport order; no thread-visibility-to-PC-knowledge inference.
+**Protected invariants:** no campaign-global clock/frontier; no generic scheduler/global firing ledger; no chronology from CURRENT/IDs/transport order; no thread-visibility-to-PC-knowledge inference; no split-party global synchronization.
 
-**Out of scope:** generic timeline/CSP engine, LIVE authorization ownership, execution authority transfer.
+**Out of scope:** generic timeline/CSP engine, LIVE authorization ownership, execution authority transfer, Context Runtime or collaboration ownership.
 
 ---
 
-## RD-09 — Principal authorization, LIVE identity/currentness and split-party causal bridges
+## RD-09 — Principal authorization and LIVE identity/currentness
 
-**Direct readiness:** `R013`, `R014`, `R019`, `R020`, `R040`, `R078`, `R079`, `R080`, `R122`.
+**Direct readiness:** `R013`, `R014`, `R019`, `R020`, `R040`, `R078`, `R079`, `R080`.
 
-**Composite slices:** `R053.LIVE`, `R016.LIVE`, `R018.LIVE`, `R062.LIVE`.
+**Composite slices:** `R053.LIVE`, `R016.LIVE`, `R018.LIVE`, `R122.CURRENTNESS_SCENE`.
 
 **R080 classification:** **implementation + proof**.
 
@@ -363,50 +369,53 @@ Numeric readiness order, file adjacency, shared directories and historical works
 - LIVE source-native identity and exact-source fencing;
 - LIVE claim grammar, active/closed/closed-unabsorbed transitions and exact-source lookup;
 - stale/revoked/current source integration with deterministic execution;
-- split-party currentness/causal bridges;
+- current mutable-scene/currentness contribution to R122 material causal bridges;
 - direct stale/revocation/currentness tests.
 
-**Preliminary impact boundary:** access/LIVE owners and their direct recovery/collaboration/Story/bootstrap/execution consumers.
+**Preliminary impact boundary:** access/LIVE owners and their direct recovery/collaboration/Story/bootstrap/execution consumers. R122 bridge completion remains multi-owner and is not LIVE/access-local.
 
-**Dependencies:** consumes native routes from owner families/RD-04. R040 completion explicitly joins RD-09 current/authenticated source state with RD-05 execution. Supplies selected LIVE state to RD-07, collaboration currentness to RD-12, recipient/currentness constraints to RD-13 and creator binding input to RD-14.
+**Dependencies:** consumes native routes from owner families/RD-04. R040 completion explicitly joins RD-09 current/authenticated source state with RD-05 execution. Supplies selected LIVE state to RD-07, collaboration currentness to RD-12, recipient/currentness constraints to RD-11/RD-13/RD-14 and the currentness/scene slice to R122 parent closure.
 
-**Protected invariants:** login/repository permission/card/session/cache/scalar freshness do not authorize; no login-rename inference or stable-ID authority transfer; no wildcard LIVE claim, overlap, fallback, branch deletion, rekey or transport-order chronology; no global split-party synchronization; no authentication/currentness authority in RD-05.
+**Protected invariants:** login/repository permission/card/session/cache/scalar freshness do not authorize; no login-rename inference or stable-ID authority transfer; no wildcard LIVE claim, overlap, fallback, branch deletion, rekey or transport-order chronology; no global split-party synchronization/frontier; no authentication/currentness authority in RD-05.
 
-**Out of scope:** automatic creator recovery claim, generic ACL replacement, global LIVE mega-owner.
+**Out of scope:** automatic creator recovery claim, generic ACL replacement, global LIVE mega-owner, chronology/context/collaboration ownership for R122.
 
 ---
 
-## RD-10 — Role containment, typed handoffs and protected emission
+## RD-10 — Role containment, typed handoffs, auxiliary/steering containment and protected emission
 
-**Direct readiness:** `R054..R057`.
+**Direct readiness:** `R054..R057`, `R118`, `R133`, `R137`.
 
-**Goal:** install the single owner-equivalent role/recipient containment route and realize ephemeral role-runtime controls, phase rebind, typed handoffs and protected emission.
+**Goal:** install the single owner-equivalent role/recipient containment route and realize ephemeral role-runtime controls, phase rebind, typed handoffs, invisible auxiliary-work fencing, non-authoritative late steering and structural protected emission.
 
 **Expected owner/consumer surfaces:**
 
 - `GAME/CORE/AI_REASONING.md` containment owner projection and invoking runtime surfaces;
 - TurnEnvelope/profile/bundle/trace control structures;
 - role rebind and typed handoff validators;
-- Narrator/protected emission boundary;
-- direct raw-bundle/recipient-leak/source-escalation/rebind tests.
+- invisible auxiliary phase/result fencing without making extra model calls mandatory;
+- late steering/procedure guidance kept separate from evidence/canon;
+- Narrator/protected emission boundary where only validated visible payload crosses ordinary `EMISSION_COMMIT`;
+- structural fencing with string sanitation only as defense in depth;
+- direct raw-bundle/recipient-leak/source-escalation/rebind/visible-surface tests.
 
-**Preliminary impact boundary:** role-context/orchestration/output consumers only; no durable role/session/memory record.
+**Preliminary impact boundary:** R2.4/Step-4 role-context/orchestration/output consumers only; no durable role/session/memory record and no deterministic mechanics authority.
 
-**Dependencies:** can begin from accepted owners in parallel. Integrates with RD-11 Context Runtime and with RD-12/RD-13 recipient-sensitive consumers.
+**Dependencies:** can begin from accepted owners in parallel. Consumes only typed accepted deterministic inputs/frontiers from RD-05 where required; integrates with RD-11 Context Runtime and with RD-12/RD-13 recipient-sensitive consumers. R124 completion consumes this role/recipient-containment boundary.
 
-**Protected invariants:** physical co-presence is not eligibility; no role-agent topology, persistent context record, generic role-result bus, same-envelope Story feedback or secret delivery through diagnostics/tools/maintenance.
+**Protected invariants:** physical co-presence is not eligibility; no role-agent topology, persistent context record, generic role-result bus, same-envelope Story feedback or secret delivery through diagnostics/tools/maintenance; no mandatory extra model call/subagent/background worker from R118; steering cannot self-promote to canon; sanitation cannot replace structural output fencing.
 
-**Out of scope:** Context Runtime selection/budget algorithm, Story authority.
+**Out of scope:** Context Runtime selection/budget/ranking algorithm, Story authority, deterministic mechanics/execution authority.
 
 ---
 
-## RD-11 — Bounded Context Runtime: discovery, allocation, retrieval and trace
+## RD-11 — Bounded Context Runtime: discovery, allocation, retrieval, ranking and trace
 
-**Direct readiness:** `R059`, `R060`, `R097`, `R105..R107`, `R117`, `R119`, `R120`, `R124`, `R125`, `R127`, `R134`, `R135`, `R138`, `R140`, `R144`, `R145`.
+**Direct readiness:** `R059`, `R060`, `R097`, `R105..R107`, `R117`, `R119`, `R120`, `R124`, `R125`, `R127`, `R134`, `R135`, `R138`, `R139`, `R140`, `R144`, `R145`.
 
-**Composite slice:** `R087.RETROSPECTIVE`.
+**Composite slices:** `R087.RETROSPECTIVE`, `R122.CONTEXT`.
 
-**Goal:** realize bounded typed context discovery/assembly, conservative capacity allocation/degradation, source-aware retrieval/ranking, dry-run/trace diagnostics and the ordinary-Master retrospective consumer.
+**Goal:** realize bounded typed context discovery/assembly, conservative capacity allocation/degradation, source-aware retrieval/ranking, dry-run/trace diagnostics, recipient-scoped context integration and the ordinary-Master retrospective consumer.
 
 **Expected owner/consumer surfaces:**
 
@@ -414,18 +423,21 @@ Numeric readiness order, file adjacency, shared directories and historical works
 - registered campaign packet/profile/bundle/trace assembly;
 - conservative estimator and floor/degradation/UNSATISFIABLE behavior;
 - recurrence/recency/diversity/starvation and epistemic-evidence ranking;
+- R139 ranking completion where witnessed/known/epistemically supported evidence outranks mere textual mention only within already eligible optional/supporting candidates;
 - coarse-to-exact retrieval/deduplication;
 - explicit target/recipient eligibility and party-size scaling;
+- R124 recipient/controlled-actor scoped projection integration from native disclosure/role/multiplayer inputs;
+- bounded context contribution to R122 material cross-scope causal bridges;
 - dry-run/non-mutating trace;
 - ordinary retrospective binding/acceptance route.
 
-**Preliminary impact boundary:** ephemeral Context Runtime, direct owner readers and diagnostics; native state remains authoritative.
+**Preliminary impact boundary:** ephemeral Context Runtime, direct owner readers and diagnostics; native state, knowledge/disclosure/currentness/chronology/collaboration remain authoritative.
 
-**Dependencies:** consumes native history/continuity from RD-03 and role containment from RD-10 at integration. `R097` requires native history/continuity plus bounded Context Runtime and does not require Commentator. R087 parent closure consumes this retrospective branch with RD-13 and RD-14 branches.
+**Dependencies:** consumes native history/continuity and epistemic evidence from RD-02/RD-03 and role containment from RD-10 at integration. `R097` requires native history/continuity plus bounded Context Runtime and does not require Commentator. R139 completes here using owner-native epistemic/history evidence; ranking cannot create eligibility, knowledge or truth. R124 completes here only after the explicit RD-02/RD-10/RD-12 join, plus RD-09 principal/currentness where the applicable multiplayer path requires it. R087 parent closure consumes this retrospective branch with RD-13 and RD-14 branches. R122 parent closure consumes this bounded-context slice only for concrete material bridges.
 
-**Protected invariants:** no durable context/memory/vector/graph/worker/fairness record; no keyword-only or unbounded recursive activation; no silent partial critical packet; no copied fixed quotas/provider-percentage hard target; no textual mention treated as knowledge; no targeting eligibility bypass; no linear all-PC loading; no whole-history scan.
+**Protected invariants:** no durable context/memory/vector/graph/worker/fairness record; no keyword-only or unbounded recursive activation; no silent partial critical packet; no copied fixed quotas/provider-percentage hard target; no textual mention treated as knowledge; no ranking override of authority/eligibility/requiredness; no targeting eligibility bypass; no linear all-PC loading; no whole-history scan; no second disclosure/canon/currentness authority.
 
-**Out of scope:** native canon mutation, Commentator cache/control, real-host empirical tuning until its exact trigger exists.
+**Out of scope:** native canon/knowledge/disclosure mutation, Commentator cache/control, collaboration/currentness/chronology authority, real-host empirical tuning until its exact trigger exists.
 
 ---
 
@@ -433,7 +445,7 @@ Numeric readiness order, file adjacency, shared directories and historical works
 
 **Direct readiness:** `R021`, `R044`, `R081`, `R082`, `R083`, `R121`, `R123`, `R141..R143`, `R146`.
 
-**Composite slices:** `R016.COLLAB`, `R018.COLLAB`.
+**Composite slices:** `R016.COLLAB`, `R018.COLLAB`, `R122.COLLABORATION_BRIDGE`.
 
 **R083 classification:** **implementation + proof**.
 
@@ -447,16 +459,18 @@ Numeric readiness order, file adjacency, shared directories and historical works
 - typed OOC/diegetic/actionable-intent channels;
 - independent/collective/native-ordered coordination modes;
 - recipient-specific catch-up and bounded collective windows;
+- R122 still-open-human-agency/material-joint-input contribution where a concrete cross-scope bridge exists;
+- R124 controlled-actor/multiplayer-scope input to recipient-scoped Context Runtime projection;
 - remaining R083 collaboration machine debt and attached proof;
 - direct stale-generation/agency/close-race/channel tests.
 
-**Preliminary impact boundary:** WP-17 collaboration/multiplayer owner surfaces and direct Story/Dramaturg/mechanics consumers; no generic routing service.
+**Preliminary impact boundary:** WP-17/R2.5 collaboration/multiplayer owner surfaces and direct Story/Dramaturg/mechanics/context consumers; no generic routing or currentness/chronology/context service.
 
-**Dependencies:** authorization/currentness joins RD-09; role/recipient containment joins RD-10; execution integration uses RD-05 only when an admitted collective action resolves into mechanics. RD-09 + RD-12 join for recipient/current-generation acceptance.
+**Dependencies:** authorization/currentness joins RD-09; role/recipient containment joins RD-10; Context Runtime recipient projection joins RD-11 for R124; execution integration uses RD-05 only when an admitted collective action resolves into mechanics. RD-09 + RD-12 join recipient/current-generation acceptance. R122 parent closure additionally consumes independent chronology and bounded-context contributions from RD-08/RD-11.
 
-**Protected invariants:** no transcript coordinator, collaboration authority, registry/index/scheduler/heartbeat, generic input queue/broker, timeout/debounce correctness, arrival-order authority, universal active-player gate or private-input disclosure.
+**Protected invariants:** no transcript coordinator, collaboration authority, registry/index/scheduler/heartbeat, generic input queue/broker, timeout/debounce correctness, arrival-order authority, universal active-player gate or private-input disclosure; no global split-party synchronization/frontier; no second canon/disclosure/context owner.
 
-**Out of scope:** Story canon, global planning graph, future measured optimization until WP-24 trigger.
+**Out of scope:** Story canon, global planning graph, currentness/chronology/Context Runtime ownership, future measured optimization until WP-24 trigger.
 
 ---
 
@@ -464,26 +478,27 @@ Numeric readiness order, file adjacency, shared directories and historical works
 
 **Direct readiness:** `R022`, `R051`, `R084`, `R085`, `R099`, `R102`, `R131`.
 
-**Composite slices:** `R016.STORY`, `R018.STORY`, `R087.SEMANTIC_EVENT_T0`.
+**Composite slices:** `R016.STORY`, `R018.STORY`, `R062.SEMANTIC_EVENT_HISTORY`, `R087.SEMANTIC_EVENT_T0`.
 
-**Goal:** realize the noncanonical Story projection, sparse event-time T0 basis, self-contained baseline Commentator eligibility/control projection and exactly the accepted multiplayer Dramaturg horizons.
+**Goal:** realize the noncanonical Story projection, native SemanticEvent/history integration required by its exact owner routes, sparse event-time T0 basis, self-contained baseline Commentator eligibility/control projection and exactly the accepted multiplayer Dramaturg horizons.
 
 **Expected owner/consumer surfaces:**
 
 - Story root/scaffold and projection-state/unit schemas;
 - Story producer linking EVENTS/NARRATIVE as accepted by owner contracts;
+- native SemanticEvent/history family realization required by R062, kept semantically distinct from Story projection authority;
 - SemanticEvent T0 retained-factor schema/serialization/validation and bounded discovery/index support;
 - Commentator snapshot/control producer, deterministic pre-LLM filter and isolated cache;
 - `DRAMATURG/SHARED.yaml` and `DRAMATURG/PLAYERS/<player_id>.yaml` only for accepted multiplayer retained horizons;
-- direct T0/T1, local eligibility/control, no-native-fallback and no-authority tests.
+- direct native-history/T0/T1, local eligibility/control, no-native-fallback and no-authority tests.
 
-**Preliminary impact boundary:** Story/T0/Commentator projection and fixed Dramaturg paths. Native history, disclosure, access and gameplay canon remain authoritative.
+**Preliminary impact boundary:** native SemanticEvent/history owner integration plus Story/T0/Commentator projection and fixed Dramaturg paths. Story, Commentator and planning projections never become native history, disclosure, access or gameplay canon authority.
 
-**Dependencies:** R099 T0 basis precedes qualifying Story/Commentator consumption. Native history/event production uses RD-03/RD-05 as applicable; access/currentness and recipient constraints join RD-09/RD-10; retained multiplayer Dramaturg joins RD-12. R087 parent closure explicitly consumes this SemanticEvent/T0 branch together with RD-11 retrospective and RD-14 save/session branches.
+**Dependencies:** R099 T0 basis precedes qualifying Story/Commentator consumption. Native history/event production uses accepted native owner contracts and RD-03/RD-05 inputs as applicable; access/currentness and recipient constraints join RD-09/RD-10; retained multiplayer Dramaturg joins RD-12. R087 parent closure explicitly consumes this SemanticEvent/T0 branch together with RD-11 retrospective and RD-14 save/session branches. R062 parent closure consumes the native SemanticEvent/history slice here independently of Story projection status.
 
-**Protected invariants:** no Story/history/ACL/canon authority; no mutable T1 substitute for T0; no hidden reasoning/current-pointer substitute; zero extra serial LLM/tool/remote/publication/irrelevant-turn work for ordinary capture; no native-only baseline fallback for accepted Commentator route; no Story feedback into same envelope; no single-player durable Dramaturg without a new admitted consumer trigger.
+**Protected invariants:** no Story/history/ACL/canon authority transfer; native SemanticEvent/history remains its native owner even when realized in the same bounded checkpoint; no mutable T1 substitute for T0; no hidden reasoning/current-pointer substitute; zero extra serial LLM/tool/remote/publication/irrelevant-turn work for ordinary capture; no native-only baseline fallback for accepted Commentator route; no Story feedback into same envelope; no single-player durable Dramaturg without a new admitted consumer trigger.
 
-**Out of scope:** writer-specific partition/rollover until `R093/R094/R095/R103` trigger; generic narrative dynamics framework.
+**Out of scope:** writer-specific partition/rollover until `R093/R094/R095/R103` trigger; generic narrative dynamics framework; Story-as-history authority.
 
 ---
 
@@ -604,17 +619,20 @@ Parent closure requires LIVE normalization to feed the native information owner 
 
 ## R062
 
-Required slices:
+Required exact native-family slices from WP-10 canonical allocation items 1–5:
 
 ```text
-R062.INFO          -> RD-02
-R062.ACTOR_HISTORY -> RD-03
-R062.EXECUTION     -> RD-05
-R062.TEMPORAL      -> RD-08
-R062.LIVE          -> RD-09
+R062.ACTOR_CONTINUITY_RELATIONS   -> RD-03
+R062.KNOWLEDGE                    -> RD-02
+R062.EFFECT_APPLICATION           -> RD-03
+R062.TEMPORAL_BINDING             -> RD-08
+R062.RUNTIME_LIFECYCLE_EVIDENCE   -> RD-05
+R062.SEMANTIC_EVENT_HISTORY       -> RD-13
+R062.DISCLOSURE                   -> RD-02
+R062.RETAINED_MESSAGE             -> RD-02
 ```
 
-These routes preserve WP-10 allocation items 1-5 losslessly. Parent closure requires all five owner routes, target-local proofs, parent negative laws and one Version Impact reconciliation.
+Parent closure requires all eight exact family routes, family/authority/negative schema proof for every route, owner-route/root integration through RD-04 where applicable, and one parent-level Version Impact reconciliation. The logical allocation matrix remains documentation-level planning metadata only: it is not a registry, service or semantic owner. Actor continuity/relationships, `world.knowledge`, natural-owner Effect/application, native TemporalBinding, runtime lifecycle/evidence, native SemanticEvent/history, Disclosure and retained Message remain distinct native families. LIVE/currentness may constrain a concrete Message/history consumer when required, but LIVE is not a substitute R062 family and cannot discharge item 5.
 
 ## R087
 
@@ -628,11 +646,24 @@ R087.SEMANTIC_EVENT_T0  -> RD-13
 
 Parent closure requires all three accepted WP-19 downstream branches. The retrospective branch remains ordinary-Master/Context-Runtime behavior; the save/session branch remains product/session behavior backed by RD-06 save truth; the SemanticEvent/T0 branch remains native history/event-owned and feeds the accepted Story/Commentator consumer without creating a second history owner. Zero-extra-serial and disclosure boundaries remain parent obligations.
 
+## R122
+
+Required owner-scoped slices:
+
+```text
+R122.CURRENTNESS_SCENE      -> RD-09
+R122.CHRONOLOGY             -> RD-08
+R122.CONTEXT                -> RD-11
+R122.COLLABORATION_BRIDGE   -> RD-12
+```
+
+Parent closure is required only for a concrete material cross-scope bridge. It requires the smallest applicable current mutable-scene/currentness basis, causal/order chronology basis, bounded eligible context expansion and still-open-human-agency/collaboration contribution needed by that bridge. Independent scenes retain independent current/context/chronology frontiers; a planning relation or transport order cannot manufacture causal fact. No strict subset of required applicable slices may discharge the canonical parent, and no slice creates a campaign-global synchronization/frontier owner. Parent proof must include both positive material-bridge cases and negative independent-scope cases, plus one parent Version Impact reconciliation.
+
 ---
 
 # 5. Integration-node ledger
 
-The following canonical leaves are deliberately completed at downstream joins rather than treated as upstream-local execution work.
+The following canonical leaves are deliberately completed at downstream joins rather than treated as upstream-local producer work.
 
 ## R037 — execution + persistence
 
@@ -696,6 +727,30 @@ RD-14:R100
 
 Repository permission or PLAYER stable ID never substitutes for creator provenance.
 
+## R124 — recipient/controlled-actor scoped context projection
+
+```text
+RD-02 native disclosure/knowledge inputs
++ RD-10 role/recipient containment
++ RD-12 controlled-actor/multiplayer scope
++ RD-09 principal/currentness when the applicable multiplayer route requires it
+  JOIN_BEFORE_INTEGRATION
+RD-11:R124 Context Runtime completion
+```
+
+RD-11 assembles the bounded recipient/controlled-actor projection but gains no disclosure, canon, participant-binding or collaboration authority. R124 cannot complete from Context Runtime alone, and planning/Dramaturg co-presence cannot bypass Step-4/R2.3 eligibility.
+
+## R139 — epistemic-evidence ranking completion
+
+```text
+RD-02 native knowledge/epistemic owner evidence
++ RD-03 eligible native history/continuity evidence
+  JOIN_BEFORE_INTEGRATION
+RD-11:R139 optional/supporting ranking completion
+```
+
+Witnessed/known or otherwise owner-supported epistemic evidence may influence ranking only after eligibility/currentness/requiredness gates. Textual mention alone is not knowledge; ranking cannot create truth, eligibility or requiredness.
+
 ---
 
 # 6. Proof routing and exact former proof-bucket classification
@@ -737,14 +792,14 @@ RD-01 is an independent projection-repair root.
 
 Owner-family realization roots:
   RD-02 information
-  RD-03 Actor/continuity
+  RD-03 Actor/continuity/Effect
   RD-05 execution
   RD-08 temporal
   RD-09 access/LIVE
-  RD-10 role containment
+  RD-10 role containment/emission
   RD-11 Context Runtime
   RD-12 collaboration
-  RD-13 Story/T0/Commentator
+  RD-13 native SemanticEvent/history + Story/T0/Commentator
 
 Owner family slices -> RD-04 route/body/load joins where applicable.
 
@@ -772,8 +827,17 @@ RD-05 + RD-07 + RD-09
 RD-09 + RD-12
   -> recipient/current-generation collaboration acceptance.
 
+RD-05 accepted deterministic frontier/results + RD-10
+  -> auxiliary/steering/emission containment for R118/R133/R137 where applicable.
+
 RD-10 + RD-11
   -> bounded role-context assembly/containment acceptance.
+
+RD-02 + RD-10 + RD-12 (+ RD-09 when applicable)
+  -> RD-11:R124 recipient/controlled-actor scoped projection completion.
+
+RD-02/RD-03 owner-native epistemic/history evidence
+  -> RD-11:R139 ranking completion.
 
 RD-09 + RD-10 + RD-12
   -> RD-13 recipient-safe Story/Dramaturg integration as applicable.
@@ -786,6 +850,9 @@ RD-03
 
 RD-11 + RD-13 + RD-14
   -> R087 parent closure.
+
+RD-08 + RD-09 + RD-11 + RD-12
+  -> R122 material causal-bridge parent closure only when a concrete bridge exists.
 
 RD-06 + RD-09 + RD-11 + RD-13
   -> RD-14 product consumers as applicable.
@@ -804,7 +871,7 @@ The earlier P3 remains provenance; this section is the current self-contained ro
 
 ## E1 — native family contract to route/load realization
 
-Owner-specific `R016/R018/R052/R062` slices join RD-04 routing/body/HOT integration. Schema and route code may proceed in parallel; the join is at integration. No universal schema-first phase exists.
+Owner-specific `R016/R018/R052/R062` slices join RD-04 routing/body/HOT integration. For R062, the current projection explicitly preserves Actor continuity/relations, `world.knowledge`, Effect/application, TemporalBinding, runtime lifecycle/evidence, SemanticEvent/history, Disclosure and retained Message as separate native-family routes. Schema and route code may proceed in parallel; the join is at integration. No universal schema-first phase exists.
 
 ## E2 — Actor family to persistence/bootstrap consumers
 
@@ -824,23 +891,23 @@ RD-04/RD-06 join RD-07 R072; checkpoint-aware acceptance consumes R073; selected
 
 ## E6 — temporal process realization
 
-`R075 HARD_PRECEDES R076`; R077 carries implementation + attached chronology/currentness proof in RD-08. R039 explicitly joins deterministic execution to temporal occurrence lifecycle.
+`R075 HARD_PRECEDES R076`; R077 carries implementation + attached chronology/currentness proof in RD-08. R039 explicitly joins deterministic execution to temporal occurrence lifecycle. R122 consumes chronology only for a concrete material cross-scope bridge and creates no global chronology frontier.
 
 ## E7 — access/LIVE realization
 
-`R078 HARD_PRECEDES R079`; R080 carries LIVE implementation + integrated proof. R040 explicitly joins current authenticated/LIVE source state to execution.
+`R078 HARD_PRECEDES R079`; R080 carries LIVE implementation + integrated proof. R040 explicitly joins current authenticated/LIVE source state to execution. R122 consumes only the smallest applicable currentness/mutable-scene contribution rather than making LIVE a global split-party owner.
 
 ## E8 — containment/context realization
 
-`R054 + R055 JOIN_BEFORE_INTEGRATION R056`; `R056 HARD_PRECEDES R057`; `R056 + R059 + R060` join context acceptance; R058/R061 provide attached proof. Round-2 Context Runtime leaves co-realize the bounded target without creating numeric-order dependencies.
+`R054 + R055 JOIN_BEFORE_INTEGRATION R056`; `R056 HARD_PRECEDES R057`; `R056 + R059 + R060` join context acceptance; R058/R061 provide attached proof. R118/R133/R137 co-realize the RD-10 TurnEnvelope/role/visible-output boundary, not Step-3 deterministic mechanics. R139 completes in RD-11 from eligible owner-native epistemic/history evidence. R124 explicitly joins Step-4 disclosure/role containment and R2.5 multiplayer scope into R2.3 Context Runtime. Round-2 Context Runtime leaves co-realize the bounded target without creating numeric-order dependencies.
 
-## E9 — collaboration lifecycle
+## E9 — collaboration lifecycle and multiplayer bridge composition
 
-`R021 + R081 + R141 + R146` join R082; RD-09 access/currentness + R082 join recipient/current-generation acceptance. R044 and R083 are collaboration-owned; R083 carries machine debt + proof. R122 remains a material causal bridge only, not a global frontier.
+`R021 + R081 + R141 + R146` join R082; RD-09 access/currentness + R082 join recipient/current-generation acceptance. R044 and R083 are collaboration-owned; R083 carries machine debt + proof. R124 consumes RD-12 controlled-actor/multiplayer scope but leaves projection assembly in RD-11. R122 is a composite material causal bridge across independent currentness/chronology/context/collaboration owners only when a concrete dependency exists; it is not a global frontier or synchronization service.
 
 ## E10 — event-time T0 to Story/Commentator consumer
 
-R099 T0 basis precedes qualifying Story/Commentator consumption. R051/R084/R099 join R102. R087's SemanticEvent/T0 branch is explicitly routed to RD-13 and reconciled at parent closure. Story never becomes a second history/ACL/canon owner.
+R099 T0 basis precedes qualifying Story/Commentator consumption. R051/R084/R099 join R102. R087's SemanticEvent/T0 branch is explicitly routed to RD-13 and reconciled at parent closure. R062's native SemanticEvent/history family is explicit and remains native-history-owned even when implemented in the same bounded RD-13 checkpoint. Story never becomes a second history/ACL/canon owner.
 
 ## E11 — retained multiplayer Dramaturg
 
@@ -848,7 +915,7 @@ Access/currentness + collaboration + R085 join R131 multiplayer retained-horizon
 
 ## E12 — ordinary retrospective consumer
 
-Native history/continuity + bounded Context Runtime join R097. R087's retrospective branch reuses that accepted owner route and does not introduce Commentator transition or whole-history scan.
+Native history/continuity + bounded Context Runtime join R097. R087's retrospective branch reuses that accepted owner route and does not introduce Commentator transition or whole-history scan. R139 ranking remains an R2.3 completion using eligible native epistemic/history evidence rather than a new history or knowledge owner.
 
 ## E13 — save-and-exit consumer
 
@@ -873,7 +940,7 @@ Several owner realizations can begin in parallel because accepted architecture a
 ```text
 ROOT-A: RD-01 shipped/current projection repairs
 ROOT-B: RD-02 information-family realization
-ROOT-C: RD-03 Actor/continuity realization
+ROOT-C: RD-03 Actor/continuity/Effect realization
 ROOT-D: RD-05 deterministic execution realization
 ROOT-E: RD-10/RD-11 role containment and Context Runtime against accepted contracts
 ROOT-F: RD-09 access/LIVE primitives
@@ -897,7 +964,8 @@ The following are not dependency edges:
 - any dependency on Story/cache/index/checkpoint/transcript/diagnostics/CURRENT/IDs/Git order/host UI as semantic authority;
 - any migration edge before a qualifying released source/target compatibility obligation exists;
 - writer partition/rollover before its exact trigger;
-- generic failure/health/retry/scheduler sequencing derived from focus-specific failure semantics.
+- generic failure/health/retry/scheduler sequencing derived from focus-specific failure semantics;
+- a global split-party currentness/context/chronology frontier merely because R122 composes material bridge evidence.
 
 ## 9.3 Cycle law
 
@@ -912,18 +980,18 @@ Detailed executable Impact Envelopes are still gated until critic PASS. This mat
 | Unit | Expected owner/change family | Required consumers/joins | Architecture-sensitive surfaces | Explicitly protected/out of scope |
 |---|---|---|---|---|
 | RD-01 | instruction/current projections | install/CORE readers | active shipped instructions | no runtime authority |
-| RD-02 | information families | RD-04, RD-09 normalization | information ownership/native identity | no generic state service/parallel canon |
-| RD-03 | Actor/Asset/Effect + continuity/history | RD-04, R029, R030, RD-11/RD-13 | epistemic split/player agency | no generic memory/NPC simulation/persistence ownership |
+| RD-02 | information/knowledge/disclosure/message families | RD-04, R124, R139 and applicable currentness normalization | information ownership/native identity | no generic state service/parallel canon/event authority |
+| RD-03 | Actor/Asset/Effect + continuity/history inputs | RD-04, R029, R030, R139, RD-11/RD-13 | epistemic split/player agency | no generic memory/NPC simulation/persistence or ranking ownership |
 | RD-04 | routing/index/HOT | owner-family integrations, RD-05..RD-14 as applicable | authority/currentness/local atomicity | no index/cache authority/global transaction |
-| RD-05 | deterministic execution | R037/R038/R039/R040 downstream integrations, collab/Story mechanics | determinism/RNG/commit/emission | no replay/global failure/publication/recovery/temporal/LIVE authority |
+| RD-05 | deterministic execution | R037/R038/R039/R040 downstream integrations, RD-10 typed frontier, collab/Story mechanics | determinism/RNG/commit | no replay/global failure/publication/recovery/temporal/LIVE/role-output authority |
 | RD-06 | SAVE/publication/currentness | R037, R029 durability, RD-07, RD-14 | publication/CAS/currentness | no force/alternate transport/global frontier/Actor authority |
 | RD-07 | recovery/checkpoints | R038/R072, selected LIVE | recovery authority/no-reroll | no checkpoint authority/global clock/RecoveryCut |
-| RD-08 | temporal/thread/current-state | R039, recovery/currentness integration | chronology/occurrence | no scheduler/global clock/execution authority |
-| RD-09 | access/LIVE | R040, RD-07/RD-12/RD-13/RD-14 | authorization/currentness/provenance | no login substitution/global ACL/execution authority |
-| RD-10 | role-context/emission | RD-11/RD-12/RD-13 | eligibility/recipient containment | no durable role memory/result bus |
-| RD-11 | Context Runtime | R097, R087 retrospective, RD-14 | source eligibility/boundedness | no durable context owner/whole-history scan |
-| RD-12 | collaboration/multiplayer | RD-09/RD-10/RD-13/RD-05 mechanics join | agency/current generation/recipient safety | no transcript coordinator/queue/broker |
-| RD-13 | Story/T0/Commentator/Dramaturg | R087 T0 branch, RD-14 parent closure | native history/disclosure/access | no Story canon/ACL/native fallback |
+| RD-08 | temporal/thread/current-state | R039, R122 chronology, recovery/currentness integration | chronology/occurrence | no scheduler/global clock/execution/global split-party authority |
+| RD-09 | access/LIVE | R040, R122 currentness, RD-07/RD-11/RD-12/RD-13/RD-14 | authorization/currentness/provenance | no login substitution/global ACL/execution/chronology/context authority |
+| RD-10 | role-context/auxiliary/steering/emission | R118/R133/R137, R124, RD-11/RD-12/RD-13 | eligibility/recipient/visible-output containment | no durable role memory/result bus/mechanics authority |
+| RD-11 | Context Runtime | R097, R139, R124, R122 context, R087 retrospective, RD-14 | source eligibility/boundedness/ranking | no durable context, truth, disclosure, currentness or collaboration owner |
+| RD-12 | collaboration/multiplayer | R122 bridge, R124 scope, RD-09/RD-10/RD-11/RD-13/RD-05 mechanics join | agency/current generation/recipient safety | no transcript coordinator/queue/broker/global frontier/context owner |
+| RD-13 | native SemanticEvent/history integration + Story/T0/Commentator/Dramaturg | R062 history, R087 T0 branch, RD-14 parent closure | native history vs projection authority | no Story canon/ACL/history authority transfer/native fallback |
 | RD-14 | bootstrap/session/menu | R029/R030/R087/R098/R100 | save truth/currentness/lifecycle | no inferred campaign lifecycle/Actor/history authority |
 
 Every later detailed plan executes the per-task Version Impact Gate independently. This v2 preselects no version bump or migration. Clean-slate/prerelease status does not waive projection synchronization.
@@ -935,9 +1003,9 @@ Every later detailed plan executes the per-task Version Impact Gate independentl
 Canonical accounting is by parent readiness IDs, not by number of planning slices.
 
 ```text
-DIRECT_UNIT_COVERAGE:    117
+DIRECT_UNIT_COVERAGE:    116
 PURE_PROOF_ROUTES:         9
-COMPOSITE_PARENT_ROUTES:    7
+COMPOSITE_PARENT_ROUTES:    8
 TOTAL_CANONICAL_ACTIVE:   133 / 133
 ```
 
@@ -946,15 +1014,15 @@ Direct canonical readiness:
 ```text
 RD-01  7 : R001 R003 R033 R043 R047 R048 R050
 RD-02  6 : R007 R008 R009 R017 R049 R052
-RD-03 20 : R025-R028 R104 R108-R111 R113-R116 R126 R128-R130 R132 R136 R139
+RD-03 19 : R025-R028 R104 R108-R111 R113-R116 R126 R128-R130 R132 R136
 RD-04  6 : R015 R063-R067
-RD-05  9 : R034-R036 R042 R046 R112 R118 R133 R137
+RD-05  6 : R034-R036 R042 R046 R112
 RD-06  5 : R037 R045 R069 R070 R071
 RD-07  6 : R011 R012 R038 R072 R073 R074
 RD-08  5 : R010 R039 R075 R076 R077
-RD-09  9 : R013 R014 R019 R020 R040 R078 R079 R080 R122
-RD-10  4 : R054-R057
-RD-11 18 : R059 R060 R097 R105-R107 R117 R119 R120 R124 R125 R127 R134 R135 R138 R140 R144 R145
+RD-09  8 : R013 R014 R019 R020 R040 R078 R079 R080
+RD-10  7 : R054-R057 R118 R133 R137
+RD-11 19 : R059 R060 R097 R105-R107 R117 R119 R120 R124 R125 R127 R134 R135 R138-R140 R144 R145
 RD-12 11 : R021 R044 R081 R082 R083 R121 R123 R141-R143 R146
 RD-13  7 : R022 R051 R084 R085 R099 R102 R131
 RD-14  4 : R030 R086 R098 R100
@@ -969,7 +1037,7 @@ R023 R031 R032 R041 R058 R061 R068 R088 R089
 Composite canonical parents:
 
 ```text
-R006 R016 R018 R029 R053 R062 R087
+R006 R016 R018 R029 R053 R062 R087 R122
 ```
 
 Reverse-map law: every planning slice appears under exactly one canonical parent in §4; every direct or proof leaf appears exactly once in this ledger. Secondary joins do not duplicate canonical accounting.
@@ -1007,54 +1075,82 @@ HG-01 remains evidence/guardrail, not a new architecture owner.
 ## First independent critic
 
 ```text
-DC-001 RESOLVED IN V2
+DC-001 RESOLVED_ON_V2_REREVIEW
   broad schema-first foundation removed; owner-local projections/checkpoints retained.
 
-DC-002 RESOLVED IN V2
+DC-002 RESOLVED_ON_V2_REREVIEW
   proof-only implementation bucket removed; R071/R077/R080/R083 retain implementation-bearing work; pure proof routes explicit.
 
-DC-003 RESOLVED IN V2
+DC-003 RESOLVED_ON_V2_REREVIEW
   R044 collaboration lifecycle responsibility is RD-12-owned; RD-05 has typed mechanics join only.
 
-DC-004 RESOLVED IN V2
+DC-004 RESOLVED_ON_V2_REREVIEW
   R045 publication evidence/currentness is RD-06-owned; RD-05 supplies inputs only.
 
-DC-005 RESOLVED IN V2
+DC-005 RESOLVED_ON_V2_REREVIEW
   R078 + R086 -> R100 is explicit and acyclic; R100 is RD-14-owned.
 ```
 
 ## Second independent critic
 
 ```text
-DC-006 REPAIRED IN V2
-  R016/R018/R062 include explicit EXECUTION slices in RD-05.
+DC-006 RESOLVED_ON_V2_REREVIEW
+  R016/R018/R062 include explicit EXECUTION routing under the runtime.execution owner.
 
-DC-007 REPAIRED IN V2
+DC-007 RESOLVED_ON_V2_REREVIEW
   §4 defines required slice sets and canonical-parent proof/version/completion law for all composite parents.
 
-DC-008 REPAIRED IN V2
+DC-008 RESOLVED_ON_V2_REREVIEW
   R037 completes in RD-06 at execution+persistence join.
 
-DC-009 REPAIRED IN V2
+DC-009 RESOLVED_ON_V2_REREVIEW
   R038 completes in RD-07 with explicit execution-to-recovery join and R072.
 
-DC-010 REPAIRED IN V2
+DC-010 RESOLVED_ON_V2_REREVIEW
   R039 completes in RD-08 at execution+temporal occurrence join.
 
-DC-011 REPAIRED IN V2
+DC-011 RESOLVED_ON_V2_REREVIEW
   R040 completes in RD-09 at authenticated/current-source + execution join.
 
-DC-012 REPAIRED IN V2
+DC-012 RESOLVED_ON_V2_REREVIEW
   R029 is a composite Actor+durability+onboarding parent with explicit closure.
 
-DC-013 REPAIRED IN V2
+DC-013 RESOLVED_ON_V2_REREVIEW
   R030 completes in RD-14 with explicit RD-03 Actor-shape input.
 
-DC-014 REPAIRED IN V2
+DC-014 RESOLVED_ON_V2_REREVIEW
   R087 is a composite retrospective + save/session/menu + SemanticEvent/T0 parent with all three WP-19 routes explicit.
 ```
 
-These are author repair claims only. They do not count as independent closure until the next critic verifies them.
+The third independent critic at reviewed HEAD `2211546ab7e086b061eb24269b07dc616749def1` explicitly confirmed `DC-001..DC-014` resolved and self-containedness PASS. Those resolutions remain preserved by this surgical repair.
+
+## Third independent critic — author repair claims pending re-review
+
+```text
+DC-015 AUTHOR_REPAIRED_IN_V2 / INDEPENDENT_VERIFICATION_PENDING
+  R062 now enumerates every exact WP-10 item-1..5 native family separately:
+  Actor continuity/relations, world.knowledge, Effect/application, TemporalBinding,
+  runtime lifecycle/evidence, SemanticEvent/history, Disclosure and retained Message.
+
+DC-016 AUTHOR_REPAIRED_IN_V2 / INDEPENDENT_VERIFICATION_PENDING
+  R118/R133/R137 move from RD-05 execution to RD-10 R2.4 role/TurnEnvelope/protected-emission ownership.
+  RD-05 supplies accepted deterministic inputs only where required.
+
+DC-017 AUTHOR_REPAIRED_IN_V2 / INDEPENDENT_VERIFICATION_PENDING
+  R139 completes in RD-11 Context Runtime from eligible native epistemic/history evidence;
+  ranking cannot create eligibility, knowledge, truth or requiredness.
+
+DC-018 AUTHOR_REPAIRED_IN_V2 / INDEPENDENT_VERIFICATION_PENDING
+  R124 remains an RD-11 integration-node completion but explicitly consumes native disclosure,
+  RD-10 role/recipient containment and RD-12 multiplayer/controlled-actor scope,
+  plus RD-09 principal/currentness when the applicable route requires it.
+
+DC-019 AUTHOR_REPAIRED_IN_V2 / INDEPENDENT_VERIFICATION_PENDING
+  R122 is now a composite parent across RD-09 currentness/scene, RD-08 chronology,
+  RD-11 bounded context and RD-12 collaboration bridge contributions, with material-bridge-only closure.
+```
+
+These five entries are author repair claims only. They do not count as independent closure until a fresh genuinely independent critic verifies them.
 
 ---
 
@@ -1062,21 +1158,21 @@ These are author repair claims only. They do not count as independent closure un
 
 The next genuinely independent critic must reconstruct owners/dependencies independently and attempt to reject v2 on at least these questions:
 
-1. Are the seven composite parents lossless, including all runtime.execution and WP-19 branches?
+1. Are the eight composite parents lossless, including all runtime.execution, WP-19 and R122 bridge branches?
 2. Can any composite parent be incorrectly marked complete from a strict subset of slices?
 3. Are parent-level proof, negative laws and Version Impact consequences preserved exactly once?
 4. Do R037/R038/R039/R040 complete at the correct owner-valid downstream joins without transferring authority?
 5. Does R029 preserve Actor identity plus durability plus onboarding without creating a new lifecycle owner?
 6. Does R030 expose the Actor-shape/bootstrap-consumer join and retain gameplay-first/no-complete-sheet behavior?
 7. Does R087 preserve retrospective, save/session/menu and SemanticEvent/T0 branches with zero-extra-serial/disclosure constraints?
-8. Is RD-02 now sufficiently bounded, or does it still hide cross-owner/version checkpoints?
-9. Does RD-03 combine only coherent Actor/continuity work after R029/R030 extraction?
+8. Is RD-02 sufficiently bounded, or does it still hide cross-owner/version checkpoints?
+9. Does RD-03 combine only coherent Actor/Asset/Effect/continuity work after R029/R030/R139 extraction?
 10. Is RD-04 still a bounded substrate rather than an infrastructure catch-all or authority source?
-11. Is RD-05 independently reviewable after moving R037..R040 downstream, with no hidden publication/recovery/temporal/LIVE authority?
+11. Is RD-05 independently reviewable after moving R037..R040 and R118/R133/R137 downstream, with no hidden publication/recovery/temporal/LIVE/role-output authority?
 12. Do RD-07/RD-08 remain appropriately separated recovery versus temporal owners?
-13. Does RD-09 combine access/LIVE only within accepted owner boundaries and avoid creator/product ownership leakage?
-14. Is RD-11 too large or internally incoherent across retrieval, budgeting, trace and retrospective duties?
-15. Does RD-13 preserve native T0/history ownership while guaranteeing accepted Commentator self-containment?
+13. Does RD-09 combine access/LIVE only within accepted owner boundaries and avoid creator/product/chronology/context ownership leakage?
+14. Is RD-11 internally coherent across retrieval, budgeting, trace, R139 ranking, R124 recipient projection and retrospective duties without becoming a new semantic owner?
+15. Does RD-13 preserve native SemanticEvent/history ownership while guaranteeing accepted Story/Commentator self-containment?
 16. Does RD-14 hide any product lifecycle decision, history authority or Actor semantic ownership?
 17. Are all cross-unit joins explicit enough that detailed planners need no architecture rediscovery?
 18. Are any implementation units too large or too small for independent TDD/review/coherent commit checkpoints?
@@ -1088,6 +1184,11 @@ The next genuinely independent critic must reconstruct owners/dependencies indep
 24. Are all four HG-01 constraints preserved at Actor/execution/multiplayer/product joins?
 25. Does v2 resurrect any rejected scheduler, global failure owner, global memory authority, Story canon, generic state service, distributed transaction, generic queue/broker or prose-to-StateDelta authority?
 26. Does any current unit still force a detailed-plan author to rediscover owner boundaries, consumer joins, version checkpoints or proof closure?
+27. Does R062 map every exact WP-10 item-1..5 native family losslessly, with no family hidden under LIVE or a coarse generic bucket?
+28. Do R118/R133/R137 complete under RD-10 role/TurnEnvelope/emission containment without making extra model calls mandatory or moving mechanics authority out of RD-05?
+29. Does R139 complete in RD-11 using eligible owner-native epistemic evidence while preserving `textual mention != knowledge` and ranking-only semantics?
+30. Does R124 require the full disclosure/role + Context Runtime + multiplayer scope join and avoid creating a second disclosure/canon owner?
+31. Does R122 preserve independent scene/context/chronology frontiers and activate cross-scope integration only for concrete material causal/agency dependencies, with no global synchronization/frontier?
 
 The critic may reject the entire v2 decomposition. The author does not pre-approve any boundary.
 
@@ -1098,17 +1199,20 @@ The critic may reject the entire v2 decomposition. The author does not pre-appro
 ```text
 CANDIDATE_V2_STATUS: READY_FOR_FRESH_INDEPENDENT_DECOMPOSITION_CRITIC
 CURRENT_REVIEW_TARGET: this document
+CANDIDATE_SELF_CONTAINEDNESS_AS_CURRENT_SURFACE: PASS
 CURRENT_BOUNDED_UNITS: 14
 ACTIVE_READINESS_CANONICAL_ACCOUNTING: 133 / 133
-DIRECT_UNIT_COVERAGE: 117
+DIRECT_UNIT_COVERAGE: 116
 PURE_PROOF_ROUTES: 9
-COMPOSITE_PARENT_ROUTES: 7
+COMPOSITE_PARENT_ROUTES: 8
 UNASSIGNED_ACTIVE_READINESS: 0
 DUPLICATE_CANONICAL_ACCOUNTING: 0
 TRIGGER_GATED_PREMATURE_TASKS: 0
 NO_WORK_PREMATURE_TASKS: 0
 R27_R004_PRESENT: NO
 KNOWN_EXECUTABLE_CYCLES: 0
+PRIOR_DC_001_TO_DC_014: RESOLVED_ON_V2_REREVIEW
+DC_015_TO_DC_019: AUTHOR_REPAIRED_IN_V2 / INDEPENDENT_VERIFICATION_PENDING
 HIDDEN_HUMAN_DECISION_IDENTIFIED: NO
 PRODUCT_OWNER_DECISION_REQUIRED: NO
 ARCHITECTURE_REOPEN_REQUIRED: NO
@@ -1117,5 +1221,5 @@ MIGRATION_REQUIRED: NO
 DECOMPOSITION_CRITIC_REQUIRED: YES
 DETAILED_EXECUTABLE_PLAN_AUTHORING_AUTHORIZED: NO
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
-NEXT_GATE: fresh genuinely independent Decomposition Critic over v2
+NEXT_GATE: fresh genuinely independent Decomposition Critic over repaired self-contained v2
 ```
