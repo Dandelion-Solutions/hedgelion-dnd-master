@@ -11,12 +11,12 @@ Canonical owners: Step-5.8, WP-16, WP-11 identity/routing, WP-12 HOT/currentness
 - `NEW_CREATE GAME/TOOLS/access_control.py`
 - `NEW_CREATE GAME/TOOLS/live_state.py`
 - `EXISTING_REPLACE GAME/SCHEMA/live_scene.schema.yaml`
-- `EXISTING_MODIFY GAME/SCHEMA/player.schema.yaml` only where final v1 control/currentness law requires it
+- `INSPECT_ONLY GAME/SCHEMA/player.schema.yaml` — current v1 contract already carries stable `github_binding.user_id`, canonical `player_id`, active/inactive state and controlled-PC relations; RD-09 must consume it rather than create a duplicate authority
 - `NEW_CREATE DEV/SCHEMAS/live-claim.schema.json`
 - `NEW_CREATE DEV/SCHEMAS/live-publication-attempt.schema.json`
 - identifier-policy/catalog projections required for `source_native_live`
 - `NEW_CREATE DEV/TESTS/test_rd09_access_live.py`
-- direct CORE/schema/audit projections only where stale authority wording is proven.
+- direct audit/project-map projections only.
 
 Forbidden: login-as-stable-principal, self-declared player authority, global active player, presence/heartbeat authority, scene-wide wildcard claims, path-glob claims, LIVE semantic mega-owner, integer revision/currentness authority, force update, branch-name authority, campaign allocator for LIVE-born identities, ID-order chronology.
 
@@ -58,8 +58,9 @@ Required claim grammar:
 ```text
 EXACT_OWNER(native_family, native_identity)
 EPOCH_LOCAL_CREATION(native_family)
-OWNER_DEFINED_PARTITION(partition_type, partition_key)  # only where owner already defines it
+OWNER_DEFINED_PARTITION(partition_type, partition_key)
 ```
+`OWNER_DEFINED_PARTITION` is legal only when a native owner already defines deterministic bounded partition semantics.
 
 Remove/demote fields that imply LIVE ownership of objective facts, knowledge/disclosure, arbitrary entity overlays or path-glob authority. Retain only lawful source/currentness/claim/lifecycle/evidence projections needed by the accepted owner graph.
 
@@ -135,7 +136,7 @@ DEV/TOOLS/run_maintenance_audit
 python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
 ```
 
-Version Impact Gate classifies LIVE/player schema and identifier-policy changes; migration execution remains prohibited.
+Version Impact Gate classifies LIVE schema and identifier-policy changes. `player.schema.yaml` is read as existing authority and is not modified by this RD unless a later planning repair, not the implementation worker, explicitly changes that file action. Migration execution remains prohibited.
 
 Negative stale proof must find no active login-as-ID rule, global LIVE owner, branch/integer freshness authority, wildcard claim expansion, force update, allocator dependency for LIVE-born identity, presence-based revocation or ID chronology.
 
