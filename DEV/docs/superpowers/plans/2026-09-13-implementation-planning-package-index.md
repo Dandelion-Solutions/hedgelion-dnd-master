@@ -32,7 +32,7 @@ RD-05 2026-09-13-RD-05-deterministic-execution-fixed-rng-plan.md
 RD-06 2026-09-13-RD-06-save-durability-publication-plan.md
 RD-07 2026-09-13-RD-07-current-native-recovery-checkpoint-plan.md
 RD-08 2026-09-13-RD-08-temporal-thread-current-state-plan-v2.md
-RD-09 2026-09-13-RD-09-live-access-currentness-information-normalization-plan.md
+RD-09 2026-09-13-RD-09-principal-live-currentness-plan.md
 RD-10 2026-09-13-RD-10-role-handoff-protected-emission-plan-v2.md
 RD-11 2026-09-13-RD-11-context-runtime-plan-v2.md
 RD-12 2026-09-13-RD-12-collaboration-multiplayer-plan.md
