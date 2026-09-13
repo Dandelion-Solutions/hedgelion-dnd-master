@@ -37,7 +37,7 @@ TASK_LOCAL_PREVIOUS_RE_REVIEW_RESULT: DEV/docs/superpowers/plans/2026-09-13-impl
 
 AUTHOR_SIDE_OPEN_SIRR_FINDINGS: 0
 INDEPENDENTLY_CONFIRMED_SIRR_CLOSURE: PENDING RE-REVIEW #2
-KNOWN_GATE_BLOCKER: mandatory independent Senior re-review #2 has not yet returned PASS / GO
+KNOWN_BLOCKERS: mandatory independent Senior re-review #2 has not yet returned PASS / GO
 ```
 
 ## Package accounting
