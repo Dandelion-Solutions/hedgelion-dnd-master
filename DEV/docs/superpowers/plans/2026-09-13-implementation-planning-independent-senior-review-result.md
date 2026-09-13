@@ -319,7 +319,7 @@ These are defects in the reviewed package, not a replacement decomposition or ex
 | FINDING_CONFIRMATION | WP-12 §14; WP-13 §§14–15 | Test explicit 17-theme/38-theme proof obligations and consumer routing against broad proof labels (SIP-002/009). |
 | AMBIGUITY / VERSION_IMPACT_GATE | DEV/RELEASE/VERSIONING.md; detailed version namespace policy | Classify this review/status-only publication, without changing product or runtime/schema/version owners. |
 
-No other Tier-3 evidence was used. Metadata-only directory reads checked exact target actions and the literal audit-command existence; they were not recursive code inspection. The original baseline comparison identified historical changes, but unchanged canonical owners and the later critic-baseline comparison made historical body escalation unnecessary.
+No other Tier-3 repository-body evidence was used; the publication follow-up below records the later targeted CI-log escalation. Metadata-only directory reads checked exact target actions and the literal audit-command existence; they were not recursive code inspection. The original baseline comparison identified historical changes, but unchanged canonical owners and the later critic-baseline comparison made historical body escalation unnecessary.
 
 ## 10. Source locators
 
@@ -375,6 +375,14 @@ No production implementation, migration, release or gameplay bootstrap.
 No Product Owner decision or architecture reopening is established by this review.
 Any repair that actually needs new product/architecture authority must use its owner gate.
 ```
+
+### Publication verification follow-up
+
+The initial review publication was commit `5c8328becdc3103203c980f538aa14495cb2d92d`. Connector readback matched both intended blobs exactly; the commit had only the reviewed HEAD as parent, and its diff contained exactly this result and CURRENT_PROGRESS.
+
+[Hosted validation run 34762771065](https://github.com/Dandelion-Solutions/hedgelion-dnd-master/actions/runs/34762771065) failed the maintenance audit solely on `CURRENT_PROGRESS.md missing required marker: LAST_CLOSED_UNIT:`; unit tests were skipped. A targeted comparison with [baseline run 34761247388](https://github.com/Dandelion-Solutions/hedgelion-dnd-master/actions/runs/34761247388) confirmed the identical error at the reviewed HEAD. The marker was absent in the original status file and had been carried forward in the review update.
+
+The review-status publication therefore adds the required LAST_CLOSED_UNIT marker for the completed independent review. This is control-file formatting within the authorized review-gate update, not a repair of the author implementation package, and does not change the verdict or finding count. No validator, test, runtime or author plan is changed. The only additional evidence escalation was FINDING_CONFIRMATION for these two hosted job logs and their run/job metadata. Fresh readback and hosted validation of the follow-up commit are required; no success is predicted here.
 
 ## 12. Final verdict
 
