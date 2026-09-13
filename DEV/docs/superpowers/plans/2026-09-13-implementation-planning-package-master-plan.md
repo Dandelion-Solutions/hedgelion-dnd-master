@@ -20,7 +20,7 @@ OPEN_DECOMPOSITION_FINDINGS: 0
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 ```
 
-`GAME/**` may be fully reconstructed for v1.0. Existing layout/content is not a preservation constraint and may be v1-compatible, mixed, or superseded v0.8 material.
+`GAME/**` may be fully reconstructed for v1.0. Existing layout/content is not a preservation constraint.
 
 ## Planning blocks
 
@@ -29,35 +29,38 @@ PB-01 package protocol/conventions/template/Impact-TDD/index       COMPLETE
 PB-02 RD-01..RD-04 detailed plans                                 COMPLETE
 PB-03 RD-05..RD-08 detailed plans                                 COMPLETE
 PB-04 RD-09..RD-11 detailed plans                                 COMPLETE
-PB-05 RD-12..RD-14 detailed plans                                 ACTIVE
-PB-06 execution-wave/integration package                          NOT_STARTED
+PB-05 RD-12..RD-14 detailed plans                                 COMPLETE
+PB-06 execution-wave/integration package                          ACTIVE
 PB-07 bidirectional coverage/currentness + Senior handoff         NOT_STARTED
 ```
 
-No routine human pause is required between blocks unless a genuine human-owned decision, contradiction or material risk appears. Every block ends with coherent repository checkpoint(s) and a cursor update.
+No routine human pause is required unless a genuine human-owned decision, contradiction or material risk appears.
 
 Closure authorities:
-- PB-02: `2026-09-13-PB-02-rd01-rd04-source-manifest.md`, `2026-09-13-PB-02-rd01-rd04-closure.md`
-- PB-03: `2026-09-13-PB-03-rd05-rd08-source-manifest.md`, `2026-09-13-PB-03-rd05-rd08-closure.md`
-- PB-04: `2026-09-13-PB-04-rd09-rd11-source-manifest.md`, `2026-09-13-PB-04-rd09-rd11-closure.md`
+- PB-02: `2026-09-13-PB-02-rd01-rd04-closure.md`
+- PB-03: `2026-09-13-PB-03-rd05-rd08-closure.md`
+- PB-04: `2026-09-13-PB-04-rd09-rd11-closure.md`
+- PB-05: `2026-09-13-PB-05-rd12-rd14-closure.md`
 
 ## Cursor
 
 ```text
 PLANNING_PACKAGE_STATE: IN_PROGRESS
-CURRENT_BLOCK: PB-05
-LAST_COMPLETED_BLOCK: PB-04
-NEXT_AUTHORIZED_BLOCK: PB-05 — RD-12..RD-14 DETAILED EXECUTABLE PLANS
-LAST_CHECKPOINT_COMMIT: c64fa8ae648302ca3179327011c4ab3063df771a
+CURRENT_BLOCK: PB-06
+LAST_COMPLETED_BLOCK: PB-05
+NEXT_AUTHORIZED_BLOCK: PB-06 — EXECUTION-WAVE / INTEGRATION PACKAGE
+LAST_CHECKPOINT_COMMIT: d8c0e4dcd5db2510969525ea68bdbe89b459e28b
 PB01_PROTOCOL_READBACK: PASS
 PB02_PLAN_SELF_REVIEW: PASS
 PB03_PLAN_SELF_REVIEW: PASS
 PB04_PLAN_SELF_REVIEW: PASS
-RD_PLANS_COMPLETE: 11 / 14
+PB05_PLAN_SELF_REVIEW: PASS
+RD_PLANS_COMPLETE: 14 / 14
 PB02_DIRECT_LEAVES_PLANNED: 38
 PB03_DIRECT_LEAVES_PLANNED: 22
 PB04_DIRECT_LEAVES_PLANNED: 34
-CUMULATIVE_DIRECT_LEAVES_PLANNED: 94 / 116
+PB05_DIRECT_LEAVES_PLANNED: 22
+CUMULATIVE_DIRECT_LEAVES_PLANNED: 116 / 116
 ACTIVE_READINESS_COVERAGE_CLOSED: 0 / 133
 TRIGGER_GATED_PRESERVED: 12 / 12
 NO_WORK_PRESERVED: 79 / 79
@@ -65,4 +68,6 @@ OPEN_PLANNING_FINDINGS: 0
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 ```
 
-`ACTIVE_READINESS_COVERAGE_CLOSED` remains zero until PB-07 performs package-level bidirectional closure; authored RD plans must not pre-claim canonical package closure.
+PB-06 must turn the 14 approved RD plans into an explicit dependency-safe execution-wave/integration sequence with cross-RD join gates, proof/version/checkpoint/currentness gates and coherent worker checkpoints. It must not implement production code or pre-claim PB-07 package closure.
+
+`ACTIVE_READINESS_COVERAGE_CLOSED` remains zero until PB-07 performs package-level bidirectional closure.
