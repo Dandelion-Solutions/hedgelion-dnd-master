@@ -4,59 +4,55 @@ Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 FINAL RECONCILIATION CLOSED — IMPLEMENTATION PLANNING IN PROGRESS
-CURRENT_WORKSTREAM: implementation planning
-CURRENT_SLICE: PB-07 bidirectional coverage/currentness + Senior handoff active
+GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR PACKAGE COMPLETE — INDEPENDENT SENIOR REVIEW PENDING
+CURRENT_WORKSTREAM: implementation planning review gate
+CURRENT_SLICE: genuinely independent Senior plan review
 
-LAST_COMPLETED_WORKER_UNIT: PB-06 execution-wave/integration package complete; E1-E15 self-review PASS after PB-05 composite-slice repair
-NEXT_ELIGIBLE_UNIT: PB-07 bidirectional readiness-task coverage/currentness closure
-NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING PB-07 ONLY — prove canonical active readiness <-> plan/task/proof/composite bidirectional coverage, fresh-check current owners/cursor/exclusions, publish independent Senior review handoff, and stop before production implementation pending independent Senior PASS/GO
-REQUIRED_GATE: PB-07 PASS -> mandatory genuinely independent Senior plan review / GO -> production implementation only after GO
+LAST_COMPLETED_WORKER_UNIT: PB-07 bidirectional coverage/currentness + Senior handoff complete; author-side 133/133 PASS
+NEXT_ELIGIBLE_UNIT: independent Senior implementation-plan review
+NEXT_AUTHORIZED_UNIT: INDEPENDENT SENIOR REVIEW ONLY — fresh-bootstrap, independently recompute accounting/coverage/currentness/plan quality/dependency graph using `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-senior-review-brief.md`; publish PASS/GO or FAIL/REPAIR result. Author/planner must not self-approve or start implementation
+REQUIRED_GATE: independent Senior PASS / GO -> only then advance to production implementation execution gate
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md
 TASK_LOCAL_PACKAGE_INDEX: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md
-TASK_LOCAL_PB06_EXECUTION_WAVES: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-execution-waves.md
-TASK_LOCAL_PB06_CLOSURE: DEV/docs/superpowers/plans/2026-09-13-PB-06-execution-waves-closure.md
-TASK_LOCAL_CURRENT_CANDIDATE_V2: DEV/docs/superpowers/design/2026-09-13-implementation-planning-candidate-bounded-decomposition-v2.md
-KNOWN_BLOCKERS: none; production implementation/migration/release/gameplay bootstrap unauthorized pending PB-07 + independent Senior PASS/GO
+TASK_LOCAL_EXECUTION_WAVES: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-execution-waves.md
+TASK_LOCAL_COVERAGE: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-bidirectional-coverage.md
+TASK_LOCAL_SENIOR_BRIEF: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-senior-review-brief.md
+TASK_LOCAL_PB07_CLOSURE: DEV/docs/superpowers/plans/2026-09-13-PB-07-coverage-senior-handoff-closure.md
+KNOWN_BLOCKERS: none author-side; independent Senior verdict pending
 ```
 
-## Planning accounting
+## Package accounting
 ```text
 ACTIVE_READINESS: 133
-DIRECT_READINESS: 116
-PURE_PROOF: 9
-COMPOSITE_PARENTS: 8
-TRIGGER_GATED: 12
-NO_WORK_TERMINALS: 79
+DIRECT_READINESS: 116 / 116 planned
+PURE_PROOF: 9 / 9 routed
+COMPOSITE_PARENTS: 8 / 8 routed
+AUTHOR_ACTIVE_COVERAGE: 133 / 133 PASS
+TRIGGER_GATED: 12 / 12 preserved outside execution
+NO_WORK_TERMINALS: 79 / 79 preserved
 R27_R004: ABSENT
-DECOMPOSITION_CRITIC: PASS — 0/0/0
 RD_PLANS_COMPLETE: 14 / 14
-DIRECT_LEAVES_PLANNED: 116 / 116
-ACTIVE_READINESS_COVERAGE_CLOSED: 0 / 133  # PB-07 only
-PB01_PROTOCOL_READBACK: PASS
-PB02_PLAN_SELF_REVIEW: PASS
-PB03_PLAN_SELF_REVIEW: PASS
-PB04_PLAN_SELF_REVIEW: PASS
+PB01..PB07: COMPLETE
+DECOMPOSITION_CRITIC: PASS — 0/0/0
 PB05_PLAN_SELF_REVIEW: PASS_AFTER_REPAIR
 PB06_EXECUTION_WAVE_SELF_REVIEW: PASS
+PB07_BIDIRECTIONAL_CURRENTNESS_SELF_REVIEW: PASS
+INDEPENDENT_SENIOR_REVIEW: REQUIRED / PENDING
 PRODUCT_OWNER_DECISION_REQUIRED_NOW: NO
 ARCHITECTURE_REOPEN_REQUIRED_NOW: NO
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 ```
 
-PB-05 repair restored decomposition-v2 composite slices before PB-06 publication: RD-12 `R016.COLLAB/R018.COLLAB/R122.COLLABORATION_BRIDGE`; RD-13 `R016.STORY/R018.STORY/R062.SEMANTIC_EVENT_HISTORY/R087.SEMANTIC_EVENT_T0`; RD-14 `R029.ONBOARDING/R087.SAVE_SESSION_MENU`.
+PB-05 repair provenance remains explicit: RD-12 collaboration composite slices, RD-13 Story/native-history/T0 composite slices and RD-14 onboarding/save-session slice were restored from decomposition v2 before PB-06 closure. Senior brief requires adversarial recheck.
 
-PB-06 routes all RD-01..RD-14, owner-derived E1-E15 joins, all 8 composite parents and all 9 pure-proof leaves. No authority-transfer cycle break is admitted.
+PB-06 routes owner-derived E1-E15 and all proof/composite closure. PB-07 reverse-scope check found no orphan executable task or unowned semantic expansion. Currentness compare across PB-05..PB-07 found planning/control changes only, no canonical owner drift.
 
-GAME rewrite policy: `GAME/**` may be reconstructed for v1.0; existing layout/content is evidence, not preservation authority.
+GAME rewrite policy remains: `GAME/**` may be reconstructed for v1.0 under accepted owners; existing layout is not preservation authority.
 
 ```text
 R2_7_FINAL_RECONCILIATION: CLOSED / FINAL INDEPENDENT SENIOR PASS / GO
-UNRESOLVED_BLOCKING: 0
-UNRESOLVED_SIGNIFICANT: 0
-UNRESOLVED_MINOR: 0
 HUMAN_DECISION_REQUIRED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 MIGRATION_EXECUTION_STARTED: NO
@@ -64,4 +60,4 @@ RELEASE_EXECUTION_STARTED: NO
 GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
-Exact gate: PB-07 active; 14/14 RD plans and 116/116 direct placements exist; package 133/133 closure is not yet claimed; production implementation remains prohibited until independent Senior plan PASS/GO.
+Exact gate: author planning is complete, but production implementation remains prohibited. The next actor must be genuinely independent Senior reviewer and must not treat author closure documents as authority.
