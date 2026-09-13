@@ -471,7 +471,7 @@ Severity: **MEDIUM/HIGH.**
 
 # 13. Required strengthening R8 — one-file Contents expected-blob fallback is conditional
 
-The lab experiment confirms that, while the live ref has one runtime-mutated file, expected blob SHA rejects a stale writer after another write/close.
+The isolated feasibility experiment confirms that, while the live ref has one runtime-mutated file, expected blob SHA rejects a stale writer after another write/close.
 
 But expected blob SHA is not equivalent to exact ref-head CAS if some independent same-ref commit can change another path while leaving the live file blob unchanged.
 
@@ -562,7 +562,7 @@ Severity: **MEDIUM performance requirement.**
 | concurrent overlapping opening | PASS subject to bounded claim lookup | campaign CAS serializes route selection; overlap lookup must be bounded |
 | concurrent disjoint opening | PASS | second opener repins/revalidates; no global leader needed |
 | stale campaign writer vs new claim | PASS if ClaimAuthorityLookup is mandatory | campaign CAS fences pre-route writer; later writer must consult routing |
-| active live writer vs close | PASS | exact source CAS provides safety; lab reproduced stale rejection |
+| active live writer vs close | PASS | exact source CAS provides safety; isolated feasibility evidence reproduced stale rejection |
 | close ACK lost | PASS | exact current source lifecycle verification resolves/blocks |
 | live mutation ACK lost + descendant | PASS WITH STRENGTHENING | lineage/receipts prove durable occurrence; dependent progression blocks while unresolved |
 | route-away without close | PASS as integrity defect | candidate correctly rejects |
