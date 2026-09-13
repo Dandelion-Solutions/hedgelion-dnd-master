@@ -1,91 +1,46 @@
-# RD-13 — Story / T0 / Commentator / History — Executable Implementation Plan
+# RD-13 — Story / T0 / Commentator / Native History — Executable Implementation Plan
 
-Goal: realize the Story-specific durable projection, reconstructible T0 baseline and read-only Commentator path while preserving SemanticEvent/history, temporal and world owners as the only authorities for their domains.
+Goal: realize native SemanticEvent/history integration plus noncanonical Story projection, sparse event-time T0 basis, read-only Commentator and accepted retained multiplayer Dramaturg horizons without authority transfer.
 
 Direct readiness: `R022,R051,R084,R085,R099,R102,R131`.
-Owners: Story architecture decisions/appendix, accepted history/continuity architecture, Multiplayer Model. RD-03 owns Actor continuity, RD-08 temporal/current-state, RD-09 currentness, RD-12 collaboration projection.
+Composite slices: `R016.STORY`, `R018.STORY`, `R062.SEMANTIC_EVENT_HISTORY`, `R087.SEMANTIC_EVENT_T0`.
+Owners: Story decisions/appendix, native history/continuity architecture, Multiplayer Model. RD-03 Actor continuity; RD-05 accepted execution evidence; RD-08 temporal; RD-09 access/currentness; RD-10 recipient containment; RD-12 collaboration.
 
 ## Impact Envelope
-
-- `NEW_CREATE GAME/TOOLS/story.py`
-- `NEW_CREATE GAME/TOOLS/commentator.py`
-- `NEW_CREATE DEV/SCHEMAS/story-state.schema.json`
-- `NEW_CREATE DEV/SCHEMAS/t0-baseline.schema.json`
-- `NEW_CREATE DEV/SCHEMAS/commentator-view.schema.json`
-- accepted SemanticEvent/history owner schemas/catalogs — INSPECT_ONLY except explicit consumer wiring
+- `NEW_CREATE GAME/TOOLS/story.py`, `GAME/TOOLS/commentator.py`
+- `NEW_CREATE DEV/SCHEMAS/story-state.schema.json`, `t0-baseline.schema.json`, `commentator-view.schema.json`
+- native SemanticEvent/history owner schemas/catalogs — owner-controlled integration target, not Story-owned
+- accepted retained multiplayer Dramaturg paths only where current owners require them
 - `NEW_CREATE DEV/TESTS/test_rd13_story_t0_commentator.py`
-- direct project-map/audit projections only.
+- direct project-map/audit projections.
 
-Forbidden: Story summary as truth/currentness/history authority; T0 as parallel timeline; Commentator mutation; transcript as canonical event history; multiplayer copy as second Story/history canon; summary text silently promoting external/derived material.
+Forbidden: Story/history/ACL/canon authority transfer; T0 mutable T1 substitute/parallel timeline; Commentator mutation; transcript as SemanticEvent history; hidden reasoning/current pointer as T0; Story feedback into same envelope; untriggered single-player durable Dramaturg.
 
-## Task 1 — RED: Story authority boundaries
+## Task 1 — RED authority boundaries
+Tests prove native SemanticEvent/history is causal authority, Story is rebuildable projection, Commentator read-only, and T0 cannot advance independently. Expected RED: no complete v1 path.
 
-Create tests proving Story state contains only Story-specific durable state and references native world/history/temporal evidence rather than copying their authority. A summary cannot override a current native owner or accepted SemanticEvent.
+## Task 2 — native history integration: `R062.SEMANTIC_EVENT_HISTORY`
+Realize the native SemanticEvent/history slice using accepted owner contracts and RD-03/RD-05 inputs as applicable. Preserve ancestry/provenance and source suitability. Story/Commentator are consumers, never the owner. Add negative tests for transcript/history substitution and derived-source silent promotion.
 
-Expected RED: no v1 Story runtime contract exists.
+## Task 3 — Story composite slices `R016.STORY` / `R018.STORY`
+Implement `story-state.schema.json` and `story.py` projection/transition boundary. Wire only Story-owned portions of the composite parents; information/Actor/execution/collaboration/routing slices remain their owners. Story summary carries source/frontier identity and cannot override newer native evidence.
 
-## Task 2 — GREEN: Story-state contract and transition boundary
+## Task 4 — T0 basis `R099` + `R087.SEMANTIC_EVENT_T0`
+Implement deterministic sparse event-time T0 construction in `t0-baseline.schema.json`. R099 T0 precedes qualifying Story/Commentator consumption. T0 is reconstructible baseline, not mutable history/currentness authority. Preserve zero-extra-serial and disclosure boundaries required by R087.
 
-Implement `story-state.schema.json` and `GAME/TOOLS/story.py` interfaces equivalent to:
-```text
-project_story_state(native_evidence, prior_story) -> StoryProjection
-advance_story_state(accepted_event, prior_story) -> StoryTransition
-```
+## Task 5 — Commentator route
+Implement `reconstruct_commentary(...) -> CommentatorView` over eligible Story/history/T0 evidence. No authoritative mutations, SemanticEvents, knowledge grants or currentness changes. Evidence basis is explicit and disposable.
 
-Transitions consume already accepted authoritative evidence. Story may maintain narrative phase/goals/hooks/threads only where canonical decisions assign that ownership. It does not accept free-form truth mutations.
+## Task 6 — R051/R084/R102 consumer join
+Prove accepted T0/history/Story inputs join the qualifying Commentator/Story consumer exactly as owner decisions require, including no hidden native-only fallback where prohibited.
 
-Commit boundary: Story schema + transition/projection + tests.
+## Task 7 — retained multiplayer Dramaturg / R085/R131
+Integrate only accepted multiplayer retained horizons after RD-09 access/currentness and RD-12 collaboration/recipient constraints. Recipient-specific retained projections cannot become Story/history/ACL canon. No single-player durable planning system is admitted without its future trigger.
 
-## Task 3 — non-authoritative summaries and reconstruction
+## Task 8 — Version Impact/persistence/checkpoint
+Classify durable native history and Story-state schema effects separately. Route schema version/checkpoint/migration to their owners. T0 retention follows its owner; CommentatorView is not durable authority. No compatibility layer preserves legacy Story semantics by default.
 
-Add deterministic summary/projection behavior whose outputs carry source/frontier identity. Summary is replaceable/rebuildable compression. Tests prove stale summary cannot defeat newer native evidence and summary omission is not semantic absence.
+## Task 9 — verification/currentness
+Fresh-read Story/native-history owners and RD-03/RD-05/RD-08/RD-09/RD-10/RD-12. Run focused unittest, maintenance audit and full DEV discovery. Negative stale proof searches Story-as-canon/history/ACL, Commentator writes, T0 parallel timeline, transcript-as-history, native-only fallback and untriggered durable Dramaturg.
 
-## Task 4 — T0 baseline
-
-Implement `t0-baseline.schema.json` and a deterministic T0 construction path. T0 records the accepted initial reconstruction basis needed by downstream Story/history consumers. It is not a mutable second history and cannot advance independently of accepted owner evidence.
-
-Tests cover reproducibility, invalid mixed-frontier input and rejection of T0-as-current-world authority.
-
-## Task 5 — Commentator read-only boundary
-
-Implement `GAME/TOOLS/commentator.py` and `commentator-view.schema.json`:
-```text
-reconstruct_commentary(request, eligible_story, eligible_history, t0) -> CommentatorView
-```
-
-Commentator may explain/reconstruct using eligible evidence; it cannot emit authoritative gameplay mutations, SemanticEvents, knowledge grants or currentness changes. Output identifies its evidence basis and remains disposable.
-
-## Task 6 — history / transcript / SemanticEvent separation
-
-Integration tests enforce:
-- transcript is communication evidence, not canonical SemanticEvent history;
-- accepted SemanticEvent/history remains the causal/history authority;
-- Story may reference history but not rewrite ancestry/provenance;
-- T0 + later history reconstructs the intended baseline/continuation without a parallel event stream.
-
-## Task 7 — multiplayer and source-trust negatives
-
-Consume RD-12 recipient projection only after disclosure/eligibility. A participant-specific Story/Commentator view cannot become a second canon. Derived/external narrative material remains non-canonical until an owner-defined promotion path accepts it.
-
-Tests include divergent lawful recipient views over one canon and rejection of summary-derived truth promotion.
-
-## Task 8 — Version Impact / persistence / checkpoint
-
-Classify `story-state.schema.json` as a durable v1 contract and explicitly route schema version, checkpoint serialization and migration consequences through their owners. T0 is reconstructible evidence with owner-defined retention; CommentatorView is not durable authority.
-
-No compatibility layer preserves legacy Story semantics merely because old GAME text/schema existed.
-
-## Task 9 — verification and currentness fence
-
-Run:
-```bash
-python3 -m unittest DEV.TESTS.test_rd13_story_t0_commentator -v
-DEV/TOOLS/run_maintenance_audit
-python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
-```
-
-Negative stale proof searches for Story-as-world/history/currentness authority, Commentator writes, T0 parallel timeline, transcript-as-history and recipient projection promoted to canon.
-
-Before implementation/closure fresh-read Story decisions/appendix, history/continuity owners, RD-03/RD-08/RD-09/RD-12 and exact SemanticEvent/history machine owners. Owner drift stops execution.
-
-RD-13 closes only its seven direct leaves; proof/composite/package closure remains PB-07 work.
+RD-13 closes its seven direct leaves and listed slices only. `R016`, `R018`, `R062`, `R087` parent closure remains package-level join work.
