@@ -11,18 +11,19 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 FINAL RECONCILIATION CLOSED — IMPLEMENTATION PLANNING IN PROGRESS
 
 CURRENT_WORKSTREAM: implementation planning
-CURRENT_SLICE: independent Decomposition Critic re-review of repaired self-contained v2 complete — PASS; detailed executable implementation-plan package authoring is the active next unit
+CURRENT_SLICE: detailed executable implementation-plan package authoring — PB-01 package protocol active under the published master control plane
 
 LAST_CLOSED_DOMAIN: R2.7 whole-project final architecture & machine-realization audit
 LAST_CLOSED_UNIT: R2.7 Final Reconciliation independent Final Senior review — PASS / GO
-LAST_COMPLETED_WORKER_UNIT: independent implementation-planning Decomposition Critic round 4 / repaired v2 — PASS; 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR; DC-001..DC-019 resolved; decomposition gate satisfied
-NEXT_ELIGIBLE_UNIT: detailed executable implementation-plan package authoring from the critic-approved self-contained v2
-NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING DETAILED EXECUTABLE PLAN PACKAGE ONLY — derive bounded execution-ready plans under DEV/docs/superpowers/plans/ from the critic-approved self-contained v2 using the current superpowers:writing-plans contract plus HDM Impact Envelopes; preserve exact 133 active readiness/proof obligations, 12 trigger-gated routes, 79 no-work terminals, owner-derived joins, negative laws, proof/version/HG-01 routing and currentness fences; produce execution-wave and bidirectional coverage/currentness artifacts; then submit the complete implementation-planning package to the mandatory independent Senior plan review / GO. No production implementation, migration execution, release execution or gameplay bootstrap is authorized before that Senior GO
-NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: no further critic-side work in this review; the critic gate is satisfied and detailed-plan authoring belongs to the implementation-planning architect/planner context
-REQUIRED_GATE: detailed executable plan package + execution-wave/bidirectional coverage/currentness closure -> mandatory independent Senior plan review / GO -> production implementation only after GO
+LAST_COMPLETED_WORKER_UNIT: implementation-planning package operational decomposition approved by Product Owner and master control plane initialized at commit ba62956d73e620529aff02537ba922ea2e656f41
+NEXT_ELIGIBLE_UNIT: PB-01 package protocol, followed without routine human pauses by PB-02..PB-07 according to the master control plane unless a genuine architecture/product decision, contradiction or material risk appears
+NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING PB-01 ONLY — complete the package conventions/template, file-action vocabulary, GAME v1 reconstruction classification policy, TDD/verification contract, HDM Impact Envelope contract, worker/checkpoint semantics and package skeleton under DEV/docs/superpowers/plans/. Then advance the package cursor to PB-02. No production implementation, migration execution, release execution or gameplay bootstrap is authorized before the complete package receives mandatory independent Senior PASS / GO
+NEXT_AUTHORIZED_UNIT_FOR_CURRENT_WORKER: planner/architect context owns PB-01 and may continue automatically through PB-07 after each coherent checkpoint unless an actual human-owned decision gate appears
+REQUIRED_GATE: PB-01..PB-07 complete + execution-wave/bidirectional coverage/currentness closure -> mandatory independent Senior plan review / GO -> production implementation only after GO
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-critic-v2-rereview-result.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md
+TASK_LOCAL_MASTER_PLAN: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md
 TASK_LOCAL_CRITIC_RESULT_ROUND4: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-critic-v2-rereview-result.md
 TASK_LOCAL_CURRENT_CANDIDATE_V2: DEV/docs/superpowers/design/2026-09-13-implementation-planning-candidate-bounded-decomposition-v2.md
 TASK_LOCAL_CRITIC_RESULT_ROUND3: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-critic-v2-result.md
@@ -36,7 +37,7 @@ TASK_LOCAL_BRIEF: DEV/docs/superpowers/design/2026-09-13-implementation-planning
 TASK_LOCAL_CRITIC: DEV/docs/superpowers/design/2026-09-13-implementation-planning-task-brief-critic.md
 TASK_LOCAL_PROCESS_AMENDMENT: DEV/docs/superpowers/design/2026-09-13-implementation-planning-decomposition-critic-amendment.md
 HG01_PUBLIC_RESEARCH: DEV/docs/superpowers/research/2026-09-13-hg01-novel-action-hourglass-result.md
-KNOWN_BLOCKERS: no open decomposition finding; production implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until the complete implementation-planning package receives mandatory independent Senior PASS / GO
+KNOWN_BLOCKERS: no open decomposition finding; production implementation / migration execution / release execution / gameplay bootstrap remain unauthorized until PB-01..PB-07 are complete and the complete implementation-planning package receives mandatory independent Senior PASS / GO
 ```
 
 ---
@@ -48,6 +49,8 @@ P1/P2 lossless readiness reconciliation remains complete. The original candidate
 The decomposition author repaired DC-015..DC-019 directly inside the same self-contained v2 at commit `3816260acee8d9c70c1db0ff12582d4711013bcf`, preserving the 14-unit topology and routing the repaired candidate to a fresh independent critic at HEAD `10be00e6ec61e7004e14fe6c0e4c38633d8d241d`.
 
 Independent critic round 4 has now re-read the current owners/Step-2/P3/native seams, independently retested all five author repairs, checked preservation of DC-001..DC-014, revalidated canonical accounting and performed a fresh adversarial regression pass. Result: **PASS — 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR**. The mandatory Decomposition Critic gate is satisfied.
+
+The Product Owner then approved an operational seven-block planning-package decomposition designed for resumability and coherent checkpoint commits. The master control plane is `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md`. It also establishes that `GAME/**` may be fully reconstructed for v1.0: existing GAME material is not a preservation constraint and may be v1-compatible, mixed, or superseded v0.8 material. Accepted v1 owners/readiness obligations remain authoritative over existing layout.
 
 Current result:
 
@@ -93,9 +96,14 @@ DECOMPOSITION_CRITIC_ROUND4_RESULT: DEV/docs/superpowers/design/2026-09-13-imple
 OPEN_DECOMPOSITION_FINDINGS: NONE
 DETAILED_EXECUTABLE_PLAN_AUTHORING_GATE: SATISFIED
 DETAILED_EXECUTABLE_PLAN_AUTHORING_AUTHORIZED: YES
+PLANNING_PACKAGE_MASTER: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md
+PLANNING_PACKAGE_CURRENT_BLOCK: PB-01
+PLANNING_PACKAGE_LAST_COMPLETED_BLOCK: NONE
+PLANNING_PACKAGE_NEXT_BLOCK: PB-01
+PLANNING_PACKAGE_RD_PLANS_COMPLETE: 0 / 14
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 MANDATORY_PRE_PLAN_SENIOR_GATE: NONE — not created
-NEXT_ROUTINE_SENIOR_GATE: complete implementation-planning package review after detailed plan authoring / execution-wave / bidirectional coverage / currentness closure
+NEXT_ROUTINE_SENIOR_GATE: complete implementation-planning package review after PB-01..PB-07 / execution-wave / bidirectional coverage / currentness closure
 PRODUCT_OWNER_DECISION_REQUIRED_NOW: NO
 ARCHITECTURE_REOPEN_REQUIRED_NOW: NO
 ```
@@ -117,7 +125,7 @@ All first-, second- and third-round findings are now closed at their independent
 
 The fresh regression pass found no new decomposition defect. The RD-11/RD-12 R124 seam is a one-way downstream integration completion rather than an executable unit cycle; RD-13 co-location of native SemanticEvent/history realization with Story/T0 consumers does not transfer history authority; and R122 remains conditional on a concrete positive material cross-scope bridge with independent-scope negative cases preserved.
 
-The decomposition critic gate is therefore closed. Full execution-ready `writing-plans` authoring is now authorized, but the implementation-planning stage itself is **not** closed. The planner must still produce bounded executable plans with exact files/interfaces/RED-GREEN verification, HDM Impact Envelopes, proof/version/HG-01 routing, execution waves, bidirectional readiness↔task coverage and fresh currentness checks. The complete package must then receive mandatory independent Senior plan review PASS / GO before any production implementation begins.
+The decomposition critic gate is therefore closed. Full execution-ready `writing-plans` authoring is now active under the seven-block master control plane, but the implementation-planning stage itself is **not** closed. PB-01 must establish the worker-plan protocol; PB-02..PB-05 author the 14 RD plans; PB-06 creates execution waves/integration routing; PB-07 closes bidirectional coverage/currentness and publishes the Senior-review handoff. The complete package must then receive mandatory independent Senior plan review PASS / GO before any production implementation begins.
 
 ---
 
@@ -201,11 +209,13 @@ GAMEPLAY_BOOTSTRAP_STARTED: NO
 Exact current gate:
 
 ```text
-implementation planning is in progress;
+implementation planning is in progress under the published seven-block master control plane;
+PB-01 package protocol is the active current block;
 P1/P2 remain complete with 133 exact planning-active readiness leaves, 12 exact trigger-gated readiness leaves and 79 preserved no-work terminals;
 the self-contained v2 candidate is the critic-approved current decomposition surface; critic round 4 reviewed the repaired v2 at HEAD 10be00e6ec61e7004e14fe6c0e4c38633d8d241d and returned PASS with 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR;
 DC-001..DC-019 are resolved at their independently reviewed scope and the Decomposition Critic gate is satisfied;
-current work is detailed execution-ready implementation-plan package authoring from the approved decomposition, including HDM Impact Envelopes, proof/version/HG-01 routing, execution waves, bidirectional coverage and fresh currentness checks;
+GAME/** is explicitly reconstructable for v1.0 and its existing layout/content is not a preservation constraint;
+PB-01..PB-07 may continue without routine human pauses, subject to genuine human-owned decision gates and coherent repository checkpoints;
 future-only empirical/release/writer/focus-triggered work remains outside the current executable DAG until its exact trigger exists;
 production implementation remains prohibited until the complete implementation-planning package receives mandatory independent Senior plan review PASS / GO.
 ```
