@@ -1,5 +1,7 @@
 # RD-01 — Shipped / Stale Projection Repairs — Executable Implementation Plan
 
+> For implementation workers: execute task-by-task under the current HDM execution process and Superpowers TDD workflow. RED-only failing checkpoints are never publication checkpoints.
+
 Goal: make shipped instructions and stale GAME/DEV projections conform to accepted v1 owners without recreating removed v0.8 topology.
 
 RD unit: `RD-01`
@@ -9,8 +11,6 @@ Pure-proof leaves: none directly owned.
 Canonical owners: exact Step-2 records and their domain/randomness/information owners; WP-26 documentation-routing closure.
 Dependencies/joins: semantic owners only; parallel implementation root.
 Out of scope: runtime subsystem implementation, release acceptance, new semantic architecture.
-
-Baseline planning source: PB-02 Source Manifest at/after `8b8e1bad6d581ba4246ced91279ea0fb558f29c4`.
 
 ## Impact Envelope
 
@@ -24,86 +24,106 @@ GAME runtime/projection surfaces with known active debt:
 - `GAME/CORE/DOMAIN_RULES_COVERAGE.md` (`R047`)
 - `GAME/CORE/EXPLORATION.md` (`R048`)
 - active `GAME/CORE/**` current-projection scan for `R033`/`R050` only.
-DEV machine/check surfaces: `NEW_CREATE DEV/TESTS/test_rd01_shipped_projection_repairs.py`; `DEV/TOOLS/audit_engine.py` is `INSPECT_ONLY` unless its current assertions contradict the repaired shipped projections.
+DEV machine/check surfaces: `NEW_CREATE DEV/TESTS/test_rd01_shipped_projection_repairs.py`; `DEV/TOOLS/audit_engine.py` is `INSPECT_ONLY` unless its current assertions contradict repaired projections.
 Cross-RD joins: none required before RD-01 completion.
 Explicit exclusions / authority not transferred: docs/install files gain no semantic authority; no generic spatial engine; no new epistemic/event owner; no READY_PC blanket gate; no verbose per-turn RNG log requirement.
 Version Impact: classify actual delta at execution checkpoint; do not pre-bump.
 Schema/catalog/checkpoint impact: expected none.
 Migration impact: none; v1 clean-slate policy applies.
 HG-01 constraints affected: constraint 3 only.
-Currentness/re-read set before write: exact seven Step-2 readiness records, their current owners, and every path named above.
+Currentness/re-read set before write: exact seven Step-2 readiness records, current owners, and every path named above.
 
 ## Task 1 — RED: exact stale-projection guards
 
-Files:
-- `NEW_CREATE DEV/TESTS/test_rd01_shipped_projection_repairs.py`
-- `INSPECT_ONLY` all known-debt paths in the Impact Envelope
-- `INSPECT_ONLY GAME/CORE/**` only for R033/R050 stale-current-projection discovery.
+**Files**
+- Create `DEV/TESTS/test_rd01_shipped_projection_repairs.py`.
+- Inspect only the known-debt paths and bounded `GAME/CORE/**` scope for R033/R050.
+
+Create test classes:
+```text
+InstallProjectionTests        -> R001,R003
+RandomnessProjectionTests     -> R043
+DomainExplorationTests        -> R047,R048
+CoreCurrentProjectionTests    -> R033,R050
+```
 
 RED assertions:
-1. `GAME/INSTALL/README.md` states supported ChatGPT Plus + ordinary Project-capable chat without persisting model/plan identity (`R001`).
-2. The four exact transport consumers use an absolute fixed Connector/no-probe/no-fallback rule (`R003`).
-3. `GAME/CORE/RANDOMNESS.md` retains recovery-relevant fixed RNG result with Resolution/Continuation closure and requires restore/reuse/no-reroll without Git-logging trivial rolls (`R043`).
-4. `GAME/CORE/DOMAIN_RULES_COVERAGE.md` no longer presents historical B-prime blocked/not-materialized text as current (`R047`).
-5. `GAME/CORE/EXPLORATION.md` uses bounded location/procedure/applicability contracts and does not mandate a generic compact-map/spatial engine (`R048`).
-6. Active CORE projection scan rejects stale pre-live/complete-dossier/legacy-schema routing or blanket READY_PC semantics (`R033`).
-7. Active CORE projection scan rejects stale entity prose that contradicts current catalog knowledge fields or creates a second epistemic event log (`R050`).
-8. Removed `GAME/AGENTS.md` / `GAME/CORE/START.md` are never required repair targets.
+1. `GAME/INSTALL/README.md` states supported ordinary Project-capable ChatGPT use without persisting model/plan identity (`R001`).
+2. Four exact transport consumers use fixed Connector/no-probe/no-fallback (`R003`).
+3. `GAME/CORE/RANDOMNESS.md` retains accepted RNG for recovery/retry without trivial-roll Git logging (`R043`).
+4. `GAME/CORE/DOMAIN_RULES_COVERAGE.md` does not present old blocked/not-materialized wording as current (`R047`).
+5. `GAME/CORE/EXPLORATION.md` uses bounded owner/applicability semantics and does not mandate a generic spatial engine (`R048`).
+6. Active CORE scan rejects stale pre-live/complete-dossier/legacy-schema/blanket READY_PC semantics (`R033`).
+7. Active CORE scan rejects stale entity prose contradicting current information owners or creating a second epistemic event log (`R050`).
+8. Removed `GAME/AGENTS.md` / `GAME/CORE/START.md` are never required targets.
 
 Run:
 ```bash
 python3 -m unittest DEV.TESTS.test_rd01_shipped_projection_repairs -v
 ```
-Expected: RED only for the known current mismatches from the seven readiness leaves.
+Expected RED only for confirmed current mismatches. Record the failing assertions as RED evidence; **do not publish/commit a knowingly failing RED-only checkpoint**.
 
-Commit boundary: combine with Task 2 unless the RED test is independently useful as a diagnostic checkpoint.
+## Task 2 — GREEN: repair all exact named projections
 
-## Task 2 — GREEN: repair all known exact projections
+**Files**
+- Modify `GAME/INSTALL/README.md`.
+- Modify `GAME/INSTALL/PROJECT_INSTRUCTIONS.txt`.
+- Modify `GAME/INSTALL/00_DND_BOOTSTRAP.md`.
+- Modify `GAME/CORE/BOOTSTRAP_RUNTIME.md`.
+- Modify `GAME/CORE/RANDOMNESS.md`.
+- Modify `GAME/CORE/DOMAIN_RULES_COVERAGE.md`.
+- Modify `GAME/CORE/EXPLORATION.md`.
+- Modify focused test.
 
-Files:
-- `EXISTING_MODIFY GAME/INSTALL/README.md`
-- `EXISTING_MODIFY GAME/INSTALL/PROJECT_INSTRUCTIONS.txt`
-- `EXISTING_MODIFY GAME/INSTALL/00_DND_BOOTSTRAP.md`
-- `EXISTING_MODIFY GAME/CORE/BOOTSTRAP_RUNTIME.md`
-- `EXISTING_MODIFY GAME/CORE/RANDOMNESS.md`
-- `EXISTING_MODIFY GAME/CORE/DOMAIN_RULES_COVERAGE.md`
-- `EXISTING_MODIFY GAME/CORE/EXPLORATION.md`
-- `EXISTING_MODIFY DEV/TESTS/test_rd01_shipped_projection_repairs.py`
-
-GREEN:
-- independently rewrite only stale current wording into accepted HDM v1 terminology;
+GREEN behavior:
+- independently rewrite stale current wording into accepted HDM v1 terminology;
 - preserve already-correct v1 prose in mixed files;
-- fixed transport becomes absolute no-probe/no-fallback;
-- Plus support profile is explicit but model/plan identity is not campaign state;
-- fixed RNG recovery wording preserves accepted values and avoids verbose trace requirements;
-- domain/exploration repairs do not invent package or spatial authority.
+- transport is absolute no-probe/no-fallback;
+- supported product profile is explicit but model/plan identity is not campaign state;
+- fixed RNG recovery preserves accepted values without verbose trace requirements;
+- domain/exploration wording creates no package/spatial authority.
 
-Run focused test; expected known exact projections PASS.
+Run:
+```bash
+python3 -m unittest DEV.TESTS.test_rd01_shipped_projection_repairs.InstallProjectionTests -v
+python3 -m unittest DEV.TESTS.test_rd01_shipped_projection_repairs.RandomnessProjectionTests -v
+python3 -m unittest DEV.TESTS.test_rd01_shipped_projection_repairs.DomainExplorationTests -v
+```
+Expected GREEN.
 
-Commit boundary: these seven files + focused test are one coherent shipped-projection repair checkpoint.
-
-## Task 3 — R033/R050 current-projection closure
-
-Files:
-- `INSPECT_ONLY GAME/CORE/**`
-- `INSPECT_ONLY GAME/SCHEMA/**`
-- `INSPECT_ONLY DEV/PROJECT_MAP.md`
-- `INSPECT_ONLY DEV/TOOLS/audit_engine.py`
-- `EXISTING_MODIFY DEV/TESTS/test_rd01_shipped_projection_repairs.py`
-
-The scan is proof scope, not blanket write authority. If a currently active R033/R050 contradiction is found outside Task-2 paths, record its exact path before editing and compare it to this Impact Envelope. Because those two readiness leaves explicitly authorize narrow current-projection reconciliation, a prose-only active GAME/CORE consumer may be added to this RD-01 checkpoint; a machine/schema/runtime owner change is **not** implicitly authorized and is a plan-impact finding for its owning RD instead.
-
-GREEN: focused guard proves no current active stale routing/READY_PC/second-epistemic-log contradiction remains; historical provenance docs are not rewritten merely to erase history.
+REFACTOR: collapse repeated wording only when one canonical local projection can serve all named shipped consumers; do not remove deliberate defense-in-depth at independent boundaries.
 
 VERIFY:
 ```bash
 python3 -m unittest DEV.TESTS.test_rd01_shipped_projection_repairs -v
-DEV/TOOLS/run_maintenance_audit
+```
+
+Coherent checkpoint: all Task-2 changed projections + focused tests are green together. No unrelated runtime/schema changes.
+
+## Task 3 — R033/R050 bounded current-projection closure
+
+**Files**
+- Inspect `GAME/CORE/**`, `GAME/SCHEMA/**`, `DEV/PROJECT_MAP.md`, `DEV/TOOLS/audit_engine.py` only for exact R033/R050 proof.
+- Modify `DEV/TESTS/test_rd01_shipped_projection_repairs.py`.
+- Modify a newly discovered active prose-only GAME/CORE consumer only after recording its exact path and tying it to R033/R050; a machine/schema/runtime contradiction is returned to its owning RD rather than edited here.
+
+Run RED/GREEN scan test:
+```bash
+python3 -m unittest DEV.TESTS.test_rd01_shipped_projection_repairs.CoreCurrentProjectionTests -v
+```
+Expected GREEN after any exact in-scope prose repair. Historical provenance is not rewritten merely to erase stale history.
+
+REFACTOR: keep scan patterns exact to current forbidden semantics; no broad “old words” detector.
+
+VERIFY / completion:
+```bash
+python3 -m unittest DEV.TESTS.test_rd01_shipped_projection_repairs -v
+python3 DEV/TOOLS/run_maintenance_audit.py
 python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
 ```
-Expected: PASS.
+Expected PASS.
 
-Version Impact Gate: read `DEV/RELEASE/VERSIONING.md` and detailed owner; record `NONE` or exact mechanically required namespace transitions from actual delta.
+Version Impact Gate: read current version owner and record `NONE` or exact mechanically required namespace transition from actual delta. System Impact Gate: any discovered need for runtime/schema/authority change is an owning-RD plan impact, not RD-01 scope expansion.
 
 Completion evidence:
 - all seven direct leaves map to explicit assertions/repairs;
@@ -112,4 +132,4 @@ Completion evidence:
 - no trigger-gated/no-work item activated;
 - remote read-back and hosted CI obtained after publication.
 
-Final commit boundary: RD-01 independently reviewable and resumable; no runtime implementation is pulled into this unit.
+Final coherent checkpoint: Task 3 verification green + Task 2 checkpoint already green; RD-01 independently reviewable/resumable with no production runtime pulled in.
