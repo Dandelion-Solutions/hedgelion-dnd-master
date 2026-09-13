@@ -153,6 +153,20 @@ Pure proof routes come from `2026-09-13-implementation-planning-lossless-proof-l
 
 After future implementation only: all focused RD tests green; package proof ledger green for current rows; full DEV unittest discovery green; `python3 DEV/TOOLS/run_maintenance_audit.py` green; retired-authority stale searches clean; schema/catalog/checkpoint/version/migration evidence coherent; owner/ref reread current; hosted CI success on exact publication HEAD. Failed join returns to owning RD task, never architecture invention.
 
+## Independednt Senior HG review reminders
+
+`Independednt Senior HG review` is the exact Product-Owner reminder marker. Its spelling is intentional and should remain unchanged unless the Product Owner requests otherwise.
+
+These reminders do **not** add a new dependency edge type, semantic owner or unconditional wave barrier. They preserve condition-bound independent Senior Hourglass review points so an execution worker cannot accidentally pass the relevant maturity point without checking whether an HG trigger is due.
+
+- **HG-01 — satisfied / reopen only.** The public HG-01 result is already closed. Revisit only if later work materially invalidates the open-semantic -> bounded-deterministic hourglass premise; ordinary implementation pressure to add primitives is handled through HG-07/HG-08 instead.
+- **HG-04 — satisfied / reopen only.** Revisit only if later work materially changes the generic mechanically-resolved check/save path, accepted execution/idempotency evidence semantics, or introduces a requirement that mechanically resolved outcomes must always mutate authoritative world state.
+- **Any wave — `Independednt Senior HG review`: HG-07 + HG-08.** Before accepting or implementing a proposal that activates or materially expands executable primitives, catalogs, schemas, protocols or typed authority boundaries beyond already accepted realization, independently challenge necessity and semantic-to-core regression. This is trigger-driven; it does not stop unrelated work.
+- **At EW-5 exit — `Independednt Senior HG review`: evaluate HG-02 + HG-03 + runtime HG-06.** If the implementation now exposes a credible production CORE/context-loading strategy, a coherent one-turn Interpreter/Dramaturg/Actor/mechanics/persistence/Narrator path, and/or the executable runtime vertical slice needed for one-off House-Rule adjudication, run the applicable independent HG review before claiming those affected runtime surfaces production-ready or closing them as accepted. If a required executable surface does not yet exist, carry the unsatisfied trigger forward rather than manufacturing a premature test.
+- **After a verified playable multi-turn vertical slice exists — `Independednt Senior HG review`: HG-05.** Run the adaptive campaign-divergence review before claiming that role containment plus persistence discipline is validated for open-ended campaign play and no later than MVP gameplay acceptance. If EW-7 completes before such a playable slice exists, the trigger remains pending outside this execution-wave package.
+
+HG review evidence may constrain repair or reopen architecture when warranted, but the reminder itself is not approval to invent new architecture, execute gameplay bootstrap, or bypass the normal System-Impact/Senior process.
+
 ## Worker checkpoint policy
 
 Use substantial atomic commits: one RD task cluster or named cross-RD join normally. Do not batch unrelated owners merely because they share a wave number. Do not split an atomic schema+validator+consumer migration into invalid intermediate commits.
