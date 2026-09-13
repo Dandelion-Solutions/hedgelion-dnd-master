@@ -1,173 +1,263 @@
 # RD-02 — Information / Knowledge / Disclosure / Message — Executable Implementation Plan
 
-Goal: realize distinct v1 owner-native lore-fact, Actor knowledge, human disclosure and retained-message contracts; remove legacy parallel epistemic/secret representations.
+> For implementation workers: execute task-by-task under the current HDM execution process and Superpowers TDD workflow. No production implementation begins before independent Senior plan GO.
+
+Goal: realize distinct v1 owner-native lore-fact, fictional knowledge, human disclosure and retained-message contracts, plus the positive evidence-normalization path that feeds those owners without creating a parallel epistemic/history authority.
 
 RD unit: `RD-02`
 Direct readiness: `R007,R008,R009,R017,R049,R052`.
 Composite slices/parents: `R006.INFO,R016.INFO,R018.INFO,R053.INFO,R062.KNOWLEDGE,R062.DISCLOSURE,R062.RETAINED_MESSAGE`.
-Pure-proof leaves: none directly owned.
-Canonical owners: Step-4 truth/knowledge/role/context Story; host delivery/disclosure boundary; WP-10; WP-11; exact Step-2 records.
-Dependencies/joins: owner shapes precede RD-04 route/HOT integration; joins RD-09 for LIVE/currentness where applicable; constrains RD-03/RD-11/RD-13 without serializing them.
-Out of scope: HOT implementation, LIVE lifecycle, Story authority, generic memory/state service, release migration.
+Canonical owners: Step-4 truth/knowledge/disclosure/history, host delivery boundary, WP-10, WP-11, exact Step-2 records.
+Dependencies/joins: RD-04 supplies route/HOT mechanics after owner shapes; RD-09 supplies LIVE source/currentness evidence; RD-13 accepts native SemanticEvent/history drafts; RD-03/14 may supply bounded embedded-epistemic input at their accepted ingestion boundaries. No authority transfer.
+Out of scope: HOT implementation, LIVE lifecycle ownership, Story authority, generic memory/state service, historical migration execution.
 
-## Impact Envelope
+## Implementation Impact Envelope
 
-Primary owner artifacts: accepted specs remain read-only authority.
-GAME runtime/projection surfaces: `GAME/SCHEMA/lore.schema.yaml`, `pc.schema.yaml`, `npc.schema.yaml`, `faction.schema.yaml`, `location.schema.yaml`, `item.schema.yaml`, `GAME/SCHEMA/README.md`, `GAME/CORE/INFORMATION.md`, `GAME/TEMPLATE/STORAGE_README.md`.
-DEV schemas/catalogs/machine contracts: `NEW_CREATE DEV/SCHEMAS/world-lore-fact-state.schema.json`, `world-knowledge-state.schema.json`, `runtime-disclosure-state.schema.json`, `runtime-message-state.schema.json`; direct projection consumers `DEV/PROJECT_MAP.md`, `DEV/TOOLS/audit_engine.py`.
-Validators/tests/audits: `NEW_CREATE DEV/TESTS/test_rd02_information_native_contracts.py`; existing maintenance audit consumes `DEV/TOOLS/audit_engine.py`.
-Documentation/install/package projections: only the exact README/project-map/storage projection files named above.
-Cross-RD joins: RD-04 route law; RD-09 currentness; RD-11 Context eligibility/ranking; RD-13 semantic history; no authority transfer.
-Explicit exclusions / authority not transferred: no `Secret` owner; no truth.disputed owner; disclosure never implies Actor knowledge; path/index/cache never epistemic authority; no generic memory/state service.
-Version Impact: deferred to actual execution delta and version-owner classification.
-Schema/catalog/checkpoint impact: expected new schema-generation impact; exact bump selected at Version Impact Gate, not here.
-Migration impact: none for v1 clean-slate unless an accepted concrete compatibility trigger exists at execution time.
-HG-01 constraints affected: constraint 3 only; missing representation is implementation debt, not new architecture.
-Currentness/re-read set before write: Step-4, disclosure boundary, WP-10/11, exact readiness records, all GAME/DEV paths named in this envelope.
+SPEC / APPROVED DESIGN: Step-4 §§4–7, 12.2, 24.2; WP-10/11; exact readiness records.
+BASELINE REF: fresh branch HEAD at execution.
 
-## Task 1 — RED for authority separation and legacy contamination
+EXPECTED OWNERS TO CHANGE:
+- native information contracts;
+- information-normalization runtime capability owned by the information boundary;
+- active legacy GAME epistemic projections.
 
-Files:
-- `NEW_CREATE DEV/TESTS/test_rd02_information_native_contracts.py`
-- `INSPECT_ONLY GAME/SCHEMA/lore.schema.yaml`
-- `INSPECT_ONLY GAME/SCHEMA/pc.schema.yaml`
-- `INSPECT_ONLY GAME/SCHEMA/npc.schema.yaml`
-- `INSPECT_ONLY GAME/SCHEMA/faction.schema.yaml`
-- `INSPECT_ONLY GAME/SCHEMA/location.schema.yaml`
-- `INSPECT_ONLY GAME/SCHEMA/item.schema.yaml`
-- `INSPECT_ONLY GAME/CORE/INFORMATION.md`
-- `INSPECT_ONLY DEV/TOOLS/audit_engine.py`
+EXPECTED CONSUMERS TO CHANGE:
+- RD-09 LIVE handoff/compaction adapter;
+- RD-03 Actor epistemic transition consumer;
+- RD-13 native SemanticEvent/history consumer;
+- RD-14/bootstrap ingestion only where accepted embedded epistemic input exists.
 
-Interfaces asserted:
-- `world.lore_fact` objective fact record;
-- `world.knowledge` identity `(knower_id,fact_id)`;
-- `runtime.disclosure` identity `(player_id,fact_id)`;
-- retained `runtime.message` with source-native identity/retention contract;
-- all four remain semantically separate.
+ALLOWED INTERFACES / CONTRACTS TO CHANGE:
+- Create `GAME/TOOLS/information.py`;
+- create four owner schemas plus `DEV/SCHEMAS/information-normalization-result.schema.json`;
+- replace/modify exact GAME schemas/projections named below;
+- tests/audit/project-map projections.
 
-RED cases:
-1. required owner-native schemas are absent;
-2. legacy `secret_ids` / equivalent embedded knowledge or disclosure aliases remain in old GAME entity schemas;
-3. disclosure cannot validate as knowledge and knowledge cannot validate as disclosure;
-4. no schema may infer truth from knowledge/disclosure/message presence;
-5. no `Secret`, `truth.disputed`, or parallel epistemic authority may be admitted;
-6. shipped schema/audit projections still describe old epistemic ownership before repair.
+PROTECTED INVARIANTS:
+- `world.lore_fact`, `world.knowledge`, `runtime.disclosure`, retained Message and SemanticEvent/history remain distinct owners;
+- disclosure never implies fictional knowledge;
+- transcript/message exposure never implies objective truth;
+- PC voluntary belief/suspicion/rejection is not silently chosen;
+- normalization is deterministic validation/routing, not generic memory or truth inference;
+- LIVE/legacy embedded evidence ceases to be parallel current authority after accepted normalization;
+- recipient isolation is mandatory.
+
+Version Impact: classify actual schema/API changes task-by-task. No historical campaign migration is activated by this plan.
+
+## Shared-file coordination
+
+`GAME/SCHEMA/location.schema.yaml` is shared with RD-04 R015. RD-04 removes only reverse `present_entity_ids`; RD-02 then removes epistemic `known_fact_ids` / `secret_ids` against the fresh file. This is a shared-file checkpoint order, not semantic serialization.
+
+`GAME/SCHEMA/pc.schema.yaml`, `npc.schema.yaml`, `item.schema.yaml` are later retired by RD-03. RD-02 first removes forbidden epistemic authority so no intermediate accepted checkpoint preserves a parallel knowledge/Secret owner.
+
+## Task 1 — RED: owner separation, normalization and contamination
+
+**Files**
+- Create: `DEV/TESTS/test_rd02_information_native_contracts.py`
+- Inspect: the six named legacy GAME schemas and `GAME/CORE/INFORMATION.md`.
+
+**Required interfaces to be absent at RED**
+```text
+normalize_information_evidence(evidence, source_basis, recipient_scope) -> InformationNormalizationResult
+normalize_live_material_evidence(live_evidence, source_basis, recipient_scope) -> InformationNormalizationResult
+normalize_embedded_epistemic_input(source_record, source_basis) -> InformationNormalizationResult
+validate_knowledge_transition(candidate, current_relation, eligible_sources) -> KnowledgeTransitionResult
+```
+
+**RED groups**
+- `NativeInformationSchemaTests`: required owner-native schemas absent and cross-owner identity substitution rejected;
+- `InformationNormalizationTests`: positive claim/evidence -> typed owner mutation route absent;
+- `LegacyInformationProjectionTests`: active embedded `secret_ids` / knowledge aliases remain;
+- `RecipientIsolationTests`: no callable path yet proves player/subject separation.
 
 Run:
 ```bash
-python3 -m unittest DEV.TESTS.test_rd02_information_native_contracts -v
+python3 -m unittest DEV.TESTS.test_rd02_information_native_contracts.NativeInformationSchemaTests -v
+python3 -m unittest DEV.TESTS.test_rd02_information_native_contracts.InformationNormalizationTests -v
 ```
-Expected: RED for missing native schemas and known legacy contamination/projection drift only.
+Expected RED for missing native contracts/normalizer. Do not publish RED-only checkpoint.
 
-Commit boundary: combine with Task 2 unless the RED fixture itself is a useful coherent diagnostic checkpoint.
+## Task 2 — GREEN: native owner machine contracts
 
-## Task 2 — Create canonical DEV machine schemas
+**Files**
+- Create: `DEV/SCHEMAS/world-lore-fact-state.schema.json`
+- Create: `DEV/SCHEMAS/world-knowledge-state.schema.json`
+- Create: `DEV/SCHEMAS/runtime-disclosure-state.schema.json`
+- Create: `DEV/SCHEMAS/runtime-message-state.schema.json`
+- Create: `DEV/SCHEMAS/information-normalization-result.schema.json`
+- Modify: `DEV/TESTS/test_rd02_information_native_contracts.py`
 
-Files:
-- `NEW_CREATE DEV/SCHEMAS/world-lore-fact-state.schema.json`
-- `NEW_CREATE DEV/SCHEMAS/world-knowledge-state.schema.json`
-- `NEW_CREATE DEV/SCHEMAS/runtime-disclosure-state.schema.json`
-- `NEW_CREATE DEV/SCHEMAS/runtime-message-state.schema.json`
-- `EXISTING_MODIFY DEV/TESTS/test_rd02_information_native_contracts.py`
+**Normalization result contract**
+```text
+InformationNormalizationResult {
+  lore_fact_candidates: tuple[LoreFactCandidate, ...]
+  knowledge_transitions: tuple[KnowledgeTransitionCandidate, ...]
+  disclosure_transitions: tuple[DisclosureTransitionCandidate, ...]
+  semantic_event_drafts: tuple[SemanticEventDraft, ...]
+  rejected_inputs: tuple[RejectedInformationEvidence, ...]
+}
+```
+This object is ephemeral typed output. It is not a durable owner, transaction log or generic mutation bus.
 
-GREEN requirements:
-- encode complete native identities and structural owner payloads, not generic property bags;
-- knowledge identity order is `knower_id,fact_id`;
-- disclosure identity order is `player_id,fact_id`;
-- preserve objective fact vs fictional knowledge/belief vs human disclosure vs retained communication;
-- Message remains delivery/history evidence, not ACL, knowledge or canon owner;
-- physical WP-11 route is not encoded as semantic identity.
-
-Run focused test; expected new-contract assertions GREEN while legacy-contamination assertions remain RED until Task 3.
-
-REFACTOR: reuse existing DEV schema idioms locally; do not create a generic world-state envelope.
-
-Commit boundary: four owner schemas + focused tests.
-
-## Task 3 — Replace legacy GAME epistemic representation
-
-Files:
-- `EXISTING_REPLACE GAME/SCHEMA/lore.schema.yaml`
-- `EXISTING_MODIFY GAME/SCHEMA/pc.schema.yaml`
-- `EXISTING_MODIFY GAME/SCHEMA/npc.schema.yaml`
-- `EXISTING_MODIFY GAME/SCHEMA/faction.schema.yaml`
-- `EXISTING_MODIFY GAME/SCHEMA/location.schema.yaml`
-- `EXISTING_MODIFY GAME/SCHEMA/item.schema.yaml`
-- `EXISTING_MODIFY GAME/SCHEMA/README.md`
-- `EXISTING_MODIFY GAME/CORE/INFORMATION.md` only to remove a test-proven contradiction; otherwise record `INSPECT_ONLY` and preserve its current v1 distinctions
-- `EXISTING_MODIFY GAME/TEMPLATE/STORAGE_README.md`
-- `EXISTING_MODIFY DEV/PROJECT_MAP.md`
-- `EXISTING_MODIFY DEV/TOOLS/audit_engine.py`
-
-Coordination law: RD-02 removes epistemic/secret ownership from PC/NPC/item now; RD-03 later retires those three whole native schemas in favor of Actor/Asset/Effect. RD-02 must not wait for RD-03 to remove forbidden parallel epistemic authority.
-
-RED: focused assertions identify every active legacy epistemic field in the six named GAME schemas and stale direct projection assertions in README/project-map/audit.
-
-GREEN:
-- remove parallel authority rather than maintain compatibility aliases;
-- GAME projections refer to native information owners/IDs according to accepted contracts;
-- `lore.schema.yaml` becomes the shipped projection of objective `world.lore_fact`, not combined truth/knowledge/dispute lifecycle;
-- preserve correct `GAME/CORE/INFORMATION.md` laws unless a contradiction is concretely proven;
-- do not resurrect absent `world_state.schema.yaml`.
+GREEN schema requirements: complete native identities; knowledge key `(knower_id,fact_id)`; disclosure key `(player_id,fact_id)`; objective fact vs fictional stance vs human exposure vs retained communication remain structurally distinct; Message stays evidence, not ACL/knowledge/canon.
 
 Run:
 ```bash
-python3 -m unittest DEV.TESTS.test_rd02_information_native_contracts -v
-DEV/TOOLS/run_maintenance_audit
+python3 -m unittest DEV.TESTS.test_rd02_information_native_contracts.NativeInformationSchemaTests -v
 ```
-Expected: legacy-contamination and direct projection checks PASS.
+Expected GREEN. Legacy and runtime-normalization test groups may remain RED until their own task, so the coherent checkpoint includes only the schema test group and must not claim whole-file suite green.
 
-Commit boundary: legacy epistemic retirement + direct consumer synchronization.
+REFACTOR: follow existing DEV schema idioms; no generic state envelope.
 
-## Task 4 — Validation/projection closure without a new registry
+Coherent checkpoint: five DEV contracts + schema-only focused test group. Published checkpoint is explicitly `RD02-TASK2`, not RD-02 completion.
 
-Files:
-- `EXISTING_MODIFY DEV/TESTS/test_rd02_information_native_contracts.py`
-- `EXISTING_MODIFY DEV/TOOLS/audit_engine.py`
-- `EXISTING_MODIFY DEV/PROJECT_MAP.md`
-- `INSPECT_ONLY DEV/SCHEMAS/identifier-policies.schema.json`
-- `INSPECT_ONLY DEV/SCHEMAS/catalog-definition.schema.json`
-- `INSPECT_ONLY DEV/SCHEMAS/core-catalog.schema.json`
+## Task 3 — GREEN: deterministic information normalizer
 
-Current planning decision: RD-02 does **not** create or expand a generic family/catalog registry merely to register campaign-state owner families. The three catalog/identifier schemas above are re-read as contamination guards; modify them only if a fresh owner-required contradiction is proven, in which case that is a plan-impact finding requiring review before code change rather than an execution-time guess.
+**Files**
+- Create: `GAME/TOOLS/information.py`
+- Modify: `DEV/TESTS/test_rd02_information_native_contracts.py`
+- Modify: `DEV/PROJECT_MAP.md`
+- Modify: `DEV/TOOLS/audit_engine.py`
 
-RED/GREEN cases:
-- each new schema validates its complete native identity;
-- forbidden legacy aliases fail focused validation;
-- owner family/identity mismatch fails;
-- existing catalog/identifier contracts are not repurposed into campaign-state semantic authority.
+**Interfaces**
+```text
+normalize_information_evidence(evidence, source_basis, recipient_scope) -> InformationNormalizationResult
+normalize_live_material_evidence(live_evidence, source_basis, recipient_scope) -> InformationNormalizationResult
+normalize_embedded_epistemic_input(source_record, source_basis) -> InformationNormalizationResult
+validate_knowledge_transition(candidate, current_relation, eligible_sources) -> KnowledgeTransitionResult
+```
 
-VERIFY:
+**Rules**
+- evidence type and source basis determine which owner candidates are legal; the normalizer never infers truth merely from message/transcript/LIVE presence;
+- objective proposition identity is created/reused only when Step-4 promotion threshold is met;
+- knowledge transition is subject-local and validates eligible source refs;
+- disclosure transition is player-local and records only delivered/exposed aspect actually supported by host evidence;
+- SemanticEvent draft is causal/history evidence only and is handed to RD-13 native history owner;
+- PC `believed/suspected/rejected` requires explicit player-authored or admitted cognition-constraining evidence;
+- embedded legacy epistemic arrays are accepted only as bounded ingestion/migration input and cease to be writable authority after normalized output; no historical migration is executed here;
+- output contains typed candidates, not commits; owner-specific commit APIs perform authoritative mutation.
+
+**RED/GREEN cases**
+- same claim disclosed to Player A creates no Player B disclosure and no automatic PC knowledge;
+- NPC claim may produce `aware/believed` candidate only when eligible subject evidence supports it;
+- objective-status disclosure requires exact truth transition ref;
+- transcript/LIVE statement without truth evidence cannot create `truth.established`;
+- embedded `known/belief/suspicion` input normalizes to subject relations without retaining writable arrays;
+- rejected/ineligible evidence produces typed rejection and zero owner mutation candidates.
+
+Run:
+```bash
+python3 -m unittest DEV.TESTS.test_rd02_information_native_contracts.InformationNormalizationTests -v
+python3 -m unittest DEV.TESTS.test_rd02_information_native_contracts.RecipientIsolationTests -v
+```
+Expected GREEN.
+
+REFACTOR: owner-specific candidate builders may be private functions in `information.py`; do not split into generic mutation/event services.
+
+Coherent checkpoint: normalizer + result schema integration + positive/negative normalization tests + audit/project-map projection.
+
+## Task 4 — replace legacy GAME epistemic representation
+
+**Files**
+- Replace: `GAME/SCHEMA/lore.schema.yaml`
+- Modify: `GAME/SCHEMA/pc.schema.yaml`
+- Modify: `GAME/SCHEMA/npc.schema.yaml`
+- Modify: `GAME/SCHEMA/faction.schema.yaml`
+- Modify: `GAME/SCHEMA/location.schema.yaml` after RD-04 shared-file checkpoint
+- Modify: `GAME/SCHEMA/item.schema.yaml`
+- Modify: `GAME/SCHEMA/README.md`
+- Modify conditionally only on test-proven contradiction: `GAME/CORE/INFORMATION.md`; otherwise inspect-only
+- Modify: `GAME/TEMPLATE/STORAGE_README.md`
+- Modify: `DEV/PROJECT_MAP.md`
+- Modify: `DEV/TOOLS/audit_engine.py`
+- Modify: `DEV/TESTS/test_rd02_information_native_contracts.py`
+
+**RED**: enumerate every current legacy epistemic field in these six exact schemas and stale direct projections.
+
+**GREEN**
+- remove parallel writable epistemic/Secret authority, not alias it;
+- `lore.schema.yaml` projects `world.lore_fact`, not combined truth/knowledge/dispute lifecycle;
+- Location cleanup preserves RD-04 removal of `present_entity_ids`;
+- no absent `world_state.schema.yaml` is resurrected.
+
+Run:
+```bash
+python3 -m unittest DEV.TESTS.test_rd02_information_native_contracts.LegacyInformationProjectionTests -v
+python3 DEV/TOOLS/run_maintenance_audit.py
+```
+Expected GREEN.
+
+Coherent checkpoint: all six coordinated GAME schema/projection edits + focused test/audit. This checkpoint must not knowingly leave one of those active schemas as a parallel epistemic authority.
+
+## Task 5 — install the LIVE normalization consumer (`R053.INFO` / `R053.LIVE` join)
+
+**Files**
+- Modify: `GAME/TOOLS/information.py`
+- Modify in RD-09 checkpoint: `GAME/TOOLS/live_state.py`
+- Modify: `DEV/TESTS/test_rd02_information_native_contracts.py`
+- Modify in RD-09 suite: `DEV/TESTS/test_rd09_access_live.py`
+- Inspect/consume: RD-13 native SemanticEvent/history interface once published.
+
+**Producer/consumer contract**
+```text
+RD-09 close/absorb/handoff
+  -> extract typed material LIVE evidence at one exact selected source revision
+  -> RD-02 normalize_live_material_evidence(...)
+  -> owner-specific Lore/Knowledge/Disclosure candidates
+  -> RD-13 SemanticEventDraft candidate where material history is required
+  -> native owner validation/commit through ordinary owner transaction/durability routes
+  -> only after accepted handoff may legacy LIVE epistemic arrays cease to participate as current source evidence
+```
+
+RD-09 owns LIVE lifecycle/currentness and source extraction. RD-02 owns information normalization semantics. RD-13 owns native SemanticEvent/history. RD-04 owns route/HOT mechanics. No participant can substitute for another.
+
+**Integration cases**
+- live-observed material knowledge becomes one native `world.knowledge` relation with source basis and no surviving second global LIVE relation after handoff;
+- human disclosure normalizes to exact player only;
+- material event history is handed to native history owner, not Story;
+- close/absorb is blocked/retryable when required normalization candidate cannot be validated/committed;
+- non-material/ephemeral LIVE evidence need not create durable relation;
+- current source movement invalidates the extraction basis; no mixed-revision normalization.
+
+Run after RD-09 consumer exists:
+```bash
+python3 -m unittest DEV.TESTS.test_rd02_information_native_contracts.InformationNormalizationTests -v
+python3 -m unittest DEV.TESTS.test_rd09_access_live.LiveInformationNormalizationIntegrationTests -v
+```
+Expected GREEN before R053 parent can close.
+
+Coherent checkpoint: cross-RD integration commit contains the smallest compatible RD-02/RD-09 consumer wiring + tests; it does not move LIVE or history authority.
+
+## Task 6 — embedded-epistemic ingestion consumers
+
+RD-03 Actor materialization and RD-14 bootstrap may encounter admitted embedded legacy/input epistemic state. They consume `normalize_embedded_epistemic_input(...)` before accepting native v1 state and must prove the source arrays are not retained as writable authority.
+
+No migration scan/job is created. If execution currentness shows no admitted input path can still carry these fields, record the consumer as `NOT_APPLICABLE_CURRENT_V1` with evidence rather than inventing a compatibility path.
+
+Focused acceptance is owned by the consuming RD tests and referenced from the package proof ledger.
+
+## Task 7 — RD-02 closure / composite evidence
+
+**Files**
+- Modify: `DEV/TESTS/test_rd02_information_native_contracts.py`
+- Modify: `DEV/TOOLS/audit_engine.py`
+- Inspect active `GAME/**`/`DEV/**` only through bounded stale queries; arbitrary matches do not grant write authority.
+
+Required evidence:
+- R006/R016/R018 information slices have native schema + positive consumer routes;
+- R053.INFO/LIVE integration test is GREEN;
+- `R062.KNOWLEDGE`, `.DISCLOSURE`, `.RETAINED_MESSAGE` map to exact owner contracts/tests;
+- no active embedded writable knowledge/Secret/disclosure shortcut remains;
+- downstream context/history/routing joins are named without authority transfer.
+
+Full verification:
 ```bash
 python3 -m unittest DEV.TESTS.test_rd02_information_native_contracts -v
-DEV/TOOLS/run_maintenance_audit
+python3 DEV/TOOLS/run_maintenance_audit.py
 python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
 ```
-Expected: PASS.
+Expected PASS for all currently realized deterministic/scenario obligations.
 
-## Task 5 — Composite-parent and stale-reference closure
+Version Impact Gate: classify new/changed schema/API generations and synchronize required projections. System Impact Gate stops if implementation requires a new information/history/transaction owner or broader compatibility/migration policy.
 
-Files:
-- `EXISTING_MODIFY DEV/TESTS/test_rd02_information_native_contracts.py`
-- `INSPECT_ONLY GAME/**`
-- `INSPECT_ONLY DEV/**`
-
-The repository-wide scan is proof scope, not authorization to edit arbitrary matches. Active stale matches outside the explicit Task 3 file set are classified before modification: historical/design evidence remains untouched; a current runtime/projection consumer not listed by this plan is an Impact Envelope deviation and must be added through plan review rather than silently edited.
-
-Evidence required:
-- `R062.KNOWLEDGE`, `.DISCLOSURE`, `.RETAINED_MESSAGE` map to exact machine contracts and focused proof;
-- R006/R016/R018/R053 information slices are accounted without claiming non-information slices;
-- no unauthorized `secret_ids`, embedded epistemic authority or disclosure=>knowledge shortcut remains in active v1 GAME surfaces;
-- downstream RD-04/RD-09/RD-11/RD-13 joins are recorded, not prematurely implemented.
-
-Version Impact Gate: classify actual new/changed schema generations and projections using current version owners; synchronize required changes in the same coherent checkpoint.
-
-Final verification:
-```bash
-python3 -m unittest DEV.TESTS.test_rd02_information_native_contracts -v
-DEV/TOOLS/run_maintenance_audit
-python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
-```
-Then hosted CI on published exact HEAD.
-
-Completion boundary: RD-02 is independently reviewable when native contracts, explicit GAME retirement edits, validation and composite-slice evidence are coherent; RD-04 routing/HOT behavior is not required for RD-02 semantic completion.
+Final coherent checkpoint: native schemas + normalizer + active legacy retirement + installed consumers + focused/integration proof. Pure proof/package parent closure remains in the package proof ledger, not pre-claimed here.
