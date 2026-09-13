@@ -7,6 +7,11 @@ Purpose: prevent readiness or composite closure from being credited by identity 
 
 Canonical inputs are WP-27 final readiness + Step-2 evidence ledger and the exact owner suites referenced by those records. This ledger does not create requirements or activate future-trigger leaves.
 
+Owner-suite appendices:
+- `2026-09-13-implementation-planning-lossless-proof-ledger-wp12-wp13.md`
+- `2026-09-13-implementation-planning-lossless-proof-ledger-wp14-wp15.md`
+- `2026-09-13-implementation-planning-lossless-proof-ledger-wp16-wp17.md`
+
 ## Proof channel law
 
 Every current proof obligation is assigned exactly one primary channel and may have supporting channels:
@@ -48,7 +53,7 @@ Its classes are package-level witnesses over implemented RD interfaces; they do 
 | R058 | later empirical protocol/MVP assurance where owner trigger requires | future empirical run | EMPIRICAL_DEFERRED | TRIGGER_NOT_ACTIVE |
 | R061 | bounded discovery, no broad scan, lawful degradation, typed context bounds and authority separation | `ContextBoundednessProofTests` over RD-11 | INTEGRATION_SCENARIO | CURRENT_PLANNED |
 | R061 | supported-target context empirical evaluation | future empirical run | EMPIRICAL_DEFERRED | TRIGGER_NOT_ACTIVE |
-| R068 | all 17 WP-12 §14 themes | `Wp12HotProofTests` | FOCUSED_BEHAVIOR + INTEGRATION_SCENARIO | SEE_WP12_WP13_LEDGER |
+| R068 | all 17 WP-12 §14 themes | `Wp12HotProofTests` | FOCUSED_BEHAVIOR + INTEGRATION_SCENARIO | SEE_WP12_WP13_APPENDIX |
 | R088 | owner-first positive/negative/failure/indeterminate proof and reverse reconciliation | `OwnerFirstReconciliationProofTests` | INTEGRATION_SCENARIO + STATIC_AUDIT | CURRENT_PLANNED |
 | R089 | channel limits: static/scenario/empirical/exact-head CI remain distinct | `ProofChannelDisciplineTests` + exact-head CI evidence | STATIC_AUDIT + HOSTED_CI | CURRENT_PLANNED |
 
@@ -56,15 +61,15 @@ Its classes are package-level witnesses over implemented RD interfaces; they do 
 
 These direct leaves cannot be closed merely because their owning RD functional tests pass generally:
 
-| Readiness | Exact suite | Package witness |
-|---|---|---|
-| R071 | WP-13 §15 items 1–38 | `Wp13DurabilityProofTests` |
-| R074 | WP-14 §15 items 13–25 | `Wp14RecoveryProofTests` |
-| R077 | WP-15 §13 items 9–17 | `Wp15TemporalProofTests` |
-| R080 | WP-16 §15 items 1–22 | `Wp16LiveAccessProofTests` |
-| R083 | WP-17 §28 complete downstream verification list | `Wp17CollaborationProofTests` |
-| R099 | qualifying sparse T0 capture/rejection/lookup/zero-extra-serial | `T0HistoricalBasisProofTests` |
-| R102 | Story-local T0 + self-contained Commentator control/filter/currentness separation | `CommentatorSelfContainedProofTests` |
+| Readiness | Exact suite | Package witness | Item ledger |
+|---|---|---|---|
+| R071 | WP-13 §15 items 1–38 | `Wp13DurabilityProofTests` | WP-12/WP-13 appendix |
+| R074 | WP-14 §15 items 13–25 | `Wp14RecoveryProofTests` | WP-14/WP-15 appendix |
+| R077 | WP-15 §13 items 9–17 | `Wp15TemporalProofTests` | WP-14/WP-15 appendix |
+| R080 | WP-16 §15 items 1–21 current machine/scenario + item 22 measured-target empirical branch | `Wp16LiveAccessProofTests` | WP-16/WP-17 appendix |
+| R083 | WP-17 §28 26 explicit verification themes | `Wp17CollaborationProofTests` | WP-16/WP-17 appendix |
+| R099 | qualifying sparse T0 capture/rejection/lookup/zero-extra-serial | `T0HistoricalBasisProofTests` | this control ledger + RD-13 named cases |
+| R102 | Story-local T0 + self-contained Commentator control/filter/currentness separation | `CommentatorSelfContainedProofTests` | this control ledger + RD-13 named cases |
 
 R099 current deterministic rows must prove retained T0 remains explainable after T1 mutation, invalid/current-pointer/hidden-reasoning capture rejection, bounded lookup and zero-extra-serial design. Real-target critical-path observation remains `EMPIRICAL_DEFERRED` until its trigger.
 
@@ -100,7 +105,7 @@ It verifies that schema/catalog/API/checkpoint/version impacts introduced by sib
 ## Completion rule
 
 SIP-009 is author-repaired only when:
-1. this control ledger and both owner-suite appendices are routed from the package index;
+1. this control ledger and all three named owner-suite appendices are routed from the package index;
 2. every owner-suite item has a named package test/scenario and supporting RD target;
 3. composite parent witnesses and package Version Impact reconciliation are present;
 4. future empirical/release triggers remain dormant rather than being counted as current failures;
