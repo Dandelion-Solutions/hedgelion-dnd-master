@@ -10,7 +10,7 @@ Task brief:
 
 - `2026-08-20-step-5-8-multiplayer-live-epoch-ownership-task-brief.md`
 
-This document records verified repository state, external primary-source evidence, lab evidence, derived constraints and a provisional architecture recommendation. It is intentionally noncanonical until analytical challenge and adversarial review are complete.
+This document records verified repository state, external primary-source evidence, isolated feasibility evidence, derived constraints and a provisional architecture recommendation. It is intentionally noncanonical until analytical challenge and adversarial review are complete.
 
 ---
 
@@ -227,13 +227,9 @@ Primary-source references reviewed:
 
 ---
 
-# 4. Lab evidence
+# 4. Isolated feasibility evidence
 
-A dedicated branch was created in `dkolyada/hedgelion-dnd-master-lab`:
-
-```text
-experiment/step-5-8-live-cas-001
-```
+An isolated feasibility fixture was used for this check; source-specific repository and branch identifiers are not material to the public architecture record.
 
 Fixture:
 
@@ -248,7 +244,7 @@ value: initial
 Initial blob:
 
 ```text
-ae35e8f1249bc9355a986750ce32891d3fcd3611
+B0
 ```
 
 Writer F froze the epoch by replacing the file with expected old blob:
@@ -261,16 +257,16 @@ revision: 1
 Successful close commit:
 
 ```text
-459a5a154340e6b60ff4edb5a8885f13a3960fcf
+CLOSE_COMMIT
 ```
 
 New blob:
 
 ```text
-5d331c75f58cb78da8738d83b591f47943067d44
+B1
 ```
 
-A stale gameplay writer then attempted to replace the file using the **same original expected blob** `ae35e8f...` and received HTTP `409` conflict. The stale write was not published.
+A stale gameplay writer then attempted to replace the file using the **same original expected blob** `B0` and received HTTP `409` conflict. The stale write was not published.
 
 Final source remained `closed`.
 
@@ -294,10 +290,6 @@ application authorization
 ```
 
 not repository CAS alone.
-
-### Lab hygiene note
-
-Before creating the dedicated branch, an accidental placeholder file was briefly written to lab `main` and then immediately deleted by a forward revert-style commit. Product repository was never affected. The lab main tree was restored but now contains those two harmless history commits. No force history rewrite was performed or will be performed.
 
 ---
 
