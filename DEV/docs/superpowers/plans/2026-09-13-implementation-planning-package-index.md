@@ -1,6 +1,6 @@
 # HDM Implementation Planning Package — Index
 
-Status: **PB-02 COMPLETE / PB-03 ACTIVE**
+Status: **PB-03 COMPLETE / PB-04 ACTIVE**
 Date: 2026-09-13
 
 Control artifacts:
@@ -20,15 +20,18 @@ PB-02 completed artifacts:
 - `2026-09-13-RD-04-owner-native-routing-index-hot-plan.md`
 - `2026-09-13-PB-02-rd01-rd04-closure.md`
 
+PB-03 completed artifacts:
+
+- `2026-09-13-PB-03-rd05-rd08-source-manifest.md`
+- `2026-09-13-RD-05-deterministic-execution-fixed-rng-plan.md`
+- `2026-09-13-RD-06-save-durability-publication-plan.md`
+- `2026-09-13-RD-07-current-native-recovery-checkpoint-plan.md`
+- `2026-09-13-RD-08-temporal-thread-current-state-plan.md`
+- `2026-09-13-PB-03-rd05-rd08-closure.md`
+
 Remaining RD artifacts:
 
 ```text
-PB-03
-RD-05  deterministic execution / fixed RNG / native failure adapters
-RD-06  SAVE / durability / publication currentness
-RD-07  recovery / checkpoint alignment
-RD-08  temporal / thread / current-state ownership
-
 PB-04
 RD-09  principal / LIVE / currentness
 RD-10  role / handoff / protected emission
@@ -53,10 +56,13 @@ Current status:
 ```text
 PB-01: COMPLETE
 PB-02: COMPLETE
-PB-03: ACTIVE
-PB-04..PB-07: NOT_STARTED
-RD_PLANS_COMPLETE: 4 / 14
+PB-03: COMPLETE
+PB-04: ACTIVE
+PB-05..PB-07: NOT_STARTED
+RD_PLANS_COMPLETE: 8 / 14
 PB02_DIRECT_LEAVES_PLANNED: 38
+PB03_DIRECT_LEAVES_PLANNED: 22
+CUMULATIVE_DIRECT_LEAVES_PLANNED: 60 / 116
 TRIGGER_GATED_PRESERVED: 12 / 12
 NO_WORK_PRESERVED: 79 / 79
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
