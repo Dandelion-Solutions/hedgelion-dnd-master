@@ -12,10 +12,13 @@ Canonical owners: R2.3, WP-09, WP-08, R2.4 consumer/fallback contract, Step-4 kn
 - `NEW_CREATE GAME/TOOLS/context_budget.py`
 - `NEW_CREATE DEV/SCHEMAS/context-need-profile.schema.json`
 - `NEW_CREATE DEV/SCHEMAS/context-trace.schema.json`
+- `INSPECT_ONLY GAME/SCHEMA/current_state.schema.yaml`
+- `INSPECT_ONLY GAME/SCHEMA/scene.schema.yaml`
+- `INSPECT_ONLY GAME/SCHEMA/index.schema.yaml`
+- native owner schemas/indexes are read/routing inputs only; RD-11 has no blanket authority to edit them
 - no durable GAME schema/root for RoleContextBundle, ContextTrace, profile, source basis or estimator state
-- existing CURRENT/scene/index/native owner schemas are read/routing inputs only; modify them only if a proven stale projection falsely grants context authority
 - `NEW_CREATE DEV/TESTS/test_rd11_context_runtime.py`
-- direct CORE/project-map/audit projections only where required.
+- direct project-map/audit projection updates only.
 
 Forbidden: generic memory DB, vector/graph authority, persistent context bundle/trace/profile/source basis, provider-specific fixed percentages, exact hidden-token dependency, full-world/full-history fallback, arbitrary graph walk, ranking-before-eligibility, optional eviction of required evidence, persistent fairness ledger, background retrieval worker, trace-as-prompt/authority, index/cache omission as semantic absence.
 
@@ -56,7 +59,7 @@ Rules:
 - physical prompt presence, explicit mention, ranking score, scene presence or cache presence never grants eligibility;
 - secret-bearing routing/trace remains internal unless independently eligible.
 
-RD-09 currentness/principal evidence is consumed where applicable; Context Runtime never owns it.
+RD-09 currentness/principal evidence is consumed where applicable; Context Runtime never owns it. If an inspected native routing/schema surface contradicts these accepted laws, worker stops and returns to planning authority rather than expanding RD-11 write scope.
 
 ## Task 4 — bounded required packet closure
 
@@ -149,7 +152,7 @@ DEV/TOOLS/run_maintenance_audit
 python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
 ```
 
-Version Impact Gate classifies DEV ephemeral validation-contract/catalog/profile registrations and any directly touched routing projections. No durable campaign migration exists for RoleContextBundle/Trace/profile/source basis.
+Version Impact Gate classifies DEV ephemeral validation-contract/profile registrations and direct project-map/audit projections. No durable campaign migration exists for RoleContextBundle/Trace/profile/source basis.
 
 Negative stale proof must find no durable context-memory owner, hidden-token dependency, ranking/physical-presence eligibility, required-evidence eviction, arbitrary graph/history scan, trace-as-evidence/output, persistent fairness, background retrieval authority or global R122 synchronization.
 
