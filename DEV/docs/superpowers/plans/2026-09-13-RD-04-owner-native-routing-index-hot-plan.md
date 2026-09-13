@@ -13,28 +13,30 @@ Out of scope: gameplay semantics, global transaction manager, publication timing
 ## Impact Envelope
 
 Primary owner artifacts: WP-11/WP-12 remain read-only architecture authority.
-GAME runtime/projection surfaces: `GAME/SCHEMA/index.schema.yaml` and exact storage/config projections whose current contracts conflict with WP-11/12; no pre-existing `GAME/HOT` authority is assumed.
-DEV schemas/catalogs/machine contracts: `NEW_CREATE DEV/SCHEMAS/native-route.schema.json`, `native-owner-hot-envelope.schema.json` if schema contracts are the existing machine-contract convention; exact shared identifier/storage schemas only as required. Implementation code paths are selected from the current DEV tooling/runtime structure during execution rather than inventing a generic service layer.
-Validators/tests/audits: `NEW_CREATE DEV/TESTS/test_rd04_native_routing_index_hot.py`; route vectors, integrity mismatch, index rebuild and HOT authority-negative tests.
+GAME runtime/projection surfaces: `GAME/SCHEMA/index.schema.yaml`, `GAME/SCHEMA/README.md`, `GAME/TEMPLATE/STORAGE_README.md`, `GAME/TOOLS/native_storage.py`, `GAME/TOOLS/hot_store.py`.
+DEV schemas/catalogs/machine contracts: `NEW_CREATE DEV/SCHEMAS/native-route.schema.json`, `native-family-index.schema.json`, `native-owner-hot-envelope.schema.json`; projection/audit consumers `DEV/PROJECT_MAP.md`, `DEV/TOOLS/audit_engine.py`.
+Validators/tests/audits: `NEW_CREATE DEV/TESTS/test_rd04_native_routing_index_hot.py`.
 Cross-RD joins: native owner schemas from RD-02/RD-03 first at integration; later families plug into same routing/HOT law without transferring ownership.
 Explicit exclusions / authority not transferred: path/hash/shard/index/SQL rowid/order/time are never identity, chronology, eligibility, currentness or publication authority; no generic ID registry/state service/global dirty frontier; no SQLite+LIVE distributed transaction; no automatic partitioning without accepted trigger.
 Version Impact: classify actual schema/API/storage contract delta at execution checkpoint.
-Schema/catalog/checkpoint impact: route/HOT machine contracts expected; checkpoint semantics remain untouched.
+Schema/catalog/checkpoint impact: route/index/HOT machine-contract generation may change; checkpoint semantics remain untouched.
 Migration impact: none during v1 clean-slate implementation absent accepted concrete compatibility trigger.
 HG-01 constraints affected: constraint 3; absence of old HOT implementation does not create new semantic architecture.
-Currentness/re-read set before write: WP-11, WP-12, exact readiness records, finalized native family schemas being integrated, current GAME storage/index schemas, current DEV tools/tests/schema conventions.
+Currentness/re-read set before write: WP-11, WP-12, exact readiness records, finalized RD-02/RD-03 family schemas, `GAME/SCHEMA/index.schema.yaml`, `GAME/SCHEMA/README.md`, `GAME/TEMPLATE/STORAGE_README.md`, existing `GAME/TOOLS/init_campaign.py`, `GAME/TOOLS/ruleset_package.py`, `DEV/PROJECT_MAP.md`, `DEV/TOOLS/audit_engine.py`.
 
 ## Task 1 — RED: canonical WP-11 route vectors and authority negatives
 
 Files:
 - `NEW_CREATE DEV/TESTS/test_rd04_native_routing_index_hot.py`
-- `NEW_CREATE DEV/SCHEMAS/native-route.schema.json` only in GREEN step if current machine-contract convention requires a serialized route contract.
+- `NEW_CREATE DEV/SCHEMAS/native-route.schema.json`
+- `NEW_CREATE GAME/TOOLS/native_storage.py` in Task 2.
 
 Interfaces:
 ```text
-route(family_key, ordered_identity_components) -> family-root relative record path
+route_native_record(family_key: str, identity_components: tuple[str, ...]) -> str
+validate_loaded_identity(family_key, identity_components, document) -> None
 ```
-Route input must use the exact `HDM-WP11-ROUTE-V1` framing, uint32be component count/lengths, SHA-256 two-level bucket and unpadded base32hex encoded route input chunks.
+Route input uses exact `HDM-WP11-ROUTE-V1` framing, uint32be component count/lengths, SHA-256 two-level bucket and unpadded base32hex encoded route-input chunks.
 
 RED cases:
 1. fixed vectors for simple identity and composite `world.knowledge(knower_id,fact_id)` / `runtime.disclosure(player_id,fact_id)` routes;
@@ -52,27 +54,48 @@ Expected: RED because route implementation/contract is absent.
 ## Task 2 — GREEN: deterministic native route implementation
 
 Files:
-- `NEW_CREATE` smallest current DEV runtime/tool module suitable for reusable deterministic storage routing; choose exact path after fresh inspection of `DEV/TOOLS`/runtime modules and record it in execution status before write.
-- `NEW_CREATE DEV/SCHEMAS/native-route.schema.json` only if an externalized machine contract is required by current validator architecture.
-- `EXISTING_MODIFY` exact storage/manifest consumers only where route roots are represented.
+- `NEW_CREATE GAME/TOOLS/native_storage.py`
+- `NEW_CREATE DEV/SCHEMAS/native-route.schema.json`
+- `EXISTING_MODIFY DEV/PROJECT_MAP.md`
+- `EXISTING_MODIFY DEV/TOOLS/audit_engine.py`
 
 GREEN:
-- implement exact framing/hash/encoding/chunk law, no alternative path scheme;
+- implement `route_native_record(...)` and `validate_loaded_identity(...)` exactly once in shipped code;
+- encode the owner-defined family root + ordered complete native identity contract in `native-route.schema.json` without turning that schema into identity allocator/semantic authority;
+- implement exact framing/hash/encoding/chunk law, no alternate path scheme;
 - consume native identity but never allocate it;
-- exceptional fixed routes (manifest/config/card/current/allocator/LIVE/Story) remain explicit and do not pass through generic native route function where WP-11 excludes them.
+- exceptional fixed routes (manifest/config/card/current/allocator/LIVE/Story) remain explicit and are not passed through native routing where WP-11 excludes them;
+- development audit validates fixed vectors/importability rather than re-implementing a second router.
 
-VERIFY focused route-vector tests PASS.
+VERIFY:
+```bash
+python3 -m unittest DEV.TESTS.test_rd04_native_routing_index_hot -v
+DEV/TOOLS/run_maintenance_audit
+```
+Expected: route-vector/integrity assertions PASS.
 
-REFACTOR: isolate encoding/framing helpers only when doing so does not create a new identity authority.
+REFACTOR: private framing/encoding helpers may live inside `GAME/TOOLS/native_storage.py`; do not add a second identity or path module.
 
-Commit boundary: deterministic routing + vectors + integrity validation contract.
+Commit boundary: deterministic routing + vectors + integrity validation contract + audit projection.
 
-## Task 3 — Rebuildable family index contract
+## Task 3 — Rebuildable family-index contract
 
 Files:
-- `EXISTING_REPLACE GAME/SCHEMA/index.schema.yaml` if current generic shape cannot encode WP-11 compact family-index rules without retaining false authority;
-- `NEW_CREATE DEV/SCHEMAS/native-family-index.schema.json` if needed by the DEV validation layer;
-- exact route/index helper module from Task 2.
+- `EXISTING_REPLACE GAME/SCHEMA/index.schema.yaml`
+- `NEW_CREATE DEV/SCHEMAS/native-family-index.schema.json`
+- `EXISTING_MODIFY GAME/TOOLS/native_storage.py`
+- `EXISTING_MODIFY GAME/SCHEMA/README.md`
+- `EXISTING_MODIFY GAME/TEMPLATE/STORAGE_README.md`
+- `EXISTING_MODIFY DEV/PROJECT_MAP.md`
+- `EXISTING_MODIFY DEV/TOOLS/audit_engine.py`
+- `EXISTING_MODIFY DEV/TESTS/test_rd04_native_routing_index_hot.py`
+
+Interfaces:
+```text
+rebuild_family_index(family_key, native_records) -> family_index_document
+resolve_discovery_candidate(family_key, index_entry) -> native_route
+```
+Neither function establishes semantic existence/currentness; caller must rehydrate and validate native body.
 
 RED cases:
 - discovery uses expected family index only, then exact candidate route, then body identity/eligibility revalidation;
@@ -82,25 +105,31 @@ RED cases:
 - known-ID route bypasses index;
 - partitioned index shape is rejected absent WP-24 trigger.
 
-GREEN: implement/reconcile compact family-index validation and deterministic rebuild helpers from native families. Keep monolithic `*_INDEX.yaml` baseline.
+GREEN: replace old generic index contract with compact family-index projection and deterministic rebuild helper from native records. Keep monolithic `*_INDEX.yaml` baseline.
 
-Commit boundary: family-index contract + rebuild proof.
+VERIFY focused test + maintenance audit PASS.
+
+Commit boundary: family-index contract/rebuild + shipped/schema/docs/audit synchronization.
 
 ## Task 4 — RED/GREEN: typed native-owner HOT envelope
 
 Files:
 - `NEW_CREATE DEV/SCHEMAS/native-owner-hot-envelope.schema.json`
-- `NEW_CREATE` narrow local HOT data-access module in the current DEV/runtime implementation tree selected during execution inspection;
-- tests remain in `DEV/TESTS/test_rd04_native_routing_index_hot.py`.
+- `NEW_CREATE GAME/TOOLS/hot_store.py`
+- `EXISTING_MODIFY DEV/TESTS/test_rd04_native_routing_index_hot.py`
+- `EXISTING_MODIFY DEV/PROJECT_MAP.md`
+- `EXISTING_MODIFY DEV/TOOLS/audit_engine.py`
 
-Required interface semantics:
+Required shipped interface:
 ```text
-campaign_authority_context
-+ native_family
-+ complete_native_identity
--> one current validated owner representation
+class NativeHotStore:
+    get(campaign_authority_context, native_family, complete_native_identity)
+    establish_current(..., owner_document, source_basis, owner_generation)
+    mark_dirty(..., owner_generation, scope)
+    clear_published_generation(..., frozen_generation, scope)
+    rebuild_helper(...)
 ```
-Source/ref/revision/tree/blob and writable partition are metadata/currentness basis, not second semantic key.
+The class is a typed persistence/cache substrate, not semantic owner. Source/ref/revision/tree/blob and writable partition are metadata/currentness basis, not second semantic key.
 
 RED cases:
 - unknown family, invalid shape or identity mismatch rejected;
@@ -110,33 +139,47 @@ RED cases:
 - clean source-derived copies distinguish source basis from owner generation;
 - narrow derived helpers are rebuildable and cannot prove semantic absence.
 
-GREEN: implement smallest typed envelope/store API and SQLite baseline needed to pass cases. Exact DDL/serialization/pragmas are delegated implementation details, but schemas/API must mechanically preserve WP-12 laws.
+GREEN: implement the smallest SQLite-backed store in `GAME/TOOLS/hot_store.py` needed for these contracts. Exact DDL/serialization/pragmas are delegated implementation details but remain private to this module and must preserve WP-12 laws.
 
-Commit boundary: typed owner-envelope HOT core, independently usable by later integration.
+VERIFY focused test + maintenance audit PASS.
+
+Commit boundary: typed owner-envelope HOT core + machine schema + audit projection, independently usable by later integration.
 
 ## Task 5 — Atomicity, dirty-generation and LIVE-boundary proof
 
+Files:
+- `EXISTING_MODIFY GAME/TOOLS/hot_store.py`
+- `EXISTING_MODIFY DEV/TESTS/test_rd04_native_routing_index_hot.py`
+
 RED/GREEN scenarios:
-- one permitted local owner establishment transaction atomically advances all implicated local owner/evidence/dirty/helper state or none;
+- one permitted local owner-establishment transaction atomically advances all implicated local owner/evidence/dirty/helper state or none;
 - no SQLite transaction spans player choice, model/host exchange, repo/network I/O, campaign publication, LIVE CAS or external research;
 - dirty bookkeeping is owner-generation/scope relative, not campaign-global frontier;
-- publication-success helper can clear only the exact frozen generation, leaving newer generation dirty;
+- publication-success helper clears only the exact frozen generation, leaving newer generation dirty;
 - pre-CAS LIVE consequence cannot replace current accepted owner state;
 - post-CAS local adoption cannot roll back accepted remote CAS;
 - surviving SQLite on cold start is cache unless source-equivalence is proven.
 
-This task tests/implements only the reusable HOT substrate admitted by WP-12; actual RD-05/RD-09 publication/LIVE owner behavior remains in those plans.
+This task implements only the reusable HOT substrate admitted by WP-12; actual RD-05/RD-09 publication/LIVE behavior remains outside this module.
+
+Commit boundary: HOT atomicity/currentness helper behavior with focused tests.
 
 ## Task 6 — R018 route/root integration and closure
 
-After RD-02/RD-03 owner schemas are final, integrate their family/root/identity definitions into routing validation without creating a registry authority. Record joins for later owner families rather than blocking RD-04 on their semantic implementation.
+Files:
+- `EXISTING_MODIFY GAME/TOOLS/native_storage.py`
+- `EXISTING_MODIFY DEV/SCHEMAS/native-route.schema.json`
+- `EXISTING_MODIFY DEV/TESTS/test_rd04_native_routing_index_hot.py`
+- `INSPECT_ONLY` finalized RD-02 and RD-03 native owner schemas.
+
+After RD-02/RD-03 owner schemas are final, integrate their family/root/identity definitions into routing validation without creating a registry authority. Later owner families join through the same explicit contract in their owning RD plans.
 
 Required proof includes:
 - `world.knowledge` direct composite route under `WORLD/KNOWLEDGE`;
 - `runtime.disclosure` direct composite route under `STATE/RUNTIME/DISCLOSURES`;
 - Actor/Asset/Effect roots exactly as WP-11;
 - native body identity validation after route/hydration;
-- index route rules and HOT envelope use native owner definitions.
+- index route rules and HOT envelope consume native owner definitions rather than redefine them.
 
 Full verification:
 ```bash
@@ -148,6 +191,6 @@ Expected: PASS.
 
 Version Impact Gate: classify actual storage/schema/API namespaces under current version owners; synchronize mechanically required bumps/projections exactly once.
 
-Stale/negative proof: active GAME/DEV contains no generic ID registry, path-as-identity/currentness rule, SQL-order chronology, authoritative index-absence inference, global dirty frontier, automatic index partitioning or SQLite+LIVE distributed transaction.
+Stale/negative proof is encoded in the focused test over active `GAME/**`, `DEV/SCHEMAS/**`, `DEV/PROJECT_MAP.md` and `DEV/TOOLS/audit_engine.py`: no generic ID registry, path-as-identity/currentness rule, SQL-order chronology, authoritative index-absence inference, global dirty frontier, automatic index partitioning or SQLite+LIVE distributed transaction.
 
-Final commit boundary: route vectors + index contract + typed HOT substrate + currently available R018 owner integrations form one reviewable RD-04 result. Later semantic families join through the same contract without reopening RD-04 ownership.
+Final commit boundary: `native_storage.py` + route/index contracts + `hot_store.py` + HOT envelope + tests + current owner integrations form one reviewable RD-04 result.
