@@ -1,38 +1,32 @@
 # HDM Implementation Planning Package — Index
 
-Status: **PB-06 COMPLETE / PB-07 ACTIVE**
+Status: **PB-01..PB-07 COMPLETE / AWAITING INDEPENDENT SENIOR REVIEW**
 Date: 2026-09-13
 
-Control: master plan, conventions, Impact/TDD contract, RD template, this index.
-
-Completed:
+Completed package:
 ```text
+PB-01 control/conventions/template/Impact-TDD/index
 PB-02 source manifest + RD-01..RD-04 + closure
 PB-03 source manifest + RD-05..RD-08 + closure
 PB-04 source manifest + RD-09..RD-11 + closure
 PB-05 source manifest + RD-12..RD-14 + repaired closure
 PB-06 2026-09-13-implementation-planning-execution-waves.md
       2026-09-13-PB-06-execution-waves-closure.md
-```
-
-PB-07 artifacts:
-```text
-2026-09-13-implementation-planning-bidirectional-coverage.md
-2026-09-13-implementation-planning-senior-review-brief.md
+PB-07 2026-09-13-implementation-planning-bidirectional-coverage.md
+      2026-09-13-implementation-planning-senior-review-brief.md
+      2026-09-13-PB-07-coverage-senior-handoff-closure.md
 ```
 
 ```text
-PB-01..PB-06: COMPLETE
-PB-07: ACTIVE
 RD_PLANS_COMPLETE: 14 / 14
-PB02_DIRECT: 38
-PB03_DIRECT: 22
-PB04_DIRECT: 34
-PB05_DIRECT: 22
-CUMULATIVE_DIRECT: 116 / 116
+DIRECT: 116 / 116
+PURE_PROOF: 9 / 9 routed
+COMPOSITE_PARENTS: 8 / 8 routed
+AUTHOR_ACTIVE_COVERAGE: 133 / 133 PASS
 TRIGGER_GATED_PRESERVED: 12 / 12
 NO_WORK_PRESERVED: 79 / 79
+INDEPENDENT_SENIOR_REVIEW: PENDING
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 ```
 
-PB-07 alone may establish package-level 133/133 bidirectional closure. `DEV/CURRENT_PROGRESS.md` and master cursor control active work.
+Next authorized work is the independent Senior review gate only. `DEV/CURRENT_PROGRESS.md` is global authority.
