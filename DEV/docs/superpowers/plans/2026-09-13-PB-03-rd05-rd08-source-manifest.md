@@ -23,7 +23,7 @@ This manifest is subordinate to accepted native owners, exact WP-27 Step-2 readi
 ## RD-05 — deterministic execution / fixed RNG / failure adapters
 
 Direct readiness: `R034,R035,R036,R042,R046,R112`.
-Composite contribution: `R062.RUNTIME_LIFECYCLE_EVIDENCE`.
+Composite contributions: `R016.EXECUTION,R018.EXECUTION,R062.RUNTIME_LIFECYCLE_EVIDENCE`.
 
 Owner boundaries:
 - runtime lifecycle owners remain Interaction / IntentPlan / Command / Procedure / Resolution / Continuation;
