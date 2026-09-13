@@ -1,50 +1,49 @@
 # HDM Implementation Planning — Independent Senior Review Repair Disposition
 
-Status: AUTHOR REPAIR ACTIVE
+Status: **AUTHOR REPAIR COMPLETE — SUBMITTED FOR INDEPENDENT RE-REVIEW**
 Date: 2026-09-13
 Repair baseline: `33cbebcfb1586061dc9f27d8af72bf1be62a372e`
 Independent reviewed head: `38f4eb527fbbbd3a03e92aed4bf1e7315346cd21`
 Independent result: `2026-09-13-implementation-planning-independent-senior-review-result.md`
+Repair closure: `2026-09-13-implementation-planning-senior-review-repair-closure.md`
 Production implementation authorized: NO.
 
 Purpose: disposition SIP-001..SIP-011 without changing accepted architecture, activating trigger-gated readiness, resurrecting no-work terminals or performing implementation.
 
-## Repair sequence
+## Repair sequence and final disposition
 
 ### AR-1 — concrete owner-native omissions
 
-- SIP-001: repair RD-04 with explicit campaign allocator state/operation/atomic-create consumer and focused proof. Preserve `runtime.id_allocator = campaign-allocator`, fixed `STATE/ID_ALLOCATOR.yaml`, policy-local `last_allocated`, derived `next`, no generic registry/service, no campaign allocator fallback for source-native LIVE identities.
-- SIP-002: route confirmed active stale consumers explicitly: `GAME/SCHEMA/location.schema.yaml` under R015; `GAME/CORE/STORAGE.md` under R012; recheck and explicitly route current WP-13/WP-19 shipped projections before claiming R071/R086 closure.
-- SIP-003: repair RD-02/RD-09 integration with an executable normalization producer/consumer path from admitted LIVE/embedded evidence into native lore/knowledge/disclosure/history relations, preserving separate authorities and recipient isolation.
-- SIP-004: repair RD-03 with owner-local Actor-purpose assessment/current-revision/evidence/NO_CHANGE mutation behavior and continuity draft/validate/publish/promotion path; no generic cognition/memory/mutation service.
-- SIP-005: repair RD-12 to realize current WP-17 obligation lineage/generation, immutable IntentClause identity/content, hold/handoff, closed-set fingerprint, PLAYER routing companion, publication/recovery linkage, three collaboration modes and OOC/diegetic/actionable channels.
-- SIP-006: repair RD-13 with separate native SemanticEvent/history realization, Story-local state, self-contained Commentator control/snapshot/filter/cache path, T0 capture/validity and exact multiplayer Dramaturg horizon generation/invalidation/privacy routes.
-- SIP-007: repair RD-14 to remove the unconditional Story/T0 startup prerequisite, retain gameplay-first provisional initialization, and make generator/identity propagation, initial-tree materialization, retrospective entry, save/menu clear-preserve and creator fail-closed cases executable.
+- SIP-001: **RESOLVED_FOR_RE_REVIEW** — RD-04 now explicitly plans campaign allocator state/operation/atomic-create realization and focused proof while preserving source-native identity boundaries.
+- SIP-002: **RESOLVED_FOR_RE_REVIEW** — active stale consumers are explicitly routed, including Location reverse-presence and STORAGE/recovery surfaces, with proof projections reconciled.
+- SIP-003: **RESOLVED_FOR_RE_REVIEW** — RD-02/RD-09 now plan an executable normalization producer/consumer path from admitted LIVE/embedded evidence into native lore/knowledge/disclosure/history relations without authority collapse.
+- SIP-004: **RESOLVED_FOR_RE_REVIEW** — RD-03 now plans owner-local Actor purpose/current-revision/evidence/NO_CHANGE behavior and continuity draft/validate/publish/promotion.
+- SIP-005: **RESOLVED_FOR_RE_REVIEW** — RD-12 now realizes current WP-17 obligation lineage/generation, immutable IntentClause identity/content, hold/handoff, closed-set fingerprint, PLAYER routing companion, publication/recovery linkage, collaboration modes and channel distinctions.
+- SIP-006: **RESOLVED_FOR_RE_REVIEW** — RD-13 now separately realizes native SemanticEvent/history, Story-local state, self-contained Commentator control/snapshot/filter/cache, T0 and multiplayer Dramaturg routes.
+- SIP-007: **RESOLVED_FOR_RE_REVIEW** — RD-14 removes unconditional Story/T0 startup dependency and makes gameplay-first provisional initialization, generator/identity propagation, initial-tree materialization and product/save/creator paths executable.
 
 ### AR-2 — package-wide executability
 
-- SIP-008: make every RD plan fresh-worker executable at bounded task/checkpoint granularity: exact files, producer/consumer interfaces, named RED cases, exact focused commands, GREEN acceptance, REFACTOR boundary, VERIFY, coherent passing commit boundary and Version/System Impact checkpoints. No knowingly failing intermediate publication checkpoint.
-- SIP-009: add lossless item-level proof/channel reconciliation for all nine pure-proof leaves, mixed proof-bearing leaves, enumerated WP-12/WP-13 themes, composite-parent proof/scenario/negative obligations and one parent Version Impact reconciliation. Future empirical/release branches remain dormant until their exact trigger.
+- SIP-008: **RESOLVED_FOR_RE_REVIEW** — current RD-01..RD-14 worker routes use bounded task/checkpoint/TDD/verification/currentness discipline; RD-08/RD-10/RD-11 use repaired v2 plans; knowingly failing RED-only publication checkpoints are forbidden.
+- SIP-009: **RESOLVED_FOR_RE_REVIEW** — package lossless-proof control ledger plus WP-12/13, WP-14/15 and WP-16/17 appendices preserve enumerated proof obligations item-by-item; composite-parent and parent Version Impact proof routes are explicit; future empirical/release branches remain dormant.
 
 ### AR-3 — execution clarity / mechanical repair
 
-- SIP-010: distinguish HARD_PRECEDES, JOIN_BEFORE_INTEGRATION, integration-completion gates, scheduling preferences and shared-file coordination in execution waves; preserve parallel roots and RD-11/RD-12 core/join separation.
-- SIP-011: replace every literal `DEV/TOOLS/run_maintenance_audit` invocation with `python3 DEV/TOOLS/run_maintenance_audit.py`; RD-12..RD-14 receive explicit focused/audit/full commands under SIP-008.
+- SIP-010: **RESOLVED_FOR_RE_REVIEW** — execution waves now distinguish hard prerequisites, joins, integration-completion gates, scheduling preferences, proof ordering and shared-file coordination; parallel roots and RD-11/RD-12 core/join separation are preserved.
+- SIP-011: **RESOLVED_FOR_RE_REVIEW** — every current routed RD plan was audited; executable maintenance-audit invocations use `python3 DEV/TOOLS/run_maintenance_audit.py`. Historical/non-worker entry-point naming was not rewritten merely for textual uniformity.
 
-## Repair evidence discipline
+`RESOLVED_FOR_RE_REVIEW` is an author disposition, not an independent PASS.
 
-Use the independent result's targeted escalation ledger. Read only the smallest current owner excerpts required to verify each SIP disposition. Author-side prior PASS/coverage documents are not evidence that a finding is resolved.
+## Repair evidence discipline satisfied
 
-Each repair checkpoint must:
+Repair checkpoints used current remote state, edited only planning/control artifacts admitted by the findings, preserved the 133 active readiness identities and accepted E1-E15 ownership, retained trigger/no-work exclusions, and kept `PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO`.
 
-1. fresh-read current remote HEAD;
-2. edit only planning/control artifacts admitted by the finding;
-3. preserve exact readiness identities and accepted E1-E15 ownership;
-4. remote read-back edited artifacts;
-5. verify no conditional worker design choice or placeholder remains in repaired scope;
-6. record Version Impact as development-plan-only unless an accepted owner says otherwise;
-7. keep `PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO`.
+The repaired package now routes current worker plans through `2026-09-13-implementation-planning-package-index.md`, package proof through the lossless-proof ledger and three appendices, scheduling through the repaired execution-waves artifact, and author reconciliation through the repaired bidirectional/currentness artifact.
+
+Fresh currentness comparison found no canonical semantic/runtime/persistence/readiness owner drift during the repair interval. No architecture reopen or Product Owner decision was required.
 
 ## Re-review gate
 
-After SIP-001..SIP-011 are dispositioned, rerun author bidirectional/currentness/proof reconciliation against the repaired package, publish a repair closure/handoff, update `DEV/CURRENT_PROGRESS.md` to genuinely independent Senior re-review only, and do not self-approve the package.
+Author-side repair is closed by `2026-09-13-implementation-planning-senior-review-repair-closure.md`.
+
+Next authorized unit: **genuinely independent Senior implementation-plan re-review only** after control-state publication. The re-review must independently verify SIP-001..SIP-011 and the repaired package and may reject it. No production implementation, migration, release or gameplay bootstrap is authorized before independent PASS/GO and the subsequent repository gate advance.
