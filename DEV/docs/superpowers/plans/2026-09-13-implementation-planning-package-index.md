@@ -42,6 +42,24 @@ RD-14 2026-09-13-RD-14-bootstrap-onboarding-product-plan.md
 
 The earlier files without `-v2` for RD-08/RD-10/RD-11 are superseded planning provenance and are **not** worker execution inputs.
 
+## Lossless package-proof routes
+
+The package-level proof control surface is:
+
+```text
+2026-09-13-implementation-planning-lossless-proof-ledger.md
+2026-09-13-implementation-planning-lossless-proof-ledger-wp12-wp13.md
+2026-09-13-implementation-planning-lossless-proof-ledger-wp14-wp15.md
+2026-09-13-implementation-planning-lossless-proof-ledger-wp16-wp17.md
+```
+
+The control ledger owns channel discipline, pure-proof leaves, composite-parent joins and parent Version Impact reconciliation. The three appendices preserve the explicitly enumerated owner proof suites item-by-item. None of these artifacts claims runtime PASS before implementation.
+
+Planned package witness target:
+```text
+DEV/TESTS/test_implementation_proof_ledger.py
+```
+
 ## Repair accounting
 
 ```text
@@ -57,6 +75,6 @@ OPEN_REPAIR_SCOPE: SIP-001..SIP-011 until author reconciliation closes them
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 ```
 
-Current repair has already changed executable planning substance for allocator/reverse-presence/storage routing, information normalization, Actor continuity behavior, collaboration, Story/Commentator/native history, bootstrap/product flow, and fresh-worker checkpoint quality. These edits do not constitute production implementation.
+Current repair has already changed executable planning substance for allocator/reverse-presence/storage routing, information normalization, Actor continuity behavior, collaboration, Story/Commentator/native history, bootstrap/product flow, recovery maintenance, Procedure/Continuation temporal contracts, temporal/chronology machine alignment, and fresh-worker checkpoint/proof quality. These edits do not constitute production implementation.
 
-The package is not eligible for independent re-review until the lossless proof ledger, execution-wave scheduling clarification, bidirectional/currentness reconciliation, repair closure and fresh verification are all published and read back.
+The package is not eligible for independent re-review until execution-wave scheduling clarification, SIP-011 command audit, bidirectional/currentness reconciliation, repair closure and fresh verification are all published and read back.
