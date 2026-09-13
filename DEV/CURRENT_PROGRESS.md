@@ -4,15 +4,15 @@ Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR THIRD-PASS CLOSED — INDEPENDENT SENIOR RE-REVIEW #2 REQUIRED
-CURRENT_WORKSTREAM: implementation planning independent Senior re-review gate
-CURRENT_SLICE: author adversarial repairs/self-review closed; no production implementation
+GLOBAL_STATE: R2.7 CLOSED — INDEPENDENT SENIOR IMPLEMENTATION-PLAN RE-REVIEW #2 FAILED — AUTHOR REPAIR REQUIRED
+CURRENT_WORKSTREAM: implementation planning author repair after independent Senior re-review #2
+CURRENT_SLICE: SIRR2-001 shipped LIVE/chronology consumer cutover remains unplanned; no production implementation
 
-LAST_CLOSED_UNIT: author third-pass implementation-plan self-review completed against final repair checkpoint 9bbad183dd8c82f281bf334940d25f8ba8131863 with zero open author findings; final handoff/control publication is control-only
-LAST_COMPLETED_WORKER_UNIT: author third-pass self-review closure and independent Senior re-review #2 handoff preparation
-NEXT_ELIGIBLE_UNIT: genuinely independent Senior implementation-plan re-review #2
-NEXT_AUTHORIZED_UNIT: GENUINELY INDEPENDENT SENIOR IMPLEMENTATION-PLAN RE-REVIEW #2 ONLY — follow DEV/docs/superpowers/plans/2026-09-13-implementation-planning-senior-re-review-2-final-brief.md; fresh-bootstrap current remote state; independently challenge current plans, overlays, proof/currentness and RD-01..RD-14; publish PASS / GO or FAIL / REPAIR REQUIRED; do not repair the package while acting as reviewer. No production implementation, migration, release or gameplay bootstrap
-REQUIRED_GATE: genuinely independent Senior implementation-plan re-review #2 PASS / GO -> only then production implementation execution gate
+LAST_CLOSED_UNIT: independent Senior implementation-plan re-review #2 completed against b3d5ba14503458f9ca88b742d16e7a5ee46eaea4 — FAIL / REPAIR REQUIRED; 0 BLOCKING, 1 SIGNIFICANT, 0 MINOR
+LAST_COMPLETED_WORKER_UNIT: independent Senior re-review #2 result and verdict-consistent current-progress publication
+NEXT_ELIGIBLE_UNIT: author planning repair of SIRR2-001, then genuinely independent Senior re-review
+NEXT_AUTHORIZED_UNIT: AUTHOR PLANNING REPAIR ONLY — repair SIRR2-001 under DEV/docs/superpowers/plans/2026-09-13-implementation-planning-independent-senior-re-review-2-result.md; name exact shipped LIVE/chronology consumer actions, tests, green checkpoint, Version Impact and proof joins; then obtain genuinely independent Senior re-review. No production implementation, migration, release or gameplay bootstrap
+REQUIRED_GATE: author planning repair + genuinely independent Senior implementation-plan re-review PASS / GO -> only then production implementation execution gate
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
 FIRST_INDEPENDENT_REVIEWED_HEAD: 38f4eb527fbbbd3a03e92aed4bf1e7315346cd21
@@ -24,6 +24,7 @@ FIRST_SELF_REVIEW_REPAIR_CHECKPOINT: db23d097abfb9a2cfdbeb88b115689566a575bed
 FIRST_SELF_REVIEW_REPAIR_CI_RUN: 34785919811
 AUTHOR_FINAL_REPAIR_CHECKPOINT: 9bbad183dd8c82f281bf334940d25f8ba8131863
 AUTHOR_FINAL_REPAIR_CI_RUN: 34786332166
+INDEPENDENT_RE_REVIEW_2_HEAD: b3d5ba14503458f9ca88b742d16e7a5ee46eaea4
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md
 TASK_LOCAL_PACKAGE_INDEX: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md
@@ -37,6 +38,7 @@ TASK_LOCAL_SECOND_PASS_FINDINGS: DEV/docs/superpowers/plans/2026-09-13-implement
 TASK_LOCAL_SECOND_PASS_ADDENDUM: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-author-second-pass-repair-addendum.md
 TASK_LOCAL_AUTHOR_THIRD_PASS_CLOSURE: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-author-third-pass-self-review-closure.md
 TASK_LOCAL_INDEPENDENT_RE_REVIEW_2_BRIEF: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-senior-re-review-2-final-brief.md
+TASK_LOCAL_INDEPENDENT_RE_REVIEW_2_RESULT: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-independent-senior-re-review-2-result.md
 TASK_LOCAL_PREVIOUS_RE_REVIEW_RESULT: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-independent-senior-re-review-result.md
 
 AUTHOR_SIDE_OPEN_SIRR_FINDINGS: 0
@@ -47,8 +49,12 @@ AUTHOR_THIRD_PASS: PASS FOR INDEPENDENT HANDOFF
 OPEN_AUTHOR_BLOCKING: 0
 OPEN_AUTHOR_SIGNIFICANT: 0
 OPEN_AUTHOR_MINOR: 0
-INDEPENDENTLY_CONFIRMED_SIRR_CLOSURE: PENDING RE-REVIEW #2
-KNOWN_BLOCKERS: mandatory genuinely independent Senior implementation-plan re-review #2 has not yet returned PASS / GO
+INDEPENDENT_OPEN_BLOCKING: 0
+INDEPENDENT_OPEN_SIGNIFICANT: 1
+INDEPENDENT_OPEN_MINOR: 0
+INDEPENDENT_OPEN_FINDINGS: SIRR2-001
+INDEPENDENTLY_CONFIRMED_SIRR_CLOSURE: PARTIAL — SIRR-003 residual tracked as SIRR2-001; numbered proof repair alone does not close executable consumer coverage
+KNOWN_BLOCKERS: SIRR2-001 SIGNIFICANT — GAME/CORE/LIVE_SCENE.md and GAME/CORE/MULTIPLAYER.md are OWNER_ROUTED but have no executable shipped-consumer cutover; WP13-38/WP15-16 and SIP-002/008/009 remain open
 ```
 
 ## Package accounting
@@ -76,15 +82,25 @@ AUTHOR_THIRD_PASS: PASS FOR INDEPENDENT HANDOFF — 0 / 0 / 0 open author findin
 SEMANTIC_OWNER_DRIFT_DURING_SELF_REVIEW: NONE FOUND
 PRODUCT_OWNER_DECISION_REQUIRED_NOW: NO
 ARCHITECTURE_REOPEN_REQUIRED_NOW: NO
-INDEPENDENT_SENIOR_RE_REVIEW_2: REQUIRED / PENDING
+INDEPENDENT_SENIOR_RE_REVIEW_2: FAIL / REPAIR REQUIRED — 0 BLOCKING, 1 SIGNIFICANT, 0 MINOR
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 ```
 
-## Current author disposition
+## Current independent disposition
+
+The independently reviewed remote HEAD is `b3d5ba14503458f9ca88b742d16e7a5ee46eaea4`. The [independent re-review #2 result](docs/superpowers/plans/2026-09-13-implementation-planning-independent-senior-re-review-2-result.md) returns **FAIL / REPAIR REQUIRED** with **0 BLOCKING / 1 SIGNIFICANT / 0 MINOR**.
+
+SIRR2-001: current `LIVE_SCENE.md` still derives epoch ownership from physical scene participation, and `MULTIPLAYER.md` still assigns global chronology meaning to `CURRENT.world_time.frontier`. Current proof/repair routes label these files OWNER_ROUTED to RD-09, but no current RD/overlay assigns their material edits. Required next work is an author plan repair with exact actions, conformance witnesses, coherent green checkpoint and version/consumer reconciliation, followed by independent re-review.
+
+Independent identity accounting is 116 direct + 9 pure-proof + 8 composite = 133 active, with 12 trigger-gated and 79 no-work terminals preserved; R004 is absent. All 14 RD and 125 individual proof duties were checked. Semantic numbering now matches, but WP13-38/WP15-16 executable consumer coverage is incomplete. Counts and successful repair-checkpoint CI do not close that gap.
+
+R2.7 architecture remains closed. No author-package repair or production implementation was performed by the reviewer.
+
+## Recorded author disposition
 
 The author repair chain closes SIRR-001..SIRR-005 and the additional ASR-001..ASR-005 findings on the author side. The final third pass re-checked exact WP-11/WP-18 Story topology, no Story/T0 bootstrap prerequisite under WP-19, Dramaturg `ABSENT | BOUND` basis semantics, LIVE close-versus-absorb separation, exact WP-12/WP-13 proof routing, affected RD composition, reverse coverage and owner/currentness drift. No further author finding was identified.
 
-This author result is not independent gate approval. The independent reviewer must challenge it under the final re-review #2 brief and may return either PASS / GO or FAIL / REPAIR REQUIRED.
+This author result is historical author-side evidence, not independent gate approval. Re-review #2 independently confirmed the selector/Story/Dramaturg/LIVE-close repairs but found a residual shipped-consumer execution gap; the current gate verdict is FAIL / REPAIR REQUIRED.
 
 ```text
 R2_7_FINAL_RECONCILIATION: CLOSED / FINAL INDEPENDENT SENIOR PASS / GO
