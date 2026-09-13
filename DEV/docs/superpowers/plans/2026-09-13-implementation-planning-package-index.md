@@ -1,26 +1,13 @@
 # HDM Implementation Planning Package — Index
 
-Status: **AUTHOR ADVERSARIAL SELF-REVIEW SECOND REPAIR ACTIVE — INDEPENDENT RE-REVIEW #2 NOT YET READY**
+Status: **AUTHOR THIRD-PASS CLOSED — AWAITING GENUINELY INDEPENDENT SENIOR RE-REVIEW #2**
 Date: 2026-09-13
 
 Global gate authority: `DEV/CURRENT_PROGRESS.md`.
+Author repair checkpoint: `9bbad183dd8c82f281bf334940d25f8ba8131863`.
+Author third-pass closure: `2026-09-13-implementation-planning-author-third-pass-self-review-closure.md`.
+Current independent-review brief: `2026-09-13-implementation-planning-senior-re-review-2-final-brief.md`.
 Previous independent finding authority: `2026-09-13-implementation-planning-independent-senior-re-review-result.md`.
-First author self-review findings: `2026-09-13-implementation-planning-author-self-review-findings.md`.
-Second-pass author findings: `2026-09-13-implementation-planning-author-second-pass-findings.md`.
-
-## Package provenance
-
-```text
-PB-01..PB-07 planning package
-first independent Senior review -> FAIL / REPAIR REQUIRED
-SIP-001..SIP-011 author repair -> COMPLETE
-first independent Senior re-review -> FAIL / REPAIR REQUIRED (SIRR-001..005)
-SIRR-001..SIRR-005 author repair -> COMPLETE at 87941ed63028efea71eb38e03375573e31a70be2
-author adversarial self-review -> ASR-001..ASR-003
-first self-review repair -> db23d097abfb9a2cfdbeb88b115689566a575bed
-author second pass -> ASR-004..ASR-005
-current gate -> ASR-004/005 repair + author third-pass verification
-```
 
 ## Current RD-plan routes
 
@@ -42,57 +29,48 @@ RD-13 2026-09-13-RD-13-story-t0-commentator-history-plan.md
 RD-14 2026-09-13-RD-14-bootstrap-onboarding-product-plan.md
 ```
 
-Mandatory overlays, in precedence order:
+Mandatory overlays in precedence order:
 ```text
 1. 2026-09-13-implementation-planning-sirr-repair-amendments.md
 2. 2026-09-13-implementation-planning-author-self-review-repair-addendum.md
 3. 2026-09-13-implementation-planning-author-second-pass-repair-addendum.md
 ```
 
-Later overlays supersede only the exact conflicting repaired detail; unchanged earlier/base content remains authoritative.
+Later overlays supersede only exact conflicting repaired details.
 
 Current applicability:
 ```text
-RD-02: SIRR-005 close/absorb integration wording/tests
-RD-04: ASR-001 seven-selector manifest/schema/STORAGE realization; ASR-005 removes false Story-materialization prerequisite
-RD-06: SIRR-001/SIRR-003 SAVE/publication consumer cutover + proof joins
-RD-09: SIRR-005 two-phase close/absorb semantics/tests
-RD-13: SIRR-002 retained Dramaturg publication/admission; ASR-002 ABSENT|BOUND; ASR-004 exact Story routes; ASR-005 on-demand Story materialization
-RD-14: SIRR-003 generator identity synchronization; ASR-001 selector/schema consumers; ASR-005 no Story bootstrap prerequisite
+RD-02: SIRR-005 close/absorb correction
+RD-04: seven-selector manifest/schema/STORAGE realization; no Story materialization prerequisite
+RD-06: shipped SAVE/PERSISTENCE cutover + exact proof joins
+RD-09: two-phase LIVE close/absorb
+RD-13: retained Dramaturg publication/admission + ABSENT|BOUND + exact Story routes + on-demand Story materialization
+RD-14: exact generator/ruleset identity + selector/schema consumers + no Story bootstrap prerequisite
 ```
 
-Earlier non-v2 RD-08/RD-10/RD-11 files remain superseded provenance.
-
-## Current execution scheduling
+## Current proof/currentness/scheduling routes
 
 ```text
-BASE: 2026-09-13-implementation-planning-execution-waves.md
-SIRR ADDENDUM: 2026-09-13-implementation-planning-execution-waves-sirr-repair-addendum.md
-AUTHOR SELF-REVIEW ADDENDUM: 2026-09-13-implementation-planning-author-self-review-repair-addendum.md
-AUTHOR SECOND-PASS ADDENDUM: 2026-09-13-implementation-planning-author-second-pass-repair-addendum.md
+COVERAGE BASE:
+  2026-09-13-implementation-planning-bidirectional-coverage-v2.md
+  + both author repair addenda as mandatory deltas
+
+LOSSLESS PROOF:
+  2026-09-13-implementation-planning-lossless-proof-ledger-v2.md
+  2026-09-13-implementation-planning-lossless-proof-ledger-wp12-wp13-v2.md
+  2026-09-13-implementation-planning-lossless-proof-ledger-wp14-wp15.md
+  2026-09-13-implementation-planning-lossless-proof-ledger-wp16-wp17.md
+
+SCHEDULING:
+  2026-09-13-implementation-planning-execution-waves.md
+  + SIRR repair addendum
+  + first author self-review addendum
+  + second-pass author addendum
 ```
 
-Important supersession: the first self-review `ROOT_SELECTOR_CUTOVER` that required physical Story realization is removed by the second-pass addendum. RD-04 static selector/schema realization is independently green; RD-13 consumes `story_root` only when Story materializes; R018 joins the route/root and Story slices later.
+The first self-review artificial `ROOT_SELECTOR_CUTOVER` that required physical Story creation is explicitly superseded. RD-04 static selector/schema realization is independently green; RD-13 consumes `story_root` only when Story materializes; R018 joins later.
 
-## Current lossless proof routes
-
-```text
-2026-09-13-implementation-planning-lossless-proof-ledger-v2.md
-2026-09-13-implementation-planning-lossless-proof-ledger-wp12-wp13-v2.md
-2026-09-13-implementation-planning-lossless-proof-ledger-wp14-wp15.md
-2026-09-13-implementation-planning-lossless-proof-ledger-wp16-wp17.md
-```
-
-The current WP-12/WP-13 v2 appendix includes ASR-003 corrections for WP12-05, WP12-11, WP13-19, WP13-20 and row-38 consumer dispositions.
-
-Planned package witness target remains `DEV/TESTS/test_implementation_proof_ledger.py`.
-
-## Current coverage/currentness route
-
-Base reconciliation:
-`2026-09-13-implementation-planning-bidirectional-coverage-v2.md`.
-
-Mandatory deltas are the two author self-review repair addenda. Current accounting remains:
+## Accounting
 
 ```text
 ACTIVE_READINESS: 133
@@ -108,48 +86,45 @@ RD_UNITS: 14
 Relevant repaired reverse map:
 ```text
 R064 -> RD-04 seven static MANIFEST selectors + schema + STORAGE projection
-R018.ROUTE/ROOT -> RD-04 static route contract
-R016.STORY/R018.STORY -> RD-13 exact WP-11/WP-18 Story routes and projection lifecycle
-R085/R131 -> RD-13 retained Dramaturg publication/admission + ABSENT|BOUND basis
-R030/R086 -> RD-14 generator/bootstrap selector/schema consumers without Story startup requirement
-R068/R071 -> corrected lossless proof routes
+R018.ROUTE_ROOT -> RD-04 static topology
+R016.STORY/R018.STORY -> RD-13 exact WP-11/WP-18 Story routes/lifecycle
+R085/R131 -> RD-13 retained Dramaturg publication/admission + ABSENT|BOUND
+R030/R086 -> RD-14 bootstrap consumers without Story startup requirement
+R068/R071 -> corrected exact proof routes
 ```
 
-## Current review/control route
+## Review/control provenance
 
 ```text
-PREVIOUS INDEPENDENT FINDINGS:
+INDEPENDENT RE-REVIEW FINDINGS:
   2026-09-13-implementation-planning-independent-senior-re-review-result.md
 
 SIRR AUTHOR REPAIR:
   2026-09-13-implementation-planning-senior-re-review-repair-disposition.md
   2026-09-13-implementation-planning-sirr-repair-amendments.md
 
-FIRST AUTHOR SELF-REVIEW:
+AUTHOR ADVERSARIAL REVIEW:
   2026-09-13-implementation-planning-author-self-review-findings.md
   2026-09-13-implementation-planning-author-self-review-repair-addendum.md
-
-SECOND AUTHOR PASS:
   2026-09-13-implementation-planning-author-second-pass-findings.md
   2026-09-13-implementation-planning-author-second-pass-repair-addendum.md
+  2026-09-13-implementation-planning-author-third-pass-self-review-closure.md
 
-NEXT INDEPENDENT REVIEW:
-  NOT AUTHORIZED UNTIL AUTHOR THIRD-PASS CLOSURE
+CURRENT INDEPENDENT HANDOFF:
+  2026-09-13-implementation-planning-senior-re-review-2-final-brief.md
 ```
 
-The old `2026-09-13-implementation-planning-senior-re-review-2-brief.md` is now historical/pre-self-review and MUST NOT be used as the next handoff. A fresh brief is created only after third-pass author closure.
+The earlier `2026-09-13-implementation-planning-senior-re-review-2-brief.md` is historical and must not be used for the next review.
 
-## Gate accounting
+## Gate
 
 ```text
-SIRR_FINDINGS: 5
-FIRST_AUTHOR_SELF_REVIEW_FINDINGS: 3 SIGNIFICANT
-SECOND_AUTHOR_PASS_FINDINGS: 2 SIGNIFICANT
-AUTHOR_REPAIR_ROUTES: PUBLISHED / THIRD PASS PENDING
+AUTHOR_THIRD_PASS: PASS FOR INDEPENDENT HANDOFF
+OPEN_AUTHOR_BLOCKING: 0
+OPEN_AUTHOR_SIGNIFICANT: 0
+OPEN_AUTHOR_MINOR: 0
 SEMANTIC_OWNER_DRIFT: NONE FOUND
-DECOMPOSITION_REOPEN: NOT REQUIRED
 HUMAN_PRODUCT_DECISION_REQUIRED: NO
-NEXT_AUTHORIZED_UNIT: AUTHOR THIRD-PASS SELF-REVIEW + EXACT-HEAD VALIDATION ONLY
-INDEPENDENT_RE_REVIEW_2_READY: NO
+NEXT_AUTHORIZED_UNIT: GENUINELY INDEPENDENT SENIOR IMPLEMENTATION-PLAN RE-REVIEW #2 ONLY
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 ```
