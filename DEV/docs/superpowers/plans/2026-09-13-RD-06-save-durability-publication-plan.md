@@ -150,7 +150,7 @@ Scenario suite must cover WP-13 proof obligations relevant to R069-R071, includi
 Full verification:
 ```bash
 python3 -m unittest DEV.TESTS.test_rd06_durability_publication -v
-DEV/TOOLS/run_maintenance_audit
+python3 DEV/TOOLS/run_maintenance_audit.py
 python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
 ```
 Expected: PASS.
