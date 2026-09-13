@@ -385,7 +385,7 @@ LiveSourceCAS(
 
 Canonical architecture does not depend on GitHub Contents API blob-SHA semantics.
 
-Current connector lab evidence is only feasibility evidence that source-local stale writes can be rejected.
+Current isolated connector feasibility evidence shows only that source-local stale writes can be rejected.
 
 A future RepositoryPort may use Git commit/ref CAS, GraphQL expected-head mutation or another supported GitHub primitive preserving equivalent semantics.
 
@@ -486,4 +486,3 @@ NO force rewrite / stale overwrite
 Expected next artifact:
 
 - canonical Step-5.8 specification incorporating candidate + this gate.
-
