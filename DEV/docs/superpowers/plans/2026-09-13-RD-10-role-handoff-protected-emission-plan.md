@@ -9,10 +9,16 @@ Canonical owners: Step-4 role/context owner + single-context amendment, R2.4, WP
 
 - `NEW_CREATE GAME/TOOLS/turn_runtime.py`
 - `NEW_CREATE GAME/TOOLS/emission.py`
-- `EXISTING_MODIFY GAME/CORE/AI_REASONING.md` as primary containment-text owner
-- `EXISTING_MODIFY GAME/CORE/RUNTIME.md` / `GAME/CORE/PLAY_POLICY.md` only for invocation/reference alignment where required
+- `EXISTING_MODIFY GAME/CORE/AI_REASONING.md` as the one primary ordinary-gameplay containment-text owner
+- `INSPECT_ONLY GAME/CORE/RUNTIME.md`
+- `INSPECT_ONLY GAME/CORE/PLAY_POLICY.md`
 - `NEW_CREATE DEV/SCHEMAS/turn-envelope.schema.json`
-- minimal registered phase-result schemas in `DEV/SCHEMAS` only where no current accepted equivalent exists; these validate ephemeral values and are never durable campaign records
+- `NEW_CREATE DEV/SCHEMAS/interpreter-result.schema.json`
+- `NEW_CREATE DEV/SCHEMAS/preparation-draft.schema.json`
+- `NEW_CREATE DEV/SCHEMAS/actor-proposal.schema.json`
+- `NEW_CREATE DEV/SCHEMAS/story-projection-draft.schema.json`
+- `NEW_CREATE DEV/SCHEMAS/narration-result.schema.json`
+- all above DEV schemas validate ephemeral machine values; none is a durable campaign owner
 - `NEW_CREATE DEV/TESTS/test_rd10_role_emission.py`
 - direct audit/project-map projections only.
 
@@ -43,15 +49,18 @@ TurnEnvelope may track legal phases, deterministic frontier refs, bundle/profile
 
 Commit boundary: envelope/rebind/fallback + tests.
 
-## Task 3 — minimum typed handoffs
+## Task 3 — exact minimum typed handoffs
 
-Realize only registered result families needed by current owners (e.g. InterpreterResult, PreparationDraft, ActorProposal/NO_CHANGE, StoryProjectionDraft, NarrationResult) with purpose/subject/recipient/generation scoping.
+Implement the five exact phase-result validation contracts listed in the Impact Envelope. `actor-proposal.schema.json` includes `NO_CHANGE` as the accepted no-op disposition rather than creating a sixth bus/result family.
+
+Every result is scoped by the minimum applicable purpose/subject/recipient/generation identity and carries only the semantic payload required by its registered downstream consumer.
 
 Tests reject:
 - raw RoleContextBundle transport as another phase's evidence;
 - role frames/private source sets/private reasoning as handoff payload;
 - unaccepted drafts as continuity/authority evidence;
-- MechanicalContext substitution for role context.
+- MechanicalContext substitution for role context;
+- arbitrary new role-result family invented by model text.
 
 Deterministic code owns validation, serialization/final IDs/bookkeeping; model-facing transport stays minimum-semantic.
 
@@ -95,7 +104,13 @@ When RD-11 reports `UNSATISFIABLE`, RD-10 chooses exactly one registered finite 
 
 No blind reassembly loop, ad-hoc profile invention, silent guessing, mechanics replay or required-evidence drop.
 
-## Task 8 — verification / Version Impact
+## Task 8 — instruction-owner alignment
+
+Modify only `GAME/CORE/AI_REASONING.md` to carry the primary ordinary-gameplay containment wording equivalent to WP-08. `RUNTIME.md` and `PLAY_POLICY.md` are inspected as consumers/activation owners and are not modified by RD-10 unless a later planning repair explicitly changes the file action.
+
+Static tests/audit must prove there is one primary containment wording owner and no competing role-eligibility rule in active CORE.
+
+## Task 9 — verification / Version Impact
 
 Run:
 ```bash
@@ -104,9 +119,9 @@ DEV/TOOLS/run_maintenance_audit
 python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
 ```
 
-Version Impact Gate classifies CORE instruction-contract and ephemeral machine-schema changes. No durable campaign migration is created by TurnEnvelope/phase-result contracts.
+Version Impact Gate classifies `AI_REASONING.md` instruction-contract and ephemeral machine-schema changes. No durable campaign migration is created by TurnEnvelope/phase-result contracts.
 
-Negative stale proof: one primary containment wording owner (`AI_REASONING.md`), no competing CORE eligibility law, no raw handoff/result bus, no physical-presence eligibility, no Story same-envelope feedback, no late-steering authority, no visible internal surfaces and no sanitizer-only boundary.
+Negative stale proof: one primary containment wording owner, no raw handoff/result bus, no physical-presence eligibility, no Story same-envelope feedback, no late-steering authority, no visible internal surfaces and no sanitizer-only boundary.
 
 ## Currentness fence
 
