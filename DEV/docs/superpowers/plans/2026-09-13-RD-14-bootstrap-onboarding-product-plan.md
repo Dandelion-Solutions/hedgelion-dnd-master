@@ -1,87 +1,52 @@
 # RD-14 — Bootstrap / Onboarding / Product — Executable Implementation Plan
 
-Goal: realize deterministic v1 bootstrap/onboarding that establishes a valid initial authoritative frontier and projects one aligned product/install flow without resurrecting legacy authority or stale GAME layout.
+Goal: realize deterministic v1 bootstrap/onboarding plus product retrospective/save/session-return and creator fail-closed consumers without inventing campaign lifecycle or semantic authority.
 
 Direct readiness: `R030,R086,R098,R100`.
-Composite slice: `R029.ONBOARDING`.
-Owners: bootstrap/product decisions, Actor continuity, Story/T0, collaboration/current-frontier and shipped install projections. RD-03 owns Actor continuity; RD-12 collaboration/frontier; RD-13 Story/T0; RD-09 currentness.
+Composite slices: `R029.ONBOARDING`, `R087.SAVE_SESSION_MENU`.
+Owners: bootstrap/product decisions, Actor continuity, RD-06 save truth, Story/T0, collaboration/currentness and shipped install projections.
 
 ## Impact Envelope
-
 - `NEW_CREATE GAME/TOOLS/bootstrap.py`
-- `NEW_CREATE DEV/SCHEMAS/bootstrap-request.schema.json`
-- `NEW_CREATE DEV/SCHEMAS/bootstrap-result.schema.json`
+- `NEW_CREATE DEV/SCHEMAS/bootstrap-request.schema.json`, `bootstrap-result.schema.json`
 - `EXISTING_REPLACE GAME/INSTALL/00_DND_BOOTSTRAP.md`
-- `EXISTING_MODIFY GAME/INSTALL/PROJECT_INSTRUCTIONS.txt`
-- `EXISTING_MODIFY GAME/INSTALL/README.md`
+- `EXISTING_MODIFY GAME/INSTALL/PROJECT_INSTRUCTIONS.txt`, `GAME/INSTALL/README.md`
 - `NEW_CREATE DEV/TESTS/test_rd14_bootstrap.py`
-- `GAME/CORE/START.md` remains absent; do not recreate as compatibility theater.
+- `GAME/CORE/START.md` remains absent; do not recreate.
 
-Forbidden: bootstrap gameplay before validated initial frontier; hidden default active player; onboarding-owned knowledge/history/currentness; legacy PC/NPC/item authority resurrection; root-relative stale `SESSION/...` writes; instructions diverging from executable machine flow.
+Forbidden: gameplay before validated initial frontier; hidden global/default active player; onboarding-owned knowledge/history/currentness; context clearing before confirmed save; repository permission or PLAYER stable ID substituting for creator provenance; stale root-relative `SESSION/...` writes.
 
-## Task 1 — RED: bootstrap preconditions and deterministic result
+## Task 1 — RED bootstrap/product preconditions
+Tests require explicit request identity/product mode, deterministic stage order, terminal result and no gameplay mutation before valid frontier. Expected RED: no v1 orchestrator.
 
-Create tests for explicit bootstrap request identity/product mode, validated inputs, deterministic stage order and terminal result. Invalid/missing prerequisites fail before gameplay mutation.
+## Task 2 — GREEN request/result + orchestrator
+Implement schemas and `bootstrap(request) -> BootstrapResult`; stages explicit, typed and idempotence-aware. Orchestrator coordinates owners only. Commit boundary: stage machine + tests.
 
-Expected RED: no v1 bootstrap orchestrator exists.
-
-## Task 2 — GREEN: request/result contracts and orchestrator skeleton
-
-Implement schemas and `GAME/TOOLS/bootstrap.py` interface equivalent to:
-```text
-bootstrap(request) -> BootstrapResult
-validate_bootstrap_request(request) -> ValidationResult
-```
-
-Stages are explicit, typed and idempotence-aware. The orchestrator coordinates owner operations; it does not become their semantic authority.
-
-Commit boundary: request/result + stage machine + tests.
-
-## Task 3 — Actor/onboarding join (`R029.ONBOARDING`, `R030`)
-
-Onboarding creates/associates Actor/controlled-actor state only through RD-03 owner contracts. No knowledge arrays, secret authority or legacy PC/NPC semantic duplication is introduced. Principal/control association consumes RD-09/RD-10 contracts.
-
-Tests cover new participant, existing participant rejoin and invalid duplicate/ambiguous control.
+## Task 3 — Actor/onboarding join `R029.ONBOARDING` + R030
+Consume RD-03 Actor/provisional shape and RD-09/RD-10 principal/control. No knowledge arrays or legacy PC/NPC authority. Parent R029 later joins RD-06 durability.
 
 ## Task 4 — initial Story/T0/history/current frontier
+Consume RD-13 accepted T0/history/Story basis and native currentness. Verify coherent frontier before first gameplay mutation; install prose/transcript cannot substitute for missing authority.
 
-Bootstrap obtains the initial accepted Story/T0/history basis from RD-13 and currentness from native owners. It verifies a coherent frontier before accepting the first gameplay mutation.
+## Task 5 — collaboration/rejoin
+Consume RD-12 frontier/catch-up. Recipient gets lawful current projection before mutation; absent participants do not cause global waiting without positive dependency.
 
-No empty-summary, install prose or transcript can stand in for missing authoritative initialization.
+## Task 6 — `R087.SAVE_SESSION_MENU` / R098
+Consume confirmed RD-06 save-success result. Only confirmed success permits session-local context clear/menu return; failed/indeterminate save preserves truthful state and does not pretend completion. Reconcile this branch later with RD-11 retrospective and RD-13 SemanticEvent/T0 branches at R087 parent closure.
 
-## Task 5 — collaboration/rejoin product path
+## Task 7 — creator provenance R086/R100
+Implement creator-only fail-closed consumer path. `RD-09:R078 + RD-14:R086 -> R100`; repository permission, login convenience or PLAYER stable ID never substitutes for creator provenance. Add multiplayer non-interference tests.
 
-For multiplayer bootstrap/rejoin, consume RD-12 frontier/catch-up projection. Joining users receive lawful recipient-scoped context before mutation; absence of another participant does not create global waiting unless a positive dependency exists.
+## Task 8 — shipped projections
+Replace `00_DND_BOOTSTRAP.md`; align project instructions/README to canonical runtime root and machine stage order. Audit stale `SESSION/...` semantics and missing legacy START references.
 
-## Task 6 — shipped install/bootstrap projections
+## Task 9 — failure/retry/idempotence
+Pre-mutation failure leaves no partial authoritative mutation. Post-owner-commit retry consumes owner idempotence/currentness, never blind replay. Test interrupted owner call and duplicate request.
 
-Rewrite `GAME/INSTALL/00_DND_BOOTSTRAP.md` as the v1 executable flow projection. Align `PROJECT_INSTRUCTIONS.txt` and `README.md` with canonical runtime-root semantics and the same stage order. Do not recreate `GAME/CORE/START.md` merely to satisfy stale historical paths.
+## Task 10 — Version Impact/migration/checkpoint/HG-01
+Classify new validation contracts and checkpoint/schema effects. BootstrapResult is operational evidence only. Legacy GAME bootstrap is replaced by v1 contract, not emulated absent an owner requirement. HG-01 remains evidence-only unless activated by current owner.
 
-Tests/audit fixtures should fail on stale `SESSION/...` root semantics or contradictory bootstrap stage order.
+## Task 11 — verification/currentness
+Fresh-read RD-03/RD-06/RD-09/RD-11/RD-12/RD-13, bootstrap/product owners and install surfaces. Run focused unittest, maintenance audit and full DEV discovery. Negative stale proof searches stale root writes, global active-player defaults, pre-frontier mutation, premature context clear, creator-login substitution and onboarding-owned authority.
 
-## Task 7 — failure, retry and idempotence
-
-Define terminal success/failure result and safe retry boundaries. A failed pre-mutation bootstrap leaves no partial authoritative world mutation. Post-owner-commit retries use owner idempotence/currentness contracts rather than blind replay.
-
-Tests cover failure before mutation, interrupted owner call, retry and duplicate request identity.
-
-## Task 8 — Version Impact / migration / checkpoint / HG-01
-
-Classify new bootstrap validation contracts and any checkpoint/schema-version effects. BootstrapResult is operational evidence, not a new durable gameplay authority. Migration from legacy GAME bootstrap is replacement-by-v1 contract, not compatibility emulation unless an accepted owner explicitly requires it.
-
-HG-01 implications are evidence-only unless a current owner makes them implementation requirements.
-
-## Task 9 — verification and currentness fence
-
-Run:
-```bash
-python3 -m unittest DEV.TESTS.test_rd14_bootstrap -v
-DEV/TOOLS/run_maintenance_audit
-python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
-```
-
-Negative stale proof searches for `SESSION/...` root writes, missing legacy START references, global-active-player defaults, onboarding-owned knowledge/history/currentness and pre-frontier gameplay mutation.
-
-Before implementation/closure fresh-read RD-03/RD-09/RD-12/RD-13, bootstrap/product decisions and all three shipped install surfaces. Owner drift stops execution.
-
-RD-14 closes its four direct leaves and `R029.ONBOARDING`; composite-parent/proof/package closure remains PB-07 work.
+RD-14 closes its four direct leaves and listed slices only. `R029` and `R087` parent closure remains package-level join work.
