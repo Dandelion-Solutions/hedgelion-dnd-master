@@ -29,12 +29,13 @@ Mandatory overlays, low to high precedence:
 20. `2026-09-14-implementation-planning-live-source-creation-order-addendum.md`
 21. `2026-09-14-implementation-planning-live-epoch-route-identity-addendum.md`
 22. `2026-09-14-implementation-planning-live-opening-routing-native-state-addendum.md`
+23. `2026-09-14-implementation-planning-runtime-family-r018-proof-closure-amendment.md`
 
-Current execution graph: `2026-09-14-implementation-planning-execution-waves-v2-post-graph.md`, amended for F27–F31 by `2026-09-14-implementation-planning-f27-f31-control-amendment.md`.
-Current coverage: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`, amended for F27–F31 by `2026-09-14-implementation-planning-f27-f31-control-amendment.md`.
-Current proof: historical v2 ledger/appendices + `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` + `2026-09-14-implementation-planning-f27-f31-control-amendment.md` + mandatory exact witness matrix `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md`.
+Current execution graph: `2026-09-14-implementation-planning-execution-waves-v2-post-graph.md`, amended for F27–F31 by `2026-09-14-implementation-planning-f27-f31-control-amendment.md`; F34 adds only a proof-checkpoint join and no new semantic hard edge.
+Current coverage: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`, amended for F27–F31 by `2026-09-14-implementation-planning-f27-f31-control-amendment.md` and for exact runtime-family R018 machine/proof closure by `2026-09-14-implementation-planning-runtime-family-r018-proof-closure-amendment.md`.
+Current proof: historical v2 ledger/appendices + `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` + `2026-09-14-implementation-planning-f27-f31-control-amendment.md` + mandatory exact witness matrix `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md` + later-precedence F34 runtime-family R018 proof amendment.
 
-Findings 16–31 mandatory deltas:
+Findings 16–34 current dispositions:
 - F16: native `world.player` uses enclosing world-record `id` as its single campaign key; strict PLAYER state has no second persisted `player_id`.
 - F17: RD-15/RD-16 obey overlay 5; later-task tests appear only in their own RED-to-GREEN task and are GREEN before publication.
 - F18: catalog-backed RD-05 command acceptance requires RD-15 same-context validated binding and preserves its accepted catalog basis.
@@ -51,9 +52,12 @@ Findings 16–31 mandatory deltas:
 - F29: every pre-existing claimed owner/partition is seeded into initial LIVE state from one exact pinned opening campaign revision `H`; `EPOCH_LOCAL_CREATION` seeds nothing; mixed-basis or incomplete seed blocks route selection.
 - F30: campaign `STATE/RUNTIME/LIVE_ROUTING.yaml` is the v1 completeness-protected current selected-route/claim companion. Valid current absence may prove CAMPAIGN routing; missing/stale/inconsistent companion cannot. Scene/current/index/ref projections cannot prove claim absence.
 - F31: final v1 LIVE source uses typed native-state packing rather than legacy generic overlays. Recovery hydrates native owners from exact selected LIVE state, and absorption deterministically materializes exact CLOSED native state plus required companions into campaign authority while preserving accepted IDs and keeping route removal in the same campaign closure.
+- F32: negative finding — accepted R2.6/deployment/publication owners already supply the required testable exact-source CAS capability boundary; planning must not invent a REST/GraphQL primitive.
+- F33: blocking control-plane regression repaired — `CURRENT_PROGRESS.md` again carries all markers required by maintenance-audit current-progress validation.
+- F34: significant proof/coverage gap repaired — R018 runtime-family closure now requires an exact 17-row schema/root matrix and `R018RuntimeFamilyProofTests`; aggregate 17+17 counts, catalog membership or world-only family proof cannot close R018.
 
 Final census: 17 world families and 17 runtime families; `world.faction` is not an independent v1 family. Counts are not proof.
 
-Accounting: 133 active = 116 direct + 9 proof + 8 composite; 12 trigger-gated; 79 no-work; R004 absent; 16 RD units; 22 overlays.
+Accounting: 133 active = 116 direct + 9 proof + 8 composite; 12 trigger-gated; 79 no-work; R004 absent; 16 RD units; 23 overlays.
 
-Author Findings 1–31 are planning-repaired at the package-router level. F27–F31 proof/coverage/execution routing is supplied by the later-precedence control amendment plus the current witness matrix. All findings remain independently unconfirmed. Independent review remains blocked until fresh zero-open author closure and exact-head hosted validation.
+Author Findings 1–31 and F34 are planning-repaired at the package-router level; F32 is a negative finding and F33 is a repaired control-plane defect. All author-side dispositions remain independently unconfirmed. Independent review remains blocked until the broader adversarial graph audit reaches a fresh zero-open author closure and exact-final-HEAD hosted validation.
