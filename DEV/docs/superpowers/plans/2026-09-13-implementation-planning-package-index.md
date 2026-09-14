@@ -24,14 +24,18 @@ Mandatory overlays, low to high precedence:
 15. `2026-09-14-implementation-planning-catalog-binding-shipped-consumer-addendum.md`
 16. `2026-09-14-implementation-planning-post-graph-integration-addendum.md`
 
+Current bidirectional coverage/currentness route: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`. The 2026-09-13 v2 coverage file is historical for the pre-graph 14-RD package.
+
 Finding 16: native `world.player` uses enclosing world-record `id` as its single campaign record key; strict PLAYER state must not persist another `player_id`.
 
 Finding 17: RD-15/RD-16 obey overlay 5. A later-task test group is introduced only in its own RED-to-GREEN task and is GREEN before checkpoint publication.
 
 Finding 18: for a catalog-backed executable request, RD-15 same-context deterministic validation must produce the accepted binding before RD-05 command acceptance. RD-05 preserves the same catalog-context fingerprint and rejects a catalog-backed acceptance lacking that validated basis. RD-05 mechanics core may develop independently; only its catalog-backed acceptance/integration checkpoint is gated. Native non-catalog transitions retain their own deterministic validation.
 
+Finding 19: current bidirectional coverage is v3; it preserves historical 133 readiness accounting while adding item-level 17+17 family routing and explicit post-WP27 graph-closure atoms for RD-15/RD-16 and late repairs.
+
 Final census: 17 world families, 17 runtime families; `world.faction` is not an independent v1 family. Counts are not proof.
 
 Accounting: 133 active readiness = 116 direct + 9 proof + 8 composite; 12 trigger-gated; 79 no-work; R004 absent; 16 RD units; 16 overlays.
 
-Author Findings 1–18 are plan-repaired and independently unconfirmed. Independent review remains blocked until fresh zero-open author closure and exact-head hosted validation.
+Author Findings 1–19 are plan-repaired and independently unconfirmed. Independent review remains blocked until fresh zero-open author closure and exact-head hosted validation.
