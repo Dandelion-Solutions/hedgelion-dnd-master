@@ -2,10 +2,10 @@
 
 Status: **CURRENT POST-GRAPH EXECUTION ROUTE — PLANNING ONLY**
 Date: 2026-09-14
-Finding origin: **AUTHOR FINDING 21 — SIGNIFICANT**, extended through Finding 23.
+Finding origin: **AUTHOR FINDING 21 — SIGNIFICANT**, extended through Finding 24.
 Production implementation: **NO**.
 
-This document supersedes the 14-RD execution-wave topology for current execution scheduling. Historical wave documents remain provenance for their accepted edges; this v2 reconciles them with RD-15, RD-16 and Findings 6–23.
+This document supersedes the 14-RD execution-wave topology for current execution scheduling. Historical wave documents remain provenance for their accepted edges; this v2 reconciles them with RD-15, RD-16 and Findings 6–24.
 
 ## Edge law
 
@@ -28,7 +28,7 @@ RD-03 actor / asset / effect core
 RD-04 routing / HOT / allocator owner-local work
 RD-05 deterministic mechanics core and Procedure/Continuation owner-local work
 RD-08 thread / temporal / chronology owner-local work
-RD-09 principal / LIVE owner-local work
+RD-09 principal / LIVE owner-local work, including F24 source-native ID encoding/cursor/CAS
 RD-10 typed role / Interpreter-result / emission core
 RD-11 Context Runtime core
 RD-12 collaboration core
@@ -91,6 +91,57 @@ Meaning:
 
 This join does **not** create a global catalog snapshot, new definition record family, universal refcount, universal dependency graph or second ruleset loader.
 
+### Source-native LIVE identity seam — Finding 24
+
+RD-09 owns the exact v1 source-native identity realization for every family whose final `live_birth.disposition` is `SOURCE_NATIVE_LIVE`:
+
+```text
+stable LiveSourceKey(campaign_technical_id, scene_id, epoch_id)
++ persisted uint64 next_source_native_creation_ordinal
++ framed_base32hex_v1
++ same exact-source CAS establishes final IDs, refs and cursor advance
+```
+
+Owner-local checkpoint:
+
+```text
+RD-09 LIVE schema replacement
+-> RD-09 source-native encoding + cursor GREEN
+-> RD-09 frozen-attempt stale/indeterminate CAS semantics GREEN
+-> RD09_SOURCE_NATIVE_ID_READY
+```
+
+`RD09_SOURCE_NATIVE_ID_READY` means:
+
+- campaign allocator fallback is absent;
+- mutable ref/source revision/time/host/session are not semantic ID components;
+- confirmed stale prospective IDs are noncanonical;
+- an indeterminate prior attempt is reconciled before any new coordinate is allocated;
+- current SOURCE_NATIVE_LIVE families do not rely on generic provisional->compaction rekey semantics;
+- accepted IDs survive close/absorption unchanged.
+
+This owner-local output has two mandatory joins:
+
+```text
+RD09_SOURCE_NATIVE_ID_READY
++ RD-16 other shared identifier-policy inputs
+  JOIN_BEFORE_INTEGRATION
+RD-16 SHARED_MACHINE_INTEGRATION
+```
+
+and
+
+```text
+RD09_SOURCE_NATIVE_ID_READY
++ RD-07 selected-LIVE recovery owner-local foundation
+  JOIN_BEFORE_INTEGRATION
+RD-07 SOURCE_NATIVE_LIVE_RECOVERY_READY
+```
+
+RD-16 is the single final writer of `identifier-policies.schema.json` / `identifier-policies.json` and records the closed `source_native_live + framed_base32hex_v1` policy only for applicable families. RD-07 validates the selected exact LIVE source's cursor/IDs without campaign allocator, directory/index order or latest-looking source heuristics.
+
+F24's source-local ordinal is allocation uniqueness state only. It introduces no global sequence, fictional chronology, priority, generation or replacement CAS fence.
+
 ### Execution / publication / recovery seams
 
 ```text
@@ -101,7 +152,7 @@ RD-05 accepted execution
   JOIN_BEFORE_INTEGRATION -> RD-09 current execution source join
 ```
 
-RD-06 current publication + RD-04 current route evidence join RD-07 current-native recovery. Selected-LIVE recovery additionally joins RD-09 exact selected source/currentness. For catalog-backed accepted execution these generic joins additionally obey the Finding-23 catalog-basis joins above.
+RD-06 current publication + RD-04 current route evidence join RD-07 current-native recovery. Selected-LIVE recovery additionally joins RD-09 exact selected source/currentness and, for SOURCE_NATIVE_LIVE families, F24 `RD09_SOURCE_NATIVE_ID_READY`. For catalog-backed accepted execution these generic joins additionally obey the Finding-23 catalog-basis joins above.
 
 ### Catalog-gap evidence seam
 
@@ -131,6 +182,7 @@ RD-08 world.thread                     LOCAL_SEMANTIC_READY
 RD-04 world.player / no-world.faction  LOCAL_SEMANTIC_READY
 RD-05 MechanicalEvent identity         LOCAL_SEMANTIC_READY
 RD-09 exhaustive live-birth table      LOCAL_SEMANTIC_READY
+RD-09 exact source-native ID policy    RD09_SOURCE_NATIVE_ID_READY
 RD-15 catalog-gap policy input          LOCAL_SEMANTIC_READY
 RD-16 17-family strict schemas          READY
 ```
@@ -148,7 +200,7 @@ No producer RD independently publishes a competing final version of those shared
 
 RD-16 integration is required before final R018 closure and before RD-14 final scaffold validation claims the v1 family/catalog topology.
 
-Finding-23 `CatalogContextBasis` schemas are execution embedded-value contracts, not world-family/shared-catalog members; they remain under RD-15/RD-05 integration rather than being absorbed into RD-16 semantic ownership.
+Finding-23 `CatalogContextBasis` schemas are execution embedded-value contracts, not world-family/shared-catalog members; they remain under RD-15/RD-05 integration rather than being absorbed into RD-16 semantic ownership. F24 changes the shared identifier-policy realization but does not transfer LIVE identity semantics from RD-09 to RD-16.
 
 ## Tier D — shared shipped-consumer checkpoints
 
@@ -191,8 +243,9 @@ No gameplay bootstrap is executed by this planning package.
 4. current bidirectional coverage through `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`;
 5. R018 waits for RD-15 catalog-gap family + RD-16 exact world-family/shared-machine joins;
 6. F23 waits for RD-15 basis producer + RD-05 carriers + RD-06 retention/publication + RD-07 exact reconstruction witnesses;
-7. all eight historical composite parents retain their original accepted semantics;
-8. dormant empirical trigger rows remain dormant.
+7. F24 waits for RD-09 source-native encoding/cursor/CAS + RD-16 policy integration + RD-07 selected-LIVE recovery witnesses;
+8. all eight historical composite parents retain their original accepted semantics;
+9. dormant empirical trigger rows remain dormant.
 
 ## Cycle check
 
@@ -203,7 +256,7 @@ RD-10 -> RD-15 -> RD-05 catalog-backed acceptance
 RD-04/RD-05/RD-08/RD-09/RD-15 -> RD-16 shared integration
 RD-05 -> RD-06 -> RD-07 integration joins
 RD-15 -> RD-05 -> RD-06 -> RD-07 catalog-basis integration path
-RD-09 -> RD-07 selected-LIVE join
+RD-09 -> RD-07 selected-LIVE/source-native recovery join
 RD-13 -> RD-14 Story-selector consumer join
 RD-16 -> RD-14 final topology/scaffold validation
 ```
@@ -219,9 +272,11 @@ Before independent handoff, verify:
 - RD-15 cannot be bypassed by catalog-backed RD-05 acceptance;
 - accepted catalog-backed work cannot lose/rebind its reconstructive catalog basis across RD-05/RD-06/RD-07;
 - unpublished session-only definitions cannot be stranded behind durable accepted execution;
-- RD-16 has one final shared machine writer;
+- RD-09 source-native allocation/encoding/CAS behavior is exact, non-rekeying and campaign-allocator-independent;
+- RD-07 recovery cannot invent/reallocate source-native IDs;
+- RD-16 has one final shared machine writer and consumes the exact F24 identifier policy;
 - no publishable checkpoint contains future intentional RED tests;
-- coverage v3, proof-ledger v3 and witness matrix match this 16-RD graph through F23;
+- coverage v3, proof-ledger v3 and witness matrix match this 16-RD graph through F24;
 - exact-head hosted validation is green.
 
 Production implementation remains unauthorized.
