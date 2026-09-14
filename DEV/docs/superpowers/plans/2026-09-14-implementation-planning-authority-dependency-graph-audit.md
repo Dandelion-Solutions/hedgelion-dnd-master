@@ -3,8 +3,8 @@
 Status: **ACTIVE AUTHOR ADVERSARIAL PLANNING AUDIT — NON-CANONICAL EVIDENCE LEDGER**
 Date: 2026-09-14
 Initial audit baseline: `94e416c58633912a97308c1bfa95762951f0f8a4`
-Current graph synchronization basis: `8eb8c6fb35a6fd52bd922da80149931a3a6a3d26`
-Synchronized through: **F38**
+Current graph synchronization basis: `7bb8073bb12dd27daec376acab5c9536458b7280`
+Synchronized through: **F39**
 Production implementation authorized: **NO**.
 
 This artifact is an audit/traceability ledger. It does not replace canonical owners, RD plans, proof ledgers, package precedence or readiness authorities. Its purpose is to keep the current typed dependency/authority graph explicit while the author adversarial audit searches for hidden implementation-planning defects that document-by-document review can miss.
@@ -178,8 +178,9 @@ All dispositions below are author-side planning dispositions only and remain ind
 | F36 | campaign/LIVE authority movement could update LIVE routing and temporal completeness routing independently, yielding duplicate/missing current temporal enrollment | repaired by one campaign publication handoff for `LIVE_ROUTING` + campaign `TEMPORAL_ROUTING` movement against exact prepared/closed LIVE state |
 | F37 | accepted PLAYER membership/control transition semantics had validators/classifiers but no executable mutation producer; a worker had to invent delta/preservation/publication behavior | repaired by frozen exact-current PLAYER access-transition producer, typed field deltas, F9 principal-route join, F7 LIVE classifier and RD-06 coherent campaign publication |
 | F38 | WP-17 authority-change law required pending-obligation re-evaluation but current plan only noticed mismatch opportunistically during new input association | repaired by bounded reverse PLAYER `collaboration_route_refs` -> exact obligation reconciliation; obsolete/successor and PLAYER-route deltas join the F37 campaign transition |
+| F39 | RD-01 and RD-14 independently wrote the same shipped install/bootstrap projections without a shared-file checkpoint | repaired by one RD-14 final integration writer over fresh current bytes, preserving both RD-01 stale-projection laws and RD-14 bootstrap/product semantics |
 
-Current author-open findings after F38: **none yet recorded**, but the adversarial graph audit is explicitly still active and has not issued zero-open closure.
+Current author-open findings after F39: **none yet recorded**, but the adversarial graph audit is explicitly still active and has not issued zero-open closure.
 
 ## 5. Family-level R018 graph — current evidence
 
@@ -420,11 +421,29 @@ RD12_PLAYER_COLLABORATION_ROUTE_LOCAL_SEMANTIC_READY
 RD09_PLAYER_ACCESS_TRANSITION_LOCAL_READY
 + RD12_PLAYER_AUTHORITY_RECONCILIATION_LOCAL_READY
   -> RD09_RD12_PLAYER_AUTHORITY_COLLABORATION_JOIN
+
+RD01_INSTALL_PROJECTION_LOCAL_READY
++ RD14 final bootstrap/product semantics ready
+  SHARED_FILE_CHECKPOINT
+RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION
 ```
 
 For F37 transitions marked `collaboration_reconciliation_required`, RD-06 final campaign publication waits for `RD09_RD12_PLAYER_AUTHORITY_COLLABORATION_JOIN` and any applicable principal-route/LIVE-terminal checkpoints.
 
 F36 adds bounded campaign/LIVE temporal-companion handoff joins around RD-06 publication; it does not add a distributed transaction or whole-RD serialization.
+
+### Shared physical writer table — audited/current rows
+
+| Physical surface | Planned writers | Current integration owner/checkpoint |
+|---|---|---|
+| shared catalog / family / identifier machine files | multiple producer RDs + RD-16 | RD-16 `SHARED_MACHINE_INTEGRATION_JOIN` |
+| scene routing shipped/schema surfaces | RD-08 + RD-09 | ordered chronology delta -> LIVE delta + joint proof |
+| catalog-binding shipped prose (`PLAY_POLICY`,`CORE_INDEX`,`ADJUDICATION`) | RD-15 + possible RD-01 stale projection | one coherent ordered writer/merge preserving both requirement sets |
+| multiplayer/session shipped prose | RD-09 + RD-12 | one ordered physical cutover preserving LIVE/currentness + collaboration semantics |
+| `DEV/PROJECT_MAP.md` / `DEV/TOOLS/audit_engine.py` | many RDs | every later writer fresh-reads and preserves admitted assertions |
+| `GAME/INSTALL/README.md`, `PROJECT_INSTRUCTIONS.txt`, `00_DND_BOOTSTRAP.md` | RD-01 + RD-14 | F39 RD-14 final install/bootstrap integration checkpoint |
+
+Shared-writer audit remains active for additional unlisted overlaps.
 
 The declared checkpoint-level graph must remain acyclic after every new repair. Whole-RD apparent cycles must be decomposed only when there are genuinely distinct owner-local checkpoints; checkpoint splitting may not be used to hide a real semantic cycle.
 
@@ -442,9 +461,10 @@ historical v2 ledger/appendices
 + F36 LIVE/temporal handoff amendment
 + F37 PLAYER access-transition amendment
 + F38 PLAYER-authority/collaboration reconciliation amendment
++ F39 install/bootstrap shared-writer amendment
 ```
 
-F37 amends WP-16 duties 11/12 so LIVE lifecycle/classifier proof is joined to an executable exact-current PLAYER mutation producer. F38 amends WP-17 theme 16 so input-time mismatch detection is supporting evidence only; the required reverse access-transition reconciliation must be witnessed directly.
+F37 amends WP-16 duties 11/12 so LIVE lifecycle/classifier proof is joined to an executable exact-current PLAYER mutation producer. F38 amends WP-17 theme 16 so input-time mismatch detection is supporting evidence only; the required reverse access-transition reconciliation must be witnessed directly. F39 requires final cross-RD shipped-install proof, not two independent single-writer test suites.
 
 Proof closure is item-bound. A row/test-class/count is insufficient when the named executable producer, consumer, durability/currentness/recovery join or required negative is absent.
 
@@ -459,14 +479,14 @@ R004 absent
 
 Post-WP27 author findings repair implementation planning; they do not invent historical readiness IDs.
 
-## 10. Active audit queue after F38
+## 10. Active audit queue after F39
 
 The graph audit remains open. Next passes, in current priority order:
 
-1. **Residual mutation-trigger contradiction pairs.** Re-test principal/PLAYER/collaboration/LIVE intersections after F37/F38, especially operations touching more than one companion plus LIVE route/claim transitions.
-2. **All remaining shared physical writers.** Build a file -> planned-writers -> semantic-deltas -> final-writer table and find any later writer that can erase an earlier accepted delta or publish two independently-final generations.
+1. **Remaining shared physical writers.** Complete the file -> planned-writers -> semantic-deltas -> final-writer table and find any later writer that can erase an earlier accepted delta or publish two independently-final generations.
+2. **Residual mutation-trigger contradiction pairs.** Re-test principal/PLAYER/collaboration/LIVE intersections after F37/F38, especially operations touching more than one companion plus LIVE route/claim transitions.
 3. **Schema/version-generation cutovers.** Check schema-version bumps, catalog generation, strict wrapper dispatch and shipped schema projections for mixed-generation states that the declared checkpoints still permit.
-4. **Checkpoint DAG cycle proof.** Rebuild hard/join edges at checkpoint granularity including F34-F38 and prove acyclicity without relying on informal whole-RD ordering.
+4. **Checkpoint DAG cycle proof.** Rebuild hard/join edges at checkpoint granularity including F34-F39 and prove acyclicity without relying on informal whole-RD ordering.
 5. **Dormant / trigger / no-work activation safety.** Verify trigger-gated and no-work rows cannot silently become current implementation obligations or remain dormant after their exact trigger has become true.
 6. **Stale shipped-consumer reverse scan.** Starting from every repaired owner law, search current shipped CORE/setup/session/bootstrap/schema consumers for any shorter contradictory authority/currentness path.
 7. **Recovery negative-path scan.** For every completeness companion, prove missing/stale/ambiguous state cannot degrade into broad scan, newest-wins, cache authority or false absence.
