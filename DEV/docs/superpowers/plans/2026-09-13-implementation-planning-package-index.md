@@ -34,12 +34,13 @@ Mandatory overlays, low to high precedence:
 25. `2026-09-14-implementation-planning-live-temporal-companion-handoff-amendment.md`
 26. `2026-09-14-implementation-planning-player-access-transition-executable-closure-amendment.md`
 27. `2026-09-14-implementation-planning-player-authority-collaboration-reconciliation-amendment.md`
+28. `2026-09-14-implementation-planning-install-bootstrap-shared-writer-amendment.md`
 
-Current execution graph: `2026-09-14-implementation-planning-execution-waves-v2-post-graph.md`, amended for F27–F31 by `2026-09-14-implementation-planning-f27-f31-control-amendment.md`; F34 adds only a proof-checkpoint join; F35 adds `RD12_PLAYER_COLLABORATION_ROUTE_LOCAL_SEMANTIC_READY -> RD16_PLAYER_STRICT_STATE_INTEGRATION_JOIN`; F36 adds bounded campaign<->LIVE temporal-companion handoff joins around RD-06 publication; F37 adds the executable PLAYER access-transition producer and its principal/LIVE/publication joins; F38 adds the reverse PLAYER authority -> collaboration reconciliation join.
-Current coverage: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`, amended by the F27–F31 control amendment, F34 runtime-family R018, F35 PLAYER strict-state, F36 LIVE/temporal handoff, F37 PLAYER access-transition and F38 authority/collaboration reconciliation amendments.
-Current proof: historical v2 ledger/appendices + `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` + F27–F31 control amendment + mandatory exact witness matrix + F34/F35/F36/F37/F38 later-precedence item-bound proof amendments.
+Current execution graph: `2026-09-14-implementation-planning-execution-waves-v2-post-graph.md`, amended for F27–F31 by `2026-09-14-implementation-planning-f27-f31-control-amendment.md`; F34 adds only a proof-checkpoint join; F35 adds `RD12_PLAYER_COLLABORATION_ROUTE_LOCAL_SEMANTIC_READY -> RD16_PLAYER_STRICT_STATE_INTEGRATION_JOIN`; F36 adds bounded campaign<->LIVE temporal-companion handoff joins around RD-06 publication; F37 adds the executable PLAYER access-transition producer and its principal/LIVE/publication joins; F38 adds the reverse PLAYER authority -> collaboration reconciliation join; F39 adds the RD-01 -> RD-14 shared install/bootstrap final-integration checkpoint.
+Current coverage: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`, amended by the F27–F31 control amendment and F34–F39 later-precedence amendments.
+Current proof: historical v2 ledger/appendices + `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` + F27–F31 control amendment + mandatory exact witness matrix + F34–F39 later-precedence item-bound proof amendments.
 
-Findings 16–38 current dispositions:
+Findings 16–39 current dispositions:
 - F16: native `world.player` uses enclosing world-record `id` as its single campaign key; strict PLAYER state has no second persisted `player_id`.
 - F17: RD-15/RD-16 obey overlay 5; later-task tests appear only in their own RED-to-GREEN task and are GREEN before publication.
 - F18: catalog-backed RD-05 command acceptance requires RD-15 same-context validated binding and preserves its accepted catalog basis.
@@ -63,9 +64,10 @@ Findings 16–38 current dispositions:
 - F36: significant cross-companion atomicity gap repaired — campaign->LIVE selection atomically moves affected current temporal enrollment from campaign `TEMPORAL_ROUTING` to the already-prepared selected LIVE source while adding `LIVE_ROUTING`; absorption atomically restores campaign temporal enrollment while removing `LIVE_ROUTING`. Duplicate/missing cross-domain current enrollment is an integrity conflict; no distributed transaction is introduced.
 - F37: significant executable-mutation gap repaired — RD-09 now has a required frozen PLAYER access-transition producer; mutations use exact current PLAYER state, typed field deltas, preserve unrelated PLAYER fields, join principal routing when stable binding changes, use the existing LIVE transition classifier and publish through one coherent RD-06 campaign closure.
 - F38: significant reverse-trigger gap repaired — membership/control/authorization changes that can affect pending voluntary agency must use bounded `collaboration_route_refs` to re-evaluate exact current obligation generations before publication; old generation semantics are never rewritten in place and successor/obsolete plus PLAYER route-ref changes publish coherently with the access transition.
+- F39: significant shared-writer gap repaired — RD-01 and RD-14 overlapping writes to `GAME/INSTALL/README.md`, `PROJECT_INSTRUCTIONS.txt` and `00_DND_BOOTSTRAP.md` now converge through one RD-14 final install/bootstrap integration checkpoint that fresh-reads current bytes and proves both requirement sets.
 
 Final census: 17 world families and 17 runtime families; `world.faction` is not an independent v1 family. Counts are not proof.
 
-Accounting: 133 active = 116 direct + 9 proof + 8 composite; 12 trigger-gated; 79 no-work; R004 absent; 16 RD units; 27 overlays.
+Accounting: 133 active = 116 direct + 9 proof + 8 composite; 12 trigger-gated; 79 no-work; R004 absent; 16 RD units; 28 overlays.
 
-Author Findings 1–31 and F34–F38 are planning-repaired at the package-router level; F32 is a negative finding and F33 is a repaired control-plane defect. All author-side dispositions remain independently unconfirmed. Independent review remains blocked until the broader adversarial graph audit reaches a fresh zero-open author closure and exact-final-HEAD hosted validation.
+Author Findings 1–31 and F34–F39 are planning-repaired at the package-router level; F32 is a negative finding and F33 is a repaired control-plane defect. All author-side dispositions remain independently unconfirmed. Independent review remains blocked until the broader adversarial graph audit reaches a fresh zero-open author closure and exact-final-HEAD hosted validation.
