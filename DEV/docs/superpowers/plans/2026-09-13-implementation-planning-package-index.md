@@ -32,7 +32,7 @@ Later overlays supersede only exact conflicting execution detail.
 
 ## Current post-graph applicability
 
-- RD-04 supplies world.player / no-world.faction and routing inputs; final shared machine writes route through RD-16.
+- RD-04 supplies world.player / no-world-faction and routing inputs; final shared machine writes route through RD-16.
 - RD-05 owns MechanicalEvent composite identity; shared policy integration routes through RD-16.
 - RD-08 supplies world.thread owner-local state and temporal completeness; shared final catalog/identity write routes through RD-16.
 - RD-09 supplies LIVE/additive/live-birth/multi-LIVE semantics; shared policy write routes through RD-16.
@@ -41,15 +41,13 @@ Later overlays supersede only exact conflicting execution detail.
 
 **Finding 16 repair — mandatory RD-16 rule:** native `world.player` has exactly one canonical campaign record key: the enclosing world-record `id`. The strict world-player state schema must reject a second persisted `player_id`. If a GAME projection exposes `player_id`, it is derived from the enclosing native record `id` and is not independently assigned. Create/deactivate/reactivate/routing/recovery proofs must preserve the same enclosing record `id`.
 
+**Finding 17 repair — mandatory checkpoint rule:** RD-15 and RD-16 inherit overlay 5. A test group for a later task is introduced only when that task begins, and every test already present is GREEN before a publishable checkpoint. Full DEV discovery and maintenance audit are GREEN at each checkpoint.
+
 ## Final family census
 
 World families: **17 exact** — actor, actor_group, asset, location, connection, zone, organization, contract, mission, scene, encounter, hazard, effect, lore_fact, knowledge, thread, player.
 
-`world.faction` is not an independent v1 native family.
-
-Runtime families: **17 exact**.
-
-Counts are routing aids only; closure remains item-bound.
+`world.faction` is not an independent v1 native family. Runtime families: **17 exact**. Counts are routing aids only; closure remains item-bound.
 
 ## Accounting / gate
 
@@ -63,7 +61,7 @@ NO_WORK: 79
 R004: ABSENT
 RD_UNITS: 16
 MANDATORY_OVERLAYS: 16
-AUTHOR_FINDINGS_1_TO_16: PLAN-REPAIRED / INDEPENDENTLY UNCONFIRMED
+AUTHOR_FINDINGS_1_TO_17: PLAN-REPAIRED / INDEPENDENTLY UNCONFIRMED
 AUTHOR_POST_REPAIR_INVESTIGATION: ACTIVE
 NEXT_INDEPENDENT_REVIEW: BLOCKED UNTIL FRESH ZERO-OPEN AUTHOR CLOSURE + EXACT-HEAD HOSTED VALIDATION
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
