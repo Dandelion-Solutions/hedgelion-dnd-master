@@ -5,16 +5,16 @@ Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR ADVERSARIAL CLOSURE ACTIVE
 CURRENT_WORKSTREAM: implementation planning
-CURRENT_SLICE: bounded graph-based author adversarial closure of the complete RD-01..RD-16 / 25-overlay implementation-planning package
-LAST_CLOSED_UNIT: F36 LIVE/temporal completeness-companion handoff repair prepared after F34 runtime-family proof and F35 PLAYER strict-state integration repairs
-NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING AUTHOR REVIEW / REPAIR ONLY — continue typed dependency/authority graph audit for remaining derivative-companion intersections (principal/PLAYER/collaboration/LIVE), shared-writer conflicts, schema-version cutover collisions, hidden checkpoint cycles, trigger/no-work activation leaks, stale shipped consumers and worker-must-invent seams; publish any discovered planning/control repair immediately. Do not begin production implementation, migration, release execution or gameplay bootstrap.
+CURRENT_SLICE: bounded graph-based author adversarial closure of the complete RD-01..RD-16 / 27-overlay implementation-planning package
+LAST_CLOSED_UNIT: F38 PLAYER authority -> collaboration reverse-reconciliation repair prepared after F37 executable PLAYER access-transition closure
+NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING AUTHOR REVIEW / REPAIR ONLY — continue typed dependency/authority graph audit for remaining shared-writer conflicts, schema-version cutover collisions, hidden checkpoint cycles, trigger/no-work activation leaks, stale shipped consumers, recovery negative paths and worker-must-invent seams; publish any discovered planning/control repair immediately and synchronize the live graph before continuing. Do not begin production implementation, migration, release execution or gameplay bootstrap.
 REQUIRED_GATE: exhaustive bounded author graph audit reaches fresh zero-open closure + fresh exact-final-HEAD hosted validation (full maintenance audit and full DEV unittest discovery) -> mandatory independent Senior re-review; production implementation remains unauthorized until the independent Senior gate passes
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-live-temporal-companion-handoff-amendment.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-player-authority-collaboration-reconciliation-amendment.md
 KNOWN_BLOCKERS: independent Senior re-review is blocked pending completion of the graph-based author audit, fresh zero-open author closure and exact-final-HEAD hosted validation; production implementation is not authorized
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
 
-Current executable package: RD-01 through RD-16 with 25 mandatory overlays.
+Current executable package: RD-01 through RD-16 with 27 mandatory overlays.
 
 Author Findings 1–31 are planning-repaired and independently unconfirmed. Findings 23–31 add the current catalog-context and LIVE realization repairs.
 
@@ -28,15 +28,20 @@ F35 is a significant PLAYER shared-schema/integration-order defect repaired by `
 
 F36 is a significant cross-companion atomicity defect repaired by `2026-09-14-implementation-planning-live-temporal-companion-handoff-amendment.md`. Campaign->LIVE route selection now requires one campaign publication closure that adds current `LIVE_ROUTING` while removing affected campaign `TEMPORAL_ROUTING` membership only after the prepared candidate proves equivalent LIVE temporal enrollment. Absorption performs the reverse handoff in one campaign closure. Duplicate/missing current enrollment across campaign/LIVE source domains is an integrity conflict; no distributed transaction is introduced.
 
+F37 is a significant executable PLAYER mutation defect repaired by `2026-09-14-implementation-planning-player-access-transition-executable-closure-amendment.md`: RD-09 now requires a frozen access-transition producer over exact current PLAYER state, typed field deltas, F9 principal-route joins, F7 LIVE transition classification and RD-06 coherent campaign publication. Blind stale whole-PLAYER replacement is forbidden.
+
+F38 is a significant WP-17 reverse-trigger defect repaired by `2026-09-14-implementation-planning-player-authority-collaboration-reconciliation-amendment.md`: membership/control/authorization changes that can affect pending voluntary agency must traverse bounded current `collaboration_route_refs`, exact-load current obligation generations, apply unchanged vs obsolete vs successor semantics and publish obligation/PLAYER-route deltas coherently with the access transition. Input-time authority checks alone cannot close WP-17 theme 16.
+
 Current authority routes:
 - package router: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md`;
 - master plan: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md`;
-- execution graph: post-graph v2 + F27–F31 control amendment + F34 proof join + F35 PLAYER integration edge + F36 temporal handoff joins;
-- bidirectional coverage: coverage v3 + F27–F31 + F34 + F35 + F36 amendments;
-- post-graph proof: proof-ledger v3 + F27–F31 + exact witness matrix + F34/F35/F36 item-bound proof amendments;
-- highest-precedence LIVE execution repair remains the F28–F31 LIVE opening/native-state overlay, composed with F36 for temporal source handoff.
+- execution graph: post-graph v2 + F27–F31 control amendment + F34 proof join + F35 PLAYER integration edge + F36 temporal handoff joins + F37 PLAYER access-transition joins + F38 PLAYER-authority/collaboration reverse join;
+- bidirectional coverage: coverage v3 + F27–F31 + F34 + F35 + F36 + F37 + F38 amendments;
+- post-graph proof: proof-ledger v3 + F27–F31 + exact witness matrix + F34/F35/F36/F37/F38 item-bound proof amendments;
+- live graph/audit ledger: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-authority-dependency-graph-audit.md`;
+- highest-precedence LIVE execution repair remains the F28–F31 LIVE opening/native-state overlay, composed with F36 for temporal source handoff and F37/F38 when PLAYER authority mutations intersect LIVE/collaboration state.
 
-Current work: continue typed dependency/authority graph audit across the complete package. Next concentrated passes: (1) mutation-trigger intersection among principal->PLAYER routing, PLAYER collaboration refs, LIVE routing and access/control transitions; (2) all remaining shared physical writers; (3) schema/version-generation cutovers; (4) checkpoint DAG cycle proof; (5) dormant/trigger/no-work activation safety; (6) stale shipped-consumer reverse scan. F34–F36 do not end the audit. No zero-open author verdict has been issued.
+Current work: continue typed dependency/authority graph audit across the complete package. The principal/PLAYER/collaboration mutation-trigger pass found and repaired F37–F38; continue the remaining contradiction-pair sweep, then all remaining shared physical writers, schema/version-generation cutovers, checkpoint DAG cycle proof, dormant/trigger/no-work activation safety, stale shipped-consumer reverse scan and recovery/proof asymmetry scans. No zero-open author verdict has been issued.
 
 Historical readiness accounting remains 133 active = 116 direct + 9 pure proof + 8 composite parents; 12 trigger-gated; 79 no-work; R004 absent. Post-WP27 findings do not invent historical readiness IDs.
 
