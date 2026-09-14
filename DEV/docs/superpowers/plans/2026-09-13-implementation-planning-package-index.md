@@ -30,9 +30,9 @@ Mandatory overlays, low to high precedence:
 21. `2026-09-14-implementation-planning-live-epoch-route-identity-addendum.md`
 22. `2026-09-14-implementation-planning-live-opening-routing-native-state-addendum.md`
 
-Current execution graph: `2026-09-14-implementation-planning-execution-waves-v2-post-graph.md`; overlays 17–22 add accepted catalog-basis and exact source-native LIVE identity/routing/allocation/opening/native-state joins.
-Current coverage: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`; it must route every post-WP27 finding through the latest author repair before closure.
-Current proof: historical v2 ledger/appendices + `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` + mandatory exact witness matrix `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md`.
+Current execution graph: `2026-09-14-implementation-planning-execution-waves-v2-post-graph.md`, amended for F27–F31 by `2026-09-14-implementation-planning-f27-f31-control-amendment.md`.
+Current coverage: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`, amended for F27–F31 by `2026-09-14-implementation-planning-f27-f31-control-amendment.md`.
+Current proof: historical v2 ledger/appendices + `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` + `2026-09-14-implementation-planning-f27-f31-control-amendment.md` + mandatory exact witness matrix `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md`.
 
 Findings 16–31 mandatory deltas:
 - F16: native `world.player` uses enclosing world-record `id` as its single campaign key; strict PLAYER state has no second persisted `player_id`.
@@ -56,4 +56,4 @@ Final census: 17 world families and 17 runtime families; `world.faction` is not 
 
 Accounting: 133 active = 116 direct + 9 proof + 8 composite; 12 trigger-gated; 79 no-work; R004 absent; 16 RD units; 22 overlays.
 
-Author Findings 1–31 are planning-repaired at the package-router level. Coverage/proof/witness/execution/currentness surfaces are synchronized separately and must all be current before zero-open closure. All findings remain independently unconfirmed. Independent review remains blocked until fresh zero-open author closure and exact-head hosted validation.
+Author Findings 1–31 are planning-repaired at the package-router level. F27–F31 proof/coverage/execution routing is supplied by the later-precedence control amendment plus the current witness matrix. All findings remain independently unconfirmed. Independent review remains blocked until fresh zero-open author closure and exact-head hosted validation.
