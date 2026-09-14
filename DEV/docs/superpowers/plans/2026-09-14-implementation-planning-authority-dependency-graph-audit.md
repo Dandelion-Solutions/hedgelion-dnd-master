@@ -3,8 +3,8 @@
 Status: **ACTIVE AUTHOR ADVERSARIAL PLANNING AUDIT — NON-CANONICAL EVIDENCE LEDGER**
 Date: 2026-09-14
 Initial audit baseline: `94e416c58633912a97308c1bfa95762951f0f8a4`
-Current graph synchronization basis: `5b0dcd4dd285d26c610d633416270901b9b3d5cb`
-Synchronized through: **F36**
+Current graph synchronization basis: `8eb8c6fb35a6fd52bd922da80149931a3a6a3d26`
+Synchronized through: **F38**
 Production implementation authorized: **NO**.
 
 This artifact is an audit/traceability ledger. It does not replace canonical owners, RD plans, proof ledgers, package precedence or readiness authorities. Its purpose is to keep the current typed dependency/authority graph explicit while the author adversarial audit searches for hidden implementation-planning defects that document-by-document review can miss.
@@ -130,7 +130,9 @@ The audit marks a planning defect when it finds any of:
 17. mutation trigger whose owner transition and derivative companions are not frozen/revalidated against one basis;
 18. schema/generation cutover where a later strict integrator can erase an earlier semantic delta;
 19. checkpoint-level dependency that is absent from the declared DAG and therefore permits an invalid legal execution order;
-20. dormant/trigger/no-work accounting that can accidentally activate work or hide a required trigger realization.
+20. dormant/trigger/no-work accounting that can accidentally activate work or hide a required trigger realization;
+21. accepted transition semantics with only validators/classifiers but no executable mutation producer;
+22. reverse semantic trigger required by an owner law but reachable only opportunistically from a later consumer action.
 
 ## 4. Findings currently established
 
@@ -174,8 +176,10 @@ All dispositions below are author-side planning dispositions only and remain ind
 | F34 | R018 runtime-family proof could close from count/catalog/world-only evidence without exact runtime schema/root realization | repaired: exact 17-row runtime family matrix + `R018RuntimeFamilyProofTests` mandatory |
 | F35 | RD-12 `PLAYER.collaboration_route_refs` could be erased/diverged by later RD-16 strict `world.player` integration | repaired by `RD12_PLAYER_COLLABORATION_ROUTE_LOCAL_SEMANTIC_READY -> RD16_PLAYER_STRICT_STATE_INTEGRATION_JOIN`; RD-16 final physical PLAYER schema generation |
 | F36 | campaign/LIVE authority movement could update LIVE routing and temporal completeness routing independently, yielding duplicate/missing current temporal enrollment | repaired by one campaign publication handoff for `LIVE_ROUTING` + campaign `TEMPORAL_ROUTING` movement against exact prepared/closed LIVE state |
+| F37 | accepted PLAYER membership/control transition semantics had validators/classifiers but no executable mutation producer; a worker had to invent delta/preservation/publication behavior | repaired by frozen exact-current PLAYER access-transition producer, typed field deltas, F9 principal-route join, F7 LIVE classifier and RD-06 coherent campaign publication |
+| F38 | WP-17 authority-change law required pending-obligation re-evaluation but current plan only noticed mismatch opportunistically during new input association | repaired by bounded reverse PLAYER `collaboration_route_refs` -> exact obligation reconciliation; obsolete/successor and PLAYER-route deltas join the F37 campaign transition |
 
-Current author-open findings after F36: **none yet recorded**, but the adversarial graph audit is explicitly still active and has not issued zero-open closure.
+Current author-open findings after F38: **none yet recorded**, but the adversarial graph audit is explicitly still active and has not issued zero-open closure.
 
 ## 5. Family-level R018 graph — current evidence
 
@@ -298,6 +302,27 @@ RD16_PLAYER_STRICT_STATE_INTEGRATION_JOIN
 
 The refs nominate completeness/routing only; they do not satisfy an obligation or grant PLAYER authority.
 
+### PLAYER authority -> collaboration reverse trigger — F37/F38
+
+```text
+exact current world.player
+  -> F37 freeze typed access transition
+  -> F7 classify LIVE effect
+  -> F9 principal-route delta when stable binding changes
+  -> if membership/control/authorization can affect voluntary agency:
+       exact current PLAYER collaboration_route_refs
+       -> direct-load exact obligation generations
+       -> F38 re-evaluate opportunity + requirement identity
+       -> UNCHANGED | OBSOLETE_NO_SUCCESSOR | OBSOLETE_AND_SUCCESSOR
+       -> recompute affected PLAYER collaboration_route_refs
+
+all campaign-domain deltas
+  MUTATES_WITH
+one RD-06 campaign resulting-tree closure
+```
+
+No stale whole-PLAYER replacement is allowed. Access transition construction is delta-based from exact current PLAYER state and preserves independently-owned fields unless an admitted joined semantic producer intentionally changes them.
+
 ### Campaign <-> LIVE selection/currentness
 
 ```text
@@ -330,22 +355,21 @@ one RD-06 campaign resulting-tree closure
 
 Duplicate or missing current temporal enrollment across campaign and selected LIVE domains is an integrity conflict. Recovery uses the disjoint union of validated current source-domain enrollments only.
 
-### Authorization/control mutation intersection still under audit
+### Authorization/control mutation intersection — current closed edges, residual scan active
 
-The following transitions may touch more than one of the above subgraphs and therefore remain a concentrated contradiction-pair target:
+Current repaired sequence for a relevant PLAYER authority mutation is:
 
 ```text
-PLAYER creation/admission
-external principal rebind
-PLAYER activation/reactivation/deactivation
-controlled-PC transfer
-collaboration generation/terminalization
-LIVE claim expansion/revocation
-campaign -> LIVE selection
-LIVE -> campaign absorption
+F37 exact current PLAYER transition plan
+ -> F7 LIVE impact classification
+ -> exact affected LIVE terminalization if required
+ -> F9 principal-route join if stable binding changes
+ -> F38 collaboration reconciliation if voluntary-agency requirements may change
+ -> one RD-06 campaign resulting-tree publication
+ -> post-publication consumers rehydrate exact current PLAYER/companions
 ```
 
-A legal execution order must not permit any acknowledged resulting state in which semantic owner state and one or more required companions describe different current authority/binding/enrollment facts.
+Residual contradiction-pair audit still tests PLAYER creation/admission, external principal rebind, activation/reactivation/deactivation, controlled-PC transfer, collaboration generation/terminalization, LIVE claim expansion/revocation, campaign->LIVE selection and LIVE->campaign absorption in combinations. A legal execution order must not permit any acknowledged resulting state in which semantic owner state and required companions describe different current authority/binding/enrollment facts.
 
 ## 8. Current checkpoint / shared-writer graph
 
@@ -382,7 +406,23 @@ RD08 thread LOCAL_SEMANTIC_READY
 RD16 shared machine integration
   -> R018 final closure
   -> RD14 late final topology/scaffold validation
+
+RD09_PLAYER_ACCESS_TRANSITION_LOCAL_READY
+  -> RD09_PLAYER_ACCESS_LIVE_CLASSIFICATION_READY
+
+F9 principal-route producer ready
++ RD09_PLAYER_ACCESS_TRANSITION_LOCAL_READY
+  -> RD09_PLAYER_ACCESS_PRINCIPAL_ROUTE_JOIN_READY
+
+RD12_PLAYER_COLLABORATION_ROUTE_LOCAL_SEMANTIC_READY
+  -> RD12_PLAYER_AUTHORITY_RECONCILIATION_LOCAL_READY
+
+RD09_PLAYER_ACCESS_TRANSITION_LOCAL_READY
++ RD12_PLAYER_AUTHORITY_RECONCILIATION_LOCAL_READY
+  -> RD09_RD12_PLAYER_AUTHORITY_COLLABORATION_JOIN
 ```
+
+For F37 transitions marked `collaboration_reconciliation_required`, RD-06 final campaign publication waits for `RD09_RD12_PLAYER_AUTHORITY_COLLABORATION_JOIN` and any applicable principal-route/LIVE-terminal checkpoints.
 
 F36 adds bounded campaign/LIVE temporal-companion handoff joins around RD-06 publication; it does not add a distributed transaction or whole-RD serialization.
 
@@ -400,7 +440,11 @@ historical v2 ledger/appendices
 + F34 runtime-family R018 amendment
 + F35 PLAYER strict-state integration amendment
 + F36 LIVE/temporal handoff amendment
++ F37 PLAYER access-transition amendment
++ F38 PLAYER-authority/collaboration reconciliation amendment
 ```
+
+F37 amends WP-16 duties 11/12 so LIVE lifecycle/classifier proof is joined to an executable exact-current PLAYER mutation producer. F38 amends WP-17 theme 16 so input-time mismatch detection is supporting evidence only; the required reverse access-transition reconciliation must be witnessed directly.
 
 Proof closure is item-bound. A row/test-class/count is insufficient when the named executable producer, consumer, durability/currentness/recovery join or required negative is absent.
 
@@ -415,18 +459,18 @@ R004 absent
 
 Post-WP27 author findings repair implementation planning; they do not invent historical readiness IDs.
 
-## 10. Active audit queue after F36
+## 10. Active audit queue after F38
 
 The graph audit remains open. Next passes, in current priority order:
 
-1. **Mutation-trigger contradiction pairs** across principal -> PLAYER routing, PLAYER collaboration refs, activation/control changes, LIVE claims/selection and temporal handoff. Freeze each mutation's semantic owners + all affected companions and test whether every legal partial/order outcome fails closed.
+1. **Residual mutation-trigger contradiction pairs.** Re-test principal/PLAYER/collaboration/LIVE intersections after F37/F38, especially operations touching more than one companion plus LIVE route/claim transitions.
 2. **All remaining shared physical writers.** Build a file -> planned-writers -> semantic-deltas -> final-writer table and find any later writer that can erase an earlier accepted delta or publish two independently-final generations.
 3. **Schema/version-generation cutovers.** Check schema-version bumps, catalog generation, strict wrapper dispatch and shipped schema projections for mixed-generation states that the declared checkpoints still permit.
-4. **Checkpoint DAG cycle proof.** Rebuild hard/join edges at checkpoint granularity including F34-F36 and prove acyclicity without relying on informal whole-RD ordering.
+4. **Checkpoint DAG cycle proof.** Rebuild hard/join edges at checkpoint granularity including F34-F38 and prove acyclicity without relying on informal whole-RD ordering.
 5. **Dormant / trigger / no-work activation safety.** Verify trigger-gated and no-work rows cannot silently become current implementation obligations or remain dormant after their exact trigger has become true.
 6. **Stale shipped-consumer reverse scan.** Starting from every repaired owner law, search current shipped CORE/setup/session/bootstrap/schema consumers for any shorter contradictory authority/currentness path.
 7. **Recovery negative-path scan.** For every completeness companion, prove missing/stale/ambiguous state cannot degrade into broad scan, newest-wins, cache authority or false absence.
-8. **Proof asymmetry scan.** Mechanism-without-proof and proof-without-mechanism at concrete family/item/companion level, including all later F34-F36 repairs.
+8. **Proof asymmetry scan.** Mechanism-without-proof and proof-without-mechanism at concrete family/item/companion level, including all later repairs.
 9. **Final reverse-coverage/currentness sweep.** Only after the above passes produce no open item.
 
 Any confirmed planning/control defect is published immediately and this graph is synchronized before the next pass continues.
