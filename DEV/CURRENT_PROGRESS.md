@@ -5,16 +5,16 @@ Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR ADVERSARIAL CLOSURE ACTIVE
 CURRENT_WORKSTREAM: implementation planning
-CURRENT_SLICE: bounded graph-based author adversarial closure of the complete RD-01..RD-16 / 31-overlay implementation-planning package
-LAST_CLOSED_UNIT: F42 RD-02/RD-16 information world-schema ownership/integration repair after F41 schema/storage README shared-writer repair
-NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING AUTHOR REVIEW / REPAIR ONLY — continue typed dependency/authority graph audit for schema/version-generation cutover collisions, remaining shared-writer conflicts, hidden checkpoint cycles, trigger/no-work activation leaks, stale shipped consumers, recovery negative paths and worker-must-invent seams; publish any discovered planning/control repair immediately and synchronize the live graph before continuing. Do not begin production implementation, migration, release execution or gameplay bootstrap.
+CURRENT_SLICE: bounded graph-based author adversarial closure of the complete RD-01..RD-16 / 32-overlay implementation-planning package
+LAST_CLOSED_UNIT: F43 deterministic retained-schema version-cutover repair after F42 RD-02/RD-16 information world-schema ownership/integration repair
+NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING AUTHOR REVIEW / REPAIR ONLY — continue typed dependency/authority graph audit with coordinated catalog/module generation cutovers, remaining shared physical writers, hidden checkpoint cycles, trigger/no-work activation leaks, stale shipped consumers, recovery negative paths and worker-must-invent seams; publish any discovered planning/control repair immediately and synchronize the live graph before continuing. Do not begin production implementation, migration, release execution or gameplay bootstrap.
 REQUIRED_GATE: exhaustive bounded author graph audit reaches fresh zero-open closure + fresh exact-final-HEAD hosted validation (full maintenance audit and full DEV unittest discovery) -> mandatory independent Senior re-review; production implementation remains unauthorized until the independent Senior gate passes
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-information-schema-rd16-integration-amendment.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-retained-schema-version-cutover-amendment.md
 KNOWN_BLOCKERS: independent Senior re-review is blocked pending completion of the graph-based author audit, fresh zero-open author closure and exact-final-HEAD hosted validation; production implementation is not authorized
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
 
-Current executable package: RD-01 through RD-16 with 31 mandatory overlays.
+Current executable package: RD-01 through RD-16 with 32 mandatory overlays.
 
 Author Findings 1–31 are planning-repaired and independently unconfirmed. Findings 23–31 add the current catalog-context and LIVE realization repairs.
 
@@ -40,21 +40,23 @@ F41 is a significant documentation shared-writer defect repaired by `2026-09-14-
 
 F42 is a significant information world-schema ownership collision repaired by `2026-09-14-implementation-planning-information-schema-rd16-integration-amendment.md`: RD-02 remains sole semantic/schema producer for strict `world.lore_fact` and `world.knowledge`; RD-16 no longer independently creates those schemas and instead consumes their exact GREEN owner contracts in final world-wrapper/catalog/R018 integration.
 
+F43 is a significant deterministic local-version cutover defect repaired by `2026-09-14-implementation-planning-retained-schema-version-cutover-amendment.md`: ten retained breaking GAME schema contracts have exact target local versions and one final bump writer/checkpoint each — checkpoint 4, current_state 3, thread 2, live_scene 2, index 2, scene 3, location 2, event 2, lore 2, player 2. Clean-slate v1 explicitly avoids migration edges, dual-read support and deprecated aliases solely for superseded pre-release shapes. Session remains v1 absent a separately proven breaking shape; retired PC/NPC/item/faction contracts receive no terminal compatibility bump. Catalog/campaign/storage/engine namespaces remain separate and are audited independently.
+
 Current authority routes:
 - package router: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md`;
 - master plan: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md`;
-- execution graph: post-graph v2 + F27–F31 control amendment + F34 proof join + F35 PLAYER integration edge + F36 temporal handoff joins + F37 PLAYER access-transition joins + F38 PLAYER-authority/collaboration reverse join + F39 install/bootstrap shared-writer checkpoint + F40 blank-scaffold producer joins + F41 schema/storage README projection joins + F42 RD-02 information-schema -> RD-16 integration join;
-- bidirectional coverage: coverage v3 + F27–F31 + F34–F42 amendments;
-- post-graph proof: proof-ledger v3 + F27–F31 + exact witness matrix + F34–F42 item-bound proof amendments;
+- execution graph: post-graph v2 + F27–F31 control amendment + F34 proof join + F35 PLAYER integration edge + F36 temporal handoff joins + F37 PLAYER access-transition joins + F38 PLAYER-authority/collaboration reverse join + F39 install/bootstrap shared-writer checkpoint + F40 blank-scaffold producer joins + F41 schema/storage README projection joins + F42 RD-02 information-schema -> RD-16 integration join + F43 owner-local retained-schema version obligations / final package proof sink;
+- bidirectional coverage: coverage v3 + F27–F31 + F34–F43 amendments;
+- post-graph proof: proof-ledger v3 + F27–F31 + exact witness matrix + F34–F43 item-bound proof amendments;
 - live graph/audit ledger: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-authority-dependency-graph-audit.md`;
 - highest-precedence LIVE execution repair remains the F28–F31 LIVE opening/native-state overlay, composed with F36 for temporal source handoff and F37/F38 when PLAYER authority mutations intersect LIVE/collaboration state.
 
-Current work: continue typed dependency/authority graph audit across the complete package. Principal/PLAYER/collaboration mutation-trigger pass found F37–F38; shared-writer/scaffold passes found F39–F41; schema-owner/cutover pass found F42. Continue schema/version-generation cutovers and remaining physical writer scan, then checkpoint DAG cycle proof, dormant/trigger/no-work activation safety, stale shipped-consumer reverse scan and recovery/proof asymmetry scans. No zero-open author verdict has been issued.
+Current work: continue typed dependency/authority graph audit across the complete package. Principal/PLAYER/collaboration mutation-trigger pass found F37–F38; shared-writer/scaffold passes found F39–F41; schema-owner pass found F42; retained local schema-version cutover pass found F43. Continue coordinated catalog/module-generation cutovers and remaining physical-writer census, then checkpoint DAG cycle proof, dormant/trigger/no-work activation safety, stale shipped-consumer reverse scan and recovery/proof asymmetry scans. No zero-open author verdict has been issued.
 
 Historical readiness accounting remains 133 active = 116 direct + 9 pure proof + 8 composite parents; 12 trigger-gated; 79 no-work; R004 absent. Post-WP27 findings do not invent historical readiness IDs.
 
 Current family census after planned repairs: 17 world families and 17 runtime families. `world.faction` is not an independent v1 family. Counts are not proof.
 
-`GAME/**` is clean-slate for v1.0; legacy v0.8 preservation is not a constraint.
+`GAME/**` is clean-slate for v1.0; legacy v0.8 preservation is not a constraint. Breaking retained local contracts must use their F43 target versions; do not preserve obsolete pre-release shapes through compatibility debt.
 
 Production implementation, migration, release execution and gameplay bootstrap are not authorized.
