@@ -5,22 +5,22 @@ Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR ADVERSARIAL CLOSURE ACTIVE
 CURRENT_WORKSTREAM: implementation planning
-CURRENT_SLICE: bounded graph-based author adversarial closure of the complete RD-01..RD-16 / 33-overlay implementation-planning package
-LAST_CLOSED_UNIT: F44 RD-01/R047 removed-surface currentness reconciliation after F43 retained-schema version cutover repair
-NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING AUTHOR REVIEW / REPAIR ONLY — complete exact Category-B `framework_module_version` cutover census for actual material CORE edits, then continue remaining shared physical writers, hidden checkpoint cycles, trigger/no-work activation leaks, stale shipped consumers, recovery negative paths and worker-must-invent seams; publish any discovered planning/control repair immediately and synchronize the live graph before continuing. Do not begin production implementation, migration, release execution or gameplay bootstrap.
+CURRENT_SLICE: bounded graph-based author adversarial closure of the complete RD-01..RD-16 / 34-overlay implementation-planning package
+LAST_CLOSED_UNIT: F46 deterministic CORE framework-module version/shared-writer closure after F45 control-plane currentness repair
+NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING AUTHOR REVIEW / REPAIR ONLY — continue remaining non-CORE shared physical writers, hidden checkpoint cycles, trigger/no-work activation leaks, stale shipped consumers, recovery negative paths, proof asymmetry and worker-must-invent seams; self-attack F46 and publish any discovered planning/control repair immediately, synchronizing the live graph before continuing. Do not begin production implementation, migration, release execution or gameplay bootstrap.
 REQUIRED_GATE: exhaustive bounded author graph audit reaches fresh zero-open closure + fresh exact-final-HEAD hosted validation (full maintenance audit and full DEV unittest discovery) -> mandatory independent Senior re-review; production implementation remains unauthorized until the independent Senior gate passes
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-r047-current-surface-reconciliation-amendment.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-core-module-version-shared-writer-amendment.md
 KNOWN_BLOCKERS: independent Senior re-review is blocked pending completion of the graph-based author audit, fresh zero-open author closure and exact-final-HEAD hosted validation; production implementation is not authorized
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
 
-Current executable package: RD-01 through RD-16 with 33 mandatory overlays.
+Current executable package: RD-01 through RD-16 with 34 mandatory overlays.
 
 Author Findings 1–31 are planning-repaired and independently unconfirmed. Findings 23–31 add the current catalog-context and LIVE realization repairs.
 
 F32 is a negative finding: accepted publication/deployment owners already bind the LIVE exact-source CAS boundary to exact ref/read, single-parent successor construction and non-force stale-head rejection with typed fail-closed outcomes; no REST/GraphQL primitive is introduced by planning.
 
-F33 was a blocking control-plane regression in this file. The repair restored the markers required by `DEV/TOOLS/audit_engine.py::audit_current_progress_authority()`; exact repair HEAD `cc155b6d1cc4bc7bea2db35d3bcf5c71c49616ac` passed hosted maintenance audit and full DEV unittest discovery.
+F33 was a blocking control-plane regression in this file. The repair restored the markers required by `DEV/TOOLS/audit_engine.py::audit_current_progress_authority()`; exact repair HEAD `cc155b6d1cc4bc7bea2db35d3bcf5c71c49616ac` passed hosted maintenance audit and full DEV unittest discovery. That historical validation is not final-package validation because later planning commits changed HEAD.
 
 F34 is a significant R018 proof/coverage defect repaired by `2026-09-14-implementation-planning-runtime-family-r018-proof-closure-amendment.md`: exact 17-row runtime-family schema/root validation and `R018RuntimeFamilyProofTests` are mandatory; aggregate census/catalog/world-only proof cannot close R018.
 
@@ -44,21 +44,25 @@ F43 is a significant deterministic local-version cutover defect repaired by `202
 
 F44 is a significant RD-01 currentness defect repaired by `2026-09-14-implementation-planning-r047-current-surface-reconciliation-amendment.md`: the historical R047 stale B-prime projection path `GAME/CORE/DOMAIN_RULES_COVERAGE.md` is absent both at the planning baseline and current state. It must not be recreated. R047 is now `CURRENT_V1_ALREADY_SATISFIED` with bounded active-consumer negative proof only; no production mutation or Category-B version bump is permitted unless a real active contradictory consumer is later found.
 
+F45 is a control-plane currentness defect repaired in the package master plan and synchronized into the live graph: the master had remained at the earlier 25-overlay/F36 state while package index/progress had advanced through 33 overlays/F44. F45 adds no implementation edge or overlay.
+
+F46 is a significant Category-B module-version/shared-writer defect repaired by `2026-09-14-implementation-planning-core-module-version-shared-writer-amendment.md`. Sixteen currently proven material CORE edits now have exact final `framework_module_version` targets. `BOOTSTRAP_RUNTIME.md` combines RD-01 and RD-14/bootstrap owner deltas into one final physical edit at `1.0.9`; `STORAGE.md` combines RD-04 and RD-07 owner deltas into one final physical edit at `1.0.2`; existing `MULTIPLAYER.md` shared integration remains one target `1.0.8`. Inspect-only/conditional modules are not speculatively bumped and F44's removed module remains absent. A package-level `CoreFrameworkModuleVersionCutoverTests` witness is mandatory after implementation is authorized.
+
 Current authority routes:
 - package router: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md`;
 - master plan: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md`;
-- execution graph: post-graph v2 + F27–F31 control amendment + F34 proof join + F35 PLAYER integration edge + F36 temporal handoff joins + F37 PLAYER access-transition joins + F38 PLAYER-authority/collaboration reverse join + F39 install/bootstrap shared-writer checkpoint + F40 blank-scaffold producer joins + F41 schema/storage README projection joins + F42 RD-02 information-schema -> RD-16 integration join + F43 owner-local retained-schema version obligations / final package proof sink; F44 adds no execution edge and only removes a stale nonexistent RD-01 mutation target;
-- bidirectional coverage: coverage v3 + F27–F31 + F34–F44 amendments;
-- post-graph proof: proof-ledger v3 + F27–F31 + exact witness matrix + F34–F44 item-bound proof amendments;
-- live graph/audit ledger: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-authority-dependency-graph-audit.md`;
+- execution graph: post-graph v2 + F27–F31 control amendment + F34 proof join + F35 PLAYER integration edge + F36 temporal handoff joins + F37 PLAYER access-transition joins + F38 PLAYER-authority/collaboration reverse join + F39 install/bootstrap shared-writer checkpoint + F40 blank-scaffold producer joins + F41 schema/storage README projection joins + F42 RD-02 information-schema -> RD-16 integration join + F43 owner-local retained-schema version obligations/final package proof sink + F46 CORE shared-writer/version joins and module-version proof sink; F44 adds no execution edge and only removes a stale nonexistent RD-01 mutation target; F45 is control-plane only;
+- bidirectional coverage: coverage v3 + F27–F31 + F34–F46 amendments;
+- post-graph proof: proof-ledger v3 + F27–F31 + exact witness matrix + F34–F46 item-bound/proof amendments;
+- live graph/audit ledger: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-authority-dependency-graph-audit.md` plus higher-precedence graph sync deltas through F46;
 - highest-precedence LIVE execution repair remains the F28–F31 LIVE opening/native-state overlay, composed with F36 for temporal source handoff and F37/F38 when PLAYER authority mutations intersect LIVE/collaboration state.
 
-Current work: continue typed dependency/authority graph audit across the complete package. Principal/PLAYER/collaboration mutation-trigger pass found F37–F38; shared-writer/scaffold passes found F39–F41; schema-owner pass found F42; retained local schema-version cutover pass found F43; currentness pass removed stale R047 work in F44. Catalog generation remains 2 as a negative finding under the unreleased clean-slate R2.7 catalog owner; do not manufacture generation 3. Continue exact Category-B module-revision census for actual material CORE edits, then remaining physical-writer census, checkpoint DAG cycle proof, dormant/trigger/no-work activation safety, stale shipped-consumer reverse scan and recovery/proof asymmetry scans. No zero-open author verdict has been issued.
+Current work: continue typed dependency/authority graph audit across the complete package. Principal/PLAYER/collaboration mutation-trigger pass found F37–F38; shared-writer/scaffold passes found F39–F41; schema-owner pass found F42; retained local schema-version cutover pass found F43; currentness pass removed stale R047 work in F44; control-plane pass found F45; Category-B CORE module-version/shared-writer pass found F46. Catalog generation remains 2 as a negative finding under the unreleased clean-slate R2.7 catalog owner; do not manufacture generation 3. Next: self-attack F46, continue remaining non-CORE physical-writer census, checkpoint DAG cycle proof, dormant/trigger/no-work activation safety, stale shipped-consumer reverse scan, recovery negative-path scan and proof/worker-invention asymmetry. No zero-open author verdict has been issued.
 
 Historical readiness accounting remains 133 active = 116 direct + 9 pure proof + 8 composite parents; 12 trigger-gated; 79 no-work; R004 absent. Post-WP27 findings do not invent historical readiness IDs.
 
 Current family census after planned repairs: 17 world families and 17 runtime families. `world.faction` is not an independent v1 family. Counts are not proof.
 
-`GAME/**` is clean-slate for v1.0; legacy v0.8 preservation is not a constraint. Breaking retained local contracts must use their F43 target versions; obsolete pre-release surfaces such as the F44 R047 historical module must not be recreated through compatibility debt.
+`GAME/**` is clean-slate for v1.0; legacy v0.8 preservation is not a constraint. Breaking retained local contracts must use their F43 target versions; obsolete pre-release surfaces such as the F44 R047 historical module must not be recreated through compatibility debt. Material CORE instruction cutovers must use the F46 exact module targets and shared-writer joins.
 
 Production implementation, migration, release execution and gameplay bootstrap are not authorized.
