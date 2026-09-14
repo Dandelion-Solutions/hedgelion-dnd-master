@@ -7,9 +7,9 @@ Current executable routing is defined by `2026-09-13-implementation-planning-pac
 
 Current package: RD-01 through RD-16; 22 mandatory overlays; author Findings 1–31 planning-repaired and independently unconfirmed.
 
-Current execution authority: `2026-09-14-implementation-planning-execution-waves-v2-post-graph.md`.
-Current bidirectional coverage authority: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`.
-Current post-graph proof authority: `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` plus `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md`.
+Current execution authority: `2026-09-14-implementation-planning-execution-waves-v2-post-graph.md` plus later-precedence F27–F31 routing in `2026-09-14-implementation-planning-f27-f31-control-amendment.md`.
+Current bidirectional coverage authority: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md` plus the same F27–F31 control amendment.
+Current post-graph proof authority: `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` + `2026-09-14-implementation-planning-f27-f31-control-amendment.md` + `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md`.
 
 Highest-precedence mandatory LIVE realization repairs are now:
 
@@ -22,7 +22,7 @@ F28–F31 LIVE opening idempotency, exact initial seeding,
         completeness-protected LIVE routing and native-state packing/absorption
 ```
 
-The highest-precedence file for F28–F31 is `2026-09-14-implementation-planning-live-opening-routing-native-state-addendum.md`.
+The highest-precedence execution overlay for F28–F31 is `2026-09-14-implementation-planning-live-opening-routing-native-state-addendum.md`. The later-precedence control/proof/coverage/execution routing amendment is `2026-09-14-implementation-planning-f27-f31-control-amendment.md`.
 
 Finding 23 requires one reconstructive accepted `CatalogContextBasis` across RD-15 deterministic binding, RD-05 accepted RuntimeCommand/Resolution/Continuation evidence, RD-06 durability/retention closure and RD-07 exact recovery. Fingerprint-only, ambient/current/latest rebinding and durable dependence on unpublished session-only definitions are forbidden.
 
