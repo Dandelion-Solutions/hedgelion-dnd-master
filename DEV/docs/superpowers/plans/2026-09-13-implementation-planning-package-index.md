@@ -24,12 +24,13 @@ Mandatory overlays, low to high precedence:
 15. `2026-09-14-implementation-planning-catalog-binding-shipped-consumer-addendum.md`
 16. `2026-09-14-implementation-planning-post-graph-integration-addendum.md`
 17. `2026-09-14-implementation-planning-catalog-context-reconstruction-addendum.md`
+18. `2026-09-14-implementation-planning-source-native-live-id-encoding-addendum.md`
 
-Current execution graph: `2026-09-14-implementation-planning-execution-waves-v2-post-graph.md`, with overlay 17 adding the explicit accepted catalog-basis propagation/retention/recovery joins.
-Current coverage: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`, extended by F23 before author closure.
-Current proof: historical v2 ledger/appendices + `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` + mandatory exact witness matrix `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md`; F23 exact proof must be added before author closure.
+Current execution graph: `2026-09-14-implementation-planning-execution-waves-v2-post-graph.md`; overlays 17–18 add accepted catalog-basis and exact source-native LIVE-ID joins.
+Current coverage: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`; it must route every post-WP27 finding through the latest author repair before closure.
+Current proof: historical v2 ledger/appendices + `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` + mandatory exact witness matrix `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md`.
 
-Findings 16–23 mandatory deltas:
+Findings 16–24 mandatory deltas:
 - F16: native `world.player` uses enclosing world-record `id` as its single campaign key; strict PLAYER state has no second persisted `player_id`.
 - F17: RD-15/RD-16 obey overlay 5; later-task tests appear only in their own RED-to-GREEN task and are GREEN before publication.
 - F18: catalog-backed RD-05 command acceptance requires RD-15 same-context validated binding and preserves its accepted catalog basis.
@@ -37,10 +38,11 @@ Findings 16–23 mandatory deltas:
 - F20: proof-ledger v3 makes RD-15/RD-16 mandatory for R018 and adds post-WP27 proof rows.
 - F21: execution-wave v2 is the current 16-RD dependency graph; older 14-RD wave documents are historical except for explicitly preserved edge semantics.
 - F22: post-graph proof rows require exact named witnesses and primary proof channels from the current witness matrix; a thematic test reference is insufficient.
-- F23: accepted catalog-backed execution carries one reconstructive `CatalogContextBasis` (exact ruleset-set identity + catalog fingerprint identity + bounded owner-local campaign/session definition dependency refs) from RD-15 through RD-05 durable execution, RD-06 retention/publication and RD-07 exact recovery. Fingerprint-only or ambient/current rebinding is forbidden; unpublished session-only definitions cannot become durable accepted dependencies without owner-approved promotion/publication basis.
+- F23: accepted catalog-backed execution carries one reconstructive `CatalogContextBasis` from RD-15 through RD-05 durable execution, RD-06 retention/publication and RD-07 exact recovery. Fingerprint-only or ambient/current rebinding is forbidden; unpublished session-only definitions cannot become durable accepted dependencies without owner-approved promotion/publication basis.
+- F24: every `SOURCE_NATIVE_LIVE` family uses one exact v1 identity realization: stable `(campaign_technical_id, scene_id, epoch_id)` source key + CAS-owned `uint64` source-local creation ordinal + `framed_base32hex_v1` printable encoding. The LIVE source persists `next_source_native_creation_ordinal`; accepted IDs freeze in the same exact-source CAS as creation, survive absorption unchanged, and never use the campaign allocator. Legacy generic provisional->rekey semantics are not the v1 baseline.
 
 Final census: 17 world families and 17 runtime families; `world.faction` is not an independent v1 family. Counts are not proof.
 
-Accounting: 133 active = 116 direct + 9 proof + 8 composite; 12 trigger-gated; 79 no-work; R004 absent; 16 RD units; 17 overlays.
+Accounting: 133 active = 116 direct + 9 proof + 8 composite; 12 trigger-gated; 79 no-work; R004 absent; 16 RD units; 18 overlays.
 
-Author Findings 1–23 are planning-repaired once F23 coverage/proof/witness/execution/currentness routing updates are published and read back; all remain independently unconfirmed. Independent review remains blocked until fresh zero-open author closure and exact-head hosted validation.
+Author Findings 1–24 are planning-repaired once F24 coverage/proof/witness/execution/currentness routing updates are published and read back; all remain independently unconfirmed. Independent review remains blocked until fresh zero-open author closure and exact-head hosted validation.
