@@ -2,10 +2,10 @@
 
 Status: **CURRENT POST-GRAPH EXECUTION ROUTE — PLANNING ONLY**
 Date: 2026-09-14
-Finding: **AUTHOR FINDING 21 — SIGNIFICANT**
+Finding origin: **AUTHOR FINDING 21 — SIGNIFICANT**, extended through Finding 23.
 Production implementation: **NO**.
 
-This document supersedes the 14-RD execution-wave topology for current execution scheduling. Historical wave documents remain provenance for their accepted edges; this v2 reconciles them with RD-15, RD-16 and Findings 6–20.
+This document supersedes the 14-RD execution-wave topology for current execution scheduling. Historical wave documents remain provenance for their accepted edges; this v2 reconciles them with RD-15, RD-16 and Findings 6–23.
 
 ## Edge law
 
@@ -54,7 +54,42 @@ RD-05 RuntimeCommand acceptance
 
 RD-05 pure deterministic mechanics helpers may exist before RD-15. The hard edge applies to catalog-backed command acceptance/integration, not to owner-native non-catalog transitions.
 
-`SUPPORTED` binding preserves the same catalog-context fingerprint into RuntimeCommand. `UNSUPPORTED` produces no RuntimeCommand and routes to RD-15 gap evidence.
+For catalog-backed execution, RD-15 `SUPPORTED` output carries one canonical reconstructive `CatalogContextBasis`:
+
+```text
+exact ruleset-set identity
++ catalog-context fingerprint identity
++ bounded owner-local campaign/session definition dependency refs
+```
+
+RD-05 accepted RuntimeCommand copies that exact basis. Root/child Resolution and Continuation preserve basis equality; a generic dependency-frontier list or fingerprint alone is not a substitute. `UNSUPPORTED` produces no RuntimeCommand and routes to RD-15 gap evidence carrying the same accepted basis in which validation failed.
+
+### Accepted catalog-basis durability / recovery seam — Finding 23
+
+Owner-local implementation may proceed independently, but the following integration order is mandatory:
+
+```text
+RD-15 LOCAL_CATALOG_BASIS_READY
+  HARD_PRECEDES catalog-backed acceptance
+RD-05 LOCAL_ACCEPTED_CATALOG_EXECUTION_READY
+  JOIN_BEFORE_INTEGRATION -> RD-06 LOCAL_CATALOG_BASIS_DURABILITY_READY
+
+RD-15 LOCAL_CATALOG_BASIS_READY
++ RD-05 LOCAL_ACCEPTED_CATALOG_EXECUTION_READY
++ RD-06 LOCAL_CATALOG_BASIS_DURABILITY_READY
+  JOIN_BEFORE_INTEGRATION
+RD-07 LOCAL_CATALOG_BASIS_RECOVERY_READY
+```
+
+Meaning:
+
+- RD-06 cannot claim an accepted catalog-backed execution durably recoverable unless its reconstructive catalog basis and required retained owner-local definition evidence are in the correctness-required closure;
+- unresolved accepted execution protects those definition dependencies under Step-5.13 typed retention/protection laws;
+- unpublished session-only definitions cannot become durable accepted dependencies without owner-approved publication/promotion basis;
+- RD-07 exact-reconstructs the accepted ruleset set and every required owner-local definition dependency before retry/resume;
+- missing/incompatible/unpinned dependency evidence yields typed blocked/compatibility/integrity failure; current/latest/search fallback is forbidden.
+
+This join does **not** create a global catalog snapshot, new definition record family, universal refcount, universal dependency graph or second ruleset loader.
 
 ### Execution / publication / recovery seams
 
@@ -66,16 +101,18 @@ RD-05 accepted execution
   JOIN_BEFORE_INTEGRATION -> RD-09 current execution source join
 ```
 
-RD-06 current publication + RD-04 current route evidence join RD-07 current-native recovery. Selected-LIVE recovery additionally joins RD-09 exact selected source/currentness.
+RD-06 current publication + RD-04 current route evidence join RD-07 current-native recovery. Selected-LIVE recovery additionally joins RD-09 exact selected source/currentness. For catalog-backed accepted execution these generic joins additionally obey the Finding-23 catalog-basis joins above.
 
 ### Catalog-gap evidence seam
 
 ```text
 RD-15 deterministic UNSUPPORTED result
-  -> stable runtime.catalog_gap_report candidate
-  JOIN_BEFORE_INTEGRATION -> RD-06 campaign publication
-  PROOF_AFTER_TARGET -> RD-07 retained evidence / non-authority recovery
+  -> stable runtime.catalog_gap_report candidate with exact CatalogContextBasis
+  JOIN_BEFORE_INTEGRATION -> RD-06 campaign publication / retained dependency proof
+  PROOF_AFTER_TARGET -> RD-07 retained evidence / exact-context non-authority recovery
 ```
+
+A gap report is evidence that deterministic validation failed in one exact accepted catalog basis; it is not reinterpreted by a newer/current context.
 
 ### Information / LIVE / history seam
 
@@ -90,12 +127,12 @@ RD-13 static Story selector and owner-local Story contract join RD-14 generated-
 RD-16 owns one final shared machine checkpoint. Before that checkpoint:
 
 ```text
-RD-08 world.thread                    LOCAL_SEMANTIC_READY
-RD-04 world.player / no-world.faction LOCAL_SEMANTIC_READY
-RD-05 MechanicalEvent identity        LOCAL_SEMANTIC_READY
-RD-09 exhaustive live-birth table     LOCAL_SEMANTIC_READY
-RD-15 catalog-gap policy input         LOCAL_SEMANTIC_READY
-RD-16 17-family strict schemas         READY
+RD-08 world.thread                     LOCAL_SEMANTIC_READY
+RD-04 world.player / no-world.faction  LOCAL_SEMANTIC_READY
+RD-05 MechanicalEvent identity         LOCAL_SEMANTIC_READY
+RD-09 exhaustive live-birth table      LOCAL_SEMANTIC_READY
+RD-15 catalog-gap policy input          LOCAL_SEMANTIC_READY
+RD-16 17-family strict schemas          READY
 ```
 
 Then:
@@ -110,6 +147,8 @@ RD-16 SHARED_MACHINE_INTEGRATION
 No producer RD independently publishes a competing final version of those shared machine files after RD-16 integration begins.
 
 RD-16 integration is required before final R018 closure and before RD-14 final scaffold validation claims the v1 family/catalog topology.
+
+Finding-23 `CatalogContextBasis` schemas are execution embedded-value contracts, not world-family/shared-catalog members; they remain under RD-15/RD-05 integration rather than being absorbed into RD-16 semantic ownership.
 
 ## Tier D — shared shipped-consumer checkpoints
 
@@ -148,19 +187,22 @@ No gameplay bootstrap is executed by this planning package.
 
 1. historical readiness proof through current v2 ledger/appendices;
 2. post-graph proof through `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md`;
-3. current bidirectional coverage through `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`;
-4. R018 waits for RD-15 catalog-gap family + RD-16 exact world-family/shared-machine joins;
-5. all eight historical composite parents retain their original accepted semantics;
-6. dormant empirical trigger rows remain dormant.
+3. exact post-WP27 witnesses through `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md`;
+4. current bidirectional coverage through `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`;
+5. R018 waits for RD-15 catalog-gap family + RD-16 exact world-family/shared-machine joins;
+6. F23 waits for RD-15 basis producer + RD-05 carriers + RD-06 retention/publication + RD-07 exact reconstruction witnesses;
+7. all eight historical composite parents retain their original accepted semantics;
+8. dormant empirical trigger rows remain dormant.
 
 ## Cycle check
 
-Current hard-edge graph is acyclic:
+Current hard-edge graph remains acyclic:
 
 ```text
 RD-10 -> RD-15 -> RD-05 catalog-backed acceptance
 RD-04/RD-05/RD-08/RD-09/RD-15 -> RD-16 shared integration
 RD-05 -> RD-06 -> RD-07 integration joins
+RD-15 -> RD-05 -> RD-06 -> RD-07 catalog-basis integration path
 RD-09 -> RD-07 selected-LIVE join
 RD-13 -> RD-14 Story-selector consumer join
 RD-16 -> RD-14 final topology/scaffold validation
@@ -175,9 +217,11 @@ Before independent handoff, verify:
 - every RD-01..RD-16 appears in this graph or is explicitly owner-local;
 - no hard edge is inferred merely from tier number;
 - RD-15 cannot be bypassed by catalog-backed RD-05 acceptance;
+- accepted catalog-backed work cannot lose/rebind its reconstructive catalog basis across RD-05/RD-06/RD-07;
+- unpublished session-only definitions cannot be stranded behind durable accepted execution;
 - RD-16 has one final shared machine writer;
 - no publishable checkpoint contains future intentional RED tests;
-- coverage v3 and proof-ledger v3 match this 16-RD graph;
+- coverage v3, proof-ledger v3 and witness matrix match this 16-RD graph through F23;
 - exact-head hosted validation is green.
 
 Production implementation remains unauthorized.
