@@ -2,7 +2,7 @@
 
 Status: **CURRENT AUTHOR POST-GRAPH COVERAGE — ADVERSARIAL CLOSURE ACTIVE**
 Date: 2026-09-14
-Finding origin: **AUTHOR FINDING 19 — SIGNIFICANT**, extended through Finding 26.
+Finding origin: **AUTHOR FINDING 19 — SIGNIFICANT**, extended through Finding 27.
 Production implementation: **NO**.
 
 This document supersedes bidirectional-coverage-v2 for current package routing. v2 remains historical evidence for the original readiness decomposition.
@@ -27,22 +27,22 @@ Current decomposition count: **16 RD units**.
 
 | Family | Semantic / owner route | Current machine execution route |
 |---|---|---|
-| world.actor | RD-03 / Actor owner | existing strict schema + RD-16 final wrapper proof; SOURCE_NATIVE_LIVE birth uses F24/F25/F26 RD-09 source/cursor/order realization when admitted |
-| world.actor_group | RD-03 / Actor-group owner | existing strict schema + RD-16 final wrapper proof; SOURCE_NATIVE_LIVE birth uses F24/F25/F26 when admitted |
-| world.asset | RD-03 / Asset owner | existing strict schema + RD-16 final wrapper proof; SOURCE_NATIVE_LIVE birth uses F24/F25/F26 when admitted |
-| world.location | current catalog/native owner | RD-16 strict schema/wrapper closure + F24/F25/F26 source-native identity when LIVE-born |
-| world.connection | current catalog/native owner | RD-16 strict schema/wrapper closure + F24/F25/F26 source-native identity when LIVE-born |
-| world.zone | current catalog/native owner | RD-16 strict schema/wrapper closure + F24/F25/F26 source-native identity when LIVE-born |
-| world.organization | current catalog/native owner | RD-16 strict schema/wrapper closure; faction is only a facet; F24/F25/F26 source-native identity when LIVE-born |
-| world.contract | current catalog/native owner | RD-16 strict schema/wrapper closure + F24/F25/F26 source-native identity when LIVE-born |
-| world.mission | current catalog/native owner | RD-16 strict schema/wrapper closure + F24/F25/F26 source-native identity when LIVE-born |
-| world.scene | current scene owner + RD-08/RD-09 routing/currentness joins | RD-16 strict schema/wrapper closure + F24/F25/F26 source-native identity when LIVE-born |
-| world.encounter | current catalog/native owner | RD-16 strict schema/wrapper closure + F24/F25/F26 source-native identity when LIVE-born |
-| world.hazard | current catalog/native owner | RD-16 strict schema/wrapper closure + F24/F25/F26 source-native identity when LIVE-born |
-| world.effect | RD-03 / Effect owner | existing strict schema + RD-16 final wrapper proof + F24/F25/F26 source-native identity when LIVE-born |
-| world.lore_fact | RD-02 information/truth owner | RD-16 strict schema/wrapper closure + F24/F25/F26 source-native identity when LIVE-born |
+| world.actor | RD-03 / Actor owner | existing strict schema + RD-16 final wrapper proof; SOURCE_NATIVE_LIVE birth uses F24–F27 RD-09 source/cursor/order/route realization when admitted |
+| world.actor_group | RD-03 / Actor-group owner | existing strict schema + RD-16 final wrapper proof; SOURCE_NATIVE_LIVE birth uses F24–F27 when admitted |
+| world.asset | RD-03 / Asset owner | existing strict schema + RD-16 final wrapper proof; SOURCE_NATIVE_LIVE birth uses F24–F27 when admitted |
+| world.location | current catalog/native owner | RD-16 strict schema/wrapper closure + F24–F27 source-native identity when LIVE-born |
+| world.connection | current catalog/native owner | RD-16 strict schema/wrapper closure + F24–F27 source-native identity when LIVE-born |
+| world.zone | current catalog/native owner | RD-16 strict schema/wrapper closure + F24–F27 source-native identity when LIVE-born |
+| world.organization | current catalog/native owner | RD-16 strict schema/wrapper closure; faction is only a facet; F24–F27 source-native identity when LIVE-born |
+| world.contract | current catalog/native owner | RD-16 strict schema/wrapper closure + F24–F27 source-native identity when LIVE-born |
+| world.mission | current catalog/native owner | RD-16 strict schema/wrapper closure + F24–F27 source-native identity when LIVE-born |
+| world.scene | current scene owner + RD-08/RD-09 routing/currentness joins | RD-16 strict schema/wrapper closure + F24–F27 source-native identity when LIVE-born; F27 prevents raw semantic scene IDs from being used as physical LIVE ref components |
+| world.encounter | current catalog/native owner | RD-16 strict schema/wrapper closure + F24–F27 source-native identity when LIVE-born |
+| world.hazard | current catalog/native owner | RD-16 strict schema/wrapper closure + F24–F27 source-native identity when LIVE-born |
+| world.effect | RD-03 / Effect owner | existing strict schema + RD-16 final wrapper proof + F24–F27 source-native identity when LIVE-born |
+| world.lore_fact | RD-02 information/truth owner | RD-16 strict schema/wrapper closure + F24–F27 source-native identity when LIVE-born |
 | world.knowledge | RD-02 knowledge owner | RD-16 strict schema; composite owner-equivalent identity retained; source-native cursor allocation does not apply |
-| world.thread | RD-08 / WP-15 | RD-08 owner-local schema -> RD-16 shared catalog/identity integration; F24/F25/F26 source-native identity when LIVE-born |
+| world.thread | RD-08 / WP-15 | RD-08 owner-local schema -> RD-16 shared catalog/identity integration; F24–F27 source-native identity when LIVE-born |
 | world.player | WP-16 / RD-09 access-currentness consumers | RD-16 admission/schema/shared integration; enclosing world-record `id` is the sole native campaign player key; LIVE birth forbidden |
 
 `world.faction` has explicit **NO INDEPENDENT NATIVE FAMILY** disposition.
@@ -52,15 +52,15 @@ Current decomposition count: **16 RD units**.
 | Family | Owning execution route |
 |---|---|
 | runtime.session | RD-07 session/recovery contract; LIVE birth forbidden |
-| runtime.message | RD-02 information/message + RD-09 F24/F25/F26 source-native identity when LIVE-born |
-| runtime.interaction | RD-05 execution lifecycle + RD-09 F24/F25/F26 source-native identity when LIVE-born |
-| runtime.procedure | RD-05 execution lifecycle + RD-09 F24/F25/F26 source-native identity when LIVE-born |
+| runtime.message | RD-02 information/message + RD-09 F24–F27 source-native identity when LIVE-born |
+| runtime.interaction | RD-05 execution lifecycle + RD-09 F24–F27 source-native identity when LIVE-born |
+| runtime.procedure | RD-05 execution lifecycle + RD-09 F24–F27 source-native identity when LIVE-born |
 | runtime.intent_plan | RD-05 execution lifecycle; owner-equivalent/derived LIVE identity, not source-native cursor allocation |
 | runtime.command | RD-05 execution lifecycle; catalog-backed acceptance requires RD-15 `SUPPORTED` binding and persists accepted reconstructive `CatalogContextBasis`; owner-equivalent/derived LIVE identity |
-| runtime.resolution | RD-05 execution lifecycle; catalog-backed execution preserves exact equality with root command catalog basis; F24/F25/F26 source-native identity when LIVE-born |
+| runtime.resolution | RD-05 execution lifecycle; catalog-backed execution preserves exact equality with root command catalog basis; F24–F27 source-native identity when LIVE-born |
 | runtime.continuation | RD-05 execution/recovery evidence; suspended generation persists accepted catalog basis; owner-equivalent/derived LIVE identity |
 | runtime.mechanical_event | RD-05 composite identity -> RD-16 shared identifier integration; source-native cursor allocation does not apply |
-| runtime.semantic_event | RD-13 native history + RD-09 F24/F25/F26 source-native identity when LIVE-born |
+| runtime.semantic_event | RD-13 native history + RD-09 F24–F27 source-native identity when LIVE-born |
 | runtime.resolution_trace | RD-05 execution evidence; owner-equivalent LIVE identity |
 | runtime.disclosure | RD-02 disclosure owner; composite/owner-equivalent LIVE identity |
 | runtime.collaboration_obligation | RD-12 collaboration owner; LIVE birth forbidden |
@@ -97,6 +97,7 @@ F23 reconstructive accepted catalog basis        -> RD-15 -> RD-05 -> RD-06 -> R
 F24 source-native LIVE cursor/printable-ID basis -> RD-09 cursor/encoding/CAS -> RD-16 shared policy -> RD-07 recovery
 F25 campaign semantic-ID / physical-route split  -> RD-14 + RD-06 -> RD-09 route/body/ID validation -> RD-07 recovery
 F26 deterministic LIVE creation-slot order       -> RD-09 normalization/allocation/CAS -> RD-16 proof + RD-07 recovery
+F27 exact LIVE epoch / scene route identity      -> RD-09 claim+epoch+ref realization -> RD-06 route-selection validation -> RD-07 recovery
 ```
 
 Findings 1–5 remain routed by the earlier SIRR2/author repair overlays and are not replaced by this table.
@@ -131,19 +132,21 @@ exact recovery reconstruction
   -> accepted owners above
 ```
 
-## 6. F24/F25/F26 bidirectional LIVE identity mapping
+## 6. F24–F27 bidirectional LIVE identity / route mapping
 
 Forward:
 
 ```text
-Step-5.8 / WP-16 stable live-born identity laws
-  -> F24 cursor + printable ID realization
-  -> F25 canonical campaign_id source key + bounded derived physical route token
+Step-5.8 / WP-16 stable LIVE authority + live-born identity laws
+  -> F24 cursor + printable source-native ID realization
+  -> F25 canonical campaign_id source key + bounded c1 physical campaign token
   -> F26 deterministic attempt-local multiple-creation normalization
-  -> RD-09 exact-source CAS freezes semantic source tuple, allocation array, final IDs and cursor advance
+  -> F27 canonical immutable-claim framing + e1 epoch identity + s1 scene token
+  -> RD-09 exact-source/opening/CAS machinery
+  -> RD-06 campaign route-selection validation
   -> RD-16 final live_birth/identifier-policy machine write/proof
-  -> RD-07 selected-LIVE source identity/allocation recovery validation
-  -> exact PG24/PG25/PG26 witnesses
+  -> RD-07 selected-LIVE source/opening/allocation recovery validation
+  -> exact PG24/PG25/PG26/PG27 witnesses
 ```
 
 Correct semantic source key:
@@ -152,20 +155,35 @@ Correct semantic source key:
 (campaign_id, scene_id, epoch_id)
 ```
 
-Physical WP-11 campaign route component:
+Current physical WP-11 LIVE route:
 
 ```text
-encode_live_campaign_route_token(campaign_id)
-= "c1-" + lowercase(hex(SHA256(domain-separated length-framed UTF8(campaign_id))))
+live/c1-<64hex>/s1-<64hex>/e1-<64hex>/LIVE/LIVE_STATE.yaml
 ```
 
-The physical token is only a locator and is verified against `LIVE_STATE.campaign_id`; source-native semantic IDs frame canonical `campaign_id`, never the physical token.
+where:
 
-For multiple `SOURCE_NATIVE_LIVE` creations in one frozen attempt:
+- `c1-...` = domain-separated SHA-256 token of canonical `campaign_id` (F25);
+- `s1-...` = domain-separated SHA-256 token of canonical semantic `scene_id` (F27);
+- `e1-...` = full SHA-256 digest of the exact domain-separated opening basis `(campaign_id, scene_id, pinned opening campaign revision, canonical immutable claim set)` (F27).
+
+The campaign and scene tokens are physical locators only. `epoch_id` is semantic identity with an intentionally transport-safe v1 spelling. Route/token/digest equality never substitutes for full expected LIVE envelope/opening-basis equality.
+
+Canonical F27 claim frames consume only the accepted closed claim grammar:
+
+```text
+EXACT_OWNER(native_family, complete owner-ordered identity components)
+EPOCH_LOCAL_CREATION(native_family)
+OWNER_DEFINED_PARTITION(partition_type, complete owner-ordered key components)
+```
+
+Complete claim frames are sorted lexicographically as bytes because the claim set is unordered. Duplicate canonical claims or a partition without a deterministic bounded key block opening; arbitrary JSON/model/container ordering is never identity.
+
+For multiple `SOURCE_NATIVE_LIVE` creations in one accepted LIVE mutation, F26 remains:
 
 ```text
 per-family owner deterministic sequence
--> canonical family-group order by UTF8(native_family)
+-> family groups by UTF8(native_family)
 -> contiguous owner_local_creation_index
 -> contiguous creation_slot_index
 -> source_local_creation_ordinal = frozen_cursor + slot
@@ -176,19 +194,22 @@ Reverse:
 
 ```text
 MANIFEST campaign_id creation/immutability
-c1-<sha256> physical LIVE route token
-LIVE envelope campaign_id/scene_id/epoch_id validation
-framed_base32hex_v1 using campaign_id
+c1 campaign physical route token
+s1 scene physical route token
+canonical immutable claim frames
+e1 epoch_id derivation
+LIVE envelope campaign_id/scene_id/epoch_id/opening_campaign_revision/Q
+framed_base32hex_v1 source-native IDs using semantic source values
 next_source_native_creation_ordinal
 owner_local_creation_index / creation_slot_index
 FrozenLiveAttempt source_native_allocations
-final LIVE schema removal of generic provisional-rekey baseline
+campaign route-selection validation
 selected-LIVE recovery validation
-  -> F24/F25/F26
-  -> WP-19 campaign identity + WP-11 bounded route + Step-5.8/WP-16 stable live-born identity/CAS laws
+  -> F24/F25/F26/F27
+  -> WP-19 campaign identity + WP-11 bounded physical route + Step-5.8/WP-16 LIVE opening/currentness/live-born identity laws
 ```
 
-These findings introduce no campaign allocator dependency, global sequence, fictional chronology, new native family, second campaign identity, generic ordering service or transport-ref semantic identity.
+These findings introduce no campaign allocator dependency, global epoch allocator, global sequence, fictional chronology, new native family, second campaign identity, generic ordering service or branch/ref semantic authority.
 
 ## 7. Reverse-coverage law
 
@@ -199,14 +220,14 @@ Every current implementation task must resolve backward to one of:
 3. a required consumer/version/checkpoint consequence of such work;
 4. one of the explicit post-WP27 graph-closure atoms above, with an accepted native owner.
 
-RD-15 tasks reverse to accepted catalog-resolution and `runtime.catalog_gap_report` owners plus F23 accepted-context reconstruction. RD-16 tasks reverse to R018 per-family realization, current catalog structure/identity owners, shared-machine integration required by accepted deltas, and F24–F26 final identifier-policy/source-native proof. RD-05/RD-06/RD-07 F23 deltas reverse to Step-3 accepted execution, Catalog Resolution, Ruleset Package Identity and Step-5.13 retention/protection laws. RD-14/RD-06/RD-09/RD-07 F25 deltas reverse to WP-19 stable campaign identity, WP-11 physical routing and WP-16 exact source identity. RD-09/RD-07 F26 deltas reverse to Step-5.8/WP-16 accepted source-local coordinate and frozen exact-source CAS/recovery laws.
+RD-15 tasks reverse to accepted catalog-resolution and `runtime.catalog_gap_report` owners plus F23 accepted-context reconstruction. RD-16 tasks reverse to R018 per-family realization, current catalog structure/identity owners, shared-machine integration required by accepted deltas, and F24–F27 final source-native identifier-policy compatibility/proof. RD-05/RD-06/RD-07 F23 deltas reverse to Step-3 accepted execution, Catalog Resolution, Ruleset Package Identity and Step-5.13 retention/protection laws. RD-14/RD-06/RD-09/RD-07 F25 deltas reverse to WP-19 stable campaign identity, WP-11 physical routing and WP-16 exact source identity. RD-09/RD-07 F26 deltas reverse to Step-5.8/WP-16 accepted source-local coordinate and frozen exact-source CAS/recovery laws. RD-09/RD-06/RD-07 F27 deltas reverse to Step-5.8 opening/source authority, WP-16 closed claim grammar and WP-11 bounded LIVE physical route.
 
 No wave number, file adjacency, legacy v0.8 artifact or author convenience creates semantic work.
 
 ## 8. Currentness / closure rule
 
-Current package routing is RD-01..RD-16 plus the package-index mandatory precedence chain, including Findings 25–26 as current highest-precedence LIVE identity refinements over Finding 24. Any older statement that the semantic source key is `(campaign_technical_id, scene_id, epoch_id)`, that raw campaign identity is a physical ref component, or that an unspecified "normalized mutation list" may choose allocation order is superseded for v1 execution.
+Current package routing is RD-01..RD-16 plus the package-index mandatory precedence chain, including Finding 27 as the current highest-precedence LIVE epoch/physical-route refinement over Findings 24–26. Any older statement that raw semantic `campaign_id`/`scene_id` may be directly interpolated into the physical LIVE ref, that `campaign_technical_id` is semantic identity, that epoch spelling is implementation-choice/example-only, that `E_<first-12-hex>` is sufficient v1 contract, or that an unspecified normalized mutation list may choose source-native allocation order is superseded for v1 execution.
 
-This v3 document does **not** declare zero-open author closure. Final closure still requires fresh reverse review of every RD-15/RD-16 task, full 17+17 family proof, F23 accepted-context proof, F24–F26 source-native identity/routing/order/CAS/recovery proof, proof-witness/mechanism symmetry, shared-writer uniqueness, execution-wave reconciliation, exact package-index/master/progress agreement and exact-head hosted validation.
+This v3 document does **not** declare zero-open author closure. Final closure still requires fresh reverse review of every RD-15/RD-16 task, full 17+17 family proof, F23 accepted-context proof, F24–F27 source-native identity/opening/routing/order/CAS/recovery proof, proof-witness/mechanism symmetry, shared-writer uniqueness, execution-wave reconciliation, exact package-index/master/progress agreement and exact-head hosted validation.
 
 Architecture reopen: **NO CURRENT OPEN REOPEN**. Human product decision: **NO CURRENT OPEN DECISION**. Independent review remains blocked. Production implementation remains unauthorized.
