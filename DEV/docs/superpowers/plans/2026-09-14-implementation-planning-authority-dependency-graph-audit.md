@@ -3,8 +3,8 @@
 Status: **ACTIVE AUTHOR ADVERSARIAL PLANNING AUDIT — NON-CANONICAL EVIDENCE LEDGER**
 Date: 2026-09-14
 Initial audit baseline: `94e416c58633912a97308c1bfa95762951f0f8a4`
-Current graph synchronization basis: `fd5e2bd94b9143641de6eee2320e850d477c80c4`
-Synchronized through: **F41**
+Current graph synchronization basis: `d6c9b245b31beb0afb31ad905f57ff41985ff5bc`
+Synchronized through: **F42**
 Production implementation authorized: **NO**.
 
 This artifact is an audit/traceability ledger. It does not replace canonical owners, RD plans, proof ledgers, package precedence or readiness authorities. Its purpose is to keep the current typed dependency/authority graph explicit while the author adversarial audit searches for hidden implementation-planning defects that document-by-document review can miss.
@@ -134,7 +134,8 @@ The audit marks a planning defect when it finds any of:
 21. accepted transition semantics with only validators/classifiers but no executable mutation producer;
 22. reverse semantic trigger required by an owner law but reachable only opportunistically from a later consumer action;
 23. generator/bootstrap consumer whose mandatory package-template producers are only checked after generation rather than joined before validation;
-24. known multi-owner documentation/projection file whose owner-local GREEN checkpoints can overwrite one another because no final integrated-byte checkpoint exists.
+24. known multi-owner documentation/projection file whose owner-local GREEN checkpoints can overwrite one another because no final integrated-byte checkpoint exists;
+25. final machine integrator independently recreating a semantic-owner schema instead of consuming the owner-final contract.
 
 ## 4. Findings currently established
 
@@ -183,8 +184,9 @@ All dispositions below are author-side planning dispositions only and remain ind
 | F39 | RD-01 and RD-14 independently wrote the same shipped install/bootstrap projections without a shared-file checkpoint | repaired by one RD-14 final integration writer over fresh current bytes, preserving both RD-01 stale-projection laws and RD-14 bootstrap/product semantics |
 | F40 | RD-14 generator/scaffold validation consumed mandatory blank allocator/temporal/principal/LIVE companion artifacts without producer-local readiness edges | repaired by four bounded scaffold-contract checkpoints joined into `RD14_BLANK_SCAFFOLD_INPUTS_READY`, which hard-precedes Task-3 generator/scaffold validation without whole-RD serialization |
 | F41 | RD-02/RD-03/RD-04/RD-07 independently write shared schema/storage README projections with no named final integrated-byte checkpoint | repaired by `GAME_SCHEMA_README_FINAL_INTEGRATION_READY` and `GAME_STORAGE_README_FINAL_INTEGRATION_READY` over owner-local GREEN deltas; no semantic serialization |
+| F42 | RD-16 independently recreates strict LoreFact/Knowledge schemas already created and semantically owned by RD-02 | repaired: RD-02 sole producer; RD-16 quiet local-create set becomes eight families and consumes exact RD-02 GREEN schemas in final wrapper/catalog/R018 integration |
 
-Current author-open findings after F41: **none yet recorded**, but the adversarial graph audit is explicitly still active and has not issued zero-open closure.
+Current author-open findings after F42: **none yet recorded**, but the adversarial graph audit is explicitly still active and has not issued zero-open closure.
 
 ## 5. Family-level R018 graph — current evidence
 
@@ -236,7 +238,7 @@ runtime.catalog_gap_report
 
 Counts are routing aids, not proof. Current R018 closure requires, per concrete family, the full owner -> admission -> exact structure/schema -> identity policy -> route/root -> RD producer/integrator -> durability/recovery -> item-bound witness chain. F34 additionally requires the exact 17-row runtime schema/root matrix and `R018RuntimeFamilyProofTests`.
 
-RD-16 is the final physical shared-machine writer for the coordinated world-family/catalog/identifier-policy integration; semantic ownership remains with the producing RDs/owners.
+RD-16 is the final physical shared-machine writer for the coordinated world-family/catalog/identifier-policy integration; semantic ownership remains with the producing RDs/owners. F42 makes this explicit for LoreFact/Knowledge: RD-02 produces their strict schemas; RD-16 consumes them exactly.
 
 ## 6. Current identity / source graph
 
@@ -414,13 +416,14 @@ RD09_SOURCE_NATIVE_ID_READY
   -> RD16 shared identifier-policy integration
   -> RD07 selected-LIVE recovery join
 
-RD08 thread LOCAL_SEMANTIC_READY
+RD02_INFORMATION_WORLD_SCHEMA_LOCAL_SEMANTIC_READY
++ RD08 thread LOCAL_SEMANTIC_READY
 + RD04 player/faction disposition LOCAL_SEMANTIC_READY
 + RD05 MechanicalEvent identity LOCAL_SEMANTIC_READY
 + RD09/WP16 live_birth table LOCAL_SEMANTIC_READY
 + RD12 PLAYER collaboration-route companion LOCAL_SEMANTIC_READY
 + RD15 catalog-gap policy input LOCAL_SEMANTIC_READY
-+ RD16 strict world-family schemas ready
++ RD16 eight quiet-family schemas ready
   -> RD16 SHARED_MACHINE_INTEGRATION_JOIN
 
 RD16 shared machine integration
@@ -473,11 +476,14 @@ F40's scaffold checkpoints are deliberately producer-local and do not wait for R
 
 F41's README checkpoints are documentation sinks. They do not feed owner semantics and therefore introduce no cycle or whole-RD dependency.
 
+F42 adds an owner-schema input to RD-16; RD-02 does not wait for RD-16 for its owner-local information semantics, so the edge is acyclic.
+
 ### Shared physical writer table — audited/current rows
 
 | Physical surface | Planned writers | Current integration owner/checkpoint |
 |---|---|---|
 | shared catalog / family / identifier machine files | multiple producer RDs + RD-16 | RD-16 `SHARED_MACHINE_INTEGRATION_JOIN` |
+| `DEV/SCHEMAS/world-lore-fact-state.schema.json`, `world-knowledge-state.schema.json` | RD-02 semantic producer; stale RD-16 duplicate create intent | F42 RD-02 sole producer -> RD-16 exact-schema consumer/integrator |
 | scene routing shipped/schema surfaces | RD-08 + RD-09 | ordered chronology delta -> LIVE delta + joint proof |
 | catalog-binding shipped prose (`PLAY_POLICY`,`CORE_INDEX`,`ADJUDICATION`) | RD-15 + possible RD-01 stale projection | one coherent ordered writer/merge preserving both requirement sets |
 | multiplayer/session shipped prose | RD-09 + RD-12 | one ordered physical cutover preserving LIVE/currentness + collaboration semantics |
@@ -487,7 +493,7 @@ F41's README checkpoints are documentation sinks. They do not feed owner semanti
 | `GAME/SCHEMA/README.md` | RD-02 + RD-03 + RD-04 + RD-07 | F41 `GAME_SCHEMA_README_FINAL_INTEGRATION_READY` over all owner-local GREEN deltas |
 | `GAME/TEMPLATE/STORAGE_README.md` | RD-02 + RD-03 + RD-04 | F41 `GAME_STORAGE_README_FINAL_INTEGRATION_READY` over all owner-local GREEN deltas |
 
-Shared-writer/scaffold audit remains active for additional unlisted overlaps.
+Shared-writer/schema-cutover audit remains active for additional unlisted overlaps.
 
 The declared checkpoint-level graph must remain acyclic after every new repair. Whole-RD apparent cycles must be decomposed only when there are genuinely distinct owner-local checkpoints; checkpoint splitting may not be used to hide a real semantic cycle.
 
@@ -508,9 +514,10 @@ historical v2 ledger/appendices
 + F39 install/bootstrap shared-writer amendment
 + F40 blank-scaffold input checkpoint amendment
 + F41 schema/storage README shared-writer amendment
++ F42 information schema / RD-16 integration amendment
 ```
 
-F37 amends WP-16 duties 11/12 so LIVE lifecycle/classifier proof is joined to an executable exact-current PLAYER mutation producer. F38 amends WP-17 theme 16 so input-time mismatch detection is supporting evidence only; the required reverse access-transition reconciliation must be witnessed directly. F39 requires final cross-RD shipped-install proof, not two independent single-writer test suites. F40 requires proof over actual generated blank scaffold bytes after all mandatory template-producer checkpoints, not merely repository-template presence. F41 requires integrated-byte proof for the shared schema/storage README projections; isolated RD documentation tests are supporting evidence only.
+F37 amends WP-16 duties 11/12 so LIVE lifecycle/classifier proof is joined to an executable exact-current PLAYER mutation producer. F38 amends WP-17 theme 16 so input-time mismatch detection is supporting evidence only; the required reverse access-transition reconciliation must be witnessed directly. F39 requires final cross-RD shipped-install proof, not two independent single-writer test suites. F40 requires proof over actual generated blank scaffold bytes after all mandatory template-producer checkpoints, not merely repository-template presence. F41 requires integrated-byte proof for the shared schema/storage README projections; isolated RD documentation tests are supporting evidence only. F42 requires LoreFact/Knowledge R018 rows to trace RD-02 owner/schema production into RD-16 exact final integration; count-only closure cannot substitute.
 
 Proof closure is item-bound. A row/test-class/count is insufficient when the named executable producer, consumer, durability/currentness/recovery join or required negative is absent.
 
@@ -525,14 +532,14 @@ R004 absent
 
 Post-WP27 author findings repair implementation planning; they do not invent historical readiness IDs.
 
-## 10. Active audit queue after F41
+## 10. Active audit queue after F42
 
 The graph audit remains open. Next passes, in current priority order:
 
-1. **Finish remaining shared physical writers.** Complete the file -> planned-writers -> semantic-deltas -> final-writer table and find any later writer that can erase an earlier accepted delta or publish two independently-final generations.
-2. **Schema/version-generation cutovers.** Check schema-version bumps, catalog generation, strict wrapper dispatch and shipped schema projections for mixed-generation states that the declared checkpoints still permit.
+1. **Schema/version-generation cutovers.** Check local schema bump law, coordinated catalog generation, strict wrapper dispatch, shipped module revisions and mixed-generation closure; do not infer coupling between independent namespaces.
+2. **Finish remaining shared physical writers.** Continue file -> planned-writers -> semantic-deltas -> final-writer census, especially schemas and generated projections not yet in the table.
 3. **Residual mutation-trigger contradiction pairs.** Re-test principal/PLAYER/collaboration/LIVE intersections after F37/F38, especially operations touching more than one companion plus LIVE route/claim transitions.
-4. **Checkpoint DAG cycle proof.** Rebuild hard/join edges at checkpoint granularity including F34-F41 and prove acyclicity without relying on informal whole-RD ordering.
+4. **Checkpoint DAG cycle proof.** Rebuild hard/join edges at checkpoint granularity including F34-F42 and prove acyclicity without relying on informal whole-RD ordering.
 5. **Dormant / trigger / no-work activation safety.** Verify trigger-gated and no-work rows cannot silently become current implementation obligations or remain dormant after their exact trigger has become true.
 6. **Stale shipped-consumer reverse scan.** Starting from every repaired owner law, search current shipped CORE/setup/session/bootstrap/schema consumers for any shorter contradictory authority/currentness path.
 7. **Recovery negative-path scan.** For every completeness companion, prove missing/stale/ambiguous state cannot degrade into broad scan, newest-wins, cache authority or false absence.
