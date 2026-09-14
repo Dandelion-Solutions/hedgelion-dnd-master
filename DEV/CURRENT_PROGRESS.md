@@ -4,18 +4,19 @@ Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR ADVERSARIAL CLOSURE ACTIVE
 
-Current executable package: RD-01 through RD-16 with 20 mandatory overlays.
+Current executable package: RD-01 through RD-16 with 22 mandatory overlays.
 
-Author Findings 1–26 are planning-repaired and independently unconfirmed. Finding 23 adds reconstructive accepted catalog-context provenance across RD-15 binding, RD-05 accepted execution, RD-06 retention/publication and RD-07 exact recovery. Findings 24–26 together define exact source-native LIVE identity realization: canonical semantic source key `(campaign_id, scene_id, epoch_id)`; bounded derived physical campaign route token with LIVE-body identity validation; CAS-owned nonreused uint64 creation ordinal; deterministic attempt-local multi-creation slot normalization; injective `framed_base32hex_v1` using canonical `campaign_id`; no campaign allocator fallback; no generic accepted-ID rekey on absorption.
+Author Findings 1–31 are planning-repaired and independently unconfirmed. Findings 23–31 add the current catalog-context and LIVE realization repairs: reconstructive accepted catalog basis; exact source-native LIVE identity/allocation; canonical campaign/scene/epoch routing; idempotent candidate preparation; exact opening seed from one pinned campaign revision; completeness-protected `STATE/RUNTIME/LIVE_ROUTING.yaml`; typed native-state LIVE packing and lossless/idempotent forward absorption.
 
 Current authority routes:
 - package router: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md`;
+- master plan: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md`;
 - execution graph: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-execution-waves-v2-post-graph.md`;
 - bidirectional coverage: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`;
 - post-graph proof: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` plus `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md`;
-- highest-precedence current repairs: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-live-campaign-identity-routing-addendum.md` and `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-live-source-creation-order-addendum.md` over the Finding-24 source-native encoding baseline.
+- highest-precedence LIVE repair: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-live-opening-routing-native-state-addendum.md` layered above Findings 24–27.
 
-Current work: fresh post-repair adversarial review of the complete 16-RD / 20-overlay package. No zero-open author verdict has been issued.
+Current work: continue fresh adversarial review of the complete 16-RD / 22-overlay package and synchronize proof/coverage/execution surfaces through Finding 31. No zero-open author verdict has been issued.
 
 Next authorized work: author review / repair only.
 
