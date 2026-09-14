@@ -2,7 +2,7 @@
 
 Status: **CURRENT MANDATORY PROOF AMENDMENT — PLANNING ONLY**
 Date: 2026-09-14
-Finding origin: **AUTHOR FINDING 22 — SIGNIFICANT**, extended through Finding 23.
+Finding origin: **AUTHOR FINDING 22 — SIGNIFICANT**, extended through Finding 24.
 Production implementation: **NO**.
 
 This matrix amends `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md`. A post-WP27 row is not planned-closed unless its exact mechanism, executable witness and primary proof channel are all present.
@@ -26,6 +26,7 @@ This matrix amends `2026-09-14-implementation-planning-lossless-proof-ledger-v3-
 | PG20 | current proof router requires RD-15/RD-16 for R018 and routes PG rows | `PostGraphProofRoutingTests` | STATIC_AUDIT |
 | PG21 | current execution graph is acyclic and routes all RD-01..RD-16 joins | `PostGraphExecutionGraphProofTests` | STATIC_AUDIT |
 | PG23 | one reconstructive accepted `CatalogContextBasis` survives bind -> accepted execution -> durability/retention -> exact recovery; unpublished session-only dependency cannot be stranded | RD-15 `CatalogContextBasisContractTests` + `CatalogGapContextEvidenceTests`; RD-05 `AcceptedExecutionCatalogBasisTests`; RD-06 `CatalogDependencyDurabilityTests`; RD-07 `CatalogBasisRecoveryTests` | FOCUSED_BEHAVIOR + INTEGRATION_SCENARIO + STATIC_AUDIT |
+| PG24 | stable LiveSourceKey + CAS-owned source-local ordinal + injective `framed_base32hex_v1` freezes source-native IDs at accepted creation and preserves them through ambiguity/recovery/absorption | RD-09 `SourceNativeLiveIdEncodingTests`, `LiveSourceCreationCursorTests`, `SourceNativeAmbiguousPublicationTests`, `LiveSourceNativeSchemaCutoverTests`; RD-16 `SourceNativeIdentifierPolicyIntegrationTests`; RD-07 `SourceNativeLiveRecoveryTests` | FOCUSED_BEHAVIOR + INTEGRATION_SCENARIO + STATIC_AUDIT |
 
 `PG22` is intentionally not a separate semantic-mechanism row: Finding 22 is the proof-routing rule realized by this matrix itself. Its closure is tested by `PostGraphProofRoutingTests`, which must fail if any PG semantic row lacks an exact witness or primary channel.
 
@@ -42,6 +43,12 @@ Finding-23 executable witnesses are owner-local rather than proof-only:
 - RD-06 `CatalogDependencyDurabilityTests` is created with the durability/protection join GREEN;
 - RD-07 `CatalogBasisRecoveryTests` is created with exact reconstruction/recovery GREEN.
 
+Finding-24 executable witnesses are also owner-local:
+
+- RD-09 creates `SourceNativeLiveIdEncodingTests` with the exact encoding GREEN, `LiveSourceCreationCursorTests` with cursor/CAS allocation GREEN, `SourceNativeAmbiguousPublicationTests` with ambiguity reconciliation GREEN, and `LiveSourceNativeSchemaCutoverTests` with final v1 LIVE schema GREEN;
+- RD-16 creates `SourceNativeIdentifierPolicyIntegrationTests` only in the shared identifier-policy integration task;
+- RD-07 creates `SourceNativeLiveRecoveryTests` only with selected-LIVE recovery validation GREEN.
+
 None is pre-created as a future-task failing class.
 
 ## Exact negative requirements
@@ -51,6 +58,7 @@ None is pre-created as a future-task failing class.
 - PG17 fails if any publishable checkpoint contains an intentional future-task RED or uses skip/disable as a substitute for choreography.
 - PG18 fails if a catalog-backed RuntimeCommand can be accepted with absent/mismatched RD-15 binding basis; native non-catalog transitions are not forced through a fake catalog path.
 - PG19/PG20/PG21 fail on stale 14-RD current claims, inconsistent family census, missing RD-15/RD-16 proof join, missing routed current authority, or a hard-edge cycle.
-- PG23 fails if any of the following is possible: fingerprint-only accepted retry basis; command/resolution/continuation basis divergence; ambient/current/latest definition rebinding; missing owner-local dependency ref treated as recoverable; durable accepted dependency on unpublished session-only definition; accepted catalog dependency evidence dropped from durability/retention closure; gap evidence reinterpreted under a newer context.
+- PG23 fails on fingerprint-only retry basis, command/resolution/continuation basis divergence, ambient/current/latest definition rebinding, missing retained dependency treated as recoverable, durable dependence on unpublished session-only definition, dropped retention evidence, or gap evidence reinterpreted under a newer context.
+- PG24 fails if any SOURCE_NATIVE_LIVE family can use campaign allocator fallback, mutable ref/time in its semantic ID, probabilistic-only/hash-only identity, unversioned/non-injective encoding, accepted ID rekey at absorption, ordinal reuse/wrap, allocation before resolving an indeterminate prior attempt, generic provisional->compaction rekey baseline, or recovery from directory/index order rather than exact source evidence.
 
 No row may be discharged by test-name existence alone. Production implementation remains unauthorized.
