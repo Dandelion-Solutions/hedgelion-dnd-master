@@ -2,7 +2,7 @@
 
 Status: **CURRENT POST-GRAPH PROOF ROUTE — PLANNING ONLY**
 Date: 2026-09-14
-Finding origin: **AUTHOR FINDING 20 — SIGNIFICANT**, extended through Finding 24.
+Finding origin: **AUTHOR FINDING 20 — SIGNIFICANT**, extended through Finding 26.
 
 Historical readiness/proof semantics remain in v2 and its appendices. This v3 adds the mandatory post-graph joins; it creates no readiness IDs. Exact executable witnesses and primary proof channels are defined by `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md` and are part of this ledger's closure condition.
 
@@ -16,7 +16,7 @@ The historical R018 slices remain required, but closure now also requires:
 
 `CompositeR018ProofTests` may close only after `R018WorldFamilyProofTests` and the RD-15 catalog-gap family witness are green. Exact 17-world and 17-runtime members are checked item-by-item; count-only proof is invalid. `world.faction` must be absent as an independent family.
 
-Findings 23–24 add embedded accepted-execution/LIVE identity evidence and do not add native families; the 17+17 census therefore remains unchanged.
+Findings 23–26 add embedded accepted-execution/LIVE identity/routing/allocation evidence and do not add native families; the 17+17 census therefore remains unchanged.
 
 ## Post-WP27 proof rows
 
@@ -39,7 +39,9 @@ These are proof obligations, not readiness identities:
 - PG20 current proof routing -> static proof that R018 requires RD-15/RD-16 and every post-WP27 mechanism row is routed.
 - PG21 current execution graph -> static acyclicity and RD-01..RD-16 dependency/join proof.
 - PG23 reconstructive accepted catalog basis -> RD-15 exact basis producer/session-only guard + RD-05 accepted carrier equality + RD-06 retention/publication join + RD-07 exact reconstruction/no-ambient-rebind proof.
-- PG24 exact source-native LIVE identity -> RD-09 stable source key/ordinal/encoding + same-CAS allocation/ambiguity handling + RD-16 shared policy integration + RD-07 selected-LIVE recovery validation.
+- PG24 source-native LIVE cursor/printable-ID realization -> RD-09 exact cursor/encoding/CAS + RD-16 shared policy integration + RD-07 selected-LIVE recovery; PG25/PG26 supply the corrected campaign source key and deterministic multi-creation allocation order.
+- PG25 LIVE campaign semantic-identity / physical-route separation -> RD-14 exact `campaign_id` creation projection + RD-06 identity immutability + RD-09 derived bounded route token/body validation/corrected ID frame + RD-07 selected-LIVE campaign identity recovery.
+- PG26 deterministic attempt-local source-native creation order -> RD-09 per-family owner-order normalization + exact slot/ordinal allocation + original frozen-attempt ambiguity handling + RD-07 accepted allocation recovery.
 
 `PG22` is deliberately not a second semantic mechanism row. Finding 22 is the exact-witness routing rule embodied by the mandatory witness matrix. `PostGraphProofRoutingTests` closes that meta-obligation only when every semantic PG row has a named executable/static witness and primary channel.
 
@@ -71,20 +73,21 @@ Primary witnesses:
 
 ## PG24 exact closure law
 
-PG24 cannot close from the semantic phrase "epoch-qualified source-native ID" alone. Worker-visible machine realization must be exact.
+PG24 cannot close from the semantic phrase "epoch-qualified source-native ID" alone. Worker-visible machine realization must be exact and is refined by PG25/PG26.
 
 Closure requires all of:
 
-1. stable `LiveSourceKey = (campaign_technical_id, scene_id, epoch_id)`; mutable transport refs, exact source revisions, clocks, hosts and sessions are excluded from semantic identity;
+1. stable semantic `LiveSourceKey = (campaign_id, scene_id, epoch_id)` under PG25; mutable transport refs, physical campaign-route tokens, exact source revisions, clocks, hosts and sessions are excluded from semantic identity;
 2. one persisted `uint64 next_source_native_creation_ordinal` per LIVE source, initialized to 1, never wrapped/reused, and used only as uniqueness allocation state rather than chronology/currentness/priority;
-3. exact injective `framed_base32hex_v1` encoding over length-framed stable source key + native family + accepted source-local ordinal, with the family's final identifier-policy prefix;
-4. the final canonical IDs, all transition-internal references to them and the cursor advance are established by the same accepted exact-source CAS as creation;
-5. confirmed stale/rejected prospective IDs are noncanonical and a retry rereads the current cursor;
-6. `INDETERMINATE` publication reconciles the original frozen allocation/lineage before any new coordinate/ID may be allocated;
-7. accepted source-native IDs never rekey merely because LIVE later closes/absorbs into campaign;
-8. legacy generic `provisional_id -> compaction rekey` semantics are not the baseline representation for current `SOURCE_NATIVE_LIVE` families;
-9. RD-16's one shared identifier-policy write records the closed `source_native_live` + `framed_base32hex_v1` disposition and does not apply it to owner-equivalent/composite/forbidden families;
-10. RD-07 selected-LIVE recovery validates exact source-native IDs/cursor from the selected exact source and cannot use campaign allocator, directory/index ordering or latest-looking branches as reconstruction authority.
+3. exact injective `framed_base32hex_v1` encoding over length-framed canonical semantic source key + native family + accepted source-local ordinal, with the family's final identifier-policy prefix;
+4. when one attempt creates multiple SOURCE_NATIVE_LIVE records, PG26 supplies the exact normalized slot order used to map the frozen cursor to individual ordinals;
+5. final canonical IDs, all transition-internal references to them, exact allocation evidence and the cursor advance are established by the same accepted exact-source CAS as creation;
+6. confirmed stale/rejected prospective IDs are noncanonical and a refreshed attempt rereads the current cursor;
+7. `INDETERMINATE` publication reconciles the original frozen allocation/lineage before any new coordinate/ID may be allocated;
+8. accepted source-native IDs never rekey merely because LIVE later closes/absorbs into campaign;
+9. legacy generic `provisional_id -> compaction rekey` semantics are not the baseline representation for current `SOURCE_NATIVE_LIVE` families;
+10. RD-16's one shared identifier-policy write records the closed `source_native_live` + `framed_base32hex_v1` disposition and does not apply it to owner-equivalent/composite/forbidden families;
+11. RD-07 selected-LIVE recovery validates exact source-native IDs/cursor/allocation from the selected exact source and cannot use campaign allocator, directory/index ordering or latest-looking branches as reconstruction authority.
 
 Primary witnesses:
 
@@ -93,6 +96,55 @@ Primary witnesses:
 - RD-09 `SourceNativeAmbiguousPublicationTests`;
 - RD-09 `LiveSourceNativeSchemaCutoverTests`;
 - RD-16 `SourceNativeIdentifierPolicyIntegrationTests`;
+- RD-07 `SourceNativeLiveRecoveryTests`.
+
+## PG25 exact closure law
+
+PG25 closes only when semantic campaign identity and physical LIVE routing are mechanically separated.
+
+Closure requires all of:
+
+1. WP-19 frozen `campaign_id` is the sole semantic campaign component of `LiveSourceKey` and of the F24 printable source-native ID frame;
+2. no second semantic `campaign_technical_id` is persisted or accepted as campaign identity;
+3. WP-11 `<campaign-technical-id>` is realized only as `encode_live_campaign_route_token(campaign_id)` using domain-separated length-framed UTF-8 input and full lowercase SHA-256 hexadecimal with `c1-` prefix;
+4. the repaired LIVE envelope carries canonical `campaign_id` and selection/recovery validates `(campaign_id, scene_id, epoch_id)` against the selected route/source;
+5. physical-token equality alone is never semantic identity proof; token/body mismatch is a typed integrity failure with no search/random-suffix/alternate-route repair;
+6. RD-14 initial materialization propagates exact frozen `campaign_id` into admitted scaffold projections and does not generate a second semantic campaign identity;
+7. RD-06 ordinary post-initialization publication rejects a change to `MANIFEST.campaign_id` before remote mutation;
+8. RD-07 selected-LIVE recovery resolves current canonical campaign identity, derives route token, loads exact source, then validates the LIVE body tuple before adopting LIVE owner/currentness evidence;
+9. branch/ref name, current revision, creator login, card projection and route token never substitute for canonical campaign identity.
+
+Primary witnesses:
+
+- RD-14 `CreationIdentityTests` / `GeneratorScaffoldTests` campaign-ID cases;
+- RD-06 `CampaignIdentityImmutabilityTests`;
+- RD-09 `LiveCampaignRouteIdentityTests`;
+- RD-09 corrected `SourceNativeLiveIdEncodingTests`;
+- RD-07 `SelectedLiveCampaignIdentityRecoveryTests`.
+
+## PG26 exact closure law
+
+PG26 closes only when multiple source-native creations in one frozen LIVE mutation have an exact reproducible technical slot mapping without inventing cross-owner chronology.
+
+Closure requires all of:
+
+1. only `SOURCE_NATIVE_LIVE` families participate in the allocation list;
+2. each participating native-family adapter supplies one deterministic ordered sequence with contiguous unique `owner_local_creation_index = 0..m-1` for that family;
+3. unordered/ambiguous owner output with no deterministic native sequence blocks the attempt rather than being arbitrarily enumerated;
+4. global attempt normalization orders family groups by raw UTF-8 bytes of canonical native-family ID and preserves ascending owner-local creation index within a family;
+5. `creation_slot_index` is exactly the zero-based position in the normalized array;
+6. for frozen cursor `start`, `source_local_creation_ordinal = start + creation_slot_index` and resulting cursor is exactly `start + n`;
+7. allocation order never comes from final native ID, payload/hash/serialization, dictionary/set iteration, wall clock or randomness and carries no fictional chronology/priority semantics;
+8. the frozen attempt retains exact `(native_family, owner_local_creation_index, creation_slot_index, source_local_creation_ordinal, native_id)` mapping;
+9. a definite stale/not-applied attempt may rebuild from refreshed current source because its prospective IDs were noncanonical;
+10. an indeterminate attempt must reconcile the original frozen allocation before any second allocation range may be created;
+11. RD-07 recovery validates accepted source-native identity/allocation from exact source evidence and never regenerates IDs from current container iteration.
+
+Primary witnesses:
+
+- RD-09 `SourceNativeCreationOrderingTests`;
+- RD-09 `SourceNativeAmbiguousPublicationTests`;
+- RD-09 `SourceNativeLiveIdEncodingTests`;
 - RD-07 `SourceNativeLiveRecoveryTests`.
 
 ## Current proof law
