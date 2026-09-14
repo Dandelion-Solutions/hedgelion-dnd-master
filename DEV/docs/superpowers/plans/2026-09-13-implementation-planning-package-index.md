@@ -24,18 +24,18 @@ Mandatory overlays, low to high precedence:
 15. `2026-09-14-implementation-planning-catalog-binding-shipped-consumer-addendum.md`
 16. `2026-09-14-implementation-planning-post-graph-integration-addendum.md`
 
-Current bidirectional coverage/currentness route: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`. The 2026-09-13 v2 coverage file is historical for the pre-graph 14-RD package.
+Current coverage: `2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`.
+Current proof: historical v2 ledger/appendices plus mandatory override `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md`.
 
-Finding 16: native `world.player` uses enclosing world-record `id` as its single campaign record key; strict PLAYER state must not persist another `player_id`.
+Findings 16–20 mandatory deltas:
+- F16: native `world.player` uses enclosing world-record `id` as its single campaign key; strict PLAYER state has no second persisted `player_id`.
+- F17: RD-15/RD-16 obey overlay 5; later-task tests appear only in their own RED-to-GREEN task and are GREEN before publication.
+- F18: catalog-backed RD-05 command acceptance requires RD-15 same-context validated binding and preserves its catalog-context fingerprint.
+- F19: coverage v3 is current for the 16-RD / 17+17-family package.
+- F20: proof-ledger v3 makes RD-15/RD-16 mandatory for R018 and adds PG06..PG19 post-WP27 proof rows.
 
-Finding 17: RD-15/RD-16 obey overlay 5. A later-task test group is introduced only in its own RED-to-GREEN task and is GREEN before checkpoint publication.
+Final census: 17 world families and 17 runtime families; `world.faction` is not an independent v1 family. Counts are not proof.
 
-Finding 18: for a catalog-backed executable request, RD-15 same-context deterministic validation must produce the accepted binding before RD-05 command acceptance. RD-05 preserves the same catalog-context fingerprint and rejects a catalog-backed acceptance lacking that validated basis. RD-05 mechanics core may develop independently; only its catalog-backed acceptance/integration checkpoint is gated. Native non-catalog transitions retain their own deterministic validation.
+Accounting: 133 active = 116 direct + 9 proof + 8 composite; 12 trigger-gated; 79 no-work; R004 absent; 16 RD units; 16 overlays.
 
-Finding 19: current bidirectional coverage is v3; it preserves historical 133 readiness accounting while adding item-level 17+17 family routing and explicit post-WP27 graph-closure atoms for RD-15/RD-16 and late repairs.
-
-Final census: 17 world families, 17 runtime families; `world.faction` is not an independent v1 family. Counts are not proof.
-
-Accounting: 133 active readiness = 116 direct + 9 proof + 8 composite; 12 trigger-gated; 79 no-work; R004 absent; 16 RD units; 16 overlays.
-
-Author Findings 1–19 are plan-repaired and independently unconfirmed. Independent review remains blocked until fresh zero-open author closure and exact-head hosted validation.
+Author Findings 1–20 are plan-repaired and independently unconfirmed. Independent review remains blocked until fresh zero-open author closure and exact-head hosted validation.
