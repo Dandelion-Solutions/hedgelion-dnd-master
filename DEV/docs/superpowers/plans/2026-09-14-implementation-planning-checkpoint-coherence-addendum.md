@@ -24,6 +24,20 @@ After publication, hosted CI on the exact checkpoint HEAD must also be GREEN bef
 
 Focused GREEN never overrides broader committed-module or branch-discovery RED. Do not hide a planned RED through skip, expected-failure, discovery-name tricks or temporary suppression.
 
+This law is package-wide. The explicit replacement choreography below covers the seven current base plans where the present text otherwise permits or strongly implies future-task RED groups in an earlier publishable checkpoint.
+
+## RD-01 replacement choreography
+
+Base Task 1 currently declares four test classes even though `CoreCurrentProjectionTests` is owned by Task 3 while Task 2 declares an earlier coherent checkpoint.
+
+Replace that timing with:
+
+- Before Task 2, create `InstallProjectionTests`, `RandomnessProjectionTests` and `DomainExplorationTests`; observe the exact current projection REDs; Task 2 makes those groups GREEN.
+- Create `CoreCurrentProjectionTests` only at Task 3, immediately before the bounded R033/R050 scan/repair that owns it; observe RED only for confirmed current in-scope prose debt, then make the group GREEN.
+- Task 2 is publication-eligible only when the complete committed RD-01 test module, maintenance audit and full DEV discovery are GREEN.
+
+The base requirement to test R033/R050 is preserved; only premature materialization of its RED group is superseded.
+
 ## RD-02 replacement choreography
 
 Base Task 1 no longer creates every future group at once.
@@ -100,9 +114,9 @@ Task 10 -> ShippedBootstrapProjectionTests
 
 The earlier umbrella `ProductExitCreatorTests` is not pre-created in Task 1. Its required save/exit and creator-fail-closed behavior remains mandatory through the task-local groups at Tasks 8 and 9.
 
-## Checkpoint verification rule for all six RDs
+## Checkpoint verification rule for all seven explicitly repaired RDs
 
-For every named coherent checkpoint in RD-02, RD-03, RD-05, RD-12, RD-13 and RD-14, append this verification before publication:
+For every named coherent checkpoint in RD-01, RD-02, RD-03, RD-05, RD-12, RD-13 and RD-14, append this verification before publication:
 
 ```bash
 python3 DEV/TOOLS/run_maintenance_audit.py
@@ -110,6 +124,8 @@ python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
 ```
 
 Expected: PASS. A failed broader suite means the checkpoint is not publication-eligible even if its focused class is GREEN.
+
+For RD-04, RD-06, RD-07, RD-08, RD-09, RD-10 and RD-11, the current reviewed plan text does not pre-create a future-task RED group before an earlier coherent checkpoint. The same global publication law still applies if execution-time currentness later exposes such a conflict.
 
 ## Scope
 
