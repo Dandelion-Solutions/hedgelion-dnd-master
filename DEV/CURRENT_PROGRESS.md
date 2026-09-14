@@ -5,16 +5,16 @@ Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR ADVERSARIAL CLOSURE ACTIVE
 CURRENT_WORKSTREAM: implementation planning
-CURRENT_SLICE: bounded graph-based author adversarial closure of the complete RD-01..RD-16 / 28-overlay implementation-planning package
-LAST_CLOSED_UNIT: F39 RD-01/RD-14 shared install/bootstrap writer repair prepared after F37/F38 PLAYER access/collaboration repairs
+CURRENT_SLICE: bounded graph-based author adversarial closure of the complete RD-01..RD-16 / 29-overlay implementation-planning package
+LAST_CLOSED_UNIT: F40 blank-scaffold producer/input checkpoint repair prepared after F39 shared install/bootstrap writer repair
 NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING AUTHOR REVIEW / REPAIR ONLY — continue typed dependency/authority graph audit for remaining shared-writer conflicts, schema-version cutover collisions, hidden checkpoint cycles, trigger/no-work activation leaks, stale shipped consumers, recovery negative paths and worker-must-invent seams; publish any discovered planning/control repair immediately and synchronize the live graph before continuing. Do not begin production implementation, migration, release execution or gameplay bootstrap.
 REQUIRED_GATE: exhaustive bounded author graph audit reaches fresh zero-open closure + fresh exact-final-HEAD hosted validation (full maintenance audit and full DEV unittest discovery) -> mandatory independent Senior re-review; production implementation remains unauthorized until the independent Senior gate passes
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-install-bootstrap-shared-writer-amendment.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-blank-scaffold-input-checkpoint-amendment.md
 KNOWN_BLOCKERS: independent Senior re-review is blocked pending completion of the graph-based author audit, fresh zero-open author closure and exact-final-HEAD hosted validation; production implementation is not authorized
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
 
-Current executable package: RD-01 through RD-16 with 28 mandatory overlays.
+Current executable package: RD-01 through RD-16 with 29 mandatory overlays.
 
 Author Findings 1–31 are planning-repaired and independently unconfirmed. Findings 23–31 add the current catalog-context and LIVE realization repairs.
 
@@ -34,16 +34,18 @@ F38 is a significant WP-17 reverse-trigger defect repaired by `2026-09-14-implem
 
 F39 is a significant shipped shared-writer defect repaired by `2026-09-14-implementation-planning-install-bootstrap-shared-writer-amendment.md`: RD-01 stale-projection repair and RD-14 bootstrap/product projection overlap on `GAME/INSTALL/README.md`, `PROJECT_INSTRUCTIONS.txt` and `00_DND_BOOTSTRAP.md`; one RD-14 final integration checkpoint now fresh-reads current bytes and must prove both requirement sets.
 
+F40 is a significant blank-scaffold producer/checkpoint defect repaired by `2026-09-14-implementation-planning-blank-scaffold-input-checkpoint-amendment.md`: allocator, temporal routing, principal->PLAYER routing and LIVE routing expose bounded blank-template readiness checkpoints that join before RD-14 generator/scaffold validation. The early RD-14 campaign-identity checkpoint and late RD-16 topology validation remain separate, so the repair adds no whole-RD cycle.
+
 Current authority routes:
 - package router: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md`;
 - master plan: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md`;
-- execution graph: post-graph v2 + F27–F31 control amendment + F34 proof join + F35 PLAYER integration edge + F36 temporal handoff joins + F37 PLAYER access-transition joins + F38 PLAYER-authority/collaboration reverse join + F39 install/bootstrap shared-writer checkpoint;
-- bidirectional coverage: coverage v3 + F27–F31 + F34–F39 amendments;
-- post-graph proof: proof-ledger v3 + F27–F31 + exact witness matrix + F34–F39 item-bound proof amendments;
+- execution graph: post-graph v2 + F27–F31 control amendment + F34 proof join + F35 PLAYER integration edge + F36 temporal handoff joins + F37 PLAYER access-transition joins + F38 PLAYER-authority/collaboration reverse join + F39 install/bootstrap shared-writer checkpoint + F40 blank-scaffold producer joins;
+- bidirectional coverage: coverage v3 + F27–F31 + F34–F40 amendments;
+- post-graph proof: proof-ledger v3 + F27–F31 + exact witness matrix + F34–F40 item-bound proof amendments;
 - live graph/audit ledger: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-authority-dependency-graph-audit.md`;
 - highest-precedence LIVE execution repair remains the F28–F31 LIVE opening/native-state overlay, composed with F36 for temporal source handoff and F37/F38 when PLAYER authority mutations intersect LIVE/collaboration state.
 
-Current work: continue typed dependency/authority graph audit across the complete package. The principal/PLAYER/collaboration mutation-trigger pass found F37–F38; the shared-writer pass has found F39 and remains active. Continue remaining shared physical writers, then schema/version-generation cutovers, checkpoint DAG cycle proof, dormant/trigger/no-work activation safety, stale shipped-consumer reverse scan and recovery/proof asymmetry scans. No zero-open author verdict has been issued.
+Current work: continue typed dependency/authority graph audit across the complete package. The principal/PLAYER/collaboration mutation-trigger pass found F37–F38; shared-writer/scaffold passes found F39–F40. Continue remaining shared physical writers, then schema/version-generation cutovers, checkpoint DAG cycle proof, dormant/trigger/no-work activation safety, stale shipped-consumer reverse scan and recovery/proof asymmetry scans. No zero-open author verdict has been issued.
 
 Historical readiness accounting remains 133 active = 116 direct + 9 pure proof + 8 composite parents; 12 trigger-gated; 79 no-work; R004 absent. Post-WP27 findings do not invent historical readiness IDs.
 
