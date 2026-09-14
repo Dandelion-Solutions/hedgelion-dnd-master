@@ -11,12 +11,12 @@ Author Findings 1–31 are planning-repaired and independently unconfirmed. Find
 Current authority routes:
 - package router: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md`;
 - master plan: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md`;
-- execution graph: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-execution-waves-v2-post-graph.md`;
-- bidirectional coverage: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md`;
-- post-graph proof: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` plus `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md`;
-- highest-precedence LIVE repair: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-live-opening-routing-native-state-addendum.md` layered above Findings 24–27.
+- execution graph: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-execution-waves-v2-post-graph.md` plus F27–F31 routing in `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-f27-f31-control-amendment.md`;
+- bidirectional coverage: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-bidirectional-coverage-v3-post-graph.md` plus the same F27–F31 control amendment;
+- post-graph proof: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md` + F27–F31 control amendment + `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md`;
+- highest-precedence LIVE execution repair: `DEV/docs/superpowers/plans/2026-09-14-implementation-planning-live-opening-routing-native-state-addendum.md` layered above Findings 24–27.
 
-Current work: continue fresh adversarial review of the complete 16-RD / 22-overlay package and synchronize proof/coverage/execution surfaces through Finding 31. No zero-open author verdict has been issued.
+Current work: continue fresh adversarial review of the complete 16-RD / 22-overlay package. F27–F31 control routing is now published; no zero-open author verdict has been issued.
 
 Next authorized work: author review / repair only.
 
