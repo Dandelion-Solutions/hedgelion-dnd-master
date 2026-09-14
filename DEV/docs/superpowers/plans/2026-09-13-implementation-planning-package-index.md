@@ -1,13 +1,12 @@
 # HDM Implementation Planning Package — Index
 
-Status: **AUTHOR THIRD-PASS CLOSED — AWAITING GENUINELY INDEPENDENT SENIOR RE-REVIEW #2**
-Date: 2026-09-13
+Status: **AUTHOR SIRR2 CONSUMER-CUTOVER REPAIR ROUTED — AUTHOR ADVERSARIAL INVESTIGATION REQUIRED BEFORE NEXT INDEPENDENT REVIEW**
+Date: 2026-09-14
 
 Global gate authority: `DEV/CURRENT_PROGRESS.md`.
-Author repair checkpoint: `9bbad183dd8c82f281bf334940d25f8ba8131863`.
-Author third-pass closure: `2026-09-13-implementation-planning-author-third-pass-self-review-closure.md`.
-Current independent-review brief: `2026-09-13-implementation-planning-senior-re-review-2-final-brief.md`.
-Previous independent finding authority: `2026-09-13-implementation-planning-independent-senior-re-review-result.md`.
+Independent re-review #2 finding authority: `2026-09-13-implementation-planning-independent-senior-re-review-2-result.md`.
+Current SIRR2 repair overlay: `2026-09-14-implementation-planning-sirr2-consumer-cutover-repair-addendum.md`.
+Production implementation authorized: **NO**.
 
 ## Current RD-plan routes
 
@@ -34,6 +33,7 @@ Mandatory overlays in precedence order:
 1. 2026-09-13-implementation-planning-sirr-repair-amendments.md
 2. 2026-09-13-implementation-planning-author-self-review-repair-addendum.md
 3. 2026-09-13-implementation-planning-author-second-pass-repair-addendum.md
+4. 2026-09-14-implementation-planning-sirr2-consumer-cutover-repair-addendum.md
 ```
 
 Later overlays supersede only exact conflicting repaired details.
@@ -43,32 +43,39 @@ Current applicability:
 RD-02: SIRR-005 close/absorb correction
 RD-04: seven-selector manifest/schema/STORAGE realization; no Story materialization prerequisite
 RD-06: shipped SAVE/PERSISTENCE cutover + exact proof joins
-RD-09: two-phase LIVE close/absorb
+RD-08: temporal owner remains authoritative; R077/WP15-16 also joins repaired MULTIPLAYER chronology consumer
+RD-09: two-phase LIVE close/absorb + exact shipped LIVE_SCENE/MULTIPLAYER/case-catalog consumer cutover
 RD-13: retained Dramaturg publication/admission + ABSENT|BOUND + exact Story routes + on-demand Story materialization
 RD-14: exact generator/ruleset identity + selector/schema consumers + no Story bootstrap prerequisite
 ```
 
-## Current proof/currentness/scheduling routes
+## Current proof / coverage / scheduling routes
 
 ```text
-COVERAGE BASE:
+COVERAGE:
   2026-09-13-implementation-planning-bidirectional-coverage-v2.md
-  + both author repair addenda as mandatory deltas
+  + first author self-review addendum
+  + second-pass author addendum
+  + SIRR2 consumer-cutover addendum section 9 as mandatory latest delta
 
 LOSSLESS PROOF:
   2026-09-13-implementation-planning-lossless-proof-ledger-v2.md
   2026-09-13-implementation-planning-lossless-proof-ledger-wp12-wp13-v2.md
   2026-09-13-implementation-planning-lossless-proof-ledger-wp14-wp15.md
   2026-09-13-implementation-planning-lossless-proof-ledger-wp16-wp17.md
+  + SIRR2 consumer-cutover addendum section 8, which supersedes only affected WP13-38 / WP15-16 / listed R080 supporting routes
 
-SCHEDULING:
+SCHEDULING / SHARED FILES:
   2026-09-13-implementation-planning-execution-waves.md
   + SIRR repair addendum
   + first author self-review addendum
   + second-pass author addendum
+  + SIRR2 consumer-cutover addendum section 7 shared-file/currentness join
 ```
 
-The first self-review artificial `ROOT_SELECTOR_CUTOVER` that required physical Story creation is explicitly superseded. RD-04 static selector/schema realization is independently green; RD-13 consumes `story_root` only when Story materializes; R018 joins later.
+The earlier pointer-only classifications for `GAME/CORE/LIVE_SCENE.md` and `GAME/CORE/MULTIPLAYER.md` are superseded. Both are mandatory `MODIFY` surfaces under the SIRR2 RD-09 consumer-cutover task. `DEV/TESTS/LIVE_SCENE_CASES.md` and `DEV/TESTS/MULTIPLAYER_MEMBERSHIP_CASES.md` are part of the same coherent cutover checkpoint.
+
+`GAME/CORE/MULTIPLAYER.md` is physically edited once under RD-09 after fresh consumption of the current WP-15/RD-08 chronology contract; chronology semantics remain WP-15/RD-08-owned.
 
 ## Accounting
 
@@ -83,48 +90,44 @@ R004: ABSENT
 RD_UNITS: 14
 ```
 
-Relevant repaired reverse map:
+SIRR2 repair reverse routes:
 ```text
-R064 -> RD-04 seven static MANIFEST selectors + schema + STORAGE projection
-R018.ROUTE_ROOT -> RD-04 static topology
-R016.STORY/R018.STORY -> RD-13 exact WP-11/WP-18 Story routes/lifecycle
-R085/R131 -> RD-13 retained Dramaturg publication/admission + ABSENT|BOUND
-R030/R086 -> RD-14 bootstrap consumers without Story startup requirement
-R068/R071 -> corrected exact proof routes
+R071 / WP13-38 -> RD-06 proof owner + RD-09 exact shipped consumer cutover
+R077 / WP15-16 -> RD-08 chronology owner + RD-09 MULTIPLAYER shared consumer witness
+R079/R080 -> RD-09 exact LIVE runtime + LIVE_SCENE/MULTIPLAYER/case-catalog convergence
+SIP-002/SIP-008/SIP-009 -> remain author-open until the SIRR2 repair is published, verified and adversarially investigated
 ```
+
+All pre-SIRR2 repaired routes remain in force unless this latest addendum explicitly supersedes a conflicting detail.
 
 ## Review/control provenance
 
 ```text
-INDEPENDENT RE-REVIEW FINDINGS:
+FIRST INDEPENDENT RE-REVIEW:
   2026-09-13-implementation-planning-independent-senior-re-review-result.md
 
-SIRR AUTHOR REPAIR:
-  2026-09-13-implementation-planning-senior-re-review-repair-disposition.md
+SIRR / AUTHOR REPAIRS:
   2026-09-13-implementation-planning-sirr-repair-amendments.md
-
-AUTHOR ADVERSARIAL REVIEW:
-  2026-09-13-implementation-planning-author-self-review-findings.md
   2026-09-13-implementation-planning-author-self-review-repair-addendum.md
-  2026-09-13-implementation-planning-author-second-pass-findings.md
   2026-09-13-implementation-planning-author-second-pass-repair-addendum.md
-  2026-09-13-implementation-planning-author-third-pass-self-review-closure.md
 
-CURRENT INDEPENDENT HANDOFF:
-  2026-09-13-implementation-planning-senior-re-review-2-final-brief.md
+INDEPENDENT RE-REVIEW #2:
+  2026-09-13-implementation-planning-independent-senior-re-review-2-result.md
+
+CURRENT AUTHOR REPAIR:
+  2026-09-14-implementation-planning-sirr2-consumer-cutover-repair-addendum.md
 ```
 
-The earlier `2026-09-13-implementation-planning-senior-re-review-2-brief.md` is historical and must not be used for the next review.
+The historical author third-pass PASS is superseded as a current gate claim by the independent re-review #2 FAIL. It remains provenance only.
 
 ## Gate
 
 ```text
-AUTHOR_THIRD_PASS: PASS FOR INDEPENDENT HANDOFF
-OPEN_AUTHOR_BLOCKING: 0
-OPEN_AUTHOR_SIGNIFICANT: 0
-OPEN_AUTHOR_MINOR: 0
-SEMANTIC_OWNER_DRIFT: NONE FOUND
+INDEPENDENT_SENIOR_RE_REVIEW_2: FAIL / REPAIR REQUIRED — SIRR2-001 SIGNIFICANT
+SIRR2_001_AUTHOR_REPAIR: ROUTED / PUBLICATION+VERIFICATION REQUIRED
+AUTHOR_ADVERSARIAL_INVESTIGATION_AFTER_REPAIR: REQUIRED
 HUMAN_PRODUCT_DECISION_REQUIRED: NO
-NEXT_AUTHORIZED_UNIT: GENUINELY INDEPENDENT SENIOR IMPLEMENTATION-PLAN RE-REVIEW #2 ONLY
+ARCHITECTURE_REOPEN_REQUIRED: NO
+NEXT_AUTHORIZED_UNIT: PUBLISH+VERIFY SIRR2 REPAIR, THEN AUTHOR ADVERSARIAL INVESTIGATION ONLY
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 ```

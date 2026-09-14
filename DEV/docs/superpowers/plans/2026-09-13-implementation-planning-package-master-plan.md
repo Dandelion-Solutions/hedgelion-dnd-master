@@ -1,6 +1,6 @@
 # HDM Implementation Planning Package — Master Plan
 
-Status: **AUTHOR THIRD-PASS CLOSED — AWAITING GENUINELY INDEPENDENT SENIOR RE-REVIEW #2**
+Status: **INDEPENDENT SENIOR RE-REVIEW #2 FAILED — SIRR2 AUTHOR REPAIR IN PROGRESS / ADVERSARIAL INVESTIGATION REQUIRED**
 Date: 2026-09-14
 
 Fixed accounting remains: 133 active = 116 direct + 9 pure proof + 8 composite parents; 12 trigger-gated; 79 no-work; R004 absent; 14 RD units. Production implementation: **NO**.
@@ -8,43 +8,35 @@ Fixed accounting remains: 133 active = 116 direct + 9 pure proof + 8 composite p
 ```text
 PB-01..PB-07 planning package                  COMPLETE / current routes overlaid by accepted repairs
 first independent Senior review                FAIL / REPAIR REQUIRED
-SIP-001..SIP-011 author repair                 COMPLETE
 first independent Senior re-review             FAIL / REPAIR REQUIRED — SIRR-001..005
-SIRR author repair                             COMPLETE / independently unconfirmed
-first author adversarial self-review           FAIL — ASR-001..003
-first author self-review repair checkpoint     db23d097abfb9a2cfdbeb88b115689566a575bed / CI PASS
-second author adversarial pass                 FAIL — ASR-004..005
-final author repair checkpoint                 9bbad183dd8c82f281bf334940d25f8ba8131863 / CI PASS
-third author adversarial self-review            PASS FOR INDEPENDENT HANDOFF — 0 BLOCKING / 0 SIGNIFICANT / 0 MINOR open author findings
-independent Senior re-review #2                REQUIRED / PENDING
+SIRR + author adversarial repairs              COMPLETE as historical repair chain
+independent Senior re-review #2                FAIL / REPAIR REQUIRED — SIRR2-001 SIGNIFICANT
+current SIRR2 author repair                    ROUTED / PUBLICATION+VERIFICATION REQUIRED
+post-repair author adversarial investigation   REQUIRED
+next independent Senior review                 BLOCKED UNTIL AUTHOR INVESTIGATION CLOSES ZERO-OPEN
 ```
 
 ## Cursor
 
 ```text
-PLANNING_PACKAGE_STATE: AUTHOR_THIRD_PASS_CLOSED
-CURRENT_BLOCK: GENUINELY INDEPENDENT SENIOR IMPLEMENTATION-PLAN RE-REVIEW #2
-LAST_COMPLETED_BLOCK: AUTHOR THIRD-PASS ADVERSARIAL SELF-REVIEW AND HANDOFF PREPARATION
-NEXT_AUTHORIZED_BLOCK: GENUINELY INDEPENDENT SENIOR IMPLEMENTATION-PLAN RE-REVIEW #2 ONLY
-AUTHOR_FINAL_REPAIR_CHECKPOINT: 9bbad183dd8c82f281bf334940d25f8ba8131863
-AUTHOR_THIRD_PASS_CLOSURE: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-author-third-pass-self-review-closure.md
-INDEPENDENT_RE_REVIEW_2_BRIEF: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-senior-re-review-2-final-brief.md
+PLANNING_PACKAGE_STATE: SIRR2_AUTHOR_REPAIR_ACTIVE
+CURRENT_BLOCK: SIRR2-001 SHIPPED LIVE / CHRONOLOGY CONSUMER CUTOVER
+LAST_COMPLETED_BLOCK: INDEPENDENT SENIOR RE-REVIEW #2 — FAIL 0B/1S/0M
+NEXT_AUTHORIZED_BLOCK: PUBLISH+VERIFY SIRR2 REPAIR -> AUTHOR ADVERSARIAL INVESTIGATION ONLY
+INDEPENDENT_RE_REVIEW_2_RESULT: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-independent-senior-re-review-2-result.md
+SIRR2_REPAIR_ADDENDUM: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-sirr2-consumer-cutover-repair-addendum.md
 
 RD_PLANS_BASE_COMPLETE: 14 / 14
-CURRENT_MANDATORY_OVERLAYS: SIRR + first self-review + second-pass where applicable
-AFFECTED_RD_OVERLAY: RD-02,RD-04,RD-06,RD-09,RD-13,RD-14
+CURRENT_MANDATORY_OVERLAYS: SIRR + first self-review + second-pass + SIRR2 consumer-cutover addendum
+AFFECTED_RD_OVERLAY: RD-02,RD-04,RD-06,RD-08,RD-09,RD-13,RD-14
 DIRECT_LEAVES_PLANNED: 116 / 116
 PURE_PROOF_ROUTES: 9 / 9
 COMPOSITE_PARENT_ROUTES: 8 / 8
-WP12_PROOF_ROWS: 17 / 17 CURRENT ROUTED
-WP13_PROOF_ROWS: 38 / 38 CURRENT ROUTED
 TRIGGER_GATED_PRESERVED: 12 / 12
 NO_WORK_PRESERVED: 79 / 79
-AUTHOR_THIRD_PASS: PASS FOR INDEPENDENT HANDOFF
-OPEN_AUTHOR_BLOCKING: 0
-OPEN_AUTHOR_SIGNIFICANT: 0
-OPEN_AUTHOR_MINOR: 0
-INDEPENDENT_SENIOR_RE_REVIEW_2: REQUIRED / PENDING
+INDEPENDENT_OPEN_BLOCKING: 0
+INDEPENDENT_OPEN_SIGNIFICANT: 1 — SIRR2-001
+INDEPENDENT_OPEN_MINOR: 0
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 ```
 
@@ -52,28 +44,62 @@ PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 
 - Global gate: `DEV/CURRENT_PROGRESS.md`.
 - Worker/reviewer route index: `2026-09-13-implementation-planning-package-index.md`.
-- Base RD routes: current RD-01..RD-14 listed by the package index.
+- Base RD routes: current RD-01..RD-14 listed by package index.
 - Mandatory overlays, in precedence order:
   1. `2026-09-13-implementation-planning-sirr-repair-amendments.md`;
   2. `2026-09-13-implementation-planning-author-self-review-repair-addendum.md`;
-  3. `2026-09-13-implementation-planning-author-second-pass-repair-addendum.md`.
-- Base scheduling: `2026-09-13-implementation-planning-execution-waves.md` plus current repair addenda.
-- Current coverage: `2026-09-13-implementation-planning-bidirectional-coverage-v2.md` plus both author self-review addenda.
-- Current proof control: `2026-09-13-implementation-planning-lossless-proof-ledger-v2.md` and `2026-09-13-implementation-planning-lossless-proof-ledger-wp12-wp13-v2.md`.
-- Author third-pass evidence: `2026-09-13-implementation-planning-author-third-pass-self-review-closure.md`.
-- Independent handoff contract: `2026-09-13-implementation-planning-senior-re-review-2-final-brief.md`.
+  3. `2026-09-13-implementation-planning-author-second-pass-repair-addendum.md`;
+  4. `2026-09-14-implementation-planning-sirr2-consumer-cutover-repair-addendum.md`.
+- The SIRR2 addendum is also the mandatory latest delta for the affected bidirectional coverage, WP13-38/WP15-16/R080 proof routes, and the `MULTIPLAYER.md` shared-file/currentness checkpoint.
 
-## Final author-side reconciliation
+## SIRR2-001 author repair scope
 
-The third author pass re-checked currentness, the prior independent findings, the three repair overlays, affected RD composition, exact WP-11/WP-18 Story topology, WP-19 bootstrap separation, Dramaturg `ABSENT | BOUND` basis semantics, two-phase close/absorb behavior, WP-12/WP-13 item-level proof routing, reverse coverage and the protected no-implementation boundary. No additional author finding was identified.
+The independent finding is confirmed. Pointer-only `OWNER_ROUTED` classifications were not executable consumer coverage.
 
-The controlling repaired semantics include:
+The current repair assigns one coherent RD-09 shipped-consumer checkpoint to:
 
-- seven static `MANIFEST.storage` selectors: `STATE`, `INDEX`, `WORLD`, `LOG`, `CHECKPOINTS`, `SESSIONS`, `STORY`;
-- static `story_root` metadata does not require `STORY/**` materialization during blank campaign bootstrap;
-- exact Story routes are `<story_root>/<layer>/PROJECTION_STATE.yaml` and `<story_root>/<layer>/<floor(sequence/1000)>/<story_id>.yaml` for the accepted four layers;
-- player-local retained Dramaturg permits `shared_basis.kind = ABSENT | BOUND`; BOUND references the exact accepted shared generation, ABSENT fabricates no dependency;
-- successful LIVE close/fence may remain `CLOSED_UNABSORBED` if later normalization/absorption fails, without reopen or campaign fallback;
-- WP-12/WP-13 proof completeness is item-bound rather than count-bound, including the corrected owner/transport routes.
+```text
+GAME/CORE/LIVE_SCENE.md
+GAME/CORE/MULTIPLAYER.md
+DEV/TESTS/LIVE_SCENE_CASES.md
+DEV/TESTS/MULTIPLAYER_MEMBERSHIP_CASES.md
+DEV/TESTS/test_rd09_access_live.py
+```
 
-This is an **author-side handoff result only**. It is not an independent PASS / GO and does not authorize production implementation. The next gate is the genuinely independent Senior implementation-plan re-review #2 under the final brief.
+The repair is intentionally broader than the two quoted audit lines because current canonical WP-16 debt also exposes stale scene-wide ownership, provisional-ID rekey, one-action/one-write, information-owner and revocation-sequencing assertions in those same shipped consumers/case catalogs.
+
+`MULTIPLAYER.md` consumes WP-15/RD-08 chronology semantics but is physically edited once under the broader RD-09/WP-16 consumer cutover. This does not transfer chronology ownership.
+
+Required future implementation Version Impact is explicit:
+
+```text
+LIVE_SCENE.md   1.0.3 -> 1.0.4
+MULTIPLAYER.md  0.1.7 -> 1.0.8
+```
+
+No campaign-contract or storage-format generation bump is created solely by these CORE projection edits.
+
+## Proof and completion reconciliation
+
+The latest overlay makes the following executable rather than pointer-only:
+
+- `R071 / WP13-38`: exact `LIVE_SCENE.md`, `MULTIPLAYER.md` and stale-case-catalog modifications plus focused witnesses;
+- `R077 / WP15-16`: RD-08 chronology owner witness **and** RD-09 `MULTIPLAYER.md` chronology consumer witness;
+- `R080`: shipped CORE/case-catalog evidence joins the relevant typed-claim, lifecycle, source-native-ID, chronology, information, recovery and native-durability-edge rows;
+- `SIP-002/SIP-008/SIP-009`: remain open until repair publication, exact-head verification and post-repair author investigation.
+
+## Gate discipline
+
+The old author third-pass PASS is historical evidence and cannot advance the current gate after independent re-review #2 returned FAIL.
+
+After repair publication, the author must independently investigate the repaired package and adjacent WP-15/WP-16 consumers for further omissions. Another independent Senior review is authorized only after that investigation records zero open BLOCKING/SIGNIFICANT/MINOR author findings and exact-head hosted validation is green.
+
+```text
+HUMAN_PRODUCT_DECISION_REQUIRED: NO
+ARCHITECTURE_REOPEN_REQUIRED: NO
+SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
+MIGRATION_EXECUTION_STARTED: NO
+RELEASE_EXECUTION_STARTED: NO
+GAMEPLAY_BOOTSTRAP_STARTED: NO
+PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
+```
