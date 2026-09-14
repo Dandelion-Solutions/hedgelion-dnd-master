@@ -4,14 +4,14 @@ Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 ```text
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING POST-SIRR2 AUTHOR CORRECTION PUBLISHED — VERIFICATION / ADVERSARIAL CLOSURE REQUIRED
+GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING POST-SIRR2 AUTHOR CORRECTION ACTIVE — ADVERSARIAL CLOSURE NOT YET COMPLETE
 CURRENT_WORKSTREAM: implementation planning author repair and adversarial investigation after independent Senior re-review #2
-CURRENT_SLICE: SIRR2 consumer repair plus author-found scene-route/checkpoint-coherence corrections published; no production implementation
+CURRENT_SLICE: SIRR2 consumer repair plus author-found scene-route and checkpoint-coherence corrections; no production implementation
 
 LAST_CLOSED_UNIT: independent Senior implementation-plan re-review #2 — FAIL / REPAIR REQUIRED; 0 BLOCKING, 1 SIGNIFICANT, 0 MINOR
-LAST_COMPLETED_WORKER_UNIT: author planning publication of SIRR2 consumer cutover plus two independently re-verified additional corrections: shipped scene-route closure and checkpoint/test publication coherence
-NEXT_ELIGIBLE_UNIT: exact-head readback/diff/hosted validation followed by fresh author post-repair adversarial review
-NEXT_AUTHORIZED_UNIT: AUTHOR POST-REPAIR VERIFICATION / ADVERSARIAL REVIEW ONLY — verify current correction HEAD, current package precedence, exact consumer/proof/checkpoint routes and hosted CI; repair any new author finding before handoff. No production implementation, migration, release or gameplay bootstrap
+LAST_COMPLETED_WORKER_UNIT: extend mandatory checkpoint-coherence overlay to RD-01 after full 14-RD sweep exposed the same premature future-RED publication defect
+NEXT_ELIGIBLE_UNIT: exact latest-head readback/diff/hosted validation, then complete bounded author adversarial investigation
+NEXT_AUTHORIZED_UNIT: AUTHOR POST-REPAIR VERIFICATION / ADVERSARIAL REVIEW ONLY — repair any new author defect before handoff. No production implementation, migration, release or gameplay bootstrap
 REQUIRED_GATE: zero-open author post-repair closure -> genuinely independent Senior implementation-plan re-review PASS / GO -> only then production implementation execution gate
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
@@ -21,9 +21,9 @@ AUTHOR_FINAL_REPAIR_CHECKPOINT: 9bbad183dd8c82f281bf334940d25f8ba8131863
 INDEPENDENT_RE_REVIEW_2_HEAD: b3d5ba14503458f9ca88b742d16e7a5ee46eaea4
 INDEPENDENT_RE_REVIEW_2_PUBLICATION: 10a75f6d713044a6f7b7d9799166539179739cd6
 SIRR2_FIRST_AUTHOR_REPAIR_CHECKPOINT: 3bd4995fd1c7c957d7ec99742b517a8867b64899
-POST_SIRR2_PACKAGE_INDEX_ROUTE_COMMIT: 4b23948e2278f34585b0614cd61d98a8b3852119
-POST_SIRR2_OVERLAY_PUBLICATION_COMMIT: bd956ed1894d155e1fdf770c2035861588986922
-POST_SIRR2_MASTER_SYNC_COMMIT: 4ecee8bc173dd810ad0511b16db72f653e7a2a07
+CHECKPOINT_COHERENCE_RD01_REPAIR_COMMIT: df95f41dc1e3c2c9fd8bbdd17f81d36ead294a08
+PACKAGE_INDEX_SYNC_COMMIT: e8d7823b19181fefab43d4a4b93293ca1dd121c0
+MASTER_CURSOR_SYNC_COMMIT: 8d51a3bd9bbc4ac1afd42d075cdb157db3e832fc
 
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md
 TASK_LOCAL_PACKAGE_INDEX: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md
@@ -35,9 +35,9 @@ TASK_LOCAL_SCENE_ROUTE: DEV/docs/superpowers/plans/2026-09-14-implementation-pla
 INDEPENDENT_OPEN_BLOCKING: 0
 INDEPENDENT_OPEN_SIGNIFICANT: 1 — SIRR2-001; author repair independently unconfirmed
 INDEPENDENT_OPEN_MINOR: 0
-AUTHOR_POST_SIRR2_FINDINGS: 2 SIGNIFICANT FOUND AND PLAN-REPAIRED — independent confirmation pending
-AUTHOR_POST_REPAIR_INVESTIGATION: REQUIRED / ACTIVE
-KNOWN_BLOCKERS: exact current correction HEAD has not yet completed author readback/hosted validation/zero-open adversarial closure; next independent Senior review is not yet authorized; production implementation remains prohibited
+AUTHOR_POST_SIRR2_FINDINGS: 3 SIGNIFICANT FOUND AND PLAN-REPAIRED — independent confirmation pending
+AUTHOR_POST_REPAIR_INVESTIGATION: ACTIVE
+KNOWN_BLOCKERS: latest repair/control HEAD still requires exact-head validation and zero-open author closure; next independent Senior review is not yet authorized; production implementation remains prohibited
 ```
 
 ## Package accounting
@@ -62,18 +62,21 @@ PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 
 ## Current repair disposition
 
-The independent SIRR2 consumer gap is routed by the exact shipped LIVE/multiplayer CORE/case-catalog cutover overlay.
+The SIRR2 shipped LIVE/multiplayer consumer gap is routed by overlay 4.
 
-The author's subsequent investigation found and repaired two additional planning defects:
+Author investigation has additionally found and repaired:
 
-1. `scene.schema.yaml` is now an explicit RD-08 -> RD-09 shared physical checkpoint so shipped scene routing cannot retain scene-wide LIVE authority semantics after the typed-claim machine realization.
-2. RD-02, RD-03, RD-05, RD-12, RD-13 and RD-14 checkpoint choreography now forbids committing later-task intentionally failing test groups into an earlier publication checkpoint. A checkpoint requires all committed tests in the RD module plus maintenance audit and full DEV discovery to be green.
+1. shipped scene-route closure under the RD-08 -> RD-09 shared physical checkpoint;
+2. systemic checkpoint/TDD publication incoherence in RD-02, RD-03, RD-05, RD-12, RD-13 and RD-14;
+3. the same checkpoint defect in RD-01, missed by the first checkpoint repair and found by the subsequent full 14-RD sweep.
 
-These are planning instructions only; no GAME/runtime/schema/catalog bytes have been implemented by this repair.
+Overlay 5 now applies the package-wide publication law and explicitly repairs RD-01, RD-02, RD-03, RD-05, RD-12, RD-13 and RD-14. The other seven RD plans were rechecked for this exact failure mode and currently pass that challenge.
+
+These are planning/control changes only; no GAME/runtime/schema/catalog implementation has been performed.
 
 ```text
 R2_7_FINAL_RECONCILIATION: CLOSED
-IMPLEMENTATION_PLANNING_GATE: REPAIR PUBLISHED / AUTHOR VERIFICATION ACTIVE
+IMPLEMENTATION_PLANNING_GATE: REPAIR ACTIVE / AUTHOR ADVERSARIAL CLOSURE PENDING
 HUMAN_DECISION_REQUIRED: NO
 SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
 MIGRATION_EXECUTION_STARTED: NO
