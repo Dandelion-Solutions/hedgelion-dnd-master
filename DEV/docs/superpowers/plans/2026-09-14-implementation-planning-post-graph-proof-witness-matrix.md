@@ -2,7 +2,7 @@
 
 Status: **CURRENT MANDATORY PROOF AMENDMENT — PLANNING ONLY**
 Date: 2026-09-14
-Finding origin: **AUTHOR FINDING 22 — SIGNIFICANT**, extended through Finding 31, with F58/PG35 operational-root and F59/PG36 access-policy integration.
+Finding origin: **AUTHOR FINDING 22 — SIGNIFICANT**, extended through Finding 31, with F58/PG35 operational-root and F59/PG36 access-policy integration, and F62/PG37 accepted-adjudication basis.
 Production implementation: **NO**.
 
 This matrix amends `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md`. A post-WP27 row is not planned-closed unless its exact mechanism, executable witness and primary proof channel are all present.
@@ -36,6 +36,7 @@ This matrix amends `2026-09-14-implementation-planning-lossless-proof-ledger-v3-
 | PG31 | typed LIVE native-state packing -> exact recovery -> deterministic lossless/idempotent forward absorption | RD-09 `LiveNativeStatePackingTests` + `LiveAbsorptionMaterializationTests`; RD-06 publication join; RD-07 recovery; RD-16 strict-family validation | FOCUSED_BEHAVIOR + INTEGRATION_SCENARIO + STATIC_AUDIT |
 | PG35 | F58 native lifecycle/promise -> active-only operational membership -> campaign/LIVE acceptance and handoff -> complete pinned cold recovery -> generated scaffold/final projections | `test_rd05_runtime_execution.OperationalRootEnrollmentTests`; `test_rd06_durability_publication.OperationalRootPublicationTests`; `test_rd09_access_live.LiveOperationalRootHandoffTests`; `test_rd07_recovery.OperationalRootRoutingContractTests` + `OperationalRootRecoveryTests`; RD-14 `BlankScaffoldCompletenessTests`; final README/CORE witnesses at the exact modules/channels in overlay 37 | INTEGRATION_SCENARIO (primary); FOCUSED_BEHAVIOR and STATIC_AUDIT sub-obligations |
 | PG36 | existing creator-owned mode/join-policy/narrow PLAYER grant -> typed current mutation and complete impact -> one collaboration after-view -> LIVE/campaign acceptance/recovery -> current planning/catch-up consumer | `test_rd09_access_live.CampaignAccessPolicyTransitionTests` + `AccessPolicyPublicationIntegrationTests` + `AccessPolicyConsumerIntegrationTests`; `test_rd12_collaboration.AccessPolicyCollaborationReconciliationTests`; exact cases/checkpoints in overlay 38 | INTEGRATION_SCENARIO (primary); FOCUSED_BEHAVIOR local producer |
+| PG37 | bounded exact policy-source resolver -> complete accepted binding/fact fingerprint and frozen carriers -> required publication closure -> historical cold recovery/resume | `test_rd07_recovery.ExactPolicyBasisResolutionTests`; `test_rd05_runtime_execution.AcceptedAdjudicationBasisTests`; `test_rd06_durability_publication.AcceptedAdjudicationPublicationTests`; `test_rd07_recovery.AcceptedAdjudicationRecoveryTests`; all nine exact consumer edges and task/checkpoint cases in overlay 39 | INTEGRATION_SCENARIO (primary); FOCUSED_BEHAVIOR resolver sub-obligations |
 
 PG32–PG34 remain the logical item-bound rows introduced by mandatory overlays 23–25 (F34 runtime-family closure, F35 PLAYER collaboration integration and F36 temporal handoff). PG35 does not reuse those identities.
 
@@ -59,5 +60,7 @@ Owner-local witness classes are created only in the task that owns their RED-to-
 
 - PG35 fails on an unproduced root set, active Procedure omitted after Command settlement, promised unresolved input omission, marker/partial listing mistaken for completeness, split owner/root publication, missing/duplicate current handoff domain, historical-runtime scan as ordinary discovery, or proof before actual producer/integration/generated/final projection targets. Exact module/class placement and task-local RED/GREEN order are mandatory under overlay 37.
 - PG36 fails on validator-only policy mutation, stale full MANIFEST/PLAYER replacement, incomplete impact set, multiple competing successors for one generation, split authority/companion closure, missing required LIVE terminal evidence, retroactive grant revocation, join-policy membership removal, stale planning/private-input admission, creator uncertainty treated as approval, or proof before actual task targets. Overlay 38 supplies exact modules/classes and preserves the separate creator architecture gate.
+
+- PG37 fails on supplied resolver booleans replacing actual paired exact-source/adoption evidence, omitted/changed policy refs under the same accepted identity, fingerprint-only or JSON-round-trip runtime proof, ambient current-policy rebinding, missing required historical dependency, accepted carrier divergence, reroll/replay, mutation before validation, or a count-only nine-edge witness. Overlay 39 supplies exact task/module/class placement and preserves one-off empty basis, nonselectable realization fixtures, current operation checks and the creator gate.
 
 No row may be discharged by test-name existence alone. Production implementation remains unauthorized.

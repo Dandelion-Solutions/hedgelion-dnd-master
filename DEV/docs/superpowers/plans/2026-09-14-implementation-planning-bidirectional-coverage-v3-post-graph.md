@@ -260,3 +260,16 @@ Mandatory overlay `2026-09-15-implementation-planning-campaign-access-policy-tra
 | PG36 | Four exact producer/reconciliation/publication/consumer classes and terminal proof sink in overlay38; all readiness duties remain item-bound. |
 
 The ephemeral transition/batch adapters reverse to these owners. They add no durable family, schema, policy grant type, principal authority, MANIFEST membership registry or creator placement. Historical readiness counts, final retained schema versions and dormant execution/release gates remain unchanged.
+
+## 11. F62 — accepted adjudication basis forward/reverse coverage
+
+| Existing owner duty | Exact producer / consumer / proof route |
+|---|---|
+| S6D-10 sections3/8; House-Rules section19 exact policy basis | Bounded early RD-07 source resolver reads the paired exact revision/sidecar/normative anchor and owner-valid adoption/applicability; ExactPolicyBasisResolutionTests. |
+| HR-17; Step-3 section5; S6D-10 section6 | RD-05 complete accepted parameter/fact value/ref fingerprint, identity-first retry and carrier preservation; AcceptedAdjudicationBasisTests. |
+| Step-5.6 required closure; accepted-policy retention | RD-06 frozen accepted carriers/dependencies and truthful publication/indeterminate result; AcceptedAdjudicationPublicationTests. |
+| House-Rules section15; Step-5.7; S6D-10 section8 | Current native root/source -> accepted carrier -> frozen historical policy resolution -> actual RD-05 resume; AcceptedAdjudicationRecoveryTests. |
+| R041 | Existing ExecutionRetryProofTests consumes the four actual task-owned results and retains original stale-Continuation/child-crash duties. |
+| PG37 | All nine source-derived parameter/fact consumer edges, exact negative cases and terminal proof-after-target order in mandatory overlay39; no count-only closure. |
+
+Reverse witness traversal must reach actual resolver/executor/publication/recovery targets, not static JSON round-trip/hash fixtures or mocked evidence booleans. No new readiness, schema/version, permission, policy engine or runtime implementation is created. PG23 catalog reconstruction, PG35 roots and PG36 access-policy changes remain distinct consumed joins.

@@ -2,7 +2,7 @@
 
 Status: **CURRENT POST-GRAPH PROOF ROUTE — PLANNING ONLY**
 Date: 2026-09-14
-Finding origin: **AUTHOR FINDING 20 — SIGNIFICANT**, extended through Finding 26, with F58/PG35 operational-root and F59/PG36 access-policy integration.
+Finding origin: **AUTHOR FINDING 20 — SIGNIFICANT**, extended through Finding 26, with F58/PG35 operational-root and F59/PG36 access-policy integration, and F62/PG37 accepted-adjudication basis.
 
 Historical readiness/proof semantics remain in v2 and its appendices. This v3 adds the mandatory post-graph joins; it creates no readiness IDs. Exact executable witnesses and primary proof channels are defined by `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md` and are part of this ledger's closure condition.
 
@@ -175,3 +175,7 @@ Primary integration witnesses: DEV/TESTS/test_rd06_durability_publication.py::Op
 ## PG36 exact closure law — F59 access-policy mutations
 
 Mandatory overlay `2026-09-15-implementation-planning-campaign-access-policy-transition-addendum.md` supplies the three existing policy-operation producers, exact typed field scope, complete bounded impact, one collaboration after-authority view, current LIVE/campaign/companion acceptance and separate actual-admission/catch-up consumer proof. The four exact task-owned classes/channels and checkpoint order in that overlay are mandatory. R080 items 3/4/11/12 and R083 theme16 retain their individual owner duties and consume the applicable F59 cases; neither a class name nor aggregate PG count closes them. Join-policy non-revocation, prospective grant change and creator-unresolved denial are required negatives. This row does not resolve the creator architecture decision or replace PG35.
+
+## PG37 exact closure law — F62 accepted adjudication basis
+
+Mandatory overlay `2026-09-15-implementation-planning-accepted-adjudication-basis-addendum.md` closes HOUSE_RULES_MECHANICAL_BOUNDARY sections3/6/8 and CAMPAIGN_HOUSE_RULES HR-17/section15/section19 through actual bounded source resolution, complete Step-3 accepted-input identity, RD-06 required closure and RD-07 historical cold recovery/RD-05 resume. Four exact task-owned classes and all nine current parameter/fact consumer edges must be green at their actual targets. R041 consumes the integrated retry/recovery evidence; it retains stale-Continuation/child-crash duties. Static S6D-10 shape/hash/JSON fixtures and supplied authority/applicability booleans cannot close production acceptance or source resolution. The early resolver does not depend on full accepted-execution recovery; PG37 is a terminal proof sink, not a new readiness or execution authority. Nonselectable realization-link fixtures and F51's creator gate remain separate.

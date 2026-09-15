@@ -47,7 +47,7 @@ Rules:
 | R031 | provisional Actor state, READY_PC, lazy derivation, no retrofit | `ActorReadinessProofTests` over RD-03 + RD-14 | INTEGRATION_SCENARIO |
 | R032 | reconstructable rules/build + initial commitment/domain behavior; no eager universal sheet | `DomainCommitmentProofTests` over RD-03 + RD-14 | INTEGRATION_SCENARIO |
 | R032 empirical branch | real-target performance/coverage | future target measurement | EMPIRICAL_DEFERRED |
-| R041 | deterministic retry/RNG/no replay incl. stale continuation and child crash boundary | `ExecutionRetryProofTests` over RD-05/RD-07/RD-08 | INTEGRATION_SCENARIO |
+| R041 | deterministic retry/RNG/no replay incl. stale continuation and child crash boundary | `ExecutionRetryProofTests` over RD-05/RD-07/RD-08; F62/PG37 additionally binds actual accepted adjudication/source/publication/cold-recovery witnesses under mandatory overlay39 | INTEGRATION_SCENARIO |
 | R058 | containment/source escalation/rebind/safe emission/finite UNSATISFIABLE degradation | `RoleContainmentProofTests` over RD-10/RD-11 | INTEGRATION_SCENARIO |
 | R058 empirical branch | later protocol/MVP assurance when owner trigger activates | future empirical run | EMPIRICAL_DEFERRED |
 | R061 | bounded discovery/no broad scan/lawful degradation/typed context bounds/authority separation | `ContextBoundednessProofTests` over RD-11 | INTEGRATION_SCENARIO |
@@ -55,6 +55,8 @@ Rules:
 | R068 | all exact WP-12 §14 duties | `Wp12HotProofTests` | current WP-12/WP-13 v2 appendix |
 | R088 | owner-first positive/negative/failure/indeterminate proof + reverse reconciliation | `OwnerFirstReconciliationProofTests` | INTEGRATION_SCENARIO + STATIC_AUDIT |
 | R089 | proof-channel separation + exact-head hosted evidence | `ProofChannelDisciplineTests` + exact-head CI evidence | STATIC_AUDIT + HOSTED_CI |
+
+F62/PG37 later-precedence amendment: R041 retains every original retry/RNG/child-crash duty and consumes the four exact task-owned witnesses in `2026-09-15-implementation-planning-accepted-adjudication-basis-addendum.md` for policy-basis-sensitive accepted inputs. A schema-valid JSON round-trip or conformance hash is not production source resolution, accepted RuntimeCommand identity or cold recovery. No new readiness identity is created.
 
 ## 4. Direct readiness with enumerated owner suites
 
