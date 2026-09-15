@@ -2,7 +2,9 @@
 
 Status: **R2.7 WP-03 CANONICAL CLASS/ENVELOPE CONTRACT**
 
-Active unreleased catalog generation: `2.0.0`.
+Active unreleased catalog generation: integer `2` (`catalog_generation: 2`).
+
+Current version-field representation follows `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md` and its machine-realization status amendment. Integer `catalog_generation`, package revision and explicit compatibility family/generation are the realized forms; older field spellings are not current compatibility aliases.
 
 Machine-readable contracts:
 
@@ -230,9 +232,9 @@ A world record changes `definition_id` only through an explicitly admitted trans
 
 Catalog generation identifies the coherent engine machine-contract set; it is not a per-record version field.
 
-R2.7 uses `2.0.0` as one **unreleased** clean-slate machine generation because this architecture audit intentionally removes/changes prior catalog IDs and semantics and no real campaign depends on `1.6.0`.
+R2.7 uses integer generation `2` as one **unreleased** clean-slate machine generation. The former `2.0.0` spelling was normalized to `catalog_generation: 2`; it is not a second supported representation. No real campaign depends on the discarded pre-rearchitecture catalog shapes historically labeled `1.6.0`.
 
-Until R2.7 final closure, later owning domains may make coordinated changes to the `2.0.0` artifacts without providing a `1.6.0 -> 2.0.0` campaign migration.
+The pre-release R2.7 cutover permits coordinated realization of the accepted generation-2 machine contracts without manufacturing migration from discarded pre-rearchitecture shapes. All coordinated projections use the same integer `catalog_generation`; artifact-local `schema_version` remains a separate namespace. Actual generation changes follow the current versioning owner, not the former three-component labels.
 
 After release, incompatible semantic catalog changes require the future version/evolution contract defined by WP-20; same-version published refreshes may not silently change catalog meaning.
 

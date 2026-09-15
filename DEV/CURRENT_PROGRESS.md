@@ -6,10 +6,10 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR ADVERSARIAL CLOSURE ACTIVE
 CURRENT_WORKSTREAM: implementation planning
 CURRENT_SLICE: bounded graph-based author adversarial closure of the complete RD-01..RD-16 / 36-overlay implementation-planning package
-LAST_CLOSED_UNIT: F55 RD-08 schema-README writer/proof joined into existing F41/F47 integration
+LAST_CLOSED_UNIT: F56 active catalog namespace projections synchronized with realized integer-generation/package identity policy
 NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING AUTHOR REVIEW / REPAIR ONLY — continue the private repository-owned author-audit traversal from its exact current cursor; publish only concrete product/planning repairs into this public package. Continue stale shipped-consumer reverse scans, recovery/currentness negatives, proof/mechanism asymmetry, runtime end-to-end/LLM/remote critical-path performance and final whole-checkpoint DAG reconciliation. Do not begin production implementation, migration, release execution or gameplay bootstrap.
 REQUIRED_GATE: exhaustive bounded author graph audit reaches fresh zero-open closure + fresh exact-final-HEAD hosted validation (full maintenance audit and full DEV unittest discovery) -> mandatory independent Senior re-review; production implementation remains unauthorized until the independent Senior gate passes
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-schema-readme-shared-writer-amendment.md
+TASK_LOCAL_CURSOR: DEV/ARCHITECTURE/CATALOG_CONTRACTS.md
 KNOWN_BLOCKERS: independent Senior re-review is blocked pending completion of the graph-based author audit, fresh zero-open author closure and exact-final-HEAD hosted validation; production implementation is not authorized
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
@@ -63,6 +63,8 @@ F53 is a minor planning-proof defect repaired inside mandatory overlay 28. F39/F
 F54 is a minor readiness-routing defect repaired inside mandatory overlay 34: the `RANDOMNESS.md` material-version row now points to `R043` (fixed RNG retention/recovery), matching the exact WP-27 Step-2 record and RD-01. `R050` remains the separate information/catalog prose duty. The final writer, target `1.0.3`, required RNG behavior and proof obligations are unchanged.
 
 F55 is a significant shared-writer/proof defect repaired inside mandatory overlays 30 and 35. RD-08 v2 explicitly includes the schema README in its CURRENT/R010 checkpoint, but the F41 final writer and F47 witness admitted only RD-02/RD-03/RD-04/RD-07. The existing schema-README sink now also consumes bounded `RD08_SCHEMA_DOC_DELTA_READY`, and the same actual-byte static witness proves all five contributions. The storage-template sink retains three inputs; no semantic owner, runtime dependency, version bump or whole-RD barrier is added.
+
+F56 is a minor current-document namespace projection defect repaired in `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `CATALOG_ADMISSION.md` and `CATALOG_RESOLUTION.md`. Their active generation/package-field wording lagged the already approved and realized versioning policy. Current guidance now uses integer `catalog_generation: 2`, package revision and explicit compatibility family/generation; the recorded S6D-02 admission snapshot is distinguished from current machine-owned counts/selectability. No machine representation, generation value, implementation task, overlay or proof/execution edge changes.
 
 Current authority routes:
 - package router: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md`;

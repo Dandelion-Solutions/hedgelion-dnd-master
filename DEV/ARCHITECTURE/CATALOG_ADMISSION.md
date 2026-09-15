@@ -4,6 +4,8 @@ Status: **ACCEPTED S6D-02 ARCHITECTURE OWNER**
 
 Date: 2026-08-25
 
+Current version-field representation follows `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md` and its machine-realization status amendment. Integer `catalog_generation`, package revision and explicit compatibility family/generation are the realized forms; older field spellings are not current compatibility aliases.
+
 ## 1. Decision
 
 HDM maintains one exact machine-readable admission ledger for the current catalog generation. The ledger classifies every registered ID without turning admission into a false claim of complete implementation.
@@ -55,17 +57,17 @@ Capability, reusable definition, world record, runtime record, embedded value an
 
 There is no “registered placeholder” disposition. An active ID with missing detail names the exact downstream owner and missing contract. A dormant ID is nonselectable. A stale ID is removed coherently.
 
-## 3. Current generation result
+## 3. Recorded S6D-02 admission snapshot
 
-Catalog generation `2.0.0` contains 571 admitted IDs:
+The S6D-02 generation-2 snapshot recorded here contains 571 admitted IDs:
 
 - 192 `S6D_PRIMARY`;
 - 276 `ENGINE_ENUM_CONSISTENCY`;
 - 103 `INHERITED_ROUND2`.
 
-No current machine registry ID is removed by S6D-02.
+That S6D-02 cutover removed no machine registry ID. These recorded counts do not replace a fresh current admission census.
 
-The complete result is machine-owned in the ledger. Prose summaries do not duplicate its 571-ID enumeration.
+The current complete result is machine-owned in the admission ledger and must match the exact current core catalog. This prose snapshot cannot replace that equality check or the current per-ID realization state.
 
 ## 4. S6D-primary routing
 
@@ -82,19 +84,19 @@ Integrated S6D `COMPLETE-or-remove` applies only to S6D-primary IDs and residual
 
 ### LAW S6D02-07 — MINIMUM BUILT-IN PACKAGE PROFILE
 
-Exactly one built-in package profile is currently required:
+Exactly one built-in package profile is required. Its identity uses the current normalized fields:
 
 ```text
 package_id = hdm.rules.dnd2024-srd52-core
-compatibility_id = hdm.rules.dnd2024-srd52.v1
-catalog_generation = 2.0.0
+compatibility_family = hdm.rules.dnd2024-srd52
+compatibility_generation = 1
+catalog_generation = 2
 semantic_content_root = GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/
-selectable_now = false
 ```
 
 Namespace claims are the semantic top-level prefixes corresponding to the 37 admitted reusable definition families.
 
-This profile is not an empty executable rules seed. It becomes selectable only after S6D-07–09 content exists and S6D-11 proves manifest, dependency lock, digest, builder and loader contracts.
+The initial S6D-02 checkpoint did not make this profile selectable or admit an empty executable rules seed. Selectability requires the S6D-07–09 content and S6D-11 manifest, dependency-lock, digest, builder and loader proof. Current manifest/lock representation and realization status are owned by `RULESET_PACKAGE_IDENTITY.md` and `RULESET_PACKAGE_MACHINE_CLOSURE.md`; the initial admission snapshot is not a separate current selectability flag.
 
 Additional packages require a current consumer; S6D-02 does not split the built-in seed speculatively.
 

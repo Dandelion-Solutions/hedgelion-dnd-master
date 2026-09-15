@@ -2,6 +2,8 @@
 
 Status: **AGREED STEP-1 ARCHITECTURE — RETROSPECTIVE ASSURANCE AMENDMENT**
 
+Current version-field representation follows `DEV/docs/superpowers/specs/2026-09-05-hdm-versioning-namespace-compatibility-policy.md` and its machine-realization status amendment. Integer `catalog_generation`, package revision and explicit compatibility family/generation are the realized forms; older field spellings are not current compatibility aliases.
+
 Related contracts:
 
 - `ARCHITECTURE/CATALOG_MODEL.md`
@@ -100,28 +102,32 @@ requires deterministic ownership inside the selected HDM package set.
 
 ## 6. Ruleset package identity and snapshot requirement
 
-`catalog_version` identifies the engine machine-catalog contract. It does not by
-itself identify the complete reusable definition set selected for a campaign.
-Likewise, a human-readable rules-baseline string is not sufficient package
-identity.
+`catalog_generation` identifies the coordinated engine machine-catalog contract.
+It does not identify the complete reusable definition set selected for a campaign.
+A human-readable rules-baseline string is not sufficient package identity either.
 
-When independently versioned ruleset definition packages become executable,
-the ResolvedCatalogContext must identify them with stable package-level
-metadata sufficient for compatibility/restoration, conceptually including:
+For the currently realized ruleset packages, the ResolvedCatalogContext consumes
+the package-owned identities defined by `RULESET_PACKAGE_IDENTITY.md`, including:
 
 ```text
 package_id
-package_version
-content identity/digest or equivalent immutable snapshot identity
-compatibility identity when distinct from presentation version
+package_revision
+compatibility_family
+compatibility_generation
+catalog_generation
+typed exact content identity/digest and dependency snapshot
 ```
 
-Exact fields, storage paths, package derivation, and migration tooling are Step
-6 concerns. Do not add package version fields to every definition/world record.
+Package revision is update order, compatibility family/generation is the semantic
+line, and exact content identity remains separate. Exact manifest/lock/digest
+fields and machine realization belong to `RULESET_PACKAGE_IDENTITY.md` and
+`RULESET_PACKAGE_MACHINE_CLOSURE.md`. The earlier Step-1 deferral of those fields
+is historical; it is not an alternate current `package_version` contract.
 
-Until a separately versioned ruleset package exists, shipped definitions may be
-covered by the adopted engine/runtime package identity, provided the release
-compatibility contract below is enforced.
+Do not add package/catalog version fields to every definition/world record merely
+to reconstruct the resolved set. Engine/runtime package identity supplies its own
+provenance and cannot substitute for the independently declared ruleset-set
+identity when ruleset packages participate.
 
 ## 7. Same-version runtime refresh cannot change catalog meaning incompatibly
 
