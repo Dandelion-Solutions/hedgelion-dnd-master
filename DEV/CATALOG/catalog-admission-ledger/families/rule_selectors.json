@@ -74,9 +74,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for check.roll; current references are historical, structural examples, or unresolved downstream requirements",
-      "consumer_or_dependency": "reserved selector check.roll; not selectable",
-      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
+      "evidence_citation": "DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md section 4.4 accepted S6D-07 extension; DEV/CATALOG/mechanical-surfaces.json#/selectors/check.roll complete metadata; DEV/TESTS/test_s6d_07_mvp_selector_activation.py",
+      "consumer_or_dependency": "op.resolve_check (activity.check.generic, activity.feature.tactical_mind)",
+      "activation_trigger": "SATISFIED_BY_ACCEPTED_S6D_07_MVP_DEPENDENCY_AND_COMPLETE_CURRENT_SELECTOR_METADATA"
     },
     {
       "registry_family": "rule_selectors",
@@ -102,9 +102,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for save.roll; current references are historical, structural examples, or unresolved downstream requirements",
-      "consumer_or_dependency": "reserved selector save.roll; not selectable",
-      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
+      "evidence_citation": "DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md section 4.4 accepted S6D-07 extension; DEV/CATALOG/mechanical-surfaces.json#/selectors/save.roll complete metadata; DEV/TESTS/test_s6d_07_mvp_selector_activation.py",
+      "consumer_or_dependency": "op.resolve_save (activity.save.generic, activity.spell.poison_spray, activity.spell.thunderclap, activity.spell.acid_splash, activity.spell.burning_hands)",
+      "activation_trigger": "SATISFIED_BY_ACCEPTED_S6D_07_MVP_DEPENDENCY_AND_COMPLETE_CURRENT_SELECTOR_METADATA"
     },
     {
       "registry_family": "rule_selectors",
@@ -158,9 +158,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for spell.dc; current references are historical, structural examples, or unresolved downstream requirements",
-      "consumer_or_dependency": "reserved selector spell.dc; not selectable",
-      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
+      "evidence_citation": "DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md section 4.4 accepted S6D-07 extension; DEV/CATALOG/mechanical-surfaces.json#/selectors/spell.dc complete metadata; DEV/TESTS/test_s6d_07_mvp_selector_activation.py",
+      "consumer_or_dependency": "activity.spell.poison_spray, activity.spell.thunderclap, activity.spell.acid_splash, activity.spell.burning_hands selector.spell.dc thresholds; effect.innate_sorcery rule.add_flat contribution in character-mvp-seed.json",
+      "activation_trigger": "SATISFIED_BY_ACCEPTED_S6D_07_MVP_DEPENDENCY_AND_COMPLETE_CURRENT_SELECTOR_METADATA"
     },
     {
       "registry_family": "rule_selectors",
@@ -172,9 +172,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for attack.roll; current references are historical, structural examples, or unresolved downstream requirements",
-      "consumer_or_dependency": "reserved selector attack.roll; not selectable",
-      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
+      "evidence_citation": "DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md section 4.4 accepted S6D-07 extension; DEV/CATALOG/mechanical-surfaces.json#/selectors/attack.roll complete metadata; DEV/TESTS/test_s6d_07_mvp_selector_activation.py",
+      "consumer_or_dependency": "op.resolve_attack (activity.attack.ranged_weapon, activity.spell.fire_bolt)",
+      "activation_trigger": "SATISFIED_BY_ACCEPTED_S6D_07_MVP_DEPENDENCY_AND_COMPLETE_CURRENT_SELECTOR_METADATA"
     },
     {
       "registry_family": "rule_selectors",
@@ -200,9 +200,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for defense.armor_class; current references are historical, structural examples, or unresolved downstream requirements",
-      "consumer_or_dependency": "reserved selector defense.armor_class; not selectable",
-      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
+      "evidence_citation": "DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md section 4.4 accepted S6D-07 extension; DEV/CATALOG/mechanical-surfaces.json#/selectors/defense.armor_class complete metadata; DEV/TESTS/test_s6d_07_mvp_selector_activation.py",
+      "consumer_or_dependency": "op.resolve_attack (activity.attack.ranged_weapon, activity.spell.fire_bolt)",
+      "activation_trigger": "SATISFIED_BY_ACCEPTED_S6D_07_MVP_DEPENDENCY_AND_COMPLETE_CURRENT_SELECTOR_METADATA"
     },
     {
       "registry_family": "rule_selectors",
@@ -256,9 +256,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for damage.received; current references are historical, structural examples, or unresolved downstream requirements",
-      "consumer_or_dependency": "reserved selector damage.received; not selectable",
-      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
+      "evidence_citation": "DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md section 4.4 accepted S6D-07 extension; DEV/CATALOG/mechanical-surfaces.json#/selectors/damage.received complete metadata; DEV/TESTS/test_s6d_07_mvp_selector_activation.py",
+      "consumer_or_dependency": "op.apply_damage (activity.attack.ranged_weapon, activity.spell.fire_bolt, activity.spell.poison_spray, activity.spell.thunderclap, activity.spell.acid_splash, activity.spell.magic_missile, activity.spell.burning_hands)",
+      "activation_trigger": "SATISFIED_BY_ACCEPTED_S6D_07_MVP_DEPENDENCY_AND_COMPLETE_CURRENT_SELECTOR_METADATA"
     },
     {
       "registry_family": "rule_selectors",
@@ -284,9 +284,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for healing.received; current references are historical, structural examples, or unresolved downstream requirements",
-      "consumer_or_dependency": "reserved selector healing.received; not selectable",
-      "activation_trigger": "Concrete canonical supported-profile mechanic plus complete S6D-03 metadata; if portable semantics are involved, S6D-05 shape closure; then coordinated catalog verification"
+      "evidence_citation": "DEV/ARCHITECTURE/CALCULATION_SELECTOR_METADATA.md section 4.4 accepted S6D-07 extension; DEV/CATALOG/mechanical-surfaces.json#/selectors/healing.received complete metadata; DEV/TESTS/test_s6d_07_mvp_selector_activation.py",
+      "consumer_or_dependency": "op.apply_healing (activity.feature.second_wind)",
+      "activation_trigger": "SATISFIED_BY_ACCEPTED_S6D_07_MVP_DEPENDENCY_AND_COMPLETE_CURRENT_SELECTOR_METADATA"
     },
     {
       "registry_family": "rule_selectors",

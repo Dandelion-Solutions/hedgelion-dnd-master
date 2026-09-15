@@ -60,9 +60,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for op.resolve_check; no complete current primitive contract/consumer proof",
-      "consumer_or_dependency": "reserved Activity primitive op.resolve_check; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-06 exact primitive contract plus supported Activity consumer and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/activity-primitive-contracts/primitives/op.resolve_check.json#/contract COMPLETE exact primitive contract and consumer list; DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md sections 1, 6 and 8; current declared package seed consumers",
+      "consumer_or_dependency": "activity.check.generic, activity.feature.tactical_mind; bounded calculation under DEV/CATALOG/activity-primitive-contracts/primitives/op.resolve_check.json#/contract",
+      "activation_trigger": "SATISFIED_BY_CURRENT_EXACT_COMPILED_SEED_CONSUMERS_AND_ACTIVE_DEPENDENCY_CLOSURE"
     },
     {
       "registry_family": "activity_primitives",
@@ -270,9 +270,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for op.create_effect; no complete current primitive contract/consumer proof",
-      "consumer_or_dependency": "reserved Activity primitive op.create_effect; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-06 exact primitive contract plus supported Activity consumer and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/activity-primitive-contracts/primitives/op.create_effect.json#/contract COMPLETE exact primitive contract and consumer list; DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md sections 1, 6 and 8; current declared package seed consumers",
+      "consumer_or_dependency": "activity.feature.innate_sorcery; bounded mutation under DEV/CATALOG/activity-primitive-contracts/primitives/op.create_effect.json#/contract",
+      "activation_trigger": "SATISFIED_BY_CURRENT_EXACT_COMPILED_SEED_CONSUMERS_AND_ACTIVE_DEPENDENCY_CLOSURE"
     },
     {
       "registry_family": "activity_primitives",
@@ -368,9 +368,9 @@
       "semantic_owner": "DEV/ARCHITECTURE/ACTIVITY_MODEL.md + DEV/ARCHITECTURE/RULE_ELEMENT_MODEL.md",
       "admission_disposition": "ACTIVE_ADMITTED",
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
-      "evidence_citation": "DEV/CATALOG/core-catalog.json registry reservation for op.for_each_target; no complete current primitive contract/consumer proof",
-      "consumer_or_dependency": "reserved Activity primitive op.for_each_target; nonselectable pending activation trigger",
-      "activation_trigger": "S6D-06 exact primitive contract plus supported Activity consumer and S6D-11 verification"
+      "evidence_citation": "DEV/CATALOG/activity-primitive-contracts/primitives/op.for_each_target.json#/contract COMPLETE exact primitive contract and consumer list; DEV/ARCHITECTURE/ACTIVITY_PRIMITIVE_CONTRACTS.md sections 1, 6 and 8; current declared package seed consumers",
+      "consumer_or_dependency": "activity.spell.acid_splash, activity.spell.thunderclap, activity.spell.magic_missile, activity.spell.burning_hands; bounded compiler_form under DEV/CATALOG/activity-primitive-contracts/primitives/op.for_each_target.json#/contract",
+      "activation_trigger": "SATISFIED_BY_CURRENT_EXACT_COMPILED_SEED_CONSUMERS_AND_ACTIVE_DEPENDENCY_CLOSURE"
     },
     {
       "registry_family": "activity_primitives",
