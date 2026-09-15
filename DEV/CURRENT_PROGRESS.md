@@ -6,17 +6,17 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR ADVERSARIAL CLOSURE ACTIVE
 CURRENT_WORKSTREAM: implementation planning
 CURRENT_SLICE: bounded graph-based author adversarial closure of the complete RD-01..RD-16 / 36-overlay implementation-planning package
-LAST_CLOSED_UNIT: F56 active catalog namespace projections synchronized with realized integer-generation/package identity policy
+LAST_CLOSED_UNIT: F57 F36 verification command aligned with the declared RD06 test module
 NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING AUTHOR REVIEW / REPAIR ONLY — continue the private repository-owned author-audit traversal from its exact current cursor; publish only concrete product/planning repairs into this public package. Continue stale shipped-consumer reverse scans, recovery/currentness negatives, proof/mechanism asymmetry, runtime end-to-end/LLM/remote critical-path performance and final whole-checkpoint DAG reconciliation. Do not begin production implementation, migration, release execution or gameplay bootstrap.
 REQUIRED_GATE: exhaustive bounded author graph audit reaches fresh zero-open closure + fresh exact-final-HEAD hosted validation (full maintenance audit and full DEV unittest discovery) -> mandatory independent Senior re-review; production implementation remains unauthorized until the independent Senior gate passes
-TASK_LOCAL_CURSOR: DEV/ARCHITECTURE/CATALOG_CONTRACTS.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-live-temporal-companion-handoff-amendment.md
 KNOWN_BLOCKERS: independent Senior re-review is blocked pending completion of the graph-based author audit, fresh zero-open author closure and exact-final-HEAD hosted validation; production implementation is not authorized
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
 
 Current executable package: RD-01 through RD-16 with 36 mandatory overlays. F50 is folded into existing mandatory overlay 11 and F52 is folded into existing mandatory overlay 28; neither changes the overlay count.
 
-Author Findings 1–31 are planning-repaired and independently unconfirmed. Findings 23–31 add the current catalog-context and LIVE realization repairs. F34–F48, F50, F52, F53, F54 and F55 are also planning-repaired and independently unconfirmed; F32 is negative and F33/F45/F49 are repaired control-plane defects.
+Author Findings 1–31 are planning-repaired and independently unconfirmed. Findings 23–31 add the current catalog-context and LIVE realization repairs. F34–F48, F50, F52, F53, F54, F55 and F57 are also planning-repaired and independently unconfirmed; F32 is negative and F33/F45/F49 are repaired control-plane defects.
 
 F32 is a negative finding: accepted publication/deployment owners already bind the LIVE exact-source CAS boundary to exact ref/read, single-parent successor construction and non-force stale-head rejection with typed fail-closed outcomes; no REST/GraphQL primitive is introduced by planning.
 
@@ -65,6 +65,8 @@ F54 is a minor readiness-routing defect repaired inside mandatory overlay 34: th
 F55 is a significant shared-writer/proof defect repaired inside mandatory overlays 30 and 35. RD-08 v2 explicitly includes the schema README in its CURRENT/R010 checkpoint, but the F41 final writer and F47 witness admitted only RD-02/RD-03/RD-04/RD-07. The existing schema-README sink now also consumes bounded `RD08_SCHEMA_DOC_DELTA_READY`, and the same actual-byte static witness proves all five contributions. The storage-template sink retains three inputs; no semantic owner, runtime dependency, version bump or whole-RD barrier is added.
 
 F56 is a minor current-document namespace projection defect repaired in `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `CATALOG_ADMISSION.md` and `CATALOG_RESOLUTION.md`. Their active generation/package-field wording lagged the already approved and realized versioning policy. Current guidance now uses integer `catalog_generation: 2`, package revision and explicit compatibility family/generation; the recorded S6D-02 admission snapshot is distinguished from current machine-owned counts/selectability. No machine representation, generation value, implementation task, overlay or proof/execution edge changes.
+
+F57 is a minor proof-command routing defect repaired inside mandatory overlay 25 (F36): its RD-06 verification command now invokes `DEV.TESTS.test_rd06_durability_publication`, matching the test module explicitly created by RD-06 and extended by the current LIVE amendments. The former command named an unplanned module. The handoff mechanism, required cases, test ownership, primary channels, checkpoint graph, versions and overlay count are unchanged.
 
 Current authority routes:
 - package router: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md`;

@@ -1,8 +1,9 @@
 # HDM Implementation Planning — LIVE / Temporal Completeness-Companion Handoff Amendment
 
 Status: **CURRENT HIGHEST-PRECEDENCE MANDATORY AUTHOR REPAIR — PLANNING ONLY / NO PRODUCTION IMPLEMENTATION**
-Date: 2026-09-14
+Date: 2026-09-15
 Finding: **F36 — SIGNIFICANT — campaign/LIVE authority movement lacks an explicit atomic temporal-routing handoff**
+Later proof-command repair: **F57 — MINOR**
 
 ## 1. Finding
 
@@ -174,13 +175,15 @@ Focused verification after implementation is authorized:
 ```bash
 python3 -m unittest DEV.TESTS.test_rd08_temporal.TemporalRoutingCompletenessTests -v
 python3 -m unittest DEV.TESTS.test_rd09_access_live.LiveTemporalRoutingHandoffTests -v
-python3 -m unittest DEV.TESTS.test_rd06_save_publication -v
+python3 -m unittest DEV.TESTS.test_rd06_durability_publication -v
 python3 -m unittest DEV.TESTS.test_rd07_recovery -v
 python3 DEV/TOOLS/run_maintenance_audit.py
 python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
 ```
 
 Exact concrete class placement may follow the existing RD test modules, but one item-bound cross-companion witness is mandatory; broad temporal tests and broad LIVE tests passing separately do not discharge F36.
+
+F57 corrects the RD-06 command above to the exact module `DEV/TESTS/test_rd06_durability_publication.py`, created by RD-06 and extended by the current LIVE amendments. The former command referred to an unplanned module. This is a proof-command spelling repair; it creates no test module or compatibility alias and changes no handoff cases, proof channels or execution joins.
 
 ## 9. Execution / coverage / proof amendment
 
@@ -241,6 +244,9 @@ No LIVE source exists and no cross-companion handoff is required at bootstrap. E
 
 ```text
 F36: REPAIRED_IN_PLANNING
+F57: MINOR / REPAIRED_IN_PLANNING — exact RD06 verification module
+F57_VERSION_IMPACT: NONE
+F57_NEW_OVERLAY_OR_EXECUTION_EDGE: NO
 CAMPAIGN_TO_LIVE_TEMPORAL_HANDOFF_ATOMIC_WITH_LIVE_ROUTE_SELECTION: REQUIRED
 LIVE_TO_CAMPAIGN_TEMPORAL_HANDOFF_ATOMIC_WITH_LIVE_ROUTE_REMOVAL: REQUIRED
 CROSS_DOMAIN_DUPLICATE_CURRENT_TEMPORAL_ENROLLMENT: INTEGRITY_CONFLICT
