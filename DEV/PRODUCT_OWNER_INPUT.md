@@ -306,6 +306,20 @@ Accepted owner decision:
 Переименование GH юзера мы не будем поддерживать. Тут 2 риска: кража сессии игры под видом "я переименовал пользователя" с одной стороны и получение R/O игры с другой стороны. Я выбираю второе! в крайнем случае, если это действительно хозяин репозитория - он может вручную создать копию этой ветки со всей историей и тогда владелец новой ветки-сессии будет новый юзер. Игра тут стоит на своём и ничего менять не будет. Правила есть правила.
 ```
 
+### Product Owner follow-up — VERBATIM / IMMUTABLE
+
+Source: direct Product Owner clarification; the containing commit records publication time.
+
+```text
+что нам даёт "устойчивый ID"? если он удобнее - я не возражаю использовать его. Но логин всё равно лучше знать - пусть будет
+```
+
+```text
+просто, например, для `приглашения` в мультиплеер логин гораздо лучше! Учти это и закрывай все висяки, связанные с "идентификацией".
+```
+
+Agent-owned disposition — INCORPORATED: retain the GitHub login for human-facing invitations/display and use the verified stable account ID for the existing PLAYER binding. An invitation accepts a login, resolves the exact account through the supported Connector, and establishes the existing authorized PLAYER binding; users need not supply a numeric ID. Email, a raw login string, chat claims and repository permission alone do not grant gameplay authority. Missing or ambiguous account evidence denies the binding write. Login-label refresh must not rebind an existing PLAYER to a different account or confer creator authority. This clarification is projected in `DEV/ARCHITECTURE/ACCESS_CONTROL.md` and RD-14 Task 6 / `MultiplayerJoinRejoinTests`, consuming RD-09 principal resolution and the existing PLAYER access-transition producer. The accepted PO-005 creator-login fail-closed/no-automatic-transfer policy remains in force; no MANIFEST creator field, rename-recovery mechanism or further identification decision is required for the accepted scope.
+
 ### Agent interpretation / classification
 
 ```text

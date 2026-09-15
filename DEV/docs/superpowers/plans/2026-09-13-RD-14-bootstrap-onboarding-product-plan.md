@@ -280,7 +280,7 @@ Coherent checkpoint: progressive onboarding composition + tests; no Story/T0 own
 - Modify: `DEV/TESTS/test_rd14_bootstrap.py`
 - Consume RD-09 current principal/PLAYER/control and RD-12 PLAYER collaboration routes/frontier/catch-up.
 
-Before mutable multiplayer input:
+For a creator-authorized multiplayer invitation, accept the invitee's GitHub login, resolve trustworthy current account ID + login through the supported Connector, then use the existing PLAYER access-transition producer and principal-routing closure. The resulting active binding is the invitation; no email identity, user-supplied numeric ID or separate invitation registry is required. Existing-account matching uses the stable ID and never substitutes for creator authority. Before mutable multiplayer input:
 ```text
 trusted current principal
 -> current active PLAYER/control
@@ -291,8 +291,8 @@ trusted current principal
 ```
 
 **Cases**
-- absent participant does not create global wait without positive dependency;
-- rejoin cannot mutate from stale session/card/chat cache;
+- invitation by login resolves and displays the intended account, writes its verified stable ID + login through the authorized PLAYER transition, and reuses an existing matching binding under current reactivation rules; absent participant does not create global wait without positive dependency;
+- unresolved/ambiguous login lookup, email-only evidence, login reuse by a different account, and attempted binding without current creator authority cannot grant access; a login-label refresh cannot transfer an existing binding; rejoin cannot mutate from stale session/card/chat cache;
 - private catch-up material remains recipient isolated;
 - collaboration catch-up projection never becomes history/knowledge authority.
 

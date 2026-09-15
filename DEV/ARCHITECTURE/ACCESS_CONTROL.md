@@ -48,7 +48,7 @@ Neither exception authorizes control of another PC/binding, unrelated world chan
 
 Deactivation never deletes canonical PLAYER/provenance. Reactivation reuses the same stable PLAYER identity and existing PC binding unless explicitly reassigned.
 
-GitHub login is mutable authorization/audit metadata; campaign semantic actor identity is stable PLAYER ID.
+GitHub login is mutable authorization/audit metadata and the human-facing identifier for multiplayer invitations and display; campaign semantic actor identity is stable PLAYER ID. The user supplies the invitee's login, not a numeric ID. Resolve that login to trustworthy current GitHub account evidence through the supported Connector before the creator-authorized PLAYER binding write; store the verified stable user ID and login in the existing binding. Missing or ambiguous account evidence denies the write. Email and an unverified login string are not authorization evidence. Refreshing a login label never rebinds an existing PLAYER to another stable account ID and never substitutes for creator-login provenance. The active PLAYER binding itself remains the invitation; this adds no invitation registry or creator-authority store.
 
 ## Campaign House-Rules policy adoption authority
 

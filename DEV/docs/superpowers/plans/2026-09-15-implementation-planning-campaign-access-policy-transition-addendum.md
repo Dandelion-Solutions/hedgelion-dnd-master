@@ -12,7 +12,7 @@ RD-09 Task 2 supplies authorization validators; Task 7 and F7 supply LIVE classi
 
 A concrete mode change can affect several PLAYERs and the same obligation generation through several route holders. Independent per-PLAYER reconciliation against different provisional after-states cannot establish one coherent successor. A grant-only write must also preserve unrelated current PLAYER fields; join-policy changes must not be misclassified as membership revocation.
 
-This overlay extends F37/F38 for these already-owned operations. It adds no authorization class, stable creator contract, persistent transition journal, generic ACL service or gameplay policy. Creator evidence remains subject to the current owner and its unresolved architecture gate: unresolved creator authority denies the request. No login-to-stable-ID substitution or creator placement decision is authorized here.
+This overlay extends F37/F38 for these already-owned operations. It adds no authorization class, stable creator contract, persistent transition journal, generic ACL service or gameplay policy. Creator evidence follows ACCESS_CONTROL and the accepted `2026-09-06-hdm-creator-login-continuity-owner-decision.md` (PO-005): confirmed historical creator-login provenance permits admitted creator-only operations; unresolved or mismatched provenance denies them. Login-rename continuity, stable-ID substitution and silent creator transfer remain forbidden; no new creator architecture decision is pending.
 
 ## 2. Exact operation and native-field scope
 
@@ -124,7 +124,7 @@ python3 -m unittest DEV.TESTS.test_rd09_access_live.AccessPolicyConsumerIntegrat
 
 The publication integration must inject an omitted policy/PLAYER/collaboration/LIVE companion, missing required terminal source and stale affected-set basis; each must prevent false success. It must also prove safe join-policy/grant-only changes do not revoke existing memberships or roll unrelated LIVE, accepted prior policy/execution remains valid after revocation, and the separate consumer integration proves disabled/re-enabled planning never bypasses actual admission. Mocked success booleans or only the existing static HouseRulesPolicyAuthorityContractTests do not establish this joined behavior.
 
-PG36 is the exact integration row. It extends the supporting routes for R080 items 3, 4, 11 and 12 and R083 theme 16; item12 keeps its original additive membership duty while the shared classifier's policy/non-revocation boundary receives additional integration coverage. Existing Wp16LiveAccessProofTests and Wp17CollaborationProofTests remain item-bound. PG35 and all earlier PG identities remain separate. Creator-unresolved denial is testable; no test/finding disposition here closes the unresolved creator architecture decision or authorizes production.
+PG36 is the exact integration row. It extends the supporting routes for R080 items 3, 4, 11 and 12 and R083 theme 16; item12 keeps its original additive membership duty while the shared classifier's policy/non-revocation boundary receives additional integration coverage. Existing Wp16LiveAccessProofTests and Wp17CollaborationProofTests remain item-bound. PG35 and all earlier PG identities remain separate. The confirmed-creator and unresolved/non-creator cases are required under the already-accepted PO-005 contract. This proof introduces no creator architecture gate and does not authorize production implementation.
 
 ## 8. Checkpoints, files and version impact
 
