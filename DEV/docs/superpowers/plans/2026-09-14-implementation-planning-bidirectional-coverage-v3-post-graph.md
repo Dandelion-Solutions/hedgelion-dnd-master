@@ -230,4 +230,18 @@ Current package routing is RD-01..RD-16 plus the package-index mandatory precede
 
 This v3 document does **not** declare zero-open author closure. Final closure still requires fresh reverse review of every RD-15/RD-16 task, full 17+17 family proof, F23 accepted-context proof, F24–F27 source-native identity/opening/routing/order/CAS/recovery proof, proof-witness/mechanism symmetry, shared-writer uniqueness, execution-wave reconciliation, exact package-index/master/progress agreement and exact-head hosted validation.
 
-Architecture reopen: **NO CURRENT OPEN REOPEN**. Human product decision: **NO CURRENT OPEN DECISION**. Independent review remains blocked. Production implementation remains unauthorized.
+This coverage document does not decide the package's global open-finding or human-decision state. Current package owners control those gates. Independent review remains blocked. Production implementation remains unauthorized.
+
+## 9. F58 — operational-root forward/reverse coverage
+
+Mandatory overlay `2026-09-15-implementation-planning-operational-root-routing-addendum.md` is the later-precedence realization route for this bounded addition.
+
+| Accepted obligation | Executable realization and reverse owner |
+|---|---|
+| Step-5.2 Laws 2–5/9–11 and section 5; WP-14 Laws 6–8; R072 | RD-05 native A/B/C eligibility -> RD-07 typed active-only path/contract -> RD-06 campaign closure / RD-09 selected-LIVE CAS and handoff -> RD-07 complete exact-pinned root/dependency hydration. |
+| Steps 5.4/5.5 and WP-13 promised durable closure | Class-C accepted unresolved input is enrolled only when protected by the owner-defined promise; irreducible accepted evidence remains recoverable. No new durable promise authority. |
+| Existing scaffold law / F40 | RD07_OPERATIONAL_ROOT_CONTRACT_READY contributes FORMAT.yaml before RD14 generator validation, independently of full runtime/LIVE/RD16 completion. |
+| Existing F41/F47/F46 physical projections | Five schema-README owner inputs with the full RD07 delta; four storage-template inputs including bounded RD07 operational routing; existing one-final-edit STORAGE/LIVE_SCENE targets. |
+| PG35 | Exact actual-producer/publication/handoff/recovery/scaffold/final-byte witnesses in the post-graph matrix and overlay 37; R038/R072/R074 duties remain item-bound. |
+
+The derivative FORMAT.yaml, per-native-owner route documents, embedded LIVE operational_root_routes, mechanical recovery_roots.py helpers and their proof checkpoints all reverse to the accepted laws above. They are not extra native families or a new semantic owner; the 17+17 census and historical readiness accounting are unchanged. Current lifecycle authority remains in runtime.command, runtime.procedure, runtime.interaction and runtime.intent_plan. All later package-index overlays remain mandatory beyond this document's earlier F27 narrative.

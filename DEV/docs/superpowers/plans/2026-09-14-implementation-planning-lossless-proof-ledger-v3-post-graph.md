@@ -2,7 +2,7 @@
 
 Status: **CURRENT POST-GRAPH PROOF ROUTE — PLANNING ONLY**
 Date: 2026-09-14
-Finding origin: **AUTHOR FINDING 20 — SIGNIFICANT**, extended through Finding 26.
+Finding origin: **AUTHOR FINDING 20 — SIGNIFICANT**, extended through Finding 26, with F58/PG35 operational-root integration.
 
 Historical readiness/proof semantics remain in v2 and its appendices. This v3 adds the mandatory post-graph joins; it creates no readiness IDs. Exact executable witnesses and primary proof channels are defined by `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md` and are part of this ledger's closure condition.
 
@@ -42,6 +42,8 @@ These are proof obligations, not readiness identities:
 - PG24 source-native LIVE cursor/printable-ID realization -> RD-09 exact cursor/encoding/CAS + RD-16 shared policy integration + RD-07 selected-LIVE recovery; PG25/PG26 supply the corrected campaign source key and deterministic multi-creation allocation order.
 - PG25 LIVE campaign semantic-identity / physical-route separation -> RD-14 exact `campaign_id` creation projection + RD-06 identity immutability + RD-09 derived bounded route token/body validation/corrected ID frame + RD-07 selected-LIVE campaign identity recovery.
 - PG26 deterministic attempt-local source-native creation order -> RD-09 per-family owner-order normalization + exact slot/ordinal allocation + original frozen-attempt ambiguity handling + RD-07 accepted allocation recovery.
+
+- PG35 F58 operational-root enrollment/publication/recovery -> RD-05 native producer + RD-07 active-only contract and complete cold hydration + RD-06 campaign closure + RD-09 current LIVE handoff + RD-14 generated scaffold + F41/F47/F46 final integrated projections.
 
 `PG22` is deliberately not a second semantic mechanism row. Finding 22 is the exact-witness routing rule embodied by the mandatory witness matrix. `PostGraphProofRoutingTests` closes that meta-obligation only when every semantic PG row has a named executable/static witness and primary channel.
 
@@ -162,3 +164,9 @@ Behavioral obligations require behavioral/integration proof; static evidence can
 Final author closure additionally requires proof-ledger v3, witness matrix, coverage v3 and execution-wave v2 to agree on RD count, exact family census, overlay routing and all post-WP27 atoms through the latest author finding, followed by exact-head maintenance audit, full DEV discovery, hosted CI and independent Senior review.
 
 Production implementation remains unauthorized.
+
+## PG35 exact closure law — F58 operational roots
+
+Mandatory overlay `2026-09-15-implementation-planning-operational-root-routing-addendum.md` owns the exact physical contract, interfaces, lifecycle cases, failure behavior, module/class placement and checkpoint joins. PG35 requires actual A/B/C native producer output, same-closure campaign/LIVE routing, exact selection/absorption, complete bounded cold recovery without checkpoint/HOT/remembered IDs, generated blank format and actual final projection bytes. Its active-Procedure-after-Command-settlement case is mandatory. Marker syntax or a partial namespace listing never proves completeness. R072 and the applicable R038/R074 item-bound duties remain separately routed; PG35 is not a new readiness ID or replacement aggregate proof.
+
+Primary integration witnesses: DEV/TESTS/test_rd06_durability_publication.py::OperationalRootPublicationTests, DEV/TESTS/test_rd09_access_live.py::LiveOperationalRootHandoffTests and DEV/TESTS/test_rd07_recovery.py::OperationalRootRecoveryTests. Focused contract/enrollment/generated-scaffold and static final-file witnesses are mandatory at the exact locations in overlay 37. OPERATIONAL_ROOT_ROUTING_PROOF_READY follows every target; it feeds no semantic producer. No future runtime witness is claimed executed by this planning amendment.

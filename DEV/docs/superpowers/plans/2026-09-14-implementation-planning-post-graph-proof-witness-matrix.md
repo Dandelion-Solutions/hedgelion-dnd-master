@@ -2,7 +2,7 @@
 
 Status: **CURRENT MANDATORY PROOF AMENDMENT — PLANNING ONLY**
 Date: 2026-09-14
-Finding origin: **AUTHOR FINDING 22 — SIGNIFICANT**, extended through Finding 31.
+Finding origin: **AUTHOR FINDING 22 — SIGNIFICANT**, extended through Finding 31, with F58/PG35 operational-root integration.
 Production implementation: **NO**.
 
 This matrix amends `2026-09-14-implementation-planning-lossless-proof-ledger-v3-post-graph.md`. A post-WP27 row is not planned-closed unless its exact mechanism, executable witness and primary proof channel are all present.
@@ -34,6 +34,9 @@ This matrix amends `2026-09-14-implementation-planning-lossless-proof-ledger-v3-
 | PG29 | exact pinned campaign `H` -> initial LIVE native-state seed equivalence | RD-09 `LiveOpeningSeedTests`; RD-06 seed-validation selection cases | FOCUSED_BEHAVIOR + INTEGRATION_SCENARIO |
 | PG30 | completeness-protected `STATE/RUNTIME/LIVE_ROUTING.yaml` -> bounded `WriteAuthorityLookup` + coherent publication/recovery/scaffold | RD-09 `LiveRoutingCompletenessTests`; RD-06 route-table publication cases; RD-07 recovery; RD-14 scaffold | FOCUSED_BEHAVIOR + INTEGRATION_SCENARIO + STATIC_AUDIT |
 | PG31 | typed LIVE native-state packing -> exact recovery -> deterministic lossless/idempotent forward absorption | RD-09 `LiveNativeStatePackingTests` + `LiveAbsorptionMaterializationTests`; RD-06 publication join; RD-07 recovery; RD-16 strict-family validation | FOCUSED_BEHAVIOR + INTEGRATION_SCENARIO + STATIC_AUDIT |
+| PG35 | F58 native lifecycle/promise -> active-only operational membership -> campaign/LIVE acceptance and handoff -> complete pinned cold recovery -> generated scaffold/final projections | `test_rd05_runtime_execution.OperationalRootEnrollmentTests`; `test_rd06_durability_publication.OperationalRootPublicationTests`; `test_rd09_access_live.LiveOperationalRootHandoffTests`; `test_rd07_recovery.OperationalRootRoutingContractTests` + `OperationalRootRecoveryTests`; RD-14 `BlankScaffoldCompletenessTests`; final README/CORE witnesses at the exact modules/channels in overlay 37 | INTEGRATION_SCENARIO (primary); FOCUSED_BEHAVIOR and STATIC_AUDIT sub-obligations |
+
+PG32–PG34 remain the logical item-bound rows introduced by mandatory overlays 23–25 (F34 runtime-family closure, F35 PLAYER collaboration integration and F36 temporal handoff). PG35 does not reuse those identities.
 
 `PG22` is not a separate semantic-mechanism row. Finding 22 is the exact-witness routing rule embodied by this matrix and closed by `PostGraphProofRoutingTests` only when every semantic PG row has a named witness/channel.
 
@@ -52,5 +55,7 @@ Owner-local witness classes are created only in the task that owns their RED-to-
 - PG29 fails if existing claims are seeded from mixed revisions, owner-defined partition seed is incomplete, or `EPOCH_LOCAL_CREATION` fabricates an owner during opening.
 - PG30 fails if scene/current/index/ref absence proves campaign authority, if missing/stale routing is treated as empty, if selected-route/table coherence can split, or ordinary lookup depends on scanning LIVE refs.
 - PG31 fails if LIVE packing changes semantic ownership, entry absence becomes generic deletion, live-born IDs change during absorption, campaign fallback is used while CLOSED_UNABSORBED remains selected, absorption duplicates accepted semantics after uncertainty, or route release is detached from the campaign-native successor truth for the same transfer.
+
+- PG35 fails on an unproduced root set, active Procedure omitted after Command settlement, promised unresolved input omission, marker/partial listing mistaken for completeness, split owner/root publication, missing/duplicate current handoff domain, historical-runtime scan as ordinary discovery, or proof before actual producer/integration/generated/final projection targets. Exact module/class placement and task-local RED/GREEN order are mandatory under overlay 37.
 
 No row may be discharged by test-name existence alone. Production implementation remains unauthorized.

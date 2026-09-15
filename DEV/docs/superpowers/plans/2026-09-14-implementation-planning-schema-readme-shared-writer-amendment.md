@@ -28,7 +28,7 @@ Semantic ownership remains unchanged:
 - RD-02 owns information/knowledge/disclosure/message semantics and its legacy-epistemic retirement.
 - RD-03 owns Actor/Asset/Effect shipped cutover semantics.
 - RD-04 owns native routing/index/HOT/storage projection semantics.
-- RD-07 owns checkpoint/recovery projection semantics.
+- RD-07 owns checkpoint/recovery projection semantics, including F58 typed operational-root routing and its bounded storage-template projection.
 - RD-08 owns CURRENT/thread/temporal schema projection semantics; the README remains a consumer.
 
 `GAME/SCHEMA/README.md` and `GAME/TEMPLATE/STORAGE_README.md` are documentation/projection surfaces only. They gain no schema, storage, currentness, recovery or semantic authority from this repair.
@@ -51,8 +51,14 @@ RD04_SCHEMA_STORAGE_DOC_DELTA_READY
     and its required README/storage projection delta is known.
 
 RD07_SCHEMA_DOC_DELTA_READY
-  = RD-07 Task-5 checkpoint descriptor/recovery semantics/tests are GREEN
-    and its required schema-README projection delta is known.
+  = RD-07 Task-5 checkpoint descriptor/recovery semantics/tests and the F58
+    operational-root contract/schema projection assertions are GREEN,
+    and its complete schema-README projection delta is known.
+
+RD07_OPERATIONAL_ROOT_STORAGE_DOC_DELTA_READY
+  = F58 RD07_OPERATIONAL_ROOT_CONTRACT_READY and focused operational-root
+    storage projection assertions are GREEN; the storage-template delta is
+    known, without a whole-RD07 recovery prerequisite.
 
 RD08_SCHEMA_DOC_DELTA_READY
   = RD-08 CURRENT/R010 and any other currently required RD-08 schema-README
@@ -97,6 +103,7 @@ The final storage-template documentation checkpoint is:
 RD02_SCHEMA_STORAGE_DOC_DELTA_READY
 + RD03_SCHEMA_STORAGE_DOC_DELTA_READY
 + RD04_SCHEMA_STORAGE_DOC_DELTA_READY
++ RD07_OPERATIONAL_ROOT_STORAGE_DOC_DELTA_READY
   SHARED_FILE_CHECKPOINT / JOIN_BEFORE_INTEGRATION
 GAME_STORAGE_README_FINAL_INTEGRATION_READY
 ```
@@ -105,25 +112,19 @@ The final projection must simultaneously preserve:
 
 - information-owner routing/storage separation and absence of embedded writable epistemic authority;
 - Actor/Asset/Effect native-family cutover and absence of PC/NPC/item native compatibility fiction;
-- owner-native direct routing, rebuildable non-authoritative indexes and storage/HOT negative laws from RD-04.
+- owner-native direct routing, rebuildable non-authoritative indexes and storage/HOT negative laws from RD-04;
+- F58 RD-07 active-only operational-root paths, explicit blank format, native-owner authority, selected-source routing and no historical-runtime scan as normal discovery.
 
-RD-07 and RD-08 have no currently planned write to `GAME/TEMPLATE/STORAGE_README.md` and therefore are not inputs to this checkpoint. F55 does not add a storage-template writer.
+F58 adds RD-07 as the fourth storage-template input through its bounded operational-root projection checkpoint. RD-08 still has no planned storage-template write; F55 adds only its schema-README input.
 
 ## 5. Execution graph effect
 
 Add only these bounded edges:
 
-```text
-RD02_SCHEMA_STORAGE_DOC_DELTA_READY ----\
-RD03_SCHEMA_STORAGE_DOC_DELTA_READY -----+-> GAME_SCHEMA_README_FINAL_INTEGRATION_READY
-RD04_SCHEMA_STORAGE_DOC_DELTA_READY -----+
-RD07_SCHEMA_DOC_DELTA_READY -------------+
-RD08_SCHEMA_DOC_DELTA_READY -------------/
-
-RD02_SCHEMA_STORAGE_DOC_DELTA_READY ----\
-RD03_SCHEMA_STORAGE_DOC_DELTA_READY -----+-> GAME_STORAGE_README_FINAL_INTEGRATION_READY
-RD04_SCHEMA_STORAGE_DOC_DELTA_READY -----/
-```
+| Final projection | Required owner-local inputs |
+|---|---|
+| GAME_SCHEMA_README_FINAL_INTEGRATION_READY | RD02_SCHEMA_STORAGE_DOC_DELTA_READY; RD03_SCHEMA_STORAGE_DOC_DELTA_READY; RD04_SCHEMA_STORAGE_DOC_DELTA_READY; RD07_SCHEMA_DOC_DELTA_READY; RD08_SCHEMA_DOC_DELTA_READY |
+| GAME_STORAGE_README_FINAL_INTEGRATION_READY | RD02_SCHEMA_STORAGE_DOC_DELTA_READY; RD03_SCHEMA_STORAGE_DOC_DELTA_READY; RD04_SCHEMA_STORAGE_DOC_DELTA_READY; RD07_OPERATIONAL_ROOT_STORAGE_DOC_DELTA_READY |
 
 No semantic `HARD_PRECEDES` edge is introduced among RD-02, RD-03, RD-04, RD-07 and RD-08. Existing owner-specific shared schema orders remain unchanged, including RD-04 -> RD-02 for `location.schema.yaml` and the RD-02/RD-03 legacy PC/NPC/item cutover rule.
 
@@ -137,7 +138,7 @@ The package must add a direct cross-owner projection witness proving at minimum:
 2. final schema README projects Actor/Asset/Effect rather than PC/NPC/item as independent native families;
 3. final schema README describes indexes/routes as non-authoritative and preserves known-ID direct routing semantics;
 4. final schema README does not present checkpoint/event/frontier metadata as currentness or recovery authority; CURRENT remains a compact routing/current-summary projection rather than a global chronology owner;
-5. final `GAME/TEMPLATE/STORAGE_README.md` simultaneously preserves RD-02/RD-03/RD-04 storage/routing laws;
+5. final `GAME/TEMPLATE/STORAGE_README.md` simultaneously preserves RD-02/RD-03/RD-04 storage/routing laws and the F58 RD-07 operational-root projection;
 6. executing any one later owner-local documentation delta against the integrated form cannot legally drop another owner section; final proof runs on the integrated bytes, not on isolated fixture text;
 7. the final schema README preserves the RD-08 CURRENT/schema projection together with the four other required owner contributions, including any required current temporal-contract projection; a missing RD-08 contribution fails the existing exact F47 witness even when all earlier four contributions survive.
 
@@ -162,6 +163,10 @@ PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 
 ## 9. F55 — complete the admitted schema-README writer set
 
-The earlier four-input sink omitted the RD-08 v2 explicit README checkpoint. F55 adds its bounded projection input to the existing `GAME_SCHEMA_README_FINAL_INTEGRATION_READY` sink and extends the existing F47 `SharedSchemaStorageReadmeIntegrationProofTests` actual-byte assertions. The final schema README has five owner inputs (RD02/RD03/RD04/RD07/RD08); the storage-template README still has three (RD02/RD03/RD04).
+The earlier four-input sink omitted the RD-08 v2 explicit README checkpoint. F55 adds its bounded projection input to the existing `GAME_SCHEMA_README_FINAL_INTEGRATION_READY` sink and extends the existing F47 `SharedSchemaStorageReadmeIntegrationProofTests` actual-byte assertions. The final schema README has five owner inputs (RD02/RD03/RD04/RD07/RD08); at the F55 boundary the storage-template README had three (RD02/RD03/RD04); F58 below extends that set.
 
 This is a planning shared-writer/proof repair. It adds no semantic owner, product runtime dependency, new test class, schema/module/generation bump or whole-RD barrier. Both documentation integration checkpoints remain terminal projection targets; their proof remains terminal. A later new required RD-08 projection delta invalidates its readiness and the dependent final README/proof until reintegrated; it cannot bypass the sink by being called a later owner-local update.
+
+## 10. F58 — operational-root projection joins
+
+Mandatory overlay 37 extends RD07_SCHEMA_DOC_DELTA_READY with the operational-root schema projection and adds RD07_OPERATIONAL_ROOT_STORAGE_DOC_DELTA_READY to the existing storage-template sink. Final inputs are five for schema README and four for storage-template README. F47's existing exact final-byte witness must preserve the full RD-07 contribution alongside every earlier admitted owner delta; later changes invalidate dependent readiness until reintegrated. No semantic owner or whole-RD order is added by these projection joins.

@@ -64,11 +64,11 @@ and prove all of the following.
 2. Actor/Asset/Effect are projected as the admitted native families and the README does not resurrect PC/NPC/item as independent native owner families.
 3. Indexes/routes are described as rebuildable/non-authoritative discovery/routing helpers and known-ID direct routing remains the correctness path where the owner defines it.
 4. Checkpoint/event/frontier/session metadata is not presented as currentness, recovery-source or global-frontier authority. The RD-08 CURRENT projection remains compact routing/current-summary metadata, not a campaign-wide chronology owner.
-5. All five current F41/F55 owner-local projection contributions (RD02/RD03/RD04/RD07/RD08) are simultaneously present in the final integrated bytes, including RD-08's required CURRENT/schema and applicable temporal-contract projection. Dropping the RD-08 contribution fails even if the original four remain. Proof against isolated fixtures or pre-integration snapshots is invalid.
+5. All five current F41/F55/F58 owner-local projection contributions (RD02/RD03/RD04/RD07/RD08) are simultaneously present in the final integrated bytes, including RD-08's required CURRENT/schema and applicable temporal-contract projection and RD-07's F58 operational-root contract projection. Dropping the RD-08 contribution fails even if the original four remain. Proof against isolated fixtures or pre-integration snapshots is invalid.
 
 ### 3.2 `GAME/TEMPLATE/STORAGE_README.md`
 
-6. The final bytes simultaneously preserve RD-02 information-owner separation, RD-03 Actor/Asset/Effect native cutover and RD-04 owner-native direct-routing/rebuildable-index/storage laws.
+6. The final bytes simultaneously preserve RD-02 information-owner separation, RD-03 Actor/Asset/Effect native cutover, RD-04 owner-native direct-routing/rebuildable-index/storage laws, and the F58 RD-07 active-only operational-root/blank-format/selected-source projection. Dropping this fourth input fails the exact same final-byte witness.
 7. The file does not restore legacy PC/NPC/item native compatibility fiction or embedded writable epistemic authority.
 8. A final-file regression that drops any one owner contribution fails even if every individual RD focused suite remains GREEN.
 
@@ -141,4 +141,8 @@ This author-side repair does not constitute zero-open closure and does not unblo
 
 ## 8. F55 — RD-08 shared schema-README contribution
 
-The exact module/class and primary `STATIC_AUDIT` channel above are unchanged. The existing schema-README target now consumes `RD08_SCHEMA_DOC_DELTA_READY` as its fifth projection input under overlay 30; the storage-template target retains its three original inputs. Run this same actual-final-byte witness after both targets, with the RD-08 assertion included. No new semantic checkpoint, test class or whole-RD/R077 barrier is introduced.
+The exact module/class and primary `STATIC_AUDIT` channel above are unchanged. The existing schema-README target now consumes `RD08_SCHEMA_DOC_DELTA_READY` as its fifth projection input under overlay 30; at the F55 boundary the storage-template target retained its three original inputs; F58 adds the bounded RD-07 input. Run this same actual-final-byte witness after both targets, with the RD-08 assertion included. No new semantic checkpoint, test class or whole-RD/R077 barrier is introduced.
+
+## 9. F58 — fourth storage-template input and complete RD-07 schema delta
+
+The exact module/class and primary STATIC_AUDIT channel remain unchanged. Both final integrated-byte targets must contain F58's admitted RD-07 operational-root projection; the storage-template sink now has four inputs while the schema sink retains five complete owner inputs. This proof runs after both F41 integrations, not on isolated owner candidates. The existing proof sink remains terminal.
