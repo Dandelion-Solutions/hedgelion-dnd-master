@@ -4,6 +4,7 @@ Status: **MANDATORY AUTHOR REPAIR — PLANNING ONLY / NO PRODUCTION IMPLEMENTATI
 Date: 2026-09-15
 Finding: **AUTHOR GRAPH FINDING 39 — SIGNIFICANT**
 Later runtime-performance repair: **AUTHOR FINDING 52 — SIGNIFICANT**
+Later proof-binding repair: **AUTHOR FINDING 53 — MINOR**
 
 ## Finding
 
@@ -107,10 +108,17 @@ python3 -m unittest DEV.TESTS.test_rd14_bootstrap -v
 
 and the final package verification required by checkpoint law.
 
-Add an exact cross-RD witness conceptually:
+The exact final-byte cross-RD witness is:
 
 ```text
-InstallBootstrapSharedWriterTests
+DEV/TESTS/test_rd14_bootstrap.py::InstallBootstrapSharedWriterTests
+PRIMARY_PROOF_CHANNEL: STATIC_AUDIT
+```
+
+Create and run this class in the existing RD-14 final install/bootstrap integration task, against the actual integrated package files named below. Owner-local candidate fixtures and test-name existence do not discharge this witness. The class must be GREEN before `RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION` is accepted; it is not a new semantic checkpoint.
+
+```bash
+python3 -m unittest DEV.TESTS.test_rd14_bootstrap.InstallBootstrapSharedWriterTests -v
 ```
 
 Required cases:
@@ -266,6 +274,19 @@ It MUST prove at least:
 
 The existing `InstallBootstrapSharedWriterTests` final-byte witness also MUST preserve this bounded-discovery projection together with the previously required RD-01 and RD-14 semantics.
 
+Exact proof binding under the mandatory F22 witness/channel law:
+
+| Obligation | Exact witness | Primary channel | Required execution point |
+|---|---|---|---|
+| §7.5 cases 1–7, bounded producer/consumer behavior | `DEV/TESTS/test_rd14_bootstrap.py::BoundedCampaignDiscoveryTests` | `FOCUSED_BEHAVIOR` | RD-14 bounded-discovery RED-to-GREEN task; use controlled provider evidence to assert actual candidate/card calls and bounds |
+| §4 cases 1–6 plus §7.5 case 8, final integrated install/CORE projection | `DEV/TESTS/test_rd14_bootstrap.py::InstallBootstrapSharedWriterTests`; `BoundedCampaignDiscoveryTests` case 8 | `STATIC_AUDIT` | Final integrated package bytes after `RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION` and, for CORE assertions, `CORE_BOOTSTRAP_RUNTIME_FINAL_INTEGRATION_READY` |
+
+The install assertions required by §4 run inside the install integration task before that checkpoint is accepted. The full install-plus-CORE proof is rerun after both physical integrations and before final RD-14/package proof closure. These are `PROOF_AFTER_TARGET` constraints on existing checkpoints, with no back-edge to owner-local semantic work.
+
+Add the final-file assertions only in their final-integration RED-to-GREEN task; do not pre-create future failing assertions in the earlier producer task. Full unittest discovery remains GREEN at each published checkpoint. Both exact classes must run at final RD-14/package verification. Static final-byte proof cannot replace the behavioral cases, and behavioral fixtures cannot replace final integrated bytes.
+
+F53 repairs an omitted explicit witness placement/channel declaration. The existing F39/F52 mechanisms and intended assertions were already present; this is a MINOR planning-proof defect, not evidence of a new gameplay or bounded-discovery algorithm failure. No new overlay, production file, version bump or semantic execution edge is introduced.
+
 ## 7.6 Graph / package consequence
 
 No new cross-RD semantic edge is required. F52 strengthens the acceptance of the existing RD-14 bootstrap and final integration checkpoints:
@@ -300,6 +321,15 @@ HUMAN_DECISION_REQUIRED: NO
 NEW_OVERLAY: NO — folded into mandatory overlay 28
 NEW_EXECUTION_EDGE: NO — strengthens existing RD-14/bootstrap final integration acceptance
 NEW_MODULE_BUMP: NO — F46 final BOOTSTRAP_RUNTIME target remains 1.0.9
+PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
+INDEPENDENT_CONFIRMATION: PENDING
+
+AUTHOR_FINDING_53: MINOR / REPAIRED_IN_PLANNING
+ROOT_CAUSE: F39/F52 named proof duties without explicit primary channels and exact placement for the shared-writer witness
+REPAIR: bind existing RD-14 witnesses to exact module/channel and final integrated-byte execution points under F22
+VERSION_IMPACT: NONE
+NEW_OVERLAY: NO
+NEW_SEMANTIC_EXECUTION_EDGE: NO
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 INDEPENDENT_CONFIRMATION: PENDING
 ```
