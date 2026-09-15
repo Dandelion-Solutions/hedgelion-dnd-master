@@ -292,7 +292,7 @@ trusted current principal
 
 **Cases**
 - invitation by login resolves and displays the intended account, writes its verified stable ID + login through the authorized PLAYER transition, and reuses an existing matching binding under current reactivation rules; absent participant does not create global wait without positive dependency;
-- unresolved/ambiguous login lookup, email-only evidence, login reuse by a different account, and attempted binding without current creator authority cannot grant access; a login-label refresh cannot transfer an existing binding; rejoin cannot mutate from stale session/card/chat cache;
+- unresolved/ambiguous login lookup, email-only evidence, a reused login offered to inherit an existing binding owned by a different account ID, and attempted binding without current creator authority cannot grant access; a login-label refresh cannot transfer an existing binding; rejoin cannot mutate from stale session/card/chat cache;
 - private catch-up material remains recipient isolated;
 - collaboration catch-up projection never becomes history/knowledge authority.
 

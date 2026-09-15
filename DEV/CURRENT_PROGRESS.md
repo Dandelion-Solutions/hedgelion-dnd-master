@@ -3,20 +3,20 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR ADVERSARIAL CLOSURE ACTIVE
+GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR AUDIT CLOSED / INDEPENDENT SENIOR RE-REVIEW REQUIRED
 CURRENT_WORKSTREAM: implementation planning
-CURRENT_SLICE: bounded graph-based author adversarial closure of the complete RD-01..RD-16 / 39-overlay implementation-planning package
-LAST_CLOSED_UNIT: F62 accepted-adjudication source/basis/idempotency/publication/cold-recovery planning and exact proof joins repaired
-NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING AUTHOR REVIEW / REPAIR ONLY — continue the private repository-owned author-audit traversal from its exact current cursor; publish only concrete product/planning repairs into this public package. Continue stale shipped-consumer reverse scans, recovery/currentness negatives, proof/mechanism asymmetry, runtime end-to-end/LLM/remote critical-path performance and final whole-checkpoint DAG reconciliation. Do not begin production implementation, migration, release execution or gameplay bootstrap.
-REQUIRED_GATE: exhaustive bounded author graph audit reaches fresh zero-open closure + fresh exact-final-HEAD hosted validation (full maintenance audit and full DEV unittest discovery) -> mandatory independent Senior re-review; production implementation remains unauthorized until the independent Senior gate passes
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-15-implementation-planning-campaign-access-policy-transition-addendum.md
-KNOWN_BLOCKERS: independent Senior re-review is blocked pending completion of the graph-based author audit, fresh zero-open author closure and exact-final-HEAD hosted validation; production implementation is not authorized
+CURRENT_SLICE: mandatory independent Senior re-review of the complete RD-01..RD-16 / 39-overlay implementation-planning package
+LAST_CLOSED_UNIT: whole-project author audit — zero open author findings; accepted PO-005 and login-invitation clarification reconciled
+NEXT_AUTHORIZED_UNIT: INDEPENDENT SENIOR RE-REVIEW of the complete current planning package after exact-final-HEAD hosted maintenance audit and full DEV unittest discovery are GREEN. Author repairs remain independently unconfirmed. Production implementation, migration, release execution and gameplay bootstrap remain unauthorized.
+REQUIRED_GATE: completed zero-open author audit + fresh exact-final-HEAD hosted maintenance audit and full DEV unittest discovery -> mandatory independent Senior re-review; production implementation remains unauthorized until that independent gate passes
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md
+KNOWN_BLOCKERS: no open author findings; exact current-head validation must pass before independent Senior re-review. The independent Senior gate has not passed and production implementation is not authorized.
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
 
 Current executable package: RD-01 through RD-16 with 39 mandatory overlays. F50 is folded into existing mandatory overlay 11 and F52 is folded into existing mandatory overlay 28; neither changes the overlay count.
 
-Author Findings 1–31 are planning-repaired and independently unconfirmed. Findings 23–31 add the current catalog-context and LIVE realization repairs. F34–F48, F50, F52, F53, F54, F55, F57, F58, F59 and F62 are also planning-repaired and independently unconfirmed; F32 is negative and F33/F45/F49 are repaired control-plane defects.
+Author Findings 1–31 are planning-repaired and independently unconfirmed. Findings 23–31 add the current catalog-context and LIVE realization repairs. F34–F48, F50, F52, F53, F54, F55, F57, F58, F59 and F62 are also planning-repaired and independently unconfirmed; F32 is negative and F33/F45/F49 are repaired control-plane defects. F51 was retracted because its proposed rename-continuity requirement contradicted accepted PO-005. The current total is 62 findings: 60 author-repaired and two negative (F32 and F51), with no open author finding.
 
 F32 is a negative finding: accepted publication/deployment owners already bind the LIVE exact-source CAS boundary to exact ref/read, single-parent successor construction and non-force stale-head rejection with typed fail-closed outcomes; no REST/GraphQL primitive is introduced by planning.
 
@@ -84,7 +84,7 @@ Current authority routes:
 - legacy public author-audit graph/control ledgers through F47 were retired from the current tree after verified private migration; they were audit/control evidence rather than package authority; author-audit operational cursor, graph decomposition, negative knowledge, runtime-performance evidence and investigation bookkeeping live outside the public product/planning tree;
 - highest-precedence LIVE execution repair remains the F28–F31 LIVE opening/native-state overlay, composed with F36 for temporal source handoff and F37/F38 when PLAYER authority mutations intersect LIVE/collaboration state, with F58 composing operational-root membership into the same exact LIVE acceptance and campaign handoff edges and F59 applying the full join to existing campaign access-policy mutations.
 
-Current work: continue the typed whole-package author audit from repository-owned private audit state rather than extending public graph/cursor ledgers. Public HDM receives only concrete sanitized product/planning repairs such as F48/F50/F52/F58/F59. Remaining traversal includes stale shipped-consumer reverse scans, currentness/recovery negative paths, proof/mechanism asymmetry, mutation intersections, dormant/trigger/no-work safety, exact checkpoint-DAG closure, runtime end-to-end performance including physical LLM/GitHub/remote critical paths, cross-chat audit portability/currentness and final reverse closure. No zero-open author verdict has been issued.
+Current work: the whole-project author audit is complete with zero open author findings. Accepted creator-login fail-closed policy and login-based invitations through verified stable-ID PLAYER binding are reconciled. Mandatory independent Senior re-review now assesses all author repairs and the complete package after fresh exact-head hosted validation. Operational author-audit graphs, source evidence and reopen-only cursor remain in the private audit workspace; no production authorization is inferred.
 
 Historical readiness accounting remains 133 active = 116 direct + 9 pure proof + 8 composite parents; 12 trigger-gated; 79 no-work; R004 absent. Post-WP27 findings do not invent historical readiness IDs.
 
