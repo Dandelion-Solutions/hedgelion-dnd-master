@@ -63,8 +63,8 @@ and prove all of the following.
 1. No stale embedded epistemic-authority route remains: knowledge/disclosure/message projections do not create a second writable truth/knowledge/disclosure owner.
 2. Actor/Asset/Effect are projected as the admitted native families and the README does not resurrect PC/NPC/item as independent native owner families.
 3. Indexes/routes are described as rebuildable/non-authoritative discovery/routing helpers and known-ID direct routing remains the correctness path where the owner defines it.
-4. Checkpoint/event/frontier/session metadata is not presented as currentness, recovery-source or global-frontier authority.
-5. All four F41 owner-local projection contributions are simultaneously present in the final integrated bytes; proof against isolated fixtures or pre-integration snapshots is invalid.
+4. Checkpoint/event/frontier/session metadata is not presented as currentness, recovery-source or global-frontier authority. The RD-08 CURRENT projection remains compact routing/current-summary metadata, not a campaign-wide chronology owner.
+5. All five current F41/F55 owner-local projection contributions (RD02/RD03/RD04/RD07/RD08) are simultaneously present in the final integrated bytes, including RD-08's required CURRENT/schema and applicable temporal-contract projection. Dropping the RD-08 contribution fails even if the original four remain. Proof against isolated fixtures or pre-integration snapshots is invalid.
 
 ### 3.2 `GAME/TEMPLATE/STORAGE_README.md`
 
@@ -89,7 +89,7 @@ GAME_SCHEMA_README_FINAL_INTEGRATION_READY
 SHARED_SCHEMA_STORAGE_README_PROOF_READY
 ```
 
-`SHARED_SCHEMA_STORAGE_README_PROOF_READY` is a proof sink only. It does not feed any semantic producer, does not serialize RD-02/RD-03/RD-04/RD-07 owner work and cannot participate in an execution cycle.
+`SHARED_SCHEMA_STORAGE_README_PROOF_READY` is a proof sink only. It does not feed any semantic producer, does not serialize RD-02/RD-03/RD-04/RD-07/RD-08 owner work and cannot participate in an execution cycle.
 
 Package author closure and later independent Senior handoff may not claim F41 repaired/verified without this proof sink.
 
@@ -121,7 +121,7 @@ VERSION_IMPACT: NONE
 MIGRATION_IMPACT: NONE
 ```
 
-The two existing F41 integration checkpoints remain unchanged. F47 only makes their final integrated-byte proof explicit and mandatory.
+The two existing F41 integration checkpoint identities remain unchanged; F55 extends the schema-README input set in overlay 30. F47 makes their final integrated-byte proof explicit and mandatory.
 
 ## 7. Disposition
 
@@ -138,3 +138,7 @@ INDEPENDENT_CONFIRMATION: PENDING
 ```
 
 This author-side repair does not constitute zero-open closure and does not unblock independent Senior review.
+
+## 8. F55 — RD-08 shared schema-README contribution
+
+The exact module/class and primary `STATIC_AUDIT` channel above are unchanged. The existing schema-README target now consumes `RD08_SCHEMA_DOC_DELTA_READY` as its fifth projection input under overlay 30; the storage-template target retains its three original inputs. Run this same actual-final-byte witness after both targets, with the RD-08 assertion included. No new semantic checkpoint, test class or whole-RD/R077 barrier is introduced.
