@@ -137,6 +137,6 @@ ADJUDICATION      1.0.2 -> 1.0.3
 
 Final census: 17 world families and 17 runtime families; `world.faction` is not an independent v1 family. Counts are not proof.
 
-Accounting: 133 active = 116 direct + 9 proof + 8 composite; 12 trigger-gated; 79 no-work; R004 absent; 16 RD units; 37 overlays.
+Accounting: 133 active = 116 direct + 9 proof + 8 composite; 12 trigger-gated; 79 no-work; R004 absent; 16 RD units; 38 overlays.
 
 Author Findings 1–31, F34–F48, F50, F52, F53, F54, F55, F57, F58 and F59 are planning-repaired at the package-router level; F32 is a negative finding and F33/F45/F49 are repaired control-plane defects. All author-side dispositions remain independently unconfirmed. Independent review remains blocked until the broader adversarial graph audit reaches a fresh zero-open author closure and exact-final-HEAD hosted validation.
