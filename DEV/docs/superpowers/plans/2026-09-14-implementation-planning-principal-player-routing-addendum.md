@@ -2,7 +2,7 @@
 
 Status: **MANDATORY AUTHOR REPAIR — PLANNING ONLY / NO PRODUCTION IMPLEMENTATION**
 Date: 2026-09-14
-Finding: **AUTHOR GRAPH FINDING 9 — SIGNIFICANT**
+Finding: **AUTHOR GRAPH FINDING 9 — SIGNIFICANT; extended by AUTHOR FINDING 50 shipped-consumer closure**
 
 ## Finding
 
@@ -157,10 +157,97 @@ world.player semantic/machine admission
 
 No production implementation is authorized by this addendum.
 
+## Finding 50 — shipped MULTIPLAYER join/rejoin consumer cutover
+
+### Proven defect
+
+The current shipped `GAME/CORE/MULTIPLAYER.md` still instructs the join path:
+
+```text
+Before treating somebody as a new player, search the player index for an existing binding to the same stable GitHub user ID.
+```
+
+That instruction contradicts this addendum's accepted completeness route. Current generic `GAME/SCHEMA/index.schema.yaml` exposes only compact entity-routing fields (`id`, `name`, `aliases`, `status`, `path`, `parent_id`, `tags`, `last_event_id`) and no stable external-user key; current `GAME/CAMPAIGN/INDEX/PLAYER_INDEX.yaml` is an instance of that generic index contract. Therefore a worker cannot implement the shipped instruction literally without inventing an unowned index field, abusing mutable aliases, or broad-scanning PLAYER records/indexes. All three violate the principal-routing law above.
+
+The existing SIRR2 shared `MULTIPLAYER.md` physical writer correctly cuts over several WP-15/WP-16 stale consumers, but its named final-byte acceptance does not include this later F9 principal-routing join/rejoin instruction. F37/F38 consume the F9 route for access transitions but likewise do not replace the shipped lookup text. F48 removes the separate manifest membership list but does not repair this stale index lookup.
+
+This is a shipped-consumer / worker-must-invent defect, not a new architecture decision.
+
+### Required physical cutover
+
+The already-mandatory SIRR2 RD-09 `MULTIPLAYER.md` shared consumer edit must also reconcile the complete join/rejoin path to the accepted F9 route:
+
+```text
+authenticated supported stable external user ID
+-> exact current PRINCIPAL_PLAYER_ROUTING companion at one pinned campaign basis
+-> bounded lookup of candidate_player_ids, including inactive bindings
+-> direct-load every nominated exact current PLAYER owner
+-> validate github_binding.user_id + current status + current control/policy
+-> decide existing active binding / permitted reactivation / genuinely new enrollment
+```
+
+Final shipped wording must state explicitly:
+
+1. Generic `PLAYER_INDEX` remains compact entity discovery/routing only and is not the stable-principal completeness route.
+2. Join/rejoin must query `PRINCIPAL_PLAYER_ROUTING`, not search `PLAYER_INDEX` for a field it does not own.
+3. Inactive bindings remain discoverable through the principal companion so returning users reuse the same PLAYER identity.
+4. A missing/invalid/stale/inconsistent principal companion is integrity/repair handling and cannot be interpreted as "never bound".
+5. Normal join/rejoin must not scan the PLAYER family, all indexes, Git history or all refs. A deterministic PLAYER-family rebuild is maintenance/recovery only.
+6. Candidate route metadata never authorizes; exact current PLAYER reload/revalidation remains mandatory.
+7. Mutable GitHub login/display/aliases never substitute for the stable external user ID.
+
+The existing `MULTIPLAYER.md` final shared writer remains the one physical integration point. F50 adds an acceptance obligation to that writer; it does not create a second writer or semantic owner.
+
+### TDD / exact proof obligation
+
+Extend the existing SIRR2 `MultiplayerCoreCutoverTests` with exact final-byte/behavior cases conceptually named:
+
+```text
+test_multiplayer_join_uses_principal_route_not_player_index
+test_multiplayer_rejoin_finds_inactive_binding_via_principal_route
+test_multiplayer_missing_principal_route_fails_closed_without_broad_scan
+```
+
+Required proof:
+
+- final integrated `GAME/CORE/MULTIPLAYER.md` contains the principal-route -> exact PLAYER reload chain for join/rejoin;
+- final bytes no longer instruct stable-user lookup through generic `PLAYER_INDEX`;
+- `PrincipalPlayerRouteCompanionTests` proves complete active+inactive projection and no hot-path scan;
+- `PrincipalAuthorizationTests` proves route nomination is non-authoritative and exact PLAYER reload controls authorization;
+- `PlayerAccessTransitionTests` proves genuinely new enrollment/reactivation mutations use the same current owner/companion law;
+- stale/missing route negatives cannot fall back to generic index/cache/session/card/broad scan.
+
+`STATIC_AUDIT` over the final integrated CORE bytes plus the focused runtime tests is the primary proof route for the shipped-consumer assertion. A machine-only principal resolver test cannot close F50 while contradictory shipped instructions remain.
+
+### Physical writer / version consequence
+
+F50 is folded into the already-planned single unpublished v1 `MULTIPLAYER.md` integration edit. Preserve F46's exact target:
+
+```text
+framework_module_version: 0.1.7 -> 1.0.8
+```
+
+Do **not** bump to `1.0.9` merely because F50 was found later; the file has not yet been published as an independently final v1 generation. The SIRR2 WP-15/WP-16 consumer deltas, WP-17 consumer deltas and this F9/F50 principal-route cutover converge into the same final shared edit.
+
+### Runtime-performance consequence
+
+Normal join/rejoin becomes bounded by one completeness-protected principal-route lookup plus direct current PLAYER loads for nominated candidates. Any full PLAYER-family scan is repair-only. This prevents runtime remote/repository work from growing linearly with campaign membership on the ordinary join/rejoin path while preserving fail-closed authority semantics.
+
+### Execution-graph consequence
+
+No new RD, readiness ID, whole-RD ordering edge or independent checkpoint is required. The existing F9 principal-route readiness constrains the already-existing SIRR2 RD-09/WP-16 shared `MULTIPLAYER.md` final integration checkpoint. F50 extends that checkpoint's acceptance/proof surface only.
+
 ## Disposition
 
 ```text
 AUTHOR_GRAPH_FINDING_9: REPAIRED_IN_PLANNING
+AUTHOR_FINDING_50: SIGNIFICANT / REPAIRED_IN_PLANNING
+F50_ROOT_CAUSE: later principal-routing law was not propagated into the existing shared shipped MULTIPLAYER final-byte acceptance
+NEW_RD: NO
+NEW_SEMANTIC_OWNER: NO
+NEW_EXECUTION_EDGE: NO
+MULTIPLAYER_FINAL_TARGET: 1.0.8
+NORMAL_JOIN_REJOIN_BROAD_SCAN: FORBIDDEN
 ARCHITECTURE_REOPEN_REQUIRED: NO
 HUMAN_DECISION_REQUIRED: NO
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
