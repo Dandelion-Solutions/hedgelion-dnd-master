@@ -245,3 +245,18 @@ Mandatory overlay `2026-09-15-implementation-planning-operational-root-routing-a
 | PG35 | Exact actual-producer/publication/handoff/recovery/scaffold/final-byte witnesses in the post-graph matrix and overlay 37; R038/R072/R074 duties remain item-bound. |
 
 The derivative FORMAT.yaml, per-native-owner route documents, embedded LIVE operational_root_routes, mechanical recovery_roots.py helpers and their proof checkpoints all reverse to the accepted laws above. They are not extra native families or a new semantic owner; the 17+17 census and historical readiness accounting are unchanged. Current lifecycle authority remains in runtime.command, runtime.procedure, runtime.interaction and runtime.intent_plan. All later package-index overlays remain mandatory beyond this document's earlier F27 narrative.
+
+
+## 10. F59 — existing access-policy mutation forward/reverse coverage
+
+Mandatory overlay `2026-09-15-implementation-planning-campaign-access-policy-transition-addendum.md` is the later-precedence producer and integration route for these existing operations.
+
+| Existing owner/duty | Exact realization/consumer route |
+|---|---|
+| ACCESS_CONTROL campaign ownership; MULTIPLAYER mode/join rules; House-Rules HR-8; retained PLAYER/MANIFEST fields | RD09 typed SET_CAMPAIGN_MODE, SET_JOIN_POLICY, SET_MECHANICAL_OVERRIDE_GRANT producer under current creator authority; preserve unrelated native fields and prospective semantics. |
+| WP16 Laws4/7/18/37–41; applicable R078/R080 items3/4/11/12 | Complete current F9/F30 nomination + F7 actual affected-source classification; exact LIVE terminal prerequisites and one RD06 campaign authority/companion closure; RD07 truthful retry. |
+| WP17 Law27 / R083 theme16 | RD12 deduplicates nominated current generations and reconciles each once under one common intended after-authority view; all current required/held-input route holders participate. |
+| WP18/current RD13 overlays1/2; WP17 recipient-safe join | Actual current-mode/native/recipient/shared-basis admission and catch-up consume the accepted transition; no mandatory rewrite of all retained horizons or private-scope transfer. |
+| PG36 | Four exact producer/reconciliation/publication/consumer classes and terminal proof sink in overlay38; all readiness duties remain item-bound. |
+
+The ephemeral transition/batch adapters reverse to these owners. They add no durable family, schema, policy grant type, principal authority, MANIFEST membership registry or creator placement. Historical readiness counts, final retained schema versions and dormant execution/release gates remain unchanged.

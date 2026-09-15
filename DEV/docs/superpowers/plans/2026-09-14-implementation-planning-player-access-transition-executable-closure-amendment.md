@@ -255,6 +255,10 @@ This repair does not add:
 
 ---
 
+## Later-precedence access-policy extension
+
+Mandatory overlay `2026-09-15-implementation-planning-campaign-access-policy-transition-addendum.md` extends this producer's exact-current field-preservation/publication pattern to existing MANIFEST mode/join-policy and PLAYER mechanical-override grant operations. It supplies their omitted typed producer, complete impact derivation, F38 common-after-view batch join and PG36 proof. The five lifecycle/control/binding kinds above remain valid; their presence does not imply implementation of those additional policy mutations.
+
 ## Disposition
 
 ```text

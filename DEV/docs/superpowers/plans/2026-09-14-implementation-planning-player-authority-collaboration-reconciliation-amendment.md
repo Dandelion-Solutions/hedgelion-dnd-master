@@ -257,6 +257,10 @@ This repair does not add:
 
 ---
 
+## Later-precedence campaign policy / multiple-PLAYER join
+
+Mandatory overlay `2026-09-15-implementation-planning-campaign-access-policy-transition-addendum.md` adds the bounded adapter for mode and existing grant changes. When several affected PLAYER routes nominate the same current obligation generation, reconciliation occurs once under one complete intended after-authority view, with one resulting generation/route closure. Do not independently replay this single-PLAYER producer over competing partial after-states. Native F38 generation/opportunity/held-input and failure laws remain controlling; PG36 supplies the exact joined witness.
+
 ## Disposition
 
 ```text

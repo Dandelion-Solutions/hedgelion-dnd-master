@@ -2,7 +2,7 @@
 
 Status: **CURRENT POST-GRAPH PROOF ROUTE — PLANNING ONLY**
 Date: 2026-09-14
-Finding origin: **AUTHOR FINDING 20 — SIGNIFICANT**, extended through Finding 26, with F58/PG35 operational-root integration.
+Finding origin: **AUTHOR FINDING 20 — SIGNIFICANT**, extended through Finding 26, with F58/PG35 operational-root and F59/PG36 access-policy integration.
 
 Historical readiness/proof semantics remain in v2 and its appendices. This v3 adds the mandatory post-graph joins; it creates no readiness IDs. Exact executable witnesses and primary proof channels are defined by `2026-09-14-implementation-planning-post-graph-proof-witness-matrix.md` and are part of this ledger's closure condition.
 
@@ -170,3 +170,8 @@ Production implementation remains unauthorized.
 Mandatory overlay `2026-09-15-implementation-planning-operational-root-routing-addendum.md` owns the exact physical contract, interfaces, lifecycle cases, failure behavior, module/class placement and checkpoint joins. PG35 requires actual A/B/C native producer output, same-closure campaign/LIVE routing, exact selection/absorption, complete bounded cold recovery without checkpoint/HOT/remembered IDs, generated blank format and actual final projection bytes. Its active-Procedure-after-Command-settlement case is mandatory. Marker syntax or a partial namespace listing never proves completeness. R072 and the applicable R038/R074 item-bound duties remain separately routed; PG35 is not a new readiness ID or replacement aggregate proof.
 
 Primary integration witnesses: DEV/TESTS/test_rd06_durability_publication.py::OperationalRootPublicationTests, DEV/TESTS/test_rd09_access_live.py::LiveOperationalRootHandoffTests and DEV/TESTS/test_rd07_recovery.py::OperationalRootRecoveryTests. Focused contract/enrollment/generated-scaffold and static final-file witnesses are mandatory at the exact locations in overlay 37. OPERATIONAL_ROOT_ROUTING_PROOF_READY follows every target; it feeds no semantic producer. No future runtime witness is claimed executed by this planning amendment.
+
+
+## PG36 exact closure law — F59 access-policy mutations
+
+Mandatory overlay `2026-09-15-implementation-planning-campaign-access-policy-transition-addendum.md` supplies the three existing policy-operation producers, exact typed field scope, complete bounded impact, one collaboration after-authority view, current LIVE/campaign/companion acceptance and separate actual-admission/catch-up consumer proof. The four exact task-owned classes/channels and checkpoint order in that overlay are mandatory. R080 items 3/4/11/12 and R083 theme16 retain their individual owner duties and consume the applicable F59 cases; neither a class name nor aggregate PG count closes them. Join-policy non-revocation, prospective grant change and creator-unresolved denial are required negatives. This row does not resolve the creator architecture decision or replace PG35.
