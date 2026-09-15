@@ -6,17 +6,17 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR ADVERSARIAL CLOSURE ACTIVE
 CURRENT_WORKSTREAM: implementation planning
 CURRENT_SLICE: bounded graph-based author adversarial closure of the complete RD-01..RD-16 / 36-overlay implementation-planning package
-LAST_CLOSED_UNIT: F53 exact install/bootstrap proof binding after F52 bounded campaign discovery repair
+LAST_CLOSED_UNIT: F54 RANDOMNESS material-version row bound to exact R043 readiness owner
 NEXT_AUTHORIZED_UNIT: IMPLEMENTATION PLANNING AUTHOR REVIEW / REPAIR ONLY — continue the private repository-owned author-audit traversal from its exact current cursor; publish only concrete product/planning repairs into this public package. Continue stale shipped-consumer reverse scans, recovery/currentness negatives, proof/mechanism asymmetry, runtime end-to-end/LLM/remote critical-path performance and final whole-checkpoint DAG reconciliation. Do not begin production implementation, migration, release execution or gameplay bootstrap.
 REQUIRED_GATE: exhaustive bounded author graph audit reaches fresh zero-open closure + fresh exact-final-HEAD hosted validation (full maintenance audit and full DEV unittest discovery) -> mandatory independent Senior re-review; production implementation remains unauthorized until the independent Senior gate passes
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-install-bootstrap-shared-writer-amendment.md
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-14-implementation-planning-core-module-version-shared-writer-amendment.md
 KNOWN_BLOCKERS: independent Senior re-review is blocked pending completion of the graph-based author audit, fresh zero-open author closure and exact-final-HEAD hosted validation; production implementation is not authorized
 
 PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
 
 Current executable package: RD-01 through RD-16 with 36 mandatory overlays. F50 is folded into existing mandatory overlay 11 and F52 is folded into existing mandatory overlay 28; neither changes the overlay count.
 
-Author Findings 1–31 are planning-repaired and independently unconfirmed. Findings 23–31 add the current catalog-context and LIVE realization repairs. F34–F48, F50, F52 and F53 are also planning-repaired and independently unconfirmed; F32 is negative and F33/F45/F49 are repaired control-plane defects.
+Author Findings 1–31 are planning-repaired and independently unconfirmed. Findings 23–31 add the current catalog-context and LIVE realization repairs. F34–F48, F50, F52, F53 and F54 are also planning-repaired and independently unconfirmed; F32 is negative and F33/F45/F49 are repaired control-plane defects.
 
 F32 is a negative finding: accepted publication/deployment owners already bind the LIVE exact-source CAS boundary to exact ref/read, single-parent successor construction and non-force stale-head rejection with typed fail-closed outcomes; no REST/GraphQL primitive is introduced by planning.
 
@@ -60,12 +60,14 @@ F52 is a significant cold-bootstrap runtime-performance/mechanism defect repaire
 
 F53 is a minor planning-proof defect repaired inside mandatory overlay 28. F39/F52 already named the intended shared-writer and bounded-discovery checks, but did not explicitly assign their primary proof channels or locate the shared-writer class. The repair binds `DEV/TESTS/test_rd14_bootstrap.py::InstallBootstrapSharedWriterTests` to `STATIC_AUDIT`, separates `BoundedCampaignDiscoveryTests` behavioral cases (`FOCUSED_BEHAVIOR`) from final-file assertions, and requires the final install/CORE proof after the existing physical integration checkpoints. It adds no overlay, semantic execution edge or version bump.
 
+F54 is a minor readiness-routing defect repaired inside mandatory overlay 34: the `RANDOMNESS.md` material-version row now points to `R043` (fixed RNG retention/recovery), matching the exact WP-27 Step-2 record and RD-01. `R050` remains the separate information/catalog prose duty. The final writer, target `1.0.3`, required RNG behavior and proof obligations are unchanged.
+
 Current authority routes:
 - package router: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md`;
 - master plan: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md`;
 - execution graph: post-graph v2 + F27–F31 control amendment + F34 proof join + F35 PLAYER integration edge + F36 temporal handoff joins + F37 PLAYER access-transition joins + F38 PLAYER-authority/collaboration reverse join + F39 install/bootstrap shared-writer checkpoint + F40 blank-scaffold producer joins + F41 schema/storage README projection joins + F42 RD-02 information-schema -> RD-16 integration join + F43 retained-schema version obligations/final package proof sink + F46 CORE shared-writer/version joins and module-version proof sink + F48 campaign-manifest v5 obligation into the existing retained-schema proof sink; F44 adds no execution edge; F45/F49 are control-plane only; F47 adds only the terminal README package-proof sink; F50 adds no new edge and extends the existing F9/SIRR2 `MULTIPLAYER.md` final-integration acceptance/proof; F52 adds no new edge and strengthens existing RD-14/bootstrap plus `RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION` acceptance with bounded campaign discovery;
-- bidirectional coverage: coverage v3 + F27–F31 + F34–F53 amendments, with F49 control-plane only;
-- post-graph proof: proof-ledger v3 + F27–F31 + exact witness matrix + F34–F53 item-bound/proof amendments; F50 requires final integrated MULTIPLAYER principal-route/no-PLAYER_INDEX lookup proof; F52 requires `BoundedCampaignDiscoveryTests` and final integrated bootstrap/install bytes with no normal exhaustive all-campaign card loop; F53 fixes the exact witness/channel and final-byte execution binding inside the same overlay;
+- bidirectional coverage: coverage v3 + F27–F31 + F34–F54 amendments, with F49 control-plane only;
+- post-graph proof: proof-ledger v3 + F27–F31 + exact witness matrix + F34–F54 item-bound/proof amendments; F50 requires final integrated MULTIPLAYER principal-route/no-PLAYER_INDEX lookup proof; F52 requires `BoundedCampaignDiscoveryTests` and final integrated bootstrap/install bytes with no normal exhaustive all-campaign card loop; F53 fixes the exact witness/channel and final-byte execution binding inside the same overlay;
 - legacy public author-audit graph/control ledgers through F47 were retired from the current tree after verified private migration; they were audit/control evidence rather than package authority; author-audit operational cursor, graph decomposition, negative knowledge, runtime-performance evidence and investigation bookkeeping live outside the public product/planning tree;
 - highest-precedence LIVE execution repair remains the F28–F31 LIVE opening/native-state overlay, composed with F36 for temporal source handoff and F37/F38 when PLAYER authority mutations intersect LIVE/collaboration state.
 

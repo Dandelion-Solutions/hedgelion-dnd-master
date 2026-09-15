@@ -61,7 +61,7 @@ The following sixteen current modules have mandatory material changes in the pre
 | CORE module | Current | Final v1 target | Mandatory material source(s) | Final version writer/checkpoint |
 |---|---:|---:|---|---|
 | `GAME/CORE/BOOTSTRAP_RUNTIME.md` | `0.8.8` | **`1.0.9`** | RD-01 R003 + RD-14/bootstrap projection repairs | `CORE_BOOTSTRAP_RUNTIME_FINAL_INTEGRATION_READY` |
-| `GAME/CORE/RANDOMNESS.md` | `0.1.2` | **`1.0.3`** | RD-01 R050 deterministic RNG consumer repair | RD-01 final RANDOMNESS repair checkpoint |
+| `GAME/CORE/RANDOMNESS.md` | `0.1.2` | **`1.0.3`** | RD-01 R043 deterministic RNG consumer repair | RD-01 final RANDOMNESS repair checkpoint |
 | `GAME/CORE/EXPLORATION.md` | `0.1.1` | **`1.0.2`** | RD-01 R048 active exploration projection repair | RD-01 final EXPLORATION repair checkpoint |
 | `GAME/CORE/STORAGE.md` | `1.0.1` | **`1.0.2`** | RD-04 routing/storage + RD-07 recovery/current-source deltas | `CORE_STORAGE_FINAL_INTEGRATION_READY` |
 | `GAME/CORE/SAVE_CONTRACT.md` | `0.2.1` | **`1.0.2`** | RD-06/SIRR SAVE_ALL_DIRTY native-domain publication cutover | RD-06 shipped save-consumer checkpoint |
@@ -76,6 +76,8 @@ The following sixteen current modules have mandatory material changes in the pre
 | `GAME/CORE/PLAY_POLICY.md` | `0.8.4` | **`1.0.5`** | F14 catalog-backed executable-primitive fence | RD-15/F14 shipped-consumer checkpoint |
 | `GAME/CORE/CORE_INDEX.md` | `0.3.1` | **`1.0.2`** | F14 catalog-backed executable-primitive fence | RD-15/F14 shipped-consumer checkpoint |
 | `GAME/CORE/ADJUDICATION.md` | `1.0.2` | **`1.0.3`** | F14 catalog-backed executable-primitive fence | RD-15/F14 shipped-consumer checkpoint |
+
+F54 source-binding correction: the `RANDOMNESS.md` row belongs to `R27-R043` / RD-01 `R043` (fixed RNG retention/recovery), not `R27-R050` (information/catalog prose alignment). This corrects the requirement-to-material-version route only; its one final writer, target `1.0.3` and existing proof obligations remain unchanged.
 
 These targets are mandatory for the current package baseline. A worker must not leave any row as `Version Impact: classify` or choose a different target merely because multiple findings contribute to the same final unpublished edit.
 
