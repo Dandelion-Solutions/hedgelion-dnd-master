@@ -1,8 +1,9 @@
 # Implementation Planning — Install / Bootstrap Shared-Writer Amendment
 
 Status: **MANDATORY AUTHOR REPAIR — PLANNING ONLY / NO PRODUCTION IMPLEMENTATION**
-Date: 2026-09-14
+Date: 2026-09-15
 Finding: **AUTHOR GRAPH FINDING 39 — SIGNIFICANT**
+Later runtime-performance repair: **AUTHOR FINDING 52 — SIGNIFICANT**
 
 ## Finding
 
@@ -158,6 +159,128 @@ This repair does not:
 
 ---
 
+# 7. Later runtime-performance repair — F52 bounded campaign-menu discovery
+
+## 7.1 Finding
+
+The accepted owners already require bounded campaign discovery:
+
+```text
+WP24-11 bounded campaign discovery per menu operation
++ WP19-L02 bounded pre-selection discovery
+  -> RD-14 select_campaign(request, bounded_campaign_cards)
+```
+
+However, RD-14 currently consumes `bounded_campaign_cards` without assigning a producer/currentness/continuation contract for that bounded set, while shipped `GAME/CORE/BOOTSTRAP_RUNTIME.md` instructs the runtime to enumerate `campaign/*` and probe `CAMPAIGN_CARD.yaml` for each campaign branch.
+
+Therefore a conforming worker has no executable bridge from the current shipped `O(N)` card-read loop to the accepted bounded-discovery law. The missing producer is material on the cold/menu critical path: repository work can grow linearly with total campaign refs before the user can select one.
+
+This is not permission to invent a particular REST/GraphQL primitive. The repair binds an implementation-facing bounded producer contract while preserving provider/transport choice under the existing transport owner.
+
+Broken chain:
+
+```text
+WP24-11 / WP19-L02
+  -> bounded campaign-discovery requirement
+  -> RD-14 bounded_campaign_cards consumer
+  -X-> bounded candidate/page producer
+  -> shipped for-each-campaign card probe
+  -> N-dependent remote-read fan-out
+```
+
+## 7.2 Required RD-14 producer contract
+
+RD-14 Task 2 bootstrap implementation MUST own or bind one explicit provider-independent bounded discovery interface before `select_campaign(...)` is called.
+
+Logical interface:
+
+```text
+discover_campaign_candidates(storage_basis, selector?, continuation?)
+  -> BoundedCampaignPage
+
+hydrate_campaign_cards(candidate_page)
+  -> BoundedCampaignCards
+```
+
+`BoundedCampaignPage` MUST carry enough information to enforce, not merely describe:
+
+```text
+candidate refs/identities limited to one admitted finite menu window
+continuation token/cursor or equivalent bounded continuation when more candidates remain
+exhausted / more-available disposition
+selector/narrowing basis when exact-name or prefix routing is used
+```
+
+The exact spelling/type may follow the final bootstrap request/result schema, but these semantics are mandatory and may not be left to worker invention.
+
+## 7.3 Runtime laws
+
+The final implementation and shipped projections MUST satisfy all of the following:
+
+1. one normal menu operation does not traverse every physical `campaign/*` ref merely because more campaigns exist than the admitted finite retrieval window;
+2. card hydration is limited to candidates already admitted by that bounded page/window;
+3. missing/invalid `CAMPAIGN_CARD.yaml` may trigger the accepted minimum-authoritative-metadata fallback only for candidates already inside the admitted bounded set; fallback does not expand the candidate set;
+4. known exact campaign identity/ref/name uses the shortest admitted exact/narrowed route and does not first enumerate the complete campaign namespace;
+5. when more candidates exist, expose/use bounded continuation, paging or owner-permitted narrowing rather than silently reading the remainder;
+6. when the provider cannot supply a bounded listing primitive for the current situation, ask for an exact/narrowing selector or return a typed bounded inability/continuation state; never fall back to exhaustive traversal;
+7. campaign selection remains a pre-gameplay barrier: bounded discovery still must not preload PC/PLAYER/STATE/WORLD/SCENE/LOG gameplay working sets;
+8. save-and-exit re-entry uses the same bounded discovery producer and does not reintroduce the shipped all-ref card loop;
+9. transport/provider mechanics remain beneath the existing owner; this amendment does not prescribe REST, GraphQL or another provider API.
+
+## 7.4 File actions / integration
+
+Use the already-planned RD-14 implementation surfaces; do not create a second campaign-discovery subsystem.
+
+```text
+GAME/TOOLS/bootstrap.py                         RD-14 Task 2: implement/bind bounded producer before select_campaign
+RD-14 bootstrap request/result schemas          carry continuation/narrowing disposition as required by the concrete interface
+GAME/CORE/BOOTSTRAP_RUNTIME.md                  final shared RD-01/RD-14 CORE integration: retire for-each-ref card loop wording
+GAME/INSTALL/README.md                          final RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION projection
+GAME/INSTALL/PROJECT_INSTRUCTIONS.txt            final RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION projection
+GAME/INSTALL/00_DND_BOOTSTRAP.md                 final RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION projection
+DEV/TESTS/test_rd14_bootstrap.py                 add exact bounded-discovery behavioral witnesses
+```
+
+F52 extends the existing unpublished final RD-14/BOOTSTRAP integration; it adds no second final writer.
+
+Under F46, `GAME/CORE/BOOTSTRAP_RUNTIME.md` remains one coherent final material edit at target `framework_module_version: 1.0.9`. F52 does not create a second module bump.
+
+## 7.5 Exact proof
+
+Add an exact class to `DEV/TESTS/test_rd14_bootstrap.py`:
+
+```text
+BoundedCampaignDiscoveryTests
+```
+
+It MUST prove at least:
+
+1. a repository with more campaign refs than one admitted menu window does not issue a card read for every physical campaign ref;
+2. the returned menu/page is finite and exposes a bounded continuation/narrowing disposition when additional campaigns remain;
+3. the number of `CAMPAIGN_CARD` hydrations cannot exceed the admitted candidate page size;
+4. an exact known campaign selector does not enumerate the full campaign namespace first;
+5. missing/invalid cards use fallback only inside the current bounded candidate set and do not trigger broad expansion;
+6. unsupported/unavailable bounded listing fails/degrades to exact narrowing or typed bounded continuation/inability rather than exhaustive scan;
+7. save-and-exit menu re-entry uses the same bounded discovery law;
+8. final `GAME/CORE/BOOTSTRAP_RUNTIME.md` and install/bootstrap projections no longer prescribe `one card read per campaign` / complete `campaign/*` traversal as the normal menu algorithm.
+
+The existing `InstallBootstrapSharedWriterTests` final-byte witness also MUST preserve this bounded-discovery projection together with the previously required RD-01 and RD-14 semantics.
+
+## 7.6 Graph / package consequence
+
+No new cross-RD semantic edge is required. F52 strengthens the acceptance of the existing RD-14 bootstrap and final integration checkpoints:
+
+```text
+RD14 bounded discovery producer GREEN
+  -> RD14 campaign-selection consumer GREEN
+  -> RD14 bootstrap/product semantics ready
+  -> existing RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION
+```
+
+The package overlay count remains unchanged because F52 is folded into this already-mandatory overlay.
+
+---
+
 ## Disposition
 
 ```text
@@ -165,6 +288,18 @@ AUTHOR_GRAPH_FINDING_39: REPAIRED_IN_PLANNING
 SEVERITY: SIGNIFICANT
 ARCHITECTURE_REOPEN_REQUIRED: NO
 HUMAN_DECISION_REQUIRED: NO
+PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
+INDEPENDENT_CONFIRMATION: PENDING
+
+AUTHOR_FINDING_52: REPAIRED_IN_PLANNING
+SEVERITY: SIGNIFICANT
+ROOT_CAUSE: accepted bounded campaign-menu law reached an RD-14 bounded-card consumer but no executable bounded candidate/card producer, leaving shipped O(N) per-campaign remote reads as the only concrete route
+REPAIR: bind provider-independent bounded campaign candidate/page + card hydration producer into RD-14; cut shipped/install projections over to bounded continuation/narrowing semantics; add exact behavioral proof
+ARCHITECTURE_REOPEN_REQUIRED: NO
+HUMAN_DECISION_REQUIRED: NO
+NEW_OVERLAY: NO — folded into mandatory overlay 28
+NEW_EXECUTION_EDGE: NO — strengthens existing RD-14/bootstrap final integration acceptance
+NEW_MODULE_BUMP: NO — F46 final BOOTSTRAP_RUNTIME target remains 1.0.9
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: NO
 INDEPENDENT_CONFIRMATION: PENDING
 ```
