@@ -8,7 +8,7 @@ BASE_SHA: `2746530e868e968bf985fe19448a9d475a8c70ec`
 STATUS: SENIOR_REVIEW_REQUIRED
 CURRENT_TASK: named W01 System-Impact rulings only
 LAST_COMPLETED_TASK: W01.T08
-LAST_SAFE_SHA: `78599e549adbb5c7727d5b62fafd16d8e7e208e1`
+LAST_SAFE_SHA: `aa9d5506714f3235ccce99583f31c0df852e61b5`
 
 ## Dependency schedule
 
@@ -115,9 +115,22 @@ published commit/remote read-back: pending this coordinator checkpoint
 newly eligible dependent tasks: applicable Wave 02 consumers remain expressly out of current scope
 ```
 
-CURRENT_VERIFICATION_STATE: W01.T08 integration focused test and maintenance audit PASS at `d19cd2ef659cfdd5bdcba106b8ac9b5f43241930`; final coordinator publication/read-back pending this checkpoint
+CURRENT_VERIFICATION_STATE: W01.T08 integration focused test and maintenance audit PASS at `d19cd2ef659cfdd5bdcba106b8ac9b5f43241930`; exact remote `aa9d5506714f3235ccce99583f31c0df852e61b5` clean-worktree full DEV discovery 596 passed, 1 skipped and maintenance audit PASS
 VERSION_IMPACT: W01.T02 GAME/CORE/INFORMATION.md 0.1.2 -> 1.0.4; W01.T04 GAME/SCHEMA/index.schema.yaml 1 -> 2; W01.T05/T06/T08/T10 NONE; other integrated namespaces NONE
 SYSTEM_IMPACT: W01.T01 SENIOR_REVIEW_REQUIRED (deferred final-writer contradiction); W01.T03 SENIOR_REVIEW_REQUIRED (legacy schema retirement/audit consumer); W01.T07 SENIOR_REVIEW_REQUIRED (generic lexical schema-validation policy)
 NEXT_EXACT_TASK: await Senior rulings for W01.T01, W01.T03, and W01.T07; only then resume their affected lanes and re-evaluate W01.T09; do not start Wave 02
 KNOWN_BLOCKERS: W01.T01 deferred-final-writer contradiction; W01.T03 legacy-retirement/audit-consumer contradiction; W01.T07 generic lexical schema-validation policy; W01.T09 is ineligible without W01.T03 output
 UNPUBLISHED_WORK: NONE
+
+## Exact-head checkpoint verification
+
+Published remote read-back at `aa9d5506714f3235ccce99583f31c0df852e61b5` contains every completed checkpoint above and the W01.T03 safe partial.
+
+```text
+clean detached-worktree DEV discovery:
+  596 passed, 1 skipped
+clean detached-worktree maintenance audit:
+  PASS
+```
+
+The primary checkout's broad discovery failure is not source evidence: the local OpenCode `.opencode/node_modules` cache is ignored workspace infrastructure but is not excluded by `test_versioning_namespace_policy.py`. The clean exact-head worktree has no such local cache and passes the same suite.
