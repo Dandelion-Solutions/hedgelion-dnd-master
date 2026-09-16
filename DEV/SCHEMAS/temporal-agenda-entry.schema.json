@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/temporal-agenda-entry.schema.json",
+  "title": "HDM derived temporal Agenda entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["root_ref", "occurrence_id", "binding_id", "dependency_keys"],
+  "properties": {
+    "root_ref": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*:[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "occurrence_id": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "binding_id": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "dependency_keys": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^(METRIC_POSITION|BOUNDARY_OCCURRENCE|EVENT_OR_SIGNAL|RELATION_EVIDENCE|OWNER_LOCAL_TEMPORAL_STATE):.+$"}}
+  }
+}

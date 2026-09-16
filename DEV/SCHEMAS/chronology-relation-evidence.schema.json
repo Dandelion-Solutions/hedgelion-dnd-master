@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/chronology-relation-evidence.schema.json",
+  "title": "HDM typed chronology relation evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["relation_type", "before_anchor_id", "after_anchor_id", "scope_id"],
+  "properties": {
+    "relation_type": {"enum": ["CAUSES", "PRECEDES", "SAME_COORDINATE", "ELAPSED"]},
+    "before_anchor_id": {"$ref": "#/$defs/machineId"},
+    "after_anchor_id": {"$ref": "#/$defs/machineId"},
+    "scope_id": {"$ref": "#/$defs/machineId"},
+    "coordinate": {"type": ["integer", "string", "null"]},
+    "elapsed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lower", "upper", "unit_id"],
+      "properties": {"lower": {"type": "integer", "minimum": 0}, "upper": {"type": "integer", "minimum": 0}, "unit_id": {"$ref": "#/$defs/machineId"}}
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"relation_type": {"const": "ELAPSED"}}, "required": ["relation_type"]},
+      "then": {"required": ["elapsed"]}
+    },
+    {
+      "if": {"properties": {"relation_type": {"const": "SAME_COORDINATE"}}, "required": ["relation_type"]},
+      "then": {"required": ["coordinate"]}
+    }
+  ],
+  "$defs": {"machineId": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}}
+}
