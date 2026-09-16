@@ -166,6 +166,53 @@ Output checkpoint: `W04_PROTECTED_EMISSION_READY`.
 
 Hard inputs: `W01_HISTORY_STORY_OWNER_READY`, deterministic publication/recovery, current information/knowledge, temporal and PLAYER/LIVE authority.
 
+### Mandatory CLS <-> HDM preflight before the first RED step
+
+This gate is intentionally narrow. It protects the public Story/T0/Commentator integration boundary without making private CLS repair debt a global HDM blocker.
+
+Immediately before W04.T07 implementation starts, fresh-read and record exact refs/blobs for:
+
+```text
+PUBLIC HDM
+  DEV/docs/superpowers/specs/2026-09-09-story-commentator-self-contained-corpus-owner-decision.md
+  the current Story baseline/source/version owners routed by that decision and the current task Source Manifest
+
+PRIVATE CLS
+  dkolyada/hedgelion-dnd-master-lab@audit/cls-project-audit-workspace
+    CLS-AUDIT/CURRENT_AUDIT_STATE.md
+    CLS-AUDIT/graph/HDM_INTEGRATION_GRAPH.md
+
+  dkolyada/hedgelion-dnd-master-lab@feature/commentator-language-stack
+    HDM-CLS/docs/SENIOR_AUDITOR_HDM_INTEGRATION_HANDOFF.md
+    HDM-CLS/docs/CURRENT_PROGRESS.md
+```
+
+Preflight classification:
+
+```text
+PASS_TO_IMPLEMENT
+  no current CLS/audit finding requires a new or changed public-HDM semantic owner,
+  persisted/wire contract, Story/T0/control meaning, authority transfer or incompatible
+  source/version law for W04.T07.
+
+PRIVATE_CLS_REPAIR_DEBT_ONLY
+  findings are confined to private CLS SQLite/read-model/lifecycle/query/performance
+  realization while preserving current public owners -> does NOT block W04.T07.
+
+SYSTEM_IMPACT_GATE
+  a current finding/accepted CLS architecture requires a new or changed public-HDM
+  owner/semantic/persisted/interface contract, or conflicts with the current SCC/Story
+  owner -> stop before RED and publish the exact conflict/current refs for reconciliation.
+
+PREFLIGHT_UNAVAILABLE
+  the required current private CLS evidence cannot be fresh-read -> do not guess; stop
+  only W04.T07 until the cross-project evidence route is available.
+```
+
+The preflight does **not** require all CLS `Rxx` code repairs to be closed, does not require WP12-03+ activation, and does not require the REAL CLS reader to already exist. It checks only whether current public HDM semantics/owners remain sufficient for the Story/T0/Commentator producer work about to begin.
+
+Record the disposition and exact refs in W04.T07 execution evidence. A later private CLS implementation bug is not retroactively an HDM semantic defect unless its accepted repair actually changes this public boundary.
+
 Implement the complete projection chain:
 
 ```text
