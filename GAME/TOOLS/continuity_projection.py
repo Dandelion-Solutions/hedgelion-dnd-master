@@ -9,6 +9,7 @@ from copy import deepcopy
 from GAME.TOOLS.actor_continuity import (
     ActorContinuityError,
     NATIVE_ID_PATTERN,
+    validate_actor_continuity,
     validate_actor_source,
 )
 
@@ -70,9 +71,10 @@ def _validated_source_bundle(value: object) -> dict[str, object]:
     bundle = _mapping(value, "continuity source bundle")
     if set(bundle) != {"actor_id", "state_revision", "source_refs", "continuity"}:
         raise ContinuityProjectionError("continuity source bundle contains an unsupported field")
-    continuity = _mapping(bundle["continuity"], "native continuity")
-    if not continuity:
-        raise ContinuityProjectionError("native continuity must not be empty")
+    try:
+        continuity = validate_actor_continuity(bundle["continuity"])
+    except ActorContinuityError as error:
+        raise ContinuityProjectionError(str(error)) from error
     return {
         "actor_id": _id(bundle["actor_id"], "source bundle actor_id"),
         "state_revision": _revision(bundle["state_revision"], "source bundle state_revision"),

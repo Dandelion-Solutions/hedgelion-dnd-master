@@ -155,6 +155,204 @@ def _relationships(value: object) -> dict[str, object]:
     return normalized
 
 
+def _nonnegative_integer(value: object, label: str) -> int:
+    if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+        raise ActorContinuityError(f"{label} must be a nonnegative integer")
+    return value
+
+
+def _localized_text(value: object) -> dict[str, object]:
+    text = _mapping(value, "actor name")
+    if not 1 <= len(text) <= 4:
+        raise ActorContinuityError("actor name must contain one to four translations")
+    normalized: dict[str, object] = {}
+    for locale, content in text.items():
+        if not isinstance(locale, str) or re.fullmatch(r"[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*", locale) is None:
+            raise ActorContinuityError("actor name locale is invalid")
+        if not isinstance(content, str) or not content:
+            raise ActorContinuityError("actor name value must be a nonempty string")
+        normalized[locale] = content
+    return normalized
+
+
+def _build(value: object) -> dict[str, object]:
+    build = _mapping(value, "actor build")
+    allowed = {"species_id", "background_id", "class_progression", "choice_bindings", "spellcasting"}
+    if set(build) - allowed or "class_progression" not in build:
+        raise ActorContinuityError("actor build contains an unsupported field")
+    progression = build["class_progression"]
+    if not isinstance(progression, Sequence) or isinstance(progression, str) or not progression:
+        raise ActorContinuityError("actor build class_progression must be a nonempty array")
+    normalized_progression: list[dict[str, object]] = []
+    for entry in progression:
+        item = _mapping(entry, "actor build class progression entry")
+        if set(item) - {"class_id", "level", "subclass_id"} or {"class_id", "level"} - set(item):
+            raise ActorContinuityError("actor build class progression contains an unsupported field")
+        normalized_entry: dict[str, object] = {
+            "class_id": _id(item["class_id"], "actor build class_id"),
+            "level": _nonnegative_integer(item["level"], "actor build level"),
+        }
+        if normalized_entry["level"] < 1:
+            raise ActorContinuityError("actor build level must be positive")
+        if "subclass_id" in item:
+            normalized_entry["subclass_id"] = _id(item["subclass_id"], "actor build subclass_id")
+        normalized_progression.append(normalized_entry)
+    result: dict[str, object] = {"class_progression": normalized_progression}
+    for field in ("species_id", "background_id"):
+        if field in build:
+            result[field] = _id(build[field], f"actor build {field}")
+    if "choice_bindings" in build:
+        bindings = _mapping(build["choice_bindings"], "actor build choice_bindings")
+        if not bindings:
+            raise ActorContinuityError("actor build choice_bindings must not be empty")
+        normalized_bindings: dict[str, object] = {}
+        allowed_bases = {
+            "choice_basis.player_explicit",
+            "choice_basis.rules_inheritance",
+            "choice_basis.concept_inference",
+            "choice_basis.campaign_default",
+            "choice_basis.delegated_default",
+        }
+        for choice_id, raw_binding in bindings.items():
+            binding = _mapping(raw_binding, "actor build choice binding")
+            if set(binding) - {"selected_option_ids", "selection_basis", "basis_ref"} or "selected_option_ids" not in binding:
+                raise ActorContinuityError("actor build choice binding contains an unsupported field")
+            normalized_binding: dict[str, object] = {
+                "selected_option_ids": _id_set(
+                    binding["selected_option_ids"], "actor build selected_option_ids", allow_empty=True
+                )
+            }
+            if "selection_basis" in binding:
+                if binding["selection_basis"] not in allowed_bases:
+                    raise ActorContinuityError("actor build selection_basis is unsupported")
+                normalized_binding["selection_basis"] = binding["selection_basis"]
+            if "basis_ref" in binding:
+                if not isinstance(binding["basis_ref"], str) or not binding["basis_ref"]:
+                    raise ActorContinuityError("actor build basis_ref must be a nonempty string")
+                normalized_binding["basis_ref"] = binding["basis_ref"]
+            normalized_bindings[_id(choice_id, "actor build choice id")] = normalized_binding
+        result["choice_bindings"] = normalized_bindings
+    if "spellcasting" in build:
+        spellcasting = _mapping(build["spellcasting"], "actor build spellcasting")
+        allowed_spells = {"known_spell_ids", "prepared_spell_ids", "spellbook_spell_ids"}
+        if not spellcasting or set(spellcasting) - allowed_spells:
+            raise ActorContinuityError("actor build spellcasting contains an unsupported field")
+        result["spellcasting"] = {
+            field: _id_set(content, f"actor build {field}", allow_empty=True)
+            for field, content in spellcasting.items()
+        }
+    return result
+
+
+def _abilities(value: object) -> dict[str, object]:
+    abilities = _mapping(value, "actor abilities")
+    normalized: dict[str, object] = {}
+    for ability_id, raw_components in abilities.items():
+        components = _mapping(raw_components, "actor ability components")
+        if not components or set(components) - {"base", "adjustment"}:
+            raise ActorContinuityError("actor ability components contain an unsupported field")
+        normalized_components: dict[str, object] = {}
+        for field, component in components.items():
+            if not isinstance(component, int) or isinstance(component, bool):
+                raise ActorContinuityError(f"actor ability {field} must be an integer")
+            if field == "base" and component < 0:
+                raise ActorContinuityError("actor ability base must be nonnegative")
+            normalized_components[field] = component
+        normalized[_id(ability_id, "actor ability id")] = normalized_components
+    return normalized
+
+
+def _hp(value: object) -> dict[str, object]:
+    hp = _mapping(value, "actor hp")
+    if set(hp) - {"current", "maximum_base", "maximum_adjustment", "temporary"} or {"current", "maximum_base"} - set(hp):
+        raise ActorContinuityError("actor hp contains an unsupported field")
+    result: dict[str, object] = {}
+    for field, amount in hp.items():
+        if not isinstance(amount, int) or isinstance(amount, bool):
+            raise ActorContinuityError(f"actor hp {field} must be an integer")
+        if field != "maximum_adjustment" and amount < 0:
+            raise ActorContinuityError(f"actor hp {field} must be nonnegative")
+        result[field] = amount
+    return result
+
+
+def _temporal_binding(value: object, label: str) -> dict[str, object]:
+    binding = _mapping(value, label)
+    basis = binding.get("basis_id")
+    variants = {
+        "temporal.metric_deadline": ({"basis_id", "context_id", "anchor_value", "deadline_value", "unit_id"}, {"context_id", "unit_id"}, {"anchor_value", "deadline_value"}),
+        "temporal.procedure_boundary": ({"basis_id", "boundary_id", "procedure_id", "anchor_id", "subject_id", "offset"}, {"boundary_id", "procedure_id", "anchor_id", "subject_id"}, {"offset"}),
+        "temporal.semantic_boundary": ({"basis_id", "boundary_id", "anchor_id", "subject_id", "scope_id"}, {"boundary_id", "anchor_id", "subject_id", "scope_id"}, set()),
+    }
+    if basis not in variants:
+        raise ActorContinuityError(f"{label} basis_id is unsupported")
+    allowed, id_fields, integer_fields = variants[basis]
+    required = {
+        "temporal.metric_deadline": {"basis_id", "context_id", "anchor_value", "deadline_value", "unit_id"},
+        "temporal.procedure_boundary": {"basis_id", "boundary_id", "procedure_id", "anchor_id"},
+        "temporal.semantic_boundary": {"basis_id", "boundary_id", "anchor_id"},
+    }[basis]
+    if set(binding) - allowed or required - set(binding):
+        raise ActorContinuityError(f"{label} contains an unsupported field")
+    result: dict[str, object] = {"basis_id": basis}
+    for field, item in binding.items():
+        if field == "basis_id":
+            continue
+        if field in id_fields:
+            result[field] = _id(item, f"{label} {field}")
+        elif field in integer_fields:
+            minimum = 1 if field == "offset" else 0
+            amount = _nonnegative_integer(item, f"{label} {field}")
+            if amount < minimum:
+                raise ActorContinuityError(f"{label} offset must be positive")
+            result[field] = amount
+    return result
+
+
+def _life_progress(value: object, life_state_id: object) -> dict[str, object]:
+    progress = _mapping(value, "actor life_progress")
+    if life_state_id == "life.dying":
+        if set(progress) != {"death_saves"}:
+            raise ActorContinuityError("actor life_progress contains an unsupported field")
+        saves = _mapping(progress["death_saves"], "actor death_saves")
+        if set(saves) != {"successes", "failures"}:
+            raise ActorContinuityError("actor death_saves contains an unsupported field")
+        normalized_saves = {
+            field: _nonnegative_integer(amount, f"actor death_saves {field}")
+            for field, amount in saves.items()
+        }
+        if any(amount > 2 for amount in normalized_saves.values()):
+            raise ActorContinuityError("actor death_saves values must not exceed two")
+        return {"death_saves": normalized_saves}
+    if life_state_id == "life.stable":
+        if set(progress) != {"recovery_binding"}:
+            raise ActorContinuityError("actor life_progress contains an unsupported field")
+        return {
+            "recovery_binding": _temporal_binding(
+                progress["recovery_binding"], "actor recovery_binding"
+            )
+        }
+    raise ActorContinuityError("actor life_progress is not allowed for this life state")
+
+
+def _resources(value: object) -> dict[str, object]:
+    resources = _mapping(value, "actor resources")
+    normalized: dict[str, object] = {}
+    for resource_id, raw_pool in resources.items():
+        pool = _mapping(raw_pool, "actor resource pool")
+        if set(pool) - {"current", "recovery_binding"} or "current" not in pool:
+            raise ActorContinuityError("actor resource pool contains an unsupported field")
+        normalized_pool: dict[str, object] = {
+            "current": _nonnegative_integer(pool["current"], "actor resource current")
+        }
+        if "recovery_binding" in pool:
+            normalized_pool["recovery_binding"] = _temporal_binding(
+                pool["recovery_binding"], "actor resource recovery_binding"
+            )
+        normalized[_id(resource_id, "actor resource id")] = normalized_pool
+    return normalized
+
+
 def validate_actor_source(value: object) -> dict[str, object]:
     """Return the bounded native Actor source required by continuity operations."""
 
@@ -225,6 +423,12 @@ def _validated_continuity(
     return normalized
 
 
+def validate_actor_continuity(value: object) -> dict[str, object]:
+    """Validate the complete native Actor continuity contract."""
+
+    return _validated_continuity(value)
+
+
 def _validated_actor_state(value: object) -> dict[str, object]:
     state = _mapping(value, "actor state")
     unsupported = set(state) - ACTOR_STATE_FIELDS
@@ -234,12 +438,55 @@ def _validated_actor_state(value: object) -> dict[str, object]:
     if aliases:
         raise ActorContinuityError("native Actor continuity cannot mutate legacy authority aliases")
     normalized = deepcopy(dict(state))
+    if "name" in state:
+        normalized["name"] = _localized_text(state["name"])
     if "roles" in state:
         normalized["roles"] = _id_set(state["roles"], "actor roles", allow_empty=True)
     if "location_id" in state:
         normalized["location_id"] = _id(state["location_id"], "actor location_id")
     if "concept" in state and (not isinstance(state["concept"], str) or not state["concept"]):
         raise ActorContinuityError("actor concept must be a nonempty string")
+    if "build" in state:
+        normalized["build"] = _build(state["build"])
+    if "abilities" in state:
+        normalized["abilities"] = _abilities(state["abilities"])
+    if "hp" in state:
+        normalized["hp"] = _hp(state["hp"])
+    if "life_state_id" in state:
+        if state["life_state_id"] not in {"life.active", "life.dying", "life.stable", "life.dead"}:
+            raise ActorContinuityError("actor life_state_id is unsupported")
+    if "life_state_policy_id" in state:
+        if state["life_state_policy_id"] not in {
+            "life_policy.dnd2024.character_like",
+            "life_policy.dnd2024.monster_default",
+        }:
+            raise ActorContinuityError("actor life_state_policy_id is unsupported")
+    if "life_state_progress" in state:
+        if "life_state_id" not in state:
+            raise ActorContinuityError("actor life_state_progress requires life_state_id")
+        normalized["life_state_progress"] = _life_progress(
+            state["life_state_progress"], state["life_state_id"]
+        )
+    if "resources" in state:
+        normalized["resources"] = _resources(state["resources"])
+    if "hp" in state and not {"life_state_id", "life_state_policy_id"}.issubset(state):
+        raise ActorContinuityError(
+            "actor hp requires life_state_id and life_state_policy_id"
+        )
+    if "life_state_id" in state and "life_state_policy_id" not in state:
+        raise ActorContinuityError("actor life_state_id requires life_state_policy_id")
+    if "life_state_progress" in state and not {"life_state_id", "life_state_policy_id"}.issubset(state):
+        raise ActorContinuityError(
+            "actor life_state_progress requires life_state_id and life_state_policy_id"
+        )
+    if state.get("life_state_id") == "life.dying" and "life_state_progress" not in state:
+        raise ActorContinuityError("actor life.dying requires life_state_progress")
+    if state.get("life_state_id") == "life.stable" and "life_state_progress" not in state:
+        raise ActorContinuityError("actor life.stable requires life_state_progress")
+    if state.get("life_state_id") in {"life.active", "life.dead"} and "life_state_progress" in state:
+        raise ActorContinuityError("actor life_state_progress is not allowed for this life state")
+    if "details" in state:
+        normalized["details"] = deepcopy(dict(_mapping(state["details"], "actor details")))
     if "continuity" in state:
         normalized["continuity"] = _validated_continuity(state["continuity"])
     return normalized
@@ -261,6 +508,11 @@ def validate_actor_delta(
         "changes",
     }:
         raise ActorContinuityError("actor delta contains an unsupported field")
+    if (
+        "foundation_transition" in delta
+        and delta["foundation_transition"] != "foundation.explicit"
+    ):
+        raise ActorContinuityError("foundation_transition must equal foundation.explicit")
     actor_id = _id(delta.get("actor_id"), "delta actor_id")
     if actor_id != native_actor["id"]:
         raise ActorContinuityError("delta actor identity conflicts with native Actor source")

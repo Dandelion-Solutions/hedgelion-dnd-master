@@ -237,6 +237,99 @@ class ActorAssessmentBehaviorTests(unittest.TestCase):
                 }
             )
 
+    def test_assessment_rejects_malformed_declared_hp_state(self) -> None:
+        malformed_hp = _actor()
+        malformed_hp["state"].update(
+            {
+                "hp": {"current": 5},
+                "life_state_id": "life.active",
+                "life_state_policy_id": "life_policy.dnd2024.character_like",
+            }
+        )
+
+        with self.assertRaisesRegex(ActorContinuityError, "hp"):
+            assess_actor(
+                {
+                    "actor": malformed_hp,
+                    "purpose": "assessment.reflect",
+                    "source_evidence": _accepted_evidence(),
+                    "delta": None,
+                }
+            )
+
+    def test_assessment_validates_each_declared_native_state_field(self) -> None:
+        malformed_states = (
+            {"name": {"en": ""}},
+            {"concept": ""},
+            {"location_id": "not a native id"},
+            {"build": {"class_progression": []}},
+            {"abilities": {"ability.strength": {"base": -1}}},
+            {
+                "hp": {"current": "five", "maximum_base": 5},
+                "life_state_id": "life.active",
+                "life_state_policy_id": "life_policy.dnd2024.character_like",
+            },
+            {"life_state_id": "life.unknown", "life_state_policy_id": "life_policy.dnd2024.character_like"},
+            {"life_state_id": "life.active", "life_state_policy_id": "life_policy.invalid"},
+            {
+                "hp": {"current": 0, "maximum_base": 5},
+                "life_state_id": "life.dying",
+                "life_state_policy_id": "life_policy.dnd2024.character_like",
+                "life_state_progress": {"death_saves": {"successes": 3, "failures": 0}},
+            },
+            {"resources": {"resource.inspiration": {"current": -1}}},
+            {"details": []},
+        )
+        for changes in malformed_states:
+            with self.subTest(changes=changes):
+                actor = _actor()
+                actor["state"].update(changes)
+                with self.assertRaises(ActorContinuityError):
+                    assess_actor(
+                        {
+                            "actor": actor,
+                            "purpose": "assessment.reflect",
+                            "source_evidence": _accepted_evidence(),
+                            "delta": None,
+                        }
+                    )
+
+    def test_assessment_accepts_complete_declared_native_state(self) -> None:
+        actor = _actor()
+        actor["state"].update(
+            {
+                "name": {"en": "Mara"},
+                "concept": "Village guardian",
+                "location_id": "location.well",
+                "build": {"class_progression": [{"class_id": "class.fighter", "level": 1}]},
+                "abilities": {"ability.strength": {"base": 15, "adjustment": 1}},
+                "hp": {"current": 12, "maximum_base": 12},
+                "life_state_id": "life.active",
+                "life_state_policy_id": "life_policy.dnd2024.character_like",
+                "resources": {
+                    "resource.inspiration": {
+                        "current": 1,
+                        "recovery_binding": {
+                            "basis_id": "temporal.semantic_boundary",
+                            "boundary_id": "boundary.long_rest",
+                            "anchor_id": "rest.001",
+                        },
+                    }
+                },
+                "details": {"description": "A watchful villager."},
+            }
+        )
+
+        result = assess_actor(
+            {
+                "actor": actor,
+                "purpose": "assessment.reflect",
+                "source_evidence": _accepted_evidence(),
+                "delta": None,
+            }
+        )
+
+        self.assertEqual(result["disposition"], "assessment.no_change")
 
 class ActorMutationIntegrationTests(unittest.TestCase):
     def test_accepted_delta_advances_only_the_native_actor_state(self) -> None:
@@ -280,6 +373,13 @@ class ActorMutationIntegrationTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ActorContinuityError, "unsupported field"):
             apply_actor_delta(_actor(), unmodelled, _accepted_evidence())
+
+    def test_mutation_rejects_unused_invalid_foundation_transition(self) -> None:
+        invalid_transition = _delta()
+        invalid_transition["foundation_transition"] = "foundation.implicit"
+
+        with self.assertRaisesRegex(ActorContinuityError, "foundation_transition"):
+            apply_actor_delta(_actor(), invalid_transition, _accepted_evidence())
 
 
 class ContinuitySourceAdmissionTests(unittest.TestCase):
@@ -348,6 +448,22 @@ class ContinuitySourceAdmissionTests(unittest.TestCase):
             "continuity": {"knowledge": {"fact.hidden": "epistemic.known"}},
         }
         with self.assertRaisesRegex(ContinuityProjectionError, "knowledge"):
+            validate_continuity_projection(candidate, bundle)
+
+    def test_projection_rejects_unmodelled_source_bundle_continuity(self) -> None:
+        bundle = build_continuity_source_bundle(_actor(), _accepted_evidence())
+        bundle["continuity"]["evolving"]["hidden_reasoning"] = {
+            "statement": "This must not become projection authority"
+        }
+        candidate = {
+            "actor_id": "actor.mara",
+            "expected_state_revision": 4,
+            "source_refs": ["event.well.001"],
+            "projection_kind": "continuity.derived",
+            "continuity": _actor()["state"]["continuity"],
+        }
+
+        with self.assertRaisesRegex(ContinuityProjectionError, "unsupported field"):
             validate_continuity_projection(candidate, bundle)
 
 
