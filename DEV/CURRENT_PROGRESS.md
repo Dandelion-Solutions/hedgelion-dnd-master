@@ -3,16 +3,19 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — CONSOLIDATED PLAN TARGETED REPAIR + PO-AUTHORIZED W04.T07 CLS-HDM PREFLIGHT / INDEPENDENT SENIOR RE-REVIEW REQUIRED
-CURRENT_WORKSTREAM: implementation planning
-CURRENT_SLICE: independent Senior re-review of the consolidated six-wave implementation package
-LAST_CLOSED_UNIT: targeted restoration of the R018 runtime-family matrix/proof, Wave-05 checkpoint separation, and PO-authorized narrow CLS<->HDM preflight added before W04.T07 without making private CLS repair debt a global HDM blocker
-NEXT_AUTHORIZED_UNIT: exact-current-HEAD hosted validation followed by independent Senior re-review of the repaired consolidated package including the new W04.T07 preflight. Production implementation, migration, release execution and gameplay bootstrap remain unauthorized.
-REQUIRED_GATE: consolidated author plan + fresh exact-current-HEAD hosted maintenance audit and full DEV unittest discovery -> mandatory independent Senior re-review -> explicit PASS / GO before production implementation
+GLOBAL_STATE: R2.7 CLOSED — CONSOLIDATED IMPLEMENTATION PLAN INDEPENDENT SENIOR PASS / GO — PRODUCTION IMPLEMENTATION AUTHORIZED
+CURRENT_WORKSTREAM: production implementation
+CURRENT_SLICE: execution from the approved consolidated six-wave implementation package
+LAST_CLOSED_UNIT: independent Senior re-review of the complete current consolidated package, including the targeted SR-01..03 repairs and the PO-authorized W04.T07 CLS<->HDM preflight, returned PASS / GO at `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
+NEXT_AUTHORIZED_UNIT: begin production implementation from `DEV/docs/superpowers/plans/implementation-plan-index.md` under `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`, selecting dependency-valid task batches from the approved wave graph. Migration execution, release execution and gameplay bootstrap remain unauthorized unless their later explicit gates are satisfied.
+REQUIRED_GATE: autonomous implementation with TDD/review/version-impact/checkpoint discipline -> exact-head completion verification -> mandatory final Senior integration audit before implementation is marked complete
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/implementation-plan-index.md
-KNOWN_BLOCKERS: independent Senior PASS / GO absent; current package changed after the last exact-head validation by the PO-authorized W04.T07 preflight and therefore requires fresh exact-head validation and review.
+KNOWN_BLOCKERS: NONE for production implementation start; individual tasks remain gated by their named producer checkpoints, W04.T07 retains its narrow CLS<->HDM preflight, and later migration/release/gameplay gates remain separate
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: 8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d
+SENIOR_APPROVED_PLAN_SHA: ce944404d7c9e93ba85b12305b6e74473ccb8ce1
+SENIOR_APPROVED_PLAN_CI_RUN: 35077571665
+SENIOR_APPROVED_PLAN_CI_JOB: 104733502491
 
 ## Current planning package
 
@@ -57,11 +60,47 @@ REQUIRED CROSS-PROJECT EVIDENCE UNAVAILABLE
 
 The preflight does not require all private CLS `Rxx` repairs to be closed, does not require CLS WP12-03+ activation and does not require the REAL CLS reader to exist. It exists only to prevent HDM Story/T0/Commentator implementation from hardening against a cross-project semantic owner that has materially changed.
 
-## Preserved closure state
+## Approved Senior disposition
 
-The prior whole-project author audit is historical evidence. Independent review of the consolidation proved two blocking planning defects and a control-state defect; the present package repairs only their affected scope plus the PO-authorized W04.T07 preflight. It does not reopen accepted architecture or confer Senior approval. Of 62 historical author findings, 60 were planning-repaired and two were negative: F32 and F51. The lost runtime-family proof obligation is restored in the stable Wave-05 matrix and Wave-06 item-bound proof. F51 remains closed because rename continuity would contradict accepted PO-005; login rename does not transfer creator or PLAYER authority.
+Independent Senior review first examined the consolidated package at `7e563da41f667bd4a98c603af7786368ebdf5f93` and returned `FAIL / NO-GO` on two blocking planning defects plus one control-state defect. The author then published the targeted SR-01..03 repair and exact-head validation.
 
-The accepted identity contract is now explicit in the consolidated plan:
+The repaired package was independently re-reviewed. Before the PASS could be recorded, the package advanced by a PO-authorized narrow W04.T07 CLS<->HDM preflight. That post-review delta changed only `DEV/CURRENT_PROGRESS.md`, `implementation-plan-index.md` and `implementation-wave-04-collaboration-context-story.md`; it introduced no new public semantic owner, persisted/wire contract, runtime primitive or version-bearing machine surface. The preflight is a bounded currentness/System-Impact guard for W04.T07 only and does not turn private CLS repair debt into a global HDM blocker.
+
+The final reviewed package HEAD is:
+
+```text
+ce944404d7c9e93ba85b12305b6e74473ccb8ce1
+```
+
+Exact-head hosted evidence:
+
+```text
+workflow: Validate engine source
+run: 35077571665
+job: 104733502491
+head_sha: ce944404d7c9e93ba85b12305b6e74473ccb8ce1
+status: completed
+conclusion: success
+Run full maintenance audit: success
+Run DEV unit tests: success
+```
+
+Senior disposition:
+
+```text
+SR-01: CLOSED
+SR-02: CLOSED
+SR-03: CLOSED
+W04.T07 PREFLIGHT DELTA: ACCEPTED / NO NEW BLOCKER
+INDEPENDENT SENIOR PLAN REVIEW: PASS / GO
+PRODUCTION IMPLEMENTATION: AUTHORIZED
+```
+
+This PASS / GO approves execution of the current consolidated implementation plan. It does not authorize migration execution, release execution or gameplay bootstrap beyond their own later gates, and it does not waive task-local System-Impact, Version Impact, TDD, publication/read-back or final Senior integration requirements.
+
+## Preserved architecture and accounting
+
+The accepted identity contract remains:
 
 - current GitHub login is used for human-facing selection, display and multiplayer invitations;
 - verified stable GitHub account ID is the durable PLAYER binding;
@@ -81,53 +120,53 @@ R004 absent
 17 runtime families
 ```
 
-The trigger-gated routes remain dormant until their exact canonical trigger exists. Post-WP27 repairs do not invent readiness IDs. `world.faction` remains a facet of `world.organization`, not an additional family.
+The trigger-gated routes remain dormant until their exact canonical trigger exists. Wave placement or implementation start does not activate them. `world.faction` remains a facet of `world.organization`, not an additional family.
 
-## Required validation and review
+The Wave-05 runtime matrix and Wave-06 item-bound proof retain the exact R018 family/schema/root/realization obligations and negative witnesses. W05.T01 closes at `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY`, W05.T02 consumes that checkpoint through `JOIN_BEFORE_INTEGRATION`, and final R018 proof remains downstream of the shared writer and affected final schema checkpoints.
 
-The current author result requires validation on the exact published consolidation HEAD:
+## Production implementation route
 
-- repository maintenance audit;
-- `python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'`;
-- remote ref/tree/file read-back;
-- hosted CI disposition where available;
-- independent Senior re-review of the complete current package.
+Implementation now follows the canonical development process:
 
-Historical green runs on earlier package forms are evidence only for those earlier commits. They cannot authorize production from the current package.
+```text
+approved consolidated plan
+-> dependency-valid task/batch selection
+-> RED / GREEN / refactor / focused verification
+-> task-local integration checks
+-> Version Impact Gate
+-> review and local repair
+-> coherent checkpoint publication + remote read-back
+-> continue automatically while inside the approved Impact Envelope
+-> System-Impact Gate only when a real cross-boundary trigger fires
+-> complete-package exact-head verification
+-> final Senior integration audit
+```
 
-### Hosted evidence and current-HEAD resolution
-
-The reviewed consolidation at `7e563da41f667bd4a98c603af7786368ebdf5f93` did pass hosted validation: [run 35067274834](https://github.com/Dandelion-Solutions/hedgelion-dnd-master/actions/runs/35067274834), job `104700312776`, `SUCCESS` for both full maintenance audit and full DEV unittest discovery. The former statement that its hosted validation had not passed was stale.
-
-The substantive targeted repair at `386410c0bc2cd00ccc2761cc37a405b138fdfd58` passed [run 35073220807](https://github.com/Dandelion-Solutions/hedgelion-dnd-master/actions/runs/35073220807), job `104719408176`: full maintenance audit and full DEV unittest discovery both `SUCCESS`. The later control-only evidence synchronization at `7740a65a385f137ab2bf12e345a3ec1f085b5b44` was also part of the prior exact-head gate history.
-
-Those results predate the newly authorized Wave-04/index/current-progress plan change and therefore do not validate the current HEAD. Resolve the new exact remote HEAD H and select the `Validate engine source` run with `head_sha == H`; require `completed/success` and successful `Run full maintenance audit` plus `Run DEV unit tests` steps. Evidence for an ancestor is never evidence for H. Missing, queued, running or failed evidence does not satisfy the gate.
-
-Repository progress remains `SENIOR_REVIEW_REQUIRED` after CI success.
-
-Targeted repair disposition: the Wave-05 runtime matrix and Wave-06 negative/composite obligations are restored; W05.T01 now closes at `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY`, consumed by W05.T02 through `JOIN_BEFORE_INTEGRATION`; final R018 proof follows shared integration and its actual schema writers. The new W04.T07 preflight is a PO-authorized dependency/currentness guard, not a new semantic owner or implementation authorization. All remain author-side package changes awaiting independent Senior re-review.
+A worker must fresh-read the implementation-start HEAD and must not treat the historical consolidation or review SHA as a cached execution basis. For long execution, use the durable execution-status path/rules from `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`.
 
 ## Durable cursor
 
 PLAN: `DEV/docs/superpowers/plans/implementation-plan-index.md`
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
-BASE_SHA: 8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d
+BASE_SHA: implementation worker must record the fresh production implementation-start HEAD
 
-STATUS: SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: exact-current-HEAD validation, then independent Senior re-review of the current package
-LAST_COMPLETED_TASK: PO-authorized W04.T07 cross-project preflight integrated coherently into Wave 04 and package index after the earlier targeted planning repair
-LAST_SAFE_SHA: current published commit containing this file, verified through remote read-back
+STATUS: EXECUTION_AUTHORIZED
+CURRENT_TASK: select and start the first dependency-valid production implementation batch from the approved six-wave graph
+LAST_COMPLETED_TASK: independent Senior implementation-plan review PASS / GO at `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
+LAST_SAFE_SHA: current published commit containing this file, after remote read-back
 
 COMPLETED_TASKS:
-  Planning consolidation -> 7e563da41f667bd4a98c603af7786368ebdf5f93; subsequent independent verdict FAIL / NO-GO
-  Targeted planning repair -> 386410c0bc2cd00ccc2761cc37a405b138fdfd58; hosted maintenance/full DEV SUCCESS; no Senior PASS
-  W04.T07 CLS-HDM preflight -> current package; exact-head hosted validation and independent Senior review still required
+  Planning consolidation -> 7e563da41f667bd4a98c603af7786368ebdf5f93; independent verdict FAIL / NO-GO
+  Targeted planning repair -> 386410c0bc2cd00ccc2761cc37a405b138fdfd58; hosted maintenance/full DEV SUCCESS
+  Targeted repair control evidence -> 7740a65a385f137ab2bf12e345a3ec1f085b5b44; exact-head hosted maintenance/full DEV SUCCESS
+  W04.T07 CLS-HDM preflight -> ce944404d7c9e93ba85b12305b6e74473ccb8ce1; exact-head hosted maintenance/full DEV SUCCESS
+  Independent Senior review -> PASS / GO at ce944404d7c9e93ba85b12305b6e74473ccb8ce1
 
-CURRENT_VERIFICATION_STATE: current plan bytes published/read back; prior hosted evidence applies only to ancestor package states; fresh exact-current-HEAD hosted validation pending
-VERSION_IMPACT: NONE — planning/dependency/currentness guard only; no runtime/module contract, serialized schema, catalog generation, release identity or other version-bearing owner changed
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED
-NEXT_EXACT_TASK: resolve exact current-HEAD hosted validation, then perform independent Senior re-review from the stable index
-KNOWN_BLOCKERS: exact-current-HEAD validation and independent Senior PASS / GO absent
+CURRENT_VERIFICATION_STATE: reviewed plan exact HEAD `ce944404d7c9e93ba85b12305b6e74473ccb8ce1` has successful hosted maintenance audit and full DEV unittest discovery; independent Senior plan gate passed
+VERSION_IMPACT: NONE — Senior disposition/current-progress transition only; no runtime/module contract, serialized schema, catalog generation or release identity changed
+SYSTEM_IMPACT: NONE — production implementation may proceed inside the approved plan/Impact Envelope; later qualifying events use the normal System-Impact Gate
+NEXT_EXACT_TASK: choose the first dependency-valid worker batch from the stable plan, fresh-record implementation BASE_SHA, and execute autonomously under `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`
+KNOWN_BLOCKERS: NONE for implementation start
 UNPUBLISHED_WORK: NONE after verified remote publication/read-back
 
-Production implementation, migration, release execution and gameplay bootstrap are not authorized.
+Production implementation is authorized. Migration execution, release execution and gameplay bootstrap remain unauthorized unless later explicit gates are satisfied.
