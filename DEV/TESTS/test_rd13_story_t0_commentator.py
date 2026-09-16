@@ -4,6 +4,8 @@ import json
 import unittest
 from pathlib import Path
 
+from jsonschema import Draft202012Validator
+
 from GAME.TOOLS.commentator import (
     CommentatorContractError,
     build_commentator_control_projection,
@@ -269,6 +271,69 @@ class StorySchemaTests(unittest.TestCase):
 
 
 class SchemaVersionTests(unittest.TestCase):
+    def test_owner_native_python_ingress_accepts_only_actual_integer_one(self) -> None:
+        valid_horizon = {
+            "schema_version": 1,
+            "scope_id": "campaign.main",
+            "generation": 1,
+            "source_basis": ["event.gate_opened"],
+            "entries": [],
+        }
+        valid_control = build_commentator_control_projection(
+            {"player.aria": {"story_ids": ["E000007"]}}
+        )
+        valid_snapshot = build_commentator_snapshot([_story_projection()], valid_control)
+
+        self.assertEqual(validate_semantic_event_draft(_semantic_event())["schema_version"], 1)
+        self.assertEqual(validate_t0_basis(_t0_basis())["schema_version"], 1)
+        self.assertEqual(
+            validate_story_projection(_story_projection(), layer="EVENTS")["schema_version"], 1
+        )
+        self.assertEqual(
+            build_commentator_snapshot([_story_projection()], valid_control)["schema_version"], 1
+        )
+        self.assertEqual(
+            filter_commentator_request(valid_snapshot, "player.aria"), [_story_projection()]
+        )
+        self.assertEqual(validate_dramaturg_horizon(valid_horizon)["schema_version"], 1)
+
+        invalid_versions: tuple[object, ...] = (1.0, True, "1", None, 2)
+        for version in invalid_versions:
+            with self.subTest(version=version, ingress="semantic event"):
+                with self.assertRaises(HistoryContractError):
+                    validate_semantic_event_draft({**_semantic_event(), "schema_version": version})
+            with self.subTest(version=version, ingress="T0 basis"):
+                with self.assertRaises(HistoryContractError):
+                    validate_t0_basis({**_t0_basis(), "schema_version": version})
+            with self.subTest(version=version, ingress="Story projection"):
+                with self.assertRaises(StoryContractError):
+                    validate_story_projection(
+                        {**_story_projection(), "schema_version": version}, layer="EVENTS"
+                    )
+            with self.subTest(version=version, ingress="Commentator control"):
+                with self.assertRaises(CommentatorContractError):
+                    build_commentator_snapshot(
+                        [_story_projection()],
+                        {"schema_version": version, "controls": {"player.aria": {"story_ids": []}}},
+                    )
+            with self.subTest(version=version, ingress="Commentator snapshot"):
+                with self.assertRaises(CommentatorContractError):
+                    filter_commentator_request(
+                        {**valid_snapshot, "schema_version": version}, "player.aria"
+                    )
+            with self.subTest(version=version, ingress="Dramaturg horizon"):
+                with self.assertRaises(DramaturgContractError):
+                    validate_dramaturg_horizon({**valid_horizon, "schema_version": version})
+
+    def test_draft_2020_12_structural_validation_accepts_numeric_one_point_zero(self) -> None:
+        schema = json.loads(
+            (SCHEMAS / "runtime-semantic-event-state.schema.json").read_text(encoding="utf-8")
+        )
+
+        self.assertTrue(
+            Draft202012Validator(schema).is_valid({**_semantic_event(), "schema_version": 1.0})
+        )
+
     def test_owner_local_validators_reject_noninteger_schema_version_one_point_zero(self) -> None:
         with self.assertRaises(HistoryContractError):
             validate_semantic_event_draft({**_semantic_event(), "schema_version": 1.0})
