@@ -119,6 +119,24 @@ class CreationIdentityTests(unittest.TestCase):
                 ruleset_set_sha256="d" * 64,
                 ruleset_set_digest_generation=2,
             )
+        for invalid_generation in (True, 1.0):
+            with self.subTest(invalid_generation=invalid_generation):
+                with self.assertRaisesRegex(BootstrapContractError, "digest generation"):
+                    create_bootstrap_result(
+                        selection=CampaignSelection.new(),
+                        storage_repository="github.com/example/campaign-storage",
+                        pinned_storage_head="a" * 40,
+                        creator=_creator(),
+                        mode="singleplayer",
+                        campaign_branch="campaign/20260916-02",
+                        created_at="2026-09-16T12:00:00Z",
+                        engine_version="1.0-alpha",
+                        package_id="dev-v1.0-alpha",
+                        source_commit_sha=None,
+                        package_sha256="c" * 64,
+                        ruleset_set_sha256="d" * 64,
+                        ruleset_set_digest_generation=invalid_generation,  # type: ignore[arg-type]
+                    )
         with self.assertRaises(BootstrapContractError):
             create_bootstrap_result(
                 selection=CampaignSelection.new(),

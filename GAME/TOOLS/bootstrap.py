@@ -226,5 +226,8 @@ def _validate_creation_input(
         raise BootstrapContractError("package SHA-256 must be a lowercase 64-character SHA")
     if not _SHA256_RE.fullmatch(ruleset_set_sha256):
         raise BootstrapContractError("ruleset-set SHA-256 must be a lowercase 64-character SHA")
-    if ruleset_set_digest_generation != 1:
+    if (
+        type(ruleset_set_digest_generation) is not int
+        or ruleset_set_digest_generation != 1
+    ):
         raise BootstrapContractError("ruleset-set digest generation must be 1")
