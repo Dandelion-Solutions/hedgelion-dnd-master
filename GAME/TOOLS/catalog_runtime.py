@@ -323,7 +323,9 @@ def _validate_admitted_source_evidence(
         raise CatalogBindingError("natural owner sources do not match admitted owner domains")
     for owner_domain in sorted(expected_domains):
         source = _require_exact_keys(
-            sources[owner_domain], {"selected_frontier", "members"}, "natural owner source"
+            sources[owner_domain],
+            {"selected_frontier", "members", "immutable_member_bytes"},
+            "natural owner source",
         )
         frontier_key = (
             "campaign_definition_frontier"
@@ -346,6 +348,20 @@ def _validate_admitted_source_evidence(
             str(row["definition_id"]) for row in admitted_members
         }.issubset(set(selected_frontier["definition_ids"])):
             raise CatalogBindingError("natural owner member is absent from its selected frontier")
+        immutable_member_bytes = _require_mapping(
+            source["immutable_member_bytes"], "natural owner immutable member bytes"
+        )
+        expected_routes = {str(row["route"]) for row in admitted_members}
+        if set(immutable_member_bytes) != expected_routes:
+            raise CatalogBindingError("natural owner immutable member bytes are incomplete")
+        for row in admitted_members:
+            raw_content = immutable_member_bytes[row["route"]]
+            if not isinstance(raw_content, bytes):
+                raise CatalogBindingError("natural owner immutable member content must be bytes")
+            if sha256(raw_content) != row["content_sha256"]:
+                raise CatalogBindingError(
+                    "natural owner content digest differs from immutable owner bytes"
+                )
 
 
 def _rebuild_definition_sources(

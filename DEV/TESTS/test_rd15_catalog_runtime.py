@@ -117,8 +117,20 @@ def _natural_owner_evidence(*, owner_domain: str = "campaign") -> dict[str, obje
             else f"session/overlays/{definition_id}.json"
         ),
         "pinned_revision": 4,
-        "content_sha256": "b" * 64,
+        "content_sha256": sha256(_natural_owner_content(owner_domain=owner_domain)),
     }
+
+
+def _natural_owner_content(*, owner_domain: str) -> bytes:
+    return canonical_json(
+        {
+            "definition_id": f"{owner_domain}.local_attack",
+            "kind": "definition.activity",
+            "owner_domain": owner_domain,
+            "pinned_revision": 4,
+            "effect": "local attack",
+        }
+    )
 
 
 def _natural_owner_dependency(evidence: dict[str, object]) -> dict[str, object]:
@@ -152,6 +164,10 @@ def _natural_owner_sources(request: dict[str, object]) -> dict[str, object]:
         sources[owner_domain] = {
             "selected_frontier": copy.deepcopy(basis[frontier_key]),
             "members": copy.deepcopy(rows),
+            "immutable_member_bytes": {
+                row["route"]: _natural_owner_content(owner_domain=owner_domain)
+                for row in rows
+            },
         }
     return sources
 
@@ -361,6 +377,22 @@ class CatalogDefinitionAdmissionTests(unittest.TestCase):
         natural_owner_sources = _natural_owner_sources(request)
         forged = request["basis"]["natural_owner_evidence"][0]
         forged["content_sha256"] = "c" * 64
+        request["definition_dependencies"][1] = _natural_owner_dependency(forged)
+
+        with self.assertRaises(CatalogBindingError):
+            bind_catalog_context(
+                request,
+                package_snapshots=_package_snapshots(),
+                engine_contract_inventory_source=request["basis"]["engine_contract_inventory"],
+                natural_owner_sources=natural_owner_sources,
+            )
+
+    def test_synchronized_natural_owner_claims_cannot_forge_owner_content_digest(self) -> None:
+        request = self._request_with_natural_evidence()
+        natural_owner_sources = _natural_owner_sources(request)
+        forged = request["basis"]["natural_owner_evidence"][0]
+        forged["content_sha256"] = "c" * 64
+        natural_owner_sources["campaign"]["members"][0]["content_sha256"] = "c" * 64
         request["definition_dependencies"][1] = _natural_owner_dependency(forged)
 
         with self.assertRaises(CatalogBindingError):
