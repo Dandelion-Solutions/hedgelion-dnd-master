@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/context-trace.schema.json",
+  "title": "HDM protected diagnostic ContextTrace",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile_id", "discovered_ids", "included_ids", "excluded_ids"],
+  "properties": {
+    "profile_id": {"type": "string", "minLength": 1},
+    "discovered_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "included_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "excluded_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  },
+  "examples": [{"profile_id": "profile.narration", "discovered_ids": ["scene-1"], "included_ids": ["scene-1"], "excluded_ids": []}]
+}

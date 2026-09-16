@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/turn-envelope.schema.json",
+  "title": "HDM transient TurnEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["turn_id", "accepted_frontier", "protected_narrator_capacity"],
+  "properties": {
+    "turn_id": {"type": "string", "minLength": 1},
+    "accepted_frontier": {"type": "string", "minLength": 1},
+    "protected_narrator_capacity": {"type": "integer", "minimum": 0}
+  },
+  "examples": [{"turn_id": "turn-1", "accepted_frontier": "frontier-7", "protected_narrator_capacity": 120}]
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/preparation-draft.schema.json",
+  "title": "HDM non-authoritative PreparationDraft",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "purpose", "source_generation", "pressures"],
+  "properties": {
+    "kind": {"const": "preparation_draft"},
+    "purpose": {"type": "string", "minLength": 1},
+    "source_generation": {"type": "string", "minLength": 1},
+    "pressures": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "examples": [{"kind": "preparation_draft", "purpose": "prepare", "source_generation": "frontier-7", "pressures": ["storm"]}]
+}

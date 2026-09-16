@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/narration-result.schema.json",
+  "title": "HDM recipient-scoped NarrationResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "recipient_id", "bundle_id", "prose", "disclosure_refs"],
+  "properties": {
+    "kind": {"const": "narration_result"},
+    "recipient_id": {"type": "string", "minLength": 1},
+    "bundle_id": {"type": "string", "minLength": 1},
+    "prose": {"type": "string", "minLength": 1},
+    "disclosure_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  },
+  "examples": [{"kind": "narration_result", "recipient_id": "player-1", "bundle_id": "bundle-1", "prose": "You hear a bell.", "disclosure_refs": ["fact.bell"]}]
+}
