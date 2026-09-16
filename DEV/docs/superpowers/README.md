@@ -30,3 +30,9 @@ A mixed historical source may be split. If an intermediate/research artifact is 
 Start with current durable architecture owners and `specs/`. Use `design/` for provenance/reopening/audit and `research/` for evidence/applicability questions. A planner should not need to bulk-read design or research history merely to reconstruct already accepted architecture.
 
 Historical old paths may remain inside exact historical statements, but current live routing references must follow current locations.
+
+## Current implementation-plan route
+
+Start at `plans/implementation-plan-index.md`. It routes one package-wide execution contract, six dependency-ordered development waves and a non-normative consolidation trace.
+
+The stable index and wave files are the only current implementation plan. Dated base plans, overlays, addenda, alternate masters, execution-wave variants and separate coverage/proof ledgers are not current planning authorities. Future repairs update the affected stable wave file and the index in one coherent checkpoint.

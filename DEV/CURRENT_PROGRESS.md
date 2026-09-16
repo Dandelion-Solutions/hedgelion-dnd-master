@@ -3,93 +3,97 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — IMPLEMENTATION PLANNING AUTHOR AUDIT CLOSED / INDEPENDENT SENIOR RE-REVIEW REQUIRED
+GLOBAL_STATE: R2.7 CLOSED — CONSOLIDATED IMPLEMENTATION PLAN AUTHOR-COMPLETE / INDEPENDENT SENIOR RE-REVIEW REQUIRED
 CURRENT_WORKSTREAM: implementation planning
-CURRENT_SLICE: mandatory independent Senior re-review of the complete RD-01..RD-16 / 39-overlay implementation-planning package
-LAST_CLOSED_UNIT: whole-project author audit — zero open author findings; accepted PO-005 and login-invitation clarification reconciled
-NEXT_AUTHORIZED_UNIT: INDEPENDENT SENIOR RE-REVIEW of the complete current planning package after exact-final-HEAD hosted maintenance audit and full DEV unittest discovery are GREEN. Author repairs remain independently unconfirmed. Production implementation, migration, release execution and gameplay bootstrap remain unauthorized.
-REQUIRED_GATE: completed zero-open author audit + fresh exact-final-HEAD hosted maintenance audit and full DEV unittest discovery -> mandatory independent Senior re-review; production implementation remains unauthorized until that independent gate passes
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md
-KNOWN_BLOCKERS: no open author findings; exact current-head validation must pass before independent Senior re-review. The independent Senior gate has not passed and production implementation is not authorized.
+CURRENT_SLICE: independent Senior re-review of the consolidated six-wave implementation package
+LAST_CLOSED_UNIT: consolidation of the 16 owner-plan / 39 mandatory-overlay patch stack into one stable six-wave execution plan; obsolete current-tree plan versions retired with traceability retained
+NEXT_AUTHORIZED_UNIT: exact-current-HEAD hosted maintenance audit and full DEV unittest discovery, followed by independent Senior re-review of the complete consolidated package. Production implementation, migration, release execution and gameplay bootstrap remain unauthorized.
+REQUIRED_GATE: consolidated author plan + fresh exact-current-HEAD hosted maintenance audit and full DEV unittest discovery -> mandatory independent Senior re-review -> explicit PASS / GO before production implementation
+TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/implementation-plan-index.md
+KNOWN_BLOCKERS: no open author planning finding; exact-head hosted validation and the independent Senior gate have not yet passed
 
-PLANNING_BASELINE_SHA: 85311db76be2e440c97baf0b0625177de2eb0774
+PLANNING_CONSOLIDATION_SOURCE_SHA: 8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d
 
-Current executable package: RD-01 through RD-16 with 39 mandatory overlays. F50 is folded into existing mandatory overlay 11 and F52 is folded into existing mandatory overlay 28; neither changes the overlay count.
+## Current planning package
 
-Author Findings 1–31 are planning-repaired and independently unconfirmed. Findings 23–31 add the current catalog-context and LIVE realization repairs. F34–F48, F50, F52, F53, F54, F55, F57, F58, F59 and F62 are also planning-repaired and independently unconfirmed; F32 is negative and F33/F45/F49 are repaired control-plane defects. F51 was retracted because its proposed rename-continuity requirement contradicted accepted PO-005. The current total is 62 findings: 60 author-repaired and two negative (F32 and F51), with no open author finding.
+The only current entry point is `DEV/docs/superpowers/plans/implementation-plan-index.md`. The executable package is:
 
-F32 is a negative finding: accepted publication/deployment owners already bind the LIVE exact-source CAS boundary to exact ref/read, single-parent successor construction and non-force stale-head rejection with typed fail-closed outcomes; no REST/GraphQL primitive is introduced by planning.
+1. one package-wide execution contract;
+2. six dependency-ordered development waves;
+3. one non-normative traceability record.
 
-F33 was a blocking control-plane regression in this file. The repair restored the markers required by `DEV/TOOLS/audit_engine.py::audit_current_progress_authority()`; exact repair HEAD `cc155b6d1cc4bc7bea2db35d3bcf5c71c49616ac` passed hosted maintenance audit and full DEV unittest discovery. That historical validation is not final-package validation because later planning commits changed HEAD.
+There are no current dated overlays, alternate master plan, separate execution-wave authority, parallel coverage ledger or independently executable proof ledger. Historical bytes remain in Git history. Future planning repairs edit the applicable stable wave file and index coherently instead of adding another overlay.
 
-F34 is a significant R018 proof/coverage defect repaired by `2026-09-14-implementation-planning-runtime-family-r018-proof-closure-amendment.md`: exact 17-row runtime-family schema/root validation and `R018RuntimeFamilyProofTests` are mandatory; aggregate census/catalog/world-only proof cannot close R018.
+The wave route is:
 
-F35 is a significant PLAYER shared-schema/integration-order defect repaired by `2026-09-14-implementation-planning-player-collaboration-strict-state-integration-amendment.md`: WP-17 `PLAYER.collaboration_route_refs` is integrated into final strict world.player state through an RD-12 local-semantic-ready -> RD-16 final integration edge and one final physical PLAYER schema generation.
+```text
+01 owner-native foundations
+-> 02 deterministic execution, durability and recovery
+-> 03 principal/PLAYER, LIVE and temporal handoff
+-> 04 collaboration, Context and Story
+-> 05 final 17+17 machine, bootstrap and shared writers
+-> 06 proof, exact-head validation and Senior handoff
+```
 
-F36 is a significant cross-companion atomicity defect repaired by `2026-09-14-implementation-planning-live-temporal-companion-handoff-amendment.md`. Campaign->LIVE route selection now requires one campaign publication closure that adds current `LIVE_ROUTING` while removing affected campaign `TEMPORAL_ROUTING` membership only after the prepared candidate proves equivalent LIVE temporal enrollment. Absorption performs the reverse handoff in one campaign closure. Duplicate/missing current enrollment across campaign/LIVE source domains is an integrity conflict; no distributed transaction is introduced.
+Wave numbers do not impose a barrier on unrelated lanes. Only the named producer checkpoints and joins in the package order work.
 
-F37 is a significant executable PLAYER mutation defect repaired by `2026-09-14-implementation-planning-player-access-transition-executable-closure-amendment.md`: RD-09 now requires a frozen access-transition producer over exact current PLAYER state, typed field deltas, F9 principal-route joins, F7 LIVE transition classification and RD-06 coherent campaign publication. Blind stale whole-PLAYER replacement is forbidden.
+## Preserved closure state
 
-F38 is a significant WP-17 reverse-trigger defect repaired by `2026-09-14-implementation-planning-player-authority-collaboration-reconciliation-amendment.md`: membership/control/authorization changes that can affect pending voluntary agency must traverse bounded current `collaboration_route_refs`, exact-load current obligation generations, apply unchanged vs obsolete vs successor semantics and publish obligation/PLAYER-route deltas coherently with the access transition. Input-time authority checks alone cannot close WP-17 theme 16.
+The whole-project author audit remains closed with zero open author findings. Of 62 historical findings, 60 were planning-repaired and two were negative: F32 and F51. F51 is closed because rename continuity would contradict accepted PO-005; login rename does not transfer creator or PLAYER authority.
 
-F39 is a significant shipped shared-writer defect repaired by `2026-09-14-implementation-planning-install-bootstrap-shared-writer-amendment.md`: RD-01 stale-projection repair and RD-14 bootstrap/product projection overlap on `GAME/INSTALL/README.md`, `PROJECT_INSTRUCTIONS.txt` and `00_DND_BOOTSTRAP.md`; one RD-14 final integration checkpoint now fresh-reads current bytes and must prove both requirement sets.
+The accepted identity contract is now explicit in the consolidated plan:
 
-F40 is a significant blank-scaffold producer/checkpoint defect repaired by `2026-09-14-implementation-planning-blank-scaffold-input-checkpoint-amendment.md`: allocator, temporal routing, principal->PLAYER routing and LIVE routing expose bounded blank-template readiness checkpoints that join before RD-14 generator/scaffold validation. The early RD-14 campaign-identity checkpoint and late RD-16 topology validation remain separate, so the repair adds no whole-RD cycle.
+- current GitHub login is used for human-facing selection, display and multiplayer invitations;
+- verified stable GitHub account ID is the durable PLAYER binding;
+- email is not identity or invitation authority;
+- creator uncertainty fails closed to read-only behavior;
+- login rename continuity and automatic creator transfer are unsupported.
 
-F41, extended by F55, is a significant documentation shared-writer defect repaired by `2026-09-14-implementation-planning-schema-readme-shared-writer-amendment.md`: RD-02/RD-03/RD-04/RD-07/RD-08 project independent owner semantics into `GAME/SCHEMA/README.md`, while RD-02/RD-03/RD-04 share `GAME/TEMPLATE/STORAGE_README.md`. Two final sink integration checkpoints preserve the five schema-README and three storage-template contributions. F47, extended by F55, supplies the exact package-level integrated-byte proof.
+Historical readiness accounting remains:
 
-F42 is a significant information world-schema ownership collision repaired by `2026-09-14-implementation-planning-information-schema-rd16-integration-amendment.md`: RD-02 remains sole semantic/schema producer for strict `world.lore_fact` and `world.knowledge`; RD-16 no longer independently creates those schemas and instead consumes their exact GREEN owner contracts in final world-wrapper/catalog/R018 integration.
+```text
+145 total readiness records
+133 active = 116 direct + 9 pure proof + 8 composite parents
+12 trigger-gated
+79 explicit no-work source terminals
+R004 absent
+17 world families
+17 runtime families
+```
 
-F43 is a significant deterministic local-version cutover defect repaired by `2026-09-14-implementation-planning-retained-schema-version-cutover-amendment.md`: ten retained breaking GAME schema contracts have exact target local versions and one final bump writer/checkpoint each — checkpoint 4, current_state 3, thread 2, live_scene 2, index 2, scene 3, location 2, event 2, lore 2, player 2. F48 later extends the package-level retained-schema matrix with campaign_manifest 5. Clean-slate v1 explicitly avoids migration edges, dual-read support and deprecated aliases solely for superseded pre-release shapes. Session remains v1 absent a separately proven breaking shape; retired PC/NPC/item/faction contracts receive no terminal compatibility bump. Catalog/campaign/storage/engine namespaces remain separate and are audited independently.
+The trigger-gated routes remain dormant until their exact canonical trigger exists. Post-WP27 repairs do not invent readiness IDs. `world.faction` remains a facet of `world.organization`, not an additional family.
 
-F44 is a significant RD-01 currentness defect repaired by `2026-09-14-implementation-planning-r047-current-surface-reconciliation-amendment.md`: the historical R047 stale B-prime projection path `GAME/CORE/DOMAIN_RULES_COVERAGE.md` is absent both at the planning baseline and current state. It must not be recreated. R047 is now `CURRENT_V1_ALREADY_SATISFIED` with bounded active-consumer negative proof only; no production mutation or Category-B version bump is permitted unless a real active contradictory consumer is later found.
+## Required validation and review
 
-F45 is a control-plane currentness defect repaired in the package master plan: the master had remained at the earlier 25-overlay/F36 state while package index/progress had advanced through 33 overlays/F44. F45 adds no implementation edge or overlay.
+The current author result requires validation on the exact published consolidation HEAD:
 
-F46 is a significant Category-B module-version/shared-writer defect repaired by `2026-09-14-implementation-planning-core-module-version-shared-writer-amendment.md`. Sixteen currently proven material CORE edits now have exact final `framework_module_version` targets. `BOOTSTRAP_RUNTIME.md` combines RD-01 and RD-14/bootstrap owner deltas into one final physical edit at `1.0.9`; `STORAGE.md` combines RD-04 and RD-07 deltas into one final physical edit at `1.0.2`; existing `MULTIPLAYER.md` shared integration remains one target `1.0.8`. Inspect-only/conditional modules are not speculatively bumped and F44's removed module remains absent. A package-level `CoreFrameworkModuleVersionCutoverTests` witness is mandatory after implementation is authorized.
+- repository maintenance audit;
+- `python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'`;
+- remote ref/tree/file read-back;
+- hosted CI disposition where available;
+- independent Senior re-review of the complete new package.
 
-F47 is a significant proof-routing defect repaired by `2026-09-14-implementation-planning-shared-readme-proof-routing-amendment.md`. F41's two physical integration mechanisms were not routed through an exact executable package witness or primary channel, so owner-local GREEN suites could not prove the final integrated README bytes. F47 requires `DEV/TESTS/test_implementation_proof_ledger.py::SharedSchemaStorageReadmeIntegrationProofTests`, primary channel `STATIC_AUDIT`, after both F41 integration checkpoints and exposes terminal proof sink `SHARED_SCHEMA_STORAGE_README_PROOF_READY`. It adds no implementation ordering edge, semantic owner, readiness ID or version/migration work.
+Historical green runs on earlier package forms are evidence only for those earlier commits. They cannot authorize production from the consolidated package.
 
-F48 is a significant stale duplicate membership-contract defect repaired by `2026-09-14-implementation-planning-manifest-player-registry-retirement-amendment.md`. `MANIFEST.players.player_ids` had no producer, same-closure mutation/currentness/recovery law or required consumer after exact current PLAYER became the sole membership/authorization owner. Final v1 retires the field, preserves `players.join_policy`, keeps campaign-card participant logins non-authoritative, and cuts `campaign_manifest.schema_version` 4 -> 5 at one RD-14 final manifest/scaffold checkpoint. The F43 package version witness is extended from ten to eleven retained cutovers; no migration/dual-read or campaign-contract generation bump is introduced solely for this pre-release shape.
+## Durable cursor
 
-F49 is a control-plane currentness defect: after F48 the package master again remained at the earlier 35-overlay/F47 state while the canonical package index and this current-progress authority were already 36 overlays/F48. Repair resynchronized the master to 36 overlays/F48. F49 adds no product/runtime edge or overlay.
+PLAN: `DEV/docs/superpowers/plans/implementation-plan-index.md`
+SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
+BASE_SHA: 8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d
 
-F50 is a significant shipped-consumer cutover defect repaired by the expanded mandatory principal-routing addendum. Current `GAME/CORE/MULTIPLAYER.md` still instructed join/rejoin to search generic `PLAYER_INDEX` for a binding to the authenticated stable GitHub user ID. The generic index schema contains no stable-external-user key, while F9 explicitly makes `PRINCIPAL_PLAYER_ROUTING.yaml` the completeness-protected stable-principal route and forbids `PLAYER_INDEX`/broad scans as authorization lookup. The existing SIRR2 shared `MULTIPLAYER.md` final-byte checkpoint now must cut over join/rejoin to `PRINCIPAL_PLAYER_ROUTING -> candidate PLAYER IDs -> exact current PLAYER reload/revalidation`, including inactive bindings for rejoin. Missing/stale route fails closed to repair handling; ordinary PLAYER/index scans are forbidden. F50 adds no new overlay or execution edge and preserves the one final unpublished `MULTIPLAYER.md` target `1.0.8`.
+STATUS: SENIOR_REVIEW_REQUIRED
+CURRENT_TASK: exact-head validation and independent Senior re-review of the consolidated plan
+LAST_COMPLETED_TASK: author-side six-wave consolidation and retirement of the old current-tree plan stack
+LAST_SAFE_SHA: current published commit containing this file, verified through remote read-back
 
-F52 is a significant cold-bootstrap runtime-performance/mechanism defect repaired inside mandatory overlay 28. WP24-11 and WP19-L02 require bounded campaign discovery per menu operation, but RD-14 consumed `bounded_campaign_cards` without an executable bounded candidate/card producer while shipped `BOOTSTRAP_RUNTIME.md` prescribed one `CAMPAIGN_CARD` probe for every `campaign/*` ref. The repair binds a provider-independent bounded candidate/page producer and bounded card hydration before `select_campaign`, requires continuation/narrowing or typed bounded inability when more campaigns remain, preserves exact-selector direct routing, forbids exhaustive fallback, and cuts final bootstrap/install projections away from all-ref card traversal. `DEV/TESTS/test_rd14_bootstrap.py::BoundedCampaignDiscoveryTests` is mandatory. F52 adds no new overlay or execution edge and folds into the existing F46 one-bump `BOOTSTRAP_RUNTIME.md` target `1.0.9`.
+COMPLETED_TASKS:
+  Planning consolidation -> current published commit containing this file
 
-F53 is a minor planning-proof defect repaired inside mandatory overlay 28. F39/F52 already named the intended shared-writer and bounded-discovery checks, but did not explicitly assign their primary proof channels or locate the shared-writer class. The repair binds `DEV/TESTS/test_rd14_bootstrap.py::InstallBootstrapSharedWriterTests` to `STATIC_AUDIT`, separates `BoundedCampaignDiscoveryTests` behavioral cases (`FOCUSED_BEHAVIOR`) from final-file assertions, and requires the final install/CORE proof after the existing physical integration checkpoints. It adds no overlay, semantic execution edge or version bump.
-
-F54 is a minor readiness-routing defect repaired inside mandatory overlay 34: the `RANDOMNESS.md` material-version row now points to `R043` (fixed RNG retention/recovery), matching the exact WP-27 Step-2 record and RD-01. `R050` remains the separate information/catalog prose duty. The final writer, target `1.0.3`, required RNG behavior and proof obligations are unchanged.
-
-F55 is a significant shared-writer/proof defect repaired inside mandatory overlays 30 and 35. RD-08 v2 explicitly includes the schema README in its CURRENT/R010 checkpoint, but the F41 final writer and F47 witness admitted only RD-02/RD-03/RD-04/RD-07. The existing schema-README sink now also consumes bounded `RD08_SCHEMA_DOC_DELTA_READY`, and the same actual-byte static witness proves all five contributions. At the F55 boundary the storage-template sink retained three inputs; F58 later adds the bounded RD-07 operational-root input; no semantic owner, runtime dependency, version bump or whole-RD barrier is added.
-
-F56 is a minor current-document namespace projection defect repaired in `DEV/ARCHITECTURE/CATALOG_CONTRACTS.md`, `CATALOG_ADMISSION.md` and `CATALOG_RESOLUTION.md`. Their active generation/package-field wording lagged the already approved and realized versioning policy. Current guidance now uses integer `catalog_generation: 2`, package revision and explicit compatibility family/generation; the recorded S6D-02 admission snapshot is distinguished from current machine-owned counts/selectability. No machine representation, generation value, implementation task, overlay or proof/execution edge changes.
-
-F57 is a minor proof-command routing defect repaired inside mandatory overlay 25 (F36): its RD-06 verification command now invokes `DEV.TESTS.test_rd06_durability_publication`, matching the test module explicitly created by RD-06 and extended by the current LIVE amendments. The former command named an unplanned module. The handoff mechanism, required cases, test ownership, primary channels, checkpoint graph, versions and overlay count are unchanged.
-
-F58 is a significant operational-root producer/planning defect repaired by mandatory overlay 37 (`2026-09-15-implementation-planning-operational-root-routing-addendum.md`). Step-5.2/R072 require independently recoverable Command/Procedure/promised unresolved input roots, but RD-07 consumed the set without a non-temporal enrollment producer or physical route. The repair assigns RD-05 native eligibility, RD-07 typed active-only membership and complete pinned recovery, RD-06 campaign closure, RD-09 LIVE CAS/selection/absorption, a fifth F40 blank-scaffold input, and PG35 exact integration proof. F41/F47 now integrate four storage-template inputs including bounded RD-07 operational routing; schema README retains five complete owner inputs. No semantic owner, readiness ID, native family, runtime implementation or additional version bump is introduced.
-
-F59 is a significant access-policy mutation/planning defect repaired by mandatory overlay 38 (`2026-09-15-implementation-planning-campaign-access-policy-transition-addendum.md`). Existing creator-owned mode/join-policy and narrow PLAYER mechanical-override grant changes had validators and LIVE consumers but no exact-current mutation producer beyond F37's five lifecycle/control operations. RD-09 now plans typed field deltas and complete bounded impact; RD-12 reconciles each affected obligation once under a common after-authority view; RD-06/RD-07/LIVE and current planning/catch-up consumers supply the joined acceptance/recovery proof in PG36. Join-policy changes do not revoke existing bindings, grant revocation is prospective, and creator uncertainty still fails closed. No creator placement, new policy authority, durable schema, version bump or production implementation is introduced.
-
-F62 is a significant accepted-adjudication basis planning/proof gap repaired by mandatory overlay 39 (`2026-09-15-implementation-planning-accepted-adjudication-basis-addendum.md`). S6D-10 requires actual exact policy-source resolution, full accepted-input idempotency and frozen historical retry/recovery; static JSON round-trip or supplied authority booleans cannot prove this chain. RD-07 now has a bounded early exact-source resolver, RD-05 binds the complete accepted parameter/fact basis, and RD-06/RD-07 supply publication/cold-recovery joins with four task-owned witnesses in PG37. The nine current consumer edges remain item-bound; no policy compiler, new authority/schema/version or production implementation is introduced.
-
-Current authority routes:
-
-- package router: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-index.md`;
-- master plan: `DEV/docs/superpowers/plans/2026-09-13-implementation-planning-package-master-plan.md`;
-- execution graph: post-graph v2 + F27–F31 control amendment + F34 proof join + F35 PLAYER integration edge + F36 temporal handoff joins + F37 PLAYER access-transition joins + F38 PLAYER-authority/collaboration reverse join + F39 install/bootstrap shared-writer checkpoint + F40 blank-scaffold producer joins + F41 schema/storage README projection joins + F42 RD-02 information-schema -> RD-16 integration join + F43 retained-schema version obligations/final package proof sink + F46 CORE shared-writer/version joins and module-version proof sink + F48 campaign-manifest v5 obligation into the existing retained-schema proof sink; F44 adds no execution edge; F45/F49 are control-plane only; F47 adds only the terminal README package-proof sink; F50 adds no new edge and extends the existing F9/SIRR2 `MULTIPLAYER.md` final-integration acceptance/proof; F52 adds no new edge and strengthens existing RD-14/bootstrap plus `RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION` acceptance with bounded campaign discovery; F58 adds the native operational-root producer/contract/publication/recovery joins, fifth F40 blank input, bounded RD-07 storage-template input and terminal PG35 proof sink; F59 adds bounded access-policy mutation, common-after-view collaboration reconciliation, publication/consumer joins and terminal PG36 proof. F62 adds the bounded early policy-basis resolver, full accepted-input/idempotency, publication/cold-recovery joins and terminal PG37 proof; full recovery is not a prerequisite of the early resolver.
-- bidirectional coverage: coverage v3 + F27–F31 + F34–F55 amendments, with F49 control-plane only; F58/PG35 adds the bidirectional operational-root chain and F59/PG36 adds the existing access-policy mutation/consumer chain without new readiness IDs. F62/PG37 adds accepted policy-basis source resolution/idempotency/publication/historical recovery.
-- post-graph proof: proof-ledger v3 + F27–F31 + exact witness matrix + F34–F55 item-bound/proof amendments; F50 requires final integrated MULTIPLAYER principal-route/no-PLAYER_INDEX lookup proof; F52 requires `BoundedCampaignDiscoveryTests` and final integrated bootstrap/install bytes with no normal exhaustive all-campaign card loop; F53 fixes the exact witness/channel and final-byte execution binding inside the same overlay; F58 requires PG35 actual enrollment/publication/LIVE handoff/cold recovery, generated blank format and final projection witnesses at the exact modules/channels in overlay 37; F59 requires the four task-owned access-policy/reconciliation/publication/consumer classes in overlay 38 and extends exact R080 items 3/4/11/12 plus R083 theme16. F62 requires the four exact resolver/acceptance/publication/cold-recovery classes in overlay 39, all nine source-derived parameter/fact consumer edges and R041's actual integrated evidence; static S6D-10 fixtures remain conformance only.
-- legacy public author-audit graph/control ledgers through F47 were retired from the current tree after verified private migration; they were audit/control evidence rather than package authority; author-audit operational cursor, graph decomposition, negative knowledge, runtime-performance evidence and investigation bookkeeping live outside the public product/planning tree;
-- highest-precedence LIVE execution repair remains the F28–F31 LIVE opening/native-state overlay, composed with F36 for temporal source handoff and F37/F38 when PLAYER authority mutations intersect LIVE/collaboration state, with F58 composing operational-root membership into the same exact LIVE acceptance and campaign handoff edges and F59 applying the full join to existing campaign access-policy mutations.
-
-Current work: the whole-project author audit is complete with zero open author findings. Accepted creator-login fail-closed policy and login-based invitations through verified stable-ID PLAYER binding are reconciled. Mandatory independent Senior re-review now assesses all author repairs and the complete package after fresh exact-head hosted validation. Operational author-audit graphs, source evidence and reopen-only cursor remain in the private audit workspace; no production authorization is inferred.
-
-Historical readiness accounting remains 133 active = 116 direct + 9 pure proof + 8 composite parents; 12 trigger-gated; 79 no-work; R004 absent. Post-WP27 findings do not invent historical readiness IDs.
-
-Current family census after planned repairs: 17 world families and 17 runtime families. `world.faction` is not an independent v1 family. Counts are not proof.
-
-`GAME/**` is clean-slate for v1.0; legacy v0.8 preservation is not a constraint. Breaking retained local contracts must use the F43/F48 target versions; obsolete pre-release surfaces such as the F44 R047 historical module must not be recreated through compatibility debt. Material CORE instruction cutovers must use the F46 exact module targets and shared-writer joins; F50 folds into the existing one-bump `MULTIPLAYER.md` integration at `1.0.8`; F52 folds into the existing one-bump `BOOTSTRAP_RUNTIME.md` integration at `1.0.9`.
+CURRENT_VERIFICATION_STATE: local structural/losslessness validation complete before publication; exact published-head/hosted validation remains required
+VERSION_IMPACT: planning/control documents only; no GAME schema, catalog, checkpoint, migration or CORE version changed by consolidation
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED
+NEXT_EXACT_TASK: validate the exact published consolidation HEAD, then perform independent Senior re-review from the stable index
+KNOWN_BLOCKERS: independent Senior PASS / GO absent
+UNPUBLISHED_WORK: NONE after verified remote publication/read-back
 
 Production implementation, migration, release execution and gameplay bootstrap are not authorized.
