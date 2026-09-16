@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from copy import deepcopy
 from pathlib import Path
 
 from jsonschema import Draft202012Validator, ValidationError
@@ -129,6 +130,30 @@ class NativeActorShapeTests(unittest.TestCase):
                 }
             )
 
+    def test_delta_and_projection_schemas_reject_unmodelled_nested_continuity(self) -> None:
+        delta_validator = Draft202012Validator(
+            self.schemas["actor-delta-draft.schema.json"], registry=self.registry
+        )
+        projection_validator = Draft202012Validator(
+            self.schemas["continuity-projection-candidate.schema.json"], registry=self.registry
+        )
+        invalid_delta = _delta()
+        invalid_delta["changes"]["continuity"]["evolving"]["hidden_reasoning"] = {
+            "statement": "Not a native continuity field"
+        }
+        with self.assertRaises(ValidationError):
+            delta_validator.validate(invalid_delta)
+
+        invalid_projection = {
+            "actor_id": "actor.mara",
+            "expected_state_revision": 4,
+            "source_refs": ["event.well.001"],
+            "projection_kind": "continuity.derived",
+            "continuity": {"evolving": {"hidden_reasoning": {"statement": "No"}}},
+        }
+        with self.assertRaises(ValidationError):
+            projection_validator.validate(invalid_projection)
+
     def test_installed_schema_projections_name_only_native_actor_asset_effect_families(self) -> None:
         for name, schema_name in (
             ("actor.schema.yaml", "world_actor"),
@@ -187,6 +212,31 @@ class ActorAssessmentBehaviorTests(unittest.TestCase):
         with self.assertRaisesRegex(ActorContinuityError, "identity"):
             validate_actor_delta(conflict, _actor(), _accepted_evidence())
 
+    def test_assessment_rejects_unmodelled_native_state_and_malformed_player_role(self) -> None:
+        unmodelled = _actor()
+        unmodelled["state"]["hidden_authority"] = {"statement": "Do not persist this"}
+        with self.assertRaisesRegex(ActorContinuityError, "unsupported field"):
+            assess_actor(
+                {
+                    "actor": unmodelled,
+                    "purpose": "assessment.reflect",
+                    "source_evidence": _accepted_evidence(),
+                    "delta": None,
+                }
+            )
+
+        malformed_role = _actor()
+        malformed_role["state"]["roles"] = "actor.player_character"
+        with self.assertRaisesRegex(ActorContinuityError, "roles"):
+            assess_actor(
+                {
+                    "actor": malformed_role,
+                    "purpose": "assessment.reflect",
+                    "source_evidence": _accepted_evidence(),
+                    "delta": None,
+                }
+            )
+
 
 class ActorMutationIntegrationTests(unittest.TestCase):
     def test_accepted_delta_advances_only_the_native_actor_state(self) -> None:
@@ -215,6 +265,22 @@ class ActorMutationIntegrationTests(unittest.TestCase):
         with self.assertRaisesRegex(ActorContinuityError, "player-controlled"):
             apply_actor_delta(player_actor, _delta(), _accepted_evidence())
 
+    def test_mutation_rejects_unmodelled_nested_continuity_fields(self) -> None:
+        unmodelled = _delta()
+        unmodelled["changes"]["continuity"]["evolving"]["hidden_reasoning"] = {
+            "statement": "Invent a private plan graph"
+        }
+
+        with self.assertRaisesRegex(ActorContinuityError, "unsupported field"):
+            apply_actor_delta(_actor(), unmodelled, _accepted_evidence())
+
+    def test_mutation_rejects_unmodelled_delta_envelope_fields(self) -> None:
+        unmodelled = _delta()
+        unmodelled["replacement_state"] = {"roles": ["actor.player_character"]}
+
+        with self.assertRaisesRegex(ActorContinuityError, "unsupported field"):
+            apply_actor_delta(_actor(), unmodelled, _accepted_evidence())
+
 
 class ContinuitySourceAdmissionTests(unittest.TestCase):
     def test_projection_requires_current_native_actor_sources(self) -> None:
@@ -229,6 +295,42 @@ class ContinuitySourceAdmissionTests(unittest.TestCase):
 
         projection = validate_continuity_projection(candidate, bundle)
         self.assertEqual(classify_projection_compatibility(projection, bundle), "compatible")
+
+    def test_projection_accepts_only_retained_native_values_and_native_ids(self) -> None:
+        actor = _actor()
+        actor["state"]["continuity"]["foundation"] = {
+            "values": [{"statement": "Protect the village"}]
+        }
+        bundle = build_continuity_source_bundle(actor, _accepted_evidence())
+        retained_subset = {
+            "actor_id": "actor.mara",
+            "expected_state_revision": 4,
+            "source_refs": ["event.well.001"],
+            "projection_kind": "continuity.derived",
+            "continuity": {
+                "evolving": {
+                    "current_objective": {"statement": "Find who poisoned the well"}
+                }
+            },
+        }
+        self.assertEqual(
+            classify_projection_compatibility(retained_subset, bundle), "compatible"
+        )
+
+        divergent = deepcopy(retained_subset)
+        divergent["continuity"]["evolving"]["current_objective"]["statement"] = "Invent a new goal"
+        with self.assertRaisesRegex(ContinuityProjectionError, "diverges"):
+            validate_continuity_projection(divergent, bundle)
+
+        invalid_ref = deepcopy(retained_subset)
+        invalid_ref["source_refs"] = ["not a native id"]
+        with self.assertRaisesRegex(ContinuityProjectionError, "native id"):
+            validate_continuity_projection(invalid_ref, bundle)
+
+        invalid_evidence = _accepted_evidence()
+        invalid_evidence[0]["ref"] = "not a native id"
+        with self.assertRaisesRegex(ContinuityProjectionError, "native id"):
+            build_continuity_source_bundle(actor, invalid_evidence)
 
     def test_projection_rejects_provisional_or_non_native_authority(self) -> None:
         provisional = _actor()

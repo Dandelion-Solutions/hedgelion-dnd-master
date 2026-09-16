@@ -22,6 +22,34 @@ ACTOR_STATE_ALIASES = frozenset(
     {"knowledge", "beliefs", "suspicions", "inventory", "conditions", "active_effects"}
 )
 CONTINUITY_FIELDS = frozenset({"foundation", "evolving", "relationships"})
+ACTOR_STATE_FIELDS = frozenset(
+    {
+        "name",
+        "concept",
+        "roles",
+        "location_id",
+        "build",
+        "abilities",
+        "hp",
+        "life_state_id",
+        "life_state_policy_id",
+        "life_state_progress",
+        "resources",
+        "continuity",
+        "details",
+    }
+)
+FOUNDATION_FIELDS = frozenset({"values", "temperament", "identity"})
+EVOLVING_STATEMENT_FIELDS = frozenset(
+    {"long_term_goal", "current_objective", "next_intention"}
+)
+EVOLVING_STATEMENT_SET_FIELDS = frozenset(
+    {"material_commitments", "reconsideration_cues"}
+)
+RELATIONSHIP_FACETS = frozenset(
+    {"trust", "affinity", "fear", "respect", "hostility", "felt_obligation"}
+)
+RELATIONSHIP_LEVELS = frozenset({"low", "moderate", "high"})
 
 
 class ActorContinuityError(ValueError):
@@ -46,21 +74,101 @@ def _revision(value: object, label: str) -> int:
     return value
 
 
+def _id_set(value: object, label: str, *, allow_empty: bool) -> list[str]:
+    if not isinstance(value, Sequence) or isinstance(value, str):
+        raise ActorContinuityError(f"{label} must be an array")
+    identifiers = [_id(item, label) for item in value]
+    if not allow_empty and not identifiers:
+        raise ActorContinuityError(f"{label} must not be empty")
+    if len(identifiers) != len(set(identifiers)):
+        raise ActorContinuityError(f"{label} is ambiguous")
+    return identifiers
+
+
+def _statement(value: object, label: str) -> dict[str, object]:
+    statement = _mapping(value, label)
+    if set(statement) - {"statement", "source_refs"}:
+        raise ActorContinuityError(f"{label} contains an unsupported field")
+    text = statement.get("statement")
+    if not isinstance(text, str) or not text:
+        raise ActorContinuityError(f"{label} statement must be a nonempty string")
+    result: dict[str, object] = {"statement": text}
+    if "source_refs" in statement:
+        result["source_refs"] = _id_set(
+            statement["source_refs"], f"{label} source_refs", allow_empty=True
+        )
+    return result
+
+
+def _statement_set(value: object, label: str) -> list[dict[str, object]]:
+    if not isinstance(value, Sequence) or isinstance(value, str) or not value:
+        raise ActorContinuityError(f"{label} must be a nonempty array")
+    return [_statement(item, label) for item in value]
+
+
+def _foundation(value: object) -> dict[str, object]:
+    foundation = _mapping(value, "foundation continuity")
+    if not foundation or set(foundation) - FOUNDATION_FIELDS:
+        raise ActorContinuityError("foundation continuity contains an unsupported field")
+    return {field: _statement_set(content, f"foundation {field}") for field, content in foundation.items()}
+
+
+def _evolving(value: object) -> dict[str, object]:
+    evolving = _mapping(value, "evolving continuity")
+    allowed = EVOLVING_STATEMENT_FIELDS | EVOLVING_STATEMENT_SET_FIELDS
+    if not evolving or set(evolving) - allowed:
+        raise ActorContinuityError("evolving continuity contains an unsupported field")
+    result: dict[str, object] = {}
+    for field, content in evolving.items():
+        if field in EVOLVING_STATEMENT_FIELDS:
+            result[field] = _statement(content, f"evolving {field}")
+        else:
+            result[field] = _statement_set(content, f"evolving {field}")
+    return result
+
+
+def _relationships(value: object) -> dict[str, object]:
+    relationships = _mapping(value, "relationship continuity")
+    if not relationships:
+        raise ActorContinuityError("relationship continuity must not be empty")
+    normalized: dict[str, object] = {}
+    for target_id, raw_view in relationships.items():
+        _id(target_id, "relationship target id")
+        view = _mapping(raw_view, "relationship view")
+        if set(view) - {"facets", "basis_refs", "last_changed_event_id"} or "facets" not in view:
+            raise ActorContinuityError("relationship view contains an unsupported field")
+        facets = _mapping(view["facets"], "relationship facets")
+        if not facets or set(facets) - RELATIONSHIP_FACETS:
+            raise ActorContinuityError("relationship facets contain an unsupported field")
+        if any(level not in RELATIONSHIP_LEVELS for level in facets.values()):
+            raise ActorContinuityError("relationship facet has an unsupported value")
+        normalized_view: dict[str, object] = {"facets": dict(facets)}
+        if "basis_refs" in view:
+            normalized_view["basis_refs"] = _id_set(
+                view["basis_refs"], "relationship basis_refs", allow_empty=True
+            )
+        if "last_changed_event_id" in view:
+            normalized_view["last_changed_event_id"] = _id(
+                view["last_changed_event_id"], "relationship last_changed_event_id"
+            )
+        normalized[target_id] = normalized_view
+    return normalized
+
+
 def validate_actor_source(value: object) -> dict[str, object]:
     """Return the bounded native Actor source required by continuity operations."""
 
     actor = _mapping(value, "actor")
     if actor.get("kind") != "world.actor":
         raise ActorContinuityError("continuity requires a world.actor native source")
+    if set(actor) - {"id", "kind", "state_revision", "state", "provisional"}:
+        raise ActorContinuityError("actor contains an unsupported field")
     if actor.get("provisional") is True:
         raise ActorContinuityError("provisional actor cannot become native continuity authority")
 
     actor_id = _id(actor.get("id"), "actor id")
     state_revision = _revision(actor.get("state_revision"), "actor state_revision")
-    state = _mapping(actor.get("state"), "actor state")
-    aliases = ACTOR_STATE_ALIASES.intersection(state)
-    if aliases:
-        raise ActorContinuityError("native Actor continuity cannot mutate legacy authority aliases")
+    state = _validated_actor_state(actor.get("state"))
     return {
         "id": actor_id,
         "kind": "world.actor",
@@ -91,17 +199,50 @@ def _validated_evidence(value: object, actor_id: str) -> list[str]:
     return refs
 
 
-def _validated_continuity(value: object, *, foundation_transition: object = None) -> dict[str, object]:
+def _validated_continuity(
+    value: object,
+    *,
+    foundation_transition: object = None,
+    require_foundation_transition: bool = False,
+) -> dict[str, object]:
     continuity = _mapping(value, "continuity changes")
     fields = set(continuity)
     if not fields or not fields.issubset(CONTINUITY_FIELDS):
         raise ActorContinuityError("changes must remain within native Actor continuity")
-    if "foundation" in fields and foundation_transition != "foundation.explicit":
+    if (
+        require_foundation_transition
+        and "foundation" in fields
+        and foundation_transition != "foundation.explicit"
+    ):
         raise ActorContinuityError("foundation changes require an explicit foundation transition")
-    for field, content in continuity.items():
-        if not isinstance(content, Mapping) or not content:
-            raise ActorContinuityError(f"continuity {field} must be a nonempty object")
-    return deepcopy(dict(continuity))
+    normalized: dict[str, object] = {}
+    if "foundation" in continuity:
+        normalized["foundation"] = _foundation(continuity["foundation"])
+    if "evolving" in continuity:
+        normalized["evolving"] = _evolving(continuity["evolving"])
+    if "relationships" in continuity:
+        normalized["relationships"] = _relationships(continuity["relationships"])
+    return normalized
+
+
+def _validated_actor_state(value: object) -> dict[str, object]:
+    state = _mapping(value, "actor state")
+    unsupported = set(state) - ACTOR_STATE_FIELDS
+    if unsupported:
+        raise ActorContinuityError("actor state contains an unsupported field")
+    aliases = ACTOR_STATE_ALIASES.intersection(state)
+    if aliases:
+        raise ActorContinuityError("native Actor continuity cannot mutate legacy authority aliases")
+    normalized = deepcopy(dict(state))
+    if "roles" in state:
+        normalized["roles"] = _id_set(state["roles"], "actor roles", allow_empty=True)
+    if "location_id" in state:
+        normalized["location_id"] = _id(state["location_id"], "actor location_id")
+    if "concept" in state and (not isinstance(state["concept"], str) or not state["concept"]):
+        raise ActorContinuityError("actor concept must be a nonempty string")
+    if "continuity" in state:
+        normalized["continuity"] = _validated_continuity(state["continuity"])
+    return normalized
 
 
 def validate_actor_delta(
@@ -111,6 +252,15 @@ def validate_actor_delta(
 
     native_actor = validate_actor_source(actor)
     delta = _mapping(value, "actor delta")
+    if set(delta) - {
+        "actor_id",
+        "expected_state_revision",
+        "purpose",
+        "source_refs",
+        "foundation_transition",
+        "changes",
+    }:
+        raise ActorContinuityError("actor delta contains an unsupported field")
     actor_id = _id(delta.get("actor_id"), "delta actor_id")
     if actor_id != native_actor["id"]:
         raise ActorContinuityError("delta actor identity conflicts with native Actor source")
@@ -135,7 +285,9 @@ def validate_actor_delta(
     if set(raw_changes) != {"continuity"}:
         raise ActorContinuityError("changes must remain within native Actor continuity")
     continuity = _validated_continuity(
-        raw_changes["continuity"], foundation_transition=delta.get("foundation_transition")
+        raw_changes["continuity"],
+        foundation_transition=delta.get("foundation_transition"),
+        require_foundation_transition=True,
     )
     result: dict[str, object] = {
         "actor_id": actor_id,
@@ -211,6 +363,7 @@ def apply_actor_delta(
     if not isinstance(continuity, dict):
         raise ActorContinuityError("actor continuity state must be an object")
     state["continuity"] = _merge_mapping(continuity, normalized_delta["changes"]["continuity"])
+    state = _validated_actor_state(state)
     return {
         "id": native_actor["id"],
         "kind": "world.actor",

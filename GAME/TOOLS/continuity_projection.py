@@ -6,7 +6,11 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 
-from GAME.TOOLS.actor_continuity import ActorContinuityError, validate_actor_source
+from GAME.TOOLS.actor_continuity import (
+    ActorContinuityError,
+    NATIVE_ID_PATTERN,
+    validate_actor_source,
+)
 
 
 class ContinuityProjectionError(ValueError):
@@ -23,11 +27,58 @@ def _source_refs(value: object) -> list[str]:
     if not isinstance(value, Sequence) or isinstance(value, str):
         raise ContinuityProjectionError("source_refs must be an array")
     refs = list(value)
-    if not refs or not all(isinstance(ref, str) and ref for ref in refs):
-        raise ContinuityProjectionError("source_refs must contain native references")
+    if not refs or not all(
+        isinstance(ref, str) and NATIVE_ID_PATTERN.fullmatch(ref) is not None for ref in refs
+    ):
+        raise ContinuityProjectionError("source_refs must contain native ids")
     if len(refs) != len(set(refs)):
         raise ContinuityProjectionError("source_refs are ambiguous")
     return refs
+
+
+def _id(value: object, label: str) -> str:
+    if not isinstance(value, str) or NATIVE_ID_PATTERN.fullmatch(value) is None:
+        raise ContinuityProjectionError(f"{label} must be a native id")
+    return value
+
+
+def _revision(value: object, label: str) -> int:
+    if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+        raise ContinuityProjectionError(f"{label} must be a nonnegative integer")
+    return value
+
+
+def _retained_value_subset(candidate: object, source: object) -> bool:
+    if isinstance(candidate, Mapping):
+        return (
+            isinstance(source, Mapping)
+            and bool(candidate)
+            and all(
+                key in source and _retained_value_subset(value, source[key])
+                for key, value in candidate.items()
+            )
+        )
+    if isinstance(candidate, list):
+        return isinstance(source, list) and bool(candidate) and all(
+            any(candidate_item == source_item for source_item in source)
+            for candidate_item in candidate
+        )
+    return candidate == source
+
+
+def _validated_source_bundle(value: object) -> dict[str, object]:
+    bundle = _mapping(value, "continuity source bundle")
+    if set(bundle) != {"actor_id", "state_revision", "source_refs", "continuity"}:
+        raise ContinuityProjectionError("continuity source bundle contains an unsupported field")
+    continuity = _mapping(bundle["continuity"], "native continuity")
+    if not continuity:
+        raise ContinuityProjectionError("native continuity must not be empty")
+    return {
+        "actor_id": _id(bundle["actor_id"], "source bundle actor_id"),
+        "state_revision": _revision(bundle["state_revision"], "source bundle state_revision"),
+        "source_refs": _source_refs(bundle["source_refs"]),
+        "continuity": deepcopy(dict(continuity)),
+    }
 
 
 def build_continuity_source_bundle(actor: object, source_evidence: object) -> dict[str, object]:
@@ -53,7 +104,7 @@ def build_continuity_source_bundle(actor: object, source_evidence: object) -> di
             or native_actor["id"] not in authorized
         ):
             raise ContinuityProjectionError("projection source evidence is not current native evidence")
-        refs.append(ref)
+        refs.append(_id(ref, "projection source evidence ref"))
     if not refs or len(refs) != len(set(refs)):
         raise ContinuityProjectionError("projection source evidence is missing or ambiguous")
     continuity = native_actor["state"].get("continuity", {})
@@ -73,12 +124,22 @@ def validate_continuity_projection(
     """Validate a derived projection without admitting a writable replacement authority."""
 
     projection = _mapping(candidate, "continuity projection candidate")
-    bundle = _mapping(source_bundle, "continuity source bundle")
+    bundle = _validated_source_bundle(source_bundle)
+    if set(projection) != {
+        "actor_id",
+        "expected_state_revision",
+        "source_refs",
+        "projection_kind",
+        "continuity",
+    }:
+        raise ContinuityProjectionError("continuity projection contains an unsupported field")
     if projection.get("projection_kind") != "continuity.derived":
         raise ContinuityProjectionError("continuity projection must be explicitly derived")
-    if projection.get("actor_id") != bundle.get("actor_id"):
+    if _id(projection.get("actor_id"), "projection actor_id") != bundle["actor_id"]:
         raise ContinuityProjectionError("projection actor identity conflicts with source bundle")
-    if projection.get("expected_state_revision") != bundle.get("state_revision"):
+    if _revision(
+        projection.get("expected_state_revision"), "projection expected_state_revision"
+    ) != bundle["state_revision"]:
         raise ContinuityProjectionError("continuity projection is stale")
     refs = _source_refs(projection.get("source_refs"))
     if set(refs) != set(_source_refs(bundle.get("source_refs"))):
@@ -87,9 +148,8 @@ def validate_continuity_projection(
     forbidden = {"knowledge", "beliefs", "suspicions", "inventory", "conditions", "active_effects"}
     if forbidden.intersection(continuity):
         raise ContinuityProjectionError("continuity projection cannot contain knowledge or other native authority")
-    allowed = {"foundation", "evolving", "relationships"}
-    if not continuity or not set(continuity).issubset(allowed):
-        raise ContinuityProjectionError("continuity projection contains an unsupported authority field")
+    if not _retained_value_subset(continuity, bundle["continuity"]):
+        raise ContinuityProjectionError("continuity projection diverges from native source continuity")
     return {
         "actor_id": projection["actor_id"],
         "expected_state_revision": projection["expected_state_revision"],

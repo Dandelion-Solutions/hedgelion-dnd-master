@@ -16,7 +16,7 @@
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
     "idSet": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
-    "continuity": {"type": "object", "additionalProperties": false, "minProperties": 1, "properties": {"foundation": {"type": "object", "minProperties": 1}, "evolving": {"type": "object", "minProperties": 1}, "relationships": {"type": "object", "minProperties": 1}}},
+    "continuity": {"$ref": "world-actor-state.schema.json#/$defs/continuity"},
     "changes": {"type": "object", "additionalProperties": false, "required": ["continuity"], "properties": {"continuity": {"$ref": "#/$defs/continuity"}}}
   },
   "allOf": [{"if": {"properties": {"changes": {"properties": {"continuity": {"required": ["foundation"]}}}}, "required": ["changes"]}, "then": {"required": ["foundation_transition"]}}]
