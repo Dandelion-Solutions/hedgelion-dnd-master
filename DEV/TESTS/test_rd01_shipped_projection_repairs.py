@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import re
 import unittest
 
 
@@ -23,12 +24,11 @@ EXPECTED_FINAL_WRITERS = {
     CORE / "EXPLORATION.md": SHIPPED_INTEGRATION_CHECKPOINT,
 }
 
-HISTORICAL_RUNTIME_DOMAIN_ALIASES = (
-    "DOMAIN_RULES_COVERAGE.md",
-    "domain_rules_coverage.md",
-    "CORE/DOMAIN_RULES_COVERAGE",
-    "core/domain_rules_coverage",
+HISTORICAL_RUNTIME_DOMAIN_ALIAS = re.compile(
+    rb"(?<![a-z0-9_])domain_rules_coverage(?:\.(?:md|py))?(?![a-z0-9_])",
+    re.IGNORECASE,
 )
+CURRENT_DOMAIN_CLOSURE_VOCABULARY = b"domain_rules_coverage_closure"
 
 
 @dataclass(frozen=True)
@@ -142,6 +142,109 @@ REPAIR_INPUTS: tuple[FinalWriterRepair, ...] = (
     ),
 )
 
+APPROVED_REPAIR_IDENTITIES: tuple[tuple[str, str, str, str], ...] = (
+    (
+        "GAME/INSTALL/README.md",
+        (
+            "## Что нужно\n\n- ChatGPT Project;\n- один или несколько runtime ZIP вида "
+            "`hedgelion-dnd-master-runtime-vX.Y.zip`"
+        ),
+        (
+            "## Что нужно\n\n- ChatGPT Plus (supported MVP plan);\n- ChatGPT Project;\n"
+            "- один или несколько runtime ZIP вида `hedgelion-dnd-master-runtime-vX.Y.zip`"
+        ),
+        INSTALL_FINAL_CHECKPOINT,
+    ),
+    (
+        "GAME/INSTALL/README.md",
+        (
+            "Use the connected GitHub Connector as the default transport for campaign-storage "
+            "GitHub reads/writes. Do not substitute shell `git`, `gh`, local clone, direct "
+            "private-repository HTTP, or web scraping first."
+        ),
+        (
+            "Use the connected GitHub Connector as the only permitted transport for campaign-storage "
+            "GitHub reads/writes. Do not attempt or probe shell `git`, `gh`, local clone, direct "
+            "private-repository HTTP, web scraping, or any other alternate transport. Missing required "
+            "Connector capability is a supported-profile capability failure."
+        ),
+        INSTALL_FINAL_CHECKPOINT,
+    ),
+    (
+        "GAME/INSTALL/PROJECT_INSTRUCTIONS.txt",
+        (
+            "Use the connected GitHub Connector as the default transport for campaign-storage "
+            "GitHub reads/writes. Do not substitute shell `git`, `gh`, local clone, direct "
+            "private-repository HTTP, or web scraping first."
+        ),
+        (
+            "Use the connected GitHub Connector as the only permitted transport for campaign-storage "
+            "GitHub reads/writes. Do not attempt or probe shell `git`, `gh`, local clone, direct "
+            "private-repository HTTP, web scraping, or any other alternate transport. Missing required "
+            "Connector capability is a supported-profile capability failure."
+        ),
+        INSTALL_FINAL_CHECKPOINT,
+    ),
+    (
+        "GAME/INSTALL/00_DND_BOOTSTRAP.md",
+        (
+            "Do not try shell git, `gh`, local clone, direct private-repository HTTP, or web scraping "
+            "first. Diagnose Connector binding, identity, App access, permissions/status, then a real "
+            "capability gap."
+        ),
+        (
+            "Do not attempt or probe shell git, `gh`, local clone, direct private-repository HTTP, web "
+            "scraping, or any other alternate transport. Missing required Connector capability is a "
+            "supported-profile capability failure; diagnose Connector binding, identity, App access, and "
+            "permissions/status within that fixed path."
+        ),
+        INSTALL_FINAL_CHECKPOINT,
+    ),
+    (
+        "GAME/CORE/BOOTSTRAP_RUNTIME.md",
+        (
+            "Use connected GitHub Connector as normal transport for campaign-storage reads/writes and "
+            "GitHub identity/metadata.\n\nDo not first use shell git, `gh`, local clone/pull, direct private "
+            "HTTP or web scraping. Do not copy engine blobs/tree objects into campaign storage and do not "
+            "reconstruct engine from GitHub."
+        ),
+        (
+            "Use connected GitHub Connector as the only permitted transport for campaign-storage reads/writes "
+            "and GitHub identity/metadata.\n\nDo not attempt or probe shell git, `gh`, local clone/pull, direct "
+            "private HTTP, web scraping, or any other alternate transport. Missing required Connector capability "
+            "is a supported-profile capability failure. Do not copy engine blobs/tree objects into campaign "
+            "storage and do not reconstruct engine from GitHub."
+        ),
+        CORE_BOOTSTRAP_FINAL_CHECKPOINT,
+    ),
+    (
+        "GAME/CORE/RANDOMNESS.md",
+        (
+            "Maintain the compact operational trace required by `MECHANICS_INTEGRITY.md` during the current "
+            "action sequence/encounter.\n\nWhen randomness materially causes durable state, the semantic record "
+            "may include:"
+        ),
+        (
+            "Maintain the compact operational trace required by `MECHANICS_INTEGRITY.md` during the current "
+            "action sequence/encounter. When a Resolution or Continuation carrying accepted fixed RNG can survive "
+            "suspension or recovery, retain that result with its Resolution/Continuation closure; on resume, "
+            "restore and reuse it rather than rerolling. This does not require Git logging every trivial roll.\n\n"
+            "When randomness materially causes durable state, the semantic record may include:"
+        ),
+        SHIPPED_INTEGRATION_CHECKPOINT,
+    ),
+    (
+        "GAME/CORE/EXPLORATION.md",
+        "For complex tactical spaces, create a compact spatial record/map rather than repeatedly reconstructing geometry from prose.",
+        (
+            "For complex tactical spaces, retain only the bounded location/procedure/applicability facts needed "
+            "by the current decision. Do not introduce a generic spatial record/map, pathfinding engine, or "
+            "geometry authority."
+        ),
+        SHIPPED_INTEGRATION_CHECKPOINT,
+    ),
+)
+
 
 def reconcile_text(source: str, repair: FinalWriterRepair) -> str:
     stale_count = source.count(repair.stale_fragment)
@@ -163,6 +266,25 @@ def repair_for(relative_path: str) -> FinalWriterRepair:
     return next(repair for repair in REPAIR_INPUTS if repair.path == ROOT / relative_path)
 
 
+def repair_identities(
+    repairs: tuple[FinalWriterRepair, ...],
+) -> tuple[tuple[str, str, str, str], ...]:
+    return tuple(
+        (
+            repair.path.relative_to(ROOT).as_posix(),
+            repair.stale_fragment,
+            repair.replacement,
+            repair.final_checkpoint,
+        )
+        for repair in repairs
+    )
+
+
+def historical_domain_module_aliases(relative_path: str, source: bytes) -> list[str]:
+    material = relative_path.encode("utf-8") + b"\n" + source
+    return [match.group().decode("ascii") for match in HISTORICAL_RUNTIME_DOMAIN_ALIAS.finditer(material)]
+
+
 class CoreCurrentProjectionTests(unittest.TestCase):
     def test_domain_rules_coverage_remains_absent_from_all_runtime_paths_and_references(self) -> None:
         historical_path = CORE / "DOMAIN_RULES_COVERAGE.md"
@@ -171,15 +293,40 @@ class CoreCurrentProjectionTests(unittest.TestCase):
         historical_hits = []
         for game_path in GAME.rglob("*"):
             relative_path = game_path.relative_to(GAME).as_posix()
-            if any(alias.casefold() in relative_path.casefold() for alias in HISTORICAL_RUNTIME_DOMAIN_ALIASES):
-                historical_hits.append(relative_path)
             if game_path.is_file():
-                source = game_path.read_bytes().lower()
-                for alias in HISTORICAL_RUNTIME_DOMAIN_ALIASES:
-                    if alias.casefold().encode("utf-8") in source:
-                        historical_hits.append(f"{relative_path}: {alias}")
+                aliases = historical_domain_module_aliases(relative_path, game_path.read_bytes())
+                historical_hits.extend(f"{relative_path}: {alias}" for alias in aliases)
+            else:
+                aliases = historical_domain_module_aliases(relative_path, b"")
+                historical_hits.extend(f"{relative_path}: {alias}" for alias in aliases)
 
         self.assertEqual([], historical_hits)
+
+    def test_domain_module_guard_rejects_stem_and_python_aliases_but_allows_current_closure_vocabulary(self) -> None:
+        self.assertEqual(
+            ["domain_rules_coverage.py"],
+            historical_domain_module_aliases("TOOLS/domain_rules_coverage.py", b""),
+        )
+        self.assertEqual(
+            ["DOMAIN_RULES_COVERAGE"],
+            historical_domain_module_aliases("TOOLS/other.py", b"import DOMAIN_RULES_COVERAGE"),
+        )
+        self.assertEqual(
+            [],
+            historical_domain_module_aliases(
+                "TOOLS/ruleset_package.py", CURRENT_DOMAIN_CLOSURE_VOCABULARY
+            ),
+        )
+
+    def test_repair_inputs_match_the_exact_seven_approved_records_without_duplicates(self) -> None:
+        actual_identities = repair_identities(REPAIR_INPUTS)
+
+        self.assertEqual(APPROVED_REPAIR_IDENTITIES, actual_identities)
+        self.assertEqual(7, len(actual_identities))
+        self.assertNotEqual(
+            APPROVED_REPAIR_IDENTITIES,
+            repair_identities(REPAIR_INPUTS + (REPAIR_INPUTS[0],)),
+        )
 
     def test_repair_inputs_have_the_exact_six_path_to_final_writer_mapping(self) -> None:
         actual_paths = {repair.path for repair in REPAIR_INPUTS}
