@@ -12,6 +12,23 @@ CORE = GAME / "CORE"
 
 INSTALL_FINAL_CHECKPOINT = "RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION_READY"
 CORE_BOOTSTRAP_FINAL_CHECKPOINT = "CORE_BOOTSTRAP_RUNTIME_FINAL_INTEGRATION_READY"
+SHIPPED_INTEGRATION_CHECKPOINT = "W05_SHIPPED_INTEGRATION_READY"
+
+EXPECTED_FINAL_WRITERS = {
+    INSTALL / "README.md": INSTALL_FINAL_CHECKPOINT,
+    INSTALL / "PROJECT_INSTRUCTIONS.txt": INSTALL_FINAL_CHECKPOINT,
+    INSTALL / "00_DND_BOOTSTRAP.md": INSTALL_FINAL_CHECKPOINT,
+    CORE / "BOOTSTRAP_RUNTIME.md": CORE_BOOTSTRAP_FINAL_CHECKPOINT,
+    CORE / "RANDOMNESS.md": SHIPPED_INTEGRATION_CHECKPOINT,
+    CORE / "EXPLORATION.md": SHIPPED_INTEGRATION_CHECKPOINT,
+}
+
+HISTORICAL_RUNTIME_DOMAIN_ALIASES = (
+    "DOMAIN_RULES_COVERAGE.md",
+    "domain_rules_coverage.md",
+    "CORE/DOMAIN_RULES_COVERAGE",
+    "core/domain_rules_coverage",
+)
 
 
 @dataclass(frozen=True)
@@ -25,8 +42,14 @@ class FinalWriterRepair:
 REPAIR_INPUTS: tuple[FinalWriterRepair, ...] = (
     FinalWriterRepair(
         path=INSTALL / "README.md",
-        stale_fragment="- ChatGPT Project;",
-        replacement="- ChatGPT Plus (supported MVP plan);\n- ChatGPT Project;",
+        stale_fragment=(
+            "## Что нужно\n\n- ChatGPT Project;\n- один или несколько runtime ZIP вида "
+            "`hedgelion-dnd-master-runtime-vX.Y.zip`"
+        ),
+        replacement=(
+            "## Что нужно\n\n- ChatGPT Plus (supported MVP plan);\n- ChatGPT Project;\n"
+            "- один или несколько runtime ZIP вида `hedgelion-dnd-master-runtime-vX.Y.zip`"
+        ),
         final_checkpoint=INSTALL_FINAL_CHECKPOINT,
     ),
     FinalWriterRepair(
@@ -121,11 +144,15 @@ REPAIR_INPUTS: tuple[FinalWriterRepair, ...] = (
 
 
 def reconcile_text(source: str, repair: FinalWriterRepair) -> str:
-    if repair.replacement in source:
+    stale_count = source.count(repair.stale_fragment)
+    replacement_count = source.count(repair.replacement)
+    if stale_count == 1 and replacement_count == 0:
+        return source.replace(repair.stale_fragment, repair.replacement, 1)
+    if stale_count == 0 and replacement_count == 1:
         return source
-    if repair.stale_fragment in source:
-        return source.replace(repair.stale_fragment, repair.replacement)
-    raise AssertionError(f"{repair.path.relative_to(ROOT)} lacks its admitted stale or repaired form")
+    raise AssertionError(
+        f"{repair.path.relative_to(ROOT)} must contain exactly one stale or repaired form"
+    )
 
 
 def reconciled_source(repair: FinalWriterRepair) -> str:
@@ -137,13 +164,35 @@ def repair_for(relative_path: str) -> FinalWriterRepair:
 
 
 class CoreCurrentProjectionTests(unittest.TestCase):
-    def test_domain_rules_coverage_remains_an_absent_runtime_path_without_alias_consumers(self) -> None:
+    def test_domain_rules_coverage_remains_absent_from_all_runtime_paths_and_references(self) -> None:
         historical_path = CORE / "DOMAIN_RULES_COVERAGE.md"
 
         self.assertFalse(historical_path.exists())
-        self.assertEqual([], list(CORE.glob("DOMAIN_RULES_COVERAGE*")))
-        for core_file in CORE.glob("*.md"):
-            self.assertNotIn("DOMAIN_RULES_COVERAGE", core_file.read_text(encoding="utf-8"))
+        historical_hits = []
+        for game_path in GAME.rglob("*"):
+            relative_path = game_path.relative_to(GAME).as_posix()
+            if any(alias.casefold() in relative_path.casefold() for alias in HISTORICAL_RUNTIME_DOMAIN_ALIASES):
+                historical_hits.append(relative_path)
+            if game_path.is_file():
+                source = game_path.read_bytes().lower()
+                for alias in HISTORICAL_RUNTIME_DOMAIN_ALIASES:
+                    if alias.casefold().encode("utf-8") in source:
+                        historical_hits.append(f"{relative_path}: {alias}")
+
+        self.assertEqual([], historical_hits)
+
+    def test_repair_inputs_have_the_exact_six_path_to_final_writer_mapping(self) -> None:
+        actual_paths = {repair.path for repair in REPAIR_INPUTS}
+        actual_mapping = {
+            path: {repair.final_checkpoint for repair in REPAIR_INPUTS if repair.path == path}
+            for path in actual_paths
+        }
+
+        self.assertEqual(set(EXPECTED_FINAL_WRITERS), actual_paths)
+        self.assertEqual(
+            {path: {checkpoint} for path, checkpoint in EXPECTED_FINAL_WRITERS.items()},
+            actual_mapping,
+        )
 
     def test_nonshared_core_repair_inputs_flow_to_the_wave_five_shipped_integration_writer(self) -> None:
         expected_paths = ("GAME/CORE/RANDOMNESS.md", "GAME/CORE/EXPLORATION.md")
@@ -192,21 +241,34 @@ class InstallProjectionTests(unittest.TestCase):
     def test_repaired_project_instructions_remain_identical_in_both_install_projections(self) -> None:
         readme = (INSTALL / "README.md").read_text(encoding="utf-8")
         for repair in REPAIR_INPUTS:
-            if repair.path == INSTALL / "README.md" and repair.stale_fragment in readme:
-                readme = readme.replace(repair.stale_fragment, repair.replacement)
+            if repair.path == INSTALL / "README.md":
+                readme = reconcile_text(readme, repair)
 
         marker = "```text\n"
         embedded = readme.split(marker, 1)[1].split("\n```", 1)[0]
         instructions = (INSTALL / "PROJECT_INSTRUCTIONS.txt").read_text(encoding="utf-8")
         for repair in REPAIR_INPUTS:
-            if repair.path == INSTALL / "PROJECT_INSTRUCTIONS.txt" and repair.stale_fragment in instructions:
-                instructions = instructions.replace(repair.stale_fragment, repair.replacement)
+            if repair.path == INSTALL / "PROJECT_INSTRUCTIONS.txt":
+                instructions = reconcile_text(instructions, repair)
 
         self.assertEqual(embedded, instructions.rstrip("\n"))
 
     def test_repair_inputs_are_idempotent_after_the_final_writer_applies_them(self) -> None:
         for repair in REPAIR_INPUTS:
             self.assertEqual(repair.replacement, reconcile_text(repair.replacement, repair))
+
+    def test_reconciliation_requires_exactly_one_stale_or_repaired_form_and_one_replacement(self) -> None:
+        for repair in REPAIR_INPUTS:
+            self.assertEqual(repair.replacement, reconcile_text(repair.stale_fragment, repair))
+            self.assertEqual(repair.replacement, reconcile_text(repair.replacement, repair))
+            for invalid_source in (
+                "",
+                repair.stale_fragment * 2,
+                repair.replacement * 2,
+                repair.stale_fragment + repair.replacement,
+            ):
+                with self.assertRaises(AssertionError):
+                    reconcile_text(invalid_source, repair)
 
 
 class RandomnessProjectionTests(unittest.TestCase):
