@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/world-connection-state.schema.json",
+  "title": "HDM world.connection state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["from_location_id", "to_location_id"],
+  "properties": {
+    "from_location_id": {"$ref": "#/$defs/id"},
+    "to_location_id": {"$ref": "#/$defs/id"},
+    "direction": {"type": "string", "minLength": 1},
+    "traversal_activity_id": {"$ref": "#/$defs/id"},
+    "status": {"type": "object"},
+    "requirements": {"type": "object"},
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+  }
+}

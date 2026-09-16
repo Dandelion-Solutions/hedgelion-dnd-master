@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/world-contract-state.schema.json",
+  "title": "HDM world.contract state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["party_ids", "terms", "status"],
+  "properties": {
+    "party_ids": {"$ref": "#/$defs/idSet"},
+    "terms": {"type": "object"},
+    "status": {"type": "object"},
+    "obligations": {"type": "object"},
+    "deadlines": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/id"},
+      "additionalProperties": {"$ref": "https://hedgelion.invalid/schemas/temporal-binding.schema.json"}
+    },
+    "collateral_asset_ids": {"$ref": "#/$defs/idSet"},
+    "breach_consequences": {"type": "object"},
+    "details": {"type": "object"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+  }
+}

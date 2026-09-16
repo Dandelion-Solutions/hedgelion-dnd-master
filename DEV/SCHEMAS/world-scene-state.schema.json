@@ -1,15 +1,15 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://hedgelion.invalid/schemas/world-location-state.schema.json",
-  "title": "HDM world.location state",
+  "$id": "https://hedgelion.invalid/schemas/world-scene-state.schema.json",
+  "title": "HDM world.scene state",
   "type": "object",
   "additionalProperties": false,
   "required": ["name"],
   "properties": {
     "name": {"type": "string", "minLength": 1},
-    "parent_location_id": {"$ref": "#/$defs/id"},
-    "organization_id": {"$ref": "#/$defs/id"},
-    "environment_ids": {"$ref": "#/$defs/idSet"},
+    "location_id": {"$ref": "#/$defs/id"},
+    "participant_ids": {"$ref": "#/$defs/idSet"},
+    "focal_entity_ids": {"$ref": "#/$defs/idSet"},
     "status": {"type": "object"},
     "details": {"type": "object"}
   },
@@ -18,4 +18,3 @@
     "idSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
   }
 }
-
