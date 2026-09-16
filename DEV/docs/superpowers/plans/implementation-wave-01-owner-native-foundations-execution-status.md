@@ -6,8 +6,8 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `2746530e868e968bf985fe19448a9d475a8c70ec`
 
 STATUS: EXECUTING
-CURRENT_TASK: W01.T01 and W01.T07 review-repair lanes
-LAST_COMPLETED_TASK: W01.T03
+CURRENT_TASK: W01.T09 review-repair lane
+LAST_COMPLETED_TASK: W01.T07
 LAST_SAFE_SHA: `aa9d5506714f3235ccce99583f31c0df852e61b5`
 
 ## Dependency schedule
@@ -32,6 +32,8 @@ COMPLETED_TASKS:
   W01.T10 -> `07754ce5b7fcdf1d6f24d0054217e81bc37be8e0` + `a3d461fd4d3eaba91e5226ac6e2626f569b643f3` + `06d46cdd6e9049df81b33dbbcf924641b42a54dd`; task review repaired and re-review PASS; `W01_CAMPAIGN_IDENTITY_READY`, `W01_SCAFFOLD_INPUT_CONTRACT_READY`
   W01.T03 -> `0f21d800c53ea1885754f0372deafc8dca9be44e` + `1b4e3cf10b2e57ae2f8433cc899e8c1eec6f8ebc` + `ad391f9c5d8b99db7dad9cc4e541bae125a575c6` + `2d5a9c9807e222f8a34fe50ecfcfb201c674dbc0` + `78b2eb3b881c1734c453f1c4decb798f30d15854` + `a4499b5d04d50b3f22683b1f81002f9659620aa5`; task review/re-review PASS; `W01_ACTOR_ASSET_EFFECT_READY`
   W01.T08 -> `ece9b2e2f6b85c235caabcfd979c181e087af379` + `0b58cb1f536c8ba6b4abd10c5ae774fc57edfcce` + `65e40288a6f356434e8e8e841e94626decc6b256` + `775f083f4ea6173e3c08b72537af6ceeb3ee6b09` + `00ce240366b3708c1cde7255b9174a992d9720da` + `d19cd2ef659cfdd5bdcba106b8ac9b5f43241930`; task review repaired through round 5 and re-review PASS; `W01_CATALOG_CONTEXT_READY`
+  W01.T01 -> `6db27ffa0563b497faf2e2b3341035505488f5e6` + `087d2b5de06008ecc447f3fc6dfa2671991cf1c0` + `d228892cd434749d8342f04e1030beeec7b953e8`; task review/re-review PASS; `W01_CURRENT_PROJECTIONS_READY` as Wave-05 repair-input readiness only
+  W01.T07 -> `10c42a17ef0478fc897bc0951ac1a6fa8a87dfc2` + `470720e0a054bcdad3ac1798cf44e3490d5594af` + `249805cfa78221d6b40e2d77b3257efe3048a41c` + `e232517f96ef12a11cefff8b1625e9d6224a8754` + `fa15bb31c86f8f23c41dcb5cadc7ca66f2d84d11`; task review/re-review PASS; `W01_HISTORY_STORY_OWNER_READY`
 
 ## W01.T02 completion evidence
 
@@ -115,11 +117,19 @@ published commit/remote read-back: pending this coordinator checkpoint
 newly eligible dependent tasks: applicable Wave 02 consumers remain expressly out of current scope
 ```
 
-CURRENT_VERIFICATION_STATE: W01.T03 closure focused suite 25 passed and maintenance audit PASS at `a4499b5d04d50b3f22683b1f81002f9659620aa5`; publication/read-back pending this coordinator checkpoint
-VERSION_IMPACT: W01.T02 GAME/CORE/INFORMATION.md 0.1.2 -> 1.0.4; W01.T04 GAME/SCHEMA/index.schema.yaml 1 -> 2; W01.T05/T06/T08/T10 NONE; other integrated namespaces NONE
+## W01.T01 and W01.T07 completion evidence
+
+```text
+W01.T01: focused reconciliation suite 11 passed after coordinator integration; worker full DEV discovery 607 passed, 1 skipped; maintenance audit PASS; VERSION_IMPACT NONE. Exact stale witnesses map to bounded Wave-05 repair inputs only; deferred shipped bytes are unchanged.
+W01.T07: focused Story suite 21 passed after coordinator integration; worker full DEV discovery 617 passed, 1 skipped; maintenance audit PASS; VERSION_IMPACT NONE. Owner-native ingress rejects 1.0, True, strings, null and 2; the explicit Draft 2020-12 test documents that generic structural validation may accept numeric 1.0. No generic lexical validator exists.
+Publication/read-back is pending this coordinator checkpoint.
+```
+
+CURRENT_VERIFICATION_STATE: W01.T01 and W01.T07 integration focused suites and maintenance audits PASS; publication/read-back pending this coordinator checkpoint
+VERSION_IMPACT: W01.T02 GAME/CORE/INFORMATION.md 0.1.2 -> 1.0.4; W01.T04 GAME/SCHEMA/index.schema.yaml 1 -> 2; W01.T01/T05/T06/T07/T08/T10 NONE; other integrated namespaces NONE
 SYSTEM_IMPACT: NONE - Senior rulings accepted: T01 creates Wave-05 repair inputs only; T03 retains physical legacy residue until Wave 05; T07 uses owner-native ingress without generic lexical validation
-NEXT_EXACT_TASK: publish W01.T03 closure, complete/review T01 and T07, then execute T09; do not start Wave 02
-KNOWN_BLOCKERS: NONE after the targeted rulings; W01.T09 becomes eligible after this W01.T03 publication
+NEXT_EXACT_TASK: publish T01/T07 integration state, complete/review T09, then run Wave-01 final verification; do not start Wave 02
+KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE
 
 ## Exact-head checkpoint verification
