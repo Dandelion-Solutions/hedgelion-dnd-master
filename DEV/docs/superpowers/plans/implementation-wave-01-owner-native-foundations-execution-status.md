@@ -26,9 +26,9 @@ Hard dependencies:
 
 COMPLETED_TASKS: none
 
-CURRENT_VERIFICATION_STATE: fresh `origin/v1/engine-rearchitecture` read at `2746530e868e968bf985fe19448a9d475a8c70ec`; implementation authorization recorded by current progress
+CURRENT_VERIFICATION_STATE: fresh remote state, maintenance audit, and remote cursor read-back at `2e5636cd0bdfd569fef3fd8afe538dde7e818093`; implementation authorization recorded by current progress
 VERSION_IMPACT: NONE - execution cursor only; no semantic, runtime, schema, catalog, or version-namespace owner changes
 SYSTEM_IMPACT: NONE
 NEXT_EXACT_TASK: dispatch up to five dependency-valid Wave 01 owner-local tasks in isolated worktrees; do not start Wave 02
 KNOWN_BLOCKERS: none
-UNPUBLISHED_WORK: this new execution cursor awaits its coordinator checkpoint
+UNPUBLISHED_WORK: NONE
