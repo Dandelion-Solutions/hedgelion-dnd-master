@@ -142,7 +142,7 @@ Apply one final physical writer and one exact local-version transition for each 
 | player | 1 -> 2 | principal binding + collaboration strict state |
 | campaign_manifest | 4 -> 5 | manifest membership retirement + bootstrap scaffold |
 
-`session` remains version 1 unless the fresh implementation reveals and separately proves a breaking retained-shape change. Retired pc/npc/item/faction contracts get no terminal bump. Do not add migration, dual-read or deprecated aliases solely for unreleased pre-v1 shapes.
+`session` remains version 1 unless the fresh implementation reveals and separately proves a breaking retained-shape change. Retire `pc.schema.yaml`, `npc.schema.yaml` and `item.schema.yaml` only in this final control-plane cutover, after `audit_engine.py` and every remaining legacy-schema consumer are reconciled; retired pc/npc/item/faction contracts get no terminal bump. Do not add migration, dual-read or deprecated aliases solely for unreleased pre-v1 shapes.
 
 Integrate the durability/publication and recovery/currentness deltas to `GAME/SCHEMA/session.schema.yaml` once and close `SESSION_SCHEMA_FINAL_INTEGRATION_READY`; retaining schema version 1 requires proof that its accepted wire shape did not break.
 

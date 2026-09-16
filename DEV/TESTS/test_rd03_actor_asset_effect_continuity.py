@@ -509,6 +509,37 @@ class LegacyEntityProjectionTests(unittest.TestCase):
                 }
             )
 
+    def test_native_schemas_are_current_while_legacy_retirement_is_a_wave_five_cutover(self) -> None:
+        native_schemas = {
+            "actor.schema.yaml": "state is the sole native Actor state authority",
+            "asset.schema.yaml": "current asset knowledge and legal ownership are not Asset-state aliases",
+            "effect.schema.yaml": "one record is one target-local Effect application",
+        }
+        for filename, authority_marker in native_schemas.items():
+            with self.subTest(native_schema=filename):
+                text = (ROOT / "GAME" / "SCHEMA" / filename).read_text(encoding="utf-8")
+                self.assertIn("strict: true", text)
+                self.assertIn(authority_marker, text)
+
+        legacy_schema_names = ("pc.schema.yaml", "npc.schema.yaml", "item.schema.yaml")
+        for filename in legacy_schema_names:
+            with self.subTest(legacy_schema=filename):
+                self.assertTrue((ROOT / "GAME" / "SCHEMA" / filename).is_file())
+
+        runtime_legacy_references = [
+            path.relative_to(ROOT)
+            for path in (ROOT / "GAME" / "TOOLS").rglob("*.py")
+            if any(name in path.read_text(encoding="utf-8") for name in legacy_schema_names)
+        ]
+        self.assertEqual(runtime_legacy_references, [])
+
+        wave_five = (
+            ROOT / "DEV" / "docs" / "superpowers" / "plans"
+            / "implementation-wave-05-machine-bootstrap-integration.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Retire `pc.schema.yaml`, `npc.schema.yaml` and `item.schema.yaml`", wave_five)
+        self.assertIn("`audit_engine.py` and every remaining legacy-schema consumer", wave_five)
+
 
 class ProvisionalActorConsumerTests(unittest.TestCase):
     def test_provisional_actor_cannot_be_promoted_by_continuity_projection(self) -> None:
