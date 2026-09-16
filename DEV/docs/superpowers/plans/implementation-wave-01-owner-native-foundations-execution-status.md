@@ -5,10 +5,10 @@ WAVE: `DEV/docs/superpowers/plans/implementation-wave-01-owner-native-foundation
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `2746530e868e968bf985fe19448a9d475a8c70ec`
 
-STATUS: EXECUTING
-CURRENT_TASK: W01.T08 final review/integration and the named W01 impact-ruling lanes
-LAST_COMPLETED_TASK: W01.T10
-LAST_SAFE_SHA: `e9c71885e14ebdfc2119d8950cd6eddf464818d3`
+STATUS: SENIOR_REVIEW_REQUIRED
+CURRENT_TASK: named W01 System-Impact rulings only
+LAST_COMPLETED_TASK: W01.T08
+LAST_SAFE_SHA: `78599e549adbb5c7727d5b62fafd16d8e7e208e1`
 
 ## Dependency schedule
 
@@ -31,6 +31,7 @@ COMPLETED_TASKS:
   W01.T06 -> `b70ca6a3cc3dd42dded39fe0d01ebd9dc40c0876` + `e8c94e76c57e2a9270f7afea23d28ef7717aa7d2` + `0f3ef238bee0ccea43a3788fc6d7336bae626b5c`; task review repaired and re-review PASS; `W01_ROLE_CONTRACT_READY`, `W01_CONTEXT_OWNER_READY`
   W01.T10 -> `07754ce5b7fcdf1d6f24d0054217e81bc37be8e0` + `a3d461fd4d3eaba91e5226ac6e2626f569b643f3` + `06d46cdd6e9049df81b33dbbcf924641b42a54dd`; task review repaired and re-review PASS; `W01_CAMPAIGN_IDENTITY_READY`, `W01_SCAFFOLD_INPUT_CONTRACT_READY`
   W01.T03 safe partial -> `0f21d800c53ea1885754f0372deafc8dca9be44e` + `1b4e3cf10b2e57ae2f8433cc899e8c1eec6f8ebc` + `ad391f9c5d8b99db7dad9cc4e541bae125a575c6` + `2d5a9c9807e222f8a34fe50ecfcfb201c674dbc0` + `78b2eb3b881c1734c453f1c4decb798f30d15854`; reviews PASS for the safe slice; `W01_ACTOR_ASSET_EFFECT_READY` intentionally withheld
+  W01.T08 -> `ece9b2e2f6b85c235caabcfd979c181e087af379` + `0b58cb1f536c8ba6b4abd10c5ae774fc57edfcce` + `65e40288a6f356434e8e8e841e94626decc6b256` + `775f083f4ea6173e3c08b72537af6ceeb3ee6b09` + `00ce240366b3708c1cde7255b9174a992d9720da` + `d19cd2ef659cfdd5bdcba106b8ac9b5f43241930`; task review repaired through round 5 and re-review PASS; `W01_CATALOG_CONTEXT_READY`
 
 ## W01.T02 completion evidence
 
@@ -100,9 +101,23 @@ produced checkpoint: NONE - W01_ACTOR_ASSET_EFFECT_READY is withheld
 published commit/remote read-back: pending this coordinator checkpoint
 ```
 
-CURRENT_VERIFICATION_STATE: W01.T03 safe-slice integration focused test and maintenance audit PASS at `78b2eb3b881c1734c453f1c4decb798f30d15854`; its safe publication/read-back is pending this coordinator checkpoint
-VERSION_IMPACT: W01.T02 GAME/CORE/INFORMATION.md 0.1.2 -> 1.0.4; W01.T04 GAME/SCHEMA/index.schema.yaml 1 -> 2; W01.T05/T06/T10 NONE; other integrated namespaces NONE
+## W01.T08 completion evidence
+
+```text
+focused RED observed: absent catalog runtime, forged/caller-attested package and natural-owner evidence, missing or ambient frontier, malformed dependencies
+focused GREEN observed: DEV.TESTS.test_rd15_catalog_runtime (31 passed after coordinator integration)
+task-local suite: worker full DEV discovery 596 passed, 1 skipped; maintenance audit PASS
+integration/static witnesses: immutable owner-byte digest reconstruction, package/natural-owner source separation, exact inventory evidence, and no ambient/latest fallback
+actual Impact Envelope vs planned: within W01.T08 owner-local paths; final shared catalog/identifier writers untouched
+Version Impact result: NONE - final first publication of the new catalog-context fingerprint is generation 1 under the reviewed Version Gate ruling
+schema/catalog/checkpoint result: W01_CATALOG_CONTEXT_READY
+published commit/remote read-back: pending this coordinator checkpoint
+newly eligible dependent tasks: applicable Wave 02 consumers remain expressly out of current scope
+```
+
+CURRENT_VERIFICATION_STATE: W01.T08 integration focused test and maintenance audit PASS at `d19cd2ef659cfdd5bdcba106b8ac9b5f43241930`; final coordinator publication/read-back pending this checkpoint
+VERSION_IMPACT: W01.T02 GAME/CORE/INFORMATION.md 0.1.2 -> 1.0.4; W01.T04 GAME/SCHEMA/index.schema.yaml 1 -> 2; W01.T05/T06/T08/T10 NONE; other integrated namespaces NONE
 SYSTEM_IMPACT: W01.T01 SENIOR_REVIEW_REQUIRED (deferred final-writer contradiction); W01.T03 SENIOR_REVIEW_REQUIRED (legacy schema retirement/audit consumer); W01.T07 SENIOR_REVIEW_REQUIRED (generic lexical schema-validation policy)
-NEXT_EXACT_TASK: publish this checkpoint, complete W01.T03 safe-slice and W01.T08 review/integration, and await only the named Senior impact rulings; do not start Wave 02
-KNOWN_BLOCKERS: W01.T01, W01.T03, and W01.T07 await their separate Senior rulings; W01.T09 remains ineligible without W01.T03 output
+NEXT_EXACT_TASK: await Senior rulings for W01.T01, W01.T03, and W01.T07; only then resume their affected lanes and re-evaluate W01.T09; do not start Wave 02
+KNOWN_BLOCKERS: W01.T01 deferred-final-writer contradiction; W01.T03 legacy-retirement/audit-consumer contradiction; W01.T07 generic lexical schema-validation policy; W01.T09 is ineligible without W01.T03 output
 UNPUBLISHED_WORK: NONE
