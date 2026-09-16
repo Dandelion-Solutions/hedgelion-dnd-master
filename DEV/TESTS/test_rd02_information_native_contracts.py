@@ -4,6 +4,9 @@ import json
 import unittest
 from pathlib import Path
 
+from jsonschema import Draft202012Validator, ValidationError
+from referencing import Registry, Resource
+
 from GAME.TOOLS.information import (
     InformationContractError,
     normalize_embedded_epistemic_input,
@@ -14,9 +17,24 @@ from GAME.TOOLS.information import (
 
 
 ROOT = Path(__file__).resolve().parents[2]
+SCHEMAS = ROOT / "DEV" / "SCHEMAS"
+
+
+def _schema_registry() -> tuple[Registry, dict[str, object]]:
+    registry = Registry()
+    schemas: dict[str, object] = {}
+    for path in SCHEMAS.glob("*.schema.json"):
+        schema = json.loads(path.read_text(encoding="utf-8"))
+        schemas[path.name] = schema
+        registry = registry.with_resource(schema["$id"], Resource.from_contents(schema))
+    return registry, schemas
 
 
 class NativeInformationSchemaTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.registry, cls.schemas = _schema_registry()
+
     def test_owner_native_schemas_are_strict_and_preserve_distinct_authorities(self) -> None:
         schema_names = (
             "information-normalization-result.schema.json",
@@ -33,11 +51,11 @@ class NativeInformationSchemaTests(unittest.TestCase):
         self.assertTrue(all(schema["additionalProperties"] is False for schema in schemas.values()))
         self.assertEqual(
             schemas["world-lore-fact-state.schema.json"]["required"],
-            ["statement", "truth_status", "record_status"],
+            ["fact_id", "statement", "truth_status", "record_status"],
         )
         self.assertEqual(
             schemas["world-knowledge-state.schema.json"]["required"],
-            ["knower_id", "fact_id", "stance"],
+            ["knower_id", "fact_id", "stance", "supporting_source_refs"],
         )
         self.assertEqual(
             schemas["runtime-disclosure-state.schema.json"]["required"],
@@ -48,57 +66,108 @@ class NativeInformationSchemaTests(unittest.TestCase):
             ["message_id", "interaction_id", "direction", "recipient_player_id", "payload_state", "content_digest"],
         )
 
+    def test_normalizer_output_satisfies_strict_draft_2020_12_result_schema(self) -> None:
+        result = normalize_information_evidence(_native_information_input())
 
-class InformationNormalizationTests(unittest.TestCase):
-    def test_normalizes_accepted_evidence_into_lore_knowledge_disclosure_and_message(self) -> None:
-        result = normalize_information_evidence(
-            {
-                "fact": {
-                    "fact_id": "fact.duke_vampire",
+        Draft202012Validator(
+            self.schemas["information-normalization-result.schema.json"],
+            registry=self.registry,
+        ).validate(result)
+
+    def test_schemas_reject_missing_provenance_and_invalid_native_ids(self) -> None:
+        lore_validator = Draft202012Validator(
+            self.schemas["world-lore-fact-state.schema.json"], registry=self.registry
+        )
+        knowledge_validator = Draft202012Validator(
+            self.schemas["world-knowledge-state.schema.json"], registry=self.registry
+        )
+
+        with self.assertRaises(ValidationError):
+            lore_validator.validate(
+                {
                     "statement": "The duke is a vampire.",
                     "truth_status": "truth.established",
                     "record_status": "lore_record.active",
-                    "provenance_refs": ["semantic.001"],
-                    "last_truth_transition_ref": "semantic.001",
-                },
-                "knowledge": {
+                }
+            )
+        with self.assertRaises(ValidationError):
+            knowledge_validator.validate(
+                {
                     "knower_id": "actor.aria",
                     "fact_id": "fact.duke_vampire",
                     "stance": "epistemic.known",
+                    "supporting_source_refs": [],
+                }
+            )
+        with self.assertRaises(ValidationError):
+            knowledge_validator.validate(
+                {
+                    "knower_id": "actor.aria",
+                    "fact_id": "1-not-a-native-id",
+                    "stance": "epistemic.known",
                     "supporting_source_refs": ["semantic.001"],
-                    "source_evidence": [
-                        {
-                            "ref": "semantic.001",
-                            "accepted": True,
-                            "current": True,
-                            "authorized_knower_ids": ["actor.aria"],
-                        }
-                    ],
+                }
+            )
+
+
+def _native_information_input() -> dict[str, object]:
+    return {
+        "fact": {
+            "fact_id": "fact.duke_vampire",
+            "statement": "The duke is a vampire.",
+            "truth_status": "truth.established",
+            "record_status": "lore_record.active",
+            "provenance_refs": ["semantic.001"],
+            "last_truth_transition_ref": "semantic.001",
+        },
+        "knowledge": {
+            "knower_id": "actor.aria",
+            "fact_id": "fact.duke_vampire",
+            "stance": "epistemic.known",
+            "supporting_source_refs": ["semantic.001"],
+            "source_evidence": [
+                {
+                    "ref": "semantic.001",
+                    "accepted": True,
+                    "current": True,
+                    "authorized_knower_ids": ["actor.aria"],
+                }
+            ],
+        },
+        "emission": {
+            "message_id": "message.scene.001",
+            "interaction_id": "turn.001",
+            "recipient_player_id": "player.aria",
+            "text": "You confirm the duke is a vampire.",
+            "source_evidence": [
+                {
+                    "ref": "semantic.001",
+                    "accepted": True,
+                    "current": True,
+                    "fact_id": "fact.duke_vampire",
+                    "truth_transition_ref": "semantic.001",
+                }
+            ],
+            "disclosure_refs": [
+                {
+                    "fact_id": "fact.duke_vampire",
+                    "aspect": "disclosure.statement",
+                    "source_ref": "semantic.001",
                 },
-                "emission": {
-                    "message_id": "message.scene.001",
-                    "interaction_id": "turn.001",
-                    "recipient_player_id": "player.aria",
-                    "text": "You confirm the duke is a vampire.",
-                    "source_evidence": [
-                        {"ref": "semantic.001", "accepted": True, "current": True}
-                    ],
-                    "disclosure_refs": [
-                        {
-                            "fact_id": "fact.duke_vampire",
-                            "aspect": "disclosure.statement",
-                            "source_ref": "semantic.001",
-                        },
-                        {
-                            "fact_id": "fact.duke_vampire",
-                            "aspect": "disclosure.objective_status",
-                            "truth_transition_ref": "semantic.001",
-                            "source_ref": "semantic.001",
-                        },
-                    ],
+                {
+                    "fact_id": "fact.duke_vampire",
+                    "aspect": "disclosure.objective_status",
+                    "truth_transition_ref": "semantic.001",
+                    "source_ref": "semantic.001",
                 },
-            }
-        )
+            ],
+        },
+    }
+
+
+class InformationNormalizationTests(unittest.TestCase):
+    def test_normalizes_accepted_evidence_into_lore_knowledge_disclosure_and_message(self) -> None:
+        result = normalize_information_evidence(_native_information_input())
 
         self.assertEqual(result["lore_fact"]["fact_id"], "fact.duke_vampire")
         self.assertEqual(result["knowledge"]["stance"], "epistemic.known")
@@ -137,6 +206,28 @@ class InformationNormalizationTests(unittest.TestCase):
                             "source_evidence": source_evidence,
                         }
                     )
+
+    def test_rejects_unrelated_or_stale_truth_transition_evidence(self) -> None:
+        cases = (
+            ("fact.other", "semantic.001", True),
+            ("fact.duke_vampire", "semantic.other", True),
+            ("fact.duke_vampire", "semantic.001", False),
+        )
+        for evidence_fact_id, evidence_transition_ref, current in cases:
+            with self.subTest(
+                evidence_fact_id=evidence_fact_id,
+                evidence_transition_ref=evidence_transition_ref,
+                current=current,
+            ):
+                value = _native_information_input()
+                evidence = value["emission"]["source_evidence"][0]
+                evidence["fact_id"] = evidence_fact_id
+                evidence["truth_transition_ref"] = evidence_transition_ref
+                evidence["current"] = current
+                with self.assertRaisesRegex(
+                    InformationContractError, "truth-transition evidence|accepted native evidence"
+                ):
+                    normalize_information_evidence(value)
 
 
 class LegacyInformationProjectionTests(unittest.TestCase):

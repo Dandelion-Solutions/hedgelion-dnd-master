@@ -4,8 +4,9 @@
   "title": "HDM world.lore_fact state",
   "type": "object",
   "additionalProperties": false,
-  "required": ["statement", "truth_status", "record_status"],
+  "required": ["fact_id", "statement", "truth_status", "record_status"],
   "properties": {
+    "fact_id": {"$ref": "#/$defs/id"},
     "statement": {"type": "string", "minLength": 1},
     "truth_status": {"enum": ["truth.undetermined", "truth.established", "truth.disproven"]},
     "record_status": {"enum": ["lore_record.active", "lore_record.superseded"]},

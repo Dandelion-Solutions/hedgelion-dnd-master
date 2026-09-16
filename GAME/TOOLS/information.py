@@ -8,6 +8,7 @@ discover evidence, infer knowledge from visibility, or read caches/indexes.
 from __future__ import annotations
 
 import hashlib
+import re
 from collections.abc import Mapping, Sequence
 from typing import Final
 
@@ -28,6 +29,7 @@ EPISTEMIC_STANCES: Final = frozenset(
 DISCLOSURE_ASPECTS: Final = frozenset(
     {"disclosure.statement", "disclosure.objective_status"}
 )
+NATIVE_ID_PATTERN: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 
 
 class InformationContractError(ValueError):
@@ -46,16 +48,23 @@ def _require_nonempty_string(value: object, label: str) -> str:
     return value
 
 
-def _optional_nonempty_string(value: object, label: str) -> str | None:
+def _require_native_id(value: object, label: str) -> str:
+    identifier = _require_nonempty_string(value, label)
+    if NATIVE_ID_PATTERN.fullmatch(identifier) is None:
+        raise InformationContractError(f"{label} must be a schema-compatible native id")
+    return identifier
+
+
+def _optional_native_id(value: object, label: str) -> str | None:
     if value is None:
         return None
-    return _require_nonempty_string(value, label)
+    return _require_native_id(value, label)
 
 
 def _accepted_source_refs(value: object) -> list[str]:
     if not isinstance(value, Sequence) or isinstance(value, str):
         raise InformationContractError("supporting_source_refs must be an array")
-    source_refs = [_require_nonempty_string(source_ref, "source reference") for source_ref in value]
+    source_refs = [_require_native_id(source_ref, "source reference") for source_ref in value]
     if not source_refs:
         raise InformationContractError("knowledge requires accepted native evidence")
     if len(source_refs) != len(set(source_refs)):
@@ -94,13 +103,15 @@ def _validate_source_evidence(
             raise InformationContractError("knowledge evidence is unauthorized")
 
 
-def _validate_disclosure_source_evidence(source_refs: list[str], source_evidence: object) -> None:
+def _validate_disclosure_source_evidence(
+    source_refs: list[str], source_evidence: object
+) -> dict[str, Mapping[str, object]]:
     if not isinstance(source_evidence, Sequence) or isinstance(source_evidence, str):
         raise InformationContractError("disclosure requires accepted native evidence")
     evidence_by_ref: dict[str, Mapping[str, object]] = {}
     for raw_evidence in source_evidence:
         evidence = _require_mapping(raw_evidence, "disclosure source evidence")
-        ref = _require_nonempty_string(evidence.get("ref"), "disclosure source evidence ref")
+        ref = _require_native_id(evidence.get("ref"), "disclosure source evidence ref")
         if ref in evidence_by_ref:
             raise InformationContractError("disclosure source evidence is ambiguous")
         if evidence.get("accepted") is not True or evidence.get("current") is not True:
@@ -108,11 +119,12 @@ def _validate_disclosure_source_evidence(source_refs: list[str], source_evidence
         evidence_by_ref[ref] = evidence
     if any(source_ref not in evidence_by_ref for source_ref in source_refs):
         raise InformationContractError("disclosure requires accepted native evidence")
+    return evidence_by_ref
 
 
 def _validated_fact(value: object) -> dict[str, object]:
     fact = _require_mapping(value, "fact")
-    fact_id = _require_nonempty_string(fact.get("fact_id"), "fact_id")
+    fact_id = _require_native_id(fact.get("fact_id"), "fact_id")
     statement = _require_nonempty_string(fact.get("statement"), "statement")
     truth_status = _require_nonempty_string(fact.get("truth_status"), "truth_status")
     record_status = _require_nonempty_string(fact.get("record_status"), "record_status")
@@ -124,11 +136,11 @@ def _validated_fact(value: object) -> dict[str, object]:
     if not isinstance(provenance_refs, Sequence) or isinstance(provenance_refs, str):
         raise InformationContractError("provenance_refs must be an array")
     normalized_provenance = [
-        _require_nonempty_string(reference, "provenance reference") for reference in provenance_refs
+        _require_native_id(reference, "provenance reference") for reference in provenance_refs
     ]
     if len(normalized_provenance) != len(set(normalized_provenance)):
         raise InformationContractError("provenance_refs are ambiguous")
-    last_transition = _optional_nonempty_string(
+    last_transition = _optional_native_id(
         fact.get("last_truth_transition_ref"), "last_truth_transition_ref"
     )
     result: dict[str, object] = {
@@ -147,8 +159,8 @@ def validate_knowledge_transition(value: object) -> dict[str, object]:
     """Validate one current `(knower_id, fact_id)` epistemic relation."""
 
     knowledge = _require_mapping(value, "knowledge")
-    knower_id = _require_nonempty_string(knowledge.get("knower_id"), "knower_id")
-    fact_id = _require_nonempty_string(knowledge.get("fact_id"), "fact_id")
+    knower_id = _require_native_id(knowledge.get("knower_id"), "knower_id")
+    fact_id = _require_native_id(knowledge.get("fact_id"), "fact_id")
     stance = _require_nonempty_string(knowledge.get("stance"), "stance")
     if stance not in EPISTEMIC_STANCES:
         raise InformationContractError("unsupported epistemic stance")
@@ -160,7 +172,7 @@ def validate_knowledge_transition(value: object) -> dict[str, object]:
         "stance": stance,
         "supporting_source_refs": source_refs,
     }
-    last_changed = _optional_nonempty_string(
+    last_changed = _optional_native_id(
         knowledge.get("last_changed_event_id"), "last_changed_event_id"
     )
     if last_changed is not None:
@@ -189,11 +201,11 @@ def normalize_embedded_epistemic_input(value: object) -> dict[str, object]:
 
 def _normalize_emission(value: object) -> dict[str, object]:
     emission = _require_mapping(value, "emission")
-    recipient_player_id = _require_nonempty_string(
+    recipient_player_id = _require_native_id(
         emission.get("recipient_player_id"), "recipient_player_id"
     )
-    message_id = _require_nonempty_string(emission.get("message_id"), "message_id")
-    interaction_id = _require_nonempty_string(emission.get("interaction_id"), "interaction_id")
+    message_id = _require_native_id(emission.get("message_id"), "message_id")
+    interaction_id = _require_native_id(emission.get("interaction_id"), "interaction_id")
     text = _require_nonempty_string(emission.get("text"), "text")
     disclosure_refs = emission.get("disclosure_refs", [])
     if not isinstance(disclosure_refs, Sequence) or isinstance(disclosure_refs, str):
@@ -208,14 +220,14 @@ def _normalize_emission(value: object) -> dict[str, object]:
         ref_recipient = disclosure_ref.get("player_id", recipient_player_id)
         if ref_recipient != recipient_player_id:
             raise InformationContractError("disclosure recipient does not match message recipient")
-        fact_id = _require_nonempty_string(disclosure_ref.get("fact_id"), "disclosure fact_id")
+        fact_id = _require_native_id(disclosure_ref.get("fact_id"), "disclosure fact_id")
         aspect = _require_nonempty_string(disclosure_ref.get("aspect"), "disclosure aspect")
         if aspect not in DISCLOSURE_ASPECTS:
             raise InformationContractError("unsupported disclosure aspect")
-        source_ref = _require_nonempty_string(disclosure_ref.get("source_ref"), "disclosure source_ref")
+        source_ref = _require_native_id(disclosure_ref.get("source_ref"), "disclosure source_ref")
         disclosure_transition: str | None = None
         if aspect == "disclosure.objective_status":
-            disclosure_transition = _require_nonempty_string(
+            disclosure_transition = _require_native_id(
                 disclosure_ref.get("truth_transition_ref"), "truth_transition_ref"
             )
             if truth_transition_ref is not None and truth_transition_ref != disclosure_transition:
@@ -230,10 +242,24 @@ def _normalize_emission(value: object) -> dict[str, object]:
         raise InformationContractError("one disclosure relation must have one fact_id")
     if len(disclosure_evidence) != len(set(disclosure_evidence)):
         raise InformationContractError("disclosure source evidence is ambiguous")
-    _validate_disclosure_source_evidence(
+    evidence_by_ref = _validate_disclosure_source_evidence(
         list(dict.fromkeys(reference[2] for reference in disclosure_evidence)),
         emission.get("source_evidence"),
     )
+    for fact_id, aspect, source_ref, disclosure_transition in disclosure_evidence:
+        if aspect != "disclosure.objective_status":
+            continue
+        evidence = evidence_by_ref[source_ref]
+        evidence_fact_id = _require_native_id(
+            evidence.get("fact_id"), "truth-transition evidence fact_id"
+        )
+        evidence_transition = _require_native_id(
+            evidence.get("truth_transition_ref"), "truth-transition evidence ref"
+        )
+        if evidence_fact_id != fact_id or evidence_transition != disclosure_transition:
+            raise InformationContractError(
+                "truth-transition evidence does not bind to the disclosed fact"
+            )
 
     message = {
         "message_id": message_id,
