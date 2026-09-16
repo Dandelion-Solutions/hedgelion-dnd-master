@@ -15,7 +15,7 @@ from typing import Literal
 
 _SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
-_CAMPAIGN_BRANCH_RE = re.compile(r"^campaign/\d{8}(?:-\d+)?$")
+_CAMPAIGN_BRANCH_RE = re.compile(r"^campaign/\d{8}(?:-(?:0[2-9]|[1-9]\d+))?$")
 
 SelectionKind = Literal["existing", "new"]
 CreatorAuthority = Literal["creator", "read_only"]
@@ -83,6 +83,7 @@ class BootstrapResult:
     source_commit_sha: str | None
     package_sha256: str
     ruleset_set_sha256: str
+    ruleset_set_digest_generation: int
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -99,6 +100,7 @@ class BootstrapResult:
             "source_commit_sha": self.source_commit_sha,
             "package_sha256": self.package_sha256,
             "ruleset_set_sha256": self.ruleset_set_sha256,
+            "ruleset_set_digest_generation": self.ruleset_set_digest_generation,
         }
 
 
@@ -132,6 +134,7 @@ def create_bootstrap_result(
     source_commit_sha: str | None,
     package_sha256: str,
     ruleset_set_sha256: str,
+    ruleset_set_digest_generation: int,
 ) -> BootstrapResult:
     """Freeze creation identity before a generator or dependent campaign root can exist."""
 
@@ -149,6 +152,7 @@ def create_bootstrap_result(
         source_commit_sha=source_commit_sha,
         package_sha256=package_sha256,
         ruleset_set_sha256=ruleset_set_sha256,
+        ruleset_set_digest_generation=ruleset_set_digest_generation,
     )
     return BootstrapResult(
         selection=selection,
@@ -164,6 +168,7 @@ def create_bootstrap_result(
         source_commit_sha=source_commit_sha,
         package_sha256=package_sha256.lower(),
         ruleset_set_sha256=ruleset_set_sha256.lower(),
+        ruleset_set_digest_generation=ruleset_set_digest_generation,
     )
 
 
@@ -181,6 +186,7 @@ def build_scaffold_input(result: BootstrapResult) -> dict[str, object]:
         "source_commit_sha": result.source_commit_sha,
         "package_sha256": result.package_sha256,
         "ruleset_set_sha256": result.ruleset_set_sha256,
+        "ruleset_set_digest_generation": result.ruleset_set_digest_generation,
     }
 
 
@@ -196,6 +202,7 @@ def _validate_creation_input(
     source_commit_sha: str | None,
     package_sha256: str,
     ruleset_set_sha256: str,
+    ruleset_set_digest_generation: int,
 ) -> None:
     if not storage_repository:
         raise BootstrapContractError("storage repository identity is required")
@@ -219,3 +226,5 @@ def _validate_creation_input(
         raise BootstrapContractError("package SHA-256 must be a lowercase 64-character SHA")
     if not _SHA256_RE.fullmatch(ruleset_set_sha256):
         raise BootstrapContractError("ruleset-set SHA-256 must be a lowercase 64-character SHA")
+    if ruleset_set_digest_generation != 1:
+        raise BootstrapContractError("ruleset-set digest generation must be 1")

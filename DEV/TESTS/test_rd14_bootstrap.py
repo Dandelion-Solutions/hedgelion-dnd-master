@@ -36,20 +36,21 @@ def _creator(login: str = "lina") -> CreatorIdentity:
     return CreatorIdentity(stable_github_user_id="U_kgDOBootstrap", login=login)
 
 
-def _scaffold_input() -> dict[str, object]:
+def _scaffold_input(campaign_branch: str = "campaign/20260916") -> dict[str, object]:
     creation = create_bootstrap_result(
         selection=CampaignSelection.new(),
         storage_repository="github.com/example/campaign-storage",
         pinned_storage_head="a" * 40,
         creator=_creator(),
         mode="multiplayer",
-        campaign_branch="campaign/20260916",
+        campaign_branch=campaign_branch,
         created_at="2026-09-16T12:00:00Z",
         engine_version="1.0-alpha",
         package_id="dev-v1.0-alpha",
         source_commit_sha="b" * 40,
         package_sha256="c" * 64,
         ruleset_set_sha256="d" * 64,
+        ruleset_set_digest_generation=1,
     )
     return build_scaffold_input(creation)
 
@@ -77,6 +78,13 @@ class CreationIdentityTests(unittest.TestCase):
         self.assertRegex(str(scaffold_input["campaign_id"]), r"^campaign\.[0-9a-f]{32}$")
         self.assertEqual(scaffold_input["creator_github_login"], "lina")
         self.assertEqual(scaffold_input["campaign_branch"], "campaign/20260916")
+        self.assertEqual(scaffold_input.get("ruleset_set_digest_generation"), 1)
+
+    def test_creation_accepts_the_first_admitted_collision_suffix(self) -> None:
+        self.assertEqual(
+            _scaffold_input("campaign/20260916-02")["campaign_branch"],
+            "campaign/20260916-02",
+        )
 
     def test_creation_rejects_missing_or_ambiguous_identity_material(self) -> None:
         with self.assertRaises(BootstrapContractError):
@@ -93,6 +101,23 @@ class CreationIdentityTests(unittest.TestCase):
                 source_commit_sha=None,
                 package_sha256="c" * 64,
                 ruleset_set_sha256="d" * 64,
+                ruleset_set_digest_generation=1,
+            )
+        with self.assertRaisesRegex(BootstrapContractError, "digest generation"):
+            create_bootstrap_result(
+                selection=CampaignSelection.new(),
+                storage_repository="github.com/example/campaign-storage",
+                pinned_storage_head="a" * 40,
+                creator=_creator(),
+                mode="singleplayer",
+                campaign_branch="campaign/20260916-02",
+                created_at="2026-09-16T12:00:00Z",
+                engine_version="1.0-alpha",
+                package_id="dev-v1.0-alpha",
+                source_commit_sha=None,
+                package_sha256="c" * 64,
+                ruleset_set_sha256="d" * 64,
+                ruleset_set_digest_generation=2,
             )
         with self.assertRaises(BootstrapContractError):
             create_bootstrap_result(
@@ -108,6 +133,23 @@ class CreationIdentityTests(unittest.TestCase):
                 source_commit_sha=None,
                 package_sha256="c" * 64,
                 ruleset_set_sha256="d" * 64,
+                ruleset_set_digest_generation=1,
+            )
+        with self.assertRaises(BootstrapContractError):
+            create_bootstrap_result(
+                selection=CampaignSelection.new(),
+                storage_repository="github.com/example/campaign-storage",
+                pinned_storage_head="a" * 40,
+                creator=_creator(),
+                mode="singleplayer",
+                campaign_branch="campaign/20260916-01",
+                created_at="2026-09-16T12:00:00Z",
+                engine_version="1.0-alpha",
+                package_id="dev-v1.0-alpha",
+                source_commit_sha=None,
+                package_sha256="c" * 64,
+                ruleset_set_sha256="d" * 64,
+                ruleset_set_digest_generation=1,
             )
 
 
@@ -127,11 +169,21 @@ class GeneratorScaffoldTests(unittest.TestCase):
             {
                 "campaign_id", "campaign_branch", "created_at", "creator_github_login", "mode",
                 "engine_version", "package_id", "source_commit_sha", "package_sha256", "ruleset_set_sha256",
+                "ruleset_set_digest_generation",
             },
         )
 
     def test_scaffold_input_rejects_unknown_fields(self) -> None:
         invalid = _scaffold_input() | {"creator_email": "lina@example.test"}
+        validator = Draft202012Validator(
+            self.schemas["bootstrap-request.schema.json"], registry=self.registry
+        )
+
+        with self.assertRaises(ValidationError):
+            validator.validate(invalid)
+
+    def test_scaffold_input_rejects_an_incompatible_ruleset_digest_generation(self) -> None:
+        invalid = _scaffold_input() | {"ruleset_set_digest_generation": 2}
         validator = Draft202012Validator(
             self.schemas["bootstrap-request.schema.json"], registry=self.registry
         )
@@ -179,6 +231,7 @@ class CreatorAuthorityTests(unittest.TestCase):
             source_commit_sha=None,
             package_sha256="c" * 64,
             ruleset_set_sha256="d" * 64,
+            ruleset_set_digest_generation=1,
         )
         result_value = result.as_dict()
 
@@ -186,6 +239,7 @@ class CreatorAuthorityTests(unittest.TestCase):
             self.schemas["bootstrap-result.schema.json"], registry=self.registry
         ).validate(result_value)
         self.assertNotIn("email", json.dumps(result_value))
+        self.assertEqual(result_value.get("ruleset_set_digest_generation"), 1)
 
 
 if __name__ == "__main__":
