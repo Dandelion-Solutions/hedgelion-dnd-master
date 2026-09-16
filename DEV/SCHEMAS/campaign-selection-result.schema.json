@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/campaign-selection-result.schema.json",
+  "title": "HDM explicit campaign selection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "campaign_id"],
+  "properties": {
+    "kind": {"enum": ["existing", "new"]},
+    "campaign_id": {"type": ["string", "null"]}
+  },
+  "allOf": [
+    {"if": {"properties": {"kind": {"const": "existing"}}}, "then": {"properties": {"campaign_id": {"type": "string", "minLength": 1}}}},
+    {"if": {"properties": {"kind": {"const": "new"}}}, "then": {"properties": {"campaign_id": {"type": "null"}}}}
+  ]
+}

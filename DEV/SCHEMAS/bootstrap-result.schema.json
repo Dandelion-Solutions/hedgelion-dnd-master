@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/bootstrap-result.schema.json",
+  "title": "HDM frozen pre-materialization campaign identity",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["selection", "storage_repository", "pinned_storage_head", "creator", "mode", "campaign_id", "campaign_branch", "created_at", "engine_version", "package_id", "source_commit_sha", "package_sha256", "ruleset_set_sha256"],
+  "properties": {
+    "selection": {"$ref": "campaign-selection-result.schema.json"},
+    "storage_repository": {"type": "string", "minLength": 1},
+    "pinned_storage_head": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "creator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stable_github_user_id", "login"],
+      "properties": {
+        "stable_github_user_id": {"type": "string", "minLength": 1},
+        "login": {"type": "string", "minLength": 1}
+      }
+    },
+    "mode": {"enum": ["singleplayer", "multiplayer"]},
+    "campaign_id": {"type": "string", "pattern": "^campaign\\.[0-9a-f]{32}$"},
+    "campaign_branch": {"type": "string", "pattern": "^campaign/[0-9]{8}(?:-[0-9]+)?$"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "engine_version": {"type": "string", "minLength": 1},
+    "package_id": {"type": "string", "minLength": 1},
+    "source_commit_sha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+    "package_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ruleset_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
