@@ -1,9 +1,9 @@
-schema_name: entity_index
-schema_version: 1
-required: [schema_version, entity_type, entries]
+schema_name: native_family_index
+schema_version: 2
+required: [schema_version, family_key, entries]
 fields:
   schema_version: integer
-  entity_type: string
+  family_key: string
   entries:
     type: array
     item:
@@ -16,7 +16,9 @@ fields:
       tags: array[string]
       last_event_id: string|null
 invariants:
-  - index is a routing structure, not a duplicate entity database
-  - keep entries compact enough to search without loading entity bodies
-  - update affected index entry in the same atomic commit as canonical entity changes
+  - index is a derived discovery helper, not a semantic authority or presence owner
+  - known-ID reads derive their exact native route and do not load this index
+  - candidates are revalidated by exact native owner reads before material use
+  - index absence does not prove semantic absence
+  - entries remain compact and contain no owner body, private continuity, knowledge, disclosure, Story, LIVE claim or authorization grant
   - aliases are lookup aids and do not redefine canonical identity

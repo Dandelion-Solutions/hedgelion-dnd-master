@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/native-route.schema.json",
+  "title": "HDM native record route",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["family_key", "identity", "relative_path"],
+  "properties": {
+    "family_key": {"type": "string", "pattern": "^(world|runtime)\\.[a-z][a-z0-9_]*$"},
+    "identity": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "relative_path": {"type": "string", "pattern": "^[A-Z][A-Z0-9_/.-]*\\.yaml$"},
+    "route_companion_inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "principal_candidate_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "live_source_key": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "string", "minLength": 1}},
+        "operational_root_keys": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/campaign-id-allocator-state.schema.json",
+  "title": "HDM campaign ID allocator state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "campaign_id", "counters"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "runtime.id_allocator"},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "counters": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}}
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/native-family-index.schema.json",
+  "title": "HDM derived native family index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "family_key", "entries"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "family_key": {"type": "string", "pattern": "^(world|runtime)\\.[a-z][a-z0-9_]*$"},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "path"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "name": {"type": ["string", "null"]},
+          "aliases": {"type": "array", "items": {"type": "string"}},
+          "status": {"type": ["string", "null"]},
+          "path": {"type": "string", "minLength": 1},
+          "parent_id": {"type": ["string", "null"]},
+          "tags": {"type": "array", "items": {"type": "string"}},
+          "last_event_id": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+schema_name: campaign_id_allocator
+schema_version: 1
+required: [schema_version, kind, campaign_id, counters]
+fields:
+  schema_version: integer
+  kind: const[runtime.id_allocator]
+  campaign_id: string
+  counters: object[string, nonnegative_integer]
+invariants:
+  - one allocator singleton is scoped to one selected campaign
+  - allocator counters are operational allocation state, not a global ID registry
+  - allocator allocation never supplies source-native LIVE identities
