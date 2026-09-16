@@ -132,9 +132,19 @@ def project_story_window(bundle: object, projections: object) -> list[dict[str, 
         raise StoryContractError("invalid EVENTS Story source bundle")
     if not isinstance(projections, Sequence) or isinstance(projections, str):
         raise StoryContractError("projections must be an array")
-    event_ids = {event["event_id"] for event in source_bundle["events"]}
+    raw_events = source_bundle["events"]
+    if not isinstance(raw_events, Sequence) or isinstance(raw_events, str):
+        raise StoryContractError("Story source bundle events must be an array")
+    try:
+        events = [validate_semantic_event_draft(event) for event in raw_events]
+    except HistoryContractError as exc:
+        raise StoryContractError(str(exc)) from exc
+    event_ids = [event["event_id"] for event in events]
+    if len(event_ids) != len(set(event_ids)):
+        raise StoryContractError("source bundle event identities must be unique")
+    source_event_ids = set(event_ids)
     validated = [validate_story_projection(projection, layer="EVENTS") for projection in projections]
     for projection in validated:
-        if not set(projection["sources"]).issubset(event_ids):
+        if not set(projection["sources"]).issubset(source_event_ids):
             raise StoryContractError("Story projection must use only its bounded native sources")
     return deepcopy(validated)

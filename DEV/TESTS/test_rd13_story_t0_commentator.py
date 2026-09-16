@@ -103,6 +103,21 @@ class StoryProjectionTests(unittest.TestCase):
         self.assertEqual(projection[0]["sources"], ["event.gate_opened"])
         self.assertEqual(bundle["events"][0]["event_id"], "event.gate_opened")
 
+    def test_story_window_revalidates_and_rejects_forged_malformed_or_duplicate_bundle_events(
+        self,
+    ) -> None:
+        forged_event = {**_semantic_event(), "provenance_refs": []}
+        malformed_event = {"event_id": "event.gate_opened"}
+
+        for events in (
+            [forged_event],
+            [malformed_event],
+            [_semantic_event(), _semantic_event()],
+        ):
+            with self.subTest(events=events):
+                with self.assertRaises(StoryContractError):
+                    project_story_window({"layer": "EVENTS", "events": events}, [])
+
 
 class StoryT0MaterializationTests(unittest.TestCase):
     def test_story_event_retains_story_local_t0_basis(self) -> None:
