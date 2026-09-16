@@ -392,6 +392,18 @@ class ActorMutationIntegrationTests(unittest.TestCase):
 
 
 class ContinuitySourceAdmissionTests(unittest.TestCase):
+    def test_source_bundle_rejects_sparse_actor_without_continuity(self) -> None:
+        for continuity in (None, {}):
+            with self.subTest(continuity=continuity):
+                actor = _actor()
+                if continuity is None:
+                    del actor["state"]["continuity"]
+                else:
+                    actor["state"]["continuity"] = continuity
+
+                with self.assertRaisesRegex(ContinuityProjectionError, "continuity"):
+                    build_continuity_source_bundle(actor, _accepted_evidence())
+
     def test_projection_requires_current_native_actor_sources(self) -> None:
         bundle = build_continuity_source_bundle(_actor(), _accepted_evidence())
         candidate = {

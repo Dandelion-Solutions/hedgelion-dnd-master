@@ -109,9 +109,10 @@ def build_continuity_source_bundle(actor: object, source_evidence: object) -> di
         refs.append(_id(ref, "projection source evidence ref"))
     if not refs or len(refs) != len(set(refs)):
         raise ContinuityProjectionError("projection source evidence is missing or ambiguous")
-    continuity = native_actor["state"].get("continuity", {})
-    if not isinstance(continuity, Mapping):
-        raise ContinuityProjectionError("native actor continuity must be an object")
+    try:
+        continuity = validate_actor_continuity(native_actor["state"].get("continuity"))
+    except ActorContinuityError as error:
+        raise ContinuityProjectionError(str(error)) from error
     return {
         "actor_id": native_actor["id"],
         "state_revision": native_actor["state_revision"],
