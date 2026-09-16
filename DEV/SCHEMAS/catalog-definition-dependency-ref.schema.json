@@ -2,15 +2,33 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/catalog-definition-dependency-ref.schema.json",
   "title": "HDM exact catalog definition dependency reference",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["definition_id", "kind", "package_id", "package_content_sha256"],
-  "properties": {
-    "definition_id": {"$ref": "#/$defs/id"},
-    "kind": {"$ref": "#/$defs/id"},
-    "package_id": {"$ref": "#/$defs/id"},
-    "package_content_sha256": {"$ref": "#/$defs/sha256"}
-  },
+  "oneOf": [
+    {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_type", "definition_id", "kind", "package_id", "package_content_sha256"],
+      "properties": {
+        "source_type": {"const": "ruleset_package"},
+        "definition_id": {"$ref": "#/$defs/id"}, "kind": {"$ref": "#/$defs/id"},
+        "package_id": {"$ref": "#/$defs/id"}, "package_content_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_type", "definition_id", "kind", "owner_domain", "scope", "route", "pinned_revision", "evidence_sha256"],
+      "properties": {
+        "source_type": {"const": "natural_owner"},
+        "definition_id": {"$ref": "#/$defs/id"}, "kind": {"$ref": "#/$defs/id"},
+        "owner_domain": {"enum": ["campaign", "session"]},
+        "scope": {"enum": ["campaign.definition_frontier", "session.overlay_frontier"]},
+        "route": {"type": "string", "minLength": 1}, "pinned_revision": {"type": "integer", "minimum": 0},
+        "evidence_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "allOf": [
+        {"if": {"properties": {"owner_domain": {"const": "campaign"}}}, "then": {"properties": {"scope": {"const": "campaign.definition_frontier"}}}},
+        {"if": {"properties": {"owner_domain": {"const": "session"}}}, "then": {"properties": {"scope": {"const": "session.overlay_frontier"}}}}
+      ]
+    }
+  ],
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
     "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}

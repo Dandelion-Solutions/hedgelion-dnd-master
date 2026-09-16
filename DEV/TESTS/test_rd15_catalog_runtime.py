@@ -18,6 +18,8 @@ from GAME.TOOLS.catalog_runtime import (
     validate_executable_binding,
 )
 from GAME.TOOLS.ruleset_package import (
+    INVENTORY_DOMAIN,
+    REQUIRED_ENGINE_CONTRACT_FAMILIES,
     RULESET_SET_DIGEST_GENERATION,
     SET_DOMAIN,
     build_resolved_lock,
@@ -31,6 +33,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
 PACKAGE_ID = "hdm.rules.dnd2024-srd52-core"
 PACKAGE = ROOT / "GAME" / "RULES" / "packages" / PACKAGE_ID
+NATURAL_OWNER_EVIDENCE_DOMAIN = b"HDM_CATALOG_NATURAL_OWNER_EVIDENCE/1\n"
 
 
 def _schema_registry() -> tuple[Registry, dict[str, object]]:
@@ -51,26 +54,81 @@ def _request(*, frontier_revision: int = 4) -> dict[str, object]:
         catalog_generation=2,
     )
     package = lock["packages"][0]
+    inventory = _engine_contract_inventory(lock)
     return {
         "basis": {
             "catalog_generation": 2,
             "engine_version": "1.0-alpha",
-            "engine_contract_inventory_sha256": "a" * 64,
+            "engine_contract_inventory_sha256": inventory["inventory_sha256"],
+            "engine_contract_inventory": inventory,
             "ruleset_lock": lock,
             "campaign_definition_frontier": {
                 "frontier_id": "campaign.definitions",
                 "state_revision": frontier_revision,
                 "definition_ids": ["activity.check.generic"],
             },
+            "natural_owner_evidence": [],
         },
         "definition_dependencies": [
             {
                 "definition_id": "activity.check.generic",
                 "kind": "definition.activity",
+                "source_type": "ruleset_package",
                 "package_id": package["package_id"],
                 "package_content_sha256": package["content_sha256"],
             }
         ],
+    }
+
+
+def _engine_contract_inventory(lock: dict[str, object]) -> dict[str, object]:
+    core = {
+        "inventory_schema_version": 2,
+        "engine_version": "1.0-alpha",
+        "ruleset_set_digest_generation": lock["ruleset_set_digest_generation"],
+        "ruleset_set_sha256": lock["ruleset_set_sha256"],
+        "items": [
+            {
+                "family": family,
+                "contract_id": f"engine_contract.{family}.v1",
+                "semantic_sha256": "a" * 64,
+            }
+            for family in sorted(REQUIRED_ENGINE_CONTRACT_FAMILIES)
+        ],
+    }
+    return {**core, "inventory_sha256": sha256(INVENTORY_DOMAIN + canonical_json(core))}
+
+
+def _natural_owner_evidence(*, owner_domain: str = "campaign") -> dict[str, object]:
+    scope = (
+        f"{owner_domain}.definition_frontier"
+        if owner_domain == "campaign"
+        else "session.overlay_frontier"
+    )
+    definition_id = f"{owner_domain}.local_attack"
+    return {
+        "definition_id": definition_id,
+        "kind": "definition.activity",
+        "owner_domain": owner_domain,
+        "scope": scope,
+        "route": f"{owner_domain}/definitions/local_attack.json",
+        "pinned_revision": 4,
+        "content_sha256": "b" * 64,
+    }
+
+
+def _natural_owner_dependency(evidence: dict[str, object]) -> dict[str, object]:
+    return {
+        "source_type": "natural_owner",
+        "definition_id": evidence["definition_id"],
+        "kind": evidence["kind"],
+        "owner_domain": evidence["owner_domain"],
+        "scope": evidence["scope"],
+        "route": evidence["route"],
+        "pinned_revision": evidence["pinned_revision"],
+        "evidence_sha256": sha256(
+            NATURAL_OWNER_EVIDENCE_DOMAIN + canonical_json(evidence)
+        ),
     }
 
 
@@ -179,6 +237,88 @@ class CatalogCandidateValidationTests(unittest.TestCase):
 
 
 class CatalogDefinitionAdmissionTests(unittest.TestCase):
+    def _request_with_natural_evidence(
+        self, *, owner_domain: str = "campaign"
+    ) -> dict[str, object]:
+        request = _request()
+        evidence = _natural_owner_evidence(owner_domain=owner_domain)
+        request["basis"]["natural_owner_evidence"] = [evidence]
+        request["definition_dependencies"].append(_natural_owner_dependency(evidence))
+        return request
+
+    def test_pinned_campaign_owner_evidence_is_admitted_with_the_exact_package_context(self) -> None:
+        request = self._request_with_natural_evidence()
+
+        context = bind_catalog_context(
+            request,
+            package_snapshots=_package_snapshots(),
+        )
+
+        self.assertEqual(
+            {row["definition_id"] for row in context.definition_dependencies},
+            {"activity.check.generic", "campaign.local_attack"},
+        )
+        registry, schemas = _schema_registry()
+        Draft202012Validator(
+            schemas["catalog-binding-result.schema.json"], registry=registry
+        ).validate(context.to_dict())
+
+    def test_pinned_session_owner_evidence_is_admitted(self) -> None:
+        request = self._request_with_natural_evidence(owner_domain="session")
+        request["basis"]["session_overlay_frontier"] = {
+            "frontier_id": "session.overlay",
+            "state_revision": 4,
+            "definition_ids": ["session.local_attack"],
+        }
+
+        context = bind_catalog_context(request, package_snapshots=_package_snapshots())
+
+        self.assertEqual(context.definition_dependencies[-1]["owner_domain"], "session")
+
+    def test_natural_owner_evidence_cannot_be_missing_changed_or_ambient(self) -> None:
+        missing = self._request_with_natural_evidence()
+        missing["basis"]["natural_owner_evidence"] = []
+        changed = self._request_with_natural_evidence()
+        changed["basis"]["natural_owner_evidence"][0]["content_sha256"] = "c" * 64
+        ambient = self._request_with_natural_evidence()
+        ambient["basis"]["natural_owner_evidence"][0]["route"] = "campaign/latest/local_attack.json"
+
+        for request in (missing, changed, ambient):
+            with self.subTest(request=request):
+                with self.assertRaises(CatalogBindingError):
+                    bind_catalog_context(request, package_snapshots=_package_snapshots())
+
+    def test_natural_owner_dependency_cannot_change_its_pinned_revision(self) -> None:
+        request = self._request_with_natural_evidence()
+        request["definition_dependencies"][1]["pinned_revision"] = 5
+
+        with self.assertRaises(CatalogBindingError):
+            bind_catalog_context(request, package_snapshots=_package_snapshots())
+
+    def test_engine_contract_inventory_requires_its_admitted_evidence(self) -> None:
+        request = _request()
+        request["basis"]["engine_contract_inventory"]["items"][0]["semantic_sha256"] = "b" * 64
+
+        with self.assertRaises(CatalogBindingError):
+            bind_catalog_context(request, package_snapshots=_package_snapshots())
+
+    def test_natural_owner_executable_binding_retains_its_pinned_source(self) -> None:
+        context = bind_catalog_context(
+            self._request_with_natural_evidence(), package_snapshots=_package_snapshots()
+        )
+
+        binding = bind_interpreter_candidate(
+            context,
+            {"definition_id": "campaign.local_attack", "kind": "definition.activity"},
+        )
+
+        self.assertEqual(binding["source_type"], "natural_owner")
+        validate_executable_binding(context, binding)
+        forged = dict(binding)
+        forged["pinned_revision"] = 5
+        with self.assertRaises(CatalogBindingError):
+            validate_executable_binding(context, forged)
+
     def test_absent_definition_cannot_be_declared_into_a_context(self) -> None:
         request = _request()
         request["basis"]["campaign_definition_frontier"]["definition_ids"] = [

@@ -18,6 +18,7 @@ from .ruleset_package import (
     PackageSnapshot,
     RULESET_SET_DIGEST_GENERATION,
     RulesetContractError,
+    _validated_engine_contract_entries,
     build_resolved_lock,
     canonical_json,
     sha256,
@@ -27,7 +28,12 @@ from .ruleset_package import (
 
 CATALOG_CONTEXT_FINGERPRINT_GENERATION: Final = 1
 CATALOG_CONTEXT_DOMAIN: Final = b"HDM_CATALOG_CONTEXT/1\n"
+NATURAL_OWNER_EVIDENCE_DOMAIN: Final = b"HDM_CATALOG_NATURAL_OWNER_EVIDENCE/1\n"
 _SHA256_HEX: Final = frozenset("0123456789abcdef")
+_NATURAL_OWNER_SCOPES: Final = {
+    "campaign": "campaign.definition_frontier",
+    "session": "session.overlay_frontier",
+}
 
 
 class CatalogBindingError(ValueError):
@@ -39,7 +45,7 @@ class BoundCatalogContext:
     """One immutable logical context with reconstructive input evidence."""
 
     basis: Mapping[str, object]
-    definition_dependencies: tuple[Mapping[str, str], ...]
+    definition_dependencies: tuple[Mapping[str, object], ...]
     fingerprint: str
 
     def to_dict(self) -> dict[str, object]:
@@ -131,8 +137,10 @@ def _normalize_basis(value: object) -> dict[str, object]:
             "catalog_generation",
             "engine_version",
             "engine_contract_inventory_sha256",
+            "engine_contract_inventory",
             "ruleset_lock",
             "campaign_definition_frontier",
+            "natural_owner_evidence",
         },
         "catalog context basis",
         optional={"session_overlay_frontier"},
@@ -155,15 +163,37 @@ def _normalize_basis(value: object) -> dict[str, object]:
         package_ids.add(package_id)
         if package["catalog_generation"] != catalog_generation:
             raise CatalogBindingError("ruleset_lock has a mixed catalog generation")
+    engine_version = _require_nonempty_string(basis["engine_version"], "engine_version")
+    inventory = copy.deepcopy(
+        _require_mapping(basis["engine_contract_inventory"], "engine_contract_inventory")
+    )
+    inventory_sha256 = _require_sha256(
+        basis["engine_contract_inventory_sha256"], "engine_contract_inventory_sha256"
+    )
+    if inventory.get("inventory_sha256") != inventory_sha256:
+        raise CatalogBindingError("engine contract inventory digest does not match its basis")
+    try:
+        _validated_engine_contract_entries(
+            inventory,
+            engine_version=engine_version,
+            ruleset_set_sha256=validated_lock["ruleset_set_sha256"],
+            ruleset_set_digest_generation=validated_lock["ruleset_set_digest_generation"],
+        )
+    except RulesetContractError as exc:
+        raise CatalogBindingError(
+            f"engine contract inventory is not admitted evidence: {exc.detail}"
+        ) from exc
     normalized: dict[str, object] = {
         "catalog_generation": catalog_generation,
-        "engine_version": _require_nonempty_string(basis["engine_version"], "engine_version"),
-        "engine_contract_inventory_sha256": _require_sha256(
-            basis["engine_contract_inventory_sha256"], "engine_contract_inventory_sha256"
-        ),
+        "engine_version": engine_version,
+        "engine_contract_inventory_sha256": inventory_sha256,
+        "engine_contract_inventory": inventory,
         "ruleset_lock": validated_lock,
         "campaign_definition_frontier": _normalize_frontier(
             basis["campaign_definition_frontier"], "campaign_definition_frontier"
+        ),
+        "natural_owner_evidence": _normalize_natural_owner_evidence(
+            basis["natural_owner_evidence"]
         ),
     }
     if "session_overlay_frontier" in basis:
@@ -177,6 +207,61 @@ def _require_nonempty_string(value: object, label: str) -> str:
     if not isinstance(value, str) or not value:
         raise CatalogBindingError(f"{label} must be a nonempty string")
     return value
+
+
+def _require_route(value: object, label: str) -> str:
+    route = _require_nonempty_string(value, label)
+    components = route.split("/")
+    if any(not component or component.casefold() == "latest" for component in components):
+        raise CatalogBindingError(
+            f"{label} must be an exact route, not an ambient/latest selector"
+        )
+    return route
+
+
+def _normalize_natural_owner_evidence(value: object) -> tuple[dict[str, object], ...]:
+    if not isinstance(value, Sequence) or isinstance(value, str):
+        raise CatalogBindingError("natural_owner_evidence must be an array")
+    evidence_rows: list[dict[str, object]] = []
+    seen_ids: set[str] = set()
+    for raw_row in value:
+        row = _require_exact_keys(
+            raw_row,
+            {
+                "definition_id",
+                "kind",
+                "owner_domain",
+                "scope",
+                "route",
+                "pinned_revision",
+                "content_sha256",
+            },
+            "natural owner evidence",
+        )
+        definition_id = _require_id(row["definition_id"], "natural owner definition_id")
+        owner_domain = _require_nonempty_string(row["owner_domain"], "owner_domain")
+        scope = _require_nonempty_string(row["scope"], "scope")
+        if _NATURAL_OWNER_SCOPES.get(owner_domain) != scope:
+            raise CatalogBindingError("natural owner domain and scope do not match")
+        if definition_id in seen_ids:
+            raise CatalogBindingError("natural owner evidence is ambiguous")
+        seen_ids.add(definition_id)
+        evidence_rows.append(
+            {
+                "definition_id": definition_id,
+                "kind": _require_id(row["kind"], "natural owner kind"),
+                "owner_domain": owner_domain,
+                "scope": scope,
+                "route": _require_route(row["route"], "natural owner route"),
+                "pinned_revision": _require_revision(
+                    row["pinned_revision"], "natural owner pinned_revision"
+                ),
+                "content_sha256": _require_sha256(
+                    row["content_sha256"], "natural owner content_sha256"
+                ),
+            }
+        )
+    return tuple(sorted(evidence_rows, key=lambda row: str(row["definition_id"])))
 
 
 def _rebuild_definition_sources(
@@ -236,41 +321,107 @@ def _normalize_dependencies(
     if not isinstance(value, Sequence) or isinstance(value, str) or not value:
         raise CatalogBindingError("definition_dependencies must be a nonempty array")
     source_definitions = _rebuild_definition_sources(basis, package_snapshots)
-    dependencies: list[dict[str, str]] = []
+    natural_evidence = {
+        str(row["definition_id"]): row for row in basis["natural_owner_evidence"]
+    }
+    dependencies: list[dict[str, object]] = []
     seen_ids: set[str] = set()
     for value_row in value:
-        row = _require_exact_keys(
-            value_row,
-            {"definition_id", "kind", "package_id", "package_content_sha256"},
-            "catalog definition dependency",
+        row = _require_mapping(value_row, "catalog definition dependency")
+        source_type = _require_nonempty_string(
+            row.get("source_type"), "dependency source_type"
         )
         definition_id = _require_id(row["definition_id"], "definition_id")
         kind = _require_id(row["kind"], "kind")
-        package_id = _require_id(row["package_id"], "package_id")
-        content_sha256 = _require_sha256(
-            row["package_content_sha256"], "package_content_sha256"
-        )
         if definition_id in seen_ids:
             raise CatalogBindingError("definition_dependencies contain duplicate definition_id")
-        source_definition = source_definitions.get(definition_id)
-        if source_definition is None:
-            raise CatalogBindingError("definition dependency is absent from rebuilt source evidence")
-        if (
-            source_definition["package_id"] != package_id
-            or source_definition["package_content_sha256"] != content_sha256
-        ):
-            raise CatalogBindingError("definition dependency source does not match rebuilt evidence")
-        if source_definition["kind"] != kind:
-            raise CatalogBindingError("definition dependency kind differs from rebuilt evidence")
-        seen_ids.add(definition_id)
-        dependencies.append(
-            {
+        if source_type == "ruleset_package":
+            row = _require_exact_keys(
+                row,
+                {
+                    "source_type",
+                    "definition_id",
+                    "kind",
+                    "package_id",
+                    "package_content_sha256",
+                },
+                "ruleset package definition dependency",
+            )
+            package_id = _require_id(row["package_id"], "package_id")
+            content_sha256 = _require_sha256(
+                row["package_content_sha256"], "package_content_sha256"
+            )
+            source_definition = source_definitions.get(definition_id)
+            if source_definition is None:
+                raise CatalogBindingError(
+                    "definition dependency is absent from rebuilt source evidence"
+                )
+            if (
+                source_definition["package_id"] != package_id
+                or source_definition["package_content_sha256"] != content_sha256
+            ):
+                raise CatalogBindingError(
+                    "definition dependency source does not match rebuilt evidence"
+                )
+            if source_definition["kind"] != kind:
+                raise CatalogBindingError("definition dependency kind differs from rebuilt evidence")
+            normalized_dependency: dict[str, object] = {
+                "source_type": source_type,
                 "definition_id": definition_id,
                 "kind": kind,
                 "package_id": package_id,
                 "package_content_sha256": content_sha256,
             }
-        )
+        elif source_type == "natural_owner":
+            row = _require_exact_keys(
+                row,
+                {
+                    "source_type",
+                    "definition_id",
+                    "kind",
+                    "owner_domain",
+                    "scope",
+                    "route",
+                    "pinned_revision",
+                    "evidence_sha256",
+                },
+                "natural owner definition dependency",
+            )
+            if definition_id in source_definitions:
+                raise CatalogBindingError(
+                    "natural owner definition collides with a package definition"
+                )
+            evidence = natural_evidence.get(definition_id)
+            if evidence is None:
+                raise CatalogBindingError("natural owner evidence is missing")
+            expected = {
+                key: evidence[key]
+                for key in (
+                    "definition_id",
+                    "kind",
+                    "owner_domain",
+                    "scope",
+                    "route",
+                    "pinned_revision",
+                )
+            }
+            actual = {key: row[key] for key in expected}
+            if actual != expected:
+                raise CatalogBindingError("natural owner dependency does not match pinned evidence")
+            evidence_sha256 = _require_sha256(row["evidence_sha256"], "evidence_sha256")
+            if evidence_sha256 != sha256(
+                NATURAL_OWNER_EVIDENCE_DOMAIN + canonical_json(evidence)
+            ):
+                raise CatalogBindingError("natural owner evidence digest mismatch")
+            normalized_dependency = {
+                "source_type": source_type,
+                **expected,
+                "evidence_sha256": evidence_sha256,
+            }
+        else:
+            raise CatalogBindingError("unsupported dependency source_type")
+        seen_ids.add(definition_id)
+        dependencies.append(normalized_dependency)
     return tuple(sorted(dependencies, key=lambda row: row["definition_id"]))
 
 
@@ -308,7 +459,7 @@ def _candidate(value: object) -> tuple[str, str]:
 
 def _find_dependency(
     context: BoundCatalogContext, definition_id: str
-) -> dict[str, str] | None:
+) -> Mapping[str, object] | None:
     return next(
         (
             row
@@ -331,17 +482,37 @@ def bind_interpreter_candidate(
     if dependency["kind"] != kind:
         raise CatalogBindingError("definition_kind_mismatch")
     lock = context.basis["ruleset_lock"]
-    return {
+    binding: dict[str, object] = {
         "definition_id": definition_id,
         "kind": kind,
-        "source_package_id": dependency["package_id"],
-        "source_package_content_sha256": dependency["package_content_sha256"],
+        "source_type": dependency["source_type"],
         "catalog_generation": context.basis["catalog_generation"],
         "ruleset_set_digest_generation": lock["ruleset_set_digest_generation"],
         "ruleset_set_sha256": lock["ruleset_set_sha256"],
         "catalog_context_fingerprint_generation": CATALOG_CONTEXT_FINGERPRINT_GENERATION,
         "catalog_context_fingerprint": context.fingerprint,
     }
+    if dependency["source_type"] == "ruleset_package":
+        binding.update(
+            {
+                "source_package_id": dependency["package_id"],
+                "source_package_content_sha256": dependency["package_content_sha256"],
+            }
+        )
+    else:
+        binding.update(
+            {
+                key: dependency[key]
+                for key in (
+                    "owner_domain",
+                    "scope",
+                    "route",
+                    "pinned_revision",
+                    "evidence_sha256",
+                )
+            }
+        )
+    return binding
 
 
 def validate_executable_binding(
@@ -349,21 +520,33 @@ def validate_executable_binding(
 ) -> None:
     """Reject bindings that were selected under another or forged context."""
 
-    value = _require_exact_keys(
-        binding,
-        {
-            "definition_id",
-            "kind",
-            "source_package_id",
-            "source_package_content_sha256",
-            "catalog_generation",
-            "ruleset_set_digest_generation",
-            "ruleset_set_sha256",
-            "catalog_context_fingerprint_generation",
-            "catalog_context_fingerprint",
-        },
-        "executable binding",
-    )
+    raw_binding = _require_mapping(binding, "executable binding")
+    source_type = _require_nonempty_string(raw_binding.get("source_type"), "source_type")
+    common_fields = {
+        "definition_id",
+        "kind",
+        "source_type",
+        "catalog_generation",
+        "ruleset_set_digest_generation",
+        "ruleset_set_sha256",
+        "catalog_context_fingerprint_generation",
+        "catalog_context_fingerprint",
+    }
+    if source_type == "ruleset_package":
+        value = _require_exact_keys(
+            raw_binding,
+            common_fields | {"source_package_id", "source_package_content_sha256"},
+            "ruleset package executable binding",
+        )
+    elif source_type == "natural_owner":
+        value = _require_exact_keys(
+            raw_binding,
+            common_fields
+            | {"owner_domain", "scope", "route", "pinned_revision", "evidence_sha256"},
+            "natural owner executable binding",
+        )
+    else:
+        raise CatalogBindingError("unsupported binding source_type")
     if (
         value["catalog_context_fingerprint_generation"]
         != CATALOG_CONTEXT_FINGERPRINT_GENERATION
@@ -383,9 +566,17 @@ def validate_executable_binding(
     dependency = _find_dependency(context, definition_id)
     if dependency is None or dependency["kind"] != kind:
         raise CatalogBindingError("binding definition is no longer pinned")
-    if (
-        value["source_package_id"] != dependency["package_id"]
-        or value["source_package_content_sha256"] != dependency["package_content_sha256"]
+    if value["source_type"] != dependency["source_type"]:
+        raise CatalogBindingError("binding source does not match the pinned definition")
+    if value["source_type"] == "ruleset_package":
+        source_fields = ("package_id", "package_content_sha256")
+        binding_fields = ("source_package_id", "source_package_content_sha256")
+    else:
+        source_fields = ("owner_domain", "scope", "route", "pinned_revision", "evidence_sha256")
+        binding_fields = source_fields
+    if any(
+        value[binding_key] != dependency[source_key]
+        for binding_key, source_key in zip(binding_fields, source_fields, strict=True)
     ):
         raise CatalogBindingError("binding source does not match the pinned definition")
 
