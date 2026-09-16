@@ -7,7 +7,7 @@ GLOBAL_STATE: R2.7 CLOSED — CONSOLIDATED PLAN TARGETED REPAIR / INDEPENDENT SE
 CURRENT_WORKSTREAM: implementation planning
 CURRENT_SLICE: independent Senior re-review of the consolidated six-wave implementation package
 LAST_CLOSED_UNIT: targeted restoration of the R018 runtime-family matrix/proof and separation of the Wave-05 owner-local input checkpoint from final shared integration
-NEXT_AUTHORIZED_UNIT: resolve hosted validation for the exact current remote HEAD, then independent Senior re-review of the repaired consolidated package. Production implementation, migration, release execution and gameplay bootstrap remain unauthorized.
+NEXT_AUTHORIZED_UNIT: independent Senior re-review of the repaired consolidated package, with the exact current-HEAD hosted evidence check below. Production implementation, migration, release execution and gameplay bootstrap remain unauthorized.
 REQUIRED_GATE: consolidated author plan + fresh exact-current-HEAD hosted maintenance audit and full DEV unittest discovery -> mandatory independent Senior re-review -> explicit PASS / GO before production implementation
 TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/implementation-plan-index.md
 KNOWN_BLOCKERS: independent Senior PASS / GO absent; the reviewed consolidation received FAIL / NO-GO at 7e563da41f667bd4a98c603af7786368ebdf5f93. Targeted author repairs require independent confirmation.
@@ -79,6 +79,8 @@ Historical green runs on earlier package forms are evidence only for those earli
 
 The reviewed consolidation at `7e563da41f667bd4a98c603af7786368ebdf5f93` did pass hosted validation: [run 35067274834](https://github.com/Dandelion-Solutions/hedgelion-dnd-master/actions/runs/35067274834), job `104700312776`, `SUCCESS` for both full maintenance audit and full DEV unittest discovery. The former statement that its hosted validation had not passed was stale.
 
+The substantive targeted repair at `386410c0bc2cd00ccc2761cc37a405b138fdfd58` passed [run 35073220807](https://github.com/Dandelion-Solutions/hedgelion-dnd-master/actions/runs/35073220807), job `104719408176`: full maintenance audit and full DEV unittest discovery both `SUCCESS`. Remote read-back matched all four changed files. This control-state synchronization preserves those exact plan bytes; its own current-head hosted result is resolved separately below.
+
 Hosted status is an external, exact-SHA result, not a permanent pending/green assertion inside the commit being tested. Resolve current remote HEAD H and select the `Validate engine source` run with `head_sha == H`; require `completed/success` and successful `Run full maintenance audit` plus `Run DEV unit tests` steps. Evidence for an ancestor is never evidence for H. Missing, queued, running or failed evidence does not satisfy the gate. A control-only evidence update also requires its own exact-head run. Repository progress remains `SENIOR_REVIEW_REQUIRED` after CI success.
 
 Targeted repair disposition: the Wave-05 runtime matrix and Wave-06 negative/composite obligations are restored; W05.T01 now closes at `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY`, consumed by W05.T02 through `JOIN_BEFORE_INTEGRATION`; final R018 proof follows shared integration and its actual schema writers. These are author repairs awaiting independent Senior re-review, not an issued PASS.
@@ -90,15 +92,15 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: 8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d
 
 STATUS: SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: exact-head hosted validation and independent Senior re-review of the targeted repaired plan
-LAST_COMPLETED_TASK: restore runtime-family item-bound proof and repair the owner-local/shared-writer dependency boundary
+CURRENT_TASK: independent Senior re-review of the targeted repaired plan
+LAST_COMPLETED_TASK: substantive targeted repair, exact-head hosted validation at 386410c0bc2cd00ccc2761cc37a405b138fdfd58 and control-state evidence synchronization
 LAST_SAFE_SHA: current published commit containing this file, verified through remote read-back
 
 COMPLETED_TASKS:
   Planning consolidation -> 7e563da41f667bd4a98c603af7786368ebdf5f93; subsequent independent verdict FAIL / NO-GO
-  Targeted planning repair -> published history containing the current Wave-05/06 changes; no Senior PASS
+  Targeted planning repair -> 386410c0bc2cd00ccc2761cc37a405b138fdfd58; hosted maintenance/full DEV SUCCESS; no Senior PASS
 
-CURRENT_VERIFICATION_STATE: targeted structural validation is recorded with the repair; current hosted disposition is resolved from the exact-SHA run and job steps above, without inheriting ancestor success
+CURRENT_VERIFICATION_STATE: targeted matrix/root/negative-proof/checkpoint checks and substantive repair hosted validation passed; final current-head disposition is the exact-SHA run/job result under the rule above, without inheriting ancestor success
 VERSION_IMPACT: NONE — targeted planning/proof-order/control repair; no runtime/module contract, serialized schema, catalog generation, release identity or other version-bearing owner changed
 SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED
 NEXT_EXACT_TASK: verify the exact current-HEAD hosted result, then perform independent Senior re-review from the stable index
