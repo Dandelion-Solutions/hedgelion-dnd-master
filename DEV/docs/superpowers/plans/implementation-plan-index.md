@@ -109,6 +109,7 @@ Mandatory hard/join edges include:
 - early RD-14 campaign identity + RD-06 identity immutability + RD-09 route/order/cursor checkpoints -> source-native LIVE ID acceptance;
 - campaign/LIVE route selection and absorption -> same-closure temporal, operational-root and route-companion handoffs;
 - current PLAYER/access-policy mutation -> one after-authority collaboration reconciliation -> one campaign publication closure;
+- W04.T07 first RED is preceded by the mandatory fresh CLS <-> HDM preflight in Wave 04: current public Story/Commentator SCC owner + current private CLS integration/audit state are reconciled; private CLS-only repair debt does not block HDM, but any current requirement for a new/changed public-HDM semantic owner, persisted/interface contract or incompatible Story/T0/control law triggers the System-Impact Gate before implementation;
 - information/thread/PLAYER/collaboration/LIVE identifier deltas -> W05.T01 owner-local strict schema/wrapper inputs GREEN at `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY` -> `JOIN_BEFORE_INTEGRATION` -> W05.T02 final shared write at `RD16_SHARED_MACHINE_INTEGRATION_READY`;
 - W05.T02 final shared bytes + the affected final schema/realization checkpoints -> W06.T02 item-bound world/runtime R018 proof; neither final proof nor T02 integration/conformance is a prerequisite of T01 closure;
 - every package proof -> its realized target, never the reverse.
@@ -124,6 +125,7 @@ Mandatory hard/join edges include:
 - Accepted mechanics are not replayed and fixed RNG is not rerolled on retry/recovery.
 - LIVE currentness is exact-source CAS evidence. Prepared candidate existence is not authority.
 - Story, Commentator, Dramaturg and catch-up material are projections with their own privacy/currentness rules; none becomes history, knowledge, ACL or gameplay truth.
+- Private CLS implementation defects are not public-HDM blockers by default; only a fresh cross-project conflict that changes public semantic ownership, persisted/interface policy or the accepted Story/T0/control contract may stop the implicated HDM task through the System-Impact Gate.
 - Every task runs the Version Impact Gate and every shared file has one final physical writer/checkpoint.
 - R018 runtime proof consumes the exact 17-row family/schema/root/realization matrix in Wave 05 and the negative witnesses in Wave 06. Count equality, catalog admission, a world-only proof or a catalog-gap-only proof cannot close the composite.
 - No future-task intentional RED tests are published. A task creates its RED witness with the mechanism it turns GREEN.
