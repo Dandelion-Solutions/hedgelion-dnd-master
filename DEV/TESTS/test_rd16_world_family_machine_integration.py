@@ -3,6 +3,7 @@ from pathlib import Path
 import unittest
 
 from jsonschema import Draft202012Validator, ValidationError
+from referencing import Registry, Resource
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -57,9 +58,31 @@ VALID_QUIET_STATES = {
     "world.hazard": {"status": {}},
 }
 
+VALID_CONTRACT_DEADLINE = {
+    "basis_id": "temporal.metric_deadline",
+    "context_id": "scene.market",
+    "anchor_value": 12,
+    "deadline_value": 15,
+    "unit_id": "unit.day",
+}
+
+MALFORMED_CONTRACT_DEADLINE = {
+    **VALID_CONTRACT_DEADLINE,
+    "anchor_value": "twelve",
+}
+
 
 def load_schema(name: str) -> dict[str, object]:
     return json.loads((SCHEMAS / name).read_text(encoding="utf-8"))
+
+
+def local_schema_registry() -> Registry:
+    registry = Registry()
+    for path in SCHEMAS.glob("*.schema.json"):
+        schema = json.loads(path.read_text(encoding="utf-8"))
+        if "$id" in schema:
+            registry = registry.with_resource(schema["$id"], Resource.from_contents(schema))
+    return registry
 
 
 class WorldStateSchemaCoverageTests(unittest.TestCase):
@@ -80,6 +103,23 @@ class WorldStateSchemaCoverageTests(unittest.TestCase):
                 invalid = dict(VALID_QUIET_STATES[family], knowledge={"fact.secret": "known"})
                 with self.assertRaises(ValidationError):
                     Draft202012Validator(load_schema(name)).validate(invalid)
+
+    def test_contract_deadlines_resolve_and_enforce_t05_temporal_bindings(self) -> None:
+        validator = Draft202012Validator(
+            load_schema("world-contract-state.schema.json"), registry=local_schema_registry()
+        )
+        valid = dict(
+            VALID_QUIET_STATES["world.contract"],
+            deadlines={"deadline.delivery": VALID_CONTRACT_DEADLINE},
+        )
+        validator.validate(valid)
+
+        malformed = dict(
+            valid,
+            deadlines={"deadline.delivery": MALFORMED_CONTRACT_DEADLINE},
+        )
+        with self.assertRaises(ValidationError):
+            validator.validate(malformed)
 
     def test_information_and_thread_schemas_remain_owner_supplied_inputs(self) -> None:
         for family, name in CONSUMED_OWNER_SCHEMA_NAMES.items():
