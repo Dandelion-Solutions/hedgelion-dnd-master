@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/commentator-view.schema.json",
+  "title": "HDM filtered Commentator view",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "player_id", "records"],
+  "properties": {
+    "schema_version": {"type": "integer", "minimum": 1},
+    "player_id": {"type": "string", "minLength": 1},
+    "records": {"type": "array", "items": {"$ref": "story-event-unit.schema.json"}}
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/commentator-snapshot.schema.json",
+  "title": "HDM self-contained Commentator snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "records", "control"],
+  "properties": {
+    "schema_version": {"type": "integer", "minimum": 1},
+    "records": {"type": "array", "items": {"$ref": "story-event-unit.schema.json"}},
+    "control": {"$ref": "commentator-control-projection.schema.json"}
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/commentator-control-projection.schema.json",
+  "title": "HDM Commentator derived eligibility control projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "controls"],
+  "properties": {
+    "schema_version": {"type": "integer", "minimum": 1},
+    "controls": {"type": "object", "additionalProperties": {"type": "object", "additionalProperties": false, "required": ["story_ids"], "properties": {"story_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}}}}
+  }
+}

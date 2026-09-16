@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/story-projection-state.schema.json",
+  "title": "HDM Story layer projection state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "layer", "story_id_allocator_high_water", "coverage_by_source_domain", "lookup"],
+  "properties": {
+    "schema_version": {"type": "integer", "minimum": 1},
+    "layer": {"enum": ["TRANSCRIPT", "EVENTS", "MECHANICS", "NARRATIVE"]},
+    "story_id_allocator_high_water": {"type": "integer", "minimum": 0},
+    "coverage_by_source_domain": {"type": "object"},
+    "lookup": {"type": "object"},
+    "chapters": {"type": "array"}
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/dramaturg-horizon.schema.json",
+  "title": "HDM retained multiplayer Dramaturg horizon",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "scope_id", "generation", "source_basis", "entries"],
+  "properties": {
+    "schema_version": {"type": "integer", "minimum": 1},
+    "scope_id": {"type": "string", "minLength": 1},
+    "generation": {"type": "integer", "minimum": 1},
+    "source_basis": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "entries": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["kind", "text"], "properties": {"kind": {"enum": ["SOURCE_ANCHORED_CONSTRAINT", "PROVISIONAL_DRAMATURGIC_DIRECTION"]}, "text": {"type": "string", "minLength": 1}}}}
+  }
+}
