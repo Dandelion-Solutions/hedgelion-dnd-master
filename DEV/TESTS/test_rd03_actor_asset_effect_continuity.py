@@ -270,6 +270,7 @@ class ActorAssessmentBehaviorTests(unittest.TestCase):
                 "life_state_policy_id": "life_policy.dnd2024.character_like",
             },
             {"life_state_id": "life.unknown", "life_state_policy_id": "life_policy.dnd2024.character_like"},
+            {"life_state_id": [], "life_state_policy_id": "life_policy.dnd2024.character_like"},
             {"life_state_id": "life.active", "life_state_policy_id": "life_policy.invalid"},
             {
                 "hp": {"current": 0, "maximum_base": 5},
@@ -278,6 +279,14 @@ class ActorAssessmentBehaviorTests(unittest.TestCase):
                 "life_state_progress": {"death_saves": {"successes": 3, "failures": 0}},
             },
             {"resources": {"resource.inspiration": {"current": -1}}},
+            {
+                "resources": {
+                    "resource.inspiration": {
+                        "current": 1,
+                        "recovery_binding": {"basis_id": []},
+                    }
+                }
+            },
             {"details": []},
         )
         for changes in malformed_states:

@@ -223,7 +223,10 @@ def _build(value: object) -> dict[str, object]:
                 )
             }
             if "selection_basis" in binding:
-                if binding["selection_basis"] not in allowed_bases:
+                if (
+                    not isinstance(binding["selection_basis"], str)
+                    or binding["selection_basis"] not in allowed_bases
+                ):
                     raise ActorContinuityError("actor build selection_basis is unsupported")
                 normalized_binding["selection_basis"] = binding["selection_basis"]
             if "basis_ref" in binding:
@@ -284,7 +287,7 @@ def _temporal_binding(value: object, label: str) -> dict[str, object]:
         "temporal.procedure_boundary": ({"basis_id", "boundary_id", "procedure_id", "anchor_id", "subject_id", "offset"}, {"boundary_id", "procedure_id", "anchor_id", "subject_id"}, {"offset"}),
         "temporal.semantic_boundary": ({"basis_id", "boundary_id", "anchor_id", "subject_id", "scope_id"}, {"boundary_id", "anchor_id", "subject_id", "scope_id"}, set()),
     }
-    if basis not in variants:
+    if not isinstance(basis, str) or basis not in variants:
         raise ActorContinuityError(f"{label} basis_id is unsupported")
     allowed, id_fields, integer_fields = variants[basis]
     required = {
@@ -453,13 +456,15 @@ def _validated_actor_state(value: object) -> dict[str, object]:
     if "hp" in state:
         normalized["hp"] = _hp(state["hp"])
     if "life_state_id" in state:
-        if state["life_state_id"] not in {"life.active", "life.dying", "life.stable", "life.dead"}:
+        if (
+            not isinstance(state["life_state_id"], str)
+            or state["life_state_id"] not in {"life.active", "life.dying", "life.stable", "life.dead"}
+        ):
             raise ActorContinuityError("actor life_state_id is unsupported")
     if "life_state_policy_id" in state:
-        if state["life_state_policy_id"] not in {
-            "life_policy.dnd2024.character_like",
-            "life_policy.dnd2024.monster_default",
-        }:
+        if not isinstance(state["life_state_policy_id"], str) or state[
+            "life_state_policy_id"
+        ] not in {"life_policy.dnd2024.character_like", "life_policy.dnd2024.monster_default"}:
             raise ActorContinuityError("actor life_state_policy_id is unsupported")
     if "life_state_progress" in state:
         if "life_state_id" not in state:
