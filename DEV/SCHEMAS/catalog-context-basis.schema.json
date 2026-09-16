@@ -4,9 +4,10 @@
   "title": "HDM exact reconstructive catalog-context basis",
   "type": "object",
   "additionalProperties": false,
-  "required": ["catalog_generation", "engine_contract_inventory_sha256", "ruleset_lock", "campaign_definition_frontier"],
+  "required": ["catalog_generation", "engine_version", "engine_contract_inventory_sha256", "ruleset_lock", "campaign_definition_frontier"],
   "properties": {
     "catalog_generation": {"const": 2},
+    "engine_version": {"type": "string", "minLength": 1},
     "engine_contract_inventory_sha256": {"$ref": "#/$defs/sha256"},
     "ruleset_lock": {
       "allOf": [

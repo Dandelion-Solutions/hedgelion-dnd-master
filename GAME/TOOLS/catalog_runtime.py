@@ -18,6 +18,7 @@ from .ruleset_package import (
     PackageSnapshot,
     RULESET_SET_DIGEST_GENERATION,
     RulesetContractError,
+    build_resolved_lock,
     canonical_json,
     sha256,
     validate_resolved_lock,
@@ -128,6 +129,7 @@ def _normalize_basis(value: object) -> dict[str, object]:
         value,
         {
             "catalog_generation",
+            "engine_version",
             "engine_contract_inventory_sha256",
             "ruleset_lock",
             "campaign_definition_frontier",
@@ -155,6 +157,7 @@ def _normalize_basis(value: object) -> dict[str, object]:
             raise CatalogBindingError("ruleset_lock has a mixed catalog generation")
     normalized: dict[str, object] = {
         "catalog_generation": catalog_generation,
+        "engine_version": _require_nonempty_string(basis["engine_version"], "engine_version"),
         "engine_contract_inventory_sha256": _require_sha256(
             basis["engine_contract_inventory_sha256"], "engine_contract_inventory_sha256"
         ),
@@ -170,6 +173,61 @@ def _normalize_basis(value: object) -> dict[str, object]:
     return normalized
 
 
+def _require_nonempty_string(value: object, label: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise CatalogBindingError(f"{label} must be a nonempty string")
+    return value
+
+
+def _rebuild_definition_sources(
+    basis: Mapping[str, object], package_snapshots: Mapping[str, PackageSnapshot]
+) -> dict[str, dict[str, str]]:
+    packages = {
+        row["package_id"]: row
+        for row in basis["ruleset_lock"]["packages"]
+    }
+    if set(package_snapshots) != set(packages):
+        raise CatalogBindingError("package snapshot evidence is incomplete or ambiguous")
+    source_dirs = []
+    for snapshot in package_snapshots.values():
+        if not isinstance(snapshot, PackageSnapshot):
+            raise CatalogBindingError("package snapshot evidence has an invalid source")
+        source_dirs.append(snapshot.package_dir)
+    try:
+        rebuilt_lock, rebuilt_snapshots = build_resolved_lock(
+            source_dirs,
+            root_package_ids=basis["ruleset_lock"]["root_package_ids"],
+            engine_version=basis["engine_version"],
+            catalog_generation=basis["catalog_generation"],
+        )
+    except RulesetContractError as exc:
+        raise CatalogBindingError(
+            f"package snapshot source cannot rebuild an admitted lock: {exc.detail}"
+        ) from exc
+    if rebuilt_lock != basis["ruleset_lock"]:
+        raise CatalogBindingError("rebuilt admitted lock does not match ruleset_lock")
+
+    definitions: dict[str, dict[str, str]] = {}
+    for package_id, rebuilt in rebuilt_snapshots.items():
+        lock_package = packages[package_id]
+        for entry_key, entry in rebuilt.semantic_entries.items():
+            _prefix, marker, definition_id = entry_key.rpartition("|id:")
+            kind = entry.get("kind")
+            if not marker or not isinstance(kind, str) or not kind.startswith("definition."):
+                continue
+            namespace = f"{definition_id.partition('.')[0]}.*"
+            if namespace not in lock_package["owned_namespaces"]:
+                raise CatalogBindingError("source definition is outside its package namespace")
+            if definition_id in definitions:
+                raise CatalogBindingError("cross-source definition collision")
+            definitions[definition_id] = {
+                "package_id": package_id,
+                "kind": kind,
+                "package_content_sha256": rebuilt.content_sha256,
+            }
+    return definitions
+
+
 def _normalize_dependencies(
     value: object,
     basis: Mapping[str, object],
@@ -177,27 +235,7 @@ def _normalize_dependencies(
 ) -> tuple[dict[str, str], ...]:
     if not isinstance(value, Sequence) or isinstance(value, str) or not value:
         raise CatalogBindingError("definition_dependencies must be a nonempty array")
-    packages = {
-        row["package_id"]: row
-        for row in basis["ruleset_lock"]["packages"]
-    }
-    if set(package_snapshots) != set(packages):
-        raise CatalogBindingError("package snapshot evidence is incomplete or ambiguous")
-    for package_id, lock_package in packages.items():
-        snapshot = package_snapshots[package_id]
-        if not isinstance(snapshot, PackageSnapshot):
-            raise CatalogBindingError("package snapshot evidence has an invalid source")
-        if (
-            snapshot.manifest.get("package_id") != package_id
-            or snapshot.content_sha256 != lock_package["content_sha256"]
-            or set(snapshot.manifest.get("owned_namespaces", ()))
-            != set(lock_package["owned_namespaces"])
-        ):
-            raise CatalogBindingError("package snapshot evidence does not match ruleset_lock")
-    frontier_ids = set(basis["campaign_definition_frontier"]["definition_ids"])
-    session_frontier = basis.get("session_overlay_frontier")
-    if session_frontier is not None:
-        frontier_ids.update(session_frontier["definition_ids"])
+    source_definitions = _rebuild_definition_sources(basis, package_snapshots)
     dependencies: list[dict[str, str]] = []
     seen_ids: set[str] = set()
     for value_row in value:
@@ -214,24 +252,16 @@ def _normalize_dependencies(
         )
         if definition_id in seen_ids:
             raise CatalogBindingError("definition_dependencies contain duplicate definition_id")
-        lock_package = packages.get(package_id)
-        if lock_package is None or lock_package["content_sha256"] != content_sha256:
-            raise CatalogBindingError("definition dependency is not pinned by ruleset_lock")
-        namespace = f"{definition_id.partition('.')[0]}.*"
-        if namespace not in lock_package["owned_namespaces"]:
-            raise CatalogBindingError("definition dependency namespace is not owned by its source")
-        if definition_id not in frontier_ids:
-            raise CatalogBindingError("definition dependency is outside the current frontier")
-        snapshot = package_snapshots[package_id]
-        matching_entries = [
-            entry
-            for entry_key, entry in snapshot.semantic_entries.items()
-            if entry_key.endswith(f"|id:{definition_id}")
-        ]
-        if len(matching_entries) != 1:
-            raise CatalogBindingError("definition dependency is absent or ambiguous in source evidence")
-        if matching_entries[0].get("kind") != kind:
-            raise CatalogBindingError("definition dependency kind differs from source evidence")
+        source_definition = source_definitions.get(definition_id)
+        if source_definition is None:
+            raise CatalogBindingError("definition dependency is absent from rebuilt source evidence")
+        if (
+            source_definition["package_id"] != package_id
+            or source_definition["package_content_sha256"] != content_sha256
+        ):
+            raise CatalogBindingError("definition dependency source does not match rebuilt evidence")
+        if source_definition["kind"] != kind:
+            raise CatalogBindingError("definition dependency kind differs from rebuilt evidence")
         seen_ids.add(definition_id)
         dependencies.append(
             {

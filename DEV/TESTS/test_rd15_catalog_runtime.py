@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import copy
 import json
+import shutil
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -15,7 +17,14 @@ from GAME.TOOLS.catalog_runtime import (
     bind_interpreter_candidate,
     validate_executable_binding,
 )
-from GAME.TOOLS.ruleset_package import build_resolved_lock
+from GAME.TOOLS.ruleset_package import (
+    RULESET_SET_DIGEST_GENERATION,
+    SET_DOMAIN,
+    build_resolved_lock,
+    build_snapshot,
+    canonical_json,
+    sha256,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -45,6 +54,7 @@ def _request(*, frontier_revision: int = 4) -> dict[str, object]:
     return {
         "basis": {
             "catalog_generation": 2,
+            "engine_version": "1.0-alpha",
             "engine_contract_inventory_sha256": "a" * 64,
             "ruleset_lock": lock,
             "campaign_definition_frontier": {
@@ -74,11 +84,54 @@ def _package_snapshots():
     return snapshots
 
 
-def _bind_context(request: dict[str, object] | None = None):
+def _bind_context(
+    request: dict[str, object] | None = None, *, package_snapshots=None
+):
     return bind_catalog_context(
         _request() if request is None else request,
-        package_snapshots=_package_snapshots(),
+        package_snapshots=_package_snapshots() if package_snapshots is None else package_snapshots,
     )
+
+
+def _lock_from_snapshots(snapshots):
+    packages = []
+    for package_id, snapshot in sorted(snapshots.items()):
+        manifest = snapshot.manifest
+        packages.append(
+            {
+                "package_id": package_id,
+                "package_revision": manifest["package_revision"],
+                "compatibility_family": manifest["compatibility_family"],
+                "compatibility_generation": manifest["compatibility_generation"],
+                "content_sha256": snapshot.content_sha256,
+                "catalog_generation": manifest["catalog_generation"],
+                "owned_namespaces": sorted(manifest["owned_namespaces"]),
+                "dependencies": sorted(
+                    manifest["dependencies"], key=lambda row: row["package_id"]
+                ),
+                "members": list(snapshot.members),
+            }
+        )
+    core = {
+        "lock_schema_version": 2,
+        "ruleset_set_digest_generation": RULESET_SET_DIGEST_GENERATION,
+        "root_package_ids": sorted(snapshots),
+        "packages": packages,
+    }
+    return {**core, "ruleset_set_sha256": sha256(SET_DOMAIN + canonical_json(core))}
+
+
+def _rehash_lock(lock):
+    core = {
+        key: lock[key]
+        for key in (
+            "lock_schema_version",
+            "ruleset_set_digest_generation",
+            "root_package_ids",
+            "packages",
+        )
+    }
+    lock["ruleset_set_sha256"] = sha256(SET_DOMAIN + canonical_json(core))
 
 
 class CatalogContextBindingTests(unittest.TestCase):
@@ -146,9 +199,70 @@ class CatalogDefinitionAdmissionTests(unittest.TestCase):
         with self.assertRaises(CatalogBindingError):
             _bind_context(request)
 
-    def test_definition_outside_the_declared_frontier_cannot_be_bound(self) -> None:
+    def test_package_definition_admission_does_not_use_campaign_session_frontiers(self) -> None:
         request = _request()
         request["basis"]["campaign_definition_frontier"]["definition_ids"] = []
+
+        self.assertEqual(
+            _bind_context(request).definition_dependencies[0]["definition_id"],
+            "activity.check.generic",
+        )
+
+    def test_forged_mutable_semantic_entry_cannot_admit_an_absent_definition(self) -> None:
+        request = _request()
+        request["basis"]["campaign_definition_frontier"]["definition_ids"] = [
+            "activity.forged"
+        ]
+        request["definition_dependencies"][0]["definition_id"] = "activity.forged"
+        snapshots = _package_snapshots()
+        snapshots[PACKAGE_ID].semantic_entries[
+            f"{PACKAGE_ID}|activity_definitions|id:activity.forged"
+        ] = {"kind": "definition.activity", "semantic_sha256": "f" * 64}
+
+        with self.assertRaises(CatalogBindingError):
+            _bind_context(request, package_snapshots=snapshots)
+
+    def test_changed_package_bytes_cannot_reuse_a_snapshot_self_reported_digest(self) -> None:
+        request = _request()
+        with tempfile.TemporaryDirectory() as directory:
+            package = Path(directory) / PACKAGE_ID
+            shutil.copytree(PACKAGE, package)
+            _lock, snapshots = build_resolved_lock(
+                [package],
+                root_package_ids=[PACKAGE_ID],
+                engine_version="1.0-alpha",
+                catalog_generation=2,
+            )
+            source = package / "gameplay-spine-seed.json"
+            source.write_text(source.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+
+            with self.assertRaises(CatalogBindingError):
+                _bind_context(request, package_snapshots=snapshots)
+
+    def test_cross_source_definition_collision_rejects_the_catalog_context(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            duplicate_dir = Path(directory) / "duplicate"
+            shutil.copytree(PACKAGE, duplicate_dir)
+            manifest_path = duplicate_dir / "ruleset-package-manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            duplicate_id = "hdm.rules.duplicate"
+            manifest["package_id"] = duplicate_id
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            duplicate = build_snapshot(
+                duplicate_dir, engine_version="1.0-alpha", catalog_generation=2
+            )
+            snapshots = _package_snapshots()
+            snapshots[duplicate_id] = duplicate
+            request = _request()
+            request["basis"]["ruleset_lock"] = _lock_from_snapshots(snapshots)
+
+            with self.assertRaises(CatalogBindingError):
+                _bind_context(request, package_snapshots=snapshots)
+
+    def test_rehashed_lock_cannot_forge_a_package_identity_line(self) -> None:
+        request = _request()
+        request["basis"]["ruleset_lock"]["packages"][0]["package_revision"] = 99
+        _rehash_lock(request["basis"]["ruleset_lock"])
 
         with self.assertRaises(CatalogBindingError):
             _bind_context(request)
