@@ -144,6 +144,8 @@ def native_identity_from_record(family_key: str, payload: Mapping[str, object]) 
     }
     fields = composite_fields.get(family_key)
     if fields is not None:
+        if "id" in payload:
+            raise IdentityMismatch("loaded composite record must not carry a surrogate id")
         values: list[str] = []
         for field in fields:
             value = payload.get(field)

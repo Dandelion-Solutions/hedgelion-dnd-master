@@ -9,7 +9,39 @@
     "campaign_id": {"type": "string", "minLength": 1},
     "family_key": {"type": "string", "pattern": "^(world|runtime)\\.[a-z][a-z0-9_]*$"},
     "identity": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
-    "payload": {
+    "payload": {"type": "object"},
+    "source_basis": {"type": "string", "minLength": 1},
+    "generation": {"type": "integer", "minimum": 0}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"family_key": {"const": "world.knowledge"}}, "required": ["family_key"]},
+      "then": {
+        "properties": {
+          "identity": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "string", "minLength": 1}},
+          "payload": {"$ref": "#/$defs/worldKnowledgePayload"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"family_key": {"const": "runtime.disclosure"}}, "required": ["family_key"]},
+      "then": {
+        "properties": {
+          "identity": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "string", "minLength": 1}},
+          "payload": {"$ref": "#/$defs/runtimeDisclosurePayload"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"family_key": {"not": {"enum": ["world.knowledge", "runtime.disclosure"]}}},
+        "required": ["family_key"]
+      },
+      "then": {"properties": {"payload": {"$ref": "#/$defs/standardOwnerPayload"}}}
+    }
+  ],
+  "$defs": {
+    "standardOwnerPayload": {
       "type": "object",
       "required": ["id", "kind"],
       "properties": {
@@ -24,7 +56,26 @@
         }
       ]
     },
-    "source_basis": {"type": "string", "minLength": 1},
-    "generation": {"type": "integer", "minimum": 0}
+    "worldKnowledgePayload": {
+      "type": "object",
+      "required": ["kind", "knower_id", "fact_id", "state"],
+      "not": {"required": ["id"]},
+      "properties": {
+        "kind": {"const": "world.knowledge"},
+        "knower_id": {"type": "string", "minLength": 1},
+        "fact_id": {"type": "string", "minLength": 1},
+        "state": {"type": "object"}
+      }
+    },
+    "runtimeDisclosurePayload": {
+      "type": "object",
+      "required": ["kind", "player_id", "fact_id"],
+      "not": {"required": ["id"]},
+      "properties": {
+        "kind": {"const": "runtime.disclosure"},
+        "player_id": {"type": "string", "minLength": 1},
+        "fact_id": {"type": "string", "minLength": 1}
+      }
+    }
   }
 }

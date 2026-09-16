@@ -7,6 +7,7 @@ import sys
 import unittest
 from pathlib import Path
 
+from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[2]
 GAME_ROOT = ROOT / "GAME"
@@ -46,6 +47,31 @@ class NativeRouteTests(unittest.TestCase):
                 "world.actor",
                 ("actor-0001",),
                 {"kind": "world.actor", "id": "actor-0002"},
+            )
+
+    def test_composite_owner_rejects_surrogate_id_and_family_mismatch(self) -> None:
+        with self.assertRaises(IdentityMismatch):
+            validate_loaded_identity(
+                "world.knowledge",
+                ("actor-0001", "fact-0001"),
+                {
+                    "id": "knowledge-0001",
+                    "kind": "world.knowledge",
+                    "knower_id": "actor-0001",
+                    "fact_id": "fact-0001",
+                    "state": {},
+                },
+            )
+        with self.assertRaises(IdentityMismatch):
+            validate_loaded_identity(
+                "runtime.disclosure",
+                ("player-0001", "fact-0001"),
+                {
+                    "kind": "world.knowledge",
+                    "knower_id": "player-0001",
+                    "fact_id": "fact-0001",
+                    "state": {},
+                },
             )
 
 
@@ -333,6 +359,75 @@ class NativeContractSchemaTests(unittest.TestCase):
         allocator_template = (ROOT / "GAME/CAMPAIGN/STATE/ID_ALLOCATOR.yaml").read_text(encoding="utf-8")
         self.assertIn("kind: runtime.id_allocator", allocator_template)
         self.assertIn("campaign_id: null", allocator_template)
+
+    def test_hot_envelope_schema_accepts_composite_identities_without_surrogate_ids(self) -> None:
+        schema = json.loads(
+            (ROOT / "DEV/SCHEMAS/native-owner-hot-envelope.schema.json").read_text(encoding="utf-8")
+        )
+        validator = Draft202012Validator(schema)
+        knowledge = {
+            "campaign_id": "campaign-a",
+            "family_key": "world.knowledge",
+            "identity": ["actor-0001", "fact-0001"],
+            "payload": {
+                "kind": "world.knowledge",
+                "knower_id": "actor-0001",
+                "fact_id": "fact-0001",
+                "state": {},
+            },
+            "source_basis": "commit-a",
+            "generation": 1,
+        }
+        disclosure = {
+            "campaign_id": "campaign-a",
+            "family_key": "runtime.disclosure",
+            "identity": ["player-0001", "fact-0001"],
+            "payload": {
+                "kind": "runtime.disclosure",
+                "player_id": "player-0001",
+                "fact_id": "fact-0001",
+            },
+            "source_basis": "commit-a",
+            "generation": 1,
+        }
+
+        self.assertTrue(validator.is_valid(knowledge))
+        self.assertTrue(validator.is_valid(disclosure))
+
+    def test_hot_envelope_schema_rejects_composite_surrogate_and_family_mismatch(self) -> None:
+        schema = json.loads(
+            (ROOT / "DEV/SCHEMAS/native-owner-hot-envelope.schema.json").read_text(encoding="utf-8")
+        )
+        validator = Draft202012Validator(schema)
+        surrogate = {
+            "campaign_id": "campaign-a",
+            "family_key": "world.knowledge",
+            "identity": ["actor-0001", "fact-0001"],
+            "payload": {
+                "id": "knowledge-0001",
+                "kind": "world.knowledge",
+                "knower_id": "actor-0001",
+                "fact_id": "fact-0001",
+                "state": {},
+            },
+            "source_basis": "commit-a",
+            "generation": 1,
+        }
+        mismatch = {
+            "campaign_id": "campaign-a",
+            "family_key": "world.knowledge",
+            "identity": ["actor-0001", "fact-0001"],
+            "payload": {
+                "kind": "runtime.disclosure",
+                "player_id": "actor-0001",
+                "fact_id": "fact-0001",
+            },
+            "source_basis": "commit-a",
+            "generation": 1,
+        }
+
+        self.assertFalse(validator.is_valid(surrogate))
+        self.assertFalse(validator.is_valid(mismatch))
 
 
 if __name__ == "__main__":
