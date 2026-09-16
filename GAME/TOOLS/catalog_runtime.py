@@ -2,8 +2,9 @@
 """Exact, caller-supplied catalog-context binding for HDM execution.
 
 This module neither discovers catalog content nor supplies a default context. A
-consumer must bind an exact resolved ruleset lock, definition frontier, and
-definition dependencies before it can use an interpreter candidate.
+consumer must bind an exact resolved ruleset lock, definition frontier,
+definition dependencies, and admitted immutable engine/campaign/session source
+evidence before it can use an interpreter candidate.
 """
 
 from __future__ import annotations
@@ -33,6 +34,10 @@ _SHA256_HEX: Final = frozenset("0123456789abcdef")
 _NATURAL_OWNER_SCOPES: Final = {
     "campaign": "campaign.definition_frontier",
     "session": "session.overlay_frontier",
+}
+_NATURAL_OWNER_ROUTE_PREFIXES: Final = {
+    "campaign": "campaign/definitions/",
+    "session": "session/overlays/",
 }
 
 
@@ -219,6 +224,16 @@ def _require_route(value: object, label: str) -> str:
     return route
 
 
+def _require_canonical_natural_owner_route(
+    value: object, *, owner_domain: str, definition_id: str
+) -> str:
+    route = _require_route(value, "natural owner route")
+    expected = f"{_NATURAL_OWNER_ROUTE_PREFIXES[owner_domain]}{definition_id}.json"
+    if route != expected:
+        raise CatalogBindingError("natural owner route is not canonical")
+    return route
+
+
 def _normalize_natural_owner_evidence(value: object) -> tuple[dict[str, object], ...]:
     if not isinstance(value, Sequence) or isinstance(value, str):
         raise CatalogBindingError("natural_owner_evidence must be an array")
@@ -252,7 +267,9 @@ def _normalize_natural_owner_evidence(value: object) -> tuple[dict[str, object],
                 "kind": _require_id(row["kind"], "natural owner kind"),
                 "owner_domain": owner_domain,
                 "scope": scope,
-                "route": _require_route(row["route"], "natural owner route"),
+                "route": _require_canonical_natural_owner_route(
+                    row["route"], owner_domain=owner_domain, definition_id=definition_id
+                ),
                 "pinned_revision": _require_revision(
                     row["pinned_revision"], "natural owner pinned_revision"
                 ),
@@ -262,6 +279,73 @@ def _normalize_natural_owner_evidence(value: object) -> tuple[dict[str, object],
             }
         )
     return tuple(sorted(evidence_rows, key=lambda row: str(row["definition_id"])))
+
+
+def _validate_admitted_source_evidence(
+    basis: Mapping[str, object],
+    *,
+    engine_contract_inventory_source: object,
+    natural_owner_sources: object,
+) -> None:
+    source_inventory = copy.deepcopy(
+        _require_mapping(engine_contract_inventory_source, "engine contract inventory source")
+    )
+    try:
+        _validated_engine_contract_entries(
+            source_inventory,
+            engine_version=str(basis["engine_version"]),
+            ruleset_set_sha256=str(basis["ruleset_lock"]["ruleset_set_sha256"]),
+            ruleset_set_digest_generation=int(
+                basis["ruleset_lock"]["ruleset_set_digest_generation"]
+            ),
+        )
+    except (RulesetContractError, KeyError, TypeError, ValueError) as exc:
+        detail = exc.detail if isinstance(exc, RulesetContractError) else str(exc)
+        raise CatalogBindingError(
+            f"engine contract inventory source is not admitted evidence: {detail}"
+        ) from exc
+    if source_inventory != basis["engine_contract_inventory"]:
+        raise CatalogBindingError("engine contract inventory differs from admitted source evidence")
+
+    sources = _require_mapping(natural_owner_sources, "natural owner sources")
+    evidence_by_domain = {
+        owner_domain: tuple(
+            row
+            for row in basis["natural_owner_evidence"]
+            if row["owner_domain"] == owner_domain
+        )
+        for owner_domain in _NATURAL_OWNER_SCOPES
+    }
+    expected_domains = {
+        owner_domain for owner_domain, rows in evidence_by_domain.items() if rows
+    }
+    if set(sources) != expected_domains:
+        raise CatalogBindingError("natural owner sources do not match admitted owner domains")
+    for owner_domain in sorted(expected_domains):
+        source = _require_exact_keys(
+            sources[owner_domain], {"selected_frontier", "members"}, "natural owner source"
+        )
+        frontier_key = (
+            "campaign_definition_frontier"
+            if owner_domain == "campaign"
+            else "session_overlay_frontier"
+        )
+        if frontier_key not in basis:
+            raise CatalogBindingError("natural owner source has no selected context frontier")
+        selected_frontier = _normalize_frontier(
+            source["selected_frontier"], f"{owner_domain} source selected_frontier"
+        )
+        if selected_frontier != basis[frontier_key]:
+            raise CatalogBindingError("natural owner selected frontier differs from context basis")
+        admitted_members = _normalize_natural_owner_evidence(source["members"])
+        if any(row["owner_domain"] != owner_domain for row in admitted_members):
+            raise CatalogBindingError("natural owner source member has the wrong domain")
+        if admitted_members != evidence_by_domain[owner_domain]:
+            raise CatalogBindingError("natural owner evidence differs from admitted source membership")
+        if not {
+            str(row["definition_id"]) for row in admitted_members
+        }.issubset(set(selected_frontier["definition_ids"])):
+            raise CatalogBindingError("natural owner member is absent from its selected frontier")
 
 
 def _rebuild_definition_sources(
@@ -331,10 +415,6 @@ def _normalize_dependencies(
         source_type = _require_nonempty_string(
             row.get("source_type"), "dependency source_type"
         )
-        definition_id = _require_id(row["definition_id"], "definition_id")
-        kind = _require_id(row["kind"], "kind")
-        if definition_id in seen_ids:
-            raise CatalogBindingError("definition_dependencies contain duplicate definition_id")
         if source_type == "ruleset_package":
             row = _require_exact_keys(
                 row,
@@ -347,6 +427,10 @@ def _normalize_dependencies(
                 },
                 "ruleset package definition dependency",
             )
+            definition_id = _require_id(row["definition_id"], "definition_id")
+            kind = _require_id(row["kind"], "kind")
+            if definition_id in seen_ids:
+                raise CatalogBindingError("definition_dependencies contain duplicate definition_id")
             package_id = _require_id(row["package_id"], "package_id")
             content_sha256 = _require_sha256(
                 row["package_content_sha256"], "package_content_sha256"
@@ -387,6 +471,10 @@ def _normalize_dependencies(
                 },
                 "natural owner definition dependency",
             )
+            definition_id = _require_id(row["definition_id"], "definition_id")
+            kind = _require_id(row["kind"], "kind")
+            if definition_id in seen_ids:
+                raise CatalogBindingError("definition_dependencies contain duplicate definition_id")
             if definition_id in source_definitions:
                 raise CatalogBindingError(
                     "natural owner definition collides with a package definition"
@@ -426,7 +514,11 @@ def _normalize_dependencies(
 
 
 def bind_catalog_context(
-    value: object, *, package_snapshots: Mapping[str, PackageSnapshot]
+    value: object,
+    *,
+    package_snapshots: Mapping[str, PackageSnapshot],
+    engine_contract_inventory_source: object,
+    natural_owner_sources: object,
 ) -> BoundCatalogContext:
     """Bind exact reconstruction inputs; this function never chooses a default."""
 
@@ -434,6 +526,11 @@ def bind_catalog_context(
         value, {"basis", "definition_dependencies"}, "catalog binding request"
     )
     basis = _normalize_basis(request["basis"])
+    _validate_admitted_source_evidence(
+        basis,
+        engine_contract_inventory_source=engine_contract_inventory_source,
+        natural_owner_sources=natural_owner_sources,
+    )
     dependencies = _normalize_dependencies(
         request["definition_dependencies"], basis, package_snapshots
     )

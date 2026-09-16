@@ -111,7 +111,11 @@ def _natural_owner_evidence(*, owner_domain: str = "campaign") -> dict[str, obje
         "kind": "definition.activity",
         "owner_domain": owner_domain,
         "scope": scope,
-        "route": f"{owner_domain}/definitions/local_attack.json",
+        "route": (
+            f"campaign/definitions/{definition_id}.json"
+            if owner_domain == "campaign"
+            else f"session/overlays/{definition_id}.json"
+        ),
         "pinned_revision": 4,
         "content_sha256": "b" * 64,
     }
@@ -132,6 +136,26 @@ def _natural_owner_dependency(evidence: dict[str, object]) -> dict[str, object]:
     }
 
 
+def _natural_owner_sources(request: dict[str, object]) -> dict[str, object]:
+    basis = request["basis"]
+    evidence = basis["natural_owner_evidence"]
+    sources: dict[str, object] = {}
+    for owner_domain in ("campaign", "session"):
+        rows = [row for row in evidence if row["owner_domain"] == owner_domain]
+        if not rows:
+            continue
+        frontier_key = (
+            "campaign_definition_frontier"
+            if owner_domain == "campaign"
+            else "session_overlay_frontier"
+        )
+        sources[owner_domain] = {
+            "selected_frontier": copy.deepcopy(basis[frontier_key]),
+            "members": copy.deepcopy(rows),
+        }
+    return sources
+
+
 def _package_snapshots():
     _lock, snapshots = build_resolved_lock(
         [PACKAGE],
@@ -145,9 +169,14 @@ def _package_snapshots():
 def _bind_context(
     request: dict[str, object] | None = None, *, package_snapshots=None
 ):
+    request = _request() if request is None else request
     return bind_catalog_context(
-        _request() if request is None else request,
+        request,
         package_snapshots=_package_snapshots() if package_snapshots is None else package_snapshots,
+        engine_contract_inventory_source=copy.deepcopy(
+            request["basis"]["engine_contract_inventory"]
+        ),
+        natural_owner_sources=_natural_owner_sources(request),
     )
 
 
@@ -244,15 +273,22 @@ class CatalogDefinitionAdmissionTests(unittest.TestCase):
         evidence = _natural_owner_evidence(owner_domain=owner_domain)
         request["basis"]["natural_owner_evidence"] = [evidence]
         request["definition_dependencies"].append(_natural_owner_dependency(evidence))
+        if owner_domain == "campaign":
+            request["basis"]["campaign_definition_frontier"]["definition_ids"].append(
+                evidence["definition_id"]
+            )
+        else:
+            request["basis"]["session_overlay_frontier"] = {
+                "frontier_id": "session.overlay",
+                "state_revision": 4,
+                "definition_ids": [evidence["definition_id"]],
+            }
         return request
 
     def test_pinned_campaign_owner_evidence_is_admitted_with_the_exact_package_context(self) -> None:
         request = self._request_with_natural_evidence()
 
-        context = bind_catalog_context(
-            request,
-            package_snapshots=_package_snapshots(),
-        )
+        context = _bind_context(request)
 
         self.assertEqual(
             {row["definition_id"] for row in context.definition_dependencies},
@@ -265,13 +301,7 @@ class CatalogDefinitionAdmissionTests(unittest.TestCase):
 
     def test_pinned_session_owner_evidence_is_admitted(self) -> None:
         request = self._request_with_natural_evidence(owner_domain="session")
-        request["basis"]["session_overlay_frontier"] = {
-            "frontier_id": "session.overlay",
-            "state_revision": 4,
-            "definition_ids": ["session.local_attack"],
-        }
-
-        context = bind_catalog_context(request, package_snapshots=_package_snapshots())
+        context = _bind_context(request)
 
         self.assertEqual(context.definition_dependencies[-1]["owner_domain"], "session")
 
@@ -286,26 +316,128 @@ class CatalogDefinitionAdmissionTests(unittest.TestCase):
         for request in (missing, changed, ambient):
             with self.subTest(request=request):
                 with self.assertRaises(CatalogBindingError):
-                    bind_catalog_context(request, package_snapshots=_package_snapshots())
+                    _bind_context(request)
 
     def test_natural_owner_dependency_cannot_change_its_pinned_revision(self) -> None:
         request = self._request_with_natural_evidence()
         request["definition_dependencies"][1]["pinned_revision"] = 5
 
         with self.assertRaises(CatalogBindingError):
-            bind_catalog_context(request, package_snapshots=_package_snapshots())
+            _bind_context(request)
+
+    def test_coordinated_caller_claims_cannot_forge_immutable_engine_inventory(self) -> None:
+        request = _request()
+        immutable_inventory = copy.deepcopy(request["basis"]["engine_contract_inventory"])
+        forged_inventory = copy.deepcopy(immutable_inventory)
+        forged_inventory["items"][0]["semantic_sha256"] = "b" * 64
+        forged_core = {
+            key: forged_inventory[key]
+            for key in (
+                "inventory_schema_version",
+                "engine_version",
+                "ruleset_set_digest_generation",
+                "ruleset_set_sha256",
+                "items",
+            )
+        }
+        forged_inventory["inventory_sha256"] = sha256(
+            INVENTORY_DOMAIN + canonical_json(forged_core)
+        )
+        request["basis"]["engine_contract_inventory"] = forged_inventory
+        request["basis"]["engine_contract_inventory_sha256"] = forged_inventory[
+            "inventory_sha256"
+        ]
+
+        with self.assertRaises(CatalogBindingError):
+            bind_catalog_context(
+                request,
+                package_snapshots=_package_snapshots(),
+                engine_contract_inventory_source=immutable_inventory,
+                natural_owner_sources={},
+            )
+
+    def test_coordinated_caller_claims_cannot_forge_natural_owner_source_evidence(self) -> None:
+        request = self._request_with_natural_evidence()
+        natural_owner_sources = _natural_owner_sources(request)
+        forged = request["basis"]["natural_owner_evidence"][0]
+        forged["content_sha256"] = "c" * 64
+        request["definition_dependencies"][1] = _natural_owner_dependency(forged)
+
+        with self.assertRaises(CatalogBindingError):
+            bind_catalog_context(
+                request,
+                package_snapshots=_package_snapshots(),
+                engine_contract_inventory_source=request["basis"]["engine_contract_inventory"],
+                natural_owner_sources=natural_owner_sources,
+            )
+
+    def test_natural_owner_source_requires_selected_frontier_and_member(self) -> None:
+        request = self._request_with_natural_evidence()
+        for missing_key, source in (
+            ("selected_frontier", {"members": request["basis"]["natural_owner_evidence"]}),
+            (
+                "members",
+                {
+                    "selected_frontier": request["basis"]["campaign_definition_frontier"],
+                    "members": [],
+                },
+            ),
+        ):
+            with self.subTest(missing_key=missing_key):
+                with self.assertRaises(CatalogBindingError):
+                    bind_catalog_context(
+                        request,
+                        package_snapshots=_package_snapshots(),
+                        engine_contract_inventory_source=request["basis"][
+                            "engine_contract_inventory"
+                        ],
+                        natural_owner_sources={"campaign": source},
+                    )
+
+    def test_noncanonical_natural_owner_source_route_is_rejected(self) -> None:
+        request = self._request_with_natural_evidence()
+        source = _natural_owner_sources(request)
+        source["campaign"]["members"][0]["route"] = "campaign/archive/local_attack.json"
+        request["basis"]["natural_owner_evidence"][0]["route"] = (
+            "campaign/archive/local_attack.json"
+        )
+        request["definition_dependencies"][1] = _natural_owner_dependency(
+            request["basis"]["natural_owner_evidence"][0]
+        )
+
+        with self.assertRaises(CatalogBindingError):
+            bind_catalog_context(
+                request,
+                package_snapshots=_package_snapshots(),
+                engine_contract_inventory_source=request["basis"]["engine_contract_inventory"],
+                natural_owner_sources=source,
+            )
+
+    def test_malformed_source_specific_dependency_raises_catalog_binding_error(self) -> None:
+        malformed_dependencies = (
+            {"source_type": "ruleset_package", "definition_id": "activity.check.generic"},
+            {
+                "source_type": "natural_owner",
+                "definition_id": "campaign.local_attack",
+                "kind": "definition.activity",
+            },
+        )
+        for dependency in malformed_dependencies:
+            request = _request()
+            request["definition_dependencies"] = [dependency]
+            with self.subTest(dependency=dependency):
+                with self.assertRaises(CatalogBindingError):
+                    _bind_context(request)
 
     def test_engine_contract_inventory_requires_its_admitted_evidence(self) -> None:
         request = _request()
         request["basis"]["engine_contract_inventory"]["items"][0]["semantic_sha256"] = "b" * 64
 
         with self.assertRaises(CatalogBindingError):
-            bind_catalog_context(request, package_snapshots=_package_snapshots())
+            _bind_context(request)
 
     def test_natural_owner_executable_binding_retains_its_pinned_source(self) -> None:
-        context = bind_catalog_context(
-            self._request_with_natural_evidence(), package_snapshots=_package_snapshots()
-        )
+        context = _bind_context(self._request_with_natural_evidence())
 
         binding = bind_interpreter_candidate(
             context,
@@ -511,7 +643,12 @@ class CatalogGapContextEvidenceTests(unittest.TestCase):
 class CatalogBindingInstructionCutoverTests(unittest.TestCase):
     def test_default_or_ambient_catalog_selection_is_not_accepted(self) -> None:
         with self.assertRaises(CatalogBindingError):
-            _bind_context({"default_catalog": "dnd"})
+            bind_catalog_context(
+                {"default_catalog": "dnd"},
+                package_snapshots=_package_snapshots(),
+                engine_contract_inventory_source={},
+                natural_owner_sources={},
+            )
 
 
 class CatalogBackedAcceptanceIntegrationTests(unittest.TestCase):
