@@ -5,8 +5,8 @@ WAVE: `DEV/docs/superpowers/plans/implementation-wave-01-owner-native-foundation
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `2746530e868e968bf985fe19448a9d475a8c70ec`
 
-STATUS: SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: named W01 System-Impact rulings only
+STATUS: EXECUTING
+CURRENT_TASK: W01.T01, W01.T03, and W01.T07 targeted ruling realization
 LAST_COMPLETED_TASK: W01.T08
 LAST_SAFE_SHA: `aa9d5506714f3235ccce99583f31c0df852e61b5`
 
@@ -117,9 +117,9 @@ newly eligible dependent tasks: applicable Wave 02 consumers remain expressly ou
 
 CURRENT_VERIFICATION_STATE: W01.T08 integration focused test and maintenance audit PASS at `d19cd2ef659cfdd5bdcba106b8ac9b5f43241930`; exact remote `aa9d5506714f3235ccce99583f31c0df852e61b5` clean-worktree full DEV discovery 596 passed, 1 skipped and maintenance audit PASS
 VERSION_IMPACT: W01.T02 GAME/CORE/INFORMATION.md 0.1.2 -> 1.0.4; W01.T04 GAME/SCHEMA/index.schema.yaml 1 -> 2; W01.T05/T06/T08/T10 NONE; other integrated namespaces NONE
-SYSTEM_IMPACT: W01.T01 SENIOR_REVIEW_REQUIRED (deferred final-writer contradiction); W01.T03 SENIOR_REVIEW_REQUIRED (legacy schema retirement/audit consumer); W01.T07 SENIOR_REVIEW_REQUIRED (generic lexical schema-validation policy)
-NEXT_EXACT_TASK: await Senior rulings for W01.T01, W01.T03, and W01.T07; only then resume their affected lanes and re-evaluate W01.T09; do not start Wave 02
-KNOWN_BLOCKERS: W01.T01 deferred-final-writer contradiction; W01.T03 legacy-retirement/audit-consumer contradiction; W01.T07 generic lexical schema-validation policy; W01.T09 is ineligible without W01.T03 output
+SYSTEM_IMPACT: NONE - Senior rulings accepted: T01 creates Wave-05 repair inputs only; T03 retains physical legacy residue until Wave 05; T07 uses owner-native ingress without generic lexical validation
+NEXT_EXACT_TASK: publish the stable-plan ruling checkpoint, complete/review T01, T03, and T07, then re-evaluate and execute T09; do not start Wave 02
+KNOWN_BLOCKERS: NONE after the targeted rulings; W01.T09 remains dependency-gated until T03 publishes W01_ACTOR_ASSET_EFFECT_READY
 UNPUBLISHED_WORK: NONE
 
 ## Exact-head checkpoint verification

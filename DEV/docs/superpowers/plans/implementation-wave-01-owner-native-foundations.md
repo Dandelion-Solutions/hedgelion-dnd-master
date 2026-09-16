@@ -23,9 +23,9 @@ These are the concrete source-HEAD actions. Fresh-read and reclassify a path bef
 
 | Task | Direct action paths | Deferred shared/final paths |
 |---|---|---|
-| W01.T01 | `NEW_CREATE DEV/TESTS/test_rd01_shipped_projection_repairs.py`; inspect current `GAME/CORE/**` | `GAME/INSTALL/README.md`, `GAME/INSTALL/PROJECT_INSTRUCTIONS.txt`, `GAME/INSTALL/00_DND_BOOTSTRAP.md`, `GAME/CORE/BOOTSTRAP_RUNTIME.md`, `GAME/CORE/RANDOMNESS.md`, `GAME/CORE/EXPLORATION.md`; keep absent `GAME/CORE/DOMAIN_RULES_COVERAGE.md` absent |
+| W01.T01 | `NEW_CREATE DEV/TESTS/test_rd01_shipped_projection_repairs.py`; inspect current `GAME/CORE/**`; produce bounded reconciliation/repair inputs for Wave-05 writers | `GAME/INSTALL/README.md`, `GAME/INSTALL/PROJECT_INSTRUCTIONS.txt`, `GAME/INSTALL/00_DND_BOOTSTRAP.md`, `GAME/CORE/BOOTSTRAP_RUNTIME.md`, `GAME/CORE/RANDOMNESS.md`, `GAME/CORE/EXPLORATION.md`; keep absent `GAME/CORE/DOMAIN_RULES_COVERAGE.md` absent |
 | W01.T02 | `NEW_CREATE GAME/TOOLS/information.py`, `DEV/SCHEMAS/information-normalization-result.schema.json`, `world-lore-fact-state.schema.json`, `world-knowledge-state.schema.json`, `runtime-disclosure-state.schema.json`, `runtime-message-state.schema.json`, `DEV/TESTS/test_rd02_information_native_contracts.py`; modify `GAME/CORE/INFORMATION.md` | retained/legacy GAME schemas and both shared READMEs integrate at W05 |
-| W01.T03 | `NEW_CREATE GAME/TOOLS/actor_continuity.py`, `GAME/TOOLS/continuity_projection.py`, `DEV/SCHEMAS/actor-assessment-request.schema.json`, `actor-delta-draft.schema.json`, `continuity-projection-candidate.schema.json`, `world-actor-state.schema.json`, `world-actor-group-state.schema.json`, `world-asset-state.schema.json`, `world-effect-state.schema.json`, `DEV/TESTS/test_rd03_actor_asset_effect_continuity.py`; create strict `GAME/SCHEMA/actor.schema.yaml`, `asset.schema.yaml`, `effect.schema.yaml`; retire superseded `pc.schema.yaml`, `npc.schema.yaml`, `item.schema.yaml` only after W01.T02 knowledge cleanup is preserved | shared READMEs integrate at W05 |
+| W01.T03 | `NEW_CREATE GAME/TOOLS/actor_continuity.py`, `GAME/TOOLS/continuity_projection.py`, `DEV/SCHEMAS/actor-assessment-request.schema.json`, `actor-delta-draft.schema.json`, `continuity-projection-candidate.schema.json`, `world-actor-state.schema.json`, `world-actor-group-state.schema.json`, `world-asset-state.schema.json`, `world-effect-state.schema.json`, `DEV/TESTS/test_rd03_actor_asset_effect_continuity.py`; create strict `GAME/SCHEMA/actor.schema.yaml`, `asset.schema.yaml`, `effect.schema.yaml`; retain superseded `pc.schema.yaml`, `npc.schema.yaml`, `item.schema.yaml` as physical legacy residue until the Wave-05 final control-plane cutover | shared READMEs and legacy schema/audit-consumer retirement integrate at W05 |
 | W01.T04 | `NEW_CREATE GAME/TOOLS/native_storage.py`, `id_allocator.py`, `hot_store.py`, `DEV/SCHEMAS/native-route.schema.json`, `campaign-id-allocator-state.schema.json`, `native-family-index.schema.json`, `native-owner-hot-envelope.schema.json`, `DEV/TESTS/test_rd04_native_routing_index_hot.py`; modify `GAME/SCHEMA/index.schema.yaml`, `id_allocator.schema.yaml`, `GAME/CAMPAIGN/STATE/ID_ALLOCATOR.yaml` | `GAME/SCHEMA/location.schema.yaml` and shared READMEs integrate at W05 |
 | W01.T05 | `NEW_CREATE GAME/TOOLS/temporal.py`, `DEV/SCHEMAS/world-thread-state.schema.json`, `temporal-agenda-entry.schema.json`, `chronology-relation-evidence.schema.json`, `DEV/TESTS/test_rd08_temporal.py`; modify `DEV/SCHEMAS/temporal-binding.schema.json` only on focused RED | `current_state`, `thread`, `scene`, `event`, `GAME/CORE/CHRONOLOGY.md`, `GAME/CORE/PROCESSES.md` and schema README integrate at W05 |
 | W01.T06 | `NEW_CREATE GAME/TOOLS/turn_runtime.py`, `emission.py`, `context_runtime.py`, `context_budget.py`; create `DEV/SCHEMAS/turn-envelope.schema.json`, `interpreter-result.schema.json`, `preparation-draft.schema.json`, `actor-proposal.schema.json`, `story-projection-draft.schema.json`, `narration-result.schema.json`, `context-need-profile.schema.json`, `context-trace.schema.json`; create both owner tests | `GAME/CORE/AI_REASONING.md`, `RUNTIME.md`, `PLAY_POLICY.md` are integrated/inspected at W05 |
@@ -61,7 +61,7 @@ Read the current architecture/spec owners and the shipped `GAME/**` surfaces nam
 
 Required behavior:
 
-- repair only a current shipped contradiction proven at the implementation-start HEAD;
+- prove only a current shipped contradiction at the implementation-start HEAD, then produce its exact bounded Wave-05 final-writer repair input/delta;
 - retain fixed RNG semantics and the current clean-slate v1 transport/currentness rules;
 - prove that the historical R047 path `GAME/CORE/DOMAIN_RULES_COVERAGE.md` remains absent and has no active contradictory consumer;
 - do not recreate an absent module, add a compatibility alias or bump a version for a negative-only reconciliation.
@@ -69,10 +69,10 @@ Required behavior:
 TDD and verification:
 
 - extend `DEV/TESTS/test_rd01_shipped_projection_repairs.py` with `CoreCurrentProjectionTests`, `DomainExplorationTests`, `InstallProjectionTests` and `RandomnessProjectionTests`;
-- RED must identify the exact contradictory bytes or active stale consumer; GREEN changes the owning surface and all bounded current consumers;
+- RED must identify the exact contradictory bytes or active stale consumer; GREEN proves the reconciliation/repair-input contract without changing a deferred final-writer surface;
 - run the focused module and static absence/reference checks.
 
-Output checkpoint: `W01_CURRENT_PROJECTIONS_READY`. Bounded install and `BOOTSTRAP_RUNTIME` deltas flow to the Wave-05 final writers; current bytes are not edited twice.
+Output checkpoint: `W01_CURRENT_PROJECTIONS_READY` means reconciliation/repair-input readiness, not final shipped-byte integration. Bounded install and `BOOTSTRAP_RUNTIME` deltas flow to the Wave-05 final writers; current bytes are not edited twice.
 
 ## W01.T02 — Information, knowledge, disclosure and message ownership
 
@@ -109,7 +109,7 @@ Required interfaces and laws:
 - deterministic assessment and mutation outputs suitable for the execution carrier;
 - explicit admission or rejection of legacy/provisional inputs, with no duplicate entity authority.
 
-Produce only owner-local schema/code changes and bounded README/storage deltas. Final shared documentation and wrapper/catalog integration occur in Wave 05.
+Produce only owner-local schema/code changes and bounded README/storage deltas. The three superseded PC/NPC/item schema files remain temporary physical legacy residue until the Wave-05 final control-plane cutover reconciles `audit_engine.py` and remaining consumers; new code must not use them as authority. Final shared documentation, wrapper/catalog integration and physical legacy retirement occur in Wave 05.
 
 TDD and verification:
 
@@ -117,7 +117,7 @@ TDD and verification:
 - retain `NativeActorShapeTests`, `ActorAssessmentBehaviorTests`, `ActorMutationIntegrationTests`, `ContinuitySourceAdmissionTests`, `LegacyEntityProjectionTests` and `ProvisionalActorConsumerTests`;
 - cover accepted mutation, stale input, conflicting identity and failed provisional promotion.
 
-Output checkpoint: `W01_ACTOR_ASSET_EFFECT_READY`.
+Output checkpoint: `W01_ACTOR_ASSET_EFFECT_READY` requires current native Actor/Asset/Effect ownership and explicit legacy non-authority, not early physical retirement of the legacy schema bytes.
 
 ## W01.T04 — Native routes, allocator, index and HOT contracts
 
@@ -201,6 +201,7 @@ Required behavior:
 - Story has a bounded physical root/selector and exact source currentness;
 - Commentator input is self-contained and privacy-bounded;
 - Dramaturg horizon/admission/rebase primitives never mutate history by narration alone.
+- Owner-native Python ingress is the strict schema-version admission boundary: accept only a real integer `1`, reject `1.0`, `True`, strings, `null` and unsupported integers. Draft 2020-12 structural schemas may treat numeric `1.0` as integer-valued under their standard semantics; this task does not create a generic lexical schema validator.
 
 TDD and verification:
 
