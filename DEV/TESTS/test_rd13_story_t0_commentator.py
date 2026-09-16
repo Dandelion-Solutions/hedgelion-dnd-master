@@ -264,10 +264,40 @@ class StorySchemaTests(unittest.TestCase):
         schemas = [json.loads((SCHEMAS / name).read_text(encoding="utf-8")) for name in schema_names]
         self.assertTrue(all(schema["additionalProperties"] is False for schema in schemas))
         self.assertTrue(all("schema_version" in schema["properties"] for schema in schemas))
+        self.assertTrue(all(schema["properties"]["schema_version"].get("type") == "integer" for schema in schemas))
         self.assertTrue(all(schema["properties"]["schema_version"].get("const") == 1 for schema in schemas))
 
 
 class SchemaVersionTests(unittest.TestCase):
+    def test_owner_local_validators_reject_noninteger_schema_version_one_point_zero(self) -> None:
+        with self.assertRaises(HistoryContractError):
+            validate_semantic_event_draft({**_semantic_event(), "schema_version": 1.0})
+        with self.assertRaises(HistoryContractError):
+            validate_t0_basis({**_t0_basis(), "schema_version": 1.0})
+        with self.assertRaises(StoryContractError):
+            validate_story_projection({**_story_projection(), "schema_version": 1.0}, layer="EVENTS")
+        with self.assertRaises(CommentatorContractError):
+            build_commentator_snapshot(
+                [_story_projection()],
+                {"schema_version": 1.0, "controls": {"player.aria": {"story_ids": ["E000007"]}}},
+            )
+        snapshot = build_commentator_snapshot(
+            [_story_projection()],
+            build_commentator_control_projection({"player.aria": {"story_ids": ["E000007"]}}),
+        )
+        with self.assertRaises(CommentatorContractError):
+            filter_commentator_request({**snapshot, "schema_version": 1.0}, "player.aria")
+        with self.assertRaises(DramaturgContractError):
+            validate_dramaturg_horizon(
+                {
+                    "schema_version": 1.0,
+                    "scope_id": "campaign.main",
+                    "generation": 1,
+                    "source_basis": ["event.gate_opened"],
+                    "entries": [],
+                }
+            )
+
     def test_owner_local_validators_reject_unsupported_schema_version_two(self) -> None:
         with self.assertRaises(HistoryContractError):
             validate_semantic_event_draft({**_semantic_event(), "schema_version": 2})

@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "event_id", "actor_id", "factors"],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"type": "integer", "const": 1},
     "event_id": {"type": "string", "minLength": 1},
     "actor_id": {"type": "string", "minLength": 1},
     "factors": {

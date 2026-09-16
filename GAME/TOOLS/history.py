@@ -29,7 +29,7 @@ def _positive_int(value: object, label: str) -> int:
 
 
 def _schema_version(value: object) -> int:
-    if value != 1 or isinstance(value, bool):
+    if not isinstance(value, int) or isinstance(value, bool) or value != 1:
         raise HistoryContractError("unsupported schema_version")
     return 1
 

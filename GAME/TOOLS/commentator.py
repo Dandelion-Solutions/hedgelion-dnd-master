@@ -45,7 +45,7 @@ def _validate_control_projection(value: object) -> dict[str, object]:
     if not isinstance(value, Mapping) or set(value) != {"schema_version", "controls"}:
         raise CommentatorContractError("invalid Commentator control projection")
     version = value["schema_version"]
-    if version != 1 or isinstance(version, bool):
+    if not isinstance(version, int) or isinstance(version, bool) or version != 1:
         raise CommentatorContractError("unsupported Commentator control schema_version")
     controls = value["controls"]
     if not isinstance(controls, Mapping):
@@ -74,7 +74,12 @@ def filter_commentator_request(snapshot: object, player_id: object) -> list[dict
 
     if not isinstance(snapshot, Mapping) or set(snapshot) != {"schema_version", "records", "control"}:
         raise CommentatorContractError("invalid Commentator snapshot")
-    if snapshot["schema_version"] != 1 or isinstance(snapshot["schema_version"], bool):
+    version = snapshot["schema_version"]
+    if (
+        not isinstance(version, int)
+        or isinstance(version, bool)
+        or version != 1
+    ):
         raise CommentatorContractError("unsupported Commentator snapshot schema_version")
     player = _nonempty_string(player_id, "player_id")
     control = _validate_control_projection(snapshot["control"])

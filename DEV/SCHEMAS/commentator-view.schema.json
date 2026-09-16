@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "player_id", "records"],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"type": "integer", "const": 1},
     "player_id": {"type": "string", "minLength": 1},
     "records": {"type": "array", "items": {"$ref": "story-event-unit.schema.json"}}
   }
