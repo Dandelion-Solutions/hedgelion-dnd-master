@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/runtime-catalog-gap-report-state.schema.json",
+  "title": "HDM runtime.catalog_gap_report state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["requested_identity", "context_basis", "catalog_generation", "ruleset_set_digest_generation", "ruleset_set_sha256", "catalog_context_fingerprint_generation", "catalog_context_fingerprint", "reason"],
+  "properties": {
+    "requested_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["definition_id", "kind"],
+      "properties": {
+        "definition_id": {"$ref": "#/$defs/id"},
+        "kind": {"$ref": "#/$defs/id"}
+      }
+    },
+    "context_basis": {"$ref": "catalog-context-basis.schema.json"},
+    "catalog_generation": {"const": 2},
+    "ruleset_set_digest_generation": {"const": 1},
+    "ruleset_set_sha256": {"$ref": "#/$defs/sha256"},
+    "catalog_context_fingerprint_generation": {"const": 1},
+    "catalog_context_fingerprint": {"$ref": "#/$defs/sha256"},
+    "reason": {"enum": ["definition_not_found", "definition_kind_mismatch"]}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

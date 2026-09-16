@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/catalog-binding-result.schema.json",
+  "title": "HDM bound catalog context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["basis", "definition_dependencies", "catalog_context_fingerprint_generation", "catalog_context_fingerprint"],
+  "properties": {
+    "basis": {"$ref": "catalog-context-basis.schema.json"},
+    "definition_dependencies": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "catalog-definition-dependency-ref.schema.json"}
+    },
+    "catalog_context_fingerprint_generation": {"const": 1},
+    "catalog_context_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

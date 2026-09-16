@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/catalog-context-basis.schema.json",
+  "title": "HDM exact reconstructive catalog-context basis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["catalog_generation", "engine_contract_inventory_sha256", "ruleset_lock", "campaign_definition_frontier"],
+  "properties": {
+    "catalog_generation": {"const": 2},
+    "engine_contract_inventory_sha256": {"$ref": "#/$defs/sha256"},
+    "ruleset_lock": {
+      "allOf": [
+        {"$ref": "resolved-ruleset-lock.schema.json"},
+        {"properties": {"packages": {"items": {"properties": {"catalog_generation": {"const": 2}}}}}}
+      ]
+    },
+    "campaign_definition_frontier": {"$ref": "#/$defs/frontier"},
+    "session_overlay_frontier": {"$ref": "#/$defs/frontier"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["frontier_id", "state_revision", "definition_ids"],
+      "properties": {
+        "frontier_id": {"$ref": "#/$defs/id"},
+        "state_revision": {"type": "integer", "minimum": 0},
+        "definition_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+      }
+    }
+  }
+}

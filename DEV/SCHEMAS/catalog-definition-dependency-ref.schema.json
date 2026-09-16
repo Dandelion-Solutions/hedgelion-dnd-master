@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/catalog-definition-dependency-ref.schema.json",
+  "title": "HDM exact catalog definition dependency reference",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["definition_id", "kind", "package_id", "package_content_sha256"],
+  "properties": {
+    "definition_id": {"$ref": "#/$defs/id"},
+    "kind": {"$ref": "#/$defs/id"},
+    "package_id": {"$ref": "#/$defs/id"},
+    "package_content_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}
