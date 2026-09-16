@@ -2,31 +2,82 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/chronology-relation-evidence.schema.json",
   "title": "HDM typed chronology relation evidence",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["relation_type", "before_anchor_id", "after_anchor_id", "scope_id"],
-  "properties": {
-    "relation_type": {"enum": ["CAUSES", "PRECEDES", "SAME_COORDINATE", "ELAPSED"]},
-    "before_anchor_id": {"$ref": "#/$defs/machineId"},
-    "after_anchor_id": {"$ref": "#/$defs/machineId"},
-    "scope_id": {"$ref": "#/$defs/machineId"},
-    "coordinate": {"type": ["integer", "string", "null"]},
+  "oneOf": [
+    {"$ref": "#/$defs/causes"},
+    {"$ref": "#/$defs/precedes"},
+    {"$ref": "#/$defs/sameCoordinate"},
+    {"$ref": "#/$defs/elapsed"}
+  ],
+  "$defs": {
+    "machineId": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "causes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relation_type", "cause_anchor_id", "effect_anchor_id", "scope_id"],
+      "properties": {
+        "relation_type": {"const": "CAUSES"},
+        "cause_anchor_id": {"$ref": "#/$defs/machineId"},
+        "effect_anchor_id": {"$ref": "#/$defs/machineId"},
+        "scope_id": {"$ref": "#/$defs/machineId"}
+      }
+    },
+    "precedes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relation_type", "predecessor_anchor_id", "successor_anchor_id", "order_domain_id", "scope_id"],
+      "properties": {
+        "relation_type": {"const": "PRECEDES"},
+        "predecessor_anchor_id": {"$ref": "#/$defs/machineId"},
+        "successor_anchor_id": {"$ref": "#/$defs/machineId"},
+        "order_domain_id": {"$ref": "#/$defs/machineId"},
+        "scope_id": {"$ref": "#/$defs/machineId"}
+      }
+    },
+    "sameCoordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relation_type", "first_anchor_id", "second_anchor_id", "provider_scope_id", "coordinate"],
+      "properties": {
+        "relation_type": {"const": "SAME_COORDINATE"},
+        "first_anchor_id": {"$ref": "#/$defs/machineId"},
+        "second_anchor_id": {"$ref": "#/$defs/machineId"},
+        "provider_scope_id": {"$ref": "#/$defs/machineId"},
+        "coordinate": {"$ref": "#/$defs/coordinate"}
+      }
+    },
     "elapsed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relation_type", "start_anchor_id", "end_anchor_id", "provider_scope_id", "elapsed"],
+      "properties": {
+        "relation_type": {"const": "ELAPSED"},
+        "start_anchor_id": {"$ref": "#/$defs/machineId"},
+        "end_anchor_id": {"$ref": "#/$defs/machineId"},
+        "provider_scope_id": {"$ref": "#/$defs/machineId"},
+        "elapsed": {"$ref": "#/$defs/interval"}
+      }
+    },
+    "coordinate": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value", "unit_id"],
+          "properties": {"kind": {"const": "EXACT"}, "value": {"type": "integer"}, "unit_id": {"$ref": "#/$defs/machineId"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "lower", "upper", "unit_id"],
+          "properties": {"kind": {"const": "BOUNDED"}, "lower": {"type": "integer"}, "upper": {"type": "integer"}, "unit_id": {"$ref": "#/$defs/machineId"}}
+        }
+      ]
+    },
+    "interval": {
       "type": "object",
       "additionalProperties": false,
       "required": ["lower", "upper", "unit_id"],
       "properties": {"lower": {"type": "integer", "minimum": 0}, "upper": {"type": "integer", "minimum": 0}, "unit_id": {"$ref": "#/$defs/machineId"}}
     }
-  },
-  "allOf": [
-    {
-      "if": {"properties": {"relation_type": {"const": "ELAPSED"}}, "required": ["relation_type"]},
-      "then": {"required": ["elapsed"]}
-    },
-    {
-      "if": {"properties": {"relation_type": {"const": "SAME_COORDINATE"}}, "required": ["relation_type"]},
-      "then": {"required": ["coordinate"]}
-    }
-  ],
-  "$defs": {"machineId": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}}
+  }
 }

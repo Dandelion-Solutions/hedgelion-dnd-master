@@ -4,7 +4,7 @@
   "title": "HDM native world.thread state",
   "type": "object",
   "additionalProperties": false,
-  "required": ["record_kind", "id", "state_revision", "status", "kind", "state", "temporal"],
+  "required": ["record_kind", "id", "state_revision", "status", "kind", "state"],
   "properties": {
     "record_kind": {"const": "world.thread"},
     "id": {"$ref": "#/$defs/threadId"},

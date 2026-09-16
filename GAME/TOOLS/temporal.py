@@ -7,6 +7,7 @@ an accepted execution consequence.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
 
@@ -20,6 +21,7 @@ _DEPENDENCY_KINDS = frozenset({
     "RELATION_EVIDENCE",
     "OWNER_LOCAL_TEMPORAL_STATE",
 })
+_MACHINE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 
 
 class TemporalContractError(ValueError):
@@ -43,6 +45,13 @@ def _require_string(value: Any, label: str) -> str:
     return value
 
 
+def _require_machine_id(value: Any, label: str) -> str:
+    result = _require_string(value, label)
+    if _MACHINE_ID.fullmatch(result) is None:
+        raise TemporalContractError(f"{label} must be a machine ID")
+    return result
+
+
 def _require_integer(value: Any, label: str) -> int:
     if not isinstance(value, int) or isinstance(value, bool):
         raise TemporalContractError(f"{label} must be an integer")
@@ -52,30 +61,58 @@ def _require_integer(value: Any, label: str) -> int:
 def _validate_binding(binding: Mapping[str, Any]) -> str:
     basis_id = _require_string(binding.get("basis_id"), "binding.basis_id")
     if basis_id == "temporal.metric_deadline":
-        _reject_unknown_fields(binding, {"basis_id", "context_id", "anchor_value", "deadline_value", "unit_id"})
-        _require_string(binding.get("context_id"), "binding.context_id")
-        anchor = _require_integer(binding.get("anchor_value"), "binding.anchor_value")
-        deadline = _require_integer(binding.get("deadline_value"), "binding.deadline_value")
-        _require_string(binding.get("unit_id"), "binding.unit_id")
-        if anchor < 0 or deadline < anchor:
-            raise TemporalContractError("metric deadline must not precede its anchor")
+        _require_exact_fields(binding, {"basis_id", "context_id", "anchor_value", "deadline_value", "unit_id"})
+        _require_machine_id(binding["context_id"], "binding.context_id")
+        _require_nonnegative_integer(binding["anchor_value"], "binding.anchor_value")
+        _require_nonnegative_integer(binding["deadline_value"], "binding.deadline_value")
+        _require_machine_id(binding["unit_id"], "binding.unit_id")
     elif basis_id == "temporal.procedure_boundary":
-        _reject_unknown_fields(binding, {"basis_id", "boundary_id", "procedure_id", "anchor_id", "subject_id", "offset"})
+        _require_exact_fields(
+            binding,
+            {"basis_id", "boundary_id", "procedure_id", "anchor_id"},
+            {"subject_id", "offset"},
+        )
         for field in ("boundary_id", "procedure_id", "anchor_id"):
-            _require_string(binding.get(field), f"binding.{field}")
+            _require_machine_id(binding[field], f"binding.{field}")
+        if "subject_id" in binding:
+            _require_machine_id(binding["subject_id"], "binding.subject_id")
+        if "offset" in binding:
+            offset = _require_integer(binding["offset"], "binding.offset")
+            if offset < 1:
+                raise TemporalContractError("binding.offset must be positive")
     elif basis_id == "temporal.semantic_boundary":
-        _reject_unknown_fields(binding, {"basis_id", "boundary_id", "anchor_id", "subject_id", "scope_id"})
+        _require_exact_fields(
+            binding,
+            {"basis_id", "boundary_id", "anchor_id"},
+            {"subject_id", "scope_id"},
+        )
         for field in ("boundary_id", "anchor_id"):
-            _require_string(binding.get(field), f"binding.{field}")
+            _require_machine_id(binding[field], f"binding.{field}")
+        for field in ("subject_id", "scope_id"):
+            if field in binding:
+                _require_machine_id(binding[field], f"binding.{field}")
     else:
         raise TemporalContractError(f"unsupported temporal basis: {basis_id}")
     return basis_id
 
 
-def _reject_unknown_fields(value: Mapping[str, Any], allowed: set[str]) -> None:
+def _require_nonnegative_integer(value: Any, label: str) -> int:
+    result = _require_integer(value, label)
+    if result < 0:
+        raise TemporalContractError(f"{label} must be non-negative")
+    return result
+
+
+def _require_exact_fields(
+    value: Mapping[str, Any], required: set[str], optional: set[str] | None = None
+) -> None:
+    allowed = required | (optional or set())
     unexpected = set(value).difference(allowed)
     if unexpected:
         raise TemporalContractError(f"unsupported binding field: {sorted(unexpected)[0]}")
+    missing = required.difference(value)
+    if missing:
+        raise TemporalContractError(f"missing binding field: {sorted(missing)[0]}")
 
 
 def _metric_disposition(position: Mapping[str, Any], deadline: int) -> str:

@@ -124,9 +124,59 @@ class WorldThreadContractTests(unittest.TestCase):
         incomplete_armed = dict(thread, temporal=dict(thread["temporal"], dependency_keys=[]))
         with self.assertRaises(ValidationError):
             Draft202012Validator(schema, registry=schema_registry()).validate(incomplete_armed)
+        non_temporal_terminal = dict(thread, status="resolved")
+        del non_temporal_terminal["temporal"]
+        Draft202012Validator(schema, registry=schema_registry()).validate(non_temporal_terminal)
+        Draft202012Validator(schema, registry=schema_registry()).validate(
+            dict(non_temporal_terminal, status="active")
+        )
 
 
 class TemporalBindingAgendaTests(unittest.TestCase):
+    def test_all_authoritative_binding_variants_validate_before_evaluation(self):
+        metric_binding = {
+            "basis_id": "temporal.metric_deadline",
+            "context_id": "scene:market",
+            "anchor_value": 12,
+            "deadline_value": 11,
+            "unit_id": "unit.day",
+        }
+        procedure_binding = {
+            "basis_id": "temporal.procedure_boundary",
+            "boundary_id": "boundary:turn-start",
+            "procedure_id": "procedure:market-fight",
+            "anchor_id": "event:market-warning",
+            "subject_id": "actor:guard",
+            "offset": 1,
+        }
+        semantic_binding = {
+            "basis_id": "temporal.semantic_boundary",
+            "boundary_id": "boundary:market-fall",
+            "anchor_id": "event:market-warning",
+            "subject_id": "actor:guard",
+            "scope_id": "scene:market",
+        }
+        bindings = (
+            (metric_binding, {"provider_id": "scene:market", "position": {"kind": "EXACT", "value": 12}}),
+            (procedure_binding, {}),
+            (semantic_binding, {}),
+        )
+        validator = Draft202012Validator(load_schema("temporal-binding.schema.json"), registry=schema_registry())
+        for binding, evidence in bindings:
+            validator.validate(binding)
+            evaluate_temporal_binding(binding, evidence)
+
+        malformed = (
+            dict(procedure_binding, subject_id=3),
+            dict(procedure_binding, offset=0),
+            dict(semantic_binding, scope_id=3),
+        )
+        for binding in malformed:
+            with self.assertRaises(ValidationError):
+                validator.validate(binding)
+            with self.assertRaises(TemporalContractError):
+                evaluate_temporal_binding(binding, {})
+
     def test_due_binding_produces_a_candidate_without_mutating_the_native_owner(self):
         evaluation = evaluate_temporal_binding(
             METRIC_BINDING,
@@ -161,24 +211,47 @@ class TemporalExecutionRecoveryTests(unittest.TestCase):
 
 
 class ChronologyBridgeTests(unittest.TestCase):
-    def test_chronology_relation_schema_requires_typed_anchor_evidence(self):
+    def test_chronology_relation_schema_encodes_each_typed_relation_shape(self):
         schema = load_schema("chronology-relation-evidence.schema.json")
-        relation = {
-            "relation_type": "PRECEDES",
-            "before_anchor_id": "event:market-warning",
-            "after_anchor_id": "event:market-fall",
-            "scope_id": "scene:market",
-        }
-        Draft202012Validator(schema, registry=schema_registry()).validate(relation)
+        validator = Draft202012Validator(schema, registry=schema_registry())
+        relations = (
+            {
+                "relation_type": "CAUSES",
+                "cause_anchor_id": "event:market-warning",
+                "effect_anchor_id": "event:market-fall",
+                "scope_id": "scene:market",
+            },
+            {
+                "relation_type": "PRECEDES",
+                "predecessor_anchor_id": "event:market-warning",
+                "successor_anchor_id": "event:market-fall",
+                "order_domain_id": "order-domain:market",
+                "scope_id": "scene:market",
+            },
+            {
+                "relation_type": "SAME_COORDINATE",
+                "first_anchor_id": "event:market-warning",
+                "second_anchor_id": "event:market-fall",
+                "provider_scope_id": "scene:market",
+                "coordinate": {"kind": "EXACT", "value": 15, "unit_id": "unit.day"},
+            },
+            {
+                "relation_type": "ELAPSED",
+                "start_anchor_id": "event:market-warning",
+                "end_anchor_id": "event:market-fall",
+                "provider_scope_id": "scene:market",
+                "elapsed": {"lower": 2, "upper": 4, "unit_id": "unit.day"},
+            },
+        )
+        for relation in relations:
+            validator.validate(relation)
 
         with self.assertRaises(ValidationError):
-            Draft202012Validator(schema, registry=schema_registry()).validate(
-                dict(relation, relation_type="TOTAL_ORDER")
-            )
+            validator.validate(dict(relations[1], relation_type="TOTAL_ORDER"))
         with self.assertRaises(ValidationError):
-            Draft202012Validator(schema, registry=schema_registry()).validate(
-                dict(relation, relation_type="ELAPSED")
-            )
+            validator.validate(dict(relations[1], order_domain_id=None))
+        with self.assertRaises(ValidationError):
+            validator.validate(dict(relations[0], order_domain_id="order-domain:market"))
 
 
 class TemporalMachineAlignmentTests(unittest.TestCase):
