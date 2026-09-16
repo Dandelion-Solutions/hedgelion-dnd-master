@@ -232,7 +232,7 @@ def _validate_coordinate(coordinate: Mapping[str, Any]) -> None:
         _require_integer(coordinate["value"], "coordinate.value")
     elif kind == "BOUNDED":
         _require_relation_fields(coordinate, {"kind", "lower", "upper", "unit_id"})
-        _validate_range(coordinate["lower"], coordinate["upper"], "coordinate")
+        _validate_ordered_integer_range(coordinate["lower"], coordinate["upper"], "coordinate")
     else:
         raise TemporalContractError(f"unsupported coordinate kind: {kind}")
     _require_machine_id(coordinate["unit_id"], "coordinate.unit_id")
@@ -240,11 +240,18 @@ def _validate_coordinate(coordinate: Mapping[str, Any]) -> None:
 
 def _validate_interval(interval: Mapping[str, Any]) -> None:
     _require_relation_fields(interval, {"lower", "upper", "unit_id"})
-    _validate_range(interval["lower"], interval["upper"], "elapsed")
+    _validate_nonnegative_integer_range(interval["lower"], interval["upper"], "elapsed")
     _require_machine_id(interval["unit_id"], "elapsed.unit_id")
 
 
-def _validate_range(lower: Any, upper: Any, label: str) -> None:
+def _validate_ordered_integer_range(lower: Any, upper: Any, label: str) -> None:
+    checked_lower = _require_integer(lower, f"{label}.lower")
+    checked_upper = _require_integer(upper, f"{label}.upper")
+    if checked_lower > checked_upper:
+        raise TemporalContractError(f"{label}.lower must not exceed {label}.upper")
+
+
+def _validate_nonnegative_integer_range(lower: Any, upper: Any, label: str) -> None:
     checked_lower = _require_nonnegative_integer(lower, f"{label}.lower")
     checked_upper = _require_nonnegative_integer(upper, f"{label}.upper")
     if checked_lower > checked_upper:

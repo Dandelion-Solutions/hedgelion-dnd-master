@@ -212,6 +212,21 @@ class TemporalExecutionRecoveryTests(unittest.TestCase):
 
 
 class ChronologyBridgeTests(unittest.TestCase):
+    def test_bounded_coordinate_accepts_an_ordered_signed_range(self):
+        relation = {
+            "relation_type": "SAME_COORDINATE",
+            "first_anchor_id": "event:market-warning",
+            "second_anchor_id": "event:market-fall",
+            "provider_scope_id": "scene:market",
+            "context_id": "chronology:market",
+            "coordinate": {"kind": "BOUNDED", "lower": -8, "upper": 3, "unit_id": "unit.day"},
+        }
+
+        schema = load_schema("chronology-relation-evidence.schema.json")
+        Draft202012Validator(schema, registry=schema_registry()).validate(relation)
+
+        self.assertEqual(validate_chronology_relation_evidence(relation), relation)
+
     def test_chronology_relation_schema_encodes_each_typed_relation_shape(self):
         schema = load_schema("chronology-relation-evidence.schema.json")
         validator = Draft202012Validator(schema, registry=schema_registry())
