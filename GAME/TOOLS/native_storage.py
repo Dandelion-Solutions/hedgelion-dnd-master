@@ -92,6 +92,12 @@ class NativeFamilyIndex:
     family_key: str
     entries: tuple[Mapping[str, object], ...]
 
+    def __post_init__(self) -> None:
+        if self.family_key not in FAMILY_ROOTS:
+            raise NativeStorageError(f"unknown native family: {self.family_key}")
+        for entry in self.entries:
+            _validate_index_entry(self.family_key, entry)
+
 
 def route_native_record(family_key: str, identity: Sequence[str]) -> NativeRoute:
     """Derive the one WP-11 route for a known native identity."""
@@ -99,7 +105,7 @@ def route_native_record(family_key: str, identity: Sequence[str]) -> NativeRoute
     components = tuple(identity)
     if root is None:
         raise NativeStorageError(f"unknown native family: {family_key}")
-    if not components or any(not component for component in components):
+    if not components or any(not isinstance(component, str) or not component for component in components):
         raise NativeStorageError("native route identity must contain non-empty components")
 
     framed = _frame_route_input(family_key, components)
@@ -117,11 +123,17 @@ def validate_loaded_identity(
     payload: Mapping[str, object],
 ) -> None:
     """Reject a route/index result whose actual owner identity differs."""
+    if family_key not in FAMILY_ROOTS:
+        raise NativeStorageError(f"unknown native family: {family_key}")
+    if not isinstance(payload, Mapping):
+        raise IdentityMismatch("loaded owner payload is not an object")
     if payload.get("kind") != family_key:
         raise IdentityMismatch("loaded record family does not match requested family")
     actual_identity = native_identity_from_record(family_key, payload)
     if actual_identity != tuple(requested_identity):
         raise IdentityMismatch("loaded record identity does not match requested identity")
+    if family_key.startswith("world.") and not isinstance(payload.get("state"), Mapping):
+        raise IdentityMismatch("loaded world owner payload has no object state")
 
 
 def native_identity_from_record(family_key: str, payload: Mapping[str, object]) -> tuple[str, ...]:
@@ -211,3 +223,25 @@ def _frame_route_input(family_key: str, identity: tuple[str, ...]) -> bytes:
         component_bytes = component.encode("utf-8")
         parts.extend((len(component_bytes).to_bytes(4, "big"), component_bytes))
     return b"".join(parts)
+
+
+def _validate_index_entry(family_key: str, entry: Mapping[str, object]) -> None:
+    allowed_fields = {"id", "name", "aliases", "status", "path", "parent_id", "tags", "last_event_id"}
+    if not isinstance(entry, Mapping) or set(entry) - allowed_fields:
+        raise NativeStorageError("index entry is not compact routing metadata")
+    record_id = entry.get("id")
+    path = entry.get("path")
+    if not isinstance(record_id, str) or not record_id or not isinstance(path, str):
+        raise NativeStorageError("index entry has an invalid id or path")
+    if path != route_native_record(family_key, (record_id,)).relative_path:
+        raise NativeStorageError("index entry path does not match the deterministic native route")
+    for field in ("name", "status", "parent_id", "last_event_id"):
+        value = entry.get(field)
+        if value is not None and not isinstance(value, str):
+            raise NativeStorageError(f"index entry {field} is not compact scalar metadata")
+    for field in ("aliases", "tags"):
+        value = entry.get(field)
+        if value is not None and (
+            not isinstance(value, (list, tuple)) or any(not isinstance(item, str) for item in value)
+        ):
+            raise NativeStorageError(f"index entry {field} is not compact string metadata")

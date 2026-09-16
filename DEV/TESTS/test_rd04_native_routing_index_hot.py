@@ -13,7 +13,7 @@ GAME_ROOT = ROOT / "GAME"
 if str(GAME_ROOT) not in sys.path:
     sys.path.insert(0, str(GAME_ROOT))
 
-from TOOLS.hot_store import NativeHotStore, OwnerDocument, rebuild_helper
+from TOOLS.hot_store import NativeHotStore, OwnerDocument, StaleOwnerGeneration, rebuild_helper
 from TOOLS.id_allocator import AllocatorState, allocate_and_stage_record, load_campaign_allocator
 from TOOLS.native_storage import (
     AmbiguousCampaignRoot,
@@ -21,6 +21,7 @@ from TOOLS.native_storage import (
     IdentityMismatch,
     MissingCampaignRoot,
     StaleCampaignRoot,
+    NativeStorageError,
     route_native_record,
     select_campaign_root,
     validate_loaded_identity,
@@ -84,7 +85,7 @@ class PresenceAuthorityTests(unittest.TestCase):
             entries=(
                 {
                     "id": "actor-0001",
-                    "path": "WORLD/ACTORS/RECORDS/a7/02/example.yaml",
+                    "path": route_native_record("world.actor", ("actor-0001",)).relative_path,
                     "name": "Ari",
                 },
             ),
@@ -112,6 +113,7 @@ class NativeIndexTests(unittest.TestCase):
                 {
                     "id": "actor-0002",
                     "kind": "world.actor",
+                    "state": {},
                     "name": "Bryn",
                     "aliases": ["B"],
                     "status": "active",
@@ -132,11 +134,31 @@ class NativeIndexTests(unittest.TestCase):
     def test_rebuild_helper_delegates_only_to_the_explicit_family_rebuild(self) -> None:
         index = rebuild_helper(
             "world.actor",
-            [{"id": "actor-0001", "kind": "world.actor", "name": "Ari"}],
+            [{"id": "actor-0001", "kind": "world.actor", "state": {}, "name": "Ari"}],
         )
 
         self.assertEqual(index.family_key, "world.actor")
         self.assertEqual(index.entries[0]["id"], "actor-0001")
+
+    def test_rejects_index_entry_with_non_deterministic_path(self) -> None:
+        with self.assertRaises(NativeStorageError):
+            NativeFamilyIndex(
+                family_key="world.actor",
+                entries=({"id": "actor-0001", "path": "WORLD/ACTORS/RECORDS/wrong.yaml"},),
+            )
+
+    def test_rejects_noncompact_index_entry_with_owner_body(self) -> None:
+        with self.assertRaises(NativeStorageError):
+            NativeFamilyIndex(
+                family_key="world.actor",
+                entries=(
+                    {
+                        "id": "actor-0001",
+                        "path": route_native_record("world.actor", ("actor-0001",)).relative_path,
+                        "state": {"location_id": "location-0001"},
+                    },
+                ),
+            )
 
 
 class NativeHotStoreTests(unittest.TestCase):
@@ -147,7 +169,7 @@ class NativeHotStoreTests(unittest.TestCase):
                     campaign_id="campaign-a",
                     family_key="world.actor",
                     identity=("actor-0001",),
-                    payload={"id": "actor-0001", "kind": "world.actor"},
+                    payload={"id": "actor-0001", "kind": "world.actor", "state": {}},
                     source_basis="commit-a",
                     generation=1,
                 )
@@ -157,7 +179,7 @@ class NativeHotStoreTests(unittest.TestCase):
                     campaign_id="campaign-a",
                     family_key="world.actor",
                     identity=("actor-0001",),
-                    payload={"id": "actor-0001", "kind": "world.actor", "name": "Ari"},
+                    payload={"id": "actor-0001", "kind": "world.actor", "state": {}, "name": "Ari"},
                     source_basis="commit-b",
                     generation=2,
                 )
@@ -168,6 +190,57 @@ class NativeHotStoreTests(unittest.TestCase):
         self.assertEqual(loaded.generation, 2)
         self.assertEqual(loaded.payload["name"], "Ari")
 
+    def test_rejects_stale_generation_without_replacing_newer_hot_owner(self) -> None:
+        with NativeHotStore(":memory:") as store:
+            current = OwnerDocument(
+                campaign_id="campaign-a",
+                family_key="world.actor",
+                identity=("actor-0001",),
+                payload={"id": "actor-0001", "kind": "world.actor", "state": {}},
+                source_basis="commit-new",
+                generation=2,
+            )
+            store.stage_owner_document(current)
+
+            with self.assertRaises(StaleOwnerGeneration):
+                store.stage_owner_document(
+                    OwnerDocument(
+                        campaign_id="campaign-a",
+                        family_key="world.actor",
+                        identity=("actor-0001",),
+                        payload={"id": "actor-0001", "kind": "world.actor", "state": {}},
+                        source_basis="commit-old",
+                        generation=1,
+                    )
+                )
+
+            self.assertEqual(store.load_current_owner("campaign-a", "world.actor", ("actor-0001",)).generation, 2)
+
+    def test_rejects_unadmitted_family_and_invalid_world_payload(self) -> None:
+        with NativeHotStore(":memory:") as store:
+            with self.assertRaises(NativeStorageError):
+                store.stage_owner_document(
+                    OwnerDocument(
+                        campaign_id="campaign-a",
+                        family_key="world.unadmitted",
+                        identity=("unadmitted-0001",),
+                        payload={"id": "unadmitted-0001", "kind": "world.unadmitted", "state": {}},
+                        source_basis="commit-a",
+                        generation=1,
+                    )
+                )
+            with self.assertRaises(IdentityMismatch):
+                store.stage_owner_document(
+                    OwnerDocument(
+                        campaign_id="campaign-a",
+                        family_key="world.actor",
+                        identity=("actor-0001",),
+                        payload={"id": "actor-0001", "kind": "world.actor", "state": []},
+                        source_basis="commit-a",
+                        generation=1,
+                    )
+                )
+
 
 class NativeAtomicityTests(unittest.TestCase):
     def test_failed_atomic_batch_leaves_no_partial_owner_state(self) -> None:
@@ -176,7 +249,7 @@ class NativeAtomicityTests(unittest.TestCase):
                 campaign_id="campaign-a",
                 family_key="world.actor",
                 identity=("actor-0001",),
-                payload={"id": "actor-0001", "kind": "world.actor"},
+                payload={"id": "actor-0001", "kind": "world.actor", "state": {}},
                 source_basis="commit-a",
                 generation=1,
             )
@@ -184,7 +257,7 @@ class NativeAtomicityTests(unittest.TestCase):
                 campaign_id="campaign-a",
                 family_key="world.actor",
                 identity=("actor-0002",),
-                payload={"id": "actor-0001", "kind": "world.actor"},
+                payload={"id": "actor-0001", "kind": "world.actor", "state": {}},
                 source_basis="commit-a",
                 generation=1,
             )
@@ -201,7 +274,7 @@ class NativeAtomicityTests(unittest.TestCase):
                     campaign_id="campaign-a",
                     family_key="world.actor",
                     identity=("actor-0001",),
-                    payload={"id": "actor-0001", "kind": "world.actor"},
+                    payload={"id": "actor-0001", "kind": "world.actor", "state": {}},
                     source_basis="commit-a",
                     generation=2,
                 )

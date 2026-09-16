@@ -7,7 +7,17 @@ import sqlite3
 from dataclasses import dataclass
 from typing import Iterable, Mapping, Sequence
 
-from .native_storage import IdentityMismatch, NativeFamilyIndex, rebuild_family_index, validate_loaded_identity
+from .native_storage import (
+    IdentityMismatch,
+    NativeFamilyIndex,
+    NativeStorageError,
+    rebuild_family_index,
+    validate_loaded_identity,
+)
+
+
+class StaleOwnerGeneration(NativeStorageError):
+    """A local update would replace an equal or newer accepted HOT generation."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -122,6 +132,24 @@ class NativeHotStore:
         return cursor.rowcount
 
     def _stage(self, document: OwnerDocument) -> None:
+        identity_json = _canonical_identity(document.identity)
+        existing = self._connection.execute(
+            """
+            SELECT payload_json, source_basis, generation
+            FROM current_native_owner
+            WHERE campaign_id = ? AND family_key = ? AND identity_json = ?
+            """,
+            (document.campaign_id, document.family_key, identity_json),
+        ).fetchone()
+        if existing is not None:
+            existing_payload, existing_basis, existing_generation = existing
+            candidate_payload = json.dumps(document.payload, sort_keys=True, separators=(",", ":"))
+            if document.generation < existing_generation:
+                raise StaleOwnerGeneration("stale HOT generation requires reconciliation from current owner state")
+            if document.generation == existing_generation:
+                if existing_payload != candidate_payload or existing_basis != document.source_basis:
+                    raise StaleOwnerGeneration("conflicting HOT generation requires reconciliation")
+                return
         self._connection.execute(
             """
             INSERT INTO current_native_owner (
@@ -136,7 +164,7 @@ class NativeHotStore:
             (
                 document.campaign_id,
                 document.family_key,
-                _canonical_identity(document.identity),
+                identity_json,
                 json.dumps(document.payload, sort_keys=True, separators=(",", ":")),
                 document.source_basis,
                 document.generation,
