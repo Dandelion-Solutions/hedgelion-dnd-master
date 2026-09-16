@@ -36,7 +36,7 @@ def resolve_candidate_basis(candidate: dict[str, Any]) -> dict[str, Any]:
     return candidate
 
 
-def _required_closure(required_ids: list[str], available: dict[str, dict[str, Any]], allowed_relations: set[str]) -> list[dict[str, Any]]:
+def _required_closure(required_ids: list[str], available: dict[str, dict[str, Any]], allowed_relations: set[str]) -> list[dict[str, Any]] | None:
     pending = list(required_ids)
     resolved: dict[str, dict[str, Any]] = {}
     while pending:
@@ -45,7 +45,9 @@ def _required_closure(required_ids: list[str], available: dict[str, dict[str, An
             continue
         candidate = available.get(candidate_id)
         if candidate is None:
-            raise ContextContractError("required candidate is missing")
+            return None
+        if candidate.get("current") is not True or candidate.get("eligible") is not True:
+            return None
         resolved[candidate_id] = resolve_candidate_basis(candidate)
         dependencies = candidate.get("dependencies", [])
         if not isinstance(dependencies, list):
@@ -72,13 +74,15 @@ def assemble_context(request: dict[str, Any], candidates: list[dict[str, Any]]) 
     discovered = discover_candidates(request, candidates)
     available = {item.get("candidate_id"): item for item in discovered if isinstance(item.get("candidate_id"), str)}
     required_ids = request.get("required_ids", [])
-    relations = request.get("allowed_relations", [])
+    relations = request.get("allowed_relations")
     if not isinstance(required_ids, list) or len(required_ids) != len(set(required_ids)) or any(not isinstance(item, str) for item in required_ids):
         raise ContextContractError("required_ids must be strings")
     if not isinstance(relations, list) or len(relations) != len(set(relations)) or any(not isinstance(item, str) or not item for item in relations):
         raise ContextContractError("allowed_relations must be registered unique strings")
-    required = _required_closure(required_ids, available, set(relations))
     trace = {"profile_id": profile_id, "discovered_ids": sorted(available), "included_ids": [], "excluded_ids": []}
+    required = _required_closure(required_ids, available, set(relations))
+    if required is None:
+        return {"outcome": "UNSATISFIABLE", "bundle": None, "trace": trace}
     required_set = {item["candidate_id"] for item in required}
     optional: list[dict[str, Any]] = []
     for item in discovered:

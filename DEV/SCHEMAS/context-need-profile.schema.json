@@ -4,13 +4,14 @@
   "title": "HDM registered ephemeral ContextNeedProfile",
   "type": "object",
   "additionalProperties": false,
-  "required": ["profile_id", "allowed_channels", "max_candidates", "required_ids", "budget"],
+  "required": ["profile_id", "allowed_channels", "max_candidates", "required_ids", "allowed_relations", "budget"],
   "properties": {
     "profile_id": {"type": "string", "minLength": 1},
     "allowed_channels": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["CURRENT_SCOPE", "SCENE_MANIFEST", "EXPLICIT_REF", "ACTIVE_DEPENDENCY", "LIVE_CURRENT", "INDEX_LOOKUP", "HISTORY_HINT"]}},
     "max_candidates": {"type": "integer", "minimum": 0},
     "required_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "allowed_relations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
     "budget": {"type": "integer", "minimum": 0}
   },
-  "examples": [{"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": ["current-scene"], "budget": 120}]
+  "examples": [{"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": ["current-scene"], "allowed_relations": ["requires"], "budget": 120}]
 }

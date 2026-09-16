@@ -3,7 +3,7 @@ import sys
 import unittest
 from pathlib import Path
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, ValidationError
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -63,6 +63,19 @@ class RequiredPacketClosureTests(unittest.TestCase):
     def test_missing_required_closure_is_terminal_unsatisfiable(self):
         root = candidate("root", required=True, depends_on=("missing",))
         request = {"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": ["root"], "allowed_relations": ["requires"], "budget": budget_for(root)}
+        result = context_runtime.assemble_context(request, [root])
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+
+    def test_ineligible_required_closure_is_terminal_unsatisfiable(self):
+        required = candidate("required", eligible=False)
+        request = {"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": ["required"], "allowed_relations": [], "budget": budget_for(required)}
+        result = context_runtime.assemble_context(request, [required])
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+
+    def test_relation_bearing_profile_requires_admitted_typed_relations(self):
+        root = candidate("root", depends_on=("dependency",))
+        request = {"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": ["root"], "budget": budget_for(root)}
         with self.assertRaises(context_runtime.ContextContractError):
             context_runtime.assemble_context(request, [root])
 
@@ -120,6 +133,11 @@ class ScopedContextJoinTests(unittest.TestCase):
             Draft202012Validator.check_schema(schema)
             for example in schema["examples"]:
                 Draft202012Validator(schema).validate(example)
+        profile_schema = json.loads((SCHEMAS / "context-need-profile.schema.json").read_text(encoding="utf-8"))
+        self.assertIn("allowed_relations", profile_schema["required"])
+        Draft202012Validator(profile_schema).validate({"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 1, "required_ids": [], "allowed_relations": ["requires"], "budget": 10})
+        with self.assertRaises(ValidationError):
+            Draft202012Validator(profile_schema).validate({"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 1, "required_ids": [], "allowed_relations": [1], "budget": 10})
 
 
 if __name__ == "__main__":
