@@ -50,12 +50,12 @@ def _request(*, frontier_revision: int = 4) -> dict[str, object]:
             "campaign_definition_frontier": {
                 "frontier_id": "campaign.definitions",
                 "state_revision": frontier_revision,
-                "definition_ids": ["activity.attack.basic"],
+                "definition_ids": ["activity.check.generic"],
             },
         },
         "definition_dependencies": [
             {
-                "definition_id": "activity.attack.basic",
+                "definition_id": "activity.check.generic",
                 "kind": "definition.activity",
                 "package_id": package["package_id"],
                 "package_content_sha256": package["content_sha256"],
@@ -64,13 +64,30 @@ def _request(*, frontier_revision: int = 4) -> dict[str, object]:
     }
 
 
+def _package_snapshots():
+    _lock, snapshots = build_resolved_lock(
+        [PACKAGE],
+        root_package_ids=[PACKAGE_ID],
+        engine_version="1.0-alpha",
+        catalog_generation=2,
+    )
+    return snapshots
+
+
+def _bind_context(request: dict[str, object] | None = None):
+    return bind_catalog_context(
+        _request() if request is None else request,
+        package_snapshots=_package_snapshots(),
+    )
+
+
 class CatalogContextBindingTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.registry, cls.schemas = _schema_registry()
 
     def test_bound_context_carries_exact_reconstructive_basis(self) -> None:
-        context = bind_catalog_context(_request())
+        context = _bind_context()
         payload = context.to_dict()
 
         self.assertEqual(payload["basis"]["catalog_generation"], 2)
@@ -83,7 +100,7 @@ class CatalogContextBindingTests(unittest.TestCase):
         ).validate(payload)
 
     def test_bound_context_does_not_expose_mutable_reconstruction_inputs(self) -> None:
-        context = bind_catalog_context(_request())
+        context = _bind_context()
 
         with self.assertRaises(TypeError):
             context.basis["catalog_generation"] = 3
@@ -91,26 +108,55 @@ class CatalogContextBindingTests(unittest.TestCase):
 
 class CatalogCandidateValidationTests(unittest.TestCase):
     def test_candidate_is_bound_only_when_its_exact_id_and_kind_are_pinned(self) -> None:
-        context = bind_catalog_context(_request())
+        context = _bind_context()
 
         binding = bind_interpreter_candidate(
             context,
-            {"definition_id": "activity.attack.basic", "kind": "definition.activity"},
+            {"definition_id": "activity.check.generic", "kind": "definition.activity"},
         )
 
-        self.assertEqual(binding["definition_id"], "activity.attack.basic")
+        self.assertEqual(binding["definition_id"], "activity.check.generic")
         self.assertEqual(binding["catalog_context_fingerprint"], context.fingerprint)
 
     def test_name_only_candidate_cannot_become_an_executable_binding(self) -> None:
-        context = bind_catalog_context(_request())
+        context = _bind_context()
 
         with self.assertRaises(CatalogBindingError):
             bind_interpreter_candidate(context, {"name": "Basic attack"})
 
 
+class CatalogDefinitionAdmissionTests(unittest.TestCase):
+    def test_absent_definition_cannot_be_declared_into_a_context(self) -> None:
+        request = _request()
+        request["basis"]["campaign_definition_frontier"]["definition_ids"] = [
+            "activity.unknown"
+        ]
+        request["definition_dependencies"][0]["definition_id"] = "activity.unknown"
+
+        with self.assertRaises(CatalogBindingError):
+            _bind_context(request)
+
+    def test_unowned_namespace_cannot_be_declared_into_a_context(self) -> None:
+        request = _request()
+        request["basis"]["campaign_definition_frontier"]["definition_ids"] = [
+            "unowned.attack"
+        ]
+        request["definition_dependencies"][0]["definition_id"] = "unowned.attack"
+
+        with self.assertRaises(CatalogBindingError):
+            _bind_context(request)
+
+    def test_definition_outside_the_declared_frontier_cannot_be_bound(self) -> None:
+        request = _request()
+        request["basis"]["campaign_definition_frontier"]["definition_ids"] = []
+
+        with self.assertRaises(CatalogBindingError):
+            _bind_context(request)
+
+
 class CatalogGapReportTests(unittest.TestCase):
     def test_unavailable_exact_candidate_returns_context_bound_gap_evidence(self) -> None:
-        context = bind_catalog_context(_request())
+        context = _bind_context()
 
         result = bind_executable_catalog(
             context,
@@ -128,11 +174,11 @@ class CatalogGapReportTests(unittest.TestCase):
         )
 
     def test_wrong_kind_is_a_gap_not_a_name_based_substitution(self) -> None:
-        context = bind_catalog_context(_request())
+        context = _bind_context()
 
         result = bind_executable_catalog(
             context,
-            {"definition_id": "activity.attack.basic", "kind": "definition.spell"},
+            {"definition_id": "activity.check.generic", "kind": "definition.spell"},
         )
 
         self.assertEqual(result["status"], "gap")
@@ -141,12 +187,12 @@ class CatalogGapReportTests(unittest.TestCase):
 
 class CatalogBindingCurrentnessTests(unittest.TestCase):
     def test_binding_from_an_older_frontier_is_rejected_against_the_current_context(self) -> None:
-        old_context = bind_catalog_context(_request(frontier_revision=4))
+        old_context = _bind_context(_request(frontier_revision=4))
         old_binding = bind_interpreter_candidate(
             old_context,
-            {"definition_id": "activity.attack.basic", "kind": "definition.activity"},
+            {"definition_id": "activity.check.generic", "kind": "definition.activity"},
         )
-        current_context = bind_catalog_context(_request(frontier_revision=5))
+        current_context = _bind_context(_request(frontier_revision=5))
 
         with self.assertRaisesRegex(CatalogBindingError, "stale catalog context"):
             validate_executable_binding(current_context, old_binding)
@@ -154,10 +200,10 @@ class CatalogBindingCurrentnessTests(unittest.TestCase):
 
 class CatalogBindingIntegrationTests(unittest.TestCase):
     def test_executable_binding_remains_pinned_to_the_context_that_selected_it(self) -> None:
-        context = bind_catalog_context(_request())
+        context = _bind_context()
         binding = bind_interpreter_candidate(
             context,
-            {"definition_id": "activity.attack.basic", "kind": "definition.activity"},
+            {"definition_id": "activity.check.generic", "kind": "definition.activity"},
         )
 
         validate_executable_binding(context, binding)
@@ -192,7 +238,7 @@ class CatalogGapContextEvidenceTests(unittest.TestCase):
         cls.registry, cls.schemas = _schema_registry()
 
     def test_gap_report_schema_requires_pinned_context_and_requested_identity(self) -> None:
-        context = bind_catalog_context(_request())
+        context = _bind_context()
         result = bind_executable_catalog(
             context,
             {"definition_id": "activity.unknown", "kind": "definition.activity"},
@@ -211,15 +257,15 @@ class CatalogGapContextEvidenceTests(unittest.TestCase):
 class CatalogBindingInstructionCutoverTests(unittest.TestCase):
     def test_default_or_ambient_catalog_selection_is_not_accepted(self) -> None:
         with self.assertRaises(CatalogBindingError):
-            bind_catalog_context({"default_catalog": "dnd"})
+            _bind_context({"default_catalog": "dnd"})
 
 
 class CatalogBackedAcceptanceIntegrationTests(unittest.TestCase):
     def test_binding_result_requires_revalidation_before_a_consumer_can_accept_it(self) -> None:
-        context = bind_catalog_context(_request())
+        context = _bind_context()
         result = bind_executable_catalog(
             context,
-            {"definition_id": "activity.attack.basic", "kind": "definition.activity"},
+            {"definition_id": "activity.check.generic", "kind": "definition.activity"},
         )
 
         self.assertEqual(result["status"], "bound")

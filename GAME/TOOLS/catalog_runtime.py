@@ -15,6 +15,7 @@ from types import MappingProxyType
 from typing import Final
 
 from .ruleset_package import (
+    PackageSnapshot,
     RULESET_SET_DIGEST_GENERATION,
     RulesetContractError,
     canonical_json,
@@ -170,14 +171,33 @@ def _normalize_basis(value: object) -> dict[str, object]:
 
 
 def _normalize_dependencies(
-    value: object, basis: Mapping[str, object]
+    value: object,
+    basis: Mapping[str, object],
+    package_snapshots: Mapping[str, PackageSnapshot],
 ) -> tuple[dict[str, str], ...]:
     if not isinstance(value, Sequence) or isinstance(value, str) or not value:
         raise CatalogBindingError("definition_dependencies must be a nonempty array")
     packages = {
-        row["package_id"]: row["content_sha256"]
+        row["package_id"]: row
         for row in basis["ruleset_lock"]["packages"]
     }
+    if set(package_snapshots) != set(packages):
+        raise CatalogBindingError("package snapshot evidence is incomplete or ambiguous")
+    for package_id, lock_package in packages.items():
+        snapshot = package_snapshots[package_id]
+        if not isinstance(snapshot, PackageSnapshot):
+            raise CatalogBindingError("package snapshot evidence has an invalid source")
+        if (
+            snapshot.manifest.get("package_id") != package_id
+            or snapshot.content_sha256 != lock_package["content_sha256"]
+            or set(snapshot.manifest.get("owned_namespaces", ()))
+            != set(lock_package["owned_namespaces"])
+        ):
+            raise CatalogBindingError("package snapshot evidence does not match ruleset_lock")
+    frontier_ids = set(basis["campaign_definition_frontier"]["definition_ids"])
+    session_frontier = basis.get("session_overlay_frontier")
+    if session_frontier is not None:
+        frontier_ids.update(session_frontier["definition_ids"])
     dependencies: list[dict[str, str]] = []
     seen_ids: set[str] = set()
     for value_row in value:
@@ -194,8 +214,24 @@ def _normalize_dependencies(
         )
         if definition_id in seen_ids:
             raise CatalogBindingError("definition_dependencies contain duplicate definition_id")
-        if packages.get(package_id) != content_sha256:
+        lock_package = packages.get(package_id)
+        if lock_package is None or lock_package["content_sha256"] != content_sha256:
             raise CatalogBindingError("definition dependency is not pinned by ruleset_lock")
+        namespace = f"{definition_id.partition('.')[0]}.*"
+        if namespace not in lock_package["owned_namespaces"]:
+            raise CatalogBindingError("definition dependency namespace is not owned by its source")
+        if definition_id not in frontier_ids:
+            raise CatalogBindingError("definition dependency is outside the current frontier")
+        snapshot = package_snapshots[package_id]
+        matching_entries = [
+            entry
+            for entry_key, entry in snapshot.semantic_entries.items()
+            if entry_key.endswith(f"|id:{definition_id}")
+        ]
+        if len(matching_entries) != 1:
+            raise CatalogBindingError("definition dependency is absent or ambiguous in source evidence")
+        if matching_entries[0].get("kind") != kind:
+            raise CatalogBindingError("definition dependency kind differs from source evidence")
         seen_ids.add(definition_id)
         dependencies.append(
             {
@@ -208,14 +244,18 @@ def _normalize_dependencies(
     return tuple(sorted(dependencies, key=lambda row: row["definition_id"]))
 
 
-def bind_catalog_context(value: object) -> BoundCatalogContext:
+def bind_catalog_context(
+    value: object, *, package_snapshots: Mapping[str, PackageSnapshot]
+) -> BoundCatalogContext:
     """Bind exact reconstruction inputs; this function never chooses a default."""
 
     request = _require_exact_keys(
         value, {"basis", "definition_dependencies"}, "catalog binding request"
     )
     basis = _normalize_basis(request["basis"])
-    dependencies = _normalize_dependencies(request["definition_dependencies"], basis)
+    dependencies = _normalize_dependencies(
+        request["definition_dependencies"], basis, package_snapshots
+    )
     fingerprint_payload = {
         "basis": basis,
         "definition_dependencies": list(dependencies),
