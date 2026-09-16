@@ -95,8 +95,8 @@ def validate_story_projection(value: object, *, layer: str) -> dict[str, object]
     if basis["event_id"] not in sources:
         raise StoryContractError("Story-local T0 basis must name an event source")
     version = projection["schema_version"]
-    if not isinstance(version, int) or isinstance(version, bool) or version < 1:
-        raise StoryContractError("schema_version must be a positive integer")
+    if version != 1 or isinstance(version, bool):
+        raise StoryContractError("unsupported schema_version")
     return {
         "schema_version": version,
         "story_id": projection["story_id"],

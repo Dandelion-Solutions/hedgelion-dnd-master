@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "layer", "story_id_allocator_high_water", "coverage_by_source_domain", "lookup"],
   "properties": {
-    "schema_version": {"type": "integer", "minimum": 1},
+    "schema_version": {"const": 1},
     "layer": {"enum": ["TRANSCRIPT", "EVENTS", "MECHANICS", "NARRATIVE"]},
     "story_id_allocator_high_water": {"type": "integer", "minimum": 0},
     "coverage_by_source_domain": {"type": "object"},

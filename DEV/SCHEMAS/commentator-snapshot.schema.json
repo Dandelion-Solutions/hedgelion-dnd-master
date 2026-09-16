@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "records", "control"],
   "properties": {
-    "schema_version": {"type": "integer", "minimum": 1},
+    "schema_version": {"const": 1},
     "records": {"type": "array", "items": {"$ref": "story-event-unit.schema.json"}},
     "control": {"$ref": "commentator-control-projection.schema.json"}
   }

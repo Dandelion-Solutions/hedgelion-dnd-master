@@ -45,8 +45,8 @@ def _validate_control_projection(value: object) -> dict[str, object]:
     if not isinstance(value, Mapping) or set(value) != {"schema_version", "controls"}:
         raise CommentatorContractError("invalid Commentator control projection")
     version = value["schema_version"]
-    if not isinstance(version, int) or isinstance(version, bool) or version < 1:
-        raise CommentatorContractError("Commentator control schema_version must be a positive integer")
+    if version != 1 or isinstance(version, bool):
+        raise CommentatorContractError("unsupported Commentator control schema_version")
     controls = value["controls"]
     if not isinstance(controls, Mapping):
         raise CommentatorContractError("Commentator controls must be an object")
@@ -74,6 +74,8 @@ def filter_commentator_request(snapshot: object, player_id: object) -> list[dict
 
     if not isinstance(snapshot, Mapping) or set(snapshot) != {"schema_version", "records", "control"}:
         raise CommentatorContractError("invalid Commentator snapshot")
+    if snapshot["schema_version"] != 1 or isinstance(snapshot["schema_version"], bool):
+        raise CommentatorContractError("unsupported Commentator snapshot schema_version")
     player = _nonempty_string(player_id, "player_id")
     control = _validate_control_projection(snapshot["control"])
     raw_player_control = control["controls"].get(player)
@@ -83,4 +85,14 @@ def filter_commentator_request(snapshot: object, player_id: object) -> list[dict
     records = snapshot["records"]
     if not isinstance(records, Sequence) or isinstance(records, str):
         raise CommentatorContractError("invalid Commentator record corpus")
-    return deepcopy([record for record in records if record["story_id"] in allowed])
+    try:
+        validated_records = [validate_story_projection(record, layer="EVENTS") for record in records]
+    except StoryContractError as exc:
+        raise CommentatorContractError(str(exc)) from exc
+    return deepcopy(
+        [
+            record
+            for record in validated_records
+            if record["story_id"] in allowed and player in record["availability"]["visible_to"]
+        ]
+    )

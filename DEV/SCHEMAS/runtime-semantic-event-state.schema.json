@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "event_id", "semantic_order", "kind", "provenance_refs", "semantic_delta"],
   "properties": {
-    "schema_version": {"type": "integer", "minimum": 1},
+    "schema_version": {"const": 1},
     "event_id": {"type": "string", "minLength": 1},
     "semantic_order": {"type": "integer", "minimum": 1},
     "kind": {"type": "string", "minLength": 1},

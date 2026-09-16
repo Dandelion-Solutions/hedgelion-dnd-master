@@ -127,6 +127,17 @@ class CommentatorSelfContainedTests(unittest.TestCase):
                 {"schema_version": 0, "controls": {"player.aria": {"story_ids": ["E000007"]}}},
             )
 
+    def test_commentator_control_cannot_widen_story_availability_for_another_player(self) -> None:
+        private_projection = _story_projection()
+        private_projection["story_id"] = "E000008"
+        private_projection["availability"] = {"visible_to": ["player.borin"]}
+        control = build_commentator_control_projection(
+            {"player.aria": {"story_ids": ["E000007", "E000008"]}}
+        )
+        snapshot = build_commentator_snapshot([_story_projection(), private_projection], control)
+
+        self.assertEqual(filter_commentator_request(snapshot, "player.aria"), [_story_projection()])
+
 
 class DramaturgHorizonTests(unittest.TestCase):
     def test_dramaturg_horizon_is_provisional_and_has_no_future_fact_field(self) -> None:
@@ -253,6 +264,38 @@ class StorySchemaTests(unittest.TestCase):
         schemas = [json.loads((SCHEMAS / name).read_text(encoding="utf-8")) for name in schema_names]
         self.assertTrue(all(schema["additionalProperties"] is False for schema in schemas))
         self.assertTrue(all("schema_version" in schema["properties"] for schema in schemas))
+        self.assertTrue(all(schema["properties"]["schema_version"].get("const") == 1 for schema in schemas))
+
+
+class SchemaVersionTests(unittest.TestCase):
+    def test_owner_local_validators_reject_unsupported_schema_version_two(self) -> None:
+        with self.assertRaises(HistoryContractError):
+            validate_semantic_event_draft({**_semantic_event(), "schema_version": 2})
+        with self.assertRaises(HistoryContractError):
+            validate_t0_basis({**_t0_basis(), "schema_version": 2})
+        with self.assertRaises(StoryContractError):
+            validate_story_projection({**_story_projection(), "schema_version": 2}, layer="EVENTS")
+        with self.assertRaises(CommentatorContractError):
+            build_commentator_snapshot(
+                [_story_projection()],
+                {"schema_version": 2, "controls": {"player.aria": {"story_ids": ["E000007"]}}},
+            )
+        snapshot = build_commentator_snapshot(
+            [_story_projection()],
+            build_commentator_control_projection({"player.aria": {"story_ids": ["E000007"]}}),
+        )
+        with self.assertRaises(CommentatorContractError):
+            filter_commentator_request({**snapshot, "schema_version": 2}, "player.aria")
+        with self.assertRaises(DramaturgContractError):
+            validate_dramaturg_horizon(
+                {
+                    "schema_version": 2,
+                    "scope_id": "campaign.main",
+                    "generation": 1,
+                    "source_basis": ["event.gate_opened"],
+                    "entries": [],
+                }
+            )
 
 
 if __name__ == "__main__":

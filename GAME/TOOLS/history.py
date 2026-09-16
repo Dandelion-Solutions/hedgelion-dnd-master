@@ -28,6 +28,12 @@ def _positive_int(value: object, label: str) -> int:
     return value
 
 
+def _schema_version(value: object) -> int:
+    if value != 1 or isinstance(value, bool):
+        raise HistoryContractError("unsupported schema_version")
+    return 1
+
+
 def _unique_strings(value: object, label: str) -> list[str]:
     if not isinstance(value, Sequence) or isinstance(value, str):
         raise HistoryContractError(f"{label} must be an array")
@@ -54,7 +60,7 @@ def validate_semantic_event_draft(value: object) -> dict[str, object]:
     if not isinstance(event["semantic_delta"], Mapping):
         raise HistoryContractError("semantic_delta must be an object")
     return {
-        "schema_version": _positive_int(event["schema_version"], "schema_version"),
+        "schema_version": _schema_version(event["schema_version"]),
         "event_id": _nonempty_string(event["event_id"], "event_id"),
         "semantic_order": _positive_int(event["semantic_order"], "semantic_order"),
         "kind": _nonempty_string(event["kind"], "kind"),
@@ -91,7 +97,7 @@ def validate_t0_basis(value: object) -> dict[str, object]:
             }
         )
     return {
-        "schema_version": _positive_int(basis["schema_version"], "schema_version"),
+        "schema_version": _schema_version(basis["schema_version"]),
         "event_id": _nonempty_string(basis["event_id"], "event_id"),
         "actor_id": _nonempty_string(basis["actor_id"], "actor_id"),
         "factors": factors,

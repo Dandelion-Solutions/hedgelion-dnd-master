@@ -35,8 +35,8 @@ def validate_dramaturg_horizon(value: object) -> dict[str, object]:
         raise DramaturgContractError("Dramaturg horizon has unsupported or missing fields")
     generation = value["generation"]
     version = value["schema_version"]
-    if not isinstance(version, int) or isinstance(version, bool) or version < 1:
-        raise DramaturgContractError("schema_version must be a positive integer")
+    if version != 1 or isinstance(version, bool):
+        raise DramaturgContractError("unsupported schema_version")
     if not isinstance(generation, int) or isinstance(generation, bool) or generation < 1:
         raise DramaturgContractError("generation must be a positive integer")
     entries = value["entries"]
