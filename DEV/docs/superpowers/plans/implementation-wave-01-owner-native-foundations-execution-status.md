@@ -6,8 +6,8 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `2746530e868e968bf985fe19448a9d475a8c70ec`
 
 STATUS: EXECUTING
-CURRENT_TASK: W01.T01, W01.T03, and W01.T07 targeted ruling realization
-LAST_COMPLETED_TASK: W01.T08
+CURRENT_TASK: W01.T01 and W01.T07 review-repair lanes
+LAST_COMPLETED_TASK: W01.T03
 LAST_SAFE_SHA: `aa9d5506714f3235ccce99583f31c0df852e61b5`
 
 ## Dependency schedule
@@ -30,7 +30,7 @@ COMPLETED_TASKS:
   W01.T05 -> `50797efe4e5a705009f05b544da926f53b0c6287` + `af899682685b155796fa0752298e901c08e3cfb2` + `56f6d4ba29ba44209077146bb2a7bbe10ccc5cdf` + `6d7fecf690b20104b39dec109259cc6ece8e9acf`; task review repaired and re-review PASS; `W01_TEMPORAL_OWNER_READY`, `RD08_SCHEMA_DOC_DELTA_READY`
   W01.T06 -> `b70ca6a3cc3dd42dded39fe0d01ebd9dc40c0876` + `e8c94e76c57e2a9270f7afea23d28ef7717aa7d2` + `0f3ef238bee0ccea43a3788fc6d7336bae626b5c`; task review repaired and re-review PASS; `W01_ROLE_CONTRACT_READY`, `W01_CONTEXT_OWNER_READY`
   W01.T10 -> `07754ce5b7fcdf1d6f24d0054217e81bc37be8e0` + `a3d461fd4d3eaba91e5226ac6e2626f569b643f3` + `06d46cdd6e9049df81b33dbbcf924641b42a54dd`; task review repaired and re-review PASS; `W01_CAMPAIGN_IDENTITY_READY`, `W01_SCAFFOLD_INPUT_CONTRACT_READY`
-  W01.T03 safe partial -> `0f21d800c53ea1885754f0372deafc8dca9be44e` + `1b4e3cf10b2e57ae2f8433cc899e8c1eec6f8ebc` + `ad391f9c5d8b99db7dad9cc4e541bae125a575c6` + `2d5a9c9807e222f8a34fe50ecfcfb201c674dbc0` + `78b2eb3b881c1734c453f1c4decb798f30d15854`; reviews PASS for the safe slice; `W01_ACTOR_ASSET_EFFECT_READY` intentionally withheld
+  W01.T03 -> `0f21d800c53ea1885754f0372deafc8dca9be44e` + `1b4e3cf10b2e57ae2f8433cc899e8c1eec6f8ebc` + `ad391f9c5d8b99db7dad9cc4e541bae125a575c6` + `2d5a9c9807e222f8a34fe50ecfcfb201c674dbc0` + `78b2eb3b881c1734c453f1c4decb798f30d15854` + `a4499b5d04d50b3f22683b1f81002f9659620aa5`; task review/re-review PASS; `W01_ACTOR_ASSET_EFFECT_READY`
   W01.T08 -> `ece9b2e2f6b85c235caabcfd979c181e087af379` + `0b58cb1f536c8ba6b4abd10c5ae774fc57edfcce` + `65e40288a6f356434e8e8e841e94626decc6b256` + `775f083f4ea6173e3c08b72537af6ceeb3ee6b09` + `00ce240366b3708c1cde7255b9174a992d9720da` + `d19cd2ef659cfdd5bdcba106b8ac9b5f43241930`; task review repaired through round 5 and re-review PASS; `W01_CATALOG_CONTEXT_READY`
 
 ## W01.T02 completion evidence
@@ -89,15 +89,15 @@ W01.T10: focused bootstrap suite 11 passed after coordinator integration; byteco
 Both actual deltas remained within their W01 owner-local envelopes and deferred shared/bootstrap writers were untouched. Publication/read-back is pending this coordinator checkpoint.
 ```
 
-## W01.T03 safe-slice evidence
+## W01.T03 completion evidence
 
 ```text
 focused GREEN observed: DEV.TESTS.test_rd03_actor_asset_effect_continuity (24 passed after coordinator integration)
 integration/static witnesses: strict Actor/Asset/Effect state, PC agency, native-only projection derivation, and sparse-continuity rejection
-actual Impact Envelope vs planned: safe owner-local creation only; required pc/npc/item schema retirement not performed
+actual Impact Envelope vs planned: owner-local native creation and explicit Wave-05 legacy-residue handoff; required pc/npc/item schema retirement intentionally deferred
 Version Impact result: NONE - new local schemas begin at 1; no existing namespace transition
-System Impact: legacy retirement remains blocked by the deferred audit consumer; see 2026-09-16-w01-t03-legacy-schema-retirement-impact-brief.md
-produced checkpoint: NONE - W01_ACTOR_ASSET_EFFECT_READY is withheld
+System Impact: NONE under Senior ruling; legacy retirement remains owned by Wave-05 final cutover
+produced checkpoint: W01_ACTOR_ASSET_EFFECT_READY
 published commit/remote read-back: pending this coordinator checkpoint
 ```
 
@@ -115,11 +115,11 @@ published commit/remote read-back: pending this coordinator checkpoint
 newly eligible dependent tasks: applicable Wave 02 consumers remain expressly out of current scope
 ```
 
-CURRENT_VERIFICATION_STATE: W01.T08 integration focused test and maintenance audit PASS at `d19cd2ef659cfdd5bdcba106b8ac9b5f43241930`; exact remote `aa9d5506714f3235ccce99583f31c0df852e61b5` clean-worktree full DEV discovery 596 passed, 1 skipped and maintenance audit PASS
+CURRENT_VERIFICATION_STATE: W01.T03 closure focused suite 25 passed and maintenance audit PASS at `a4499b5d04d50b3f22683b1f81002f9659620aa5`; publication/read-back pending this coordinator checkpoint
 VERSION_IMPACT: W01.T02 GAME/CORE/INFORMATION.md 0.1.2 -> 1.0.4; W01.T04 GAME/SCHEMA/index.schema.yaml 1 -> 2; W01.T05/T06/T08/T10 NONE; other integrated namespaces NONE
 SYSTEM_IMPACT: NONE - Senior rulings accepted: T01 creates Wave-05 repair inputs only; T03 retains physical legacy residue until Wave 05; T07 uses owner-native ingress without generic lexical validation
-NEXT_EXACT_TASK: publish the stable-plan ruling checkpoint, complete/review T01, T03, and T07, then re-evaluate and execute T09; do not start Wave 02
-KNOWN_BLOCKERS: NONE after the targeted rulings; W01.T09 remains dependency-gated until T03 publishes W01_ACTOR_ASSET_EFFECT_READY
+NEXT_EXACT_TASK: publish W01.T03 closure, complete/review T01 and T07, then execute T09; do not start Wave 02
+KNOWN_BLOCKERS: NONE after the targeted rulings; W01.T09 becomes eligible after this W01.T03 publication
 UNPUBLISHED_WORK: NONE
 
 ## Exact-head checkpoint verification
