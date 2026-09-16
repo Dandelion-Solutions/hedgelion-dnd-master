@@ -5,10 +5,10 @@ WAVE: `DEV/docs/superpowers/plans/implementation-wave-01-owner-native-foundation
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `2746530e868e968bf985fe19448a9d475a8c70ec`
 
-STATUS: EXECUTING
-CURRENT_TASK: W01.T09 review-repair lane
-LAST_COMPLETED_TASK: W01.T07
-LAST_SAFE_SHA: `aa9d5506714f3235ccce99583f31c0df852e61b5`
+STATUS: FINAL_REVIEW
+CURRENT_TASK: Senior Wave-01 integration audit
+LAST_COMPLETED_TASK: W01.T09
+LAST_SAFE_SHA: `2e55e45fee9fdfbf8b469d2966cb95423458db4d`
 
 ## Dependency schedule
 
@@ -34,6 +34,7 @@ COMPLETED_TASKS:
   W01.T08 -> `ece9b2e2f6b85c235caabcfd979c181e087af379` + `0b58cb1f536c8ba6b4abd10c5ae774fc57edfcce` + `65e40288a6f356434e8e8e841e94626decc6b256` + `775f083f4ea6173e3c08b72537af6ceeb3ee6b09` + `00ce240366b3708c1cde7255b9174a992d9720da` + `d19cd2ef659cfdd5bdcba106b8ac9b5f43241930`; task review repaired through round 5 and re-review PASS; `W01_CATALOG_CONTEXT_READY`
   W01.T01 -> `6db27ffa0563b497faf2e2b3341035505488f5e6` + `087d2b5de06008ecc447f3fc6dfa2671991cf1c0` + `d228892cd434749d8342f04e1030beeec7b953e8`; task review/re-review PASS; `W01_CURRENT_PROJECTIONS_READY` as Wave-05 repair-input readiness only
   W01.T07 -> `10c42a17ef0478fc897bc0951ac1a6fa8a87dfc2` + `470720e0a054bcdad3ac1798cf44e3490d5594af` + `249805cfa78221d6b40e2d77b3257efe3048a41c` + `e232517f96ef12a11cefff8b1625e9d6224a8754` + `fa15bb31c86f8f23c41dcb5cadc7ca66f2d84d11`; task review/re-review PASS; `W01_HISTORY_STORY_OWNER_READY`
+  W01.T09 -> `47a2ba2` + `d7e46d00b4c2a142e29cccbab400aa254d502b8a`; task review/re-review PASS; `W01_WORLD_OWNER_INPUTS_READY`
 
 ## W01.T02 completion evidence
 
@@ -125,10 +126,24 @@ W01.T07: focused Story suite 21 passed after coordinator integration; worker ful
 Publication/read-back is pending this coordinator checkpoint.
 ```
 
-CURRENT_VERIFICATION_STATE: W01.T01 and W01.T07 integration focused suites and maintenance audits PASS; publication/read-back pending this coordinator checkpoint
-VERSION_IMPACT: W01.T02 GAME/CORE/INFORMATION.md 0.1.2 -> 1.0.4; W01.T04 GAME/SCHEMA/index.schema.yaml 1 -> 2; W01.T01/T05/T06/T07/T08/T10 NONE; other integrated namespaces NONE
+## W01.T09 completion evidence
+
+```text
+focused RED observed: absent quiet schemas, nonconforming location title, and unresolved temporal binding without a local registry
+focused GREEN observed: DEV.TESTS.test_rd16_world_family_machine_integration (11 passed, 6 Wave-05-owned skips after coordinator integration)
+task-local suite: worker full DEV discovery 608 passed, 7 skipped; maintenance audit PASS
+integration/static witnesses: exact 17-family census, no world.faction family, owner-schema consumption without recreation, and local-registry valid/malformed T05 deadline validation
+actual Impact Envelope vs planned: quiet DEV world schemas/tests only; world.player, shared wrappers/catalogs/dispatch, and Wave-05 integration untouched
+Version Impact result: NONE - new owner-local DEV schemas and test-only location strictness change no existing version/generation projection; retained GAME schema integration remains Wave-05-owned
+schema/catalog/checkpoint result: W01_WORLD_OWNER_INPUTS_READY
+published commit/remote read-back: pending this final coordinator checkpoint
+newly eligible dependent tasks: no Wave-02 task is started by this cursor
+```
+
+CURRENT_VERIFICATION_STATE: exact clean worktree at `d7e46d00b4c2a142e29cccbab400aa254d502b8a` ran full DEV discovery 640 passed, 7 skipped; maintenance audit PASS on the coordinator integration surface; all W01 focused suites together 180 passed, 7 Wave-05-owned skips
+VERSION_IMPACT: W01.T02 GAME/CORE/INFORMATION.md 0.1.2 -> 1.0.4; W01.T04 GAME/SCHEMA/index.schema.yaml 1 -> 2; W01.T01/T05/T06/T07/T08/T09/T10 NONE; other integrated namespaces NONE
 SYSTEM_IMPACT: NONE - Senior rulings accepted: T01 creates Wave-05 repair inputs only; T03 retains physical legacy residue until Wave 05; T07 uses owner-native ingress without generic lexical validation
-NEXT_EXACT_TASK: publish T01/T07 integration state, complete/review T09, then run Wave-01 final verification; do not start Wave 02
+NEXT_EXACT_TASK: publish/read back this final Wave-01 technical checkpoint, then obtain the mandatory Senior integration audit; do not start Wave 02
 KNOWN_BLOCKERS: NONE
 UNPUBLISHED_WORK: NONE
 
@@ -144,3 +159,7 @@ clean detached-worktree maintenance audit:
 ```
 
 The primary checkout's broad discovery failure is not source evidence: the local OpenCode `.opencode/node_modules` cache is ignored workspace infrastructure but is not excluded by `test_versioning_namespace_policy.py`. The clean exact-head worktree has no such local cache and passes the same suite.
+
+## Final technical review disposition
+
+The technical whole-wave reviewer correctly required T09 completion evidence, which is recorded above. Its proposed T10 stable-ID creator-authority repair was not integrated because it contradicts the current creator-login owner: `DEV/docs/superpowers/specs/2026-09-06-hdm-creator-login-continuity-owner-decision.md` requires login-rename fail-closed behavior and prohibits stable-ID creator substitution. The reviewed current T10 implementation remains compliant: verified stable account ID is a PLAYER binding input, while creator authority retains historical creator-login provenance.
