@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/runtime-message-state.schema.json",
+  "title": "HDM runtime.message state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["message_id", "interaction_id", "direction", "recipient_player_id", "payload_state", "content_digest"],
+  "properties": {
+    "message_id": {"$ref": "#/$defs/id"},
+    "interaction_id": {"$ref": "#/$defs/id"},
+    "direction": {"enum": ["inbound", "outbound"]},
+    "recipient_player_id": {"$ref": "#/$defs/id"},
+    "payload_state": {"enum": ["message.exact_retained", "message.compacted"]},
+    "exact_text": {"type": "string", "minLength": 1},
+    "content_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_domain_ref": {"$ref": "#/$defs/id"},
+    "semantic_event_refs": {"$ref": "#/$defs/idSet"},
+    "delivery_evidence_ref": {"$ref": "#/$defs/id"}
+  },
+  "allOf": [
+    {"if": {"properties": {"payload_state": {"const": "message.exact_retained"}}, "required": ["payload_state"]}, "then": {"required": ["exact_text"]}}
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+  }
+}

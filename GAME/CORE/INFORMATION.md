@@ -1,16 +1,19 @@
 # Information, Clues and Mysteries
 
-framework_module_version: 0.1.2
+framework_module_version: 1.0.3
 load_when: investigation, mystery, lore discovery, perception, hidden information
 
 ## Information layers
 
-Maintain explicit separation between:
-- objective truth;
-- what each NPC knows;
-- what each NPC believes incorrectly;
-- what each PC knows;
-- what each player has actually been told.
+Maintain explicit separation between native owners:
+- `world.lore_fact` — objective proposition identity, truth status and lifecycle;
+- `world.knowledge` — one current fictional subject-to-fact relation, with accepted native evidence;
+- `runtime.disclosure` — material information emitted to one human recipient;
+- `runtime.message` — accepted communication evidence, not proposition truth.
+
+Visibility, possession, narration, repository readability, cache/index presence and Story availability do not establish knowledge or disclosure. A knowledge transition requires accepted native evidence; legacy embedded PC/NPC/Faction knowledge arrays are migration input or derived convenience, never parallel writable authority.
+
+Before player-facing emission, validate recipient-scoped disclosure references against eligible source evidence. One outbound message and its material disclosure transitions form one semantic closure; delivery to one recipient never advances another recipient's disclosure or any PC's knowledge.
 
 Knowledge requires a source: observation, testimony, inference, magic, prior history, records or another established mechanism.
 

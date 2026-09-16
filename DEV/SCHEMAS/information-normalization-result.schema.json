@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/information-normalization-result.schema.json",
+  "title": "HDM native information normalization result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["lore_fact", "knowledge", "message"],
+  "properties": {
+    "lore_fact": {"$ref": "world-lore-fact-state.schema.json"},
+    "knowledge": {"$ref": "world-knowledge-state.schema.json"},
+    "disclosure": {"$ref": "runtime-disclosure-state.schema.json"},
+    "message": {"$ref": "runtime-message-state.schema.json"}
+  }
+}

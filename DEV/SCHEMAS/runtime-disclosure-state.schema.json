@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/runtime-disclosure-state.schema.json",
+  "title": "HDM runtime.disclosure state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["player_id", "fact_id", "statement_exposed", "source_refs"],
+  "properties": {
+    "player_id": {"$ref": "#/$defs/id"},
+    "fact_id": {"$ref": "#/$defs/id"},
+    "statement_exposed": {"type": "boolean"},
+    "latest_exposed_truth_transition_ref": {"$ref": "#/$defs/id"},
+    "source_refs": {"$ref": "#/$defs/idSet"},
+    "last_disclosed_interaction_id": {"$ref": "#/$defs/id"},
+    "message_id": {"$ref": "#/$defs/id"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/world-knowledge-state.schema.json",
+  "title": "HDM world.knowledge state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["knower_id", "fact_id", "stance"],
+  "properties": {
+    "knower_id": {"$ref": "#/$defs/id"},
+    "fact_id": {"$ref": "#/$defs/id"},
+    "stance": {"enum": ["epistemic.aware", "epistemic.known", "epistemic.believed", "epistemic.suspected", "epistemic.rejected"]},
+    "supporting_source_refs": {"$ref": "#/$defs/idSet"},
+    "last_changed_event_id": {"$ref": "#/$defs/id"},
+    "confidence": {"type": "number"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+  }
+}

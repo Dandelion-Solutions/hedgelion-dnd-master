@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/world-lore-fact-state.schema.json",
+  "title": "HDM world.lore_fact state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["statement", "truth_status", "record_status"],
+  "properties": {
+    "statement": {"type": "string", "minLength": 1},
+    "truth_status": {"enum": ["truth.undetermined", "truth.established", "truth.disproven"]},
+    "record_status": {"enum": ["lore_record.active", "lore_record.superseded"]},
+    "subject_refs": {"$ref": "#/$defs/idSet"},
+    "scope": {"type": "object"},
+    "chronology": {"type": "object"},
+    "provenance_refs": {"$ref": "#/$defs/idSet"},
+    "supersedes_fact_id": {"$ref": "#/$defs/id"},
+    "superseded_by_fact_id": {"$ref": "#/$defs/id"},
+    "importance": {"type": "string", "minLength": 1},
+    "last_truth_transition_ref": {"$ref": "#/$defs/id"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "idSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+  }
+}
