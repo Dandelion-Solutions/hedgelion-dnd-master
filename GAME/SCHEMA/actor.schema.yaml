@@ -1,0 +1,14 @@
+schema_name: world_actor
+schema_version: 1
+strict: true
+required: [schema_version, id, kind, state]
+fields:
+  schema_version: integer
+  id: native_actor_id
+  kind: const[world.actor]
+  definition_id: definition.actor_archetype|null
+  state: world-actor-state
+invariants:
+  - state is the sole native Actor state authority
+  - knowledge, inventory, active effects and Conditions remain with their native owners
+  - provisional or projected data cannot silently become native Actor authority

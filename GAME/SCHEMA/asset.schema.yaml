@@ -1,0 +1,14 @@
+schema_name: world_asset
+schema_version: 1
+strict: true
+required: [schema_version, id, kind, state]
+fields:
+  schema_version: integer
+  id: native_asset_id
+  kind: const[world.asset]
+  definition_id: definition.asset|null
+  state: world-asset-state
+invariants:
+  - state has at most one direct placement: owner_actor_id, container_asset_id or location_id
+  - current asset knowledge and legal ownership are not Asset-state aliases
+  - current durability and resources remain distinct native state

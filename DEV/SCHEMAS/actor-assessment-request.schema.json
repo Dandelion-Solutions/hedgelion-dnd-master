@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/actor-assessment-request.schema.json",
+  "title": "HDM actor assessment request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["actor", "purpose", "source_evidence", "delta"],
+  "properties": {
+    "actor": {"$ref": "#/$defs/nativeActor"},
+    "purpose": {"enum": ["assessment.react", "assessment.reflect", "assessment.plan", "assessment.reconsider", "assessment.relationship_update"]},
+    "source_evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/sourceEvidence"}},
+    "delta": {"oneOf": [{"type": "null"}, {"$ref": "actor-delta-draft.schema.json"}]}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "nativeActor": {"type": "object", "additionalProperties": false, "required": ["id", "kind", "state_revision", "state"], "properties": {"id": {"$ref": "#/$defs/id"}, "kind": {"const": "world.actor"}, "state_revision": {"type": "integer", "minimum": 0}, "state": {"$ref": "world-actor-state.schema.json"}}},
+    "sourceEvidence": {"type": "object", "additionalProperties": false, "required": ["ref", "accepted", "current", "authorized_actor_ids"], "properties": {"ref": {"$ref": "#/$defs/id"}, "accepted": {"const": true}, "current": {"const": true}, "authorized_actor_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}}}
+  }
+}

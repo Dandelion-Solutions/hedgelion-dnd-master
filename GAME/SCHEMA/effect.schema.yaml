@@ -1,0 +1,14 @@
+schema_name: world_effect
+schema_version: 1
+strict: true
+required: [schema_version, id, kind, definition_id, state]
+fields:
+  schema_version: integer
+  id: native_effect_id
+  kind: const[world.effect]
+  definition_id: definition.effect|definition.condition
+  state: world-effect-state
+invariants:
+  - one record is one target-local Effect application
+  - Condition aggregation and remaining duration are derived, not writable Effect-state aliases
+  - terminal Effects cannot retain armed scheduled-trigger state
