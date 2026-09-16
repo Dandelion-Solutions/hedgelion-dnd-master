@@ -109,7 +109,8 @@ Mandatory hard/join edges include:
 - early RD-14 campaign identity + RD-06 identity immutability + RD-09 route/order/cursor checkpoints -> source-native LIVE ID acceptance;
 - campaign/LIVE route selection and absorption -> same-closure temporal, operational-root and route-companion handoffs;
 - current PLAYER/access-policy mutation -> one after-authority collaboration reconciliation -> one campaign publication closure;
-- information/thread/PLAYER/collaboration/LIVE identifier deltas -> one final Wave-05 shared machine integration;
+- information/thread/PLAYER/collaboration/LIVE identifier deltas -> W05.T01 owner-local strict schema/wrapper inputs GREEN at `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY` -> `JOIN_BEFORE_INTEGRATION` -> W05.T02 final shared write at `RD16_SHARED_MACHINE_INTEGRATION_READY`;
+- W05.T02 final shared bytes + the affected final schema/realization checkpoints -> W06.T02 item-bound world/runtime R018 proof; neither final proof nor T02 integration/conformance is a prerequisite of T01 closure;
 - every package proof -> its realized target, never the reverse.
 
 ## 6. Package-wide invariants
@@ -124,6 +125,7 @@ Mandatory hard/join edges include:
 - LIVE currentness is exact-source CAS evidence. Prepared candidate existence is not authority.
 - Story, Commentator, Dramaturg and catch-up material are projections with their own privacy/currentness rules; none becomes history, knowledge, ACL or gameplay truth.
 - Every task runs the Version Impact Gate and every shared file has one final physical writer/checkpoint.
+- R018 runtime proof consumes the exact 17-row family/schema/root/realization matrix in Wave 05 and the negative witnesses in Wave 06. Count equality, catalog admission, a world-only proof or a catalog-gap-only proof cannot close the composite.
 - No future-task intentional RED tests are published. A task creates its RED witness with the mechanism it turns GREEN.
 
 ## 7. Exact version targets at the consolidation baseline

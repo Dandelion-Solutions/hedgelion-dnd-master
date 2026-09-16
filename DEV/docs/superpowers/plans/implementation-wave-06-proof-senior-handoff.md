@@ -8,7 +8,7 @@ Use `implementation-plan-execution-contract.md`. Proof follows the mechanism it 
 
 ## Entry and exit
 
-Entry requires all Wave-01..05 target checkpoints GREEN and published. Exit requires complete local and hosted evidence for the same exact HEAD plus independent Senior integration review. Until that review returns PASS / GO and `DEV/CURRENT_PROGRESS.md` records it, release/migration/gameplay bootstrap remain unauthorized.
+Each proof becomes eligible when its named target checkpoints are GREEN and published; there is no whole-wave entry barrier for an unrelated proof or owner-local task. W06.T01 and W06.T06 perform the complete-package checks after all required writers. Exit requires complete local and hosted evidence for the same exact HEAD plus independent Senior integration review. Until that review returns PASS / GO and `DEV/CURRENT_PROGRESS.md` records it, release/migration/gameplay bootstrap remain unauthorized.
 
 Minimum wave impact envelope:
 
@@ -60,7 +60,55 @@ R004 absent
 
 Every active record points to an executed task/checkpoint and evidence channel. Every trigger-gated record retains its exact dormant trigger and cannot be activated by wave placement. Every no-work terminal retains its reason. Counts are cross-checks; item-level mapping is authority.
 
-Output checkpoint: `W06_READINESS_PROOF_READY`.
+### Exact runtime-family proof and negative witnesses
+
+`R018RuntimeFamilyProofTests` in `DEV/TESTS/test_implementation_proof_ledger.py` consumes the exact 17-row runtime-family realization matrix in Wave 05. Create and turn these witnesses GREEN only when their realized targets exist; do not publish future-task RED tests. Primary evidence channels: `STATIC_AUDIT + INTEGRATION_SCENARIO`.
+
+For every row, prove all of the following against final published bytes:
+
+1. Exact accepted family membership, with no missing, duplicate or unowned extra member.
+2. Resolution to every named final schema/machine-shape surface, including shipped projections and an admitted concrete Procedure subtype where applicable. No current row has a no-durable-record exemption.
+3. The exact native root/exceptional route from the matrix and current WP-11 owner, independently of a valid record body.
+4. Strict validation of the complete owner-native identity/state contract, not merely a generic untyped object envelope.
+5. Compatibility with the final identifier/live-birth policy: `runtime.id_allocator` stays a fixed exceptional singleton; SOURCE_NATIVE_LIVE never falls back to that allocator.
+6. An executable owner-native producer/consumer realization route, with the matrix's exact checkpoints and final-schema writers. Catalog admission alone is insufficient.
+7. Rejection of missing schema, family/schema mismatch, wrong root, duplicate/extra family and any count-only substitute.
+
+Required negative fixtures, each with an assertion that the corresponding row/proof fails:
+
+| Negative fixture | Required rejection |
+|---|---|
+| Delete one required row and keep the count at 17 by substituting a duplicate or unowned extra member | Exact set/row mismatch fails despite count equality; test both duplicate and extra substitutions |
+| Map one runtime family to another family's schema | Family/schema binding fails even if that schema validates its own body |
+| Use a wrong WP-11 root with an otherwise valid native body | Root/route proof fails |
+| Route `runtime.id_allocator` as a hashed ordinary native record | Exceptional fixed `STATE/ID_ALLOCATOR.yaml` law fails |
+| Admit a catalog kind whose final schema is absent | R018 realization proof fails despite catalog presence |
+| Supply only a 17-member census with no per-row schema/root/realization evidence | Count-only closure fails |
+
+The integration join is:
+
+```text
+W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY
+    -> JOIN_BEFORE_INTEGRATION -> W05.T02
+    -> RD16_SHARED_MACHINE_INTEGRATION_READY
+
+W01_INFORMATION_OWNER_READY + W01_NATIVE_ROUTING_READY
++ W02_CATALOG_BACKED_COMMAND_READY + W02_DETERMINISTIC_EXECUTION_READY
++ W02_EXACT_RECOVERY_READY
++ W04_COLLABORATION_PUBLICATION_READY + W04_NATIVE_HISTORY_PUBLICATION_READY
++ W01_CATALOG_CONTEXT_READY + W02_DURABILITY_PUBLICATION_READY
++ SESSION_SCHEMA_FINAL_INTEGRATION_READY + W05_RETAINED_SCHEMA_CUTOVERS_READY
++ RD16_SHARED_MACHINE_INTEGRATION_READY
+    -> PROOF_AFTER_TARGET -> R018_RUNTIME_FAMILY_PROOF_READY (W06.T02)
+```
+
+The world proof independently waits for its final world schemas, wrapper/identifier integration and `RD16_PLAYER_STRICT_STATE_INTEGRATION_READY`, then produces `R018_WORLD_FAMILY_PROOF_READY`. The catalog-gap behavioral chain uses W01.T08 -> W02.T05 -> W02.T06 with W05.T02's final shared binding, and produces `RD15_CATALOG_GAP_BEHAVIORAL_FAMILY_WITNESS_READY` here. Its matrix row proves schema/root realization; its separate behavioral witness must prove producer/publication/recovery and cannot be replaced by that row.
+
+`CompositeR018ProofTests` requires `R018_WORLD_FAMILY_PROOF_READY` + `R018_RUNTIME_FAMILY_PROOF_READY` + `RD15_CATALOG_GAP_BEHAVIORAL_FAMILY_WITNESS_READY` + the current route/identity/shared-integration prerequisites. Assert that the composite fails when any required proof is missing, even if the world-only proof, catalog-gap-only witness, 17 admitted catalog names, bidirectional name list or aggregate 17+17 census is GREEN.
+
+Final integrated 17x17/R018 evidence is produced only after the W05.T02 shared write and the affected final schema writers. It is never an input to W05.T01 or W05.T02. No semantic owner or runtime registry is introduced by this proof fixture.
+
+Output checkpoints: `R018_WORLD_FAMILY_PROOF_READY`, `R018_RUNTIME_FAMILY_PROOF_READY`, `RD15_CATALOG_GAP_BEHAVIORAL_FAMILY_WITNESS_READY` and, after all readiness/composite obligations, `W06_READINESS_PROOF_READY`.
 
 ## W06.T03 — Post-WP27 proof matrix PG06–PG37
 
@@ -93,7 +141,7 @@ Execute and record the following integration rows against actual mechanisms:
 | PG29 | complete LIVE opening seed |
 | PG30 | completeness-protected LIVE routing companion |
 | PG31 | lossless native packing and idempotent absorption |
-| PG32 | R018 runtime-family closure |
+| PG32 | exact Wave-05 17-row family -> final schema/machine shape -> native root/exceptional route -> owning realization mapping, proved by W06.T02 `R018RuntimeFamilyProofTests` / `R018_RUNTIME_FAMILY_PROOF_READY`, including every named negative fixture; census/catalog presence alone cannot close the row |
 | PG33 | PLAYER collaboration strict-state integration |
 | PG34 | LIVE temporal handoff |
 | PG35 | operational-root enrollment, publication, LIVE handoff and cold recovery |
