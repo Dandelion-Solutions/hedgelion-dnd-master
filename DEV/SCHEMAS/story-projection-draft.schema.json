@@ -4,12 +4,13 @@
   "title": "HDM non-authoritative StoryProjectionDraft",
   "type": "object",
   "additionalProperties": false,
-  "required": ["kind", "purpose", "source_generation", "source_refs"],
+  "required": ["kind", "purpose", "bundle_id", "source_generation", "source_refs"],
   "properties": {
     "kind": {"const": "story_projection_draft"},
     "purpose": {"type": "string", "minLength": 1},
+    "bundle_id": {"type": "string", "minLength": 1},
     "source_generation": {"type": "string", "minLength": 1},
     "source_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
   },
-  "examples": [{"kind": "story_projection_draft", "purpose": "chronicle", "source_generation": "frontier-7", "source_refs": ["event-1"]}]
+  "examples": [{"kind": "story_projection_draft", "purpose": "chronicle", "bundle_id": "bundle-1", "source_generation": "frontier-7", "source_refs": ["event-1"]}]
 }

@@ -4,12 +4,13 @@
   "title": "HDM typed InterpreterResult",
   "type": "object",
   "additionalProperties": false,
-  "required": ["kind", "purpose", "source_generation", "intent"],
+  "required": ["kind", "purpose", "bundle_id", "source_generation", "intent"],
   "properties": {
     "kind": {"const": "interpreter_result"},
     "purpose": {"type": "string", "minLength": 1},
+    "bundle_id": {"type": "string", "minLength": 1},
     "source_generation": {"type": "string", "minLength": 1},
     "intent": {"type": "string", "minLength": 1}
   },
-  "examples": [{"kind": "interpreter_result", "purpose": "interpret", "source_generation": "frontier-7", "intent": "move"}]
+  "examples": [{"kind": "interpreter_result", "purpose": "interpret", "bundle_id": "bundle-1", "source_generation": "frontier-7", "intent": "move"}]
 }

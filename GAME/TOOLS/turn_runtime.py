@@ -12,6 +12,13 @@ PHASE_RESULT_KINDS = {
     "CHRONICLER": {"story_projection_draft"},
     "NARRATOR": {"narration_result"},
 }
+RESULT_REQUIRED_FIELDS = {
+    "interpreter_result": frozenset({"kind", "purpose", "bundle_id", "source_generation", "intent"}),
+    "preparation_draft": frozenset({"kind", "purpose", "bundle_id", "source_generation", "pressures"}),
+    "actor_proposal": frozenset({"kind", "purpose", "bundle_id", "source_generation", "subject_id", "proposal"}),
+    "story_projection_draft": frozenset({"kind", "purpose", "bundle_id", "source_generation", "source_refs"}),
+    "narration_result": frozenset({"kind", "bundle_id", "recipient_id", "prose", "disclosure_refs"}),
+}
 FORBIDDEN_HANDOFF_KEYS = frozenset({"raw_bundle", "context_trace", "hidden_reasoning", "role_frame", "tool_payload"})
 FALLBACKS = frozenset({"BLOCKED", "DEGRADED", "CLARIFICATION", "DETERMINISTIC_PATH"})
 
@@ -48,19 +55,29 @@ def start_turn(turn_id: str, accepted_frontier: str, protected_narrator_capacity
 
 def bind_phase(
     envelope: dict[str, Any], role: str, purpose: str, profile_id: str, bundle_id: str, allowed_results: tuple[str, ...],
+    *, subject_id: str | None = None, recipient_id: str | None = None,
 ) -> dict[str, Any]:
     """Bind one registered role to its independently assembled context basis."""
     if role not in PHASE_RESULT_KINDS:
         raise TurnContractError("unregistered role")
     for label, value in (("purpose", purpose), ("profile_id", profile_id), ("bundle_id", bundle_id)):
         _nonempty_string(value, label)
-    if not isinstance(allowed_results, tuple) or any(not isinstance(item, str) or not item for item in allowed_results):
-        raise TurnContractError("allowed_results must be a tuple of nonempty strings")
+    if (
+        not isinstance(allowed_results, tuple)
+        or not allowed_results
+        or any(not isinstance(item, str) or item not in PHASE_RESULT_KINDS[role] for item in allowed_results)
+    ):
+        raise TurnContractError("allowed_results must be registered for the bound phase")
+    for label, value in (("subject_id", subject_id), ("recipient_id", recipient_id)):
+        if value is not None:
+            _nonempty_string(value, label)
     binding = {
         "purpose": purpose,
         "profile_id": profile_id,
         "bundle_id": bundle_id,
         "allowed_results": list(allowed_results),
+        "subject_id": subject_id,
+        "recipient_id": recipient_id,
     }
     envelope["phase_bindings"][role] = binding
     return binding
@@ -73,14 +90,24 @@ def accept_phase_result(envelope: dict[str, Any], result: dict[str, Any]) -> dic
     if FORBIDDEN_HANDOFF_KEYS.intersection(result):
         raise TurnContractError("result contains protected private material")
     kind = result.get("kind")
+    required_fields = RESULT_REQUIRED_FIELDS.get(kind)
+    if required_fields is None or set(result) != required_fields:
+        raise TurnContractError("result does not satisfy its registered schema contract")
     bindings = envelope.get("phase_bindings", {})
     matching_roles = [role for role, allowed in PHASE_RESULT_KINDS.items() if kind in allowed and role in bindings]
     if len(matching_roles) != 1:
         raise TurnContractError("result kind is not accepted by exactly one bound phase")
     role = matching_roles[0]
     binding = bindings[role]
+    if kind not in binding["allowed_results"]:
+        raise TurnContractError("result kind is outside the bound allowed-results scope")
     if result.get("purpose") != binding["purpose"]:
         raise TurnContractError("result purpose does not match phase binding")
+    if result.get("bundle_id") != binding["bundle_id"]:
+        raise TurnContractError("result bundle_id does not match phase binding")
+    for field in ("subject_id", "recipient_id"):
+        if binding[field] is not None and result.get(field) != binding[field]:
+            raise TurnContractError(f"result {field} does not match phase binding")
     if result.get("source_generation") != envelope.get("accepted_frontier"):
         raise TurnContractError("result source_generation does not match accepted frontier")
     accepted = dict(result)

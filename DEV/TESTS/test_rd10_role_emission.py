@@ -29,17 +29,21 @@ class TurnEnvelopeContainmentTests(unittest.TestCase):
 
 
 class TypedHandoffTests(unittest.TestCase):
+    def test_phase_rejects_result_outside_registered_result_and_binding_scope(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        with self.assertRaises(turn_runtime.TurnContractError):
+            turn_runtime.bind_phase(envelope, "INTERPRETER", "interpret", "profile.intent", "bundle-1", ("actor_proposal",))
     def test_bound_phase_advances_only_as_transient_control(self):
         envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
-        turn_runtime.bind_phase(envelope, "INTERPRETER", "interpret", "profile.intent", "bundle-1", ())
+        turn_runtime.bind_phase(envelope, "INTERPRETER", "interpret", "profile.intent", "bundle-1", ("interpreter_result",))
         self.assertEqual(turn_runtime.advance_phase(envelope, "INTERPRETER"), "INTERPRETER")
 
     def test_phase_accepts_only_its_registered_minimum_result_family(self):
         envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
-        turn_runtime.bind_phase(envelope, "INTERPRETER", "interpret", "profile.intent", "bundle-1", ())
+        turn_runtime.bind_phase(envelope, "INTERPRETER", "interpret", "profile.intent", "bundle-1", ("interpreter_result",))
         accepted = turn_runtime.accept_phase_result(
             envelope,
-            {"kind": "interpreter_result", "purpose": "interpret", "source_generation": "frontier-7", "intent": "move"},
+            {"kind": "interpreter_result", "purpose": "interpret", "bundle_id": "bundle-1", "source_generation": "frontier-7", "intent": "move"},
         )
         self.assertEqual(accepted["kind"], "interpreter_result")
         with self.assertRaises(turn_runtime.TurnContractError):
@@ -47,7 +51,7 @@ class TypedHandoffTests(unittest.TestCase):
 
     def test_raw_bundle_trace_and_hidden_reasoning_cannot_cross_phase_boundary(self):
         envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
-        turn_runtime.bind_phase(envelope, "ACTOR", "assess", "profile.actor", "bundle-2", ())
+        turn_runtime.bind_phase(envelope, "ACTOR", "assess", "profile.actor", "bundle-2", ("actor_proposal",))
         with self.assertRaises(turn_runtime.TurnContractError):
             turn_runtime.accept_phase_result(
                 envelope,

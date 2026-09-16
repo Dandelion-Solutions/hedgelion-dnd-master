@@ -16,6 +16,12 @@ def discover_candidates(request: dict[str, Any], candidates: list[dict[str, Any]
     limit = request.get("max_candidates")
     if not isinstance(channels, list) or not channels or isinstance(limit, bool) or not isinstance(limit, int) or limit < 0:
         raise ContextContractError("request must name bounded registered discovery channels")
+    identities: set[str] = set()
+    for item in candidates:
+        candidate_id = item.get("candidate_id") if isinstance(item, dict) else None
+        if not isinstance(candidate_id, str) or not candidate_id or candidate_id in identities:
+            raise ContextContractError("candidate identities must be unique nonempty strings")
+        identities.add(candidate_id)
     found = [item for item in candidates if item.get("channel") in channels]
     return sorted(found, key=lambda item: item.get("candidate_id", ""))[:limit]
 
@@ -30,7 +36,7 @@ def resolve_candidate_basis(candidate: dict[str, Any]) -> dict[str, Any]:
     return candidate
 
 
-def _required_closure(required_ids: list[str], available: dict[str, dict[str, Any]]) -> list[dict[str, Any]] | None:
+def _required_closure(required_ids: list[str], available: dict[str, dict[str, Any]], allowed_relations: set[str]) -> list[dict[str, Any]]:
     pending = list(required_ids)
     resolved: dict[str, dict[str, Any]] = {}
     while pending:
@@ -39,15 +45,23 @@ def _required_closure(required_ids: list[str], available: dict[str, dict[str, An
             continue
         candidate = available.get(candidate_id)
         if candidate is None:
-            return None
-        try:
-            resolved[candidate_id] = resolve_candidate_basis(candidate)
-        except ContextContractError:
-            return None
-        dependencies = candidate.get("depends_on", [])
-        if not isinstance(dependencies, list) or any(not isinstance(item, str) for item in dependencies):
-            return None
-        pending.extend(dependencies)
+            raise ContextContractError("required candidate is missing")
+        resolved[candidate_id] = resolve_candidate_basis(candidate)
+        dependencies = candidate.get("dependencies", [])
+        if not isinstance(dependencies, list):
+            raise ContextContractError("dependencies must be a typed list")
+        dependency_keys: set[tuple[str, str]] = set()
+        for dependency in dependencies:
+            if not isinstance(dependency, dict) or set(dependency) != {"relation", "candidate_id"}:
+                raise ContextContractError("dependency must be a typed relation")
+            relation, target = dependency["relation"], dependency["candidate_id"]
+            if not isinstance(relation, str) or relation not in allowed_relations or not isinstance(target, str) or not target:
+                raise ContextContractError("dependency relation is not registered by the profile")
+            key = (relation, target)
+            if key in dependency_keys:
+                raise ContextContractError("duplicate dependency relation")
+            dependency_keys.add(key)
+            pending.append(target)
     return [resolved[key] for key in sorted(resolved)]
 
 
@@ -58,12 +72,13 @@ def assemble_context(request: dict[str, Any], candidates: list[dict[str, Any]]) 
     discovered = discover_candidates(request, candidates)
     available = {item.get("candidate_id"): item for item in discovered if isinstance(item.get("candidate_id"), str)}
     required_ids = request.get("required_ids", [])
-    if not isinstance(required_ids, list) or any(not isinstance(item, str) for item in required_ids):
+    relations = request.get("allowed_relations", [])
+    if not isinstance(required_ids, list) or len(required_ids) != len(set(required_ids)) or any(not isinstance(item, str) for item in required_ids):
         raise ContextContractError("required_ids must be strings")
-    required = _required_closure(required_ids, available)
+    if not isinstance(relations, list) or len(relations) != len(set(relations)) or any(not isinstance(item, str) or not item for item in relations):
+        raise ContextContractError("allowed_relations must be registered unique strings")
+    required = _required_closure(required_ids, available, set(relations))
     trace = {"profile_id": profile_id, "discovered_ids": sorted(available), "included_ids": [], "excluded_ids": []}
-    if required is None:
-        return {"outcome": "UNSATISFIABLE", "bundle": None, "trace": trace}
     required_set = {item["candidate_id"] for item in required}
     optional: list[dict[str, Any]] = []
     for item in discovered:

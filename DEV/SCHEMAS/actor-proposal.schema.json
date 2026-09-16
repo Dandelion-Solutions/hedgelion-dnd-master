@@ -4,13 +4,14 @@
   "title": "HDM non-authoritative ActorProposal",
   "type": "object",
   "additionalProperties": false,
-  "required": ["kind", "purpose", "source_generation", "subject_id", "proposal"],
+  "required": ["kind", "purpose", "bundle_id", "source_generation", "subject_id", "proposal"],
   "properties": {
     "kind": {"const": "actor_proposal"},
     "purpose": {"type": "string", "minLength": 1},
+    "bundle_id": {"type": "string", "minLength": 1},
     "source_generation": {"type": "string", "minLength": 1},
     "subject_id": {"type": "string", "minLength": 1},
     "proposal": {"type": "string", "minLength": 1}
   },
-  "examples": [{"kind": "actor_proposal", "purpose": "assess", "source_generation": "frontier-7", "subject_id": "actor-1", "proposal": "withdraw"}]
+  "examples": [{"kind": "actor_proposal", "purpose": "assess", "bundle_id": "bundle-1", "source_generation": "frontier-7", "subject_id": "actor-1", "proposal": "withdraw"}]
 }
