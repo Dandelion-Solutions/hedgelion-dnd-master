@@ -28,7 +28,7 @@ COMPLETED_TASKS: none
 
 CURRENT_VERIFICATION_STATE: fresh remote state, maintenance audit, and remote cursor read-back at `2e5636cd0bdfd569fef3fd8afe538dde7e818093`; implementation authorization recorded by current progress
 VERSION_IMPACT: NONE - execution cursor only; no semantic, runtime, schema, catalog, or version-namespace owner changes
-SYSTEM_IMPACT: NONE
-NEXT_EXACT_TASK: dispatch up to five dependency-valid Wave 01 owner-local tasks in isolated worktrees; do not start Wave 02
-KNOWN_BLOCKERS: none
+SYSTEM_IMPACT: W01.T01 SENIOR_REVIEW_REQUIRED - see `DEV/docs/superpowers/design/2026-09-16-w01-t01-shipped-projections-impact-brief.md`; other independent Wave 01 lanes continue
+NEXT_EXACT_TASK: complete task review/repair/integration for the non-impacted Wave 01 lanes; do not start Wave 02
+KNOWN_BLOCKERS: W01.T01 awaits a Senior ruling on its deferred-final-writer contradiction
 UNPUBLISHED_WORK: NONE
