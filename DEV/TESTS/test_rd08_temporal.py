@@ -17,6 +17,7 @@ from temporal import (
     evaluate_temporal_binding,
     materialize_due_occurrence,
     rebuild_temporal_agenda,
+    validate_chronology_relation_evidence,
     validate_current_state_replacement,
 )
 
@@ -233,6 +234,7 @@ class ChronologyBridgeTests(unittest.TestCase):
                 "first_anchor_id": "event:market-warning",
                 "second_anchor_id": "event:market-fall",
                 "provider_scope_id": "scene:market",
+                "context_id": "chronology:market",
                 "coordinate": {"kind": "EXACT", "value": 15, "unit_id": "unit.day"},
             },
             {
@@ -240,11 +242,13 @@ class ChronologyBridgeTests(unittest.TestCase):
                 "start_anchor_id": "event:market-warning",
                 "end_anchor_id": "event:market-fall",
                 "provider_scope_id": "scene:market",
+                "context_id": "chronology:market",
                 "elapsed": {"lower": 2, "upper": 4, "unit_id": "unit.day"},
             },
         )
         for relation in relations:
             validator.validate(relation)
+            self.assertEqual(validate_chronology_relation_evidence(relation), relation)
 
         with self.assertRaises(ValidationError):
             validator.validate(dict(relations[1], relation_type="TOTAL_ORDER"))
@@ -252,6 +256,23 @@ class ChronologyBridgeTests(unittest.TestCase):
             validator.validate(dict(relations[1], order_domain_id=None))
         with self.assertRaises(ValidationError):
             validator.validate(dict(relations[0], order_domain_id="order-domain:market"))
+        for relation in (relations[2], relations[3]):
+            missing_context = dict(relation)
+            del missing_context["context_id"]
+            with self.assertRaises(ValidationError):
+                validator.validate(missing_context)
+
+        bounded_coordinate = dict(
+            relations[2],
+            coordinate={"kind": "BOUNDED", "lower": 8, "upper": 3, "unit_id": "unit.day"},
+        )
+        invalid_elapsed = dict(
+            relations[3],
+            elapsed={"lower": 4, "upper": 2, "unit_id": "unit.day"},
+        )
+        for relation in (bounded_coordinate, invalid_elapsed):
+            with self.assertRaisesRegex(TemporalContractError, "lower"):
+                validate_chronology_relation_evidence(relation)
 
 
 class TemporalMachineAlignmentTests(unittest.TestCase):

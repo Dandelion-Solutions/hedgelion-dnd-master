@@ -180,6 +180,77 @@ def validate_current_state_replacement(
     return {"status": "ACCEPTED", "state_revision": replacement_revision}
 
 
+def validate_chronology_relation_evidence(evidence: Mapping[str, Any]) -> dict[str, Any]:
+    """Validate one typed sparse chronology relation without inventing a clock."""
+    relation = _require_mapping(evidence, "chronology relation")
+    relation_type = _require_string(relation.get("relation_type"), "relation_type")
+    if relation_type == "CAUSES":
+        _require_relation_fields(relation, {"relation_type", "cause_anchor_id", "effect_anchor_id", "scope_id"})
+        for field in ("cause_anchor_id", "effect_anchor_id", "scope_id"):
+            _require_machine_id(relation[field], field)
+    elif relation_type == "PRECEDES":
+        _require_relation_fields(
+            relation,
+            {"relation_type", "predecessor_anchor_id", "successor_anchor_id", "order_domain_id", "scope_id"},
+        )
+        for field in ("predecessor_anchor_id", "successor_anchor_id", "order_domain_id", "scope_id"):
+            _require_machine_id(relation[field], field)
+    elif relation_type == "SAME_COORDINATE":
+        _require_relation_fields(
+            relation,
+            {"relation_type", "first_anchor_id", "second_anchor_id", "provider_scope_id", "context_id", "coordinate"},
+        )
+        for field in ("first_anchor_id", "second_anchor_id", "provider_scope_id", "context_id"):
+            _require_machine_id(relation[field], field)
+        _validate_coordinate(_require_mapping(relation["coordinate"], "coordinate"))
+    elif relation_type == "ELAPSED":
+        _require_relation_fields(
+            relation,
+            {"relation_type", "start_anchor_id", "end_anchor_id", "provider_scope_id", "context_id", "elapsed"},
+        )
+        for field in ("start_anchor_id", "end_anchor_id", "provider_scope_id", "context_id"):
+            _require_machine_id(relation[field], field)
+        _validate_interval(_require_mapping(relation["elapsed"], "elapsed"))
+    else:
+        raise TemporalContractError(f"unsupported chronology relation: {relation_type}")
+    return dict(relation)
+
+
+def _require_relation_fields(value: Mapping[str, Any], required: set[str]) -> None:
+    unexpected = set(value).difference(required)
+    if unexpected:
+        raise TemporalContractError(f"unsupported chronology relation field: {sorted(unexpected)[0]}")
+    missing = required.difference(value)
+    if missing:
+        raise TemporalContractError(f"missing chronology relation field: {sorted(missing)[0]}")
+
+
+def _validate_coordinate(coordinate: Mapping[str, Any]) -> None:
+    kind = _require_string(coordinate.get("kind"), "coordinate.kind")
+    if kind == "EXACT":
+        _require_relation_fields(coordinate, {"kind", "value", "unit_id"})
+        _require_integer(coordinate["value"], "coordinate.value")
+    elif kind == "BOUNDED":
+        _require_relation_fields(coordinate, {"kind", "lower", "upper", "unit_id"})
+        _validate_range(coordinate["lower"], coordinate["upper"], "coordinate")
+    else:
+        raise TemporalContractError(f"unsupported coordinate kind: {kind}")
+    _require_machine_id(coordinate["unit_id"], "coordinate.unit_id")
+
+
+def _validate_interval(interval: Mapping[str, Any]) -> None:
+    _require_relation_fields(interval, {"lower", "upper", "unit_id"})
+    _validate_range(interval["lower"], interval["upper"], "elapsed")
+    _require_machine_id(interval["unit_id"], "elapsed.unit_id")
+
+
+def _validate_range(lower: Any, upper: Any, label: str) -> None:
+    checked_lower = _require_nonnegative_integer(lower, f"{label}.lower")
+    checked_upper = _require_nonnegative_integer(upper, f"{label}.upper")
+    if checked_lower > checked_upper:
+        raise TemporalContractError(f"{label}.lower must not exceed {label}.upper")
+
+
 def derive_temporal_dependency_keys(root: Mapping[str, Any]) -> tuple[str, ...]:
     """Return the complete declared re-evaluation keys for one armed occurrence."""
     checked_root = _require_mapping(root, "temporal root")

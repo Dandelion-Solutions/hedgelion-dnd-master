@@ -36,24 +36,26 @@
     "sameCoordinate": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["relation_type", "first_anchor_id", "second_anchor_id", "provider_scope_id", "coordinate"],
+      "required": ["relation_type", "first_anchor_id", "second_anchor_id", "provider_scope_id", "context_id", "coordinate"],
       "properties": {
         "relation_type": {"const": "SAME_COORDINATE"},
         "first_anchor_id": {"$ref": "#/$defs/machineId"},
         "second_anchor_id": {"$ref": "#/$defs/machineId"},
         "provider_scope_id": {"$ref": "#/$defs/machineId"},
+        "context_id": {"$ref": "#/$defs/machineId"},
         "coordinate": {"$ref": "#/$defs/coordinate"}
       }
     },
     "elapsed": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["relation_type", "start_anchor_id", "end_anchor_id", "provider_scope_id", "elapsed"],
+      "required": ["relation_type", "start_anchor_id", "end_anchor_id", "provider_scope_id", "context_id", "elapsed"],
       "properties": {
         "relation_type": {"const": "ELAPSED"},
         "start_anchor_id": {"$ref": "#/$defs/machineId"},
         "end_anchor_id": {"$ref": "#/$defs/machineId"},
         "provider_scope_id": {"$ref": "#/$defs/machineId"},
+        "context_id": {"$ref": "#/$defs/machineId"},
         "elapsed": {"$ref": "#/$defs/interval"}
       }
     },
