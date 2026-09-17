@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T03/T04 - RESUME AUTHORIZED under accepted 2026-09-18 System-Impact rulings; W02.T05/T06 remain dependency-blocked
-LAST_COMPLETED_TASK: W02.T07 - W02_PROTECTED_EXECUTION_HANDOFF_READY
-LAST_SAFE_SHA: `acc40855850f4d07b63bad4792917f97764038a3` (published architecture/plan ruling checkpoint; last implementation checkpoint remains `c750437a0cc7587840faf3f6423ce3c97146a6c6`)
+CURRENT_TASK: W02.T04 - RESUME AUTHORIZED after T03 accepted-basis checkpoint; W02.T05/T06 remain dependency-blocked
+LAST_COMPLETED_TASK: W02.T03 - W02_ACCEPTED_ADJUDICATION_BASIS_READY
+LAST_SAFE_SHA: `bebaa81` (local coherent T03 implementation checkpoint; no push)
 
 ## Dependency schedule
 
@@ -89,6 +89,7 @@ COMPLETED_TASKS:
   W01.T08 -> `W01_CATALOG_CONTEXT_READY` at published Wave-01 closure
   W02.T01 -> code `c23ac68` + `751665f` + `70f2d80`, published under remote-ref checkpoint `81ad503305d5fefdb47d209c722263f02365a04c`; `W02_CATALOG_BACKED_COMMAND_READY`
   W02.T02 -> code `d40213e` + `2ca6899` + `cfaf8a0` + `238e2db`, published under remote-ref checkpoint `351ab3e876254c31b506efcadc76fca635ea2aab`; `W02_DETERMINISTIC_EXECUTION_READY`
+  W02.T03 -> code `bebaa81`; `W02_ACCEPTED_ADJUDICATION_BASIS_READY`
 
 ACTUAL IMPACT VS PLANNED: within the W02.T01 envelope. The new owner-native `GAME/TOOLS/runtime_execution.py`, `runtime.command` schema synchronization, and RD05/RD15 tests were expected. Existing Step-3 schema consumer tests required mechanical fixture synchronization; no new authority, persistence/recovery/currentness owner, catalog change, or shared physical writer was introduced.
 
@@ -97,6 +98,10 @@ CURRENT_VERIFICATION_STATE:
 - exact rebased detached HEAD `32b78af`: full DEV discovery 647 passed, 7 skipped
 - exact rebased detached HEAD `32b78af`: maintenance audit PASS
 - exact detached T02 code head `238e2db`: focused execution/Step-3 suites 56 passed; full DEV discovery 671 passed, 7 skipped; maintenance audit PASS
+- T03 focused resolver/acceptance suites: 41 passed
+- T03 full DEV discovery: 695 passed, 7 skipped
+- T03 maintenance audit: PASS
+- T03 RED evidence: resolver/acceptance imports failed before the new owner existed; GREEN evidence is recorded above after fresh implementation
 - current full-discovery census excludes ignored `.opencode/` infrastructure; no current scan contamination is present
 
 VERSION_IMPACT:
@@ -109,13 +114,18 @@ VERSION_IMPACT:
 - T02 new `GAME/TOOLS/mechanics.py`: 1.0.1 -> 1.0.4 across its reviewed implementation/repair commits
 - T02 `GAME/TOOLS/runtime_execution.py`: 1.0.1 -> 1.0.2 for the replay/advance targeting interface
 - T02 engine, catalog, persistence, storage, campaign, migration, runtime-resolution, and embedded execution-segment schema namespaces: NONE; no independent owner namespace exists to bump
+- T03 new `GAME/TOOLS/policy_basis.py`: `framework_module_version` 1.0.1
+- T03 `GAME/TOOLS/runtime_execution.py`: 1.0.2 -> 1.0.3
+- T03 runtime command schemas, catalog generation, engine, campaign, persistence, storage and migration namespaces: NONE
 
 ACTUAL T02 IMPACT VS PLANNED: within the approved T02 execution-owner envelope. `GAME/TOOLS/mechanics.py` was an explicit Wave-02 baseline direct action path that the initial cursor omitted; its introduction, direct-transition producer/schema synchronization, and domain coverage validator changes are mechanical consumers of the accepted embedded-segment identity, not a new authority or broader boundary.
 
+ACTUAL T03 IMPACT VS PLANNED: within the approved T03 policy-basis envelope. The new resolver is an ephemeral verifier over exact pinned reads and existing access/applicability/catalog owners; runtime acceptance now retains complete typed adjudicated parameters/facts in the existing command identity. No policy proof registry, policy epoch, ACL/currentness owner, persistence/recovery owner, network path or shared writer was introduced.
+
 SYSTEM_IMPACT: RESOLVED - Product Owner accepted the Senior-recommended T03/T04 realization at `acc40855850f4d07b63bad4792917f97764038a3`; canonical owners, stable Wave-02 plan and both impact briefs are synchronized
-NEXT_EXACT_TASK: fresh-read current HEAD, implement W02.T03 and W02.T04 under the accepted rulings, review/re-repair each independently, publish `W02_ACCEPTED_ADJUDICATION_BASIS_READY` and `W02_OPERATIONAL_ROOT_ENROLLMENT_READY`; then start W02.T05 only after both are GREEN/published
+NEXT_EXACT_TASK: fresh-read current HEAD; implement/review/publish W02.T04 as `W02_OPERATIONAL_ROOT_ENROLLMENT_READY`; then start W02.T05 only after both T03/T04 checkpoints are GREEN/published
 KNOWN_BLOCKERS: NONE for W02.T03/T04; W02.T05 remains dependency-blocked on their named checkpoints and W02.T06 remains blocked on W02.T05
-UNPUBLISHED_WORK: rejected detached prototypes `29ded20`, `0244a7b`, `14b061b` remain non-authoritative evidence only and MUST NOT be cherry-picked/integrated as-is
+UNPUBLISHED_WORK: NONE for W02.T03; rejected detached prototypes `29ded20`, `0244a7b`, `14b061b` remain non-authoritative evidence only and MUST NOT be cherry-picked/integrated as-is
 
 ## Accepted T03/T04 System-Impact rulings — 2026-09-18
 
