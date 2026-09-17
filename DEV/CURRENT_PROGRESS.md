@@ -3,48 +3,175 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — CONSOLIDATED IMPLEMENTATION PLAN INDEPENDENT SENIOR PASS / GO — PRODUCTION IMPLEMENTATION AUTHORIZED
+GLOBAL_STATE: R2.7 CLOSED — CONSOLIDATED IMPLEMENTATION PLAN SENIOR PASS / GO — PRODUCTION IMPLEMENTATION EXECUTING
 CURRENT_WORKSTREAM: production implementation
-CURRENT_SLICE: execution from the approved consolidated six-wave implementation package
-LAST_CLOSED_UNIT: independent Senior re-review of the complete current consolidated package, including the targeted SR-01..03 repairs and the PO-authorized W04.T07 CLS<->HDM preflight, returned PASS / GO at `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
-NEXT_AUTHORIZED_UNIT: begin production implementation from `DEV/docs/superpowers/plans/implementation-plan-index.md` under `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`, selecting dependency-valid task batches from the approved wave graph. Migration execution, release execution and gameplay bootstrap remain unauthorized unless their later explicit gates are satisfied.
-REQUIRED_GATE: autonomous implementation with TDD/review/version-impact/checkpoint discipline -> exact-head completion verification -> mandatory final Senior integration audit before implementation is marked complete
-TASK_LOCAL_CURSOR: DEV/docs/superpowers/plans/implementation-plan-index.md
-KNOWN_BLOCKERS: NONE for production implementation start; individual tasks remain gated by their named producer checkpoints, W04.T07 retains its narrow CLS<->HDM preflight, and later migration/release/gameplay gates remain separate
+CURRENT_SLICE: Wave 02 — execution, durability and recovery
+LAST_CLOSED_UNIT: Wave 01 owner-native foundations; mandatory Senior integration audit PASS at audited published HEAD `02651e13f9d6890364d14960f40c94175766c60e`
+NEXT_AUTHORIZED_UNIT: begin Wave 02 from `DEV/docs/superpowers/plans/implementation-wave-02-execution-durability-recovery.md`; the first Wave-02 coordinator must fresh-read the published remote HEAD, create/update the Wave-02 durable execution cursor with that exact implementation-start SHA, and start only dependency-valid tasks. Initially W02.T01 is authorized from `W01_CATALOG_CONTEXT_READY`; later tasks become eligible only from their named GREEN published checkpoints.
+REQUIRED_GATE: Wave-02 autonomous TDD/review/version-impact/checkpoint discipline -> exact-head Wave-02 completion verification -> mandatory Senior Wave-02 integration audit before Wave 02 is marked complete
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-02-execution-durability-recovery.md` until the Wave-02 coordinator publishes its execution-status cursor
+KNOWN_BLOCKERS: NONE for W02.T01; migration execution, release execution and gameplay bootstrap remain unauthorized unless their later explicit gates are satisfied
 
-PLANNING_CONSOLIDATION_SOURCE_SHA: 8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d
-SENIOR_APPROVED_PLAN_SHA: ce944404d7c9e93ba85b12305b6e74473ccb8ce1
-SENIOR_APPROVED_PLAN_CI_RUN: 35077571665
-SENIOR_APPROVED_PLAN_CI_JOB: 104733502491
+PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
+SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
+SENIOR_APPROVED_PLAN_CI_RUN: `35077571665`
+SENIOR_APPROVED_PLAN_CI_JOB: `104733502491`
+WAVE_01_BASE_SHA: `2746530e868e968bf985fe19448a9d475a8c70ec`
+WAVE_01_FINAL_IMPLEMENTATION_SHA: `d7e46d00b4c2a142e29cccbab400aa254d502b8a`
+WAVE_01_SENIOR_AUDIT_HEAD: `02651e13f9d6890364d14960f40c94175766c60e`
+WAVE_01_HOSTED_CI_RUN: `35159778200`
+WAVE_01_HOSTED_CI_JOB: `105007610526`
 
 ## Current planning package
 
-The only current entry point is `DEV/docs/superpowers/plans/implementation-plan-index.md`. The executable package is:
+The only current implementation-planning entry point is `DEV/docs/superpowers/plans/implementation-plan-index.md`. The executable package remains:
 
-1. one package-wide execution contract;
-2. six dependency-ordered development waves;
-3. one non-normative traceability record.
+1. `implementation-plan-execution-contract.md`;
+2. `implementation-wave-01-owner-native-foundations.md`;
+3. `implementation-wave-02-execution-durability-recovery.md`;
+4. `implementation-wave-03-principal-live-temporal.md`;
+5. `implementation-wave-04-collaboration-context-story.md`;
+6. `implementation-wave-05-machine-bootstrap-integration.md`;
+7. `implementation-wave-06-proof-senior-handoff.md`;
+8. non-normative `implementation-plan-traceability.md`.
 
-There are no current dated overlays, alternate master plan, separate execution-wave authority, parallel coverage ledger or independently executable proof ledger. Historical bytes remain in Git history. Future planning repairs edit the applicable stable wave file and index coherently instead of adding another overlay.
+There are no current dated overlays, alternate master plan, separate execution-wave authority, parallel coverage ledger or independently executable proof ledger. Future planning repairs edit the applicable stable wave file and index coherently instead of adding another overlay.
 
-The wave route is:
+The route remains:
 
 ```text
-01 owner-native foundations
--> 02 deterministic execution, durability and recovery
+01 owner-native foundations                 COMPLETE / SENIOR PASS
+-> 02 deterministic execution, durability and recovery   CURRENT / AUTHORIZED
 -> 03 principal/PLAYER, LIVE and temporal handoff
 -> 04 collaboration, Context and Story
 -> 05 final 17+17 machine, bootstrap and shared writers
 -> 06 proof, exact-head validation and Senior handoff
 ```
 
-Wave numbers do not impose a barrier on unrelated lanes. Only the named producer checkpoints and joins in the package order work.
+Wave numbers do not override dependency edges. A task is eligible only from its named GREEN published inputs.
 
-### PO-authorized W04.T07 cross-project preflight
+## Wave 01 closure
 
-Immediately before the first RED step of `W04.T07 — Native history, T0, Story, Commentator and Dramaturg integration`, the worker must fresh-reconcile the current public Story/Commentator self-contained corpus owner against the current private CLS whole-project integration/audit state.
+Durable Wave-01 execution evidence is owned by:
 
-The gate is narrow:
+`DEV/docs/superpowers/plans/implementation-wave-01-owner-native-foundations-execution-status.md`
+
+The final Senior audit compared the approved owners/spec, stable Wave-01 plan and three recorded System-Impact rulings against the actual `2746530e868e968bf985fe19448a9d475a8c70ec..02651e13f9d6890364d14960f40c94175766c60e` delta and the exact task/checkpoint ledger.
+
+Accepted System-Impact rulings are fully realized:
+
+- W01.T01 produces only bounded Wave-05 repair inputs; it does not write deferred install/shared CORE bytes.
+- W01.T03 establishes native Actor/Asset/Effect authority while `pc.schema.yaml`, `npc.schema.yaml` and `item.schema.yaml` remain temporary physical legacy residue until the Wave-05 final control-plane cutover with `audit_engine.py` and remaining consumers.
+- W01.T07 uses owner-native Python ingress as the strict semantic version-admission boundary; no generic lexical JSON-Schema validator was introduced.
+
+W01.T09 closed at `W01_WORLD_OWNER_INPUTS_READY`: exact 17-world-family owner inputs are represented, `world.faction` is not a family, and final PLAYER/wrapper/catalog/identifier work remains with its downstream owners.
+
+T10 remains aligned with the canonical creator-login owner: verified stable GitHub account ID is PLAYER-binding evidence; it does not replace historical creator-login provenance or confer creator authority. Login rename/unresolvable creator provenance fails closed to read-only behavior.
+
+Version Impact accepted for Wave 01:
+
+```text
+GAME/CORE/INFORMATION.md:
+  0.1.2 -> 1.0.3 initial native-information material change
+  1.0.3 -> 1.0.4 subsequent material evidence-contract review repair
+GAME/SCHEMA/index.schema.yaml:
+  1 -> 2
+W01.T01/T05/T06/T07/T08/T09/T10:
+  VERSION_IMPACT NONE
+W01.T03:
+  new owner-local schemas begin at 1; no existing namespace transition
+```
+
+Wave-01 verification:
+
+```text
+implementation code head d7e46d00b4c2a142e29cccbab400aa254d502b8a:
+  clean full DEV discovery: 640 passed, 7 skipped
+  all Wave-01 focused suites: 180 passed, 7 Wave-05-owned skips
+  maintenance audit: PASS
+
+published Senior-audit head 02651e13f9d6890364d14960f40c94175766c60e:
+  hosted workflow: Validate engine source
+  run: 35159778200
+  job: 105007610526
+  head_sha: exact
+  conclusion: success
+  Run full maintenance audit: success
+  Run DEV unit tests: success
+```
+
+Wave-01 Senior disposition:
+
+```text
+SENIOR_INTEGRATION_AUDIT: PASS
+WAVE_01: COMPLETE
+BLOCKING_FINDINGS: NONE
+```
+
+## Wave 02 authorization and dependency start
+
+Current Wave-02 owner:
+
+`DEV/docs/superpowers/plans/implementation-wave-02-execution-durability-recovery.md`
+
+Initial scheduling is dependency-driven, not number-driven:
+
+```text
+W01_CATALOG_CONTEXT_READY
+  -> W02.T01 typed interpretation + catalog-backed command acceptance
+  -> W02_CATALOG_BACKED_COMMAND_READY
+
+W02_CATALOG_BACKED_COMMAND_READY
+  -> W02.T02 deterministic execution / fixed RNG / event identity
+  -> W02.T03 exact accepted adjudication basis
+
+W02.T02 plus required accepted command/procedure semantics and W01 native routing
+  -> W02.T04 operational-root enrollment
+
+W02.T02 + W02.T03 + W02.T04
+  -> W02.T05 durability/publication closure
+
+W02.T05 + W01 native routing/temporal + persisted accepted bases
+  -> W02.T06 exact current-source recovery/maintenance
+
+W01 role/context + W02.T02
+  -> W02.T07 role-protected execution handoff
+```
+
+The coordinator must obey the package execution contract for every task: fresh currentness read, Impact Envelope, RED/GREEN/refactor, focused and cross-owner verification, Version Impact Gate, task review/re-review, maintenance/broader tests, coherent checkpoint publication, remote read-back and durable cursor update. Shared/final bytes assigned to Wave 05 remain bounded semantic deltas only in Wave 02.
+
+No Wave-03 task is authorized merely because a Wave-02 producer becomes GREEN unless the canonical current-progress cursor is intentionally advanced after Wave-02 closure/Senior gate. This execution slice uses a wave barrier for coordination even though the package graph itself permits dependency-valid later-wave work.
+
+## Preserved package laws
+
+- Native semantic owners remain authoritative; cache/index/checkpoint/Story/projections/routes do not become authority.
+- Known-ID reads use bounded native routes; no broad/latest/physical-order authority.
+- Accepted mechanics execute once; retry/recovery reuses fixed RNG and identities rather than replaying/rerolling/reallocating.
+- Shared physical targets have one final writer/checkpoint; Wave-02 owner-local work emits bounded deltas for Wave 05 where specified.
+- GitHub login remains human-facing selection/display/invitation identity; verified stable account ID is durable PLAYER binding evidence.
+- Email is not identity or invitation authority.
+- Automatic creator login-rename continuity/transfer is unsupported; unresolved creator authority fails closed read-only.
+- Branch/ref deletion and force update are forbidden.
+- v1 is clean-slate relative to superseded unreleased v0.8 shapes; do not invent compatibility aliases/migrations.
+- Trigger-gated readiness remains dormant until its exact canonical trigger exists.
+
+Historical accounting remains:
+
+```text
+145 total readiness records
+133 active = 116 direct + 9 pure proof + 8 composite parents
+12 trigger-gated
+79 explicit no-work source terminals
+R004 absent
+17 world families
+17 runtime families
+```
+
+The Wave-05 exact 17-row runtime-family realization matrix and Wave-06 item-bound proof remain mandatory. Count equality or catalog admission alone cannot close R018.
+
+## PO-authorized W04.T07 cross-project preflight
+
+Immediately before the first RED step of `W04.T07 — Native history, T0, Story, Commentator and Dramaturg integration`, fresh-reconcile the current public Story/Commentator self-contained corpus owner against the current private CLS whole-project integration/audit state.
 
 ```text
 PRIVATE_CLS_REPAIR_DEBT_ONLY
@@ -58,115 +185,25 @@ REQUIRED CROSS-PROJECT EVIDENCE UNAVAILABLE
   -> stop only W04.T07; do not guess
 ```
 
-The preflight does not require all private CLS `Rxx` repairs to be closed, does not require CLS WP12-03+ activation and does not require the REAL CLS reader to exist. It exists only to prevent HDM Story/T0/Commentator implementation from hardening against a cross-project semantic owner that has materially changed.
-
-## Approved Senior disposition
-
-Independent Senior review first examined the consolidated package at `7e563da41f667bd4a98c603af7786368ebdf5f93` and returned `FAIL / NO-GO` on two blocking planning defects plus one control-state defect. The author then published the targeted SR-01..03 repair and exact-head validation.
-
-The repaired package was independently re-reviewed. Before the PASS could be recorded, the package advanced by a PO-authorized narrow W04.T07 CLS<->HDM preflight. That post-review delta changed only `DEV/CURRENT_PROGRESS.md`, `implementation-plan-index.md` and `implementation-wave-04-collaboration-context-story.md`; it introduced no new public semantic owner, persisted/wire contract, runtime primitive or version-bearing machine surface. The preflight is a bounded currentness/System-Impact guard for W04.T07 only and does not turn private CLS repair debt into a global HDM blocker.
-
-The final reviewed package HEAD is:
-
-```text
-ce944404d7c9e93ba85b12305b6e74473ccb8ce1
-```
-
-Exact-head hosted evidence:
-
-```text
-workflow: Validate engine source
-run: 35077571665
-job: 104733502491
-head_sha: ce944404d7c9e93ba85b12305b6e74473ccb8ce1
-status: completed
-conclusion: success
-Run full maintenance audit: success
-Run DEV unit tests: success
-```
-
-Senior disposition:
-
-```text
-SR-01: CLOSED
-SR-02: CLOSED
-SR-03: CLOSED
-W04.T07 PREFLIGHT DELTA: ACCEPTED / NO NEW BLOCKER
-INDEPENDENT SENIOR PLAN REVIEW: PASS / GO
-PRODUCTION IMPLEMENTATION: AUTHORIZED
-```
-
-This PASS / GO approves execution of the current consolidated implementation plan. It does not authorize migration execution, release execution or gameplay bootstrap beyond their own later gates, and it does not waive task-local System-Impact, Version Impact, TDD, publication/read-back or final Senior integration requirements.
-
-## Preserved architecture and accounting
-
-The accepted identity contract remains:
-
-- current GitHub login is used for human-facing selection, display and multiplayer invitations;
-- verified stable GitHub account ID is the durable PLAYER binding;
-- email is not identity or invitation authority;
-- creator uncertainty fails closed to read-only behavior;
-- login rename continuity and automatic creator transfer are unsupported.
-
-Historical readiness accounting remains:
-
-```text
-145 total readiness records
-133 active = 116 direct + 9 pure proof + 8 composite parents
-12 trigger-gated
-79 explicit no-work source terminals
-R004 absent
-17 world families
-17 runtime families
-```
-
-The trigger-gated routes remain dormant until their exact canonical trigger exists. Wave placement or implementation start does not activate them. `world.faction` remains a facet of `world.organization`, not an additional family.
-
-The Wave-05 runtime matrix and Wave-06 item-bound proof retain the exact R018 family/schema/root/realization obligations and negative witnesses. W05.T01 closes at `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY`, W05.T02 consumes that checkpoint through `JOIN_BEFORE_INTEGRATION`, and final R018 proof remains downstream of the shared writer and affected final schema checkpoints.
-
-## Production implementation route
-
-Implementation now follows the canonical development process:
-
-```text
-approved consolidated plan
--> dependency-valid task/batch selection
--> RED / GREEN / refactor / focused verification
--> task-local integration checks
--> Version Impact Gate
--> review and local repair
--> coherent checkpoint publication + remote read-back
--> continue automatically while inside the approved Impact Envelope
--> System-Impact Gate only when a real cross-boundary trigger fires
--> complete-package exact-head verification
--> final Senior integration audit
-```
-
-A worker must fresh-read the implementation-start HEAD and must not treat the historical consolidation or review SHA as a cached execution basis. For long execution, use the durable execution-status path/rules from `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`.
+The preflight does not require all private CLS repairs to be closed, does not require later CLS stage activation and does not require the REAL CLS reader to exist.
 
 ## Durable cursor
 
 PLAN: `DEV/docs/superpowers/plans/implementation-plan-index.md`
+CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-02-execution-durability-recovery.md`
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
-BASE_SHA: implementation worker must record the fresh production implementation-start HEAD
+BASE_SHA: the first Wave-02 coordinator must record the fresh published HEAD immediately before the first W02 RED step
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: select and start the first dependency-valid production implementation batch from the approved six-wave graph
-LAST_COMPLETED_TASK: independent Senior implementation-plan review PASS / GO at `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
-LAST_SAFE_SHA: current published commit containing this file, after remote read-back
+CURRENT_TASK: bootstrap Wave-02 execution state, then W02.T01
+LAST_COMPLETED_TASK: Wave-01 Senior integration audit PASS at `02651e13f9d6890364d14960f40c94175766c60e`
+LAST_SAFE_SHA: current published commit containing this authority after remote read-back
 
-COMPLETED_TASKS:
-  Planning consolidation -> 7e563da41f667bd4a98c603af7786368ebdf5f93; independent verdict FAIL / NO-GO
-  Targeted planning repair -> 386410c0bc2cd00ccc2761cc37a405b138fdfd58; hosted maintenance/full DEV SUCCESS
-  Targeted repair control evidence -> 7740a65a385f137ab2bf12e345a3ec1f085b5b44; exact-head hosted maintenance/full DEV SUCCESS
-  W04.T07 CLS-HDM preflight -> ce944404d7c9e93ba85b12305b6e74473ccb8ce1; exact-head hosted maintenance/full DEV SUCCESS
-  Independent Senior review -> PASS / GO at ce944404d7c9e93ba85b12305b6e74473ccb8ce1
+CURRENT_VERIFICATION_STATE: Wave-01 implementation is fully published, exact hosted validation is GREEN at its audited HEAD and the mandatory Senior Wave-01 gate passed
+VERSION_IMPACT: NONE for this control-plane Wave-01-close/Wave-02-open transition; no runtime/module contract, serialized schema, catalog generation or release identity changes
+SYSTEM_IMPACT: NONE; Wave 02 executes inside the approved package and uses the normal System-Impact Gate for newly discovered cross-boundary requirements
+NEXT_EXACT_TASK: Wave-02 coordinator fresh-reads remote HEAD, creates/updates `DEV/docs/superpowers/plans/implementation-wave-02-execution-durability-recovery-execution-status.md` with that exact BASE_SHA and starts W02.T01 under TDD/review/version/checkpoint discipline
+KNOWN_BLOCKERS: NONE for W02.T01
+UNPUBLISHED_WORK: NONE after verified Wave-02 authorization publication/read-back
 
-CURRENT_VERIFICATION_STATE: reviewed plan exact HEAD `ce944404d7c9e93ba85b12305b6e74473ccb8ce1` has successful hosted maintenance audit and full DEV unittest discovery; independent Senior plan gate passed
-VERSION_IMPACT: NONE — Senior disposition/current-progress transition only; no runtime/module contract, serialized schema, catalog generation or release identity changed
-SYSTEM_IMPACT: NONE — production implementation may proceed inside the approved plan/Impact Envelope; later qualifying events use the normal System-Impact Gate
-NEXT_EXACT_TASK: choose the first dependency-valid worker batch from the stable plan, fresh-record implementation BASE_SHA, and execute autonomously under `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`
-KNOWN_BLOCKERS: NONE for implementation start
-UNPUBLISHED_WORK: NONE after verified remote publication/read-back
-
-Production implementation is authorized. Migration execution, release execution and gameplay bootstrap remain unauthorized unless later explicit gates are satisfied.
+Migration execution, release execution and gameplay bootstrap remain unauthorized unless later explicit gates are satisfied.
