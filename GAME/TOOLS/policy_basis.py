@@ -9,10 +9,11 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import re
 from types import MappingProxyType
 from typing import Final, Protocol
+import weakref
 
 from .catalog_runtime import (
     BoundCatalogContext,
@@ -22,7 +23,7 @@ from .catalog_runtime import (
 )
 
 
-# framework_module_version: 1.0.1
+# framework_module_version: 1.0.2
 HOUSE_RULES_SIDECAR_PATH: Final = "RULES/HOUSE_RULES.yaml"
 HOUSE_RULES_MANIFEST_PATH: Final = "MANIFEST.yaml"
 _REVISION_PATTERN: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
@@ -55,6 +56,32 @@ _INVOCATION_FACT_FIELDS: Final = frozenset(
         "policy_basis_refs",
     }
 )
+_ADJUDICATED_PARAMETER_CONSUMERS: Final = MappingProxyType(
+    {
+        "activity.check.generic": frozenset({"dc"}),
+        "activity.save.generic": frozenset({"dc"}),
+    }
+)
+_ADJUDICATED_FACT_CONSUMERS: Final = MappingProxyType(
+    {
+        "fiction.target_reachable": frozenset(
+            {
+                "activity.attack.ranged_weapon",
+                "activity.spell.fire_bolt",
+                "activity.spell.poison_spray",
+                "activity.spell.thunderclap",
+                "activity.spell.acid_splash",
+                "activity.spell.magic_missile",
+                "activity.spell.burning_hands",
+            }
+        )
+    }
+)
+_ADMITTED_ADJUDICATION_CONSUMERS: Final = frozenset(
+    set(_ADJUDICATED_PARAMETER_CONSUMERS)
+    | set().union(*_ADJUDICATED_FACT_CONSUMERS.values())
+)
+_EPHEMERAL_ISSUANCE: dict[int, weakref.ReferenceType[object]] = {}
 
 
 class PolicyBasisResolutionError(ValueError):
@@ -109,6 +136,27 @@ class ApplicabilityPort(Protocol):
         self, pinned: PinnedCampaign, policy: Mapping[str, object], consumer_id: str
     ) -> ApplicabilityEvidence:
         """Prove applicability; failure is represented by raising, not a caller flag."""
+
+
+def _register_ephemeral(value: object) -> None:
+    key = id(value)
+
+    def remove(_reference: weakref.ReferenceType[object], *, key: int = key) -> None:
+        _EPHEMERAL_ISSUANCE.pop(key, None)
+
+    _EPHEMERAL_ISSUANCE[key] = weakref.ref(value, remove)
+
+
+def _is_ephemeral_issued(value: object) -> bool:
+    reference = _EPHEMERAL_ISSUANCE.get(id(value))
+    return reference is not None and reference() is value
+
+
+def _admitted_consumer(value: object, label: str) -> str:
+    consumer = _native_id(value, label)
+    if consumer not in _ADMITTED_ADJUDICATION_CONSUMERS:
+        raise PolicyBasisResolutionError(f"{label} is not an admitted adjudication consumer")
+    return consumer
 
 
 def _nonempty_string(value: object, label: str) -> str:
@@ -186,7 +234,7 @@ class PolicySelection:
 
     def __post_init__(self) -> None:
         policy_id = _native_id(self.policy_id, "policy_id")
-        consumer_id = _native_id(self.consumer_id, "consumer_id")
+        consumer_id = _admitted_consumer(self.consumer_id, "consumer_id")
         if policy_id != self.policy_id or consumer_id != self.consumer_id:
             raise PolicyBasisResolutionError("policy selection contains a noncanonical identifier")
 
@@ -254,10 +302,10 @@ class ApplicabilityEvidence:
 
     def __post_init__(self) -> None:
         _native_id(self.policy_id, "applicable policy_id")
-        _native_id(self.consumer_id, "applicable consumer_id")
+        _admitted_consumer(self.consumer_id, "applicable consumer_id")
 
 
-@dataclass(frozen=True, slots=True, init=False)
+@dataclass(frozen=True, slots=True, weakref_slot=True, init=False)
 class ResolvedPolicyBasis:
     """Ephemeral verified evidence; no persistence/serialization API is provided."""
 
@@ -273,41 +321,52 @@ class ResolvedPolicyBasis:
     source_anchor: str
     realization_refs: tuple[str, ...]
     realization_bindings: tuple[Mapping[str, object], ...]
+    _catalog_context: BoundCatalogContext | None = field(repr=False, compare=False)
 
-    def __init__(
-        self,
-        *,
-        campaign_id: str,
-        campaign_revision: str,
-        policy_id: str,
-        policy_ref: str,
-        consumer_id: str,
-        authority_class: str,
-        adoption_basis: str,
-        adopted_by_player_id: str | None,
-        source_path: str,
-        source_anchor: str,
-        realization_refs: tuple[str, ...],
-        realization_bindings: tuple[Mapping[str, object], ...],
-        _verified: object = None,
-    ) -> None:
-        if _verified is not _VERIFIED_BASIS_SEAL:
-            raise PolicyBasisResolutionError("resolved policy basis must come from PolicyBasisResolver")
-        object.__setattr__(self, "campaign_id", campaign_id)
-        object.__setattr__(self, "campaign_revision", campaign_revision)
-        object.__setattr__(self, "policy_id", policy_id)
-        object.__setattr__(self, "policy_ref", policy_ref)
-        object.__setattr__(self, "consumer_id", consumer_id)
-        object.__setattr__(self, "authority_class", authority_class)
-        object.__setattr__(self, "adoption_basis", adoption_basis)
-        object.__setattr__(self, "adopted_by_player_id", adopted_by_player_id)
-        object.__setattr__(self, "source_path", source_path)
-        object.__setattr__(self, "source_anchor", source_anchor)
-        object.__setattr__(self, "realization_refs", realization_refs)
-        object.__setattr__(self, "realization_bindings", realization_bindings)
+    def __init__(self, **_values: object) -> None:
+        raise PolicyBasisResolutionError(
+            "resolved policy basis must be resolver-issued ephemeral evidence"
+        )
+
+    def _matches_catalog_context(self, context: BoundCatalogContext) -> bool:
+        return _is_ephemeral_issued(self) and self._catalog_context is context
 
 
-_VERIFIED_BASIS_SEAL: Final = object()
+def _issue_resolved_policy_basis(
+    *,
+    campaign_id: str,
+    campaign_revision: str,
+    policy_id: str,
+    policy_ref: str,
+    consumer_id: str,
+    authority_class: str,
+    adoption_basis: str,
+    adopted_by_player_id: str | None,
+    source_path: str,
+    source_anchor: str,
+    realization_refs: tuple[str, ...],
+    realization_bindings: tuple[Mapping[str, object], ...],
+    catalog_context: BoundCatalogContext | None,
+) -> ResolvedPolicyBasis:
+    basis = object.__new__(ResolvedPolicyBasis)
+    for name, value in {
+        "campaign_id": campaign_id,
+        "campaign_revision": campaign_revision,
+        "policy_id": policy_id,
+        "policy_ref": policy_ref,
+        "consumer_id": consumer_id,
+        "authority_class": authority_class,
+        "adoption_basis": adoption_basis,
+        "adopted_by_player_id": adopted_by_player_id,
+        "source_path": source_path,
+        "source_anchor": source_anchor,
+        "realization_refs": realization_refs,
+        "realization_bindings": realization_bindings,
+        "_catalog_context": catalog_context,
+    }.items():
+        object.__setattr__(basis, name, value)
+    _register_ephemeral(basis)
+    return basis
 
 
 def _policy_ref(policy_id: str, revision: str) -> str:
@@ -355,6 +414,10 @@ def _validate_parameter_bindings(value: object) -> dict[str, object]:
             scalar = raw_binding["value"]
             if isinstance(scalar, (Mapping, list, tuple)):
                 raise PolicyBasisResolutionError("adjudicated parameter value must be scalar")
+            if parameter != "dc":
+                raise PolicyBasisResolutionError("adjudicated parameter id is not admitted")
+            if isinstance(scalar, bool) or not isinstance(scalar, int) or not 1 <= scalar <= 30:
+                raise PolicyBasisResolutionError("adjudicated dc value is outside the bounded contract")
             refs = _normalize_refs(raw_binding["policy_basis_refs"], "policy_basis_refs")
             normalized = {key: deepcopy(raw_binding[key]) for key in raw_binding}
             normalized["policy_basis_refs"] = list(refs)
@@ -380,7 +443,11 @@ def _validate_invocation_facts(value: object) -> list[dict[str, object]]:
         if _FORBIDDEN_UNTRUSTED_FIELDS & set(fact):
             raise PolicyBasisResolutionError("invocation fact contains untrusted authority fields")
         fact_id = _native_id(fact["fact_id"], "invocation fact_id")
-        consumer_id = _native_id(fact["consumer_id"], "invocation consumer_id")
+        consumer_id = _native_id(fact["consumer_id"], "invocation fact consumer")
+        if consumer_id not in _ADMITTED_ADJUDICATION_CONSUMERS:
+            raise PolicyBasisResolutionError("invocation fact consumer is not an admitted fact consumer")
+        if fact_id != "fiction.target_reachable" or consumer_id not in _ADJUDICATED_FACT_CONSUMERS[fact_id]:
+            raise PolicyBasisResolutionError("invocation fact is not an admitted fact edge")
         if not isinstance(fact["value"], bool):
             raise PolicyBasisResolutionError("invocation fact value must be boolean")
         if fact["provenance_class"] != "INVOCATION_ADJUDICATED":
@@ -399,6 +466,37 @@ def _validate_invocation_facts(value: object) -> list[dict[str, object]]:
     return facts
 
 
+def validate_adjudicated_input_surface(
+    consumer_id: str,
+    parameter_bindings: object,
+    invocation_facts: object,
+) -> tuple[dict[str, object], list[dict[str, object]]]:
+    """Validate the exact active parameter/fact consumer edges for one command."""
+
+    consumer = _native_id(consumer_id, "consuming command activity_id")
+    parameters = _validate_parameter_bindings(parameter_bindings)
+    facts = _validate_invocation_facts(invocation_facts)
+    parameter_contract = _ADJUDICATED_PARAMETER_CONSUMERS.get(consumer)
+    if parameter_contract is not None:
+        if set(parameters) - parameter_contract:
+            raise PolicyBasisResolutionError("parameter id is not admitted for consuming command")
+        if "dc" in parameters:
+            binding = parameters["dc"]
+            if not isinstance(binding, Mapping) or binding.get("source_class") != "INVOCATION_ADJUDICATED":
+                raise PolicyBasisResolutionError("bounded dc parameter requires an adjudicated binding")
+    elif any(
+        isinstance(binding, Mapping) and binding.get("source_class") == "INVOCATION_ADJUDICATED"
+        for binding in parameters.values()
+    ):
+        raise PolicyBasisResolutionError("adjudicated parameter consumer is not admitted")
+
+    allowed_facts = _ADJUDICATED_FACT_CONSUMERS.get("fiction.target_reachable", frozenset())
+    for fact in facts:
+        if consumer not in allowed_facts or fact["consumer_id"] != consumer:
+            raise PolicyBasisResolutionError("invocation fact consumer does not match consuming command")
+    return parameters, facts
+
+
 def _refs_in_inputs(parameter_bindings: Mapping[str, object], invocation_facts: Sequence[Mapping[str, object]]) -> tuple[str, ...]:
     refs: set[str] = set()
     for binding in parameter_bindings.values():
@@ -409,7 +507,7 @@ def _refs_in_inputs(parameter_bindings: Mapping[str, object], invocation_facts: 
     return tuple(sorted(refs))
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, weakref_slot=True)
 class AcceptedAdjudicationBasis:
     """Complete frozen parameter/fact input plus ephemeral resolver witnesses."""
 
@@ -421,8 +519,13 @@ class AcceptedAdjudicationBasis:
         parameters = _validate_parameter_bindings(self.parameter_bindings)
         facts = _validate_invocation_facts(list(self.invocation_facts))
         policies = tuple(self.verified_policies)
-        if any(not isinstance(policy, ResolvedPolicyBasis) for policy in policies):
-            raise PolicyBasisResolutionError("accepted basis requires resolver-produced policy evidence")
+        if any(
+            not isinstance(policy, ResolvedPolicyBasis) or not _is_ephemeral_issued(policy)
+            for policy in policies
+        ):
+            raise PolicyBasisResolutionError("accepted basis requires resolver-issued policy evidence")
+        if any(policy._catalog_context is None for policy in policies):
+            raise PolicyBasisResolutionError("accepted basis requires a resolver-selected catalog context")
         policy_refs = tuple(policy.policy_ref for policy in policies)
         if len(policy_refs) != len(set(policy_refs)) or policy_refs != tuple(sorted(policy_refs)):
             raise PolicyBasisResolutionError("verified policy references must be unique and sorted")
@@ -432,12 +535,39 @@ class AcceptedAdjudicationBasis:
         object.__setattr__(self, "parameter_bindings", MappingProxyType(_deep_freeze(parameters)))
         object.__setattr__(self, "invocation_facts", tuple(_deep_freeze(fact) for fact in facts))
         object.__setattr__(self, "verified_policies", policies)
+        _register_ephemeral(self)
 
     def runtime_parameter_bindings(self) -> dict[str, object]:
         return _thaw(self.parameter_bindings)  # type: ignore[return-value]
 
     def runtime_invocation_facts(self) -> list[dict[str, object]]:
         return _thaw(self.invocation_facts)  # type: ignore[return-value]
+
+
+def validate_policy_applicability_witnesses(
+    policies: Sequence[ResolvedPolicyBasis],
+    consuming_command_id: str,
+    catalog_context: BoundCatalogContext,
+) -> None:
+    """Require each ephemeral policy witness to match the accepted command/input."""
+
+    for policy in policies:
+        if not isinstance(policy, ResolvedPolicyBasis) or not _is_ephemeral_issued(policy):
+            raise PolicyBasisResolutionError("accepted basis requires resolver-issued policy evidence")
+        if policy.consumer_id != consuming_command_id:
+            raise PolicyBasisResolutionError(
+                "policy applicability witness does not match consuming command"
+            )
+        if not policy._matches_catalog_context(catalog_context):
+            raise PolicyBasisResolutionError(
+                "resolver-selected catalog context differs from consuming command"
+            )
+
+
+def is_accepted_basis_issued(value: object) -> bool:
+    """Return whether the wrapper was created by the ephemeral basis binder."""
+
+    return isinstance(value, AcceptedAdjudicationBasis) and _is_ephemeral_issued(value)
 
 
 class PolicyBasisResolver:
@@ -506,7 +636,7 @@ class PolicyBasisResolver:
 
         realization_refs = _string_array(policy["realization_refs"], "realization_refs")
         realization_bindings = self._resolve_realizations(realization_refs, catalog_context)
-        return ResolvedPolicyBasis(
+        return _issue_resolved_policy_basis(
             campaign_id=campaign.campaign_id,
             campaign_revision=campaign.revision,
             policy_id=selection.policy_id,
@@ -519,7 +649,7 @@ class PolicyBasisResolver:
             source_anchor=str(policy["source_anchor"]),
             realization_refs=tuple(sorted(realization_refs)),
             realization_bindings=realization_bindings,
-            _verified=_VERIFIED_BASIS_SEAL,
+            catalog_context=catalog_context,
         )
 
     def resolve_many(

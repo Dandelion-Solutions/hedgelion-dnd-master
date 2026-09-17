@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from dataclasses import fields
 import unittest
 
 from DEV.TESTS.test_rd15_catalog_runtime import _bind_context
@@ -231,6 +232,128 @@ class ExactPolicyBasisResolutionTests(unittest.TestCase):
         resolver = PolicyBasisResolver(repository, InvalidShapeAccess(), FakeApplicability())
 
         with self.assertRaisesRegex(PolicyBasisResolutionError, "adoption basis is not admitted"):
+            resolver.resolve(
+                "campaign-1",
+                PolicySelection(policy_id="policy.social_leverage", consumer_id="activity.check.generic"),
+                catalog_context=_bind_context(),
+            )
+
+    def test_sidecar_and_manifest_house_rules_paths_must_match(self) -> None:
+        repository = FakeRepository()
+        repository.files["RULES/HOUSE_RULES.yaml"] = _sidecar(source_path="RULES/OTHER_RULES.md")
+        resolver = PolicyBasisResolver(repository, FakeAccess(), FakeApplicability())
+
+        with self.assertRaisesRegex(PolicyBasisResolutionError, "paths differ"):
+            resolver.resolve(
+                "campaign-1",
+                PolicySelection(policy_id="policy.social_leverage", consumer_id="activity.check.generic"),
+                catalog_context=_bind_context(),
+            )
+
+    def test_policy_selection_rejects_consumer_outside_active_adjudication_surface(self) -> None:
+        with self.assertRaisesRegex(PolicyBasisResolutionError, "admitted adjudication consumer"):
+            PolicySelection(policy_id="policy.social_leverage", consumer_id="activity.not_admitted")
+
+    def test_direct_resolved_policy_basis_construction_is_not_a_provenance_source(self) -> None:
+        repository = FakeRepository()
+        resolved = PolicyBasisResolver(repository, FakeAccess(), FakeApplicability()).resolve(
+            "campaign-1",
+            PolicySelection(policy_id="policy.social_leverage", consumer_id="activity.check.generic"),
+            catalog_context=_bind_context(),
+        )
+        values = {
+            item.name: getattr(resolved, item.name)
+            for item in fields(resolved)
+            if not item.name.startswith("_")
+        }
+
+        with self.assertRaisesRegex(PolicyBasisResolutionError, "resolver-issued"):
+            type(resolved)(**values)
+
+    def test_object_new_forged_policy_basis_cannot_bind_accepted_inputs(self) -> None:
+        repository = FakeRepository()
+        resolved = PolicyBasisResolver(repository, FakeAccess(), FakeApplicability()).resolve(
+            "campaign-1",
+            PolicySelection(policy_id="policy.social_leverage", consumer_id="activity.check.generic"),
+            catalog_context=_bind_context(),
+        )
+        forged = object.__new__(type(resolved))
+        for item in fields(resolved):
+            object.__setattr__(forged, item.name, getattr(resolved, item.name))
+        object.__setattr__(forged, "policy_ref", "policy.forged@" + "f" * 40)
+
+        with self.assertRaisesRegex(PolicyBasisResolutionError, "resolver-issued"):
+            PolicyBasisResolver.bind_accepted_basis(
+                {
+                    "dc": {
+                        "source_class": "INVOCATION_ADJUDICATED",
+                        "value": 15,
+                        "provenance_ref": "turn-1:dc",
+                        "eligibility_basis_fingerprint": "eligibility-A",
+                        "rules_context_fingerprint": "rules-A",
+                        "policy_basis_refs": [forged.policy_ref],
+                    }
+                },
+                (),
+                (forged,),
+            )
+
+    def test_invocation_fact_must_use_the_exact_admitted_fact_edge(self) -> None:
+        repository = FakeRepository()
+        resolved = PolicyBasisResolver(repository, FakeAccess(), FakeApplicability()).resolve(
+            "campaign-1",
+            PolicySelection(policy_id="policy.social_leverage", consumer_id="activity.spell.fire_bolt"),
+            catalog_context=_bind_context(),
+        )
+        fact = {
+            "fact_id": "fiction.target_visible",
+            "value": True,
+            "provenance_class": "INVOCATION_ADJUDICATED",
+            "provenance_ref": "turn-1:reachable",
+            "consumer_id": "activity.spell.fire_bolt",
+            "binding_fingerprint": "a" * 64,
+            "rules_context_fingerprint": "b" * 64,
+            "policy_basis_refs": [resolved.policy_ref],
+        }
+
+        with self.assertRaisesRegex(PolicyBasisResolutionError, "admitted fact edge"):
+            PolicyBasisResolver.bind_accepted_basis({}, (fact,), (resolved,))
+
+    def test_invocation_fact_consumer_must_be_one_of_the_seven_compiled_edges(self) -> None:
+        repository = FakeRepository()
+        resolved = PolicyBasisResolver(repository, FakeAccess(), FakeApplicability()).resolve(
+            "campaign-1",
+            PolicySelection(policy_id="policy.social_leverage", consumer_id="activity.check.generic"),
+            catalog_context=_bind_context(),
+        )
+        fact = {
+            "fact_id": "fiction.target_reachable",
+            "value": True,
+            "provenance_class": "INVOCATION_ADJUDICATED",
+            "provenance_ref": "turn-1:reachable",
+            "consumer_id": "activity.not_admitted",
+            "binding_fingerprint": "a" * 64,
+            "rules_context_fingerprint": "b" * 64,
+            "policy_basis_refs": [resolved.policy_ref],
+        }
+
+        with self.assertRaisesRegex(PolicyBasisResolutionError, "admitted fact consumer"):
+            PolicyBasisResolver.bind_accepted_basis({}, (fact,), (resolved,))
+
+    def test_applicability_witness_must_match_the_selected_consumer(self) -> None:
+        class CrossConsumerApplicability(FakeApplicability):
+            def prove_policy_applicability(
+                self,
+                pinned: PinnedCampaign,
+                policy: dict[str, object],
+                consumer_id: str,
+            ) -> ApplicabilityEvidence:
+                return ApplicabilityEvidence(
+                    policy_id=str(policy["policy_id"]), consumer_id="activity.save.generic"
+                )
+
+        resolver = PolicyBasisResolver(FakeRepository(), FakeAccess(), CrossConsumerApplicability())
+        with self.assertRaisesRegex(PolicyBasisResolutionError, "applicability evidence identity mismatch"):
             resolver.resolve(
                 "campaign-1",
                 PolicySelection(policy_id="policy.social_leverage", consumer_id="activity.check.generic"),

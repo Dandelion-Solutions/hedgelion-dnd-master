@@ -17,11 +17,14 @@ from .catalog_runtime import (
 from .policy_basis import (
     AcceptedAdjudicationBasis,
     PolicyBasisResolutionError,
+    is_accepted_basis_issued,
+    validate_adjudicated_input_surface,
     validate_frozen_adjudication_basis,
+    validate_policy_applicability_witnesses,
 )
 
 
-# framework_module_version: 1.0.3
+# framework_module_version: 1.0.4
 RUNTIME_COMMAND_SCHEMA_VERSION: Final = 3
 INTERPRETER_RESULT_FINGERPRINT_GENERATION: Final = 1
 RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION: Final = 2
@@ -218,7 +221,7 @@ def accept_command(
     proposal = _typed_command_proposal(command_proposal, candidate_id)
     action_request = _require_mapping(proposal["action_request"], "accepted action_request")
     if adjudication_basis is not None:
-        if not isinstance(adjudication_basis, AcceptedAdjudicationBasis):
+        if not is_accepted_basis_issued(adjudication_basis):
             raise CommandAcceptanceError("adjudication basis must be resolver-produced evidence")
         expected_bindings = adjudication_basis.runtime_parameter_bindings()
         actual_bindings = action_request.get("parameter_bindings", {})
@@ -233,6 +236,23 @@ def accept_command(
             for binding in action_request.get("parameter_bindings", {}).values()
         ):
             raise CommandAcceptanceError("adjudicated parameters require a verified policy basis")
+    try:
+        normalized_parameters, normalized_facts = validate_adjudicated_input_surface(
+            str(action_request["activity_id"]),
+            action_request.get("parameter_bindings", {}),
+            invocation_facts,
+        )
+        if adjudication_basis is not None:
+            validate_policy_applicability_witnesses(
+                adjudication_basis.verified_policies,
+                str(action_request["activity_id"]),
+                admitted_context,
+            )
+    except PolicyBasisResolutionError as exc:
+        raise CommandAcceptanceError(str(exc)) from exc
+    if adjudication_basis is not None and normalized_parameters != expected_bindings:
+        raise CommandAcceptanceError("accepted adjudication parameters differ from verified basis")
+    invocation_facts = normalized_facts
     try:
         catalog_result = bind_executable_catalog(admitted_context, candidate)
     except CatalogBindingError as exc:
@@ -285,15 +305,17 @@ def validate_execution_proposal(
         raise CommandAcceptanceError("accepted command has an unsupported disposition")
     if not isinstance(command["invocation_facts"], list):
         raise CommandAcceptanceError("accepted command invocation facts must be an array")
+    action_request = _require_mapping(command["action_request"], "accepted command action_request")
     try:
-        validate_frozen_adjudication_basis(
-            _require_mapping(command["action_request"], "accepted command action_request").get(
-                "parameter_bindings", {}
-            ),
+        parameters, facts = validate_adjudicated_input_surface(
+            _require_nonempty_string(action_request.get("activity_id"), "action_request activity_id"),
+            action_request.get("parameter_bindings", {}),
             command["invocation_facts"],
         )
     except PolicyBasisResolutionError as exc:
         raise CommandAcceptanceError(str(exc)) from exc
+    if parameters != action_request.get("parameter_bindings", {}) or facts != command["invocation_facts"]:
+        raise CommandAcceptanceError("accepted adjudication input differs from its normalized basis")
     if not isinstance(command["pending_child_invocations"], list):
         raise CommandAcceptanceError("accepted command pending child invocations must be an array")
     if command["disposition"] == "command.settled" and command["pending_child_invocations"]:

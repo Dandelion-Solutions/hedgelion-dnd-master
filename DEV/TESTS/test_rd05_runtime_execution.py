@@ -15,6 +15,7 @@ from GAME.TOOLS.runtime_execution import (
 )
 from GAME.TOOLS.policy_basis import (
     AcceptedAdjudicationBasis,
+    PolicyBasisResolutionError,
     PolicyBasisResolver,
 )
 from GAME.TOOLS.mechanics import (
@@ -194,10 +195,11 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
         from GAME.TOOLS.policy_basis import PolicySelection
 
         repository = FakeRepository()
+        context = _bind_context()
         resolved = PolicyBasisResolver(repository, FakeAccess(), FakeApplicability()).resolve(
             "campaign-1",
             PolicySelection("policy.social_leverage", "activity.check.generic"),
-            catalog_context=_bind_context(),
+            catalog_context=context,
         )
         binding = {
             "source_class": "INVOCATION_ADJUDICATED",
@@ -215,7 +217,7 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
         proposal = _proposal()
         proposal["action_request"] = dict(proposal["action_request"], parameter_bindings={"dc": binding})
         accepted = accept_command(
-            _interpreter_result(), _bind_context(), _candidate(), proposal,
+            _interpreter_result(), context, _candidate(), proposal,
             adjudication_basis=basis,
         )
         self.assertNotIsInstance(accepted, CatalogGap)
@@ -228,7 +230,7 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
         Draft202012Validator(
             schemas["runtime-command-state.schema.json"], registry=registry
         ).validate(accepted)
-        validate_execution_proposal(accepted, _bind_context(), _candidate())
+        validate_execution_proposal(accepted, context, _candidate())
 
         changed = dict(proposal)
         changed["action_request"] = dict(
@@ -241,7 +243,7 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
             verified_policies=(resolved,),
         )
         changed_command = accept_command(
-            _interpreter_result(), _bind_context(), _candidate(), changed,
+            _interpreter_result(), context, _candidate(), changed,
             adjudication_basis=changed_basis,
         )
         self.assertNotEqual(accepted["input_fingerprint"], changed_command["input_fingerprint"])
@@ -252,7 +254,21 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
         from GAME.TOOLS.policy_basis import PolicySelection
 
         repository = FakeRepository()
-        context = _bind_context()
+        request = _request_with_frontier_revision(4)
+        request["basis"]["campaign_definition_frontier"]["definition_ids"] = [
+            "activity.check.generic",
+            "activity.spell.fire_bolt",
+        ]
+        request["definition_dependencies"].append(
+            {
+                "definition_id": "activity.spell.fire_bolt",
+                "kind": "definition.activity",
+                "source_type": "ruleset_package",
+                "package_id": "hdm.rules.dnd2024-srd52-core",
+                "package_content_sha256": request["definition_dependencies"][0]["package_content_sha256"],
+            }
+        )
+        context = _bind_context(request)
         resolved = PolicyBasisResolver(repository, FakeAccess(), FakeApplicability()).resolve(
             "campaign-1",
             PolicySelection("policy.social_leverage", "activity.spell.fire_bolt"),
@@ -277,21 +293,33 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
             "policy_basis_refs": [resolved.policy_ref],
         }
         basis = AcceptedAdjudicationBasis(
-            parameter_bindings={"dc": binding},
+            parameter_bindings={},
             invocation_facts=(fact,),
             verified_policies=(resolved,),
         )
         proposal = _proposal()
-        proposal["action_request"] = dict(proposal["action_request"], parameter_bindings={"dc": binding})
+        proposal["action_request"] = dict(
+            proposal["action_request"],
+            activity_id="activity.spell.fire_bolt",
+            parameter_bindings={},
+        )
         accepted = accept_command(
-            _interpreter_result(), context, _candidate(), proposal, adjudication_basis=basis
+            _interpreter_result(),
+            context,
+            {"definition_id": "activity.spell.fire_bolt", "kind": "definition.activity"},
+            proposal,
+            adjudication_basis=basis,
         )
         self.assertNotIsInstance(accepted, CatalogGap)
         self.assertEqual(accepted["invocation_facts"], [fact])
         read_count = len(repository.reads)
 
         repository.files["RULES/HOUSE_RULES.yaml"] = {"schema_version": 1, "source_path": "RULES/HOUSE_RULES.md", "policies": []}
-        validate_execution_proposal(accepted, context, _candidate())
+        validate_execution_proposal(
+            accepted,
+            context,
+            {"definition_id": "activity.spell.fire_bolt", "kind": "definition.activity"},
+        )
         self.assertEqual(len(repository.reads), read_count)
 
     def test_untrusted_policy_basis_mapping_cannot_be_used_as_acceptance_authority(self) -> None:
@@ -303,6 +331,113 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
                 _candidate(),
                 proposal,
                 adjudication_basis={"policy_ref": "policy.fake@" + "a" * 40},  # type: ignore[arg-type]
+            )
+
+    def test_direct_dev_validator_output_cannot_be_used_as_acceptance_authority(self) -> None:
+        proposal = _proposal()
+        with self.assertRaisesRegex(CommandAcceptanceError, "resolver-produced"):
+            accept_command(
+                _interpreter_result(),
+                _bind_context(),
+                _candidate(),
+                proposal,
+                adjudication_basis=True,  # type: ignore[arg-type]
+            )
+
+    def test_adjudicated_parameter_id_is_exactly_the_bounded_dc_contract(self) -> None:
+        from DEV.TESTS.test_rd07_recovery import FakeAccess, FakeApplicability, FakeRepository
+        from GAME.TOOLS.policy_basis import PolicySelection
+
+        resolved = PolicyBasisResolver(FakeRepository(), FakeAccess(), FakeApplicability()).resolve(
+            "campaign-1",
+            PolicySelection("policy.social_leverage", "activity.check.generic"),
+            catalog_context=_bind_context(),
+        )
+        binding = {
+            "source_class": "INVOCATION_ADJUDICATED",
+            "value": 15,
+            "provenance_ref": "turn-1:dc",
+            "eligibility_basis_fingerprint": "eligibility-A",
+            "rules_context_fingerprint": "rules-A",
+            "policy_basis_refs": [resolved.policy_ref],
+        }
+        with self.assertRaisesRegex(PolicyBasisResolutionError, "parameter id"):
+            AcceptedAdjudicationBasis(
+                parameter_bindings={"dc_other": binding},
+                invocation_facts=(),
+                verified_policies=(resolved,),
+            )
+
+    def test_policy_applicability_must_match_the_consuming_command(self) -> None:
+        from DEV.TESTS.test_rd07_recovery import FakeAccess, FakeApplicability, FakeRepository
+        from GAME.TOOLS.policy_basis import PolicySelection
+
+        context = _bind_context()
+        resolved = PolicyBasisResolver(FakeRepository(), FakeAccess(), FakeApplicability()).resolve(
+            "campaign-1",
+            PolicySelection("policy.social_leverage", "activity.spell.fire_bolt"),
+            catalog_context=context,
+        )
+        binding = {
+            "source_class": "INVOCATION_ADJUDICATED",
+            "value": 15,
+            "provenance_ref": "turn-1:dc",
+            "eligibility_basis_fingerprint": "eligibility-A",
+            "rules_context_fingerprint": "rules-A",
+            "policy_basis_refs": [resolved.policy_ref],
+        }
+        proposal = _proposal()
+        proposal["action_request"] = {
+            **proposal["action_request"],
+            "parameter_bindings": {"dc": binding},
+        }
+        basis = AcceptedAdjudicationBasis(
+            parameter_bindings={"dc": binding},
+            invocation_facts=(),
+            verified_policies=(resolved,),
+        )
+        with self.assertRaisesRegex(CommandAcceptanceError, "consuming command"):
+            accept_command(
+                _interpreter_result(), context, _candidate(), proposal,
+                adjudication_basis=basis,
+            )
+
+    def test_resolver_selected_catalog_context_must_match_acceptance_context(self) -> None:
+        from DEV.TESTS.test_rd07_recovery import FakeAccess, FakeApplicability, FakeRepository
+        from GAME.TOOLS.policy_basis import PolicySelection
+
+        context = _bind_context()
+        resolved = PolicyBasisResolver(FakeRepository(), FakeAccess(), FakeApplicability()).resolve(
+            "campaign-1",
+            PolicySelection("policy.social_leverage", "activity.check.generic"),
+            catalog_context=context,
+        )
+        binding = {
+            "source_class": "INVOCATION_ADJUDICATED",
+            "value": 15,
+            "provenance_ref": "turn-1:dc",
+            "eligibility_basis_fingerprint": "eligibility-A",
+            "rules_context_fingerprint": "rules-A",
+            "policy_basis_refs": [resolved.policy_ref],
+        }
+        proposal = _proposal()
+        proposal["action_request"] = {
+            **proposal["action_request"],
+            "parameter_bindings": {"dc": binding},
+        }
+        basis = AcceptedAdjudicationBasis(
+            parameter_bindings={"dc": binding},
+            invocation_facts=(),
+            verified_policies=(resolved,),
+        )
+
+        with self.assertRaisesRegex(CommandAcceptanceError, "catalog context"):
+            accept_command(
+                _interpreter_result(),
+                _bind_context(_request_with_frontier_revision(5)),
+                _candidate(),
+                proposal,
+                adjudication_basis=basis,
             )
 
     def test_arbitrary_mapping_parameter_binding_is_not_an_adjudicated_value(self) -> None:
