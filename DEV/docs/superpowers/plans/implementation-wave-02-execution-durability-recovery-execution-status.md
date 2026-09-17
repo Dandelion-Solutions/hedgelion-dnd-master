@@ -7,7 +7,7 @@ BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 STATUS: EXECUTING
 CURRENT_TASK: W02.T07 - Role-protected execution handoff complete locally (T03/T04 remain blocked)
 LAST_COMPLETED_TASK: W02.T07 - W02_PROTECTED_EXECUTION_HANDOFF_READY
-LAST_SAFE_SHA: `c258c9f20c8e1f76be3fa64fa14b4b7a245d57e0` (local T07 repair checkpoint; publication intentionally not performed)
+LAST_SAFE_SHA: `34043757c7ff842d7f1e5828c2bb1dd9c74ad768` (integrated published-candidate evidence commit; publication intentionally not performed)
 
 ## Dependency schedule
 
