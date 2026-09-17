@@ -4,8 +4,9 @@
   "title": "HDM runtime.procedure state",
   "type": "object",
   "additionalProperties": false,
-  "required": ["participant_resources"],
+  "required": ["lifecycle", "participant_resources"],
   "properties": {
+    "lifecycle": {"enum": ["ACTIVE", "TERMINAL"]},
     "participant_resources": {
       "type": "object",
       "propertyNames": {"type": "string", "minLength": 1},
@@ -30,6 +31,7 @@
   },
   "examples": [
     {
+      "lifecycle": "ACTIVE",
       "participant_resources": {
         "actor-0001": {
           "resource.action": {"spent": 1},

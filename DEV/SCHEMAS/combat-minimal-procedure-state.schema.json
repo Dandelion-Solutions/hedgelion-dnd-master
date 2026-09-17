@@ -3,9 +3,10 @@
   "$id": "https://hedgelion.invalid/schemas/combat-minimal-procedure-state.schema.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["procedure_kind", "lifecycle_state", "participant_ids", "initiative_order", "round_number", "round_advance_pending", "active_turn_index", "participant_resources"],
+  "required": ["procedure_kind", "lifecycle", "lifecycle_state", "participant_ids", "initiative_order", "round_number", "round_advance_pending", "active_turn_index", "participant_resources"],
   "properties": {
     "procedure_kind": {"const": "procedure.combat_minimal"},
+    "lifecycle": {"enum": ["ACTIVE", "TERMINAL"]},
     "lifecycle_state": {"enum": ["between_turns", "turn_active", "terminated"]},
     "participant_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
     "initiative_order": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},

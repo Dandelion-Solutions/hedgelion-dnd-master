@@ -1,0 +1,21 @@
+schema_name: operational_root_routing
+schema_version: 1
+required: [schema_version, campaign_id, complete, roots]
+fields:
+  schema_version: integer
+  campaign_id: string
+  complete: boolean
+  roots:
+    type: array
+    item:
+      owner_kind: enum[runtime.command, runtime.procedure, runtime.interaction, runtime.intent_plan]
+      owner_id: string
+      route:
+        family_key: enum[runtime.command, runtime.procedure, runtime.interaction, runtime.intent_plan]
+        identity: array[string]
+        relative_path: string
+invariants:
+  - roots are a bounded routing projection and contain no owner lifecycle or payload
+  - every root route is derived from exact native owner kind and identity
+  - complete is required; absent owners are a completeness defect, not terminal evidence
+  - routing, indexes, checkpoints and carriers never establish lifecycle authority

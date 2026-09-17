@@ -1,0 +1,10 @@
+format_name: operational_root_routing
+format_version: 1
+schema: GAME/SCHEMA/operational_root_routing.schema.yaml
+purpose: bounded native-owner routing evidence for independent recovery roots
+authority: native owner lifecycle and accepted closure state
+non_authority:
+  - routing membership
+  - indexes and caches
+  - checkpoints
+  - caller assertions

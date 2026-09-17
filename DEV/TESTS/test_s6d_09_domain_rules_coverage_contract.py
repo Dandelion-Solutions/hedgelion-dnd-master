@@ -113,7 +113,7 @@ class CoverageTests(unittest.TestCase):
   extra=copy.deepcopy(fact);extra["lifecycle"]="pending"
   with self.assertRaises(Exception): validator.validate(extra,json.loads((ROOT/"DEV/SCHEMAS/invocation-fact.schema.json").read_text()))
  def test_procedure_semantic_invariants_and_advance(self):
-  state=initialize_combat_procedure(["a","b"],["b","a"]);self.assertTrue(validate_combat_procedure_state(state));advanced=advance_combat_turn(state);self.assertEqual(advanced["active_turn_index"],1);advanced=advance_combat_turn(advanced);self.assertEqual((advanced["active_turn_index"],advanced["round_number"]),(0,2))
+  state=initialize_combat_procedure(["a","b"],["b","a"]);self.assertTrue(validate_combat_procedure_state(state));self.assertEqual(state["lifecycle"],"ACTIVE");advanced=advance_combat_turn(state);self.assertEqual(advanced["active_turn_index"],1);advanced=advance_combat_turn(advanced);self.assertEqual((advanced["active_turn_index"],advanced["round_number"]),(0,2))
   for mutate in (lambda x:x["initiative_order"].append("c"),lambda x:x["participant_resources"].pop("a"),lambda x:x.update(active_turn_index=2),lambda x:x["participant_resources"]["a"]["resource.action_budget"].update(spent=2)):
    bad=copy.deepcopy(state);mutate(bad)
    with self.assertRaises(ValueError):validate_combat_procedure_state(bad)
@@ -136,7 +136,7 @@ class CoverageTests(unittest.TestCase):
   ]
   for index,delta in enumerate(sequence,1):
    req={"idempotency_key":f"proc-{index}","catalog_generation":2,"procedure_id":"procedure-1","procedure_revision":procedure["revision"],**delta};v.validate(req,request_schema);wire,after=execute_combat_procedure_transition(req,procedure,{});v.validate(wire,result_schema);v.validate(after["mechanical_event"],event_schema);v.validate(after["receipt"],json.loads((schemas/"resolution-receipt.schema.json").read_text()));self.assertEqual(wire["execution_segment"]["segment_id"],f"resolution:proc-{index}:segment:1");procedure=after["procedure"]
-  self.assertEqual(procedure["state"]["round_number"],2);self.assertEqual(procedure["state"]["lifecycle_state"],"terminated")
+  self.assertEqual(procedure["state"]["round_number"],2);self.assertEqual(procedure["state"]["lifecycle_state"],"terminated");self.assertEqual(procedure["state"]["lifecycle"],"TERMINAL")
  def test_procedure_rejects_unfixed_tie_overspend_wrong_phase_and_retry_conflict(self):
   bad_init={"profile_id":"procedure.initialize","idempotency_key":"bad-init","catalog_generation":2,"procedure_id":"procedure-1","procedure_revision":0,"initiative_entries":[{"actor_id":"a","roll_total":10,"rng_result_ref":"rng-same","tie_break_rank":1},{"actor_id":"b","roll_total":10,"rng_result_ref":"rng-same","tie_break_rank":1}],"action_capacity":1,"movement_capacity":30}
   wire,_=execute_combat_procedure_transition(bad_init,None,{});self.assertEqual(wire["failure_code"],"failure.missing_reference")

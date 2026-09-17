@@ -195,6 +195,12 @@ def _world_record(snapshot,kind,schemas):
  CanonicalSchemaValidator(schemas).validate(record,load(Path(schemas)/"world-record.schema.json"))
  return record
 def validate_combat_procedure_state(state):
+ if state.get("lifecycle") not in {"ACTIVE", "TERMINAL"}:
+  raise ValueError("procedure lifecycle must be ACTIVE or TERMINAL")
+ if state["lifecycle"] == "TERMINAL" and state.get("lifecycle_state") != "terminated":
+  raise ValueError("terminal procedure must use the terminated procedure phase")
+ if state["lifecycle"] == "ACTIVE" and state.get("lifecycle_state") == "terminated":
+  raise ValueError("active procedure cannot use the terminated procedure phase")
  participants=state["participant_ids"];order=state["initiative_order"];resources=state["participant_resources"]
  if len(participants)!=len(set(participants)) or len(order)!=len(participants) or set(order)!=set(participants):raise ValueError("initiative order is not exact participant permutation")
  if set(resources)!=set(participants):raise ValueError("participant resource keys mismatch")
@@ -206,7 +212,7 @@ def validate_combat_procedure_state(state):
    if budget["spent"]>budget["capacity"]:raise ValueError("procedure spent exceeds capacity")
  return True
 def initialize_combat_procedure(participants,initiative_order,action_capacity=1,movement_capacity=30):
- state={"procedure_kind":"procedure.combat_minimal","lifecycle_state":"between_turns","participant_ids":list(participants),"initiative_order":list(initiative_order),"round_number":1,"round_advance_pending":False,"active_turn_index":0,"participant_resources":{p:{"resource.action_budget":{"capacity":action_capacity,"spent":0},"resource.movement_budget":{"capacity":movement_capacity,"spent":0}} for p in participants}}
+ state={"procedure_kind":"procedure.combat_minimal","lifecycle":"ACTIVE","lifecycle_state":"between_turns","participant_ids":list(participants),"initiative_order":list(initiative_order),"round_number":1,"round_advance_pending":False,"active_turn_index":0,"participant_resources":{p:{"resource.action_budget":{"capacity":action_capacity,"spent":0},"resource.movement_budget":{"capacity":movement_capacity,"spent":0}} for p in participants}}
  validate_combat_procedure_state(state);return state
 def advance_combat_turn(state):
  validate_combat_procedure_state(state);result=deepcopy(state);result["active_turn_index"]+=1
@@ -224,13 +230,13 @@ def execute_combat_procedure_transition(req,procedure=None,receipts=None):
   rows=req["initiative_entries"];actors=[r["actor_id"] for r in rows];ranks=[r["tie_break_rank"] for r in rows];rng_refs=[r["rng_result_ref"] for r in rows]
   if len(actors)!=len(set(actors)) or len(rng_refs)!=len(set(rng_refs)) or sorted(ranks)!=list(range(1,len(rows)+1)):return _procedure_failure(req,"failure.missing_reference")
   ordered=[r["actor_id"] for r in sorted(rows,key=lambda r:(-r["roll_total"],r["tie_break_rank"]))]
-  state=initialize_combat_procedure(actors,ordered,req["action_capacity"],req["movement_capacity"]);after={"id":req["procedure_id"],"revision":1,"state":state};before_revision=0
+  state=initialize_combat_procedure(actors,ordered,req["action_capacity"],req["movement_capacity"]);after={"kind":"runtime.procedure","id":req["procedure_id"],"revision":1,"state":state};before_revision=0
  else:
   if procedure is None or req["procedure_id"]!=procedure["id"]:return _procedure_failure(req,"failure.missing_reference")
   validate_combat_procedure_state(procedure["state"])
   if req["procedure_revision"]!=procedure["revision"]:return _procedure_failure(req,"failure.state_revision_conflict")
   state=deepcopy(procedure["state"]);before_revision=procedure["revision"]
-  if state["lifecycle_state"]=="terminated":return _procedure_failure(req,"failure.transition_requires_procedure")
+  if state["lifecycle"]=="TERMINAL" or state["lifecycle_state"]=="terminated":return _procedure_failure(req,"failure.transition_requires_procedure")
   active=state["initiative_order"][state["active_turn_index"]]
   if profile in {"procedure.start_turn","procedure.spend_action","procedure.spend_movement","procedure.end_turn"} and req["actor_id"]!=active:return _procedure_failure(req,"failure.missing_reference")
   if profile=="procedure.start_turn":
@@ -255,9 +261,9 @@ def execute_combat_procedure_transition(req,procedure=None,receipts=None):
   elif profile=="procedure.advance_round":
    if state["lifecycle_state"]!="between_turns" or not state["round_advance_pending"]:return _procedure_failure(req,"failure.transition_requires_procedure")
    state["round_number"]+=1;state["active_turn_index"]=0;state["round_advance_pending"]=False
-  elif profile=="procedure.terminate":state["lifecycle_state"]="terminated";state["round_advance_pending"]=False
+  elif profile=="procedure.terminate":state["lifecycle"]="TERMINAL";state["lifecycle_state"]="terminated";state["round_advance_pending"]=False
   else:return _procedure_failure(req,"failure.missing_reference")
-  validate_combat_procedure_state(state);after={"id":procedure["id"],"revision":procedure["revision"]+1,"state":state}
+  validate_combat_procedure_state(state);after={"kind":"runtime.procedure","id":procedure["id"],"revision":procedure["revision"]+1,"state":state}
  mutation={"owner_kind":"runtime.procedure","owner_id":after["id"],"field_path":"state","before_revision":before_revision,"after_revision":after["revision"],"new_value":deepcopy(after["state"])}
  event_id=f"{key}:event:procedure-state-changed";wire=_committed(profile,key,[mutation],[event_id]);exports={"procedure_revision":after["revision"]}
  if profile=="procedure.initialize":

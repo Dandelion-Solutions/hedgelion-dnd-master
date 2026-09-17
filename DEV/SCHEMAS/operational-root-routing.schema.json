@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/operational-root-routing.schema.json",
+  "title": "HDM bounded operational-root routing page",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "campaign_id", "complete", "roots"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "complete": {"const": true},
+    "roots": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/root"}
+    }
+  },
+  "$defs": {
+    "root": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner_kind", "owner_id", "route"],
+      "properties": {
+        "owner_kind": {"enum": ["runtime.command", "runtime.procedure", "runtime.interaction", "runtime.intent_plan"]},
+        "owner_id": {"type": "string", "minLength": 1},
+        "route": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["family_key", "identity", "relative_path"],
+          "properties": {
+            "family_key": {"enum": ["runtime.command", "runtime.procedure", "runtime.interaction", "runtime.intent_plan"]},
+            "identity": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "items": {"$ref": "#/$defs/nonempty"}
+            },
+            "relative_path": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "nonempty": {"type": "string", "minLength": 1}
+  }
+}
