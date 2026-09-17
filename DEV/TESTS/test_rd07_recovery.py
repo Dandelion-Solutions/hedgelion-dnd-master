@@ -207,6 +207,36 @@ class ExactPolicyBasisResolutionTests(unittest.TestCase):
                 catalog_context=_bind_context(),
             )
 
+    def test_sidecar_authority_class_and_adoption_basis_must_obey_access_law(self) -> None:
+        class InvalidShapeAccess(FakeAccess):
+            def prove_policy_adoption(
+                self,
+                pinned: PinnedCampaign,
+                policy: dict[str, object],
+                principal: AuthenticatedPrincipalEvidence,
+                creator: CreatorEvidence,
+                player: PlayerEvidence,
+            ) -> AdoptionEvidence:
+                return AdoptionEvidence(
+                    authority_class="INTERPRETIVE_POLICY",
+                    adoption_basis="campaign_creator",
+                    adopted_by_player_id=None,
+                )
+
+        repository = FakeRepository()
+        sidecar = _sidecar()
+        sidecar["policies"][0]["adoption_basis"] = "campaign_creator"
+        sidecar["policies"][0]["adopted_by_player_id"] = None
+        repository.files["RULES/HOUSE_RULES.yaml"] = sidecar
+        resolver = PolicyBasisResolver(repository, InvalidShapeAccess(), FakeApplicability())
+
+        with self.assertRaisesRegex(PolicyBasisResolutionError, "adoption basis is not admitted"):
+            resolver.resolve(
+                "campaign-1",
+                PolicySelection(policy_id="policy.social_leverage", consumer_id="activity.check.generic"),
+                catalog_context=_bind_context(),
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

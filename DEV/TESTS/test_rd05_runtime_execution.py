@@ -305,6 +305,15 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
                 adjudication_basis={"policy_ref": "policy.fake@" + "a" * 40},  # type: ignore[arg-type]
             )
 
+    def test_arbitrary_mapping_parameter_binding_is_not_an_adjudicated_value(self) -> None:
+        proposal = _proposal()
+        proposal["action_request"] = dict(
+            proposal["action_request"],
+            parameter_bindings={"dc": {"bogus": True}},
+        )
+        with self.assertRaisesRegex(CommandAcceptanceError, "parameter binding object"):
+            accept_command(_interpreter_result(), _bind_context(), _candidate(), proposal)
+
 
 class DeterministicExecutionTests(unittest.TestCase):
     def _accepted(self) -> dict[str, object]:

@@ -359,9 +359,11 @@ def _validate_parameter_bindings(value: object) -> dict[str, object]:
             normalized = {key: deepcopy(raw_binding[key]) for key in raw_binding}
             normalized["policy_basis_refs"] = list(refs)
             result[parameter] = normalized
+        elif isinstance(raw_binding, Mapping):
+            raise PolicyBasisResolutionError(
+                "parameter binding object must be an admitted adjudicated value"
+            )
         else:
-            if isinstance(raw_binding, Mapping) and _FORBIDDEN_UNTRUSTED_FIELDS & set(raw_binding):
-                raise PolicyBasisResolutionError("parameter binding contains untrusted authority fields")
             result[parameter] = deepcopy(raw_binding)
     return result
 
@@ -619,6 +621,17 @@ class PolicyBasisResolver:
                 raise PolicyBasisResolutionError("unsupported House-Rules authority class")
             if policy["lifecycle"] not in {"active", "superseded", "retired"}:
                 raise PolicyBasisResolutionError("unsupported House-Rules lifecycle")
+            adoption_basis = policy["adoption_basis"]
+            authority_class = policy["authority_class"]
+            valid_adoption = (
+                authority_class == "INTERPRETIVE_POLICY"
+                and adoption_basis == "active_player_interpretive"
+            ) or (
+                authority_class == "MECHANICAL_OVERRIDE_POLICY"
+                and adoption_basis in {"campaign_creator", "creator_delegated_mechanical_override"}
+            )
+            if not valid_adoption:
+                raise PolicyBasisResolutionError("policy adoption basis is not admitted for authority class")
             _string_array(policy["routing_keys"], "routing_keys")
             _string_array(policy["supersedes_policy_ids"], "supersedes_policy_ids")
             _string_array(policy["realization_refs"], "realization_refs")
