@@ -78,8 +78,8 @@ EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
 KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
 - RNG/event identity, adjudication basis, procedure/continuation, durability/publication, recovery, operational roots, role emission, all Wave-05 shared writers
 
-VERSION IMPACT: pending actual changed-owner assessment under `DEV/RELEASE/VERSIONING.md`
-SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative changes; actual impact pending focused implementation
+VERSION IMPACT: see completed W02.T01 assessment below
+SCHEMA / CATALOG / CHECKPOINT IMPACT: runtime.command schema and input-fingerprint generation changed only as required by the accepted-command contract; catalog generation remains 2
 MIGRATION IMPACT: NONE - v1 clean-slate; no migration or compatibility layer admitted
 HG-01 CONSTRAINTS AFFECTED: catalog context remains exact, bounded, and reconstructible; no generic dependency frontier
 CURRENTNESS RE-READ SET BEFORE WRITE:
@@ -87,10 +87,24 @@ CURRENTNESS RE-READ SET BEFORE WRITE:
 
 COMPLETED_TASKS:
   W01.T08 -> `W01_CATALOG_CONTEXT_READY` at published Wave-01 closure
+  W02.T01 -> local verified code checkpoint `37d85cd` (`W02_CATALOG_BACKED_COMMAND_READY`); publication pending this cursor checkpoint
 
-CURRENT_VERIFICATION_STATE: fresh remote `origin/v1/engine-rearchitecture` read and local fast-forward to `d11b3aec20c3441e426443227e3700e45eb724b9`; no Wave-02 RED run yet
-VERSION_IMPACT: PENDING W02.T01 actual-owner assessment
+ACTUAL IMPACT VS PLANNED: within the W02.T01 envelope. The new owner-native `GAME/TOOLS/runtime_execution.py`, `runtime.command` schema synchronization, and RD05/RD15 tests were expected. Existing Step-3 schema consumer tests required mechanical fixture synchronization; no new authority, persistence/recovery/currentness owner, catalog change, or shared physical writer was introduced.
+
+CURRENT_VERIFICATION_STATE:
+- focused RD05/RD15 plus Step-3 acceptance/schema suites: 60 passed
+- named catalog binding and catalog-backed acceptance integration/static negatives: included in the focused 60 and GREEN
+- clean detached exact-head verification at `92c1434`: full DEV discovery 647 passed, 7 skipped; maintenance audit PASS
+- local primary worktree full discovery is environment-blocked only by ignored `.opencode/node_modules` bytes being scanned by `test_versioning_namespace_policy`; the same exact tracked bytes pass in the clean detached worktree
+
+VERSION_IMPACT:
+- `runtime.command.schema_version`: 1 -> 2; accepted action records now retain the exact interpreter/catalog/binding evidence after settlement
+- `runtime_command_input_fingerprint_generation`: 1 -> 2; canonical accepted-input fields and domain changed from `HDM_RUNTIME_COMMAND_INPUT/1` to `/2`
+- new runtime module `GAME/TOOLS/runtime_execution.py`: `framework_module_version` 1.0.1
+- `interpreter_result_fingerprint_generation` remains 1; catalog, engine, campaign, persistence, and migration namespaces are unchanged
+- migration impact: NONE; v1 clean-slate has no compatibility shim or speculative migration
+
 SYSTEM_IMPACT: NONE
-NEXT_EXACT_TASK: fresh-read W02.T01 owner and consumer paths; add the smallest material RED for catalog-backed command acceptance
+NEXT_EXACT_TASK: publish this reviewed W02.T01 checkpoint and remote-read it back; then start W02.T02 and W02.T03 independently after fresh task-local currentness reads
 KNOWN_BLOCKERS: NONE
-UNPUBLISHED_WORK: execution cursor creation only
+UNPUBLISHED_WORK: reviewed W02.T01 commits through `92c1434` and this cursor update await one fast-forward publication
