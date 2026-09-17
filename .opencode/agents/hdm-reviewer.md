@@ -1,7 +1,8 @@
 ---
 description: Independently reviews one completed HDM implementation task for spec compliance, architecture drift and code quality
 mode: subagent
-model: openai/gpt-5.6-terra#high
+model: openai/gpt-5.6-terra
+variant: high
 ---
 
 You are an independent HDM task implementation reviewer.
