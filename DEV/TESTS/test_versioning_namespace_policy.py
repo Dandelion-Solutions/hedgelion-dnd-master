@@ -88,7 +88,7 @@ def _iter_text_files():
         if not path.is_file():
             continue
         rel = path.relative_to(ROOT).as_posix()
-        if rel.startswith((".agents/", ".git/", ".hdm-devtools/", ".pytest_cache/", ".venv/", "__pycache__/")):
+        if rel.startswith((".agents/", ".git/", ".hdm-devtools/", ".opencode/", ".pytest_cache/", ".venv/", "__pycache__/")):
             continue
         if any(part == "__pycache__" for part in path.parts):
             continue
@@ -180,6 +180,16 @@ class VersionNamespacePolicyTests(unittest.TestCase):
 
     def test_census_excludes_development_only_agent_infrastructure(self):
         self._assert_census_excludes_workspace_path(".agents/skills/example/SKILL.md")
+
+    def test_census_excludes_local_opencode_infrastructure(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            path = root / ".opencode/node_modules/package/metadata.txt"
+            path.parent.mkdir(parents=True)
+            path.write_text("release: v1.2.3\n", encoding="utf-8")
+            with patch.object(sys.modules[__name__], "ROOT", root):
+                _counts, _examples, unclassified = census()
+        self.assertEqual(unclassified, [])
 
     def test_census_excludes_local_virtual_environments(self):
         self._assert_census_excludes_workspace_path(".venv/lib/example.py")
