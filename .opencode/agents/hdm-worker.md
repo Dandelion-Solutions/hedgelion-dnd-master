@@ -1,4 +1,3 @@
-# .opencode/agents/hdm-worker.md
 ---
 description: Executes one bounded HDM implementation-plan task with TDD, verification and coherent commit
 mode: subagent

@@ -1,4 +1,3 @@
-# .opencode/agents/hdm-reviewer.md
 ---
 description: Independently reviews one completed HDM implementation task for spec compliance, architecture drift and code quality
 mode: subagent
