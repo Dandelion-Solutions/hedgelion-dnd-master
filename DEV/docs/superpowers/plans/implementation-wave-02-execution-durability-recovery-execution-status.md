@@ -7,7 +7,7 @@ BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 STATUS: EXECUTING
 CURRENT_TASK: W02.T04 - RESUME AUTHORIZED after T03 accepted-basis checkpoint; W02.T05/T06 remain dependency-blocked
 LAST_COMPLETED_TASK: W02.T03 - W02_ACCEPTED_ADJUDICATION_BASIS_READY
-LAST_SAFE_SHA: `bebaa81` (local coherent T03 implementation checkpoint; no push)
+LAST_SAFE_SHA: `3acbbf5` (local coherent T03 implementation/review-repair checkpoint; no push)
 
 ## Dependency schedule
 
@@ -89,7 +89,7 @@ COMPLETED_TASKS:
   W01.T08 -> `W01_CATALOG_CONTEXT_READY` at published Wave-01 closure
   W02.T01 -> code `c23ac68` + `751665f` + `70f2d80`, published under remote-ref checkpoint `81ad503305d5fefdb47d209c722263f02365a04c`; `W02_CATALOG_BACKED_COMMAND_READY`
   W02.T02 -> code `d40213e` + `2ca6899` + `cfaf8a0` + `238e2db`, published under remote-ref checkpoint `351ab3e876254c31b506efcadc76fca635ea2aab`; `W02_DETERMINISTIC_EXECUTION_READY`
-  W02.T03 -> code `bebaa81`; `W02_ACCEPTED_ADJUDICATION_BASIS_READY`
+  W02.T03 -> code `bebaa81` + review repair `3acbbf5`; `W02_ACCEPTED_ADJUDICATION_BASIS_READY`
 
 ACTUAL IMPACT VS PLANNED: within the W02.T01 envelope. The new owner-native `GAME/TOOLS/runtime_execution.py`, `runtime.command` schema synchronization, and RD05/RD15 tests were expected. Existing Step-3 schema consumer tests required mechanical fixture synchronization; no new authority, persistence/recovery/currentness owner, catalog change, or shared physical writer was introduced.
 
@@ -98,8 +98,8 @@ CURRENT_VERIFICATION_STATE:
 - exact rebased detached HEAD `32b78af`: full DEV discovery 647 passed, 7 skipped
 - exact rebased detached HEAD `32b78af`: maintenance audit PASS
 - exact detached T02 code head `238e2db`: focused execution/Step-3 suites 56 passed; full DEV discovery 671 passed, 7 skipped; maintenance audit PASS
-- T03 focused resolver/acceptance suites: 41 passed
-- T03 full DEV discovery: 695 passed, 7 skipped
+- T03 focused resolver/acceptance suites: 94 passed
+- T03 full DEV discovery: 697 passed, 7 skipped
 - T03 maintenance audit: PASS
 - T03 RED evidence: resolver/acceptance imports failed before the new owner existed; GREEN evidence is recorded above after fresh implementation
 - current full-discovery census excludes ignored `.opencode/` infrastructure; no current scan contamination is present
