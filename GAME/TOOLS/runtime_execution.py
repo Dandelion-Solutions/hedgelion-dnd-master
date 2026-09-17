@@ -14,9 +14,14 @@ from .catalog_runtime import (
     sha256,
     validate_executable_binding,
 )
+from .policy_basis import (
+    AcceptedAdjudicationBasis,
+    PolicyBasisResolutionError,
+    validate_frozen_adjudication_basis,
+)
 
 
-# framework_module_version: 1.0.2
+# framework_module_version: 1.0.3
 RUNTIME_COMMAND_SCHEMA_VERSION: Final = 3
 INTERPRETER_RESULT_FINGERPRINT_GENERATION: Final = 1
 RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION: Final = 2
@@ -162,7 +167,20 @@ def _typed_command_proposal(value: object, candidate_id: str) -> dict[str, objec
     activity_id = _require_nonempty_string(action_request["activity_id"], "action_request activity_id")
     if activity_id != candidate_id:
         raise CommandAcceptanceError("action_request activity_id differs from candidate")
-    normalized["action_request"] = _thaw(action_request)
+    if "parameter_bindings" in action_request:
+        try:
+            parameter_bindings, _facts, _refs = validate_frozen_adjudication_basis(
+                action_request["parameter_bindings"], []
+            )
+        except PolicyBasisResolutionError as exc:
+            raise CommandAcceptanceError(str(exc)) from exc
+        normalized_action_request = _thaw(action_request)
+        if not isinstance(normalized_action_request, dict):
+            raise CommandAcceptanceError("action_request must be an object")
+        normalized_action_request["parameter_bindings"] = parameter_bindings
+        normalized["action_request"] = normalized_action_request
+    else:
+        normalized["action_request"] = _thaw(action_request)
     return normalized
 
 
@@ -189,6 +207,8 @@ def accept_command(
     context: BoundCatalogContext,
     candidate: object,
     command_proposal: object,
+    *,
+    adjudication_basis: AcceptedAdjudicationBasis | None = None,
 ) -> dict[str, object] | CatalogGap:
     """Return a schema-shaped accepted command or typed catalog-gap evidence."""
 
@@ -196,6 +216,23 @@ def accept_command(
     admitted_context = _require_admitted_context(context)
     candidate_id, _candidate_kind = _candidate_identity(candidate)
     proposal = _typed_command_proposal(command_proposal, candidate_id)
+    action_request = _require_mapping(proposal["action_request"], "accepted action_request")
+    if adjudication_basis is not None:
+        if not isinstance(adjudication_basis, AcceptedAdjudicationBasis):
+            raise CommandAcceptanceError("adjudication basis must be resolver-produced evidence")
+        expected_bindings = adjudication_basis.runtime_parameter_bindings()
+        actual_bindings = action_request.get("parameter_bindings", {})
+        if actual_bindings != expected_bindings:
+            raise CommandAcceptanceError("accepted adjudication parameters differ from verified basis")
+        invocation_facts = adjudication_basis.runtime_invocation_facts()
+    else:
+        invocation_facts = []
+        if any(
+            isinstance(binding, Mapping)
+            and binding.get("source_class") == "INVOCATION_ADJUDICATED"
+            for binding in action_request.get("parameter_bindings", {}).values()
+        ):
+            raise CommandAcceptanceError("adjudicated parameters require a verified policy basis")
     try:
         catalog_result = bind_executable_catalog(admitted_context, candidate)
     except CatalogBindingError as exc:
@@ -216,7 +253,7 @@ def accept_command(
         "input_fingerprint_generation": RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION,
         "input_fingerprint": "",
         "disposition": "command.accepted",
-        "invocation_facts": [],
+        "invocation_facts": invocation_facts,
         "pending_child_invocations": [],
         "interpreter_result": typed_result,
         "interpreter_result_fingerprint_generation": INTERPRETER_RESULT_FINGERPRINT_GENERATION,
@@ -248,6 +285,15 @@ def validate_execution_proposal(
         raise CommandAcceptanceError("accepted command has an unsupported disposition")
     if not isinstance(command["invocation_facts"], list):
         raise CommandAcceptanceError("accepted command invocation facts must be an array")
+    try:
+        validate_frozen_adjudication_basis(
+            _require_mapping(command["action_request"], "accepted command action_request").get(
+                "parameter_bindings", {}
+            ),
+            command["invocation_facts"],
+        )
+    except PolicyBasisResolutionError as exc:
+        raise CommandAcceptanceError(str(exc)) from exc
     if not isinstance(command["pending_child_invocations"], list):
         raise CommandAcceptanceError("accepted command pending child invocations must be an array")
     if command["disposition"] == "command.settled" and command["pending_child_invocations"]:

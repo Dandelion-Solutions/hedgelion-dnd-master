@@ -13,6 +13,10 @@ from GAME.TOOLS.runtime_execution import (
     accept_command,
     validate_execution_proposal,
 )
+from GAME.TOOLS.policy_basis import (
+    AcceptedAdjudicationBasis,
+    PolicyBasisResolver,
+)
 from GAME.TOOLS.mechanics import (
     ExecutionConflict,
     ExecutionContractError,
@@ -184,6 +188,122 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
         tampered["action_request"] = dict(accepted["action_request"], actor_id="actor-3")
         with self.assertRaisesRegex(CommandAcceptanceError, "input fingerprint"):
             validate_execution_proposal(tampered, _bind_context(), _candidate())
+
+    def test_accepted_command_identity_includes_complete_adjudication_basis(self) -> None:
+        from DEV.TESTS.test_rd07_recovery import FakeAccess, FakeApplicability, FakeRepository, H
+        from GAME.TOOLS.policy_basis import PolicySelection
+
+        repository = FakeRepository()
+        resolved = PolicyBasisResolver(repository, FakeAccess(), FakeApplicability()).resolve(
+            "campaign-1",
+            PolicySelection("policy.social_leverage", "activity.check.generic"),
+            catalog_context=_bind_context(),
+        )
+        binding = {
+            "source_class": "INVOCATION_ADJUDICATED",
+            "value": 15,
+            "provenance_ref": "turn-1:dc",
+            "eligibility_basis_fingerprint": "eligibility-A",
+            "rules_context_fingerprint": "rules-A",
+            "policy_basis_refs": [resolved.policy_ref],
+        }
+        basis = AcceptedAdjudicationBasis(
+            parameter_bindings={"dc": binding},
+            invocation_facts=(),
+            verified_policies=(resolved,),
+        )
+        proposal = _proposal()
+        proposal["action_request"] = dict(proposal["action_request"], parameter_bindings={"dc": binding})
+        accepted = accept_command(
+            _interpreter_result(), _bind_context(), _candidate(), proposal,
+            adjudication_basis=basis,
+        )
+        self.assertNotIsInstance(accepted, CatalogGap)
+        self.assertEqual(accepted["action_request"]["parameter_bindings"], {"dc": binding})
+        self.assertEqual(
+            accepted["action_request"]["parameter_bindings"]["dc"]["policy_basis_refs"],
+            [resolved.policy_ref],
+        )
+        registry, schemas = _schema_registry()
+        Draft202012Validator(
+            schemas["runtime-command-state.schema.json"], registry=registry
+        ).validate(accepted)
+        validate_execution_proposal(accepted, _bind_context(), _candidate())
+
+        changed = dict(proposal)
+        changed["action_request"] = dict(
+            proposal["action_request"],
+            parameter_bindings={"dc": dict(binding, value=16)},
+        )
+        changed_basis = AcceptedAdjudicationBasis(
+            parameter_bindings=changed["action_request"]["parameter_bindings"],
+            invocation_facts=(),
+            verified_policies=(resolved,),
+        )
+        changed_command = accept_command(
+            _interpreter_result(), _bind_context(), _candidate(), changed,
+            adjudication_basis=changed_basis,
+        )
+        self.assertNotEqual(accepted["input_fingerprint"], changed_command["input_fingerprint"])
+        self.assertEqual(resolved.policy_ref, f"policy.social_leverage@{H}")
+
+    def test_accepted_facts_are_frozen_and_historical_validation_does_not_reread_policy(self) -> None:
+        from DEV.TESTS.test_rd07_recovery import FakeAccess, FakeApplicability, FakeRepository
+        from GAME.TOOLS.policy_basis import PolicySelection
+
+        repository = FakeRepository()
+        context = _bind_context()
+        resolved = PolicyBasisResolver(repository, FakeAccess(), FakeApplicability()).resolve(
+            "campaign-1",
+            PolicySelection("policy.social_leverage", "activity.spell.fire_bolt"),
+            catalog_context=context,
+        )
+        binding = {
+            "source_class": "INVOCATION_ADJUDICATED",
+            "value": 15,
+            "provenance_ref": "turn-1:dc",
+            "eligibility_basis_fingerprint": "eligibility-A",
+            "rules_context_fingerprint": "rules-A",
+            "policy_basis_refs": [resolved.policy_ref],
+        }
+        fact = {
+            "fact_id": "fiction.target_reachable",
+            "value": True,
+            "provenance_class": "INVOCATION_ADJUDICATED",
+            "provenance_ref": "turn-1:reachable",
+            "consumer_id": "activity.spell.fire_bolt",
+            "binding_fingerprint": "a" * 64,
+            "rules_context_fingerprint": "b" * 64,
+            "policy_basis_refs": [resolved.policy_ref],
+        }
+        basis = AcceptedAdjudicationBasis(
+            parameter_bindings={"dc": binding},
+            invocation_facts=(fact,),
+            verified_policies=(resolved,),
+        )
+        proposal = _proposal()
+        proposal["action_request"] = dict(proposal["action_request"], parameter_bindings={"dc": binding})
+        accepted = accept_command(
+            _interpreter_result(), context, _candidate(), proposal, adjudication_basis=basis
+        )
+        self.assertNotIsInstance(accepted, CatalogGap)
+        self.assertEqual(accepted["invocation_facts"], [fact])
+        read_count = len(repository.reads)
+
+        repository.files["RULES/HOUSE_RULES.yaml"] = {"schema_version": 1, "source_path": "RULES/HOUSE_RULES.md", "policies": []}
+        validate_execution_proposal(accepted, context, _candidate())
+        self.assertEqual(len(repository.reads), read_count)
+
+    def test_untrusted_policy_basis_mapping_cannot_be_used_as_acceptance_authority(self) -> None:
+        proposal = _proposal()
+        with self.assertRaisesRegex(CommandAcceptanceError, "resolver-produced"):
+            accept_command(
+                _interpreter_result(),
+                _bind_context(),
+                _candidate(),
+                proposal,
+                adjudication_basis={"policy_ref": "policy.fake@" + "a" * 40},  # type: ignore[arg-type]
+            )
 
 
 class DeterministicExecutionTests(unittest.TestCase):
