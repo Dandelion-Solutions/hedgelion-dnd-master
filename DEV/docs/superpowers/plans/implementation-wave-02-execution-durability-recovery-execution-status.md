@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T03 - Exact accepted adjudication basis
+CURRENT_TASK: W02.T03 blocked - System-Impact review required
 LAST_COMPLETED_TASK: W02.T02 - W02_DETERMINISTIC_EXECUTION_READY
-LAST_SAFE_SHA: `351ab3e876254c31b506efcadc76fca635ea2aab` (published and remote-read back T02 checkpoint)
+LAST_SAFE_SHA: `f8a5166b3371e565e3d252fab5bbdd890f5f33d1` (published T03-start cursor; no T03 code integrated)
 
 ## Dependency schedule
 
@@ -112,10 +112,10 @@ VERSION_IMPACT:
 
 ACTUAL T02 IMPACT VS PLANNED: within the approved T02 execution-owner envelope. `GAME/TOOLS/mechanics.py` was an explicit Wave-02 baseline direct action path that the initial cursor omitted; its introduction, direct-transition producer/schema synchronization, and domain coverage validator changes are mechanical consumers of the accepted embedded-segment identity, not a new authority or broader boundary.
 
-SYSTEM_IMPACT: NONE
-NEXT_EXACT_TASK: add the smallest material T03 RED for exact accepted policy-basis resolution before acceptance
-KNOWN_BLOCKERS: NONE
-UNPUBLISHED_WORK: T03 execution cursor update only
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED - `implementation-wave-02-t03-system-impact-brief.md`
+NEXT_EXACT_TASK: hold T03 pending its System-Impact ruling; independently assess W02.T04 and W02.T07 write sets against the unresolved adjudication-basis boundary
+KNOWN_BLOCKERS: W02.T03 requires an accepted native campaign publication/history policy resolver; raw caller evidence and the DEV conformance helper are not runtime authority
+UNPUBLISHED_WORK: unsafe detached W02.T03 commit `29ded20` is not integrated or published; safe branch work is this cursor/brief only
 
 ## W02.T02 Impact Envelope
 
