@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T01 - Typed interpretation and catalog-backed command acceptance
-LAST_COMPLETED_TASK: W01.T08 - W01_CATALOG_CONTEXT_READY
-LAST_SAFE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
+CURRENT_TASK: W02.T01 checkpoint publication and remote read-back
+LAST_COMPLETED_TASK: W02.T01 - W02_CATALOG_BACKED_COMMAND_READY
+LAST_SAFE_SHA: local verified `70f2d80` code checkpoint; publication pending
 
 ## Dependency schedule
 
@@ -91,7 +91,11 @@ COMPLETED_TASKS:
 
 ACTUAL IMPACT VS PLANNED: within the W02.T01 envelope. The new owner-native `GAME/TOOLS/runtime_execution.py`, `runtime.command` schema synchronization, and RD05/RD15 tests were expected. Existing Step-3 schema consumer tests required mechanical fixture synchronization; no new authority, persistence/recovery/currentness owner, catalog change, or shared physical writer was introduced.
 
-CURRENT_VERIFICATION_STATE: prior clean-worktree verification passed before the required remote-currentness rebase; repeat on the rebased exact HEAD before publication
+CURRENT_VERIFICATION_STATE:
+- exact rebased detached HEAD `32b78af`: focused RD05/RD15 plus Step-3 acceptance/schema suites 60 passed
+- exact rebased detached HEAD `32b78af`: full DEV discovery 647 passed, 7 skipped
+- exact rebased detached HEAD `32b78af`: maintenance audit PASS
+- the primary worktree's ignored `.opencode/node_modules` remains an external local scan contaminant for full discovery; clean-worktree verification above is the applicable tracked-tree evidence
 
 VERSION_IMPACT:
 - `runtime.command.schema_version`: 1 -> 2; accepted action records now retain the exact interpreter/catalog/binding evidence after settlement
@@ -101,6 +105,6 @@ VERSION_IMPACT:
 - migration impact: NONE; v1 clean-slate has no compatibility shim or speculative migration
 
 SYSTEM_IMPACT: NONE
-NEXT_EXACT_TASK: publish this reviewed W02.T01 checkpoint and remote-read it back; then start W02.T02 and W02.T03 independently after fresh task-local currentness reads
+NEXT_EXACT_TASK: after this required publication/read-back, stop as requested. On a future fresh session, W02.T02 and W02.T03 are independently eligible after task-local currentness reads.
 KNOWN_BLOCKERS: NONE
-UNPUBLISHED_WORK: reviewed rebased W02.T01 commits through `6376209` and this cursor correction await exact-head verification and one fast-forward publication
+UNPUBLISHED_WORK: reviewed rebased W02.T01 commits through `32b78af` and this verification cursor update await one fast-forward publication
