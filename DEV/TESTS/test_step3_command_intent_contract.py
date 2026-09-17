@@ -43,7 +43,7 @@ def action_command():
 
 def transition_command(disposition="command.accepted"):
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "command_id": "turn-1-cmd-01",
         "interaction_id": "turn-1",
         "intent_plan_id": "turn-1-plan",

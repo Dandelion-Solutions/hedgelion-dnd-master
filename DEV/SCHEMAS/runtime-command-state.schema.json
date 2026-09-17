@@ -10,14 +10,14 @@
     "invocation_facts", "pending_child_invocations"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "command_id": {"type": "string", "minLength": 1},
     "interaction_id": {"type": "string", "minLength": 1},
     "intent_plan_id": {"type": "string", "minLength": 1},
     "clause_id": {"type": "string", "minLength": 1},
     "command_kind": {"enum": ["action", "transition"]},
     "catalog_context_fingerprint": {"type": "string", "minLength": 1},
-    "input_fingerprint_generation": {"const": 1},
+    "input_fingerprint_generation": {"const": 2},
     "input_fingerprint": {"type": "string", "minLength": 1},
     "disposition": {"enum": ["command.accepted", "command.settled"]},
     "invocation_facts": {"type": "array", "items": {"$ref": "https://hedgelion.invalid/schemas/invocation-fact.schema.json"}},
@@ -62,7 +62,7 @@
       "then": {"required": ["action_request", "root_resolution_id"], "not": {"anyOf": [{"required": ["transition_request"]}, {"required": ["direct_transition_segments"]}, {"required": ["direct_transition_receipt"]}]}}
     },
     {
-      "if": {"properties": {"command_kind": {"const": "action"}, "disposition": {"const": "command.accepted"}}, "required": ["command_kind", "disposition"]},
+      "if": {"properties": {"command_kind": {"const": "action"}}, "required": ["command_kind"]},
       "then": {"required": ["input_fingerprint_generation", "interpreter_result", "interpreter_result_fingerprint_generation", "interpreter_result_fingerprint", "catalog_context", "candidate_binding"]}
     },
     {

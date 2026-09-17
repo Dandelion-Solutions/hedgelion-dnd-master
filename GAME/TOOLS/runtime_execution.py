@@ -16,9 +16,10 @@ from .catalog_runtime import (
 )
 
 
-RUNTIME_COMMAND_SCHEMA_VERSION: Final = 1
+# framework_module_version: 1.0.1
+RUNTIME_COMMAND_SCHEMA_VERSION: Final = 2
 INTERPRETER_RESULT_FINGERPRINT_GENERATION: Final = 1
-RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION: Final = 1
+RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION: Final = 2
 INTERPRETER_RESULT_FIELDS: Final = frozenset(
     {"kind", "purpose", "bundle_id", "source_generation", "intent"}
 )
@@ -55,8 +56,21 @@ COMMAND_STATE_FIELDS: Final = frozenset(
         "candidate_binding",
     }
 )
+ACCEPTED_INPUT_FIELDS: Final = frozenset(
+    {
+        "command_kind",
+        "catalog_context_fingerprint",
+        "invocation_facts",
+        "action_request",
+        "interpreter_result",
+        "interpreter_result_fingerprint_generation",
+        "interpreter_result_fingerprint",
+        "catalog_context",
+        "candidate_binding",
+    }
+)
 _INTERPRETER_RESULT_DOMAIN: Final = b"HDM_INTERPRETER_RESULT/1\n"
-_RUNTIME_COMMAND_INPUT_DOMAIN: Final = b"HDM_RUNTIME_COMMAND_INPUT/1\n"
+_RUNTIME_COMMAND_INPUT_DOMAIN: Final = b"HDM_RUNTIME_COMMAND_INPUT/2\n"
 _SHA256_HEX: Final = frozenset("0123456789abcdef")
 
 
@@ -159,8 +173,7 @@ def _interpreter_result_fingerprint(interpreter_result: Mapping[str, str]) -> st
 def _input_fingerprint(command: Mapping[str, object]) -> str:
     material = {
         key: _thaw(command[key])
-        for key in COMMAND_STATE_FIELDS
-        if key not in {"input_fingerprint", "interpreter_result_fingerprint"}
+        for key in ACCEPTED_INPUT_FIELDS
     }
     return sha256(_RUNTIME_COMMAND_INPUT_DOMAIN + canonical_json(material))
 
@@ -228,10 +241,17 @@ def validate_execution_proposal(
         raise CommandAcceptanceError("unsupported runtime command schema version")
     for field in ("command_id", "interaction_id", "intent_plan_id", "clause_id", "root_resolution_id"):
         _require_nonempty_string(command[field], f"accepted command {field}")
-    if command["command_kind"] != "action" or command["disposition"] != "command.accepted":
+    if command["command_kind"] != "action" or command["disposition"] not in {
+        "command.accepted",
+        "command.settled",
+    }:
         raise CommandAcceptanceError("accepted command has an unsupported disposition")
-    if command["invocation_facts"] != [] or command["pending_child_invocations"] != []:
-        raise CommandAcceptanceError("accepted command has unadmitted execution evidence")
+    if not isinstance(command["invocation_facts"], list):
+        raise CommandAcceptanceError("accepted command invocation facts must be an array")
+    if not isinstance(command["pending_child_invocations"], list):
+        raise CommandAcceptanceError("accepted command pending child invocations must be an array")
+    if command["disposition"] == "command.settled" and command["pending_child_invocations"]:
+        raise CommandAcceptanceError("settled command retains pending child invocations")
     if command["input_fingerprint_generation"] != RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION:
         raise CommandAcceptanceError("unsupported command input fingerprint generation")
     if command["interpreter_result_fingerprint_generation"] != INTERPRETER_RESULT_FINGERPRINT_GENERATION:

@@ -155,7 +155,7 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
 
     def test_E_direct_transition_is_distinct_from_activity_resolution(self):
         validate("runtime-command-state.schema.json", {
-            "schema_version": 1,
+            "schema_version": 2,
             "command_id": "turn-1-cmd-01",
             "interaction_id": "turn-1",
             "intent_plan_id": "turn-1-plan",
