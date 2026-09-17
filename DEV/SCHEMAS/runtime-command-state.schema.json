@@ -10,7 +10,7 @@
     "invocation_facts", "pending_child_invocations"
   ],
   "properties": {
-    "schema_version": {"const": 2},
+    "schema_version": {"const": 3},
     "command_id": {"type": "string", "minLength": 1},
     "interaction_id": {"type": "string", "minLength": 1},
     "intent_plan_id": {"type": "string", "minLength": 1},

@@ -77,9 +77,12 @@ class AcceptedIdentityTests(unittest.TestCase):
             accepted["catalog_context"]["catalog_context_fingerprint"], context.fingerprint
         )
         self.assertEqual(accepted["candidate_binding"]["definition_id"], "activity.check.generic")
-        self.assertEqual(accepted["schema_version"], 2)
+        self.assertEqual(accepted["schema_version"], 3)
         self.assertEqual(accepted["input_fingerprint_generation"], 2)
         self.assertRegex(accepted["input_fingerprint"], r"^[a-f0-9]{64}$")
+        unsupported = dict(accepted, schema_version=2)
+        with self.assertRaisesRegex(CommandAcceptanceError, "schema version"):
+            validate_execution_proposal(unsupported, context, _candidate())
         registry, schemas = _schema_registry()
         Draft202012Validator(
             schemas["runtime-command-state.schema.json"], registry=registry
@@ -447,6 +450,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         retry = execute_segment(
             accepted,
             first["resolution"],
+            target_segment_id=first["segment"]["segment_id"],
             rng=FixedRng([3]),
             event_payload={"result": 17},
             store=store,
@@ -497,6 +501,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         replay = resume_accepted_execution(
             accepted,
             second["resolution"],
+            target_segment_id=second["segment"]["segment_id"],
             rng=replay_rng,
             event_payload={"result": 19},
             store=store,
@@ -505,6 +510,76 @@ class DeterministicExecutionTests(unittest.TestCase):
         self.assertEqual(replay, second)
         self.assertEqual(replay["segment"]["segment_id"], "resolution-1:segment:2")
         self.assertEqual(replay["roll_result"]["raw_values"], [19])
+        self.assertEqual(replay_rng.draw_count, 0)
+
+    def test_no_rng_continuation_advances_past_prior_roll_backed_segment(self) -> None:
+        accepted = self._accepted()
+        store = ExecutionStore()
+        first = execute_segment(
+            accepted,
+            self._resolution(),
+            rng=FixedRng([17]),
+            event_payload={"result": 17},
+            store=store,
+        )
+
+        continuity = resume_accepted_execution(
+            accepted,
+            first["resolution"],
+            event_payload={"continuity": True},
+            store=store,
+        )
+
+        self.assertEqual(continuity["segment"]["segment_sequence"], 2)
+        self.assertEqual(continuity["segment"]["segment_id"], "resolution-1:segment:2")
+        self.assertNotIn("roll_result", continuity)
+        self.assertEqual(first["event_id"], "resolution-1:segment:1:event:1")
+        self.assertNotEqual(first["event_id"], continuity["event_id"])
+
+    def test_targeted_recovery_replays_prior_segment_after_continuation_advance(self) -> None:
+        accepted = self._accepted()
+        store = ExecutionStore()
+        first = execute_segment(
+            accepted,
+            self._resolution(),
+            rng=FixedRng([17]),
+            event_payload={"result": 17},
+            store=store,
+        )
+        execute_segment(
+            accepted,
+            first["resolution"],
+            event_payload={"continuity": True},
+            store=store,
+        )
+
+        replay_rng = FixedRng([23])
+        replay = resume_accepted_execution(
+            accepted,
+            first["resolution"],
+            target_segment_id=first["segment"]["segment_id"],
+            rng=replay_rng,
+            event_payload={"result": 17},
+            store=store,
+        )
+
+        self.assertEqual(replay, first)
+        self.assertEqual(replay_rng.draw_count, 0)
+
+    def test_targeted_recovery_rejects_missing_segment_without_rng_draw(self) -> None:
+        accepted = self._accepted()
+        replay_rng = FixedRng([23])
+
+        with self.assertRaisesRegex(ExecutionConflict, "target segment"):
+            resume_accepted_execution(
+                accepted,
+                self._resolution(),
+                target_segment_id="resolution-1:segment:99",
+                rng=replay_rng,
+                event_payload={"result": 17},
+                store=ExecutionStore(),
+            )
+
         self.assertEqual(replay_rng.draw_count, 0)
 
     def test_child_resolution_under_one_root_command_has_a_distinct_owner_slot(self) -> None:
@@ -656,6 +731,7 @@ class DeterministicExecutionTests(unittest.TestCase):
             execute_segment(
                 accepted,
                 conflicting_resolution,
+                target_segment_id=first["segment"]["segment_id"],
                 rng=retry_rng,
                 event_payload={"result": 17},
                 store=store,

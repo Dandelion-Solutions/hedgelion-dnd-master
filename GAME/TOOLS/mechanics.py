@@ -19,8 +19,8 @@ from threading import RLock
 from typing import Final, Protocol
 
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final = "1.0.4"
 _DIGEST_GENERATION: Final = 1
 _ID_PATTERN: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _EVENT_KIND_PATTERN: Final = re.compile(r"^event\.[a-z][a-z0-9_.]*$")
@@ -235,6 +235,7 @@ def execute_segment(
     accepted_command: Mapping[str, object],
     resolution: Mapping[str, object],
     *,
+    target_segment_id: str | None = None,
     rng: RngProvider | None = None,
     roll_request: Mapping[str, object] | None = None,
     event_kind: str = "event.execution.committed",
@@ -249,6 +250,10 @@ def execute_segment(
     All evidence is constructed before the owner-local store mutation.  A
     duplicate owner/segment delivery therefore returns the committed result without drawing
     RNG, allocating another segment/event identity, or mutating caller input.
+
+    When ``target_segment_id`` is provided, this is an exact replay of an
+    already committed segment; otherwise the resolution's next segment is
+    advanced.
     """
     command_id, input_fingerprint, root_resolution_id = _accepted_identity(accepted_command)
     checked_resolution = _mapping_copy(resolution, "resolution")
@@ -257,7 +262,12 @@ def execute_segment(
         checked_resolution.get("resolution_id", root_resolution_id), "resolution resolution_id"
     )
     _validate_invocation_binding(accepted_command, checked_resolution, resolution_id, root_resolution_id)
-    sequence = _segment_sequence(checked_resolution)
+    replay_target = _optional_id(target_segment_id, "target_segment_id")
+    sequence = (
+        _segment_sequence(checked_resolution)
+        if replay_target is None
+        else _target_segment_sequence(resolution_id, replay_target)
+    )
     status = checked_resolution.get("status", "COMPLETED")
     if not isinstance(status, str):
         raise ExecutionContractError("resolution status must be a string")
@@ -283,16 +293,33 @@ def execute_segment(
         command_id,
         resolution_id,
     )
+    targeted_existing = (
+        store.lookup(resolution_id, replay_target) if replay_target is not None else None
+    )
+    if replay_target is not None and targeted_existing is None:
+        raise ExecutionConflict("target segment is not a committed execution")
+    stored_roll = (
+        _roll_result(_require_mapping(targeted_existing["roll_result"], "stored roll result"))
+        if targeted_existing is not None and "roll_result" in targeted_existing
+        else None
+    )
     if roll_request is not None:
         checked_roll_request = _roll_request(resolution_id, roll_request)
+    elif stored_roll is not None:
+        checked_roll_request = _roll_request_from_result(stored_roll)
+    elif rng is not None:
+        checked_roll_request = _roll_request(resolution_id, None)
     else:
-        checked_roll_request = _roll_request_from_resolution(checked_resolution)
-        if checked_roll_request is None and rng is not None:
-            checked_roll_request = _roll_request(resolution_id, None)
-    fixed_roll = _existing_roll_result(checked_resolution, checked_roll_request)
-    replay_sequence = _replay_sequence(checked_resolution, checked_roll_request)
-    if replay_sequence is not None:
-        sequence = replay_sequence
+        checked_roll_request = None
+    fixed_roll = stored_roll if replay_target is not None else _existing_roll_result(
+        checked_resolution, checked_roll_request
+    )
+    if replay_target is not None and stored_roll is not None:
+        supplied_roll = _existing_roll_result(
+            checked_resolution, _roll_request_from_result(stored_roll)
+        )
+        if supplied_roll is not None and supplied_roll != stored_roll:
+            raise ExecutionConflict("accepted command was replayed with conflicting fixed RNG")
     execution_fingerprint = _digest(
         {
             "generation": _DIGEST_GENERATION,
@@ -309,7 +336,7 @@ def execute_segment(
         }
     )
     segment_id = f"{resolution_id}:segment:{sequence}"
-    existing = store.lookup(resolution_id, segment_id)
+    existing = targeted_existing if replay_target is not None else store.lookup(resolution_id, segment_id)
     if existing is not None:
         prior_roll = existing.get("roll_result")
         if fixed_roll is not None and prior_roll is not None and fixed_roll != prior_roll:
@@ -428,6 +455,7 @@ def resume_accepted_execution(
     accepted_command: Mapping[str, object],
     resolution: Mapping[str, object],
     *,
+    target_segment_id: str | None = None,
     rng: RngProvider | None = None,
     roll_request: Mapping[str, object] | None = None,
     event_kind: str = "event.execution.committed",
@@ -437,10 +465,15 @@ def resume_accepted_execution(
     expected_continuation_generation: int | None = None,
     store: ExecutionStore,
 ) -> dict[str, object]:
-    """Resume an accepted execution through the same idempotent owner boundary."""
+    """Resume or replay an accepted execution through its owner boundary.
+
+    ``target_segment_id`` selects an existing committed segment for exact
+    recovery.  Omitting it advances to the resolution's next segment.
+    """
     return execute_segment(
         accepted_command,
         resolution,
+        target_segment_id=target_segment_id,
         rng=rng,
         roll_request=roll_request,
         event_kind=event_kind,
@@ -625,37 +658,6 @@ def _evidence_without_close_state(result: Mapping[str, object]) -> dict[str, obj
     return evidence
 
 
-def _replay_sequence(
-    resolution: Mapping[str, object],
-    request: Mapping[str, object] | None,
-) -> int | None:
-    """Identify a retry of the latest committed roll-backed segment.
-
-    A request that matches the latest fixed roll in a resolution carrying
-    committed segments is a replay of that segment rather than an instruction
-    to advance its sequence.  A new segment can still use a request that is not
-    already present in the resolution's fixed-roll evidence.
-    """
-    if request is None:
-        return None
-    segments = resolution.get("segments", [])
-    if not isinstance(segments, Sequence) or isinstance(segments, (str, bytes)) or not segments:
-        return None
-    latest = segments[-1]
-    if not isinstance(latest, Mapping):
-        return None
-    sequence = latest.get("segment_sequence")
-    if isinstance(sequence, bool) or not isinstance(sequence, int) or sequence < 1:
-        return None
-    fixed_results = resolution.get("fixed_rng_results", [])
-    if not isinstance(fixed_results, Sequence) or isinstance(fixed_results, (str, bytes)):
-        return None
-    latest_fixed = fixed_results[-1]
-    if isinstance(latest_fixed, Mapping) and latest_fixed.get("request_id") == request.get("request_id"):
-        return sequence
-    return None
-
-
 def _reject_fields(value: Mapping[str, object], forbidden: frozenset[str], label: str) -> None:
     unexpected = sorted(set(value).intersection(forbidden))
     if unexpected:
@@ -721,6 +723,16 @@ def _segment_sequence(resolution: Mapping[str, object]) -> int:
     if existing_sequences and value <= max(existing_sequences):
         raise ExecutionContractError("resolution next_segment_sequence reuses a committed segment")
     return value
+
+
+def _target_segment_sequence(resolution_id: str, target_segment_id: str) -> int:
+    prefix = f"{resolution_id}:segment:"
+    if not target_segment_id.startswith(prefix):
+        raise ExecutionContractError("target segment does not belong to the resolution")
+    suffix = target_segment_id[len(prefix) :]
+    if not suffix.isdigit() or int(suffix) < 1:
+        raise ExecutionContractError("target segment must identify a positive segment sequence")
+    return int(suffix)
 
 
 def _event_kind(value: object) -> str:
@@ -909,17 +921,9 @@ def _execution_resolution_basis(resolution: Mapping[str, object]) -> dict[str, o
     }
 
 
-def _roll_request_from_resolution(
-    resolution: Mapping[str, object],
-) -> dict[str, object] | None:
-    fixed_results = resolution.get("fixed_rng_results", [])
-    if not isinstance(fixed_results, Sequence) or isinstance(fixed_results, (str, bytes)):
-        raise ExecutionContractError("resolution fixed_rng_results must be an array")
-    if not fixed_results:
-        return None
-    roll = _roll_result(_require_mapping(fixed_results[-1], "resolution fixed RNG result"))
+def _roll_request_from_result(result: Mapping[str, object]) -> dict[str, object]:
     return {
-        key: roll[key]
+        key: result[key]
         for key in ("roll_id", "request_id", "expression", "source_kind", "provenance_ref")
     }
 

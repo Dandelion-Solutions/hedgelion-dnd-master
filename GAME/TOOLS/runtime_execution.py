@@ -16,8 +16,8 @@ from .catalog_runtime import (
 )
 
 
-# framework_module_version: 1.0.1
-RUNTIME_COMMAND_SCHEMA_VERSION: Final = 2
+# framework_module_version: 1.0.2
+RUNTIME_COMMAND_SCHEMA_VERSION: Final = 3
 INTERPRETER_RESULT_FINGERPRINT_GENERATION: Final = 1
 RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION: Final = 2
 INTERPRETER_RESULT_FIELDS: Final = frozenset(
