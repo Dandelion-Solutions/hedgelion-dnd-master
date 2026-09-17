@@ -5,7 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "segment_sequence", "commit_state", "resulting_execution_state", "event_ids",
+    "segment_id", "segment_sequence", "commit_state", "resulting_execution_state", "event_ids",
     "pending_child_invocations", "receipt_exports", "affected_revision_refs"
   ],
   "properties": {

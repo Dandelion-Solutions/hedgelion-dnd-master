@@ -51,6 +51,7 @@ class Step3EventFollowupContractTest(unittest.TestCase):
 
     def test_committed_segment_can_atomically_carry_mandatory_followup(self):
         segment = {
+            "segment_id": "event-00000001:segment:1",
             "segment_sequence": 1,
             "commit_state": "committed",
             "resulting_execution_state": "COMPLETED",
@@ -74,6 +75,19 @@ class Step3EventFollowupContractTest(unittest.TestCase):
         }]
         # Cross-membership is an execution invariant; the machine test records the required relationship explicitly.
         self.assertNotIn(invalid["pending_child_invocations"][0]["trigger_ref"], invalid["event_ids"])
+
+    def test_committed_segment_requires_embedded_segment_identity(self):
+        segment = {
+            "segment_sequence": 1,
+            "commit_state": "committed",
+            "resulting_execution_state": "COMPLETED",
+            "event_ids": [],
+            "pending_child_invocations": [],
+            "receipt_exports": {},
+            "affected_revision_refs": [],
+        }
+        with self.assertRaises(ValidationError):
+            validate("execution-segment.schema.json", segment)
 
 
 if __name__ == "__main__":

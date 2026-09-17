@@ -71,6 +71,7 @@ class Step3ExecutionValueSchemasTest(unittest.TestCase):
 
     def test_execution_segment_is_complete_receipt_evidence_not_world_snapshot(self):
         valid = {
+            "segment_id": "resolution-0000001:segment:1",
             "segment_sequence": 1,
             "commit_state": "committed",
             "resulting_execution_state": "COMPLETED",

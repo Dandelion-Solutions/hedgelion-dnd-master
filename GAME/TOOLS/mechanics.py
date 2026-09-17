@@ -19,8 +19,8 @@ from threading import RLock
 from typing import Final, Protocol
 
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final = "1.0.2"
 _DIGEST_GENERATION: Final = 1
 _ID_PATTERN: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _EVENT_KIND_PATTERN: Final = re.compile(r"^event\.[a-z][a-z0-9_.]*$")
@@ -81,6 +81,16 @@ _FORBIDDEN_CONTINUATION_FIELDS: Final = frozenset(
         "condition_index",
         "committed_receipt_refs",
         "receipt_ref",
+    }
+)
+_FORBIDDEN_PROCEDURE_FIELDS: Final = frozenset(
+    {
+        "world_state",
+        "world_state_snapshot",
+        "prospective_deltas",
+        "mechanical_context",
+        "temporal_agenda",
+        "condition_index",
     }
 )
 
@@ -152,6 +162,9 @@ class FixedRng:
 
 @dataclass(frozen=True, slots=True)
 class _StoredExecution:
+    execution_owner_id: str
+    segment_id: str
+    command_id: str
     input_fingerprint: str
     execution_fingerprint: str
     result: dict[str, object]
@@ -162,16 +175,31 @@ class ExecutionStore:
 
     def __init__(self) -> None:
         self._lock = RLock()
-        self._entries: dict[str, _StoredExecution] = {}
+        self._entries: dict[tuple[str, str], _StoredExecution] = {}
+        self._command_fingerprints: dict[str, str] = {}
 
-    def lookup(self, command_id: str) -> dict[str, object] | None:
+    def lookup(self, execution_owner_id: str, segment_id: str | None = None) -> dict[str, object] | None:
         """Return an isolated copy of a committed result, if present."""
         with self._lock:
-            entry = self._entries.get(command_id)
+            if segment_id is not None:
+                entry = self._entries.get((execution_owner_id, segment_id))
+            else:
+                matches = [
+                    entry
+                    for entry in self._entries.values()
+                    if entry.command_id == execution_owner_id
+                ]
+                if len(matches) > 1:
+                    raise ExecutionContractError(
+                        "command has multiple execution segments; owner and segment are required"
+                    )
+                entry = matches[0] if matches else None
             return None if entry is None else deepcopy(entry.result)
 
     def commit(
         self,
+        execution_owner_id: str,
+        segment_id: str,
         command_id: str,
         input_fingerprint: str,
         execution_fingerprint: str,
@@ -179,7 +207,10 @@ class ExecutionStore:
     ) -> dict[str, object]:
         """Commit one result or return the exact prior result for a duplicate."""
         with self._lock:
-            existing = self._entries.get(command_id)
+            prior_fingerprint = self._command_fingerprints.get(command_id)
+            if prior_fingerprint is not None and prior_fingerprint != input_fingerprint:
+                raise ExecutionConflict("accepted command was replayed with conflicting input fingerprint")
+            existing = self._entries.get((execution_owner_id, segment_id))
             if existing is not None:
                 if (
                     existing.input_fingerprint != input_fingerprint
@@ -188,23 +219,13 @@ class ExecutionStore:
                     raise ExecutionConflict("accepted command was replayed with conflicting input")
                 return deepcopy(existing.result)
             stored = deepcopy(dict(result))
-            self._entries[command_id] = _StoredExecution(
+            self._command_fingerprints[command_id] = input_fingerprint
+            self._entries[(execution_owner_id, segment_id)] = _StoredExecution(
+                execution_owner_id=execution_owner_id,
+                segment_id=segment_id,
+                command_id=command_id,
                 input_fingerprint=input_fingerprint,
                 execution_fingerprint=execution_fingerprint,
-                result=stored,
-            )
-            return deepcopy(stored)
-
-    def replace(self, command_id: str, result: Mapping[str, object]) -> dict[str, object]:
-        """Replace the committed evidence without changing its accepted identity."""
-        with self._lock:
-            existing = self._entries.get(command_id)
-            if existing is None:
-                raise ExecutionContractError("cannot close an uncommitted execution")
-            stored = deepcopy(dict(result))
-            self._entries[command_id] = _StoredExecution(
-                input_fingerprint=existing.input_fingerprint,
-                execution_fingerprint=existing.execution_fingerprint,
                 result=stored,
             )
             return deepcopy(stored)
@@ -226,16 +247,16 @@ def execute_segment(
     """Execute one accepted input into one deterministic committed segment.
 
     All evidence is constructed before the owner-local store mutation.  A
-    duplicate command therefore returns the committed result without drawing
+    duplicate owner/segment delivery therefore returns the committed result without drawing
     RNG, allocating another segment/event identity, or mutating caller input.
     """
     command_id, input_fingerprint, root_resolution_id = _accepted_identity(accepted_command)
     checked_resolution = _mapping_copy(resolution, "resolution")
     _reject_fields(checked_resolution, _FORBIDDEN_RESOLUTION_FIELDS, "resolution")
-    _validate_invocation_binding(accepted_command, checked_resolution)
     resolution_id = _require_id(
         checked_resolution.get("resolution_id", root_resolution_id), "resolution resolution_id"
     )
+    _validate_invocation_binding(accepted_command, checked_resolution, resolution_id, root_resolution_id)
     sequence = _segment_sequence(checked_resolution)
     status = checked_resolution.get("status", "COMPLETED")
     if not isinstance(status, str):
@@ -255,10 +276,20 @@ def execute_segment(
         _reject_fields(continuation, _FORBIDDEN_CONTINUATION_FIELDS, "continuation state")
     _validate_continuation_generation(continuation, expected_continuation_generation)
     procedure_id = _optional_id(checked_resolution.get("procedure_id"), "resolution procedure_id")
+    _validate_procedure_binding(checked_resolution, procedure)
+    _validate_continuation_binding(
+        checked_resolution,
+        continuation,
+        command_id,
+        resolution_id,
+    )
     checked_roll_request = _roll_request(resolution_id, roll_request) if (
         rng is not None or roll_request is not None
     ) else _roll_request_from_resolution(checked_resolution)
     fixed_roll = _existing_roll_result(checked_resolution, checked_roll_request)
+    replay_sequence = _replay_sequence(checked_resolution, checked_roll_request, roll_request)
+    if replay_sequence is not None:
+        sequence = replay_sequence
     execution_fingerprint = _digest(
         {
             "generation": _DIGEST_GENERATION,
@@ -271,14 +302,23 @@ def execute_segment(
             "continuation_state": _continuation_execution_basis(continuation),
             "expected_continuation_generation": expected_continuation_generation,
             "roll_request": checked_roll_request,
+            "segment_id": f"{resolution_id}:segment:{sequence}",
         }
     )
-    existing = store.lookup(command_id)
+    segment_id = f"{resolution_id}:segment:{sequence}"
+    existing = store.lookup(resolution_id, segment_id)
     if existing is not None:
         prior_roll = existing.get("roll_result")
         if fixed_roll is not None and prior_roll is not None and fixed_roll != prior_roll:
             raise ExecutionConflict("accepted command was replayed with conflicting fixed RNG")
-        return store.commit(command_id, input_fingerprint, execution_fingerprint, existing)
+        return store.commit(
+            resolution_id,
+            segment_id,
+            command_id,
+            input_fingerprint,
+            execution_fingerprint,
+            existing,
+        )
 
     checkpoint = rng._checkpoint() if isinstance(rng, FixedRng) else None
     try:
@@ -287,7 +327,6 @@ def execute_segment(
             if checked_roll_request is None:
                 raise ExecutionContractError("RNG execution requires a typed roll request")
             roll_result = _roll_result(rng.draw(checked_roll_request))
-        segment_id = f"{resolution_id}:segment:{sequence}"
         event_ordinal = 1
         event_id = f"{segment_id}:event:{event_ordinal}"
         event: dict[str, object] = {
@@ -321,6 +360,7 @@ def execute_segment(
         result: dict[str, object] = {
             "accepted_command_id": command_id,
             "accepted_input_fingerprint": input_fingerprint,
+            "execution_owner_id": resolution_id,
             "resolution_id": resolution_id,
             "status": status,
             "segment": segment,
@@ -339,7 +379,14 @@ def execute_segment(
         result["resolution"] = _resolution_with_segment(
             checked_resolution, segment, roll_result
         )
-        return store.commit(command_id, input_fingerprint, execution_fingerprint, result)
+        return store.commit(
+            resolution_id,
+            segment_id,
+            command_id,
+            input_fingerprint,
+            execution_fingerprint,
+            result,
+        )
     except Exception:
         if isinstance(rng, FixedRng) and checkpoint is not None:
             rng._restore(checkpoint)
@@ -411,33 +458,27 @@ def close_resolution(
     """Close committed execution evidence without changing its identities."""
     if not isinstance(status, str) or status not in _EXECUTION_STATES:
         raise ExecutionContractError("resolution close status is not supported")
+    if store is None:
+        raise ExecutionContractError("closing requires stored committed execution evidence")
     result = _mapping_copy(execution, "execution result")
     segment = _mapping_copy(result.get("segment"), "execution segment")
-    receipt = _mapping_copy(result.get("receipt"), "execution receipt")
-    segment["resulting_execution_state"] = status
-    receipt["status"] = status
-    result["status"] = status
-    result["segment"] = segment
-    result["receipt"] = receipt
-    resolution = _mapping_copy(result.get("resolution"), "execution resolution")
-    resolution["status"] = status
-    segments = resolution.get("segments")
-    if not isinstance(segments, Sequence) or isinstance(segments, (str, bytes)):
-        raise ExecutionContractError("execution resolution segments must be an array")
-    resolution["segments"] = [
-        (
-            dict(item, resulting_execution_state=status)
-            if isinstance(item, Mapping)
-            and item.get("segment_id") == segment.get("segment_id")
-            else deepcopy(item)
-        )
-        for item in segments
-    ]
-    result["resolution"] = resolution
-    command_id = _require_id(result.get("accepted_command_id"), "execution accepted_command_id")
-    if store is None:
-        return result
-    return store.replace(command_id, result)
+    segment_id = _require_id(segment.get("segment_id"), "execution segment segment_id")
+    execution_owner_id = _require_id(
+        result.get("execution_owner_id", result.get("resolution_id")),
+        "execution execution_owner_id",
+    )
+    stored = store.lookup(execution_owner_id, segment_id)
+    if stored is None:
+        raise ExecutionContractError("closing requires stored committed execution evidence")
+    if _evidence_without_close_state(result) != _evidence_without_close_state(stored):
+        raise ExecutionConflict("closing requires the stored committed evidence")
+
+    closed = deepcopy(stored)
+    closed["status"] = status
+    closed_resolution = _mapping_copy(closed.get("resolution"), "stored execution resolution")
+    closed_resolution["status"] = status
+    closed["resolution"] = closed_resolution
+    return closed
 
 
 def _accepted_identity(value: Mapping[str, object]) -> tuple[str, str, str]:
@@ -463,14 +504,156 @@ def _accepted_identity(value: Mapping[str, object]) -> tuple[str, str, str]:
 
 
 def _validate_invocation_binding(
-    accepted_command: Mapping[str, object], resolution: Mapping[str, object]
+    accepted_command: Mapping[str, object],
+    resolution: Mapping[str, object],
+    resolution_id: str,
+    root_resolution_id: str,
 ) -> None:
+    command_id = _require_id(accepted_command.get("command_id"), "accepted command command_id")
+    root_command_id = _require_id(resolution.get("root_command_id"), "resolution root_command_id")
+    if root_command_id != command_id:
+        raise ExecutionConflict("resolution root_command_id differs from accepted command")
+    initiating_command_id = _optional_id(
+        resolution.get("initiating_command_id"), "resolution initiating_command_id"
+    )
     action_request = _require_mapping(accepted_command.get("action_request"), "accepted command action_request")
+    if resolution_id != root_resolution_id:
+        if resolution.get("causal_invocation_key") is None:
+            raise ExecutionConflict("child resolution requires causal_invocation_key")
+        _require_string(resolution["causal_invocation_key"], "resolution causal_invocation_key")
+        if initiating_command_id is not None and initiating_command_id != command_id:
+            raise ExecutionConflict("child resolution initiating_command_id differs from root command")
+    elif initiating_command_id != command_id:
+        raise ExecutionConflict("resolution initiating_command_id differs from accepted command")
     for field in ("activity_id", "actor_id"):
         resolved = _require_id(resolution.get(field), f"resolution {field}")
         accepted = _require_id(action_request.get(field), f"accepted command action_request {field}")
-        if resolved != accepted:
+        if resolution_id == root_resolution_id and resolved != accepted:
             raise ExecutionConflict(f"resolution {field} differs from accepted input")
+
+
+def _validate_procedure_binding(
+    resolution: Mapping[str, object], procedure: Mapping[str, object] | None
+) -> None:
+    if procedure is None:
+        return
+    _reject_fields(procedure, _FORBIDDEN_PROCEDURE_FIELDS, "procedure state")
+    resolution_procedure_id = _optional_id(
+        resolution.get("procedure_id"), "resolution procedure_id"
+    )
+    procedure_procedure_id = _optional_id(procedure.get("procedure_id"), "procedure state procedure_id")
+    if procedure_procedure_id is not None and procedure_procedure_id != resolution_procedure_id:
+        raise ExecutionConflict("procedure state procedure_id differs from resolution procedure_id")
+
+
+def _validate_continuation_binding(
+    resolution: Mapping[str, object],
+    continuation: Mapping[str, object] | None,
+    command_id: str,
+    resolution_id: str,
+) -> None:
+    if continuation is None:
+        return
+    required = (
+        "root_command_id",
+        "resolution_id",
+        "activity_id",
+        "actor_id",
+        "execution_cursor",
+        "safe_recompute_phase",
+    )
+    for field in required:
+        if field not in continuation:
+            raise ExecutionContractError(f"continuation state is missing {field}")
+    if _require_id(continuation["root_command_id"], "continuation root_command_id") != command_id:
+        raise ExecutionConflict("continuation root_command_id differs from accepted command")
+    if _require_id(continuation["resolution_id"], "continuation resolution_id") != resolution_id:
+        raise ExecutionConflict("continuation resolution_id differs from resolution")
+    for field in ("activity_id", "actor_id"):
+        continuation_value = _require_id(continuation[field], f"continuation {field}")
+        resolution_value = _require_id(resolution.get(field), f"resolution {field}")
+        if continuation_value != resolution_value:
+            raise ExecutionConflict(f"continuation {field} differs from resolution")
+    for field in ("execution_cursor", "safe_recompute_phase"):
+        continuation_value = _require_string(continuation[field], f"continuation {field}")
+        if field in resolution:
+            resolution_value = _require_string(resolution[field], f"resolution {field}")
+            if continuation_value != resolution_value:
+                raise ExecutionConflict(f"continuation {field} differs from resolution")
+    continuation_procedure_id = _optional_id(
+        continuation.get("procedure_id"), "continuation procedure_id"
+    )
+    resolution_procedure_id = _optional_id(
+        resolution.get("procedure_id"), "resolution procedure_id"
+    )
+    if continuation_procedure_id != resolution_procedure_id:
+        raise ExecutionConflict("continuation procedure_id differs from resolution")
+
+
+def _evidence_without_close_state(result: Mapping[str, object]) -> dict[str, object]:
+    evidence = deepcopy(dict(result))
+    evidence.pop("status", None)
+    segment = evidence.get("segment")
+    if isinstance(segment, Mapping):
+        segment_copy = deepcopy(dict(segment))
+        segment_copy.pop("resulting_execution_state", None)
+        evidence["segment"] = segment_copy
+    receipt = evidence.get("receipt")
+    if isinstance(receipt, Mapping):
+        receipt_copy = deepcopy(dict(receipt))
+        receipt_copy.pop("status", None)
+        evidence["receipt"] = receipt_copy
+    resolution = evidence.get("resolution")
+    if isinstance(resolution, Mapping):
+        resolution_copy = deepcopy(dict(resolution))
+        resolution_copy.pop("status", None)
+        segments = resolution_copy.get("segments")
+        if isinstance(segments, Sequence) and not isinstance(segments, (str, bytes)):
+            normalized_segments: list[object] = []
+            for item in segments:
+                if isinstance(item, Mapping):
+                    segment_copy = deepcopy(dict(item))
+                    segment_copy.pop("resulting_execution_state", None)
+                    normalized_segments.append(segment_copy)
+                else:
+                    normalized_segments.append(deepcopy(item))
+            resolution_copy["segments"] = normalized_segments
+        evidence["resolution"] = resolution_copy
+    return evidence
+
+
+def _replay_sequence(
+    resolution: Mapping[str, object],
+    request: Mapping[str, object] | None,
+    explicit_request: Mapping[str, object] | None,
+) -> int | None:
+    """Identify a retry of the latest committed roll-backed segment.
+
+    An explicit roll request is the caller's declaration that a new segment is
+    intended.  Without one, a resolution carrying the latest fixed roll is a
+    replay of that committed segment rather than an instruction to advance its
+    sequence.
+    """
+    if request is None or explicit_request is not None:
+        return None
+    segments = resolution.get("segments", [])
+    if not isinstance(segments, Sequence) or isinstance(segments, (str, bytes)) or not segments:
+        return None
+    latest = segments[-1]
+    if not isinstance(latest, Mapping):
+        return None
+    sequence = latest.get("segment_sequence")
+    if isinstance(sequence, bool) or not isinstance(sequence, int) or sequence < 1:
+        return None
+    fixed_results = resolution.get("fixed_rng_results", [])
+    if not isinstance(fixed_results, Sequence) or isinstance(fixed_results, (str, bytes)):
+        return None
+    if any(
+        isinstance(item, Mapping) and item.get("request_id") == request.get("request_id")
+        for item in fixed_results
+    ):
+        return sequence
+    return None
 
 
 def _reject_fields(value: Mapping[str, object], forbidden: frozenset[str], label: str) -> None:

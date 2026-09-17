@@ -73,6 +73,7 @@ def resolution(status="COMPLETED"):
         "prior_step_exports": {"hit": True},
         "child_resolution_ids": [],
         "segments": [{
+            "segment_id": "resolution-1:segment:1",
             "segment_sequence": 1,
             "commit_state": "committed",
             "resulting_execution_state": status,
@@ -128,6 +129,7 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
 
     def test_C_post_commit_followup_is_in_committed_segment_contract(self):
         validate("execution-segment.schema.json", {
+            "segment_id": "resolution-1:segment:1",
             "segment_sequence": 1,
             "commit_state": "committed",
             "resulting_execution_state": "COMPLETED",
@@ -170,6 +172,7 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
                 "payload": {"target_id": "actor-1", "destination_id": "location-2"},
             },
             "direct_transition_segments": [{
+                "segment_id": "turn-1-cmd-01:segment:1",
                 "segment_sequence": 1,
                 "commit_state": "committed",
                 "resulting_execution_state": "COMPLETED",

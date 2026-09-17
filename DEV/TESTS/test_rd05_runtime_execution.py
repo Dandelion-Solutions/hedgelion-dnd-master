@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 import unittest
 
 from jsonschema import Draft202012Validator, ValidationError
@@ -190,6 +191,8 @@ class DeterministicExecutionTests(unittest.TestCase):
     def _resolution(self, **overrides: object) -> dict[str, object]:
         value: dict[str, object] = {
             "resolution_id": "resolution-1",
+            "root_command_id": "turn-1-cmd-01",
+            "initiating_command_id": "turn-1-cmd-01",
             "activity_id": "activity.check.generic",
             "actor_id": "actor-1",
             "procedure_id": "procedure-1",
@@ -252,6 +255,11 @@ class DeterministicExecutionTests(unittest.TestCase):
         }
         continuation = {
             "generation": 2,
+            "root_command_id": accepted["command_id"],
+            "resolution_id": "resolution-1",
+            "activity_id": "activity.check.generic",
+            "actor_id": "actor-1",
+            "procedure_id": "procedure-1",
             "execution_cursor": "step.check.resolve",
             "safe_recompute_phase": "determine",
             "committed_segment_refs": [],
@@ -446,6 +454,174 @@ class DeterministicExecutionTests(unittest.TestCase):
 
         self.assertEqual(retry, first)
 
+    def test_later_segment_under_one_root_command_gets_its_own_idempotency_slot(self) -> None:
+        accepted = self._accepted()
+        store = ExecutionStore()
+        first = execute_segment(
+            accepted,
+            self._resolution(next_segment_sequence=1, segments=[]),
+            rng=FixedRng([17]),
+            event_payload={"result": 17},
+            store=store,
+        )
+        second_resolution = deepcopy(first["resolution"])
+        second_resolution["next_segment_sequence"] = 2
+        second_roll_request = {
+            "roll_id": "resolution-1:roll:2",
+            "request_id": "resolution-1:roll:2",
+            "expression": "fixed",
+            "source_kind": "rng.system",
+            "provenance_ref": "resolution-1:rng:2",
+        }
+
+        second = execute_segment(
+            accepted,
+            second_resolution,
+            rng=FixedRng([19]),
+            roll_request=second_roll_request,
+            event_payload={"result": 19},
+            store=store,
+        )
+
+        self.assertEqual(second["segment"]["segment_id"], "resolution-1:segment:2")
+        self.assertNotEqual(first["event_id"], second["event_id"])
+        self.assertEqual(len(second["resolution"]["segments"]), 2)
+        self.assertEqual(
+            store.lookup("resolution-1", "resolution-1:segment:1")["event_id"], first["event_id"]
+        )
+        self.assertEqual(
+            store.lookup("resolution-1", "resolution-1:segment:2")["event_id"], second["event_id"]
+        )
+
+    def test_child_resolution_under_one_root_command_has_a_distinct_owner_slot(self) -> None:
+        accepted = self._accepted()
+        store = ExecutionStore()
+        child_resolution = self._resolution(
+            resolution_id="resolution-child",
+            activity_id="activity.followup",
+            actor_id="actor-2",
+            initiating_command_id=None,
+            causal_invocation_key="resolution-1:segment:1:event:1",
+        )
+        child_resolution.pop("initiating_command_id")
+
+        child = execute_segment(
+            accepted,
+            child_resolution,
+            event_payload={"followup": True},
+            store=store,
+        )
+
+        self.assertEqual(child["resolution_id"], "resolution-child")
+        self.assertEqual(child["event"]["root_command_id"], accepted["command_id"])
+        self.assertEqual(
+            store.lookup("resolution-child", "resolution-child:segment:1")["event_id"],
+            child["event_id"],
+        )
+
+    def test_close_requires_stored_result_and_rejects_tampered_evidence(self) -> None:
+        accepted = self._accepted()
+        store = ExecutionStore()
+        committed = execute_segment(
+            accepted,
+            self._resolution(status="RUNNING"),
+            event_payload={"result": 17},
+            store=store,
+        )
+        with self.assertRaisesRegex(ExecutionContractError, "stored"):
+            close_resolution(committed)
+        for field_path in ("segment", "event", "receipt"):
+            tampered = deepcopy(committed)
+            if field_path == "segment":
+                tampered["segment"]["event_ids"] = []
+            elif field_path == "event":
+                tampered["event"]["payload"]["result"] = 99
+            else:
+                tampered["receipt"]["event_ids"] = []
+            with self.subTest(field=field_path), self.assertRaisesRegex(
+                ExecutionConflict, "stored committed evidence"
+            ):
+                close_resolution(tampered, store=store)
+
+        closed = close_resolution(committed, store=store)
+        stored = store.lookup("resolution-1", "resolution-1:segment:1")
+        self.assertEqual(closed["segment"], committed["segment"])
+        self.assertEqual(closed["event"], committed["event"])
+        self.assertEqual(closed["receipt"], committed["receipt"])
+        self.assertEqual(stored["segment"], committed["segment"])
+        self.assertEqual(stored["event"], committed["event"])
+        self.assertEqual(stored["receipt"], committed["receipt"])
+        stored["event"]["payload"]["result"] = 99
+        self.assertEqual(
+            store.lookup("resolution-1", "resolution-1:segment:1")["event"]["payload"]["result"],
+            17,
+        )
+
+    def test_mismatched_root_binding_fails_before_rng_or_store_mutation(self) -> None:
+        accepted = self._accepted()
+        store = ExecutionStore()
+        rng = FixedRng([17])
+
+        with self.assertRaisesRegex(ExecutionConflict, "root_command_id"):
+            execute_segment(
+                accepted,
+                self._resolution(root_command_id="other-command"),
+                rng=rng,
+                event_payload={"result": 17},
+                store=store,
+            )
+
+        self.assertEqual(rng.draw_count, 0)
+        self.assertIsNone(store.lookup("resolution-1", "resolution-1:segment:1"))
+
+    def test_mismatched_procedure_binding_fails_before_rng_or_store_mutation(self) -> None:
+        accepted = self._accepted()
+        store = ExecutionStore()
+        rng = FixedRng([17])
+
+        with self.assertRaisesRegex(ExecutionConflict, "procedure_id"):
+            execute_segment(
+                accepted,
+                self._resolution(),
+                rng=rng,
+                procedure_state={"procedure_id": "procedure-other"},
+                event_payload={"result": 17},
+                store=store,
+            )
+
+        self.assertEqual(rng.draw_count, 0)
+        self.assertIsNone(store.lookup("resolution-1", "resolution-1:segment:1"))
+
+    def test_mismatched_continuation_binding_fails_before_rng_or_store_mutation(self) -> None:
+        accepted = self._accepted()
+        store = ExecutionStore()
+        rng = FixedRng([17])
+        continuation = {
+            "generation": 1,
+            "root_command_id": "other-command",
+            "resolution_id": "resolution-1",
+            "activity_id": "activity.check.generic",
+            "actor_id": "actor-1",
+            "procedure_id": "procedure-1",
+            "execution_cursor": "step.check.resolve",
+            "safe_recompute_phase": "determine",
+            "committed_segment_refs": [],
+            "fixed_rng_results": [],
+        }
+
+        with self.assertRaisesRegex(ExecutionConflict, "continuation root_command_id"):
+            execute_segment(
+                accepted,
+                self._resolution(),
+                rng=rng,
+                continuation_state=continuation,
+                event_payload={"result": 17},
+                store=store,
+            )
+
+        self.assertEqual(rng.draw_count, 0)
+        self.assertIsNone(store.lookup("resolution-1", "resolution-1:segment:1"))
+
     def test_replay_with_conflicting_fixed_rng_fails_without_reroll(self) -> None:
         accepted = self._accepted()
         store = ExecutionStore()
@@ -506,8 +682,11 @@ class DeterministicExecutionTests(unittest.TestCase):
         self.assertEqual(closed["segment"]["segment_id"], running["segment"]["segment_id"])
         self.assertEqual(closed["event_id"], running["event_id"])
         self.assertEqual(closed["resolution"]["status"], "COMPLETED")
-        self.assertEqual(closed["resolution"]["segments"][-1]["resulting_execution_state"], "COMPLETED")
-        self.assertEqual(store.lookup(accepted["command_id"])["status"], "COMPLETED")
+        self.assertEqual(closed["resolution"]["segments"][-1]["resulting_execution_state"], "RUNNING")
+        self.assertEqual(
+            store.lookup(accepted["root_resolution_id"], running["segment"]["segment_id"])["status"],
+            "RUNNING",
+        )
 
     def test_full_resolution_and_continuation_outputs_match_owner_schemas(self) -> None:
         accepted = self._accepted()

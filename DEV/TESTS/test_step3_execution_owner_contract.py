@@ -57,6 +57,7 @@ def resolution():
         "prior_step_exports": {"attack_roll": 17},
         "child_resolution_ids": [],
         "segments": [{
+            "segment_id": "resolution-0000001:segment:1",
             "segment_sequence": 1,
             "commit_state": "committed",
             "resulting_execution_state": "AWAITING_REACTION",

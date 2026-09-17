@@ -63,6 +63,7 @@ def transition_command(disposition="command.accepted"):
 
 def committed_transition_segment(pending=None):
     return {
+        "segment_id": "turn-1-cmd-01:segment:1",
         "segment_sequence": 1,
         "commit_state": "committed",
         "resulting_execution_state": "COMPLETED",
