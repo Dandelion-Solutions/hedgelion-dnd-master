@@ -25,7 +25,30 @@ Every durable policy materially used by an accepted adjudicated parameter or fac
 policy_id@exact_campaign_commit
 ```
 
-The exact grammar is owned by `policy-basis-ref.schema.json`; it proves locator shape, not policy existence. Before acceptance the existing campaign publication/history resolver must prove the exact revision, paired sidecar/normative anchor, policy ID, adoption authority and applicability. The accepted array is empty when no durable policy materially contributed. Recovery resolves the frozen historical revision; later publication does not rewrite accepted work.
+The exact grammar is owned by `policy-basis-ref.schema.json`; it proves locator shape, not policy existence. Before acceptance a production `PolicyBasisResolver` boundary must prove the exact revision, paired sidecar/normative anchor, policy ID, adoption authority and applicability. The resolver is a verifier/adapter over existing campaign-currentness, House-Rules and Access-Control owners; it is **not** a new policy, publication, authorization or currentness authority.
+
+The accepted runtime realization is:
+
+```text
+trusted selected campaign + exact pinned authoritative revision H
++ authenticated RepositoryPort-equivalent exact commit/tree/path reads at H
++ trustworthy acting-principal evidence
++ current creator/PLAYER policy-adoption evidence when required
++ selected BoundCatalogContext when realization_refs are mechanically material
+-> exact-read RULES/HOUSE_RULES.yaml and its source_path at H
+-> validate unique active policy_id, matching normative anchor, authority class,
+   adoption basis, adopter attribution, applicability and required realization linkage
+-> ephemeral verified ResolvedPolicyBasis
+-> accepted policy_id@H refs + accepted parameter/fact values participate in RuntimeCommand identity
+```
+
+Raw caller assertions such as `authority_validated=true`, `applicable=true`, caller-selected source paths or an asserted campaign revision are never authority evidence. `DEV/TOOLS/validate_house_rules_mechanical_boundary.py` remains development/conformance proof and must not be promoted into the gameplay trust boundary.
+
+The verified resolver result is ephemeral. It does not create a persistent policy-proof registry, policy epoch, ACL copy or additional policy owner. Python object/type construction alone never proves trust; trust derives from exact pinned owner reads plus the owning authorization/currentness checks on the supported runtime path.
+
+The accepted array is empty when no durable policy materially contributed. Retry/recovery resolves the frozen historical revision from the accepted `policy_id@H` basis and does not rebind accepted work to current/latest policy or current grants. Later publication or grant changes are forward-looking and do not rewrite accepted work.
+
+This contract assumes supported HDM campaign publication/currentness paths are the admitted authority-changing paths. Arbitrary out-of-band repository mutation is integrity/tamper evidence requiring normal currentness/integrity handling; technical Git write capability does not become gameplay policy authority.
 
 ## 4. Active adjudicated surface
 

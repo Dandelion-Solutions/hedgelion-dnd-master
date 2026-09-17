@@ -210,6 +210,21 @@ TERMINAL
 
 Absence of an open Command and Encounter/Scene status alone do not terminate Procedure. Recovery routing cannot be the sole lifecycle evidence. Later machine realization must expose deterministic Procedure-native lifecycle evidence sufficient to validate membership.
 
+### 4.2.1 W02.T04 machine-realization ruling — 2026-09-18
+
+The deferred machine realization above is now constrained as follows without changing Step-5.2 ownership:
+
+- `runtime.procedure` must expose an explicit owner-native lifecycle field with exactly `ACTIVE` and `TERMINAL` semantics for this v1 realization;
+- `ACTIVE` begins only from an accepted Procedure-opening transition owned by the Procedure mechanism;
+- `TERMINAL` is established only by an explicit typed Procedure close/reset/terminal transition; absence of open Commands, Resolution state, Encounter/Scene state, routing membership or caller assertion cannot manufacture terminality;
+- non-settled `runtime.command` eligibility continues to derive from the command owner's accepted/settled disposition plus unfinished mandatory closure;
+- operational-root membership is a derivative of validated native owner state. A routing carrier, delta, cache, index, checkpoint, Python class instance or caller-built before/after set is never lifecycle authority;
+- the W02.T04 implementation may produce a typed `OperationalRootDelta` (or equivalent bounded derivative) from validated owner evidence, but W02.T05 remains the owner that joins terminal publication/removal with the native owner transition in the promised durability/publication closure;
+- materially unresolved accepted Interaction/IntentPlan becomes independently rootable only when the durability/handoff owner supplies an accepted promise for that semantic point. W02.T04 defines the eligibility/derivation contract; it must not invent that promise or create a generic pending-work authority;
+- source-native identity validation uses exact owner kind + owner identity. Same-kind/different-owner identifiers must not compare equal merely because a routing carrier has the same kind.
+
+A production implementation therefore secures the boundary by exact native-owner validation and deterministic derivation, not by trying to make Python carrier constructors intrinsically unforgeable.
+
 ## 4.3 Resolution
 
 Active/suspended/blocked Resolution remains native operational state. When boundedly reachable from an admitted root, it need not be separately rooted.

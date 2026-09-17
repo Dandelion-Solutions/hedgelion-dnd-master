@@ -38,3 +38,19 @@ RECOMMENDATION: resolve the native lifecycle proof authority through the System-
 COST / RISK IF RECOMMENDATION IS WRONG: forged root removal can hide active accepted work from later recovery; a new ad-hoc proof carrier can silently become a duplicate lifecycle/currentness authority.
 
 UNPUBLISHED_WORK: detached `/tmp/opencode/w02-t04` commits `0244a7b` and `14b061b` are unsafe T04 implementation evidence only; they are not integrated or published.
+
+## Senior / Product-Owner-approved resolution — ACCEPTED 2026-09-18
+
+Selected disposition: **materialize the already-accepted native lifecycle contract; no new lifecycle authority**.
+
+Step 5.2 now constrains the W02.T04 realization:
+
+- `runtime.procedure` exposes explicit owner-native `ACTIVE|TERMINAL` lifecycle semantics;
+- only an accepted Procedure-opening transition creates ACTIVE and only an explicit typed Procedure close/reset/terminal transition creates TERMINAL;
+- absence of open commands, Encounter/Scene status, routing membership or caller assertion cannot establish terminality;
+- RuntimeCommand eligibility continues to derive from native accepted/settled disposition plus unfinished mandatory closure;
+- operational-root deltas derive from exact validated native owner kind+identity+state; publicly constructible Python carriers are not authority;
+- W02.T04 prepares derivative enrollment/removal evidence; W02.T05 owns the publication closure applying native terminal transition plus required root-membership mutation;
+- unresolved Interaction/IntentPlan routing is admitted only when the durability/handoff owner supplies an accepted promise. T04 defines the eligibility/derivation contract and does not invent that promise.
+
+The detached prototypes `0244a7b` and `14b061b` remain non-authoritative failed implementation evidence and must not be cherry-picked/integrated as-is. W02.T04 is unblocked for fresh implementation under the repaired stable plan.

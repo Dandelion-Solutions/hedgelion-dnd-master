@@ -38,3 +38,23 @@ RECOMMENDATION: resolve the native campaign publication/history resolver through
 COST / RISK IF RECOMMENDATION IS WRONG: accepting forged or current-latest policy evidence can change mechanically accepted input on retry/recovery and establishes an unauthorized policy/currentness authority.
 
 UNPUBLISHED_WORK: detached `/tmp/opencode/w02-t03` commit `29ded20` is unsafe T03 implementation evidence only; it is not integrated or published.
+
+## Senior / Product-Owner-approved resolution — ACCEPTED 2026-09-18
+
+Selected disposition: **bounded runtime trust-boundary realization; no new policy authority**.
+
+The canonical House-Rules mechanical boundary now defines a production `PolicyBasisResolver` as a verifier/adapter over:
+
+- exact pinned campaign revision H;
+- RepositoryPort-equivalent exact commit/tree/path reads at H;
+- the existing House-Rules sidecar + normative source owners;
+- trustworthy acting-principal plus current creator/PLAYER policy-adoption evidence when required;
+- the already selected compatible `BoundCatalogContext` for material `realization_refs`.
+
+The result is ephemeral verified evidence. Only accepted `policy_id@H` refs plus the accepted parameter/fact values participate in RuntimeCommand identity. No persisted policy-proof registry, policy epoch, second ACL/currentness owner or policy engine is authorized.
+
+Raw caller authority/applicability booleans, caller-selected source paths/revisions and `DEV/TOOLS/validate_house_rules_mechanical_boundary.py` are explicitly rejected as runtime authority.
+
+Recovery reuses the frozen historical basis and does not rebind accepted work to current/latest policy or later grant state.
+
+The detached prototype `29ded20` remains non-authoritative failed implementation evidence and must not be cherry-picked/integrated as-is. W02.T03 is unblocked for fresh implementation under the repaired stable plan.

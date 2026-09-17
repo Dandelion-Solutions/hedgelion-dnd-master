@@ -1,6 +1,6 @@
 # HDM v1 Implementation Wave 02 — Execution, Durability and Recovery
 
-Status: **PLANNED / BLOCKED ON INDEPENDENT SENIOR GO**
+Status: **CURRENT / WAVE 02 EXECUTING — T03/T04 SYSTEM-IMPACT RULINGS ACCEPTED 2026-09-18**
 
 Goal: turn accepted typed interpretation into deterministic commands and mechanical events, publish the complete durability promise, and recover the same accepted state without replay, reroll or identity reallocation.
 
@@ -26,8 +26,8 @@ Fresh-read and reclassify before write. The baseline implementation set is:
 | execution | `NEW_CREATE GAME/TOOLS/runtime_execution.py`, `GAME/TOOLS/mechanics.py`, `DEV/TESTS/test_rd05_runtime_execution.py`; reconcile the existing `DEV/SCHEMAS/runtime-command-state.schema.json`, `runtime-continuation-state.schema.json`, `runtime-intent-plan-state.schema.json`, `runtime-interaction-state.schema.json`, `runtime-procedure-state.schema.json`, `combat-minimal-procedure-state.schema.json`, `runtime-resolution-state.schema.json`, `runtime-mechanical-event-state.schema.json`, `runtime-resolution-trace-state.schema.json`, `execution-segment.schema.json`, `resolution-receipt.schema.json` | `GAME/CORE/RANDOMNESS.md` consumes W01 currentness and integrates at W05 |
 | durability/publication | `NEW_CREATE GAME/TOOLS/durability.py`, `GAME/TOOLS/publication.py`, `DEV/SCHEMAS/durability-promise-result.schema.json`, `campaign-publication-attempt.schema.json`, `DEV/TESTS/test_rd06_durability_publication.py` | `GAME/SCHEMA/session.schema.yaml`, `GAME/TEMPLATE/STORAGE_README.md`, save/persistence CORE modules integrate at W05 |
 | recovery/maintenance | `NEW_CREATE GAME/TOOLS/recovery.py`, `DEV/SCHEMAS/recovery-result.schema.json`, `runtime-maintenance-audit-state.schema.json`, `DEV/TESTS/test_rd07_recovery.py`; replace `GAME/SCHEMA/checkpoint.schema.yaml`; modify `GAME/CAMPAIGN/CHECKPOINTS/_TEMPLATE.yaml` | session schema, `GAME/CORE/STORAGE.md`, schema/storage READMEs integrate at W05 |
-| operational roots | `NEW_CREATE GAME/TOOLS/recovery_roots.py`, `DEV/SCHEMAS/operational-root-routing.schema.json`; create/replace `GAME/SCHEMA/operational_root_routing.schema.yaml` and blank `GAME/CAMPAIGN/STATE/RUNTIME/RECOVERY_ROOTS/FORMAT.yaml` through the scaffold owner | storage documentation and generated scaffold integrate at W05 |
-| adjudication/catalog basis | modify current adjudication/policy resolver and exact accepted-basis schemas only after their owner paths are fresh-resolved through `DEV/PROJECT_MAP.md`; extend the three owner test modules named by the tasks | `GAME/CORE/ADJUDICATION.md` and `PLAY_POLICY.md` integrate at W05 |
+| operational roots | `NEW_CREATE GAME/TOOLS/recovery_roots.py`, `DEV/SCHEMAS/operational-root-routing.schema.json`; create/replace `GAME/SCHEMA/operational_root_routing.schema.yaml` and blank `GAME/CAMPAIGN/STATE/RUNTIME/RECOVERY_ROOTS/FORMAT.yaml` through the scaffold owner; modify the current `runtime.procedure` schema/producer/validator only as required to materialize its accepted owner-native `ACTIVE|TERMINAL` lifecycle | storage documentation and generated scaffold integrate at W05 |
+| adjudication/catalog basis | `NEW_CREATE GAME/TOOLS/policy_basis.py` (or the current owner-equivalent path after fresh resolution) as the narrow runtime `PolicyBasisResolver` adapter; modify `GAME/TOOLS/runtime_execution.py` and exact accepted-basis schemas only as required; extend the named RD05/RD07 owner tests | `GAME/CORE/ADJUDICATION.md` and `PLAY_POLICY.md` integrate at W05 |
 
 Required callable boundary:
 
@@ -97,15 +97,20 @@ Output checkpoint: `W02_DETERMINISTIC_EXECUTION_READY`.
 
 Hard input: the current adjudication/policy owners plus `W02_CATALOG_BACKED_COMMAND_READY`.
 
-Implement a bounded early resolver that loads the exact policy sources required by the proposed action before acceptance. Bind the complete accepted parameter/fact basis into the command/result identity. Supplied booleans, static JSON round-trip and current-latest policy at retry time are insufficient.
+Implement the accepted bounded `PolicyBasisResolver` realization from `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md`. It is a read-side verifier/adapter over exact pinned campaign reads plus existing House-Rules/Access/currentness owners; it is not a new policy/currentness/authorization owner.
+
+The resolver must start from the selected campaign and exact pinned authoritative revision H, use the supported RepositoryPort-equivalent exact-read capability, and validate the sidecar + normative source + policy identity/lifecycle/adoption/applicability against trustworthy principal/creator/PLAYER evidence. When mechanically material, `realization_refs` are checked against the already selected compatible `BoundCatalogContext`.
+
+Bind the complete accepted parameter/fact basis and unique sorted `policy_id@H` refs into the command/result identity. Raw caller booleans, caller-selected paths/revisions, the DEV conformance validator, static JSON round-trip and current/latest policy at retry time are insufficient. The resolver result is ephemeral; do not add a persisted proof registry or policy epoch.
 
 The accepted basis must support:
 
 - exact source identity/version/currentness;
 - all nine source-derived parameter/fact consumer edges defined by the accepted adjudication owner;
 - deterministic idempotency for the complete accepted input;
-- historical reuse after newer policy is published;
-- typed rejection for missing, stale, inconsistent or unsupported policy sources.
+- historical reuse after newer policy is published, without revalidating accepted work against later grants/policy revisions;
+- typed rejection for missing, stale, inconsistent, unauthorized, inapplicable or unsupported policy sources;
+- explicit negative coverage proving that forged `authority_validated`/`applicable` booleans, caller-selected source paths/revisions and direct use of the DEV validator cannot create an accepted policy basis.
 
 TDD and verification:
 
@@ -125,13 +130,23 @@ Define the native active-root set for independently recoverable work:
 - procedures with remaining accepted work;
 - promised unresolved inputs that must survive interruption.
 
-Implement typed eligibility and idempotent enrollment/removal. The root set is active-only, campaign-scoped, completeness-protected and bounded. It is not a publication journal, durability frontier or global pending queue. Temporal roots remain under their temporal owner and join through explicit routing, rather than being silently absorbed here.
+Implement typed eligibility and idempotent enrollment/removal under the accepted Step-5.2 machine-realization ruling:
+
+- materialize explicit owner-native `runtime.procedure.lifecycle = ACTIVE|TERMINAL` in the current Procedure schema/producer/validator;
+- derive Procedure root eligibility only from validated Procedure-native lifecycle evidence;
+- derive RuntimeCommand root eligibility from its native accepted/settled disposition plus unfinished mandatory closure;
+- define the unresolved Interaction/IntentPlan eligibility/derivation interface, but create such a root only when the later durability/handoff owner supplies an accepted promise for that semantic point;
+- derive a bounded typed operational-root delta from exact owner identity/state; never accept a caller-built before/after root set as lifecycle proof;
+- prepare terminal removal as derivative evidence only. W02.T05 owns the publication closure that atomically/coherently applies native owner transition plus required root-membership mutation.
+
+The root set is active-only, campaign-scoped, completeness-protected and bounded. It is not a publication journal, durability frontier, lifecycle owner or global pending queue. Temporal roots remain under their temporal owner and join through explicit routing, rather than being silently absorbed here.
 
 TDD and verification:
 
 - use `OperationalRootEnrollmentTests` in `DEV/TESTS/test_rd05_runtime_execution.py`;
 - prepare `OperationalRootRoutingContractTests` in `DEV/TESTS/test_rd07_recovery.py` in the owning task; do not publish it RED before W02.T06;
-- prove idempotent enrollment, exact removal after terminal publication, completeness failure and no scan fallback.
+- prove idempotent enrollment, exact owner-kind+identity matching, rejection of same-kind/different-owner carrier substitution, rejection of forged caller-built removal, Procedure ACTIVE/TERMINAL derivation, completeness failure and no scan fallback;
+- T04 may prove the terminal-removal delta shape, but the actual terminal-publication/removal closure becomes GREEN only in W02.T05.
 
 Output checkpoint: `W02_OPERATIONAL_ROOT_ENROLLMENT_READY`.
 
