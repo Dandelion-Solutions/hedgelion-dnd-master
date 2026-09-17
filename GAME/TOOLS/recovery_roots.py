@@ -9,13 +9,15 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
+import hashlib
+import json
 from typing import Final
 
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final = "1.0.2"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
 _OWNER_KINDS: Final = frozenset(
     {
@@ -80,6 +82,7 @@ class OperationalRootDelta:
     action: str
     root: OperationalRoot
     reason: str
+    owner_state_fingerprint: str = ""
 
     def __post_init__(self) -> None:
         _nonempty(self.campaign_id, "delta campaign_id")
@@ -88,6 +91,11 @@ class OperationalRootDelta:
         if self.root.campaign_id != self.campaign_id:
             raise OperationalRootError("delta root campaign differs from delta campaign")
         _nonempty(self.reason, "delta reason")
+        if self.owner_state_fingerprint and (
+            len(self.owner_state_fingerprint) != 64
+            or any(char not in "0123456789abcdef" for char in self.owner_state_fingerprint)
+        ):
+            raise OperationalRootError("delta owner state evidence must be a SHA-256 fingerprint")
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -96,6 +104,7 @@ class OperationalRootDelta:
             "action": self.action,
             "root": self.root.to_dict(),
             "reason": self.reason,
+            "owner_state_fingerprint": self.owner_state_fingerprint,
         }
 
 
@@ -181,7 +190,13 @@ def derive_operational_root_delta(
         action = "REMOVE"
     else:
         action = "NOOP"
-    return OperationalRootDelta(campaign_id, action, root, reason)
+    return OperationalRootDelta(
+        campaign_id,
+        action,
+        root,
+        reason,
+        _native_state_fingerprint(native_owner),
+    )
 
 
 def validate_operational_root_delta(
@@ -208,6 +223,8 @@ def validate_operational_root_delta(
         raise OperationalRootError("enrollment delta is not eligible from native owner state")
     if delta.action == "REMOVE" and eligible:
         raise OperationalRootError("removal delta is not eligible from native owner state")
+    if delta.owner_state_fingerprint != _native_state_fingerprint(native_owner):
+        raise OperationalRootError("delta lacks matching native owner state evidence")
 
 
 def enumerate_operational_root_page(
@@ -379,3 +396,17 @@ def _nonempty(value: object, label: str) -> str:
     if not isinstance(value, str) or not value:
         raise OperationalRootError(f"{label} must be a nonempty string")
     return value
+
+
+def _native_state_fingerprint(native_owner: Mapping[str, object]) -> str:
+    try:
+        encoded = json.dumps(
+            dict(native_owner),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+    except (TypeError, ValueError) as exc:
+        raise OperationalRootError("native owner state is not canonical evidence") from exc
+    return hashlib.sha256(encoded).hexdigest()

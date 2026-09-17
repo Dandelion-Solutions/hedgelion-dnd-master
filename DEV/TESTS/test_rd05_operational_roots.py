@@ -130,6 +130,25 @@ class OperationalRootEnrollmentTests(unittest.TestCase):
         self.assertEqual(terminal.root, enrolled.root)
         self.assertEqual(terminal.reason, "native_lifecycle_terminal")
 
+    def test_caller_built_terminal_removal_lacks_native_state_evidence(self) -> None:
+        terminal_owner = _procedure_owner(lifecycle="TERMINAL")
+        root = OperationalRoot(
+            campaign_id="campaign-1",
+            owner_kind="runtime.procedure",
+            owner_id="procedure-000001",
+            relative_path=route_native_record(
+                "runtime.procedure", ("procedure-000001",)
+            ).relative_path,
+        )
+        forged_removal = OperationalRootDelta(
+            campaign_id="campaign-1",
+            action="REMOVE",
+            root=root,
+            reason="caller_asserted_terminal",
+        )
+        with self.assertRaisesRegex(OperationalRootError, "state evidence"):
+            validate_operational_root_delta(forged_removal, native_owner=terminal_owner)
+
     def test_runtime_command_requires_unfinished_mandatory_closure(self) -> None:
         accepted = derive_operational_root_delta(
             campaign_id="campaign-1",
