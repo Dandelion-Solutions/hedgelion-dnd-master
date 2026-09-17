@@ -87,15 +87,11 @@ CURRENTNESS RE-READ SET BEFORE WRITE:
 
 COMPLETED_TASKS:
   W01.T08 -> `W01_CATALOG_CONTEXT_READY` at published Wave-01 closure
-  W02.T01 -> local verified code checkpoint `37d85cd` (`W02_CATALOG_BACKED_COMMAND_READY`); publication pending this cursor checkpoint
+  W02.T01 -> rebased reviewed code checkpoint `70f2d80` (`W02_CATALOG_BACKED_COMMAND_READY`); publication pending this cursor checkpoint
 
 ACTUAL IMPACT VS PLANNED: within the W02.T01 envelope. The new owner-native `GAME/TOOLS/runtime_execution.py`, `runtime.command` schema synchronization, and RD05/RD15 tests were expected. Existing Step-3 schema consumer tests required mechanical fixture synchronization; no new authority, persistence/recovery/currentness owner, catalog change, or shared physical writer was introduced.
 
-CURRENT_VERIFICATION_STATE:
-- focused RD05/RD15 plus Step-3 acceptance/schema suites: 60 passed
-- named catalog binding and catalog-backed acceptance integration/static negatives: included in the focused 60 and GREEN
-- clean detached exact-head verification at `92c1434`: full DEV discovery 647 passed, 7 skipped; maintenance audit PASS
-- local primary worktree full discovery is environment-blocked only by ignored `.opencode/node_modules` bytes being scanned by `test_versioning_namespace_policy`; the same exact tracked bytes pass in the clean detached worktree
+CURRENT_VERIFICATION_STATE: prior clean-worktree verification passed before the required remote-currentness rebase; repeat on the rebased exact HEAD before publication
 
 VERSION_IMPACT:
 - `runtime.command.schema_version`: 1 -> 2; accepted action records now retain the exact interpreter/catalog/binding evidence after settlement
@@ -107,4 +103,4 @@ VERSION_IMPACT:
 SYSTEM_IMPACT: NONE
 NEXT_EXACT_TASK: publish this reviewed W02.T01 checkpoint and remote-read it back; then start W02.T02 and W02.T03 independently after fresh task-local currentness reads
 KNOWN_BLOCKERS: NONE
-UNPUBLISHED_WORK: reviewed W02.T01 commits through `92c1434` and this cursor update await one fast-forward publication
+UNPUBLISHED_WORK: reviewed rebased W02.T01 commits through `6376209` and this cursor correction await exact-head verification and one fast-forward publication
