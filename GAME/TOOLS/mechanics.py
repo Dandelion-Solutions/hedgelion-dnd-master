@@ -19,8 +19,8 @@ from threading import RLock
 from typing import Final, Protocol
 
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final = "1.0.3"
 _DIGEST_GENERATION: Final = 1
 _ID_PATTERN: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _EVENT_KIND_PATTERN: Final = re.compile(r"^event\.[a-z][a-z0-9_.]*$")
@@ -283,11 +283,14 @@ def execute_segment(
         command_id,
         resolution_id,
     )
-    checked_roll_request = _roll_request(resolution_id, roll_request) if (
-        rng is not None or roll_request is not None
-    ) else _roll_request_from_resolution(checked_resolution)
+    if roll_request is not None:
+        checked_roll_request = _roll_request(resolution_id, roll_request)
+    else:
+        checked_roll_request = _roll_request_from_resolution(checked_resolution)
+        if checked_roll_request is None and rng is not None:
+            checked_roll_request = _roll_request(resolution_id, None)
     fixed_roll = _existing_roll_result(checked_resolution, checked_roll_request)
-    replay_sequence = _replay_sequence(checked_resolution, checked_roll_request, roll_request)
+    replay_sequence = _replay_sequence(checked_resolution, checked_roll_request)
     if replay_sequence is not None:
         sequence = replay_sequence
     execution_fingerprint = _digest(
@@ -625,16 +628,15 @@ def _evidence_without_close_state(result: Mapping[str, object]) -> dict[str, obj
 def _replay_sequence(
     resolution: Mapping[str, object],
     request: Mapping[str, object] | None,
-    explicit_request: Mapping[str, object] | None,
 ) -> int | None:
     """Identify a retry of the latest committed roll-backed segment.
 
-    An explicit roll request is the caller's declaration that a new segment is
-    intended.  Without one, a resolution carrying the latest fixed roll is a
-    replay of that committed segment rather than an instruction to advance its
-    sequence.
+    A request that matches the latest fixed roll in a resolution carrying
+    committed segments is a replay of that segment rather than an instruction
+    to advance its sequence.  A new segment can still use a request that is not
+    already present in the resolution's fixed-roll evidence.
     """
-    if request is None or explicit_request is not None:
+    if request is None:
         return None
     segments = resolution.get("segments", [])
     if not isinstance(segments, Sequence) or isinstance(segments, (str, bytes)) or not segments:
@@ -648,10 +650,8 @@ def _replay_sequence(
     fixed_results = resolution.get("fixed_rng_results", [])
     if not isinstance(fixed_results, Sequence) or isinstance(fixed_results, (str, bytes)):
         return None
-    if any(
-        isinstance(item, Mapping) and item.get("request_id") == request.get("request_id")
-        for item in fixed_results
-    ):
+    latest_fixed = fixed_results[-1]
+    if isinstance(latest_fixed, Mapping) and latest_fixed.get("request_id") == request.get("request_id"):
         return sequence
     return None
 
@@ -917,7 +917,7 @@ def _roll_request_from_resolution(
         raise ExecutionContractError("resolution fixed_rng_results must be an array")
     if not fixed_results:
         return None
-    roll = _roll_result(_require_mapping(fixed_results[0], "resolution fixed RNG result"))
+    roll = _roll_result(_require_mapping(fixed_results[-1], "resolution fixed RNG result"))
     return {
         key: roll[key]
         for key in ("roll_id", "request_id", "expression", "source_kind", "provenance_ref")

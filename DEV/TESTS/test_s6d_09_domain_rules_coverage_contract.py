@@ -120,9 +120,11 @@ class CoverageTests(unittest.TestCase):
  def test_all_control_procedure_transitions_are_closed_retry_safe_and_schema_valid(self):
   schemas=ROOT/"DEV/SCHEMAS";v=CanonicalSchemaValidator(schemas);request_schema=json.loads((schemas/"combat-procedure-transition-request.schema.json").read_text());result_schema=json.loads((schemas/"combat-procedure-transition-result.schema.json").read_text())
   init={"profile_id":"procedure.initialize","idempotency_key":"proc-init-1","catalog_generation":2,"procedure_id":"procedure-1","procedure_revision":0,"initiative_entries":[{"actor_id":"actor-a","roll_total":14,"rng_result_ref":"rng-a","tie_break_rank":2},{"actor_id":"actor-b","roll_total":14,"rng_result_ref":"rng-b","tie_break_rank":1}],"action_capacity":1,"movement_capacity":30}
-  event_schema=json.loads((schemas/"procedure-state-changed-event.schema.json").read_text());v.validate(init,request_schema);receipts={};transaction=execute_combat_procedure_transition(init,None,receipts);self.assertIs(transaction,execute_combat_procedure_transition(init,None,receipts));wire,after=transaction;v.validate(wire,result_schema);v.validate(after["mechanical_event"],event_schema);v.validate(after["receipt"],json.loads((schemas/"resolution-receipt.schema.json").read_text()));procedure=after["procedure"];self.assertEqual(procedure["state"]["initiative_order"],["actor-b","actor-a"]);self.assertIn("fixed_rng_evidence_fingerprint",after["receipt"]["exports"])
+  event_schema=json.loads((schemas/"procedure-state-changed-event.schema.json").read_text());v.validate(init,request_schema);receipts={};transaction=execute_combat_procedure_transition(init,None,receipts);self.assertIs(transaction,execute_combat_procedure_transition(init,None,receipts));wire,after=transaction;v.validate(wire,result_schema);v.validate(after["mechanical_event"],event_schema);v.validate(after["receipt"],json.loads((schemas/"resolution-receipt.schema.json").read_text()));procedure=after["procedure"];self.assertEqual(wire["execution_segment"]["segment_id"],"resolution:proc-init-1:segment:1");self.assertEqual(procedure["state"]["initiative_order"],["actor-b","actor-a"]);self.assertIn("fixed_rng_evidence_fingerprint",after["receipt"]["exports"])
   missing_event=copy.deepcopy(wire);missing_event["event_ids"]=[];missing_event["execution_segment"]["event_ids"]=[]
   with self.assertRaises(Exception):v.validate(missing_event,result_schema)
+  missing_segment=copy.deepcopy(wire);missing_segment["execution_segment"].pop("segment_id")
+  with self.assertRaises(Exception):v.validate(missing_segment,result_schema)
   sequence=[
    {"profile_id":"procedure.start_turn","actor_id":"actor-b"},
    {"profile_id":"procedure.spend_action","actor_id":"actor-b","amount":1},
@@ -133,7 +135,7 @@ class CoverageTests(unittest.TestCase):
    {"profile_id":"procedure.terminate"}
   ]
   for index,delta in enumerate(sequence,1):
-   req={"idempotency_key":f"proc-{index}","catalog_generation":2,"procedure_id":"procedure-1","procedure_revision":procedure["revision"],**delta};v.validate(req,request_schema);wire,after=execute_combat_procedure_transition(req,procedure,{});v.validate(wire,result_schema);v.validate(after["mechanical_event"],event_schema);v.validate(after["receipt"],json.loads((schemas/"resolution-receipt.schema.json").read_text()));procedure=after["procedure"]
+   req={"idempotency_key":f"proc-{index}","catalog_generation":2,"procedure_id":"procedure-1","procedure_revision":procedure["revision"],**delta};v.validate(req,request_schema);wire,after=execute_combat_procedure_transition(req,procedure,{});v.validate(wire,result_schema);v.validate(after["mechanical_event"],event_schema);v.validate(after["receipt"],json.loads((schemas/"resolution-receipt.schema.json").read_text()));self.assertEqual(wire["execution_segment"]["segment_id"],f"resolution:proc-{index}:segment:1");procedure=after["procedure"]
   self.assertEqual(procedure["state"]["round_number"],2);self.assertEqual(procedure["state"]["lifecycle_state"],"terminated")
  def test_procedure_rejects_unfixed_tie_overspend_wrong_phase_and_retry_conflict(self):
   bad_init={"profile_id":"procedure.initialize","idempotency_key":"bad-init","catalog_generation":2,"procedure_id":"procedure-1","procedure_revision":0,"initiative_entries":[{"actor_id":"a","roll_total":10,"rng_result_ref":"rng-same","tie_break_rank":1},{"actor_id":"b","roll_total":10,"rng_result_ref":"rng-same","tie_break_rank":1}],"action_capacity":1,"movement_capacity":30}
@@ -149,11 +151,13 @@ class CoverageTests(unittest.TestCase):
   destination={"record":{"id":"location-b","kind":"world.location","state":{"name":"Corridor"}},"revision":3}
   request={"transition_kind":"transition.location_change","profile_id":"location_change.procedure_movement","idempotency_key":"move-1","catalog_generation":2,"procedure_id":"procedure-1","procedure_revision":4,"actor_id":"actor-1","actor_revision":7,"destination_location_id":"location-b","destination_location_revision":3,"movement_cost":10}
   receipts={};first=execute_procedure_movement(request,procedure,actor,destination,receipts);retry=execute_procedure_movement(request,procedure,actor,destination,receipts)
-  self.assertIs(first,retry);wire,after=first;self.assertEqual(wire["status"],"COMPLETED");self.assertEqual(len(wire["prospective_mutations"]),2);self.assertEqual(len(wire["execution_segment"]["affected_revision_refs"]),2)
+  self.assertIs(first,retry);wire,after=first;self.assertEqual(wire["status"],"COMPLETED");self.assertEqual(wire["execution_segment"]["segment_id"],"resolution:move-1:segment:1");self.assertEqual(len(wire["prospective_mutations"]),2);self.assertEqual(len(wire["execution_segment"]["affected_revision_refs"]),2)
   self.assertEqual(after["procedure"]["state"]["participant_resources"]["actor-1"]["resource.movement_budget"]["spent"],15);self.assertEqual(after["actor"]["record"]["state"]["location_id"],"location-b")
   schemas=ROOT/"DEV/SCHEMAS";validator=CanonicalSchemaValidator(schemas)
   validator.validate(request,json.loads((schemas/"gameplay-spine-transition-request.schema.json").read_text()))
   self.validate_transition(wire)
+  missing_segment=copy.deepcopy(wire);missing_segment["execution_segment"].pop("segment_id")
+  with self.assertRaises(Exception):self.validate_transition(missing_segment)
  def test_movement_conflict_or_budget_failure_has_no_partial_commit(self):
   p={"id":"p","revision":2,"state":initialize_combat_procedure(["a"],["a"],movement_capacity=5)};a={"record":{"id":"a","kind":"world.actor","state":{"location_id":"x"}},"revision":3}
   destination={"record":{"id":"y","kind":"world.location","state":{"name":"Corridor"}},"revision":1};req={"profile_id":"location_change.procedure_movement","idempotency_key":"k","procedure_id":"p","procedure_revision":1,"actor_revision":3,"actor_id":"a","destination_location_id":"y","destination_location_revision":1,"movement_cost":1}
@@ -165,7 +169,7 @@ class CoverageTests(unittest.TestCase):
  def test_outside_procedure_movement_changes_only_canonical_actor(self):
   actor={"record":{"id":"actor-1","kind":"world.actor","state":{"location_id":"location-a"}},"revision":7};destination={"record":{"id":"location-b","kind":"world.location","state":{"name":"Corridor"}},"revision":3};request={"transition_kind":"transition.location_change","profile_id":"location_change.outside_procedure","idempotency_key":"move-out-1","catalog_generation":2,"actor_id":"actor-1","actor_revision":7,"destination_location_id":"location-b","destination_location_revision":3,"movement_cost":"NOT_APPLICABLE_OUTSIDE_PROCEDURE"}
   schemas=ROOT/"DEV/SCHEMAS";CanonicalSchemaValidator(schemas).validate(request,json.loads((schemas/"gameplay-spine-transition-request.schema.json").read_text()))
-  wire,after=execute_outside_procedure_movement(request,actor,destination,{});self.assertEqual(after["actor"]["record"]["state"]["location_id"],"location-b");self.assertEqual({x["owner_kind"] for x in wire["prospective_mutations"]},{"world.actor"});self.validate_transition(wire)
+  wire,after=execute_outside_procedure_movement(request,actor,destination,{});self.assertEqual(wire["execution_segment"]["segment_id"],"resolution:move-out-1:segment:1");self.assertEqual(after["actor"]["record"]["state"]["location_id"],"location-b");self.assertEqual({x["owner_kind"] for x in wire["prospective_mutations"]},{"world.actor"});self.validate_transition(wire)
   invalid=copy.deepcopy(destination);invalid["record"]["state"]={"environment_ids":[]}
   with self.assertRaises(Exception):CanonicalSchemaValidator(schemas).validate(invalid["record"],json.loads((schemas/"world-record.schema.json").read_text()))
   missing_revision=copy.deepcopy(request);missing_revision.pop("destination_location_revision")
@@ -185,7 +189,7 @@ class CoverageTests(unittest.TestCase):
   self.assertEqual(spine["spatial_profile"]["within_location_reposition"],"FICTIONAL_POSITION_PLUS_PROCEDURE_BUDGET; NO_WORLD_LOCATION_MUTATION")
  def test_asset_transfer_is_exclusive_atomic_and_retry_safe(self):
   asset={"record":{"id":"asset-1","kind":"world.asset","state":{"owner_actor_id":"actor-a","equipment":{"mode":"held"}}},"revision":2};req={"transition_kind":"transition.asset_transfer","profile_id":"asset.transfer","idempotency_key":"transfer-1","catalog_generation":2,"asset_id":"asset-1","asset_revision":2,"from_placement":{"owner_actor_id":"actor-a"},"to_placement":{"owner_actor_id":"actor-b"}}
-  receipts={};transaction=execute_asset_transfer(req,asset,receipts);self.assertIs(transaction,execute_asset_transfer(req,asset,receipts));wire,after=transaction;self.assertEqual(after["asset"]["record"]["state"]["owner_actor_id"],"actor-b");self.assertNotIn("location_id",after["asset"]["record"]["state"]);self.assertEqual(len(wire["prospective_mutations"]),3);self.validate_transition(wire)
+  receipts={};transaction=execute_asset_transfer(req,asset,receipts);self.assertIs(transaction,execute_asset_transfer(req,asset,receipts));wire,after=transaction;self.assertEqual(wire["execution_segment"]["segment_id"],"resolution:transfer-1:segment:1");self.assertEqual(after["asset"]["record"]["state"]["owner_actor_id"],"actor-b");self.assertNotIn("location_id",after["asset"]["record"]["state"]);self.assertEqual(len(wire["prospective_mutations"]),3);self.validate_transition(wire)
   schemas=ROOT/"DEV/SCHEMAS";CanonicalSchemaValidator(schemas).validate(req,json.loads((schemas/"gameplay-spine-transition-request.schema.json").read_text()))
   legacy={"id":"asset-1","revision":2,"state":{"owner_actor_id":"actor-a"}}
   with self.assertRaises(ValueError):execute_asset_transfer(req,legacy,{})
@@ -193,9 +197,9 @@ class CoverageTests(unittest.TestCase):
   asset={"record":{"id":"asset-1","kind":"world.asset","state":{"owner_actor_id":"actor-a"}},"revision":2}
   equip={"transition_kind":"transition.asset_status","profile_id":"asset.equip","idempotency_key":"equip-1","catalog_generation":2,"asset_id":"asset-1","asset_revision":2,"owner_actor_id":"actor-a","mode":"worn"}
   schemas=ROOT/"DEV/SCHEMAS";requests=json.loads((schemas/"gameplay-spine-transition-request.schema.json").read_text());CanonicalSchemaValidator(schemas).validate(equip,requests)
-  wire,after=execute_asset_equip(equip,asset,{});self.assertEqual(after["asset"]["record"]["state"]["equipment"],{"mode":"worn"});self.validate_transition(wire)
+  wire,after=execute_asset_equip(equip,asset,{});self.assertEqual(wire["execution_segment"]["segment_id"],"resolution:equip-1:segment:1");self.assertEqual(after["asset"]["record"]["state"]["equipment"],{"mode":"worn"});self.validate_transition(wire)
   use={"profile_id":"asset.use","idempotency_key":"use-1","catalog_generation":2,"asset_id":"asset-1","asset_revision":2,"owner_actor_id":"actor-a","consequence_profile":"EXACT_ADMITTED_ACTIVITY","activity_id":"activity.check.generic"}
-  CanonicalSchemaValidator(schemas).validate(use,requests);receipts={};transaction=resolve_asset_use(use,asset,{"activity.check.generic"},receipts);self.assertIs(transaction,resolve_asset_use(use,asset,{"activity.check.generic"},receipts));wire,after=transaction;self.assertEqual(after,{});self.assertEqual(wire["prospective_mutations"],[]);self.assertEqual(wire["event_ids"],[]);self.assertEqual(wire["activity_binding"],{"binding_kind":"EXACT_ADMITTED_ACTIVITY","activity_id":"activity.check.generic"});self.validate_transition(wire)
+  CanonicalSchemaValidator(schemas).validate(use,requests);receipts={};transaction=resolve_asset_use(use,asset,{"activity.check.generic"},receipts);self.assertIs(transaction,resolve_asset_use(use,asset,{"activity.check.generic"},receipts));wire,after=transaction;self.assertEqual(wire["execution_segment"]["segment_id"],"resolution:use-1:segment:1");self.assertEqual(after,{});self.assertEqual(wire["prospective_mutations"],[]);self.assertEqual(wire["event_ids"],[]);self.assertEqual(wire["activity_binding"],{"binding_kind":"EXACT_ADMITTED_ACTIVITY","activity_id":"activity.check.generic"});self.validate_transition(wire)
   conflict=copy.deepcopy(use);conflict["activity_id"]="activity.save.generic";wire,_=resolve_asset_use(conflict,asset,{"activity.check.generic","activity.save.generic"},receipts);self.assertEqual(wire["failure_code"],"failure.idempotency_conflict");self.validate_transition(wire)
   bad=copy.deepcopy(use);bad["activity_id"]="activity.unadmitted";wire,_=resolve_asset_use(bad,asset,{"activity.check.generic"},{});self.assertEqual(wire["failure_code"],"failure.missing_reference");self.validate_transition(wire)
  def test_mechanical_null_has_no_fake_delta_or_event(self):
@@ -207,7 +211,7 @@ class CoverageTests(unittest.TestCase):
    request={"profile_id":f"resolution.{family}","idempotency_key":f"null-{family}","activity_id":f"activity.{family}.generic","ability_id":"ability.dexterity","dc":13,"roll":{"rng_result_ref":f"rng-{family}","d20":11,"basis_modifier":2,"proficiency_bonus":1}}
    receipts={};first=execute_mechanical_null_resolution(request,receipts);retry=execute_mechanical_null_resolution(request,receipts)
    self.assertIs(first,retry);wire,evidence=first
-   self.assertEqual(wire["status"],"COMPLETED");self.assertEqual(wire["prospective_mutations"],[])
+   self.assertEqual(wire["status"],"COMPLETED");self.assertEqual(wire["prospective_mutations"],[]);self.assertEqual(wire["execution_segment"]["segment_id"],f"resolution:{wire['idempotency_key']}:segment:1")
    self.assertEqual(wire["execution_segment"]["affected_revision_refs"],[])
    self.assertEqual(wire["execution_segment"]["event_ids"],[evidence["event_id"]])
    self.assertEqual(evidence["mechanical_event"]["event_kind"],f"event.{family}.resolved")

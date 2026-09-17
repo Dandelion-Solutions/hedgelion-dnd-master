@@ -493,6 +493,20 @@ class DeterministicExecutionTests(unittest.TestCase):
             store.lookup("resolution-1", "resolution-1:segment:2")["event_id"], second["event_id"]
         )
 
+        replay_rng = FixedRng([23])
+        replay = resume_accepted_execution(
+            accepted,
+            second["resolution"],
+            rng=replay_rng,
+            event_payload={"result": 19},
+            store=store,
+        )
+
+        self.assertEqual(replay, second)
+        self.assertEqual(replay["segment"]["segment_id"], "resolution-1:segment:2")
+        self.assertEqual(replay["roll_result"]["raw_values"], [19])
+        self.assertEqual(replay_rng.draw_count, 0)
+
     def test_child_resolution_under_one_root_command_has_a_distinct_owner_slot(self) -> None:
         accepted = self._accepted()
         store = ExecutionStore()

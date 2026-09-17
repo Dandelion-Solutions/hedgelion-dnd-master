@@ -25,8 +25,9 @@
         "profile_id": {"type": "string", "minLength": 1}, "idempotency_key": {"$ref": "#/$defs/id"}, "status": {"const": "COMPLETED"},
         "execution_segment": {
           "type": "object", "additionalProperties": false,
-          "required": ["segment_sequence", "commit_state", "resulting_execution_state", "affected_revision_refs", "event_ids"],
+          "required": ["segment_id", "segment_sequence", "commit_state", "resulting_execution_state", "affected_revision_refs", "event_ids"],
           "properties": {
+            "segment_id": {"$ref": "#/$defs/id"},
             "segment_sequence": {"const": 1}, "commit_state": {"const": "committed"}, "resulting_execution_state": {"const": "COMPLETED"},
             "affected_revision_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
             "event_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}

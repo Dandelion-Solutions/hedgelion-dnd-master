@@ -155,7 +155,7 @@ def _failure(request,code):
  return {"profile_id":request.get("profile_id","unknown.profile"),"idempotency_key":request.get("idempotency_key","unknown-key"),"status":"REJECTED","failure_code":code,"prospective_mutations":[],"event_ids":[]}
 def _committed(profile,key,mutations,event_ids):
  revisions=sorted({f"{m['owner_id']}@{m['after_revision']}" for m in mutations})
- return {"profile_id":profile,"idempotency_key":key,"status":"COMPLETED","prospective_mutations":mutations,"execution_segment":{"segment_sequence":1,"commit_state":"committed","resulting_execution_state":"COMPLETED","affected_revision_refs":revisions,"event_ids":event_ids},"event_ids":event_ids,"receipt_ref":f"{key}:receipt"}
+ return {"profile_id":profile,"idempotency_key":key,"status":"COMPLETED","prospective_mutations":mutations,"execution_segment":{"segment_id":f"resolution:{key}:segment:1","segment_sequence":1,"commit_state":"committed","resulting_execution_state":"COMPLETED","affected_revision_refs":revisions,"event_ids":event_ids},"event_ids":event_ids,"receipt_ref":f"{key}:receipt"}
 def _receipt_fixture(wire,exports=None):
  return {"execution_owner_id":f"resolution:{wire['idempotency_key']}","segment_refs":[f"resolution:{wire['idempotency_key']}:segment:1"],"status":wire["status"],"event_ids":wire["event_ids"],"exports":exports or {},"pending_child_refs":[]}
 def _generic_activity_contract(activity_id):
