@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T07 - Role-protected execution handoff (T03/T04 remain blocked)
-LAST_COMPLETED_TASK: W02.T02 - W02_DETERMINISTIC_EXECUTION_READY
-LAST_SAFE_SHA: `f8a5166b3371e565e3d252fab5bbdd890f5f33d1` (published T03-start cursor; no T03 code integrated)
+CURRENT_TASK: W02.T07 - Role-protected execution handoff complete locally (T03/T04 remain blocked)
+LAST_COMPLETED_TASK: W02.T07 - W02_PROTECTED_EXECUTION_HANDOFF_READY
+LAST_SAFE_SHA: `19e0803` (local T07 repair checkpoint; publication intentionally not performed)
 
 ## Dependency schedule
 
@@ -113,7 +113,7 @@ VERSION_IMPACT:
 ACTUAL T02 IMPACT VS PLANNED: within the approved T02 execution-owner envelope. `GAME/TOOLS/mechanics.py` was an explicit Wave-02 baseline direct action path that the initial cursor omitted; its introduction, direct-transition producer/schema synchronization, and domain coverage validator changes are mechanical consumers of the accepted embedded-segment identity, not a new authority or broader boundary.
 
 SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED - `implementation-wave-02-t03-system-impact-brief.md` and `implementation-wave-02-t04-system-impact-brief.md`
-NEXT_EXACT_TASK: add the smallest material T07 RED for typed execution-to-role handoff before implementation; keep T03/T04 blocked
+NEXT_EXACT_TASK: preserve T03/T04 Senior blockers; W02.T05 remains dependency-blocked
 KNOWN_BLOCKERS: T03 lacks an accepted native campaign publication/history policy resolver; T04 lacks an accepted native lifecycle-proof boundary for operational-root membership/removal
 UNPUBLISHED_WORK: unsafe detached W02.T03 commit `29ded20` and W02.T04 commits `0244a7b` + `14b061b` are not integrated or published; safe branch work is this cursor/brief only
 
@@ -194,7 +194,7 @@ SPEC / APPROVED DESIGN:
 - `implementation-wave-02-execution-durability-recovery.md` W02.T07
 - published `W01_ROLE_CONTRACT_READY`, `W01_CONTEXT_OWNER_READY`, and `W02_DETERMINISTIC_EXECUTION_READY`
 
-IMPLEMENTATION START HEAD: `a939aaf06282ec19e6db48846c4c4579d63ea8ec`
+IMPLEMENTATION START HEAD: `b455e3864f2d8cf247444989eecc63fd3ece2146`
 PRIMARY OWNER ARTIFACTS:
 - `GAME/TOOLS/turn_runtime.py` protected turn envelope
 - `GAME/TOOLS/emission.py` sole ordinary visible emission surface
@@ -219,9 +219,23 @@ EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
 KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
 - T03 adjudication basis, T04 operational roots, T05/T06 durability/recovery, policy/HOT/currentness, Story, final CORE writers
 
-VERSION IMPACT: pending actual T07 owner assessment under `DEV/RELEASE/VERSIONING.md`
+COMPLETED TASK:
+- W02.T07 -> implementation `811fd07` plus repair-round-1 `19e0803`; output checkpoint `W02_PROTECTED_EXECUTION_HANDOFF_READY` (local-only)
+
+VERSION IMPACT: NONE
+- T07 changed only runtime-local role/emission helpers and DEV test witnesses; no version-bearing CORE/runtime module header, serialized schema, catalog, persistent/campaign/storage/generation namespace, or projection changed.
 SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative catalog or shared-schema change
 MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
+
+ACTUAL T07 IMPACT VS PLANNED: within the approved role/emission envelope. Narrator binding now requires the registered execution handoff; emission accepts only an owner-issued typed execution outcome tied to the current turn/recipient/bundle, preserves protected capacity, rejects over-capacity and duplicate output, and excludes diagnostic/private execution material. Auxiliary fallback remains finite and cannot consume protected capacity or emit.
+
+CURRENT_VERIFICATION_STATE:
+- local focused role/execution/Step-3 conformance suites at code repair `19e0803`: 66 passed
+- local full DEV discovery at code repair `19e0803`: 680 passed, 7 skipped
+- local maintenance audit at code repair `19e0803`: PASS
+- publication/read-back: intentionally unavailable because this repair instruction requires local-only commits
+
+SYSTEM_IMPACT: NONE for W02.T07. The repair stayed within the approved ephemeral role/emission owner boundary; no new authority, persistence, dependency direction, mechanics/RNG semantics, or cross-wave owner was introduced. Existing wave-level T03/T04 `SENIOR_REVIEW_REQUIRED` disposition remains unchanged.
 
 ## W02.T04 Impact Envelope
 
