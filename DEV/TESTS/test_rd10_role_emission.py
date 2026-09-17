@@ -15,6 +15,42 @@ import emission
 import turn_runtime
 
 
+def _execution_result() -> dict[str, object]:
+    return {
+        "accepted_command_id": "turn-1-cmd-01",
+        "accepted_input_fingerprint": "a" * 64,
+        "execution_owner_id": "resolution-1",
+        "resolution_id": "resolution-1",
+        "status": "COMPLETED",
+        "segment": {"segment_id": "resolution-1:segment:1", "event_ids": ["event-1"]},
+        "event_id": "event-1",
+        "event": {"segment_id": "resolution-1:segment:1", "root_command_id": "turn-1-cmd-01"},
+    }
+
+
+def _bind_narrator(envelope: dict[str, object], *, allowed_handoffs: tuple[str, ...] = ()) -> None:
+    turn_runtime.bind_phase(
+        envelope,
+        "NARRATOR",
+        "narrate",
+        "profile.narration",
+        "bundle-1",
+        ("narration_result",),
+        recipient_id="player-1",
+        allowed_handoffs=allowed_handoffs,
+    )
+
+
+def _narration_result(prose: str = "safe") -> dict[str, object]:
+    return {
+        "kind": "narration_result",
+        "recipient_id": "player-1",
+        "bundle_id": "bundle-1",
+        "prose": prose,
+        "disclosure_refs": [],
+    }
+
+
 class TurnEnvelopeContainmentTests(unittest.TestCase):
     def test_turn_rejects_noninteger_protected_capacity(self):
         with self.assertRaises(turn_runtime.TurnContractError):
@@ -29,6 +65,57 @@ class TurnEnvelopeContainmentTests(unittest.TestCase):
 
 
 class TypedHandoffTests(unittest.TestCase):
+    def test_accepted_execution_enters_narrator_before_visible_emission(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        _bind_narrator(envelope, allowed_handoffs=("execution_result",))
+        execution = _execution_result()
+
+        handoff = turn_runtime.accept_execution_handoff(envelope, "NARRATOR", execution)
+
+        self.assertEqual(handoff["kind"], "execution_result")
+        self.assertEqual(handoff["accepted_command_id"], "turn-1-cmd-01")
+        self.assertEqual(handoff["event_id"], execution["event_id"])
+        self.assertNotIn("event", handoff)
+        self.assertNotIn("resolution", handoff)
+
+        narration = _narration_result("The check succeeds.")
+        turn_runtime.accept_phase_result(envelope, narration)
+        payload = emission.commit_visible_payload(
+            narration,
+            {"bundle_id": "bundle-1", "recipient_id": "player-1", "disclosure_refs": []},
+            "AI_REASONING",
+            envelope=envelope,
+        )
+        self.assertEqual(payload["prose"], "The check succeeds.")
+
+    def test_execution_handoff_rejects_untyped_or_diagnostic_transport(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        _bind_narrator(envelope, allowed_handoffs=("execution_result",))
+        with self.assertRaisesRegex(turn_runtime.TurnContractError, "typed object"):
+            turn_runtime.accept_execution_handoff(envelope, "NARRATOR", "execution-result")
+
+        diagnostic = {
+            "accepted_command_id": "command-1",
+            "accepted_input_fingerprint": "a" * 64,
+            "execution_owner_id": "resolution-1",
+            "resolution_id": "resolution-1",
+            "status": "COMPLETED",
+            "segment": {"segment_id": "resolution-1:segment:1", "event_ids": ["event-1"]},
+            "event_id": "event-1",
+            "event": {
+                "segment_id": "resolution-1:segment:1",
+                "root_command_id": "command-1",
+            },
+            "context_trace": {"private": True},
+        }
+        with self.assertRaisesRegex(turn_runtime.TurnContractError, "diagnostic"):
+            turn_runtime.accept_execution_handoff(envelope, "NARRATOR", diagnostic)
+
+        invalid_fingerprint = _execution_result()
+        invalid_fingerprint["accepted_input_fingerprint"] = "not-a-fingerprint"
+        with self.assertRaisesRegex(turn_runtime.TurnContractError, "fingerprint"):
+            turn_runtime.accept_execution_handoff(envelope, "NARRATOR", invalid_fingerprint)
+
     def test_phase_rejects_result_outside_registered_result_and_binding_scope(self):
         envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
         with self.assertRaises(turn_runtime.TurnContractError):
@@ -49,6 +136,12 @@ class TypedHandoffTests(unittest.TestCase):
         with self.assertRaises(turn_runtime.TurnContractError):
             turn_runtime.accept_phase_result(envelope, {"kind": "narration_result", "prose": "leak"})
 
+    def test_untyped_result_kind_is_rejected_as_a_contract_error(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        turn_runtime.bind_phase(envelope, "INTERPRETER", "interpret", "profile.intent", "bundle-1", ("interpreter_result",))
+        with self.assertRaisesRegex(turn_runtime.TurnContractError, "registered result"):
+            turn_runtime.accept_phase_result(envelope, {"kind": [], "payload": "not typed"})
+
     def test_raw_bundle_trace_and_hidden_reasoning_cannot_cross_phase_boundary(self):
         envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
         turn_runtime.bind_phase(envelope, "ACTOR", "assess", "profile.actor", "bundle-2", ("actor_proposal",))
@@ -67,9 +160,87 @@ class ProtectedCapacityTests(unittest.TestCase):
 
 
 class ProtectedEmissionTests(unittest.TestCase):
+    def test_visible_emission_requires_the_protected_envelope(self):
+        result = {
+            "kind": "narration_result",
+            "recipient_id": "player-1",
+            "bundle_id": "bundle-1",
+            "prose": "safe",
+            "disclosure_refs": [],
+        }
+
+        with self.assertRaisesRegex(emission.EmissionContractError, "envelope"):
+            emission.commit_visible_payload(
+                result,
+                {"bundle_id": "bundle-1", "recipient_id": "player-1", "disclosure_refs": []},
+                "AI_REASONING",
+            )
+
+    def test_untyped_narration_fields_are_rejected_before_emission(self):
+        result = _narration_result()
+        result["prose"] = 17
+
+        with self.assertRaisesRegex(emission.EmissionContractError, "incomplete"):
+            emission.commit_visible_payload(
+                result,
+                {"bundle_id": "bundle-1", "recipient_id": "player-1", "disclosure_refs": []},
+                "AI_REASONING",
+                envelope=turn_runtime.start_turn("turn-1", "frontier-7", 120),
+            )
+
+    def test_over_capacity_narration_is_rejected_without_emission(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 4)
+        _bind_narrator(envelope)
+        result = _narration_result("too long")
+        turn_runtime.accept_phase_result(envelope, result)
+
+        with self.assertRaisesRegex(emission.EmissionContractError, "capacity"):
+            emission.commit_visible_payload(
+                result,
+                {"bundle_id": "bundle-1", "recipient_id": "player-1", "disclosure_refs": []},
+                "AI_REASONING",
+                envelope=envelope,
+            )
+
+        self.assertIsNone(envelope["emitted_payload"])
+
+    def test_execution_handoff_is_required_before_mechanics_emission(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        _bind_narrator(envelope, allowed_handoffs=("execution_result",))
+        result = _narration_result("mechanics are missing")
+        turn_runtime.accept_phase_result(envelope, result)
+
+        with self.assertRaisesRegex(emission.EmissionContractError, "execution handoff"):
+            emission.commit_visible_payload(
+                result,
+                {"bundle_id": "bundle-1", "recipient_id": "player-1", "disclosure_refs": []},
+                "AI_REASONING",
+                envelope=envelope,
+            )
+
+    def test_only_one_enveloped_visible_result_can_be_committed(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        _bind_narrator(envelope)
+        result = _narration_result()
+        turn_runtime.accept_phase_result(envelope, result)
+        bundle = {"bundle_id": "bundle-1", "recipient_id": "player-1", "disclosure_refs": []}
+        emission.commit_visible_payload(result, bundle, "AI_REASONING", envelope=envelope)
+
+        with self.assertRaisesRegex(emission.EmissionContractError, "already committed"):
+            emission.commit_visible_payload(result, bundle, "AI_REASONING", envelope=envelope)
+
     def test_only_validated_recipient_scoped_narration_can_be_visible(self):
-        result = {"kind": "narration_result", "recipient_id": "player-1", "bundle_id": "bundle-1", "prose": "You hear a bell.", "disclosure_refs": ["fact.bell"]}
-        payload = emission.commit_visible_payload(result, {"bundle_id": "bundle-1", "recipient_id": "player-1", "disclosure_refs": ["fact.bell"]}, "AI_REASONING")
+        result = _narration_result("You hear a bell.")
+        result["disclosure_refs"] = ["fact.bell"]
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        _bind_narrator(envelope)
+        turn_runtime.accept_phase_result(envelope, result)
+        payload = emission.commit_visible_payload(
+            result,
+            {"bundle_id": "bundle-1", "recipient_id": "player-1", "disclosure_refs": ["fact.bell"]},
+            "AI_REASONING",
+            envelope=envelope,
+        )
         self.assertEqual(payload, {"recipient_id": "player-1", "prose": "You hear a bell.", "disclosure_refs": ["fact.bell"]})
 
     def test_trace_tool_and_unowned_emission_are_rejected(self):

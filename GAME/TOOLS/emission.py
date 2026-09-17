@@ -18,8 +18,17 @@ def validate_narration_result(result: dict[str, Any], bundle: dict[str, Any]) ->
         raise EmissionContractError("result and bundle must be objects")
     if result.get("kind") != "narration_result" or FORBIDDEN_VISIBLE_KEYS.intersection(result):
         raise EmissionContractError("only clean narration_result values are eligible")
-    required = ("recipient_id", "bundle_id", "prose", "disclosure_refs")
-    if any(not result.get(name) for name in required[:3]) or not isinstance(result.get("disclosure_refs"), list):
+    if (
+        any(
+            not isinstance(result.get(name), str) or not result[name]
+            for name in ("recipient_id", "bundle_id", "prose")
+        )
+        or not isinstance(result.get("disclosure_refs"), list)
+        or any(
+            not isinstance(reference, str) or not reference
+            for reference in result["disclosure_refs"]
+        )
+    ):
         raise EmissionContractError("narration result is incomplete")
     if result["bundle_id"] != bundle.get("bundle_id") or result["recipient_id"] != bundle.get("recipient_id"):
         raise EmissionContractError("narration recipient or bundle basis is invalid")
@@ -29,13 +38,57 @@ def validate_narration_result(result: dict[str, Any], bundle: dict[str, Any]) ->
     return result
 
 
-def commit_visible_payload(result: dict[str, Any], bundle: dict[str, Any], instruction_owner: str) -> dict[str, Any]:
+def commit_visible_payload(
+    result: dict[str, Any],
+    bundle: dict[str, Any],
+    instruction_owner: str,
+    *,
+    envelope: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Project validated Narrator content to the sole ordinary visible surface."""
     if instruction_owner != INSTRUCTION_OWNER:
         raise EmissionContractError("unowned ordinary emission")
     valid = validate_narration_result(result, bundle)
-    return {
+    payload = {
         "recipient_id": valid["recipient_id"],
         "prose": valid["prose"],
         "disclosure_refs": list(valid["disclosure_refs"]),
     }
+    if envelope is None:
+        raise EmissionContractError("protected emission envelope is required")
+    if not isinstance(envelope, dict):
+        raise EmissionContractError("emission envelope must be an object")
+    accepted_results = envelope.get("accepted_results")
+    phase_bindings = envelope.get("phase_bindings")
+    narrator_binding = phase_bindings.get("NARRATOR") if isinstance(phase_bindings, dict) else None
+    if not isinstance(accepted_results, dict) or not isinstance(narrator_binding, dict):
+        raise EmissionContractError("emission envelope is missing the bound Narrator phase")
+    if "narration_result" not in narrator_binding.get("allowed_results", []):
+        raise EmissionContractError("emission envelope does not admit Narrator results")
+    if narrator_binding.get("bundle_id") != valid["bundle_id"]:
+        raise EmissionContractError("emission envelope Narrator bundle is invalid")
+    if narrator_binding.get("recipient_id") != valid["recipient_id"]:
+        raise EmissionContractError("emission envelope Narrator recipient is invalid")
+    if accepted_results.get("NARRATOR") != valid:
+        raise EmissionContractError("narration result was not accepted by the Narrator phase")
+    allowed_handoffs = narrator_binding.get("allowed_handoffs", [])
+    if not isinstance(allowed_handoffs, list):
+        raise EmissionContractError("emission envelope has invalid handoff scope")
+    if "execution_result" in allowed_handoffs:
+        accepted_handoffs = envelope.get("accepted_handoffs")
+        narrator_handoffs = accepted_handoffs.get("NARRATOR") if isinstance(accepted_handoffs, dict) else None
+        if not isinstance(narrator_handoffs, list) or not narrator_handoffs:
+            raise EmissionContractError("execution handoff is required before emission")
+    if "remaining_narrator_capacity" not in envelope or "emitted_payload" not in envelope:
+        raise EmissionContractError("emission envelope is missing protected capacity state")
+    if envelope["emitted_payload"] is not None:
+        raise EmissionContractError("ordinary visible emission is already committed")
+    remaining = envelope.get("remaining_narrator_capacity")
+    if isinstance(remaining, bool) or not isinstance(remaining, int) or remaining < 0:
+        raise EmissionContractError("emission envelope has invalid protected capacity")
+    required_capacity = len(valid["prose"].encode("utf-8"))
+    if required_capacity > remaining:
+        raise EmissionContractError("narration exceeds protected capacity")
+    envelope["remaining_narrator_capacity"] = remaining - required_capacity
+    envelope["emitted_payload"] = dict(payload)
+    return payload

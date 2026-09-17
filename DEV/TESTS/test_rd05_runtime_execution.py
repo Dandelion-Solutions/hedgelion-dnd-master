@@ -23,6 +23,7 @@ from GAME.TOOLS.mechanics import (
     resolve_mechanic,
     resume_accepted_execution,
 )
+from GAME.TOOLS import turn_runtime
 
 
 def _interpreter_result() -> dict[str, str]:
@@ -204,6 +205,34 @@ class DeterministicExecutionTests(unittest.TestCase):
         }
         value.update(overrides)
         return value
+
+    def test_committed_execution_crosses_only_a_registered_narrator_handoff(self) -> None:
+        accepted = self._accepted()
+        execution = execute_segment(
+            accepted,
+            self._resolution(),
+            event_payload={"result": 17},
+            store=ExecutionStore(),
+        )
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        turn_runtime.bind_phase(
+            envelope,
+            "NARRATOR",
+            "narrate",
+            "profile.narration",
+            "bundle-1",
+            ("narration_result",),
+            recipient_id="player-1",
+            allowed_handoffs=("execution_result",),
+        )
+
+        handoff = turn_runtime.accept_execution_handoff(envelope, "NARRATOR", execution)
+        retry = turn_runtime.accept_execution_handoff(envelope, "NARRATOR", execution)
+
+        self.assertEqual(handoff["accepted_command_id"], accepted["command_id"])
+        self.assertEqual(handoff["accepted_input_fingerprint"], accepted["input_fingerprint"])
+        self.assertEqual(retry, handoff)
+        self.assertEqual(envelope["accepted_handoffs"]["NARRATOR"], [handoff])
 
     def test_retry_reuses_fixed_rng_and_event_identity(self) -> None:
         accepted = self._accepted()
