@@ -686,7 +686,7 @@ class CatalogBindingInstructionCutoverTests(unittest.TestCase):
 class CatalogBackedAcceptanceIntegrationTests(unittest.TestCase):
     def test_binding_result_requires_revalidation_before_a_consumer_can_accept_it(self) -> None:
         from GAME.TOOLS.runtime_execution import (
-            AcceptedRuntimeCommand,
+            CatalogGap,
             accept_command,
             validate_execution_proposal,
         )
@@ -709,8 +709,19 @@ class CatalogBackedAcceptanceIntegrationTests(unittest.TestCase):
             },
             context,
             {"definition_id": "activity.check.generic", "kind": "definition.activity"},
+            {
+                "command_id": "turn-1-cmd-01",
+                "interaction_id": "turn-1",
+                "intent_plan_id": "turn-1-plan",
+                "clause_id": "c1",
+                "action_request": {
+                    "activity_id": "activity.check.generic",
+                    "actor_id": "actor-1",
+                },
+                "root_resolution_id": "resolution-1",
+            },
         )
-        self.assertIsInstance(accepted, AcceptedRuntimeCommand)
+        self.assertNotIsInstance(accepted, CatalogGap)
         validate_execution_proposal(
             accepted,
             context,

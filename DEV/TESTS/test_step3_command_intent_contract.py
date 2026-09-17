@@ -5,6 +5,9 @@ import unittest
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
 
+from DEV.TESTS.test_rd15_catalog_runtime import _bind_context
+from GAME.TOOLS.runtime_execution import CatalogGap, accept_command
+
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
 
@@ -27,27 +30,21 @@ def validate(name, value):
 
 
 def action_command():
-    return {
-        "interaction_id": "turn-000042",
-        "intent_plan_id": "turn-000042-plan",
-        "clause_id": "c1",
-        "command_kind": "action",
-        "catalog_context_fingerprint": "sha256:catalog-context-A",
-        "input_fingerprint": "sha256:command-input-A",
-        "disposition": "command.accepted",
-        "invocation_facts": [],
-        "action_request": {
-            "activity_id": "activity.attack.basic",
-            "actor_id": "actor-0001",
-            "target_ids": ["actor-0002"],
-        },
-        "root_resolution_id": "resolution-0000001",
-        "pending_child_invocations": [],
-    }
+    command = accept_command(
+        {"kind": "interpreter_result", "purpose": "interpret", "bundle_id": "bundle-1", "source_generation": "frontier-7", "intent": "make a check"},
+        _bind_context(),
+        {"definition_id": "activity.check.generic", "kind": "definition.activity"},
+        {"command_id": "turn-000042-cmd-01", "interaction_id": "turn-000042", "intent_plan_id": "turn-000042-plan", "clause_id": "c1", "action_request": {"activity_id": "activity.check.generic", "actor_id": "actor-0001", "target_ids": ["actor-0002"]}, "root_resolution_id": "resolution-0000001"},
+    )
+    if isinstance(command, CatalogGap):
+        raise AssertionError("fixture candidate unexpectedly returned a catalog gap")
+    return command
 
 
 def transition_command(disposition="command.accepted"):
     return {
+        "schema_version": 1,
+        "command_id": "turn-1-cmd-01",
         "interaction_id": "turn-1",
         "intent_plan_id": "turn-1-plan",
         "clause_id": "c1",

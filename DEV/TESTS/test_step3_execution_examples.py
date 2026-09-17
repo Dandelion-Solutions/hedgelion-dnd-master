@@ -5,6 +5,9 @@ import unittest
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
+from DEV.TESTS.test_rd15_catalog_runtime import _bind_context
+from GAME.TOOLS.runtime_execution import CatalogGap, accept_command
+
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
 WP05_TEST = ROOT / "DEV" / "TESTS" / "test_r2_7_wp05_execution_conformance.py"
@@ -40,23 +43,16 @@ def roll(value=17):
 
 
 def action_command(disposition="command.accepted"):
-    return {
-        "interaction_id": "turn-1",
-        "intent_plan_id": "turn-1-plan",
-        "clause_id": "c1",
-        "command_kind": "action",
-        "catalog_context_fingerprint": "ctx",
-        "input_fingerprint": "fp",
-        "disposition": disposition,
-        "invocation_facts": [],
-        "action_request": {
-            "activity_id": "activity.attack.basic",
-            "actor_id": "actor-1",
-            "target_ids": ["actor-2"],
-        },
-        "root_resolution_id": "resolution-1",
-        "pending_child_invocations": [],
-    }
+    command = accept_command(
+        {"kind": "interpreter_result", "purpose": "interpret", "bundle_id": "bundle-1", "source_generation": "frontier-7", "intent": "make a check"},
+        _bind_context(),
+        {"definition_id": "activity.check.generic", "kind": "definition.activity"},
+        {"command_id": "turn-1-cmd-01", "interaction_id": "turn-1", "intent_plan_id": "turn-1-plan", "clause_id": "c1", "action_request": {"activity_id": "activity.check.generic", "actor_id": "actor-1", "target_ids": ["actor-2"]}, "root_resolution_id": "resolution-1"},
+    )
+    if isinstance(command, CatalogGap):
+        raise AssertionError("fixture candidate unexpectedly returned a catalog gap")
+    command["disposition"] = disposition
+    return command
 
 
 def resolution(status="COMPLETED"):
@@ -159,6 +155,8 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
 
     def test_E_direct_transition_is_distinct_from_activity_resolution(self):
         validate("runtime-command-state.schema.json", {
+            "schema_version": 1,
+            "command_id": "turn-1-cmd-01",
             "interaction_id": "turn-1",
             "intent_plan_id": "turn-1-plan",
             "clause_id": "c1",
@@ -202,10 +200,8 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
     def test_G_retry_identity_has_stable_accepted_fingerprint_fields(self):
         command = action_command()
         validate("runtime-command-state.schema.json", command)
-        self.assertEqual(
-            (command["catalog_context_fingerprint"], command["input_fingerprint"]),
-            ("ctx", "fp"),
-        )
+        self.assertRegex(command["catalog_context_fingerprint"], r"^[a-f0-9]{64}$")
+        self.assertRegex(command["input_fingerprint"], r"^[a-f0-9]{64}$")
 
     def test_H_suspended_portable_closure_uses_sources_not_caches(self):
         value = continuation()

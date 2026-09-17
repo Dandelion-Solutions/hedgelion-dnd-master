@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import copy
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Final
 
@@ -39,6 +39,7 @@ _NATURAL_OWNER_ROUTE_PREFIXES: Final = {
     "campaign": "campaign/definitions/",
     "session": "session/overlays/",
 }
+_ADMITTED_CONTEXT_SEAL: Final = object()
 
 
 class CatalogBindingError(ValueError):
@@ -52,6 +53,10 @@ class BoundCatalogContext:
     basis: Mapping[str, object]
     definition_dependencies: tuple[Mapping[str, object], ...]
     fingerprint: str
+    _admission_seal: object = field(default=None, repr=False, compare=False)
+
+    def _is_admitted(self) -> bool:
+        return self._admission_seal is _ADMITTED_CONTEXT_SEAL
 
     def to_dict(self) -> dict[str, object]:
         """Return a serializable carrier without exposing mutable internal state."""
@@ -559,7 +564,9 @@ def bind_catalog_context(
     frozen_dependencies = _freeze(dependencies)
     if not isinstance(frozen_basis, Mapping) or not isinstance(frozen_dependencies, tuple):
         raise AssertionError("catalog context freezing changed the expected carrier shape")
-    return BoundCatalogContext(frozen_basis, frozen_dependencies, fingerprint)
+    return BoundCatalogContext(
+        frozen_basis, frozen_dependencies, fingerprint, _ADMITTED_CONTEXT_SEAL
+    )
 
 
 def _candidate(value: object) -> tuple[str, str]:
