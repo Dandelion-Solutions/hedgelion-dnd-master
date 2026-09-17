@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: none - stopped after W02.T01 at Product Owner request
+CURRENT_TASK: W02.T02 - Deterministic execution, fixed RNG and event identity
 LAST_COMPLETED_TASK: W02.T01 - W02_CATALOG_BACKED_COMMAND_READY
-LAST_SAFE_SHA: `81ad503305d5fefdb47d209c722263f02365a04c` (published and remote-read back)
+LAST_SAFE_SHA: `969a6a192dca88a3db6e70240c6a73d33f459665` (fresh published implementation parent)
 
 ## Dependency schedule
 
@@ -105,6 +105,42 @@ VERSION_IMPACT:
 - migration impact: NONE; v1 clean-slate has no compatibility shim or speculative migration
 
 SYSTEM_IMPACT: NONE
-NEXT_EXACT_TASK: stop as requested. On a future fresh session, W02.T02 and W02.T03 are independently eligible after task-local currentness reads.
+NEXT_EXACT_TASK: add the smallest material T02 RED for fixed-RNG retry/recovery identity before implementation
 KNOWN_BLOCKERS: NONE
-UNPUBLISHED_WORK: NONE after remote read-back of `81ad503305d5fefdb47d209c722263f02365a04c`
+UNPUBLISHED_WORK: T02 execution cursor update only
+
+## W02.T02 Impact Envelope
+
+SPEC / APPROVED DESIGN:
+- `implementation-wave-02-execution-durability-recovery.md` W02.T02
+- `2026-08-19-step-3-execution-boundary-canonical-spec.md` sections 8-10
+
+IMPLEMENTATION START HEAD: `969a6a192dca88a3db6e70240c6a73d33f459665`
+PRIMARY OWNER ARTIFACTS:
+- `GAME/TOOLS/runtime_execution.py`
+- runtime command, resolution, continuation, execution-segment, mechanical-event and receipt machine contracts
+
+EXPECTED OWNERS TO CHANGE:
+- `GAME/TOOLS/runtime_execution.py`
+- existing T02 execution schemas only where required to represent fixed RNG, embedded segment and event identity
+- `DEV/TESTS/test_rd05_runtime_execution.py` and existing Step-3 execution schema consumers
+EXPECTED CONSUMERS TO CHANGE:
+- no persistence/recovery/publication consumer before their named T05/T06 tasks
+ALLOWED INTERFACES / CONTRACTS TO CHANGE:
+- `execute_segment(...)`, `resume_accepted_execution(...)`, and typed execution evidence admitted by W02.T02
+
+PROTECTED ARCHITECTURE INVARIANTS:
+- accepted command input executes exactly once; duplicate/conflicting replay fails closed
+- retry/recovery reuses fixed RNG and every accepted event/segment identity; it never rerolls or reallocates
+- MechanicalEvent identity is `(segment_id, event_ordinal)` and segment remains embedded under its execution owner
+- no general campaign allocator, global RNG frontier, universal queue/journal, cross-owner transaction, cache/index/checkpoint authority, compatibility shim, or Wave-05 writer
+ARCHITECTURE-SENSITIVE SURFACES:
+- RNG ownership/identity, command and resolution idempotency, execution-segment atomicity, event identity, versioned runtime/schema namespaces
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
+- `FixedRngTests`, `ProcedureTemporalStateTests`, `ContinuationTemporalStateTests`, `LifecycleEvidenceTests`, `ExecutionAtomicityTests`, `DownstreamExecutionEvidenceTests`; duplicate delivery, interrupted acknowledgement, conflicting payload, and recovery replay negatives
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
+- accepted adjudication basis (W02.T03), operational roots (W02.T04), durability/publication (W02.T05), recovery (W02.T06), protected role emission (W02.T07), all shared final writers
+
+VERSION IMPACT: pending actual T02 owner assessment under `DEV/RELEASE/VERSIONING.md`
+SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative changes; catalog generation remains 2
+MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
