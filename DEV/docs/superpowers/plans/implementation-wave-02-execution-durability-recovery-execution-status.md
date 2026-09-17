@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T04 - RESUME AUTHORIZED after T03 accepted-basis checkpoint; W02.T05/T06 remain dependency-blocked
-LAST_COMPLETED_TASK: W02.T03 - W02_ACCEPTED_ADJUDICATION_BASIS_READY
-LAST_SAFE_SHA: `c1802fe` (local coherent T03 repair-round-1 checkpoint; no push)
+CURRENT_TASK: W02.T05 - blocked until the T04 checkpoint is consumed; T02/T03/T04 are GREEN and local-only
+LAST_COMPLETED_TASK: W02.T04 - W02_OPERATIONAL_ROOT_ENROLLMENT_READY -> `9de81a8`
+LAST_SAFE_SHA: `9de81a8` (local coherent T04 implementation checkpoint; no push)
 
 ## Dependency schedule
 
@@ -90,11 +90,15 @@ COMPLETED_TASKS:
   W02.T01 -> code `c23ac68` + `751665f` + `70f2d80`, published under remote-ref checkpoint `81ad503305d5fefdb47d209c722263f02365a04c`; `W02_CATALOG_BACKED_COMMAND_READY`
   W02.T02 -> code `d40213e` + `2ca6899` + `cfaf8a0` + `238e2db`, published under remote-ref checkpoint `351ab3e876254c31b506efcadc76fca635ea2aab`; `W02_DETERMINISTIC_EXECUTION_READY`
   W02.T03 -> code `bebaa81` + review repair `3acbbf5` + repair round 1 `c1802fe`; `W02_ACCEPTED_ADJUDICATION_BASIS_READY`
+  W02.T04 -> code `9de81a8`; `W02_OPERATIONAL_ROOT_ENROLLMENT_READY` (local-only, no push)
 
 ACTUAL IMPACT VS PLANNED: within the W02.T01 envelope. The new owner-native `GAME/TOOLS/runtime_execution.py`, `runtime.command` schema synchronization, and RD05/RD15 tests were expected. Existing Step-3 schema consumer tests required mechanical fixture synchronization; no new authority, persistence/recovery/currentness owner, catalog change, or shared physical writer was introduced.
 
 CURRENT_VERIFICATION_STATE:
-- exact rebased detached HEAD `32b78af`: focused RD05/RD15 plus Step-3 acceptance/schema suites 60 passed
+- T04 focused root/lifecycle/native-routing suites at `9de81a8`: 107 passed
+- T04 full DEV discovery at `9de81a8`: 716 passed, 7 skipped
+- T04 maintenance audit at `9de81a8`: PASS
+- T04 RED evidence: lifecycle/root tests failed before native lifecycle/root implementation; initial baseline also lacked the isolated DEV dependency environment
 - exact rebased detached HEAD `32b78af`: full DEV discovery 647 passed, 7 skipped
 - exact rebased detached HEAD `32b78af`: maintenance audit PASS
 - exact detached T02 code head `238e2db`: focused execution/Step-3 suites 56 passed; full DEV discovery 671 passed, 7 skipped; maintenance audit PASS
@@ -121,15 +125,20 @@ VERSION_IMPACT:
 - T03 repair round 1 `GAME/TOOLS/policy_basis.py`: 1.0.1 -> 1.0.2
 - T03 repair round 1 `GAME/TOOLS/runtime_execution.py`: 1.0.3 -> 1.0.4
 - T03 runtime command schemas, catalog generation, engine, campaign, persistence, storage and migration namespaces: NONE
+- T04 new `GAME/TOOLS/recovery_roots.py`: `framework_module_version` 1.0.1
+- T04 new operational-root routing contract: `schema_version` 1 (new namespace; DEV schema plus GAME projection)
+- T04 Procedure lifecycle materialization: no pre-existing schema/revision namespace to transition; engine, catalog, campaign, persistence, storage and migration namespaces: NONE
 
 ACTUAL T02 IMPACT VS PLANNED: within the approved T02 execution-owner envelope. `GAME/TOOLS/mechanics.py` was an explicit Wave-02 baseline direct action path that the initial cursor omitted; its introduction, direct-transition producer/schema synchronization, and domain coverage validator changes are mechanical consumers of the accepted embedded-segment identity, not a new authority or broader boundary.
 
 ACTUAL T03 IMPACT VS PLANNED: within the approved T03 policy-basis envelope. The resolver is an ephemeral verifier over exact pinned reads and existing access/applicability/catalog owners; runtime acceptance now retains complete typed adjudicated parameters/facts in the existing command identity. Repair round 1 adds resolver-issued ephemeral provenance, exact two-parameter/seven-fact consumer allowlists, consuming-command applicability matching, and resolver-selected catalog-context identity checks. No policy proof registry, policy epoch, ACL/currentness owner, persistence/recovery owner, network path or shared writer was introduced.
 
+ACTUAL T04 IMPACT VS PLANNED: within the approved T04 envelope. Procedure lifecycle is materialized as owner-native `ACTIVE|TERMINAL`; root deltas validate exact native owner kind, identity and state; command eligibility uses accepted/settled disposition plus unfinished closure; unresolved-input rooting requires the later-owner promise interface. No publication/removal closure, recovery hydration, temporal root, global queue, lifecycle registry or shared writer was introduced.
+
 SYSTEM_IMPACT: RESOLVED - Product Owner accepted the Senior-recommended T03/T04 realization at `acc40855850f4d07b63bad4792917f97764038a3`; canonical owners, stable Wave-02 plan and both impact briefs are synchronized
-NEXT_EXACT_TASK: fresh-read current HEAD; implement/review/publish W02.T04 as `W02_OPERATIONAL_ROOT_ENROLLMENT_READY`; then start W02.T05 only after both T03/T04 checkpoints are GREEN/published
+NEXT_EXACT_TASK: fresh-read current HEAD; start W02.T05 only after the named T03/T04 checkpoints are accepted by the coordinator; T05 owns publication/removal closure
 KNOWN_BLOCKERS: NONE for W02.T03/T04; W02.T05 remains dependency-blocked on their named checkpoints and W02.T06 remains blocked on W02.T05
-UNPUBLISHED_WORK: NONE for W02.T03; rejected detached prototypes `29ded20`, `0244a7b`, `14b061b` remain non-authoritative evidence only and MUST NOT be cherry-picked/integrated as-is
+UNPUBLISHED_WORK: NONE; T04 is local-only by instruction and no publication was attempted
 
 ## Accepted T03/T04 System-Impact rulings — 2026-09-18
 
@@ -320,7 +329,7 @@ EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
 KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
 - T03 accepted adjudication basis, T05 publication/removal closure, T06 recovery hydration, temporal roots, role emission, storage documentation, shared final writers
 
-VERSION IMPACT: pending actual T04 owner assessment under `DEV/RELEASE/VERSIONING.md`
+VERSION IMPACT: `GAME/TOOLS/recovery_roots.py` new `framework_module_version` 1.0.1; new operational-root routing schema namespace starts at 1; existing engine/catalog/campaign/persistence/storage/migration namespaces NONE
 SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative catalog or shared-schema change
 MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
 SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative changes; catalog generation remains 2
