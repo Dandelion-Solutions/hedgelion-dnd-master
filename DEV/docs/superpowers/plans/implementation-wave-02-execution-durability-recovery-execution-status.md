@@ -237,6 +237,14 @@ CURRENT_VERIFICATION_STATE:
 
 SYSTEM_IMPACT: NONE for W02.T07. The repair stayed within the approved ephemeral role/emission owner boundary; no new authority, persistence, dependency direction, mechanics/RNG semantics, or cross-wave owner was introduced. Existing wave-level T03/T04 `SENIOR_REVIEW_REQUIRED` disposition remains unchanged.
 
+## Version-census repair evidence
+
+- local focused `DEV.TESTS.test_versioning_namespace_policy` at `dc9c82c`: 11 passed
+- local full `DEV/TESTS` discovery at `dc9c82c`: 685 passed, 7 skipped (previous recorded count: 684 passed, 7 skipped)
+- local maintenance audit at `dc9c82c`: PASS
+- publication/read-back: intentionally unavailable because this repair instruction requires local-only commits
+- VERSION_IMPACT: NONE; only DEV test scanning behavior and execution evidence changed, with no HDM-owned version namespace or projection change
+
 ## W02.T04 Impact Envelope
 
 SPEC / APPROVED DESIGN:
