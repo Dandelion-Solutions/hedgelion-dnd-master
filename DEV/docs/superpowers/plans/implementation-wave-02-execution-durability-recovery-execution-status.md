@@ -5,7 +5,7 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T04 blocked - System-Impact review required (T03 also blocked)
+CURRENT_TASK: W02.T07 - Role-protected execution handoff (T03/T04 remain blocked)
 LAST_COMPLETED_TASK: W02.T02 - W02_DETERMINISTIC_EXECUTION_READY
 LAST_SAFE_SHA: `f8a5166b3371e565e3d252fab5bbdd890f5f33d1` (published T03-start cursor; no T03 code integrated)
 
@@ -113,7 +113,7 @@ VERSION_IMPACT:
 ACTUAL T02 IMPACT VS PLANNED: within the approved T02 execution-owner envelope. `GAME/TOOLS/mechanics.py` was an explicit Wave-02 baseline direct action path that the initial cursor omitted; its introduction, direct-transition producer/schema synchronization, and domain coverage validator changes are mechanical consumers of the accepted embedded-segment identity, not a new authority or broader boundary.
 
 SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED - `implementation-wave-02-t03-system-impact-brief.md` and `implementation-wave-02-t04-system-impact-brief.md`
-NEXT_EXACT_TASK: hold T03/T04 pending their System-Impact rulings; independently assess W02.T07 write set and dependencies
+NEXT_EXACT_TASK: add the smallest material T07 RED for typed execution-to-role handoff before implementation; keep T03/T04 blocked
 KNOWN_BLOCKERS: T03 lacks an accepted native campaign publication/history policy resolver; T04 lacks an accepted native lifecycle-proof boundary for operational-root membership/removal
 UNPUBLISHED_WORK: unsafe detached W02.T03 commit `29ded20` and W02.T04 commits `0244a7b` + `14b061b` are not integrated or published; safe branch work is this cursor/brief only
 
@@ -186,6 +186,41 @@ KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
 
 VERSION IMPACT: pending actual T03 owner assessment under `DEV/RELEASE/VERSIONING.md`
 SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative changes; catalog generation remains 2
+MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
+
+## W02.T07 Impact Envelope
+
+SPEC / APPROVED DESIGN:
+- `implementation-wave-02-execution-durability-recovery.md` W02.T07
+- published `W01_ROLE_CONTRACT_READY`, `W01_CONTEXT_OWNER_READY`, and `W02_DETERMINISTIC_EXECUTION_READY`
+
+IMPLEMENTATION START HEAD: `a939aaf06282ec19e6db48846c4c4579d63ea8ec`
+PRIMARY OWNER ARTIFACTS:
+- `GAME/TOOLS/turn_runtime.py` protected turn envelope
+- `GAME/TOOLS/emission.py` sole ordinary visible emission surface
+- typed role handoff schemas and RD10 role/emission tests
+
+EXPECTED OWNERS TO CHANGE:
+- Wave-01 role/emission owner-native runtime helpers and their typed handoff contracts only as required
+- `DEV/TESTS/test_rd10_role_emission.py` plus T07-owned execution integration witnesses
+EXPECTED CONSUMERS TO CHANGE:
+- no command/adjudication/policy/currentness/root/publication/recovery authority, no CORE final bytes, and no shared writer
+ALLOWED INTERFACES / CONTRACTS TO CHANGE:
+- typed handoff of accepted execution result into the protected role envelope and one emitted public result
+
+PROTECTED ARCHITECTURE INVARIANTS:
+- tool, diagnostic, context, and downstream results enter only through typed role/capacity controls before emission
+- rejection/truncation/fallback cannot change accepted mechanics, expose private material, or bypass narrator ownership
+- no untyped dictionary/string result, second emission authority, visibility-to-knowledge inference, or new role instruction owner
+ARCHITECTURE-SENSITIVE SURFACES:
+- protected emission, capacity/fallback containment, role/result handoff, privacy/disclosure routing
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
+- accepted/rejected/over-capacity/diagnostic/auxiliary-fallback handoff cases with an execution result; explicit untyped-bypass negative
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
+- T03 adjudication basis, T04 operational roots, T05/T06 durability/recovery, policy/HOT/currentness, Story, final CORE writers
+
+VERSION IMPACT: pending actual T07 owner assessment under `DEV/RELEASE/VERSIONING.md`
+SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative catalog or shared-schema change
 MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
 
 ## W02.T04 Impact Envelope
