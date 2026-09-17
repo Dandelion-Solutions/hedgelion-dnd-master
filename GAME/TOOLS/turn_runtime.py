@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator, Mapping
+from dataclasses import dataclass
 from typing import Any
 
 
@@ -30,6 +32,11 @@ EXECUTION_HANDOFF_REQUIRED_FIELDS = frozenset(
         "status",
         "segment_id",
         "event_id",
+        "turn_id",
+        "recipient_role",
+        "purpose",
+        "bundle_id",
+        "recipient_id",
     }
 )
 FORBIDDEN_HANDOFF_KEYS = frozenset({"raw_bundle", "context_trace", "hidden_reasoning", "role_frame", "tool_payload"})
@@ -49,6 +56,84 @@ EXECUTION_STATES = frozenset(
     }
 )
 SHA256_HEX = frozenset("0123456789abcdef")
+_HANDOFF_SEAL = object()
+
+
+@dataclass(frozen=True, slots=True, init=False)
+class ExecutionHandoff(Mapping[str, str]):
+    """Owner-issued typed execution evidence admitted to one role phase."""
+
+    kind: str
+    accepted_command_id: str
+    accepted_input_fingerprint: str
+    execution_owner_id: str
+    resolution_id: str
+    status: str
+    segment_id: str
+    event_id: str
+    turn_id: str
+    recipient_role: str
+    purpose: str
+    bundle_id: str
+    recipient_id: str
+
+    def __init__(
+        self,
+        *,
+        _seal: object,
+        kind: str,
+        accepted_command_id: str,
+        accepted_input_fingerprint: str,
+        execution_owner_id: str,
+        resolution_id: str,
+        status: str,
+        segment_id: str,
+        event_id: str,
+        turn_id: str,
+        recipient_role: str,
+        purpose: str,
+        bundle_id: str,
+        recipient_id: str,
+    ) -> None:
+        if _seal is not _HANDOFF_SEAL:
+            raise TypeError("execution handoff is owner-issued")
+        for field, value in (
+            ("kind", kind),
+            ("accepted_command_id", accepted_command_id),
+            ("accepted_input_fingerprint", accepted_input_fingerprint),
+            ("execution_owner_id", execution_owner_id),
+            ("resolution_id", resolution_id),
+            ("status", status),
+            ("segment_id", segment_id),
+            ("event_id", event_id),
+            ("turn_id", turn_id),
+            ("recipient_role", recipient_role),
+            ("purpose", purpose),
+            ("bundle_id", bundle_id),
+            ("recipient_id", recipient_id),
+        ):
+            if not isinstance(value, str) or not value:
+                raise TypeError(f"execution handoff {field} must be a nonempty string")
+            object.__setattr__(self, field, value)
+
+    def to_dict(self) -> dict[str, str]:
+        return {field: getattr(self, field) for field in EXECUTION_HANDOFF_REQUIRED_FIELDS}
+
+    def __getitem__(self, key: str) -> str:
+        return self.to_dict()[key]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self.to_dict())
+
+    def __len__(self) -> int:
+        return len(EXECUTION_HANDOFF_REQUIRED_FIELDS)
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, ExecutionHandoff):
+            return self.to_dict() == other.to_dict()
+        if isinstance(other, Mapping):
+            return self.to_dict() == dict(other)
+        return NotImplemented
 
 
 class TurnContractError(ValueError):
@@ -104,9 +189,13 @@ def bind_phase(
         item != EXECUTION_HANDOFF_KIND for item in allowed_handoffs
     ):
         raise TurnContractError("allowed_handoffs must be registered typed handoffs")
+    if role == "NARRATOR" and allowed_handoffs != (EXECUTION_HANDOFF_KIND,):
+        raise TurnContractError("Narrator requires an owner-verified execution handoff")
     for label, value in (("subject_id", subject_id), ("recipient_id", recipient_id)):
         if value is not None:
             _nonempty_string(value, label)
+    if role == "NARRATOR" and recipient_id is None:
+        raise TurnContractError("Narrator requires a recipient scope")
     binding = {
         "purpose": purpose,
         "profile_id": profile_id,
@@ -158,22 +247,46 @@ def accept_execution_handoff(
     envelope: dict[str, Any], recipient_role: str, execution_result: object
 ) -> dict[str, Any]:
     """Project committed mechanics into one registered, recipient-scoped handoff."""
+    if not isinstance(recipient_role, str) or not recipient_role:
+        raise TurnContractError("recipient role must be a nonempty string")
     bindings = envelope.get("phase_bindings", {})
+    if not isinstance(bindings, dict):
+        raise TurnContractError("turn envelope phase bindings are invalid")
     binding = bindings.get(recipient_role)
     if not isinstance(binding, dict):
         raise TurnContractError("recipient phase is not bound")
-    if EXECUTION_HANDOFF_KIND not in binding.get("allowed_handoffs", []):
+    allowed_handoffs = binding.get("allowed_handoffs")
+    if not isinstance(allowed_handoffs, list) or allowed_handoffs != [EXECUTION_HANDOFF_KIND]:
         raise TurnContractError("execution result is outside the bound handoff scope")
     handoff = _execution_handoff(execution_result)
+    turn_id = _nonempty_string(envelope.get("turn_id"), "turn_id")
+    purpose = _nonempty_string(binding.get("purpose"), "handoff purpose")
+    bundle_id = _nonempty_string(binding.get("bundle_id"), "handoff bundle_id")
+    recipient_id = _nonempty_string(binding.get("recipient_id"), "handoff recipient_id")
+    typed_handoff = ExecutionHandoff(
+        _seal=_HANDOFF_SEAL,
+        **handoff,
+        turn_id=turn_id,
+        recipient_role=recipient_role,
+        purpose=purpose,
+        bundle_id=bundle_id,
+        recipient_id=recipient_id,
+    )
     accepted_handoffs = envelope.setdefault("accepted_handoffs", {})
+    if not isinstance(accepted_handoffs, dict):
+        raise TurnContractError("turn envelope accepted handoffs are invalid")
     prior = accepted_handoffs.setdefault(recipient_role, [])
+    if not isinstance(prior, list):
+        raise TurnContractError("turn envelope accepted handoffs are invalid")
     for existing in prior:
-        if existing["accepted_command_id"] == handoff["accepted_command_id"]:
-            if existing != handoff:
+        if not isinstance(existing, ExecutionHandoff):
+            raise TurnContractError("execution handoff is not owner-verified")
+        if existing.accepted_command_id == typed_handoff.accepted_command_id:
+            if existing != typed_handoff:
                 raise TurnContractError("execution handoff conflicts with an accepted result")
-            return dict(existing)
-    prior.append(dict(handoff))
-    return dict(handoff)
+            return typed_handoff.to_dict()
+    prior.append(typed_handoff)
+    return typed_handoff.to_dict()
 
 
 def advance_phase(envelope: dict[str, Any], role: str) -> str:

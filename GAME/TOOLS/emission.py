@@ -4,6 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
+try:
+    from .turn_runtime import ExecutionHandoff
+except ImportError:  # Direct GAME/TOOLS test imports use the module directory on sys.path.
+    from turn_runtime import ExecutionHandoff
+
 
 INSTRUCTION_OWNER = "AI_REASONING"
 FORBIDDEN_VISIBLE_KEYS = frozenset({"context_trace", "tool_payload", "hidden_reasoning", "raw_bundle", "draft"})
@@ -63,7 +68,8 @@ def commit_visible_payload(
     narrator_binding = phase_bindings.get("NARRATOR") if isinstance(phase_bindings, dict) else None
     if not isinstance(accepted_results, dict) or not isinstance(narrator_binding, dict):
         raise EmissionContractError("emission envelope is missing the bound Narrator phase")
-    if "narration_result" not in narrator_binding.get("allowed_results", []):
+    allowed_results = narrator_binding.get("allowed_results")
+    if not isinstance(allowed_results, list) or "narration_result" not in allowed_results:
         raise EmissionContractError("emission envelope does not admit Narrator results")
     if narrator_binding.get("bundle_id") != valid["bundle_id"]:
         raise EmissionContractError("emission envelope Narrator bundle is invalid")
@@ -77,8 +83,15 @@ def commit_visible_payload(
     if "execution_result" in allowed_handoffs:
         accepted_handoffs = envelope.get("accepted_handoffs")
         narrator_handoffs = accepted_handoffs.get("NARRATOR") if isinstance(accepted_handoffs, dict) else None
-        if not isinstance(narrator_handoffs, list) or not narrator_handoffs:
-            raise EmissionContractError("execution handoff is required before emission")
+        if not isinstance(narrator_handoffs, list) or not any(
+            isinstance(handoff, ExecutionHandoff)
+            and handoff.turn_id == envelope.get("turn_id")
+            and handoff.recipient_role == "NARRATOR"
+            and handoff.bundle_id == valid["bundle_id"]
+            and handoff.recipient_id == valid["recipient_id"]
+            for handoff in narrator_handoffs
+        ):
+            raise EmissionContractError("owner-verified execution handoff is required before emission")
     if "remaining_narrator_capacity" not in envelope or "emitted_payload" not in envelope:
         raise EmissionContractError("emission envelope is missing protected capacity state")
     if envelope["emitted_payload"] is not None:
