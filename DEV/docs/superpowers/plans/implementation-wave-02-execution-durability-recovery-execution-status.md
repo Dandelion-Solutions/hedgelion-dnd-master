@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T02 checkpoint publication and remote read-back
+CURRENT_TASK: W02.T03 - Exact accepted adjudication basis
 LAST_COMPLETED_TASK: W02.T02 - W02_DETERMINISTIC_EXECUTION_READY
-LAST_SAFE_SHA: `082d1a69416a99b7ddd1a6daf505a90bca996018` (published T02 implementation parent)
+LAST_SAFE_SHA: `351ab3e876254c31b506efcadc76fca635ea2aab` (published and remote-read back T02 checkpoint)
 
 ## Dependency schedule
 
@@ -88,7 +88,7 @@ CURRENTNESS RE-READ SET BEFORE WRITE:
 COMPLETED_TASKS:
   W01.T08 -> `W01_CATALOG_CONTEXT_READY` at published Wave-01 closure
   W02.T01 -> code `c23ac68` + `751665f` + `70f2d80`, published under remote-ref checkpoint `81ad503305d5fefdb47d209c722263f02365a04c`; `W02_CATALOG_BACKED_COMMAND_READY`
-  W02.T02 -> local reviewed code `d40213e` + `2ca6899` + `cfaf8a0` + `238e2db`; `W02_DETERMINISTIC_EXECUTION_READY`; publication pending this cursor checkpoint
+  W02.T02 -> code `d40213e` + `2ca6899` + `cfaf8a0` + `238e2db`, published under remote-ref checkpoint `351ab3e876254c31b506efcadc76fca635ea2aab`; `W02_DETERMINISTIC_EXECUTION_READY`
 
 ACTUAL IMPACT VS PLANNED: within the W02.T01 envelope. The new owner-native `GAME/TOOLS/runtime_execution.py`, `runtime.command` schema synchronization, and RD05/RD15 tests were expected. Existing Step-3 schema consumer tests required mechanical fixture synchronization; no new authority, persistence/recovery/currentness owner, catalog change, or shared physical writer was introduced.
 
@@ -113,9 +113,9 @@ VERSION_IMPACT:
 ACTUAL T02 IMPACT VS PLANNED: within the approved T02 execution-owner envelope. `GAME/TOOLS/mechanics.py` was an explicit Wave-02 baseline direct action path that the initial cursor omitted; its introduction, direct-transition producer/schema synchronization, and domain coverage validator changes are mechanical consumers of the accepted embedded-segment identity, not a new authority or broader boundary.
 
 SYSTEM_IMPACT: NONE
-NEXT_EXACT_TASK: publish this reviewed T02 checkpoint and remote-read it back; then start W02.T03 before T04/T07 because T03 shares the command-acceptance owner with T02
+NEXT_EXACT_TASK: add the smallest material T03 RED for exact accepted policy-basis resolution before acceptance
 KNOWN_BLOCKERS: NONE
-UNPUBLISHED_WORK: reviewed T02 commits through `238e2db` and this cursor update await one fast-forward publication
+UNPUBLISHED_WORK: T03 execution cursor update only
 
 ## W02.T02 Impact Envelope
 
@@ -150,5 +150,42 @@ KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
 - accepted adjudication basis (W02.T03), operational roots (W02.T04), durability/publication (W02.T05), recovery (W02.T06), protected role emission (W02.T07), all shared final writers
 
 VERSION IMPACT: recorded above; no further T02 bump is pending
+
+## W02.T03 Impact Envelope
+
+SPEC / APPROVED DESIGN:
+- `implementation-wave-02-execution-durability-recovery.md` W02.T03
+- Step-3 accepted command/input identity and the current House-Rules mechanical boundary
+
+IMPLEMENTATION START HEAD: `351ab3e876254c31b506efcadc76fca635ea2aab`
+PRIMARY OWNER ARTIFACTS:
+- `GAME/TOOLS/runtime_execution.py` accepted-command boundary
+- `DEV/SCHEMAS/activity-parameter-binding.schema.json`, `invocation-fact.schema.json`, and `policy-basis-ref.schema.json`
+- `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md` and `PORTABLE_ACTIVITY_VALUES.md`
+
+EXPECTED OWNERS TO CHANGE:
+- existing runtime execution acceptance/resolution functions
+- `DEV/TESTS/test_rd05_runtime_execution.py` and T03-owned exact-policy resolver witnesses in `DEV/TESTS/test_rd07_recovery.py`
+- existing accepted-basis schemas only when a synchronized mechanical contract requires it
+EXPECTED CONSUMERS TO CHANGE:
+- no publication, recovery, policy-adoption, House-Rules, or CORE writer changes before their named later tasks
+ALLOWED INTERFACES / CONTRACTS TO CHANGE:
+- bounded early exact-policy resolver and accepted-command validation that retains complete source identity/currentness/basis
+
+PROTECTED ARCHITECTURE INVARIANTS:
+- exact source identity/version/currentness and every required source-derived parameter/fact edge are frozen before acceptance
+- current/latest policy, caller-supplied booleans, or JSON round-trip cannot substitute for the accepted basis
+- retry/recovery reuses historical accepted policy basis after newer policy publication; missing/stale/inconsistent/unsupported sources reject typed before mechanics
+- policy refs are causal evidence, not policy/adoption/currentness/execution authority; no network, broad scan, compatibility shim, or Wave-05 writer
+ARCHITECTURE-SENSITIVE SURFACES:
+- command fingerprint and idempotency, policy source currentness, adjudication-to-mechanics authority, schema/version namespaces
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
+- `ExactPolicyBasisResolutionTests` and `AcceptedAdjudicationBasisTests`, historical reuse and malformed/missing/stale/inconsistent source negatives
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
+- RNG/event lifecycle, operational roots, durability/publication, recovery closure, role emission, House-Rules adoption/persistence, and all shared final writers
+
+VERSION IMPACT: pending actual T03 owner assessment under `DEV/RELEASE/VERSIONING.md`
+SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative changes; catalog generation remains 2
+MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
 SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative changes; catalog generation remains 2
 MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
