@@ -9,6 +9,7 @@
     "pending_child_invocations", "receipt_exports", "affected_revision_refs"
   ],
   "properties": {
+    "segment_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
     "segment_sequence": {"type": "integer", "minimum": 1},
     "commit_state": {"const": "committed"},
     "resulting_execution_state": {
@@ -44,6 +45,7 @@
   },
   "examples": [
     {
+      "segment_id": "resolution-0000001:segment:1",
       "segment_sequence": 1,
       "commit_state": "committed",
       "resulting_execution_state": "COMPLETED",
