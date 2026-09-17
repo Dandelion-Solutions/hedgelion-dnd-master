@@ -5,7 +5,7 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T03 blocked - System-Impact review required
+CURRENT_TASK: W02.T04 - Operational-root enrollment and routing contract (T03 remains blocked)
 LAST_COMPLETED_TASK: W02.T02 - W02_DETERMINISTIC_EXECUTION_READY
 LAST_SAFE_SHA: `f8a5166b3371e565e3d252fab5bbdd890f5f33d1` (published T03-start cursor; no T03 code integrated)
 
@@ -113,7 +113,7 @@ VERSION_IMPACT:
 ACTUAL T02 IMPACT VS PLANNED: within the approved T02 execution-owner envelope. `GAME/TOOLS/mechanics.py` was an explicit Wave-02 baseline direct action path that the initial cursor omitted; its introduction, direct-transition producer/schema synchronization, and domain coverage validator changes are mechanical consumers of the accepted embedded-segment identity, not a new authority or broader boundary.
 
 SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED - `implementation-wave-02-t03-system-impact-brief.md`
-NEXT_EXACT_TASK: hold T03 pending its System-Impact ruling; independently assess W02.T04 and W02.T07 write sets against the unresolved adjudication-basis boundary
+NEXT_EXACT_TASK: add the smallest material T04 RED for active operational-root enrollment before implementation; keep T03 blocked
 KNOWN_BLOCKERS: W02.T03 requires an accepted native campaign publication/history policy resolver; raw caller evidence and the DEV conformance helper are not runtime authority
 UNPUBLISHED_WORK: unsafe detached W02.T03 commit `29ded20` is not integrated or published; safe branch work is this cursor/brief only
 
@@ -186,6 +186,44 @@ KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
 
 VERSION IMPACT: pending actual T03 owner assessment under `DEV/RELEASE/VERSIONING.md`
 SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative changes; catalog generation remains 2
+MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
+
+## W02.T04 Impact Envelope
+
+SPEC / APPROVED DESIGN:
+- `implementation-wave-02-execution-durability-recovery.md` W02.T04
+- published `W01_NATIVE_ROUTING_READY` and `W02_DETERMINISTIC_EXECUTION_READY`
+
+IMPLEMENTATION START HEAD: `9597e697d213cc12de3c8208b5c1b04d4564a07e`
+PRIMARY OWNER ARTIFACTS:
+- active operational-root routing contract and owner-local recovery-root enrollment
+- published accepted command/procedure lifecycle evidence
+
+EXPECTED OWNERS TO CHANGE:
+- `GAME/TOOLS/recovery_roots.py`
+- `DEV/SCHEMAS/operational-root-routing.schema.json`
+- `GAME/SCHEMA/operational_root_routing.schema.yaml`
+- `GAME/CAMPAIGN/STATE/RUNTIME/RECOVERY_ROOTS/FORMAT.yaml`
+- T04-owned RD05/RD07 root enrollment/routing tests
+EXPECTED CONSUMERS TO CHANGE:
+- no publication, recovery selector, storage documentation, shared writer, or T03 adjudication-basis consumer changes
+ALLOWED INTERFACES / CONTRACTS TO CHANGE:
+- `derive_operational_root_delta(...)`, `validate_operational_root_delta(...)`, `enumerate_operational_root_page(...)`, and typed enrollment/removal results
+
+PROTECTED ARCHITECTURE INVARIANTS:
+- roots contain only active accepted commands, remaining procedures, and unresolved promised inputs; enrollment/removal is idempotent and campaign scoped
+- root set is bounded/completeness-protected and never a publication journal, durability frontier, global queue, temporal owner, or broad-scan fallback
+- terminal publication removal is prepared as semantic evidence only; T05 owns publication closure and T06 owns recovery hydration
+- no cache/index/checkpoint authority, no new global transaction/allocator, compatibility shim, or shared final writer
+ARCHITECTURE-SENSITIVE SURFACES:
+- command/procedure lifecycle, source-native routing, completeness, future durability/recovery join
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
+- `OperationalRootEnrollmentTests`, idempotent enrollment/removal, completeness failure, and no-scan fallback negatives; do not publish W02.T06 routing tests RED
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
+- T03 accepted adjudication basis, T05 publication/removal closure, T06 recovery hydration, temporal roots, role emission, storage documentation, shared final writers
+
+VERSION IMPACT: pending actual T04 owner assessment under `DEV/RELEASE/VERSIONING.md`
+SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative catalog or shared-schema change
 MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
 SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative changes; catalog generation remains 2
 MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
