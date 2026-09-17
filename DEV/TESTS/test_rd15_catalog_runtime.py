@@ -685,6 +685,12 @@ class CatalogBindingInstructionCutoverTests(unittest.TestCase):
 
 class CatalogBackedAcceptanceIntegrationTests(unittest.TestCase):
     def test_binding_result_requires_revalidation_before_a_consumer_can_accept_it(self) -> None:
+        from GAME.TOOLS.runtime_execution import (
+            AcceptedRuntimeCommand,
+            accept_command,
+            validate_execution_proposal,
+        )
+
         context = _bind_context()
         result = bind_executable_catalog(
             context,
@@ -693,6 +699,23 @@ class CatalogBackedAcceptanceIntegrationTests(unittest.TestCase):
 
         self.assertEqual(result["status"], "bound")
         validate_executable_binding(context, result["binding"])
+        accepted = accept_command(
+            {
+                "kind": "interpreter_result",
+                "purpose": "interpret",
+                "bundle_id": "bundle-1",
+                "source_generation": "frontier-7",
+                "intent": "make a check",
+            },
+            context,
+            {"definition_id": "activity.check.generic", "kind": "definition.activity"},
+        )
+        self.assertIsInstance(accepted, AcceptedRuntimeCommand)
+        validate_execution_proposal(
+            accepted,
+            context,
+            {"definition_id": "activity.check.generic", "kind": "definition.activity"},
+        )
 
 
 if __name__ == "__main__":
