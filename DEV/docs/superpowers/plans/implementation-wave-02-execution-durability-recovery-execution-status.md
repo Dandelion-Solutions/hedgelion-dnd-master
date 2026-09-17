@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T07 - Role-protected execution handoff complete locally (T03/T04 remain blocked)
+CURRENT_TASK: W02.T03/T04 - blocked pending Senior System-Impact rulings (W02.T07 complete; W02.T05/T06 remain dependency-blocked)
 LAST_COMPLETED_TASK: W02.T07 - W02_PROTECTED_EXECUTION_HANDOFF_READY
-LAST_SAFE_SHA: `34043757c7ff842d7f1e5828c2bb1dd9c74ad768` (integrated published-candidate evidence commit; publication intentionally not performed)
+LAST_SAFE_SHA: `c750437a0cc7587840faf3f6423ce3c97146a6c6` (current published checkpoint; previous safe checkpoint for this metadata-only cursor commit)
 
 ## Dependency schedule
 
@@ -97,7 +97,7 @@ CURRENT_VERIFICATION_STATE:
 - exact rebased detached HEAD `32b78af`: full DEV discovery 647 passed, 7 skipped
 - exact rebased detached HEAD `32b78af`: maintenance audit PASS
 - exact detached T02 code head `238e2db`: focused execution/Step-3 suites 56 passed; full DEV discovery 671 passed, 7 skipped; maintenance audit PASS
-- the primary worktree's ignored `.opencode/node_modules` remains an external local scan contaminant for full discovery; clean-worktree verification above is the applicable tracked-tree evidence
+- current full-discovery census excludes ignored `.opencode/` infrastructure; no current scan contamination is present
 
 VERSION_IMPACT:
 - `runtime.command.schema_version`: 1 -> 2; accepted action records now retain the exact interpreter/catalog/binding evidence after settlement
@@ -113,7 +113,7 @@ VERSION_IMPACT:
 ACTUAL T02 IMPACT VS PLANNED: within the approved T02 execution-owner envelope. `GAME/TOOLS/mechanics.py` was an explicit Wave-02 baseline direct action path that the initial cursor omitted; its introduction, direct-transition producer/schema synchronization, and domain coverage validator changes are mechanical consumers of the accepted embedded-segment identity, not a new authority or broader boundary.
 
 SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED - `implementation-wave-02-t03-system-impact-brief.md` and `implementation-wave-02-t04-system-impact-brief.md`
-NEXT_EXACT_TASK: preserve T03/T04 Senior blockers; W02.T05 remains dependency-blocked
+NEXT_EXACT_TASK: W02.T03/T04 remain blocked pending Senior System-Impact rulings; W02.T05/T06 remain dependency-blocked
 KNOWN_BLOCKERS: T03 lacks an accepted native campaign publication/history policy resolver; T04 lacks an accepted native lifecycle-proof boundary for operational-root membership/removal
 UNPUBLISHED_WORK: unsafe detached W02.T03 commit `29ded20` and W02.T04 commits `0244a7b` + `14b061b` are not integrated or published; safe branch work is this cursor/brief only
 
@@ -220,7 +220,7 @@ KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
 - T03 adjudication basis, T04 operational roots, T05/T06 durability/recovery, policy/HOT/currentness, Story, final CORE writers
 
 COMPLETED TASK:
-- W02.T07 -> implementation `811fd07` plus repair-round-1 `19e0803`; output checkpoint `W02_PROTECTED_EXECUTION_HANDOFF_READY` (local-only)
+- W02.T07 -> detached implementation `811fd07`, integrated as `3ed1487`, plus detached repair-round-1 `19e0803`, integrated as `302ad4d`; output checkpoint `W02_PROTECTED_EXECUTION_HANDOFF_READY` (integrated and published in `c750437`)
 
 VERSION IMPACT: NONE
 - T07 changed only runtime-local role/emission helpers and DEV test witnesses; no version-bearing CORE/runtime module header, serialized schema, catalog, persistent/campaign/storage/generation namespace, or projection changed.
@@ -230,19 +230,19 @@ MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
 ACTUAL T07 IMPACT VS PLANNED: within the approved role/emission envelope. Narrator binding now requires the registered execution handoff; emission accepts only an owner-issued typed execution outcome tied to the current turn/recipient/bundle, preserves protected capacity, rejects over-capacity and duplicate output, and excludes diagnostic/private execution material. Auxiliary fallback remains finite and cannot consume protected capacity or emit.
 
 CURRENT_VERIFICATION_STATE:
-- local focused role/execution/Step-3 conformance suites at code repair `19e0803`: 66 passed
-- local full DEV discovery at code repair `19e0803`: 684 passed, 7 skipped
-- local maintenance audit at code repair `19e0803`: PASS
-- publication/read-back: intentionally unavailable because this repair instruction requires local-only commits
+- local focused role/execution/Step-3 conformance suites at integrated code repair `302ad4d` (detached source `19e0803`): 66 passed
+- shared-checkout full `DEV/TESTS` discovery at integrated/published tree `c750437`: 685 passed, 7 skipped
+- maintenance audit at integrated/published tree `c750437`: PASS
+- publication/read-back: completed at published `c750437`; remote read-back confirmed the published ref
 
 SYSTEM_IMPACT: NONE for W02.T07. The repair stayed within the approved ephemeral role/emission owner boundary; no new authority, persistence, dependency direction, mechanics/RNG semantics, or cross-wave owner was introduced. Existing wave-level T03/T04 `SENIOR_REVIEW_REQUIRED` disposition remains unchanged.
 
 ## Version-census repair evidence
 
-- local focused `DEV.TESTS.test_versioning_namespace_policy` at `dc9c82c`: 11 passed
-- local full `DEV/TESTS` discovery at `dc9c82c`: 685 passed, 7 skipped (previous recorded count: 684 passed, 7 skipped)
-- local maintenance audit at `dc9c82c`: PASS
-- publication/read-back: intentionally unavailable because this repair instruction requires local-only commits
+- local focused `DEV.TESTS.test_versioning_namespace_policy` at integrated `d9440b4` (detached source `dc9c82c`): 11 passed
+- shared-checkout full `DEV/TESTS` discovery at integrated/published tree `c750437`: 685 passed, 7 skipped (previous recorded count: 684 passed, 7 skipped)
+- maintenance audit at integrated/published tree `c750437`: PASS
+- publication/read-back: completed at published `c750437`; remote read-back confirmed the published ref
 - VERSION_IMPACT: NONE; only DEV test scanning behavior and execution evidence changed, with no HDM-owned version namespace or projection change
 
 ## W02.T04 Impact Envelope
