@@ -5,7 +5,7 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T04 - Operational-root enrollment and routing contract (T03 remains blocked)
+CURRENT_TASK: W02.T04 blocked - System-Impact review required (T03 also blocked)
 LAST_COMPLETED_TASK: W02.T02 - W02_DETERMINISTIC_EXECUTION_READY
 LAST_SAFE_SHA: `f8a5166b3371e565e3d252fab5bbdd890f5f33d1` (published T03-start cursor; no T03 code integrated)
 
@@ -112,10 +112,10 @@ VERSION_IMPACT:
 
 ACTUAL T02 IMPACT VS PLANNED: within the approved T02 execution-owner envelope. `GAME/TOOLS/mechanics.py` was an explicit Wave-02 baseline direct action path that the initial cursor omitted; its introduction, direct-transition producer/schema synchronization, and domain coverage validator changes are mechanical consumers of the accepted embedded-segment identity, not a new authority or broader boundary.
 
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED - `implementation-wave-02-t03-system-impact-brief.md`
-NEXT_EXACT_TASK: add the smallest material T04 RED for active operational-root enrollment before implementation; keep T03 blocked
-KNOWN_BLOCKERS: W02.T03 requires an accepted native campaign publication/history policy resolver; raw caller evidence and the DEV conformance helper are not runtime authority
-UNPUBLISHED_WORK: unsafe detached W02.T03 commit `29ded20` is not integrated or published; safe branch work is this cursor/brief only
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED - `implementation-wave-02-t03-system-impact-brief.md` and `implementation-wave-02-t04-system-impact-brief.md`
+NEXT_EXACT_TASK: hold T03/T04 pending their System-Impact rulings; independently assess W02.T07 write set and dependencies
+KNOWN_BLOCKERS: T03 lacks an accepted native campaign publication/history policy resolver; T04 lacks an accepted native lifecycle-proof boundary for operational-root membership/removal
+UNPUBLISHED_WORK: unsafe detached W02.T03 commit `29ded20` and W02.T04 commits `0244a7b` + `14b061b` are not integrated or published; safe branch work is this cursor/brief only
 
 ## W02.T02 Impact Envelope
 
