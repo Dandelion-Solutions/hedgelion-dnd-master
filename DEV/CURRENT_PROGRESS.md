@@ -6,11 +6,11 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 CLOSED — CONSOLIDATED IMPLEMENTATION PLAN SENIOR PASS / GO — PRODUCTION IMPLEMENTATION EXECUTING
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 02 — execution, durability and recovery
-LAST_CLOSED_UNIT: Wave 01 owner-native foundations; mandatory Senior integration audit PASS at audited published HEAD `02651e13f9d6890364d14960f40c94175766c60e`
-NEXT_AUTHORIZED_UNIT: begin Wave 02 from `DEV/docs/superpowers/plans/implementation-wave-02-execution-durability-recovery.md`; the first Wave-02 coordinator must fresh-read the published remote HEAD, create/update the Wave-02 durable execution cursor with that exact implementation-start SHA, and start only dependency-valid tasks. Initially W02.T01 is authorized from `W01_CATALOG_CONTEXT_READY`; later tasks become eligible only from their named GREEN published checkpoints.
+LAST_CLOSED_UNIT: Wave-02 W02.T03/T04 System-Impact reconciliation; Product Owner accepted the Senior-recommended realization and canonical/stable-plan repair at `acc40855850f4d07b63bad4792917f97764038a3`
+NEXT_AUTHORIZED_UNIT: resume W02.T03 and W02.T04 from the current published HEAD under the accepted 2026-09-18 rulings; publish `W02_ACCEPTED_ADJUDICATION_BASIS_READY` and `W02_OPERATIONAL_ROOT_ENROLLMENT_READY`; only then start W02.T05, followed by W02.T06 after W02.T05 GREEN/published
 REQUIRED_GATE: Wave-02 autonomous TDD/review/version-impact/checkpoint discipline -> exact-head Wave-02 completion verification -> mandatory Senior Wave-02 integration audit before Wave 02 is marked complete
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-02-execution-durability-recovery.md` until the Wave-02 coordinator publishes its execution-status cursor
-KNOWN_BLOCKERS: NONE for W02.T01; migration execution, release execution and gameplay bootstrap remain unauthorized unless their later explicit gates are satisfied
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-02-execution-durability-recovery-execution-status.md`
+KNOWN_BLOCKERS: NONE for W02.T03/T04; W02.T05 is dependency-blocked on both named checkpoints and W02.T06 is dependency-blocked on W02.T05; migration execution, release execution, gameplay bootstrap and Wave 03 remain unauthorized
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -21,6 +21,7 @@ WAVE_01_FINAL_IMPLEMENTATION_SHA: `d7e46d00b4c2a142e29cccbab400aa254d502b8a`
 WAVE_01_SENIOR_AUDIT_HEAD: `02651e13f9d6890364d14960f40c94175766c60e`
 WAVE_01_HOSTED_CI_RUN: `35159778200`
 WAVE_01_HOSTED_CI_JOB: `105007610526`
+WAVE_02_T03_T04_RULING_SHA: `acc40855850f4d07b63bad4792917f97764038a3`
 
 ## Current planning package
 
@@ -138,6 +139,8 @@ W01 role/context + W02.T02
   -> W02.T07 role-protected execution handoff
 ```
 
+W02.T01, W02.T02 and W02.T07 are already published GREEN. W02.T03/T04 encountered valid System-Impact stops; their accepted 2026-09-18 rulings are now encoded in the canonical House-Rules/Step-5.2 owners, stable Wave-02 plan and durable execution cursor. Rejected detached prototypes are non-authoritative and must not be integrated as-is.
+
 The coordinator must obey the package execution contract for every task: fresh currentness read, Impact Envelope, RED/GREEN/refactor, focused and cross-owner verification, Version Impact Gate, task review/re-review, maintenance/broader tests, coherent checkpoint publication, remote read-back and durable cursor update. Shared/final bytes assigned to Wave 05 remain bounded semantic deltas only in Wave 02.
 
 No Wave-03 task is authorized merely because a Wave-02 producer becomes GREEN unless the canonical current-progress cursor is intentionally advanced after Wave-02 closure/Senior gate. This execution slice uses a wave barrier for coordination even though the package graph itself permits dependency-valid later-wave work.
@@ -192,18 +195,18 @@ The preflight does not require all private CLS repairs to be closed, does not re
 PLAN: `DEV/docs/superpowers/plans/implementation-plan-index.md`
 CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-02-execution-durability-recovery.md`
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
-BASE_SHA: the first Wave-02 coordinator must record the fresh published HEAD immediately before the first W02 RED step
+BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
-STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: bootstrap Wave-02 execution state, then W02.T01
-LAST_COMPLETED_TASK: Wave-01 Senior integration audit PASS at `02651e13f9d6890364d14960f40c94175766c60e`
-LAST_SAFE_SHA: current published commit containing this authority after remote read-back
+STATUS: EXECUTING
+CURRENT_TASK: W02.T03 + W02.T04 resume under accepted 2026-09-18 System-Impact rulings
+LAST_COMPLETED_TASK: W02.T07 -> `W02_PROTECTED_EXECUTION_HANDOFF_READY`; architecture/control reconciliation for T03/T04 -> `acc40855850f4d07b63bad4792917f97764038a3`
+LAST_SAFE_SHA: `acc40855850f4d07b63bad4792917f97764038a3` for authoritative ruling/plan state; last published implementation checkpoint is recorded in the Wave-02 execution cursor
 
-CURRENT_VERIFICATION_STATE: Wave-01 implementation is fully published, exact hosted validation is GREEN at its audited HEAD and the mandatory Senior Wave-01 gate passed
-VERSION_IMPACT: NONE for this control-plane Wave-01-close/Wave-02-open transition; no runtime/module contract, serialized schema, catalog generation or release identity changes
-SYSTEM_IMPACT: NONE; Wave 02 executes inside the approved package and uses the normal System-Impact Gate for newly discovered cross-boundary requirements
-NEXT_EXACT_TASK: Wave-02 coordinator fresh-reads remote HEAD, creates/updates `DEV/docs/superpowers/plans/implementation-wave-02-execution-durability-recovery-execution-status.md` with that exact BASE_SHA and starts W02.T01 under TDD/review/version/checkpoint discipline
-KNOWN_BLOCKERS: NONE for W02.T01
-UNPUBLISHED_WORK: NONE after verified Wave-02 authorization publication/read-back
+CURRENT_VERIFICATION_STATE: W02.T01/T02/T07 are published; last recorded shared-checkout full DEV discovery at the published implementation tree is 685 passed, 7 skipped with maintenance audit PASS; T03/T04 ruling checkpoint contains documentation/contract repair only and requires normal exact-head validation after publication
+VERSION_IMPACT: NONE for the T03/T04 architecture/plan ruling itself; task-local implementation Version Impact Gates remain mandatory
+SYSTEM_IMPACT: RESOLVED for the recorded T03/T04 events; no new semantic owner was authorized
+NEXT_EXACT_TASK: fresh-read current HEAD; implement/review/publish W02.T03 and W02.T04 under the accepted rulings; start W02.T05 only after both named checkpoints are GREEN/published; then W02.T06 after W02.T05
+KNOWN_BLOCKERS: NONE for W02.T03/T04; W02.T05/T06 are dependency-blocked as above
+UNPUBLISHED_WORK: rejected detached T03/T04 prototypes remain non-authoritative local evidence only and must not be cherry-picked/integrated as-is
 
 Migration execution, release execution and gameplay bootstrap remain unauthorized unless later explicit gates are satisfied.

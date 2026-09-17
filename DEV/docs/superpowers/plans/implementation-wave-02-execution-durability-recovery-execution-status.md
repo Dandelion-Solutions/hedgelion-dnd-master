@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T03/T04 - blocked pending Senior System-Impact rulings (W02.T07 complete; W02.T05/T06 remain dependency-blocked)
+CURRENT_TASK: W02.T03/T04 - RESUME AUTHORIZED under accepted 2026-09-18 System-Impact rulings; W02.T05/T06 remain dependency-blocked
 LAST_COMPLETED_TASK: W02.T07 - W02_PROTECTED_EXECUTION_HANDOFF_READY
-LAST_SAFE_SHA: `c750437a0cc7587840faf3f6423ce3c97146a6c6` (current published checkpoint; previous safe checkpoint for this metadata-only cursor commit)
+LAST_SAFE_SHA: `acc40855850f4d07b63bad4792917f97764038a3` (published architecture/plan ruling checkpoint; last implementation checkpoint remains `c750437a0cc7587840faf3f6423ce3c97146a6c6`)
 
 ## Dependency schedule
 
@@ -112,10 +112,24 @@ VERSION_IMPACT:
 
 ACTUAL T02 IMPACT VS PLANNED: within the approved T02 execution-owner envelope. `GAME/TOOLS/mechanics.py` was an explicit Wave-02 baseline direct action path that the initial cursor omitted; its introduction, direct-transition producer/schema synchronization, and domain coverage validator changes are mechanical consumers of the accepted embedded-segment identity, not a new authority or broader boundary.
 
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED - `implementation-wave-02-t03-system-impact-brief.md` and `implementation-wave-02-t04-system-impact-brief.md`
-NEXT_EXACT_TASK: W02.T03/T04 remain blocked pending Senior System-Impact rulings; W02.T05/T06 remain dependency-blocked
-KNOWN_BLOCKERS: T03 lacks an accepted native campaign publication/history policy resolver; T04 lacks an accepted native lifecycle-proof boundary for operational-root membership/removal
-UNPUBLISHED_WORK: unsafe detached W02.T03 commit `29ded20` and W02.T04 commits `0244a7b` + `14b061b` are not integrated or published; safe branch work is this cursor/brief only
+SYSTEM_IMPACT: RESOLVED - Product Owner accepted the Senior-recommended T03/T04 realization at `acc40855850f4d07b63bad4792917f97764038a3`; canonical owners, stable Wave-02 plan and both impact briefs are synchronized
+NEXT_EXACT_TASK: fresh-read current HEAD, implement W02.T03 and W02.T04 under the accepted rulings, review/re-repair each independently, publish `W02_ACCEPTED_ADJUDICATION_BASIS_READY` and `W02_OPERATIONAL_ROOT_ENROLLMENT_READY`; then start W02.T05 only after both are GREEN/published
+KNOWN_BLOCKERS: NONE for W02.T03/T04; W02.T05 remains dependency-blocked on their named checkpoints and W02.T06 remains blocked on W02.T05
+UNPUBLISHED_WORK: rejected detached prototypes `29ded20`, `0244a7b`, `14b061b` remain non-authoritative evidence only and MUST NOT be cherry-picked/integrated as-is
+
+## Accepted T03/T04 System-Impact rulings — 2026-09-18
+
+Published ruling checkpoint: `acc40855850f4d07b63bad4792917f97764038a3`.
+
+### W02.T03
+
+Use the canonical `PolicyBasisResolver` realization now recorded in `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md`: exact pinned campaign reads + existing House-Rules/Access/currentness owners produce ephemeral verified evidence. Do not accept raw caller authority/applicability claims or promote the DEV conformance validator into runtime authority. Persist only the already-owned accepted policy refs/parameter/fact basis.
+
+### W02.T04
+
+Materialize the already-accepted Step-5.2 Procedure-native lifecycle as explicit `ACTIVE|TERMINAL`; derive root deltas from validated native owner evidence. Routing does not own lifecycle. W02.T04 prepares derivative membership deltas; W02.T05 owns the publication closure that applies terminal owner transition plus removal. Unresolved Interaction/IntentPlan enrollment requires the later durability/handoff owner's accepted promise.
+
+These rulings introduce no new semantic owner, policy engine, lifecycle registry, persistent proof registry or global pending-work authority.
 
 ## W02.T02 Impact Envelope
 
@@ -159,28 +173,35 @@ SPEC / APPROVED DESIGN:
 
 IMPLEMENTATION START HEAD: `351ab3e876254c31b506efcadc76fca635ea2aab`
 PRIMARY OWNER ARTIFACTS:
+- `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md` accepted PolicyBasisResolver trust contract
+- `GAME/TOOLS/policy_basis.py` (or fresh-resolved owner-equivalent) as the new narrow runtime verifier/adapter
 - `GAME/TOOLS/runtime_execution.py` accepted-command boundary
 - `DEV/SCHEMAS/activity-parameter-binding.schema.json`, `invocation-fact.schema.json`, and `policy-basis-ref.schema.json`
-- `DEV/ARCHITECTURE/HOUSE_RULES_MECHANICAL_BOUNDARY.md` and `PORTABLE_ACTIVITY_VALUES.md`
+- current House-Rules sidecar/normative sources plus Access-Control/currentness owners
 
 EXPECTED OWNERS TO CHANGE:
-- existing runtime execution acceptance/resolution functions
+- new narrow policy-basis runtime adapter and existing runtime execution acceptance/resolution functions
 - `DEV/TESTS/test_rd05_runtime_execution.py` and T03-owned exact-policy resolver witnesses in `DEV/TESTS/test_rd07_recovery.py`
 - existing accepted-basis schemas only when a synchronized mechanical contract requires it
 EXPECTED CONSUMERS TO CHANGE:
 - no publication, recovery, policy-adoption, House-Rules, or CORE writer changes before their named later tasks
 ALLOWED INTERFACES / CONTRACTS TO CHANGE:
-- bounded early exact-policy resolver and accepted-command validation that retains complete source identity/currentness/basis
+- bounded `PolicyBasisResolver` over exact pinned RepositoryPort-equivalent reads + existing House-Rules/Access/currentness owners
+- accepted-command validation that retains complete source identity/currentness/basis
+- ephemeral verified resolver output only; no persisted proof registry, policy epoch or duplicate ACL/currentness owner
 
 PROTECTED ARCHITECTURE INVARIANTS:
 - exact source identity/version/currentness and every required source-derived parameter/fact edge are frozen before acceptance
-- current/latest policy, caller-supplied booleans, or JSON round-trip cannot substitute for the accepted basis
-- retry/recovery reuses historical accepted policy basis after newer policy publication; missing/stale/inconsistent/unsupported sources reject typed before mechanics
+- current/latest policy, raw caller authority/applicability booleans, caller-selected paths/revisions, DEV conformance validators or JSON round-trip cannot substitute for the accepted basis
+- resolver trust derives from exact pinned owner reads plus owning authorization/currentness checks on the supported runtime path, not from Python object construction
+- retry/recovery reuses historical accepted policy basis after newer policy publication; missing/stale/inconsistent/unauthorized/inapplicable/unsupported sources reject typed before mechanics
 - policy refs are causal evidence, not policy/adoption/currentness/execution authority; no network, broad scan, compatibility shim, or Wave-05 writer
 ARCHITECTURE-SENSITIVE SURFACES:
 - command fingerprint and idempotency, policy source currentness, adjudication-to-mechanics authority, schema/version namespaces
 EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
-- `ExactPolicyBasisResolutionTests` and `AcceptedAdjudicationBasisTests`, historical reuse and malformed/missing/stale/inconsistent source negatives
+- `ExactPolicyBasisResolutionTests` and `AcceptedAdjudicationBasisTests`
+- exact H reads, sidecar/normative-anchor pairing, authority/applicability/realization validation, historical reuse
+- forged caller booleans/paths/revisions, DEV-validator misuse and malformed/missing/stale/inconsistent/unauthorized source negatives
 KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
 - RNG/event lifecycle, operational roots, durability/publication, recovery closure, role emission, House-Rules adoption/persistence, and all shared final writers
 
@@ -258,6 +279,7 @@ PRIMARY OWNER ARTIFACTS:
 
 EXPECTED OWNERS TO CHANGE:
 - `GAME/TOOLS/recovery_roots.py`
+- current `runtime.procedure` schema plus its Procedure-native producer/validator only as required to materialize `ACTIVE|TERMINAL`
 - `DEV/SCHEMAS/operational-root-routing.schema.json`
 - `GAME/SCHEMA/operational_root_routing.schema.yaml`
 - `GAME/CAMPAIGN/STATE/RUNTIME/RECOVERY_ROOTS/FORMAT.yaml`
@@ -265,17 +287,22 @@ EXPECTED OWNERS TO CHANGE:
 EXPECTED CONSUMERS TO CHANGE:
 - no publication, recovery selector, storage documentation, shared writer, or T03 adjudication-basis consumer changes
 ALLOWED INTERFACES / CONTRACTS TO CHANGE:
-- `derive_operational_root_delta(...)`, `validate_operational_root_delta(...)`, `enumerate_operational_root_page(...)`, and typed enrollment/removal results
+- explicit Procedure-native lifecycle realization with exactly `ACTIVE|TERMINAL` semantics
+- `derive_operational_root_delta(...)`, `validate_operational_root_delta(...)`, `enumerate_operational_root_page(...)`, and typed derivative enrollment/removal results
+- unresolved Interaction/IntentPlan eligibility interface only; actual enrollment requires an accepted durability/handoff promise from its later owner
 
 PROTECTED ARCHITECTURE INVARIANTS:
-- roots contain only active accepted commands, remaining procedures, and unresolved promised inputs; enrollment/removal is idempotent and campaign scoped
+- roots contain only non-settled accepted commands with unfinished mandatory closure, Procedure owners whose native lifecycle is ACTIVE, and unresolved accepted inputs with an explicit later-owner durability promise
+- routing/carriers/deltas never define lifecycle; caller-built before/after sets cannot create enrollment or removal authority
 - root set is bounded/completeness-protected and never a publication journal, durability frontier, global queue, temporal owner, or broad-scan fallback
-- terminal publication removal is prepared as semantic evidence only; T05 owns publication closure and T06 owns recovery hydration
+- terminal removal is prepared as derivative evidence only; T05 owns the publication closure that joins native owner transition and required root membership; T06 owns recovery hydration
 - no cache/index/checkpoint authority, no new global transaction/allocator, compatibility shim, or shared final writer
 ARCHITECTURE-SENSITIVE SURFACES:
 - command/procedure lifecycle, source-native routing, completeness, future durability/recovery join
 EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
-- `OperationalRootEnrollmentTests`, idempotent enrollment/removal, completeness failure, and no-scan fallback negatives; do not publish W02.T06 routing tests RED
+- `OperationalRootEnrollmentTests` with Procedure ACTIVE/TERMINAL owner evidence, RuntimeCommand accepted/settled evidence and promised-input interface cases
+- exact native kind+identity matching, same-kind/different-owner rejection, forged carrier/removal rejection, idempotency, completeness failure and no-scan fallback
+- do not publish W02.T06 routing tests RED; actual terminal-publication/removal closure is T05-owned
 KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
 - T03 accepted adjudication basis, T05 publication/removal closure, T06 recovery hydration, temporal roots, role emission, storage documentation, shared final writers
 
