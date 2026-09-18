@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: W03.T05 -- opening preparation, seed, routing, packing and absorption
-LAST_COMPLETED_TASK: W03.T04 independent review -- PASS / W03_SOURCE_NATIVE_LIVE_ID_READY accepted
-LAST_SAFE_SHA: `9848bb11d1bd3023f33eef84f35ba06d1e394d6a` (W03.T04 repair implementation checkpoint)
+CURRENT_TASK: W03.T06 -- temporal and operational-root handoff
+LAST_COMPLETED_TASK: W03.T05 -- opening preparation, seed, routing, packing and absorption; W03_LIVE_ROUTING_READY / W03_LIVE_NATIVE_PACKING_READY / W03_LIVE_ABSORPTION_READY
+LAST_SAFE_SHA: `f214e887c20859c53c83d8d639bd82def28dbc8f` (published W03.T05 implementation checkpoint)
 
 ## Dependency schedule
 
@@ -69,6 +69,7 @@ COMPLETED_TASKS:
 - W03.T04 review repair follow-up -> `1572904309b6519af19e3cde5b323ce6752518d4` (published/read-back; explicit envelope arguments cannot bypass CAS-bound result evidence)
 - W03.T04 repair -> `9848bb11d1bd3023f33eef84f35ba06d1e394d6a` (published/read-back; cursor requires owner-issued CAS classification/reconciliation evidence and persisted history requires exact family policy prefixes)
 - W03.T04 independent review -> PASS at `a161110db60a8efc296e7982f2e607566c20ef07`; `W03_SOURCE_NATIVE_LIVE_ID_READY` accepted
+- W03.T05 -> `f214e887c20859c53c83d8d639bd82def28dbc8f` (published/read-back; W03_LIVE_ROUTING_READY / W03_LIVE_NATIVE_PACKING_READY / W03_LIVE_ABSORPTION_READY)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -106,6 +107,8 @@ CURRENT_VERIFICATION_STATE:
 - W03.T04 repair RED: the two new witnesses produced one expected assertion failure for the forged matching-envelope result and one expected missing-API error for persisted family-policy validation before production changes.
 - W03.T04 repair GREEN: focused `test_rd09_access_live` passed 84 tests; the repository `.hdm-devtools` environment was restored from `DEV/TOOLS/requirements-dev-tools.txt` and used for verification; no W05 catalog files were changed.
 - W03.T04 repair exact published-head verification at `9848bb11d1bd3023f33eef84f35ba06d1e394d6a`: named cross-owner suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`) passed 135 tests; full DEV discovery passed 878 tests with 7 skips; maintenance audit passed; version census reported zero unclassified and zero legacy hits; fresh remote read-back matched the published HEAD.
+- W03.T05 RED/GREEN: focused `test_rd09_access_live` reached 94 passing tests, including explicit source-revision/native-input requirements, exact owner-issued opening/absorption CAS binding, complete route membership, lossless packing and CLOSED_UNABSORBED recovery. Named integration suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`) passed 145 tests; full DEV discovery passed 888 tests with 7 skips under bytecode-disabled execution; version census reported zero unclassified and zero legacy hits; maintenance audit and `git diff --check` passed.
+- W03.T05 changed only the LIVE owner runtime and owner-local LIVE tests; no Wave-05 shared schema, CORE or catalog bytes changed. The accepted opening path requires exact owner-issued CAS evidence; absorption requires exact final source, selected route, packed state and campaign CAS evidence, preserving CLOSED_UNABSORBED recovery on non-acceptance.
 
 VERSION_IMPACT: W03.T02 review repair round 1 materially changes the LIVE runtime module `framework_module_version` 1.0.1 -> 1.0.2 and the ephemeral publication-attempt schema 1 -> 2 because selected-route and complete-successor evidence are now required. Claim/routing serialized shapes remain schema v1; their repair rejects pre-release invalid claim forms without changing serialized fields or adding a migration/projection.
 
@@ -123,6 +126,8 @@ SYSTEM_IMPACT: NONE -- W03.T04 remains within the approved source-native LIVE id
 - VERSION_IMPACT: NONE for the W03.T04 repair follow-up; it tightens the already-bumped T04 runtime validation without introducing another namespace or projection change.
 - VERSION_IMPACT: W03.T04 repair materially changes the LIVE runtime module `framework_module_version` `1.0.6 -> 1.0.7` for owner-issued CAS evidence and exact persisted family-policy prefix validation. LIVE routing/publication schemas remain v4/v5; no engine-release, catalog-generation, campaign-contract, storage-format, identifier-policy/catalog or other projection namespace changed.
 - SYSTEM_IMPACT: NONE -- the repair remains within the approved T04 LIVE identity/currentness envelope, adds no semantic owner, new dependency direction, transaction, catalog write or W05 surface, and keeps cursor advancement subordinate to owner-issued accepted classification/reconciliation.
-NEXT_EXACT_TASK: W03.T05 -- opening preparation, seed, routing, packing and absorption, consuming W03_SOURCE_NATIVE_LIVE_ID_READY.
-KNOWN_BLOCKERS: NONE for W03.T04 repair. Fresh remote fetch/read-back succeeded; later tasks remain gated by the schedule above and their named owner/currentness inputs.
+- VERSION_IMPACT: W03.T05 materially changes LIVE runtime `framework_module_version` `1.0.7 -> 1.0.8`; it introduces owner-local opening-seed and native-state-pack typed schema namespaces at version `1` with no existing projections or migration edge. LIVE routing/publication schemas remain v4/v5; no engine-release, catalog-generation, campaign-contract, storage-format, identifier-policy/catalog or other projection namespace required a bump.
+- SYSTEM_IMPACT: NONE -- W03.T05 remains inside the approved LIVE opening/currentness/routing/packing/absorption boundary, adds no semantic owner, dependency direction, distributed transaction, broad scan, fallback authority or Wave-05 write.
+NEXT_EXACT_TASK: W03.T06 -- temporal and operational-root handoff, consuming W03_LIVE_ROUTING_READY + W03_LIVE_NATIVE_PACKING_READY + W03_LIVE_ABSORPTION_READY.
+KNOWN_BLOCKERS: NONE for W03.T05. Fresh remote fetch/read-back succeeded; W03.T06 remains gated by the schedule above and its named temporal/operational owner inputs.
 UNPUBLISHED_WORK: NONE after this cursor-update commit and its remote read-back.
