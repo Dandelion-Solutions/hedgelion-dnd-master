@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `0b68dc873839bae573eceee63b05d46c5977774d`
 
 STATUS: FINAL_REVIEW
-CURRENT_TASK: W02.T06 - repair round 4 final integration review of duplicate fixed-RNG evidence rejection at local checkpoint `0a9e014`
-LAST_COMPLETED_TASK: W02.T06 - duplicate fixed-RNG evidence rejection repair round 4 -> local checkpoint `0a9e014`
-LAST_SAFE_SHA: `0a9e014` (local coherent W02.T06 repair checkpoint; remote publication was not requested)
+CURRENT_TASK: Wave-02 final review — implementation tasks W02.T01-W02.T07 complete; mandatory Senior Wave-02 integration audit pending
+LAST_COMPLETED_TASK: W02.T07 -> published/read back `c750437a0cc7587840faf3f6423ce3c97146a6c6`
+LAST_SAFE_SHA: `f7afbcb3959812c44b1b35cde56426ec80317936` (published/read-back W02.T06 checkpoint; prior safe checkpoint for this metadata-only cursor commit)
 
 ## Dependency schedule
 
@@ -87,14 +87,23 @@ CURRENTNESS RE-READ SET BEFORE WRITE:
 
 COMPLETED_TASKS:
   W01.T08 -> `W01_CATALOG_CONTEXT_READY` at published Wave-01 closure
-  W02.T01 -> code `c23ac68` + `751665f` + `70f2d80`, published under remote-ref checkpoint `81ad503305d5fefdb47d209c722263f02365a04c`; `W02_CATALOG_BACKED_COMMAND_READY`
-  W02.T02 -> code `d40213e` + `2ca6899` + `cfaf8a0` + `238e2db`, published under remote-ref checkpoint `351ab3e876254c31b506efcadc76fca635ea2aab`; `W02_DETERMINISTIC_EXECUTION_READY`
-  W02.T03 -> code `bebaa81` + review repair `3acbbf5` + repair round 1 `c1802fe`; `W02_ACCEPTED_ADJUDICATION_BASIS_READY`
-  W02.T04 -> code `9de81a8` + native-state repair `6c98cd7` + repair round 1 `f6c64b0` + repair round 2 `2afb5d4`; `W02_OPERATIONAL_ROOT_ENROLLMENT_READY` (published in `0b68dc873839bae573eceee63b05d46c5977774d`)
+  W02.T01 -> published/read back `81ad503305d5fefdb47d209c722263f02365a04c`; `W02_CATALOG_BACKED_COMMAND_READY`
+  W02.T02 -> published/read back `351ab3e876254c31b506efcadc76fca635ea2aab`; `W02_DETERMINISTIC_EXECUTION_READY`
+  W02.T03 -> published/read back `85e78f78564b3c576228395186a54ded1454452a`; `W02_ACCEPTED_ADJUDICATION_BASIS_READY`
+  W02.T04 -> published/read back `0b68dc873839bae573eceee63b05d46c5977774d`; `W02_OPERATIONAL_ROOT_ENROLLMENT_READY`
+  W02.T05 -> published/read back `fdb6888070bd34c128b7fed3703e08005bfb5554`; `W02_DURABILITY_PUBLICATION_READY`
+  W02.T06 -> published/read back `f7afbcb3959812c44b1b35cde56426ec80317936`; `W02_RECOVERY_MAINTENANCE_READY`
+  W02.T07 -> published/read back `c750437a0cc7587840faf3f6423ce3c97146a6c6`; `W02_PROTECTED_EXECUTION_HANDOFF_READY`
+
+The detailed task records below retain historical implementation and repair hashes as provenance. Their detached/local checkpoint wording is not the current publication state; the completed-task rows above are the authoritative Wave-02 checkpoint record.
 
 ACTUAL IMPACT VS PLANNED: within the W02.T01 envelope. The new owner-native `GAME/TOOLS/runtime_execution.py`, `runtime.command` schema synchronization, and RD05/RD15 tests were expected. Existing Step-3 schema consumer tests required mechanical fixture synchronization; no new authority, persistence/recovery/currentness owner, catalog change, or shared physical writer was introduced.
 
 CURRENT_VERIFICATION_STATE:
+- exact-head local W02 focused RD05/RD06/RD07/RD10/RD15 suites: 194 passed
+- exact-head local full DEV discovery: 794 passed, 7 skipped
+- exact-head local maintenance audit: PASS
+- exact-head hosted CI: unavailable because the `gh` executable is absent; no exact-head hosted result is claimed
 - T04 focused root/lifecycle/native-routing/execution-consumer suites at the published input: 136 passed
 - T04 full DEV discovery at the published input: 724 passed, 7 skipped
 - T04 maintenance audit at the published input: PASS
@@ -111,6 +120,12 @@ CURRENT_VERIFICATION_STATE:
 - T03 maintenance audit: PASS
 - T03 RED evidence: resolver/acceptance imports failed before the new owner existed; GREEN evidence is recorded above after fresh implementation
 - current full-discovery census excludes ignored `.opencode/` infrastructure; no current scan contamination is present
+
+VERSION_IMPACT: NONE — cursor-only final-review update; no HDM-owned version/revision/schema/generation namespace or projection changed
+SYSTEM_IMPACT: NONE — metadata-only cursor closure
+NEXT_EXACT_TASK: Mandatory Senior Wave-02 integration audit/read-back; Wave 03 implementation remains unauthorized
+KNOWN_BLOCKERS: Senior Wave-02 integration audit is mandatory; no implementation blocker remains
+UNPUBLISHED_WORK: NONE — all implementation checkpoints are published/read back; this metadata-only cursor commit is intentionally local and is not pushed
 
 VERSION_IMPACT:
 - `runtime.command.schema_version`: 1 -> 2; accepted action records now retain the exact interpreter/catalog/binding evidence after settlement
@@ -138,10 +153,10 @@ ACTUAL T03 IMPACT VS PLANNED: within the approved T03 policy-basis envelope. The
 
 ACTUAL T04 IMPACT VS PLANNED: within the approved T04 envelope. Procedure lifecycle is materialized as owner-native `ACTIVE|TERMINAL`; generic/concrete schemas, producer/validator, root validator and the existing execution consumer require the synchronized v2 lifecycle form; root deltas validate exact native owner kind, identity and state; command eligibility uses accepted/settled disposition plus unfinished closure; unresolved-input rooting retains only the typed later-owner interface and fails closed until T05 supplies its authorized boundary. No issuer, registry, promise authority, publication/removal closure, recovery hydration, temporal root, global queue, lifecycle registry or shared writer was introduced.
 
-SYSTEM_IMPACT: RESOLVED - Product Owner accepted the Senior-recommended T03/T04 realization at `acc40855850f4d07b63bad4792917f97764038a3`; canonical owners, stable Wave-02 plan and both impact briefs are synchronized
-NEXT_EXACT_TASK: W02.T05 durability/publication closure from the published input checkpoint; T06 remains blocked on W02.T05
-KNOWN_BLOCKERS: NONE for W02.T05; W02.T06 remains blocked on W02.T05
-UNPUBLISHED_WORK: NONE
+HISTORICAL_SYSTEM_IMPACT: RESOLVED - Product Owner accepted the Senior-recommended T03/T04 realization at `acc40855850f4d07b63bad4792917f97764038a3`; canonical owners, stable Wave-02 plan and both impact briefs are synchronized
+HISTORICAL_NEXT_EXACT_TASK: W02.T05 durability/publication closure from the published input checkpoint; T06 remained blocked on W02.T05 at that point
+HISTORICAL_KNOWN_BLOCKERS: NONE for W02.T05; W02.T06 remained blocked on W02.T05 at that point
+HISTORICAL_UNPUBLISHED_WORK: NONE
 
 ## Accepted T03/T04 System-Impact rulings — 2026-09-18
 
@@ -432,7 +447,7 @@ VERSION_IMPACT:
 SYSTEM_IMPACT: NONE - the repair closes a validation gap inside the existing publication owner and preserves the admitted join-free Procedure path; no new authority, transaction, journal/frontier, recovery hydration or cross-owner boundary was introduced.
 UNPUBLISHED_WORK: NONE after the repair-round checkpoint commit; final status awaits Senior integration audit.
 
-## W02.T06 Execution Record — 2026-09-18
+## W02.T06 Execution Record — 2026-09-18 (historical detached provenance)
 
 IMPLEMENTATION START HEAD: `fdb6888070bd34c128b7fed3703e08005bfb5554`
 PRIMARY OWNER ARTIFACTS:
@@ -466,15 +481,15 @@ VERSION_IMPACT:
 - catalog, engine, campaign contract, storage generation, persistence, migration and compatibility namespaces: NONE.
 
 SYSTEM_IMPACT: NONE - implementation remains within the approved W02.T06 recovery/maintenance envelope; it introduces no second currentness, persistence, transaction, journal, lifecycle, policy, catalog, RNG or LIVE authority and does not start Wave 03.
-FINAL_SHA: `db5a585`
+HISTORICAL_DETACHED_SHA: `db5a585`
 FINAL VERIFICATION EVIDENCE:
 - focused RD07 recovery suite: 35 passed;
 - full DEV discovery: 784 passed, 7 skipped;
 - maintenance audit: PASS;
 - clean committed worktree provenance/release checks included in the full-suite PASS.
-NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
+HISTORICAL_NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
 
-## W02.T06 Repair Round 1 — 2026-09-18
+## W02.T06 Repair Round 1 — 2026-09-18 (historical detached provenance)
 
 INDEPENDENT FINDINGS ADDRESSED:
 - Recovery now validates every executable `runtime.command` root's exact owner closure before returning `READY`; incomplete closures fail closed.
@@ -492,16 +507,16 @@ VERSION_IMPACT:
 - recovery-result schema, runtime-maintenance-audit-state schema, checkpoint schema, catalog, engine, campaign, storage, persistence and migration namespaces: NONE.
 
 SYSTEM_IMPACT: NONE - repair remains within the approved W02.T06 recovery/maintenance envelope; it adds no currentness, persistence, publication, journal, lifecycle, policy, catalog, RNG or LIVE authority.
-FINAL_SHA: `39c11ac`
+HISTORICAL_DETACHED_SHA: `39c11ac`
 FINAL VERIFICATION EVIDENCE:
 - focused RD07 recovery suite: 40 passed;
 - full DEV discovery: 789 passed, 7 skipped;
 - maintenance audit: PASS;
-- local coherent checkpoint remains unpublished; no remote push was requested.
-NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
-UNPUBLISHED_WORK: NONE (the implementation and execution-cursor checkpoints are committed locally).
+- historical detached coherent checkpoint was local-only; the current published/read-back checkpoint is recorded in the cursor above.
+HISTORICAL_NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
+HISTORICAL_UNPUBLISHED_WORK: NONE (the detached implementation and execution-cursor checkpoints were committed locally).
 
-## W02.T06 Repair Round 2 — 2026-09-18
+## W02.T06 Repair Round 2 — 2026-09-18 (historical detached provenance)
 
 INDEPENDENT FINDINGS ADDRESSED:
 - Removed the ad-hoc `runtime.command` owner `closure` dependency. Recovery now treats the real T05-published accepted command payload as the native command owner and hydrates its root Resolution through the deterministic pinned route.
@@ -522,17 +537,17 @@ VERSION_IMPACT:
 - recovery-result schema, runtime-maintenance-audit-state schema, runtime command/resolution/mechanical-event schemas, catalog, engine, campaign, storage, persistence and migration namespaces: NONE.
 
 SYSTEM_IMPACT: NONE - repair remains within the approved W02.T06 recovery/maintenance envelope; it removes an ad-hoc owner-carrier closure shortcut and consumes existing T05/T02 native owners without introducing currentness, publication, journal/frontier, lifecycle, policy, catalog, RNG or LIVE authority.
-FINAL_SHA: `08df57e`
+HISTORICAL_DETACHED_SHA: `08df57e`
 FINAL VERIFICATION EVIDENCE:
 - focused RD07 recovery suite: 43 passed;
 - focused RD05/RD06/RD07 suites: 123 passed;
 - full DEV discovery: 792 passed, 7 skipped;
 - maintenance audit: PASS;
-- local code/test checkpoint committed; no remote push was requested.
-NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
-UNPUBLISHED_WORK: NONE (implementation checkpoint `08df57e` and this status evidence are committed locally).
+- historical detached code/test checkpoint was committed locally; the current published/read-back checkpoint is recorded in the cursor above.
+HISTORICAL_NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
+HISTORICAL_UNPUBLISHED_WORK: NONE (detached implementation checkpoint `08df57e` and its status evidence were committed locally).
 
-## W02.T06 Repair Round 3 — 2026-09-18
+## W02.T06 Repair Round 3 — 2026-09-18 (historical detached provenance)
 
 INDEPENDENT FINDINGS ADDRESSED:
 - Recovery no longer derives fixed-RNG `roll_id`, `request_id`, or `provenance_ref` from `resolution_id` and ordinal conventions that are not part of the mechanics producer contract.
@@ -550,17 +565,17 @@ VERSION_IMPACT:
 - recovery-result schema, runtime-maintenance-audit-state schema, runtime command/resolution/mechanical-event schemas, catalog, engine, campaign, storage, persistence and migration namespaces: NONE.
 
 SYSTEM_IMPACT: NONE - repair remains within the approved W02.T06 recovery/maintenance envelope; it removes an unsupported identity derivation assumption and consumes the existing mechanics producer contract without introducing currentness, persistence, publication, journal/frontier, lifecycle, policy, catalog, RNG or LIVE authority.
-FINAL_SHA: `b139423` (implementation checkpoint; status cursor update follows in the next local commit)
+HISTORICAL_DETACHED_SHA: `b139423` (implementation checkpoint; retained as provenance)
 FINAL VERIFICATION EVIDENCE:
 - focused RD07 recovery suite: 43 passed;
 - focused RD05/RD06/RD07 suites: 123 passed;
 - full DEV discovery: 792 passed, 7 skipped;
 - maintenance audit: PASS;
-- local code/test checkpoint committed; no remote push was requested.
-NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
-UNPUBLISHED_WORK: NONE (implementation checkpoint `b139423`; this status cursor update is the only pending local change).
+- historical detached code/test checkpoint was committed locally; the current published/read-back checkpoint is recorded in the cursor above.
+HISTORICAL_NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
+HISTORICAL_UNPUBLISHED_WORK: NONE (detached implementation checkpoint `b139423`; its historical status cursor update was the only pending local change at that point).
 
-## W02.T06 Repair Round 4 — 2026-09-18
+## W02.T06 Repair Round 4 — 2026-09-18 (historical detached provenance)
 
 INDEPENDENT FINDINGS ADDRESSED:
 - Recovery now validates the complete persisted fixed-RNG result sequence for unique `request_id` evidence before direct closure matching or native-root result selection.
@@ -579,12 +594,12 @@ VERSION_IMPACT:
 - recovery-result schema, runtime-maintenance-audit-state schema, runtime command/resolution/mechanical-event schemas, catalog, engine, campaign, storage, persistence and migration namespaces: NONE.
 
 SYSTEM_IMPACT: NONE - repair remains within the approved W02.T06 recovery/maintenance envelope; it strengthens validation of the existing fixed-RNG evidence sequence without introducing currentness, persistence, publication, journal/frontier, lifecycle, policy, catalog, RNG or LIVE authority.
-FINAL_SHA: `0a9e014` (implementation checkpoint; status cursor update follows in the next local commit)
+HISTORICAL_DETACHED_SHA: `0a9e014` (implementation checkpoint; retained as provenance)
 FINAL VERIFICATION EVIDENCE:
 - focused RD07 recovery suite: 45 passed;
 - focused RD05/RD06/RD07 suites: 125 passed;
 - full DEV discovery: 794 passed, 7 skipped;
 - maintenance audit: PASS;
-- local code/test checkpoint committed; no remote push was requested.
-NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
-UNPUBLISHED_WORK: NONE (implementation checkpoint `0a9e014`; this status cursor update is the only pending local change).
+- historical detached code/test checkpoint was committed locally; the current published/read-back checkpoint is recorded in the cursor above.
+HISTORICAL_NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
+HISTORICAL_UNPUBLISHED_WORK: NONE (detached implementation checkpoint `0a9e014`; its historical status cursor update was the only pending local change at that point).
