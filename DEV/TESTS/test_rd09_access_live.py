@@ -237,6 +237,24 @@ class PrincipalAuthorizationTests(unittest.TestCase):
         self.assertEqual(denied.failure_code, "policy.mechanical_override_grant_required")
         self.assertTrue(granted.authorized)
 
+    def test_caller_supplied_creator_login_cannot_self_claim_mechanical_override(self) -> None:
+        resolution = resolve_player(
+            _principal(),
+            _route(),
+            lambda player_id: _player(player_id),
+            campaign_id="campaign-frostfall",
+        )
+
+        decision = authorize_operation(
+            _principal(),
+            resolution,
+            operation="mechanical_override_policy",
+            creator_login="lina",
+        )
+
+        self.assertFalse(decision.authorized)
+        self.assertEqual(decision.failure_code, AuthorizationFailureCode.CREATOR_UNCERTAIN)
+
     def test_ordinary_authorization_requires_campaign_scope_evidence(self) -> None:
         resolution = resolve_player(_principal(), _route(), lambda player_id: _player(player_id))
 

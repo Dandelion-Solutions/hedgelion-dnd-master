@@ -520,8 +520,8 @@ def authorize_operation(
     if operation == "mechanical_override_policy":
         if resolution.player.status != "active":
             return _fail(AuthorizationFailureCode.PLAYER_INACTIVE)
-        if creator_login == resolved_principal.login:
-            return AuthorizationDecision(authorized=True, player_id=resolution.player.player_id)
+        if creator_login is not None:
+            return _fail(AuthorizationFailureCode.CREATOR_UNCERTAIN)
         if resolution.player.mechanical_override_policy:
             return AuthorizationDecision(authorized=True, player_id=resolution.player.player_id)
         return _fail(AuthorizationFailureCode.POLICY_GRANT_REQUIRED)
