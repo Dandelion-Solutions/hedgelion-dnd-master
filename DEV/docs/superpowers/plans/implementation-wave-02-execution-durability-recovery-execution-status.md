@@ -500,3 +500,34 @@ FINAL VERIFICATION EVIDENCE:
 - local coherent checkpoint remains unpublished; no remote push was requested.
 NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
 UNPUBLISHED_WORK: NONE (the implementation and execution-cursor checkpoints are committed locally).
+
+## W02.T06 Repair Round 2 — 2026-09-18
+
+INDEPENDENT FINDINGS ADDRESSED:
+- Removed the ad-hoc `runtime.command` owner `closure` dependency. Recovery now treats the real T05-published accepted command payload as the native command owner and hydrates its root Resolution through the deterministic pinned route.
+- Hydrated every committed segment's mechanical events through exact pinned native routes, deriving execution evidence from the accepted command, Resolution and event owners without replay, reroll or identity allocation.
+- Reconstructed catalog and non-empty policy bases through their pinned-source owner validation boundaries; policy witnesses read the exact manifest, sidecar and normative source routes.
+- Required `resolution.root_command_id` to be present and exactly equal to the recovered accepted command identity; missing and mismatched bindings fail typed through `recover_current_runtime`.
+- Generalized segment/event/RNG identity validation beyond ordinal `1` while preserving forged identity and basis negatives.
+
+TDD EVIDENCE:
+- RED: the real T05-shaped command payload reached the old closure-incomplete failure before resolution/event hydration; missing and mismatched root-command cases likewise failed before the new route boundary existed.
+- GREEN: focused RD07 recovery suite, including exact command/resolution/mechanical-event/catalog/policy route witnesses and later segment/roll identity, 43 passed.
+- focused RD05/RD06/RD07 suites: 123 passed.
+- full DEV discovery from clean checkpoint: 792 passed, 7 skipped.
+- maintenance audit: PASS.
+
+VERSION_IMPACT:
+- `GAME/TOOLS/recovery.py`: `framework_module_version` 1.0.2 -> 1.0.3 for exact native execution-source hydration and root-command binding repair.
+- recovery-result schema, runtime-maintenance-audit-state schema, runtime command/resolution/mechanical-event schemas, catalog, engine, campaign, storage, persistence and migration namespaces: NONE.
+
+SYSTEM_IMPACT: NONE - repair remains within the approved W02.T06 recovery/maintenance envelope; it removes an ad-hoc owner-carrier closure shortcut and consumes existing T05/T02 native owners without introducing currentness, publication, journal/frontier, lifecycle, policy, catalog, RNG or LIVE authority.
+FINAL_SHA: `08df57e`
+FINAL VERIFICATION EVIDENCE:
+- focused RD07 recovery suite: 43 passed;
+- focused RD05/RD06/RD07 suites: 123 passed;
+- full DEV discovery: 792 passed, 7 skipped;
+- maintenance audit: PASS;
+- local code/test checkpoint committed; no remote push was requested.
+NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
+UNPUBLISHED_WORK: NONE (implementation checkpoint `08df57e` and this status evidence are committed locally).
