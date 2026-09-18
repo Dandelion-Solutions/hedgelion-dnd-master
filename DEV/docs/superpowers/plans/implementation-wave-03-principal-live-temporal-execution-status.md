@@ -7,7 +7,7 @@ BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 STATUS: EXECUTION_AUTHORIZED
 CURRENT_TASK: W03.T03 -- campaign, scene, epoch and physical route identity
 LAST_COMPLETED_TASK: W03.T02 -- base LIVE envelope, claim and exact currentness / W03_LIVE_CURRENTNESS_READY
-LAST_SAFE_SHA: `70f8956d4b87d4e5ad71e71d7102c1ac374bb7ba` (published/read-back W03.T02 checkpoint)
+LAST_SAFE_SHA: `50ee02474403b5be6cef7336e3300e04dee70669` (published/read-back W03.T02 review repair round 1 checkpoint)
 
 ## Dependency schedule
 
@@ -60,6 +60,7 @@ COMPLETED_TASKS:
 - W03.T01 review repair round 1 -> `d08466d9cc732cd6832d536ddbe1d9229c416ac4` (published/read-back)
 - W03.T01 review repair round 2 -> `72c6583ef68ef270ca3fa2321babd917bea2bffa` (published/read-back)
 - W03.T02 -> `70f8956d4b87d4e5ad71e71d7102c1ac374bb7ba` (published/read-back; W03_LIVE_CURRENTNESS_READY)
+- W03.T02 review repair round 1 -> `50ee02474403b5be6cef7336e3300e04dee70669` (published/read-back)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -73,9 +74,12 @@ CURRENT_VERIFICATION_STATE:
 - W03.T01 added only the bounded access owner, route companion template, and named tests; no shared schema/catalog/CORE/LIVE/temporal bytes changed.
 - W03.T02 focused LIVE envelope/claim/currentness/publication/lifecycle suite: 37 passed; named integration suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`): 88 passed; full DEV discovery under `.hdm-devtools/venv` with bytecode disabled: 831 passed, 7 skipped; maintenance audit PASS; AST/compile and `git diff --check` PASS.
 - W03.T02 added only the bounded LIVE owner, typed claim/publication/route contracts, blank route companion and named tests; shared scene/multiplayer schemas and CORE bytes remain deferred to their planned integration checkpoints.
+- W03.T02 review repair round 1 RED witnesses: 44 focused tests produced 6 expected assertion failures and 1 expected missing-route API error before production changes; the failures isolated CLOSED campaign fallback, unbound route/CAS closure evidence, unadmitted/overlapping claims and schema/Python grammar drift.
+- W03.T02 review repair round 1 GREEN verification: focused LIVE suite 44 passed; named integration suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`) 95 passed; full DEV discovery under `.hdm-devtools/venv` with bytecode disabled 838 passed, 7 skipped; maintenance audit, compile checks and `git diff --check` passed.
+- W03.T02 review repair round 1 published non-force from `685f43e375b56bbaf7f2e1e0c5b1d638b61847b2` to `50ee02474403b5be6cef7336e3300e04dee70669`; fresh fetch/read-back confirmed local and `origin/v1/engine-rearchitecture` equal.
 
-VERSION_IMPACT: W03.T02 NONE to existing engine/release/catalog/campaign/storage namespaces; new LIVE module starts at owner-local `framework_module_version` 1.0.1 and new claim/routing/publication schemas each start at schema version 1, with no shared projection or migration.
-SYSTEM_IMPACT: NONE -- the implementation stays within the approved LIVE envelope/claim/currentness boundary, adds no new semantic owner or dependency direction, and leaves route identity, source-native identity, absorption, temporal handoff and access-policy transitions to their named tasks.
+VERSION_IMPACT: W03.T02 review repair round 1 materially changes the LIVE runtime module `framework_module_version` 1.0.1 -> 1.0.2 and the ephemeral publication-attempt schema 1 -> 2 because selected-route and complete-successor evidence are now required. Claim/routing serialized shapes remain schema v1; their repair rejects pre-release invalid claim forms without changing serialized fields or adding a migration/projection.
+SYSTEM_IMPACT: NONE -- the repair remains within the approved LIVE envelope/claim/currentness boundary, adds no semantic owner, identifier-policy/catalog authority, dependency direction or distributed transaction, and leaves route identity, source-native identity, absorption, temporal handoff and access-policy transitions to their named tasks.
 NEXT_EXACT_TASK: W03.T03 -- campaign, scene, epoch and physical route identity, consuming W03_LIVE_CURRENTNESS_READY.
 KNOWN_BLOCKERS: NONE for W03.T02. Later tasks remain gated by the schedule above and their named owner/currentness inputs.
 UNPUBLISHED_WORK: NONE before this cursor-update commit.
