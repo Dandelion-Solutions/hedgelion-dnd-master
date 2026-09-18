@@ -6,8 +6,8 @@ BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
 CURRENT_TASK: W03.T02 -- base LIVE envelope, claim and exact currentness
-LAST_COMPLETED_TASK: W03.T01 -- principal-to-PLAYER authority route / W03_PRINCIPAL_PLAYER_ROUTE_READY
-LAST_SAFE_SHA: `043153d489f4c820c084b7a21c3514435ee4a396` (published/read-back W03.T01 implementation checkpoint)
+LAST_COMPLETED_TASK: W03.T01 -- principal-to-PLAYER authority route / review repair round 1 / W03_PRINCIPAL_PLAYER_ROUTE_READY
+LAST_SAFE_SHA: `d08466d9cc732cd6832d536ddbe1d9229c416ac4` (published/read-back W03.T01 review-repair checkpoint)
 
 ## Dependency schedule
 
@@ -57,20 +57,21 @@ Implementation is serialized at task level even where named edges permit concurr
 
 COMPLETED_TASKS:
 - W03.T01 -> `043153d489f4c820c084b7a21c3514435ee4a396` (published/read-back; W03_PRINCIPAL_PLAYER_ROUTE_READY)
+- W03.T01 review repair round 1 -> `d08466d9cc732cd6832d536ddbe1d9229c416ac4` (published/read-back)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
-- W03.T01 implementation commit `043153d489f4c820c084b7a21c3514435ee4a396` was published non-force and independently read back from `origin/v1/engine-rearchitecture` with local and remote refs equal;
-- focused principal-route plus version-policy verification: 25 passed;
-- task-local integration suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`): 65 passed;
-- full DEV discovery under `.hdm-devtools/venv` with bytecode disabled: 808 passed, 7 skipped;
+- W03.T01 implementation commit `043153d489f4c820c084b7a21c3514435ee4a396` and repair commit `d08466d9cc732cd6832d536ddbe1d9229c416ac4` were published non-force and independently read back from `origin/v1/engine-rearchitecture` with local and remote refs equal;
+- repair-focused principal-route plus version-policy verification: 28 passed;
+- task-local integration suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`): 68 passed;
+- full DEV discovery under `.hdm-devtools/venv` with bytecode disabled: 811 passed, 7 skipped;
 - maintenance audit: PASS; compileall and `git diff --check`: PASS;
-- the pre-publication full discovery attempt was dirty-worktree provenance-sensitive (807 tests, one expected `clean_head` mismatch); the clean published rerun passed 808 tests;
+- the pre-publication repair full discovery ran after the repair commit and passed cleanly; generated cache artifacts were removed before the maintenance audit;
 - Wave-02 closure evidence at its exact completed head: focused suites 194 passed, full DEV discovery 794 passed and 7 skipped, maintenance audit PASS; hosted CI unavailable because `gh` is absent;
 - W03.T01 added only the bounded access owner, route companion template, and named tests; no shared schema/catalog/CORE/LIVE/temporal bytes changed.
 
-VERSION_IMPACT: NONE -- W03.T01 initialized its owner-local route schema at schema_version 1; no existing engine, module, campaign, storage, catalog, package, or protocol namespace required a bump or projection synchronization.
-SYSTEM_IMPACT: NONE -- actual W03.T01 impact stayed within the approved principal/access envelope; no unapproved semantic owner, persistent/interface policy, compatibility rule, or authority-boundary change was discovered.
+VERSION_IMPACT: DEV `access_control_revision` 6 -> 7 -- the review repair materially changes the named access-control concern; no projection is required and no other namespace changed.
+SYSTEM_IMPACT: NONE -- the repair stays within the approved principal/access envelope, consumes the existing PLAYER mechanical-override grant, and adds no W03.T07 mutation interface.
 NEXT_EXACT_TASK: W03.T02 -- complete the base LIVE envelope/currentness task only after its own bootstrap, Impact Envelope and RED/GREEN/review/publication loop.
 KNOWN_BLOCKERS: NONE for W03.T01. Later tasks remain gated by the schedule above and their named owner/currentness inputs.
 UNPUBLISHED_WORK: NONE before this cursor-update commit.
