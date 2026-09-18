@@ -6,8 +6,8 @@ BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
 CURRENT_TASK: W03.T05 -- opening preparation, seed, routing, packing and absorption
-LAST_COMPLETED_TASK: W03.T04 -- source-native LIVE ID, ordering and cursor / W03_SOURCE_NATIVE_LIVE_ID_READY
-LAST_SAFE_SHA: `9281e9516ab3ccbf6aa6364fa3650c75063c38b2` (W03.T04 implementation checkpoint)
+LAST_COMPLETED_TASK: W03.T04 review repair -- closed live_birth admission, framed history validation and CAS-bound cursor / W03_SOURCE_NATIVE_LIVE_ID_READY
+LAST_SAFE_SHA: `23af5ccf6436d20c77cef049814030956168a1b5` (W03.T04 repair implementation checkpoint)
 
 ## Dependency schedule
 
@@ -65,6 +65,7 @@ COMPLETED_TASKS:
 - W03.T03 -> `aedc5eae550628d12c30e0f48059c2262103c42a` (published/read-back; W03_LIVE_ROUTE_IDENTITY_READY)
 - W03.T03 repair round 1 -> `60754eee8b5294c5967679b77abdc710c2d0d0f1` (implementation checkpoint; retained-schema scope repair)
 - W03.T04 -> `9281e9516ab3ccbf6aa6364fa3650c75063c38b2` (published/read-back; W03_SOURCE_NATIVE_LIVE_ID_READY)
+- W03.T04 review repair -> `23af5ccf6436d20c77cef049814030956168a1b5` (published/read-back; closed T04 admission, framed-history validation and CAS-bound cursor)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -96,6 +97,8 @@ CURRENT_VERIFICATION_STATE:
 - W03.T04 GREEN/refactor: focused source-native identity/order/cursor/ambiguous-publication suite `test_rd09_access_live` passed 76 tests; named integration suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`) passed 127 tests; full DEV discovery passed 870 tests with 7 skips; source-native publication schema validation, maintenance audit, JSON parsing, compile checks and `git diff --check` passed.
 - W03.T04 changed only the LIVE owner runtime, owner-local LIVE routing/publication schemas, blank LIVE route projection and named owner tests; `DEV/CATALOG/identifier-policies.json`, `DEV/SCHEMAS/identifier-policies.schema.json`, retained Wave-05 scene/multiplayer schemas/CORE bytes and shared catalog/identifier-policy surfaces were not written.
 - W03.T04 publication was non-force from `b05cd9a7b7c0231a85944495355bb3d62bd0624c` to `9281e9516ab3ccbf6aa6364fa3650c75063c38b2`; fresh fetch/read-back confirmed local and `origin/v1/engine-rearchitecture` equal.
+- W03.T04 review repair RED: focused `test_rd09_access_live` produced 1 expected error and 5 expected failures covering caller-forged live_birth admission, non-exact policy fallback, missing CAS-accepted envelope binding, foreign framed IDs and non-contiguous history.
+- W03.T04 review repair GREEN: focused `test_rd09_access_live` passed 81 tests; changed Python modules compiled, changed LIVE schemas remained valid JSON Schemas, and `git diff --check` passed. Named cross-owner/full DEV and maintenance-audit verification was unavailable in this worktree because the isolated dev-tool environment was absent/broken and system Python lacks `referencing`.
 
 VERSION_IMPACT: W03.T02 review repair round 1 materially changes the LIVE runtime module `framework_module_version` 1.0.1 -> 1.0.2 and the ephemeral publication-attempt schema 1 -> 2 because selected-route and complete-successor evidence are now required. Claim/routing serialized shapes remain schema v1; their repair rejects pre-release invalid claim forms without changing serialized fields or adding a migration/projection.
 
@@ -108,6 +111,8 @@ SYSTEM_IMPACT: NONE -- W03.T03 repair round 1 removes an unauthorized Wave-05 re
 VERSION_IMPACT: W03.T03 repair round 1 reverses the erroneous `GAME/SCHEMA/live_scene.schema.yaml` schema bump `1 -> 2`; the effective W03 checkpoint has no live-scene schema impact and retains only the approved T03 impacts: `framework_module_version 1.0.3 -> 1.0.4`, LIVE routing schema `2 -> 3`, and LIVE publication-attempt schema `3 -> 4`. No engine-release, catalog-generation, campaign-contract, storage-format, persistent-family or other runtime projection namespace changed.
 VERSION_IMPACT: W03.T04 materially changes the LIVE runtime module `framework_module_version` `1.0.4 -> 1.0.5`, LIVE routing schema `3 -> 4` for the persisted uint64 source-native cursor/accepted IDs, and LIVE publication-attempt schema `4 -> 5` for frozen allocation/cursor evidence; the blank LIVE route projection is synchronized to routing schema v4. No engine-release, catalog-generation, campaign-contract, storage-format, identifier-policy/catalog or other runtime projection namespace required a bump.
 SYSTEM_IMPACT: NONE -- W03.T04 remains within the approved source-native LIVE identity/currentness envelope: it adds no semantic owner, campaign allocator fallback, broad scan, distributed transaction, new dependency direction or shared identifier-policy/catalog write. Cursor advancement remains subordinate to accepted exact-source CAS; rejected/indeterminate attempts do not advance or reallocate.
+- VERSION_IMPACT: W03.T04 review repair materially changes the LIVE runtime module `framework_module_version` `1.0.5 -> 1.0.6` for closed admission/history/CAS-envelope validation. LIVE routing/publication schemas remain v4/v5 because no serialized shape changed; no engine-release, catalog-generation, campaign-contract, storage-format, identifier-policy/catalog or other projection namespace changed.
+- SYSTEM_IMPACT: NONE -- the repair remains within the approved T04 LIVE identity/currentness envelope. The closed admission table is read-only owner-local law; no W05 catalog write, new authority, dependency direction, transaction or persistence boundary was introduced.
 NEXT_EXACT_TASK: W03.T05 -- opening preparation, seed, routing, packing and absorption, consuming W03_SOURCE_NATIVE_LIVE_ID_READY.
-KNOWN_BLOCKERS: NONE for W03.T04. Fresh remote fetch/read-back succeeded; later tasks remain gated by the schedule above and their named owner/currentness inputs.
+KNOWN_BLOCKERS: NONE for W03.T04 review repair. Fresh remote fetch/read-back succeeded; later tasks remain gated by the schedule above and their named owner/currentness inputs.
 UNPUBLISHED_WORK: NONE before this cursor-update commit.
