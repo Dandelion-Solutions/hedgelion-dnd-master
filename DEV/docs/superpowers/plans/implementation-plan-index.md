@@ -1,8 +1,8 @@
 # HDM v1 Implementation Plan — Authoritative Wave Index
 
-Status: **AUTHOR-CONSOLIDATED / INDEPENDENT SENIOR RE-REVIEW REQUIRED**
+Status: **SENIOR-APPROVED / PRODUCTION IMPLEMENTATION AUTHORIZED**
 
-Production implementation: **NOT AUTHORIZED** until the complete package below receives independent Senior PASS / GO at the exact reviewed HEAD.
+Production implementation: **AUTHORIZED**, subject to `DEV/CURRENT_PROGRESS.md`, named producer checkpoints, wave-level Senior integration gates and `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`.
 
 ## 1. Sole current planning route
 

@@ -1,6 +1,6 @@
 # HDM v1 Implementation Wave 01 — Owner-Native Foundations
 
-Status: **PLANNED / BLOCKED ON INDEPENDENT SENIOR GO**
+Status: **COMPLETE / SENIOR INTEGRATION PASS**
 
 Goal: realize the owner-local contracts that later execution, LIVE, collaboration, Story, bootstrap and final-machine joins consume. This wave creates no alternate authority and does not publish shared physical files before their named final-writer checkpoints.
 

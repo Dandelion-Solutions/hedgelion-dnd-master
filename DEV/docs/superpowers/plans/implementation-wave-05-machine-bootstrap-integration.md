@@ -1,6 +1,6 @@
 # HDM v1 Implementation Wave 05 — Machine, Bootstrap and Shared Integration
 
-Status: **PLANNED / BLOCKED ON INDEPENDENT SENIOR GO**
+Status: **PLANNED / DEPENDENCY-GATED ON NAMED OWNER + INTEGRATION CHECKPOINTS**
 
 Goal: integrate the completed owner contracts into the single strict 17-world/17-runtime machine, complete bootstrap and product paths, and perform every shared physical write exactly once with the approved version cutovers.
 

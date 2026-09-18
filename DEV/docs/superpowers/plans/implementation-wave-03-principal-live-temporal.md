@@ -1,6 +1,6 @@
 # HDM v1 Implementation Wave 03 — Principal, LIVE and Temporal Authority
 
-Status: **PLANNED / BLOCKED ON INDEPENDENT SENIOR GO**
+Status: **CURRENT / WAVE 03 EXECUTION AUTHORIZED**
 
 Goal: realize one exact principal-to-PLAYER authorization route, source-native LIVE identity/currentness/state, and lossless handoff among campaign, LIVE, temporal and operational roots.
 

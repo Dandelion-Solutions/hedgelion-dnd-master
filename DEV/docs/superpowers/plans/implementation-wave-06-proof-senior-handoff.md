@@ -1,6 +1,6 @@
 # HDM v1 Implementation Wave 06 — Proof and Senior Handoff
 
-Status: **PLANNED / BLOCKED ON INDEPENDENT SENIOR GO**
+Status: **PLANNED / PROOF-AFTER-TARGET + FINAL SENIOR HANDOFF**
 
 Goal: prove the realized package at one exact remote HEAD, reconcile every active/trigger/no-work readiness disposition, validate the execution graph and version cutovers, and hand the implementation result to an independent Senior reviewer.
 

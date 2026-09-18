@@ -1,6 +1,6 @@
 # HDM v1 Implementation Wave 02 — Execution, Durability and Recovery
 
-Status: **CURRENT / WAVE 02 EXECUTING — T03/T04 SYSTEM-IMPACT RULINGS ACCEPTED 2026-09-18**
+Status: **COMPLETE / SENIOR INTEGRATION PASS**
 
 Goal: turn accepted typed interpretation into deterministic commands and mechanical events, publish the complete durability promise, and recover the same accepted state without replay, reroll or identity reallocation.
 
