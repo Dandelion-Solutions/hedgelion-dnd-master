@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: W03.T04 -- source-native LIVE ID, ordering and cursor
-LAST_COMPLETED_TASK: W03.T03 -- campaign, scene, epoch and physical route identity / W03_LIVE_ROUTE_IDENTITY_READY
-LAST_SAFE_SHA: `60754eee8b5294c5967679b77abdc710c2d0d0f1` (W03.T03 repair round 1 implementation checkpoint)
+CURRENT_TASK: W03.T05 -- opening preparation, seed, routing, packing and absorption
+LAST_COMPLETED_TASK: W03.T04 -- source-native LIVE ID, ordering and cursor / W03_SOURCE_NATIVE_LIVE_ID_READY
+LAST_SAFE_SHA: `9281e9516ab3ccbf6aa6364fa3650c75063c38b2` (W03.T04 implementation checkpoint)
 
 ## Dependency schedule
 
@@ -64,6 +64,7 @@ COMPLETED_TASKS:
 - W03.T02 review repair round 2 -> `9db8dff14653b105eadb9d65d9e383e53839feed` (implementation checkpoint)
 - W03.T03 -> `aedc5eae550628d12c30e0f48059c2262103c42a` (published/read-back; W03_LIVE_ROUTE_IDENTITY_READY)
 - W03.T03 repair round 1 -> `60754eee8b5294c5967679b77abdc710c2d0d0f1` (implementation checkpoint; retained-schema scope repair)
+- W03.T04 -> `9281e9516ab3ccbf6aa6364fa3650c75063c38b2` (published/read-back; W03_SOURCE_NATIVE_LIVE_ID_READY)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -91,6 +92,10 @@ CURRENT_VERIFICATION_STATE:
 - W03.T03 repair round 1 GREEN: `GAME/SCHEMA/live_scene.schema.yaml` was restored byte-for-byte to the pre-T03 contract/version; the focused scope witness passed, and the W03 diff from `b81bc97` contains no retained live-scene schema delta.
 - W03.T03 repair round 1 verification: focused LIVE suite 60 passed; named integration suites 111 passed; full DEV discovery 854 passed, 7 skipped; maintenance audit and `git diff --check` passed.
 - W03.T03 repair round 1 changed only the owner-local scope witness and reverted the unauthorized Wave-05 retained-schema edit; route identity remains only in `GAME/TOOLS/live_state.py`, LIVE routing/publication contracts, the blank LIVE route projection and owner-local tests.
+- W03.T04 RED: the focused `test_rd09_access_live` import failed at the intended missing source-native API boundary before production changes.
+- W03.T04 GREEN/refactor: focused source-native identity/order/cursor/ambiguous-publication suite `test_rd09_access_live` passed 76 tests; named integration suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`) passed 127 tests; full DEV discovery passed 870 tests with 7 skips; source-native publication schema validation, maintenance audit, JSON parsing, compile checks and `git diff --check` passed.
+- W03.T04 changed only the LIVE owner runtime, owner-local LIVE routing/publication schemas, blank LIVE route projection and named owner tests; `DEV/CATALOG/identifier-policies.json`, `DEV/SCHEMAS/identifier-policies.schema.json`, retained Wave-05 scene/multiplayer schemas/CORE bytes and shared catalog/identifier-policy surfaces were not written.
+- W03.T04 publication was non-force from `b05cd9a7b7c0231a85944495355bb3d62bd0624c` to `9281e9516ab3ccbf6aa6364fa3650c75063c38b2`; fresh fetch/read-back confirmed local and `origin/v1/engine-rearchitecture` equal.
 
 VERSION_IMPACT: W03.T02 review repair round 1 materially changes the LIVE runtime module `framework_module_version` 1.0.1 -> 1.0.2 and the ephemeral publication-attempt schema 1 -> 2 because selected-route and complete-successor evidence are now required. Claim/routing serialized shapes remain schema v1; their repair rejects pre-release invalid claim forms without changing serialized fields or adding a migration/projection.
 
@@ -101,6 +106,8 @@ SYSTEM_IMPACT: NONE -- round 2 remains inside the approved LIVE envelope/claim/c
 SYSTEM_IMPACT: NONE -- W03.T03 implements the approved c1/s1/e1 routing identity and exact body/opening-basis validator; it adds no semantic identity owner, physical-route authority, broad scan, compatibility alias, transaction or downstream source-native allocator.
 SYSTEM_IMPACT: NONE -- W03.T03 repair round 1 removes an unauthorized Wave-05 retained-schema delta, restores its pre-T03 bytes/version, and leaves all approved W03 LIVE route identity behavior unchanged. No Wave-05 work was started.
 VERSION_IMPACT: W03.T03 repair round 1 reverses the erroneous `GAME/SCHEMA/live_scene.schema.yaml` schema bump `1 -> 2`; the effective W03 checkpoint has no live-scene schema impact and retains only the approved T03 impacts: `framework_module_version 1.0.3 -> 1.0.4`, LIVE routing schema `2 -> 3`, and LIVE publication-attempt schema `3 -> 4`. No engine-release, catalog-generation, campaign-contract, storage-format, persistent-family or other runtime projection namespace changed.
-NEXT_EXACT_TASK: W03.T04 -- source-native LIVE ID, ordering and cursor, consuming W03_LIVE_ROUTE_IDENTITY_READY.
-KNOWN_BLOCKERS: NONE for W03.T03 repair round 1. Fresh remote fetch succeeded; later tasks remain gated by the schedule above and their named owner/currentness inputs.
+VERSION_IMPACT: W03.T04 materially changes the LIVE runtime module `framework_module_version` `1.0.4 -> 1.0.5`, LIVE routing schema `3 -> 4` for the persisted uint64 source-native cursor/accepted IDs, and LIVE publication-attempt schema `4 -> 5` for frozen allocation/cursor evidence; the blank LIVE route projection is synchronized to routing schema v4. No engine-release, catalog-generation, campaign-contract, storage-format, identifier-policy/catalog or other runtime projection namespace required a bump.
+SYSTEM_IMPACT: NONE -- W03.T04 remains within the approved source-native LIVE identity/currentness envelope: it adds no semantic owner, campaign allocator fallback, broad scan, distributed transaction, new dependency direction or shared identifier-policy/catalog write. Cursor advancement remains subordinate to accepted exact-source CAS; rejected/indeterminate attempts do not advance or reallocate.
+NEXT_EXACT_TASK: W03.T05 -- opening preparation, seed, routing, packing and absorption, consuming W03_SOURCE_NATIVE_LIVE_ID_READY.
+KNOWN_BLOCKERS: NONE for W03.T04. Fresh remote fetch/read-back succeeded; later tasks remain gated by the schedule above and their named owner/currentness inputs.
 UNPUBLISHED_WORK: NONE before this cursor-update commit.
