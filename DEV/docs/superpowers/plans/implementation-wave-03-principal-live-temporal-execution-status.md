@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: W03.T02 -- base LIVE envelope, claim and exact currentness
-LAST_COMPLETED_TASK: W03.T01 -- principal-to-PLAYER authority route / review repair rounds 1-2 / W03_PRINCIPAL_PLAYER_ROUTE_READY
-LAST_SAFE_SHA: `72c6583ef68ef270ca3fa2321babd917bea2bffa` (published/read-back W03.T01 review-repair-round-2 checkpoint)
+CURRENT_TASK: W03.T03 -- campaign, scene, epoch and physical route identity
+LAST_COMPLETED_TASK: W03.T02 -- base LIVE envelope, claim and exact currentness / W03_LIVE_CURRENTNESS_READY
+LAST_SAFE_SHA: `70f8956d4b87d4e5ad71e71d7102c1ac374bb7ba` (published/read-back W03.T02 checkpoint)
 
 ## Dependency schedule
 
@@ -59,6 +59,7 @@ COMPLETED_TASKS:
 - W03.T01 -> `043153d489f4c820c084b7a21c3514435ee4a396` (published/read-back; W03_PRINCIPAL_PLAYER_ROUTE_READY)
 - W03.T01 review repair round 1 -> `d08466d9cc732cd6832d536ddbe1d9229c416ac4` (published/read-back)
 - W03.T01 review repair round 2 -> `72c6583ef68ef270ca3fa2321babd917bea2bffa` (published/read-back)
+- W03.T02 -> `70f8956d4b87d4e5ad71e71d7102c1ac374bb7ba` (published/read-back; W03_LIVE_CURRENTNESS_READY)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -70,9 +71,11 @@ CURRENT_VERIFICATION_STATE:
 - the pre-publication repair full discovery ran after the repair commit and passed cleanly; generated cache artifacts were removed before the maintenance audit;
 - Wave-02 closure evidence at its exact completed head: focused suites 194 passed, full DEV discovery 794 passed and 7 skipped, maintenance audit PASS; hosted CI unavailable because `gh` is absent;
 - W03.T01 added only the bounded access owner, route companion template, and named tests; no shared schema/catalog/CORE/LIVE/temporal bytes changed.
+- W03.T02 focused LIVE envelope/claim/currentness/publication/lifecycle suite: 37 passed; named integration suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`): 88 passed; full DEV discovery under `.hdm-devtools/venv` with bytecode disabled: 831 passed, 7 skipped; maintenance audit PASS; AST/compile and `git diff --check` PASS.
+- W03.T02 added only the bounded LIVE owner, typed claim/publication/route contracts, blank route companion and named tests; shared scene/multiplayer schemas and CORE bytes remain deferred to their planned integration checkpoints.
 
-VERSION_IMPACT: DEV `access_control_revision` 7 -> 8 -- review repair round 2 materially changes the named access-control concern; no projection is required and no other namespace changed.
-SYSTEM_IMPACT: NONE -- the repair removes an untrusted caller creator claim, stays within the approved principal/access envelope, and adds no W03.T07 mutation interface.
-NEXT_EXACT_TASK: W03.T02 -- complete the base LIVE envelope/currentness task only after its own bootstrap, Impact Envelope and RED/GREEN/review/publication loop.
-KNOWN_BLOCKERS: NONE for W03.T01. Later tasks remain gated by the schedule above and their named owner/currentness inputs.
+VERSION_IMPACT: W03.T02 NONE to existing engine/release/catalog/campaign/storage namespaces; new LIVE module starts at owner-local `framework_module_version` 1.0.1 and new claim/routing/publication schemas each start at schema version 1, with no shared projection or migration.
+SYSTEM_IMPACT: NONE -- the implementation stays within the approved LIVE envelope/claim/currentness boundary, adds no new semantic owner or dependency direction, and leaves route identity, source-native identity, absorption, temporal handoff and access-policy transitions to their named tasks.
+NEXT_EXACT_TASK: W03.T03 -- campaign, scene, epoch and physical route identity, consuming W03_LIVE_CURRENTNESS_READY.
+KNOWN_BLOCKERS: NONE for W03.T02. Later tasks remain gated by the schedule above and their named owner/currentness inputs.
 UNPUBLISHED_WORK: NONE before this cursor-update commit.
