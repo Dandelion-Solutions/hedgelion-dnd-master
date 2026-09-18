@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: coordinator bootstrap complete; first eligible task is W03.T01
-LAST_COMPLETED_TASK: Wave 02 independent Senior integration review -- PASS / CLOSED (closure explicitly confirmed by Product Owner on 2026-09-18)
-LAST_SAFE_SHA: `b60d1f4260fbe68b938370f7deaeab8913aea89a` (published/read-back Wave-03 coordinator cursor checkpoint)
+CURRENT_TASK: W03.T02 -- base LIVE envelope, claim and exact currentness
+LAST_COMPLETED_TASK: W03.T01 -- principal-to-PLAYER authority route / W03_PRINCIPAL_PLAYER_ROUTE_READY
+LAST_SAFE_SHA: `043153d489f4c820c084b7a21c3514435ee4a396` (published/read-back W03.T01 implementation checkpoint)
 
 ## Dependency schedule
 
@@ -55,17 +55,22 @@ Implementation is serialized at task level even where named edges permit concurr
 
 ## Completion records
 
-COMPLETED_TASKS: none
+COMPLETED_TASKS:
+- W03.T01 -> `043153d489f4c820c084b7a21c3514435ee4a396` (published/read-back; W03_PRINCIPAL_PLAYER_ROUTE_READY)
 
 CURRENT_VERIFICATION_STATE:
-- fresh `git fetch --prune origin` completed before this cursor;
-- local `HEAD` and `origin/v1/engine-rearchitecture` both resolve to `1a90befb747c6d0694d68ad30614e9bed9811d97`;
-- Wave-03 coordinator cursor checkpoint `b60d1f4260fbe68b938370f7deaeab8913aea89a` was published non-force and independently read back from `origin/v1/engine-rearchitecture`;
+- fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
+- W03.T01 implementation commit `043153d489f4c820c084b7a21c3514435ee4a396` was published non-force and independently read back from `origin/v1/engine-rearchitecture` with local and remote refs equal;
+- focused principal-route plus version-policy verification: 25 passed;
+- task-local integration suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`): 65 passed;
+- full DEV discovery under `.hdm-devtools/venv` with bytecode disabled: 808 passed, 7 skipped;
+- maintenance audit: PASS; compileall and `git diff --check`: PASS;
+- the pre-publication full discovery attempt was dirty-worktree provenance-sensitive (807 tests, one expected `clean_head` mismatch); the clean published rerun passed 808 tests;
 - Wave-02 closure evidence at its exact completed head: focused suites 194 passed, full DEV discovery 794 passed and 7 skipped, maintenance audit PASS; hosted CI unavailable because `gh` is absent;
-- no Wave-03 RED, implementation, test, schema, catalog, runtime, or shared-byte change has begun.
+- W03.T01 added only the bounded access owner, route companion template, and named tests; no shared schema/catalog/CORE/LIVE/temporal bytes changed.
 
-VERSION_IMPACT: NONE -- this new execution cursor changes no HDM-owned version, revision, schema, generation, runtime, machine, or projection namespace.
-SYSTEM_IMPACT: NONE -- coordination metadata only; no semantic owner, persistent/interface policy, compatibility rule, or authority boundary changes.
-NEXT_EXACT_TASK: W03.T01 -- complete the task-local bootstrap, Impact Envelope and RED/GREEN/review/publication loop before advancing to W03.T02.
+VERSION_IMPACT: NONE -- W03.T01 initialized its owner-local route schema at schema_version 1; no existing engine, module, campaign, storage, catalog, package, or protocol namespace required a bump or projection synchronization.
+SYSTEM_IMPACT: NONE -- actual W03.T01 impact stayed within the approved principal/access envelope; no unapproved semantic owner, persistent/interface policy, compatibility rule, or authority-boundary change was discovered.
+NEXT_EXACT_TASK: W03.T02 -- complete the base LIVE envelope/currentness task only after its own bootstrap, Impact Envelope and RED/GREEN/review/publication loop.
 KNOWN_BLOCKERS: NONE for W03.T01. Later tasks remain gated by the schedule above and their named owner/currentness inputs.
 UNPUBLISHED_WORK: NONE before this cursor-update commit.
