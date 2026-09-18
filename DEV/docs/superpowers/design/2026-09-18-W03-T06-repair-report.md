@@ -60,3 +60,40 @@ The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold rema
 - Maintenance audit, JSON validation, version census, `git diff --check`, and bytecode-disabled execution: passed. Hosted CI is unavailable in the local-machine runtime.
 - `VERSION_IMPACT`: LIVE runtime `1.0.11 -> 1.0.12`; temporal runtime `1.0.2 -> 1.0.3`; operational-root runtime `1.0.8 -> 1.0.9`; operational-root handoff schema `1 -> 2` synchronized in DEV JSON and GAME YAML. No engine-release, campaign-contract, storage-format, catalog, identifier-policy, existing LIVE-routing, operational-root-page, or shared projection bump.
 - `SYSTEM_IMPACT: NONE`. The neutral evidence boundary is owner-local handoff infrastructure inside the approved W03 temporal/LIVE/operational-root envelope; no new semantic owner, broad scan, fallback authority, distributed transaction, or Wave-05 write was introduced.
+
+## Senior-ruled targeted architectural repair
+
+- **Task:** W03.T06 targeted architectural repair from `0a382a90aab1c71289134d2c576fc346ed3f4d2a`.
+- **Implementation checkpoint:** `f0866707a262ca6371daa3d6b8dc453a4b4a2f2f`.
+- **Publication:** non-force push completed; fresh remote read-back matched `f0866707a262ca6371daa3d6b8dc453a4b4a2f2f`.
+
+### Delivered repair
+
+- Removed `GAME/TOOLS/handoff_evidence.py`; accepted absorption evidence is issued and marked only by the existing LIVE absorption producer.
+- Preserved the LIVE producer's exact accepted proof checks for `CLOSED` final source, final source revision, exact campaign CAS evidence, selected route, stored closure and forward successor absorption.
+- Replaced the neutral recovery validator with a narrow producer-validation port that delegates to LIVE and cannot issue, mark or independently accept evidence.
+- Made temporal native enumeration producer-issued typed evidence, rejecting caller mappings, direct forged enumeration carriers and completeness flags as authority.
+- Kept operational-root handoff schema/runtime cross-campaign rules aligned: JSON/YAML document the first LIVE source-key component invariant and runtime rejects foreign campaigns.
+
+### TDD and verification
+
+- Baseline named suites: `188` passed, `1` skipped.
+- RED witnesses: neutral issuer presence, forged temporal enumeration, caller temporal mappings, missing LIVE producer validator, and schema/runtime cross-campaign declaration.
+- Focused named suites: `192` passed.
+- Cross-owner Wave-03 suites including bootstrap: `203` passed.
+- Clean full DEV discovery from the published implementation checkpoint: `919` passed, `6` skipped.
+- Maintenance audit: PASS; version census: zero unclassified and zero legacy hits; changed-file compile and `git diff --check`: PASS.
+- Hosted CI is unavailable in the local-machine runtime.
+
+### Version Impact Gate
+
+- LIVE runtime `framework_module_version`: `1.0.12 -> 1.0.13`.
+- Temporal runtime `framework_module_version`: `1.0.3 -> 1.0.4`.
+- Operational-root runtime `framework_module_version`: `1.0.9 -> 1.0.10`.
+- `operational-root-handoff` schema namespace remains `2`: only descriptive cross-field alignment changed; no serialized field or schema-shape change requires a bump.
+- No engine-release, campaign-contract, storage-format, catalog, identifier-policy, existing LIVE-routing, operational-root-page or shared projection bump.
+
+### System impact and review state
+
+- **SYSTEM_IMPACT: NONE.** The repair removes an unaccepted neutral authority boundary and tightens existing producer-owned evidence gates inside the approved W03 temporal/LIVE/operational-root envelope. No new semantic owner, dependency-direction change, transaction, broad scan, fallback authority or Wave-05 write was introduced.
+- Independent reviewer PASS remains pending. W03.T07 and W03.T08 remain blocked until that reviewer PASS is recorded.
