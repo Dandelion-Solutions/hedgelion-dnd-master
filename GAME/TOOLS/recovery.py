@@ -21,8 +21,8 @@ from .recovery_roots import derive_operational_root_delta
 from .runtime_execution import CommandAcceptanceError, validate_execution_proposal
 
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final = "1.0.5"
 _REVISION = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _NATIVE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 
@@ -986,13 +986,9 @@ def _hydrate_execution_result(
         raise RecoveryFailure(
             "resolution has no committed execution segments", code=RecoveryFailureCode.INCOMPLETE
         )
-    fixed_results = resolution.get("fixed_rng_results", [])
-    if not isinstance(fixed_results, list):
-        raise RecoveryFailure(
-            "resolution fixed RNG evidence is malformed", code=RecoveryFailureCode.CORRUPT
-        )
-    for raw_roll in fixed_results:
-        _validate_roll_identity(_mapping_or_failure(raw_roll, "resolution fixed RNG result"))
+    fixed_results = _validate_fixed_rng_results(
+        resolution.get("fixed_rng_results", []), "resolution fixed RNG result"
+    )
 
     hydrated_segments: list[Mapping[str, object]] = []
     events_by_id: dict[str, Mapping[str, object]] = {}
@@ -1192,6 +1188,24 @@ def _validate_roll_identity(roll: Mapping[str, object]) -> None:
     _string_or_failure(roll.get("provenance_ref"), "RNG provenance reference")
 
 
+def _validate_fixed_rng_results(value: object, label: str) -> list[Mapping[str, object]]:
+    if not isinstance(value, list):
+        raise RecoveryFailure("resolution fixed RNG evidence is malformed", code=RecoveryFailureCode.CORRUPT)
+    validated: list[Mapping[str, object]] = []
+    seen_request_ids: set[str] = set()
+    for raw_roll in value:
+        roll = _mapping_or_failure(raw_roll, label)
+        _validate_roll_identity(roll)
+        request_id = _string_or_failure(roll.get("request_id"), "request_id")
+        if request_id in seen_request_ids:
+            raise RecoveryFailure(
+                "fixed RNG request ID is duplicated", code=RecoveryFailureCode.AMBIGUOUS
+            )
+        seen_request_ids.add(request_id)
+        validated.append(roll)
+    return validated
+
+
 def _validate_resolution_closure(
     resolution: object,
     resolution_id: str,
@@ -1209,10 +1223,13 @@ def _validate_resolution_closure(
     segments = value.get("segments")
     if not isinstance(segments, list) or not any(item == segment for item in segments):
         raise RecoveryFailure("resolution closure does not contain execution segment", code=RecoveryFailureCode.INCOMPLETE)
-    if roll:
-        fixed = value.get("fixed_rng_results")
-        if not isinstance(fixed, list) or not any(item == roll for item in fixed):
+    fixed = value.get("fixed_rng_results")
+    if fixed is not None:
+        validated_fixed = _validate_fixed_rng_results(fixed, "resolution fixed RNG result")
+        if roll and not any(item == roll for item in validated_fixed):
             raise RecoveryFailure("resolution closure does not contain fixed RNG evidence", code=RecoveryFailureCode.INCOMPLETE)
+    elif roll:
+        raise RecoveryFailure("resolution closure does not contain fixed RNG evidence", code=RecoveryFailureCode.INCOMPLETE)
 
 
 def _validate_root_owner(

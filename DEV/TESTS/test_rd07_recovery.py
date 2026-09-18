@@ -764,6 +764,38 @@ class AcceptedExecutionRecoveryTests(unittest.TestCase):
         self.assertEqual(recovered.fixed_rng_values, (19,))
         self.assertEqual(recovered.execution["roll_result"], later_roll)
 
+    def test_recovery_rejects_duplicate_fixed_rng_request_ids_before_selection(self) -> None:
+        command = _accepted_command_for_recovery()
+        execution = _execution_for_recovery()
+        roll = copy.deepcopy(execution["roll_result"])
+        assert isinstance(roll, dict)
+        segment = copy.deepcopy(execution["segment"])
+        for duplicate in (
+            copy.deepcopy(roll),
+            roll
+            | {
+                "roll_id": "roll.attack.conflict",
+                "raw_values": [18],
+                "provenance_ref": "rng:conflict",
+            },
+        ):
+            with self.subTest(duplicate=duplicate):
+                resolution = {
+                    "resolution_id": "resolution-000001",
+                    "root_command_id": command["command_id"],
+                    "segments": [segment],
+                    "fixed_rng_results": [roll, duplicate],
+                }
+                with self.assertRaises(RecoveryFailure) as raised:
+                    validate_recovered_basis(
+                        command,
+                        execution,
+                        catalog_basis=command["catalog_context"],
+                        policy_basis=_policy_basis_for_recovery(command),
+                        resolution=resolution,
+                    )
+                self.assertEqual(raised.exception.code, RecoveryFailureCode.AMBIGUOUS)
+
     def test_recovery_rejects_mutually_forged_policy_refs(self) -> None:
         command = _accepted_command_for_recovery()
         action_request = copy.deepcopy(command["action_request"])
@@ -1033,6 +1065,93 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
         self.assertIn("RULES/HOUSE_RULES.md", reads)
         self.assertEqual(resolution["fixed_rng_results"][0]["roll_id"], "roll.attack.1")
         self.assertEqual(resolution["fixed_rng_results"][0]["provenance_ref"], "rng:fixture")
+
+    def test_current_runtime_rejects_duplicate_fixed_rng_request_ids_before_selection(self) -> None:
+        from GAME.TOOLS.native_storage import route_native_record
+
+        accepted, execution, closure, context, identity = _validated_command_closure(
+            include_policy=True, producer_roll=True
+        )
+        command_path = route_native_record("runtime.command", (identity["command_id"],)).relative_path
+        resolution_path = route_native_record(
+            "runtime.resolution", (str(accepted["root_resolution_id"]),)
+        ).relative_path
+        event_path = route_native_record(
+            "runtime.mechanical_event", (str(execution["event_id"]),)
+        ).relative_path
+        for duplicate in (
+            copy.deepcopy(closure["resolution"]["fixed_rng_results"][0]),
+            copy.deepcopy(closure["resolution"]["fixed_rng_results"][0])
+            | {
+                "roll_id": "roll.attack.conflict",
+                "raw_values": [18],
+                "provenance_ref": "rng:conflict",
+            },
+        ):
+            with self.subTest(duplicate=duplicate):
+                resolution = copy.deepcopy(closure["resolution"])
+                resolution["fixed_rng_results"].append(duplicate)
+                path = command_path
+                page = {
+                    "schema_version": 1,
+                    "campaign_id": "campaign-1",
+                    "complete": True,
+                    "roots": [
+                        {
+                            "owner_kind": "runtime.command",
+                            "owner_id": identity["command_id"],
+                            "route": {
+                                "family_key": "runtime.command",
+                                "identity": [identity["command_id"]],
+                                "relative_path": path,
+                            },
+                        }
+                    ],
+                }
+
+                class Repository(FakeRepository):
+                    def select_current_native_sources(
+                        self, pinned: PinnedCampaign
+                    ) -> tuple[CurrentNativeSource, ...]:
+                        return (
+                            CurrentNativeSource(
+                                pinned.campaign_id, "campaign", "campaign/current", H, "MANIFEST.yaml"
+                            ),
+                        )
+
+                    def read_exact_path(self, pinned: PinnedCampaign, requested: str) -> object:
+                        if requested == "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml":
+                            return page
+                        if requested == path:
+                            return accepted
+                        if requested == resolution_path:
+                            return resolution
+                        if requested == event_path:
+                            return execution["event"]
+                        return super().read_exact_path(pinned, requested)
+
+                    def resolve_recovery_catalog_context(
+                        self,
+                        pinned: PinnedCampaign,
+                        accepted_command: Mapping[str, object],
+                        catalog_basis: Mapping[str, object],
+                    ) -> tuple[object, Mapping[str, str]]:
+                        return context, {"definition_id": "activity.check.generic", "kind": "definition.activity"}
+
+                    def resolve_recovery_policy_basis(
+                        self,
+                        pinned: PinnedCampaign,
+                        accepted_command: Mapping[str, object],
+                        policy_refs: tuple[str, ...],
+                    ) -> Mapping[str, object]:
+                        self.read_exact_path(pinned, "MANIFEST.yaml")
+                        self.read_exact_path(pinned, "RULES/HOUSE_RULES.yaml")
+                        self.read_exact_path(pinned, "RULES/HOUSE_RULES.md")
+                        return {"source_revision": pinned.revision}
+
+                with self.assertRaises(RecoveryFailure) as raised:
+                    recover_current_runtime(Repository(), "campaign-1")
+                self.assertEqual(raised.exception.code, RecoveryFailureCode.AMBIGUOUS)
 
     def test_current_runtime_rejects_missing_resolution_root_command_id(self) -> None:
         from GAME.TOOLS.native_storage import route_native_record
