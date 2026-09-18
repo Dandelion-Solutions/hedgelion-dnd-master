@@ -96,7 +96,7 @@ ACTUAL IMPACT VS PLANNED: within the W02.T01 envelope. The new owner-native `GAM
 
 CURRENT_VERIFICATION_STATE:
 - T04 focused root/lifecycle/native-routing suites at `6c98cd7`: 108 passed
-- T04 full DEV discovery at `6c98cd7`: 716 passed, 7 skipped
+- T04 full DEV discovery at `6c98cd7`: 717 passed, 7 skipped
 - T04 maintenance audit at `6c98cd7`: PASS
 - T04 RED evidence: lifecycle/root tests failed before native lifecycle/root implementation; initial baseline also lacked the isolated DEV dependency environment
 - exact rebased detached HEAD `32b78af`: full DEV discovery 647 passed, 7 skipped
