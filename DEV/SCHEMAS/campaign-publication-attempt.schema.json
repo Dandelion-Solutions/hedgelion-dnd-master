@@ -95,7 +95,7 @@
       }
     },
     "publication_reason": {"type": "string", "minLength": 1},
-    "execution_durability_join": {"type": "object", "minProperties": 1},
+    "execution_durability_join": {"type": ["object", "null"], "minProperties": 1},
     "routed_operation": {"type": "object", "minProperties": 1},
     "native_domains": {"const": ["campaign"]}
   }

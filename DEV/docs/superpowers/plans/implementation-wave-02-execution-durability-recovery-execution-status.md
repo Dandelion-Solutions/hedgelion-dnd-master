@@ -396,3 +396,21 @@ VERSION_IMPACT:
 
 SYSTEM_IMPACT: NONE - repairs consume existing Access/currentness/native-owner owners and remain inside the approved W02.T05 envelope; no second authority, journal/frontier, transaction, or recovery hydration was introduced.
 UNPUBLISHED_WORK: NONE after the repair-round checkpoint commit; final status awaits Senior integration audit.
+
+## W02.T05 Repair Round 2 — 2026-09-18
+
+INDEPENDENT FINDINGS ADDRESSED:
+- Added typed WP13-33/PCR-6 ancestry and current-closure evidence. Head `D` is accepted only for exact typed `C`-in-`D` ancestry plus matching operation digests; overlapping/incompatible edits conflict and missing evidence remains indeterminate.
+- Execution/durability joins are conditional: mandatory for execution-backed RuntimeCommand publication, while valid owner-routed non-command Procedure terminal closures publish with exact identity/currentness and no command join.
+
+TDD EVIDENCE:
+- RED: new repair tests failed because typed ancestry evidence was absent from the publication owner.
+- GREEN: RD06 plus T03/T04 consumer suites, 108 passed.
+
+VERSION_IMPACT:
+- `GAME/TOOLS/publication.py`: `framework_module_version` 1.0.2 -> 1.0.3;
+- `campaign-publication-attempt.schema_version`: remains 2; nullable execution join is a compatible widening for admitted non-command closures;
+- durability/recovery-root modules, durability-result schema, catalog, engine, campaign, persistence, storage and migration namespaces: NONE.
+
+SYSTEM_IMPACT: NONE - the repair consumes typed bounded currentness/ancestry evidence and preserves the existing owner-routed publication boundary; no new currentness authority, transaction, journal/frontier, or recovery hydration was introduced.
+UNPUBLISHED_WORK: NONE after the repair-round checkpoint commit; final status awaits Senior integration audit.

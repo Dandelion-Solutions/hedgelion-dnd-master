@@ -19,7 +19,9 @@ from GAME.TOOLS.durability import (
 )
 from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence, PinnedCampaign
 from GAME.TOOLS.publication import (
+    CommitAncestryEvidence,
     PublicationContractError,
+    PublicationCurrentClosureEvidence,
     PublicationStatus,
     build_connector_git_plan,
     classify_ref_transition,
@@ -197,6 +199,44 @@ def _attempt(**overrides: object):
     }
     values.update(overrides)
     return freeze_campaign_publication_attempt(**values)
+
+
+def _procedure_attempt():
+    removed, terminal, page = _root_delta()
+    operation = route_serialized_operation("runtime.procedure", "procedure-000001", terminal)
+    return freeze_campaign_publication_attempt(
+        repository_id="github.com/example/campaigns",
+        target_ref="campaign/20260916",
+        campaign_id="campaign-000001",
+        acting_principal=AuthenticatedPrincipalEvidence("principal-1"),
+        pinned_head_sha=H,
+        base_tree_sha=T,
+        currentness_evidence=PinnedCampaign("campaign-000001", H, T),
+        manifest={
+            "campaign_id": "campaign-000001",
+            "campaign_name": "The Frostfall",
+            "branch": "campaign/20260916",
+            "created_at": "2026-09-16T12:00:00Z",
+        },
+        campaign_card={"campaign_id": "campaign-000001", "campaign_name": "The Frostfall"},
+        path_operations={operation.relative_path: terminal},
+        owner_generations={"runtime.procedure:procedure-000001": 2},
+        procedure_before=_procedure(lifecycle="ACTIVE"),
+        procedure_after=terminal,
+        root_delta=removed,
+        root_membership_before=page,
+        routed_operation=operation,
+        publication_reason="procedure_terminal_closure",
+    )
+
+
+def _current_closure(attempt, *, head_sha: str, operation_digests=None):
+    return PublicationCurrentClosureEvidence(
+        base_revision=H,
+        head_sha=head_sha,
+        tree_sha=T,
+        operation_digests=operation_digests or attempt.publication_operation_digests(),
+    )
 
 
 class DurabilityPromiseContractTests(unittest.TestCase):
@@ -379,11 +419,7 @@ class PublicationOutcomeTests(unittest.TestCase):
         def read_current() -> dict[str, object]:
             reads.append("current-ref")
             return {
-                "head_sha": C,
-                "tree_sha": T,
-                "parent_sha": H,
-                "operation_paths": sorted(attempt.path_operations),
-                "closure_digest": attempt.publication_closure_digest(C),
+                "closure": _current_closure(attempt, head_sha=C),
             }
 
         reconciled = reconcile_indeterminate_publication(
@@ -398,16 +434,16 @@ class PublicationOutcomeTests(unittest.TestCase):
         result = reconcile_indeterminate_publication(
             attempt,
             lambda: {
-                "head_sha": C,
-                "tree_sha": T,
-                "parent_sha": H,
-                "operation_paths": [],
-                "closure_digest": "bad",
+                "closure": _current_closure(
+                    attempt,
+                    head_sha=C,
+                    operation_digests={"unrelated/path": "0" * 64},
+                ),
             },
             intended_commit_sha=C,
         )
 
-        self.assertEqual(result.status, PublicationStatus.CONFLICT)
+        self.assertEqual(result.status, PublicationStatus.INDETERMINATE)
         self.assertFalse(result.acknowledged)
 
     def test_indeterminate_reconciliation_rejects_omitted_commit_or_unbound_boolean(self) -> None:
@@ -431,6 +467,51 @@ class PublicationOutcomeTests(unittest.TestCase):
                 },
                 intended_commit_sha=C,
             )
+
+    def test_descendant_head_accepts_only_typed_ancestor_and_compatible_closure(self) -> None:
+        attempt = _attempt()
+        descendant = "a" * 40
+        reconciled = reconcile_indeterminate_publication(
+            attempt,
+            lambda: {
+                "ancestry": CommitAncestryEvidence(ancestor_sha=C, descendant_sha=descendant),
+                "closure": _current_closure(attempt, head_sha=descendant),
+            },
+            intended_commit_sha=C,
+        )
+
+        self.assertEqual(reconciled.status, PublicationStatus.ACCEPTED)
+        self.assertEqual(reconciled.observed_head_sha, descendant)
+
+    def test_descendant_head_rejects_overlapping_or_incompatible_closure(self) -> None:
+        attempt = _attempt()
+        descendant = "a" * 40
+        digests = attempt.publication_operation_digests()
+        overlapping_path = next(iter(digests))
+        digests[overlapping_path] = "0" * 64
+        result = reconcile_indeterminate_publication(
+            attempt,
+            lambda: {
+                "ancestry": CommitAncestryEvidence(ancestor_sha=C, descendant_sha=descendant),
+                "closure": _current_closure(
+                    attempt, head_sha=descendant, operation_digests=digests
+                ),
+            },
+            intended_commit_sha=C,
+        )
+
+        self.assertEqual(result.status, PublicationStatus.CONFLICT)
+
+    def test_descendant_head_without_typed_ancestry_stays_indeterminate(self) -> None:
+        attempt = _attempt()
+        descendant = "a" * 40
+        result = reconcile_indeterminate_publication(
+            attempt,
+            lambda: {"closure": _current_closure(attempt, head_sha=descendant)},
+            intended_commit_sha=C,
+        )
+
+        self.assertEqual(result.status, PublicationStatus.INDETERMINATE)
 
 
 class ExecutionDurabilityJoinTests(unittest.TestCase):
@@ -527,6 +608,18 @@ class ShippedPersistenceDispositionTests(unittest.TestCase):
 
 
 class OperationalRootPublicationTests(unittest.TestCase):
+    def test_procedure_publication_does_not_require_execution_join(self) -> None:
+        attempt = _procedure_attempt()
+        plan = build_connector_git_plan(attempt)
+
+        self.assertIsNone(attempt.execution_durability_join)
+        self.assertIsNone(attempt.accepted_identity)
+        self.assertIn(
+            route_native_record("runtime.procedure", ("procedure-000001",)).relative_path,
+            plan.path_operations,
+        )
+        self.assertIn("STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml", plan.path_operations)
+
     def test_terminal_procedure_and_root_removal_are_one_campaign_delta(self) -> None:
         attempt = _attempt()
         plan = build_connector_git_plan(attempt)

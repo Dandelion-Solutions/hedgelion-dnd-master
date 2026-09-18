@@ -30,8 +30,8 @@ from .recovery_roots import (
 )
 
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final = "1.0.3"
 OPERATIONAL_ROOT_MEMBERSHIP_PATH: Final = "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"
 _SHA40_OR_64: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _SHA256: Final = re.compile(r"^[a-f0-9]{64}$")
@@ -108,6 +108,14 @@ def _thaw(value: object) -> object:
     return value
 
 
+def _serialized_operation_digest(value: object) -> str:
+    copied = _json_copy(value, "serialized operation")
+    encoded = json.dumps(copied, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
+        "utf-8"
+    )
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def _path(value: object) -> str:
     result = _nonempty(value, "publication path")
     if result.startswith("/") or "//" in result or any(part in {"", ".", ".."} for part in result.split("/")):
@@ -145,6 +153,52 @@ class AcceptedExecutionIdentity:
 
 
 @dataclass(frozen=True, slots=True)
+class CommitAncestryEvidence:
+    """Typed repository evidence that one exact commit is an ancestor of another."""
+
+    ancestor_sha: str
+    descendant_sha: str
+    relation: str = "ANCESTOR"
+
+    def __post_init__(self) -> None:
+        _revision(self.ancestor_sha, "ancestry ancestor")
+        _revision(self.descendant_sha, "ancestry descendant")
+        if self.ancestor_sha == self.descendant_sha:
+            raise PublicationContractError("ancestry evidence must contain distinct commits")
+        if self.relation != "ANCESTOR":
+            raise PublicationContractError("unsupported commit ancestry relation")
+
+
+@dataclass(frozen=True, slots=True)
+class PublicationCurrentClosureEvidence:
+    """Typed bounded diff evidence returned by the authoritative current-source read."""
+
+    base_revision: str
+    head_sha: str
+    tree_sha: str
+    operation_digests: Mapping[str, str]
+
+    def __post_init__(self) -> None:
+        _revision(self.base_revision, "closure base revision")
+        _revision(self.head_sha, "closure head")
+        _revision(self.tree_sha, "closure tree")
+        normalized: dict[str, str] = {}
+        for path, digest in self.operation_digests.items():
+            normalized[_path(path)] = _sha256(digest, "closure operation digest")
+        if not normalized:
+            raise PublicationContractError("current closure operation evidence is required")
+        object.__setattr__(self, "operation_digests", MappingProxyType(normalized))
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "base_revision": self.base_revision,
+            "head_sha": self.head_sha,
+            "tree_sha": self.tree_sha,
+            "operation_digests": dict(self.operation_digests),
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class FrozenCampaignPublicationAttempt:
     """Immutable pre-mutation campaign publication evidence."""
 
@@ -168,7 +222,7 @@ class FrozenCampaignPublicationAttempt:
     root_membership_before: Mapping[str, object] | None
     currentness_evidence: PinnedCampaign
     publication_reason: str
-    execution_durability_join: ExecutionDurabilityJoin
+    execution_durability_join: ExecutionDurabilityJoin | None
     routed_operation: RoutedSerializedOperation
     native_domains: tuple[str, ...] = ("campaign",)
 
@@ -188,14 +242,15 @@ class FrozenCampaignPublicationAttempt:
             raise PublicationContractError("currentness evidence does not bind pinned head")
         if self.currentness_evidence.tree_sha != self.base_tree_sha:
             raise PublicationContractError("currentness evidence does not bind pinned tree")
-        if not is_execution_durability_join(self.execution_durability_join):
-            raise PublicationContractError("owner-issued execution/durability join is required")
         if not isinstance(self.routed_operation, RoutedSerializedOperation):
             raise PublicationContractError("owner-routed serialized operation is required")
-        if self.execution_durability_join.routed_operation != self.routed_operation:
-            raise PublicationContractError("execution/durability route differs from publication route")
-        if self.execution_durability_join.campaign_id != self.campaign_id:
-            raise PublicationContractError("execution/durability join campaign differs from publication")
+        if self.execution_durability_join is not None:
+            if not is_execution_durability_join(self.execution_durability_join):
+                raise PublicationContractError("owner-issued execution/durability join is invalid")
+            if self.execution_durability_join.routed_operation != self.routed_operation:
+                raise PublicationContractError("execution/durability route differs from publication route")
+            if self.execution_durability_join.campaign_id != self.campaign_id:
+                raise PublicationContractError("execution/durability join campaign differs from publication")
         operations = {
             _path(path): _json_copy(value, f"path operation {path}")
             for path, value in self.path_operations.items()
@@ -272,7 +327,9 @@ class FrozenCampaignPublicationAttempt:
                 "tree_sha": self.currentness_evidence.tree_sha,
             },
             "publication_reason": self.publication_reason,
-            "execution_durability_join": self.execution_durability_join.to_dict(),
+            "execution_durability_join": None
+            if self.execution_durability_join is None
+            else self.execution_durability_join.to_dict(),
             "routed_operation": self.routed_operation.to_dict(),
             "native_domains": list(self.native_domains),
         }
@@ -291,6 +348,14 @@ class FrozenCampaignPublicationAttempt:
             "utf-8"
         )
         return hashlib.sha256(encoded).hexdigest()
+
+    def publication_operation_digests(self) -> dict[str, str]:
+        """Return per-path digests used by an authoritative descendant-closure read."""
+
+        return {
+            path: _serialized_operation_digest(value)
+            for path, value in self.path_operations.items()
+        }
 
 
 def _campaign_identity(
@@ -428,22 +493,25 @@ def freeze_campaign_publication_attempt(
 
     if currentness_evidence is None:
         raise PublicationContractError("captured currentness evidence is required")
-    if not isinstance(execution_durability_join, ExecutionDurabilityJoin) or not is_execution_durability_join(
-        execution_durability_join
-    ):
-        raise PublicationContractError("owner-issued execution/durability join is required")
     if not isinstance(routed_operation, RoutedSerializedOperation):
         raise PublicationContractError("owner-routed serialized operation is required")
-    if execution_durability_join.routed_operation != routed_operation:
-        raise PublicationContractError("execution/durability route differs from publication route")
-    if accepted_command is None:
-        accepted_command = _thaw(execution_durability_join.accepted_command)
-    if execution is None:
-        execution = _thaw(execution_durability_join.execution)
-    if accepted_command != _thaw(execution_durability_join.accepted_command):
-        raise PublicationContractError("accepted command differs from typed execution/durability join")
-    if execution != _thaw(execution_durability_join.execution):
-        raise PublicationContractError("execution evidence differs from typed execution/durability join")
+    if execution_durability_join is not None:
+        if not isinstance(execution_durability_join, ExecutionDurabilityJoin) or not is_execution_durability_join(
+            execution_durability_join
+        ):
+            raise PublicationContractError("owner-issued execution/durability join is invalid")
+        if execution_durability_join.routed_operation != routed_operation:
+            raise PublicationContractError("execution/durability route differs from publication route")
+        if accepted_command is None:
+            accepted_command = _thaw(execution_durability_join.accepted_command)
+        if execution is None:
+            execution = _thaw(execution_durability_join.execution)
+        if accepted_command != _thaw(execution_durability_join.accepted_command):
+            raise PublicationContractError("accepted command differs from typed execution/durability join")
+        if execution != _thaw(execution_durability_join.execution):
+            raise PublicationContractError("execution evidence differs from typed execution/durability join")
+    elif accepted_command is not None or execution is not None:
+        raise PublicationContractError("execution-backed publication requires an execution/durability join")
     identity = _campaign_identity(campaign_id, manifest, campaign_card)
     if identity.branch != target_ref:
         raise PublicationContractError("target ref differs from canonical campaign branch")
@@ -505,9 +573,10 @@ def freeze_campaign_publication_attempt(
         except ValueError as exc:
             raise PublicationContractError("root delta lacks native lifecycle evidence") from exc
         owner_path = root_delta.root.relative_path
-        if owner_path in operations:
+        procedure_payload = deepcopy(dict(procedure_after))
+        if owner_path in operations and operations[owner_path] != procedure_payload:
             raise PublicationContractError("procedure owner has duplicate publication writer")
-        operations[owner_path] = deepcopy(dict(procedure_after))
+        operations[owner_path] = procedure_payload
         if root_delta.action != "NOOP":
             root_after = _root_page_after(root_membership_before, root_delta)
             if OPERATIONAL_ROOT_MEMBERSHIP_PATH in operations:
@@ -517,15 +586,28 @@ def freeze_campaign_publication_attempt(
     if operations.get(routed_operation.relative_path) != operation_payload:
         raise PublicationContractError("owner-routed serialized operation is missing or mismatched")
     accepted_identity, fixed_rng_values, accepted_catalog = _accepted_identity(accepted_command, execution)
-    catalog = dict(catalog_basis or accepted_catalog or _thaw(execution_durability_join.catalog_basis))
+    joined_catalog = (
+        _thaw(execution_durability_join.catalog_basis)
+        if execution_durability_join is not None
+        else {}
+    )
+    catalog = dict(catalog_basis or accepted_catalog or joined_catalog)
     if accepted_catalog and catalog != accepted_catalog:
         raise PublicationContractError("catalog basis differs from accepted execution")
-    policy = dict(policy_basis or _thaw(execution_durability_join.policy_basis))
-    expected_join_policy = _thaw(execution_durability_join.policy_basis)
-    for field in ("policy_refs", "action_request", "invocation_facts"):
-        if field in policy and policy[field] != expected_join_policy[field]:
-            raise PublicationContractError("policy basis differs from typed execution/durability join")
-        policy[field] = expected_join_policy[field]
+    policy = dict(
+        policy_basis
+        or (
+            _thaw(execution_durability_join.policy_basis)
+            if execution_durability_join is not None
+            else {}
+        )
+    )
+    if execution_durability_join is not None:
+        expected_join_policy = _thaw(execution_durability_join.policy_basis)
+        for field in ("policy_refs", "action_request", "invocation_facts"):
+            if field in policy and policy[field] != expected_join_policy[field]:
+                raise PublicationContractError("policy basis differs from typed execution/durability join")
+            policy[field] = expected_join_policy[field]
     if accepted_command is not None:
         expected_refs = _policy_refs(accepted_command)
         supplied_refs = policy.get("policy_refs", expected_refs)
@@ -704,53 +786,69 @@ def reconcile_indeterminate_publication(
         for field in ("current_closure_compatible", "lineage_contains_intended", "head_is_intended")
     ):
         raise PublicationContractError("reconciliation cannot consume caller boolean authority")
-    observed_value = evidence.get("head_sha")
-    observed = None if observed_value is None else _revision(observed_value, "reconciled head")
+    closure = evidence.get("closure")
+    if not isinstance(closure, PublicationCurrentClosureEvidence):
+        return PublicationOutcome(
+            PublicationStatus.INDETERMINATE,
+            intended,
+            None,
+            "BOUNDED_RECONCILIATION_INSUFFICIENT",
+            dispatched=False,
+        )
+    observed = closure.head_sha
+    if closure.base_revision != attempt.pinned_head_sha:
+        return PublicationOutcome(
+            PublicationStatus.CONFLICT,
+            intended,
+            observed,
+            "CURRENT_CLOSURE_REQUIRES_REPIN",
+            dispatched=False,
+        )
+    expected_digests = attempt.publication_operation_digests()
+    overlapping = set(expected_digests).intersection(closure.operation_digests)
+    if any(expected_digests[path] != closure.operation_digests[path] for path in overlapping):
+        return PublicationOutcome(
+            PublicationStatus.CONFLICT,
+            intended,
+            observed,
+            "CURRENT_CLOSURE_REQUIRES_REPIN",
+            dispatched=False,
+        )
+    if set(overlapping) != set(expected_digests):
+        return PublicationOutcome(
+            PublicationStatus.INDETERMINATE,
+            intended,
+            observed,
+            "BOUNDED_RECONCILIATION_INSUFFICIENT",
+            dispatched=False,
+        )
+    if observed == intended and set(closure.operation_digests) != set(expected_digests):
+        return PublicationOutcome(
+            PublicationStatus.CONFLICT,
+            intended,
+            observed,
+            "CURRENT_CLOSURE_REQUIRES_REPIN",
+            dispatched=False,
+        )
     if observed != intended:
-        return PublicationOutcome(
-            PublicationStatus.CONFLICT,
-            intended,
-            observed,
-            "CURRENT_HEAD_DIFFERS_FROM_INTENDED",
-            dispatched=False,
-        )
-    tree_value = evidence.get("tree_sha")
-    parent_value = evidence.get("parent_sha")
-    operation_paths = evidence.get("operation_paths")
-    closure_digest = evidence.get("closure_digest")
-    if not isinstance(tree_value, str) or _SHA40_OR_64.fullmatch(tree_value) is None:
-        return PublicationOutcome(
-            PublicationStatus.INDETERMINATE,
-            intended,
-            observed,
-            "BOUNDED_RECONCILIATION_INSUFFICIENT",
-            dispatched=False,
-        )
-    if parent_value != attempt.pinned_head_sha or operation_paths != sorted(attempt.path_operations):
-        return PublicationOutcome(
-            PublicationStatus.CONFLICT,
-            intended,
-            observed,
-            "CURRENT_CLOSURE_REQUIRES_REPIN",
-            dispatched=False,
-        )
-    if closure_digest != attempt.publication_closure_digest(intended):
-        return PublicationOutcome(
-            PublicationStatus.INDETERMINATE,
-            intended,
-            observed,
-            "BOUNDED_RECONCILIATION_INSUFFICIENT",
-            dispatched=False,
-        )
-    if isinstance(operation_paths, list) and len(operation_paths) != len(set(operation_paths)):
-        return PublicationOutcome(
-            PublicationStatus.CONFLICT,
-            intended,
-            observed,
-            "CURRENT_CLOSURE_REQUIRES_REPIN",
-            dispatched=False,
-        )
-    if parent_value == attempt.pinned_head_sha:
+        ancestry = evidence.get("ancestry")
+        if not isinstance(ancestry, CommitAncestryEvidence):
+            return PublicationOutcome(
+                PublicationStatus.INDETERMINATE,
+                intended,
+                observed,
+                "BOUNDED_RECONCILIATION_INSUFFICIENT",
+                dispatched=False,
+            )
+        if ancestry.ancestor_sha != intended or ancestry.descendant_sha != observed:
+            return PublicationOutcome(
+                PublicationStatus.CONFLICT,
+                intended,
+                observed,
+                "ANCESTRY_EVIDENCE_INCOMPATIBLE",
+                dispatched=False,
+            )
+    if observed == intended:
         return PublicationOutcome(
             PublicationStatus.ACCEPTED,
             intended,
@@ -758,11 +856,19 @@ def reconcile_indeterminate_publication(
             "RECONCILED_CURRENT_CLOSURE",
             dispatched=False,
         )
+    if not closure.operation_digests:
+        return PublicationOutcome(
+            PublicationStatus.INDETERMINATE,
+            intended,
+            observed,
+            "BOUNDED_RECONCILIATION_INSUFFICIENT",
+            dispatched=False,
+        )
     return PublicationOutcome(
-        PublicationStatus.INDETERMINATE,
+        PublicationStatus.ACCEPTED,
         intended,
         observed,
-        "BOUNDED_RECONCILIATION_INSUFFICIENT",
+        "RECONCILED_ANCESTOR_CURRENT_CLOSURE",
         dispatched=False,
     )
 
