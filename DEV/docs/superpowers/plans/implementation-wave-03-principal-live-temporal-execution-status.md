@@ -6,8 +6,8 @@ BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
 CURRENT_TASK: W03.T02 -- base LIVE envelope, claim and exact currentness
-LAST_COMPLETED_TASK: W03.T01 -- principal-to-PLAYER authority route / review repair round 1 / W03_PRINCIPAL_PLAYER_ROUTE_READY
-LAST_SAFE_SHA: `d08466d9cc732cd6832d536ddbe1d9229c416ac4` (published/read-back W03.T01 review-repair checkpoint)
+LAST_COMPLETED_TASK: W03.T01 -- principal-to-PLAYER authority route / review repair rounds 1-2 / W03_PRINCIPAL_PLAYER_ROUTE_READY
+LAST_SAFE_SHA: `72c6583ef68ef270ca3fa2321babd917bea2bffa` (published/read-back W03.T01 review-repair-round-2 checkpoint)
 
 ## Dependency schedule
 
@@ -58,20 +58,21 @@ Implementation is serialized at task level even where named edges permit concurr
 COMPLETED_TASKS:
 - W03.T01 -> `043153d489f4c820c084b7a21c3514435ee4a396` (published/read-back; W03_PRINCIPAL_PLAYER_ROUTE_READY)
 - W03.T01 review repair round 1 -> `d08466d9cc732cd6832d536ddbe1d9229c416ac4` (published/read-back)
+- W03.T01 review repair round 2 -> `72c6583ef68ef270ca3fa2321babd917bea2bffa` (published/read-back)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
-- W03.T01 implementation commit `043153d489f4c820c084b7a21c3514435ee4a396` and repair commit `d08466d9cc732cd6832d536ddbe1d9229c416ac4` were published non-force and independently read back from `origin/v1/engine-rearchitecture` with local and remote refs equal;
-- repair-focused principal-route plus version-policy verification: 28 passed;
-- task-local integration suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`): 68 passed;
-- full DEV discovery under `.hdm-devtools/venv` with bytecode disabled: 811 passed, 7 skipped;
+- W03.T01 implementation commit `043153d489f4c820c084b7a21c3514435ee4a396` and repair commits `d08466d9cc732cd6832d536ddbe1d9229c416ac4`, `72c6583ef68ef270ca3fa2321babd917bea2bffa` were published non-force and independently read back from `origin/v1/engine-rearchitecture` with local and remote refs equal;
+- repair-round-2 principal-route plus version-policy verification: 29 passed;
+- task-local integration suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`): 69 passed;
+- full DEV discovery under `.hdm-devtools/venv` with bytecode disabled: 812 passed, 7 skipped;
 - maintenance audit: PASS; compileall and `git diff --check`: PASS;
 - the pre-publication repair full discovery ran after the repair commit and passed cleanly; generated cache artifacts were removed before the maintenance audit;
 - Wave-02 closure evidence at its exact completed head: focused suites 194 passed, full DEV discovery 794 passed and 7 skipped, maintenance audit PASS; hosted CI unavailable because `gh` is absent;
 - W03.T01 added only the bounded access owner, route companion template, and named tests; no shared schema/catalog/CORE/LIVE/temporal bytes changed.
 
-VERSION_IMPACT: DEV `access_control_revision` 6 -> 7 -- the review repair materially changes the named access-control concern; no projection is required and no other namespace changed.
-SYSTEM_IMPACT: NONE -- the repair stays within the approved principal/access envelope, consumes the existing PLAYER mechanical-override grant, and adds no W03.T07 mutation interface.
+VERSION_IMPACT: DEV `access_control_revision` 7 -> 8 -- review repair round 2 materially changes the named access-control concern; no projection is required and no other namespace changed.
+SYSTEM_IMPACT: NONE -- the repair removes an untrusted caller creator claim, stays within the approved principal/access envelope, and adds no W03.T07 mutation interface.
 NEXT_EXACT_TASK: W03.T02 -- complete the base LIVE envelope/currentness task only after its own bootstrap, Impact Envelope and RED/GREEN/review/publication loop.
 KNOWN_BLOCKERS: NONE for W03.T01. Later tasks remain gated by the schedule above and their named owner/currentness inputs.
 UNPUBLISHED_WORK: NONE before this cursor-update commit.
