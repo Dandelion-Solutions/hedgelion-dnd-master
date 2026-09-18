@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
@@ -34,8 +35,13 @@ from GAME.TOOLS.live_state import (
     LiveRouting,
     LiveAbsorptionStatus,
     LiveAbsorptionPublication,
+    FrozenCampaignAbsorption,
     LiveNativeStatePack,
+    LIVE_ABSORPTION_ATTEMPT_SCHEMA_VERSION,
     LIVE_CLAIM_SCHEMA_VERSION,
+    LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION,
+    LIVE_OPENING_PREPARATION_SCHEMA_VERSION,
+    LIVE_OPENING_SEED_SCHEMA_VERSION,
     LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION,
     LIVE_ROUTING_SCHEMA_VERSION,
     SOURCE_NATIVE_CURSOR_MAX,
@@ -83,6 +89,7 @@ LIVE_ROUTE_TEMPLATE = ROOT / "GAME/CAMPAIGN/STATE/RUNTIME/LIVE_ROUTING.yaml"
 LIVE_H0 = "0" * 40
 LIVE_H1 = "1" * 40
 LIVE_H2 = "2" * 40
+LIVE_H3 = "3" * 40
 SOURCE_NATIVE_POLICY = {
     "world": {
         "world.actor": {
@@ -622,13 +629,99 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.8")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.9")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
+        self.assertEqual(LIVE_OPENING_PREPARATION_SCHEMA_VERSION, 1)
+        self.assertEqual(LIVE_OPENING_SEED_SCHEMA_VERSION, 2)
+        self.assertEqual(LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION, 2)
+        self.assertEqual(LIVE_ABSORPTION_ATTEMPT_SCHEMA_VERSION, 1)
         self.assertEqual(claim_schema["properties"]["schema_version"]["const"], 2)
         self.assertEqual(route_schema["properties"]["schema_version"]["const"], 4)
         self.assertEqual(publication_schema["properties"]["schema_version"]["const"], 5)
+
+    def test_each_w03_opening_and_absorption_contract_has_its_own_schema_owner(self) -> None:
+        schema_dir = ROOT / "DEV/SCHEMAS"
+        contracts = (
+            ("live-opening-preparation.schema.json", LIVE_OPENING_PREPARATION_SCHEMA_VERSION),
+            ("live-opening-seed.schema.json", LIVE_OPENING_SEED_SCHEMA_VERSION),
+            ("live-native-state-pack.schema.json", LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION),
+            ("live-absorption-attempt.schema.json", LIVE_ABSORPTION_ATTEMPT_SCHEMA_VERSION),
+        )
+
+        for filename, expected_version in contracts:
+            schema = json.loads((schema_dir / filename).read_text(encoding="utf-8"))
+            Draft202012Validator.check_schema(schema)
+            self.assertEqual(schema["properties"]["schema_version"]["const"], expected_version)
+
+    def test_w03_serialized_contracts_validate_their_runtime_mappings(self) -> None:
+        schema_dir = ROOT / "DEV/SCHEMAS"
+        filenames = (
+            "live-claim.schema.json",
+            "live-routing.schema.json",
+            "live-opening-preparation.schema.json",
+            "live-opening-seed.schema.json",
+            "live-native-state-pack.schema.json",
+            "live-absorption-attempt.schema.json",
+        )
+        schemas = {
+            filename: json.loads((schema_dir / filename).read_text(encoding="utf-8"))
+            for filename in filenames
+        }
+        store = {schema["$id"]: schema for schema in schemas.values()}
+
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+        )
+        seed = build_live_opening_seed(
+            preparation,
+            native_owner_states=_opening_native_states(),
+            provenance={},
+            privacy={},
+            chronology={},
+            unresolved_work={},
+        )
+        closed = mark_closed_unabsorbed(
+            close_live_source(
+                preparation.source,
+                expected_source_revision=LIVE_H0,
+                closed_source_revision=LIVE_H1,
+            )
+        )
+        packed = pack_live_native_state(
+            closed,
+            native_owner_states=_opening_native_states(),
+            provenance={},
+            privacy={},
+            chronology={},
+            unresolved_work={},
+        )
+        route = build_live_route("campaign-frostfall", (closed,))
+        attempt = freeze_campaign_absorption(
+            closed,
+            route=route,
+            packed_state=packed,
+            campaign_state={},
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H2,
+        )
+        mappings = {
+            "live-opening-preparation.schema.json": preparation.as_mapping(),
+            "live-opening-seed.schema.json": seed.as_mapping(),
+            "live-native-state-pack.schema.json": packed.as_mapping(),
+            "live-absorption-attempt.schema.json": attempt.as_mapping(),
+        }
+        for filename, mapping in mappings.items():
+            validator = Draft202012Validator(
+                schemas[filename],
+                resolver=RefResolver.from_schema(schemas[filename], store=store),
+            )
+            self.assertFalse(list(validator.iter_errors(mapping)), filename)
 
     def test_w03_does_not_edit_wave05_retained_live_scene_schema(self) -> None:
         retained_schema = ROOT / "GAME/SCHEMA/live_scene.schema.yaml"
@@ -1754,6 +1847,34 @@ class LiveOpeningSeedTests(unittest.TestCase):
         with self.assertRaisesRegex(LiveContractError, "owner|issued|CAS"):
             publish_live_opening(preparation, forged)
 
+    def test_opening_publication_requires_the_exact_prepared_predecessor(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+        )
+        foreign_predecessor = LiveEnvelope(
+            campaign_id=preparation.source.campaign_id,
+            scene_id=preparation.source.scene_id,
+            epoch_id=preparation.source.epoch_id,
+            source_ref=preparation.source.source_ref,
+            source_revision=LIVE_H2,
+            claims=preparation.source.claims,
+            status=LiveLifecycle.ACTIVE,
+            opening_campaign_revision=preparation.source.opening_campaign_revision,
+        )
+        foreign_attempt = freeze_live_attempt(
+            foreign_predecessor,
+            route=build_live_route("campaign-frostfall", (foreign_predecessor,)),
+            proposed_source_revision=LIVE_H3,
+        )
+        accepted = classify_cas_result(foreign_attempt, _accepted_ack(foreign_attempt))
+
+        with self.assertRaisesRegex(LiveContractError, "predecessor|prepared|source"):
+            publish_live_opening(preparation, accepted)
+
 
 class LiveRoutingCompletenessTests(unittest.TestCase):
     def test_complete_route_requires_every_expected_body_and_rejects_stale_extra_member(self) -> None:
@@ -1809,6 +1930,10 @@ class LiveNativeStatePackingTests(unittest.TestCase):
         self.assertEqual(
             unpack_live_native_state(packed),
             {
+                "source_key": preparation.source.source_key,
+                "source_revision": LIVE_H0,
+                "next_source_native_creation_ordinal": 1,
+                "source_native_ids": (),
                 "native_owner_states": _opening_native_states(),
                 "provenance": {"opening_revision": LIVE_H0, "refs": ["event:opening"]},
                 "privacy": {"knowledge": {"actor-1": ["fact:market"]}, "disclosure": []},
@@ -1816,6 +1941,25 @@ class LiveNativeStatePackingTests(unittest.TestCase):
                 "unresolved_work": {"runtime.continuation": [{"id": "continuation-1"}]},
             },
         )
+
+    def test_packing_preserves_exact_source_native_ids_and_cursor_history(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+            source_native_creations=(SourceNativeCreation("world.asset", 7),),
+            identifier_policy=SOURCE_NATIVE_POLICY,
+        )
+        packed = _opening_seed(preparation)
+
+        unpacked = unpack_live_native_state(packed)
+
+        self.assertEqual(unpacked["source_key"], preparation.source.source_key)
+        self.assertEqual(unpacked["source_revision"], LIVE_H0)
+        self.assertEqual(unpacked["next_source_native_creation_ordinal"], 2)
+        self.assertEqual(unpacked["source_native_ids"], preparation.source.source_native_ids)
 
     def test_partial_pack_is_rejected_instead_of_inventing_owner_defaults(self) -> None:
         preparation = prepare_live_opening(
@@ -1834,6 +1978,45 @@ class LiveNativeStatePackingTests(unittest.TestCase):
 
 
 class LiveAbsorptionMaterializationTests(unittest.TestCase):
+    def test_absorption_rejects_a_successor_route_with_wrong_membership(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+        )
+        closed = mark_closed_unabsorbed(
+            close_live_source(
+                preparation.source,
+                expected_source_revision=LIVE_H0,
+                closed_source_revision=LIVE_H1,
+            )
+        )
+        route = build_live_route("campaign-frostfall", (closed,))
+        packed = _opening_seed(preparation, closed)
+        candidate = freeze_campaign_absorption(
+            closed,
+            route=route,
+            packed_state=packed,
+            campaign_state={"native_owner_states": {}},
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H2,
+        )
+        wrong_successor = build_live_route("campaign-frostfall", (closed,))
+
+        with self.assertRaisesRegex(LiveContractError, "route|member|closure"):
+            FrozenCampaignAbsorption(
+                selected_route=candidate.selected_route,
+                source_key=candidate.source_key,
+                source_revision=candidate.source_revision,
+                expected_campaign_revision=candidate.expected_campaign_revision,
+                proposed_campaign_revision=candidate.proposed_campaign_revision,
+                packed_state=candidate.packed_state,
+                candidate_state=candidate.candidate_state,
+                successor_route=wrong_successor,
+            )
+
     def test_absorption_preserves_identity_provenance_privacy_chronology_and_is_idempotent(self) -> None:
         preparation = prepare_live_opening(
             "campaign-frostfall",
@@ -1970,6 +2153,108 @@ class LiveAbsorptionMaterializationTests(unittest.TestCase):
                 campaign_state,
                 route=route,
                 publication=foreign_publication,
+            )
+
+    def test_absorption_retry_requires_the_stored_accepted_campaign_and_route_closure(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+        )
+        closed = mark_closed_unabsorbed(
+            close_live_source(
+                preparation.source,
+                expected_source_revision=LIVE_H0,
+                closed_source_revision=LIVE_H1,
+            )
+        )
+        route = build_live_route("campaign-frostfall", (closed,))
+        packed = _opening_seed(preparation, closed)
+        campaign_state = {"native_owner_states": {}}
+        attempt = freeze_campaign_absorption(
+            closed,
+            route=route,
+            packed_state=packed,
+            campaign_state=campaign_state,
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H2,
+        )
+        publication = classify_campaign_absorption(
+            attempt,
+            {
+                "accepted": True,
+                "source_key": closed.source_key,
+                "source_revision": LIVE_H1,
+                "expected_campaign_revision": LIVE_H0,
+                "new_campaign_revision": LIVE_H2,
+                "candidate_state_digest": attempt.candidate_state_digest,
+                "selected_route": attempt.selected_route.as_mapping(),
+                "successor_route": attempt.successor_route.as_mapping(),
+            },
+        )
+        first = absorb_live_state(
+            closed,
+            packed,
+            campaign_state,
+            route=route,
+            publication=publication,
+        )
+        tampered_state = deepcopy(dict(first.campaign_state))
+        tampered_state["live_routing"] = route.as_mapping()
+
+        with self.assertRaisesRegex(LiveContractError, "stored|closure|route|accepted"):
+            absorb_live_state(
+                first.source,
+                packed,
+                tampered_state,
+                route=first.route,
+                publication=publication,
+            )
+
+    def test_absorption_rejects_pack_with_different_source_native_history(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+        )
+        closed = mark_closed_unabsorbed(
+            close_live_source(
+                preparation.source,
+                expected_source_revision=LIVE_H0,
+                closed_source_revision=LIVE_H1,
+            )
+        )
+        route = build_live_route("campaign-frostfall", (closed,))
+        wrong_id = encode_source_native_live_id(
+            closed.source_key,
+            "world.actor",
+            1,
+            SOURCE_NATIVE_POLICY,
+        )
+        wrong_pack = LiveNativeStatePack(
+            source_key=closed.source_key,
+            source_revision=closed.source_revision,
+            next_source_native_creation_ordinal=2,
+            source_native_ids=(wrong_id,),
+            native_owner_states=_opening_native_states(),
+            provenance={},
+            privacy={},
+            chronology={},
+            unresolved_work={},
+        )
+
+        with self.assertRaisesRegex(LiveContractError, "history|native|exact"):
+            freeze_campaign_absorption(
+                closed,
+                route=route,
+                packed_state=wrong_pack,
+                campaign_state={"native_owner_states": {}},
+                expected_campaign_revision=LIVE_H0,
+                proposed_campaign_revision=LIVE_H2,
             )
 
     def test_failed_or_indeterminate_campaign_publication_keeps_closed_unabsorbed_recovery_truth(self) -> None:

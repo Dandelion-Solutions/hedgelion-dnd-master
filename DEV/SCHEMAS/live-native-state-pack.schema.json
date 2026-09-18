@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/live-native-state-pack.schema.json",
+  "title": "HDM lossless LIVE native state pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "source_key",
+    "source_revision",
+    "next_source_native_creation_ordinal",
+    "source_native_ids",
+    "native_owner_states",
+    "provenance",
+    "privacy",
+    "chronology",
+    "unresolved_work"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "kind": {"const": "runtime.live_native_state_pack"},
+    "source_key": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "source_revision": {"type": "string", "minLength": 1},
+    "next_source_native_creation_ordinal": {"type": "integer", "minimum": 1},
+    "source_native_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "native_owner_states": {"type": "object"},
+    "provenance": {"type": "object"},
+    "privacy": {"type": "object"},
+    "chronology": {"type": "object"},
+    "unresolved_work": {"type": "object"}
+  }
+}

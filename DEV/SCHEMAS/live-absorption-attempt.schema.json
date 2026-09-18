@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/live-absorption-attempt.schema.json",
+  "title": "HDM immutable LIVE absorption attempt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "source_key",
+    "source_revision",
+    "next_source_native_creation_ordinal",
+    "source_native_ids",
+    "expected_campaign_revision",
+    "proposed_campaign_revision",
+    "candidate_state_digest",
+    "selected_route",
+    "successor_route"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "runtime.live_absorption_attempt"},
+    "source_key": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "source_revision": {"type": "string", "minLength": 1},
+    "next_source_native_creation_ordinal": {"type": "integer", "minimum": 1},
+    "source_native_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "expected_campaign_revision": {"type": "string", "minLength": 1},
+    "proposed_campaign_revision": {"type": "string", "minLength": 1},
+    "candidate_state_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "selected_route": {"$ref": "live-routing.schema.json"},
+    "successor_route": {"$ref": "live-routing.schema.json"}
+  }
+}

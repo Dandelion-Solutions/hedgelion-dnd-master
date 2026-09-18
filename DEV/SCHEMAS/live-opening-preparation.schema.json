@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/live-opening-preparation.schema.json",
+  "title": "HDM prepared LIVE opening",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "source", "source_native_allocations"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "runtime.live_opening_preparation"},
+    "source": {"$ref": "live-routing.schema.json#/properties/entries/items"},
+    "source_native_allocations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "native_family",
+          "owner_local_index",
+          "source_local_creation_ordinal",
+          "native_id",
+          "creation_slot_index"
+        ],
+        "properties": {
+          "native_family": {"type": "string", "pattern": "^(world|runtime)\\.[a-z][a-z0-9_]*$"},
+          "owner_local_index": {"type": "integer", "minimum": 0},
+          "source_local_creation_ordinal": {"type": "integer", "minimum": 1},
+          "native_id": {"type": "string", "minLength": 1},
+          "creation_slot_index": {"type": "integer", "minimum": 0}
+        }
+      }
+    }
+  }
+}
