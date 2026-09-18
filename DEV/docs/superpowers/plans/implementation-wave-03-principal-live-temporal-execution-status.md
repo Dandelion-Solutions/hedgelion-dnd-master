@@ -5,8 +5,8 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: W03.T07 -- PLAYER and campaign access-policy transitions
-LAST_COMPLETED_TASK: W03.T06 -- temporal and operational-root handoff; W03_TEMPORAL_LIVE_HANDOFF_READY / W03_OPERATIONAL_LIVE_HANDOFF_READY
+CURRENT_TASK: W03.T06 targeted architectural repair
+LAST_COMPLETED_TASK: W03.T05 independent review -- PASS
 LAST_SAFE_SHA: `f652727` (published W03.T06 follow-up repair implementation checkpoint)
 
 ## Dependency schedule
@@ -146,7 +146,7 @@ SYSTEM_IMPACT: NONE -- W03.T06 remains inside the approved temporal/LIVE/operati
 VERSION_IMPACT: W03.T06 repair materially changes LIVE runtime `framework_module_version` `1.0.10 -> 1.0.11`, temporal runtime `framework_module_version` `1.0.1 -> 1.0.2`, and operational-root runtime `framework_module_version` `1.0.7 -> 1.0.8`. A new ephemeral operational-root handoff schema namespace starts at `1` in DEV/GAME projections; existing LIVE routing schema v4 and operational-root page schema v1 remain unchanged. No engine-release, campaign-contract, storage-format, catalog, identifier-policy or shared DEV/GAME projection changed.
 SYSTEM_IMPACT: NONE -- W03.T06 repair remains inside the approved temporal/LIVE/operational-root routing envelope, adds no semantic owner, dependency direction, distributed transaction, broad scan, fallback authority or Wave-05 write, and replaces caller lifecycle/removal assertions with owner-issued evidence.
 VERSION_IMPACT: W03.T06 follow-up materially changes LIVE runtime `framework_module_version` `1.0.11 -> 1.0.12`, temporal runtime `framework_module_version` `1.0.2 -> 1.0.3`, operational-root runtime `framework_module_version` `1.0.8 -> 1.0.9`, and operational-root handoff schema `1 -> 2` in both DEV JSON and GAME YAML projections. No engine-release, campaign-contract, storage-format, catalog, identifier-policy, existing LIVE-routing, operational-root-page or shared projection changed.
-SYSTEM_IMPACT: NONE -- the follow-up remains inside the approved temporal/LIVE/operational-root routing envelope, removes a sibling-owner dependency through a narrow neutral evidence boundary, and adds no semantic owner, broad scan, fallback authority, distributed transaction or Wave-05 write.
-NEXT_EXACT_TASK: W03.T07 -- PLAYER and campaign access-policy transitions, consuming W03_PRINCIPAL_PLAYER_ROUTE_READY + W03_LIVE_CURRENTNESS_READY.
-KNOWN_BLOCKERS: NONE for W03.T06. Hosted CI is unavailable in the local-machine runtime. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED -- the rejected neutral evidence issuer created an unaccepted authority boundary. Senior ruling requires its removal and preservation of producer-owned LIVE absorption evidence.
+NEXT_EXACT_TASK: W03.T06 targeted architectural repair under the recorded Senior ruling.
+KNOWN_BLOCKERS: W03.T07 and W03.T08 are blocked until W03.T06 repair receives independent reviewer PASS. Hosted CI is unavailable in the local-machine runtime. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
 UNPUBLISHED_WORK: NONE after this cursor-update commit and its remote read-back.
