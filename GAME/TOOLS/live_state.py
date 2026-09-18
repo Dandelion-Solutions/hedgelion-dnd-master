@@ -10,20 +10,20 @@ exact source observation and the authority-changing acknowledgement.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import StrEnum
 import re
 from typing import Final, TypeAlias
 
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
-LIVE_CLAIM_SCHEMA_VERSION: Final[int] = 1
-LIVE_ROUTING_SCHEMA_VERSION: Final[int] = 1
-LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION: Final[int] = 2
+LIVE_CLAIM_SCHEMA_VERSION: Final[int] = 2
+LIVE_ROUTING_SCHEMA_VERSION: Final[int] = 2
+LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION: Final[int] = 3
 
 _MACHINE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _NATIVE_FAMILY = re.compile(r"^(world|runtime)\.[a-z][a-z0-9_]*$")
@@ -106,56 +106,11 @@ def _source_key(value: object, label: str = "source key") -> LiveSourceKey:
     )
 
 
-@dataclass(frozen=True, slots=True)
-class LiveClaimAdmission:
-    """Caller-supplied owner evidence for non-exact LIVE claim forms.
-
-    The T02 owner does not define identifier-policy or partition catalogs.  A
-    creation or owner-partition claim therefore needs an explicit admission
-    supplied by the owning future contract; absence of that evidence fails
-    closed.  This context is ephemeral and is never serialized as authority.
-    """
-
-    creation_families: frozenset[str] = frozenset()
-    owner_defined_partitions: frozenset[tuple[str, str]] = frozenset()
-
-    def __post_init__(self) -> None:
-        families = frozenset(
-            _machine_id(family, "admitted creation family")
-            for family in self.creation_families
-        )
-        if any(_NATIVE_FAMILY.fullmatch(family) is None for family in families):
-            raise LiveContractError("admitted creation family is not a native family")
-        if any(family in _FORBIDDEN_FAMILIES for family in families):
-            raise LiveContractError("forbidden family cannot be admitted for LIVE creation")
-        partitions = frozenset(
-            (
-                _machine_id(partition_type, "admitted partition type"),
-                _machine_id(partition_key, "admitted partition key"),
-            )
-            for partition_type, partition_key in self.owner_defined_partitions
-        )
-        object.__setattr__(self, "creation_families", families)
-        object.__setattr__(self, "owner_defined_partitions", partitions)
-
-    def admits_creation(self, native_family: str) -> bool:
-        return native_family in self.creation_families
-
-    def admits_partition(self, partition_type: str, partition_key: str) -> bool:
-        return (partition_type, partition_key) in self.owner_defined_partitions
-
-
-def _claims(
-    value: object,
-    *,
-    admission: LiveClaimAdmission | None = None,
-) -> tuple[LiveClaim, ...]:
+def _claims(value: object) -> tuple[LiveClaim, ...]:
     if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
         raise LiveContractError("LIVE claims must be an array")
     result = tuple(
-        item
-        if isinstance(item, LiveClaim)
-        else LiveClaim.from_mapping(item, admission=admission)
+        item if isinstance(item, LiveClaim) else LiveClaim.from_mapping(item)
         for item in value
     )
     keys = [claim.identity_key for claim in result]
@@ -173,8 +128,6 @@ class LiveClaim:
     native_identity: str | None = None
     partition_type: str | None = None
     partition_key: str | None = None
-    _admission: LiveClaimAdmission | None = field(default=None, repr=False, compare=False)
-
     def __post_init__(self) -> None:
         if self.claim_type not in _CLAIM_TYPES:
             raise LiveContractError("LIVE claim must use the closed typed claim grammar")
@@ -195,25 +148,13 @@ class LiveClaim:
             if any(value is not None for value in (self.partition_type, self.partition_key)):
                 raise LiveContractError("EXACT_OWNER cannot carry partition fields")
         elif self.claim_type == "EPOCH_LOCAL_CREATION":
-            if family is None or self.native_identity is not None:
-                raise LiveContractError("EPOCH_LOCAL_CREATION requires only native family")
-            if any(value is not None for value in (self.partition_type, self.partition_key)):
-                raise LiveContractError("EPOCH_LOCAL_CREATION cannot carry partition fields")
-            if self._admission is None or not self._admission.admits_creation(family):
-                raise LiveContractError("creation family is not admitted as LIVE authority")
+            raise LiveContractError(
+                "non-exact LIVE claims require a current owner-backed contract"
+            )
         else:
-            if self.partition_type is None or self.partition_key is None:
-                raise LiveContractError(
-                    "OWNER_DEFINED_PARTITION requires partition type and key"
-                )
-            if self.native_family is not None or self.native_identity is not None:
-                raise LiveContractError("OWNER_DEFINED_PARTITION cannot carry an exact owner")
-            partition_type = _machine_id(self.partition_type, "claim.partition_type")
-            partition_key = _machine_id(self.partition_key, "claim.partition_key")
-            if self._admission is None or not self._admission.admits_partition(
-                partition_type, partition_key
-            ):
-                raise LiveContractError("owner-defined partition is not admitted as LIVE authority")
+            raise LiveContractError(
+                "non-exact LIVE claims require a current owner-backed contract"
+            )
 
     @classmethod
     def exact_owner(cls, native_family: str, native_identity: str) -> LiveClaim:
@@ -222,63 +163,54 @@ class LiveClaim:
         return cls("EXACT_OWNER", native_family=native_family, native_identity=native_identity)
 
     @classmethod
-    def epoch_local_creation(
-        cls,
-        native_family: str,
-        *,
-        admission: LiveClaimAdmission | None = None,
-    ) -> LiveClaim:
+    def epoch_local_creation(cls, native_family: str) -> LiveClaim:
         """Admit creation of a new owner of one explicitly admitted family."""
 
-        return cls("EPOCH_LOCAL_CREATION", native_family=native_family, _admission=admission)
+        raise LiveContractError(
+            "non-exact LIVE claims require a current owner-backed contract"
+        )
 
     @classmethod
-    def owner_defined_partition(
-        cls,
-        partition_type: str,
-        partition_key: str,
-        *,
-        admission: LiveClaimAdmission | None = None,
-    ) -> LiveClaim:
+    def owner_defined_partition(cls, partition_type: str, partition_key: str) -> LiveClaim:
         """Claim only an already owner-defined bounded partition."""
 
-        return cls(
-            "OWNER_DEFINED_PARTITION",
-            partition_type=partition_type,
-            partition_key=partition_key,
-            _admission=admission,
+        raise LiveContractError(
+            "non-exact LIVE claims require a current owner-backed contract"
         )
 
     @classmethod
     def from_mapping(
         cls,
         value: object,
-        *,
-        admission: LiveClaimAdmission | None = None,
     ) -> LiveClaim:
         if not isinstance(value, Mapping):
             raise LiveContractError("LIVE claim must be an object")
         claim_type = value.get("claim_type")
+        if value.get("schema_version") != LIVE_CLAIM_SCHEMA_VERSION:
+            raise LiveContractError("unsupported LIVE claim schema")
         if claim_type == "EXACT_OWNER":
-            expected = {"claim_type", "native_family", "native_identity"}
+            expected = {"schema_version", "claim_type", "native_family", "native_identity"}
             if set(value) != expected:
                 raise LiveContractError("EXACT_OWNER claim fields are not strict")
             return cls.exact_owner(value["native_family"], value["native_identity"])  # type: ignore[arg-type]
         if claim_type == "EPOCH_LOCAL_CREATION":
-            expected = {"claim_type", "native_family"}
+            expected = {"schema_version", "claim_type", "native_family"}
             if set(value) != expected:
                 raise LiveContractError("EPOCH_LOCAL_CREATION claim fields are not strict")
-            return cls.epoch_local_creation(
-                value["native_family"], admission=admission  # type: ignore[arg-type]
+            raise LiveContractError(
+                "non-exact LIVE claims require a current owner-backed contract"
             )
         if claim_type == "OWNER_DEFINED_PARTITION":
-            expected = {"claim_type", "partition_type", "partition_key"}
+            expected = {
+                "schema_version",
+                "claim_type",
+                "partition_type",
+                "partition_key",
+            }
             if set(value) != expected:
                 raise LiveContractError("OWNER_DEFINED_PARTITION claim fields are not strict")
-            return cls.owner_defined_partition(
-                value["partition_type"],  # type: ignore[arg-type]
-                value["partition_key"],  # type: ignore[arg-type]
-                admission=admission,
+            raise LiveContractError(
+                "non-exact LIVE claims require a current owner-backed contract"
             )
         raise LiveContractError("LIVE claim must use the closed typed claim grammar")
 
@@ -288,22 +220,22 @@ class LiveClaim:
             return (self.claim_type, self.partition_type or "", self.partition_key or "")
         return (self.claim_type, self.native_family or "", self.native_identity or "")
 
-    def _is_admitted(self) -> bool:
-        return self.claim_type == "EXACT_OWNER" or self._admission is not None
-
-    def as_mapping(self) -> dict[str, str]:
+    def as_mapping(self) -> dict[str, object]:
         if self.claim_type == "EXACT_OWNER":
             return {
+                "schema_version": LIVE_CLAIM_SCHEMA_VERSION,
                 "claim_type": self.claim_type,
                 "native_family": self.native_family or "",
                 "native_identity": self.native_identity or "",
             }
         if self.claim_type == "EPOCH_LOCAL_CREATION":
             return {
+                "schema_version": LIVE_CLAIM_SCHEMA_VERSION,
                 "claim_type": self.claim_type,
                 "native_family": self.native_family or "",
             }
         return {
+            "schema_version": LIVE_CLAIM_SCHEMA_VERSION,
             "claim_type": self.claim_type,
             "partition_type": self.partition_type or "",
             "partition_key": self.partition_key or "",
@@ -364,12 +296,7 @@ class LiveEnvelope:
         }
 
     @classmethod
-    def from_mapping(
-        cls,
-        value: object,
-        *,
-        admission: LiveClaimAdmission | None = None,
-    ) -> LiveEnvelope:
+    def from_mapping(cls, value: object) -> LiveEnvelope:
         if not isinstance(value, Mapping):
             raise LiveContractError("LIVE envelope must be an object")
         expected = {
@@ -390,7 +317,7 @@ class LiveEnvelope:
             source_ref=value["source_ref"],  # type: ignore[arg-type]
             source_revision=value["source_revision"],  # type: ignore[arg-type]
             status=value["status"],  # type: ignore[arg-type]
-            claims=_claims(value["claims"], admission=admission),
+            claims=_claims(value["claims"]),
         )
 
 
@@ -417,6 +344,7 @@ class LiveRouting:
             raise LiveContractError("LIVE route contains duplicate source keys")
         active_claims: dict[tuple[str, str], LiveEnvelope] = {}
         active_partitions: set[str] = set()
+        active_creation_families: set[str] = set()
         for entry in entries:
             if entry.status not in {
                 LiveLifecycle.ACTIVE,
@@ -425,14 +353,19 @@ class LiveRouting:
             }:
                 continue
             for claim in entry.claims:
-                if not claim._is_admitted():
-                    raise LiveContractError("selected LIVE claim lacks owner admission")
                 if claim.claim_type != "EXACT_OWNER":
-                    if claim.partition_type in active_partitions:
+                    if claim.claim_type == "EPOCH_LOCAL_CREATION":
+                        family = claim.native_family or ""
+                        if family in active_creation_families:
+                            raise LiveContractError("selected LIVE claims overlap")
+                        active_creation_families.add(family)
+                    elif claim.partition_type in active_partitions:
                         raise LiveContractError("selected LIVE claims overlap")
-                    if claim.partition_type is not None:
+                    elif claim.partition_type is not None:
                         active_partitions.add(claim.partition_type)
-                    continue
+                    raise LiveContractError(
+                        "non-exact LIVE claims require a current owner-backed contract"
+                    )
                 claim_key = (claim.native_family or "", claim.native_identity or "")
                 previous = active_claims.get(claim_key)
                 if previous is not None:
@@ -466,7 +399,7 @@ class LiveRouting:
         return cls(
             campaign_id=value["campaign_id"],  # type: ignore[arg-type]
             entries=tuple(
-                LiveEnvelope.from_mapping(item, admission=admission) for item in raw_entries
+                LiveEnvelope.from_mapping(item) for item in raw_entries
             ),
             complete=value["complete"],  # type: ignore[arg-type]
         )

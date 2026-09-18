@@ -22,12 +22,15 @@ from GAME.TOOLS.access_control import (
     resolve_principal,
 )
 from GAME.TOOLS.live_state import (
+    FRAMEWORK_MODULE_VERSION,
     LiveClaim,
-    LiveClaimAdmission,
     LiveContractError,
     LiveEnvelope,
     LiveLifecycle,
     LivePublicationStatus,
+    LIVE_CLAIM_SCHEMA_VERSION,
+    LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION,
+    LIVE_ROUTING_SCHEMA_VERSION,
     build_live_route,
     classify_cas_result,
     close_live_source,
@@ -462,6 +465,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
         )
         self.assertFalse(list(publication_validator.iter_errors(publication.as_mapping())))
         self.assertIn("kind: runtime.live_routing", LIVE_ROUTE_TEMPLATE.read_text(encoding="utf-8"))
+        self.assertIn("schema_version: 2", LIVE_ROUTE_TEMPLATE.read_text(encoding="utf-8"))
         self.assertIn("entries: []", LIVE_ROUTE_TEMPLATE.read_text(encoding="utf-8"))
 
     def test_live_source_key_is_exact_campaign_scene_epoch_tuple(self) -> None:
@@ -472,34 +476,28 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             ("campaign-frostfall", "scene-market", "epoch-1"),
         )
         self.assertEqual(source.claims[0].as_mapping(), {
+            "schema_version": 2,
             "claim_type": "EXACT_OWNER",
             "native_family": "world.actor",
             "native_identity": "actor-1",
         })
 
     def test_claim_grammar_is_typed_and_closed(self) -> None:
-        admission = LiveClaimAdmission(creation_families=frozenset({"world.asset"}))
         self.assertEqual(
-            LiveClaim.epoch_local_creation("world.asset", admission=admission).as_mapping(),
+            LiveClaim.exact_owner("world.actor", "actor-1").as_mapping(),
             {
-                "claim_type": "EPOCH_LOCAL_CREATION",
-                "native_family": "world.asset",
+                "schema_version": 2,
+                "claim_type": "EXACT_OWNER",
+                "native_family": "world.actor",
+                "native_identity": "actor-1",
             },
         )
-        self.assertEqual(
-            LiveClaim.owner_defined_partition(
-                "scene",
-                "scene-market",
-                admission=LiveClaimAdmission(
-                    owner_defined_partitions=frozenset({("scene", "scene-market")})
-                ),
-            ).as_mapping(),
-            {
-                "claim_type": "OWNER_DEFINED_PARTITION",
-                "partition_type": "scene",
-                "partition_key": "scene-market",
-            },
-        )
+        for factory in (
+            lambda: LiveClaim.epoch_local_creation("world.asset"),
+            lambda: LiveClaim.owner_defined_partition("scene", "scene-market"),
+        ):
+            with self.assertRaisesRegex(LiveContractError, "owner-backed|non-exact"):
+                factory()
         with self.assertRaisesRegex(LiveContractError, "typed|wildcard|claim"):
             LiveClaim.from_mapping({
                 "claim_type": "PATH_GLOB",
@@ -507,11 +505,54 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             })
 
     def test_creation_and_partition_claims_require_owner_admission(self) -> None:
-        with self.assertRaisesRegex(LiveContractError, "admitted|creation|partition"):
+        with self.assertRaisesRegex(
+            LiveContractError, "admitted|creation|partition|owner-backed|non-exact"
+        ):
             LiveClaim.epoch_local_creation("world.unknown")
 
-        with self.assertRaisesRegex(LiveContractError, "admitted|owner|partition"):
+        with self.assertRaisesRegex(
+            LiveContractError, "admitted|owner|partition|owner-backed|non-exact"
+        ):
             LiveClaim.owner_defined_partition("arbitrary", "unowned")
+
+    def test_non_exact_claims_have_no_current_owner_backed_contract(self) -> None:
+        with self.assertRaisesRegex(LiveContractError, "owner-backed|non-exact"):
+            LiveClaim.epoch_local_creation("world.asset")
+        with self.assertRaisesRegex(LiveContractError, "owner-backed|non-exact"):
+            LiveClaim.owner_defined_partition("scene", "scene-market")
+
+    def test_schema_and_python_fail_closed_together_for_unadmitted_creation_claim(self) -> None:
+        schema = json.loads(
+            (ROOT / "DEV/SCHEMAS/live-claim.schema.json").read_text(encoding="utf-8")
+        )
+        claim = {
+            "claim_type": "EPOCH_LOCAL_CREATION",
+            "native_family": "world.asset",
+        }
+
+        self.assertFalse(Draft202012Validator(schema).is_valid(claim))
+        with self.assertRaises(LiveContractError):
+            LiveClaim.from_mapping(claim)
+
+    def test_live_schema_versions_match_material_claim_language(self) -> None:
+        schema_dir = ROOT / "DEV/SCHEMAS"
+        claim_schema = json.loads(
+            (schema_dir / "live-claim.schema.json").read_text(encoding="utf-8")
+        )
+        route_schema = json.loads(
+            (schema_dir / "live-routing.schema.json").read_text(encoding="utf-8")
+        )
+        publication_schema = json.loads(
+            (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
+        )
+
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.3")
+        self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
+        self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 2)
+        self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 3)
+        self.assertEqual(claim_schema["properties"]["schema_version"]["const"], 2)
+        self.assertEqual(route_schema["properties"]["schema_version"]["const"], 2)
+        self.assertEqual(publication_schema["properties"]["schema_version"]["const"], 3)
 
     def test_schema_and_python_reject_illegal_claim_companion_fields(self) -> None:
         schema = json.loads(
@@ -520,17 +561,20 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
         validator = Draft202012Validator(schema)
         invalid_claims = (
             {
+                "schema_version": 2,
                 "claim_type": "EXACT_OWNER",
                 "native_family": "world.actor",
                 "native_identity": "actor-1",
                 "partition_key": "scene-market",
             },
             {
+                "schema_version": 2,
                 "claim_type": "EPOCH_LOCAL_CREATION",
                 "native_family": "world.actor",
                 "partition_key": "scene-market",
             },
             {
+                "schema_version": 2,
                 "claim_type": "OWNER_DEFINED_PARTITION",
                 "partition_type": "scene",
                 "partition_key": "scene-market",
@@ -566,33 +610,12 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
         self.assertFalse(source.claims_contain("world.asset", "asset-1"))
 
     def test_selected_partition_claims_cannot_overlap_across_route_entries(self) -> None:
-        admission = LiveClaimAdmission(
-            owner_defined_partitions=frozenset(
-                {("scene", "scene-market"), ("scene", "scene-market-2")}
-            )
-        )
-        first = _live_source(
-            claims=(
-                LiveClaim.owner_defined_partition(
-                    "scene", "scene-market", admission=admission
-                ),
-            )
-        )
-        second = LiveEnvelope(
-            campaign_id=first.campaign_id,
-            scene_id="scene-other",
-            epoch_id=first.epoch_id,
-            source_ref="live/campaign-frostfall/scene-other/epoch-1",
-            source_revision=LIVE_H1,
-            claims=(
-                LiveClaim.owner_defined_partition(
-                    "scene", "scene-market-2", admission=admission
-                ),
-            ),
-        )
+        with self.assertRaisesRegex(LiveContractError, "owner-backed|non-exact"):
+            LiveClaim.owner_defined_partition("scene", "scene-market")
 
-        with self.assertRaisesRegex(LiveContractError, "overlap"):
-            build_live_route("campaign-frostfall", (first, second))
+    def test_selected_creation_family_claims_cannot_overlap_across_route_entries(self) -> None:
+        with self.assertRaisesRegex(LiveContractError, "owner-backed|non-exact"):
+            LiveClaim.epoch_local_creation("world.asset")
 
     def test_prepared_source_is_not_selected_without_exact_route_entry(self) -> None:
         prepared = _live_source(revision=LIVE_H1)

@@ -4,10 +4,11 @@
   "title": "HDM immutable typed LIVE claim",
   "type": "object",
   "additionalProperties": false,
-  "required": ["claim_type"],
+  "required": ["schema_version", "claim_type", "native_family", "native_identity"],
   "properties": {
+    "schema_version": {"const": 2},
     "claim_type": {
-      "enum": ["EXACT_OWNER", "EPOCH_LOCAL_CREATION", "OWNER_DEFINED_PARTITION"]
+      "const": "EXACT_OWNER"
     },
     "native_family": {
       "type": "string",
@@ -37,43 +38,10 @@
       "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
     }
   },
-  "oneOf": [
-    {
-      "required": ["claim_type", "native_family", "native_identity"],
-      "properties": {
-        "claim_type": {"const": "EXACT_OWNER"}
-      },
-      "not": {
-        "anyOf": [
-          {"required": ["partition_type"]},
-          {"required": ["partition_key"]}
-        ]
-      }
-    },
-    {
-      "required": ["claim_type", "native_family"],
-      "properties": {
-        "claim_type": {"const": "EPOCH_LOCAL_CREATION"}
-      },
-      "not": {
-        "anyOf": [
-          {"required": ["native_identity"]},
-          {"required": ["partition_type"]},
-          {"required": ["partition_key"]}
-        ]
-      }
-    },
-    {
-      "required": ["claim_type", "partition_type", "partition_key"],
-      "properties": {
-        "claim_type": {"const": "OWNER_DEFINED_PARTITION"}
-      },
-      "not": {
-        "anyOf": [
-          {"required": ["native_family"]},
-          {"required": ["native_identity"]}
-        ]
-      }
-    }
-  ]
+  "not": {
+    "anyOf": [
+      {"required": ["partition_type"]},
+      {"required": ["partition_key"]}
+    ]
+  }
 }
