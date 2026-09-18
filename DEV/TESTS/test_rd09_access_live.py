@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 from pathlib import Path
@@ -33,6 +34,13 @@ from GAME.TOOLS.live_state import (
     LIVE_CLAIM_SCHEMA_VERSION,
     LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION,
     LIVE_ROUTING_SCHEMA_VERSION,
+    SOURCE_NATIVE_CURSOR_MAX,
+    SOURCE_NATIVE_LIVE_ENCODING,
+    SourceNativeCursor,
+    SourceNativeCreation,
+    SourceNativeAllocationError,
+    advance_source_native_cursor,
+    allocate_source_native_creations,
     build_live_route,
     build_live_ref,
     classify_cas_result,
@@ -40,8 +48,11 @@ from GAME.TOOLS.live_state import (
     derive_live_epoch_id,
     encode_live_campaign_route_token,
     encode_live_scene_route_token,
+    encode_source_native_live_id,
     freeze_live_attempt,
     lookup_write_authority,
+    normalize_source_native_creations,
+    parse_source_native_live_id,
     reconcile_indeterminate,
     select_live_source,
     validate_live_route_identity,
@@ -57,6 +68,36 @@ LIVE_ROUTE_TEMPLATE = ROOT / "GAME/CAMPAIGN/STATE/RUNTIME/LIVE_ROUTING.yaml"
 LIVE_H0 = "0" * 40
 LIVE_H1 = "1" * 40
 LIVE_H2 = "2" * 40
+SOURCE_NATIVE_POLICY = {
+    "world": {
+        "world.actor": {
+            "strategy": "sequential",
+            "prefix": "actor",
+            "live_birth": {
+                "disposition": "source_native_live",
+                "encoding": "framed_base32hex_v1",
+            },
+        },
+        "world.asset": {
+            "strategy": "sequential",
+            "prefix": "asset",
+            "live_birth": {
+                "disposition": "source_native_live",
+                "encoding": "framed_base32hex_v1",
+            },
+        },
+    },
+    "runtime": {
+        "runtime.message": {
+            "strategy": "sequential",
+            "prefix": "message",
+            "live_birth": {
+                "disposition": "source_native_live",
+                "encoding": "framed_base32hex_v1",
+            },
+        },
+    },
+}
 PRE_T03_LIVE_SCENE_SCHEMA_SHA256 = (
     "0e5cceac5b29d1bcad1fcfe5779905092402d1c8b00d9c3d04157a822ceb5638"
 )
@@ -67,6 +108,8 @@ def _live_source(
     revision: str = LIVE_H0,
     status: LiveLifecycle = LiveLifecycle.ACTIVE,
     claims: tuple[LiveClaim, ...] | None = None,
+    next_source_native_creation_ordinal: int = 1,
+    source_native_ids: tuple[str, ...] = (),
 ) -> LiveEnvelope:
     selected_claims = claims if claims is not None else (
         LiveClaim.exact_owner("world.actor", "actor-1"),
@@ -84,6 +127,8 @@ def _live_source(
         source_revision=revision,
         claims=selected_claims,
         status=status,
+        next_source_native_creation_ordinal=next_source_native_creation_ordinal,
+        source_native_ids=source_native_ids,
     )
 
 
@@ -481,7 +526,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
         )
         self.assertFalse(list(publication_validator.iter_errors(publication.as_mapping())))
         self.assertIn("kind: runtime.live_routing", LIVE_ROUTE_TEMPLATE.read_text(encoding="utf-8"))
-        self.assertIn("schema_version: 3", LIVE_ROUTE_TEMPLATE.read_text(encoding="utf-8"))
+        self.assertIn("schema_version: 4", LIVE_ROUTE_TEMPLATE.read_text(encoding="utf-8"))
         self.assertIn("entries: []", LIVE_ROUTE_TEMPLATE.read_text(encoding="utf-8"))
 
     def test_live_source_key_is_exact_campaign_scene_epoch_tuple(self) -> None:
@@ -562,13 +607,13 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.4")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.5")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
-        self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 3)
-        self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 4)
+        self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
+        self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
         self.assertEqual(claim_schema["properties"]["schema_version"]["const"], 2)
-        self.assertEqual(route_schema["properties"]["schema_version"]["const"], 3)
-        self.assertEqual(publication_schema["properties"]["schema_version"]["const"], 4)
+        self.assertEqual(route_schema["properties"]["schema_version"]["const"], 4)
+        self.assertEqual(publication_schema["properties"]["schema_version"]["const"], 5)
 
     def test_w03_does_not_edit_wave05_retained_live_scene_schema(self) -> None:
         retained_schema = ROOT / "GAME/SCHEMA/live_scene.schema.yaml"
@@ -1084,6 +1129,272 @@ class SceneLiveRouteProjectionTests(unittest.TestCase):
         self.assertEqual(source.source_key, ("campaign-1", "scene-1", source.epoch_id))
         self.assertNotIn(source.campaign_id, source.source_ref)
         self.assertNotIn(source.scene_id, source.source_ref)
+
+
+class SourceNativeIdentityTests(unittest.TestCase):
+    def test_source_native_identity_is_bound_to_the_exact_live_source_key(self) -> None:
+        source_key = ("campaign/α", "scene:market", "e1-" + "a" * 64)
+
+        native_id = encode_source_native_live_id(
+            source_key,
+            "world.actor",
+            1,
+            SOURCE_NATIVE_POLICY,
+        )
+        parsed = parse_source_native_live_id(native_id, SOURCE_NATIVE_POLICY)
+
+        self.assertEqual(parsed.live_source_key, source_key)
+        self.assertEqual(parsed.native_family, "world.actor")
+        self.assertEqual(parsed.source_local_creation_ordinal, 1)
+        self.assertEqual(parsed.encoding, SOURCE_NATIVE_LIVE_ENCODING)
+
+    def test_transport_revision_wall_clock_and_host_do_not_enter_identity(self) -> None:
+        source_key = ("campaign-1", "scene-1", "e1-" + "b" * 64)
+
+        first = encode_source_native_live_id(
+            source_key,
+            "world.actor",
+            4,
+            SOURCE_NATIVE_POLICY,
+        )
+        second = encode_source_native_live_id(
+            source_key,
+            "world.actor",
+            4,
+            SOURCE_NATIVE_POLICY,
+        )
+
+        self.assertEqual(first, second)
+        self.assertNotIn(LIVE_H0, first)
+        self.assertNotIn("2026-09-18", first)
+
+    def test_identity_components_are_injective_for_accepted_coordinates(self) -> None:
+        base = ("campaign-1", "scene-1", "e1-" + "c" * 64)
+        values = {
+            encode_source_native_live_id(base, "world.actor", 1, SOURCE_NATIVE_POLICY),
+            encode_source_native_live_id(("campaign-2", *base[1:]), "world.actor", 1, SOURCE_NATIVE_POLICY),
+            encode_source_native_live_id(base, "world.asset", 1, SOURCE_NATIVE_POLICY),
+            encode_source_native_live_id(base, "world.actor", 2, SOURCE_NATIVE_POLICY),
+        }
+
+        self.assertEqual(len(values), 4)
+
+
+class SourceNativeLiveIdEncodingTests(unittest.TestCase):
+    def test_known_vector_uses_domain_framing_and_unpadded_lowercase_base32hex(self) -> None:
+        source_key = ("campaign-1", "scene-1", "e1-" + "d" * 64)
+        frame = (
+            b"HDM-LIVE-ID-V1\x00"
+            + _frame_string(source_key[0])
+            + _frame_string(source_key[1])
+            + _frame_string(source_key[2])
+            + _frame_string("world.actor")
+            + (1).to_bytes(8, "big")
+        )
+        expected = "actor:live1:" + base64.b32hexencode(frame).decode("ascii").rstrip("=").lower()
+
+        self.assertEqual(
+            encode_source_native_live_id(source_key, "world.actor", 1, SOURCE_NATIVE_POLICY),
+            expected,
+        )
+
+    def test_malformed_padding_version_and_family_prefix_fail_closed(self) -> None:
+        source_key = ("campaign-1", "scene-1", "e1-" + "e" * 64)
+        native_id = encode_source_native_live_id(
+            source_key,
+            "world.actor",
+            1,
+            SOURCE_NATIVE_POLICY,
+        )
+
+        for invalid in (
+            native_id + "=",
+            native_id.replace(":live1:", ":live0:", 1),
+            native_id.replace("actor:live1:", "asset:live1:", 1),
+            native_id.upper(),
+        ):
+            with self.assertRaisesRegex(LiveContractError, "identity|encoding|ID|base32"):
+                parse_source_native_live_id(invalid, SOURCE_NATIVE_POLICY)
+
+    def test_missing_or_non_source_native_policy_cannot_allocate(self) -> None:
+        source_key = ("campaign-1", "scene-1", "e1-" + "f" * 64)
+        missing = {"world": {"world.actor": {"prefix": "actor"}}}
+
+        with self.assertRaisesRegex(LiveContractError, "policy|source_native_live|encoding|disposition"):
+            encode_source_native_live_id(source_key, "world.actor", 1, missing)
+
+
+class SourceNativeCreationOrderingTests(unittest.TestCase):
+    def test_normalization_sorts_by_native_family_utf8_bytes_then_owner_local_index(self) -> None:
+        creations = (
+            SourceNativeCreation("world.asset", 2),
+            SourceNativeCreation("world.actor", 9),
+            SourceNativeCreation("world.actor", 1),
+        )
+
+        normalized = normalize_source_native_creations(tuple(reversed(creations)))
+
+        self.assertEqual(
+            [(item.native_family, item.owner_local_index) for item in normalized],
+            [("world.actor", 1), ("world.actor", 9), ("world.asset", 2)],
+        )
+
+    def test_duplicate_owner_local_index_within_one_native_family_fails(self) -> None:
+        with self.assertRaisesRegex(LiveContractError, "duplicate|owner-local|index"):
+            normalize_source_native_creations(
+                (
+                    SourceNativeCreation("world.actor", 1),
+                    SourceNativeCreation("world.actor", 1),
+                )
+            )
+
+    def test_reordered_inputs_receive_the_same_slots_ordinals_and_ids(self) -> None:
+        source_key = ("campaign-1", "scene-1", "e1-" + "1" * 64)
+        creations = (
+            SourceNativeCreation("world.asset", 2),
+            SourceNativeCreation("world.actor", 1),
+        )
+
+        first = allocate_source_native_creations(
+            source_key, creations, SourceNativeCursor(1), SOURCE_NATIVE_POLICY
+        )
+        second = allocate_source_native_creations(
+            source_key, tuple(reversed(creations)), SourceNativeCursor(1), SOURCE_NATIVE_POLICY
+        )
+
+        self.assertEqual(first, second)
+        self.assertEqual([item.creation_slot_index for item in first], [0, 1])
+        self.assertEqual(
+            [item.source_local_creation_ordinal for item in first],
+            [1, 2],
+        )
+
+
+class LiveSourceCreationCursorTests(unittest.TestCase):
+    def test_cursor_is_uint64_and_starts_at_one(self) -> None:
+        cursor = SourceNativeCursor()
+
+        self.assertEqual(cursor.next_ordinal, 1)
+        self.assertEqual(cursor.value, 1)
+        with self.assertRaisesRegex(SourceNativeAllocationError, "uint64|cursor"):
+            SourceNativeCursor(SOURCE_NATIVE_CURSOR_MAX + 1)
+
+    def test_accepted_exact_source_cas_advances_cursor_once_for_the_batch(self) -> None:
+        source = _live_source()
+        route = _live_route(source)
+        attempt = freeze_live_attempt(
+            source,
+            route=route,
+            proposed_source_revision=LIVE_H1,
+            source_native_creations=(
+                SourceNativeCreation("world.actor", 1),
+                SourceNativeCreation("world.asset", 1),
+            ),
+            source_native_cursor=SourceNativeCursor(1),
+            identifier_policy=SOURCE_NATIVE_POLICY,
+        )
+        result = classify_cas_result(attempt, _accepted_ack(attempt) | {
+            "source_native_allocations": [
+                allocation.as_mapping() for allocation in attempt.source_native_allocations
+            ],
+            "expected_next_source_native_creation_ordinal": 1,
+            "proposed_next_source_native_creation_ordinal": 3,
+        })
+
+        self.assertEqual(result.status, LivePublicationStatus.ACCEPTED)
+        self.assertEqual(advance_source_native_cursor(SourceNativeCursor(1), result), SourceNativeCursor(3))
+
+    def test_cursor_exhaustion_fails_without_reuse_or_wrap(self) -> None:
+        source_key = ("campaign-1", "scene-1", "e1-" + "2" * 64)
+
+        with self.assertRaisesRegex(SourceNativeAllocationError, "overflow|exhaust"):
+            allocate_source_native_creations(
+                source_key,
+                (
+                    SourceNativeCreation("world.actor", 1),
+                    SourceNativeCreation("world.actor", 2),
+                ),
+                SourceNativeCursor(SOURCE_NATIVE_CURSOR_MAX),
+                SOURCE_NATIVE_POLICY,
+            )
+
+    def test_rejected_or_indeterminate_cas_does_not_advance_cursor(self) -> None:
+        source = _live_source()
+        attempt = freeze_live_attempt(
+            source,
+            route=_live_route(source),
+            proposed_source_revision=LIVE_H1,
+            source_native_creations=(SourceNativeCreation("world.actor", 1),),
+            source_native_cursor=SourceNativeCursor(1),
+            identifier_policy=SOURCE_NATIVE_POLICY,
+        )
+        stale = classify_cas_result(
+            attempt,
+            {
+                "accepted": False,
+                "source_key": source.source_key,
+                "current_source_revision": LIVE_H1,
+            },
+        )
+        indeterminate = classify_cas_result(attempt, None)
+
+        self.assertEqual(advance_source_native_cursor(SourceNativeCursor(1), stale), SourceNativeCursor(1))
+        self.assertEqual(
+            advance_source_native_cursor(SourceNativeCursor(1), indeterminate),
+            SourceNativeCursor(1),
+        )
+
+
+class SourceNativeAmbiguousPublicationTests(unittest.TestCase):
+    def test_indeterminate_ack_reconciles_original_allocations_before_reallocation(self) -> None:
+        source = _live_source()
+        attempt = freeze_live_attempt(
+            source,
+            route=_live_route(source),
+            proposed_source_revision=LIVE_H1,
+            source_native_creations=(SourceNativeCreation("world.actor", 1),),
+            source_native_cursor=SourceNativeCursor(1),
+            identifier_policy=SOURCE_NATIVE_POLICY,
+        )
+        successor = attempt.successor_route.entries[0]
+
+        result = reconcile_indeterminate(attempt, successor)
+
+        self.assertEqual(result.status, LivePublicationStatus.ACCEPTED)
+        self.assertEqual(result.source_native_allocations, attempt.source_native_allocations)
+        self.assertEqual(result.proposed_next_source_native_creation_ordinal, 2)
+
+    def test_accepted_response_loss_preserves_frozen_ids_and_cursor(self) -> None:
+        source = _live_source()
+        attempt = freeze_live_attempt(
+            source,
+            route=_live_route(source),
+            proposed_source_revision=LIVE_H1,
+            source_native_creations=(SourceNativeCreation("world.actor", 1),),
+            source_native_cursor=SourceNativeCursor(1),
+            identifier_policy=SOURCE_NATIVE_POLICY,
+        )
+        result = reconcile_indeterminate(attempt, attempt.successor_route.entries[0])
+
+        self.assertEqual(result.source_native_ids, tuple(item.native_id for item in attempt.source_native_allocations))
+        self.assertEqual(advance_source_native_cursor(SourceNativeCursor(1), result), SourceNativeCursor(2))
+
+    def test_unresolved_acknowledgement_cannot_allocate_a_second_identity(self) -> None:
+        source = _live_source()
+        attempt = freeze_live_attempt(
+            source,
+            route=_live_route(source),
+            proposed_source_revision=LIVE_H1,
+            source_native_creations=(SourceNativeCreation("world.actor", 1),),
+            source_native_cursor=SourceNativeCursor(1),
+            identifier_policy=SOURCE_NATIVE_POLICY,
+        )
+
+        result = reconcile_indeterminate(attempt, _live_source(revision=LIVE_H0))
+
+        self.assertEqual(result.status, LivePublicationStatus.INDETERMINATE)
+        self.assertEqual(result.source_native_allocations, ())
+        self.assertEqual(advance_source_native_cursor(SourceNativeCursor(1), result), SourceNativeCursor(1))
 
 
 if __name__ == "__main__":

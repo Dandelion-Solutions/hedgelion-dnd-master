@@ -17,7 +17,7 @@
     "successor"
   ],
   "properties": {
-    "schema_version": {"const": 4},
+    "schema_version": {"const": 5},
     "selected_route": {"$ref": "live-routing.schema.json"},
     "source_key": {
       "type": "array",
@@ -37,6 +37,55 @@
     "transition_kind": {"enum": ["MUTATION", "CLOSE", "ABSORB"]},
     "source_status": {"enum": ["ACTIVE", "CLOSED", "CLOSED_UNABSORBED", "ABSORBED"]},
     "claims": {"type": "array", "items": {"$ref": "live-claim.schema.json"}},
-    "successor": {"$ref": "live-routing.schema.json"}
+    "successor": {"$ref": "live-routing.schema.json"},
+    "source_native_allocations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "native_family",
+          "owner_local_index",
+          "source_local_creation_ordinal",
+          "native_id",
+          "creation_slot_index"
+        ],
+        "properties": {
+          "native_family": {
+            "type": "string",
+            "pattern": "^(world|runtime)\\.[a-z][a-z0-9_]*$"
+          },
+          "owner_local_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 18446744073709551615
+          },
+          "source_local_creation_ordinal": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 18446744073709551615
+          },
+          "native_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*:live1:[a-z0-9]+$"
+          },
+          "creation_slot_index": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "expected_next_source_native_creation_ordinal": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18446744073709551615
+    },
+    "proposed_next_source_native_creation_ordinal": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18446744073709551615
+    }
   }
 }

@@ -9,6 +9,8 @@ exact source observation and the authority-changing acknowledgement.
 
 from __future__ import annotations
 
+import base64
+import binascii
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
@@ -17,14 +19,19 @@ import re
 from typing import Final, TypeAlias
 
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
 LIVE_CLAIM_SCHEMA_VERSION: Final[int] = 2
-LIVE_ROUTING_SCHEMA_VERSION: Final[int] = 3
-LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION: Final[int] = 4
+LIVE_ROUTING_SCHEMA_VERSION: Final[int] = 4
+LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION: Final[int] = 5
+
+SOURCE_NATIVE_LIVE_ENCODING: Final[str] = "framed_base32hex_v1"
+SOURCE_NATIVE_CURSOR_MAX: Final[int] = (1 << 64) - 1
+_SOURCE_NATIVE_ID_MARKER = ":live1:"
+_SOURCE_NATIVE_ID_DOMAIN = b"HDM-LIVE-ID-V1"
 
 _CAMPAIGN_ROUTE_DOMAIN = b"HDM-LIVE-CAMPAIGN-ROUTE-V1"
 _SCENE_ROUTE_DOMAIN = b"HDM-LIVE-SCENE-ROUTE-V1"
@@ -52,6 +59,10 @@ _CLAIM_TYPES = frozenset(
 
 class LiveContractError(ValueError):
     """Raised when a LIVE envelope, claim or currentness contract is invalid."""
+
+
+class SourceNativeAllocationError(LiveContractError):
+    """Raised when source-native LIVE allocation cannot be accepted safely."""
 
 
 class LiveLifecycle(StrEnum):
@@ -145,6 +156,326 @@ def _domain_frame(domain: bytes, values: Sequence[str]) -> bytes:
     return domain + b"\x00" + b"".join(
         _frame_string(value, "LIVE identity component") for value in values
     )
+
+
+def _uint64(value: object, label: str, *, allow_zero: bool = False) -> int:
+    if type(value) is not int:
+        raise SourceNativeAllocationError(f"{label} must be a uint64 integer")
+    minimum = 0 if allow_zero else 1
+    if value < minimum or value > SOURCE_NATIVE_CURSOR_MAX:
+        raise SourceNativeAllocationError(f"{label} is outside the uint64 range")
+    return value
+
+
+def _source_native_policy_row(
+    native_family: str,
+    identifier_policy: Mapping[str, object],
+) -> Mapping[str, object]:
+    """Resolve one explicit source-native policy row without a catalog fallback."""
+
+    if not isinstance(identifier_policy, Mapping):
+        raise LiveContractError("source-native identifier policy must be a mapping")
+    row: object = identifier_policy.get(native_family)
+    if row is None:
+        domain = native_family.split(".", 1)[0]
+        rows = identifier_policy.get(domain)
+        if isinstance(rows, Mapping):
+            row = rows.get(native_family)
+    if row is None and "prefix" in identifier_policy:
+        row = identifier_policy
+    if not isinstance(row, Mapping):
+        raise LiveContractError("source-native LIVE identifier policy is missing")
+    live_birth = row.get("live_birth")
+    if not isinstance(live_birth, Mapping):
+        raise LiveContractError("source-native LIVE disposition is missing")
+    if str(live_birth.get("disposition", "")).lower() != "source_native_live":
+        raise LiveContractError("family is not admitted for source_native_live identity")
+    if live_birth.get("encoding") != SOURCE_NATIVE_LIVE_ENCODING:
+        raise LiveContractError("source-native LIVE encoding is not admitted")
+    prefix = row.get("prefix")
+    if not isinstance(prefix, str) or re.fullmatch(r"[A-Za-z][A-Za-z0-9_.:-]*", prefix) is None:
+        raise LiveContractError("source-native LIVE policy prefix is invalid")
+    return row
+
+
+@dataclass(frozen=True, slots=True, order=True)
+class SourceNativeCursor:
+    """The next source-local source-native creation ordinal for one LIVE source."""
+
+    next_source_native_creation_ordinal: int = 1
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self,
+            "next_source_native_creation_ordinal",
+            _uint64(
+                self.next_source_native_creation_ordinal,
+                "next_source_native_creation_ordinal",
+            ),
+        )
+
+    @property
+    def next_ordinal(self) -> int:
+        return self.next_source_native_creation_ordinal
+
+    @property
+    def value(self) -> int:
+        return self.next_source_native_creation_ordinal
+
+
+@dataclass(frozen=True, slots=True)
+class SourceNativeCreation:
+    """One normalized owner-local creation slot before source-native allocation."""
+
+    native_family: str
+    owner_local_index: int
+
+    def __post_init__(self) -> None:
+        family = _machine_id(self.native_family, "native_family")
+        if _NATIVE_FAMILY.fullmatch(family) is None or family in _FORBIDDEN_FAMILIES:
+            raise SourceNativeAllocationError("native family is not admitted for LIVE creation")
+        object.__setattr__(self, "native_family", family)
+        object.__setattr__(
+            self,
+            "owner_local_index",
+            _uint64(self.owner_local_index, "owner_local_index", allow_zero=True),
+        )
+
+    @classmethod
+    def from_value(cls, value: object) -> SourceNativeCreation:
+        if isinstance(value, SourceNativeCreation):
+            return value
+        if not isinstance(value, Mapping):
+            raise SourceNativeAllocationError("source-native creation must be typed")
+        return cls(
+            native_family=value.get("native_family", value.get("family")),  # type: ignore[arg-type]
+            owner_local_index=value.get("owner_local_index"),  # type: ignore[arg-type]
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class SourceNativeLiveIdentityComponents:
+    """Decoded source-native identity evidence for audit/integrity checks."""
+
+    live_source_key: LiveSourceKey
+    native_family: str
+    source_local_creation_ordinal: int
+    prefix: str
+    encoding: str = SOURCE_NATIVE_LIVE_ENCODING
+
+    @property
+    def campaign_id(self) -> str:
+        return self.live_source_key[0]
+
+    @property
+    def scene_id(self) -> str:
+        return self.live_source_key[1]
+
+    @property
+    def epoch_id(self) -> str:
+        return self.live_source_key[2]
+
+    @property
+    def ordinal(self) -> int:
+        return self.source_local_creation_ordinal
+
+
+@dataclass(frozen=True, slots=True)
+class SourceNativeAllocation:
+    """One frozen slot-to-ordinal-to-ID allocation in a LIVE attempt."""
+
+    native_family: str
+    owner_local_index: int
+    creation_slot_index: int
+    source_local_creation_ordinal: int
+    native_id: str
+
+    def __post_init__(self) -> None:
+        SourceNativeCreation(self.native_family, self.owner_local_index)
+        _uint64(self.source_local_creation_ordinal, "source_local_creation_ordinal")
+        if type(self.creation_slot_index) is not int or self.creation_slot_index < 0:
+            raise SourceNativeAllocationError("creation_slot_index must be a non-negative integer")
+        if not isinstance(self.native_id, str) or not self.native_id:
+            raise SourceNativeAllocationError("source-native allocation must carry a native ID")
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "native_family": self.native_family,
+            "owner_local_index": self.owner_local_index,
+            "source_local_creation_ordinal": self.source_local_creation_ordinal,
+            "native_id": self.native_id,
+            "creation_slot_index": self.creation_slot_index,
+        }
+
+
+def _source_native_frame(
+    live_source_key: LiveSourceKey,
+    native_family: str,
+    source_local_creation_ordinal: int,
+) -> bytes:
+    campaign_id, scene_id, epoch_id = _source_key(live_source_key, "LIVE source key")
+    family = _machine_id(native_family, "native_family")
+    if _NATIVE_FAMILY.fullmatch(family) is None or family in _FORBIDDEN_FAMILIES:
+        raise SourceNativeAllocationError("native family is not admitted for LIVE creation")
+    ordinal = _uint64(source_local_creation_ordinal, "source_local_creation_ordinal")
+    return (
+        _SOURCE_NATIVE_ID_DOMAIN
+        + b"\x00"
+        + _frame_string(campaign_id, "campaign_id")
+        + _frame_string(scene_id, "scene_id")
+        + _frame_string(epoch_id, "epoch_id")
+        + _frame_string(family, "native_family")
+        + ordinal.to_bytes(8, "big")
+    )
+
+
+def encode_source_native_live_id(
+    live_source_key: LiveSourceKey,
+    native_family: str,
+    source_local_creation_ordinal: int,
+    identifier_policy: Mapping[str, object],
+) -> str:
+    """Encode one accepted LIVE-born identity using framed Base32hex v1."""
+
+    family = _machine_id(native_family, "native_family")
+    row = _source_native_policy_row(family, identifier_policy)
+    frame = _source_native_frame(live_source_key, family, source_local_creation_ordinal)
+    payload = base64.b32hexencode(frame).decode("ascii").rstrip("=").lower()
+    return f"{row['prefix']}{_SOURCE_NATIVE_ID_MARKER}{payload}"
+
+
+def _decode_source_native_frame(payload: str) -> tuple[LiveSourceKey, str, int]:
+    if not payload or re.fullmatch(r"[a-z0-9]+", payload) is None:
+        raise LiveContractError("source-native ID payload has invalid encoding")
+    padded = payload + "=" * ((-len(payload)) % 8)
+    try:
+        raw = base64.b32hexdecode(padded, casefold=True)
+    except (ValueError, binascii.Error) as error:
+        raise LiveContractError("source-native ID payload is not valid Base32hex") from error
+    cursor = 0
+
+    def read_bytes(label: str) -> bytes:
+        nonlocal cursor
+        if cursor + 4 > len(raw):
+            raise LiveContractError(f"source-native ID frame is truncated at {label}")
+        length = int.from_bytes(raw[cursor : cursor + 4], "big")
+        cursor += 4
+        end = cursor + length
+        if end > len(raw):
+            raise LiveContractError(f"source-native ID frame is truncated at {label}")
+        value = raw[cursor:end]
+        cursor = end
+        return value
+
+    if not raw.startswith(_SOURCE_NATIVE_ID_DOMAIN + b"\x00"):
+        raise LiveContractError("source-native ID has the wrong encoding version")
+    cursor = len(_SOURCE_NATIVE_ID_DOMAIN) + 1
+    try:
+        components = tuple(read_bytes(label).decode("utf-8") for label in (
+            "campaign_id",
+            "scene_id",
+            "epoch_id",
+            "native_family",
+        ))
+    except UnicodeDecodeError as error:
+        raise LiveContractError("source-native ID frame is not UTF-8") from error
+    if cursor + 8 != len(raw):
+        raise LiveContractError("source-native ID frame has trailing or missing bytes")
+    ordinal = int.from_bytes(raw[cursor:], "big")
+    source_key = _source_key(components[:3], "LIVE source key")
+    family = _machine_id(components[3], "native_family")
+    _uint64(ordinal, "source_local_creation_ordinal")
+    return source_key, family, ordinal
+
+
+def parse_source_native_live_id(
+    native_id: str,
+    identifier_policy: Mapping[str, object],
+) -> SourceNativeLiveIdentityComponents:
+    """Parse and validate a source-native ID against its explicit family policy."""
+
+    if not isinstance(native_id, str) or native_id.count(_SOURCE_NATIVE_ID_MARKER) != 1:
+        raise LiveContractError("source-native ID has invalid encoding marker")
+    prefix, payload = native_id.split(_SOURCE_NATIVE_ID_MARKER, 1)
+    if re.fullmatch(r"[A-Za-z][A-Za-z0-9_.:-]*", prefix) is None:
+        raise LiveContractError("source-native ID prefix is invalid")
+    source_key, family, ordinal = _decode_source_native_frame(payload)
+    row = _source_native_policy_row(family, identifier_policy)
+    if row["prefix"] != prefix:
+        raise LiveContractError("source-native ID prefix does not match its family policy")
+    return SourceNativeLiveIdentityComponents(
+        live_source_key=source_key,
+        native_family=family,
+        source_local_creation_ordinal=ordinal,
+        prefix=prefix,
+    )
+
+
+def normalize_source_native_creations(
+    creations: Iterable[SourceNativeCreation | Mapping[str, object]],
+) -> tuple[SourceNativeCreation, ...]:
+    """Canonicalize creation slots by UTF-8 family bytes, then local index."""
+
+    normalized = tuple(SourceNativeCreation.from_value(value) for value in creations)
+    seen: set[tuple[str, int]] = set()
+    for creation in normalized:
+        key = (creation.native_family, creation.owner_local_index)
+        if key in seen:
+            raise SourceNativeAllocationError("duplicate owner-local index for native family")
+        seen.add(key)
+    return tuple(
+        sorted(normalized, key=lambda item: (item.native_family.encode("utf-8"), item.owner_local_index))
+    )
+
+
+def allocate_source_native_creations(
+    live_source_key: LiveSourceKey,
+    creations: Iterable[SourceNativeCreation | Mapping[str, object]],
+    cursor: SourceNativeCursor | int,
+    identifier_policy: Mapping[str, object],
+) -> tuple[SourceNativeAllocation, ...]:
+    """Assign deterministic slots, ordinals and final IDs without campaign allocation."""
+
+    current = cursor if isinstance(cursor, SourceNativeCursor) else SourceNativeCursor(cursor)
+    normalized = normalize_source_native_creations(creations)
+    if len(normalized) > SOURCE_NATIVE_CURSOR_MAX - current.next_ordinal:
+        raise SourceNativeAllocationError("source-native cursor exhausted; allocation would overflow")
+    return tuple(
+        SourceNativeAllocation(
+            native_family=creation.native_family,
+            owner_local_index=creation.owner_local_index,
+            creation_slot_index=slot,
+            source_local_creation_ordinal=current.next_ordinal + slot,
+            native_id=encode_source_native_live_id(
+                live_source_key,
+                creation.native_family,
+                current.next_ordinal + slot,
+                identifier_policy,
+            ),
+        )
+        for slot, creation in enumerate(normalized)
+    )
+
+
+def advance_source_native_cursor(
+    cursor: SourceNativeCursor | int,
+    publication: LivePublicationResult,
+) -> SourceNativeCursor:
+    """Advance only from an authoritative accepted exact-source publication."""
+
+    current = cursor if isinstance(cursor, SourceNativeCursor) else SourceNativeCursor(cursor)
+    if not isinstance(publication, LivePublicationResult):
+        raise SourceNativeAllocationError("cursor advancement requires a typed CAS result")
+    if not publication.acknowledged or not publication.source_native_allocations:
+        return current
+    if publication.expected_next_source_native_creation_ordinal != current.next_ordinal:
+        raise SourceNativeAllocationError("accepted CAS result has a different source cursor")
+    proposed = publication.proposed_next_source_native_creation_ordinal
+    if proposed is None or proposed <= current.next_ordinal:
+        raise SourceNativeAllocationError("accepted CAS result does not advance the source cursor")
+    if proposed > SOURCE_NATIVE_CURSOR_MAX:
+        raise SourceNativeAllocationError("accepted CAS result overflows the source cursor")
+    return SourceNativeCursor(proposed)
 
 
 def encode_live_campaign_route_token(campaign_id: str) -> str:
@@ -429,6 +760,8 @@ class LiveEnvelope:
     claims: tuple[LiveClaim, ...]
     status: LiveLifecycle = LiveLifecycle.ACTIVE
     opening_campaign_revision: str = ""
+    next_source_native_creation_ordinal: int = 1
+    source_native_ids: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         key = _source_key((self.campaign_id, self.scene_id, self.epoch_id))
@@ -448,6 +781,24 @@ class LiveEnvelope:
             raise LiveContractError("LIVE lifecycle status is not admitted") from error
         object.__setattr__(self, "status", status)
         object.__setattr__(self, "claims", _claims(self.claims))
+        object.__setattr__(
+            self,
+            "next_source_native_creation_ordinal",
+            _uint64(
+                self.next_source_native_creation_ordinal,
+                "next_source_native_creation_ordinal",
+            ),
+        )
+        if not isinstance(self.source_native_ids, Sequence) or isinstance(
+            self.source_native_ids, (str, bytes)
+        ):
+            raise LiveContractError("source_native_ids must be an array")
+        source_native_ids = tuple(self.source_native_ids)
+        if any(not isinstance(native_id, str) or not native_id for native_id in source_native_ids):
+            raise LiveContractError("source_native_ids must contain non-empty IDs")
+        if len(source_native_ids) != len(set(source_native_ids)):
+            raise LiveContractError("source_native_ids must be unique")
+        object.__setattr__(self, "source_native_ids", source_native_ids)
 
     @property
     def source_key(self) -> LiveSourceKey:
@@ -475,6 +826,8 @@ class LiveEnvelope:
             "opening_campaign_revision": self.opening_campaign_revision,
             "status": self.status.value,
             "claims": [claim.as_mapping() for claim in self.claims],
+            "next_source_native_creation_ordinal": self.next_source_native_creation_ordinal,
+            "source_native_ids": list(self.source_native_ids),
         }
 
     @classmethod
@@ -490,6 +843,8 @@ class LiveEnvelope:
             "opening_campaign_revision",
             "status",
             "claims",
+            "next_source_native_creation_ordinal",
+            "source_native_ids",
         }
         if set(value) != expected:
             raise LiveContractError("LIVE envelope fields are not strict")
@@ -502,6 +857,8 @@ class LiveEnvelope:
             opening_campaign_revision=value["opening_campaign_revision"],  # type: ignore[arg-type]
             status=value["status"],  # type: ignore[arg-type]
             claims=_claims(value["claims"]),
+            next_source_native_creation_ordinal=value["next_source_native_creation_ordinal"],  # type: ignore[arg-type]
+            source_native_ids=value["source_native_ids"],  # type: ignore[arg-type]
         )
 
 
@@ -682,6 +1039,9 @@ def validate_exact_source(
         and selected.opening_campaign_revision == candidate.opening_campaign_revision
         and selected.status is candidate.status
         and selected.claims == candidate.claims
+        and selected.next_source_native_creation_ordinal
+        == candidate.next_source_native_creation_ordinal
+        and selected.source_native_ids == candidate.source_native_ids
     )
 
 
@@ -698,6 +1058,9 @@ class FrozenLivePublicationAttempt:
     claims: tuple[LiveClaim, ...]
     source_status: LiveLifecycle
     successor_route: LiveRouting
+    source_native_allocations: tuple[SourceNativeAllocation, ...] = ()
+    expected_next_source_native_creation_ordinal: int | None = None
+    proposed_next_source_native_creation_ordinal: int | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.selected_route, LiveRouting) or not self.selected_route.complete:
@@ -716,6 +1079,35 @@ class FrozenLivePublicationAttempt:
         if self.transition_kind not in {"MUTATION", "CLOSE", "ABSORB"}:
             raise LiveContractError("LIVE transition kind is not admitted")
         object.__setattr__(self, "claims", _claims(self.claims))
+        allocations = tuple(self.source_native_allocations)
+        if any(not isinstance(item, SourceNativeAllocation) for item in allocations):
+            raise SourceNativeAllocationError("frozen source-native allocations must be typed")
+        object.__setattr__(self, "source_native_allocations", allocations)
+        if allocations:
+            expected_cursor = _uint64(
+                self.expected_next_source_native_creation_ordinal,
+                "expected_next_source_native_creation_ordinal",
+            )
+            proposed_cursor = _uint64(
+                self.proposed_next_source_native_creation_ordinal,
+                "proposed_next_source_native_creation_ordinal",
+            )
+            if expected_cursor + len(allocations) != proposed_cursor:
+                raise SourceNativeAllocationError("source-native cursor advance is not contiguous")
+            if tuple(item.source_local_creation_ordinal for item in allocations) != tuple(
+                range(expected_cursor, proposed_cursor)
+            ):
+                raise SourceNativeAllocationError("source-native allocations do not match cursor")
+            object.__setattr__(self, "expected_next_source_native_creation_ordinal", expected_cursor)
+            object.__setattr__(self, "proposed_next_source_native_creation_ordinal", proposed_cursor)
+        elif any(
+            value is not None
+            for value in (
+                self.expected_next_source_native_creation_ordinal,
+                self.proposed_next_source_native_creation_ordinal,
+            )
+        ):
+            raise SourceNativeAllocationError("source-native cursor evidence needs allocations")
         if not isinstance(self.source_status, LiveLifecycle):
             object.__setattr__(self, "source_status", LiveLifecycle(self.source_status))
         selected = select_live_source(self.selected_route, self.source_key)
@@ -730,6 +1122,8 @@ class FrozenLivePublicationAttempt:
                 claims=self.claims,
                 status=self.source_status,
                 opening_campaign_revision=selected.opening_campaign_revision,
+                next_source_native_creation_ordinal=selected.next_source_native_creation_ordinal,
+                source_native_ids=selected.source_native_ids,
             ),
         ):
             raise LiveContractError("frozen attempt is not bound to the selected route source")
@@ -752,9 +1146,21 @@ class FrozenLivePublicationAttempt:
             or successor.status is not expected_successor_status
         ):
             raise LiveContractError("frozen attempt successor closure is incomplete or mismatched")
+        if self.source_native_allocations:
+            expected_ids = selected.source_native_ids + tuple(
+                item.native_id for item in self.source_native_allocations
+            )
+            if (
+                selected.next_source_native_creation_ordinal
+                != self.expected_next_source_native_creation_ordinal
+                or successor.next_source_native_creation_ordinal
+                != self.proposed_next_source_native_creation_ordinal
+                or successor.source_native_ids != expected_ids
+            ):
+                raise SourceNativeAllocationError("frozen source-native cursor/ID closure is incomplete")
 
     def as_mapping(self) -> dict[str, object]:
-        return {
+        result: dict[str, object] = {
             "schema_version": LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION,
             "selected_route": self.selected_route.as_mapping(),
             "source_key": list(self.source_key),
@@ -767,6 +1173,18 @@ class FrozenLivePublicationAttempt:
             "successor": self.successor_route.as_mapping(),
         }
 
+        if self.source_native_allocations:
+            result.update(
+                {
+                    "source_native_allocations": [
+                        allocation.as_mapping() for allocation in self.source_native_allocations
+                    ],
+                    "expected_next_source_native_creation_ordinal": self.expected_next_source_native_creation_ordinal,
+                    "proposed_next_source_native_creation_ordinal": self.proposed_next_source_native_creation_ordinal,
+                }
+            )
+        return result
+
 
 def freeze_live_attempt(
     source: LiveEnvelope,
@@ -775,6 +1193,9 @@ def freeze_live_attempt(
     proposed_source_revision: str,
     transition_kind: str = "MUTATION",
     expected_source_revision: str | None = None,
+    source_native_creations: Iterable[SourceNativeCreation | Mapping[str, object]] = (),
+    source_native_cursor: SourceNativeCursor | int | None = None,
+    identifier_policy: Mapping[str, object] | None = None,
 ) -> FrozenLivePublicationAttempt:
     """Freeze one exact-source attempt after route/currentness selection."""
 
@@ -799,6 +1220,33 @@ def freeze_live_attempt(
     }.get(transition_kind)
     if successor_status is None:
         raise LiveContractError("LIVE transition kind is not admitted")
+    normalized_creations = normalize_source_native_creations(source_native_creations)
+    allocations: tuple[SourceNativeAllocation, ...] = ()
+    expected_cursor: int | None = None
+    proposed_cursor: int | None = None
+    if normalized_creations:
+        if transition_kind != "MUTATION":
+            raise SourceNativeAllocationError("source-native creation requires an ordinary LIVE mutation")
+        cursor = source.next_source_native_creation_ordinal if source_native_cursor is None else source_native_cursor
+        current_cursor = cursor if isinstance(cursor, SourceNativeCursor) else SourceNativeCursor(cursor)
+        if identifier_policy is None:
+            raise LiveContractError("source-native creation requires an explicit identifier policy")
+        allocations = allocate_source_native_creations(
+            source.source_key,
+            normalized_creations,
+            current_cursor,
+            identifier_policy,
+        )
+        expected_cursor = current_cursor.next_ordinal
+        proposed_cursor = expected_cursor + len(allocations)
+        if proposed_cursor > SOURCE_NATIVE_CURSOR_MAX:
+            raise SourceNativeAllocationError("source-native cursor exhausted; allocation would overflow")
+    elif source_native_cursor is not None:
+        current_cursor = source_native_cursor if isinstance(source_native_cursor, SourceNativeCursor) else SourceNativeCursor(source_native_cursor)
+        if current_cursor.next_ordinal != source.next_source_native_creation_ordinal:
+            raise SourceNativeAllocationError("source-native cursor is not the exact selected source cursor")
+    next_ordinal = source.next_source_native_creation_ordinal if proposed_cursor is None else proposed_cursor
+    source_native_ids = source.source_native_ids + tuple(item.native_id for item in allocations)
     successor = LiveEnvelope(
         campaign_id=source.campaign_id,
         scene_id=source.scene_id,
@@ -808,6 +1256,8 @@ def freeze_live_attempt(
         claims=source.claims,
         status=successor_status,
         opening_campaign_revision=source.opening_campaign_revision,
+        next_source_native_creation_ordinal=next_ordinal,
+        source_native_ids=source_native_ids,
     )
     return FrozenLivePublicationAttempt(
         selected_route=route,
@@ -819,6 +1269,9 @@ def freeze_live_attempt(
         claims=source.claims,
         source_status=source.status,
         successor_route=build_live_route(source.campaign_id, (successor,)),
+        source_native_allocations=allocations,
+        expected_next_source_native_creation_ordinal=expected_cursor,
+        proposed_next_source_native_creation_ordinal=proposed_cursor,
     )
 
 
@@ -830,6 +1283,9 @@ class LivePublicationResult:
     source_key: LiveSourceKey
     authoritative: bool
     observed_source_revision: str | None = None
+    source_native_allocations: tuple[SourceNativeAllocation, ...] = ()
+    expected_next_source_native_creation_ordinal: int | None = None
+    proposed_next_source_native_creation_ordinal: int | None = None
 
     @property
     def acknowledged(self) -> bool:
@@ -850,6 +1306,10 @@ class LivePublicationResult:
     def can_reexecute(self) -> bool:
         return False
 
+    @property
+    def source_native_ids(self) -> tuple[str, ...]:
+        return tuple(item.native_id for item in self.source_native_allocations)
+
     def acknowledge(self) -> bool:
         if not self.acknowledged:
             raise LiveContractError("indeterminate/rejected LIVE publication cannot be acknowledged")
@@ -862,12 +1322,25 @@ def _result(
     *,
     authoritative: bool,
     observed_source_revision: str | None = None,
+    include_source_native_allocation: bool = False,
 ) -> LivePublicationResult:
+    allocations = attempt.source_native_allocations if include_source_native_allocation else ()
     return LivePublicationResult(
         status=status,
         source_key=attempt.source_key,
         authoritative=authoritative,
         observed_source_revision=observed_source_revision,
+        source_native_allocations=allocations,
+        expected_next_source_native_creation_ordinal=(
+            attempt.expected_next_source_native_creation_ordinal
+            if include_source_native_allocation
+            else None
+        ),
+        proposed_next_source_native_creation_ordinal=(
+            attempt.proposed_next_source_native_creation_ordinal
+            if include_source_native_allocation
+            else None
+        ),
     )
 
 
@@ -921,6 +1394,16 @@ def classify_cas_result(
         return _result(LivePublicationStatus.REJECTED_STALE, attempt, authoritative=False)
     if acknowledgement["successor"] != attempt.successor_route.as_mapping():
         return _result(LivePublicationStatus.REJECTED_STALE, attempt, authoritative=False)
+    if attempt.source_native_allocations:
+        if (
+            acknowledgement.get("source_native_allocations")
+            != [item.as_mapping() for item in attempt.source_native_allocations]
+            or acknowledgement.get("expected_next_source_native_creation_ordinal")
+            != attempt.expected_next_source_native_creation_ordinal
+            or acknowledgement.get("proposed_next_source_native_creation_ordinal")
+            != attempt.proposed_next_source_native_creation_ordinal
+        ):
+            return _result(LivePublicationStatus.INDETERMINATE, attempt, authoritative=False)
     proposed = acknowledgement.get("new_source_revision")
     if proposed is None:
         return _result(LivePublicationStatus.INDETERMINATE, attempt, authoritative=False)
@@ -932,6 +1415,7 @@ def classify_cas_result(
         attempt,
         authoritative=True,
         observed_source_revision=attempt.proposed_source_revision,
+        include_source_native_allocation=True,
     )
 
 
@@ -960,6 +1444,10 @@ def reconcile_indeterminate(
         claims=attempt.claims,
         status=attempt.source_status,
         opening_campaign_revision=selected.opening_campaign_revision,
+        next_source_native_creation_ordinal=attempt.expected_next_source_native_creation_ordinal
+        if attempt.source_native_allocations
+        else selected.next_source_native_creation_ordinal,
+        source_native_ids=selected.source_native_ids,
     )
     successor = attempt.successor_route.entries[0]
     if validate_exact_source(successor, current_source):
@@ -968,6 +1456,7 @@ def reconcile_indeterminate(
             attempt,
             authoritative=True,
             observed_source_revision=current_source.source_revision,
+            include_source_native_allocation=True,
         )
     if validate_exact_source(predecessor, current_source):
         return _result(LivePublicationStatus.INDETERMINATE, attempt, authoritative=False)
@@ -1003,6 +1492,8 @@ def close_live_source(
         claims=source.claims,
         status=LiveLifecycle.CLOSED,
         opening_campaign_revision=source.opening_campaign_revision,
+        next_source_native_creation_ordinal=source.next_source_native_creation_ordinal,
+        source_native_ids=source.source_native_ids,
     )
 
 
@@ -1020,6 +1511,8 @@ def mark_closed_unabsorbed(source: LiveEnvelope) -> LiveEnvelope:
         claims=source.claims,
         status=LiveLifecycle.CLOSED_UNABSORBED,
         opening_campaign_revision=source.opening_campaign_revision,
+        next_source_native_creation_ordinal=source.next_source_native_creation_ordinal,
+        source_native_ids=source.source_native_ids,
     )
 
 
