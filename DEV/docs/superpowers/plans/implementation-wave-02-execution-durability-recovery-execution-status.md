@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `0b68dc873839bae573eceee63b05d46c5977774d`
 
 STATUS: FINAL_REVIEW
-CURRENT_TASK: W02.T06 - repair round 3 final integration review of producer-issued roll identity recovery at local checkpoint `b139423`
-LAST_COMPLETED_TASK: W02.T06 - producer-issued roll identity recovery repair round 3 -> local checkpoint `b139423`
-LAST_SAFE_SHA: `b139423` (local coherent W02.T06 repair checkpoint; remote publication was not requested)
+CURRENT_TASK: W02.T06 - repair round 4 final integration review of duplicate fixed-RNG evidence rejection at local checkpoint `0a9e014`
+LAST_COMPLETED_TASK: W02.T06 - duplicate fixed-RNG evidence rejection repair round 4 -> local checkpoint `0a9e014`
+LAST_SAFE_SHA: `0a9e014` (local coherent W02.T06 repair checkpoint; remote publication was not requested)
 
 ## Dependency schedule
 
@@ -559,3 +559,32 @@ FINAL VERIFICATION EVIDENCE:
 - local code/test checkpoint committed; no remote push was requested.
 NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
 UNPUBLISHED_WORK: NONE (implementation checkpoint `b139423`; this status cursor update is the only pending local change).
+
+## W02.T06 Repair Round 4 — 2026-09-18
+
+INDEPENDENT FINDINGS ADDRESSED:
+- Recovery now validates the complete persisted fixed-RNG result sequence for unique `request_id` evidence before direct closure matching or native-root result selection.
+- Exact duplicate request evidence and conflicting duplicate roll/value/provenance payloads fail typed with `RecoveryFailureCode.AMBIGUOUS` instead of allowing native hydration to select the final list item.
+- Arbitrary valid producer-issued roll, request, and provenance identifiers remain accepted and are not derived from `resolution_id`.
+
+TDD EVIDENCE:
+- Baseline: focused RD07 recovery suite had 43 passing tests at the Round-3 checkpoint.
+- RED: direct and native-root duplicate/conflict witnesses ran four subcases without raising under the prior validator/selector path.
+- GREEN: focused RD07 recovery suite: 45 passed; focused RD05/RD06/RD07 suites: 125 passed.
+- full DEV discovery: 794 passed, 7 skipped after removing generated `GAME/TOOLS/__pycache__` release-boundary cache from the first attempt.
+- maintenance audit: PASS.
+
+VERSION_IMPACT:
+- `GAME/TOOLS/recovery.py`: `framework_module_version` 1.0.4 -> 1.0.5 for duplicate fixed-RNG request evidence rejection before recovery selection.
+- recovery-result schema, runtime-maintenance-audit-state schema, runtime command/resolution/mechanical-event schemas, catalog, engine, campaign, storage, persistence and migration namespaces: NONE.
+
+SYSTEM_IMPACT: NONE - repair remains within the approved W02.T06 recovery/maintenance envelope; it strengthens validation of the existing fixed-RNG evidence sequence without introducing currentness, persistence, publication, journal/frontier, lifecycle, policy, catalog, RNG or LIVE authority.
+FINAL_SHA: `0a9e014` (implementation checkpoint; status cursor update follows in the next local commit)
+FINAL VERIFICATION EVIDENCE:
+- focused RD07 recovery suite: 45 passed;
+- focused RD05/RD06/RD07 suites: 125 passed;
+- full DEV discovery: 794 passed, 7 skipped;
+- maintenance audit: PASS;
+- local code/test checkpoint committed; no remote push was requested.
+NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
+UNPUBLISHED_WORK: NONE (implementation checkpoint `0a9e014`; this status cursor update is the only pending local change).
