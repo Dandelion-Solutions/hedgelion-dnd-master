@@ -6,7 +6,7 @@ BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
 CURRENT_TASK: W03.T05 -- opening preparation, seed, routing, packing and absorption
-LAST_COMPLETED_TASK: W03.T04 repair -- owner-issued CAS evidence and exact persisted history policy prefix / W03_SOURCE_NATIVE_LIVE_ID_READY
+LAST_COMPLETED_TASK: W03.T04 independent review -- PASS / W03_SOURCE_NATIVE_LIVE_ID_READY accepted
 LAST_SAFE_SHA: `9848bb11d1bd3023f33eef84f35ba06d1e394d6a` (W03.T04 repair implementation checkpoint)
 
 ## Dependency schedule
@@ -68,6 +68,7 @@ COMPLETED_TASKS:
 - W03.T04 review repair -> `23af5ccf6436d20c77cef049814030956168a1b5` (published/read-back; closed T04 admission, framed-history validation and CAS-bound cursor)
 - W03.T04 review repair follow-up -> `1572904309b6519af19e3cde5b323ce6752518d4` (published/read-back; explicit envelope arguments cannot bypass CAS-bound result evidence)
 - W03.T04 repair -> `9848bb11d1bd3023f33eef84f35ba06d1e394d6a` (published/read-back; cursor requires owner-issued CAS classification/reconciliation evidence and persisted history requires exact family policy prefixes)
+- W03.T04 independent review -> PASS at `a161110db60a8efc296e7982f2e607566c20ef07`; `W03_SOURCE_NATIVE_LIVE_ID_READY` accepted
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
