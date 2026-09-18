@@ -57,6 +57,9 @@ LIVE_ROUTE_TEMPLATE = ROOT / "GAME/CAMPAIGN/STATE/RUNTIME/LIVE_ROUTING.yaml"
 LIVE_H0 = "0" * 40
 LIVE_H1 = "1" * 40
 LIVE_H2 = "2" * 40
+PRE_T03_LIVE_SCENE_SCHEMA_SHA256 = (
+    "0e5cceac5b29d1bcad1fcfe5779905092402d1c8b00d9c3d04157a822ceb5638"
+)
 
 
 def _live_source(
@@ -566,6 +569,14 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
         self.assertEqual(claim_schema["properties"]["schema_version"]["const"], 2)
         self.assertEqual(route_schema["properties"]["schema_version"]["const"], 3)
         self.assertEqual(publication_schema["properties"]["schema_version"]["const"], 4)
+
+    def test_w03_does_not_edit_wave05_retained_live_scene_schema(self) -> None:
+        retained_schema = ROOT / "GAME/SCHEMA/live_scene.schema.yaml"
+
+        self.assertEqual(
+            hashlib.sha256(retained_schema.read_bytes()).hexdigest(),
+            PRE_T03_LIVE_SCENE_SCHEMA_SHA256,
+        )
 
     def test_schema_and_python_reject_illegal_claim_companion_fields(self) -> None:
         schema = json.loads(
