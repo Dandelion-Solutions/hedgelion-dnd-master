@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `0b68dc873839bae573eceee63b05d46c5977774d`
 
 STATUS: FINAL_REVIEW
-CURRENT_TASK: W02.T06 - repair round 1 final integration review of executable-root closure recovery at local checkpoint `39c11ac`
-LAST_COMPLETED_TASK: W02.T06 - executable-root closure validation repair round 1 -> local checkpoint `39c11ac`
-LAST_SAFE_SHA: `39c11ac` (local coherent W02.T06 repair checkpoint; remote publication was not requested)
+CURRENT_TASK: W02.T06 - repair round 3 final integration review of producer-issued roll identity recovery at local checkpoint `b139423`
+LAST_COMPLETED_TASK: W02.T06 - producer-issued roll identity recovery repair round 3 -> local checkpoint `b139423`
+LAST_SAFE_SHA: `b139423` (local coherent W02.T06 repair checkpoint; remote publication was not requested)
 
 ## Dependency schedule
 
@@ -531,3 +531,31 @@ FINAL VERIFICATION EVIDENCE:
 - local code/test checkpoint committed; no remote push was requested.
 NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
 UNPUBLISHED_WORK: NONE (implementation checkpoint `08df57e` and this status evidence are committed locally).
+
+## W02.T06 Repair Round 3 — 2026-09-18
+
+INDEPENDENT FINDINGS ADDRESSED:
+- Recovery no longer derives fixed-RNG `roll_id`, `request_id`, or `provenance_ref` from `resolution_id` and ordinal conventions that are not part of the mechanics producer contract.
+- Recovery now preserves arbitrary valid producer-issued native identifiers and exact typed roll evidence while continuing to reject malformed roll fields, unsupported source kinds, invalid native IDs, and malformed raw values.
+- Added a native-root end-to-end witness using producer-issued `roll.attack.1`, `request.attack.1`, and `rng:fixture` values, plus exact recovered roll-result preservation assertions.
+
+TDD EVIDENCE:
+- RED: the producer-shaped native-root witness failed with `fixed RNG identity differs from resolution` under the prior derived-identity validator.
+- GREEN: focused RD07 recovery suite: 43 passed; focused RD05/RD06/RD07 suites: 123 passed.
+- full DEV discovery: 792 passed, 7 skipped after removing generated `GAME/TOOLS/__pycache__` release-boundary cache from the first attempt.
+- maintenance audit: PASS.
+
+VERSION_IMPACT:
+- `GAME/TOOLS/recovery.py`: `framework_module_version` 1.0.3 -> 1.0.4 for the producer-issued native roll/provenance identity contract repair.
+- recovery-result schema, runtime-maintenance-audit-state schema, runtime command/resolution/mechanical-event schemas, catalog, engine, campaign, storage, persistence and migration namespaces: NONE.
+
+SYSTEM_IMPACT: NONE - repair remains within the approved W02.T06 recovery/maintenance envelope; it removes an unsupported identity derivation assumption and consumes the existing mechanics producer contract without introducing currentness, persistence, publication, journal/frontier, lifecycle, policy, catalog, RNG or LIVE authority.
+FINAL_SHA: `b139423` (implementation checkpoint; status cursor update follows in the next local commit)
+FINAL VERIFICATION EVIDENCE:
+- focused RD07 recovery suite: 43 passed;
+- focused RD05/RD06/RD07 suites: 123 passed;
+- full DEV discovery: 792 passed, 7 skipped;
+- maintenance audit: PASS;
+- local code/test checkpoint committed; no remote push was requested.
+NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
+UNPUBLISHED_WORK: NONE (implementation checkpoint `b139423`; this status cursor update is the only pending local change).
