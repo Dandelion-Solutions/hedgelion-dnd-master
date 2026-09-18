@@ -7,17 +7,18 @@ as proof that an owner is active.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 import hashlib
 import json
+import re
 from typing import Final, Protocol
 
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final = "1.0.7"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
 _OWNER_KINDS: Final = frozenset(
     {
@@ -31,6 +32,8 @@ _PROMISED_OWNER_KINDS: Final = frozenset({"runtime.interaction", "runtime.intent
 _ACTIONS: Final = frozenset({"ENROLL", "REMOVE", "NOOP"})
 _LIFECYCLES: Final = frozenset({"ACTIVE", "TERMINAL"})
 _PROCEDURE_SCHEMA_VERSION: Final = 2
+_SOURCE_REVISION = re.compile(r"^(?:[a-f0-9]{40}(?:[a-f0-9]{24})?|[A-Za-z][A-Za-z0-9_.:-]*)$")
+_HANDOFF_SCOPES: Final = frozenset({"CAMPAIGN", "LIVE"})
 
 
 class OperationalRootError(ValueError):
@@ -138,6 +141,62 @@ class OperationalRootPage:
         }
 
 
+@dataclass(frozen=True, slots=True)
+class OperationalRootHandoff:
+    """Ephemeral root-routing evidence pinned to one exact source."""
+
+    campaign_id: str
+    source_scope: str
+    source_revision: str
+    roots: tuple[OperationalRoot, ...]
+    source_key: tuple[str, str, str] | None = None
+    source_lifecycle: str = "ACTIVE"
+    complete: bool = True
+
+    def __post_init__(self) -> None:
+        campaign_id = _nonempty(self.campaign_id, "handoff campaign_id")
+        scope = _handoff_scope(self.source_scope)
+        revision = _source_revision(self.source_revision)
+        if self.complete is not True:
+            raise OperationalRootCompletenessError("operational-root handoff is incomplete")
+        source_key = _handoff_source_key(self.source_key, campaign_id, scope)
+        if self.source_lifecycle not in {"ACTIVE", "CLOSED", "CLOSED_UNABSORBED", "ABSORBED"}:
+            raise OperationalRootError("operational-root handoff lifecycle is unsupported")
+        roots = tuple(self.roots)
+        seen: set[tuple[str, str, str]] = set()
+        for root in roots:
+            if not isinstance(root, OperationalRoot):
+                raise OperationalRootError("operational-root handoff roots must be typed")
+            if root.campaign_id != campaign_id:
+                raise OperationalRootError("handoff root campaign differs from handoff campaign")
+            if root.key in seen:
+                raise OperationalRootError("operational-root handoff contains duplicate owner identity")
+            seen.add(root.key)
+        object.__setattr__(self, "campaign_id", campaign_id)
+        object.__setattr__(self, "source_scope", scope)
+        object.__setattr__(self, "source_revision", revision)
+        object.__setattr__(self, "source_key", source_key)
+        object.__setattr__(self, "roots", roots)
+
+    def to_page(self) -> OperationalRootPage:
+        return OperationalRootPage(self.campaign_id, self.roots, complete=True)
+
+    def to_dict(self) -> dict[str, object]:
+        """Return handoff evidence without claiming it is the persistent page schema."""
+
+        return {
+            "schema_version": OPERATIONAL_ROOT_SCHEMA_VERSION,
+            "campaign_id": self.campaign_id,
+            "source_scope": self.source_scope,
+            "source_revision": self.source_revision,
+            "source_key": list(self.source_key) if self.source_key is not None else None,
+            "source_lifecycle": self.source_lifecycle,
+            "complete": True,
+            "roots": [root.to_dict() for root in self.roots],
+            "ephemeral": True,
+        }
+
+
 class AcceptedUnresolvedInputPromise(Protocol):
     """Later-owner promise boundary interface reserved for the later owner.
 
@@ -228,6 +287,266 @@ def validate_operational_root_delta(
         raise OperationalRootError("removal delta is not eligible from native owner state")
     if delta.owner_state_fingerprint != _native_state_fingerprint(native_owner):
         raise OperationalRootError("delta lacks matching native owner state evidence")
+
+
+def _handoff_scope(value: object) -> str:
+    if not isinstance(value, str) or value.upper() not in _HANDOFF_SCOPES:
+        raise OperationalRootError("operational-root handoff source scope is unsupported")
+    return value.upper()
+
+
+def _source_revision(value: object) -> str:
+    if not isinstance(value, str) or _SOURCE_REVISION.fullmatch(value) is None:
+        raise OperationalRootError("operational-root handoff source revision is not exact")
+    return value
+
+
+def _handoff_source_key(
+    value: object,
+    campaign_id: str,
+    scope: str,
+) -> tuple[str, str, str] | None:
+    if scope == "CAMPAIGN":
+        if value is not None:
+            raise OperationalRootError("campaign operational roots cannot carry a LIVE source key")
+        return None
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)) or len(value) != 3:
+        raise OperationalRootError("LIVE operational roots require an exact source key")
+    key = tuple(_nonempty(item, "operational-root source key") for item in value)
+    if key[0] != campaign_id:
+        raise OperationalRootError("operational-root source key belongs to another campaign")
+    return key  # type: ignore[return-value]
+
+
+def _owner_key(value: object, campaign_id: str, label: str) -> tuple[str, str]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+        raise OperationalRootError(f"{label} identity is malformed")
+    if len(value) == 2:
+        kind, owner_id = value
+    elif len(value) == 3:
+        source_campaign, kind, owner_id = value
+        if source_campaign != campaign_id:
+            raise OperationalRootError(f"{label} belongs to another campaign")
+    else:
+        raise OperationalRootError(f"{label} identity is malformed")
+    return _nonempty(kind, f"{label} owner kind"), _nonempty(owner_id, f"{label} owner ID")
+
+
+def _coerce_handoff(
+    value: OperationalRootHandoff | OperationalRootPage | Mapping[str, object],
+    *,
+    campaign_id: str,
+    source_scope: str,
+    source_revision: str,
+    source_key: Sequence[str] | None,
+    source_lifecycle: str,
+) -> OperationalRootHandoff:
+    if isinstance(value, OperationalRootHandoff):
+        handoff = value
+    elif isinstance(value, OperationalRootPage):
+        handoff = OperationalRootHandoff(
+            campaign_id=value.campaign_id,
+            source_scope=source_scope,
+            source_revision=source_revision,
+            source_key=source_key,
+            source_lifecycle=source_lifecycle,
+            roots=value.roots,
+            complete=value.complete,
+        )
+    elif isinstance(value, Mapping):
+        raw_roots = value.get("roots")
+        if not isinstance(raw_roots, Sequence) or isinstance(raw_roots, (str, bytes)):
+            raise OperationalRootError("operational-root handoff has no explicit roots")
+        mapping_campaign = value.get("campaign_id")
+        mapping_scope = value.get("source_scope", source_scope)
+        mapping_revision = value.get("source_revision", source_revision)
+        mapping_key = value.get("source_key", source_key)
+        mapping_lifecycle = value.get("source_lifecycle", source_lifecycle)
+        parsed_roots = tuple(_root_from_mapping(raw, campaign_id) for raw in raw_roots)
+        handoff = OperationalRootHandoff(
+            campaign_id=mapping_campaign,  # type: ignore[arg-type]
+            source_scope=mapping_scope,  # type: ignore[arg-type]
+            source_revision=mapping_revision,  # type: ignore[arg-type]
+            source_key=mapping_key,  # type: ignore[arg-type]
+            source_lifecycle=mapping_lifecycle,  # type: ignore[arg-type]
+            roots=parsed_roots,
+            complete=value.get("complete", True),  # type: ignore[arg-type]
+        )
+    else:
+        raise OperationalRootError("operational-root handoff must be typed evidence")
+    if handoff.campaign_id != campaign_id:
+        raise OperationalRootError("operational-root handoff belongs to another campaign")
+    if handoff.source_scope != _handoff_scope(source_scope):
+        raise OperationalRootError("operational-root handoff source scope is stale")
+    if handoff.source_revision != _source_revision(source_revision):
+        raise OperationalRootError("operational-root handoff source revision is stale")
+    expected_key = _handoff_source_key(source_key, campaign_id, handoff.source_scope)
+    if handoff.source_key != expected_key:
+        raise OperationalRootError("operational-root handoff source key is stale")
+    return handoff
+
+
+def _validate_terminal_roots(
+    handoff: OperationalRootHandoff,
+    terminal_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]],
+    terminal_native_owners: Mapping[
+        tuple[str, str] | tuple[str, str, str], Mapping[str, object]
+    ]
+    | None,
+) -> set[tuple[str, str, str]]:
+    requested = {
+        _owner_key(raw_key, handoff.campaign_id, "terminal root")
+        for raw_key in terminal_owner_keys
+    }
+    root_map = {(root.owner_kind, root.owner_id): root for root in handoff.roots}
+    if not requested.issubset(root_map):
+        raise OperationalRootError("terminal root identity is not in the exact handoff page")
+    if requested and terminal_native_owners is None:
+        raise OperationalRootError("terminal roots require native owner evidence")
+    for key in requested:
+        owner = None
+        if terminal_native_owners is not None:
+            owner = terminal_native_owners.get(key)
+            if owner is None:
+                owner = terminal_native_owners.get((handoff.campaign_id, *key))
+        if not isinstance(owner, Mapping):
+            raise OperationalRootError("terminal roots require native owner evidence")
+        try:
+            delta = derive_operational_root_delta(
+                handoff.campaign_id,
+                key[0],
+                owner,
+                existing_roots=(root_map[key],),
+            )
+        except (AttributeError, KeyError, TypeError, ValueError) as exc:
+            raise OperationalRootError("terminal root lacks valid native owner evidence") from exc
+        if delta.action != "REMOVE" or delta.root != root_map[key]:
+            raise OperationalRootError("terminal root native owner is not terminal")
+    return {(kind, owner_id, root_map[(kind, owner_id)].relative_path) for kind, owner_id in requested}
+
+
+def reconcile_operational_root_handoff(
+    page: OperationalRootHandoff | OperationalRootPage | Mapping[str, object],
+    *,
+    campaign_id: str,
+    expected_source_scope: str,
+    expected_source_revision: str,
+    target_source_scope: str,
+    target_source_revision: str,
+    expected_source_key: Sequence[str] | None = None,
+    target_source_key: Sequence[str] | None = None,
+    source_lifecycle: str = "ACTIVE",
+    absorption_acknowledged: bool = False,
+    terminal_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]] = (),
+    terminal_native_owners: Mapping[
+        tuple[str, str] | tuple[str, str, str], Mapping[str, object]
+    ]
+    | None = None,
+    superseded_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]] = (),
+) -> OperationalRootHandoff:
+    """Move root references without moving native owner state or authority."""
+
+    current = _coerce_handoff(
+        page,
+        campaign_id=campaign_id,
+        source_scope=expected_source_scope,
+        source_revision=expected_source_revision,
+        source_key=expected_source_key,
+        source_lifecycle=source_lifecycle,
+    )
+    expected_scope = _handoff_scope(expected_source_scope)
+    target_scope = _handoff_scope(target_source_scope)
+    target_revision = _source_revision(target_source_revision)
+    target_key = _handoff_source_key(target_source_key, campaign_id, target_scope)
+    if target_scope == "CAMPAIGN" and expected_scope == "LIVE":
+        if source_lifecycle != "ABSORBED":
+            raise OperationalRootError("campaign recovery requires an absorbed LIVE source")
+        if absorption_acknowledged is not True:
+            raise OperationalRootError("campaign recovery requires accepted absorption handoff")
+    elif target_scope == "LIVE" and expected_scope != "CAMPAIGN":
+        raise OperationalRootError("LIVE root handoff must begin from campaign roots")
+    terminal = _validate_terminal_roots(current, terminal_owner_keys, terminal_native_owners)
+    superseded = {
+        _owner_key(raw_key, campaign_id, "superseded root")
+        for raw_key in superseded_owner_keys
+    }
+    root_keys = {(root.owner_kind, root.owner_id) for root in current.roots}
+    if not superseded.issubset(root_keys):
+        raise OperationalRootError("superseded root identity is not in the exact handoff page")
+    if superseded and not (
+        expected_scope == "LIVE"
+        and target_scope == "CAMPAIGN"
+        and source_lifecycle == "ABSORBED"
+        and absorption_acknowledged is True
+    ):
+        raise OperationalRootError("superseded roots require exact closed-source absorption")
+    removed = {(kind, owner_id) for kind, owner_id, _path in terminal}
+    removed.update(superseded)
+    roots = tuple(root for root in current.roots if (root.owner_kind, root.owner_id) not in removed)
+    return OperationalRootHandoff(
+        campaign_id=campaign_id,
+        source_scope=target_scope,
+        source_revision=target_revision,
+        source_key=target_key,
+        source_lifecycle="ACTIVE" if target_scope == "LIVE" else "ABSORBED",
+        roots=roots,
+        complete=True,
+    )
+
+
+def handoff_operational_roots_to_live(
+    page: OperationalRootPage | OperationalRootHandoff | Mapping[str, object],
+    *,
+    campaign_id: str,
+    campaign_revision: str,
+    live_source_key: Sequence[str],
+    live_source_revision: str,
+) -> OperationalRootHandoff:
+    """Route active campaign roots into one exact selected LIVE source."""
+
+    return reconcile_operational_root_handoff(
+        page,
+        campaign_id=campaign_id,
+        expected_source_scope="CAMPAIGN",
+        expected_source_revision=campaign_revision,
+        target_source_scope="LIVE",
+        target_source_revision=live_source_revision,
+        target_source_key=live_source_key,
+    )
+
+
+def recover_operational_roots_to_campaign(
+    page: OperationalRootHandoff | Mapping[str, object],
+    *,
+    campaign_id: str,
+    live_source_key: Sequence[str],
+    live_source_revision: str,
+    campaign_revision: str,
+    source_lifecycle: str,
+    absorption_acknowledged: bool,
+    terminal_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]] = (),
+    terminal_native_owners: Mapping[
+        tuple[str, str] | tuple[str, str, str], Mapping[str, object]
+    ]
+    | None = None,
+    superseded_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]] = (),
+) -> OperationalRootHandoff:
+    """Return live roots to campaign recovery only after exact absorption."""
+
+    return reconcile_operational_root_handoff(
+        page,
+        campaign_id=campaign_id,
+        expected_source_scope="LIVE",
+        expected_source_revision=live_source_revision,
+        expected_source_key=live_source_key,
+        target_source_scope="CAMPAIGN",
+        target_source_revision=campaign_revision,
+        source_lifecycle=source_lifecycle,
+        absorption_acknowledged=absorption_acknowledged,
+        terminal_owner_keys=terminal_owner_keys,
+        terminal_native_owners=terminal_native_owners,
+        superseded_owner_keys=superseded_owner_keys,
+    )
 
 
 def enumerate_operational_root_page(

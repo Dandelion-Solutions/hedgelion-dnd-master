@@ -12,6 +12,10 @@ from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
 
 
+# framework_module_version: 1.0.1
+FRAMEWORK_MODULE_VERSION = "1.0.1"
+
+
 _DISPOSITIONS = frozenset({"NOT_DUE", "DUE", "INDETERMINATE"})
 _OCCURRENCE_STATES = frozenset({"ARMED", "CLAIMED", "CLOSED"})
 _DEPENDENCY_KINDS = frozenset({
@@ -22,6 +26,8 @@ _DEPENDENCY_KINDS = frozenset({
     "OWNER_LOCAL_TEMPORAL_STATE",
 })
 _MACHINE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
+_REVISION = re.compile(r"^(?:[a-f0-9]{40}(?:[a-f0-9]{24})?|[A-Za-z][A-Za-z0-9_.:-]*)$")
+_ROUTE_SCOPES = frozenset({"CAMPAIGN", "LIVE"})
 
 
 class TemporalContractError(ValueError):
@@ -31,6 +37,155 @@ class TemporalContractError(ValueError):
 @dataclass(frozen=True)
 class TemporalEvaluation:
     disposition: str
+
+
+@dataclass(frozen=True, slots=True)
+class TemporalRouteEntry:
+    """Typed retrieval evidence for one native temporal occurrence.
+
+    The entry deliberately carries identity, binding and dependency references
+    only.  It never carries current owner state, chronology values or a due
+    result, so moving it between campaign and LIVE cannot create a second
+    temporal authority.
+    """
+
+    campaign_id: str
+    source_scope: str
+    source_revision: str
+    root_ref: str
+    occurrence_id: str
+    binding_id: str
+    occurrence_state: str
+    dependency_keys: tuple[str, ...]
+    source_key: tuple[str, str, str] | None = None
+
+    def __post_init__(self) -> None:
+        campaign_id = _require_string(self.campaign_id, "route campaign_id")
+        scope = _route_scope(self.source_scope)
+        revision = _route_revision(self.source_revision)
+        root_ref = _require_string(self.root_ref, "route root_ref")
+        occurrence_id = _require_string(self.occurrence_id, "route occurrence_id")
+        binding_id = _require_string(self.binding_id, "route binding_id")
+        state = _require_string(self.occurrence_state, "route occurrence_state")
+        if state not in _OCCURRENCE_STATES:
+            raise TemporalContractError("route occurrence_state is unknown")
+        keys = tuple(_require_string(key, "route dependency key") for key in self.dependency_keys)
+        if state == "ARMED" and not keys:
+            raise TemporalContractError("armed temporal route entry requires dependency keys")
+        if len(keys) != len(set(keys)):
+            raise TemporalContractError("route dependency keys must be unique")
+        for key in keys:
+            kind, separator, target = key.partition(":")
+            if separator != ":" or kind not in _DEPENDENCY_KINDS or not target:
+                raise TemporalContractError("route dependency key is not typed")
+        source_key = _route_source_key(self.source_key, campaign_id, scope)
+        object.__setattr__(self, "campaign_id", campaign_id)
+        object.__setattr__(self, "source_scope", scope)
+        object.__setattr__(self, "source_revision", revision)
+        object.__setattr__(self, "root_ref", root_ref)
+        object.__setattr__(self, "occurrence_id", occurrence_id)
+        object.__setattr__(self, "binding_id", binding_id)
+        object.__setattr__(self, "occurrence_state", state)
+        object.__setattr__(self, "dependency_keys", tuple(sorted(keys)))
+        object.__setattr__(self, "source_key", source_key)
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "campaign_id": self.campaign_id,
+            "source_scope": self.source_scope,
+            "source_revision": self.source_revision,
+            "source_key": list(self.source_key) if self.source_key is not None else None,
+            "root_ref": self.root_ref,
+            "occurrence_id": self.occurrence_id,
+            "binding_id": self.binding_id,
+            "occurrence_state": self.occurrence_state,
+            "dependency_keys": list(self.dependency_keys),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class TemporalRoute:
+    """Complete ephemeral routing evidence for one exact native source."""
+
+    campaign_id: str
+    source_scope: str
+    source_revision: str
+    entries: tuple[TemporalRouteEntry, ...]
+    source_key: tuple[str, str, str] | None = None
+    complete: bool = True
+
+    def __post_init__(self) -> None:
+        campaign_id = _require_string(self.campaign_id, "temporal route campaign_id")
+        scope = _route_scope(self.source_scope)
+        revision = _route_revision(self.source_revision)
+        if self.complete is not True:
+            raise TemporalContractError("temporal route must be complete")
+        source_key = _route_source_key(self.source_key, campaign_id, scope)
+        entries = tuple(self.entries)
+        if any(not isinstance(entry, TemporalRouteEntry) for entry in entries):
+            raise TemporalContractError("temporal route entries must be typed")
+        identities: set[tuple[str, str]] = set()
+        for entry in entries:
+            if (
+                entry.campaign_id != campaign_id
+                or entry.source_scope != scope
+                or entry.source_revision != revision
+                or entry.source_key != source_key
+            ):
+                raise TemporalContractError("temporal route entry campaign/source differs from route")
+            identity = (entry.root_ref, entry.occurrence_id)
+            if identity in identities:
+                raise TemporalContractError("temporal route contains duplicate occurrence")
+            identities.add(identity)
+        object.__setattr__(self, "campaign_id", campaign_id)
+        object.__setattr__(self, "source_scope", scope)
+        object.__setattr__(self, "source_revision", revision)
+        object.__setattr__(self, "entries", entries)
+        object.__setattr__(self, "source_key", source_key)
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "schema_version": 1,
+            "kind": "runtime.temporal_routing",
+            "campaign_id": self.campaign_id,
+            "source_scope": self.source_scope,
+            "source_revision": self.source_revision,
+            "source_key": list(self.source_key) if self.source_key is not None else None,
+            "complete": True,
+            "entries": [entry.as_mapping() for entry in self.entries],
+        }
+
+    @classmethod
+    def from_mapping(cls, value: object) -> "TemporalRoute":
+        if not isinstance(value, Mapping):
+            raise TemporalContractError("temporal route must be an object")
+        expected = {
+            "schema_version",
+            "kind",
+            "campaign_id",
+            "source_scope",
+            "source_revision",
+            "source_key",
+            "complete",
+            "entries",
+        }
+        if set(value) != expected:
+            raise TemporalContractError("temporal route fields are not strict")
+        if value["schema_version"] != 1 or value["kind"] != "runtime.temporal_routing":
+            raise TemporalContractError("unsupported temporal route")
+        raw_entries = value["entries"]
+        if not isinstance(raw_entries, Sequence) or isinstance(raw_entries, (str, bytes)):
+            raise TemporalContractError("temporal route entries must be an array")
+        campaign_id = _require_string(value["campaign_id"], "temporal route campaign_id")
+        entries = tuple(_route_entry_from_mapping(item) for item in raw_entries)
+        return cls(
+            campaign_id=campaign_id,
+            source_scope=value["source_scope"],  # type: ignore[arg-type]
+            source_revision=value["source_revision"],  # type: ignore[arg-type]
+            source_key=value["source_key"],  # type: ignore[arg-type]
+            complete=value["complete"],  # type: ignore[arg-type]
+            entries=entries,
+        )
 
 
 def _require_mapping(value: Any, label: str) -> Mapping[str, Any]:
@@ -43,6 +198,71 @@ def _require_string(value: Any, label: str) -> str:
     if not isinstance(value, str) or not value:
         raise TemporalContractError(f"{label} must be a non-empty string")
     return value
+
+
+def _route_scope(value: Any) -> str:
+    scope = _require_string(value, "temporal route source_scope").upper()
+    if scope not in _ROUTE_SCOPES:
+        raise TemporalContractError("temporal route source_scope is not admitted")
+    return scope
+
+
+def _route_revision(value: Any) -> str:
+    revision = _require_string(value, "temporal route source_revision")
+    if _REVISION.fullmatch(revision) is None:
+        raise TemporalContractError("temporal route source_revision is not exact")
+    return revision
+
+
+def _route_source_key(
+    value: Any,
+    campaign_id: str,
+    scope: str,
+) -> tuple[str, str, str] | None:
+    if scope == "CAMPAIGN":
+        if value is not None:
+            raise TemporalContractError("campaign temporal route cannot carry a LIVE source key")
+        return None
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)) or len(value) != 3:
+        raise TemporalContractError("LIVE temporal route requires an exact source key")
+    key = tuple(_require_string(item, "temporal route source key") for item in value)
+    if key[0] != campaign_id:
+        raise TemporalContractError("temporal route source key belongs to another campaign")
+    return key  # type: ignore[return-value]
+
+
+def _route_entry_from_mapping(value: object) -> TemporalRouteEntry:
+    if isinstance(value, TemporalRouteEntry):
+        return value
+    if not isinstance(value, Mapping):
+        raise TemporalContractError("temporal route entry must be an object")
+    expected = {
+        "campaign_id",
+        "source_scope",
+        "source_revision",
+        "source_key",
+        "root_ref",
+        "occurrence_id",
+        "binding_id",
+        "occurrence_state",
+        "dependency_keys",
+    }
+    if set(value) != expected:
+        raise TemporalContractError("temporal route entry fields are not strict")
+    keys = value["dependency_keys"]
+    if not isinstance(keys, Sequence) or isinstance(keys, (str, bytes)):
+        raise TemporalContractError("temporal route dependency_keys must be an array")
+    return TemporalRouteEntry(
+        campaign_id=value["campaign_id"],  # type: ignore[arg-type]
+        source_scope=value["source_scope"],  # type: ignore[arg-type]
+        source_revision=value["source_revision"],  # type: ignore[arg-type]
+        source_key=value["source_key"],  # type: ignore[arg-type]
+        root_ref=value["root_ref"],  # type: ignore[arg-type]
+        occurrence_id=value["occurrence_id"],  # type: ignore[arg-type]
+        binding_id=value["binding_id"],  # type: ignore[arg-type]
+        occurrence_state=value["occurrence_state"],  # type: ignore[arg-type]
+        dependency_keys=tuple(keys),
+    )
 
 
 def _require_machine_id(value: Any, label: str) -> str:
@@ -321,3 +541,165 @@ def rebuild_temporal_agenda(roots: Sequence[Mapping[str, Any]]) -> tuple[dict[st
                 "dependency_keys": list(keys),
             })
     return tuple(sorted(entries, key=lambda entry: (entry["root_ref"], entry["occurrence_id"])))
+
+
+def derive_temporal_route_entry(
+    root: Mapping[str, Any],
+    *,
+    campaign_id: str,
+    source_scope: str,
+    source_revision: str,
+    source_key: Sequence[str] | None = None,
+) -> TemporalRouteEntry:
+    """Derive routing evidence from one explicit native temporal owner.
+
+    The complete owner binding is validated at derivation time, then only its
+    stable retrieval identity and dependency references are retained in the
+    route.  This prevents a route companion from becoming a copy of current
+    owner state or chronology authority.
+    """
+
+    checked_root = _require_mapping(root, "temporal root")
+    checked_campaign = _require_string(campaign_id, "campaign_id")
+    scope = _route_scope(source_scope)
+    revision = _route_revision(source_revision)
+    _validate_binding(_require_mapping(checked_root.get("binding"), "temporal root.binding"))
+    dependencies = derive_temporal_dependency_keys(checked_root)
+    root_campaign = checked_root.get("campaign_id")
+    if root_campaign is not None and root_campaign != checked_campaign:
+        raise TemporalContractError("temporal owner belongs to another campaign")
+    return TemporalRouteEntry(
+        campaign_id=checked_campaign,
+        source_scope=scope,
+        source_revision=revision,
+        source_key=source_key,
+        root_ref=_require_string(checked_root.get("root_ref"), "root_ref"),
+        occurrence_id=_require_string(checked_root.get("occurrence_id"), "occurrence_id"),
+        binding_id=_require_string(checked_root.get("binding_id"), "binding_id"),
+        occurrence_state=_require_string(checked_root.get("occurrence_state"), "occurrence_state"),
+        dependency_keys=dependencies,
+    )
+
+
+def _coerce_temporal_route(value: TemporalRoute | Mapping[str, Any]) -> TemporalRoute:
+    if isinstance(value, TemporalRoute):
+        return value
+    return TemporalRoute.from_mapping(value)
+
+
+def resolve_temporal_dependency_dependents(
+    route: TemporalRoute | Mapping[str, Any],
+    dependency_key: str,
+    *,
+    campaign_id: str | None = None,
+) -> tuple[TemporalRouteEntry, ...]:
+    """Resolve only the entries named by one typed dependency key."""
+
+    resolved = _coerce_temporal_route(route)
+    if campaign_id is not None and resolved.campaign_id != _require_string(campaign_id, "campaign_id"):
+        raise TemporalContractError("temporal route belongs to another campaign")
+    key = _require_string(dependency_key, "dependency_key")
+    kind, separator, target = key.partition(":")
+    if separator != ":" or kind not in _DEPENDENCY_KINDS or not target:
+        raise TemporalContractError("dependency key is not typed")
+    return tuple(entry for entry in resolved.entries if key in entry.dependency_keys)
+
+
+def reconcile_temporal_route_membership(
+    route: TemporalRoute | Mapping[str, Any],
+    *,
+    expected_source_scope: str,
+    expected_source_revision: str,
+    target_source_scope: str,
+    target_source_revision: str,
+    expected_source_key: Sequence[str] | None = None,
+    target_source_key: Sequence[str] | None = None,
+    campaign_id: str | None = None,
+    terminal_root_refs: Sequence[str] = (),
+    superseded_root_refs: Sequence[str] = (),
+) -> TemporalRoute:
+    """Move complete temporal routing membership across one exact source edge.
+
+    Both the predecessor and successor source identities are explicit.  The
+    operation is idempotent when the route already describes the requested
+    successor, which makes an interrupted handoff retryable without scanning
+    owners or inventing chronology.
+    """
+
+    current = _coerce_temporal_route(route)
+    if campaign_id is not None and current.campaign_id != _require_string(campaign_id, "campaign_id"):
+        raise TemporalContractError("temporal route belongs to another campaign")
+    expected_scope = _route_scope(expected_source_scope)
+    target_scope = _route_scope(target_source_scope)
+    expected_revision = _route_revision(expected_source_revision)
+    target_revision = _route_revision(target_source_revision)
+    normalized_expected_key = _route_source_key(expected_source_key, current.campaign_id, expected_scope)
+    normalized_target_key = _route_source_key(target_source_key, current.campaign_id, target_scope)
+    if current.source_scope != expected_scope or current.source_revision != expected_revision:
+        raise TemporalContractError("temporal route predecessor source/revision is stale")
+    if current.source_key != normalized_expected_key:
+        raise TemporalContractError("temporal route predecessor source differs")
+
+    terminal = {_require_string(value, "terminal root_ref") for value in terminal_root_refs}
+    superseded = {_require_string(value, "superseded root_ref") for value in superseded_root_refs}
+    if terminal.intersection(superseded):
+        raise TemporalContractError("terminal and superseded temporal roots overlap")
+    known = {entry.root_ref for entry in current.entries}
+    unknown = (terminal | superseded).difference(known)
+    if unknown and not (
+        current.source_scope == target_scope
+        and current.source_revision == target_revision
+        and current.source_key == normalized_target_key
+    ):
+        raise TemporalContractError("temporal root removal is not bound to the exact route")
+    terminal_entries = tuple(entry for entry in current.entries if entry.root_ref in terminal)
+    if any(entry.occurrence_state != "CLOSED" for entry in terminal_entries):
+        raise TemporalContractError("terminal temporal roots require CLOSED owner state")
+
+    moved = tuple(
+        TemporalRouteEntry(
+            campaign_id=entry.campaign_id,
+            source_scope=target_scope,
+            source_revision=target_revision,
+            source_key=normalized_target_key,
+            root_ref=entry.root_ref,
+            occurrence_id=entry.occurrence_id,
+            binding_id=entry.binding_id,
+            occurrence_state=entry.occurrence_state,
+            dependency_keys=entry.dependency_keys,
+        )
+        for entry in current.entries
+        if entry.root_ref not in terminal and entry.root_ref not in superseded
+    )
+    return TemporalRoute(
+        campaign_id=current.campaign_id,
+        source_scope=target_scope,
+        source_revision=target_revision,
+        source_key=normalized_target_key,
+        entries=moved,
+        complete=True,
+    )
+
+
+def rebuild_temporal_agenda_from_route(
+    route: TemporalRoute | Mapping[str, Any],
+    *,
+    campaign_id: str | None = None,
+) -> tuple[dict[str, Any], ...]:
+    """Rebuild disposable Agenda entries from complete route evidence."""
+
+    resolved = _coerce_temporal_route(route)
+    if campaign_id is not None and resolved.campaign_id != _require_string(campaign_id, "campaign_id"):
+        raise TemporalContractError("temporal route belongs to another campaign")
+    entries: list[dict[str, Any]] = []
+    for entry in resolved.entries:
+        if entry.occurrence_state == "ARMED":
+            entries.append(
+                {
+                    "root_ref": entry.root_ref,
+                    "occurrence_id": entry.occurrence_id,
+                    "binding_id": entry.binding_id,
+                    "dependency_keys": list(entry.dependency_keys),
+                }
+            )
+    return tuple(sorted(entries, key=lambda item: (item["root_ref"], item["occurrence_id"])))

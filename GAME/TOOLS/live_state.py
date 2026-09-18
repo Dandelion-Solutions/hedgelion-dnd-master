@@ -13,7 +13,7 @@ import base64
 import binascii
 from collections.abc import Iterable, Mapping, Sequence
 from copy import deepcopy
-from dataclasses import InitVar, dataclass
+from dataclasses import InitVar, dataclass, replace
 from enum import StrEnum
 import hashlib
 import json
@@ -23,8 +23,8 @@ from typing import Final, TypeAlias
 import weakref
 
 
-# framework_module_version: 1.0.9
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
+# framework_module_version: 1.0.10
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -1198,6 +1198,85 @@ def validate_live_route_completeness(
             "LIVE route body is incomplete or contains an extra member: "
             f"missing={sorted(missing)!r}, extra={sorted(extra)!r}"
         )
+
+
+def handoff_temporal_route_to_live(
+    temporal_route: object,
+    *,
+    campaign_revision: str,
+    live_source: LiveEnvelope,
+    live_route: LiveRouting,
+) -> object:
+    """Move temporal routing into the exact selected ACTIVE LIVE source."""
+
+    if not isinstance(live_source, LiveEnvelope):
+        raise LiveContractError("temporal LIVE handoff requires an owner-typed source")
+    if live_source.status is not LiveLifecycle.ACTIVE:
+        raise LiveContractError("temporal LIVE handoff requires an ACTIVE source")
+    if not isinstance(live_route, LiveRouting) or not live_route.complete:
+        raise LiveContractError("temporal LIVE handoff requires a complete route")
+    validate_live_route_completeness(live_route)
+    selected = select_live_source(live_route, live_source.source_key)
+    if selected is None or not validate_exact_source(selected, live_source):
+        raise LiveContractError("temporal LIVE handoff requires the exact selected source")
+    from .temporal import reconcile_temporal_route_membership
+
+    return reconcile_temporal_route_membership(
+        temporal_route,  # type: ignore[arg-type]
+        expected_source_scope="CAMPAIGN",
+        expected_source_revision=_revision(campaign_revision, "campaign_revision"),
+        target_source_scope="LIVE",
+        target_source_revision=live_source.source_revision,
+        target_source_key=live_source.source_key,
+        campaign_id=live_source.campaign_id,
+    )
+
+
+def handoff_temporal_route_to_campaign(
+    temporal_route: object,
+    *,
+    live_source: LiveEnvelope,
+    live_route: LiveRouting,
+    campaign_revision: str,
+    absorption_acknowledged: bool,
+) -> object:
+    """Return temporal routing only after exact closed-LIVE absorption proof."""
+
+    if not isinstance(live_source, LiveEnvelope):
+        raise LiveContractError("temporal campaign handoff requires an owner-typed source")
+    if live_source.status not in {
+        LiveLifecycle.CLOSED,
+        LiveLifecycle.CLOSED_UNABSORBED,
+        LiveLifecycle.ABSORBED,
+    }:
+        raise LiveContractError("temporal campaign handoff requires a closed or absorbed LIVE source")
+    if absorption_acknowledged is not True:
+        raise LiveContractError("temporal campaign handoff requires accepted absorption evidence")
+    if not isinstance(live_route, LiveRouting) or not live_route.complete:
+        raise LiveContractError("temporal campaign handoff requires a complete route")
+    validate_live_route_completeness(live_route)
+    selected = select_live_source(live_route, live_source.source_key)
+    if selected is None:
+        raise LiveContractError("temporal campaign handoff requires the exact final source")
+    if live_source.status is LiveLifecycle.ABSORBED:
+        if selected.status not in {LiveLifecycle.CLOSED, LiveLifecycle.CLOSED_UNABSORBED}:
+            raise LiveContractError("temporal campaign handoff requires the exact final source")
+        exact_source = validate_exact_source(selected, replace(live_source, status=selected.status))
+    else:
+        exact_source = validate_exact_source(selected, live_source)
+    if not exact_source:
+        raise LiveContractError("temporal campaign handoff requires the exact final source")
+    from .temporal import reconcile_temporal_route_membership
+
+    return reconcile_temporal_route_membership(
+        temporal_route,  # type: ignore[arg-type]
+        expected_source_scope="LIVE",
+        expected_source_revision=live_source.source_revision,
+        expected_source_key=live_source.source_key,
+        target_source_scope="CAMPAIGN",
+        target_source_revision=_revision(campaign_revision, "campaign_revision"),
+        campaign_id=live_source.campaign_id,
+    )
 
 
 @dataclass(frozen=True, slots=True)
