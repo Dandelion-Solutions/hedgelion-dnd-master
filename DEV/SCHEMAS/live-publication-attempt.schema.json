@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/live-publication-attempt.schema.json",
+  "title": "HDM immutable ephemeral LIVE publication attempt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_key",
+    "target_ref",
+    "expected_source_revision",
+    "proposed_source_revision",
+    "transition_kind",
+    "source_status",
+    "claims"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "source_key": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "target_ref": {"type": "string", "minLength": 1},
+    "expected_source_revision": {
+      "type": "string",
+      "pattern": "^(?:[a-f0-9]{40}(?:[a-f0-9]{24})?|[A-Za-z][A-Za-z0-9_.:-]*)$"
+    },
+    "proposed_source_revision": {
+      "type": "string",
+      "pattern": "^(?:[a-f0-9]{40}(?:[a-f0-9]{24})?|[A-Za-z][A-Za-z0-9_.:-]*)$"
+    },
+    "transition_kind": {"enum": ["MUTATION", "CLOSE", "ABSORB"]},
+    "source_status": {"enum": ["ACTIVE", "CLOSED", "CLOSED_UNABSORBED", "ABSORBED"]},
+    "claims": {"type": "array", "items": {"$ref": "live-claim.schema.json"}}
+  }
+}

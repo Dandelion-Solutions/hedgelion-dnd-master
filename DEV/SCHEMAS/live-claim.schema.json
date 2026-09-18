@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/live-claim.schema.json",
+  "title": "HDM immutable typed LIVE claim",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["claim_type"],
+  "properties": {
+    "claim_type": {
+      "enum": ["EXACT_OWNER", "EPOCH_LOCAL_CREATION", "OWNER_DEFINED_PARTITION"]
+    },
+    "native_family": {
+      "type": "string",
+      "pattern": "^(world|runtime)\\.[a-z][a-z0-9_]*$",
+      "not": {
+        "enum": [
+          "world.player",
+          "runtime.session",
+          "runtime.collaboration_obligation",
+          "runtime.checkpoint",
+          "runtime.id_allocator",
+          "runtime.maintenance_audit",
+          "runtime.catalog_gap_report"
+        ]
+      }
+    },
+    "native_identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "partition_type": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "partition_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"claim_type": {"const": "EXACT_OWNER"}}},
+      "then": {
+        "required": ["native_family", "native_identity"],
+        "not": {"required": ["partition_type"]}
+      }
+    },
+    {
+      "if": {"properties": {"claim_type": {"const": "EPOCH_LOCAL_CREATION"}}},
+      "then": {
+        "required": ["native_family"],
+        "not": {"anyOf": [{"required": ["native_identity"]}, {"required": ["partition_type"]}]}
+      }
+    },
+    {
+      "if": {"properties": {"claim_type": {"const": "OWNER_DEFINED_PARTITION"}}},
+      "then": {
+        "required": ["partition_type", "partition_key"],
+        "not": {"anyOf": [{"required": ["native_family"]}, {"required": ["native_identity"]}]}
+      }
+    }
+  ]
+}
