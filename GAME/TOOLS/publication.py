@@ -11,19 +11,27 @@ from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
+import hashlib
+import json
 import re
 from types import MappingProxyType
 from typing import Final
 
-from .durability import _policy_refs
+from .durability import (
+    ExecutionDurabilityJoin,
+    RoutedSerializedOperation,
+    _policy_refs,
+    is_execution_durability_join,
+)
+from .policy_basis import AuthenticatedPrincipalEvidence, PinnedCampaign
 from .recovery_roots import (
     OperationalRootDelta,
     validate_operational_root_delta,
 )
 
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final = "1.0.2"
 OPERATIONAL_ROOT_MEMBERSHIP_PATH: Final = "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"
 _SHA40_OR_64: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _SHA256: Final = re.compile(r"^[a-f0-9]{64}$")
@@ -143,7 +151,7 @@ class FrozenCampaignPublicationAttempt:
     repository_id: str
     target_ref: str
     campaign_id: str
-    acting_principal: Mapping[str, object]
+    acting_principal: AuthenticatedPrincipalEvidence
     pinned_head_sha: str
     base_tree_sha: str
     campaign_identity: CampaignIdentity
@@ -158,8 +166,10 @@ class FrozenCampaignPublicationAttempt:
     procedure_after: Mapping[str, object] | None
     root_delta: OperationalRootDelta | None
     root_membership_before: Mapping[str, object] | None
-    currentness_evidence: Mapping[str, object]
+    currentness_evidence: PinnedCampaign
     publication_reason: str
+    execution_durability_join: ExecutionDurabilityJoin
+    routed_operation: RoutedSerializedOperation
     native_domains: tuple[str, ...] = ("campaign",)
 
     def __post_init__(self) -> None:
@@ -168,10 +178,24 @@ class FrozenCampaignPublicationAttempt:
         _machine_id(self.campaign_id, "campaign_id")
         _revision(self.pinned_head_sha, "pinned_head_sha")
         _revision(self.base_tree_sha, "base_tree_sha")
-        principal = _json_copy(self.acting_principal, "acting_principal")
-        if not isinstance(principal, dict) or not principal.get("principal_id") or not principal.get("authorization"):
-            raise PublicationContractError("trustworthy acting principal evidence is required")
-        object.__setattr__(self, "acting_principal", _freeze(principal))
+        if not isinstance(self.acting_principal, AuthenticatedPrincipalEvidence):
+            raise PublicationContractError("Access-owner-typed acting principal evidence is required")
+        if not isinstance(self.currentness_evidence, PinnedCampaign):
+            raise PublicationContractError("currentness evidence must be owner-typed")
+        if self.currentness_evidence.campaign_id != self.campaign_id:
+            raise PublicationContractError("currentness evidence campaign differs from publication")
+        if self.currentness_evidence.revision != self.pinned_head_sha:
+            raise PublicationContractError("currentness evidence does not bind pinned head")
+        if self.currentness_evidence.tree_sha != self.base_tree_sha:
+            raise PublicationContractError("currentness evidence does not bind pinned tree")
+        if not is_execution_durability_join(self.execution_durability_join):
+            raise PublicationContractError("owner-issued execution/durability join is required")
+        if not isinstance(self.routed_operation, RoutedSerializedOperation):
+            raise PublicationContractError("owner-routed serialized operation is required")
+        if self.execution_durability_join.routed_operation != self.routed_operation:
+            raise PublicationContractError("execution/durability route differs from publication route")
+        if self.execution_durability_join.campaign_id != self.campaign_id:
+            raise PublicationContractError("execution/durability join campaign differs from publication")
         operations = {
             _path(path): _json_copy(value, f"path operation {path}")
             for path, value in self.path_operations.items()
@@ -201,21 +225,20 @@ class FrozenCampaignPublicationAttempt:
             object.__setattr__(self, "root_membership_before", _freeze(_json_copy(self.root_membership_before, "root_membership_before")))
         if any(isinstance(value, bool) or not isinstance(value, int) for value in self.fixed_rng_values):
             raise PublicationContractError("fixed RNG evidence must contain integers")
-        currentness = _json_copy(self.currentness_evidence, "currentness evidence")
-        if not isinstance(currentness, dict) or not currentness:
-            raise PublicationContractError("bounded currentness evidence is required")
-        object.__setattr__(self, "currentness_evidence", _freeze(currentness))
         _nonempty(self.publication_reason, "publication reason")
         if self.native_domains != ("campaign",):
             raise PublicationContractError("campaign attempt may contain only the campaign domain")
 
     def to_dict(self) -> dict[str, object]:
         return {
-            "schema_version": 1,
+            "schema_version": 2,
             "repository_id": self.repository_id,
             "target_ref": self.target_ref,
             "campaign_id": self.campaign_id,
-            "acting_principal": _thaw(self.acting_principal),
+            "acting_principal": {
+                "principal_id": self.acting_principal.principal_id,
+                "evidence_type": "authenticated_access_owner",
+            },
             "pinned_head_sha": self.pinned_head_sha,
             "base_tree_sha": self.base_tree_sha,
             "campaign_identity": {
@@ -243,10 +266,31 @@ class FrozenCampaignPublicationAttempt:
             "procedure_after": _thaw(self.procedure_after),
             "root_delta": None if self.root_delta is None else self.root_delta.to_dict(),
             "root_membership_before": _thaw(self.root_membership_before),
-            "currentness_evidence": _thaw(self.currentness_evidence),
+            "currentness_evidence": {
+                "campaign_id": self.currentness_evidence.campaign_id,
+                "revision": self.currentness_evidence.revision,
+                "tree_sha": self.currentness_evidence.tree_sha,
+            },
             "publication_reason": self.publication_reason,
+            "execution_durability_join": self.execution_durability_join.to_dict(),
+            "routed_operation": self.routed_operation.to_dict(),
             "native_domains": list(self.native_domains),
         }
+
+    def publication_closure_digest(self, intended_commit_sha: str) -> str:
+        """Digest the exact bounded commit closure for authoritative reconciliation."""
+
+        intended = _revision(intended_commit_sha, "intended commit")
+        material = {
+            "parent_sha": self.pinned_head_sha,
+            "base_tree_sha": self.base_tree_sha,
+            "commit_sha": intended,
+            "path_operations": _thaw(self.path_operations),
+        }
+        encoded = json.dumps(material, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
+            "utf-8"
+        )
+        return hashlib.sha256(encoded).hexdigest()
 
 
 def _campaign_identity(
@@ -360,14 +404,16 @@ def freeze_campaign_publication_attempt(
     repository_id: str,
     target_ref: str,
     campaign_id: str,
-    acting_principal: Mapping[str, object],
+    acting_principal: AuthenticatedPrincipalEvidence,
     pinned_head_sha: str,
     base_tree_sha: str,
     manifest: Mapping[str, object],
     campaign_card: Mapping[str, object],
     path_operations: Mapping[str, object | None],
     owner_generations: Mapping[str, int],
-    currentness_evidence: Mapping[str, object] | None = None,
+    currentness_evidence: PinnedCampaign | None = None,
+    execution_durability_join: ExecutionDurabilityJoin | None = None,
+    routed_operation: RoutedSerializedOperation | None = None,
     accepted_command: Mapping[str, object] | None = None,
     execution: Mapping[str, object] | None = None,
     policy_basis: Mapping[str, object] | None = None,
@@ -382,6 +428,22 @@ def freeze_campaign_publication_attempt(
 
     if currentness_evidence is None:
         raise PublicationContractError("captured currentness evidence is required")
+    if not isinstance(execution_durability_join, ExecutionDurabilityJoin) or not is_execution_durability_join(
+        execution_durability_join
+    ):
+        raise PublicationContractError("owner-issued execution/durability join is required")
+    if not isinstance(routed_operation, RoutedSerializedOperation):
+        raise PublicationContractError("owner-routed serialized operation is required")
+    if execution_durability_join.routed_operation != routed_operation:
+        raise PublicationContractError("execution/durability route differs from publication route")
+    if accepted_command is None:
+        accepted_command = _thaw(execution_durability_join.accepted_command)
+    if execution is None:
+        execution = _thaw(execution_durability_join.execution)
+    if accepted_command != _thaw(execution_durability_join.accepted_command):
+        raise PublicationContractError("accepted command differs from typed execution/durability join")
+    if execution != _thaw(execution_durability_join.execution):
+        raise PublicationContractError("execution evidence differs from typed execution/durability join")
     identity = _campaign_identity(campaign_id, manifest, campaign_card)
     if identity.branch != target_ref:
         raise PublicationContractError("target ref differs from canonical campaign branch")
@@ -400,6 +462,17 @@ def freeze_campaign_publication_attempt(
                 raise PublicationContractError("campaign identity is immutable")
     manifest_operation = operations.get("MANIFEST.yaml")
     card_operation = operations.get("CAMPAIGN_CARD.yaml")
+    if manifest_operation is not None:
+        if not isinstance(manifest_operation, Mapping):
+            raise PublicationContractError("MANIFEST.yaml must retain canonical identity fields")
+        for field in ("campaign_id", "branch", "created_at"):
+            if manifest_operation.get(field) != getattr(identity, field):
+                raise PublicationContractError("canonical campaign identity is immutable")
+    if card_operation is not None:
+        if not isinstance(card_operation, Mapping) or card_operation.get("campaign_id") != campaign_id:
+            raise PublicationContractError("canonical campaign identity is immutable")
+        if "campaign_name" not in card_operation:
+            raise PublicationContractError("campaign card must retain synchronized campaign name")
     if isinstance(manifest_operation, Mapping) or isinstance(card_operation, Mapping):
         resulting_manifest_name = (
             manifest_operation.get("campaign_name", manifest.get("campaign_name"))
@@ -440,13 +513,19 @@ def freeze_campaign_publication_attempt(
             if OPERATIONAL_ROOT_MEMBERSHIP_PATH in operations:
                 raise PublicationContractError("root membership has duplicate publication writer")
             operations[OPERATIONAL_ROOT_MEMBERSHIP_PATH] = root_after
-    accepted_identity, fixed_rng_values, accepted_catalog = _accepted_identity(
-        accepted_command, execution
-    )
-    catalog = dict(catalog_basis or accepted_catalog)
+    operation_payload = _thaw(routed_operation.payload)
+    if operations.get(routed_operation.relative_path) != operation_payload:
+        raise PublicationContractError("owner-routed serialized operation is missing or mismatched")
+    accepted_identity, fixed_rng_values, accepted_catalog = _accepted_identity(accepted_command, execution)
+    catalog = dict(catalog_basis or accepted_catalog or _thaw(execution_durability_join.catalog_basis))
     if accepted_catalog and catalog != accepted_catalog:
         raise PublicationContractError("catalog basis differs from accepted execution")
-    policy = dict(policy_basis or {})
+    policy = dict(policy_basis or _thaw(execution_durability_join.policy_basis))
+    expected_join_policy = _thaw(execution_durability_join.policy_basis)
+    for field in ("policy_refs", "action_request", "invocation_facts"):
+        if field in policy and policy[field] != expected_join_policy[field]:
+            raise PublicationContractError("policy basis differs from typed execution/durability join")
+        policy[field] = expected_join_policy[field]
     if accepted_command is not None:
         expected_refs = _policy_refs(accepted_command)
         supplied_refs = policy.get("policy_refs", expected_refs)
@@ -476,6 +555,8 @@ def freeze_campaign_publication_attempt(
         root_membership_before=root_membership_before,
         currentness_evidence=currentness_evidence,
         publication_reason=publication_reason,
+        execution_durability_join=execution_durability_join,
+        routed_operation=routed_operation,
     )
 
 
@@ -610,19 +691,66 @@ def reconcile_indeterminate_publication(
 
     if not isinstance(attempt, FrozenCampaignPublicationAttempt):
         raise PublicationContractError("immutable campaign publication attempt is required")
+    if intended_commit_sha is None:
+        raise PublicationContractError("indeterminate reconciliation requires an intended commit")
+    intended = _revision(intended_commit_sha, "intended commit")
     if not callable(read_current):
         raise PublicationContractError("indeterminate reconciliation requires authoritative read")
     evidence = read_current()
     if not isinstance(evidence, Mapping):
         raise PublicationContractError("currentness reconciliation evidence must be typed")
+    if any(
+        field in evidence
+        for field in ("current_closure_compatible", "lineage_contains_intended", "head_is_intended")
+    ):
+        raise PublicationContractError("reconciliation cannot consume caller boolean authority")
     observed_value = evidence.get("head_sha")
     observed = None if observed_value is None else _revision(observed_value, "reconciled head")
-    intended = None if intended_commit_sha is None else _revision(intended_commit_sha, "intended commit")
-    if evidence.get("current_closure_compatible") is True and (
-        evidence.get("lineage_contains_intended") is True
-        or evidence.get("head_is_intended") is True
-        or (intended is not None and observed == intended)
-    ):
+    if observed != intended:
+        return PublicationOutcome(
+            PublicationStatus.CONFLICT,
+            intended,
+            observed,
+            "CURRENT_HEAD_DIFFERS_FROM_INTENDED",
+            dispatched=False,
+        )
+    tree_value = evidence.get("tree_sha")
+    parent_value = evidence.get("parent_sha")
+    operation_paths = evidence.get("operation_paths")
+    closure_digest = evidence.get("closure_digest")
+    if not isinstance(tree_value, str) or _SHA40_OR_64.fullmatch(tree_value) is None:
+        return PublicationOutcome(
+            PublicationStatus.INDETERMINATE,
+            intended,
+            observed,
+            "BOUNDED_RECONCILIATION_INSUFFICIENT",
+            dispatched=False,
+        )
+    if parent_value != attempt.pinned_head_sha or operation_paths != sorted(attempt.path_operations):
+        return PublicationOutcome(
+            PublicationStatus.CONFLICT,
+            intended,
+            observed,
+            "CURRENT_CLOSURE_REQUIRES_REPIN",
+            dispatched=False,
+        )
+    if closure_digest != attempt.publication_closure_digest(intended):
+        return PublicationOutcome(
+            PublicationStatus.INDETERMINATE,
+            intended,
+            observed,
+            "BOUNDED_RECONCILIATION_INSUFFICIENT",
+            dispatched=False,
+        )
+    if isinstance(operation_paths, list) and len(operation_paths) != len(set(operation_paths)):
+        return PublicationOutcome(
+            PublicationStatus.CONFLICT,
+            intended,
+            observed,
+            "CURRENT_CLOSURE_REQUIRES_REPIN",
+            dispatched=False,
+        )
+    if parent_value == attempt.pinned_head_sha:
         return PublicationOutcome(
             PublicationStatus.ACCEPTED,
             intended,
@@ -630,17 +758,9 @@ def reconcile_indeterminate_publication(
             "RECONCILED_CURRENT_CLOSURE",
             dispatched=False,
         )
-    if evidence.get("current_closure_compatible") is False:
-        return PublicationOutcome(
-            PublicationStatus.CONFLICT,
-            None,
-            observed,
-            "CURRENT_CLOSURE_REQUIRES_REPIN",
-            dispatched=False,
-        )
     return PublicationOutcome(
         PublicationStatus.INDETERMINATE,
-        None,
+        intended,
         observed,
         "BOUNDED_RECONCILIATION_INSUFFICIENT",
         dispatched=False,
@@ -650,7 +770,11 @@ def reconcile_indeterminate_publication(
 def reconcile_non_fast_forward_publication(
     attempt: FrozenCampaignPublicationAttempt,
     read_current: Callable[[], Mapping[str, object]],
+    *,
+    intended_commit_sha: str,
 ) -> PublicationOutcome:
     """Reconcile a stale parent through bounded reads before any rebuild."""
 
-    return reconcile_indeterminate_publication(attempt, read_current)
+    return reconcile_indeterminate_publication(
+        attempt, read_current, intended_commit_sha=intended_commit_sha
+    )

@@ -372,3 +372,27 @@ VERSION_IMPACT:
 
 SYSTEM_IMPACT: NONE - implementation remains within the approved T05 durability/publication envelope; no new semantic, currentness, policy, lifecycle, persistence or recovery authority was introduced.
 UNPUBLISHED_WORK: NONE after the coherent T05 checkpoint commit; final status awaits Senior integration audit.
+
+## W02.T05 Repair Round 1 — 2026-09-18
+
+INDEPENDENT FINDINGS ADDRESSED:
+- Access-owner principal evidence is now the existing typed `AuthenticatedPrincipalEvidence`; forged caller mappings are rejected.
+- Publication currentness consumes the existing typed `PinnedCampaign` and requires exact pinned head `H` plus tree `T(H)` binding before plan creation.
+- Indeterminate reconciliation requires intended commit `C`, exact observed head `C`, pinned parent, bounded operation-path closure and an attempt-bound closure digest; caller boolean authority is rejected.
+- Publication consumes an owner-issued typed `ExecutionDurabilityJoin` plus matching `RoutedSerializedOperation`, preserving the full accepted command, execution, fixed RNG, catalog and adjudication basis.
+- Resulting MANIFEST operations retain immutable campaign ID, branch and created-at fields; synchronized campaign-name projection behavior remains preserved.
+- Handoff issuance now consumes the recovery-root owner validator for exact campaign, native shape and unresolved state before issuing the owner-only promise.
+
+TDD EVIDENCE:
+- RED: repair suite initially failed because the typed routed-operation/join API was absent; subsequent negative tests caught unhashable issued-join registration, stale path fixtures and forged boolean reconciliation.
+- GREEN: RD06 plus RD05/RD07 focused suites, 104 passed.
+
+VERSION_IMPACT:
+- `GAME/TOOLS/durability.py`: `framework_module_version` 1.0.1 -> 1.0.2;
+- `GAME/TOOLS/publication.py`: `framework_module_version` 1.0.1 -> 1.0.2;
+- `GAME/TOOLS/recovery_roots.py`: `framework_module_version` 1.0.5 -> 1.0.6;
+- `campaign-publication-attempt.schema_version`: 1 -> 2 for the typed Access/currentness/join/route closure contract;
+- durability-result schema, catalog, engine, campaign, persistence, storage and migration namespaces: NONE.
+
+SYSTEM_IMPACT: NONE - repairs consume existing Access/currentness/native-owner owners and remain inside the approved W02.T05 envelope; no second authority, journal/frontier, transaction, or recovery hydration was introduced.
+UNPUBLISHED_WORK: NONE after the repair-round checkpoint commit; final status awaits Senior integration audit.

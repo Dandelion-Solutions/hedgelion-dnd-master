@@ -5,14 +5,19 @@ import unittest
 
 from GAME.TOOLS.durability import (
     DurabilityContractError,
+    ExecutionDurabilityJoin,
     NativeDurabilityResult,
+    RoutedSerializedOperation,
     complete_save_promise,
     evaluate_durability,
     freeze_save_promise,
+    is_execution_durability_join,
     issue_durability_handoff_promise,
     join_execution_durability,
     project_durable_generations,
+    route_serialized_operation,
 )
+from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence, PinnedCampaign
 from GAME.TOOLS.publication import (
     PublicationContractError,
     PublicationStatus,
@@ -92,6 +97,28 @@ def _execution() -> dict[str, object]:
     }
 
 
+def _command_operation() -> RoutedSerializedOperation:
+    return route_serialized_operation(
+        "runtime.command", "command-000001", _accepted_command()
+    )
+
+
+def _execution_join() -> ExecutionDurabilityJoin:
+    evaluation = evaluate_durability(
+        campaign_id="campaign-000001",
+        scope="accepted_execution",
+        dirty_roots=("runtime.command:command-000001",),
+        currentness_evidence={"head_sha": H},
+    )
+    promise = freeze_save_promise(evaluation, owner_generations={})
+    return join_execution_durability(
+        _accepted_command(),
+        _execution(),
+        promise,
+        routed_operation=_command_operation(),
+    )
+
+
 def _procedure(*, lifecycle: str, revision: int = 1) -> dict[str, object]:
     state: dict[str, object] = {
         "schema_version": 2,
@@ -140,7 +167,7 @@ def _attempt(**overrides: object):
         "repository_id": "github.com/example/campaigns",
         "target_ref": "campaign/20260916",
         "campaign_id": "campaign-000001",
-        "acting_principal": {"principal_id": "principal-1", "authorization": "campaign_write"},
+        "acting_principal": AuthenticatedPrincipalEvidence("principal-1"),
         "pinned_head_sha": H,
         "base_tree_sha": T,
         "manifest": {
@@ -153,13 +180,13 @@ def _attempt(**overrides: object):
             "campaign_id": "campaign-000001",
             "campaign_name": "The Frostfall",
         },
-        "path_operations": {
-            "STATE/RUNTIME/COMMANDS/command.yaml": _accepted_command(),
-        },
+        "path_operations": {_command_operation().relative_path: _accepted_command()},
         "owner_generations": {"runtime.procedure:procedure-000001": 2},
-        "currentness_evidence": {"head_sha": H, "ref": "campaign/20260916"},
+        "currentness_evidence": PinnedCampaign("campaign-000001", H, T),
         "accepted_command": _accepted_command(),
         "execution": _execution(),
+        "execution_durability_join": _execution_join(),
+        "routed_operation": _command_operation(),
         "procedure_before": _procedure(lifecycle="ACTIVE"),
         "procedure_after": terminal,
         "root_delta": removed,
@@ -232,7 +259,7 @@ class PublicationPlanTests(unittest.TestCase):
             "repository_id": "github.com/example/campaigns",
             "target_ref": "campaign/20260916",
             "campaign_id": "campaign-000001",
-            "acting_principal": {"principal_id": "principal-1", "authorization": "campaign_write"},
+            "acting_principal": AuthenticatedPrincipalEvidence("principal-1"),
             "pinned_head_sha": H,
             "base_tree_sha": T,
             "manifest": {
@@ -242,12 +269,33 @@ class PublicationPlanTests(unittest.TestCase):
                 "created_at": "2026-09-16T12:00:00Z",
             },
             "campaign_card": {"campaign_id": "campaign-000001", "campaign_name": "The Frostfall"},
-            "path_operations": {"STATE/RUNTIME/COMMANDS/command.yaml": _accepted_command()},
+            "path_operations": {_command_operation().relative_path: _accepted_command()},
             "owner_generations": {},
         }
 
         with self.assertRaisesRegex(PublicationContractError, "currentness"):
             freeze_campaign_publication_attempt(**values)
+
+    def test_publication_rejects_forged_mapping_principal_evidence(self) -> None:
+        with self.assertRaisesRegex(PublicationContractError, "owner-typed|Access"):
+            _attempt(acting_principal={"principal_id": "principal-1", "authorization": "campaign_write"})
+
+    def test_publication_rejects_currentness_head_or_tree_mismatch(self) -> None:
+        with self.assertRaisesRegex(PublicationContractError, "currentness"):
+            _attempt(currentness_evidence=PinnedCampaign("campaign-000001", C, T))
+        with self.assertRaisesRegex(PublicationContractError, "currentness"):
+            _attempt(currentness_evidence=PinnedCampaign("campaign-000001", H, C))
+
+    def test_publication_rejects_missing_or_mismatched_typed_join_and_route(self) -> None:
+        with self.assertRaisesRegex(PublicationContractError, "join"):
+            _attempt(execution_durability_join=None)
+        with self.assertRaisesRegex(PublicationContractError, "route|operation"):
+            _attempt(routed_operation=None)
+        with self.assertRaisesRegex(PublicationContractError, "join"):
+            _attempt(
+                execution_durability_join=_execution_join(),
+                execution=_execution() | {"event_id": "other"},
+            )
 
     def test_freeze_and_plan_use_one_parent_tree_and_non_force_ref_transition(self) -> None:
         attempt = _attempt()
@@ -276,7 +324,7 @@ class PublicationPlanTests(unittest.TestCase):
         attempt = _attempt()
 
         with self.assertRaises(TypeError):
-            attempt.path_operations["STATE/RUNTIME/COMMANDS/command.yaml"]["command_id"] = "other"  # type: ignore[index]
+            attempt.path_operations[_command_operation().relative_path]["command_id"] = "other"  # type: ignore[index]
         with self.assertRaises(TypeError):
             attempt.catalog_basis["catalog_generation"] = 3  # type: ignore[index]
 
@@ -284,7 +332,7 @@ class PublicationPlanTests(unittest.TestCase):
         with self.assertRaisesRegex(PublicationContractError, "storage"):
             _attempt(
                 path_operations={
-                    "STATE/RUNTIME/COMMANDS/command.yaml": _accepted_command(),
+                    _command_operation().relative_path: _accepted_command(),
                     "DND_STORAGE.yaml": {"storage": "metadata"},
                 }
             )
@@ -332,11 +380,15 @@ class PublicationOutcomeTests(unittest.TestCase):
             reads.append("current-ref")
             return {
                 "head_sha": C,
-                "lineage_contains_intended": True,
-                "current_closure_compatible": True,
+                "tree_sha": T,
+                "parent_sha": H,
+                "operation_paths": sorted(attempt.path_operations),
+                "closure_digest": attempt.publication_closure_digest(C),
             }
 
-        reconciled = reconcile_indeterminate_publication(attempt, read_current)
+        reconciled = reconcile_indeterminate_publication(
+            attempt, read_current, intended_commit_sha=C
+        )
         self.assertEqual(reconciled.status, PublicationStatus.ACCEPTED)
         self.assertEqual(reads, ["current-ref"])
 
@@ -347,13 +399,38 @@ class PublicationOutcomeTests(unittest.TestCase):
             attempt,
             lambda: {
                 "head_sha": C,
-                "lineage_contains_intended": True,
-                "current_closure_compatible": False,
+                "tree_sha": T,
+                "parent_sha": H,
+                "operation_paths": [],
+                "closure_digest": "bad",
             },
+            intended_commit_sha=C,
         )
 
         self.assertEqual(result.status, PublicationStatus.CONFLICT)
         self.assertFalse(result.acknowledged)
+
+    def test_indeterminate_reconciliation_rejects_omitted_commit_or_unbound_boolean(self) -> None:
+        attempt = _attempt()
+        with self.assertRaisesRegex(PublicationContractError, "intended commit"):
+            reconcile_indeterminate_publication(
+                attempt,
+                lambda: {"head_sha": C, "lineage_contains_intended": True},
+            )
+
+        with self.assertRaisesRegex(PublicationContractError, "boolean"):
+            reconcile_indeterminate_publication(
+                attempt,
+                lambda: {
+                    "head_sha": C,
+                    "tree_sha": T,
+                    "parent_sha": H,
+                    "operation_paths": sorted(attempt.path_operations),
+                    "closure_digest": "not-the-attempt-closure",
+                    "lineage_contains_intended": True,
+                },
+                intended_commit_sha=C,
+            )
 
 
 class ExecutionDurabilityJoinTests(unittest.TestCase):
@@ -365,13 +442,16 @@ class ExecutionDurabilityJoinTests(unittest.TestCase):
             currentness_evidence={"head_sha": H},
         )
         promise = freeze_save_promise(evaluation, owner_generations={})
-        joined = join_execution_durability(_accepted_command(), _execution(), promise)
+        joined = _execution_join()
 
         self.assertEqual(joined.command_id, "command-000001")
         self.assertEqual(joined.input_fingerprint, "a" * 64)
         self.assertEqual(joined.fixed_rng_values, (17,))
         self.assertEqual(joined.catalog_basis["catalog_generation"], 2)
         self.assertEqual(joined.policy_basis_refs, (f"policy.social_leverage@{H}",))
+        self.assertTrue(is_execution_durability_join(joined))
+        self.assertEqual(joined.accepted_command["command_id"], "command-000001")
+        self.assertEqual(joined.routed_operation.relative_path, _command_operation().relative_path)
 
     def test_join_rejects_execution_identity_replacement(self) -> None:
         evaluation = evaluate_durability(
@@ -385,7 +465,9 @@ class ExecutionDurabilityJoinTests(unittest.TestCase):
         execution["accepted_command_id"] = "command-other"
 
         with self.assertRaisesRegex(DurabilityContractError, "identity"):
-            join_execution_durability(_accepted_command(), execution, promise)
+            join_execution_durability(
+                _accepted_command(), execution, promise, routed_operation=_command_operation()
+            )
 
 
 class DurabilityProjectionTests(unittest.TestCase):
@@ -429,7 +511,9 @@ class PersistencePublicationContractTests(unittest.TestCase):
     def test_publication_plan_contains_exact_delta_and_no_immediate_confirmation_read(self) -> None:
         plan = build_connector_git_plan(_attempt())
 
-        self.assertEqual(plan.path_operations["STATE/RUNTIME/COMMANDS/command.yaml"]["command_id"], "command-000001")
+        self.assertEqual(
+            plan.path_operations[_command_operation().relative_path]["command_id"], "command-000001"
+        )
         self.assertEqual(plan.confirmation_reads, 0)
         self.assertTrue(plan.requires_currentness_probe)
 
@@ -516,6 +600,32 @@ class CampaignIdentityImmutabilityTests(unittest.TestCase):
                 path_operations={
                     "MANIFEST.yaml": {"campaign_id": "campaign-other", "campaign_name": "The Frostfall"},
                     "CAMPAIGN_CARD.yaml": {"campaign_id": "campaign-other", "campaign_name": "The Frostfall"},
+                    _command_operation().relative_path: _accepted_command(),
+                }
+            )
+
+    def test_manifest_branch_and_created_at_are_immutable_result_fields(self) -> None:
+        manifest = {
+            "campaign_id": "campaign-000001",
+            "campaign_name": "The Frostfall",
+            "branch": "campaign/other",
+            "created_at": "2026-09-16T12:00:00Z",
+        }
+        with self.assertRaisesRegex(PublicationContractError, "immutable"):
+            _attempt(
+                path_operations={
+                    "MANIFEST.yaml": manifest,
+                    _command_operation().relative_path: _accepted_command(),
+                }
+            )
+
+        manifest["branch"] = "campaign/20260916"
+        manifest["created_at"] = "2026-09-17T12:00:00Z"
+        with self.assertRaisesRegex(PublicationContractError, "immutable"):
+            _attempt(
+                path_operations={
+                    "MANIFEST.yaml": manifest,
+                    _command_operation().relative_path: _accepted_command(),
                 }
             )
 
@@ -542,6 +652,40 @@ class AuthorizedDurabilityHandoffTests(unittest.TestCase):
         )
         self.assertEqual(delta.action, "ENROLL")
 
+    def test_handoff_issuance_rejects_cross_campaign_and_resolved_or_fabricated_owner(self) -> None:
+        interaction = {
+            "kind": "runtime.interaction",
+            "campaign_id": "campaign-000001",
+            "session_id": "session-1",
+            "player_id": "player-1",
+            "input_message_id": "message-1",
+            "intent_plan_id": "plan-1",
+        }
+        with self.assertRaisesRegex(DurabilityContractError, "campaign"):
+            issue_durability_handoff_promise(
+                campaign_id="campaign-other",
+                owner_kind="runtime.interaction",
+                native_owner=interaction,
+                scope="accepted_handoff",
+            )
+
+        resolved = interaction | {"response_message_id": "message-2"}
+        with self.assertRaisesRegex(DurabilityContractError, "unresolved"):
+            issue_durability_handoff_promise(
+                campaign_id="campaign-000001",
+                owner_kind="runtime.interaction",
+                native_owner=resolved,
+                scope="accepted_handoff",
+            )
+
+        with self.assertRaisesRegex(DurabilityContractError, "native owner"):
+            issue_durability_handoff_promise(
+                campaign_id="campaign-000001",
+                owner_kind="runtime.interaction",
+                native_owner={"kind": "runtime.interaction", "input_message_id": "message-1"},
+                scope="accepted_handoff",
+            )
+
     def test_arbitrary_promise_shape_is_not_an_authority_boundary(self) -> None:
         interaction = {
             "kind": "runtime.interaction",
@@ -553,7 +697,7 @@ class AuthorizedDurabilityHandoffTests(unittest.TestCase):
             def validate(self, **_kwargs: object) -> bool:
                 return True
 
-        with self.assertRaisesRegex(Exception, "authorized"):
+        with self.assertRaisesRegex(Exception, "authorized|native owner|session_id"):
             derive_operational_root_delta(
                 "campaign-000001",
                 "runtime.interaction",

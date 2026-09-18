@@ -16,9 +16,11 @@ from types import MappingProxyType
 from typing import Final
 import weakref
 
+from .native_storage import route_native_record
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final = "1.0.1"
+
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final = "1.0.2"
 _SHA256: Final = re.compile(r"^[a-f0-9]{64}$")
 _ID: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _PROMISE_STATUSES: Final = frozenset(
@@ -318,6 +320,54 @@ def complete_save_promise(
 
 
 @dataclass(frozen=True, slots=True)
+class RoutedSerializedOperation:
+    """Owner-routed serialized bytes admitted to one native record route."""
+
+    owner_kind: str
+    owner_id: str
+    relative_path: str
+    payload: Mapping[str, object]
+
+    def __post_init__(self) -> None:
+        _nonempty(self.owner_kind, "operation owner kind")
+        _machine_id(self.owner_id, "operation owner id")
+        expected_path = route_native_record(self.owner_kind, (self.owner_id,)).relative_path
+        if self.relative_path != expected_path:
+            raise DurabilityContractError("serialized operation route differs from native owner")
+        copied = _json_copy(self.payload, "serialized operation payload")
+        if not isinstance(copied, dict):
+            raise DurabilityContractError("serialized operation payload must be an object")
+        declared_kind = copied.get("kind")
+        if declared_kind is not None and declared_kind != self.owner_kind:
+            raise DurabilityContractError("serialized operation owner kind differs from payload")
+        identity_field = {
+            "runtime.command": "command_id",
+            "runtime.interaction": "input_message_id",
+            "runtime.intent_plan": "intent_plan_id",
+        }.get(self.owner_kind, "id")
+        if copied.get(identity_field, copied.get("id")) != self.owner_id:
+            raise DurabilityContractError("serialized operation owner identity differs from payload")
+        object.__setattr__(self, "payload", _freeze(copied))
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "owner_kind": self.owner_kind,
+            "owner_id": self.owner_id,
+            "relative_path": self.relative_path,
+            "payload": _thaw(self.payload),
+        }
+
+
+def route_serialized_operation(
+    owner_kind: str, owner_id: str, payload: Mapping[str, object]
+) -> RoutedSerializedOperation:
+    """Derive the native route before a serialized owner operation is published."""
+
+    route = route_native_record(owner_kind, (owner_id,))
+    return RoutedSerializedOperation(owner_kind, owner_id, route.relative_path, payload)
+
+
+@dataclass(frozen=True, slots=True, weakref_slot=True, init=False)
 class ExecutionDurabilityJoin:
     """Durability evidence joined to one accepted execution identity."""
 
@@ -330,6 +380,13 @@ class ExecutionDurabilityJoin:
     fixed_rng_values: tuple[int, ...]
     catalog_basis: Mapping[str, object]
     policy_basis_refs: tuple[str, ...]
+    accepted_command: Mapping[str, object]
+    execution: Mapping[str, object]
+    routed_operation: RoutedSerializedOperation
+    policy_basis: Mapping[str, object]
+
+    def __init__(self, **_values: object) -> None:
+        raise DurabilityContractError("execution/durability joins must be owner-issued")
 
     def __post_init__(self) -> None:
         _machine_id(self.campaign_id, "campaign_id")
@@ -345,6 +402,43 @@ class ExecutionDurabilityJoin:
             raise DurabilityContractError("catalog basis must be an object")
         object.__setattr__(self, "catalog_basis", _freeze(basis))
         object.__setattr__(self, "policy_basis_refs", _sorted_unique(self.policy_basis_refs, "policy_basis_refs"))
+        accepted = _json_copy(self.accepted_command, "accepted command")
+        execution = _json_copy(self.execution, "execution evidence")
+        if not isinstance(accepted, dict) or not isinstance(execution, dict):
+            raise DurabilityContractError("execution/durability join requires serialized owner evidence")
+        if not isinstance(self.routed_operation, RoutedSerializedOperation):
+            raise DurabilityContractError("execution/durability join requires an owner-routed operation")
+        if self.routed_operation.owner_kind != "runtime.command":
+            raise DurabilityContractError("execution/durability operation must route a RuntimeCommand")
+        if self.routed_operation.owner_id != self.command_id:
+            raise DurabilityContractError("execution/durability route identity differs from command identity")
+        if _thaw(self.routed_operation.payload) != accepted:
+            raise DurabilityContractError("execution/durability route payload differs from accepted command")
+        basis = _json_copy(self.policy_basis, "policy basis")
+        if not isinstance(basis, dict):
+            raise DurabilityContractError("execution/durability policy basis must be an object")
+        if tuple(basis.get("policy_refs", ())) != self.policy_basis_refs:
+            raise DurabilityContractError("execution/durability policy refs differ from accepted basis")
+        object.__setattr__(self, "accepted_command", _freeze(accepted))
+        object.__setattr__(self, "execution", _freeze(execution))
+        object.__setattr__(self, "policy_basis", _freeze(basis))
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "campaign_id": self.campaign_id,
+            "command_id": self.command_id,
+            "input_fingerprint": self.input_fingerprint,
+            "resolution_id": self.resolution_id,
+            "segment_id": self.segment_id,
+            "event_id": self.event_id,
+            "fixed_rng_values": list(self.fixed_rng_values),
+            "catalog_basis": _thaw(self.catalog_basis),
+            "policy_basis_refs": list(self.policy_basis_refs),
+            "accepted_command": _thaw(self.accepted_command),
+            "execution": _thaw(self.execution),
+            "routed_operation": self.routed_operation.to_dict(),
+            "policy_basis": _thaw(self.policy_basis),
+        }
 
 
 def _policy_refs(command: Mapping[str, object]) -> tuple[str, ...]:
@@ -369,15 +463,24 @@ def _policy_refs(command: Mapping[str, object]) -> tuple[str, ...]:
     return tuple(sorted(refs))
 
 
+_ISSUED_EXECUTION_JOINS: weakref.WeakValueDictionary[int, ExecutionDurabilityJoin] = weakref.WeakValueDictionary()
+
+
 def join_execution_durability(
     accepted_command: Mapping[str, object],
     execution: Mapping[str, object],
     promise: DurabilityPromise,
+    *,
+    routed_operation: RoutedSerializedOperation,
 ) -> ExecutionDurabilityJoin:
     """Join execution output without rerunning mechanics or resolving policy."""
 
     if not isinstance(promise, DurabilityPromise):
         raise DurabilityContractError("typed durability promise is required")
+    if not isinstance(routed_operation, RoutedSerializedOperation):
+        raise DurabilityContractError("owner-routed serialized operation is required")
+    if not isinstance(accepted_command, Mapping) or not isinstance(execution, Mapping):
+        raise DurabilityContractError("accepted command and execution must be serialized objects")
     command_id = _machine_id(accepted_command.get("command_id"), "accepted command_id")
     fingerprint = _sha256(accepted_command.get("input_fingerprint"), "accepted input_fingerprint")
     if execution.get("accepted_command_id") != command_id:
@@ -410,16 +513,42 @@ def join_execution_durability(
     catalog_basis = dict(catalog)
     if catalog_basis.get("catalog_generation") != 2:
         raise DurabilityContractError("accepted catalog basis is not the pinned generation")
-    return ExecutionDurabilityJoin(
-        campaign_id=promise.campaign_id,
-        command_id=command_id,
-        input_fingerprint=fingerprint,
-        resolution_id=resolution_id,
-        segment_id=segment_id,
-        event_id=event_id,
-        fixed_rng_values=fixed_values,
-        catalog_basis=catalog_basis,
-        policy_basis_refs=_policy_refs(accepted_command),
+    policy_refs = _policy_refs(accepted_command)
+    accepted_copy = _json_copy(accepted_command, "accepted command")
+    execution_copy = _json_copy(execution, "execution evidence")
+    if not isinstance(accepted_copy, dict) or not isinstance(execution_copy, dict):
+        raise DurabilityContractError("accepted command and execution must be serialized objects")
+    basis = {
+        "policy_refs": list(policy_refs),
+        "action_request": _json_copy(accepted_command.get("action_request", {}), "action request"),
+        "invocation_facts": _json_copy(accepted_command.get("invocation_facts", []), "invocation facts"),
+    }
+    join = object.__new__(ExecutionDurabilityJoin)
+    for field, value in {
+        "campaign_id": promise.campaign_id,
+        "command_id": command_id,
+        "input_fingerprint": fingerprint,
+        "resolution_id": resolution_id,
+        "segment_id": segment_id,
+        "event_id": event_id,
+        "fixed_rng_values": fixed_values,
+        "catalog_basis": catalog_basis,
+        "policy_basis_refs": policy_refs,
+        "accepted_command": accepted_copy,
+        "execution": execution_copy,
+        "routed_operation": routed_operation,
+        "policy_basis": basis,
+    }.items():
+        object.__setattr__(join, field, value)
+    ExecutionDurabilityJoin.__post_init__(join)
+    _ISSUED_EXECUTION_JOINS[id(join)] = join
+    return join
+
+
+def is_execution_durability_join(value: object) -> bool:
+    return (
+        isinstance(value, ExecutionDurabilityJoin)
+        and _ISSUED_EXECUTION_JOINS.get(id(value)) is value
     )
 
 
@@ -510,7 +639,12 @@ def issue_durability_handoff_promise(
         raise DurabilityContractError("native unresolved owner must be an object")
     if native_owner.get("kind") != owner_kind:
         raise DurabilityContractError("handoff owner kind differs from native owner")
-    owner_id = _handoff_owner_id(owner_kind, native_owner)
+    try:
+        from .recovery_roots import validate_unresolved_input_owner
+
+        owner_id = validate_unresolved_input_owner(campaign, owner_kind, native_owner)
+    except (ImportError, ValueError) as exc:
+        raise DurabilityContractError(f"native owner is not an admitted unresolved owner: {exc}") from exc
     _nonempty(scope, "handoff promise scope")
     promise = object.__new__(DurabilityHandoffPromise)
     for field, value in {

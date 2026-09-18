@@ -26,14 +26,24 @@
     "root_membership_before",
     "currentness_evidence",
     "publication_reason",
+    "execution_durability_join",
+    "routed_operation",
     "native_domains"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "repository_id": {"type": "string", "minLength": 1},
     "target_ref": {"type": "string", "minLength": 1},
     "campaign_id": {"type": "string", "minLength": 1},
-    "acting_principal": {"type": "object", "minProperties": 2},
+    "acting_principal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal_id", "evidence_type"],
+      "properties": {
+        "principal_id": {"type": "string", "minLength": 1},
+        "evidence_type": {"const": "authenticated_access_owner"}
+      }
+    },
     "pinned_head_sha": {"type": "string", "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"},
     "base_tree_sha": {"type": "string", "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"},
     "campaign_identity": {
@@ -74,8 +84,19 @@
     "procedure_after": {"type": ["object", "null"]},
     "root_delta": {"type": ["object", "null"]},
     "root_membership_before": {"type": ["object", "null"]},
-    "currentness_evidence": {"type": "object", "minProperties": 1},
+    "currentness_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["campaign_id", "revision", "tree_sha"],
+      "properties": {
+        "campaign_id": {"type": "string", "minLength": 1},
+        "revision": {"type": "string", "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"},
+        "tree_sha": {"type": "string", "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"}
+      }
+    },
     "publication_reason": {"type": "string", "minLength": 1},
+    "execution_durability_join": {"type": "object", "minProperties": 1},
+    "routed_operation": {"type": "object", "minProperties": 1},
     "native_domains": {"const": ["campaign"]}
   }
 }

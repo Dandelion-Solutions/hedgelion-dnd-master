@@ -16,8 +16,8 @@ from typing import Final, Protocol
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final = "1.0.6"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
 _OWNER_KINDS: Final = frozenset(
     {
@@ -340,8 +340,12 @@ def _validate_promised_input(
     native_owner: Mapping[str, object],
     promise: AcceptedUnresolvedInputPromise | None,
 ) -> tuple[str, bool, str]:
-    if owner_kind not in _PROMISED_OWNER_KINDS:
-        raise OperationalRootError("durability promise is only valid for unresolved input owners")
+    try:
+        owner_id = validate_unresolved_input_owner(campaign_id, owner_kind, native_owner)
+    except OperationalRootError as exc:
+        raise OperationalRootError(
+            f"authorized durability/handoff promise boundary does not match native owner: {exc}"
+        ) from exc
     if promise is None:
         raise OperationalRootError(
             "unresolved input enrollment is deferred until an authorized durability/handoff promise boundary"
@@ -352,12 +356,6 @@ def _validate_promised_input(
         raise OperationalRootError("authorized durability/handoff boundary is unavailable") from exc
     if not is_authorized_handoff_promise(promise):
         raise OperationalRootError("unresolved input requires an authorized durability/handoff promise boundary")
-    if owner_kind == "runtime.interaction":
-        owner_id = _nonempty(native_owner.get("input_message_id"), "interaction input_message_id")
-    else:
-        owner_id = _nonempty(
-            native_owner.get("intent_plan_id", native_owner.get("id")), "intent plan id"
-        )
     try:
         valid = promise.validate(
             campaign_id=campaign_id,
@@ -370,6 +368,44 @@ def _validate_promised_input(
     if valid is not True:
         raise OperationalRootError("authorized durability/handoff promise does not match native owner")
     return owner_id, True, "owner_issued_durability_handoff_promise"
+
+
+def validate_unresolved_input_owner(
+    campaign_id: str, owner_kind: str, native_owner: Mapping[str, object]
+) -> str:
+    """Validate one exact native unresolved-input owner before handoff issuance."""
+
+    _nonempty(campaign_id, "campaign_id")
+    if owner_kind not in _PROMISED_OWNER_KINDS:
+        raise OperationalRootError("durability promise is only valid for unresolved input owners")
+    if not isinstance(native_owner, Mapping):
+        raise OperationalRootError("unresolved input owner must be a native mapping")
+    if native_owner.get("kind") != owner_kind:
+        raise OperationalRootError("native unresolved owner kind differs from requested owner kind")
+    if native_owner.get("campaign_id") != campaign_id:
+        raise OperationalRootError("native unresolved owner campaign differs from promise campaign")
+    if owner_kind == "runtime.interaction":
+        required = ("session_id", "player_id", "input_message_id", "intent_plan_id")
+        for field in required:
+            _nonempty(native_owner.get(field), f"interaction {field}")
+        if native_owner.get("response_message_id") is not None:
+            raise OperationalRootError("native interaction is resolved, not unresolved")
+        return _nonempty(native_owner.get("input_message_id"), "interaction input_message_id")
+
+    owner_id = _nonempty(
+        native_owner.get("intent_plan_id", native_owner.get("id")), "intent plan id"
+    )
+    _nonempty(native_owner.get("interaction_id"), "intent plan interaction_id")
+    clauses = native_owner.get("clauses")
+    if not isinstance(clauses, list) or not clauses:
+        raise OperationalRootError("native intent plan clauses are required")
+    if not any(
+        isinstance(clause, Mapping)
+        and clause.get("execution_state") in {"intent.pending", "intent.ready"}
+        for clause in clauses
+    ):
+        raise OperationalRootError("native intent plan is resolved, not unresolved")
+    return owner_id
 
 
 def _owner_item(
