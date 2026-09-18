@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T05 - blocked until the T04 checkpoint is consumed; T02/T03/T04 repair round 1 is GREEN and local-only
-LAST_COMPLETED_TASK: W02.T04 - W02_OPERATIONAL_ROOT_ENROLLMENT_READY -> `9de81a8` + native-state repair `6c98cd7` + repair round 1 `f6c64b0`
-LAST_SAFE_SHA: `f6c64b0` (local coherent T04 repair checkpoint; no push)
+CURRENT_TASK: W02.T05 - blocked until the T04 checkpoint is consumed; T02/T03/T04 repair round 2 is GREEN and local-only
+LAST_COMPLETED_TASK: W02.T04 - W02_OPERATIONAL_ROOT_ENROLLMENT_READY -> `9de81a8` + native-state repair `6c98cd7` + repair round 1 `f6c64b0` + repair round 2 `2afb5d4`
+LAST_SAFE_SHA: `2afb5d4` (local coherent T04 repair checkpoint; no push)
 
 ## Dependency schedule
 
@@ -90,16 +90,17 @@ COMPLETED_TASKS:
   W02.T01 -> code `c23ac68` + `751665f` + `70f2d80`, published under remote-ref checkpoint `81ad503305d5fefdb47d209c722263f02365a04c`; `W02_CATALOG_BACKED_COMMAND_READY`
   W02.T02 -> code `d40213e` + `2ca6899` + `cfaf8a0` + `238e2db`, published under remote-ref checkpoint `351ab3e876254c31b506efcadc76fca635ea2aab`; `W02_DETERMINISTIC_EXECUTION_READY`
   W02.T03 -> code `bebaa81` + review repair `3acbbf5` + repair round 1 `c1802fe`; `W02_ACCEPTED_ADJUDICATION_BASIS_READY`
-  W02.T04 -> code `9de81a8` + native-state repair `6c98cd7` + repair round 1 `f6c64b0`; `W02_OPERATIONAL_ROOT_ENROLLMENT_READY` (local-only, no push)
+  W02.T04 -> code `9de81a8` + native-state repair `6c98cd7` + repair round 1 `f6c64b0` + repair round 2 `2afb5d4`; `W02_OPERATIONAL_ROOT_ENROLLMENT_READY` (local-only, no push)
 
 ACTUAL IMPACT VS PLANNED: within the W02.T01 envelope. The new owner-native `GAME/TOOLS/runtime_execution.py`, `runtime.command` schema synchronization, and RD05/RD15 tests were expected. Existing Step-3 schema consumer tests required mechanical fixture synchronization; no new authority, persistence/recovery/currentness owner, catalog change, or shared physical writer was introduced.
 
 CURRENT_VERIFICATION_STATE:
-- T04 focused root/lifecycle/native-routing suites at `f6c64b0`: 135 passed
-- T04 full DEV discovery at `f6c64b0`: 723 passed, 7 skipped
-- T04 maintenance audit at `f6c64b0`: PASS
+- T04 focused root/lifecycle/native-routing/execution-consumer suites at `2afb5d4`: 136 passed
+- T04 full DEV discovery at `2afb5d4`: 724 passed, 7 skipped
+- T04 maintenance audit at `2afb5d4`: PASS
 - T04 RED evidence: lifecycle/root tests failed before native lifecycle/root implementation; initial baseline also lacked the isolated DEV dependency environment
 - T04 repair round 1 RED: promised enumeration rejected 3-item owner inputs; caller-constructible promise object was not an owner-validation interface; Procedure schema/producer/root lifecycle version and terminal-form synchronization tests failed
+- T04 repair round 2 RED: structural always-true promise validation incorrectly enrolled unresolved inputs; `execute_segment` accepted v1 and missing Procedure schema states
 - exact rebased detached HEAD `32b78af`: full DEV discovery 647 passed, 7 skipped
 - exact rebased detached HEAD `32b78af`: maintenance audit PASS
 - exact detached T02 code head `238e2db`: focused execution/Step-3 suites 56 passed; full DEV discovery 671 passed, 7 skipped; maintenance audit PASS
@@ -126,15 +127,16 @@ VERSION_IMPACT:
 - T03 repair round 1 `GAME/TOOLS/policy_basis.py`: 1.0.1 -> 1.0.2
 - T03 repair round 1 `GAME/TOOLS/runtime_execution.py`: 1.0.3 -> 1.0.4
 - T03 runtime command schemas, catalog generation, engine, campaign, persistence, storage and migration namespaces: NONE
-- T04 new `GAME/TOOLS/recovery_roots.py`: `framework_module_version` 1.0.1; native-state evidence repair 1.0.1 -> 1.0.2; repair round 1 1.0.2 -> 1.0.3
+- T04 new `GAME/TOOLS/recovery_roots.py`: `framework_module_version` 1.0.1; native-state evidence repair 1.0.1 -> 1.0.2; repair round 1 1.0.2 -> 1.0.3; repair round 2 1.0.3 -> 1.0.4
+- T04 existing `GAME/TOOLS/mechanics.py`: repair round 2 Procedure consumer validation 1.0.4 -> 1.0.5
 - T04 new operational-root routing contract: `schema_version` 1 (new namespace; DEV schema plus GAME projection)
-- T04 Procedure persistent schema family/projection: implicit 1 -> 2 for synchronized owner-native lifecycle representation; engine, catalog, campaign, persistence, storage and migration namespaces: NONE
+- T04 Procedure persistent schema family/projection: implicit 1 -> 2 for synchronized owner-native lifecycle representation; repair round 2 reuses v2 with no further schema bump; engine, catalog, campaign, persistence, storage and migration namespaces: NONE
 
 ACTUAL T02 IMPACT VS PLANNED: within the approved T02 execution-owner envelope. `GAME/TOOLS/mechanics.py` was an explicit Wave-02 baseline direct action path that the initial cursor omitted; its introduction, direct-transition producer/schema synchronization, and domain coverage validator changes are mechanical consumers of the accepted embedded-segment identity, not a new authority or broader boundary.
 
 ACTUAL T03 IMPACT VS PLANNED: within the approved T03 policy-basis envelope. The resolver is an ephemeral verifier over exact pinned reads and existing access/applicability/catalog owners; runtime acceptance now retains complete typed adjudicated parameters/facts in the existing command identity. Repair round 1 adds resolver-issued ephemeral provenance, exact two-parameter/seven-fact consumer allowlists, consuming-command applicability matching, and resolver-selected catalog-context identity checks. No policy proof registry, policy epoch, ACL/currentness owner, persistence/recovery owner, network path or shared writer was introduced.
 
-ACTUAL T04 IMPACT VS PLANNED: within the approved T04 envelope. Procedure lifecycle is materialized as owner-native `ACTIVE|TERMINAL`; generic/concrete schemas, producer/validator and root validator share the lifecycle field and synchronized schema family version; root deltas validate exact native owner kind, identity and state; command eligibility uses accepted/settled disposition plus unfinished closure; unresolved-input rooting consumes only the later-owner validation interface and supports promised Interaction/IntentPlan enumeration. No publication/removal closure, recovery hydration, temporal root, global queue, lifecycle registry or shared writer was introduced.
+ACTUAL T04 IMPACT VS PLANNED: within the approved T04 envelope. Procedure lifecycle is materialized as owner-native `ACTIVE|TERMINAL`; generic/concrete schemas, producer/validator, root validator and the existing execution consumer require the synchronized v2 lifecycle form; root deltas validate exact native owner kind, identity and state; command eligibility uses accepted/settled disposition plus unfinished closure; unresolved-input rooting retains only the typed later-owner interface and fails closed until T05 supplies its authorized boundary. No issuer, registry, promise authority, publication/removal closure, recovery hydration, temporal root, global queue, lifecycle registry or shared writer was introduced.
 
 SYSTEM_IMPACT: RESOLVED - Product Owner accepted the Senior-recommended T03/T04 realization at `acc40855850f4d07b63bad4792917f97764038a3`; canonical owners, stable Wave-02 plan and both impact briefs are synchronized
 NEXT_EXACT_TASK: fresh-read current HEAD; start W02.T05 only after the named T03/T04 checkpoints are accepted by the coordinator; T05 owns publication/removal closure
@@ -330,7 +332,7 @@ EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
 KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
 - T03 accepted adjudication basis, T05 publication/removal closure, T06 recovery hydration, temporal roots, role emission, storage documentation, shared final writers
 
-VERSION IMPACT: `GAME/TOOLS/recovery_roots.py` new `framework_module_version` 1.0.1 -> 1.0.2 for native-state evidence repair -> 1.0.3 for repair round 1; runtime.procedure persistent schema family/projection implicit 1 -> 2; new operational-root routing schema namespace starts at 1; existing engine/catalog/campaign/persistence/storage/migration namespaces NONE
+VERSION IMPACT: `GAME/TOOLS/recovery_roots.py` new `framework_module_version` 1.0.1 -> 1.0.2 for native-state evidence repair -> 1.0.3 for repair round 1 -> 1.0.4 for repair round 2; `GAME/TOOLS/mechanics.py` 1.0.4 -> 1.0.5 for v2 Procedure consumer validation; runtime.procedure persistent schema family/projection implicit 1 -> 2 (no additional round-2 bump); new operational-root routing schema namespace remains 1; existing engine/catalog/campaign/persistence/storage/migration namespaces NONE
 SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative catalog or shared-schema change
 MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
 SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative changes; catalog generation remains 2
