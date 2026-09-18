@@ -30,8 +30,8 @@ from .recovery_roots import (
 )
 
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final = "1.0.4"
 OPERATIONAL_ROOT_MEMBERSHIP_PATH: Final = "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"
 _SHA40_OR_64: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _SHA256: Final = re.compile(r"^[a-f0-9]{64}$")
@@ -121,6 +121,14 @@ def _path(value: object) -> str:
     if result.startswith("/") or "//" in result or any(part in {"", ".", ".."} for part in result.split("/")):
         raise PublicationContractError("publication path is not normalized")
     return result
+
+
+def _require_execution_join_for_route(
+    routed_operation: RoutedSerializedOperation,
+    execution_durability_join: ExecutionDurabilityJoin | None,
+) -> None:
+    if routed_operation.owner_kind == "runtime.command" and execution_durability_join is None:
+        raise PublicationContractError("runtime.command publication requires an execution/durability join")
 
 
 @dataclass(frozen=True, slots=True)
@@ -244,6 +252,7 @@ class FrozenCampaignPublicationAttempt:
             raise PublicationContractError("currentness evidence does not bind pinned tree")
         if not isinstance(self.routed_operation, RoutedSerializedOperation):
             raise PublicationContractError("owner-routed serialized operation is required")
+        _require_execution_join_for_route(self.routed_operation, self.execution_durability_join)
         if self.execution_durability_join is not None:
             if not is_execution_durability_join(self.execution_durability_join):
                 raise PublicationContractError("owner-issued execution/durability join is invalid")
@@ -495,6 +504,7 @@ def freeze_campaign_publication_attempt(
         raise PublicationContractError("captured currentness evidence is required")
     if not isinstance(routed_operation, RoutedSerializedOperation):
         raise PublicationContractError("owner-routed serialized operation is required")
+    _require_execution_join_for_route(routed_operation, execution_durability_join)
     if execution_durability_join is not None:
         if not isinstance(execution_durability_join, ExecutionDurabilityJoin) or not is_execution_durability_join(
             execution_durability_join

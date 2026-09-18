@@ -414,3 +414,20 @@ VERSION_IMPACT:
 
 SYSTEM_IMPACT: NONE - the repair consumes typed bounded currentness/ancestry evidence and preserves the existing owner-routed publication boundary; no new currentness authority, transaction, journal/frontier, or recovery hydration was introduced.
 UNPUBLISHED_WORK: NONE after the repair-round checkpoint commit; final status awaits Senior integration audit.
+
+## W02.T05 Repair Round 3 — 2026-09-18
+
+INDEPENDENT FINDING ADDRESSED:
+- Any `runtime.command` routed operation now requires an owner-issued `ExecutionDurabilityJoin` in both freeze-time validation and immutable `FrozenCampaignPublicationAttempt` validation, even when optional raw command/execution arguments are absent. Join-free owner-routed Procedure closures remain valid.
+
+TDD EVIDENCE:
+- RED: exact missing-join reproductions failed because both validators accepted a `runtime.command` route with no join when raw execution arguments were omitted.
+- GREEN: focused publication, operational-root, recovery, ref-fence and durability-risk suites, 70 passed.
+
+VERSION_IMPACT:
+- `GAME/TOOLS/publication.py`: `framework_module_version` 1.0.3 -> 1.0.4;
+- `campaign-publication-attempt.schema_version`: remains 2; the repair tightens runtime validation of an existing typed join field without changing serialized shape;
+- durability/recovery-root modules, durability-result schema, catalog, engine, campaign, persistence, storage and migration namespaces: NONE.
+
+SYSTEM_IMPACT: NONE - the repair closes a validation gap inside the existing publication owner and preserves the admitted join-free Procedure path; no new authority, transaction, journal/frontier, recovery hydration or cross-owner boundary was introduced.
+UNPUBLISHED_WORK: NONE after the repair-round checkpoint commit; final status awaits Senior integration audit.

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 import unittest
 
@@ -336,6 +337,18 @@ class PublicationPlanTests(unittest.TestCase):
                 execution_durability_join=_execution_join(),
                 execution=_execution() | {"event_id": "other"},
             )
+
+    def test_runtime_command_route_rejects_missing_join_without_raw_execution_arguments(self) -> None:
+        with self.assertRaisesRegex(PublicationContractError, "join"):
+            _attempt(
+                accepted_command=None,
+                execution=None,
+                execution_durability_join=None,
+            )
+
+    def test_immutable_command_attempt_rejects_missing_join(self) -> None:
+        with self.assertRaisesRegex(PublicationContractError, "join"):
+            replace(_attempt(), execution_durability_join=None)
 
     def test_freeze_and_plan_use_one_parent_tree_and_non_force_ref_transition(self) -> None:
         attempt = _attempt()
