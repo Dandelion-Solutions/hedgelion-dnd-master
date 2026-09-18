@@ -23,8 +23,8 @@ from typing import Final, TypeAlias
 import weakref
 
 
-# framework_module_version: 1.0.10
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
+# framework_module_version: 1.0.11
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.11"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -1206,6 +1206,7 @@ def handoff_temporal_route_to_live(
     campaign_revision: str,
     live_source: LiveEnvelope,
     live_route: LiveRouting,
+    expected_root_refs: Sequence[str],
 ) -> object:
     """Move temporal routing into the exact selected ACTIVE LIVE source."""
 
@@ -1229,6 +1230,7 @@ def handoff_temporal_route_to_live(
         target_source_revision=live_source.source_revision,
         target_source_key=live_source.source_key,
         campaign_id=live_source.campaign_id,
+        expected_root_refs=expected_root_refs,
     )
 
 
@@ -1238,23 +1240,24 @@ def handoff_temporal_route_to_campaign(
     live_source: LiveEnvelope,
     live_route: LiveRouting,
     campaign_revision: str,
-    absorption_acknowledged: bool,
+    absorption_evidence: object,
+    expected_root_refs: Sequence[str],
 ) -> object:
     """Return temporal routing only after exact closed-LIVE absorption proof."""
 
     if not isinstance(live_source, LiveEnvelope):
         raise LiveContractError("temporal campaign handoff requires an owner-typed source")
-    if live_source.status not in {
-        LiveLifecycle.CLOSED,
-        LiveLifecycle.CLOSED_UNABSORBED,
-        LiveLifecycle.ABSORBED,
-    }:
-        raise LiveContractError("temporal campaign handoff requires a closed or absorbed LIVE source")
-    if absorption_acknowledged is not True:
-        raise LiveContractError("temporal campaign handoff requires accepted absorption evidence")
+    if live_source.status is not LiveLifecycle.ABSORBED:
+        raise LiveContractError("temporal campaign handoff requires an ABSORBED LIVE source")
     if not isinstance(live_route, LiveRouting) or not live_route.complete:
         raise LiveContractError("temporal campaign handoff requires a complete route")
     validate_live_route_completeness(live_route)
+    validate_accepted_absorption_evidence(
+        absorption_evidence,
+        source_key=live_source.source_key,
+        source_revision=live_source.source_revision,
+        selected_route=live_route,
+    )
     selected = select_live_source(live_route, live_source.source_key)
     if selected is None:
         raise LiveContractError("temporal campaign handoff requires the exact final source")
@@ -1276,6 +1279,7 @@ def handoff_temporal_route_to_campaign(
         target_source_scope="CAMPAIGN",
         target_source_revision=_revision(campaign_revision, "campaign_revision"),
         campaign_id=live_source.campaign_id,
+        expected_root_refs=expected_root_refs,
     )
 
 
@@ -2549,6 +2553,49 @@ def _mark_owner_issued_absorption_result(
 def _is_owner_issued_absorption_result(result: LiveAbsorptionPublication) -> bool:
     reference = _OWNER_ISSUED_ABSORPTION_RESULTS.get(id(result))
     return reference is not None and reference() is result
+
+
+def validate_accepted_absorption_evidence(
+    evidence: object,
+    *,
+    source_key: LiveSourceKey,
+    source_revision: str,
+    selected_route: LiveRouting | None = None,
+) -> LiveAbsorptionPublication:
+    """Validate the exact owner-issued campaign CAS proof for one LIVE source."""
+
+    if not isinstance(evidence, LiveAbsorptionPublication):
+        raise LiveContractError("accepted absorption requires typed owner-issued CAS evidence")
+    if not evidence.acknowledged or not _is_owner_issued_absorption_result(evidence):
+        raise LiveContractError("accepted absorption requires owner-issued accepted CAS evidence")
+    attempt = evidence.attempt
+    if not isinstance(attempt, FrozenCampaignAbsorption):
+        raise LiveContractError("accepted absorption evidence lacks its frozen CAS attempt")
+    normalized_key = _source_key(source_key, "absorption source key")
+    normalized_revision = _revision(source_revision, "absorption source revision")
+    if attempt.source_key != normalized_key or attempt.source_revision != normalized_revision:
+        raise LiveContractError("accepted absorption evidence is bound to another LIVE source")
+    if selected_route is not None:
+        if not isinstance(selected_route, LiveRouting):
+            raise LiveContractError("accepted absorption evidence requires a typed selected route")
+        if attempt.selected_route.as_mapping() != selected_route.as_mapping():
+            raise LiveContractError("accepted absorption evidence is bound to another selected route")
+        expected_successor = _absorbed_successor_route(selected_route, normalized_key)
+        if (
+            evidence.successor_route is None
+            or evidence.successor_route.as_mapping() != expected_successor.as_mapping()
+        ):
+            raise LiveContractError("accepted absorption evidence has the wrong successor route")
+        closure = evidence.candidate_state.get("accepted_live_absorption") if evidence.candidate_state else None
+        if not isinstance(closure, Mapping):
+            raise LiveContractError("accepted absorption evidence lacks the campaign closure")
+        if (
+            closure.get("source_key") != list(normalized_key)
+            or closure.get("source_revision") != normalized_revision
+            or closure.get("successor_route") != expected_successor.as_mapping()
+        ):
+            raise LiveContractError("accepted absorption evidence has an inconsistent campaign closure")
+    return evidence
 
 
 def classify_campaign_absorption(

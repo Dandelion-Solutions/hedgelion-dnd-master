@@ -10,10 +10,11 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
+import weakref
 
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION = "1.0.2"
 
 
 _DISPOSITIONS = frozenset({"NOT_DUE", "DUE", "INDETERMINATE"})
@@ -39,7 +40,7 @@ class TemporalEvaluation:
     disposition: str
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, weakref_slot=True)
 class TemporalRouteEntry:
     """Typed retrieval evidence for one native temporal occurrence.
 
@@ -101,6 +102,25 @@ class TemporalRouteEntry:
             "occurrence_state": self.occurrence_state,
             "dependency_keys": list(self.dependency_keys),
         }
+
+
+_OWNER_ISSUED_TEMPORAL_ENTRIES: dict[int, weakref.ReferenceType[TemporalRouteEntry]] = {}
+
+
+def _mark_owner_issued_temporal_entry(entry: TemporalRouteEntry) -> TemporalRouteEntry:
+    entry_id = id(entry)
+
+    def remove(reference: weakref.ReferenceType[TemporalRouteEntry]) -> None:
+        if _OWNER_ISSUED_TEMPORAL_ENTRIES.get(entry_id) is reference:
+            _OWNER_ISSUED_TEMPORAL_ENTRIES.pop(entry_id, None)
+
+    _OWNER_ISSUED_TEMPORAL_ENTRIES[entry_id] = weakref.ref(entry, remove)
+    return entry
+
+
+def _is_owner_issued_temporal_entry(entry: TemporalRouteEntry) -> bool:
+    reference = _OWNER_ISSUED_TEMPORAL_ENTRIES.get(id(entry))
+    return reference is not None and reference() is entry
 
 
 @dataclass(frozen=True, slots=True)
@@ -568,7 +588,7 @@ def derive_temporal_route_entry(
     root_campaign = checked_root.get("campaign_id")
     if root_campaign is not None and root_campaign != checked_campaign:
         raise TemporalContractError("temporal owner belongs to another campaign")
-    return TemporalRouteEntry(
+    return _mark_owner_issued_temporal_entry(TemporalRouteEntry(
         campaign_id=checked_campaign,
         source_scope=scope,
         source_revision=revision,
@@ -578,13 +598,35 @@ def derive_temporal_route_entry(
         binding_id=_require_string(checked_root.get("binding_id"), "binding_id"),
         occurrence_state=_require_string(checked_root.get("occurrence_state"), "occurrence_state"),
         dependency_keys=dependencies,
-    )
+    ))
 
 
 def _coerce_temporal_route(value: TemporalRoute | Mapping[str, Any]) -> TemporalRoute:
     if isinstance(value, TemporalRoute):
         return value
     return TemporalRoute.from_mapping(value)
+
+
+def validate_temporal_route_completeness(
+    route: TemporalRoute | Mapping[str, Any],
+    expected_root_refs: Sequence[str],
+) -> None:
+    """Require route membership to equal one explicit native-owner set."""
+
+    resolved = _coerce_temporal_route(route)
+    if isinstance(expected_root_refs, (str, bytes)):
+        raise TemporalContractError("expected temporal root refs must be an explicit sequence")
+    expected = tuple(_require_string(value, "expected temporal root_ref") for value in expected_root_refs)
+    if len(expected) != len(set(expected)):
+        raise TemporalContractError("expected temporal root refs must be unique")
+    actual = tuple(entry.root_ref for entry in resolved.entries)
+    if set(actual) != set(expected) or len(actual) != len(expected):
+        missing = set(expected).difference(actual)
+        extra = set(actual).difference(expected)
+        raise TemporalContractError(
+            "temporal route body is incomplete or contains an extra native owner: "
+            f"missing={sorted(missing)!r}, extra={sorted(extra)!r}"
+        )
 
 
 def resolve_temporal_dependency_dependents(
@@ -617,6 +659,9 @@ def reconcile_temporal_route_membership(
     campaign_id: str | None = None,
     terminal_root_refs: Sequence[str] = (),
     superseded_root_refs: Sequence[str] = (),
+    expected_root_refs: Sequence[str] | None = None,
+    terminal_owner_entries: Sequence[TemporalRouteEntry] = (),
+    superseded_owner_entries: Sequence[TemporalRouteEntry] = (),
 ) -> TemporalRoute:
     """Move complete temporal routing membership across one exact source edge.
 
@@ -629,12 +674,22 @@ def reconcile_temporal_route_membership(
     current = _coerce_temporal_route(route)
     if campaign_id is not None and current.campaign_id != _require_string(campaign_id, "campaign_id"):
         raise TemporalContractError("temporal route belongs to another campaign")
+    if expected_root_refs is not None:
+        validate_temporal_route_completeness(current, expected_root_refs)
     expected_scope = _route_scope(expected_source_scope)
     target_scope = _route_scope(target_source_scope)
     expected_revision = _route_revision(expected_source_revision)
     target_revision = _route_revision(target_source_revision)
     normalized_expected_key = _route_source_key(expected_source_key, current.campaign_id, expected_scope)
     normalized_target_key = _route_source_key(target_source_key, current.campaign_id, target_scope)
+    if (
+        current.source_scope == target_scope
+        and current.source_revision == target_revision
+        and current.source_key == normalized_target_key
+    ):
+        if terminal_root_refs or superseded_root_refs:
+            raise TemporalContractError("idempotent temporal retry cannot add a new removal claim")
+        return current
     if current.source_scope != expected_scope or current.source_revision != expected_revision:
         raise TemporalContractError("temporal route predecessor source/revision is stale")
     if current.source_key != normalized_expected_key:
@@ -642,6 +697,18 @@ def reconcile_temporal_route_membership(
 
     terminal = {_require_string(value, "terminal root_ref") for value in terminal_root_refs}
     superseded = {_require_string(value, "superseded root_ref") for value in superseded_root_refs}
+    _validate_temporal_owner_entries(
+        current,
+        terminal,
+        terminal_owner_entries,
+        disposition="terminal",
+    )
+    _validate_temporal_owner_entries(
+        current,
+        superseded,
+        superseded_owner_entries,
+        disposition="superseded",
+    )
     if terminal.intersection(superseded):
         raise TemporalContractError("terminal and superseded temporal roots overlap")
     known = {entry.root_ref for entry in current.entries}
@@ -679,6 +746,42 @@ def reconcile_temporal_route_membership(
         entries=moved,
         complete=True,
     )
+
+
+def _validate_temporal_owner_entries(
+    current: TemporalRoute,
+    requested: set[str],
+    proofs: Sequence[TemporalRouteEntry],
+    *,
+    disposition: str,
+) -> None:
+    if not requested and not proofs:
+        return
+    if not proofs:
+        raise TemporalContractError(
+            f"{disposition} temporal roots require owner-issued native proof entries"
+        )
+    if any(
+        not isinstance(proof, TemporalRouteEntry) or not _is_owner_issued_temporal_entry(proof)
+        for proof in proofs
+    ):
+        raise TemporalContractError(
+            f"{disposition} temporal roots require owner-issued native proof entries"
+        )
+    proof_refs = {proof.root_ref for proof in proofs}
+    if requested and proof_refs != requested:
+        raise TemporalContractError(
+            f"{disposition} temporal root proof identities differ from requested roots"
+        )
+    if not requested:
+        requested.update(proof_refs)
+    current_by_ref = {entry.root_ref: entry for entry in current.entries}
+    for proof in proofs:
+        current_entry = current_by_ref.get(proof.root_ref)
+        if current_entry is None or current_entry != proof:
+            raise TemporalContractError(
+                f"{disposition} temporal root proof is not bound to the exact route entry"
+            )
 
 
 def rebuild_temporal_agenda_from_route(

@@ -13,10 +13,13 @@ sys.path.insert(0, str(ROOT / "GAME" / "TOOLS"))
 
 from temporal import (
     TemporalContractError,
+    TemporalRoute,
     derive_temporal_dependency_keys,
+    derive_temporal_route_entry,
     evaluate_temporal_binding,
     materialize_due_occurrence,
     rebuild_temporal_agenda,
+    validate_temporal_route_completeness,
     validate_chronology_relation_evidence,
     validate_current_state_replacement,
 )
@@ -203,6 +206,47 @@ class TemporalRoutingCompletenessTests(unittest.TestCase):
         incomplete = dict(ARMED_ROOT, dependency_keys=[])
         with self.assertRaisesRegex(TemporalContractError, "dependency"):
             derive_temporal_dependency_keys(incomplete)
+
+    def test_route_completeness_rejects_native_owner_omissions_and_extras(self):
+        entry = derive_temporal_route_entry(
+            ARMED_ROOT,
+            campaign_id="campaign-frostfall",
+            source_scope="CAMPAIGN",
+            source_revision="0" * 40,
+        )
+        route = TemporalRoute(
+            campaign_id="campaign-frostfall",
+            source_scope="CAMPAIGN",
+            source_revision="0" * 40,
+            entries=(entry,),
+        )
+
+        validate_temporal_route_completeness(
+            route,
+            ("world.thread:THREAD_market_siege",),
+        )
+        with self.assertRaisesRegex(TemporalContractError, "incomplete|omission|native owner"):
+            validate_temporal_route_completeness(route, ())
+        with self.assertRaisesRegex(TemporalContractError, "extra|native owner"):
+            validate_temporal_route_completeness(
+                route,
+                ("world.thread:THREAD_market_siege", "world.thread:THREAD_other"),
+            )
+
+    def test_route_completeness_rejects_cross_campaign_owner_set(self):
+        entry = derive_temporal_route_entry(
+            ARMED_ROOT,
+            campaign_id="campaign-frostfall",
+            source_scope="CAMPAIGN",
+            source_revision="0" * 40,
+        )
+        with self.assertRaisesRegex(TemporalContractError, "campaign"):
+            TemporalRoute(
+                campaign_id="campaign-other",
+                source_scope="CAMPAIGN",
+                source_revision="0" * 40,
+                entries=(entry,),
+            )
 
 
 @unittest.skip("Recovery assertions are owned by W02.T06.")

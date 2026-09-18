@@ -84,7 +84,9 @@ from GAME.TOOLS.live_state import (
 )
 from GAME.TOOLS.recovery_roots import (
     OperationalRoot,
+    OperationalRootHandoff,
     OperationalRootPage,
+    derive_operational_root_delta,
     enumerate_operational_root_page,
     handoff_operational_roots_to_live,
     recover_operational_roots_to_campaign,
@@ -645,7 +647,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.10")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.11")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
@@ -1755,6 +1757,40 @@ def _opening_seed(preparation: object, source: LiveEnvelope | None = None) -> Li
     return pack_live_native_state(seed)
 
 
+def _accepted_absorption_publication(source: LiveEnvelope) -> LiveAbsorptionPublication:
+    source = replace(source, status=LiveLifecycle.CLOSED)
+    preparation = prepare_live_opening(
+        source.campaign_id,
+        source.scene_id,
+        opening_campaign_revision=LIVE_H0,
+        claims=source.claims,
+        source_revision=LIVE_H0,
+    )
+    packed = _opening_seed(preparation, source)
+    route = _live_route(source)
+    attempt = freeze_campaign_absorption(
+        source,
+        route=route,
+        packed_state=packed,
+        campaign_state={"native_owner_states": {}},
+        expected_campaign_revision=LIVE_H0,
+        proposed_campaign_revision=LIVE_H2,
+    )
+    return classify_campaign_absorption(
+        attempt,
+        {
+            "accepted": True,
+            "source_key": source.source_key,
+            "source_revision": source.source_revision,
+            "expected_campaign_revision": LIVE_H0,
+            "new_campaign_revision": LIVE_H2,
+            "candidate_state_digest": attempt.candidate_state_digest,
+            "selected_route": attempt.selected_route.as_mapping(),
+            "successor_route": attempt.successor_route.as_mapping(),
+        },
+    )
+
+
 class LiveOpeningPreparationTests(unittest.TestCase):
     def test_opening_preparation_requires_an_explicit_source_revision(self) -> None:
         with self.assertRaises(TypeError):
@@ -2334,6 +2370,117 @@ def _temporal_route(entry: object, *, scope: str, revision: str, source_key: obj
 
 
 class LiveTemporalRoutingHandoffTests(unittest.TestCase):
+    def test_closed_unabsorbed_cannot_return_to_campaign_from_caller_ack(self) -> None:
+        root = _temporal_root()
+        entry = derive_temporal_route_entry(
+            root,
+            campaign_id="campaign-frostfall",
+            source_scope="LIVE",
+            source_revision=LIVE_H1,
+            source_key=_live_source(revision=LIVE_H1).source_key,
+        )
+        route = _temporal_route(
+            entry,
+            scope="LIVE",
+            revision=LIVE_H1,
+            source_key=_live_source(revision=LIVE_H1).source_key,
+        )
+        closed_unabsorbed = mark_closed_unabsorbed(
+            close_live_source(
+                _live_source(revision=LIVE_H0),
+                expected_source_revision=LIVE_H0,
+                closed_source_revision=LIVE_H1,
+            )
+        )
+
+        with self.assertRaisesRegex(LiveContractError, "ABSORBED|absorption"):
+            handoff_temporal_route_to_campaign(
+                route,
+                live_source=closed_unabsorbed,
+                live_route=_live_route(closed_unabsorbed),
+                campaign_revision=LIVE_H2,
+                absorption_evidence=True,
+                expected_root_refs=("world.thread:THREAD_market_siege",),
+            )
+
+    def test_temporal_campaign_return_requires_owner_issued_accepted_absorption(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+        )
+        closed = mark_closed_unabsorbed(
+            close_live_source(
+                preparation.source,
+                expected_source_revision=LIVE_H0,
+                closed_source_revision=LIVE_H1,
+            )
+        )
+        route = _live_route(closed)
+        packed = _opening_seed(preparation, closed)
+        attempt = freeze_campaign_absorption(
+            closed,
+            route=route,
+            packed_state=packed,
+            campaign_state={"native_owner_states": {}},
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H2,
+        )
+        publication = classify_campaign_absorption(
+            attempt,
+            {
+                "accepted": True,
+                "source_key": closed.source_key,
+                "source_revision": LIVE_H1,
+                "expected_campaign_revision": LIVE_H0,
+                "new_campaign_revision": LIVE_H2,
+                "candidate_state_digest": attempt.candidate_state_digest,
+                "selected_route": attempt.selected_route.as_mapping(),
+                "successor_route": attempt.successor_route.as_mapping(),
+            },
+        )
+        absorbed = replace(closed, status=LiveLifecycle.ABSORBED)
+        entry = derive_temporal_route_entry(
+            _temporal_root(),
+            campaign_id="campaign-frostfall",
+            source_scope="LIVE",
+            source_revision=LIVE_H1,
+            source_key=closed.source_key,
+        )
+
+        returned = handoff_temporal_route_to_campaign(
+            _temporal_route(entry, scope="LIVE", revision=LIVE_H1, source_key=closed.source_key),
+            live_source=absorbed,
+            live_route=route,
+            campaign_revision=LIVE_H2,
+            absorption_evidence=publication,
+            expected_root_refs=("world.thread:THREAD_market_siege",),
+        )
+
+        self.assertEqual(returned.source_scope, "CAMPAIGN")
+
+    def test_temporal_handoff_requires_the_exact_native_owner_set(self) -> None:
+        root = _temporal_root()
+        entry = derive_temporal_route_entry(
+            root,
+            campaign_id="campaign-frostfall",
+            source_scope="CAMPAIGN",
+            source_revision=LIVE_H0,
+        )
+        campaign_route = _temporal_route(entry, scope="CAMPAIGN", revision=LIVE_H0)
+        active = _live_source(revision=LIVE_H0)
+
+        with self.assertRaisesRegex((LiveContractError, ValueError), "complete|native|root"):
+            handoff_temporal_route_to_live(
+                campaign_route,
+                campaign_revision=LIVE_H0,
+                live_source=active,
+                live_route=_live_route(active),
+                expected_root_refs=(),
+            )
+
     def test_campaign_to_live_and_live_to_campaign_preserve_temporal_identity(self) -> None:
         root = _temporal_root()
         entry = derive_temporal_route_entry(
@@ -2350,7 +2497,16 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
             campaign_revision=LIVE_H0,
             live_source=active,
             live_route=_live_route(active),
+            expected_root_refs=("world.thread:THREAD_market_siege",),
         )
+        live_retry = handoff_temporal_route_to_live(
+            live_route,
+            campaign_revision=LIVE_H0,
+            live_source=active,
+            live_route=_live_route(active),
+            expected_root_refs=("world.thread:THREAD_market_siege",),
+        )
+        self.assertEqual(live_retry, live_route)
         closed = mark_closed_unabsorbed(
             close_live_source(
                 active,
@@ -2368,13 +2524,54 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
             target_source_revision=LIVE_H1,
             target_source_key=closed.source_key,
         )
+        packed = _opening_seed(
+            prepare_live_opening(
+                "campaign-frostfall",
+                "scene-market",
+                opening_campaign_revision=LIVE_H0,
+                claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+                source_revision=LIVE_H0,
+            ),
+            closed,
+        )
+        absorption_attempt = freeze_campaign_absorption(
+            closed,
+            route=_live_route(closed),
+            packed_state=packed,
+            campaign_state={"native_owner_states": {}},
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H2,
+        )
+        absorption_publication = classify_campaign_absorption(
+            absorption_attempt,
+            {
+                "accepted": True,
+                "source_key": closed.source_key,
+                "source_revision": LIVE_H1,
+                "expected_campaign_revision": LIVE_H0,
+                "new_campaign_revision": LIVE_H2,
+                "candidate_state_digest": absorption_attempt.candidate_state_digest,
+                "selected_route": absorption_attempt.selected_route.as_mapping(),
+                "successor_route": absorption_attempt.successor_route.as_mapping(),
+            },
+        )
         campaign_again = handoff_temporal_route_to_campaign(
             current_live_route,
             live_source=absorbed,
             live_route=_live_route(closed),
             campaign_revision=LIVE_H2,
-            absorption_acknowledged=True,
+            absorption_evidence=absorption_publication,
+            expected_root_refs=("world.thread:THREAD_market_siege",),
         )
+        campaign_retry = handoff_temporal_route_to_campaign(
+            campaign_again,
+            live_source=absorbed,
+            live_route=_live_route(closed),
+            campaign_revision=LIVE_H2,
+            absorption_evidence=absorption_publication,
+            expected_root_refs=("world.thread:THREAD_market_siege",),
+        )
+        self.assertEqual(campaign_retry, campaign_again)
 
         original = live_route.entries[0]
         returned = campaign_again.entries[0]
@@ -2402,6 +2599,7 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
                 campaign_revision=LIVE_H1,
                 live_source=active,
                 live_route=_live_route(active),
+                expected_root_refs=("world.thread:THREAD_market_siege",),
             )
 
         foreign_entry = derive_temporal_route_entry(
@@ -2489,6 +2687,18 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
             revision=LIVE_H1,
             source_key=_live_source(revision=LIVE_H1).source_key,
         )
+        forged_entry = replace(entry)
+        with self.assertRaisesRegex(ValueError, "owner-issued|proof"):
+            reconcile_temporal_route_membership(
+                route,
+                expected_source_scope="LIVE",
+                expected_source_revision=LIVE_H1,
+                expected_source_key=route["source_key"],
+                target_source_scope="CAMPAIGN",
+                target_source_revision=LIVE_H2,
+                terminal_root_refs=("world.thread:THREAD_market_siege",),
+                terminal_owner_entries=(forged_entry,),
+            )
         terminal = reconcile_temporal_route_membership(
             route,
             expected_source_scope="LIVE",
@@ -2497,6 +2707,7 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
             target_source_scope="CAMPAIGN",
             target_source_revision=LIVE_H2,
             terminal_root_refs=("world.thread:THREAD_market_siege",),
+            terminal_owner_entries=(entry,),
         )
 
         self.assertEqual(terminal.entries, ())
@@ -2511,6 +2722,27 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             route_native_record("runtime.command", ("command-000001",)).relative_path,
         )
         return OperationalRootPage("campaign-frostfall", (root,), complete=True)
+
+    def test_serialized_handoff_has_a_distinct_strict_contract(self) -> None:
+        source = _live_source(revision=LIVE_H1)
+        handoff = handoff_operational_roots_to_live(
+            self._page(),
+            campaign_id="campaign-frostfall",
+            campaign_revision=LIVE_H0,
+            live_source_key=source.source_key,
+            live_source_revision=source.source_revision,
+        )
+        mapping = handoff.to_dict()
+        schema = json.loads(
+            (ROOT / "DEV/SCHEMAS/operational-root-handoff.schema.json").read_text(encoding="utf-8")
+        )
+
+        Draft202012Validator(schema).validate(mapping)
+        self.assertEqual(OperationalRootHandoff.from_mapping(mapping), handoff)
+        invalid = dict(mapping)
+        del invalid["kind"]
+        with self.assertRaisesRegex(ValueError, "fields|unsupported"):
+            OperationalRootHandoff.from_mapping(invalid)
 
     def test_campaign_to_live_and_live_to_campaign_preserve_root_identity(self) -> None:
         source = _live_source(revision=LIVE_H1)
@@ -2527,8 +2759,22 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_key=source.source_key,
             live_source_revision=source.source_revision,
             campaign_revision=LIVE_H2,
-            source_lifecycle="ABSORBED",
-            absorption_acknowledged=True,
+            absorption_evidence=_accepted_absorption_publication(source),
+        )
+        live_retry = handoff_operational_roots_to_live(
+            live_page,
+            campaign_id="campaign-frostfall",
+            campaign_revision=LIVE_H0,
+            live_source_key=source.source_key,
+            live_source_revision=source.source_revision,
+        )
+        campaign_retry = recover_operational_roots_to_campaign(
+            campaign_page,
+            campaign_id="campaign-frostfall",
+            live_source_key=source.source_key,
+            live_source_revision=source.source_revision,
+            campaign_revision=LIVE_H2,
+            absorption_evidence=_accepted_absorption_publication(source),
         )
 
         self.assertEqual(live_page.source_scope, "LIVE")
@@ -2536,6 +2782,8 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
         self.assertEqual(campaign_page.source_scope, "CAMPAIGN")
         self.assertEqual(campaign_page.source_revision, LIVE_H2)
         self.assertEqual(campaign_page.roots[0].key, self._page().roots[0].key)
+        self.assertEqual(live_retry, live_page)
+        self.assertEqual(campaign_retry, campaign_page)
 
     def test_root_handoff_rejects_foreign_campaign_stale_source_and_interrupted_absorption(self) -> None:
         source = _live_source(revision=LIVE_H1)
@@ -2553,9 +2801,9 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
                 live_source_key=source.source_key,
                 live_source_revision=source.source_revision,
                 campaign_revision=LIVE_H2,
-                source_lifecycle="ABSORBED",
                 absorption_acknowledged=True,
             )
+
         with self.assertRaisesRegex(ValueError, "source|revision"):
             recover_operational_roots_to_campaign(
                 live_page,
@@ -2563,10 +2811,9 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
                 live_source_key=source.source_key,
                 live_source_revision=LIVE_H2,
                 campaign_revision=LIVE_H2,
-                source_lifecycle="ABSORBED",
                 absorption_acknowledged=True,
             )
-        with self.assertRaisesRegex(ValueError, "closed|absorbed|handoff"):
+        with self.assertRaisesRegex(ValueError, "caller|absorption|handoff"):
             recover_operational_roots_to_campaign(
                 live_page,
                 campaign_id="campaign-frostfall",
@@ -2576,7 +2823,7 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
                 source_lifecycle="CLOSED_UNABSORBED",
                 absorption_acknowledged=False,
             )
-        with self.assertRaisesRegex(ValueError, "absorbed"):
+        with self.assertRaisesRegex(ValueError, "caller|absorption|handoff"):
             recover_operational_roots_to_campaign(
                 live_page,
                 campaign_id="campaign-frostfall",
@@ -2585,6 +2832,55 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
                 campaign_revision=LIVE_H2,
                 source_lifecycle="CLOSED_UNABSORBED",
                 absorption_acknowledged=True,
+            )
+
+    def test_root_recovery_rejects_caller_absorption_acknowledgement(self) -> None:
+        source = _live_source(revision=LIVE_H1)
+        live_page = handoff_operational_roots_to_live(
+            self._page(),
+            campaign_id="campaign-frostfall",
+            campaign_revision=LIVE_H0,
+            live_source_key=source.source_key,
+            live_source_revision=source.source_revision,
+        )
+
+        with self.assertRaisesRegex(ValueError, "owner-issued|absorption|evidence"):
+            recover_operational_roots_to_campaign(
+                live_page,
+                campaign_id="campaign-frostfall",
+                live_source_key=source.source_key,
+                live_source_revision=source.source_revision,
+                campaign_revision=LIVE_H2,
+                absorption_acknowledged=True,
+            )
+
+    def test_root_recovery_rejects_caller_native_mapping_as_terminal_proof(self) -> None:
+        source = _live_source(revision=LIVE_H1)
+        live_page = handoff_operational_roots_to_live(
+            self._page(),
+            campaign_id="campaign-frostfall",
+            campaign_revision=LIVE_H0,
+            live_source_key=source.source_key,
+            live_source_revision=source.source_revision,
+        )
+        root_key = live_page.roots[0].key
+        terminal_owner = {
+            "kind": "runtime.command",
+            "command_id": "command-000001",
+            "disposition": "command.settled",
+            "pending_child_invocations": [],
+        }
+
+        with self.assertRaisesRegex(ValueError, "owner-issued|proof|delta"):
+            recover_operational_roots_to_campaign(
+                live_page,
+                campaign_id="campaign-frostfall",
+                live_source_key=source.source_key,
+                live_source_revision=source.source_revision,
+                campaign_revision=LIVE_H2,
+                absorption_acknowledged=True,
+                terminal_owner_keys=(root_key,),
+                terminal_native_owners={root_key: terminal_owner},
             )
 
     def test_terminal_and_superseded_roots_are_not_reintroduced(self) -> None:
@@ -2597,15 +2893,27 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_revision=source.source_revision,
         )
         root_key = live_page.roots[0].key
+        terminal_owner = {
+            "kind": "runtime.command",
+            "command_id": "command-000001",
+            "disposition": "command.settled",
+            "pending_child_invocations": [],
+        }
+        replacement_delta = derive_operational_root_delta(
+            "campaign-frostfall",
+            "runtime.command",
+            terminal_owner,
+            existing_roots=(live_page.roots[0],),
+        )
         terminal = recover_operational_roots_to_campaign(
             live_page,
             campaign_id="campaign-frostfall",
             live_source_key=source.source_key,
             live_source_revision=source.source_revision,
             campaign_revision=LIVE_H2,
-            source_lifecycle="ABSORBED",
-            absorption_acknowledged=True,
+            absorption_evidence=_accepted_absorption_publication(source),
             superseded_owner_keys=(root_key,),
+            superseded_native_deltas={root_key: replacement_delta},
         )
 
         self.assertEqual(terminal.roots, ())
@@ -2626,6 +2934,12 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             "disposition": "command.settled",
             "pending_child_invocations": [],
         }
+        terminal_delta = derive_operational_root_delta(
+            "campaign-frostfall",
+            "runtime.command",
+            terminal_owner,
+            existing_roots=(live_page.roots[0],),
+        )
         with self.assertRaisesRegex(ValueError, "native"):
             recover_operational_roots_to_campaign(
                 live_page,
@@ -2633,8 +2947,7 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
                 live_source_key=source.source_key,
                 live_source_revision=source.source_revision,
                 campaign_revision=LIVE_H2,
-                source_lifecycle="ABSORBED",
-                absorption_acknowledged=True,
+                absorption_evidence=_accepted_absorption_publication(source),
                 terminal_owner_keys=(root_key,),
             )
 
@@ -2644,10 +2957,9 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_key=source.source_key,
             live_source_revision=source.source_revision,
             campaign_revision=LIVE_H2,
-            source_lifecycle="ABSORBED",
-            absorption_acknowledged=True,
+            absorption_evidence=_accepted_absorption_publication(source),
             terminal_owner_keys=(root_key,),
-            terminal_native_owners={root_key: terminal_owner},
+            terminal_native_owners={root_key: terminal_delta},
         )
 
         self.assertEqual(terminal.roots, ())

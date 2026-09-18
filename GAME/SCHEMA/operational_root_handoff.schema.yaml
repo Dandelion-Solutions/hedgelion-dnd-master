@@ -1,0 +1,34 @@
+schema_name: operational_root_handoff
+schema_version: 1
+kind: runtime.operational_root_handoff
+ephemeral: true
+required:
+  - schema_version
+  - kind
+  - campaign_id
+  - source_scope
+  - source_revision
+  - source_key
+  - source_lifecycle
+  - complete
+  - roots
+  - ephemeral
+fields:
+  source_scope: enum[CAMPAIGN, LIVE]
+  source_revision: string
+  source_key: null | array[string, string, string]
+  source_lifecycle: enum[ACTIVE, CLOSED, CLOSED_UNABSORBED, ABSORBED]
+  complete: true
+  roots:
+    type: array
+    item:
+      owner_kind: enum[runtime.command, runtime.procedure, runtime.interaction, runtime.intent_plan]
+      owner_id: string
+      route:
+        family_key: enum[runtime.command, runtime.procedure, runtime.interaction, runtime.intent_plan]
+        identity: array[string]
+        relative_path: string
+invariants:
+  - this carrier is ephemeral handoff evidence, not a persistent operational-root page
+  - source lifecycle is not authority; accepted owner-issued absorption evidence is required for campaign recovery
+  - every root route is derived from exact native owner kind and identity

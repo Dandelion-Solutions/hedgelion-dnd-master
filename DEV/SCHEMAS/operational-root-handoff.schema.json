@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/operational-root-handoff.schema.json",
+  "title": "HDM ephemeral operational-root handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "campaign_id",
+    "source_scope",
+    "source_revision",
+    "source_key",
+    "source_lifecycle",
+    "complete",
+    "roots",
+    "ephemeral"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "runtime.operational_root_handoff"},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "source_scope": {"enum": ["CAMPAIGN", "LIVE"]},
+    "source_revision": {"type": "string", "minLength": 1},
+    "source_key": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {"type": "string", "minLength": 1}
+        }
+      ]
+    },
+    "source_lifecycle": {
+      "enum": ["ACTIVE", "CLOSED", "CLOSED_UNABSORBED", "ABSORBED"]
+    },
+    "complete": {"const": true},
+    "ephemeral": {"const": true},
+    "roots": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/root"}
+    }
+  },
+  "$defs": {
+    "root": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner_kind", "owner_id", "route"],
+      "properties": {
+        "owner_kind": {
+          "enum": [
+            "runtime.command",
+            "runtime.procedure",
+            "runtime.interaction",
+            "runtime.intent_plan"
+          ]
+        },
+        "owner_id": {"type": "string", "minLength": 1},
+        "route": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["family_key", "identity", "relative_path"],
+          "properties": {
+            "family_key": {
+              "enum": [
+                "runtime.command",
+                "runtime.procedure",
+                "runtime.interaction",
+                "runtime.intent_plan"
+              ]
+            },
+            "identity": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "items": {"type": "string", "minLength": 1}
+            },
+            "relative_path": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    }
+  }
+}
