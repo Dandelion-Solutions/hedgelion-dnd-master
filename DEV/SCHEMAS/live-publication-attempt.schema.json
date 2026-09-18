@@ -6,16 +6,19 @@
   "additionalProperties": false,
   "required": [
     "schema_version",
+    "selected_route",
     "source_key",
     "target_ref",
     "expected_source_revision",
     "proposed_source_revision",
     "transition_kind",
     "source_status",
-    "claims"
+    "claims",
+    "successor"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
+    "selected_route": {"$ref": "live-routing.schema.json"},
     "source_key": {
       "type": "array",
       "minItems": 3,
@@ -33,6 +36,7 @@
     },
     "transition_kind": {"enum": ["MUTATION", "CLOSE", "ABSORB"]},
     "source_status": {"enum": ["ACTIVE", "CLOSED", "CLOSED_UNABSORBED", "ABSORBED"]},
-    "claims": {"type": "array", "items": {"$ref": "live-claim.schema.json"}}
+    "claims": {"type": "array", "items": {"$ref": "live-claim.schema.json"}},
+    "successor": {"$ref": "live-routing.schema.json"}
   }
 }

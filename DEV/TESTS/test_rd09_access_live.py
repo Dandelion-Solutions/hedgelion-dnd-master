@@ -23,6 +23,7 @@ from GAME.TOOLS.access_control import (
 )
 from GAME.TOOLS.live_state import (
     LiveClaim,
+    LiveClaimAdmission,
     LiveContractError,
     LiveEnvelope,
     LiveLifecycle,
@@ -65,6 +66,23 @@ def _live_source(
         else (LiveClaim.exact_owner("world.actor", "actor-1"),),
         status=status,
     )
+
+
+def _live_route(source: LiveEnvelope | None = None):
+    selected = _live_source() if source is None else source
+    return build_live_route(selected.campaign_id, (selected,))
+
+
+def _accepted_ack(attempt: object) -> dict[str, object]:
+    return {
+        "accepted": True,
+        "source_key": attempt.source_key,  # type: ignore[attr-defined]
+        "target_ref": attempt.target_ref,  # type: ignore[attr-defined]
+        "expected_source_revision": attempt.expected_source_revision,  # type: ignore[attr-defined]
+        "new_source_revision": attempt.proposed_source_revision,  # type: ignore[attr-defined]
+        "selected_route": attempt.selected_route.as_mapping(),  # type: ignore[attr-defined]
+        "successor": attempt.successor_route.as_mapping(),  # type: ignore[attr-defined]
+    }
 
 
 def _principal(*, account_id: object = "42", login: str = "lina") -> VerifiedPrincipal:
@@ -426,12 +444,20 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             ),
         )
         self.assertFalse(list(route_validator.iter_errors(route.as_mapping())))
-        publication = freeze_live_attempt(_live_source(), proposed_source_revision=LIVE_H1)
+        source = _live_source()
+        publication = freeze_live_attempt(
+            source,
+            route=_live_route(source),
+            proposed_source_revision=LIVE_H1,
+        )
         publication_validator = Draft202012Validator(
             publication_schema,
             resolver=RefResolver.from_schema(
                 publication_schema,
-                store={claim_schema["$id"]: claim_schema},
+                store={
+                    claim_schema["$id"]: claim_schema,
+                    route_schema["$id"]: route_schema,
+                },
             ),
         )
         self.assertFalse(list(publication_validator.iter_errors(publication.as_mapping())))
@@ -452,15 +478,22 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
         })
 
     def test_claim_grammar_is_typed_and_closed(self) -> None:
+        admission = LiveClaimAdmission(creation_families=frozenset({"world.asset"}))
         self.assertEqual(
-            LiveClaim.epoch_local_creation("world.asset").as_mapping(),
+            LiveClaim.epoch_local_creation("world.asset", admission=admission).as_mapping(),
             {
                 "claim_type": "EPOCH_LOCAL_CREATION",
                 "native_family": "world.asset",
             },
         )
         self.assertEqual(
-            LiveClaim.owner_defined_partition("scene", "scene-market").as_mapping(),
+            LiveClaim.owner_defined_partition(
+                "scene",
+                "scene-market",
+                admission=LiveClaimAdmission(
+                    owner_defined_partitions=frozenset({("scene", "scene-market")})
+                ),
+            ).as_mapping(),
             {
                 "claim_type": "OWNER_DEFINED_PARTITION",
                 "partition_type": "scene",
@@ -472,6 +505,43 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
                 "claim_type": "PATH_GLOB",
                 "path": "WORLD/**",
             })
+
+    def test_creation_and_partition_claims_require_owner_admission(self) -> None:
+        with self.assertRaisesRegex(LiveContractError, "admitted|creation|partition"):
+            LiveClaim.epoch_local_creation("world.unknown")
+
+        with self.assertRaisesRegex(LiveContractError, "admitted|owner|partition"):
+            LiveClaim.owner_defined_partition("arbitrary", "unowned")
+
+    def test_schema_and_python_reject_illegal_claim_companion_fields(self) -> None:
+        schema = json.loads(
+            (ROOT / "DEV/SCHEMAS/live-claim.schema.json").read_text(encoding="utf-8")
+        )
+        validator = Draft202012Validator(schema)
+        invalid_claims = (
+            {
+                "claim_type": "EXACT_OWNER",
+                "native_family": "world.actor",
+                "native_identity": "actor-1",
+                "partition_key": "scene-market",
+            },
+            {
+                "claim_type": "EPOCH_LOCAL_CREATION",
+                "native_family": "world.actor",
+                "partition_key": "scene-market",
+            },
+            {
+                "claim_type": "OWNER_DEFINED_PARTITION",
+                "partition_type": "scene",
+                "partition_key": "scene-market",
+                "native_identity": "actor-1",
+            },
+        )
+
+        for claim in invalid_claims:
+            self.assertTrue(list(validator.iter_errors(claim)))
+            with self.assertRaises(LiveContractError):
+                LiveClaim.from_mapping(claim)
 
     def test_campaign_and_access_authority_cannot_be_live_claimed(self) -> None:
         for factory in (
@@ -494,6 +564,35 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             claims=(LiveClaim.exact_owner("world.actor", "actor-1"),)
         )
         self.assertFalse(source.claims_contain("world.asset", "asset-1"))
+
+    def test_selected_partition_claims_cannot_overlap_across_route_entries(self) -> None:
+        admission = LiveClaimAdmission(
+            owner_defined_partitions=frozenset(
+                {("scene", "scene-market"), ("scene", "scene-market-2")}
+            )
+        )
+        first = _live_source(
+            claims=(
+                LiveClaim.owner_defined_partition(
+                    "scene", "scene-market", admission=admission
+                ),
+            )
+        )
+        second = LiveEnvelope(
+            campaign_id=first.campaign_id,
+            scene_id="scene-other",
+            epoch_id=first.epoch_id,
+            source_ref="live/campaign-frostfall/scene-other/epoch-1",
+            source_revision=LIVE_H1,
+            claims=(
+                LiveClaim.owner_defined_partition(
+                    "scene", "scene-market-2", admission=admission
+                ),
+            ),
+        )
+
+        with self.assertRaisesRegex(LiveContractError, "overlap"):
+            build_live_route("campaign-frostfall", (first, second))
 
     def test_prepared_source_is_not_selected_without_exact_route_entry(self) -> None:
         prepared = _live_source(revision=LIVE_H1)
@@ -551,18 +650,15 @@ class LiveCurrentnessTests(unittest.TestCase):
 
     def test_parallel_candidate_loses_against_the_accepted_exact_predecessor(self) -> None:
         selected = _live_source()
-        first = freeze_live_attempt(selected, proposed_source_revision=LIVE_H1)
-        second = freeze_live_attempt(selected, proposed_source_revision=LIVE_H2)
-
-        accepted = classify_cas_result(
-            first,
-            {
-                "accepted": True,
-                "source_key": selected.source_key,
-                "expected_source_revision": LIVE_H0,
-                "new_source_revision": LIVE_H1,
-            },
+        route = _live_route(selected)
+        first = freeze_live_attempt(
+            selected, route=route, proposed_source_revision=LIVE_H1
         )
+        second = freeze_live_attempt(
+            selected, route=route, proposed_source_revision=LIVE_H2
+        )
+
+        accepted = classify_cas_result(first, _accepted_ack(first))
         stale = classify_cas_result(
             second,
             {
@@ -581,14 +677,28 @@ class LiveCurrentnessTests(unittest.TestCase):
         selected = _live_source()
 
         with self.assertRaisesRegex(LiveContractError, "monotonic|predecessor|revision"):
-            freeze_live_attempt(selected, proposed_source_revision=LIVE_H0)
+            freeze_live_attempt(
+                selected, route=_live_route(selected), proposed_source_revision=LIVE_H0
+            )
 
 
 class LivePublicationTests(unittest.TestCase):
+    def test_freeze_requires_exact_selected_route_evidence(self) -> None:
+        source = _live_source()
+        route = build_live_route("campaign-frostfall", ())
+
+        with self.assertRaisesRegex(LiveContractError, "route|selected|current"):
+            freeze_live_attempt(
+                source,
+                route=route,
+                proposed_source_revision=LIVE_H1,
+            )
+
     def test_frozen_attempt_binds_selected_source_and_is_immutable(self) -> None:
         source = _live_source()
         attempt = freeze_live_attempt(
             source,
+            route=_live_route(source),
             proposed_source_revision=LIVE_H1,
             transition_kind="MUTATION",
         )
@@ -600,15 +710,40 @@ class LivePublicationTests(unittest.TestCase):
             attempt.expected_source_revision = LIVE_H2  # type: ignore[misc]
 
     def test_ambiguous_acknowledgement_is_not_success(self) -> None:
-        attempt = freeze_live_attempt(_live_source(), proposed_source_revision=LIVE_H1)
+        source = _live_source()
+        attempt = freeze_live_attempt(
+            source, route=_live_route(source), proposed_source_revision=LIVE_H1
+        )
 
         result = classify_cas_result(attempt, None)
 
         self.assertEqual(result.status, LivePublicationStatus.INDETERMINATE)
         self.assertFalse(result.authoritative)
 
+    def test_accepted_acknowledgement_requires_complete_selected_successor_closure(self) -> None:
+        source = _live_source()
+        attempt = freeze_live_attempt(
+            source, route=_live_route(source), proposed_source_revision=LIVE_H1
+        )
+
+        result = classify_cas_result(
+            attempt,
+            {
+                "accepted": True,
+                "source_key": attempt.source_key,
+                "target_ref": attempt.target_ref,
+                "expected_source_revision": attempt.expected_source_revision,
+                "new_source_revision": attempt.proposed_source_revision,
+            },
+        )
+
+        self.assertNotEqual(result.status, LivePublicationStatus.ACCEPTED)
+
     def test_indeterminate_ack_requires_exact_current_source_reconciliation(self) -> None:
-        attempt = freeze_live_attempt(_live_source(), proposed_source_revision=LIVE_H1)
+        source = _live_source()
+        attempt = freeze_live_attempt(
+            source, route=_live_route(source), proposed_source_revision=LIVE_H1
+        )
 
         accepted = reconcile_indeterminate(attempt, _live_source(revision=LIVE_H1))
         unresolved = reconcile_indeterminate(attempt, _live_source(revision=LIVE_H0))
@@ -619,8 +754,25 @@ class LivePublicationTests(unittest.TestCase):
         self.assertEqual(unresolved.status, LivePublicationStatus.INDETERMINATE)
         self.assertEqual(rejected.status, LivePublicationStatus.REJECTED_STALE)
 
+    def test_reconciliation_requires_complete_successor_source_evidence(self) -> None:
+        source = _live_source()
+        attempt = freeze_live_attempt(
+            source, route=_live_route(source), proposed_source_revision=LIVE_H1
+        )
+        changed_claims = _live_source(
+            revision=LIVE_H1,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-2"),),
+        )
+
+        result = reconcile_indeterminate(attempt, changed_claims)
+
+        self.assertNotEqual(result.status, LivePublicationStatus.ACCEPTED)
+
     def test_successful_local_write_without_selected_source_ack_is_not_authority(self) -> None:
-        attempt = freeze_live_attempt(_live_source(), proposed_source_revision=LIVE_H1)
+        source = _live_source()
+        attempt = freeze_live_attempt(
+            source, route=_live_route(source), proposed_source_revision=LIVE_H1
+        )
 
         result = classify_cas_result(
             attempt,
@@ -654,7 +806,9 @@ class LiveLifecycleTests(unittest.TestCase):
         closed = _live_source(revision=LIVE_H1, status=LiveLifecycle.CLOSED)
 
         with self.assertRaisesRegex(LiveContractError, "closed|reopen|ordinary"):
-            freeze_live_attempt(closed, proposed_source_revision=LIVE_H2)
+            freeze_live_attempt(
+                closed, route=_live_route(closed), proposed_source_revision=LIVE_H2
+            )
         with self.assertRaisesRegex(LiveContractError, "reopen|monotonic"):
             close_live_source(
                 closed,
@@ -669,6 +823,15 @@ class LiveLifecycleTests(unittest.TestCase):
         selected = select_live_source(route, closed.source_key)
 
         self.assertEqual(selected, closed)
+        self.assertEqual(
+            lookup_write_authority("world.actor", "actor-1", route),
+            "INTEGRITY_CONFLICT",
+        )
+
+    def test_selected_closed_source_never_falls_back_to_campaign_authority(self) -> None:
+        closed = _live_source(revision=LIVE_H1, status=LiveLifecycle.CLOSED)
+        route = build_live_route("campaign-frostfall", (closed,))
+
         self.assertEqual(
             lookup_write_authority("world.actor", "actor-1", route),
             "INTEGRITY_CONFLICT",

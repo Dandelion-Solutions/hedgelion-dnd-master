@@ -10,20 +10,20 @@ exact source observation and the authority-changing acknowledgement.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum
 import re
 from typing import Final, TypeAlias
 
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
 LIVE_CLAIM_SCHEMA_VERSION: Final[int] = 1
 LIVE_ROUTING_SCHEMA_VERSION: Final[int] = 1
-LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION: Final[int] = 1
+LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION: Final[int] = 2
 
 _MACHINE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _NATIVE_FAMILY = re.compile(r"^(world|runtime)\.[a-z][a-z0-9_]*$")
@@ -106,11 +106,56 @@ def _source_key(value: object, label: str = "source key") -> LiveSourceKey:
     )
 
 
-def _claims(value: object) -> tuple[LiveClaim, ...]:
+@dataclass(frozen=True, slots=True)
+class LiveClaimAdmission:
+    """Caller-supplied owner evidence for non-exact LIVE claim forms.
+
+    The T02 owner does not define identifier-policy or partition catalogs.  A
+    creation or owner-partition claim therefore needs an explicit admission
+    supplied by the owning future contract; absence of that evidence fails
+    closed.  This context is ephemeral and is never serialized as authority.
+    """
+
+    creation_families: frozenset[str] = frozenset()
+    owner_defined_partitions: frozenset[tuple[str, str]] = frozenset()
+
+    def __post_init__(self) -> None:
+        families = frozenset(
+            _machine_id(family, "admitted creation family")
+            for family in self.creation_families
+        )
+        if any(_NATIVE_FAMILY.fullmatch(family) is None for family in families):
+            raise LiveContractError("admitted creation family is not a native family")
+        if any(family in _FORBIDDEN_FAMILIES for family in families):
+            raise LiveContractError("forbidden family cannot be admitted for LIVE creation")
+        partitions = frozenset(
+            (
+                _machine_id(partition_type, "admitted partition type"),
+                _machine_id(partition_key, "admitted partition key"),
+            )
+            for partition_type, partition_key in self.owner_defined_partitions
+        )
+        object.__setattr__(self, "creation_families", families)
+        object.__setattr__(self, "owner_defined_partitions", partitions)
+
+    def admits_creation(self, native_family: str) -> bool:
+        return native_family in self.creation_families
+
+    def admits_partition(self, partition_type: str, partition_key: str) -> bool:
+        return (partition_type, partition_key) in self.owner_defined_partitions
+
+
+def _claims(
+    value: object,
+    *,
+    admission: LiveClaimAdmission | None = None,
+) -> tuple[LiveClaim, ...]:
     if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
         raise LiveContractError("LIVE claims must be an array")
     result = tuple(
-        item if isinstance(item, LiveClaim) else LiveClaim.from_mapping(item)
+        item
+        if isinstance(item, LiveClaim)
+        else LiveClaim.from_mapping(item, admission=admission)
         for item in value
     )
     keys = [claim.identity_key for claim in result]
@@ -128,6 +173,7 @@ class LiveClaim:
     native_identity: str | None = None
     partition_type: str | None = None
     partition_key: str | None = None
+    _admission: LiveClaimAdmission | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if self.claim_type not in _CLAIM_TYPES:
@@ -153,6 +199,8 @@ class LiveClaim:
                 raise LiveContractError("EPOCH_LOCAL_CREATION requires only native family")
             if any(value is not None for value in (self.partition_type, self.partition_key)):
                 raise LiveContractError("EPOCH_LOCAL_CREATION cannot carry partition fields")
+            if self._admission is None or not self._admission.admits_creation(family):
+                raise LiveContractError("creation family is not admitted as LIVE authority")
         else:
             if self.partition_type is None or self.partition_key is None:
                 raise LiveContractError(
@@ -160,8 +208,12 @@ class LiveClaim:
                 )
             if self.native_family is not None or self.native_identity is not None:
                 raise LiveContractError("OWNER_DEFINED_PARTITION cannot carry an exact owner")
-            _machine_id(self.partition_type, "claim.partition_type")
-            _machine_id(self.partition_key, "claim.partition_key")
+            partition_type = _machine_id(self.partition_type, "claim.partition_type")
+            partition_key = _machine_id(self.partition_key, "claim.partition_key")
+            if self._admission is None or not self._admission.admits_partition(
+                partition_type, partition_key
+            ):
+                raise LiveContractError("owner-defined partition is not admitted as LIVE authority")
 
     @classmethod
     def exact_owner(cls, native_family: str, native_identity: str) -> LiveClaim:
@@ -170,23 +222,40 @@ class LiveClaim:
         return cls("EXACT_OWNER", native_family=native_family, native_identity=native_identity)
 
     @classmethod
-    def epoch_local_creation(cls, native_family: str) -> LiveClaim:
+    def epoch_local_creation(
+        cls,
+        native_family: str,
+        *,
+        admission: LiveClaimAdmission | None = None,
+    ) -> LiveClaim:
         """Admit creation of a new owner of one explicitly admitted family."""
 
-        return cls("EPOCH_LOCAL_CREATION", native_family=native_family)
+        return cls("EPOCH_LOCAL_CREATION", native_family=native_family, _admission=admission)
 
     @classmethod
-    def owner_defined_partition(cls, partition_type: str, partition_key: str) -> LiveClaim:
+    def owner_defined_partition(
+        cls,
+        partition_type: str,
+        partition_key: str,
+        *,
+        admission: LiveClaimAdmission | None = None,
+    ) -> LiveClaim:
         """Claim only an already owner-defined bounded partition."""
 
         return cls(
             "OWNER_DEFINED_PARTITION",
             partition_type=partition_type,
             partition_key=partition_key,
+            _admission=admission,
         )
 
     @classmethod
-    def from_mapping(cls, value: object) -> LiveClaim:
+    def from_mapping(
+        cls,
+        value: object,
+        *,
+        admission: LiveClaimAdmission | None = None,
+    ) -> LiveClaim:
         if not isinstance(value, Mapping):
             raise LiveContractError("LIVE claim must be an object")
         claim_type = value.get("claim_type")
@@ -199,12 +268,18 @@ class LiveClaim:
             expected = {"claim_type", "native_family"}
             if set(value) != expected:
                 raise LiveContractError("EPOCH_LOCAL_CREATION claim fields are not strict")
-            return cls.epoch_local_creation(value["native_family"])  # type: ignore[arg-type]
+            return cls.epoch_local_creation(
+                value["native_family"], admission=admission  # type: ignore[arg-type]
+            )
         if claim_type == "OWNER_DEFINED_PARTITION":
             expected = {"claim_type", "partition_type", "partition_key"}
             if set(value) != expected:
                 raise LiveContractError("OWNER_DEFINED_PARTITION claim fields are not strict")
-            return cls.owner_defined_partition(value["partition_type"], value["partition_key"])  # type: ignore[arg-type]
+            return cls.owner_defined_partition(
+                value["partition_type"],  # type: ignore[arg-type]
+                value["partition_key"],  # type: ignore[arg-type]
+                admission=admission,
+            )
         raise LiveContractError("LIVE claim must use the closed typed claim grammar")
 
     @property
@@ -212,6 +287,9 @@ class LiveClaim:
         if self.claim_type == "OWNER_DEFINED_PARTITION":
             return (self.claim_type, self.partition_type or "", self.partition_key or "")
         return (self.claim_type, self.native_family or "", self.native_identity or "")
+
+    def _is_admitted(self) -> bool:
+        return self.claim_type == "EXACT_OWNER" or self._admission is not None
 
     def as_mapping(self) -> dict[str, str]:
         if self.claim_type == "EXACT_OWNER":
@@ -286,7 +364,12 @@ class LiveEnvelope:
         }
 
     @classmethod
-    def from_mapping(cls, value: object) -> LiveEnvelope:
+    def from_mapping(
+        cls,
+        value: object,
+        *,
+        admission: LiveClaimAdmission | None = None,
+    ) -> LiveEnvelope:
         if not isinstance(value, Mapping):
             raise LiveContractError("LIVE envelope must be an object")
         expected = {
@@ -307,7 +390,7 @@ class LiveEnvelope:
             source_ref=value["source_ref"],  # type: ignore[arg-type]
             source_revision=value["source_revision"],  # type: ignore[arg-type]
             status=value["status"],  # type: ignore[arg-type]
-            claims=value["claims"],  # type: ignore[arg-type]
+            claims=_claims(value["claims"], admission=admission),
         )
 
 
@@ -333,11 +416,22 @@ class LiveRouting:
         if len(keys) != len(set(keys)):
             raise LiveContractError("LIVE route contains duplicate source keys")
         active_claims: dict[tuple[str, str], LiveEnvelope] = {}
+        active_partitions: set[str] = set()
         for entry in entries:
-            if entry.status not in {LiveLifecycle.ACTIVE, LiveLifecycle.CLOSED_UNABSORBED}:
+            if entry.status not in {
+                LiveLifecycle.ACTIVE,
+                LiveLifecycle.CLOSED,
+                LiveLifecycle.CLOSED_UNABSORBED,
+            }:
                 continue
             for claim in entry.claims:
+                if not claim._is_admitted():
+                    raise LiveContractError("selected LIVE claim lacks owner admission")
                 if claim.claim_type != "EXACT_OWNER":
+                    if claim.partition_type in active_partitions:
+                        raise LiveContractError("selected LIVE claims overlap")
+                    if claim.partition_type is not None:
+                        active_partitions.add(claim.partition_type)
                     continue
                 claim_key = (claim.native_family or "", claim.native_identity or "")
                 previous = active_claims.get(claim_key)
@@ -371,7 +465,9 @@ class LiveRouting:
             raise LiveContractError("LIVE route entries must be an array")
         return cls(
             campaign_id=value["campaign_id"],  # type: ignore[arg-type]
-            entries=tuple(LiveEnvelope.from_mapping(item) for item in raw_entries),
+            entries=tuple(
+                LiveEnvelope.from_mapping(item, admission=admission) for item in raw_entries
+            ),
             complete=value["complete"],  # type: ignore[arg-type]
         )
 
@@ -430,7 +526,8 @@ def lookup_write_authority(
     matches = tuple(
         entry
         for entry in entries
-        if entry.status in {LiveLifecycle.ACTIVE, LiveLifecycle.CLOSED_UNABSORBED}
+        if entry.status
+        in {LiveLifecycle.ACTIVE, LiveLifecycle.CLOSED, LiveLifecycle.CLOSED_UNABSORBED}
         and entry.claims_contain(native_family, native_identity)
     )
     if len(matches) > 1:
@@ -468,6 +565,7 @@ def validate_exact_source(
 class FrozenLivePublicationAttempt:
     """Immutable prospective LIVE transition, not a lease or publication journal."""
 
+    selected_route: LiveRouting
     source_key: LiveSourceKey
     target_ref: str
     expected_source_revision: str
@@ -475,8 +573,11 @@ class FrozenLivePublicationAttempt:
     transition_kind: str
     claims: tuple[LiveClaim, ...]
     source_status: LiveLifecycle
+    successor_route: LiveRouting
 
     def __post_init__(self) -> None:
+        if not isinstance(self.selected_route, LiveRouting) or not self.selected_route.complete:
+            raise LiveContractError("LIVE publication requires complete selected route evidence")
         object.__setattr__(self, "source_key", _source_key(self.source_key))
         object.__setattr__(self, "target_ref", _nonempty(self.target_ref, "target_ref"))
         object.__setattr__(
@@ -493,10 +594,44 @@ class FrozenLivePublicationAttempt:
         object.__setattr__(self, "claims", _claims(self.claims))
         if not isinstance(self.source_status, LiveLifecycle):
             object.__setattr__(self, "source_status", LiveLifecycle(self.source_status))
+        selected = select_live_source(self.selected_route, self.source_key)
+        if selected is None or not validate_exact_source(
+            selected,
+            LiveEnvelope(
+                campaign_id=self.source_key[0],
+                scene_id=self.source_key[1],
+                epoch_id=self.source_key[2],
+                source_ref=self.target_ref,
+                source_revision=self.expected_source_revision,
+                claims=self.claims,
+                status=self.source_status,
+            ),
+        ):
+            raise LiveContractError("frozen attempt is not bound to the selected route source")
+        if not isinstance(self.successor_route, LiveRouting) or not self.successor_route.complete:
+            raise LiveContractError("LIVE publication requires complete successor closure")
+        successors = self.successor_route.entries
+        if len(successors) != 1:
+            raise LiveContractError("LIVE successor closure must contain exactly one source")
+        successor = successors[0]
+        expected_successor_status = {
+            "MUTATION": LiveLifecycle.ACTIVE,
+            "CLOSE": LiveLifecycle.CLOSED,
+            "ABSORB": LiveLifecycle.ABSORBED,
+        }[self.transition_kind]
+        if (
+            successor.source_key != self.source_key
+            or successor.source_ref != self.target_ref
+            or successor.source_revision != self.proposed_source_revision
+            or successor.claims != self.claims
+            or successor.status is not expected_successor_status
+        ):
+            raise LiveContractError("frozen attempt successor closure is incomplete or mismatched")
 
     def as_mapping(self) -> dict[str, object]:
         return {
             "schema_version": LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION,
+            "selected_route": self.selected_route.as_mapping(),
             "source_key": list(self.source_key),
             "target_ref": self.target_ref,
             "expected_source_revision": self.expected_source_revision,
@@ -504,12 +639,14 @@ class FrozenLivePublicationAttempt:
             "transition_kind": self.transition_kind,
             "source_status": self.source_status.value,
             "claims": [claim.as_mapping() for claim in self.claims],
+            "successor": self.successor_route.as_mapping(),
         }
 
 
 def freeze_live_attempt(
     source: LiveEnvelope,
     *,
+    route: LiveRouting,
     proposed_source_revision: str,
     transition_kind: str = "MUTATION",
     expected_source_revision: str | None = None,
@@ -518,6 +655,11 @@ def freeze_live_attempt(
 
     if not isinstance(source, LiveEnvelope):
         raise LiveContractError("LIVE publication requires an owner-typed source")
+    if not isinstance(route, LiveRouting) or not route.complete:
+        raise LiveContractError("LIVE publication requires complete selected route evidence")
+    selected = select_live_source(route, source.source_key)
+    if selected is None or not validate_exact_source(source, selected):
+        raise LiveContractError("LIVE publication source is not the exact selected route source")
     expected = source.source_revision if expected_source_revision is None else _revision(
         expected_source_revision, "expected_source_revision"
     )
@@ -525,7 +667,24 @@ def freeze_live_attempt(
         raise LiveContractError("attempt expected revision differs from selected source")
     if source.status is not LiveLifecycle.ACTIVE:
         raise LiveContractError("closed LIVE source rejects ordinary writes and cannot reopen")
+    successor_status = {
+        "MUTATION": LiveLifecycle.ACTIVE,
+        "CLOSE": LiveLifecycle.CLOSED,
+        "ABSORB": LiveLifecycle.ABSORBED,
+    }.get(transition_kind)
+    if successor_status is None:
+        raise LiveContractError("LIVE transition kind is not admitted")
+    successor = LiveEnvelope(
+        campaign_id=source.campaign_id,
+        scene_id=source.scene_id,
+        epoch_id=source.epoch_id,
+        source_ref=source.source_ref,
+        source_revision=proposed_source_revision,
+        claims=source.claims,
+        status=successor_status,
+    )
     return FrozenLivePublicationAttempt(
+        selected_route=route,
         source_key=source.source_key,
         target_ref=source.source_ref,
         expected_source_revision=expected,
@@ -533,6 +692,7 @@ def freeze_live_attempt(
         transition_kind=transition_kind,
         claims=source.claims,
         source_status=source.status,
+        successor_route=build_live_route(source.campaign_id, (successor,)),
     )
 
 
@@ -598,8 +758,12 @@ def classify_cas_result(
     if not isinstance(acknowledgement, Mapping):
         return _result(LivePublicationStatus.INDETERMINATE, attempt, authoritative=False)
     raw_key = acknowledgement.get("source_key")
-    if raw_key is not None and _source_key(raw_key) != attempt.source_key:
-        return _result(LivePublicationStatus.REJECTED_STALE, attempt, authoritative=False)
+    if raw_key is not None:
+        try:
+            if _source_key(raw_key) != attempt.source_key:
+                return _result(LivePublicationStatus.REJECTED_STALE, attempt, authoritative=False)
+        except LiveContractError:
+            return _result(LivePublicationStatus.REJECTED_STALE, attempt, authoritative=False)
     raw_status = str(acknowledgement.get("status", "")).upper()
     accepted = acknowledgement.get("accepted") is True or raw_status in {
         "ACCEPTED",
@@ -617,16 +781,23 @@ def classify_cas_result(
             authoritative=False,
             observed_source_revision=_revision(current, "current_source_revision"),
         )
-    acknowledged_expected = acknowledgement.get(
-        "expected_source_revision",
-        acknowledgement.get("parent_source_revision"),
-    )
+    if raw_key is None:
+        return _result(LivePublicationStatus.INDETERMINATE, attempt, authoritative=False)
+    acknowledged_target = acknowledgement.get("target_ref")
+    if acknowledged_target != attempt.target_ref:
+        return _result(LivePublicationStatus.REJECTED_STALE, attempt, authoritative=False)
+    acknowledged_expected = acknowledgement.get("expected_source_revision")
     if acknowledged_expected != attempt.expected_source_revision:
         return _result(LivePublicationStatus.REJECTED_STALE, attempt, authoritative=False)
-    proposed = acknowledgement.get(
-        "new_source_revision",
-        acknowledgement.get("source_revision"),
-    )
+    if "selected_route" not in acknowledgement or "successor" not in acknowledgement:
+        return _result(LivePublicationStatus.INDETERMINATE, attempt, authoritative=False)
+    if acknowledgement["selected_route"] != attempt.selected_route.as_mapping():
+        return _result(LivePublicationStatus.REJECTED_STALE, attempt, authoritative=False)
+    if acknowledgement["successor"] != attempt.successor_route.as_mapping():
+        return _result(LivePublicationStatus.REJECTED_STALE, attempt, authoritative=False)
+    proposed = acknowledgement.get("new_source_revision")
+    if proposed is None:
+        return _result(LivePublicationStatus.INDETERMINATE, attempt, authoritative=False)
     if proposed != attempt.proposed_source_revision:
         raise LiveContractError("accepted CAS acknowledgement has non-monotonic source revision")
     _revision(proposed, "new_source_revision")
@@ -648,14 +819,24 @@ def reconcile_indeterminate(
         raise LiveContractError("indeterminate reconciliation requires exact source evidence")
     if current_source.source_key != attempt.source_key or current_source.source_ref != attempt.target_ref:
         return _result(LivePublicationStatus.REJECTED_STALE, attempt, authoritative=False)
-    if current_source.source_revision == attempt.proposed_source_revision:
+    predecessor = LiveEnvelope(
+        campaign_id=attempt.source_key[0],
+        scene_id=attempt.source_key[1],
+        epoch_id=attempt.source_key[2],
+        source_ref=attempt.target_ref,
+        source_revision=attempt.expected_source_revision,
+        claims=attempt.claims,
+        status=attempt.source_status,
+    )
+    successor = attempt.successor_route.entries[0]
+    if validate_exact_source(successor, current_source):
         return _result(
             LivePublicationStatus.ACCEPTED,
             attempt,
             authoritative=True,
             observed_source_revision=current_source.source_revision,
         )
-    if current_source.source_revision == attempt.expected_source_revision:
+    if validate_exact_source(predecessor, current_source):
         return _result(LivePublicationStatus.INDETERMINATE, attempt, authoritative=False)
     return _result(
         LivePublicationStatus.REJECTED_STALE,

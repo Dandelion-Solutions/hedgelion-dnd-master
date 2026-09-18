@@ -37,26 +37,42 @@
       "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
     }
   },
-  "allOf": [
+  "oneOf": [
     {
-      "if": {"properties": {"claim_type": {"const": "EXACT_OWNER"}}},
-      "then": {
-        "required": ["native_family", "native_identity"],
-        "not": {"required": ["partition_type"]}
+      "required": ["claim_type", "native_family", "native_identity"],
+      "properties": {
+        "claim_type": {"const": "EXACT_OWNER"}
+      },
+      "not": {
+        "anyOf": [
+          {"required": ["partition_type"]},
+          {"required": ["partition_key"]}
+        ]
       }
     },
     {
-      "if": {"properties": {"claim_type": {"const": "EPOCH_LOCAL_CREATION"}}},
-      "then": {
-        "required": ["native_family"],
-        "not": {"anyOf": [{"required": ["native_identity"]}, {"required": ["partition_type"]}]}
+      "required": ["claim_type", "native_family"],
+      "properties": {
+        "claim_type": {"const": "EPOCH_LOCAL_CREATION"}
+      },
+      "not": {
+        "anyOf": [
+          {"required": ["native_identity"]},
+          {"required": ["partition_type"]},
+          {"required": ["partition_key"]}
+        ]
       }
     },
     {
-      "if": {"properties": {"claim_type": {"const": "OWNER_DEFINED_PARTITION"}}},
-      "then": {
-        "required": ["partition_type", "partition_key"],
-        "not": {"anyOf": [{"required": ["native_family"]}, {"required": ["native_identity"]}]}
+      "required": ["claim_type", "partition_type", "partition_key"],
+      "properties": {
+        "claim_type": {"const": "OWNER_DEFINED_PARTITION"}
+      },
+      "not": {
+        "anyOf": [
+          {"required": ["native_family"]},
+          {"required": ["native_identity"]}
+        ]
       }
     }
   ]
