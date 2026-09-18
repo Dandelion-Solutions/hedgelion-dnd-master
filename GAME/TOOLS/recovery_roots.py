@@ -18,8 +18,8 @@ import weakref
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.10
-FRAMEWORK_MODULE_VERSION: Final = "1.0.10"
+# framework_module_version: 1.0.11
+FRAMEWORK_MODULE_VERSION: Final = "1.0.11"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
 OPERATIONAL_ROOT_HANDOFF_SCHEMA_VERSION: Final = 2
 _OWNER_KINDS: Final = frozenset(
@@ -278,21 +278,21 @@ class AcceptedUnresolvedInputPromise(Protocol):
         """Return exactly ``True`` only for matching owner-validated evidence."""
 
 
-class AcceptedAbsorptionEvidenceValidator(Protocol):
-    """Port to the existing LIVE producer's exact absorption validator.
+class AcceptedAbsorptionEvidenceTransport(Protocol):
+    """Transport to the existing LIVE producer's exact absorption validator.
 
-    The handoff adapter only delegates validation through this port.  It never
-    issues, marks, or independently accepts absorption evidence.
+    The handoff adapter only delegates validation through this producer-minted
+    transport.  It never issues, marks, or independently accepts absorption
+    evidence.
     """
 
-    def __call__(
+    def validate_for_operational_root_recovery(
         self,
-        evidence: object,
         *,
         source_key: Sequence[str],
         source_revision: str,
-    ) -> None:
-        """Raise when the LIVE producer rejects the exact absorption proof."""
+    ) -> object:
+        """Return the exact LIVE proof or raise when it is not accepted."""
 
 
 def derive_operational_root_delta(
@@ -486,7 +486,6 @@ def reconcile_operational_root_handoff(
     source_lifecycle: str | None = None,
     absorption_acknowledged: bool | None = None,
     absorption_evidence: object | None = None,
-    absorption_evidence_validator: AcceptedAbsorptionEvidenceValidator | None = None,
     terminal_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]] = (),
     terminal_native_owners: Mapping[
         tuple[str, str] | tuple[str, str, str], OperationalRootDelta
@@ -531,7 +530,6 @@ def reconcile_operational_root_handoff(
                 raise OperationalRootError("campaign recovery requires owner-issued absorption evidence")
             _validate_absorption_evidence(
                 absorption_evidence,
-                absorption_evidence_validator,
                 source_key=expected_key,
                 source_revision=expected_revision,
             )
@@ -553,7 +551,6 @@ def reconcile_operational_root_handoff(
             raise OperationalRootError("campaign recovery requires owner-issued absorption evidence")
         _validate_absorption_evidence(
             absorption_evidence,
-            absorption_evidence_validator,
             source_key=current.source_key,
             source_revision=current.source_revision,
         )
@@ -646,7 +643,6 @@ def recover_operational_roots_to_campaign(
     source_lifecycle: str | None = None,
     absorption_acknowledged: bool | None = None,
     absorption_evidence: object | None = None,
-    absorption_evidence_validator: AcceptedAbsorptionEvidenceValidator | None = None,
     terminal_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]] = (),
     terminal_native_owners: Mapping[
         tuple[str, str] | tuple[str, str, str], OperationalRootDelta
@@ -671,7 +667,6 @@ def recover_operational_roots_to_campaign(
         source_lifecycle=source_lifecycle,
         absorption_acknowledged=absorption_acknowledged,
         absorption_evidence=absorption_evidence,
-        absorption_evidence_validator=absorption_evidence_validator,
         terminal_owner_keys=terminal_owner_keys,
         terminal_native_owners=terminal_native_owners,
         superseded_owner_keys=superseded_owner_keys,
@@ -681,20 +676,19 @@ def recover_operational_roots_to_campaign(
 
 def _validate_absorption_evidence(
     evidence: object,
-    validator: AcceptedAbsorptionEvidenceValidator | None,
     *,
     source_key: Sequence[str] | None,
     source_revision: str,
 ) -> None:
-    if validator is None:
+    validator = getattr(evidence, "validate_for_operational_root_recovery", None)
+    if not callable(validator):
         raise OperationalRootError(
-            "campaign recovery requires the LIVE producer absorption validator"
+            "campaign recovery requires the LIVE producer absorption evidence transport"
         )
     if source_key is None:
         raise OperationalRootError("campaign recovery absorption source key is missing")
     try:
         validator(
-            evidence,
             source_key=source_key,
             source_revision=source_revision,
         )

@@ -79,7 +79,6 @@ from GAME.TOOLS.live_state import (
     validate_live_route_identity,
     validate_live_route_completeness,
     validate_exact_source,
-    validate_accepted_absorption_evidence,
     absorb_live_state,
     mark_closed_unabsorbed,
     unpack_live_native_state,
@@ -651,7 +650,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.13")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.14")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
@@ -2856,7 +2855,7 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
         ]
         self.assertEqual(neutral_imports, [])
 
-    def test_root_recovery_requires_the_live_owner_absorption_validator_port(self) -> None:
+    def test_root_recovery_requires_the_live_owner_absorption_transport(self) -> None:
         source = _live_source(revision=LIVE_H1)
         live_page = handoff_operational_roots_to_live(
             self._page(),
@@ -2865,14 +2864,64 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_key=source.source_key,
             live_source_revision=source.source_revision,
         )
-        with self.assertRaisesRegex(ValueError, "producer|validator|absorption"):
+        with self.assertRaisesRegex(ValueError, "producer|transport|absorption"):
             recover_operational_roots_to_campaign(
                 live_page,
                 campaign_id="campaign-frostfall",
                 live_source_key=source.source_key,
                 live_source_revision=source.source_revision,
                 campaign_revision=LIVE_H2,
-                absorption_evidence=_accepted_absorption_publication(source),
+                absorption_evidence=object(),
+            )
+
+    def test_root_recovery_rejects_forged_evidence_and_arbitrary_validator(self) -> None:
+        source = _live_source(revision=LIVE_H1)
+        live_page = handoff_operational_roots_to_live(
+            self._page(),
+            campaign_id="campaign-frostfall",
+            campaign_revision=LIVE_H0,
+            live_source_key=source.source_key,
+            live_source_revision=source.source_revision,
+        )
+        publication = _accepted_absorption_publication(source)
+        forged_evidence = LiveAbsorptionPublication(
+            status=publication.status,
+            source_key=publication.source_key,
+            source_revision=publication.source_revision,
+            authoritative=publication.authoritative,
+            candidate_state=publication.candidate_state,
+            successor_route=publication.successor_route,
+            attempt=publication.attempt,
+        )
+
+        class ForgedValidator:
+            def __call__(
+                self,
+                _evidence: object,
+                *,
+                source_key: tuple[str, str, str],
+                source_revision: str,
+            ) -> None:
+                return None
+
+        with self.assertRaisesRegex(ValueError, "producer|owner|evidence|transport"):
+            recover_operational_roots_to_campaign(
+                live_page,
+                campaign_id="campaign-frostfall",
+                live_source_key=source.source_key,
+                live_source_revision=source.source_revision,
+                campaign_revision=LIVE_H2,
+                absorption_evidence=forged_evidence,
+            )
+        with self.assertRaises(TypeError):
+            recover_operational_roots_to_campaign(
+                live_page,
+                campaign_id="campaign-frostfall",
+                live_source_key=source.source_key,
+                live_source_revision=source.source_revision,
+                campaign_revision=LIVE_H2,
+                absorption_evidence=publication,
+                absorption_evidence_validator=ForgedValidator(),
             )
 
     def test_operational_root_handoff_schema_matches_runtime_scope_and_source_key_grammar(self) -> None:
@@ -2944,7 +2993,6 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_revision=source.source_revision,
             campaign_revision=LIVE_H2,
             absorption_evidence=_accepted_absorption_publication(source),
-            absorption_evidence_validator=validate_accepted_absorption_evidence,
         )
         live_retry = handoff_operational_roots_to_live(
             live_page,
@@ -2960,7 +3008,6 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_revision=source.source_revision,
             campaign_revision=LIVE_H2,
             absorption_evidence=_accepted_absorption_publication(source),
-            absorption_evidence_validator=validate_accepted_absorption_evidence,
         )
 
         self.assertEqual(live_page.source_scope, "LIVE")
@@ -3098,7 +3145,6 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_revision=source.source_revision,
             campaign_revision=LIVE_H2,
             absorption_evidence=_accepted_absorption_publication(source),
-            absorption_evidence_validator=validate_accepted_absorption_evidence,
             superseded_owner_keys=(root_key,),
             superseded_native_deltas={root_key: replacement_delta},
         )
@@ -3135,7 +3181,6 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
                 live_source_revision=source.source_revision,
                 campaign_revision=LIVE_H2,
                 absorption_evidence=_accepted_absorption_publication(source),
-                absorption_evidence_validator=validate_accepted_absorption_evidence,
                 terminal_owner_keys=(root_key,),
             )
 
@@ -3146,7 +3191,6 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_revision=source.source_revision,
             campaign_revision=LIVE_H2,
             absorption_evidence=_accepted_absorption_publication(source),
-            absorption_evidence_validator=validate_accepted_absorption_evidence,
             terminal_owner_keys=(root_key,),
             terminal_native_owners={root_key: terminal_delta},
         )
@@ -3192,7 +3236,6 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
                     live_source_revision=source.source_revision,
                     campaign_revision=LIVE_H2,
                     absorption_evidence=_accepted_absorption_publication(source),
-                    absorption_evidence_validator=validate_accepted_absorption_evidence,
                     superseded_owner_keys=(root_key,),
                     superseded_native_deltas={root_key: delta},
                 )

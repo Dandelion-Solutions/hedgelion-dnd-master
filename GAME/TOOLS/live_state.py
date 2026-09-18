@@ -13,7 +13,7 @@ import base64
 import binascii
 from collections.abc import Iterable, Mapping, Sequence
 from copy import deepcopy
-from dataclasses import InitVar, dataclass, replace
+from dataclasses import InitVar, dataclass, field, replace
 from enum import StrEnum
 import hashlib
 import json
@@ -22,8 +22,8 @@ from types import MappingProxyType
 from typing import Final, TypeAlias
 import weakref
 
-# framework_module_version: 1.0.13
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.13"
+# framework_module_version: 1.0.14
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.14"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -2514,6 +2514,9 @@ def freeze_campaign_absorption(
     )
 
 
+_ABSORPTION_RESULT_TOKEN = object()
+
+
 @dataclass(frozen=True, slots=True, weakref_slot=True)
 class LiveAbsorptionPublication:
     """Typed result of exact campaign CAS classification."""
@@ -2525,10 +2528,25 @@ class LiveAbsorptionPublication:
     candidate_state: Mapping[str, object] | None = None
     successor_route: LiveRouting | None = None
     attempt: FrozenCampaignAbsorption | None = None
+    _issuer: object = field(default=None, repr=False, compare=False)
 
     @property
     def acknowledged(self) -> bool:
         return self.status is LiveAbsorptionStatus.ACCEPTED and self.authoritative
+
+    def validate_for_operational_root_recovery(
+        self,
+        *,
+        source_key: Sequence[str],
+        source_revision: str,
+    ) -> "LiveAbsorptionPublication":
+        """Expose the LIVE-owned validation transport to recovery adapters."""
+
+        return validate_accepted_absorption_evidence(
+            self,
+            source_key=source_key,
+            source_revision=source_revision,
+        )
 
 
 _OWNER_ISSUED_ABSORPTION_RESULTS: dict[
@@ -2539,6 +2557,7 @@ _OWNER_ISSUED_ABSORPTION_RESULTS: dict[
 def _mark_owner_issued_absorption_result(
     result: LiveAbsorptionPublication,
 ) -> LiveAbsorptionPublication:
+    object.__setattr__(result, "_issuer", _ABSORPTION_RESULT_TOKEN)
     result_id = id(result)
 
     def remove(reference: weakref.ReferenceType[LiveAbsorptionPublication]) -> None:
@@ -2565,7 +2584,11 @@ def validate_accepted_absorption_evidence(
 
     if not isinstance(evidence, LiveAbsorptionPublication):
         raise LiveContractError("accepted absorption requires typed owner-issued CAS evidence")
-    if not evidence.acknowledged or not _is_owner_issued_absorption_result(evidence):
+    if (
+        evidence._issuer is not _ABSORPTION_RESULT_TOKEN
+        or not evidence.acknowledged
+        or not _is_owner_issued_absorption_result(evidence)
+    ):
         raise LiveContractError("accepted absorption requires owner-issued accepted CAS evidence")
     attempt = evidence.attempt
     if not isinstance(attempt, FrozenCampaignAbsorption):
