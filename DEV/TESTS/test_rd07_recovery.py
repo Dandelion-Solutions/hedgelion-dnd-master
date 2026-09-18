@@ -488,8 +488,39 @@ def _policy_basis_for_recovery(
     }
 
 
-def _validated_command_closure() -> tuple[dict[str, object], dict[str, object], dict[str, object], object, dict[str, str]]:
+def _validated_command_closure(
+    *, include_policy: bool = False
+) -> tuple[dict[str, object], dict[str, object], dict[str, object], object, dict[str, str]]:
     context = _bind_context()
+    accepted_basis = None
+    resolved_policy = None
+    if include_policy:
+        resolved_policy = PolicyBasisResolver(FakeRepository(), FakeAccess(), FakeApplicability()).resolve(
+            "campaign-1",
+            PolicySelection(policy_id="policy.social_leverage", consumer_id="activity.check.generic"),
+            catalog_context=context,
+        )
+        accepted_basis = PolicyBasisResolver.bind_accepted_basis(
+            {
+                "dc": {
+                    "source_class": "INVOCATION_ADJUDICATED",
+                    "value": 15,
+                    "provenance_ref": "turn-1:dc",
+                    "eligibility_basis_fingerprint": "eligibility-A",
+                    "rules_context_fingerprint": "rules-A",
+                    "policy_basis_refs": [resolved_policy.policy_ref],
+                }
+            },
+            (),
+            (resolved_policy,),
+        )
+    action_request: dict[str, object] = {
+        "activity_id": "activity.check.generic",
+        "actor_id": "actor-1",
+        "target_ids": ["actor-2"],
+    }
+    if accepted_basis is not None:
+        action_request["parameter_bindings"] = accepted_basis.runtime_parameter_bindings()
     accepted = accept_command(
         {
             "kind": "interpreter_result",
@@ -505,13 +536,10 @@ def _validated_command_closure() -> tuple[dict[str, object], dict[str, object], 
             "interaction_id": "turn-1",
             "intent_plan_id": "turn-1-plan",
             "clause_id": "c1",
-            "action_request": {
-                "activity_id": "activity.check.generic",
-                "actor_id": "actor-1",
-                "target_ids": ["actor-2"],
-            },
+            "action_request": action_request,
             "root_resolution_id": "resolution-1",
         },
+        adjudication_basis=accepted_basis,
     )
     if not isinstance(accepted, dict):
         raise AssertionError("test command must be accepted")
@@ -551,7 +579,11 @@ def _validated_command_closure() -> tuple[dict[str, object], dict[str, object], 
         "segments": [segment],
         "fixed_rng_results": [roll],
     }
-    policy = _policy_basis_for_recovery(accepted, [])
+    policy = _policy_basis_for_recovery(
+        accepted,
+        [] if resolved_policy is None else [resolved_policy.policy_ref],
+        source_revision=H,
+    )
     closure = {
         "accepted_command": accepted,
         "execution": execution,
@@ -651,6 +683,55 @@ class AcceptedExecutionRecoveryTests(unittest.TestCase):
                 policy_basis=_policy_basis_for_recovery(command),
             )
         self.assertEqual(raised.exception.code, RecoveryFailureCode.CORRUPT)
+
+    def test_recovery_accepts_owner_derived_later_segment_and_roll_identity(self) -> None:
+        command = _accepted_command_for_recovery()
+        execution = _execution_for_recovery()
+        segment_id = "resolution-000001:segment:2"
+        event_id = f"{segment_id}:event:3"
+        roll_id = "resolution-000001:roll:7"
+        later_segment = {
+            "segment_id": segment_id,
+            "segment_sequence": 2,
+            "event_ids": [event_id],
+        }
+        later_event = {
+            "segment_id": segment_id,
+            "event_ordinal": 3,
+            "event_id": event_id,
+        }
+        later_roll = {
+            "roll_id": roll_id,
+            "request_id": roll_id,
+            "expression": "fixed",
+            "raw_values": [19],
+            "source_kind": "rng.system",
+            "provenance_ref": "resolution-000001:rng:7",
+        }
+        later_execution = execution | {
+            "segment": later_segment,
+            "event": later_event,
+            "event_id": event_id,
+            "roll_result": later_roll,
+        }
+        resolution = {
+            "resolution_id": "resolution-000001",
+            "root_command_id": command["command_id"],
+            "segments": [later_segment],
+            "fixed_rng_results": [later_roll],
+        }
+
+        recovered = validate_recovered_basis(
+            command,
+            later_execution,
+            catalog_basis=command["catalog_context"],
+            policy_basis=_policy_basis_for_recovery(command),
+            resolution=resolution,
+        )
+
+        self.assertEqual(recovered.segment_id, segment_id)
+        self.assertEqual(recovered.event_id, event_id)
+        self.assertEqual(recovered.fixed_rng_values, (19,))
 
     def test_recovery_rejects_mutually_forged_policy_refs(self) -> None:
         command = _accepted_command_for_recovery()
@@ -838,11 +919,21 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
             recover_current_runtime(Repository(), "campaign-1")
         self.assertEqual(raised.exception.code, RecoveryFailureCode.INCOMPLETE)
 
-    def test_current_runtime_validates_real_command_closure_before_ready(self) -> None:
+    def test_current_runtime_hydrates_t05_command_and_execution_sources_before_ready(self) -> None:
         from GAME.TOOLS.native_storage import route_native_record
 
-        accepted, _execution, closure, _context, identity = _validated_command_closure()
+        accepted, execution, closure, context, identity = _validated_command_closure(include_policy=True)
         path = route_native_record("runtime.command", (identity["command_id"],)).relative_path
+        resolution = copy.deepcopy(closure["resolution"])
+        resolution_path = route_native_record(
+            "runtime.resolution", (str(accepted["root_resolution_id"]),)
+        ).relative_path
+        event = copy.deepcopy(execution["event"])
+        event["root_command_id"] = accepted["command_id"]
+        event["causal_ref"] = accepted["root_resolution_id"]
+        event_path = route_native_record(
+            "runtime.mechanical_event", (str(execution["event_id"]),)
+        ).relative_path
         root = {
             "owner_kind": "runtime.command",
             "owner_id": identity["command_id"],
@@ -866,17 +957,15 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
                 return (CurrentNativeSource(pinned.campaign_id, "campaign", "campaign/current", H, "MANIFEST.yaml"),)
 
             def read_exact_path(self, pinned: PinnedCampaign, requested: str) -> object:
+                self.reads.append((pinned.revision, requested))
                 if requested == "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml":
                     return page
                 if requested == path:
-                    return {
-                        "kind": "runtime.command",
-                        "command_id": accepted["command_id"],
-                        "disposition": "command.accepted",
-                        "pending_child_invocations": [],
-                        "direct_transition_receipt": {"status": "PUBLISH_REQUIRED"},
-                        "closure": closure,
-                    }
+                    return accepted
+                if requested == resolution_path:
+                    return resolution
+                if requested == event_path:
+                    return event
                 return super().read_exact_path(pinned, requested)
 
             def resolve_recovery_catalog_context(
@@ -885,11 +974,152 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
                 accepted_command: Mapping[str, object],
                 catalog_basis: Mapping[str, object],
             ) -> tuple[object, Mapping[str, str]]:
-                return _context, {"definition_id": "activity.check.generic", "kind": "definition.activity"}
+                return context, {"definition_id": "activity.check.generic", "kind": "definition.activity"}
 
-        result = recover_current_runtime(Repository(), "campaign-1")
+            def resolve_recovery_policy_basis(
+                self,
+                pinned: PinnedCampaign,
+                accepted_command: Mapping[str, object],
+                policy_refs: tuple[str, ...],
+            ) -> Mapping[str, object]:
+                self.read_exact_path(pinned, "MANIFEST.yaml")
+                self.read_exact_path(pinned, "RULES/HOUSE_RULES.yaml")
+                self.read_exact_path(pinned, "RULES/HOUSE_RULES.md")
+                return {"source_revision": pinned.revision}
+
+        repository = Repository()
+        result = recover_current_runtime(repository, "campaign-1")
         self.assertEqual(result.disposition, "READY")
         self.assertEqual(result.hydrated_owners[0]["command_id"], identity["command_id"])
+        reads = [path for _revision, path in repository.reads]
+        self.assertIn(path, reads)
+        self.assertIn(resolution_path, reads)
+        self.assertIn(event_path, reads)
+        self.assertIn("MANIFEST.yaml", reads)
+        self.assertIn("RULES/HOUSE_RULES.yaml", reads)
+        self.assertIn("RULES/HOUSE_RULES.md", reads)
+
+    def test_current_runtime_rejects_missing_resolution_root_command_id(self) -> None:
+        from GAME.TOOLS.native_storage import route_native_record
+
+        accepted, execution, closure, context, identity = _validated_command_closure()
+        command_path = route_native_record("runtime.command", (identity["command_id"],)).relative_path
+        resolution_path = route_native_record(
+            "runtime.resolution", (str(accepted["root_resolution_id"]),)
+        ).relative_path
+        event_path = route_native_record(
+            "runtime.mechanical_event", (str(execution["event_id"]),)
+        ).relative_path
+        resolution = copy.deepcopy(closure["resolution"])
+        del resolution["root_command_id"]
+        command_owner = copy.deepcopy(accepted)
+        command_owner["kind"] = "runtime.command"
+        page = {
+            "schema_version": 1,
+            "campaign_id": "campaign-1",
+            "complete": True,
+            "roots": [
+                {
+                    "owner_kind": "runtime.command",
+                    "owner_id": identity["command_id"],
+                    "route": {
+                        "family_key": "runtime.command",
+                        "identity": [identity["command_id"]],
+                        "relative_path": command_path,
+                    },
+                }
+            ],
+        }
+
+        class Repository(FakeRepository):
+            def select_current_native_sources(
+                self, pinned: PinnedCampaign
+            ) -> tuple[CurrentNativeSource, ...]:
+                return (CurrentNativeSource(pinned.campaign_id, "campaign", "campaign/current", H, "MANIFEST.yaml"),)
+
+            def read_exact_path(self, pinned: PinnedCampaign, requested: str) -> object:
+                if requested == "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml":
+                    return page
+                if requested == command_path:
+                    return command_owner
+                if requested == resolution_path:
+                    return resolution
+                if requested == event_path:
+                    return execution["event"]
+                return super().read_exact_path(pinned, requested)
+
+            def resolve_recovery_catalog_context(
+                self,
+                pinned: PinnedCampaign,
+                accepted_command: Mapping[str, object],
+                catalog_basis: Mapping[str, object],
+            ) -> tuple[object, Mapping[str, str]]:
+                return context, {"definition_id": "activity.check.generic", "kind": "definition.activity"}
+
+        with self.assertRaises(RecoveryFailure) as raised:
+            recover_current_runtime(Repository(), "campaign-1")
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.INCOMPLETE)
+
+    def test_current_runtime_rejects_mismatched_resolution_root_command_id(self) -> None:
+        from GAME.TOOLS.native_storage import route_native_record
+
+        accepted, execution, closure, context, identity = _validated_command_closure()
+        command_path = route_native_record("runtime.command", (identity["command_id"],)).relative_path
+        resolution_path = route_native_record(
+            "runtime.resolution", (str(accepted["root_resolution_id"]),)
+        ).relative_path
+        event_path = route_native_record(
+            "runtime.mechanical_event", (str(execution["event_id"]),)
+        ).relative_path
+        resolution = copy.deepcopy(closure["resolution"])
+        resolution["root_command_id"] = "command-forged"
+        command_owner = copy.deepcopy(accepted)
+        command_owner["kind"] = "runtime.command"
+        page = {
+            "schema_version": 1,
+            "campaign_id": "campaign-1",
+            "complete": True,
+            "roots": [
+                {
+                    "owner_kind": "runtime.command",
+                    "owner_id": identity["command_id"],
+                    "route": {
+                        "family_key": "runtime.command",
+                        "identity": [identity["command_id"]],
+                        "relative_path": command_path,
+                    },
+                }
+            ],
+        }
+
+        class Repository(FakeRepository):
+            def select_current_native_sources(
+                self, pinned: PinnedCampaign
+            ) -> tuple[CurrentNativeSource, ...]:
+                return (CurrentNativeSource(pinned.campaign_id, "campaign", "campaign/current", H, "MANIFEST.yaml"),)
+
+            def read_exact_path(self, pinned: PinnedCampaign, requested: str) -> object:
+                if requested == "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml":
+                    return page
+                if requested == command_path:
+                    return command_owner
+                if requested == resolution_path:
+                    return resolution
+                if requested == event_path:
+                    return execution["event"]
+                return super().read_exact_path(pinned, requested)
+
+            def resolve_recovery_catalog_context(
+                self,
+                pinned: PinnedCampaign,
+                accepted_command: Mapping[str, object],
+                catalog_basis: Mapping[str, object],
+            ) -> tuple[object, Mapping[str, str]]:
+                return context, {"definition_id": "activity.check.generic", "kind": "definition.activity"}
+
+        with self.assertRaises(RecoveryFailure) as raised:
+            recover_current_runtime(Repository(), "campaign-1")
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.CORRUPT)
 
 
 class SourceNativeLiveRecoveryTests(unittest.TestCase):
