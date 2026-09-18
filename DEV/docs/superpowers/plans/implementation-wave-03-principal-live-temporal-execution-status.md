@@ -7,7 +7,7 @@ BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 STATUS: EXECUTION_AUTHORIZED
 CURRENT_TASK: coordinator bootstrap complete; first eligible task is W03.T01
 LAST_COMPLETED_TASK: Wave 02 independent Senior integration review -- PASS / CLOSED (closure explicitly confirmed by Product Owner on 2026-09-18)
-LAST_SAFE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97` (fresh `origin/v1/engine-rearchitecture` read before Wave-03 production mutation)
+LAST_SAFE_SHA: `b60d1f4260fbe68b938370f7deaeab8913aea89a` (published/read-back Wave-03 coordinator cursor checkpoint)
 
 ## Dependency schedule
 
@@ -60,6 +60,7 @@ COMPLETED_TASKS: none
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before this cursor;
 - local `HEAD` and `origin/v1/engine-rearchitecture` both resolve to `1a90befb747c6d0694d68ad30614e9bed9811d97`;
+- Wave-03 coordinator cursor checkpoint `b60d1f4260fbe68b938370f7deaeab8913aea89a` was published non-force and independently read back from `origin/v1/engine-rearchitecture`;
 - Wave-02 closure evidence at its exact completed head: focused suites 194 passed, full DEV discovery 794 passed and 7 skipped, maintenance audit PASS; hosted CI unavailable because `gh` is absent;
 - no Wave-03 RED, implementation, test, schema, catalog, runtime, or shared-byte change has begun.
 
@@ -67,4 +68,4 @@ VERSION_IMPACT: NONE -- this new execution cursor changes no HDM-owned version, 
 SYSTEM_IMPACT: NONE -- coordination metadata only; no semantic owner, persistent/interface policy, compatibility rule, or authority boundary changes.
 NEXT_EXACT_TASK: W03.T01 -- complete the task-local bootstrap, Impact Envelope and RED/GREEN/review/publication loop before advancing to W03.T02.
 KNOWN_BLOCKERS: NONE for W03.T01. Later tasks remain gated by the schedule above and their named owner/currentness inputs.
-UNPUBLISHED_WORK: this cursor pending coherent commit/publication/read-back.
+UNPUBLISHED_WORK: NONE before this cursor-update commit.
