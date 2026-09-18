@@ -1368,6 +1368,7 @@ class LiveSourceCreationCursorTests(unittest.TestCase):
             status=LivePublicationStatus.ACCEPTED,
             source_key=attempt.source_key,
             authoritative=True,
+            observed_source_revision=attempt.successor_route.entries[0].source_revision,
             source_native_allocations=attempt.source_native_allocations,
             expected_next_source_native_creation_ordinal=1,
             proposed_next_source_native_creation_ordinal=2,
@@ -1375,6 +1376,12 @@ class LiveSourceCreationCursorTests(unittest.TestCase):
 
         with self.assertRaisesRegex(SourceNativeAllocationError, "envelope|source|accepted"):
             advance_source_native_cursor(SourceNativeCursor(1), forged)
+        with self.assertRaisesRegex(SourceNativeAllocationError, "envelope|source|accepted"):
+            advance_source_native_cursor(
+                SourceNativeCursor(1),
+                forged,
+                attempt.successor_route.entries[0],
+            )
 
     def test_cursor_exhaustion_fails_without_reuse_or_wrap(self) -> None:
         source_key = ("campaign-1", "scene-1", "e1-" + "2" * 64)

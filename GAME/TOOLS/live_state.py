@@ -566,13 +566,13 @@ def advance_source_native_cursor(
         raise SourceNativeAllocationError("cursor advancement requires a typed CAS result")
     if not publication.acknowledged or not publication.source_native_allocations:
         return current
-    accepted = publication.accepted_source if accepted_source is None else accepted_source
-    if not isinstance(accepted, LiveEnvelope):
+    if not isinstance(publication.accepted_source, LiveEnvelope):
         raise SourceNativeAllocationError(
             "cursor advancement requires the exact source envelope accepted by CAS"
         )
-    if publication.accepted_source is not None and accepted != publication.accepted_source:
+    if accepted_source is not None and accepted_source != publication.accepted_source:
         raise SourceNativeAllocationError("cursor advancement envelope differs from CAS evidence")
+    accepted = publication.accepted_source
     if accepted.source_key != publication.source_key:
         raise SourceNativeAllocationError("cursor advancement source differs from CAS evidence")
     if accepted.source_revision != publication.observed_source_revision:
