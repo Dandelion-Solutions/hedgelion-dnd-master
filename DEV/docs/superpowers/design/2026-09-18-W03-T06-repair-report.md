@@ -44,3 +44,19 @@
 **SYSTEM_IMPACT: NONE.** The repair stays inside the approved temporal/LIVE/operational-root routing envelope and adds no semantic owner, dependency-direction change, distributed transaction, broad scan, fallback authority, or Wave-05 write.
 
 The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
+
+## Follow-up repair checkpoint
+
+- **Implementation checkpoint:** `f652727` (published non-force with fresh remote read-back).
+- Temporal completeness now consumes a complete owner-issued `TemporalNativeEnumeration` bound to the exact campaign, source scope, source revision and LIVE source key; caller `root_ref` lists are not accepted as authority.
+- RD08 recovery coverage is active rather than skipped and proves interrupted temporal handoff retry in both campaign-to-LIVE and LIVE-to-campaign directions while rebuilding the Agenda from the returned route.
+- Recovery roots no longer import `live_state`; accepted absorption proof binding crosses the narrow owner-neutral `handoff_evidence` boundary.
+- Superseded operational-root removal requires an owner-issued exact-root `REMOVE` delta; `ENROLL` and `NOOP` deltas are rejected. DEV JSON and GAME YAML handoff schemas now enforce the runtime scope/key/revision grammar.
+
+## Follow-up verification and impact
+
+- Focused RD05/RD06/RD08/RD09 suites: `188` passed.
+- Full DEV discovery from the published implementation checkpoint: `915` passed, `6` skipped.
+- Maintenance audit, JSON validation, version census, `git diff --check`, and bytecode-disabled execution: passed. Hosted CI is unavailable in the local-machine runtime.
+- `VERSION_IMPACT`: LIVE runtime `1.0.11 -> 1.0.12`; temporal runtime `1.0.2 -> 1.0.3`; operational-root runtime `1.0.8 -> 1.0.9`; operational-root handoff schema `1 -> 2` synchronized in DEV JSON and GAME YAML. No engine-release, campaign-contract, storage-format, catalog, identifier-policy, existing LIVE-routing, operational-root-page, or shared projection bump.
+- `SYSTEM_IMPACT: NONE`. The neutral evidence boundary is owner-local handoff infrastructure inside the approved W03 temporal/LIVE/operational-root envelope; no new semantic owner, broad scan, fallback authority, distributed transaction, or Wave-05 write was introduced.
