@@ -97,6 +97,7 @@ def continuation():
 class Step3ExecutionOwnerContractTest(unittest.TestCase):
     def test_procedure_is_sole_spent_resource_owner(self):
         value = {
+            "schema_version": 2,
             "lifecycle": "ACTIVE",
             "participant_resources": {
                 "actor-0001": {
@@ -107,6 +108,7 @@ class Step3ExecutionOwnerContractTest(unittest.TestCase):
         }
         validate("runtime-procedure-state.schema.json", value)
         invalid = {
+            "schema_version": 2,
             "lifecycle": "ACTIVE",
             "participant_resources": {
                 "actor-0001": {"resource.action": {"spent": 1, "capacity": 2}}

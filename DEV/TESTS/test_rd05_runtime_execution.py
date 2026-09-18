@@ -540,7 +540,9 @@ class DeterministicExecutionTests(unittest.TestCase):
     def test_procedure_and_continuation_temporal_state_is_preserved_exactly(self) -> None:
         accepted = self._accepted()
         procedure = {
+            "schema_version": 2,
             "procedure_kind": "procedure.combat_minimal",
+            "lifecycle": "ACTIVE",
             "lifecycle_state": "turn_active",
             "participant_ids": ["actor-1"],
             "initiative_order": ["actor-1"],

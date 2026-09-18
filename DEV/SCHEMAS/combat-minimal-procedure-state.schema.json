@@ -1,10 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/combat-minimal-procedure-state.schema.json",
+  "$comment": "schema_version 2 synchronizes the concrete Procedure projection. lifecycle is the owner-native ACTIVE or TERMINAL lifecycle; lifecycle_state is the combat phase and must not replace lifecycle.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["procedure_kind", "lifecycle", "lifecycle_state", "participant_ids", "initiative_order", "round_number", "round_advance_pending", "active_turn_index", "participant_resources"],
+  "required": ["schema_version", "procedure_kind", "lifecycle", "lifecycle_state", "participant_ids", "initiative_order", "round_number", "round_advance_pending", "active_turn_index", "participant_resources"],
   "properties": {
+    "schema_version": {"const": 2},
     "procedure_kind": {"const": "procedure.combat_minimal"},
     "lifecycle": {"enum": ["ACTIVE", "TERMINAL"]},
     "lifecycle_state": {"enum": ["between_turns", "turn_active", "terminated"]},
@@ -27,6 +29,16 @@
     },
     "world_context_id": {"type": "string", "minLength": 1}
   },
+  "allOf": [
+    {
+      "if": {"properties": {"lifecycle": {"const": "TERMINAL"}}, "required": ["lifecycle"]},
+      "then": {"properties": {"lifecycle_state": {"const": "terminated"}}}
+    },
+    {
+      "if": {"properties": {"lifecycle": {"const": "ACTIVE"}}, "required": ["lifecycle"]},
+      "then": {"not": {"properties": {"lifecycle_state": {"const": "terminated"}}, "required": ["lifecycle_state"]}}
+    }
+  ],
   "$defs": {
     "budget": {
       "type": "object", "additionalProperties": false,

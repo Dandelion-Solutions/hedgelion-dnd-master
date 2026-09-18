@@ -195,6 +195,8 @@ def _world_record(snapshot,kind,schemas):
  CanonicalSchemaValidator(schemas).validate(record,load(Path(schemas)/"world-record.schema.json"))
  return record
 def validate_combat_procedure_state(state):
+ if state.get("schema_version")!=2:
+  raise ValueError("procedure schema_version must be 2")
  if state.get("lifecycle") not in {"ACTIVE", "TERMINAL"}:
   raise ValueError("procedure lifecycle must be ACTIVE or TERMINAL")
  if state["lifecycle"] == "TERMINAL" and state.get("lifecycle_state") != "terminated":
@@ -212,7 +214,7 @@ def validate_combat_procedure_state(state):
    if budget["spent"]>budget["capacity"]:raise ValueError("procedure spent exceeds capacity")
  return True
 def initialize_combat_procedure(participants,initiative_order,action_capacity=1,movement_capacity=30):
- state={"procedure_kind":"procedure.combat_minimal","lifecycle":"ACTIVE","lifecycle_state":"between_turns","participant_ids":list(participants),"initiative_order":list(initiative_order),"round_number":1,"round_advance_pending":False,"active_turn_index":0,"participant_resources":{p:{"resource.action_budget":{"capacity":action_capacity,"spent":0},"resource.movement_budget":{"capacity":movement_capacity,"spent":0}} for p in participants}}
+ state={"schema_version":2,"procedure_kind":"procedure.combat_minimal","lifecycle":"ACTIVE","lifecycle_state":"between_turns","participant_ids":list(participants),"initiative_order":list(initiative_order),"round_number":1,"round_advance_pending":False,"active_turn_index":0,"participant_resources":{p:{"resource.action_budget":{"capacity":action_capacity,"spent":0},"resource.movement_budget":{"capacity":movement_capacity,"spent":0}} for p in participants}}
  validate_combat_procedure_state(state);return state
 def advance_combat_turn(state):
  validate_combat_procedure_state(state);result=deepcopy(state);result["active_turn_index"]+=1

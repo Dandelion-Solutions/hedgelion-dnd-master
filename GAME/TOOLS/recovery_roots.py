@@ -11,13 +11,13 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 import hashlib
 import json
-from typing import Final
+from typing import Final, Protocol, runtime_checkable
 
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final = "1.0.3"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
 _OWNER_KINDS: Final = frozenset(
     {
@@ -30,6 +30,7 @@ _OWNER_KINDS: Final = frozenset(
 _PROMISED_OWNER_KINDS: Final = frozenset({"runtime.interaction", "runtime.intent_plan"})
 _ACTIONS: Final = frozenset({"ENROLL", "REMOVE", "NOOP"})
 _LIFECYCLES: Final = frozenset({"ACTIVE", "TERMINAL"})
+_PROCEDURE_SCHEMA_VERSION: Final = 2
 
 
 class OperationalRootError(ValueError):
@@ -137,21 +138,24 @@ class OperationalRootPage:
         }
 
 
-@dataclass(frozen=True, slots=True)
-class AcceptedUnresolvedInputPromise:
-    """Later-owner promise required before an unresolved input may be rooted."""
+@runtime_checkable
+class AcceptedUnresolvedInputPromise(Protocol):
+    """Later-owner validation interface required before unresolved input rooting.
 
-    campaign_id: str
-    owner_kind: str
-    owner_id: str
-    promise_id: str
+    W02.T04 consumes this interface but does not construct, issue, persist, or
+    otherwise authenticate promise evidence.  The later durability/handoff
+    owner supplies the implementation and validates its own promise authority.
+    """
 
-    def __post_init__(self) -> None:
-        _nonempty(self.campaign_id, "promise campaign_id")
-        if self.owner_kind not in _PROMISED_OWNER_KINDS:
-            raise OperationalRootError("promise owner kind is not an unresolved input kind")
-        _nonempty(self.owner_id, "promise owner_id")
-        _nonempty(self.promise_id, "promise_id")
+    def validate(
+        self,
+        *,
+        campaign_id: str,
+        owner_kind: str,
+        owner_id: str,
+        native_owner: Mapping[str, object],
+    ) -> bool:
+        """Return exactly ``True`` only for matching owner-validated evidence."""
 
 
 def derive_operational_root_delta(
@@ -229,7 +233,12 @@ def validate_operational_root_delta(
 
 def enumerate_operational_root_page(
     campaign_id: str,
-    native_owners: Iterable[Mapping[str, object] | tuple[str, Mapping[str, object]]] | None,
+    native_owners: Iterable[
+        Mapping[str, object]
+        | tuple[str, Mapping[str, object]]
+        | tuple[str, Mapping[str, object], AcceptedUnresolvedInputPromise]
+    ]
+    | None,
     *,
     complete: bool = True,
 ) -> OperationalRootPage:
@@ -247,8 +256,17 @@ def enumerate_operational_root_page(
         raise OperationalRootError("native operational owners must be an explicit iterable")
     roots: dict[tuple[str, str, str], OperationalRoot] = {}
     for item in native_owners:
-        owner_kind, owner = _owner_item(item)
-        identity, eligible, _reason = _validate_native_owner(owner_kind, owner)
+        owner_kind, owner, promise = _owner_item(item)
+        if owner_kind in _PROMISED_OWNER_KINDS:
+            identity, eligible, _reason = _validate_promised_input(
+                campaign_id, owner_kind, owner, promise
+            )
+        else:
+            if promise is not None:
+                raise OperationalRootError(
+                    "promise evidence is only valid for unresolved input owners"
+                )
+            identity, eligible, _reason = _validate_native_owner(owner_kind, owner)
         if not eligible:
             continue
         root = OperationalRoot(
@@ -285,6 +303,8 @@ def _validate_native_owner(owner_kind: str, owner: Mapping[str, object]) -> tupl
         state = owner.get("state")
         if not isinstance(state, Mapping) or isinstance(state, OperationalRoot):
             raise OperationalRootError("native Procedure state is required")
+        if state.get("schema_version") != _PROCEDURE_SCHEMA_VERSION:
+            raise OperationalRootError("native Procedure schema_version is unsupported")
         if not isinstance(state.get("participant_resources"), Mapping):
             raise OperationalRootError("native Procedure resource state is required")
         lifecycle = state.get("lifecycle")
@@ -322,9 +342,9 @@ def _validate_promised_input(
     promise: AcceptedUnresolvedInputPromise | None,
 ) -> tuple[str, bool, str]:
     if not isinstance(promise, AcceptedUnresolvedInputPromise):
-        raise OperationalRootError("unresolved input requires an accepted typed promise")
-    if promise.campaign_id != campaign_id or promise.owner_kind != owner_kind:
-        raise OperationalRootError("accepted unresolved-input promise is not owner-scoped")
+        raise OperationalRootError(
+            "unresolved input requires later-owner promise validation evidence"
+        )
     if not isinstance(native_owner, Mapping) or isinstance(native_owner, OperationalRoot):
         raise OperationalRootError("unresolved input must be a native owner mapping")
     declared_kind = native_owner.get("kind")
@@ -338,24 +358,38 @@ def _validate_promised_input(
         required = ("clauses",)
     if any(field not in native_owner for field in required):
         raise OperationalRootError("native unresolved-input state is incomplete")
-    if identity != promise.owner_id:
-        raise OperationalRootError("accepted promise identity differs from native owner identity")
+    if promise.validate(
+        campaign_id=campaign_id,
+        owner_kind=owner_kind,
+        owner_id=identity,
+        native_owner=native_owner,
+    ) is not True:
+        raise OperationalRootError(
+            "later-owner promise evidence does not validate the exact native owner"
+        )
     return identity, True, "accepted_later_owner_promise"
 
 
 def _owner_item(
-    item: Mapping[str, object] | tuple[str, Mapping[str, object]],
-) -> tuple[str, Mapping[str, object]]:
+    item: Mapping[str, object]
+    | tuple[str, Mapping[str, object]]
+    | tuple[str, Mapping[str, object], AcceptedUnresolvedInputPromise],
+) -> tuple[str, Mapping[str, object], AcceptedUnresolvedInputPromise | None]:
     if isinstance(item, tuple) and len(item) == 2:
         owner_kind, owner = item
         if not isinstance(owner_kind, str) or not isinstance(owner, Mapping):
             raise OperationalRootError("native owner tuple is malformed")
-        return owner_kind, owner
+        return owner_kind, owner, None
+    if isinstance(item, tuple) and len(item) == 3:
+        owner_kind, owner, promise = item
+        if not isinstance(owner_kind, str) or not isinstance(owner, Mapping):
+            raise OperationalRootError("native owner tuple is malformed")
+        return owner_kind, owner, promise
     if isinstance(item, Mapping):
         owner_kind = item.get("kind")
         if not isinstance(owner_kind, str):
             raise OperationalRootError("native owner enumeration requires owner kind")
-        return owner_kind, item
+        return owner_kind, item, None
     raise OperationalRootError("native owner enumeration item is malformed")
 
 

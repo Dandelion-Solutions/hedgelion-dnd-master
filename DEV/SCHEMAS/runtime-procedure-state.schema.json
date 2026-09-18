@@ -2,10 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/runtime-procedure-state.schema.json",
   "title": "HDM runtime.procedure state",
+  "$comment": "schema_version 2 exposes the owner-native recovery lifecycle. lifecycle is exactly ACTIVE or TERMINAL; concrete Procedure phase fields are subtype-specific and do not replace it.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["lifecycle", "participant_resources"],
+  "required": ["schema_version", "lifecycle", "participant_resources"],
   "properties": {
+    "schema_version": {"const": 2},
     "lifecycle": {"enum": ["ACTIVE", "TERMINAL"]},
     "participant_resources": {
       "type": "object",
@@ -31,6 +33,7 @@
   },
   "examples": [
     {
+      "schema_version": 2,
       "lifecycle": "ACTIVE",
       "participant_resources": {
         "actor-0001": {

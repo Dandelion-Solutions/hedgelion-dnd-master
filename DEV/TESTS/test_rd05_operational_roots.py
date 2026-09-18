@@ -7,7 +7,11 @@ import unittest
 
 from jsonschema import Draft202012Validator
 
-from DEV.TOOLS.validate_domain_rules_coverage import initialize_combat_procedure
+from DEV.TOOLS.validate_domain_rules_coverage import (
+    execute_combat_procedure_transition,
+    initialize_combat_procedure,
+    validate_combat_procedure_state,
+)
 from GAME.TOOLS.recovery_roots import (
     AcceptedUnresolvedInputPromise,
     OperationalRoot,
@@ -48,6 +52,28 @@ def _command_owner(*, command_id: str = "command-000001") -> dict[str, object]:
             }
         ],
     }
+
+
+class _LaterOwnerPromiseEvidence:
+    def __init__(self, campaign_id: str, owner_kind: str, owner_id: str) -> None:
+        self.campaign_id = campaign_id
+        self.owner_kind = owner_kind
+        self.owner_id = owner_id
+
+    def validate(
+        self,
+        *,
+        campaign_id: str,
+        owner_kind: str,
+        owner_id: str,
+        native_owner: dict[str, object],
+    ) -> bool:
+        return (
+            self.campaign_id == campaign_id
+            and self.owner_kind == owner_kind
+            and self.owner_id == owner_id
+            and native_owner.get("kind") == owner_kind
+        )
 
 
 class OperationalRootEnrollmentTests(unittest.TestCase):
@@ -183,12 +209,7 @@ class OperationalRootEnrollmentTests(unittest.TestCase):
                 native_owner=interaction,
             )
 
-        promise = AcceptedUnresolvedInputPromise(
-            campaign_id="campaign-1",
-            owner_kind="runtime.interaction",
-            owner_id="message-1",
-            promise_id="promise-1",
-        )
+        promise = _LaterOwnerPromiseEvidence("campaign-1", "runtime.interaction", "message-1")
         delta = derive_operational_root_delta(
             campaign_id="campaign-1",
             owner_kind="runtime.interaction",
@@ -197,6 +218,156 @@ class OperationalRootEnrollmentTests(unittest.TestCase):
         )
         self.assertEqual(delta.action, "ENROLL")
         validate_operational_root_delta(delta, native_owner=interaction, accepted_promise=promise)
+
+    def test_unresolved_input_rejects_caller_constructed_or_mismatched_promise(self) -> None:
+        interaction = {
+            "kind": "runtime.interaction",
+            "campaign_id": "campaign-1",
+            "session_id": "session-1",
+            "player_id": "player-1",
+            "input_message_id": "message-1",
+            "intent_plan_id": "plan-1",
+        }
+        with self.assertRaises(TypeError):
+            AcceptedUnresolvedInputPromise(  # type: ignore[call-arg]
+                campaign_id="campaign-1",
+                owner_kind="runtime.interaction",
+                owner_id="message-1",
+            )
+        mismatched = _LaterOwnerPromiseEvidence(
+            "campaign-1", "runtime.interaction", "message-other"
+        )
+        with self.assertRaisesRegex(OperationalRootError, "promise"):
+            derive_operational_root_delta(
+                campaign_id="campaign-1",
+                owner_kind="runtime.interaction",
+                native_owner=interaction,
+                accepted_promise=mismatched,
+            )
+
+    def test_enumeration_accepts_owner_validated_interaction_promise(self) -> None:
+        interaction = {
+            "kind": "runtime.interaction",
+            "campaign_id": "campaign-1",
+            "session_id": "session-1",
+            "player_id": "player-1",
+            "input_message_id": "message-1",
+            "intent_plan_id": "plan-1",
+        }
+        promise = _LaterOwnerPromiseEvidence("campaign-1", "runtime.interaction", "message-1")
+        page = enumerate_operational_root_page(
+            "campaign-1", [("runtime.interaction", interaction, promise)]
+        )
+        self.assertEqual(
+            [(root.owner_kind, root.owner_id) for root in page.roots],
+            [("runtime.interaction", "message-1")],
+        )
+
+    def test_enumeration_accepts_owner_validated_intent_plan_promise(self) -> None:
+        intent_plan = {
+            "kind": "runtime.intent_plan",
+            "interaction_id": "message-1",
+            "clauses": [{"clause_id": "clause-1"}],
+        }
+        promise = _LaterOwnerPromiseEvidence("campaign-1", "runtime.intent_plan", "message-1")
+        page = enumerate_operational_root_page(
+            "campaign-1", [("runtime.intent_plan", intent_plan, promise)]
+        )
+        self.assertEqual(
+            [(root.owner_kind, root.owner_id) for root in page.roots],
+            [("runtime.intent_plan", "message-1")],
+        )
+
+    def test_typed_procedure_open_and_terminate_feed_root_lifecycle(self) -> None:
+        opening = {
+            "profile_id": "procedure.initialize",
+            "idempotency_key": "root-procedure-open",
+            "catalog_generation": 2,
+            "procedure_id": "procedure-000001",
+            "procedure_revision": 0,
+            "initiative_entries": [
+                {
+                    "actor_id": "actor-1",
+                    "roll_total": 12,
+                    "rng_result_ref": "rng-1",
+                    "tie_break_rank": 1,
+                }
+            ],
+            "action_capacity": 1,
+            "movement_capacity": 30,
+        }
+        _wire, opened = execute_combat_procedure_transition(opening, None, {})
+        active_owner = opened["procedure"]
+        self.assertEqual(active_owner["state"]["lifecycle"], "ACTIVE")
+        enrolled = derive_operational_root_delta(
+            campaign_id="campaign-1",
+            owner_kind="runtime.procedure",
+            native_owner=active_owner,
+        )
+        self.assertEqual(enrolled.action, "ENROLL")
+
+        termination = {
+            "profile_id": "procedure.terminate",
+            "idempotency_key": "root-procedure-close",
+            "catalog_generation": 2,
+            "procedure_id": "procedure-000001",
+            "procedure_revision": active_owner["revision"],
+        }
+        _wire, terminated = execute_combat_procedure_transition(
+            termination, active_owner, {}
+        )
+        terminal_owner = terminated["procedure"]
+        self.assertEqual(terminal_owner["state"]["lifecycle"], "TERMINAL")
+        removed = derive_operational_root_delta(
+            campaign_id="campaign-1",
+            owner_kind="runtime.procedure",
+            native_owner=terminal_owner,
+            existing_roots=(enrolled.root,),
+        )
+        self.assertEqual(removed.action, "REMOVE")
+        validate_operational_root_delta(removed, native_owner=terminal_owner)
+
+    def test_invalid_terminal_forms_fail_procedure_and_root_validation(self) -> None:
+        terminal_without_phase = _procedure_owner()
+        terminal_without_phase["state"]["lifecycle"] = "TERMINAL"
+        active_with_terminal_phase = _procedure_owner()
+        active_with_terminal_phase["state"]["lifecycle_state"] = "terminated"
+        concrete_schema = json.loads(
+            (ROOT / "DEV" / "SCHEMAS" / "combat-minimal-procedure-state.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        schema_validator = Draft202012Validator(concrete_schema)
+
+        for invalid in (terminal_without_phase, active_with_terminal_phase):
+            with self.subTest(invalid=invalid["state"]):
+                with self.assertRaises(Exception):
+                    schema_validator.validate(invalid["state"])
+                with self.assertRaises(ValueError):
+                    validate_combat_procedure_state(invalid["state"])
+                with self.assertRaises(OperationalRootError):
+                    derive_operational_root_delta(
+                        campaign_id="campaign-1",
+                        owner_kind="runtime.procedure",
+                        native_owner=invalid,
+                    )
+
+    def test_procedure_schema_family_has_synchronized_version_and_lifecycle_field(self) -> None:
+        schemas = [
+            json.loads(
+                (ROOT / "DEV" / "SCHEMAS" / name).read_text(encoding="utf-8")
+            )
+            for name in (
+                "runtime-procedure-state.schema.json",
+                "combat-minimal-procedure-state.schema.json",
+            )
+        ]
+        for schema in schemas:
+            self.assertEqual(schema["properties"]["schema_version"], {"const": 2})
+            self.assertIn("schema_version", schema["required"])
+            self.assertEqual(
+                schema["properties"]["lifecycle"]["enum"], ["ACTIVE", "TERMINAL"]
+            )
 
     def test_enumeration_requires_complete_native_input_and_never_scans(self) -> None:
         with self.assertRaises(OperationalRootError):

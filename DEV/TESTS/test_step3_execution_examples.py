@@ -239,6 +239,7 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
 
     def test_K_reaction_child_shares_procedure_by_reference_only(self):
         validate("runtime-procedure-state.schema.json", {
+            "schema_version": 2,
             "lifecycle": "ACTIVE",
             "participant_resources": {"actor-2": {"resource.reaction": {"spent": 1}}}
         })
