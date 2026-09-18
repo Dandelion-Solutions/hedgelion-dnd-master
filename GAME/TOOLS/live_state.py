@@ -12,23 +12,27 @@ from __future__ import annotations
 import base64
 import binascii
 from collections.abc import Iterable, Mapping, Sequence
+from copy import deepcopy
 from dataclasses import InitVar, dataclass
 from enum import StrEnum
 import hashlib
+import json
 import re
 from types import MappingProxyType
 from typing import Final, TypeAlias
 import weakref
 
 
-# framework_module_version: 1.0.7
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
+# framework_module_version: 1.0.8
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
 LIVE_CLAIM_SCHEMA_VERSION: Final[int] = 2
 LIVE_ROUTING_SCHEMA_VERSION: Final[int] = 4
 LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION: Final[int] = 5
+LIVE_OPENING_SEED_SCHEMA_VERSION: Final[int] = 1
+LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION: Final[int] = 1
 
 SOURCE_NATIVE_LIVE_ENCODING: Final[str] = "framed_base32hex_v1"
 SOURCE_NATIVE_CURSOR_MAX: Final[int] = (1 << 64) - 1
@@ -198,6 +202,49 @@ def _uint64(value: object, label: str, *, allow_zero: bool = False) -> int:
     if value < minimum or value > SOURCE_NATIVE_CURSOR_MAX:
         raise SourceNativeAllocationError(f"{label} is outside the uint64 range")
     return value
+
+
+def _copy_json_mapping(value: object, label: str) -> dict[str, object]:
+    """Copy one explicit JSON-shaped owner input without inventing defaults."""
+
+    if not isinstance(value, Mapping):
+        raise LiveContractError(f"{label} must be an explicit mapping")
+
+    def validate(item: object, item_label: str) -> None:
+        if isinstance(item, Mapping):
+            for key, nested in item.items():
+                if not isinstance(key, str) or not key:
+                    raise LiveContractError(f"{item_label} has a non-string key")
+                validate(nested, f"{item_label}.{key}")
+        elif isinstance(item, Sequence) and not isinstance(item, (str, bytes, bytearray)):
+            for index, nested in enumerate(item):
+                validate(nested, f"{item_label}[{index}]")
+        elif item is not None and not isinstance(item, (str, int, float, bool)):
+            raise LiveContractError(f"{item_label} is not JSON-shaped native state")
+
+    validate(value, label)
+    try:
+        json.dumps(
+            value,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+    except (TypeError, ValueError) as error:
+        raise LiveContractError(f"{label} is not canonical JSON-shaped native state") from error
+    return deepcopy(dict(value))
+
+
+def _state_digest(value: Mapping[str, object]) -> str:
+    encoded = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def _source_native_policy_row(
@@ -1110,13 +1157,391 @@ class LiveRouting:
         return route
 
 
-def build_live_route(campaign_id: str, entries: Sequence[LiveEnvelope]) -> LiveRouting:
+def build_live_route(
+    campaign_id: str,
+    entries: Sequence[LiveEnvelope],
+    *,
+    expected_source_keys: Sequence[LiveSourceKey] | None = None,
+) -> LiveRouting:
     """Build a complete route only from explicitly supplied owner envelopes."""
 
     route = LiveRouting(campaign_id=campaign_id, entries=tuple(entries))
     for entry in route.entries:
         validate_live_route_identity(route, entry, entry.source_ref)
+    if expected_source_keys is not None:
+        validate_live_route_completeness(route, expected_source_keys)
     return route
+
+
+def validate_live_route_completeness(
+    route: LiveRouting,
+    expected_source_keys: Sequence[LiveSourceKey] | None = None,
+) -> None:
+    """Require a complete current route body, never a partial/stale projection."""
+
+    if not isinstance(route, LiveRouting) or not route.complete:
+        raise LiveContractError("LIVE route must be complete")
+    if any(entry.status is LiveLifecycle.ABSORBED for entry in route.entries):
+        raise LiveContractError("LIVE route contains a stale absorbed member")
+    if expected_source_keys is None:
+        return
+    expected = tuple(_source_key(key, "expected LIVE route source key") for key in expected_source_keys)
+    if len(expected) != len(set(expected)):
+        raise LiveContractError("expected LIVE route source keys must be unique")
+    actual = tuple(entry.source_key for entry in route.entries)
+    if set(actual) != set(expected) or len(actual) != len(expected):
+        missing = set(expected).difference(actual)
+        extra = set(actual).difference(expected)
+        raise LiveContractError(
+            "LIVE route body is incomplete or contains an extra member: "
+            f"missing={sorted(missing)!r}, extra={sorted(extra)!r}"
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class LiveOpeningPreparation:
+    """Repeatable, non-authoritative preparation for one LIVE opening."""
+
+    source: LiveEnvelope
+    source_native_allocations: tuple[SourceNativeAllocation, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.source, LiveEnvelope):
+            raise LiveContractError("LIVE opening preparation requires an owner-typed source")
+        if self.source.status is not LiveLifecycle.ACTIVE:
+            raise LiveContractError("LIVE opening preparation must begin ACTIVE")
+        allocations = tuple(self.source_native_allocations)
+        if any(not isinstance(item, SourceNativeAllocation) for item in allocations):
+            raise SourceNativeAllocationError("opening allocations must be typed")
+        expected_ids = tuple(item.native_id for item in allocations)
+        if allocations and self.source.source_native_ids != expected_ids:
+            raise SourceNativeAllocationError(
+                "opening source-native history must equal the prepared allocations"
+            )
+        object.__setattr__(self, "source_native_allocations", allocations)
+
+    @property
+    def source_key(self) -> LiveSourceKey:
+        return self.source.source_key
+
+    @property
+    def prepared(self) -> bool:
+        return True
+
+    @property
+    def published(self) -> bool:
+        return False
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "schema_version": LIVE_OPENING_SEED_SCHEMA_VERSION,
+            "kind": "runtime.live_opening_preparation",
+            "source": self.source.as_mapping(),
+            "source_native_allocations": [
+                allocation.as_mapping() for allocation in self.source_native_allocations
+            ],
+        }
+
+
+def prepare_live_opening(
+    campaign_id: str,
+    scene_id: str,
+    *,
+    opening_campaign_revision: str,
+    claims: Iterable[LiveClaim],
+    source_revision: str,
+    source_native_creations: Iterable[SourceNativeCreation | Mapping[str, object]] = (),
+    identifier_policy: Mapping[str, object] | None = None,
+) -> LiveOpeningPreparation:
+    """Prepare one deterministic LIVE source without selecting it as authority."""
+
+    normalized_claims = _claims(tuple(claims))
+    if not normalized_claims:
+        raise LiveContractError("LIVE opening requires explicit immutable claims")
+    opening_revision = _revision(opening_campaign_revision, "opening_campaign_revision")
+    prepared_revision = _revision(source_revision, "source_revision")
+    epoch_id = derive_live_epoch_id(campaign_id, scene_id, opening_revision, normalized_claims)
+    source_key = (campaign_id, scene_id, epoch_id)
+    normalized_creations = normalize_source_native_creations(source_native_creations)
+    allocations: tuple[SourceNativeAllocation, ...] = ()
+    if normalized_creations:
+        if identifier_policy is None:
+            raise LiveContractError("opening source-native creation requires an explicit identifier policy")
+        allocations = allocate_source_native_creations(
+            source_key,
+            normalized_creations,
+            SourceNativeCursor(1),
+            identifier_policy,
+        )
+    source = LiveEnvelope(
+        campaign_id=campaign_id,
+        scene_id=scene_id,
+        epoch_id=epoch_id,
+        source_ref=build_live_ref(campaign_id, scene_id, epoch_id),
+        source_revision=prepared_revision,
+        claims=normalized_claims,
+        status=LiveLifecycle.ACTIVE,
+        opening_campaign_revision=opening_revision,
+        next_source_native_creation_ordinal=1 + len(allocations),
+        source_native_ids=tuple(item.native_id for item in allocations),
+        identifier_policy=identifier_policy,
+    )
+    return LiveOpeningPreparation(source=source, source_native_allocations=allocations)
+
+
+@dataclass(frozen=True, slots=True)
+class LiveOpeningSeed:
+    """Complete explicit native inputs for one prepared LIVE source."""
+
+    preparation: LiveOpeningPreparation
+    native_owner_states: Mapping[str, object]
+    provenance: Mapping[str, object]
+    privacy: Mapping[str, object]
+    chronology: Mapping[str, object]
+    unresolved_work: Mapping[str, object]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.preparation, LiveOpeningPreparation):
+            raise LiveContractError("opening seed requires typed preparation")
+        owner_states = _copy_json_mapping(self.native_owner_states, "native_owner_states")
+        if not owner_states:
+            raise LiveContractError("opening seed requires explicit native owner inputs")
+        _validate_opening_owner_families(self.preparation.source, owner_states)
+        object.__setattr__(self, "native_owner_states", owner_states)
+        for field_name in ("provenance", "privacy", "chronology", "unresolved_work"):
+            object.__setattr__(
+                self,
+                field_name,
+                _copy_json_mapping(getattr(self, field_name), field_name),
+            )
+
+    @property
+    def source(self) -> LiveEnvelope:
+        return self.preparation.source
+
+    @property
+    def source_key(self) -> LiveSourceKey:
+        return self.source.source_key
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "schema_version": LIVE_OPENING_SEED_SCHEMA_VERSION,
+            "kind": "runtime.live_opening_seed",
+            "source": self.source.as_mapping(),
+            "native_owner_states": deepcopy(dict(self.native_owner_states)),
+            "provenance": deepcopy(dict(self.provenance)),
+            "privacy": deepcopy(dict(self.privacy)),
+            "chronology": deepcopy(dict(self.chronology)),
+            "unresolved_work": deepcopy(dict(self.unresolved_work)),
+        }
+
+
+def build_live_opening_seed(
+    preparation: LiveOpeningPreparation | LiveEnvelope,
+    *,
+    native_owner_states: Mapping[str, object] | None = None,
+    owner_states: Mapping[str, object] | None = None,
+    provenance: Mapping[str, object] | None = None,
+    privacy: Mapping[str, object] | None = None,
+    chronology: Mapping[str, object] | None = None,
+    unresolved_work: Mapping[str, object] | None = None,
+) -> LiveOpeningSeed:
+    """Build a seed only when every required native input is explicitly supplied."""
+
+    typed_preparation = _as_opening_preparation(preparation)
+    selected_owner_states = native_owner_states if native_owner_states is not None else owner_states
+    if selected_owner_states is None:
+        raise LiveContractError("opening seed requires explicit native owner inputs")
+    if any(value is None for value in (provenance, privacy, chronology, unresolved_work)):
+        raise LiveContractError(
+            "opening seed requires explicit provenance, privacy, chronology and unresolved work"
+        )
+    return LiveOpeningSeed(
+        preparation=typed_preparation,
+        native_owner_states=selected_owner_states,
+        provenance=provenance,  # type: ignore[arg-type]
+        privacy=privacy,  # type: ignore[arg-type]
+        chronology=chronology,  # type: ignore[arg-type]
+        unresolved_work=unresolved_work,  # type: ignore[arg-type]
+    )
+
+
+def _as_opening_preparation(
+    value: LiveOpeningPreparation | LiveEnvelope,
+) -> LiveOpeningPreparation:
+    if isinstance(value, LiveOpeningPreparation):
+        return value
+    if isinstance(value, LiveEnvelope):
+        return LiveOpeningPreparation(source=value, source_native_allocations=())
+    raise LiveContractError("LIVE opening requires typed preparation")
+
+
+def _validate_opening_owner_families(
+    source: LiveEnvelope,
+    owner_states: Mapping[str, object],
+) -> None:
+    for family in owner_states:
+        if not isinstance(family, str) or _NATIVE_FAMILY.fullmatch(family) is None:
+            raise LiveContractError("opening native owner family is not typed")
+    required_families = {
+        claim.native_family
+        for claim in source.claims
+        if claim.claim_type == "EXACT_OWNER" and claim.native_family is not None
+    }
+    missing = required_families.difference(owner_states)
+    if missing:
+        raise LiveContractError(f"opening seed is missing claimed native owners: {sorted(missing)!r}")
+
+
+@dataclass(frozen=True, slots=True)
+class LiveNativeStatePack:
+    """Lossless physical carrier for native owners and cross-cutting evidence."""
+
+    source_key: LiveSourceKey
+    source_revision: str
+    native_owner_states: Mapping[str, object]
+    provenance: Mapping[str, object]
+    privacy: Mapping[str, object]
+    chronology: Mapping[str, object]
+    unresolved_work: Mapping[str, object]
+
+    def __post_init__(self) -> None:
+        key = _source_key(self.source_key, "packed LIVE source key")
+        object.__setattr__(self, "source_key", key)
+        object.__setattr__(self, "source_revision", _revision(self.source_revision, "packed source revision"))
+        owner_states = _copy_json_mapping(self.native_owner_states, "native_owner_states")
+        if not owner_states:
+            raise LiveContractError("packed LIVE state requires native owner states")
+        for family in owner_states:
+            if _NATIVE_FAMILY.fullmatch(family) is None:
+                raise LiveContractError("packed LIVE state contains an untyped owner family")
+        object.__setattr__(self, "native_owner_states", owner_states)
+        for field_name in ("provenance", "privacy", "chronology", "unresolved_work"):
+            object.__setattr__(
+                self,
+                field_name,
+                _copy_json_mapping(getattr(self, field_name), field_name),
+            )
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "schema_version": LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION,
+            "kind": "runtime.live_native_state_pack",
+            "source_key": list(self.source_key),
+            "source_revision": self.source_revision,
+            "native_owner_states": deepcopy(dict(self.native_owner_states)),
+            "provenance": deepcopy(dict(self.provenance)),
+            "privacy": deepcopy(dict(self.privacy)),
+            "chronology": deepcopy(dict(self.chronology)),
+            "unresolved_work": deepcopy(dict(self.unresolved_work)),
+        }
+
+
+def pack_live_native_state(
+    source: LiveOpeningSeed | LiveEnvelope | LiveNativeStatePack,
+    native_owner_states: Mapping[str, object] | None = None,
+    *,
+    owner_states: Mapping[str, object] | None = None,
+    provenance: Mapping[str, object] | None = None,
+    privacy: Mapping[str, object] | None = None,
+    chronology: Mapping[str, object] | None = None,
+    unresolved_work: Mapping[str, object] | None = None,
+) -> LiveNativeStatePack:
+    """Pack explicit native state without dropping identities or evidence."""
+
+    if isinstance(source, LiveNativeStatePack):
+        if any(
+            value is not None
+            for value in (
+                native_owner_states,
+                owner_states,
+                provenance,
+                privacy,
+                chronology,
+                unresolved_work,
+            )
+        ):
+            raise LiveContractError("an existing LIVE state pack cannot be silently replaced")
+        return source
+    if isinstance(source, LiveOpeningSeed):
+        if any(
+            value is not None
+            for value in (
+                native_owner_states,
+                owner_states,
+                provenance,
+                privacy,
+                chronology,
+                unresolved_work,
+            )
+        ):
+            raise LiveContractError("opening seed inputs cannot be overridden during packing")
+        return LiveNativeStatePack(
+            source_key=source.source_key,
+            source_revision=source.source.source_revision,
+            native_owner_states=source.native_owner_states,
+            provenance=source.provenance,
+            privacy=source.privacy,
+            chronology=source.chronology,
+            unresolved_work=source.unresolved_work,
+        )
+    if not isinstance(source, LiveEnvelope):
+        raise LiveContractError("LIVE state packing requires typed source or opening seed")
+    selected_owner_states = native_owner_states if native_owner_states is not None else owner_states
+    if selected_owner_states is None:
+        raise LiveContractError("LIVE state packing requires explicit native owner states")
+    if any(value is None for value in (provenance, privacy, chronology, unresolved_work)):
+        raise LiveContractError(
+            "LIVE state packing requires explicit provenance, privacy, chronology and unresolved work"
+        )
+    _validate_opening_owner_families(source, selected_owner_states)
+    return LiveNativeStatePack(
+        source_key=source.source_key,
+        source_revision=source.source_revision,
+        native_owner_states=selected_owner_states,
+        provenance=provenance,  # type: ignore[arg-type]
+        privacy=privacy,  # type: ignore[arg-type]
+        chronology=chronology,  # type: ignore[arg-type]
+        unresolved_work=unresolved_work,  # type: ignore[arg-type]
+    )
+
+
+def unpack_live_native_state(pack: LiveNativeStatePack) -> dict[str, object]:
+    """Return a deep copy of every packed native input, with no lossy projection."""
+
+    if not isinstance(pack, LiveNativeStatePack):
+        raise LiveContractError("LIVE state unpacking requires a typed state pack")
+    return {
+        "native_owner_states": deepcopy(dict(pack.native_owner_states)),
+        "provenance": deepcopy(dict(pack.provenance)),
+        "privacy": deepcopy(dict(pack.privacy)),
+        "chronology": deepcopy(dict(pack.chronology)),
+        "unresolved_work": deepcopy(dict(pack.unresolved_work)),
+    }
+
+
+def publish_live_opening(
+    preparation: LiveOpeningPreparation,
+    publication: LivePublicationResult,
+) -> LiveEnvelope:
+    """Adopt only an owner-issued exact-source CAS result for an opening."""
+
+    if not isinstance(preparation, LiveOpeningPreparation):
+        raise LiveContractError("opening publication requires typed preparation")
+    if (
+        not isinstance(publication, LivePublicationResult)
+        or not publication.acknowledged
+        or not _is_owner_issued_cas_result(publication)
+    ):
+        raise LiveContractError("opening publication requires an accepted exact-source CAS result")
+    accepted = publication.accepted_source
+    if accepted is None or accepted.source_key != preparation.source_key:
+        raise LiveContractError("accepted opening publication is not bound to the prepared source")
+    if accepted.status is not LiveLifecycle.ACTIVE:
+        raise LiveContractError("accepted opening publication must produce an ACTIVE source")
+    if accepted.opening_campaign_revision != preparation.source.opening_campaign_revision:
+        raise LiveContractError("accepted opening publication changed the opening basis")
+    return accepted
 
 
 def _route_or_none(route: LiveRouting | LiveEnvelope | Mapping[str, object]) -> LiveRouting | LiveEnvelope | None:
@@ -1712,6 +2137,453 @@ def mark_closed_unabsorbed(source: LiveEnvelope) -> LiveEnvelope:
         next_source_native_creation_ordinal=source.next_source_native_creation_ordinal,
         source_native_ids=source.source_native_ids,
     )
+
+
+class LiveAbsorptionStatus(StrEnum):
+    """Phase-B campaign publication knowledge for one closed LIVE source."""
+
+    ACCEPTED = "ACCEPTED"
+    REJECTED = "REJECTED"
+    REJECTED_STALE = "REJECTED_STALE"
+    INDETERMINATE = "INDETERMINATE"
+    CLOSED_UNABSORBED = "CLOSED_UNABSORBED"
+
+
+def _absorbed_successor_route(route: LiveRouting, source_key: LiveSourceKey) -> LiveRouting:
+    validate_live_route_completeness(route)
+    selected = select_live_source(route, source_key)
+    if selected is None:
+        raise LiveContractError("absorption requires the exact selected LIVE route member")
+    if selected.status not in {LiveLifecycle.CLOSED, LiveLifecycle.CLOSED_UNABSORBED}:
+        raise LiveContractError("only a closed LIVE source can be absorbed")
+    remaining = tuple(entry for entry in route.entries if entry.source_key != selected.source_key)
+    return build_live_route(route.campaign_id, remaining)
+
+
+def _absorption_marker(source: LiveEnvelope) -> dict[str, object]:
+    return {
+        "source_key": list(source.source_key),
+        "source_revision": source.source_revision,
+    }
+
+
+def _merge_absorbed_state(
+    campaign_state: Mapping[str, object],
+    packed_state: LiveNativeStatePack,
+    source: LiveEnvelope,
+    successor_route: LiveRouting,
+) -> dict[str, object]:
+    candidate = deepcopy(dict(campaign_state))
+    for field_name in (
+        "native_owner_states",
+        "provenance",
+        "privacy",
+        "chronology",
+        "unresolved_work",
+    ):
+        incoming = deepcopy(dict(getattr(packed_state, field_name)))
+        current = candidate.get(field_name)
+        if current is None:
+            candidate[field_name] = incoming
+            continue
+        if not isinstance(current, Mapping):
+            raise LiveContractError(f"campaign absorption target {field_name} is not a mapping")
+        merged = deepcopy(dict(current))
+        for key, value in incoming.items():
+            if key in merged and merged[key] != value:
+                raise LiveContractError(
+                    f"campaign absorption conflicts with current {field_name}.{key}"
+                )
+            merged[key] = value
+        candidate[field_name] = merged
+
+    marker = _absorption_marker(source)
+    raw_markers = candidate.get("absorbed_live_sources", [])
+    if not isinstance(raw_markers, Sequence) or isinstance(raw_markers, (str, bytes)):
+        raise LiveContractError("campaign absorption marker set is not an explicit array")
+    markers = [deepcopy(dict(item)) if isinstance(item, Mapping) else item for item in raw_markers]
+    for existing in markers:
+        if not isinstance(existing, Mapping):
+            raise LiveContractError("campaign absorption marker is not typed")
+        existing_key = existing.get("source_key")
+        existing_revision = existing.get("source_revision")
+        if existing_key == marker["source_key"] and existing_revision != marker["source_revision"]:
+            raise LiveContractError("campaign absorption marker conflicts with the exact final source")
+    if marker not in markers:
+        markers.append(marker)
+    candidate["absorbed_live_sources"] = markers
+    candidate["last_absorbed_live_source"] = deepcopy(marker)
+    candidate["live_routing"] = successor_route.as_mapping()
+    return candidate
+
+
+@dataclass(frozen=True, slots=True)
+class FrozenCampaignAbsorption:
+    """Immutable campaign CAS candidate for one exact final LIVE source."""
+
+    selected_route: LiveRouting
+    source_key: LiveSourceKey
+    source_revision: str
+    expected_campaign_revision: str
+    proposed_campaign_revision: str
+    packed_state: LiveNativeStatePack
+    candidate_state: Mapping[str, object]
+    successor_route: LiveRouting
+
+    def __post_init__(self) -> None:
+        validate_live_route_completeness(self.selected_route)
+        object.__setattr__(self, "source_key", _source_key(self.source_key))
+        object.__setattr__(self, "source_revision", _revision(self.source_revision, "source_revision"))
+        expected = _revision(self.expected_campaign_revision, "expected_campaign_revision")
+        proposed = _revision(self.proposed_campaign_revision, "proposed_campaign_revision")
+        if expected == proposed:
+            raise LiveContractError("campaign absorption must advance its exact predecessor")
+        object.__setattr__(self, "expected_campaign_revision", expected)
+        object.__setattr__(self, "proposed_campaign_revision", proposed)
+        if not isinstance(self.packed_state, LiveNativeStatePack):
+            raise LiveContractError("campaign absorption requires a typed native state pack")
+        if self.packed_state.source_key != self.source_key:
+            raise LiveContractError("packed state source differs from absorption source")
+        if self.packed_state.source_revision != self.source_revision:
+            raise LiveContractError("packed state revision differs from final LIVE source")
+        if not isinstance(self.candidate_state, Mapping):
+            raise LiveContractError("campaign absorption candidate must be a mapping")
+        validate_live_route_completeness(self.successor_route)
+        object.__setattr__(self, "candidate_state", deepcopy(dict(self.candidate_state)))
+
+    @property
+    def candidate_state_digest(self) -> str:
+        return _state_digest(self.candidate_state)
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "schema_version": LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION,
+            "kind": "runtime.live_absorption_attempt",
+            "source_key": list(self.source_key),
+            "source_revision": self.source_revision,
+            "expected_campaign_revision": self.expected_campaign_revision,
+            "proposed_campaign_revision": self.proposed_campaign_revision,
+            "candidate_state_digest": self.candidate_state_digest,
+            "selected_route": self.selected_route.as_mapping(),
+            "successor_route": self.successor_route.as_mapping(),
+        }
+
+
+def freeze_campaign_absorption(
+    source: LiveEnvelope,
+    *,
+    route: LiveRouting,
+    packed_state: LiveNativeStatePack,
+    campaign_state: Mapping[str, object],
+    expected_campaign_revision: str,
+    proposed_campaign_revision: str,
+) -> FrozenCampaignAbsorption:
+    """Freeze phase-B materialization; publication remains a separate exact CAS."""
+
+    if not isinstance(source, LiveEnvelope):
+        raise LiveContractError("campaign absorption requires an owner-typed source")
+    if source.status not in {LiveLifecycle.CLOSED, LiveLifecycle.CLOSED_UNABSORBED}:
+        raise LiveContractError("campaign absorption requires a closed LIVE source")
+    if not isinstance(packed_state, LiveNativeStatePack):
+        raise LiveContractError("campaign absorption requires a typed native state pack")
+    if packed_state.source_key != source.source_key or packed_state.source_revision != source.source_revision:
+        raise LiveContractError("packed state is not the exact final LIVE source")
+    if not isinstance(campaign_state, Mapping):
+        raise LiveContractError("campaign absorption target must be a mapping")
+    selected = select_live_source(route, source.source_key)
+    if selected is None or not validate_exact_source(selected, source):
+        raise LiveContractError("campaign absorption requires exact selected LIVE route evidence")
+    successor_route = _absorbed_successor_route(route, source.source_key)
+    candidate = _merge_absorbed_state(campaign_state, packed_state, source, successor_route)
+    return FrozenCampaignAbsorption(
+        selected_route=route,
+        source_key=source.source_key,
+        source_revision=source.source_revision,
+        expected_campaign_revision=expected_campaign_revision,
+        proposed_campaign_revision=proposed_campaign_revision,
+        packed_state=packed_state,
+        candidate_state=candidate,
+        successor_route=successor_route,
+    )
+
+
+@dataclass(frozen=True, slots=True, weakref_slot=True)
+class LiveAbsorptionPublication:
+    """Typed result of exact campaign CAS classification."""
+
+    status: LiveAbsorptionStatus
+    source_key: LiveSourceKey
+    source_revision: str
+    authoritative: bool
+    candidate_state: Mapping[str, object] | None = None
+    successor_route: LiveRouting | None = None
+    attempt: FrozenCampaignAbsorption | None = None
+
+    @property
+    def acknowledged(self) -> bool:
+        return self.status is LiveAbsorptionStatus.ACCEPTED and self.authoritative
+
+
+_OWNER_ISSUED_ABSORPTION_RESULTS: dict[
+    int, weakref.ReferenceType[LiveAbsorptionPublication]
+] = {}
+
+
+def _mark_owner_issued_absorption_result(
+    result: LiveAbsorptionPublication,
+) -> LiveAbsorptionPublication:
+    result_id = id(result)
+
+    def remove(reference: weakref.ReferenceType[LiveAbsorptionPublication]) -> None:
+        if _OWNER_ISSUED_ABSORPTION_RESULTS.get(result_id) is reference:
+            _OWNER_ISSUED_ABSORPTION_RESULTS.pop(result_id, None)
+
+    _OWNER_ISSUED_ABSORPTION_RESULTS[result_id] = weakref.ref(result, remove)
+    return result
+
+
+def _is_owner_issued_absorption_result(result: LiveAbsorptionPublication) -> bool:
+    reference = _OWNER_ISSUED_ABSORPTION_RESULTS.get(id(result))
+    return reference is not None and reference() is result
+
+
+def classify_campaign_absorption(
+    attempt: FrozenCampaignAbsorption,
+    acknowledgement: Mapping[str, object] | None,
+) -> LiveAbsorptionPublication:
+    """Classify campaign absorption only from complete exact-CAS evidence."""
+
+    if not isinstance(attempt, FrozenCampaignAbsorption):
+        raise LiveContractError("campaign absorption classification requires a frozen attempt")
+    if acknowledgement is None or not isinstance(acknowledgement, Mapping):
+        return _mark_owner_issued_absorption_result(LiveAbsorptionPublication(
+            LiveAbsorptionStatus.INDETERMINATE,
+            attempt.source_key,
+            attempt.source_revision,
+            False,
+            attempt=attempt,
+        ))
+    raw_key = acknowledgement.get("source_key")
+    try:
+        if raw_key is None or _source_key(raw_key) != attempt.source_key:
+            return _mark_owner_issued_absorption_result(LiveAbsorptionPublication(
+                LiveAbsorptionStatus.REJECTED_STALE,
+                attempt.source_key,
+                attempt.source_revision,
+                False,
+                attempt=attempt,
+            ))
+    except LiveContractError:
+        return _mark_owner_issued_absorption_result(LiveAbsorptionPublication(
+            LiveAbsorptionStatus.REJECTED_STALE,
+            attempt.source_key,
+            attempt.source_revision,
+            False,
+            attempt=attempt,
+        ))
+    accepted = acknowledgement.get("accepted") is True or str(
+        acknowledgement.get("status", "")
+    ).upper() in {"ACCEPTED", "CONFIRMED_ACCEPTED"}
+    if not accepted:
+        current = acknowledgement.get("current_campaign_revision")
+        status = (
+            LiveAbsorptionStatus.REJECTED_STALE
+            if current is not None and current != attempt.expected_campaign_revision
+            else LiveAbsorptionStatus.REJECTED
+        )
+        return _mark_owner_issued_absorption_result(LiveAbsorptionPublication(
+            status,
+            attempt.source_key,
+            attempt.source_revision,
+            False,
+            attempt=attempt,
+        ))
+    required = {
+        "source_revision": attempt.source_revision,
+        "expected_campaign_revision": attempt.expected_campaign_revision,
+        "new_campaign_revision": attempt.proposed_campaign_revision,
+        "candidate_state_digest": attempt.candidate_state_digest,
+        "selected_route": attempt.selected_route.as_mapping(),
+        "successor_route": attempt.successor_route.as_mapping(),
+    }
+    if any(acknowledgement.get(key) != value for key, value in required.items()):
+        return _mark_owner_issued_absorption_result(LiveAbsorptionPublication(
+            LiveAbsorptionStatus.INDETERMINATE,
+            attempt.source_key,
+            attempt.source_revision,
+            False,
+            attempt=attempt,
+        ))
+    return _mark_owner_issued_absorption_result(LiveAbsorptionPublication(
+        LiveAbsorptionStatus.ACCEPTED,
+        attempt.source_key,
+        attempt.source_revision,
+        True,
+        candidate_state=attempt.candidate_state,
+        successor_route=attempt.successor_route,
+        attempt=attempt,
+    ))
+
+
+@dataclass(frozen=True, slots=True)
+class LiveAbsorptionResult:
+    """Phase-B result retaining closed-unabsorbed truth on every non-acceptance."""
+
+    status: LiveAbsorptionStatus
+    source: LiveEnvelope
+    route: LiveRouting
+    campaign_state: Mapping[str, object]
+    authoritative: bool
+
+    @property
+    def absorbed(self) -> bool:
+        return self.status is LiveAbsorptionStatus.ACCEPTED and self.authoritative
+
+
+def _absorption_result_from_publication(
+    publication: LiveAbsorptionPublication,
+    source: LiveEnvelope,
+    route: LiveRouting,
+    campaign_state: Mapping[str, object],
+) -> LiveAbsorptionResult:
+    retained = source if source.status is LiveLifecycle.CLOSED_UNABSORBED else mark_closed_unabsorbed(source)
+    return LiveAbsorptionResult(
+        status=(
+            LiveAbsorptionStatus.CLOSED_UNABSORBED
+            if publication.status is not LiveAbsorptionStatus.ACCEPTED
+            else publication.status
+        ),
+        source=retained,
+        route=route,
+        campaign_state=deepcopy(dict(campaign_state)),
+        authoritative=False,
+    )
+
+
+def absorb_live_state(
+    source: LiveEnvelope,
+    packed_state: LiveNativeStatePack,
+    campaign_state: Mapping[str, object],
+    *,
+    route: LiveRouting,
+    publication: LiveAbsorptionPublication | Mapping[str, object] | None,
+    expected_campaign_revision: str | None = None,
+    proposed_campaign_revision: str | None = None,
+) -> LiveAbsorptionResult:
+    """Apply one accepted campaign absorption, or retain CLOSED_UNABSORBED truth."""
+
+    if not isinstance(source, LiveEnvelope):
+        raise LiveContractError("LIVE absorption requires an owner-typed source")
+    if not isinstance(packed_state, LiveNativeStatePack):
+        raise LiveContractError("LIVE absorption requires a typed native state pack")
+    if packed_state.source_key != source.source_key or packed_state.source_revision != source.source_revision:
+        raise LiveContractError("absorption pack does not match the exact final source")
+    if not isinstance(campaign_state, Mapping):
+        raise LiveContractError("LIVE absorption target must be a mapping")
+
+    if source.status is LiveLifecycle.ABSORBED:
+        if (
+            not isinstance(publication, LiveAbsorptionPublication)
+            or not publication.acknowledged
+            or not _is_owner_issued_absorption_result(publication)
+        ):
+            raise LiveContractError("absorbed LIVE source requires its accepted absorption evidence")
+        marker = campaign_state.get("last_absorbed_live_source")
+        if marker != _absorption_marker(source):
+            raise LiveContractError("absorbed LIVE source lacks exact campaign absorption marker")
+        return LiveAbsorptionResult(
+            LiveAbsorptionStatus.ACCEPTED,
+            source,
+            route,
+            deepcopy(dict(campaign_state)),
+            True,
+        )
+    if source.status not in {LiveLifecycle.CLOSED, LiveLifecycle.CLOSED_UNABSORBED}:
+        raise LiveContractError("only CLOSED or CLOSED_UNABSORBED LIVE sources can be absorbed")
+    validate_live_route_completeness(route)
+    selected = select_live_source(route, source.source_key)
+    if selected is None or not validate_exact_source(selected, source):
+        raise LiveContractError("absorption requires the exact selected LIVE route body")
+
+    if publication is None:
+        retained = source if source.status is LiveLifecycle.CLOSED_UNABSORBED else mark_closed_unabsorbed(source)
+        return LiveAbsorptionResult(
+            LiveAbsorptionStatus.CLOSED_UNABSORBED,
+            retained,
+            route,
+            deepcopy(dict(campaign_state)),
+            False,
+        )
+    if isinstance(publication, Mapping):
+        if expected_campaign_revision is None or proposed_campaign_revision is None:
+            raise LiveContractError("mapping absorption evidence requires exact campaign revisions")
+        attempt = freeze_campaign_absorption(
+            source,
+            route=route,
+            packed_state=packed_state,
+            campaign_state=campaign_state,
+            expected_campaign_revision=expected_campaign_revision,
+            proposed_campaign_revision=proposed_campaign_revision,
+        )
+        typed_publication = classify_campaign_absorption(attempt, publication)
+    elif isinstance(publication, LiveAbsorptionPublication):
+        typed_publication = publication
+        if not _is_owner_issued_absorption_result(typed_publication):
+            raise LiveContractError("absorption requires owner-issued CAS evidence")
+    else:
+        raise LiveContractError("campaign absorption publication evidence is not typed")
+    if not typed_publication.acknowledged:
+        return _absorption_result_from_publication(typed_publication, source, route, campaign_state)
+    if not _is_owner_issued_absorption_result(typed_publication):
+        raise LiveContractError("accepted absorption requires owner-issued CAS evidence")
+    if typed_publication.attempt is None:
+        raise LiveContractError("accepted absorption evidence is not bound to this source")
+    attempt = typed_publication.attempt
+    if (
+        attempt.source_key != source.source_key
+        or attempt.source_revision != source.source_revision
+        or attempt.packed_state != packed_state
+        or attempt.selected_route.as_mapping() != route.as_mapping()
+    ):
+        raise LiveContractError("accepted absorption evidence is not bound to the exact source and route")
+    if typed_publication.candidate_state is None or typed_publication.successor_route is None:
+        raise LiveContractError("accepted absorption evidence lacks complete campaign closure")
+    absorbed_source = LiveEnvelope(
+        campaign_id=source.campaign_id,
+        scene_id=source.scene_id,
+        epoch_id=source.epoch_id,
+        source_ref=source.source_ref,
+        source_revision=source.source_revision,
+        claims=source.claims,
+        status=LiveLifecycle.ABSORBED,
+        opening_campaign_revision=source.opening_campaign_revision,
+        next_source_native_creation_ordinal=source.next_source_native_creation_ordinal,
+        source_native_ids=source.source_native_ids,
+    )
+    return LiveAbsorptionResult(
+        LiveAbsorptionStatus.ACCEPTED,
+        absorbed_source,
+        typed_publication.successor_route,
+        deepcopy(dict(typed_publication.candidate_state)),
+        True,
+    )
+
+
+def recover_closed_unabsorbed(
+    route: LiveRouting,
+    source_key: LiveSourceKey,
+) -> LiveEnvelope:
+    """Recover selected LIVE truth without falling back to campaign state."""
+
+    validate_live_route_completeness(route)
+    selected = select_live_source(route, source_key)
+    if selected is None:
+        raise LiveContractError("selected LIVE source is missing; campaign fallback is forbidden")
+    if selected.status is LiveLifecycle.CLOSED:
+        return mark_closed_unabsorbed(selected)
+    if selected.status is not LiveLifecycle.CLOSED_UNABSORBED:
+        raise LiveContractError("selected LIVE source is not closed-unabsorbed recovery truth")
+    return selected
 
 
 # Compatibility names for the owner-local contract vocabulary.  These aliases

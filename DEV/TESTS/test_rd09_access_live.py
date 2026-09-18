@@ -32,6 +32,9 @@ from GAME.TOOLS.live_state import (
     LivePublicationResult,
     LivePublicationStatus,
     LiveRouting,
+    LiveAbsorptionStatus,
+    LiveAbsorptionPublication,
+    LiveNativeStatePack,
     LIVE_CLAIM_SCHEMA_VERSION,
     LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION,
     LIVE_ROUTING_SCHEMA_VERSION,
@@ -44,20 +47,31 @@ from GAME.TOOLS.live_state import (
     allocate_source_native_creations,
     build_live_route,
     build_live_ref,
+    build_live_opening_seed,
     classify_cas_result,
+    classify_campaign_absorption,
     close_live_source,
     derive_live_epoch_id,
     encode_live_campaign_route_token,
     encode_live_scene_route_token,
     encode_source_native_live_id,
     freeze_live_attempt,
+    freeze_campaign_absorption,
     lookup_write_authority,
     normalize_source_native_creations,
     parse_source_native_live_id,
+    pack_live_native_state,
+    prepare_live_opening,
+    publish_live_opening,
+    recover_closed_unabsorbed,
     reconcile_indeterminate,
     select_live_source,
     validate_live_route_identity,
+    validate_live_route_completeness,
     validate_exact_source,
+    absorb_live_state,
+    mark_closed_unabsorbed,
+    unpack_live_native_state,
 )
 
 
@@ -608,7 +622,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.7")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.8")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
@@ -1588,6 +1602,404 @@ class SourceNativeHistoryValidationTests(unittest.TestCase):
                 },
                 identifier_policy=SOURCE_NATIVE_POLICY,
             )
+
+
+def _opening_native_states() -> dict[str, object]:
+    return {
+        "world.actor": {
+            "kind": "world.actor",
+            "id": "actor-1",
+            "state": {"hp": 10, "status": "ready"},
+        },
+        "runtime.procedure": {
+            "kind": "runtime.procedure",
+            "id": "procedure-1",
+            "revision": 1,
+            "state": {
+                "schema_version": 2,
+                "lifecycle": "ACTIVE",
+                "lifecycle_state": "running",
+                "participant_resources": {"actor-1": {"action": 1}},
+            },
+        },
+    }
+
+
+def _opening_seed(preparation: object, source: LiveEnvelope | None = None) -> LiveNativeStatePack:
+    if source is not None:
+        return pack_live_native_state(
+            source,
+            native_owner_states=_opening_native_states(),
+            provenance={"opening_revision": LIVE_H0, "refs": ["event:opening"]},
+            privacy={"knowledge": {"actor-1": ["fact:market"]}, "disclosure": []},
+            chronology={"anchors": ["anchor:opening"], "relations": []},
+            unresolved_work={"runtime.continuation": [{"id": "continuation-1"}]},
+        )
+    seed = build_live_opening_seed(
+        preparation,
+        native_owner_states=_opening_native_states(),
+        provenance={"opening_revision": LIVE_H0, "refs": ["event:opening"]},
+        privacy={"knowledge": {"actor-1": ["fact:market"]}, "disclosure": []},
+        chronology={"anchors": ["anchor:opening"], "relations": []},
+        unresolved_work={"runtime.continuation": [{"id": "continuation-1"}]},
+    )
+    return pack_live_native_state(seed)
+
+
+class LiveOpeningPreparationTests(unittest.TestCase):
+    def test_opening_preparation_requires_an_explicit_source_revision(self) -> None:
+        with self.assertRaises(TypeError):
+            prepare_live_opening(
+                "campaign-frostfall",
+                "scene-market",
+                opening_campaign_revision=LIVE_H0,
+                claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            )
+
+    def test_opening_preparation_is_repeatable_and_not_selected_authority(self) -> None:
+        claims = (LiveClaim.exact_owner("world.actor", "actor-1"),)
+
+        first = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=claims,
+            source_revision="prepared-opening",
+        )
+        second = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=claims,
+            source_revision="prepared-opening",
+        )
+
+        self.assertEqual(first, second)
+        self.assertIsNone(select_live_source(build_live_route("campaign-frostfall", ()), first.source_key))
+        self.assertEqual(first.source.status, LiveLifecycle.ACTIVE)
+
+    def test_opening_seed_requires_complete_explicit_native_inputs(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision="prepared-opening",
+        )
+
+        with self.assertRaisesRegex(LiveContractError, "provenance|privacy|chronology|unresolved"):
+            build_live_opening_seed(
+                preparation,
+                native_owner_states=_opening_native_states(),
+                provenance={"opening_revision": LIVE_H0},
+                privacy={},
+                chronology={},
+                unresolved_work=None,
+            )
+
+
+class LiveOpeningSeedTests(unittest.TestCase):
+    def test_exact_cas_publication_is_required_before_opening_route_adoption(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+        )
+        source = preparation.source
+        route = build_live_route("campaign-frostfall", (source,))
+        attempt = freeze_live_attempt(source, route=route, proposed_source_revision=LIVE_H1)
+
+        rejected = classify_cas_result(
+            attempt,
+            {
+                "accepted": False,
+                "source_key": source.source_key,
+                "current_source_revision": LIVE_H1,
+            },
+        )
+        self.assertEqual(rejected.status, LivePublicationStatus.REJECTED_STALE)
+        with self.assertRaisesRegex(LiveContractError, "accepted|publication|opening"):
+            publish_live_opening(preparation, rejected)
+
+        accepted = classify_cas_result(attempt, _accepted_ack(attempt))
+        published = publish_live_opening(preparation, accepted)
+        self.assertEqual(published.source_revision, LIVE_H1)
+        self.assertEqual(published.source_key, source.source_key)
+
+    def test_forged_matching_cas_result_cannot_publish_a_prepared_opening(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+        )
+        source = preparation.source
+        attempt = freeze_live_attempt(
+            source,
+            route=build_live_route("campaign-frostfall", (source,)),
+            proposed_source_revision=LIVE_H1,
+        )
+        accepted = classify_cas_result(attempt, _accepted_ack(attempt))
+        forged = LivePublicationResult(
+            status=accepted.status,
+            source_key=accepted.source_key,
+            authoritative=accepted.authoritative,
+            observed_source_revision=accepted.observed_source_revision,
+            accepted_source=accepted.accepted_source,
+        )
+
+        with self.assertRaisesRegex(LiveContractError, "owner|issued|CAS"):
+            publish_live_opening(preparation, forged)
+
+
+class LiveRoutingCompletenessTests(unittest.TestCase):
+    def test_complete_route_requires_every_expected_body_and_rejects_stale_extra_member(self) -> None:
+        source = _live_source()
+        other = _live_source(claims=(LiveClaim.exact_owner("world.asset", "asset-1"),))
+
+        route = build_live_route(
+            "campaign-frostfall",
+            (source,),
+            expected_source_keys=(source.source_key,),
+        )
+        validate_live_route_completeness(route, (source.source_key,))
+
+        with self.assertRaisesRegex(LiveContractError, "complete|missing|expected"):
+            build_live_route(
+                "campaign-frostfall",
+                (source,),
+                expected_source_keys=(source.source_key, other.source_key),
+            )
+
+        absorbed = _live_source(
+            revision=LIVE_H1,
+            status=LiveLifecycle.ABSORBED,
+            claims=(LiveClaim.exact_owner("world.asset", "asset-1"),),
+        )
+        with self.assertRaisesRegex(LiveContractError, "stale|absorbed|complete"):
+            validate_live_route_completeness(
+                build_live_route("campaign-frostfall", (source, absorbed)),
+                (source.source_key,),
+            )
+
+
+class LiveNativeStatePackingTests(unittest.TestCase):
+    def test_packing_and_unpacking_are_lossless_across_owner_and_crosscutting_inputs(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+        )
+        seed = build_live_opening_seed(
+            preparation,
+            native_owner_states=_opening_native_states(),
+            provenance={"opening_revision": LIVE_H0, "refs": ["event:opening"]},
+            privacy={"knowledge": {"actor-1": ["fact:market"]}, "disclosure": []},
+            chronology={"anchors": ["anchor:opening"], "relations": []},
+            unresolved_work={"runtime.continuation": [{"id": "continuation-1"}]},
+        )
+
+        packed = pack_live_native_state(seed)
+
+        self.assertEqual(
+            unpack_live_native_state(packed),
+            {
+                "native_owner_states": _opening_native_states(),
+                "provenance": {"opening_revision": LIVE_H0, "refs": ["event:opening"]},
+                "privacy": {"knowledge": {"actor-1": ["fact:market"]}, "disclosure": []},
+                "chronology": {"anchors": ["anchor:opening"], "relations": []},
+                "unresolved_work": {"runtime.continuation": [{"id": "continuation-1"}]},
+            },
+        )
+
+    def test_partial_pack_is_rejected_instead_of_inventing_owner_defaults(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+        )
+        with self.assertRaisesRegex(LiveContractError, "privacy|chronology|unresolved"):
+            pack_live_native_state(
+                preparation.source,
+                native_owner_states=_opening_native_states(),
+                provenance={"opening_revision": LIVE_H0},
+            )
+
+
+class LiveAbsorptionMaterializationTests(unittest.TestCase):
+    def test_absorption_preserves_identity_provenance_privacy_chronology_and_is_idempotent(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+        )
+        source = preparation.source
+        closed = close_live_source(
+            source,
+            expected_source_revision=LIVE_H0,
+            closed_source_revision=LIVE_H1,
+        )
+        closed_unabsorbed = mark_closed_unabsorbed(closed)
+        route = build_live_route("campaign-frostfall", (closed_unabsorbed,))
+        packed = _opening_seed(preparation, closed_unabsorbed)
+        campaign_state = {
+            "native_owner_states": {},
+            "provenance": {},
+            "privacy": {},
+            "chronology": {},
+            "unresolved_work": {},
+        }
+        attempt = freeze_campaign_absorption(
+            closed_unabsorbed,
+            route=route,
+            packed_state=packed,
+            campaign_state=campaign_state,
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H2,
+        )
+        incomplete_ack = {
+            "accepted": True,
+            "source_key": closed_unabsorbed.source_key,
+            "source_revision": LIVE_H1,
+            "expected_campaign_revision": LIVE_H0,
+            "new_campaign_revision": LIVE_H2,
+            "candidate_state_digest": attempt.candidate_state_digest,
+            "successor_route": attempt.successor_route.as_mapping(),
+        }
+        self.assertEqual(
+            classify_campaign_absorption(attempt, incomplete_ack).status,
+            LiveAbsorptionStatus.INDETERMINATE,
+        )
+        publication = classify_campaign_absorption(
+            attempt,
+            {
+                "accepted": True,
+                "source_key": closed_unabsorbed.source_key,
+                "source_revision": LIVE_H1,
+                 "expected_campaign_revision": LIVE_H0,
+                 "new_campaign_revision": LIVE_H2,
+                 "candidate_state_digest": attempt.candidate_state_digest,
+                 "selected_route": attempt.selected_route.as_mapping(),
+                 "successor_route": attempt.successor_route.as_mapping(),
+             },
+         )
+        first = absorb_live_state(
+            closed_unabsorbed,
+            packed,
+            campaign_state,
+            route=route,
+            publication=publication,
+        )
+        second = absorb_live_state(
+            first.source,
+            packed,
+            first.campaign_state,
+            route=first.route,
+            publication=publication,
+        )
+
+        self.assertEqual(first.status, LiveAbsorptionStatus.ACCEPTED)
+        self.assertEqual(first.source.status, LiveLifecycle.ABSORBED)
+        self.assertEqual(first.campaign_state, second.campaign_state)
+        self.assertEqual(first.campaign_state["native_owner_states"], packed.native_owner_states)
+        self.assertEqual(first.campaign_state["provenance"], packed.provenance)
+        self.assertEqual(first.campaign_state["privacy"], packed.privacy)
+        self.assertEqual(first.campaign_state["chronology"], packed.chronology)
+        self.assertEqual(first.campaign_state["unresolved_work"], packed.unresolved_work)
+
+        forged = LiveAbsorptionPublication(
+            status=publication.status,
+            source_key=publication.source_key,
+            source_revision=publication.source_revision,
+            authoritative=publication.authoritative,
+            candidate_state=publication.candidate_state,
+            successor_route=publication.successor_route,
+            attempt=publication.attempt,
+        )
+        with self.assertRaisesRegex(LiveContractError, "owner|issued|CAS"):
+            absorb_live_state(
+                closed_unabsorbed,
+                packed,
+                campaign_state,
+                route=route,
+                publication=forged,
+            )
+
+        foreign_closed = close_live_source(
+            source,
+            expected_source_revision=LIVE_H0,
+            closed_source_revision=LIVE_H2,
+        )
+        foreign_closed_unabsorbed = mark_closed_unabsorbed(foreign_closed)
+        foreign_route = build_live_route("campaign-frostfall", (foreign_closed_unabsorbed,))
+        foreign_packed = _opening_seed(preparation, foreign_closed_unabsorbed)
+        foreign_attempt = freeze_campaign_absorption(
+            foreign_closed_unabsorbed,
+            route=foreign_route,
+            packed_state=foreign_packed,
+            campaign_state=campaign_state,
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H2,
+        )
+        foreign_publication = classify_campaign_absorption(
+            foreign_attempt,
+            {
+                "accepted": True,
+                "source_key": foreign_closed.source_key,
+                "source_revision": LIVE_H2,
+                "expected_campaign_revision": LIVE_H0,
+                "new_campaign_revision": LIVE_H2,
+                "candidate_state_digest": foreign_attempt.candidate_state_digest,
+                "selected_route": foreign_attempt.selected_route.as_mapping(),
+                "successor_route": foreign_attempt.successor_route.as_mapping(),
+            },
+        )
+        with self.assertRaisesRegex(LiveContractError, "exact|source|bound"):
+            absorb_live_state(
+                closed_unabsorbed,
+                packed,
+                campaign_state,
+                route=route,
+                publication=foreign_publication,
+            )
+
+    def test_failed_or_indeterminate_campaign_publication_keeps_closed_unabsorbed_recovery_truth(self) -> None:
+        preparation = prepare_live_opening(
+            "campaign-frostfall",
+            "scene-market",
+            opening_campaign_revision=LIVE_H0,
+            claims=(LiveClaim.exact_owner("world.actor", "actor-1"),),
+            source_revision=LIVE_H0,
+        )
+        closed = mark_closed_unabsorbed(
+            close_live_source(
+                preparation.source,
+                expected_source_revision=LIVE_H0,
+                closed_source_revision=LIVE_H1,
+            )
+        )
+        route = build_live_route("campaign-frostfall", (closed,))
+        packed = _opening_seed(preparation, closed)
+        pending = absorb_live_state(
+            closed,
+            packed,
+            {"native_owner_states": {}},
+            route=route,
+            publication=None,
+        )
+
+        self.assertEqual(pending.status, LiveAbsorptionStatus.CLOSED_UNABSORBED)
+        self.assertEqual(recover_closed_unabsorbed(pending.route, closed.source_key), closed)
+        self.assertEqual(pending.campaign_state, {"native_owner_states": {}})
 
 
 if __name__ == "__main__":
