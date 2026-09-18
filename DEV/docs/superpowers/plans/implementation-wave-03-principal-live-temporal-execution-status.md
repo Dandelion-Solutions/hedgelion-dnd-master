@@ -6,8 +6,8 @@ BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
 CURRENT_TASK: W03.T05 -- opening preparation, seed, routing, packing and absorption
-LAST_COMPLETED_TASK: W03.T04 review repair -- closed live_birth admission, framed history validation and CAS-bound cursor / W03_SOURCE_NATIVE_LIVE_ID_READY
-LAST_SAFE_SHA: `23af5ccf6436d20c77cef049814030956168a1b5` (W03.T04 repair implementation checkpoint)
+LAST_COMPLETED_TASK: W03.T04 review repair follow-up -- strict CAS-bound envelope cursor / W03_SOURCE_NATIVE_LIVE_ID_READY
+LAST_SAFE_SHA: `1572904309b6519af19e3cde5b323ce6752518d4` (W03.T04 repair follow-up implementation checkpoint)
 
 ## Dependency schedule
 
@@ -66,6 +66,7 @@ COMPLETED_TASKS:
 - W03.T03 repair round 1 -> `60754eee8b5294c5967679b77abdc710c2d0d0f1` (implementation checkpoint; retained-schema scope repair)
 - W03.T04 -> `9281e9516ab3ccbf6aa6364fa3650c75063c38b2` (published/read-back; W03_SOURCE_NATIVE_LIVE_ID_READY)
 - W03.T04 review repair -> `23af5ccf6436d20c77cef049814030956168a1b5` (published/read-back; closed T04 admission, framed-history validation and CAS-bound cursor)
+- W03.T04 review repair follow-up -> `1572904309b6519af19e3cde5b323ce6752518d4` (published/read-back; explicit envelope arguments cannot bypass CAS-bound result evidence)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -99,6 +100,7 @@ CURRENT_VERIFICATION_STATE:
 - W03.T04 publication was non-force from `b05cd9a7b7c0231a85944495355bb3d62bd0624c` to `9281e9516ab3ccbf6aa6364fa3650c75063c38b2`; fresh fetch/read-back confirmed local and `origin/v1/engine-rearchitecture` equal.
 - W03.T04 review repair RED: focused `test_rd09_access_live` produced 1 expected error and 5 expected failures covering caller-forged live_birth admission, non-exact policy fallback, missing CAS-accepted envelope binding, foreign framed IDs and non-contiguous history.
 - W03.T04 review repair GREEN: focused `test_rd09_access_live` passed 81 tests; changed Python modules compiled, changed LIVE schemas remained valid JSON Schemas, and `git diff --check` passed. Named cross-owner/full DEV and maintenance-audit verification was unavailable in this worktree because the isolated dev-tool environment was absent/broken and system Python lacks `referencing`.
+- W03.T04 review repair follow-up RED: the focused cursor witness failed when an explicitly supplied envelope could bypass a forged accepted result lacking `accepted_source` evidence; the witness then passed after the strict binding repair.
 
 VERSION_IMPACT: W03.T02 review repair round 1 materially changes the LIVE runtime module `framework_module_version` 1.0.1 -> 1.0.2 and the ephemeral publication-attempt schema 1 -> 2 because selected-route and complete-successor evidence are now required. Claim/routing serialized shapes remain schema v1; their repair rejects pre-release invalid claim forms without changing serialized fields or adding a migration/projection.
 
@@ -113,6 +115,7 @@ VERSION_IMPACT: W03.T04 materially changes the LIVE runtime module `framework_mo
 SYSTEM_IMPACT: NONE -- W03.T04 remains within the approved source-native LIVE identity/currentness envelope: it adds no semantic owner, campaign allocator fallback, broad scan, distributed transaction, new dependency direction or shared identifier-policy/catalog write. Cursor advancement remains subordinate to accepted exact-source CAS; rejected/indeterminate attempts do not advance or reallocate.
 - VERSION_IMPACT: W03.T04 review repair materially changes the LIVE runtime module `framework_module_version` `1.0.5 -> 1.0.6` for closed admission/history/CAS-envelope validation. LIVE routing/publication schemas remain v4/v5 because no serialized shape changed; no engine-release, catalog-generation, campaign-contract, storage-format, identifier-policy/catalog or other projection namespace changed.
 - SYSTEM_IMPACT: NONE -- the repair remains within the approved T04 LIVE identity/currentness envelope. The closed admission table is read-only owner-local law; no W05 catalog write, new authority, dependency direction, transaction or persistence boundary was introduced.
+- VERSION_IMPACT: NONE for the W03.T04 repair follow-up; it tightens the already-bumped T04 runtime validation without introducing another namespace or projection change.
 NEXT_EXACT_TASK: W03.T05 -- opening preparation, seed, routing, packing and absorption, consuming W03_SOURCE_NATIVE_LIVE_ID_READY.
-KNOWN_BLOCKERS: NONE for W03.T04 review repair. Fresh remote fetch/read-back succeeded; later tasks remain gated by the schedule above and their named owner/currentness inputs.
+KNOWN_BLOCKERS: NONE for W03.T04 review repair follow-up. Fresh remote fetch/read-back succeeded; later tasks remain gated by the schedule above and their named owner/currentness inputs.
 UNPUBLISHED_WORK: NONE before this cursor-update commit.
