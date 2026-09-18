@@ -13,12 +13,16 @@ sys.path.insert(0, str(ROOT / "GAME" / "TOOLS"))
 
 from temporal import (
     TemporalContractError,
+    TemporalNativeEnumeration,
     TemporalRoute,
     derive_temporal_dependency_keys,
     derive_temporal_route_entry,
+    enumerate_temporal_native_owners,
     evaluate_temporal_binding,
     materialize_due_occurrence,
     rebuild_temporal_agenda,
+    rebuild_temporal_agenda_from_route,
+    reconcile_temporal_route_membership,
     validate_temporal_route_completeness,
     validate_chronology_relation_evidence,
     validate_current_state_replacement,
@@ -40,6 +44,18 @@ ARMED_ROOT = {
     "binding": METRIC_BINDING,
     "dependency_keys": ["METRIC_POSITION:scene:market"],
 }
+
+LIVE_SOURCE_KEY = ("campaign-frostfall", "scene-market", "epoch-1")
+
+
+def _native_enumeration(*, scope: str, revision: str, source_key=None) -> TemporalNativeEnumeration:
+    return enumerate_temporal_native_owners(
+        (ARMED_ROOT,),
+        campaign_id="campaign-frostfall",
+        source_scope=scope,
+        source_revision=revision,
+        source_key=source_key,
+    )
 
 
 def schema_registry() -> Registry:
@@ -221,16 +237,35 @@ class TemporalRoutingCompletenessTests(unittest.TestCase):
             entries=(entry,),
         )
 
-        validate_temporal_route_completeness(
-            route,
-            ("world.thread:THREAD_market_siege",),
-        )
+        native_enumeration = _native_enumeration(scope="CAMPAIGN", revision="0" * 40)
+        validate_temporal_route_completeness(route, native_enumeration)
         with self.assertRaisesRegex(TemporalContractError, "incomplete|omission|native owner"):
-            validate_temporal_route_completeness(route, ())
+            validate_temporal_route_completeness(
+                route,
+                enumerate_temporal_native_owners(
+                    (),
+                    campaign_id="campaign-frostfall",
+                    source_scope="CAMPAIGN",
+                    source_revision="0" * 40,
+                ),
+            )
         with self.assertRaisesRegex(TemporalContractError, "extra|native owner"):
             validate_temporal_route_completeness(
                 route,
-                ("world.thread:THREAD_market_siege", "world.thread:THREAD_other"),
+                TemporalNativeEnumeration(
+                    campaign_id="campaign-frostfall",
+                    source_scope="CAMPAIGN",
+                    source_revision="0" * 40,
+                    entries=(
+                        native_enumeration.entries[0],
+                        derive_temporal_route_entry(
+                            dict(ARMED_ROOT, root_ref="world.thread:THREAD_other"),
+                            campaign_id="campaign-frostfall",
+                            source_scope="CAMPAIGN",
+                            source_revision="0" * 40,
+                        ),
+                    ),
+                ),
             )
 
     def test_route_completeness_rejects_cross_campaign_owner_set(self):
@@ -249,10 +284,95 @@ class TemporalRoutingCompletenessTests(unittest.TestCase):
             )
 
 
-@unittest.skip("Recovery assertions are owned by W02.T06.")
 class TemporalExecutionRecoveryTests(unittest.TestCase):
-    def test_recovery_handoff_is_deferred_to_its_owner(self):
-        self.fail("W02.T06 owns recovery behavior")
+    def test_interrupted_temporal_recovery_retries_both_directions_from_native_enumeration(self):
+        campaign_revision = "0" * 40
+        live_revision = "1" * 40
+        recovered_campaign_revision = "2" * 40
+        campaign_route = TemporalRoute(
+            campaign_id="campaign-frostfall",
+            source_scope="CAMPAIGN",
+            source_revision=campaign_revision,
+            entries=(
+                derive_temporal_route_entry(
+                    ARMED_ROOT,
+                    campaign_id="campaign-frostfall",
+                    source_scope="CAMPAIGN",
+                    source_revision=campaign_revision,
+                ),
+            ),
+        )
+        campaign_enumeration = _native_enumeration(
+            scope="CAMPAIGN", revision=campaign_revision
+        )
+        live_route = reconcile_temporal_route_membership(
+            campaign_route,
+            expected_source_scope="CAMPAIGN",
+            expected_source_revision=campaign_revision,
+            target_source_scope="LIVE",
+            target_source_revision=live_revision,
+            target_source_key=LIVE_SOURCE_KEY,
+            native_enumeration=campaign_enumeration,
+        )
+        live_enumeration = _native_enumeration(
+            scope="LIVE", revision=live_revision, source_key=LIVE_SOURCE_KEY
+        )
+        live_retry = reconcile_temporal_route_membership(
+            live_route,
+            expected_source_scope="LIVE",
+            expected_source_revision=live_revision,
+            expected_source_key=LIVE_SOURCE_KEY,
+            target_source_scope="LIVE",
+            target_source_revision=live_revision,
+            target_source_key=LIVE_SOURCE_KEY,
+            native_enumeration=live_enumeration,
+        )
+        campaign_return = reconcile_temporal_route_membership(
+            live_route,
+            expected_source_scope="LIVE",
+            expected_source_revision=live_revision,
+            expected_source_key=LIVE_SOURCE_KEY,
+            target_source_scope="CAMPAIGN",
+            target_source_revision=recovered_campaign_revision,
+            native_enumeration=live_enumeration,
+        )
+        recovered_enumeration = _native_enumeration(
+            scope="CAMPAIGN", revision=recovered_campaign_revision
+        )
+        campaign_retry = reconcile_temporal_route_membership(
+            campaign_return,
+            expected_source_scope="CAMPAIGN",
+            expected_source_revision=recovered_campaign_revision,
+            target_source_scope="CAMPAIGN",
+            target_source_revision=recovered_campaign_revision,
+            native_enumeration=recovered_enumeration,
+        )
+
+        self.assertEqual(live_retry, live_route)
+        self.assertEqual(campaign_retry, campaign_return)
+        self.assertEqual(
+            rebuild_temporal_agenda_from_route(campaign_retry),
+            rebuild_temporal_agenda_from_route(campaign_route),
+        )
+
+    def test_temporal_route_completeness_rejects_caller_root_reference_lists(self):
+        entry = derive_temporal_route_entry(
+            ARMED_ROOT,
+            campaign_id="campaign-frostfall",
+            source_scope="CAMPAIGN",
+            source_revision="0" * 40,
+        )
+        route = TemporalRoute(
+            campaign_id="campaign-frostfall",
+            source_scope="CAMPAIGN",
+            source_revision="0" * 40,
+            entries=(entry,),
+        )
+
+        with self.assertRaises(TemporalContractError):
+            validate_temporal_route_completeness(
+                route, ("world.thread:THREAD_market_siege",)  # type: ignore[arg-type]
+            )
 
 
 class ChronologyBridgeTests(unittest.TestCase):

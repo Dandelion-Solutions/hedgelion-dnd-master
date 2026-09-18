@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import ast
 from copy import deepcopy
 from dataclasses import replace
 import hashlib
@@ -10,7 +11,7 @@ import json
 from pathlib import Path
 import unittest
 
-from jsonschema import Draft202012Validator, RefResolver
+from jsonschema import Draft202012Validator, RefResolver, ValidationError
 
 from GAME.TOOLS.access_control import (
     AccessControlContractError,
@@ -86,6 +87,7 @@ from GAME.TOOLS.recovery_roots import (
     OperationalRoot,
     OperationalRootHandoff,
     OperationalRootPage,
+    OPERATIONAL_ROOT_HANDOFF_SCHEMA_VERSION,
     derive_operational_root_delta,
     enumerate_operational_root_page,
     handoff_operational_roots_to_live,
@@ -93,6 +95,7 @@ from GAME.TOOLS.recovery_roots import (
 )
 from GAME.TOOLS.temporal import (
     derive_temporal_route_entry,
+    enumerate_temporal_native_owners,
     rebuild_temporal_agenda_from_route,
     reconcile_temporal_route_membership,
 )
@@ -647,7 +650,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.11")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.12")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
@@ -2369,6 +2372,18 @@ def _temporal_route(entry: object, *, scope: str, revision: str, source_key: obj
     }
 
 
+def _temporal_native_enumeration(
+    root: dict[str, object], *, scope: str, revision: str, source_key: object = None
+):
+    return enumerate_temporal_native_owners(
+        (root,),
+        campaign_id="campaign-frostfall",
+        source_scope=scope,
+        source_revision=revision,
+        source_key=source_key,
+    )
+
+
 class LiveTemporalRoutingHandoffTests(unittest.TestCase):
     def test_closed_unabsorbed_cannot_return_to_campaign_from_caller_ack(self) -> None:
         root = _temporal_root()
@@ -2400,7 +2415,12 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
                 live_route=_live_route(closed_unabsorbed),
                 campaign_revision=LIVE_H2,
                 absorption_evidence=True,
-                expected_root_refs=("world.thread:THREAD_market_siege",),
+                native_enumeration=_temporal_native_enumeration(
+                    root,
+                    scope="LIVE",
+                    revision=LIVE_H1,
+                    source_key=closed_unabsorbed.source_key,
+                ),
             )
 
     def test_temporal_campaign_return_requires_owner_issued_accepted_absorption(self) -> None:
@@ -2456,7 +2476,12 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
             live_route=route,
             campaign_revision=LIVE_H2,
             absorption_evidence=publication,
-            expected_root_refs=("world.thread:THREAD_market_siege",),
+            native_enumeration=_temporal_native_enumeration(
+                _temporal_root(),
+                scope="LIVE",
+                revision=LIVE_H1,
+                source_key=closed.source_key,
+            ),
         )
 
         self.assertEqual(returned.source_scope, "CAMPAIGN")
@@ -2478,7 +2503,12 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
                 campaign_revision=LIVE_H0,
                 live_source=active,
                 live_route=_live_route(active),
-                expected_root_refs=(),
+                native_enumeration=enumerate_temporal_native_owners(
+                    (),
+                    campaign_id="campaign-frostfall",
+                    source_scope="CAMPAIGN",
+                    source_revision=LIVE_H0,
+                ),
             )
 
     def test_campaign_to_live_and_live_to_campaign_preserve_temporal_identity(self) -> None:
@@ -2497,14 +2527,23 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
             campaign_revision=LIVE_H0,
             live_source=active,
             live_route=_live_route(active),
-            expected_root_refs=("world.thread:THREAD_market_siege",),
+            native_enumeration=_temporal_native_enumeration(
+                root,
+                scope="CAMPAIGN",
+                revision=LIVE_H0,
+            ),
         )
         live_retry = handoff_temporal_route_to_live(
             live_route,
             campaign_revision=LIVE_H0,
             live_source=active,
             live_route=_live_route(active),
-            expected_root_refs=("world.thread:THREAD_market_siege",),
+            native_enumeration=_temporal_native_enumeration(
+                root,
+                scope="LIVE",
+                revision=LIVE_H0,
+                source_key=active.source_key,
+            ),
         )
         self.assertEqual(live_retry, live_route)
         closed = mark_closed_unabsorbed(
@@ -2523,6 +2562,12 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
             target_source_scope="LIVE",
             target_source_revision=LIVE_H1,
             target_source_key=closed.source_key,
+            native_enumeration=_temporal_native_enumeration(
+                root,
+                scope="LIVE",
+                revision=LIVE_H0,
+                source_key=active.source_key,
+            ),
         )
         packed = _opening_seed(
             prepare_live_opening(
@@ -2561,7 +2606,12 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
             live_route=_live_route(closed),
             campaign_revision=LIVE_H2,
             absorption_evidence=absorption_publication,
-            expected_root_refs=("world.thread:THREAD_market_siege",),
+            native_enumeration=_temporal_native_enumeration(
+                root,
+                scope="LIVE",
+                revision=LIVE_H1,
+                source_key=closed.source_key,
+            ),
         )
         campaign_retry = handoff_temporal_route_to_campaign(
             campaign_again,
@@ -2569,7 +2619,11 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
             live_route=_live_route(closed),
             campaign_revision=LIVE_H2,
             absorption_evidence=absorption_publication,
-            expected_root_refs=("world.thread:THREAD_market_siege",),
+            native_enumeration=_temporal_native_enumeration(
+                root,
+                scope="CAMPAIGN",
+                revision=LIVE_H2,
+            ),
         )
         self.assertEqual(campaign_retry, campaign_again)
 
@@ -2599,7 +2653,11 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
                 campaign_revision=LIVE_H1,
                 live_source=active,
                 live_route=_live_route(active),
-                expected_root_refs=("world.thread:THREAD_market_siege",),
+                native_enumeration=_temporal_native_enumeration(
+                    _temporal_root(),
+                    scope="CAMPAIGN",
+                    revision=LIVE_H0,
+                ),
             )
 
         foreign_entry = derive_temporal_route_entry(
@@ -2616,6 +2674,11 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
                 target_source_scope="LIVE",
                 target_source_revision=LIVE_H1,
                 target_source_key=active.source_key,
+                native_enumeration=_temporal_native_enumeration(
+                    _temporal_root(),
+                    scope="CAMPAIGN",
+                    revision=LIVE_H0,
+                ),
             )
 
     def test_interrupted_handoff_retries_from_exact_live_route_and_rebuilds_agenda(self) -> None:
@@ -2632,6 +2695,11 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
             target_source_scope="LIVE",
             target_source_revision=LIVE_H1,
             target_source_key=_live_source(revision=LIVE_H1).source_key,
+            native_enumeration=_temporal_native_enumeration(
+                _temporal_root(),
+                scope="CAMPAIGN",
+                revision=LIVE_H0,
+            ),
         )
         retry = reconcile_temporal_route_membership(
             live,
@@ -2641,6 +2709,12 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
             target_source_scope="LIVE",
             target_source_revision=LIVE_H1,
             target_source_key=live.source_key,
+            native_enumeration=_temporal_native_enumeration(
+                _temporal_root(),
+                scope="LIVE",
+                revision=LIVE_H1,
+                source_key=live.source_key,
+            ),
         )
 
         self.assertEqual(retry, live)
@@ -2671,6 +2745,12 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
                 target_source_scope="CAMPAIGN",
                 target_source_revision=LIVE_H2,
                 terminal_root_refs=("world.thread:THREAD_market_siege",),
+                native_enumeration=_temporal_native_enumeration(
+                    _temporal_root(),
+                    scope="LIVE",
+                    revision=LIVE_H1,
+                    source_key=armed_route["source_key"],
+                ),
             )
 
         closed_root = dict(_temporal_root(), occurrence_state="CLOSED")
@@ -2698,6 +2778,12 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
                 target_source_revision=LIVE_H2,
                 terminal_root_refs=("world.thread:THREAD_market_siege",),
                 terminal_owner_entries=(forged_entry,),
+                native_enumeration=_temporal_native_enumeration(
+                    closed_root,
+                    scope="LIVE",
+                    revision=LIVE_H1,
+                    source_key=route["source_key"],
+                ),
             )
         terminal = reconcile_temporal_route_membership(
             route,
@@ -2708,6 +2794,12 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
             target_source_revision=LIVE_H2,
             terminal_root_refs=("world.thread:THREAD_market_siege",),
             terminal_owner_entries=(entry,),
+            native_enumeration=_temporal_native_enumeration(
+                closed_root,
+                scope="LIVE",
+                revision=LIVE_H1,
+                source_key=route["source_key"],
+            ),
         )
 
         self.assertEqual(terminal.entries, ())
@@ -2743,6 +2835,51 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
         del invalid["kind"]
         with self.assertRaisesRegex(ValueError, "fields|unsupported"):
             OperationalRootHandoff.from_mapping(invalid)
+
+    def test_operational_root_handoff_schema_matches_runtime_scope_and_source_key_grammar(self) -> None:
+        source = _live_source(revision=LIVE_H1)
+        handoff = handoff_operational_roots_to_live(
+            self._page(),
+            campaign_id="campaign-frostfall",
+            campaign_revision=LIVE_H0,
+            live_source_key=source.source_key,
+            live_source_revision=source.source_revision,
+        )
+        mapping = handoff.to_dict()
+        schema = json.loads(
+            (ROOT / "DEV/SCHEMAS/operational-root-handoff.schema.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(OPERATIONAL_ROOT_HANDOFF_SCHEMA_VERSION, 2)
+        self.assertEqual(schema["properties"]["schema_version"]["const"], 2)
+        validator = Draft202012Validator(schema)
+
+        for invalid in (
+            mapping | {"source_scope": "CAMPAIGN"},
+            mapping | {"source_scope": "LIVE", "source_key": None},
+            mapping | {"source_revision": "not a source revision"},
+        ):
+            with self.assertRaises(ValidationError):
+                validator.validate(invalid)
+
+        with self.assertRaisesRegex(ValueError, "source key"):
+            OperationalRootHandoff(
+                campaign_id="campaign-frostfall",
+                source_scope="CAMPAIGN",
+                source_revision=LIVE_H0,
+                source_key=source.source_key,
+                roots=handoff.roots,
+            )
+
+    def test_recovery_roots_does_not_depend_directly_on_live_state(self) -> None:
+        tree = ast.parse(
+            (ROOT / "GAME/TOOLS/recovery_roots.py").read_text(encoding="utf-8")
+        )
+        direct_live_imports = [
+            node
+            for node in tree.body
+            if isinstance(node, ast.ImportFrom) and node.level == 1 and node.module == "live_state"
+        ]
+        self.assertEqual(direct_live_imports, [])
 
     def test_campaign_to_live_and_live_to_campaign_preserve_root_identity(self) -> None:
         source = _live_source(revision=LIVE_H1)
@@ -2963,6 +3100,49 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
         )
 
         self.assertEqual(terminal.roots, ())
+
+    def test_superseded_root_rejects_owner_issued_noop_or_enrollment_delta(self) -> None:
+        source = _live_source(revision=LIVE_H1)
+        live_page = handoff_operational_roots_to_live(
+            self._page(),
+            campaign_id="campaign-frostfall",
+            campaign_revision=LIVE_H0,
+            live_source_key=source.source_key,
+            live_source_revision=source.source_revision,
+        )
+        root_key = live_page.roots[0].key
+        active_owner = {
+            "kind": "runtime.command",
+            "command_id": "command-000001",
+            "disposition": "command.accepted",
+            "pending_child_invocations": [{"firing_key": "event-1:binding-1"}],
+        }
+        noop_delta = derive_operational_root_delta(
+            "campaign-frostfall",
+            "runtime.command",
+            active_owner,
+            existing_roots=(live_page.roots[0],),
+        )
+        enrollment_delta = derive_operational_root_delta(
+            "campaign-frostfall",
+            "runtime.command",
+            active_owner,
+        )
+        self.assertEqual(noop_delta.action, "NOOP")
+        self.assertEqual(enrollment_delta.action, "ENROLL")
+
+        for delta in (noop_delta, enrollment_delta):
+            with self.assertRaisesRegex(ValueError, "removal|replacement|delta"):
+                recover_operational_roots_to_campaign(
+                    live_page,
+                    campaign_id="campaign-frostfall",
+                    live_source_key=source.source_key,
+                    live_source_revision=source.source_revision,
+                    campaign_revision=LIVE_H2,
+                    absorption_evidence=_accepted_absorption_publication(source),
+                    superseded_owner_keys=(root_key,),
+                    superseded_native_deltas={root_key: delta},
+                )
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 schema_name: operational_root_handoff
-schema_version: 1
+schema_version: 2
 kind: runtime.operational_root_handoff
 ephemeral: true
 required:
@@ -15,7 +15,7 @@ required:
   - ephemeral
 fields:
   source_scope: enum[CAMPAIGN, LIVE]
-  source_revision: string
+  source_revision: exact-source-revision
   source_key: null | array[string, string, string]
   source_lifecycle: enum[ACTIVE, CLOSED, CLOSED_UNABSORBED, ABSORBED]
   complete: true
@@ -31,4 +31,6 @@ fields:
 invariants:
   - this carrier is ephemeral handoff evidence, not a persistent operational-root page
   - source lifecycle is not authority; accepted owner-issued absorption evidence is required for campaign recovery
+  - CAMPAIGN source_scope requires source_key null; LIVE source_scope requires exactly three non-empty source-key strings whose first component is campaign_id
+  - source_revision matches 40/64 lowercase hexadecimal characters or the admitted machine-ID grammar
   - every root route is derived from exact native owner kind and identity

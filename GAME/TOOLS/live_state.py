@@ -22,9 +22,14 @@ from types import MappingProxyType
 from typing import Final, TypeAlias
 import weakref
 
+from .handoff_evidence import (
+    mark_accepted_absorption_evidence,
+    validate_accepted_absorption_evidence as validate_owner_issued_absorption_evidence,
+)
 
-# framework_module_version: 1.0.11
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.11"
+
+# framework_module_version: 1.0.12
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.12"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -1206,7 +1211,7 @@ def handoff_temporal_route_to_live(
     campaign_revision: str,
     live_source: LiveEnvelope,
     live_route: LiveRouting,
-    expected_root_refs: Sequence[str],
+    native_enumeration: object,
 ) -> object:
     """Move temporal routing into the exact selected ACTIVE LIVE source."""
 
@@ -1230,7 +1235,7 @@ def handoff_temporal_route_to_live(
         target_source_revision=live_source.source_revision,
         target_source_key=live_source.source_key,
         campaign_id=live_source.campaign_id,
-        expected_root_refs=expected_root_refs,
+        native_enumeration=native_enumeration,
     )
 
 
@@ -1241,7 +1246,7 @@ def handoff_temporal_route_to_campaign(
     live_route: LiveRouting,
     campaign_revision: str,
     absorption_evidence: object,
-    expected_root_refs: Sequence[str],
+    native_enumeration: object,
 ) -> object:
     """Return temporal routing only after exact closed-LIVE absorption proof."""
 
@@ -1279,7 +1284,7 @@ def handoff_temporal_route_to_campaign(
         target_source_scope="CAMPAIGN",
         target_source_revision=_revision(campaign_revision, "campaign_revision"),
         campaign_id=live_source.campaign_id,
-        expected_root_refs=expected_root_refs,
+        native_enumeration=native_enumeration,
     )
 
 
@@ -2568,6 +2573,14 @@ def validate_accepted_absorption_evidence(
         raise LiveContractError("accepted absorption requires typed owner-issued CAS evidence")
     if not evidence.acknowledged or not _is_owner_issued_absorption_result(evidence):
         raise LiveContractError("accepted absorption requires owner-issued accepted CAS evidence")
+    try:
+        validate_owner_issued_absorption_evidence(
+            evidence,
+            source_key=source_key,
+            source_revision=source_revision,
+        )
+    except ValueError as exc:
+        raise LiveContractError("accepted absorption requires owner-neutral proof binding") from exc
     attempt = evidence.attempt
     if not isinstance(attempt, FrozenCampaignAbsorption):
         raise LiveContractError("accepted absorption evidence lacks its frozen CAS attempt")
@@ -2665,7 +2678,7 @@ def classify_campaign_absorption(
             False,
             attempt=attempt,
         ))
-    return _mark_owner_issued_absorption_result(LiveAbsorptionPublication(
+    result = _mark_owner_issued_absorption_result(LiveAbsorptionPublication(
         LiveAbsorptionStatus.ACCEPTED,
         attempt.source_key,
         attempt.source_revision,
@@ -2674,6 +2687,12 @@ def classify_campaign_absorption(
         successor_route=attempt.successor_route,
         attempt=attempt,
     ))
+    mark_accepted_absorption_evidence(
+        result,
+        source_key=result.source_key,
+        source_revision=result.source_revision,
+    )
+    return result
 
 
 @dataclass(frozen=True, slots=True)

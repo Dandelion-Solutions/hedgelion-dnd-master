@@ -17,11 +17,14 @@
     "ephemeral"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "kind": {"const": "runtime.operational_root_handoff"},
     "campaign_id": {"type": "string", "minLength": 1},
     "source_scope": {"enum": ["CAMPAIGN", "LIVE"]},
-    "source_revision": {"type": "string", "minLength": 1},
+    "source_revision": {
+      "type": "string",
+      "pattern": "^(?:[a-f0-9]{40}(?:[a-f0-9]{24})?|[A-Za-z][A-Za-z0-9_.:-]*)$"
+    },
     "source_key": {
       "anyOf": [
         {"type": "null"},
@@ -44,6 +47,33 @@
       "items": {"$ref": "#/$defs/root"}
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "required": ["source_scope"],
+        "properties": {"source_scope": {"const": "CAMPAIGN"}}
+      },
+      "then": {
+        "properties": {"source_key": {"type": "null"}}
+      }
+    },
+    {
+      "if": {
+        "required": ["source_scope"],
+        "properties": {"source_scope": {"const": "LIVE"}}
+      },
+      "then": {
+        "properties": {
+          "source_key": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
     "root": {
       "type": "object",

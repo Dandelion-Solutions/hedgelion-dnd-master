@@ -15,14 +15,14 @@ import re
 from typing import Final, Protocol
 import weakref
 
-from .live_state import validate_accepted_absorption_evidence
+from .handoff_evidence import validate_accepted_absorption_evidence
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.8
-FRAMEWORK_MODULE_VERSION: Final = "1.0.8"
+# framework_module_version: 1.0.9
+FRAMEWORK_MODULE_VERSION: Final = "1.0.9"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
-OPERATIONAL_ROOT_HANDOFF_SCHEMA_VERSION: Final = 1
+OPERATIONAL_ROOT_HANDOFF_SCHEMA_VERSION: Final = 2
 _OWNER_KINDS: Final = frozenset(
     {
         "runtime.command",
@@ -596,6 +596,10 @@ def _validate_superseded_roots(
             raise OperationalRootError("superseded roots require owner-issued replacement proof")
         if proof.campaign_id != handoff.campaign_id or proof.root != root_map[key]:
             raise OperationalRootError("superseded root proof is not bound to the exact root")
+        if proof.action != "REMOVE":
+            raise OperationalRootError(
+                "superseded roots require an owner-issued removal/replacement delta"
+            )
 
 
 def handoff_operational_roots_to_live(

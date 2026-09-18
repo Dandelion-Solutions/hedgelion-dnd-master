@@ -8,13 +8,14 @@ an accepted execution consequence.
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
 import weakref
 
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION = "1.0.3"
 
 
 _DISPOSITIONS = frozenset({"NOT_DUE", "DUE", "INDETERMINATE"})
@@ -121,6 +122,107 @@ def _mark_owner_issued_temporal_entry(entry: TemporalRouteEntry) -> TemporalRout
 def _is_owner_issued_temporal_entry(entry: TemporalRouteEntry) -> bool:
     reference = _OWNER_ISSUED_TEMPORAL_ENTRIES.get(id(entry))
     return reference is not None and reference() is entry
+
+
+@dataclass(frozen=True, slots=True)
+class TemporalNativeEnumeration:
+    """Complete owner-issued temporal evidence for one exact source.
+
+    This is the native-owner side of a temporal handoff.  A caller cannot
+    replace it with a list of root references: every entry is owner-issued and
+    is pinned to the same campaign, source scope, source revision and (for
+    LIVE) source key.
+    """
+
+    campaign_id: str
+    source_scope: str
+    source_revision: str
+    entries: tuple[TemporalRouteEntry, ...]
+    source_key: tuple[str, str, str] | None = None
+    complete: bool = True
+
+    def __post_init__(self) -> None:
+        campaign_id = _require_string(self.campaign_id, "native enumeration campaign_id")
+        scope = _route_scope(self.source_scope)
+        revision = _route_revision(self.source_revision)
+        if self.complete is not True:
+            raise TemporalContractError("native temporal enumeration must be complete")
+        source_key = _route_source_key(self.source_key, campaign_id, scope)
+        entries = tuple(self.entries)
+        if any(
+            not isinstance(entry, TemporalRouteEntry)
+            or not _is_owner_issued_temporal_entry(entry)
+            for entry in entries
+        ):
+            raise TemporalContractError(
+                "native temporal enumeration requires owner-issued typed entries"
+            )
+        identities: set[tuple[str, str]] = set()
+        for entry in entries:
+            if (
+                entry.campaign_id != campaign_id
+                or entry.source_scope != scope
+                or entry.source_revision != revision
+                or entry.source_key != source_key
+            ):
+                raise TemporalContractError(
+                    "native temporal enumeration entry differs from its exact source"
+                )
+            identity = (entry.root_ref, entry.occurrence_id)
+            if identity in identities:
+                raise TemporalContractError(
+                    "native temporal enumeration contains duplicate occurrence"
+                )
+            identities.add(identity)
+        object.__setattr__(self, "campaign_id", campaign_id)
+        object.__setattr__(self, "source_scope", scope)
+        object.__setattr__(self, "source_revision", revision)
+        object.__setattr__(self, "source_key", source_key)
+        object.__setattr__(self, "entries", tuple(sorted(entries, key=lambda item: (item.root_ref, item.occurrence_id))))
+
+
+def enumerate_temporal_native_owners(
+    native_owners: Iterable[Mapping[str, Any]] | None,
+    *,
+    campaign_id: str,
+    source_scope: str,
+    source_revision: str,
+    source_key: Sequence[str] | None = None,
+    complete: bool = True,
+) -> TemporalNativeEnumeration:
+    """Enumerate a complete native temporal-owner set without broad discovery."""
+
+    if native_owners is None or callable(native_owners):
+        raise TemporalContractError(
+            "native temporal enumeration requires explicit native owners"
+        )
+    if isinstance(native_owners, (str, bytes, Mapping)):
+        raise TemporalContractError(
+            "native temporal owners must be an explicit iterable"
+        )
+    if complete is not True:
+        raise TemporalContractError("native temporal enumeration must be complete")
+    checked_campaign = _require_string(campaign_id, "campaign_id")
+    scope = _route_scope(source_scope)
+    revision = _route_revision(source_revision)
+    entries = tuple(
+        derive_temporal_route_entry(
+            owner,
+            campaign_id=checked_campaign,
+            source_scope=scope,
+            source_revision=revision,
+            source_key=source_key,
+        )
+        for owner in native_owners
+    )
+    return TemporalNativeEnumeration(
+        campaign_id=checked_campaign,
+        source_scope=scope,
+        source_revision=revision,
+        source_key=source_key,
+        entries=entries,
+        complete=True,
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -609,23 +711,36 @@ def _coerce_temporal_route(value: TemporalRoute | Mapping[str, Any]) -> Temporal
 
 def validate_temporal_route_completeness(
     route: TemporalRoute | Mapping[str, Any],
-    expected_root_refs: Sequence[str],
+    native_enumeration: TemporalNativeEnumeration,
 ) -> None:
-    """Require route membership to equal one explicit native-owner set."""
+    """Require route membership to equal one exact native-owner enumeration."""
 
     resolved = _coerce_temporal_route(route)
-    if isinstance(expected_root_refs, (str, bytes)):
-        raise TemporalContractError("expected temporal root refs must be an explicit sequence")
-    expected = tuple(_require_string(value, "expected temporal root_ref") for value in expected_root_refs)
-    if len(expected) != len(set(expected)):
-        raise TemporalContractError("expected temporal root refs must be unique")
-    actual = tuple(entry.root_ref for entry in resolved.entries)
+    if not isinstance(native_enumeration, TemporalNativeEnumeration):
+        raise TemporalContractError(
+            "temporal route completeness requires typed native enumeration"
+        )
+    if (
+        resolved.campaign_id != native_enumeration.campaign_id
+        or resolved.source_scope != native_enumeration.source_scope
+        or resolved.source_revision != native_enumeration.source_revision
+        or resolved.source_key != native_enumeration.source_key
+    ):
+        raise TemporalContractError(
+            "temporal route and native enumeration differ in exact source"
+        )
+    expected = {(entry.root_ref, entry.occurrence_id): entry for entry in native_enumeration.entries}
+    actual = {(entry.root_ref, entry.occurrence_id): entry for entry in resolved.entries}
     if set(actual) != set(expected) or len(actual) != len(expected):
         missing = set(expected).difference(actual)
         extra = set(actual).difference(expected)
         raise TemporalContractError(
             "temporal route body is incomplete or contains an extra native owner: "
             f"missing={sorted(missing)!r}, extra={sorted(extra)!r}"
+        )
+    if any(actual[identity] != entry for identity, entry in expected.items()):
+        raise TemporalContractError(
+            "temporal route body differs from the exact native owner enumeration"
         )
 
 
@@ -659,7 +774,7 @@ def reconcile_temporal_route_membership(
     campaign_id: str | None = None,
     terminal_root_refs: Sequence[str] = (),
     superseded_root_refs: Sequence[str] = (),
-    expected_root_refs: Sequence[str] | None = None,
+    native_enumeration: TemporalNativeEnumeration,
     terminal_owner_entries: Sequence[TemporalRouteEntry] = (),
     superseded_owner_entries: Sequence[TemporalRouteEntry] = (),
 ) -> TemporalRoute:
@@ -674,8 +789,7 @@ def reconcile_temporal_route_membership(
     current = _coerce_temporal_route(route)
     if campaign_id is not None and current.campaign_id != _require_string(campaign_id, "campaign_id"):
         raise TemporalContractError("temporal route belongs to another campaign")
-    if expected_root_refs is not None:
-        validate_temporal_route_completeness(current, expected_root_refs)
+    validate_temporal_route_completeness(current, native_enumeration)
     expected_scope = _route_scope(expected_source_scope)
     target_scope = _route_scope(target_source_scope)
     expected_revision = _route_revision(expected_source_revision)
