@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "kind", "campaign_id", "complete", "entries"],
   "properties": {
-    "schema_version": {"const": 2},
+    "schema_version": {"const": 3},
     "kind": {"const": "runtime.live_routing"},
     "campaign_id": {"type": ["string", "null"], "minLength": 1},
     "complete": {"const": true},
@@ -21,15 +21,23 @@
           "epoch_id",
           "source_ref",
           "source_revision",
+          "opening_campaign_revision",
           "status",
           "claims"
         ],
         "properties": {
-          "campaign_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
-          "scene_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
-          "epoch_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
-          "source_ref": {"type": "string", "minLength": 1},
+          "campaign_id": {"type": "string", "minLength": 1},
+          "scene_id": {"type": "string", "minLength": 1},
+          "epoch_id": {"type": "string", "pattern": "^e1-[0-9a-f]{64}$"},
+          "source_ref": {
+            "type": "string",
+            "pattern": "^live/c1-[0-9a-f]{64}/s1-[0-9a-f]{64}/e1-[0-9a-f]{64}/LIVE/LIVE_STATE\\.yaml$"
+          },
           "source_revision": {
+            "type": "string",
+            "pattern": "^(?:[a-f0-9]{40}(?:[a-f0-9]{24})?|[A-Za-z][A-Za-z0-9_.:-]*)$"
+          },
+          "opening_campaign_revision": {
             "type": "string",
             "pattern": "^(?:[a-f0-9]{40}(?:[a-f0-9]{24})?|[A-Za-z][A-Za-z0-9_.:-]*)$"
           },

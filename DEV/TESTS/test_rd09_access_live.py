@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 import unittest
@@ -28,16 +29,22 @@ from GAME.TOOLS.live_state import (
     LiveEnvelope,
     LiveLifecycle,
     LivePublicationStatus,
+    LiveRouting,
     LIVE_CLAIM_SCHEMA_VERSION,
     LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION,
     LIVE_ROUTING_SCHEMA_VERSION,
     build_live_route,
+    build_live_ref,
     classify_cas_result,
     close_live_source,
+    derive_live_epoch_id,
+    encode_live_campaign_route_token,
+    encode_live_scene_route_token,
     freeze_live_attempt,
     lookup_write_authority,
     reconcile_indeterminate,
     select_live_source,
+    validate_live_route_identity,
     validate_exact_source,
 )
 
@@ -58,15 +65,21 @@ def _live_source(
     status: LiveLifecycle = LiveLifecycle.ACTIVE,
     claims: tuple[LiveClaim, ...] | None = None,
 ) -> LiveEnvelope:
+    selected_claims = claims if claims is not None else (
+        LiveClaim.exact_owner("world.actor", "actor-1"),
+    )
+    opening_revision = LIVE_H0
+    epoch_id = derive_live_epoch_id(
+        "campaign-frostfall", "scene-market", opening_revision, selected_claims
+    )
     return LiveEnvelope(
         campaign_id="campaign-frostfall",
         scene_id="scene-market",
-        epoch_id="epoch-1",
-        source_ref="live/campaign-frostfall/scene-market/epoch-1",
+        epoch_id=epoch_id,
+        opening_campaign_revision=opening_revision,
+        source_ref=build_live_ref("campaign-frostfall", "scene-market", epoch_id),
         source_revision=revision,
-        claims=claims
-        if claims is not None
-        else (LiveClaim.exact_owner("world.actor", "actor-1"),),
+        claims=selected_claims,
         status=status,
     )
 
@@ -465,7 +478,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
         )
         self.assertFalse(list(publication_validator.iter_errors(publication.as_mapping())))
         self.assertIn("kind: runtime.live_routing", LIVE_ROUTE_TEMPLATE.read_text(encoding="utf-8"))
-        self.assertIn("schema_version: 2", LIVE_ROUTE_TEMPLATE.read_text(encoding="utf-8"))
+        self.assertIn("schema_version: 3", LIVE_ROUTE_TEMPLATE.read_text(encoding="utf-8"))
         self.assertIn("entries: []", LIVE_ROUTE_TEMPLATE.read_text(encoding="utf-8"))
 
     def test_live_source_key_is_exact_campaign_scene_epoch_tuple(self) -> None:
@@ -473,7 +486,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
 
         self.assertEqual(
             source.source_key,
-            ("campaign-frostfall", "scene-market", "epoch-1"),
+            ("campaign-frostfall", "scene-market", source.epoch_id),
         )
         self.assertEqual(source.claims[0].as_mapping(), {
             "schema_version": 2,
@@ -546,13 +559,13 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.3")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.4")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
-        self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 2)
-        self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 3)
+        self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 3)
+        self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 4)
         self.assertEqual(claim_schema["properties"]["schema_version"]["const"], 2)
-        self.assertEqual(route_schema["properties"]["schema_version"]["const"], 2)
-        self.assertEqual(publication_schema["properties"]["schema_version"]["const"], 3)
+        self.assertEqual(route_schema["properties"]["schema_version"]["const"], 3)
+        self.assertEqual(publication_schema["properties"]["schema_version"]["const"], 4)
 
     def test_schema_and_python_reject_illegal_claim_companion_fields(self) -> None:
         schema = json.loads(
@@ -640,6 +653,7 @@ class LiveCurrentnessTests(unittest.TestCase):
             campaign_id=selected.campaign_id,
             scene_id=selected.scene_id,
             epoch_id=selected.epoch_id,
+            opening_campaign_revision=selected.opening_campaign_revision,
             source_ref="live/other-source",
             source_revision=selected.source_revision,
             claims=selected.claims,
@@ -648,6 +662,7 @@ class LiveCurrentnessTests(unittest.TestCase):
             campaign_id=selected.campaign_id,
             scene_id="scene-other",
             epoch_id=selected.epoch_id,
+            opening_campaign_revision=selected.opening_campaign_revision,
             source_ref=selected.source_ref,
             source_revision=selected.source_revision,
             claims=selected.claims,
@@ -865,6 +880,199 @@ class LiveLifecycleTests(unittest.TestCase):
         route = build_live_route("campaign-frostfall", (absorbed,))
 
         self.assertIsNone(select_live_source(route, absorbed.source_key))
+
+
+def _frame_string(value: str) -> bytes:
+    encoded = value.encode("utf-8")
+    return len(encoded).to_bytes(4, "big") + encoded
+
+
+def _reference_claim_frame(claim: LiveClaim) -> bytes:
+    if claim.claim_type != "EXACT_OWNER":
+        raise AssertionError("the T03 reference fixture intentionally uses exact-owner claims")
+    identity = (claim.native_identity or "").encode("utf-8")
+    return (
+        b"\x01"
+        + _frame_string(claim.native_family or "")
+        + len((identity,)).to_bytes(4, "big")
+        + len(identity).to_bytes(4, "big")
+        + identity
+    )
+
+
+def _reference_epoch_id(
+    campaign_id: str,
+    scene_id: str,
+    opening_campaign_revision: str,
+    claims: tuple[LiveClaim, ...],
+) -> str:
+    claim_frames = tuple(sorted(_reference_claim_frame(claim) for claim in claims))
+    frame = (
+        b"HDM-LIVE-EPOCH-ID-V1\x00"
+        + _frame_string(campaign_id)
+        + _frame_string(scene_id)
+        + _frame_string(opening_campaign_revision)
+        + len(claim_frames).to_bytes(4, "big")
+        + b"".join(len(frame).to_bytes(4, "big") + frame for frame in claim_frames)
+    )
+    return "e1-" + hashlib.sha256(frame).hexdigest()
+
+
+class LiveCampaignRouteIdentityTests(unittest.TestCase):
+    def test_campaign_route_token_uses_full_domain_separated_utf8_digest(self) -> None:
+        campaign_id = "Кампания/../α:live1:"
+        expected = "c1-" + hashlib.sha256(
+            b"HDM-LIVE-CAMPAIGN-ROUTE-V1\x00" + _frame_string(campaign_id)
+        ).hexdigest()
+
+        token = encode_live_campaign_route_token(campaign_id)
+
+        self.assertEqual(token, expected)
+        self.assertRegex(token, r"^c1-[0-9a-f]{64}$")
+        self.assertEqual(len(token.removeprefix("c1-")), 64)
+        self.assertNotIn("Кампания", token)
+        self.assertNotIn("/", token)
+
+    def test_delimiter_like_and_near_collision_campaign_ids_are_distinct_routes(self) -> None:
+        first = encode_live_campaign_route_token("campaign/a:b")
+        second = encode_live_campaign_route_token("campaign/a: b")
+        third = encode_live_campaign_route_token("campaign/a:b\x00")
+
+        self.assertEqual(len({first, second, third}), 3)
+
+    def test_physical_token_does_not_replace_semantic_campaign_identity(self) -> None:
+        campaign_id = "campaign/semantic"
+        token = encode_live_campaign_route_token(campaign_id)
+
+        self.assertNotEqual(token, campaign_id)
+        self.assertEqual(
+            build_live_ref(campaign_id, "scene/semantic", "e1-" + "a" * 64).split("/")[1],
+            token,
+        )
+
+
+class LiveEpochRouteIdentityTests(unittest.TestCase):
+    def test_epoch_id_matches_exact_full_basis_framing_and_is_order_insensitive(self) -> None:
+        claims = (
+            LiveClaim.exact_owner("world.actor", "actor-2"),
+            LiveClaim.exact_owner("world.actor", "actor-1"),
+        )
+        expected = _reference_epoch_id(
+            "campaign/α", "scene:live1:market", "f" * 40, claims
+        )
+
+        epoch_id = derive_live_epoch_id(
+            "campaign/α", "scene:live1:market", "f" * 40, claims
+        )
+        reordered = derive_live_epoch_id(
+            "campaign/α", "scene:live1:market", "f" * 40, tuple(reversed(claims))
+        )
+
+        self.assertEqual(epoch_id, expected)
+        self.assertEqual(epoch_id, reordered)
+        self.assertRegex(epoch_id, r"^e1-[0-9a-f]{64}$")
+
+    def test_epoch_id_changes_for_each_semantic_opening_basis_component(self) -> None:
+        claim = LiveClaim.exact_owner("world.actor", "actor-1")
+        base = derive_live_epoch_id("campaign-1", "scene-1", "a" * 40, (claim,))
+
+        self.assertNotEqual(
+            base, derive_live_epoch_id("campaign-2", "scene-1", "a" * 40, (claim,))
+        )
+        self.assertNotEqual(
+            base, derive_live_epoch_id("campaign-1", "scene-2", "a" * 40, (claim,))
+        )
+        self.assertNotEqual(
+            base, derive_live_epoch_id("campaign-1", "scene-1", "b" * 40, (claim,))
+        )
+        self.assertNotEqual(
+            base,
+            derive_live_epoch_id(
+                "campaign-1",
+                "scene-1",
+                "a" * 40,
+                (LiveClaim.exact_owner("world.actor", "actor-2"),),
+            ),
+        )
+
+    def test_duplicate_claim_frames_and_wrong_epoch_version_fail_closed(self) -> None:
+        claim = LiveClaim.exact_owner("world.actor", "actor-1")
+
+        with self.assertRaisesRegex(LiveContractError, "duplicate|claim"):
+            derive_live_epoch_id("campaign-1", "scene-1", "a" * 40, (claim, claim))
+        with self.assertRaisesRegex(LiveContractError, "epoch|version|e1"):
+            build_live_ref("campaign-1", "scene-1", "e0-" + "a" * 64)
+
+    def test_scene_route_token_and_live_ref_use_safe_versioned_components(self) -> None:
+        scene_id = "scene/market:α"
+        scene_token = encode_live_scene_route_token(scene_id)
+        epoch_id = "e1-" + "b" * 64
+
+        self.assertRegex(scene_token, r"^s1-[0-9a-f]{64}$")
+        self.assertEqual(
+            build_live_ref("campaign/market", scene_id, epoch_id),
+            "live/"
+            + encode_live_campaign_route_token("campaign/market")
+            + "/"
+            + scene_token
+            + "/"
+            + epoch_id
+            + "/LIVE/LIVE_STATE.yaml",
+        )
+        self.assertNotIn(scene_id, build_live_ref("campaign/market", scene_id, epoch_id))
+
+
+class SceneLiveRouteProjectionTests(unittest.TestCase):
+    def _source(self) -> LiveEnvelope:
+        claims = (LiveClaim.exact_owner("world.actor", "actor-1"),)
+        opening_revision = "a" * 40
+        epoch_id = derive_live_epoch_id("campaign-1", "scene-1", opening_revision, claims)
+        physical_ref = build_live_ref("campaign-1", "scene-1", epoch_id)
+        return LiveEnvelope(
+            campaign_id="campaign-1",
+            scene_id="scene-1",
+            epoch_id=epoch_id,
+            opening_campaign_revision=opening_revision,
+            source_ref=physical_ref,
+            source_revision="b" * 40,
+            claims=claims,
+        )
+
+    def test_route_load_revalidates_body_tuple_and_opening_basis(self) -> None:
+        source = self._source()
+        route = build_live_route(source.campaign_id, (source,))
+
+        validate_live_route_identity(route, source.as_mapping(), source.source_ref)
+
+        wrong_body = source.as_mapping() | {"scene_id": "scene-other"}
+        with self.assertRaisesRegex(LiveContractError, "identity|tuple|scene"):
+            validate_live_route_identity(route, wrong_body, source.source_ref)
+
+    def test_route_token_equality_cannot_override_wrong_body_or_version(self) -> None:
+        source = self._source()
+        route = build_live_route(source.campaign_id, (source,))
+        wrong_campaign_body = source.as_mapping() | {"campaign_id": "campaign-other"}
+        wrong_version_ref = source.source_ref.replace("/c1-", "/c0-", 1)
+
+        with self.assertRaisesRegex(LiveContractError, "identity|campaign"):
+            validate_live_route_identity(route, wrong_campaign_body, source.source_ref)
+        with self.assertRaisesRegex(LiveContractError, "route|version|physical"):
+            validate_live_route_identity(route, source.as_mapping(), wrong_version_ref)
+
+    def test_route_mapping_load_rejects_a_body_tuple_alias(self) -> None:
+        source = self._source()
+        raw_route = build_live_route(source.campaign_id, (source,)).as_mapping()
+        raw_route["entries"] = [source.as_mapping() | {"epoch_id": "e1-" + "c" * 64}]
+
+        with self.assertRaisesRegex(LiveContractError, "identity|basis|route"):
+            LiveRouting.from_mapping(raw_route)
+
+    def test_semantic_source_key_is_stable_when_physical_route_is_derived(self) -> None:
+        source = self._source()
+
+        self.assertEqual(source.source_key, ("campaign-1", "scene-1", source.epoch_id))
+        self.assertNotIn(source.campaign_id, source.source_ref)
+        self.assertNotIn(source.scene_id, source.source_ref)
 
 
 if __name__ == "__main__":

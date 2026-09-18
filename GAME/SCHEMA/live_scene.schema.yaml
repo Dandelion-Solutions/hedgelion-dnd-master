@@ -1,23 +1,27 @@
 schema_name: live_scene_state
-schema_version: 1
+schema_version: 2
 required:
   - schema_version
+  - campaign_id
   - epoch_id
-  - campaign_branch
-  - live_branch
   - scene_id
   - status
+  - opening_campaign_revision
+  - source_ref
+  - source_revision
   - base_campaign_sha
   - revision
   - participant_ids
   - player_character_ids
 fields:
   schema_version: integer
+  campaign_id: string
   epoch_id: string
-  campaign_branch: string
-  live_branch: string
   scene_id: string
   status: enum[active, closed]
+  opening_campaign_revision: string
+  source_ref: string
+  source_revision: string
   base_campaign_sha: string
   base_scene_blob_sha: string|null
   revision: integer
@@ -61,6 +65,10 @@ fields:
   touched_campaign_paths: array[string]
   touched_entity_ids: array[string]
 invariants:
+  - campaign_id is the canonical semantic campaign identity; it is not derived from a branch or physical route token
+  - source_ref is physical routing material and must equal the derived c1/s1/e1 LIVE ref after body validation
+  - campaign_branch and live_branch, when retained by a transport adapter, are routing metadata only and never semantic identity
+  - epoch_id is the full e1 SHA-256 identity of the immutable opening basis and is not truncated
   - only LIVE/LIVE_STATE.yaml is runtime-mutated on a live branch
   - revision increments once for each successful logical live-state write
   - absent overlay fields inherit from base_campaign_sha

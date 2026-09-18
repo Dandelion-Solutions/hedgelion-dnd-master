@@ -9,21 +9,27 @@ exact source observation and the authority-changing acknowledgement.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
+import hashlib
 import re
 from typing import Final, TypeAlias
 
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
 LIVE_CLAIM_SCHEMA_VERSION: Final[int] = 2
-LIVE_ROUTING_SCHEMA_VERSION: Final[int] = 2
-LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION: Final[int] = 3
+LIVE_ROUTING_SCHEMA_VERSION: Final[int] = 3
+LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION: Final[int] = 4
+
+_CAMPAIGN_ROUTE_DOMAIN = b"HDM-LIVE-CAMPAIGN-ROUTE-V1"
+_SCENE_ROUTE_DOMAIN = b"HDM-LIVE-SCENE-ROUTE-V1"
+_EPOCH_ID_DOMAIN = b"HDM-LIVE-EPOCH-ID-V1"
+_EPOCH_ID = re.compile(r"^e1-[0-9a-f]{64}$")
 
 _MACHINE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _NATIVE_FAMILY = re.compile(r"^(world|runtime)\.[a-z][a-z0-9_]*$")
@@ -87,6 +93,12 @@ def _machine_id(value: object, label: str) -> str:
     return result
 
 
+def _semantic_id(value: object, label: str) -> str:
+    """Validate semantic identity without constraining its physical spelling."""
+
+    return _nonempty(value, label)
+
+
 def _revision(value: object, label: str) -> str:
     result = _nonempty(value, label)
     if _REVISION.fullmatch(result) is None:
@@ -100,10 +112,173 @@ def _source_key(value: object, label: str = "source key") -> LiveSourceKey:
     if len(value) != 3:
         raise LiveContractError(f"{label} must contain campaign_id, scene_id and epoch_id")
     return (
-        _machine_id(value[0], f"{label}.campaign_id"),
-        _machine_id(value[1], f"{label}.scene_id"),
-        _machine_id(value[2], f"{label}.epoch_id"),
+        _semantic_id(value[0], f"{label}.campaign_id"),
+        _semantic_id(value[1], f"{label}.scene_id"),
+        _epoch_id(value[2], f"{label}.epoch_id"),
     )
+
+
+def _epoch_id(value: object, label: str) -> str:
+    result = _semantic_id(value, label)
+    if _EPOCH_ID.fullmatch(result) is None:
+        raise LiveContractError(f"{label} must use the versioned e1 identity encoding")
+    return result
+
+
+def _frame_string(value: str, label: str) -> bytes:
+    encoded = _semantic_id(value, label).encode("utf-8")
+    return len(encoded).to_bytes(4, "big") + encoded
+
+
+def _frame_list(values: Sequence[bytes]) -> bytes:
+    if len(values) > 0xFFFFFFFF:
+        raise LiveContractError("canonical LIVE identity list is too large")
+    framed = [len(values).to_bytes(4, "big")]
+    for value in values:
+        if len(value) > 0xFFFFFFFF:
+            raise LiveContractError("canonical LIVE identity component is too large")
+        framed.extend((len(value).to_bytes(4, "big"), value))
+    return b"".join(framed)
+
+
+def _domain_frame(domain: bytes, values: Sequence[str]) -> bytes:
+    return domain + b"\x00" + b"".join(
+        _frame_string(value, "LIVE identity component") for value in values
+    )
+
+
+def encode_live_campaign_route_token(campaign_id: str) -> str:
+    """Encode semantic campaign identity as a physical c1 route component."""
+
+    return "c1-" + hashlib.sha256(
+        _domain_frame(_CAMPAIGN_ROUTE_DOMAIN, (campaign_id,))
+    ).hexdigest()
+
+
+def encode_live_scene_route_token(scene_id: str) -> str:
+    """Encode semantic scene identity as a physical s1 route component."""
+
+    return "s1-" + hashlib.sha256(
+        _domain_frame(_SCENE_ROUTE_DOMAIN, (scene_id,))
+    ).hexdigest()
+
+
+def _canonical_claim_frame(claim: LiveClaim) -> bytes:
+    if not isinstance(claim, LiveClaim):
+        raise LiveContractError("LIVE identity basis contains an untyped claim")
+    if claim.claim_type == "EXACT_OWNER":
+        identity = claim.native_identity
+        if identity is None or claim.native_family is None:
+            raise LiveContractError("EXACT_OWNER claim has incomplete identity basis")
+        return b"\x01" + _frame_string(claim.native_family, "claim.native_family") + _frame_list(
+            (identity.encode("utf-8"),)
+        )
+    raise LiveContractError(
+        "LIVE claim type has no admitted canonical identity encoding"
+    )
+
+
+def canonicalize_live_claim_set(claims: Iterable[LiveClaim]) -> tuple[bytes, ...]:
+    """Return sorted complete claim frames, rejecting duplicate identity frames."""
+
+    frames = tuple(_canonical_claim_frame(claim) for claim in claims)
+    if len(frames) != len(set(frames)):
+        raise LiveContractError("LIVE identity basis contains duplicate claim frames")
+    return tuple(sorted(frames))
+
+
+def derive_live_epoch_id(
+    campaign_id: str,
+    scene_id: str,
+    opening_campaign_revision: str,
+    immutable_claims: Iterable[LiveClaim],
+) -> str:
+    """Derive the full-digest e1 identity from one immutable opening basis."""
+
+    claim_frames = canonicalize_live_claim_set(immutable_claims)
+    opening_revision = _revision(opening_campaign_revision, "opening_campaign_revision")
+    frame = (
+        _EPOCH_ID_DOMAIN
+        + b"\x00"
+        + _frame_string(campaign_id, "campaign_id")
+        + _frame_string(scene_id, "scene_id")
+        + _frame_string(opening_revision, "opening_campaign_revision")
+        + _frame_list(claim_frames)
+    )
+    return "e1-" + hashlib.sha256(frame).hexdigest()
+
+
+def build_live_ref(campaign_id: str, scene_id: str, epoch_id: str) -> str:
+    """Build the bounded physical LIVE ref from semantic IDs."""
+
+    encoded_epoch_id = _epoch_id(epoch_id, "epoch_id")
+    return "/".join(
+        (
+            "live",
+            encode_live_campaign_route_token(campaign_id),
+            encode_live_scene_route_token(scene_id),
+            encoded_epoch_id,
+            "LIVE",
+            "LIVE_STATE.yaml",
+        )
+    )
+
+
+def _route_identity_route(
+    expected_route: LiveRouting | LiveEnvelope | Mapping[str, object] | Sequence[str],
+) -> LiveRouting | LiveEnvelope | LiveSourceKey:
+    if isinstance(expected_route, (LiveRouting, LiveEnvelope)):
+        return expected_route
+    if isinstance(expected_route, Mapping):
+        if "entries" in expected_route:
+            return LiveRouting.from_mapping(expected_route)
+        return _source_key(
+            (
+                expected_route.get("campaign_id"),
+                expected_route.get("scene_id"),
+                expected_route.get("epoch_id"),
+            ),
+            "expected route identity",
+        )
+    return _source_key(expected_route, "expected route identity")
+
+
+def validate_live_route_identity(
+    expected_route: LiveRouting | LiveEnvelope | Mapping[str, object] | Sequence[str],
+    live_state: LiveEnvelope | Mapping[str, object],
+    physical_ref: str,
+) -> None:
+    """Validate semantic body identity, opening basis and derived physical ref."""
+
+    if isinstance(live_state, LiveEnvelope):
+        body = live_state
+    else:
+        body = LiveEnvelope.from_mapping(live_state)
+    expected = _route_identity_route(expected_route)
+    if isinstance(expected, LiveRouting):
+        selected = next(
+            (entry for entry in expected.entries if entry.source_key == body.source_key),
+            None,
+        )
+        if selected is None or not validate_exact_source(selected, body):
+            raise LiveContractError("LIVE route/body identity tuple or opening basis mismatch")
+    elif isinstance(expected, LiveEnvelope):
+        if not validate_exact_source(expected, body):
+            raise LiveContractError("LIVE route/body identity tuple or opening basis mismatch")
+    elif expected != body.source_key:
+        raise LiveContractError("LIVE route/body identity tuple mismatch")
+
+    expected_epoch = derive_live_epoch_id(
+        body.campaign_id,
+        body.scene_id,
+        body.opening_campaign_revision,
+        body.claims,
+    )
+    if expected_epoch != body.epoch_id:
+        raise LiveContractError("LIVE epoch identity does not match its opening basis")
+    expected_ref = build_live_ref(body.campaign_id, body.scene_id, body.epoch_id)
+    if physical_ref != expected_ref or body.source_ref != expected_ref:
+        raise LiveContractError("LIVE physical route identity mismatch")
 
 
 def _claims(value: object) -> tuple[LiveClaim, ...]:
@@ -253,6 +428,7 @@ class LiveEnvelope:
     source_revision: str
     claims: tuple[LiveClaim, ...]
     status: LiveLifecycle = LiveLifecycle.ACTIVE
+    opening_campaign_revision: str = ""
 
     def __post_init__(self) -> None:
         key = _source_key((self.campaign_id, self.scene_id, self.epoch_id))
@@ -261,6 +437,11 @@ class LiveEnvelope:
         object.__setattr__(self, "epoch_id", key[2])
         object.__setattr__(self, "source_ref", _nonempty(self.source_ref, "source_ref"))
         object.__setattr__(self, "source_revision", _revision(self.source_revision, "source_revision"))
+        object.__setattr__(
+            self,
+            "opening_campaign_revision",
+            _revision(self.opening_campaign_revision, "opening_campaign_revision"),
+        )
         try:
             status = self.status if isinstance(self.status, LiveLifecycle) else LiveLifecycle(self.status)
         except ValueError as error:
@@ -291,6 +472,7 @@ class LiveEnvelope:
             "epoch_id": self.epoch_id,
             "source_ref": self.source_ref,
             "source_revision": self.source_revision,
+            "opening_campaign_revision": self.opening_campaign_revision,
             "status": self.status.value,
             "claims": [claim.as_mapping() for claim in self.claims],
         }
@@ -305,6 +487,7 @@ class LiveEnvelope:
             "epoch_id",
             "source_ref",
             "source_revision",
+            "opening_campaign_revision",
             "status",
             "claims",
         }
@@ -316,6 +499,7 @@ class LiveEnvelope:
             epoch_id=value["epoch_id"],  # type: ignore[arg-type]
             source_ref=value["source_ref"],  # type: ignore[arg-type]
             source_revision=value["source_revision"],  # type: ignore[arg-type]
+            opening_campaign_revision=value["opening_campaign_revision"],  # type: ignore[arg-type]
             status=value["status"],  # type: ignore[arg-type]
             claims=_claims(value["claims"]),
         )
@@ -330,7 +514,7 @@ class LiveRouting:
     complete: bool = True
 
     def __post_init__(self) -> None:
-        campaign_id = _machine_id(self.campaign_id, "LIVE route campaign_id")
+        campaign_id = _semantic_id(self.campaign_id, "LIVE route campaign_id")
         object.__setattr__(self, "campaign_id", campaign_id)
         if type(self.complete) is not bool or not self.complete:
             raise LiveContractError("LIVE route must be complete")
@@ -396,19 +580,25 @@ class LiveRouting:
         raw_entries = value["entries"]
         if not isinstance(raw_entries, Sequence) or isinstance(raw_entries, (str, bytes)):
             raise LiveContractError("LIVE route entries must be an array")
-        return cls(
+        route = cls(
             campaign_id=value["campaign_id"],  # type: ignore[arg-type]
             entries=tuple(
                 LiveEnvelope.from_mapping(item) for item in raw_entries
             ),
             complete=value["complete"],  # type: ignore[arg-type]
         )
+        for entry in route.entries:
+            validate_live_route_identity(route, entry, entry.source_ref)
+        return route
 
 
 def build_live_route(campaign_id: str, entries: Sequence[LiveEnvelope]) -> LiveRouting:
     """Build a complete route only from explicitly supplied owner envelopes."""
 
-    return LiveRouting(campaign_id=campaign_id, entries=tuple(entries))
+    route = LiveRouting(campaign_id=campaign_id, entries=tuple(entries))
+    for entry in route.entries:
+        validate_live_route_identity(route, entry, entry.source_ref)
+    return route
 
 
 def _route_or_none(route: LiveRouting | LiveEnvelope | Mapping[str, object]) -> LiveRouting | LiveEnvelope | None:
@@ -489,6 +679,7 @@ def validate_exact_source(
         selected.source_key == candidate.source_key
         and selected.source_ref == candidate.source_ref
         and selected.source_revision == candidate.source_revision
+        and selected.opening_campaign_revision == candidate.opening_campaign_revision
         and selected.status is candidate.status
         and selected.claims == candidate.claims
     )
@@ -538,6 +729,7 @@ class FrozenLivePublicationAttempt:
                 source_revision=self.expected_source_revision,
                 claims=self.claims,
                 status=self.source_status,
+                opening_campaign_revision=selected.opening_campaign_revision,
             ),
         ):
             raise LiveContractError("frozen attempt is not bound to the selected route source")
@@ -615,6 +807,7 @@ def freeze_live_attempt(
         source_revision=proposed_source_revision,
         claims=source.claims,
         status=successor_status,
+        opening_campaign_revision=source.opening_campaign_revision,
     )
     return FrozenLivePublicationAttempt(
         selected_route=route,
@@ -752,6 +945,12 @@ def reconcile_indeterminate(
         raise LiveContractError("indeterminate reconciliation requires exact source evidence")
     if current_source.source_key != attempt.source_key or current_source.source_ref != attempt.target_ref:
         return _result(LivePublicationStatus.REJECTED_STALE, attempt, authoritative=False)
+    selected = next(
+        (entry for entry in attempt.selected_route.entries if entry.source_key == attempt.source_key),
+        None,
+    )
+    if selected is None:
+        raise LiveContractError("indeterminate attempt is not bound to a selected route source")
     predecessor = LiveEnvelope(
         campaign_id=attempt.source_key[0],
         scene_id=attempt.source_key[1],
@@ -760,6 +959,7 @@ def reconcile_indeterminate(
         source_revision=attempt.expected_source_revision,
         claims=attempt.claims,
         status=attempt.source_status,
+        opening_campaign_revision=selected.opening_campaign_revision,
     )
     successor = attempt.successor_route.entries[0]
     if validate_exact_source(successor, current_source):
@@ -802,6 +1002,7 @@ def close_live_source(
         source_revision=closed_source_revision,
         claims=source.claims,
         status=LiveLifecycle.CLOSED,
+        opening_campaign_revision=source.opening_campaign_revision,
     )
 
 
@@ -818,6 +1019,7 @@ def mark_closed_unabsorbed(source: LiveEnvelope) -> LiveEnvelope:
         source_revision=source.source_revision,
         claims=source.claims,
         status=LiveLifecycle.CLOSED_UNABSORBED,
+        opening_campaign_revision=source.opening_campaign_revision,
     )
 
 
