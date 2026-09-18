@@ -36,12 +36,14 @@ class AuthorizationFailureCode(StrEnum):
     PRINCIPAL_UNVERIFIED = "principal.unverified"
     ROUTE_ABSENT = "principal_player_route.absent"
     ROUTE_INCOMPLETE = "principal_player_route.incomplete"
+    ROUTE_SCOPE_REQUIRED = "principal_player_route.scope_required"
     ROUTE_SCOPE_MISMATCH = "principal_player_route.scope_mismatch"
     STALE_CANDIDATE = "principal_player_route.stale_candidate"
     PLAYER_RECORD_INVALID = "player.record_invalid"
     AMBIGUOUS_BINDING = "player.binding_ambiguous"
     PLAYER_INACTIVE = "player.inactive"
     REJOIN_REQUIRES_CREATOR = "player.rejoin_requires_creator"
+    POLICY_GRANT_REQUIRED = "policy.mechanical_override_grant_required"
     CREATOR_UNCERTAIN = "creator.uncertain"
     OPERATION_UNSUPPORTED = "operation.unsupported"
 
@@ -135,6 +137,7 @@ class PlayerRecord:
     login: str | None
     status: str
     deactivated_by: str | None
+    mechanical_override_policy: bool = False
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, object]) -> PlayerRecord:
@@ -151,12 +154,28 @@ class PlayerRecord:
         raw_deactivated_by = value.get("deactivated_by")
         if raw_deactivated_by not in {None, "self", "creator"}:
             raise AccessControlContractError("PLAYER deactivated_by is not admitted")
+        raw_policy_authority = value.get("policy_authority")
+        if raw_policy_authority is None:
+            mechanical_override_policy = False
+        elif not isinstance(raw_policy_authority, Mapping):
+            raise AccessControlContractError("PLAYER policy_authority is not admitted")
+        else:
+            raw_grant = raw_policy_authority.get("mechanical_override_policy", False)
+            if raw_grant is None:
+                mechanical_override_policy = False
+            elif type(raw_grant) is not bool:
+                raise AccessControlContractError(
+                    "PLAYER mechanical_override_policy must be boolean or null"
+                )
+            else:
+                mechanical_override_policy = raw_grant
         return cls(
             player_id=player_id,
             stable_account_id=stable_account_id,
             login=login,
             status=status,
             deactivated_by=raw_deactivated_by,
+            mechanical_override_policy=mechanical_override_policy,
         )
 
 
@@ -368,10 +387,32 @@ def resolve_player(
             principal_account_id=resolved_principal.stable_account_id,
             _issuer=_RESOLUTION_TOKEN,
         )
-    resolved_route = (
-        route if isinstance(route, PrincipalPlayerRoute) else PrincipalPlayerRoute.from_mapping(route)
-    )
-    if campaign_id is not None and resolved_route.campaign_id != campaign_id:
+    try:
+        resolved_route = (
+            route
+            if isinstance(route, PrincipalPlayerRoute)
+            else PrincipalPlayerRoute.from_mapping(route)
+        )
+    except AccessControlContractError as error:
+        failure_code = (
+            AuthorizationFailureCode.ROUTE_INCOMPLETE
+            if error.failure_code == AuthorizationFailureCode.ROUTE_INCOMPLETE
+            else AuthorizationFailureCode.PLAYER_RECORD_INVALID
+        )
+        return PlayerResolution(
+            status="FAIL_CLOSED",
+            failure_code=failure_code,
+            principal_account_id=resolved_principal.stable_account_id,
+            _issuer=_RESOLUTION_TOKEN,
+        )
+    if not isinstance(campaign_id, str) or not campaign_id:
+        return PlayerResolution(
+            status="FAIL_CLOSED",
+            failure_code=AuthorizationFailureCode.ROUTE_SCOPE_REQUIRED,
+            principal_account_id=resolved_principal.stable_account_id,
+            _issuer=_RESOLUTION_TOKEN,
+        )
+    if resolved_route.campaign_id != campaign_id:
         return PlayerResolution(
             status="FAIL_CLOSED",
             failure_code=AuthorizationFailureCode.ROUTE_SCOPE_MISMATCH,
@@ -476,6 +517,14 @@ def authorize_operation(
         return _fail(resolution.failure_code)
     if resolution.player is None:
         return _fail(AuthorizationFailureCode.PLAYER_RECORD_INVALID)
+    if operation == "mechanical_override_policy":
+        if resolution.player.status != "active":
+            return _fail(AuthorizationFailureCode.PLAYER_INACTIVE)
+        if creator_login == resolved_principal.login:
+            return AuthorizationDecision(authorized=True, player_id=resolution.player.player_id)
+        if resolution.player.mechanical_override_policy:
+            return AuthorizationDecision(authorized=True, player_id=resolution.player.player_id)
+        return _fail(AuthorizationFailureCode.POLICY_GRANT_REQUIRED)
     if operation in {"rejoin", "reactivate"}:
         if resolution.player.status == "active":
             return AuthorizationDecision(authorized=True, player_id=resolution.player.player_id)

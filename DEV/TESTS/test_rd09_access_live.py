@@ -49,14 +49,20 @@ def _player(
     login: str = "lina",
     status: str = "active",
     deactivated_by: str | None = None,
+    mechanical_override_policy: bool | None = None,
 ) -> dict[str, object]:
-    return {
+    player: dict[str, object] = {
         "player_id": player_id,
         "status": status,
         "deactivated_by": deactivated_by,
         "github_binding": {"user_id": account_id, "login": login},
         "controlled_pc_ids": ["pc-1"],
     }
+    if mechanical_override_policy is not None:
+        player["policy_authority"] = {
+            "mechanical_override_policy": mechanical_override_policy
+        }
+    return player
 
 
 class PrincipalAuthorizationTests(unittest.TestCase):
@@ -68,7 +74,9 @@ class PrincipalAuthorizationTests(unittest.TestCase):
             return _player(player_id)
 
         principal = _principal()
-        resolution = resolve_player(principal, _route(), load_exact)
+        resolution = resolve_player(
+            principal, _route(), load_exact, campaign_id="campaign-frostfall"
+        )
         decision = authorize_operation(principal, resolution, operation="gameplay")
 
         self.assertTrue(decision.authorized)
@@ -83,7 +91,9 @@ class PrincipalAuthorizationTests(unittest.TestCase):
             reads.append(player_id)
             return None
 
-        resolution = resolve_player(_principal(), _route(), load_exact)
+        resolution = resolve_player(
+            _principal(), _route(), load_exact, campaign_id="campaign-frostfall"
+        )
         decision = authorize_operation(_principal(), resolution, operation="gameplay")
 
         self.assertFalse(decision.authorized)
@@ -98,7 +108,9 @@ class PrincipalAuthorizationTests(unittest.TestCase):
             return _player(player_id)
 
         route = _route(candidates=("player-1", "player-2"))
-        resolution = resolve_player(_principal(), route, load_exact)
+        resolution = resolve_player(
+            _principal(), route, load_exact, campaign_id="campaign-frostfall"
+        )
         decision = authorize_operation(_principal(), resolution, operation="gameplay")
 
         self.assertFalse(decision.authorized)
@@ -110,6 +122,7 @@ class PrincipalAuthorizationTests(unittest.TestCase):
             _principal(),
             _route(),
             lambda player_id: _player(player_id, status="inactive", deactivated_by="self"),
+            campaign_id="campaign-frostfall",
         )
 
         self.assertEqual(resolution.status, "INACTIVE_REJOIN_CANDIDATE")
@@ -122,7 +135,12 @@ class PrincipalAuthorizationTests(unittest.TestCase):
 
     def test_login_only_impersonation_cannot_select_a_player(self) -> None:
         principal = _principal(account_id="attacker-99", login="lina")
-        resolution = resolve_player(principal, _route(), lambda _player_id: _player())
+        resolution = resolve_player(
+            principal,
+            _route(),
+            lambda _player_id: _player(),
+            campaign_id="campaign-frostfall",
+        )
         decision = authorize_operation(principal, resolution, operation="gameplay")
 
         self.assertFalse(decision.authorized)
@@ -130,7 +148,12 @@ class PrincipalAuthorizationTests(unittest.TestCase):
 
     def test_creator_uncertainty_fails_closed_and_stable_id_is_not_a_substitute(self) -> None:
         principal = _principal()
-        resolution = resolve_player(principal, _route(), lambda player_id: _player(player_id))
+        resolution = resolve_player(
+            principal,
+            _route(),
+            lambda player_id: _player(player_id),
+            campaign_id="campaign-frostfall",
+        )
 
         missing = authorize_operation(
             principal, resolution, operation="creator_write", creator_login=None
@@ -175,7 +198,12 @@ class PrincipalAuthorizationTests(unittest.TestCase):
         self.assertEqual(decision.failure_code, AuthorizationFailureCode.PLAYER_RECORD_INVALID)
 
     def test_resolution_for_one_principal_cannot_be_reused_by_another(self) -> None:
-        resolution = resolve_player(_principal(), _route(), lambda player_id: _player(player_id))
+        resolution = resolve_player(
+            _principal(),
+            _route(),
+            lambda player_id: _player(player_id),
+            campaign_id="campaign-frostfall",
+        )
 
         decision = authorize_operation(
             _principal(account_id="attacker-99"), resolution, operation="gameplay"
@@ -183,6 +211,50 @@ class PrincipalAuthorizationTests(unittest.TestCase):
 
         self.assertFalse(decision.authorized)
         self.assertEqual(decision.failure_code, AuthorizationFailureCode.PLAYER_RECORD_INVALID)
+
+    def test_mechanical_override_requires_existing_owner_grant(self) -> None:
+        resolution = resolve_player(
+            _principal(),
+            _route(),
+            lambda player_id: _player(player_id),
+            campaign_id="campaign-frostfall",
+        )
+        denied = authorize_operation(
+            _principal(), resolution, operation="mechanical_override_policy"
+        )
+
+        granted_resolution = resolve_player(
+            _principal(),
+            _route(),
+            lambda player_id: _player(player_id, mechanical_override_policy=True),
+            campaign_id="campaign-frostfall",
+        )
+        granted = authorize_operation(
+            _principal(), granted_resolution, operation="mechanical_override_policy"
+        )
+
+        self.assertFalse(denied.authorized)
+        self.assertEqual(denied.failure_code, "policy.mechanical_override_grant_required")
+        self.assertTrue(granted.authorized)
+
+    def test_ordinary_authorization_requires_campaign_scope_evidence(self) -> None:
+        resolution = resolve_player(_principal(), _route(), lambda player_id: _player(player_id))
+
+        self.assertEqual(resolution.failure_code, "principal_player_route.scope_required")
+
+    def test_incomplete_route_returns_typed_fail_closed_result(self) -> None:
+        incomplete = _route().as_mapping() | {"complete": False}
+        try:
+            resolution = resolve_player(
+                _principal(),
+                incomplete,
+                lambda player_id: _player(player_id),
+                campaign_id="campaign-frostfall",
+            )
+        except AccessControlContractError as error:
+            self.fail(f"incomplete route raised instead of returning typed failure: {error!r}")
+
+        self.assertEqual(resolution.failure_code, "principal_player_route.incomplete")
 
 
 class PrincipalPlayerRouteCompanionTests(unittest.TestCase):
@@ -260,7 +332,12 @@ class PrincipalPlayerRouteCompanionTests(unittest.TestCase):
                 "entries": [],
             }
         )
-        result = resolve_player(_principal(), template, lambda _player_id: _player())
+        result = resolve_player(
+            _principal(),
+            template,
+            lambda _player_id: _player(),
+            campaign_id="campaign-frostfall",
+        )
         self.assertEqual(result.failure_code, AuthorizationFailureCode.ROUTE_ABSENT)
 
 
