@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-02-execution-durability-re
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `0b68dc873839bae573eceee63b05d46c5977774d`
 
-STATUS: EXECUTING
-CURRENT_TASK: W02.T06 - exact current-source recovery and maintenance from published T05 at `fdb6888070bd34c128b7fed3703e08005bfb5554`
-LAST_COMPLETED_TASK: W02.T05 - W02_DURABILITY_PUBLICATION_READY -> published Wave-02 ref at `fdb6888070bd34c128b7fed3703e08005bfb5554`
-LAST_SAFE_SHA: `fdb6888070bd34c128b7fed3703e08005bfb5554` (published T05 input checkpoint)
+STATUS: FINAL_REVIEW
+CURRENT_TASK: W02.T06 - final integration review of exact current-source recovery at local checkpoint `db5a585`
+LAST_COMPLETED_TASK: W02.T06 - W02_EXACT_RECOVERY_READY + W02_OPERATIONAL_ROOT_RECOVERY_READY -> local checkpoint `db5a585`
+LAST_SAFE_SHA: `db5a585` (local coherent W02.T06 checkpoint; remote publication was not requested)
 
 ## Dependency schedule
 
@@ -466,4 +466,11 @@ VERSION_IMPACT:
 - catalog, engine, campaign contract, storage generation, persistence, migration and compatibility namespaces: NONE.
 
 SYSTEM_IMPACT: NONE - implementation remains within the approved W02.T06 recovery/maintenance envelope; it introduces no second currentness, persistence, transaction, journal, lifecycle, policy, catalog, RNG or LIVE authority and does not start Wave 03.
-UNPUBLISHED_WORK: exact W02.T06 implementation, test, schema and documentation delta is local and awaits its coherent checkpoint commit.
+FINAL_SHA: `db5a585`
+FINAL VERIFICATION EVIDENCE:
+- focused RD07 recovery suite: 35 passed;
+- full DEV discovery: 784 passed, 7 skipped;
+- maintenance audit: PASS;
+- clean committed worktree provenance/release checks included in the full-suite PASS.
+NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
+UNPUBLISHED_WORK: NONE (the implementation and execution-cursor checkpoints are committed locally).
