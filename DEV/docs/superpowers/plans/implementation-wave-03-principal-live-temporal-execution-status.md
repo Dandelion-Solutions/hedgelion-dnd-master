@@ -7,7 +7,7 @@ BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 STATUS: EXECUTION_AUTHORIZED
 CURRENT_TASK: W03.T07 -- PLAYER and campaign access-policy transitions
 LAST_COMPLETED_TASK: W03.T06 -- temporal and operational-root handoff; W03_TEMPORAL_LIVE_HANDOFF_READY / W03_OPERATIONAL_LIVE_HANDOFF_READY
-LAST_SAFE_SHA: `c55071b46548cc6ec10547f3f9ce409285d39808` (published W03.T06 implementation checkpoint)
+LAST_SAFE_SHA: `625e5488cf5e4dd51c3d8691196bbea3c30a2144` (published W03.T06 repair implementation checkpoint)
 
 ## Dependency schedule
 
@@ -71,6 +71,7 @@ COMPLETED_TASKS:
 - W03.T04 independent review -> PASS at `a161110db60a8efc296e7982f2e607566c20ef07`; `W03_SOURCE_NATIVE_LIVE_ID_READY` accepted
 - W03.T05 -> `f214e887c20859c53c83d8d639bd82def28dbc8f` (published/read-back; W03_LIVE_ROUTING_READY / W03_LIVE_NATIVE_PACKING_READY / W03_LIVE_ABSORPTION_READY)
 - W03.T05 repair -> `76178d0538373bde097757176bbed8f020b3e69d` (published/read-back; exact route/predecessor/closure/history binding and independent serialized-contract schema owners)
+- W03.T06 repair -> `625e5488cf5e4dd51c3d8691196bbea3c30a2144` (published/read-back; absorption, native-owner proof, exact temporal completeness, idempotent retry and strict operational-root handoff contract repair)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -114,6 +115,8 @@ CURRENT_VERIFICATION_STATE:
 - W03.T05 repair changed only `GAME/TOOLS/live_state.py`, `DEV/TESTS/test_rd09_access_live.py` and four owner-local LIVE schema files; no Wave-05 shared schema, CORE, catalog or identifier-policy bytes changed.
 - W03.T06 RED/GREEN: focused handoff witnesses first exposed the missing temporal/operational handoff APIs, then stale-route and identity-shape defects; the final focused handoff suite passed 8 tests and the named temporal/LIVE/recovery/durability suites passed 221 tests with 1 skip. Full DEV discovery passed 903 tests with 7 skips; version census reported zero unclassified and zero legacy hits; maintenance audit, compile checks and `git diff --check` passed.
 - W03.T06 changed only `GAME/TOOLS/temporal.py`, `GAME/TOOLS/live_state.py`, `GAME/TOOLS/recovery_roots.py` and `DEV/TESTS/test_rd09_access_live.py`; no Wave-05 shared schema, CORE, catalog or identifier-policy bytes changed. Terminal temporal removal requires `CLOSED` owner state, operational terminal removal requires exact native evidence, and campaign recovery requires an absorbed source with accepted absorption evidence.
+- W03.T06 repair RED/GREEN: repair witnesses covered caller-asserted `CLOSED_UNABSORBED` return, missing exact temporal native-owner sets, stale wrapper retries, caller absorption acknowledgement, caller native terminal mappings, forged temporal entries and untyped operational-root handoff mappings. Focused named suites passed 229 tests with 1 skip; full DEV discovery passed 911 tests with 7 skips after the closure commit; maintenance audit, JSON Schema checks, compile verification and `git diff --check` passed.
+- W03.T06 repair changed only the three named W03 handoff runtime owners, RD08/RD09 tests, and the new dedicated ephemeral operational-root handoff schema owners. Existing LIVE routing schema v4, operational-root page schema v1, Wave-05 shared surfaces, CORE, catalogs and identifier-policy bytes remain unchanged.
 
 VERSION_IMPACT: W03.T02 review repair round 1 materially changes the LIVE runtime module `framework_module_version` 1.0.1 -> 1.0.2 and the ephemeral publication-attempt schema 1 -> 2 because selected-route and complete-successor evidence are now required. Claim/routing serialized shapes remain schema v1; their repair rejects pre-release invalid claim forms without changing serialized fields or adding a migration/projection.
 
@@ -137,6 +140,8 @@ SYSTEM_IMPACT: NONE -- W03.T04 remains within the approved source-native LIVE id
 - SYSTEM_IMPACT: NONE -- the repair remains inside the approved W03.T05 LIVE opening/currentness/routing/packing/absorption boundary and adds no semantic owner, dependency direction, distributed transaction, fallback authority or Wave-05 write.
 VERSION_IMPACT: W03.T06 materially changes LIVE runtime `framework_module_version` `1.0.9 -> 1.0.10`, operational-root runtime `framework_module_version` `1.0.6 -> 1.0.7`, and introduces temporal runtime `framework_module_version` `1.0.1`; the new ephemeral temporal route schema starts at `1`, while existing LIVE routing and operational-root page schema versions remain unchanged. No engine-release, campaign-contract, storage-format, catalog, identifier-policy or shared DEV/GAME projection changed.
 SYSTEM_IMPACT: NONE -- W03.T06 remains inside the approved temporal/LIVE/operational-root routing envelope and adds no semantic owner, dependency direction, distributed transaction, broad scan, fallback authority or Wave-05 write.
+VERSION_IMPACT: W03.T06 repair materially changes LIVE runtime `framework_module_version` `1.0.10 -> 1.0.11`, temporal runtime `framework_module_version` `1.0.1 -> 1.0.2`, and operational-root runtime `framework_module_version` `1.0.7 -> 1.0.8`. A new ephemeral operational-root handoff schema namespace starts at `1` in DEV/GAME projections; existing LIVE routing schema v4 and operational-root page schema v1 remain unchanged. No engine-release, campaign-contract, storage-format, catalog, identifier-policy or shared DEV/GAME projection changed.
+SYSTEM_IMPACT: NONE -- W03.T06 repair remains inside the approved temporal/LIVE/operational-root routing envelope, adds no semantic owner, dependency direction, distributed transaction, broad scan, fallback authority or Wave-05 write, and replaces caller lifecycle/removal assertions with owner-issued evidence.
 NEXT_EXACT_TASK: W03.T07 -- PLAYER and campaign access-policy transitions, consuming W03_PRINCIPAL_PLAYER_ROUTE_READY + W03_LIVE_CURRENTNESS_READY.
 KNOWN_BLOCKERS: NONE for W03.T06. Hosted CI is unavailable in the local-machine runtime. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
 UNPUBLISHED_WORK: NONE after this cursor-update commit and its remote read-back.
