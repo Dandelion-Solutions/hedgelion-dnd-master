@@ -29,6 +29,7 @@ from GAME.TOOLS.live_state import (
     LiveContractError,
     LiveEnvelope,
     LiveLifecycle,
+    LivePublicationResult,
     LivePublicationStatus,
     LiveRouting,
     LIVE_CLAIM_SCHEMA_VERSION,
@@ -607,7 +608,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.5")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.6")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
@@ -1223,6 +1224,54 @@ class SourceNativeLiveIdEncodingTests(unittest.TestCase):
         with self.assertRaisesRegex(LiveContractError, "policy|source_native_live|encoding|disposition"):
             encode_source_native_live_id(source_key, "world.actor", 1, missing)
 
+    def test_closed_live_birth_table_rejects_owner_equivalent_and_forbidden_families(self) -> None:
+        source_key = ("campaign-1", "scene-1", "e1-" + "f" * 64)
+        forged_policy = {
+            "world": {
+                "world.knowledge": {
+                    "prefix": "knowledge",
+                    "live_birth": {
+                        "disposition": "source_native_live",
+                        "encoding": SOURCE_NATIVE_LIVE_ENCODING,
+                    },
+                },
+                "world.player": {
+                    "prefix": "player",
+                    "live_birth": {
+                        "disposition": "source_native_live",
+                        "encoding": SOURCE_NATIVE_LIVE_ENCODING,
+                    },
+                },
+            },
+            "runtime": {
+                "runtime.session": {
+                    "prefix": "session",
+                    "live_birth": {
+                        "disposition": "source_native_live",
+                        "encoding": SOURCE_NATIVE_LIVE_ENCODING,
+                    },
+                },
+            },
+        }
+
+        for family in ("world.knowledge", "world.player", "runtime.session"):
+            with self.subTest(family=family):
+                with self.assertRaisesRegex(LiveContractError, "admitted|disposition|source-native|LIVE"):
+                    encode_source_native_live_id(source_key, family, 1, forged_policy)
+
+    def test_source_native_policy_requires_an_exact_family_row(self) -> None:
+        source_key = ("campaign-1", "scene-1", "e1-" + "f" * 64)
+        domain_fallback = {
+            "prefix": "actor",
+            "live_birth": {
+                "disposition": "source_native_live",
+                "encoding": SOURCE_NATIVE_LIVE_ENCODING,
+            },
+        }
+
+        with self.assertRaisesRegex(LiveContractError, "policy|family|exact"):
+            encode_source_native_live_id(source_key, "world.actor", 1, domain_fallback)
+
 
 class SourceNativeCreationOrderingTests(unittest.TestCase):
     def test_normalization_sorts_by_native_family_utf8_bytes_then_owner_local_index(self) -> None:
@@ -1302,7 +1351,30 @@ class LiveSourceCreationCursorTests(unittest.TestCase):
         })
 
         self.assertEqual(result.status, LivePublicationStatus.ACCEPTED)
+        self.assertEqual(result.accepted_source, attempt.successor_route.entries[0])
         self.assertEqual(advance_source_native_cursor(SourceNativeCursor(1), result), SourceNativeCursor(3))
+
+    def test_cursor_advance_requires_the_exact_envelope_accepted_by_cas(self) -> None:
+        source = _live_source()
+        attempt = freeze_live_attempt(
+            source,
+            route=_live_route(source),
+            proposed_source_revision=LIVE_H1,
+            source_native_creations=(SourceNativeCreation("world.actor", 1),),
+            source_native_cursor=SourceNativeCursor(1),
+            identifier_policy=SOURCE_NATIVE_POLICY,
+        )
+        forged = LivePublicationResult(
+            status=LivePublicationStatus.ACCEPTED,
+            source_key=attempt.source_key,
+            authoritative=True,
+            source_native_allocations=attempt.source_native_allocations,
+            expected_next_source_native_creation_ordinal=1,
+            proposed_next_source_native_creation_ordinal=2,
+        )
+
+        with self.assertRaisesRegex(SourceNativeAllocationError, "envelope|source|accepted"):
+            advance_source_native_cursor(SourceNativeCursor(1), forged)
 
     def test_cursor_exhaustion_fails_without_reuse_or_wrap(self) -> None:
         source_key = ("campaign-1", "scene-1", "e1-" + "2" * 64)
@@ -1395,6 +1467,31 @@ class SourceNativeAmbiguousPublicationTests(unittest.TestCase):
         self.assertEqual(result.status, LivePublicationStatus.INDETERMINATE)
         self.assertEqual(result.source_native_allocations, ())
         self.assertEqual(advance_source_native_cursor(SourceNativeCursor(1), result), SourceNativeCursor(1))
+
+
+class SourceNativeHistoryValidationTests(unittest.TestCase):
+    def test_live_envelope_rejects_a_framed_id_for_another_source(self) -> None:
+        source = _live_source()
+        foreign_id = encode_source_native_live_id(
+            ("campaign-other", source.scene_id, source.epoch_id),
+            "world.actor",
+            1,
+            SOURCE_NATIVE_POLICY,
+        )
+
+        with self.assertRaisesRegex(LiveContractError, "source|identity|history"):
+            _live_source(next_source_native_creation_ordinal=2, source_native_ids=(foreign_id,))
+
+    def test_live_envelope_requires_contiguous_source_native_history(self) -> None:
+        source_key = _live_source().source_key
+        first = encode_source_native_live_id(source_key, "world.actor", 1, SOURCE_NATIVE_POLICY)
+        third = encode_source_native_live_id(source_key, "world.asset", 3, SOURCE_NATIVE_POLICY)
+
+        with self.assertRaisesRegex(LiveContractError, "contiguous|ordinal|history"):
+            _live_source(
+                next_source_native_creation_ordinal=4,
+                source_native_ids=(first, third),
+            )
 
 
 if __name__ == "__main__":

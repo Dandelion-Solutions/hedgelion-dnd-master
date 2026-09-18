@@ -16,11 +16,12 @@ from dataclasses import dataclass
 from enum import StrEnum
 import hashlib
 import re
+from types import MappingProxyType
 from typing import Final, TypeAlias
 
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -33,6 +34,48 @@ SOURCE_NATIVE_CURSOR_MAX: Final[int] = (1 << 64) - 1
 _SOURCE_NATIVE_ID_MARKER = ":live1:"
 _SOURCE_NATIVE_ID_DOMAIN = b"HDM-LIVE-ID-V1"
 
+# This is the closed T04 admission law.  It is deliberately local and
+# read-only: W05 owns the physical catalog projection, while T04 must not
+# accept a caller's proposed disposition as authority.
+LIVE_BIRTH_ADMISSION_TABLE: Final[Mapping[str, str]] = MappingProxyType(
+    {
+        "world.actor": "SOURCE_NATIVE_LIVE",
+        "world.actor_group": "SOURCE_NATIVE_LIVE",
+        "world.asset": "SOURCE_NATIVE_LIVE",
+        "world.location": "SOURCE_NATIVE_LIVE",
+        "world.connection": "SOURCE_NATIVE_LIVE",
+        "world.zone": "SOURCE_NATIVE_LIVE",
+        "world.organization": "SOURCE_NATIVE_LIVE",
+        "world.contract": "SOURCE_NATIVE_LIVE",
+        "world.mission": "SOURCE_NATIVE_LIVE",
+        "world.scene": "SOURCE_NATIVE_LIVE",
+        "world.encounter": "SOURCE_NATIVE_LIVE",
+        "world.hazard": "SOURCE_NATIVE_LIVE",
+        "world.effect": "SOURCE_NATIVE_LIVE",
+        "world.lore_fact": "SOURCE_NATIVE_LIVE",
+        "world.knowledge": "OWNER_EQUIVALENT",
+        "world.thread": "SOURCE_NATIVE_LIVE",
+        "world.player": "FORBIDDEN",
+        "runtime.session": "FORBIDDEN",
+        "runtime.message": "SOURCE_NATIVE_LIVE",
+        "runtime.interaction": "SOURCE_NATIVE_LIVE",
+        "runtime.procedure": "SOURCE_NATIVE_LIVE",
+        "runtime.intent_plan": "OWNER_EQUIVALENT",
+        "runtime.command": "OWNER_EQUIVALENT",
+        "runtime.resolution": "SOURCE_NATIVE_LIVE",
+        "runtime.continuation": "OWNER_EQUIVALENT",
+        "runtime.mechanical_event": "OWNER_EQUIVALENT",
+        "runtime.semantic_event": "SOURCE_NATIVE_LIVE",
+        "runtime.resolution_trace": "OWNER_EQUIVALENT",
+        "runtime.disclosure": "OWNER_EQUIVALENT",
+        "runtime.collaboration_obligation": "FORBIDDEN",
+        "runtime.checkpoint": "FORBIDDEN",
+        "runtime.id_allocator": "FORBIDDEN",
+        "runtime.maintenance_audit": "FORBIDDEN",
+        "runtime.catalog_gap_report": "FORBIDDEN",
+    }
+)
+
 _CAMPAIGN_ROUTE_DOMAIN = b"HDM-LIVE-CAMPAIGN-ROUTE-V1"
 _SCENE_ROUTE_DOMAIN = b"HDM-LIVE-SCENE-ROUTE-V1"
 _EPOCH_ID_DOMAIN = b"HDM-LIVE-EPOCH-ID-V1"
@@ -41,17 +84,6 @@ _EPOCH_ID = re.compile(r"^e1-[0-9a-f]{64}$")
 _MACHINE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _NATIVE_FAMILY = re.compile(r"^(world|runtime)\.[a-z][a-z0-9_]*$")
 _REVISION = re.compile(r"^(?:[a-f0-9]{40}(?:[a-f0-9]{24})?|[A-Za-z][A-Za-z0-9_.:-]*)$")
-_FORBIDDEN_FAMILIES = frozenset(
-    {
-        "world.player",
-        "runtime.session",
-        "runtime.collaboration_obligation",
-        "runtime.checkpoint",
-        "runtime.id_allocator",
-        "runtime.maintenance_audit",
-        "runtime.catalog_gap_report",
-    }
-)
 _CLAIM_TYPES = frozenset(
     {"EXACT_OWNER", "EPOCH_LOCAL_CREATION", "OWNER_DEFINED_PARTITION"}
 )
@@ -181,15 +213,19 @@ def _source_native_policy_row(
         rows = identifier_policy.get(domain)
         if isinstance(rows, Mapping):
             row = rows.get(native_family)
-    if row is None and "prefix" in identifier_policy:
-        row = identifier_policy
     if not isinstance(row, Mapping):
         raise LiveContractError("source-native LIVE identifier policy is missing")
+    disposition = LIVE_BIRTH_ADMISSION_TABLE.get(native_family)
+    if disposition != "SOURCE_NATIVE_LIVE":
+        raise LiveContractError(
+            f"family {native_family} is not admitted for source-native LIVE identity: "
+            f"{disposition or 'UNKNOWN'}"
+        )
     live_birth = row.get("live_birth")
     if not isinstance(live_birth, Mapping):
         raise LiveContractError("source-native LIVE disposition is missing")
-    if str(live_birth.get("disposition", "")).lower() != "source_native_live":
-        raise LiveContractError("family is not admitted for source_native_live identity")
+    if str(live_birth.get("disposition", "")).upper() != disposition:
+        raise LiveContractError("family live_birth disposition does not match the closed T04 table")
     if live_birth.get("encoding") != SOURCE_NATIVE_LIVE_ENCODING:
         raise LiveContractError("source-native LIVE encoding is not admitted")
     prefix = row.get("prefix")
@@ -232,7 +268,10 @@ class SourceNativeCreation:
 
     def __post_init__(self) -> None:
         family = _machine_id(self.native_family, "native_family")
-        if _NATIVE_FAMILY.fullmatch(family) is None or family in _FORBIDDEN_FAMILIES:
+        if (
+            _NATIVE_FAMILY.fullmatch(family) is None
+            or LIVE_BIRTH_ADMISSION_TABLE.get(family) != "SOURCE_NATIVE_LIVE"
+        ):
             raise SourceNativeAllocationError("native family is not admitted for LIVE creation")
         object.__setattr__(self, "native_family", family)
         object.__setattr__(
@@ -297,6 +336,16 @@ class SourceNativeAllocation:
             raise SourceNativeAllocationError("creation_slot_index must be a non-negative integer")
         if not isinstance(self.native_id, str) or not self.native_id:
             raise SourceNativeAllocationError("source-native allocation must carry a native ID")
+        try:
+            _, _, family, ordinal = _decode_source_native_live_id(self.native_id)
+        except LiveContractError as error:
+            raise SourceNativeAllocationError(
+                "source-native allocation must carry a framed LIVE ID"
+            ) from error
+        if family != self.native_family or ordinal != self.source_local_creation_ordinal:
+            raise SourceNativeAllocationError(
+                "source-native allocation ID does not match its family and ordinal"
+            )
 
     def as_mapping(self) -> dict[str, object]:
         return {
@@ -315,7 +364,10 @@ def _source_native_frame(
 ) -> bytes:
     campaign_id, scene_id, epoch_id = _source_key(live_source_key, "LIVE source key")
     family = _machine_id(native_family, "native_family")
-    if _NATIVE_FAMILY.fullmatch(family) is None or family in _FORBIDDEN_FAMILIES:
+    if (
+        _NATIVE_FAMILY.fullmatch(family) is None
+        or LIVE_BIRTH_ADMISSION_TABLE.get(family) != "SOURCE_NATIVE_LIVE"
+    ):
         raise SourceNativeAllocationError("native family is not admitted for LIVE creation")
     ordinal = _uint64(source_local_creation_ordinal, "source_local_creation_ordinal")
     return (
@@ -388,27 +440,72 @@ def _decode_source_native_frame(payload: str) -> tuple[LiveSourceKey, str, int]:
     return source_key, family, ordinal
 
 
-def parse_source_native_live_id(
-    native_id: str,
-    identifier_policy: Mapping[str, object],
-) -> SourceNativeLiveIdentityComponents:
-    """Parse and validate a source-native ID against its explicit family policy."""
-
+def _decode_source_native_live_id(native_id: str) -> tuple[str, LiveSourceKey, str, int]:
     if not isinstance(native_id, str) or native_id.count(_SOURCE_NATIVE_ID_MARKER) != 1:
         raise LiveContractError("source-native ID has invalid encoding marker")
     prefix, payload = native_id.split(_SOURCE_NATIVE_ID_MARKER, 1)
     if re.fullmatch(r"[A-Za-z][A-Za-z0-9_.:-]*", prefix) is None:
         raise LiveContractError("source-native ID prefix is invalid")
     source_key, family, ordinal = _decode_source_native_frame(payload)
+    return prefix, source_key, family, ordinal
+
+
+def parse_source_native_live_id(
+    native_id: str,
+    identifier_policy: Mapping[str, object],
+    *,
+    expected_source_key: LiveSourceKey | None = None,
+    expected_native_family: str | None = None,
+    expected_source_local_creation_ordinal: int | None = None,
+) -> SourceNativeLiveIdentityComponents:
+    """Parse and validate a source-native ID against its explicit family policy."""
+
+    prefix, source_key, family, ordinal = _decode_source_native_live_id(native_id)
     row = _source_native_policy_row(family, identifier_policy)
     if row["prefix"] != prefix:
         raise LiveContractError("source-native ID prefix does not match its family policy")
+    if expected_source_key is not None and source_key != _source_key(
+        expected_source_key, "expected LIVE source key"
+    ):
+        raise LiveContractError("source-native ID is bound to the wrong LIVE source")
+    if expected_native_family is not None and family != _machine_id(
+        expected_native_family, "expected native_family"
+    ):
+        raise LiveContractError("source-native ID is bound to the wrong native family")
+    if expected_source_local_creation_ordinal is not None and ordinal != _uint64(
+        expected_source_local_creation_ordinal,
+        "expected source_local_creation_ordinal",
+    ):
+        raise LiveContractError("source-native ID is bound to the wrong creation ordinal")
     return SourceNativeLiveIdentityComponents(
         live_source_key=source_key,
         native_family=family,
         source_local_creation_ordinal=ordinal,
         prefix=prefix,
     )
+
+
+def _validate_source_native_history(
+    live_source_key: LiveSourceKey,
+    next_creation_ordinal: int,
+    source_native_ids: Sequence[str],
+) -> None:
+    expected_count = next_creation_ordinal - 1
+    if len(source_native_ids) != expected_count:
+        raise LiveContractError("source-native ID history must be contiguous from ordinal one")
+    for expected_ordinal, native_id in enumerate(source_native_ids, start=1):
+        try:
+            _, source_key, family, ordinal = _decode_source_native_live_id(native_id)
+        except LiveContractError as error:
+            raise LiveContractError(
+                "source-native ID history contains an invalid framed ID"
+            ) from error
+        if source_key != live_source_key:
+            raise LiveContractError("source-native ID history contains a different LIVE source")
+        if LIVE_BIRTH_ADMISSION_TABLE.get(family) != "SOURCE_NATIVE_LIVE":
+            raise LiveContractError("source-native ID history contains a non-admitted family")
+        if ordinal != expected_ordinal:
+            raise LiveContractError("source-native ID history ordinals are not contiguous")
 
 
 def normalize_source_native_creations(
@@ -460,6 +557,7 @@ def allocate_source_native_creations(
 def advance_source_native_cursor(
     cursor: SourceNativeCursor | int,
     publication: LivePublicationResult,
+    accepted_source: LiveEnvelope | None = None,
 ) -> SourceNativeCursor:
     """Advance only from an authoritative accepted exact-source publication."""
 
@@ -468,6 +566,17 @@ def advance_source_native_cursor(
         raise SourceNativeAllocationError("cursor advancement requires a typed CAS result")
     if not publication.acknowledged or not publication.source_native_allocations:
         return current
+    accepted = publication.accepted_source if accepted_source is None else accepted_source
+    if not isinstance(accepted, LiveEnvelope):
+        raise SourceNativeAllocationError(
+            "cursor advancement requires the exact source envelope accepted by CAS"
+        )
+    if publication.accepted_source is not None and accepted != publication.accepted_source:
+        raise SourceNativeAllocationError("cursor advancement envelope differs from CAS evidence")
+    if accepted.source_key != publication.source_key:
+        raise SourceNativeAllocationError("cursor advancement source differs from CAS evidence")
+    if accepted.source_revision != publication.observed_source_revision:
+        raise SourceNativeAllocationError("cursor advancement revision differs from CAS evidence")
     if publication.expected_next_source_native_creation_ordinal != current.next_ordinal:
         raise SourceNativeAllocationError("accepted CAS result has a different source cursor")
     proposed = publication.proposed_next_source_native_creation_ordinal
@@ -475,6 +584,14 @@ def advance_source_native_cursor(
         raise SourceNativeAllocationError("accepted CAS result does not advance the source cursor")
     if proposed > SOURCE_NATIVE_CURSOR_MAX:
         raise SourceNativeAllocationError("accepted CAS result overflows the source cursor")
+    allocation_ids = tuple(item.native_id for item in publication.source_native_allocations)
+    if (
+        accepted.next_source_native_creation_ordinal != proposed
+        or accepted.source_native_ids[-len(allocation_ids) :] != allocation_ids
+    ):
+        raise SourceNativeAllocationError(
+            "accepted source envelope does not contain the CAS allocation history"
+        )
     return SourceNativeCursor(proposed)
 
 
@@ -640,7 +757,9 @@ class LiveClaim:
         family = self.native_family
         if family is not None:
             family = _machine_id(family, "claim.native_family")
-            if _NATIVE_FAMILY.fullmatch(family) is None or family in _FORBIDDEN_FAMILIES:
+            if _NATIVE_FAMILY.fullmatch(family) is None or (
+                LIVE_BIRTH_ADMISSION_TABLE.get(family) == "FORBIDDEN"
+            ):
                 raise LiveContractError("claim family is not admitted as LIVE authority")
             object.__setattr__(self, "native_family", family)
         if self.claim_type == "EXACT_OWNER":
@@ -799,6 +918,11 @@ class LiveEnvelope:
         if len(source_native_ids) != len(set(source_native_ids)):
             raise LiveContractError("source_native_ids must be unique")
         object.__setattr__(self, "source_native_ids", source_native_ids)
+        _validate_source_native_history(
+            self.source_key,
+            self.next_source_native_creation_ordinal,
+            source_native_ids,
+        )
 
     @property
     def source_key(self) -> LiveSourceKey:
@@ -1286,6 +1410,7 @@ class LivePublicationResult:
     source_native_allocations: tuple[SourceNativeAllocation, ...] = ()
     expected_next_source_native_creation_ordinal: int | None = None
     proposed_next_source_native_creation_ordinal: int | None = None
+    accepted_source: LiveEnvelope | None = None
 
     @property
     def acknowledged(self) -> bool:
@@ -1309,6 +1434,12 @@ class LivePublicationResult:
     @property
     def source_native_ids(self) -> tuple[str, ...]:
         return tuple(item.native_id for item in self.source_native_allocations)
+
+    @property
+    def accepted_envelope(self) -> LiveEnvelope | None:
+        """Compatibility vocabulary for the exact CAS-accepted source body."""
+
+        return self.accepted_source
 
     def acknowledge(self) -> bool:
         if not self.acknowledged:
@@ -1339,6 +1470,11 @@ def _result(
         proposed_next_source_native_creation_ordinal=(
             attempt.proposed_next_source_native_creation_ordinal
             if include_source_native_allocation
+            else None
+        ),
+        accepted_source=(
+            attempt.successor_route.entries[0]
+            if status is LivePublicationStatus.ACCEPTED and authoritative
             else None
         ),
     )
