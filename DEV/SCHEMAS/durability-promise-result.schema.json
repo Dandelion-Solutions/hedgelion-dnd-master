@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/durability-promise-result.schema.json",
+  "title": "HDM ephemeral durability promise result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "scope",
+    "status",
+    "acknowledged",
+    "required_roots",
+    "required_dependencies",
+    "native_results",
+    "currentness_evidence",
+    "ephemeral"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "scope": {"type": "string", "minLength": 1},
+    "status": {"enum": ["CONFIRMED_ACCEPTED", "CONFIRMED_REJECTED", "CONFLICT", "INDETERMINATE"]},
+    "acknowledged": {"type": "boolean"},
+    "required_roots": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "required_dependencies": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "native_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["domain", "status"],
+        "properties": {
+          "domain": {"type": "string", "minLength": 1},
+          "status": {"enum": ["CONFIRMED_ACCEPTED", "NO_WRITE_NEEDED", "CONFIRMED_REJECTED", "CONFLICT", "INDETERMINATE"]}
+        }
+      }
+    },
+    "currentness_evidence": {"type": "object"},
+    "ephemeral": {"const": true}
+  }
+}

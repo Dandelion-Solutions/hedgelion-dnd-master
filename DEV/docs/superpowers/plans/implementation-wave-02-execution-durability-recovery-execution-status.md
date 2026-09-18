@@ -2,12 +2,12 @@
 
 PLAN: `DEV/docs/superpowers/plans/implementation-wave-02-execution-durability-recovery.md`
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
-BASE_SHA: `d11b3aec20c3441e426443227e3700e45eb724b9`
+BASE_SHA: `0b68dc873839bae573eceee63b05d46c5977774d`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T05 - blocked until the T04 checkpoint is consumed; T02/T03/T04 repair round 2 is GREEN and local-only
-LAST_COMPLETED_TASK: W02.T04 - W02_OPERATIONAL_ROOT_ENROLLMENT_READY -> `9de81a8` + native-state repair `6c98cd7` + repair round 1 `f6c64b0` + repair round 2 `2afb5d4`
-LAST_SAFE_SHA: `2afb5d4` (local coherent T04 repair checkpoint; no push)
+CURRENT_TASK: W02.T05 - consuming the published T03/T04 checkpoints at `0b68dc873839bae573eceee63b05d46c5977774d`
+LAST_COMPLETED_TASK: W02.T04 - W02_OPERATIONAL_ROOT_ENROLLMENT_READY -> published Wave-02 ref at `0b68dc873839bae573eceee63b05d46c5977774d`
+LAST_SAFE_SHA: `0b68dc873839bae573eceee63b05d46c5977774d` (published T03/T04 input checkpoint)
 
 ## Dependency schedule
 
@@ -90,14 +90,14 @@ COMPLETED_TASKS:
   W02.T01 -> code `c23ac68` + `751665f` + `70f2d80`, published under remote-ref checkpoint `81ad503305d5fefdb47d209c722263f02365a04c`; `W02_CATALOG_BACKED_COMMAND_READY`
   W02.T02 -> code `d40213e` + `2ca6899` + `cfaf8a0` + `238e2db`, published under remote-ref checkpoint `351ab3e876254c31b506efcadc76fca635ea2aab`; `W02_DETERMINISTIC_EXECUTION_READY`
   W02.T03 -> code `bebaa81` + review repair `3acbbf5` + repair round 1 `c1802fe`; `W02_ACCEPTED_ADJUDICATION_BASIS_READY`
-  W02.T04 -> code `9de81a8` + native-state repair `6c98cd7` + repair round 1 `f6c64b0` + repair round 2 `2afb5d4`; `W02_OPERATIONAL_ROOT_ENROLLMENT_READY` (local-only, no push)
+  W02.T04 -> code `9de81a8` + native-state repair `6c98cd7` + repair round 1 `f6c64b0` + repair round 2 `2afb5d4`; `W02_OPERATIONAL_ROOT_ENROLLMENT_READY` (published in `0b68dc873839bae573eceee63b05d46c5977774d`)
 
 ACTUAL IMPACT VS PLANNED: within the W02.T01 envelope. The new owner-native `GAME/TOOLS/runtime_execution.py`, `runtime.command` schema synchronization, and RD05/RD15 tests were expected. Existing Step-3 schema consumer tests required mechanical fixture synchronization; no new authority, persistence/recovery/currentness owner, catalog change, or shared physical writer was introduced.
 
 CURRENT_VERIFICATION_STATE:
-- T04 focused root/lifecycle/native-routing/execution-consumer suites at `2afb5d4`: 136 passed
-- T04 full DEV discovery at `2afb5d4`: 724 passed, 7 skipped
-- T04 maintenance audit at `2afb5d4`: PASS
+- T04 focused root/lifecycle/native-routing/execution-consumer suites at the published input: 136 passed
+- T04 full DEV discovery at the published input: 724 passed, 7 skipped
+- T04 maintenance audit at the published input: PASS
 - T04 RED evidence: lifecycle/root tests failed before native lifecycle/root implementation; initial baseline also lacked the isolated DEV dependency environment
 - T04 repair round 1 RED: promised enumeration rejected 3-item owner inputs; caller-constructible promise object was not an owner-validation interface; Procedure schema/producer/root lifecycle version and terminal-form synchronization tests failed
 - T04 repair round 2 RED: structural always-true promise validation incorrectly enrolled unresolved inputs; `execute_segment` accepted v1 and missing Procedure schema states
@@ -139,9 +139,9 @@ ACTUAL T03 IMPACT VS PLANNED: within the approved T03 policy-basis envelope. The
 ACTUAL T04 IMPACT VS PLANNED: within the approved T04 envelope. Procedure lifecycle is materialized as owner-native `ACTIVE|TERMINAL`; generic/concrete schemas, producer/validator, root validator and the existing execution consumer require the synchronized v2 lifecycle form; root deltas validate exact native owner kind, identity and state; command eligibility uses accepted/settled disposition plus unfinished closure; unresolved-input rooting retains only the typed later-owner interface and fails closed until T05 supplies its authorized boundary. No issuer, registry, promise authority, publication/removal closure, recovery hydration, temporal root, global queue, lifecycle registry or shared writer was introduced.
 
 SYSTEM_IMPACT: RESOLVED - Product Owner accepted the Senior-recommended T03/T04 realization at `acc40855850f4d07b63bad4792917f97764038a3`; canonical owners, stable Wave-02 plan and both impact briefs are synchronized
-NEXT_EXACT_TASK: fresh-read current HEAD; start W02.T05 only after the named T03/T04 checkpoints are accepted by the coordinator; T05 owns publication/removal closure
-KNOWN_BLOCKERS: NONE for W02.T03/T04; W02.T05 remains dependency-blocked on their named checkpoints and W02.T06 remains blocked on W02.T05
-UNPUBLISHED_WORK: NONE; T04 is local-only by instruction and no publication was attempted
+NEXT_EXACT_TASK: W02.T05 durability/publication closure from the published input checkpoint; T06 remains blocked on W02.T05
+KNOWN_BLOCKERS: NONE for W02.T05; W02.T06 remains blocked on W02.T05
+UNPUBLISHED_WORK: NONE
 
 ## Accepted T03/T04 System-Impact rulings — 2026-09-18
 
@@ -337,3 +337,38 @@ SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative catalog or shared-schema ch
 MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
 SCHEMA / CATALOG / CHECKPOINT IMPACT: no speculative changes; catalog generation remains 2
 MIGRATION IMPACT: NONE - v1 clean-slate; no compatibility policy admitted
+
+## W02.T05 Execution Record — 2026-09-18
+
+IMPLEMENTATION START HEAD: `0b68dc873839bae573eceee63b05d46c5977774d`
+PRIMARY OWNER ARTIFACTS:
+- `GAME/TOOLS/durability.py` and `GAME/TOOLS/publication.py`
+- `DEV/SCHEMAS/durability-promise-result.schema.json`
+- `DEV/SCHEMAS/campaign-publication-attempt.schema.json`
+- `GAME/TOOLS/recovery_roots.py` authorized durability/handoff promise boundary
+- `DEV/TESTS/test_rd06_durability_publication.py`
+
+PROTECTED INVARIANTS:
+- promises and publication attempts are ephemeral, typed, immutable owner-local evidence;
+- one campaign publication closure uses pinned parent/tree/currentness evidence and non-force ref transition;
+- accepted command identity, fixed RNG, catalog basis and T03 policy basis are preserved without re-resolution;
+- terminal Procedure transition and derivative root removal publish together;
+- indeterminate outcomes read/reconcile and never acknowledge, replay or blindly re-execute;
+- campaign identity is canonical and immutable; storage metadata remains a separate domain;
+- unresolved Interaction/IntentPlan roots require an owner-issued durability/handoff promise;
+- no global frontier/journal, duplicate authority, broad scan, shared final writer or T06 recovery hydration.
+
+TDD EVIDENCE:
+- RED: new RD06 suite failed before the owner module existed (`ModuleNotFoundError: GAME.TOOLS.durability`).
+- GREEN: focused RD06 + T03/T04 consumer suites, 98 passed.
+
+VERSION_IMPACT:
+- new `GAME/TOOLS/durability.py`: `framework_module_version` 1.0.1;
+- new `GAME/TOOLS/publication.py`: `framework_module_version` 1.0.1;
+- `GAME/TOOLS/recovery_roots.py`: `framework_module_version` 1.0.4 -> 1.0.5 for the authorized promise boundary;
+- new durability/publication schema namespaces: `schema_version` 1;
+- catalog, engine, campaign, persistence, storage and migration namespaces: NONE;
+- migration impact: NONE - v1 clean-slate; no compatibility shim or migration edge.
+
+SYSTEM_IMPACT: NONE - implementation remains within the approved T05 durability/publication envelope; no new semantic, currentness, policy, lifecycle, persistence or recovery authority was introduced.
+UNPUBLISHED_WORK: NONE after the coherent T05 checkpoint commit; final status awaits Senior integration audit.

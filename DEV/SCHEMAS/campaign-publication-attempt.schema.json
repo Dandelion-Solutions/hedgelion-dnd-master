@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/campaign-publication-attempt.schema.json",
+  "title": "HDM immutable ephemeral campaign publication attempt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "repository_id",
+    "target_ref",
+    "campaign_id",
+    "acting_principal",
+    "pinned_head_sha",
+    "base_tree_sha",
+    "campaign_identity",
+    "path_operations",
+    "deleted_paths",
+    "owner_generations",
+    "accepted_identity",
+    "fixed_rng_values",
+    "catalog_basis",
+    "policy_basis",
+    "procedure_before",
+    "procedure_after",
+    "root_delta",
+    "root_membership_before",
+    "currentness_evidence",
+    "publication_reason",
+    "native_domains"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "repository_id": {"type": "string", "minLength": 1},
+    "target_ref": {"type": "string", "minLength": 1},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "acting_principal": {"type": "object", "minProperties": 2},
+    "pinned_head_sha": {"type": "string", "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"},
+    "base_tree_sha": {"type": "string", "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"},
+    "campaign_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["campaign_id", "campaign_name", "branch", "created_at"],
+      "properties": {
+        "campaign_id": {"type": "string", "minLength": 1},
+        "campaign_name": {"type": ["string", "null"]},
+        "branch": {"type": "string", "minLength": 1},
+        "created_at": {"type": "string", "minLength": 1}
+      }
+    },
+    "path_operations": {"type": "object"},
+    "deleted_paths": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "owner_generations": {"type": "object"},
+    "accepted_identity": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["command_id", "input_fingerprint", "resolution_id", "segment_id", "event_id"],
+          "properties": {
+            "command_id": {"type": "string", "minLength": 1},
+            "input_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "resolution_id": {"type": "string", "minLength": 1},
+            "segment_id": {"type": "string", "minLength": 1},
+            "event_id": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "fixed_rng_values": {"type": "array", "items": {"type": "integer"}},
+    "catalog_basis": {"type": "object"},
+    "policy_basis": {"type": "object"},
+    "procedure_before": {"type": ["object", "null"]},
+    "procedure_after": {"type": ["object", "null"]},
+    "root_delta": {"type": ["object", "null"]},
+    "root_membership_before": {"type": ["object", "null"]},
+    "currentness_evidence": {"type": "object", "minProperties": 1},
+    "publication_reason": {"type": "string", "minLength": 1},
+    "native_domains": {"const": ["campaign"]}
+  }
+}

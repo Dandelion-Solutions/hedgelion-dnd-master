@@ -16,8 +16,8 @@ from typing import Final, Protocol
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final = "1.0.5"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
 _OWNER_KINDS: Final = frozenset(
     {
@@ -340,10 +340,36 @@ def _validate_promised_input(
     native_owner: Mapping[str, object],
     promise: AcceptedUnresolvedInputPromise | None,
 ) -> tuple[str, bool, str]:
-    del campaign_id, owner_kind, native_owner, promise
-    raise OperationalRootError(
-        "unresolved input enrollment is deferred until an authorized durability/handoff promise boundary"
-    )
+    if owner_kind not in _PROMISED_OWNER_KINDS:
+        raise OperationalRootError("durability promise is only valid for unresolved input owners")
+    if promise is None:
+        raise OperationalRootError(
+            "unresolved input enrollment is deferred until an authorized durability/handoff promise boundary"
+        )
+    try:
+        from .durability import is_authorized_handoff_promise
+    except ImportError as exc:  # pragma: no cover - package import is stable in runtime
+        raise OperationalRootError("authorized durability/handoff boundary is unavailable") from exc
+    if not is_authorized_handoff_promise(promise):
+        raise OperationalRootError("unresolved input requires an authorized durability/handoff promise boundary")
+    if owner_kind == "runtime.interaction":
+        owner_id = _nonempty(native_owner.get("input_message_id"), "interaction input_message_id")
+    else:
+        owner_id = _nonempty(
+            native_owner.get("intent_plan_id", native_owner.get("id")), "intent plan id"
+        )
+    try:
+        valid = promise.validate(
+            campaign_id=campaign_id,
+            owner_kind=owner_kind,
+            owner_id=owner_id,
+            native_owner=native_owner,
+        )
+    except (AttributeError, TypeError, ValueError) as exc:
+        raise OperationalRootError("authorized durability/handoff promise evidence is invalid") from exc
+    if valid is not True:
+        raise OperationalRootError("authorized durability/handoff promise does not match native owner")
+    return owner_id, True, "owner_issued_durability_handoff_promise"
 
 
 def _owner_item(
