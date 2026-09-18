@@ -12,16 +12,17 @@ from __future__ import annotations
 import base64
 import binascii
 from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import InitVar, dataclass
 from enum import StrEnum
 import hashlib
 import re
 from types import MappingProxyType
 from typing import Final, TypeAlias
+import weakref
 
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -489,11 +490,25 @@ def _validate_source_native_history(
     live_source_key: LiveSourceKey,
     next_creation_ordinal: int,
     source_native_ids: Sequence[str],
+    identifier_policy: Mapping[str, object] | None = None,
 ) -> None:
     expected_count = next_creation_ordinal - 1
     if len(source_native_ids) != expected_count:
         raise LiveContractError("source-native ID history must be contiguous from ordinal one")
     for expected_ordinal, native_id in enumerate(source_native_ids, start=1):
+        if identifier_policy is not None:
+            try:
+                parse_source_native_live_id(
+                    native_id,
+                    identifier_policy,
+                    expected_source_key=live_source_key,
+                    expected_source_local_creation_ordinal=expected_ordinal,
+                )
+            except LiveContractError as error:
+                raise LiveContractError(
+                    "source-native ID history does not match the exact family policy"
+                ) from error
+            continue
         try:
             _, source_key, family, ordinal = _decode_source_native_live_id(native_id)
         except LiveContractError as error:
@@ -566,6 +581,10 @@ def advance_source_native_cursor(
         raise SourceNativeAllocationError("cursor advancement requires a typed CAS result")
     if not publication.acknowledged or not publication.source_native_allocations:
         return current
+    if not _is_owner_issued_cas_result(publication):
+        raise SourceNativeAllocationError(
+            "cursor advancement requires accepted owner-issued CAS evidence"
+        )
     if not isinstance(publication.accepted_source, LiveEnvelope):
         raise SourceNativeAllocationError(
             "cursor advancement requires the exact source envelope accepted by CAS"
@@ -881,8 +900,9 @@ class LiveEnvelope:
     opening_campaign_revision: str = ""
     next_source_native_creation_ordinal: int = 1
     source_native_ids: tuple[str, ...] = ()
+    identifier_policy: InitVar[Mapping[str, object] | None] = None
 
-    def __post_init__(self) -> None:
+    def __post_init__(self, identifier_policy: Mapping[str, object] | None) -> None:
         key = _source_key((self.campaign_id, self.scene_id, self.epoch_id))
         object.__setattr__(self, "campaign_id", key[0])
         object.__setattr__(self, "scene_id", key[1])
@@ -922,6 +942,7 @@ class LiveEnvelope:
             self.source_key,
             self.next_source_native_creation_ordinal,
             source_native_ids,
+            identifier_policy,
         )
 
     @property
@@ -955,7 +976,12 @@ class LiveEnvelope:
         }
 
     @classmethod
-    def from_mapping(cls, value: object) -> LiveEnvelope:
+    def from_mapping(
+        cls,
+        value: object,
+        *,
+        identifier_policy: Mapping[str, object] | None = None,
+    ) -> LiveEnvelope:
         if not isinstance(value, Mapping):
             raise LiveContractError("LIVE envelope must be an object")
         expected = {
@@ -972,6 +998,10 @@ class LiveEnvelope:
         }
         if set(value) != expected:
             raise LiveContractError("LIVE envelope fields are not strict")
+        if value["source_native_ids"] and identifier_policy is None:
+            raise LiveContractError(
+                "persisted source-native ID history requires the exact family policy"
+            )
         return cls(
             campaign_id=value["campaign_id"],  # type: ignore[arg-type]
             scene_id=value["scene_id"],  # type: ignore[arg-type]
@@ -983,6 +1013,7 @@ class LiveEnvelope:
             claims=_claims(value["claims"]),
             next_source_native_creation_ordinal=value["next_source_native_creation_ordinal"],  # type: ignore[arg-type]
             source_native_ids=value["source_native_ids"],  # type: ignore[arg-type]
+            identifier_policy=identifier_policy,
         )
 
 
@@ -1048,7 +1079,12 @@ class LiveRouting:
         }
 
     @classmethod
-    def from_mapping(cls, value: object) -> LiveRouting:
+    def from_mapping(
+        cls,
+        value: object,
+        *,
+        identifier_policy: Mapping[str, object] | None = None,
+    ) -> LiveRouting:
         if not isinstance(value, Mapping):
             raise LiveContractError("LIVE route must be an object")
         expected = {"schema_version", "kind", "campaign_id", "complete", "entries"}
@@ -1064,7 +1100,8 @@ class LiveRouting:
         route = cls(
             campaign_id=value["campaign_id"],  # type: ignore[arg-type]
             entries=tuple(
-                LiveEnvelope.from_mapping(item) for item in raw_entries
+                LiveEnvelope.from_mapping(item, identifier_policy=identifier_policy)
+                for item in raw_entries
             ),
             complete=value["complete"],  # type: ignore[arg-type]
         )
@@ -1382,6 +1419,7 @@ def freeze_live_attempt(
         opening_campaign_revision=source.opening_campaign_revision,
         next_source_native_creation_ordinal=next_ordinal,
         source_native_ids=source_native_ids,
+        identifier_policy=identifier_policy,
     )
     return FrozenLivePublicationAttempt(
         selected_route=route,
@@ -1399,7 +1437,7 @@ def freeze_live_attempt(
     )
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, weakref_slot=True)
 class LivePublicationResult:
     """Typed CAS result preserving ambiguous transport knowledge."""
 
@@ -1447,6 +1485,29 @@ class LivePublicationResult:
         return True
 
 
+_OWNER_ISSUED_CAS_RESULTS: dict[
+    int, weakref.ReferenceType[LivePublicationResult]
+] = {}
+
+
+def _mark_owner_issued_cas_result(
+    result: LivePublicationResult,
+) -> LivePublicationResult:
+    result_id = id(result)
+
+    def remove(reference: weakref.ReferenceType[LivePublicationResult]) -> None:
+        if _OWNER_ISSUED_CAS_RESULTS.get(result_id) is reference:
+            _OWNER_ISSUED_CAS_RESULTS.pop(result_id, None)
+
+    _OWNER_ISSUED_CAS_RESULTS[result_id] = weakref.ref(result, remove)
+    return result
+
+
+def _is_owner_issued_cas_result(result: LivePublicationResult) -> bool:
+    reference = _OWNER_ISSUED_CAS_RESULTS.get(id(result))
+    return reference is not None and reference() is result
+
+
 def _result(
     status: LivePublicationStatus,
     attempt: FrozenLivePublicationAttempt,
@@ -1456,7 +1517,7 @@ def _result(
     include_source_native_allocation: bool = False,
 ) -> LivePublicationResult:
     allocations = attempt.source_native_allocations if include_source_native_allocation else ()
-    return LivePublicationResult(
+    result = LivePublicationResult(
         status=status,
         source_key=attempt.source_key,
         authoritative=authoritative,
@@ -1478,6 +1539,7 @@ def _result(
             else None
         ),
     )
+    return _mark_owner_issued_cas_result(result)
 
 
 def classify_cas_result(

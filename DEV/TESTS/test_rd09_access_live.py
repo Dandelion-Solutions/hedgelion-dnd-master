@@ -608,7 +608,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.6")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.7")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
@@ -1383,6 +1383,48 @@ class LiveSourceCreationCursorTests(unittest.TestCase):
                 attempt.successor_route.entries[0],
             )
 
+    def test_cursor_advance_rejects_forged_matching_envelope_result(self) -> None:
+        source = _live_source()
+        attempt = freeze_live_attempt(
+            source,
+            route=_live_route(source),
+            proposed_source_revision=LIVE_H1,
+            source_native_creations=(SourceNativeCreation("world.actor", 1),),
+            source_native_cursor=SourceNativeCursor(1),
+            identifier_policy=SOURCE_NATIVE_POLICY,
+        )
+        accepted = classify_cas_result(
+            attempt,
+            _accepted_ack(attempt)
+            | {
+                "source_native_allocations": [
+                    allocation.as_mapping()
+                    for allocation in attempt.source_native_allocations
+                ],
+                "expected_next_source_native_creation_ordinal": 1,
+                "proposed_next_source_native_creation_ordinal": 2,
+            },
+        )
+        forged = LivePublicationResult(
+            status=accepted.status,
+            source_key=accepted.source_key,
+            authoritative=accepted.authoritative,
+            observed_source_revision=accepted.observed_source_revision,
+            source_native_allocations=accepted.source_native_allocations,
+            expected_next_source_native_creation_ordinal=(
+                accepted.expected_next_source_native_creation_ordinal
+            ),
+            proposed_next_source_native_creation_ordinal=(
+                accepted.proposed_next_source_native_creation_ordinal
+            ),
+            accepted_source=accepted.accepted_source,
+        )
+
+        with self.assertRaisesRegex(SourceNativeAllocationError, "owner|issued|CAS|accepted"):
+            advance_source_native_cursor(
+                SourceNativeCursor(1), forged, accepted.accepted_source
+            )
+
     def test_cursor_exhaustion_fails_without_reuse_or_wrap(self) -> None:
         source_key = ("campaign-1", "scene-1", "e1-" + "2" * 64)
 
@@ -1477,6 +1519,26 @@ class SourceNativeAmbiguousPublicationTests(unittest.TestCase):
 
 
 class SourceNativeHistoryValidationTests(unittest.TestCase):
+    def test_persisted_history_accepts_the_exact_family_policy_prefix(self) -> None:
+        source = _live_source()
+        native_id = encode_source_native_live_id(
+            source.source_key,
+            "world.actor",
+            1,
+            SOURCE_NATIVE_POLICY,
+        )
+
+        loaded = LiveEnvelope.from_mapping(
+            source.as_mapping()
+            | {
+                "next_source_native_creation_ordinal": 2,
+                "source_native_ids": [native_id],
+            },
+            identifier_policy=SOURCE_NATIVE_POLICY,
+        )
+
+        self.assertEqual(loaded.source_native_ids, (native_id,))
+
     def test_live_envelope_rejects_a_framed_id_for_another_source(self) -> None:
         source = _live_source()
         foreign_id = encode_source_native_live_id(
@@ -1498,6 +1560,33 @@ class SourceNativeHistoryValidationTests(unittest.TestCase):
             _live_source(
                 next_source_native_creation_ordinal=4,
                 source_native_ids=(first, third),
+            )
+
+    def test_persisted_history_rejects_a_reprefixed_id_for_the_same_family(self) -> None:
+        source = _live_source()
+        renamed_policy = {
+            "world": {
+                "world.actor": {
+                    **SOURCE_NATIVE_POLICY["world"]["world.actor"],
+                    "prefix": "renamed-actor",
+                }
+            }
+        }
+        re_prefixed_id = encode_source_native_live_id(
+            source.source_key,
+            "world.actor",
+            1,
+            renamed_policy,
+        )
+
+        with self.assertRaisesRegex(LiveContractError, "prefix|policy|history"):
+            LiveEnvelope.from_mapping(
+                source.as_mapping()
+                | {
+                    "next_source_native_creation_ordinal": 2,
+                    "source_native_ids": [re_prefixed_id],
+                },
+                identifier_policy=SOURCE_NATIVE_POLICY,
             )
 
 
