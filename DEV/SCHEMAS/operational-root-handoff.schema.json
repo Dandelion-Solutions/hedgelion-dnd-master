@@ -26,6 +26,7 @@
       "pattern": "^(?:[a-f0-9]{40}(?:[a-f0-9]{24})?|[A-Za-z][A-Za-z0-9_.:-]*)$"
     },
     "source_key": {
+      "description": "For LIVE handoffs, the first source_key item must equal campaign_id; the runtime owner validator enforces this cross-field invariant because standard JSON Schema cannot express dynamic property equality.",
       "anyOf": [
         {"type": "null"},
         {

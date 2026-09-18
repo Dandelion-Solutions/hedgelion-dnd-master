@@ -15,12 +15,11 @@ import re
 from typing import Final, Protocol
 import weakref
 
-from .handoff_evidence import validate_accepted_absorption_evidence
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.9
-FRAMEWORK_MODULE_VERSION: Final = "1.0.9"
+# framework_module_version: 1.0.10
+FRAMEWORK_MODULE_VERSION: Final = "1.0.10"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
 OPERATIONAL_ROOT_HANDOFF_SCHEMA_VERSION: Final = 2
 _OWNER_KINDS: Final = frozenset(
@@ -279,6 +278,23 @@ class AcceptedUnresolvedInputPromise(Protocol):
         """Return exactly ``True`` only for matching owner-validated evidence."""
 
 
+class AcceptedAbsorptionEvidenceValidator(Protocol):
+    """Port to the existing LIVE producer's exact absorption validator.
+
+    The handoff adapter only delegates validation through this port.  It never
+    issues, marks, or independently accepts absorption evidence.
+    """
+
+    def __call__(
+        self,
+        evidence: object,
+        *,
+        source_key: Sequence[str],
+        source_revision: str,
+    ) -> None:
+        """Raise when the LIVE producer rejects the exact absorption proof."""
+
+
 def derive_operational_root_delta(
     campaign_id: str,
     owner_kind: str,
@@ -470,6 +486,7 @@ def reconcile_operational_root_handoff(
     source_lifecycle: str | None = None,
     absorption_acknowledged: bool | None = None,
     absorption_evidence: object | None = None,
+    absorption_evidence_validator: AcceptedAbsorptionEvidenceValidator | None = None,
     terminal_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]] = (),
     terminal_native_owners: Mapping[
         tuple[str, str] | tuple[str, str, str], OperationalRootDelta
@@ -512,14 +529,12 @@ def reconcile_operational_root_handoff(
                 )
             if absorption_evidence is None:
                 raise OperationalRootError("campaign recovery requires owner-issued absorption evidence")
-            try:
-                validate_accepted_absorption_evidence(
-                    absorption_evidence,
-                    source_key=expected_key,  # type: ignore[arg-type]
-                    source_revision=expected_revision,
-                )
-            except ValueError as exc:
-                raise OperationalRootError("campaign recovery absorption evidence is not exact") from exc
+            _validate_absorption_evidence(
+                absorption_evidence,
+                absorption_evidence_validator,
+                source_key=expected_key,
+                source_revision=expected_revision,
+            )
             return current
         return current
     if current.source_scope != expected_scope or current.source_revision != expected_revision:
@@ -536,14 +551,12 @@ def reconcile_operational_root_handoff(
             raise OperationalRootError("campaign recovery requires owner-issued absorption evidence")
         if absorption_evidence is None:
             raise OperationalRootError("campaign recovery requires owner-issued absorption evidence")
-        try:
-            validate_accepted_absorption_evidence(
-                absorption_evidence,
-                source_key=current.source_key,  # type: ignore[arg-type]
-                source_revision=current.source_revision,
-            )
-        except ValueError as exc:
-            raise OperationalRootError("campaign recovery absorption evidence is not exact") from exc
+        _validate_absorption_evidence(
+            absorption_evidence,
+            absorption_evidence_validator,
+            source_key=current.source_key,
+            source_revision=current.source_revision,
+        )
     elif target_scope == "LIVE" and expected_scope != "CAMPAIGN":
         raise OperationalRootError("LIVE root handoff must begin from campaign roots")
     terminal = _validate_terminal_roots(current, terminal_owner_keys, terminal_native_owners)
@@ -633,6 +646,7 @@ def recover_operational_roots_to_campaign(
     source_lifecycle: str | None = None,
     absorption_acknowledged: bool | None = None,
     absorption_evidence: object | None = None,
+    absorption_evidence_validator: AcceptedAbsorptionEvidenceValidator | None = None,
     terminal_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]] = (),
     terminal_native_owners: Mapping[
         tuple[str, str] | tuple[str, str, str], OperationalRootDelta
@@ -657,11 +671,35 @@ def recover_operational_roots_to_campaign(
         source_lifecycle=source_lifecycle,
         absorption_acknowledged=absorption_acknowledged,
         absorption_evidence=absorption_evidence,
+        absorption_evidence_validator=absorption_evidence_validator,
         terminal_owner_keys=terminal_owner_keys,
         terminal_native_owners=terminal_native_owners,
         superseded_owner_keys=superseded_owner_keys,
         superseded_native_deltas=superseded_native_deltas,
     )
+
+
+def _validate_absorption_evidence(
+    evidence: object,
+    validator: AcceptedAbsorptionEvidenceValidator | None,
+    *,
+    source_key: Sequence[str] | None,
+    source_revision: str,
+) -> None:
+    if validator is None:
+        raise OperationalRootError(
+            "campaign recovery requires the LIVE producer absorption validator"
+        )
+    if source_key is None:
+        raise OperationalRootError("campaign recovery absorption source key is missing")
+    try:
+        validator(
+            evidence,
+            source_key=source_key,
+            source_revision=source_revision,
+        )
+    except (TypeError, ValueError) as exc:
+        raise OperationalRootError("campaign recovery absorption evidence is not exact") from exc
 
 
 def enumerate_operational_root_page(

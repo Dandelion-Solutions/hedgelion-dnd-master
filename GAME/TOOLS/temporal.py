@@ -14,8 +14,8 @@ from typing import Any, Mapping, Sequence
 import weakref
 
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION = "1.0.4"
 
 
 _DISPOSITIONS = frozenset({"NOT_DUE", "DUE", "INDETERMINATE"})
@@ -124,14 +124,15 @@ def _is_owner_issued_temporal_entry(entry: TemporalRouteEntry) -> bool:
     return reference is not None and reference() is entry
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, weakref_slot=True)
 class TemporalNativeEnumeration:
     """Complete owner-issued temporal evidence for one exact source.
 
     This is the native-owner side of a temporal handoff.  A caller cannot
     replace it with a list of root references: every entry is owner-issued and
     is pinned to the same campaign, source scope, source revision and (for
-    LIVE) source key.
+    LIVE) source key.  The enumeration factory is the only accepted issuance
+    path; direct dataclass construction is rejected at the completeness gate.
     """
 
     campaign_id: str
@@ -139,14 +140,11 @@ class TemporalNativeEnumeration:
     source_revision: str
     entries: tuple[TemporalRouteEntry, ...]
     source_key: tuple[str, str, str] | None = None
-    complete: bool = True
 
     def __post_init__(self) -> None:
         campaign_id = _require_string(self.campaign_id, "native enumeration campaign_id")
         scope = _route_scope(self.source_scope)
         revision = _route_revision(self.source_revision)
-        if self.complete is not True:
-            raise TemporalContractError("native temporal enumeration must be complete")
         source_key = _route_source_key(self.source_key, campaign_id, scope)
         entries = tuple(self.entries)
         if any(
@@ -181,16 +179,40 @@ class TemporalNativeEnumeration:
         object.__setattr__(self, "entries", tuple(sorted(entries, key=lambda item: (item.root_ref, item.occurrence_id))))
 
 
+_OWNER_ISSUED_TEMPORAL_ENUMERATIONS: dict[
+    int, weakref.ReferenceType[TemporalNativeEnumeration]
+] = {}
+
+
+def _mark_owner_issued_temporal_enumeration(
+    enumeration: TemporalNativeEnumeration,
+) -> TemporalNativeEnumeration:
+    enumeration_id = id(enumeration)
+
+    def remove(reference: weakref.ReferenceType[TemporalNativeEnumeration]) -> None:
+        if _OWNER_ISSUED_TEMPORAL_ENUMERATIONS.get(enumeration_id) is reference:
+            _OWNER_ISSUED_TEMPORAL_ENUMERATIONS.pop(enumeration_id, None)
+
+    _OWNER_ISSUED_TEMPORAL_ENUMERATIONS[enumeration_id] = weakref.ref(enumeration, remove)
+    return enumeration
+
+
+def _is_owner_issued_temporal_enumeration(
+    enumeration: TemporalNativeEnumeration,
+) -> bool:
+    reference = _OWNER_ISSUED_TEMPORAL_ENUMERATIONS.get(id(enumeration))
+    return reference is not None and reference() is enumeration
+
+
 def enumerate_temporal_native_owners(
-    native_owners: Iterable[Mapping[str, Any]] | None,
+    native_owners: Iterable[TemporalRouteEntry] | None,
     *,
     campaign_id: str,
     source_scope: str,
     source_revision: str,
     source_key: Sequence[str] | None = None,
-    complete: bool = True,
 ) -> TemporalNativeEnumeration:
-    """Enumerate a complete native temporal-owner set without broad discovery."""
+    """Issue one bounded native temporal-owner set without broad discovery."""
 
     if native_owners is None or callable(native_owners):
         raise TemporalContractError(
@@ -200,29 +222,25 @@ def enumerate_temporal_native_owners(
         raise TemporalContractError(
             "native temporal owners must be an explicit iterable"
         )
-    if complete is not True:
-        raise TemporalContractError("native temporal enumeration must be complete")
     checked_campaign = _require_string(campaign_id, "campaign_id")
     scope = _route_scope(source_scope)
     revision = _route_revision(source_revision)
-    entries = tuple(
-        derive_temporal_route_entry(
-            owner,
-            campaign_id=checked_campaign,
-            source_scope=scope,
-            source_revision=revision,
-            source_key=source_key,
+    entries = tuple(native_owners)
+    if any(
+        not isinstance(entry, TemporalRouteEntry)
+        or not _is_owner_issued_temporal_entry(entry)
+        for entry in entries
+    ):
+        raise TemporalContractError(
+            "native temporal enumeration requires typed owner-issued entries"
         )
-        for owner in native_owners
-    )
-    return TemporalNativeEnumeration(
+    return _mark_owner_issued_temporal_enumeration(TemporalNativeEnumeration(
         campaign_id=checked_campaign,
         source_scope=scope,
         source_revision=revision,
         source_key=source_key,
         entries=entries,
-        complete=True,
-    )
+    ))
 
 
 @dataclass(frozen=True, slots=True)
@@ -719,6 +737,10 @@ def validate_temporal_route_completeness(
     if not isinstance(native_enumeration, TemporalNativeEnumeration):
         raise TemporalContractError(
             "temporal route completeness requires typed native enumeration"
+        )
+    if not _is_owner_issued_temporal_enumeration(native_enumeration):
+        raise TemporalContractError(
+            "temporal route completeness requires producer-issued native enumeration"
         )
     if (
         resolved.campaign_id != native_enumeration.campaign_id

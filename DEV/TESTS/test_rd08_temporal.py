@@ -49,8 +49,15 @@ LIVE_SOURCE_KEY = ("campaign-frostfall", "scene-market", "epoch-1")
 
 
 def _native_enumeration(*, scope: str, revision: str, source_key=None) -> TemporalNativeEnumeration:
+    entry = derive_temporal_route_entry(
+        ARMED_ROOT,
+        campaign_id="campaign-frostfall",
+        source_scope=scope,
+        source_revision=revision,
+        source_key=source_key,
+    )
     return enumerate_temporal_native_owners(
-        (ARMED_ROOT,),
+        (entry,),
         campaign_id="campaign-frostfall",
         source_scope=scope,
         source_revision=revision,
@@ -252,11 +259,8 @@ class TemporalRoutingCompletenessTests(unittest.TestCase):
         with self.assertRaisesRegex(TemporalContractError, "extra|native owner"):
             validate_temporal_route_completeness(
                 route,
-                TemporalNativeEnumeration(
-                    campaign_id="campaign-frostfall",
-                    source_scope="CAMPAIGN",
-                    source_revision="0" * 40,
-                    entries=(
+                enumerate_temporal_native_owners(
+                    (
                         native_enumeration.entries[0],
                         derive_temporal_route_entry(
                             dict(ARMED_ROOT, root_ref="world.thread:THREAD_other"),
@@ -265,7 +269,37 @@ class TemporalRoutingCompletenessTests(unittest.TestCase):
                             source_revision="0" * 40,
                         ),
                     ),
+                    campaign_id="campaign-frostfall",
+                    source_scope="CAMPAIGN",
+                    source_revision="0" * 40,
                 ),
+            )
+
+    def test_native_enumeration_is_not_caller_constructible_evidence(self):
+        native_enumeration = _native_enumeration(scope="CAMPAIGN", revision="0" * 40)
+        route = TemporalRoute(
+            campaign_id="campaign-frostfall",
+            source_scope="CAMPAIGN",
+            source_revision="0" * 40,
+            entries=native_enumeration.entries,
+        )
+
+        forged = TemporalNativeEnumeration(
+            campaign_id="campaign-frostfall",
+            source_scope="CAMPAIGN",
+            source_revision="0" * 40,
+            entries=native_enumeration.entries,
+        )
+        with self.assertRaisesRegex(TemporalContractError, "producer-issued"):
+            validate_temporal_route_completeness(route, forged)
+
+    def test_native_enumeration_rejects_caller_native_mappings(self):
+        with self.assertRaisesRegex(TemporalContractError, "typed.*entries"):
+            enumerate_temporal_native_owners(
+                (ARMED_ROOT,),
+                campaign_id="campaign-frostfall",
+                source_scope="CAMPAIGN",
+                source_revision="0" * 40,
             )
 
     def test_route_completeness_rejects_cross_campaign_owner_set(self):

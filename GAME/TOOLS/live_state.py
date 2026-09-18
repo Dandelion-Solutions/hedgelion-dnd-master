@@ -22,14 +22,8 @@ from types import MappingProxyType
 from typing import Final, TypeAlias
 import weakref
 
-from .handoff_evidence import (
-    mark_accepted_absorption_evidence,
-    validate_accepted_absorption_evidence as validate_owner_issued_absorption_evidence,
-)
-
-
-# framework_module_version: 1.0.12
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.12"
+# framework_module_version: 1.0.13
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.13"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -2573,14 +2567,6 @@ def validate_accepted_absorption_evidence(
         raise LiveContractError("accepted absorption requires typed owner-issued CAS evidence")
     if not evidence.acknowledged or not _is_owner_issued_absorption_result(evidence):
         raise LiveContractError("accepted absorption requires owner-issued accepted CAS evidence")
-    try:
-        validate_owner_issued_absorption_evidence(
-            evidence,
-            source_key=source_key,
-            source_revision=source_revision,
-        )
-    except ValueError as exc:
-        raise LiveContractError("accepted absorption requires owner-neutral proof binding") from exc
     attempt = evidence.attempt
     if not isinstance(attempt, FrozenCampaignAbsorption):
         raise LiveContractError("accepted absorption evidence lacks its frozen CAS attempt")
@@ -2678,7 +2664,7 @@ def classify_campaign_absorption(
             False,
             attempt=attempt,
         ))
-    result = _mark_owner_issued_absorption_result(LiveAbsorptionPublication(
+    return _mark_owner_issued_absorption_result(LiveAbsorptionPublication(
         LiveAbsorptionStatus.ACCEPTED,
         attempt.source_key,
         attempt.source_revision,
@@ -2687,12 +2673,6 @@ def classify_campaign_absorption(
         successor_route=attempt.successor_route,
         attempt=attempt,
     ))
-    mark_accepted_absorption_evidence(
-        result,
-        source_key=result.source_key,
-        source_revision=result.source_revision,
-    )
-    return result
 
 
 @dataclass(frozen=True, slots=True)

@@ -31,6 +31,6 @@ fields:
 invariants:
   - this carrier is ephemeral handoff evidence, not a persistent operational-root page
   - source lifecycle is not authority; accepted owner-issued absorption evidence is required for campaign recovery
-  - CAMPAIGN source_scope requires source_key null; LIVE source_scope requires exactly three non-empty source-key strings whose first component is campaign_id
+  - CAMPAIGN source_scope requires source_key null; LIVE source_scope requires exactly three non-empty source-key strings whose first component equals campaign_id; runtime validation enforces this cross-field invariant
   - source_revision matches 40/64 lowercase hexadecimal characters or the admitted machine-ID grammar
   - every root route is derived from exact native owner kind and identity
