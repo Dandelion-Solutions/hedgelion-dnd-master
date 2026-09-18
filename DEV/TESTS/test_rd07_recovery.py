@@ -17,6 +17,7 @@ from GAME.TOOLS.policy_basis import (
     PinnedCampaign,
     PlayerEvidence,
 )
+from GAME.TOOLS.mechanics import ExecutionStore, FixedRng, execute_segment
 from GAME.TOOLS.runtime_execution import accept_command
 from GAME.TOOLS.recovery import (
     CheckpointDescriptorError,
@@ -489,7 +490,7 @@ def _policy_basis_for_recovery(
 
 
 def _validated_command_closure(
-    *, include_policy: bool = False
+    *, include_policy: bool = False, producer_roll: bool = False
 ) -> tuple[dict[str, object], dict[str, object], dict[str, object], object, dict[str, str]]:
     context = _bind_context()
     accepted_basis = None
@@ -543,42 +544,71 @@ def _validated_command_closure(
     )
     if not isinstance(accepted, dict):
         raise AssertionError("test command must be accepted")
-    segment_id = "resolution-1:segment:1"
-    event_id = f"{segment_id}:event:1"
-    roll = {
-        "roll_id": "resolution-1:roll:1",
-        "request_id": "resolution-1:roll:1",
-        "expression": "fixed",
-        "raw_values": [17],
-        "source_kind": "rng.system",
-        "provenance_ref": "resolution-1:rng:1",
-    }
-    segment = {
-        "segment_id": segment_id,
-        "segment_sequence": 1,
-        "commit_state": "committed",
-        "event_ids": [event_id],
-    }
-    execution = {
-        "accepted_command_id": accepted["command_id"],
-        "accepted_input_fingerprint": accepted["input_fingerprint"],
-        "execution_owner_id": "resolution-1",
-        "resolution_id": "resolution-1",
-        "segment": segment,
-        "event": {
+    if producer_roll:
+        execution = execute_segment(
+            accepted,
+            {
+                "resolution_id": "resolution-1",
+                "root_command_id": accepted["command_id"],
+                "initiating_command_id": accepted["command_id"],
+                "activity_id": "activity.check.generic",
+                "actor_id": "actor-1",
+                "status": "COMPLETED",
+                "next_segment_sequence": 1,
+                "invocation_facts": [],
+                "fixed_rng_results": [],
+                "prior_step_exports": {},
+                "child_resolution_ids": [],
+                "segments": [],
+            },
+            rng=FixedRng([17]),
+            roll_request={
+                "roll_id": "roll.attack.1",
+                "request_id": "request.attack.1",
+                "expression": "1d20",
+                "source_kind": "rng.system",
+                "provenance_ref": "rng:fixture",
+            },
+            store=ExecutionStore(),
+        )
+        resolution = execution["resolution"]
+    else:
+        segment_id = "resolution-1:segment:1"
+        event_id = f"{segment_id}:event:1"
+        roll = {
+            "roll_id": "resolution-1:roll:1",
+            "request_id": "resolution-1:roll:1",
+            "expression": "fixed",
+            "raw_values": [17],
+            "source_kind": "rng.system",
+            "provenance_ref": "resolution-1:rng:1",
+        }
+        segment = {
             "segment_id": segment_id,
-            "event_ordinal": 1,
+            "segment_sequence": 1,
+            "commit_state": "committed",
+            "event_ids": [event_id],
+        }
+        execution = {
+            "accepted_command_id": accepted["command_id"],
+            "accepted_input_fingerprint": accepted["input_fingerprint"],
+            "execution_owner_id": "resolution-1",
+            "resolution_id": "resolution-1",
+            "segment": segment,
+            "event": {
+                "segment_id": segment_id,
+                "event_ordinal": 1,
+                "event_id": event_id,
+            },
             "event_id": event_id,
-        },
-        "event_id": event_id,
-        "roll_result": roll,
-    }
-    resolution = {
-        "resolution_id": "resolution-1",
-        "root_command_id": accepted["command_id"],
-        "segments": [segment],
-        "fixed_rng_results": [roll],
-    }
+            "roll_result": roll,
+        }
+        resolution = {
+            "resolution_id": "resolution-1",
+            "root_command_id": accepted["command_id"],
+            "segments": [segment],
+            "fixed_rng_results": [roll],
+        }
     policy = _policy_basis_for_recovery(
         accepted,
         [] if resolved_policy is None else [resolved_policy.policy_ref],
@@ -732,6 +762,7 @@ class AcceptedExecutionRecoveryTests(unittest.TestCase):
         self.assertEqual(recovered.segment_id, segment_id)
         self.assertEqual(recovered.event_id, event_id)
         self.assertEqual(recovered.fixed_rng_values, (19,))
+        self.assertEqual(recovered.execution["roll_result"], later_roll)
 
     def test_recovery_rejects_mutually_forged_policy_refs(self) -> None:
         command = _accepted_command_for_recovery()
@@ -922,7 +953,9 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
     def test_current_runtime_hydrates_t05_command_and_execution_sources_before_ready(self) -> None:
         from GAME.TOOLS.native_storage import route_native_record
 
-        accepted, execution, closure, context, identity = _validated_command_closure(include_policy=True)
+        accepted, execution, closure, context, identity = _validated_command_closure(
+            include_policy=True, producer_roll=True
+        )
         path = route_native_record("runtime.command", (identity["command_id"],)).relative_path
         resolution = copy.deepcopy(closure["resolution"])
         resolution_path = route_native_record(
@@ -998,6 +1031,8 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
         self.assertIn("MANIFEST.yaml", reads)
         self.assertIn("RULES/HOUSE_RULES.yaml", reads)
         self.assertIn("RULES/HOUSE_RULES.md", reads)
+        self.assertEqual(resolution["fixed_rng_results"][0]["roll_id"], "roll.attack.1")
+        self.assertEqual(resolution["fixed_rng_results"][0]["provenance_ref"], "rng:fixture")
 
     def test_current_runtime_rejects_missing_resolution_root_command_id(self) -> None:
         from GAME.TOOLS.native_storage import route_native_record

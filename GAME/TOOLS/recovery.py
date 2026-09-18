@@ -21,9 +21,10 @@ from .recovery_roots import derive_operational_root_delta
 from .runtime_execution import CommandAcceptanceError, validate_execution_proposal
 
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final = "1.0.4"
 _REVISION = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
+_NATIVE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 
 
 class RecoveryFailureCode(str, Enum):
@@ -525,7 +526,7 @@ def validate_recovered_basis(
     if any(isinstance(value, bool) or not isinstance(value, int) for value in fixed_values):
         raise RecoveryFailure("fixed RNG evidence is malformed", code=RecoveryFailureCode.CORRUPT)
     if roll:
-        _validate_roll_identity(roll, resolution_id)
+        _validate_roll_identity(roll)
     if resolution is not None:
         _validate_resolution_closure(resolution, resolution_id, command_id, segment, roll)
     accepted_catalog = _mapping_or_failure(command.get("catalog_context"), "catalog basis")
@@ -991,7 +992,7 @@ def _hydrate_execution_result(
             "resolution fixed RNG evidence is malformed", code=RecoveryFailureCode.CORRUPT
         )
     for raw_roll in fixed_results:
-        _validate_roll_identity(_mapping_or_failure(raw_roll, "resolution fixed RNG result"), resolution_id)
+        _validate_roll_identity(_mapping_or_failure(raw_roll, "resolution fixed RNG result"))
 
     hydrated_segments: list[Mapping[str, object]] = []
     events_by_id: dict[str, Mapping[str, object]] = {}
@@ -1167,20 +1168,28 @@ def _validate_event_identity(
         raise RecoveryFailure("execution event ordinal is not owner-derived", code=RecoveryFailureCode.CORRUPT)
 
 
-def _validate_roll_identity(roll: Mapping[str, object], resolution_id: str) -> None:
-    roll_id = _string_or_failure(roll.get("roll_id"), "roll_id")
-    match = re.fullmatch(re.escape(resolution_id) + r":roll:(\d+)", roll_id)
-    if match is None:
-        raise RecoveryFailure("fixed RNG identity differs from resolution", code=RecoveryFailureCode.CORRUPT)
-    ordinal = int(match.group(1))
-    expected_roll_id = f"{resolution_id}:roll:{ordinal}"
-    if roll.get("roll_id") != expected_roll_id or roll.get("request_id") != expected_roll_id:
-        raise RecoveryFailure("fixed RNG identity differs from resolution", code=RecoveryFailureCode.CORRUPT)
-    if roll.get("provenance_ref") != f"{resolution_id}:rng:{ordinal}":
-        raise RecoveryFailure("fixed RNG provenance differs from resolution", code=RecoveryFailureCode.CORRUPT)
+def _validate_roll_identity(roll: Mapping[str, object]) -> None:
     expected = {"roll_id", "request_id", "expression", "raw_values", "source_kind", "provenance_ref"}
-    if set(roll) != expected or roll.get("source_kind") not in {"rng.system", "rng.player", "rng.external"}:
+    if set(roll) != expected:
         raise RecoveryFailure("fixed RNG evidence is malformed", code=RecoveryFailureCode.CORRUPT)
+    for field in ("roll_id", "request_id"):
+        value = _string_or_failure(roll.get(field), field)
+        if _NATIVE_ID.fullmatch(value) is None:
+            raise RecoveryFailure(
+                f"{field} is not a valid native identifier", code=RecoveryFailureCode.CORRUPT
+            )
+    _string_or_failure(roll.get("expression"), "roll expression")
+    raw_values = roll.get("raw_values")
+    if (
+        not isinstance(raw_values, Sequence)
+        or isinstance(raw_values, (str, bytes))
+        or not raw_values
+        or any(isinstance(value, bool) or not isinstance(value, int) for value in raw_values)
+    ):
+        raise RecoveryFailure("fixed RNG raw values are malformed", code=RecoveryFailureCode.CORRUPT)
+    if roll.get("source_kind") not in {"rng.system", "rng.player", "rng.external"}:
+        raise RecoveryFailure("fixed RNG source kind is unsupported", code=RecoveryFailureCode.CORRUPT)
+    _string_or_failure(roll.get("provenance_ref"), "RNG provenance reference")
 
 
 def _validate_resolution_closure(
