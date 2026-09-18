@@ -54,12 +54,7 @@ def _command_owner(*, command_id: str = "command-000001") -> dict[str, object]:
     }
 
 
-class _LaterOwnerPromiseEvidence:
-    def __init__(self, campaign_id: str, owner_kind: str, owner_id: str) -> None:
-        self.campaign_id = campaign_id
-        self.owner_kind = owner_kind
-        self.owner_id = owner_id
-
+class _ArbitraryStructuralPromise:
     def validate(
         self,
         *,
@@ -68,12 +63,7 @@ class _LaterOwnerPromiseEvidence:
         owner_id: str,
         native_owner: dict[str, object],
     ) -> bool:
-        return (
-            self.campaign_id == campaign_id
-            and self.owner_kind == owner_kind
-            and self.owner_id == owner_id
-            and native_owner.get("kind") == owner_kind
-        )
+        return True
 
 
 class OperationalRootEnrollmentTests(unittest.TestCase):
@@ -193,7 +183,7 @@ class OperationalRootEnrollmentTests(unittest.TestCase):
         self.assertEqual(accepted.action, "ENROLL")
         self.assertEqual(settled.action, "NOOP")
 
-    def test_unresolved_input_requires_later_owner_promise(self) -> None:
+    def test_unresolved_input_fails_closed_until_authorized_promise_boundary(self) -> None:
         interaction = {
             "kind": "runtime.interaction",
             "campaign_id": "campaign-1",
@@ -209,15 +199,13 @@ class OperationalRootEnrollmentTests(unittest.TestCase):
                 native_owner=interaction,
             )
 
-        promise = _LaterOwnerPromiseEvidence("campaign-1", "runtime.interaction", "message-1")
-        delta = derive_operational_root_delta(
-            campaign_id="campaign-1",
-            owner_kind="runtime.interaction",
-            native_owner=interaction,
-            accepted_promise=promise,
-        )
-        self.assertEqual(delta.action, "ENROLL")
-        validate_operational_root_delta(delta, native_owner=interaction, accepted_promise=promise)
+        with self.assertRaisesRegex(OperationalRootError, "authorized.*boundary"):
+            derive_operational_root_delta(
+                campaign_id="campaign-1",
+                owner_kind="runtime.interaction",
+                native_owner=interaction,
+                accepted_promise=_ArbitraryStructuralPromise(),
+            )
 
     def test_unresolved_input_rejects_caller_constructed_or_mismatched_promise(self) -> None:
         interaction = {
@@ -234,18 +222,15 @@ class OperationalRootEnrollmentTests(unittest.TestCase):
                 owner_kind="runtime.interaction",
                 owner_id="message-1",
             )
-        mismatched = _LaterOwnerPromiseEvidence(
-            "campaign-1", "runtime.interaction", "message-other"
-        )
-        with self.assertRaisesRegex(OperationalRootError, "promise"):
+        with self.assertRaisesRegex(OperationalRootError, "authorized.*boundary"):
             derive_operational_root_delta(
                 campaign_id="campaign-1",
                 owner_kind="runtime.interaction",
                 native_owner=interaction,
-                accepted_promise=mismatched,
+                accepted_promise=_ArbitraryStructuralPromise(),
             )
 
-    def test_enumeration_accepts_owner_validated_interaction_promise(self) -> None:
+    def test_enumeration_defers_interaction_until_authorized_promise_boundary(self) -> None:
         interaction = {
             "kind": "runtime.interaction",
             "campaign_id": "campaign-1",
@@ -254,29 +239,23 @@ class OperationalRootEnrollmentTests(unittest.TestCase):
             "input_message_id": "message-1",
             "intent_plan_id": "plan-1",
         }
-        promise = _LaterOwnerPromiseEvidence("campaign-1", "runtime.interaction", "message-1")
-        page = enumerate_operational_root_page(
-            "campaign-1", [("runtime.interaction", interaction, promise)]
-        )
-        self.assertEqual(
-            [(root.owner_kind, root.owner_id) for root in page.roots],
-            [("runtime.interaction", "message-1")],
-        )
+        with self.assertRaisesRegex(OperationalRootError, "authorized.*boundary"):
+            enumerate_operational_root_page(
+                "campaign-1",
+                [("runtime.interaction", interaction, _ArbitraryStructuralPromise())],
+            )
 
-    def test_enumeration_accepts_owner_validated_intent_plan_promise(self) -> None:
+    def test_enumeration_defers_intent_plan_until_authorized_promise_boundary(self) -> None:
         intent_plan = {
             "kind": "runtime.intent_plan",
             "interaction_id": "message-1",
             "clauses": [{"clause_id": "clause-1"}],
         }
-        promise = _LaterOwnerPromiseEvidence("campaign-1", "runtime.intent_plan", "message-1")
-        page = enumerate_operational_root_page(
-            "campaign-1", [("runtime.intent_plan", intent_plan, promise)]
-        )
-        self.assertEqual(
-            [(root.owner_kind, root.owner_id) for root in page.roots],
-            [("runtime.intent_plan", "message-1")],
-        )
+        with self.assertRaisesRegex(OperationalRootError, "authorized.*boundary"):
+            enumerate_operational_root_page(
+                "campaign-1",
+                [("runtime.intent_plan", intent_plan, _ArbitraryStructuralPromise())],
+            )
 
     def test_typed_procedure_open_and_terminate_feed_root_lifecycle(self) -> None:
         opening = {

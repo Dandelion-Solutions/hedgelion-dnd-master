@@ -11,13 +11,13 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 import hashlib
 import json
-from typing import Final, Protocol, runtime_checkable
+from typing import Final, Protocol
 
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final = "1.0.4"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
 _OWNER_KINDS: Final = frozenset(
     {
@@ -138,13 +138,12 @@ class OperationalRootPage:
         }
 
 
-@runtime_checkable
 class AcceptedUnresolvedInputPromise(Protocol):
-    """Later-owner validation interface required before unresolved input rooting.
+    """Later-owner promise boundary interface reserved for the later owner.
 
-    W02.T04 consumes this interface but does not construct, issue, persist, or
-    otherwise authenticate promise evidence.  The later durability/handoff
-    owner supplies the implementation and validates its own promise authority.
+    W02.T04 defines the typed input/derivation port but has no authorized
+    durability/handoff issuer.  Until that later owner supplies its boundary,
+    every unresolved-input candidate fails closed.
     """
 
     def validate(
@@ -341,33 +340,10 @@ def _validate_promised_input(
     native_owner: Mapping[str, object],
     promise: AcceptedUnresolvedInputPromise | None,
 ) -> tuple[str, bool, str]:
-    if not isinstance(promise, AcceptedUnresolvedInputPromise):
-        raise OperationalRootError(
-            "unresolved input requires later-owner promise validation evidence"
-        )
-    if not isinstance(native_owner, Mapping) or isinstance(native_owner, OperationalRoot):
-        raise OperationalRootError("unresolved input must be a native owner mapping")
-    declared_kind = native_owner.get("kind")
-    if declared_kind is not None and declared_kind != owner_kind:
-        raise OperationalRootError("native unresolved-input kind differs from requested owner kind")
-    if owner_kind == "runtime.interaction":
-        identity = _nonempty(native_owner.get("input_message_id"), "native Interaction id")
-        required = ("campaign_id", "session_id", "player_id", "intent_plan_id")
-    else:
-        identity = _nonempty(native_owner.get("interaction_id"), "native IntentPlan id")
-        required = ("clauses",)
-    if any(field not in native_owner for field in required):
-        raise OperationalRootError("native unresolved-input state is incomplete")
-    if promise.validate(
-        campaign_id=campaign_id,
-        owner_kind=owner_kind,
-        owner_id=identity,
-        native_owner=native_owner,
-    ) is not True:
-        raise OperationalRootError(
-            "later-owner promise evidence does not validate the exact native owner"
-        )
-    return identity, True, "accepted_later_owner_promise"
+    del campaign_id, owner_kind, native_owner, promise
+    raise OperationalRootError(
+        "unresolved input enrollment is deferred until an authorized durability/handoff promise boundary"
+    )
 
 
 def _owner_item(

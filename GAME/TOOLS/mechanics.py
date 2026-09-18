@@ -19,8 +19,8 @@ from threading import RLock
 from typing import Final, Protocol
 
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final = "1.0.5"
 _DIGEST_GENERATION: Final = 1
 _ID_PATTERN: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _EVENT_KIND_PATTERN: Final = re.compile(r"^event\.[a-z][a-z0-9_.]*$")
@@ -93,6 +93,8 @@ _FORBIDDEN_PROCEDURE_FIELDS: Final = frozenset(
         "condition_index",
     }
 )
+_PROCEDURE_SCHEMA_VERSION: Final = 2
+_PROCEDURE_LIFECYCLES: Final = frozenset({"ACTIVE", "TERMINAL"})
 
 
 class ExecutionContractError(ValueError):
@@ -580,6 +582,16 @@ def _validate_procedure_binding(
     procedure_procedure_id = _optional_id(procedure.get("procedure_id"), "procedure state procedure_id")
     if procedure_procedure_id is not None and procedure_procedure_id != resolution_procedure_id:
         raise ExecutionConflict("procedure state procedure_id differs from resolution procedure_id")
+    if procedure.get("schema_version") != _PROCEDURE_SCHEMA_VERSION:
+        raise ExecutionContractError("procedure schema_version must be 2")
+    lifecycle = procedure.get("lifecycle")
+    if lifecycle not in _PROCEDURE_LIFECYCLES:
+        raise ExecutionContractError("procedure schema lifecycle must be ACTIVE or TERMINAL")
+    lifecycle_state = procedure.get("lifecycle_state")
+    if lifecycle == "TERMINAL" and lifecycle_state != "terminated":
+        raise ExecutionContractError("terminal procedure schema requires terminated phase")
+    if lifecycle == "ACTIVE" and lifecycle_state == "terminated":
+        raise ExecutionContractError("active procedure schema cannot use terminated phase")
 
 
 def _validate_continuation_binding(

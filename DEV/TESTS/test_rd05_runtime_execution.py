@@ -586,6 +586,33 @@ class DeterministicExecutionTests(unittest.TestCase):
         self.assertEqual(procedure["round_number"], 2)
         self.assertEqual(continuation["committed_segment_refs"], [])
 
+    def test_procedure_execution_requires_schema_v2_state(self) -> None:
+        accepted = self._accepted()
+        procedure = {
+            "schema_version": 2,
+            "procedure_kind": "procedure.combat_minimal",
+            "lifecycle": "ACTIVE",
+            "lifecycle_state": "turn_active",
+            "participant_ids": ["actor-1"],
+            "initiative_order": ["actor-1"],
+            "round_number": 2,
+            "round_advance_pending": False,
+            "active_turn_index": 0,
+            "participant_resources": {"actor-1": {"resource.action_budget": {"spent": 1}}},
+        }
+        for invalid in (
+            dict(procedure, schema_version=1),
+            {key: value for key, value in procedure.items() if key != "schema_version"},
+        ):
+            with self.subTest(procedure=invalid):
+                with self.assertRaisesRegex(ExecutionContractError, "procedure schema"):
+                    execute_segment(
+                        accepted,
+                        self._resolution(status="AWAITING_REACTION", next_segment_sequence=2),
+                        procedure_state=invalid,
+                        store=ExecutionStore(),
+                    )
+
     def test_stale_continuation_generation_fails_closed_before_execution(self) -> None:
         accepted = self._accepted()
         continuation = {
