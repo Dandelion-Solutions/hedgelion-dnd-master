@@ -7,7 +7,7 @@ BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 STATUS: EXECUTION_AUTHORIZED
 CURRENT_TASK: W03.T04 -- source-native LIVE ID, ordering and cursor
 LAST_COMPLETED_TASK: W03.T03 -- campaign, scene, epoch and physical route identity / W03_LIVE_ROUTE_IDENTITY_READY
-LAST_SAFE_SHA: `aedc5eae550628d12c30e0f48059c2262103c42a` (W03.T03 implementation checkpoint)
+LAST_SAFE_SHA: `60754eee8b5294c5967679b77abdc710c2d0d0f1` (W03.T03 repair round 1 implementation checkpoint)
 
 ## Dependency schedule
 
@@ -63,6 +63,7 @@ COMPLETED_TASKS:
 - W03.T02 review repair round 1 -> `50ee02474403b5be6cef7336e3300e04dee70669` (published/read-back)
 - W03.T02 review repair round 2 -> `9db8dff14653b105eadb9d65d9e383e53839feed` (implementation checkpoint)
 - W03.T03 -> `aedc5eae550628d12c30e0f48059c2262103c42a` (published/read-back; W03_LIVE_ROUTE_IDENTITY_READY)
+- W03.T03 repair round 1 -> `60754eee8b5294c5967679b77abdc710c2d0d0f1` (implementation checkpoint; retained-schema scope repair)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -86,6 +87,10 @@ CURRENT_VERIFICATION_STATE:
 - W03.T03 GREEN/refactor: focused LIVE identity/currentness suite 59 passed; named integration suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`) 110 passed; full DEV discovery 853 passed, 7 skipped; maintenance audit, compile checks and `git diff --check` passed.
 - W03.T03 changed only the LIVE identity owner, route/publication/live-scene machine contracts, blank route projection and owner-local tests; route/body validation runs at route construction/load while semantic source identity remains `(campaign_id, scene_id, epoch_id)`.
 - W03.T03 implementation publication was non-force; fresh fetch/read-back confirmed local and `origin/v1/engine-rearchitecture` equal at `aedc5eae550628d12c30e0f48059c2262103c42a`.
+- W03.T03 repair round 1 RED: the focused Wave-05 retained-schema witness observed the published-head digest `e700fddb79727ad72d86be93c7b22d25e28ece95bdd898f72e1e311ea86e5b11`, not the pre-T03 digest `0e5cceac5b29d1bcad1fcfe5779905092402d1c8b00d9c3d04157a822ceb5638`.
+- W03.T03 repair round 1 GREEN: `GAME/SCHEMA/live_scene.schema.yaml` was restored byte-for-byte to the pre-T03 contract/version; the focused scope witness passed, and the W03 diff from `b81bc97` contains no retained live-scene schema delta.
+- W03.T03 repair round 1 verification: focused LIVE suite 60 passed; named integration suites 111 passed; full DEV discovery 854 passed, 7 skipped; maintenance audit and `git diff --check` passed.
+- W03.T03 repair round 1 changed only the owner-local scope witness and reverted the unauthorized Wave-05 retained-schema edit; route identity remains only in `GAME/TOOLS/live_state.py`, LIVE routing/publication contracts, the blank LIVE route projection and owner-local tests.
 
 VERSION_IMPACT: W03.T02 review repair round 1 materially changes the LIVE runtime module `framework_module_version` 1.0.1 -> 1.0.2 and the ephemeral publication-attempt schema 1 -> 2 because selected-route and complete-successor evidence are now required. Claim/routing serialized shapes remain schema v1; their repair rejects pre-release invalid claim forms without changing serialized fields or adding a migration/projection.
 
@@ -94,6 +99,8 @@ SYSTEM_IMPACT: NONE -- the repair remains within the approved LIVE envelope/clai
 
 SYSTEM_IMPACT: NONE -- round 2 remains inside the approved LIVE envelope/claim/currentness owner, adds no semantic owner or distributed transaction, and does not alter W03.T04/W05 identity/catalog ownership.
 SYSTEM_IMPACT: NONE -- W03.T03 implements the approved c1/s1/e1 routing identity and exact body/opening-basis validator; it adds no semantic identity owner, physical-route authority, broad scan, compatibility alias, transaction or downstream source-native allocator.
+SYSTEM_IMPACT: NONE -- W03.T03 repair round 1 removes an unauthorized Wave-05 retained-schema delta, restores its pre-T03 bytes/version, and leaves all approved W03 LIVE route identity behavior unchanged. No Wave-05 work was started.
+VERSION_IMPACT: W03.T03 repair round 1 reverses the erroneous `GAME/SCHEMA/live_scene.schema.yaml` schema bump `1 -> 2`; the effective W03 checkpoint has no live-scene schema impact and retains only the approved T03 impacts: `framework_module_version 1.0.3 -> 1.0.4`, LIVE routing schema `2 -> 3`, and LIVE publication-attempt schema `3 -> 4`. No engine-release, catalog-generation, campaign-contract, storage-format, persistent-family or other runtime projection namespace changed.
 NEXT_EXACT_TASK: W03.T04 -- source-native LIVE ID, ordering and cursor, consuming W03_LIVE_ROUTE_IDENTITY_READY.
-KNOWN_BLOCKERS: NONE for W03.T03. Later tasks remain gated by the schedule above and their named owner/currentness inputs.
+KNOWN_BLOCKERS: NONE for W03.T03 repair round 1. Fresh remote fetch succeeded; later tasks remain gated by the schedule above and their named owner/currentness inputs.
 UNPUBLISHED_WORK: NONE before this cursor-update commit.
