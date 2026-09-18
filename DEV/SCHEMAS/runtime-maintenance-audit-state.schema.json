@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/runtime-maintenance-audit-state.schema.json",
+  "title": "HDM runtime maintenance audit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "campaign_id", "audit_id", "operation", "scope", "outcome", "observed_basis", "authority"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "runtime.maintenance_audit"},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "audit_id": {"pattern": "^audit-[0-9]{4,}$"},
+    "operation": {"type": "string", "minLength": 1},
+    "scope": {"type": "string", "minLength": 1},
+    "outcome": {"enum": ["CONFIRMED", "UNAVAILABLE", "REJECTED", "INDETERMINATE"]},
+    "observed_basis": {"type": "object", "minProperties": 1},
+    "authority": {"const": "SUPPORT_AUDIT_ONLY"}
+  }
+}

@@ -1,34 +1,18 @@
 schema_name: checkpoint
-schema_version: 3
-required: [schema_version, id, campaign_id, valid_through_event_id, state]
+schema_version: 4
+required: [schema_version, id, campaign_id]
 fields:
   schema_version: integer
   id: string
   campaign_id: string
   created_at: string
-  valid_through_event_id: string|null
-  expected_commit_sha: string|null
-  world_time: object|null
-  state:
-    current_state_path: string
-    active_pc_ids: array[string]
-    active_thread_ids: array[string]
-    active_scene_ids: array[string]
-  recovery_notes: array[string]
-  engine:
-    version: string
-    package_id: string
-    source_commit_sha: string|null
-    package_sha256: string
-    adopted_at: string
-  ruleset:
-    ruleset_set_digest_generation: integer
-    ruleset_set_sha256: string
-  schema_data_version: integer
+  state: object|null
+  engine: object|null
+  ruleset: object|null
+  schema_data_version: integer|null
 invariants:
-  - checkpoint is compact recovery metadata, not a snapshot copy of all WORLD records
-  - checkpoint engine is a recovery projection of MANIFEST.engine.current at checkpoint creation; it stores portable runtime identity, never current_runtime_root
-  - checkpoint ruleset is a nonauthoritative recovery projection of MANIFEST.ruleset.current and preserves the exact digest generation plus digest; it never selects a replacement set
-  - current_state_path is resolved inside the current campaign root layout and normally uses STATE/CURRENT.yaml
-  - expected_commit_sha may be filled after commit identity is known; recovery must also be possible via event frontier
-  - latest pointer references a canonical checkpoint ID/path
+  - checkpoint is optional compact descriptor/provenance evidence, not current gameplay authority
+  - checkpoint engine and ruleset are optional nonauthoritative projections; they never select a replacement runtime or ruleset
+  - checkpoint does not define a recovery-completeness frontier, root set, SAVE proof, session lease, or rollback slot
+  - omitted checkpoint metadata is not evidence that a current source or historical dependency is absent
+  - latest pointer references a canonical checkpoint ID/path only; null is a healthy value

@@ -16,6 +16,26 @@ from GAME.TOOLS.policy_basis import (
     PinnedCampaign,
     PlayerEvidence,
 )
+from GAME.TOOLS.recovery import (
+    CheckpointDescriptorError,
+    CurrentNativeSource,
+    HistoricalRepairCandidate,
+    MaintenanceAudit,
+    RecoveryFailure,
+    RecoveryFailureCode,
+    RecoveredExecution,
+    RecoverySourceError,
+    export_checkpoint_diagnostics,
+    hydrate_operational_roots,
+    promote_historical_repair,
+    record_maintenance_audit,
+    recover_current_runtime,
+    reset_last_checkpoint_reference,
+    select_current_native_sources,
+    validate_checkpoint_descriptor,
+    validate_repair_candidate,
+    validate_recovered_basis,
+)
 
 
 H = "0123456789abcdef0123456789abcdef01234567"
@@ -152,6 +172,7 @@ class ExactPolicyBasisResolutionTests(unittest.TestCase):
                 catalog_context=_bind_context(),
             )
 
+
     def test_missing_realization_is_a_typed_gap(self) -> None:
         repository = FakeRepository()
         sidecar = _sidecar()
@@ -166,6 +187,7 @@ class ExactPolicyBasisResolutionTests(unittest.TestCase):
                 catalog_context=_bind_context(),
             )
 
+
     def test_owner_evidence_must_be_typed_and_is_not_a_caller_boolean(self) -> None:
         class UntrustedAccess(FakeAccess):
             def resolve_principal(self, pinned: PinnedCampaign) -> dict[str, object]:
@@ -179,6 +201,7 @@ class ExactPolicyBasisResolutionTests(unittest.TestCase):
                 PolicySelection(policy_id="policy.social_leverage", consumer_id="activity.check.generic"),
                 catalog_context=_bind_context(),
             )
+
 
     def test_sidecar_duplicate_policy_identity_is_rejected(self) -> None:
         repository = FakeRepository()
@@ -359,6 +382,417 @@ class ExactPolicyBasisResolutionTests(unittest.TestCase):
                 PolicySelection(policy_id="policy.social_leverage", consumer_id="activity.check.generic"),
                 catalog_context=_bind_context(),
             )
+
+
+
+class CurrentSourceSelectionTests(unittest.TestCase):
+    def test_selects_owner_native_current_source_not_checkpoint_or_lexical_latest(self) -> None:
+        class Repository(FakeRepository):
+            def select_current_native_sources(
+                self, pinned: PinnedCampaign
+            ) -> tuple[CurrentNativeSource, ...]:
+                return (
+                    CurrentNativeSource(
+                        campaign_id=pinned.campaign_id,
+                        domain="campaign",
+                        source_id="campaign/current",
+                        revision=pinned.revision,
+                        relative_path="MANIFEST.yaml",
+                    ),
+                )
+
+        repository = Repository()
+        selected = select_current_native_sources(
+            repository,
+            "campaign-1",
+            checkpoint_hint={"revision": "f" * 40},
+        )
+
+        self.assertEqual(selected[0].revision, H)
+        self.assertEqual(selected[0].source_id, "campaign/current")
+        self.assertEqual(repository.reads, [])
+
+    def test_missing_owner_native_route_is_typed_incomplete_failure(self) -> None:
+        class Repository(FakeRepository):
+            def select_current_native_sources(
+                self, pinned: PinnedCampaign
+            ) -> tuple[CurrentNativeSource, ...]:
+                return ()
+
+        with self.assertRaises(RecoverySourceError) as raised:
+            select_current_native_sources(Repository(), "campaign-1")
+
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.INCOMPLETE)
+
+
+def _accepted_command_for_recovery() -> dict[str, object]:
+    return {
+        "command_id": "command-000001",
+        "input_fingerprint": "a" * 64,
+        "catalog_context": {
+            "catalog_generation": 2,
+            "catalog_context_fingerprint": "b" * 64,
+            "ruleset_set_sha256": "c" * 64,
+        },
+        "action_request": {
+            "activity_id": "activity.check.generic",
+            "actor_id": "actor-1",
+            "parameter_bindings": {
+                "dc": {
+                    "source_class": "INVOCATION_ADJUDICATED",
+                    "value": 15,
+                    "policy_basis_refs": [f"policy.social_leverage@{H}"],
+                }
+            },
+        },
+        "invocation_facts": [],
+    }
+
+
+def _execution_for_recovery() -> dict[str, object]:
+    return {
+        "accepted_command_id": "command-000001",
+        "accepted_input_fingerprint": "a" * 64,
+        "resolution_id": "resolution-000001",
+        "segment": {"segment_id": "resolution-000001:segment:1"},
+        "event": {
+            "segment_id": "resolution-000001:segment:1",
+            "event_ordinal": 1,
+            "event_id": "resolution-000001:segment:1:event:1",
+        },
+        "event_id": "resolution-000001:segment:1:event:1",
+        "roll_result": {"raw_values": [17]},
+    }
+
+
+class CheckpointDescriptorTests(unittest.TestCase):
+    def test_descriptor_has_narrow_identity_and_campaign_association(self) -> None:
+        descriptor = validate_checkpoint_descriptor(
+            {
+                "schema_version": 4,
+                "id": "checkpoint-1",
+                "campaign_id": "campaign-1",
+                "created_at": "2026-09-18T00:00:00Z",
+            },
+            campaign_id="campaign-1",
+            selected_id="checkpoint-1",
+        )
+
+        self.assertEqual(descriptor.id, "checkpoint-1")
+        self.assertFalse(hasattr(descriptor, "valid_through_event_id"))
+
+    def test_retired_or_stale_descriptor_fails_typed(self) -> None:
+        base = {
+            "schema_version": 4,
+            "id": "checkpoint-1",
+            "campaign_id": "campaign-1",
+        }
+        with self.assertRaises(CheckpointDescriptorError) as retired:
+            validate_checkpoint_descriptor(base | {"valid_through_event_id": "event-1"}, campaign_id="campaign-1")
+        self.assertEqual(retired.exception.code, RecoveryFailureCode.CORRUPT)
+
+        with self.assertRaises(CheckpointDescriptorError) as stale:
+            validate_checkpoint_descriptor(base, campaign_id="campaign-1", selected_id="checkpoint-2")
+        self.assertEqual(stale.exception.code, RecoveryFailureCode.STALE)
+
+
+class AcceptedExecutionRecoveryTests(unittest.TestCase):
+    def test_recovery_preserves_command_event_and_fixed_rng_identity(self) -> None:
+        command = _accepted_command_for_recovery()
+        execution = _execution_for_recovery()
+        recovered = validate_recovered_basis(
+            command,
+            execution,
+            catalog_basis=command["catalog_context"],
+            policy_basis={"policy_refs": [f"policy.social_leverage@{H}"], "source_revision": H},
+        )
+
+        self.assertIsInstance(recovered, RecoveredExecution)
+        self.assertEqual(recovered.command_id, command["command_id"])
+        self.assertEqual(recovered.event_id, execution["event_id"])
+        self.assertEqual(recovered.fixed_rng_values, (17,))
+        self.assertEqual(recovered.catalog_basis, command["catalog_context"])
+
+    def test_recovery_rejects_identity_or_basis_replacement_before_replay(self) -> None:
+        command = _accepted_command_for_recovery()
+        execution = _execution_for_recovery()
+        with self.assertRaises(RecoveryFailure) as identity:
+            validate_recovered_basis(
+                command,
+                execution | {"accepted_command_id": "command-other"},
+                catalog_basis=command["catalog_context"],
+                policy_basis={"policy_refs": [f"policy.social_leverage@{H}"], "source_revision": H},
+            )
+        self.assertEqual(identity.exception.code, RecoveryFailureCode.CORRUPT)
+
+        with self.assertRaises(RecoveryFailure) as policy:
+            validate_recovered_basis(
+                command,
+                execution,
+                catalog_basis=command["catalog_context"],
+                policy_basis={"policy_refs": [f"policy.social_leverage@{'f' * 40}"], "source_revision": "f" * 40},
+            )
+        self.assertEqual(policy.exception.code, RecoveryFailureCode.STALE)
+
+
+class OperationalRootRecoveryTests(unittest.TestCase):
+    def test_hydrates_each_complete_root_through_its_exact_native_route(self) -> None:
+        root = {
+            "owner_kind": "runtime.command",
+            "owner_id": "command-000001",
+            "route": {
+                "family_key": "runtime.command",
+                "identity": ["command-000001"],
+                "relative_path": "",
+            },
+        }
+        from GAME.TOOLS.native_storage import route_native_record
+
+        root["route"]["relative_path"] = route_native_record(
+            "runtime.command", ("command-000001",)
+        ).relative_path
+        page = {
+            "schema_version": 1,
+            "campaign_id": "campaign-1",
+            "complete": True,
+            "roots": [root],
+        }
+
+        class Repository(FakeRepository):
+            def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+                if path == "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml":
+                    return page
+                if path == root["route"]["relative_path"]:
+                    return {
+                        "kind": "runtime.command",
+                        "command_id": "command-000001",
+                        "disposition": "command.accepted",
+                        "pending_child_invocations": [],
+                        "direct_transition_receipt": {"status": "PUBLISH_REQUIRED"},
+                    }
+                return super().read_exact_path(pinned, path)
+
+        hydrated = hydrate_operational_roots(
+            Repository(),
+            PinnedCampaign("campaign-1", H, TREE),
+            page,
+        )
+        self.assertEqual(hydrated[0]["command_id"], "command-000001")
+
+    def test_terminal_root_is_not_hydrated_as_active_recovery_work(self) -> None:
+        from GAME.TOOLS.native_storage import route_native_record
+
+        path = route_native_record("runtime.command", ("command-000001",)).relative_path
+        page = {
+            "schema_version": 1,
+            "campaign_id": "campaign-1",
+            "complete": True,
+            "roots": [
+                {
+                    "owner_kind": "runtime.command",
+                    "owner_id": "command-000001",
+                    "route": {
+                        "family_key": "runtime.command",
+                        "identity": ["command-000001"],
+                        "relative_path": path,
+                    },
+                }
+            ],
+        }
+
+        class Repository(FakeRepository):
+            def read_exact_path(self, pinned: PinnedCampaign, requested: str) -> object:
+                if requested == path:
+                    return {
+                        "kind": "runtime.command",
+                        "command_id": "command-000001",
+                        "disposition": "command.settled",
+                        "pending_child_invocations": [],
+                        "direct_transition_receipt": {"status": "CONFIRMED"},
+                    }
+                return super().read_exact_path(pinned, requested)
+
+        with self.assertRaises(RecoveryFailure) as raised:
+            hydrate_operational_roots(Repository(), PinnedCampaign("campaign-1", H, TREE), page)
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.STALE)
+
+    def test_incomplete_root_page_cannot_fall_back_to_a_directory_scan(self) -> None:
+        with self.assertRaises(RecoveryFailure) as raised:
+            hydrate_operational_roots(
+                FakeRepository(),
+                PinnedCampaign("campaign-1", H, TREE),
+                {"schema_version": 1, "campaign_id": "campaign-1", "complete": False, "roots": []},
+            )
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.INCOMPLETE)
+
+
+class RecoveryCurrentRuntimeTests(unittest.TestCase):
+    def test_current_runtime_recovery_does_not_require_checkpoint_or_hot_authority(self) -> None:
+        class Repository(FakeRepository):
+            def select_current_native_sources(
+                self, pinned: PinnedCampaign
+            ) -> tuple[CurrentNativeSource, ...]:
+                return (
+                    CurrentNativeSource(
+                        pinned.campaign_id, "campaign", "campaign/current", pinned.revision, "MANIFEST.yaml"
+                    ),
+                )
+
+            def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+                if path == "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml":
+                    return {"schema_version": 1, "campaign_id": pinned.campaign_id, "complete": True, "roots": []}
+                return super().read_exact_path(pinned, path)
+
+        result = recover_current_runtime(
+            Repository(),
+            "campaign-1",
+            checkpoint={"schema_version": 4, "id": "old", "campaign_id": "campaign-1"},
+            hot_state={"source_basis": {"campaign": "f" * 40}, "owners": {"invented": True}},
+        )
+
+        self.assertEqual(result.disposition, "READY")
+        self.assertFalse(result.hot_authoritative)
+        self.assertEqual(result.sources[0].revision, H)
+
+
+class SourceNativeLiveRecoveryTests(unittest.TestCase):
+    def test_selected_live_source_without_native_reader_is_typed_missing_not_campaign_fallback(self) -> None:
+        class Repository(FakeRepository):
+            def select_current_native_sources(
+                self, pinned: PinnedCampaign
+            ) -> tuple[CurrentNativeSource, ...]:
+                return (CurrentNativeSource(pinned.campaign_id, "live", "scene-1/epoch-1", H, "LIVE/LIVE_STATE.yaml"),)
+
+            def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+                self.reads.append((pinned.revision, path))
+                return {"campaign_id": pinned.campaign_id}
+
+        with self.assertRaises(RecoverySourceError) as raised:
+            recover_current_runtime(Repository(), "campaign-1")
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.MISSING)
+
+
+class CurrentSourceFailureTests(unittest.TestCase):
+    def test_duplicate_current_source_owners_are_ambiguous(self) -> None:
+        class Repository(FakeRepository):
+            def select_current_native_sources(
+                self, pinned: PinnedCampaign
+            ) -> tuple[CurrentNativeSource, ...]:
+                source = CurrentNativeSource(
+                    pinned.campaign_id, "campaign", "campaign/current", pinned.revision, "MANIFEST.yaml"
+                )
+                return source, source
+
+        with self.assertRaises(RecoverySourceError) as raised:
+            select_current_native_sources(Repository(), "campaign-1")
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.AMBIGUOUS)
+
+
+class SessionHotAuthorityTests(unittest.TestCase):
+    def test_checkpoint_and_hot_are_diagnostics_not_current_authority(self) -> None:
+        diagnostics = export_checkpoint_diagnostics(
+            {"schema_version": 4, "id": "checkpoint-1", "campaign_id": "campaign-1"},
+            campaign_id="campaign-1",
+            observed_revision=H,
+        )
+        self.assertFalse(diagnostics["authoritative"])
+        self.assertTrue(diagnostics["ephemeral"])
+
+
+class StorageProjectionTests(unittest.TestCase):
+    def test_empty_checkpoint_pointer_is_healthy_and_non_authoritative(self) -> None:
+        diagnostics = export_checkpoint_diagnostics(None, campaign_id="campaign-1")
+        self.assertEqual(diagnostics["status"], "NO_CHECKPOINT")
+        self.assertFalse(diagnostics["authoritative"])
+
+    def test_reset_only_clears_the_exact_selected_pointer(self) -> None:
+        manifest = {"campaign_id": "campaign-1", "last_checkpoint_id": "checkpoint-1"}
+        reset = reset_last_checkpoint_reference(manifest, selected_checkpoint_id="checkpoint-1")
+        self.assertIsNone(reset["last_checkpoint_id"])
+        self.assertEqual(manifest["last_checkpoint_id"], "checkpoint-1")
+
+    def test_export_pins_manifest_and_reads_only_the_selected_descriptor(self) -> None:
+        from GAME.TOOLS.native_storage import route_native_record
+
+        checkpoint_path = route_native_record("runtime.checkpoint", ("checkpoint-1",)).relative_path
+
+        class Repository(FakeRepository):
+            def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+                if path == "MANIFEST.yaml":
+                    return {"last_checkpoint_id": "checkpoint-1"}
+                if path == checkpoint_path:
+                    return {
+                        "schema_version": 4,
+                        "id": "checkpoint-1",
+                        "campaign_id": pinned.campaign_id,
+                    }
+                raise KeyError(path)
+
+        diagnostics = export_checkpoint_diagnostics(Repository(), campaign_id="campaign-1")
+        self.assertEqual(diagnostics["checkpoint_id"], "checkpoint-1")
+        self.assertEqual(diagnostics["observed_revision"], H)
+
+
+class HistoricalMaintenanceTests(unittest.TestCase):
+    def test_historical_candidate_is_maintenance_isolated(self) -> None:
+        candidate = validate_repair_candidate(
+            {
+                "schema_version": 1,
+                "campaign_id": "campaign-1",
+                "operation_id": "repair-1",
+                "historical_revision": H,
+                "source_paths": ["STATE/CURRENT.yaml"],
+                "evidence": {"checkpoint_id": "checkpoint-1"},
+            },
+            campaign_id="campaign-1",
+            historical_revision=H,
+        )
+        self.assertIsInstance(candidate, HistoricalRepairCandidate)
+        promotion = promote_historical_repair(candidate, current_revision=TREE, authorized=True)
+        self.assertEqual(promotion["status"], "FORWARD_PUBLICATION_REQUIRED")
+        self.assertFalse(promotion["ref_rewind"])
+        self.assertFalse(promotion["current_authority"])
+
+    def test_incomplete_historical_composition_is_typed(self) -> None:
+        with self.assertRaises(RecoveryFailure) as raised:
+            validate_repair_candidate(
+                {
+                    "schema_version": 1,
+                    "campaign_id": "campaign-1",
+                    "operation_id": "repair-1",
+                    "historical_revision": H,
+                    "source_paths": [],
+                    "evidence": {"checkpoint_id": "checkpoint-1"},
+                },
+                campaign_id="campaign-1",
+            )
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.INCOMPLETE)
+
+
+class MaintenanceAuditMachineTests(unittest.TestCase):
+    def test_audit_is_narrow_support_evidence_not_authority(self) -> None:
+        audit = record_maintenance_audit(
+            campaign_id="campaign-1",
+            audit_id="audit-0001",
+            operation="HDM_EXPORT_CHECKPOINT_LOG",
+            scope="checkpoint-1",
+            outcome="CONFIRMED",
+            observed_basis={"revision": H},
+        )
+        self.assertIsInstance(audit, MaintenanceAudit)
+        self.assertEqual(audit.to_dict()["authority"], "SUPPORT_AUDIT_ONLY")
+
+    def test_audit_identity_must_use_the_native_campaign_policy(self) -> None:
+        with self.assertRaises(RecoveryFailure) as raised:
+            record_maintenance_audit(
+                campaign_id="campaign-1",
+                audit_id="maintenance-1",
+                operation="HDM_EXPORT_CHECKPOINT_LOG",
+                scope="checkpoint-1",
+                outcome="CONFIRMED",
+                observed_basis={"revision": H},
+            )
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.CORRUPT)
 
 
 if __name__ == "__main__":

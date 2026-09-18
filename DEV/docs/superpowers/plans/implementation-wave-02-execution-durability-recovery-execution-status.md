@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `0b68dc873839bae573eceee63b05d46c5977774d`
 
 STATUS: EXECUTING
-CURRENT_TASK: W02.T05 - consuming the published T03/T04 checkpoints at `0b68dc873839bae573eceee63b05d46c5977774d`
-LAST_COMPLETED_TASK: W02.T04 - W02_OPERATIONAL_ROOT_ENROLLMENT_READY -> published Wave-02 ref at `0b68dc873839bae573eceee63b05d46c5977774d`
-LAST_SAFE_SHA: `0b68dc873839bae573eceee63b05d46c5977774d` (published T03/T04 input checkpoint)
+CURRENT_TASK: W02.T06 - exact current-source recovery and maintenance from published T05 at `fdb6888070bd34c128b7fed3703e08005bfb5554`
+LAST_COMPLETED_TASK: W02.T05 - W02_DURABILITY_PUBLICATION_READY -> published Wave-02 ref at `fdb6888070bd34c128b7fed3703e08005bfb5554`
+LAST_SAFE_SHA: `fdb6888070bd34c128b7fed3703e08005bfb5554` (published T05 input checkpoint)
 
 ## Dependency schedule
 
@@ -431,3 +431,39 @@ VERSION_IMPACT:
 
 SYSTEM_IMPACT: NONE - the repair closes a validation gap inside the existing publication owner and preserves the admitted join-free Procedure path; no new authority, transaction, journal/frontier, recovery hydration or cross-owner boundary was introduced.
 UNPUBLISHED_WORK: NONE after the repair-round checkpoint commit; final status awaits Senior integration audit.
+
+## W02.T06 Execution Record — 2026-09-18
+
+IMPLEMENTATION START HEAD: `fdb6888070bd34c128b7fed3703e08005bfb5554`
+PRIMARY OWNER ARTIFACTS:
+- `GAME/TOOLS/recovery.py` current-source selection, accepted-basis validation, checkpoint diagnostics, root hydration and maintenance-isolated repair/audit contracts
+- `GAME/SCHEMA/checkpoint.schema.yaml` and `GAME/CAMPAIGN/CHECKPOINTS/_TEMPLATE.yaml`
+- `DEV/SCHEMAS/recovery-result.schema.json` and `DEV/SCHEMAS/runtime-maintenance-audit-state.schema.json`
+- bounded `GAME/CORE/STORAGE.md` and `GAME/TEMPLATE/STORAGE_README.md` recovery deltas
+- `DEV/TESTS/test_rd07_recovery.py`
+
+PROTECTED INVARIANTS:
+- owner-native current routes are the only current-source selectors; checkpoint, session, HOT, index, lexical order and history are non-authoritative;
+- accepted command/execution, segment/event, fixed RNG, catalog and adjudication identities are preserved without replay, reroll or reallocation;
+- checkpoint descriptors are optional diagnostic evidence and do not define a frontier, root set, SAVE proof or rollback slot;
+- every complete operational root is hydrated through its deterministic native route and terminal roots are rejected;
+- historical reconstruction remains maintenance-isolated; audit records are support evidence only and current promotion is forward publication, never ref rewind;
+- missing, stale, corrupt, incomplete and ambiguous evidence remains typed; no Wave-03 LIVE fixture or campaign fallback was introduced.
+
+TDD EVIDENCE:
+- baseline: focused RD07 suite had 15 passing tests at the published T05 input;
+- RED: recovery imports failed before `GAME/TOOLS/recovery.py` existed, then the expanded recovery API imports failed until each bounded contract was implemented;
+- GREEN: final focused RD07 suite has 35 passing tests;
+- full DEV discovery reached 784 tests with 7 skipped; the only failure was the expected dirty-worktree provenance assertion while the implementation was uncommitted; generated GAME bytecode cache was suppressed/cleaned and no release-cache failures remained;
+- maintenance audit passed after generated GAME cache cleanup.
+
+VERSION_IMPACT:
+- new `GAME/TOOLS/recovery.py`: `framework_module_version` 1.0.1;
+- `GAME/CORE/STORAGE.md`: `framework_module_version` 1.0.1 -> 1.0.2 for exact recovery/maintenance semantics;
+- `GAME/SCHEMA/checkpoint.schema.yaml`: checkpoint schema 3 -> 4; retired frontier/containing-commit fields and synchronized scaffold template projection 2 -> 4;
+- new `DEV/SCHEMAS/recovery-result.schema.json`: schema 1;
+- new `DEV/SCHEMAS/runtime-maintenance-audit-state.schema.json`: schema 1;
+- catalog, engine, campaign contract, storage generation, persistence, migration and compatibility namespaces: NONE.
+
+SYSTEM_IMPACT: NONE - implementation remains within the approved W02.T06 recovery/maintenance envelope; it introduces no second currentness, persistence, transaction, journal, lifecycle, policy, catalog, RNG or LIVE authority and does not start Wave 03.
+UNPUBLISHED_WORK: exact W02.T06 implementation, test, schema and documentation delta is local and awaits its coherent checkpoint commit.

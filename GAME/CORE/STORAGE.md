@@ -1,6 +1,6 @@
 # Canonical Storage and Persistence
 
-framework_module_version: 1.0.1
+framework_module_version: 1.0.2
 load_when: session startup, state retrieval, persistence boundary, resync, canon conflict
 
 The engine package and campaign storage are separate.
@@ -142,6 +142,36 @@ When a checkpoint is created, its `engine` block is a recovery projection of the
 Do not touch MANIFEST checkpoint pointers when no new checkpoint is needed.
 
 Checkpoint/entity paths are campaign-root-relative; new campaigns use root-layout paths.
+
+## Exact current-source recovery
+
+Cold recovery first pins the campaign's owner-native current source and then
+reads only the exact native routes selected by that source. The recovery result
+is ephemeral; it is not a persisted frontier, lease, journal, or replacement
+currentness owner. A checkpoint descriptor, session record, copied log, or
+SQLite/HOT row may provide bounded diagnostics only. Healthy recovery may use
+no checkpoint at all.
+
+Recovery validates the accepted command and execution identity, segment/event
+identity, fixed RNG values, catalog context, adjudication/policy references,
+and the complete operational-root routing page before reporting `READY`.
+Missing, stale, corrupt, incomplete, and ambiguous evidence remains typed and
+blocks only the dependent recovery scope. Recovery never replays accepted
+mechanics, rerolls RNG, reallocates accepted identities, scans for a plausible
+current file, or falls back from a missing source-native LIVE owner to campaign
+state.
+
+Operational roots are hydrated from the pinned campaign source through their
+deterministic native routes. Root membership is a bounded projection of native
+owner lifecycle/closure evidence, not a lifecycle registry or global queue.
+Derived indexes, Agenda/context projections, and HOT may be rebuilt after
+native hydration; they never establish authority.
+
+Historical checkpoint export and repair are maintenance-isolated operations.
+They require complete attributable historical composition, leave ordinary
+current recovery unchanged, and record narrow support-audit evidence only.
+Any approved current promotion uses a new forward owner-native publication and
+CAS/currentness edge; it never rewinds a ref or promotes a local reconstruction.
 
 ## Canon conflicts
 

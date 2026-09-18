@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/recovery-result.schema.json",
+  "title": "HDM ephemeral current-source recovery result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "disposition", "affected_scopes", "diagnostic_evidence", "ephemeral"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "disposition": {"enum": ["READY", "RETRY", "BLOCKED"]},
+    "reason_code": {"enum": ["MISSING", "STALE", "CORRUPT", "INCOMPLETE", "AMBIGUOUS", null]},
+    "affected_scopes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "diagnostic_evidence": {"type": "object"},
+    "sources": {"type": "array", "items": {"type": "object"}},
+    "operational_root_count": {"type": "integer", "minimum": 0},
+    "hot_authoritative": {"const": false},
+    "ephemeral": {"const": true}
+  }
+}
