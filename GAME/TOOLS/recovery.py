@@ -14,13 +14,15 @@ from enum import Enum
 import re
 from typing import Final, Protocol
 
-from .native_storage import route_native_record
-from .policy_basis import PinnedCampaign
+from .catalog_runtime import BoundCatalogContext, CatalogBindingError
+from .native_storage import NativeStorageError, route_native_record
+from .policy_basis import PinnedCampaign, PolicyBasisResolutionError, validate_frozen_adjudication_basis
 from .recovery_roots import derive_operational_root_delta
+from .runtime_execution import CommandAcceptanceError, validate_execution_proposal
 
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final = "1.0.2"
 _REVISION = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 
 
@@ -497,6 +499,7 @@ def validate_recovered_basis(
     *,
     catalog_basis: Mapping[str, object],
     policy_basis: Mapping[str, object],
+    resolution: object | None = None,
 ) -> RecoveredExecution:
     """Validate accepted execution evidence exactly as persisted by publication."""
 
@@ -510,8 +513,7 @@ def validate_recovered_basis(
     segment = _mapping_or_failure(result.get("segment"), "execution segment")
     segment_id = _string_or_failure(segment.get("segment_id"), "segment_id")
     event = _mapping_or_failure(result.get("event"), "execution event")
-    if event.get("segment_id") != segment_id or result.get("event_id") != event.get("event_id"):
-        raise RecoveryFailure("accepted event identity differs", code=RecoveryFailureCode.CORRUPT)
+    _validate_event_identity(result, resolution_id, segment, segment_id, event)
     event_id = _string_or_failure(result.get("event_id"), "event_id")
     roll = result.get("roll_result", {})
     if not isinstance(roll, Mapping):
@@ -522,18 +524,39 @@ def validate_recovered_basis(
     fixed_values = tuple(raw_values)
     if any(isinstance(value, bool) or not isinstance(value, int) for value in fixed_values):
         raise RecoveryFailure("fixed RNG evidence is malformed", code=RecoveryFailureCode.CORRUPT)
+    if roll:
+        _validate_roll_identity(roll, resolution_id)
+    if resolution is not None:
+        _validate_resolution_closure(resolution, resolution_id, command_id, segment, roll)
     accepted_catalog = _mapping_or_failure(command.get("catalog_context"), "catalog basis")
     supplied_catalog = _mapping_or_failure(catalog_basis, "catalog basis")
     if dict(accepted_catalog) != dict(supplied_catalog):
         raise RecoveryFailure("catalog basis differs from accepted execution", code=RecoveryFailureCode.STALE)
     supplied_policy = _mapping_or_failure(policy_basis, "policy basis")
+    action_request = _mapping_or_failure(command.get("action_request"), "accepted action_request")
+    invocation_facts = command.get("invocation_facts")
+    try:
+        normalized_parameters, normalized_facts, frozen_refs = validate_frozen_adjudication_basis(
+            action_request.get("parameter_bindings", {}), invocation_facts
+        )
+    except PolicyBasisResolutionError as exc:
+        raise RecoveryFailure("frozen adjudication basis is invalid", code=RecoveryFailureCode.CORRUPT) from exc
+    if normalized_parameters != action_request.get("parameter_bindings", {}) or normalized_facts != invocation_facts:
+        raise RecoveryFailure("accepted adjudication basis is not normalized", code=RecoveryFailureCode.CORRUPT)
     refs = _accepted_policy_refs(command)
+    if refs != frozen_refs:
+        raise RecoveryFailure("accepted policy references differ from frozen inputs", code=RecoveryFailureCode.CORRUPT)
     supplied_refs = supplied_policy.get("policy_refs")
     if not isinstance(supplied_refs, Sequence) or isinstance(supplied_refs, (str, bytes)):
         raise RecoveryFailure("accepted policy basis is incomplete", code=RecoveryFailureCode.INCOMPLETE)
     typed_supplied_refs = tuple(sorted(_string_or_failure(ref, "policy reference") for ref in supplied_refs))
     if typed_supplied_refs != refs:
         raise RecoveryFailure("policy basis differs from accepted execution", code=RecoveryFailureCode.STALE)
+    if refs:
+        supplied_action = _mapping_or_failure(supplied_policy.get("action_request"), "policy basis action_request")
+        supplied_facts = supplied_policy.get("invocation_facts")
+        if dict(supplied_action) != dict(action_request) or supplied_facts != invocation_facts:
+            raise RecoveryFailure("policy basis inputs differ from accepted execution", code=RecoveryFailureCode.CORRUPT)
     source_revision = supplied_policy.get("source_revision")
     if refs and (not isinstance(source_revision, str) or any(not ref.endswith("@" + source_revision) for ref in refs)):
         raise RecoveryFailure("accepted policy basis is stale", code=RecoveryFailureCode.STALE)
@@ -617,6 +640,7 @@ def recover_current_runtime(
     except (AttributeError, KeyError, OSError, TypeError) as exc:
         raise RecoveryFailure("operational-root route is missing", code=RecoveryFailureCode.MISSING) from exc
     hydrated = hydrate_operational_roots(repository, pinned, _mapping_or_failure(page, "root routing page"))
+    _validate_recovered_root_closures(repository, pinned, hydrated)
     checkpoint_descriptor = None
     if checkpoint is not None:
         try:
@@ -813,7 +837,13 @@ def _root_mappings(page: Mapping[str, object], campaign_id: str) -> tuple[Mappin
         route = _mapping_or_failure(root.get("route"), "root route")
         if route.get("family_key") != owner_kind or route.get("identity") != [owner_id]:
             raise RecoveryFailure("operational-root route identity differs", code=RecoveryFailureCode.CORRUPT)
-        expected_path = route_native_record(owner_kind, (owner_id,)).relative_path
+        try:
+            expected_path = route_native_record(owner_kind, (owner_id,)).relative_path
+        except NativeStorageError as exc:
+            raise RecoveryFailure(
+                "operational-root owner kind is not a native storage family",
+                code=RecoveryFailureCode.CORRUPT,
+            ) from exc
         if route.get("relative_path") != expected_path:
             raise RecoveryFailure("operational-root route is not native", code=RecoveryFailureCode.CORRUPT)
         key = owner_kind, owner_id
@@ -822,6 +852,147 @@ def _root_mappings(page: Mapping[str, object], campaign_id: str) -> tuple[Mappin
         seen.add(key)
         result.append(root)
     return tuple(result)
+
+
+def _validate_recovered_root_closures(
+    repository: object,
+    pinned: PinnedCampaign,
+    owners: Sequence[Mapping[str, object]],
+) -> None:
+    for owner in owners:
+        if owner.get("kind") != "runtime.command":
+            continue
+        closure = owner.get("closure")
+        if not isinstance(closure, Mapping):
+            raise RecoveryFailure(
+                "runtime command closure is incomplete", code=RecoveryFailureCode.INCOMPLETE
+            )
+        required = {"accepted_command", "execution", "resolution", "catalog_basis", "policy_basis"}
+        if not required.issubset(closure):
+            raise RecoveryFailure(
+                "runtime command closure is incomplete", code=RecoveryFailureCode.INCOMPLETE
+            )
+        accepted_command = _mapping_or_failure(closure["accepted_command"], "accepted command closure")
+        execution = _mapping_or_failure(closure["execution"], "execution closure")
+        recovered = validate_recovered_basis(
+            accepted_command,
+            execution,
+            catalog_basis=_mapping_or_failure(closure["catalog_basis"], "catalog closure"),
+            policy_basis=_mapping_or_failure(closure["policy_basis"], "policy closure"),
+            resolution=closure["resolution"],
+        )
+        if recovered.command_id != owner.get("command_id"):
+            raise RecoveryFailure(
+                "runtime command closure identity differs from native owner",
+                code=RecoveryFailureCode.CORRUPT,
+            )
+        _validate_catalog_closure(repository, pinned, closure, accepted_command)
+
+
+def _validate_catalog_closure(
+    repository: object,
+    pinned: PinnedCampaign,
+    closure: Mapping[str, object],
+    accepted_command: Mapping[str, object],
+) -> None:
+    context = closure.get("catalog_context")
+    candidate = closure.get("candidate")
+    if isinstance(context, BoundCatalogContext):
+        if candidate is None:
+            binding = _mapping_or_failure(accepted_command.get("candidate_binding"), "catalog candidate binding")
+            candidate = {"definition_id": binding.get("definition_id"), "kind": binding.get("kind")}
+        try:
+            validate_execution_proposal(accepted_command, context, candidate)
+        except (CatalogBindingError, CommandAcceptanceError, TypeError, ValueError) as exc:
+            raise RecoveryFailure(
+                "accepted catalog basis failed owner validation", code=RecoveryFailureCode.STALE
+            ) from exc
+        return
+    resolver = getattr(repository, "resolve_recovery_catalog_context", None)
+    if callable(resolver):
+        try:
+            resolved = resolver(pinned, accepted_command, closure["catalog_basis"])
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+            raise RecoveryFailure(
+                "accepted catalog basis could not be reconstructed", code=RecoveryFailureCode.INCOMPLETE
+            ) from exc
+        if not isinstance(resolved, tuple) or len(resolved) != 2:
+            raise RecoveryFailure(
+                "catalog recovery validator did not return typed context and candidate",
+                code=RecoveryFailureCode.CORRUPT,
+            )
+        context, candidate = resolved
+        if not isinstance(context, BoundCatalogContext):
+            raise RecoveryFailure(
+                "catalog recovery validator returned untyped context",
+                code=RecoveryFailureCode.CORRUPT,
+            )
+        try:
+            validate_execution_proposal(accepted_command, context, candidate)
+        except (CatalogBindingError, CommandAcceptanceError, TypeError, ValueError) as exc:
+            raise RecoveryFailure(
+                "accepted catalog basis failed owner validation", code=RecoveryFailureCode.STALE
+            ) from exc
+        return
+    raise RecoveryFailure(
+        "accepted catalog basis lacks an owner validation boundary",
+        code=RecoveryFailureCode.INCOMPLETE,
+    )
+
+
+def _validate_event_identity(
+    result: Mapping[str, object],
+    resolution_id: str,
+    segment: Mapping[str, object],
+    segment_id: str,
+    event: Mapping[str, object],
+) -> None:
+    match = re.fullmatch(re.escape(resolution_id) + r":segment:(\d+)", segment_id)
+    if match is None:
+        raise RecoveryFailure("execution segment identity is arbitrary", code=RecoveryFailureCode.CORRUPT)
+    sequence = int(match.group(1))
+    if segment.get("segment_sequence") != sequence:
+        raise RecoveryFailure("execution segment sequence differs from identity", code=RecoveryFailureCode.CORRUPT)
+    if event.get("segment_id") != segment_id or event.get("event_ordinal") != 1:
+        raise RecoveryFailure("execution event identity is arbitrary", code=RecoveryFailureCode.CORRUPT)
+    expected_event_id = f"{segment_id}:event:1"
+    if event.get("event_id") != expected_event_id or result.get("event_id") != expected_event_id:
+        raise RecoveryFailure("execution event ID differs from derived identity", code=RecoveryFailureCode.CORRUPT)
+    event_ids = segment.get("event_ids")
+    if event_ids is not None and (not isinstance(event_ids, list) or event_ids != [expected_event_id]):
+        raise RecoveryFailure("execution segment event membership is corrupt", code=RecoveryFailureCode.CORRUPT)
+
+
+def _validate_roll_identity(roll: Mapping[str, object], resolution_id: str) -> None:
+    expected_roll_id = f"{resolution_id}:roll:1"
+    if roll.get("roll_id") != expected_roll_id or roll.get("request_id") != expected_roll_id:
+        raise RecoveryFailure("fixed RNG identity differs from resolution", code=RecoveryFailureCode.CORRUPT)
+    if roll.get("provenance_ref") != f"{resolution_id}:rng:1":
+        raise RecoveryFailure("fixed RNG provenance differs from resolution", code=RecoveryFailureCode.CORRUPT)
+    expected = {"roll_id", "request_id", "expression", "raw_values", "source_kind", "provenance_ref"}
+    if set(roll) != expected or roll.get("source_kind") not in {"rng.system", "rng.player", "rng.external"}:
+        raise RecoveryFailure("fixed RNG evidence is malformed", code=RecoveryFailureCode.CORRUPT)
+
+
+def _validate_resolution_closure(
+    resolution: object,
+    resolution_id: str,
+    command_id: str,
+    segment: Mapping[str, object],
+    roll: Mapping[str, object],
+) -> None:
+    value = _mapping_or_failure(resolution, "resolution closure")
+    if value.get("resolution_id") != resolution_id:
+        raise RecoveryFailure("resolution identity differs from execution", code=RecoveryFailureCode.CORRUPT)
+    if value.get("root_command_id") is not None and value.get("root_command_id") != command_id:
+        raise RecoveryFailure("resolution root command differs from accepted command", code=RecoveryFailureCode.CORRUPT)
+    segments = value.get("segments")
+    if not isinstance(segments, list) or not any(item == segment for item in segments):
+        raise RecoveryFailure("resolution closure does not contain execution segment", code=RecoveryFailureCode.INCOMPLETE)
+    if roll:
+        fixed = value.get("fixed_rng_results")
+        if not isinstance(fixed, list) or not any(item == roll for item in fixed):
+            raise RecoveryFailure("resolution closure does not contain fixed RNG evidence", code=RecoveryFailureCode.INCOMPLETE)
 
 
 def _validate_root_owner(

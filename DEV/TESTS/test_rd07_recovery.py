@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from collections.abc import Mapping
 from dataclasses import fields
 import unittest
 
@@ -16,6 +17,7 @@ from GAME.TOOLS.policy_basis import (
     PinnedCampaign,
     PlayerEvidence,
 )
+from GAME.TOOLS.runtime_execution import accept_command
 from GAME.TOOLS.recovery import (
     CheckpointDescriptorError,
     CurrentNativeSource,
@@ -441,6 +443,9 @@ def _accepted_command_for_recovery() -> dict[str, object]:
                 "dc": {
                     "source_class": "INVOCATION_ADJUDICATED",
                     "value": 15,
+                    "provenance_ref": "turn-1:dc",
+                    "eligibility_basis_fingerprint": "eligibility-A",
+                    "rules_context_fingerprint": "rules-A",
                     "policy_basis_refs": [f"policy.social_leverage@{H}"],
                 }
             },
@@ -454,15 +459,108 @@ def _execution_for_recovery() -> dict[str, object]:
         "accepted_command_id": "command-000001",
         "accepted_input_fingerprint": "a" * 64,
         "resolution_id": "resolution-000001",
-        "segment": {"segment_id": "resolution-000001:segment:1"},
+        "segment": {"segment_id": "resolution-000001:segment:1", "segment_sequence": 1},
         "event": {
             "segment_id": "resolution-000001:segment:1",
             "event_ordinal": 1,
             "event_id": "resolution-000001:segment:1:event:1",
         },
         "event_id": "resolution-000001:segment:1:event:1",
-        "roll_result": {"raw_values": [17]},
+        "roll_result": {
+            "roll_id": "resolution-000001:roll:1",
+            "request_id": "resolution-000001:roll:1",
+            "expression": "fixed",
+            "raw_values": [17],
+            "source_kind": "rng.system",
+            "provenance_ref": "resolution-000001:rng:1",
+        },
     }
+
+
+def _policy_basis_for_recovery(
+    command: Mapping[str, object], refs: list[str] | None = None, *, source_revision: str = H
+) -> dict[str, object]:
+    return {
+        "policy_refs": [f"policy.social_leverage@{source_revision}"] if refs is None else refs,
+        "source_revision": source_revision,
+        "action_request": copy.deepcopy(command["action_request"]),
+        "invocation_facts": copy.deepcopy(command["invocation_facts"]),
+    }
+
+
+def _validated_command_closure() -> tuple[dict[str, object], dict[str, object], dict[str, object], object, dict[str, str]]:
+    context = _bind_context()
+    accepted = accept_command(
+        {
+            "kind": "interpreter_result",
+            "purpose": "interpret",
+            "bundle_id": "bundle-1",
+            "source_generation": "frontier-7",
+            "intent": "make a check",
+        },
+        context,
+        {"definition_id": "activity.check.generic", "kind": "definition.activity"},
+        {
+            "command_id": "turn-1-cmd-01",
+            "interaction_id": "turn-1",
+            "intent_plan_id": "turn-1-plan",
+            "clause_id": "c1",
+            "action_request": {
+                "activity_id": "activity.check.generic",
+                "actor_id": "actor-1",
+                "target_ids": ["actor-2"],
+            },
+            "root_resolution_id": "resolution-1",
+        },
+    )
+    if not isinstance(accepted, dict):
+        raise AssertionError("test command must be accepted")
+    segment_id = "resolution-1:segment:1"
+    event_id = f"{segment_id}:event:1"
+    roll = {
+        "roll_id": "resolution-1:roll:1",
+        "request_id": "resolution-1:roll:1",
+        "expression": "fixed",
+        "raw_values": [17],
+        "source_kind": "rng.system",
+        "provenance_ref": "resolution-1:rng:1",
+    }
+    segment = {
+        "segment_id": segment_id,
+        "segment_sequence": 1,
+        "commit_state": "committed",
+        "event_ids": [event_id],
+    }
+    execution = {
+        "accepted_command_id": accepted["command_id"],
+        "accepted_input_fingerprint": accepted["input_fingerprint"],
+        "execution_owner_id": "resolution-1",
+        "resolution_id": "resolution-1",
+        "segment": segment,
+        "event": {
+            "segment_id": segment_id,
+            "event_ordinal": 1,
+            "event_id": event_id,
+        },
+        "event_id": event_id,
+        "roll_result": roll,
+    }
+    resolution = {
+        "resolution_id": "resolution-1",
+        "root_command_id": accepted["command_id"],
+        "segments": [segment],
+        "fixed_rng_results": [roll],
+    }
+    policy = _policy_basis_for_recovery(accepted, [])
+    closure = {
+        "accepted_command": accepted,
+        "execution": execution,
+        "resolution": resolution,
+        "catalog_basis": accepted["catalog_context"],
+        "policy_basis": policy,
+        "candidate": {"definition_id": "activity.check.generic", "kind": "definition.activity"},
+    }
+    return accepted, execution, closure, context, {"command_id": str(accepted["command_id"]), "path": ""}
 
 
 class CheckpointDescriptorTests(unittest.TestCase):
@@ -504,7 +602,7 @@ class AcceptedExecutionRecoveryTests(unittest.TestCase):
             command,
             execution,
             catalog_basis=command["catalog_context"],
-            policy_basis={"policy_refs": [f"policy.social_leverage@{H}"], "source_revision": H},
+            policy_basis=_policy_basis_for_recovery(command),
         )
 
         self.assertIsInstance(recovered, RecoveredExecution)
@@ -521,7 +619,7 @@ class AcceptedExecutionRecoveryTests(unittest.TestCase):
                 command,
                 execution | {"accepted_command_id": "command-other"},
                 catalog_basis=command["catalog_context"],
-                policy_basis={"policy_refs": [f"policy.social_leverage@{H}"], "source_revision": H},
+                policy_basis=_policy_basis_for_recovery(command),
             )
         self.assertEqual(identity.exception.code, RecoveryFailureCode.CORRUPT)
 
@@ -530,9 +628,50 @@ class AcceptedExecutionRecoveryTests(unittest.TestCase):
                 command,
                 execution,
                 catalog_basis=command["catalog_context"],
-                policy_basis={"policy_refs": [f"policy.social_leverage@{'f' * 40}"], "source_revision": "f" * 40},
+                policy_basis=_policy_basis_for_recovery(
+                    command, [f"policy.social_leverage@{'f' * 40}"], source_revision="f" * 40
+                ),
             )
         self.assertEqual(policy.exception.code, RecoveryFailureCode.STALE)
+
+    def test_recovery_rejects_arbitrary_event_ordinal_and_derived_event_id(self) -> None:
+        command = _accepted_command_for_recovery()
+        execution = _execution_for_recovery()
+        forged_event_id = "resolution-000001:segment:1:event:99"
+        forged_event = dict(execution["event"])
+        forged_event["event_ordinal"] = 99
+        forged_event["event_id"] = forged_event_id
+        forged = execution | {"event": forged_event, "event_id": forged_event_id}
+
+        with self.assertRaises(RecoveryFailure) as raised:
+            validate_recovered_basis(
+                command,
+                forged,
+                catalog_basis=command["catalog_context"],
+                policy_basis=_policy_basis_for_recovery(command),
+            )
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.CORRUPT)
+
+    def test_recovery_rejects_mutually_forged_policy_refs(self) -> None:
+        command = _accepted_command_for_recovery()
+        action_request = copy.deepcopy(command["action_request"])
+        action_request["parameter_bindings"]["dc"]["policy_basis_refs"] = [f"policy.forged@{H}"]
+        forged_command = command | {"action_request": action_request}
+        forged_policy = {
+            "policy_refs": [f"policy.forged@{H}"],
+            "source_revision": H,
+            "action_request": command["action_request"],
+            "invocation_facts": [],
+        }
+
+        with self.assertRaises(RecoveryFailure) as raised:
+            validate_recovered_basis(
+                forged_command,
+                _execution_for_recovery(),
+                catalog_basis=command["catalog_context"],
+                policy_basis=forged_policy,
+            )
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.CORRUPT)
 
 
 class OperationalRootRecoveryTests(unittest.TestCase):
@@ -654,6 +793,104 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
         self.assertFalse(result.hot_authoritative)
         self.assertEqual(result.sources[0].revision, H)
 
+    def test_current_runtime_does_not_return_ready_before_command_closure_validation(self) -> None:
+        from GAME.TOOLS.native_storage import route_native_record
+
+        path = route_native_record("runtime.command", ("command-000001",)).relative_path
+        page = {
+            "schema_version": 1,
+            "campaign_id": "campaign-1",
+            "complete": True,
+            "roots": [
+                {
+                    "owner_kind": "runtime.command",
+                    "owner_id": "command-000001",
+                    "route": {
+                        "family_key": "runtime.command",
+                        "identity": ["command-000001"],
+                        "relative_path": path,
+                    },
+                }
+            ],
+        }
+
+        class Repository(FakeRepository):
+            def select_current_native_sources(
+                self, pinned: PinnedCampaign
+            ) -> tuple[CurrentNativeSource, ...]:
+                return (CurrentNativeSource(pinned.campaign_id, "campaign", "campaign/current", H, "MANIFEST.yaml"),)
+
+            def read_exact_path(self, pinned: PinnedCampaign, requested: str) -> object:
+                if requested == "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml":
+                    return page
+                if requested == path:
+                    return {
+                        "kind": "runtime.command",
+                        "command_id": "command-000001",
+                        "disposition": "command.accepted",
+                        "pending_child_invocations": [],
+                        "direct_transition_receipt": {"status": "PUBLISH_REQUIRED"},
+                        "closure": {},
+                    }
+                return super().read_exact_path(pinned, requested)
+
+        with self.assertRaises(RecoveryFailure) as raised:
+            recover_current_runtime(Repository(), "campaign-1")
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.INCOMPLETE)
+
+    def test_current_runtime_validates_real_command_closure_before_ready(self) -> None:
+        from GAME.TOOLS.native_storage import route_native_record
+
+        accepted, _execution, closure, _context, identity = _validated_command_closure()
+        path = route_native_record("runtime.command", (identity["command_id"],)).relative_path
+        root = {
+            "owner_kind": "runtime.command",
+            "owner_id": identity["command_id"],
+            "route": {
+                "family_key": "runtime.command",
+                "identity": [identity["command_id"]],
+                "relative_path": path,
+            },
+        }
+        page = {
+            "schema_version": 1,
+            "campaign_id": "campaign-1",
+            "complete": True,
+            "roots": [root],
+        }
+
+        class Repository(FakeRepository):
+            def select_current_native_sources(
+                self, pinned: PinnedCampaign
+            ) -> tuple[CurrentNativeSource, ...]:
+                return (CurrentNativeSource(pinned.campaign_id, "campaign", "campaign/current", H, "MANIFEST.yaml"),)
+
+            def read_exact_path(self, pinned: PinnedCampaign, requested: str) -> object:
+                if requested == "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml":
+                    return page
+                if requested == path:
+                    return {
+                        "kind": "runtime.command",
+                        "command_id": accepted["command_id"],
+                        "disposition": "command.accepted",
+                        "pending_child_invocations": [],
+                        "direct_transition_receipt": {"status": "PUBLISH_REQUIRED"},
+                        "closure": closure,
+                    }
+                return super().read_exact_path(pinned, requested)
+
+            def resolve_recovery_catalog_context(
+                self,
+                pinned: PinnedCampaign,
+                accepted_command: Mapping[str, object],
+                catalog_basis: Mapping[str, object],
+            ) -> tuple[object, Mapping[str, str]]:
+                return _context, {"definition_id": "activity.check.generic", "kind": "definition.activity"}
+
+        result = recover_current_runtime(Repository(), "campaign-1")
+        self.assertEqual(result.disposition, "READY")
+        self.assertEqual(result.hydrated_owners[0]["command_id"], identity["command_id"])
+
 
 class SourceNativeLiveRecoveryTests(unittest.TestCase):
     def test_selected_live_source_without_native_reader_is_typed_missing_not_campaign_fallback(self) -> None:
@@ -686,6 +923,28 @@ class CurrentSourceFailureTests(unittest.TestCase):
         with self.assertRaises(RecoverySourceError) as raised:
             select_current_native_sources(Repository(), "campaign-1")
         self.assertEqual(raised.exception.code, RecoveryFailureCode.AMBIGUOUS)
+
+    def test_invalid_native_root_kind_is_typed_corrupt_recovery_failure(self) -> None:
+        page = {
+            "schema_version": 1,
+            "campaign_id": "campaign-1",
+            "complete": True,
+            "roots": [
+                {
+                    "owner_kind": "runtime.unknown",
+                    "owner_id": "unknown-000001",
+                    "route": {
+                        "family_key": "runtime.unknown",
+                        "identity": ["unknown-000001"],
+                        "relative_path": "STATE/RUNTIME/UNKNOWN/owner.yaml",
+                    },
+                }
+            ],
+        }
+
+        with self.assertRaises(RecoveryFailure) as raised:
+            hydrate_operational_roots(FakeRepository(), PinnedCampaign("campaign-1", H, TREE), page)
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.CORRUPT)
 
 
 class SessionHotAuthorityTests(unittest.TestCase):
