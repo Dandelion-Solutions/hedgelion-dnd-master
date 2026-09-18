@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `0b68dc873839bae573eceee63b05d46c5977774d`
 
 STATUS: FINAL_REVIEW
-CURRENT_TASK: W02.T06 - final integration review of exact current-source recovery at local checkpoint `db5a585`
-LAST_COMPLETED_TASK: W02.T06 - W02_EXACT_RECOVERY_READY + W02_OPERATIONAL_ROOT_RECOVERY_READY -> local checkpoint `db5a585`
-LAST_SAFE_SHA: `db5a585` (local coherent W02.T06 checkpoint; remote publication was not requested)
+CURRENT_TASK: W02.T06 - repair round 1 final integration review of executable-root closure recovery at local checkpoint `39c11ac`
+LAST_COMPLETED_TASK: W02.T06 - executable-root closure validation repair round 1 -> local checkpoint `39c11ac`
+LAST_SAFE_SHA: `39c11ac` (local coherent W02.T06 repair checkpoint; remote publication was not requested)
 
 ## Dependency schedule
 
@@ -472,5 +472,31 @@ FINAL VERIFICATION EVIDENCE:
 - full DEV discovery: 784 passed, 7 skipped;
 - maintenance audit: PASS;
 - clean committed worktree provenance/release checks included in the full-suite PASS.
+NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
+
+## W02.T06 Repair Round 1 — 2026-09-18
+
+INDEPENDENT FINDINGS ADDRESSED:
+- Recovery now validates every executable `runtime.command` root's exact owner closure before returning `READY`; incomplete closures fail closed.
+- Recovered command closures revalidate accepted command identity, resolution membership, segment/event derivation, fixed-RNG identity/provenance, catalog binding and frozen policy inputs through the existing owner validators.
+- Forged event ordinals/IDs, mutually inconsistent policy references, and invalid native root kinds are rejected with typed recovery failures rather than being accepted or leaking storage exceptions.
+
+TDD EVIDENCE:
+- RED: focused repair witnesses reproduced arbitrary event identity acceptance, mutually forged policy acceptance, incomplete command closure reaching recovery, and leaked `NativeStorageError` for an invalid root kind.
+- GREEN: focused RD07 recovery suite, including a valid end-to-end executable-root closure, 40 passed.
+- full DEV discovery: 789 passed, 7 skipped.
+- maintenance audit: PASS.
+
+VERSION_IMPACT:
+- `GAME/TOOLS/recovery.py`: `framework_module_version` 1.0.1 -> 1.0.2 for executable-root closure and hardened recovered-basis validation.
+- recovery-result schema, runtime-maintenance-audit-state schema, checkpoint schema, catalog, engine, campaign, storage, persistence and migration namespaces: NONE.
+
+SYSTEM_IMPACT: NONE - repair remains within the approved W02.T06 recovery/maintenance envelope; it adds no currentness, persistence, publication, journal, lifecycle, policy, catalog, RNG or LIVE authority.
+FINAL_SHA: `39c11ac`
+FINAL VERIFICATION EVIDENCE:
+- focused RD07 recovery suite: 40 passed;
+- full DEV discovery: 789 passed, 7 skipped;
+- maintenance audit: PASS;
+- local coherent checkpoint remains unpublished; no remote push was requested.
 NEXT_EXACT_TASK: Senior integration audit/read-back for W02.T06; do not start Wave 03 LIVE integration in this task.
 UNPUBLISHED_WORK: NONE (the implementation and execution-cursor checkpoints are committed locally).
