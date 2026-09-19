@@ -368,6 +368,20 @@ DEV/TOOLS/run_release_build.py
 
 Both own/reuse the isolated repository-local `.hdm-devtools/` environment declared by `DEV/TOOLS/requirements-dev-tools.txt`. Do not install DEV dependencies into system Python and do not make GAME/runtime depend on them.
 
+### Local Python test parallelism
+
+For broad or full local Python test-suite runs, prefer the repository-provided `pytest-xdist` runner with automatic worker selection:
+
+```text
+.hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto
+```
+
+Use focused single-test or single-module runs sequentially when parallel startup would add overhead or make debugging less clear. Do not force parallel execution for tests that intentionally share mutable resources unless their owning test contract provides isolation.
+
+If an owning plan, CI workflow, release checklist, audit, or verification contract names an exact canonical command (including the canonical `unittest` regression command), run that exact command for the required acceptance evidence. A parallel pytest run may accelerate local development and broad regression feedback, but it does not silently replace an explicitly required verification surface.
+
+If a failure appears only under parallel execution, treat parallelism/order/shared-state interference as a live hypothesis and reproduce the affected scope sequentially before classifying the product behavior.
+
 `GAME/TOOLS/init_campaign.py` is runtime support and remains Python-standard-library-only.
 
 ## Release boundary
