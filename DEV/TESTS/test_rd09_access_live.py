@@ -3445,8 +3445,12 @@ class PlayerAccessTransitionTests(unittest.TestCase):
 
     def test_access_publication_and_recovery_share_one_after_authority_view(self) -> None:
         creator = _principal(account_id="99", login="creator")
-        current = self._campaign()
-        proposed = self._campaign(revision=LIVE_H1, join_policy="open_contributors")
+        current = self._campaign() | {
+            "metadata": {"display_name": "Frostfall", "region": "north"},
+        }
+        proposed = self._campaign(revision=LIVE_H1, join_policy="open_contributors") | {
+            "metadata": {"display_name": "Frostfall", "region": "north"},
+        }
         transition = freeze_access_policy_transition(
             creator,
             current_campaign=current,
@@ -3465,11 +3469,59 @@ class PlayerAccessTransitionTests(unittest.TestCase):
         recovered = transition.recover_after_authority(proposed)
 
         self.assertEqual(published, recovered)
+        self.assertEqual(
+            published["campaign"]["metadata"],
+            {"display_name": "Frostfall", "region": "north"},
+        )
         with self.assertRaisesRegex(AccessControlContractError, "stale"):
             publish_access_policy_transition(
                 transition,
                 current_campaign_revision=LIVE_H1,
                 current_campaign=current,
+            )
+
+    def test_access_publication_rejects_same_revision_unrelated_campaign_body_drift(self) -> None:
+        creator = _principal(account_id="99", login="creator")
+        current = self._campaign() | {"metadata": {"display_name": "Frostfall"}}
+        proposed = self._campaign(revision=LIVE_H1, join_policy="open_contributors") | {
+            "metadata": {"display_name": "Frostfall"},
+        }
+        transition = freeze_access_policy_transition(
+            creator,
+            current_campaign=current,
+            proposed_campaign=proposed,
+            creator_provenance=_creator_provenance(),
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H1,
+            live_route=_empty_live_route(),
+        )
+
+        with self.assertRaisesRegex(AccessControlContractError, "stale|currentness|body"):
+            publish_access_policy_transition(
+                transition,
+                current_campaign_revision=LIVE_H0,
+                current_campaign=current | {"metadata": {"display_name": "Drifted"}},
+            )
+
+    def test_access_recovery_rejects_same_revision_unrelated_campaign_body_drift(self) -> None:
+        creator = _principal(account_id="99", login="creator")
+        current = self._campaign() | {"metadata": {"display_name": "Frostfall"}}
+        proposed = self._campaign(revision=LIVE_H1, join_policy="open_contributors") | {
+            "metadata": {"display_name": "Frostfall"},
+        }
+        transition = freeze_access_policy_transition(
+            creator,
+            current_campaign=current,
+            proposed_campaign=proposed,
+            creator_provenance=_creator_provenance(),
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H1,
+            live_route=_empty_live_route(),
+        )
+
+        with self.assertRaisesRegex(AccessControlContractError, "match|currentness|body"):
+            transition.recover_after_authority(
+                proposed | {"metadata": {"display_name": "Drifted"}},
             )
 
     def test_creator_uncertainty_fails_closed_for_campaign_policy_mutation(self) -> None:
@@ -3624,7 +3676,7 @@ class LiveAdditiveAuthorizationTests(unittest.TestCase):
 
 class MultiLiveForwardTransitionTests(unittest.TestCase):
     def test_access_control_repair_advances_runtime_module_version(self) -> None:
-        self.assertEqual(access_control_module.FRAMEWORK_MODULE_VERSION, "1.0.3")
+        self.assertEqual(access_control_module.FRAMEWORK_MODULE_VERSION, "1.0.4")
 
     def _source(self, scene_id: str, actor_id: str, revision: str = LIVE_H0) -> LiveEnvelope:
         claims = (LiveClaim.exact_owner("world.actor", actor_id),)

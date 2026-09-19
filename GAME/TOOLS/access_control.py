@@ -21,8 +21,8 @@ from .history import (
 
 AccountId: TypeAlias = str
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
 ROUTE_SCHEMA_VERSION: Final = 1
 ROUTE_KIND: Final = "runtime.principal_player_routing"
 _RESOLUTION_TOKEN: Final = object()
@@ -1236,9 +1236,11 @@ class FrozenAccessPolicyTransition:
     ) -> dict[str, object]:
         """Reproduce the same after-view from one exact published campaign read."""
 
-        observed_campaign = _campaign_state(campaign)
-        expected_campaign = _campaign_state(self.proposed_campaign)
-        if observed_campaign != expected_campaign:
+        if not _same_campaign_state(
+            self.proposed_campaign,
+            campaign,
+            revision=self.proposed_campaign_revision,
+        ):
             raise AccessControlContractError(
                 "recovered campaign does not match the frozen after-authority view",
                 failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
@@ -1642,9 +1644,11 @@ def publish_access_policy_transition(
             failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
         )
     if current_campaign is not None:
-        observed_campaign = _campaign_state(current_campaign, revision=current_campaign_revision)
-        expected_campaign = _campaign_state(transition.current_campaign)
-        if observed_campaign != expected_campaign:
+        if not _same_campaign_state(
+            transition.current_campaign,
+            current_campaign,
+            revision=current_campaign_revision,
+        ):
             raise AccessControlContractError(
                 "access publication campaign evidence is stale",
                 failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
