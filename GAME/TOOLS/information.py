@@ -11,7 +11,7 @@ import hashlib
 import re
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
@@ -73,6 +73,9 @@ class LiveInformationCandidate:
     source_native_ids: tuple[str, ...]
     recipient_player_id: str
     evidence: Mapping[str, object]
+    _extraction_admission: object | None = field(
+        default=None, init=False, repr=False, compare=False
+    )
 
     def __post_init__(self) -> None:
         object.__setattr__(
@@ -384,16 +387,21 @@ def normalize_information_evidence(value: object) -> dict[str, object]:
     return {"lore_fact": fact, "knowledge": knowledge, **emission}
 
 
-def _selected_live_source(value: object) -> LiveEnvelope:
-    """Require the W03 owner-typed LIVE source without importing it at module load."""
+def _selected_live_source(selected_route: object, value: object) -> LiveEnvelope:
+    """Require one owner-typed source selected by the complete LIVE route."""
 
     from .live_state import LiveEnvelope, LiveLifecycle
+    from .live_state import LiveContractError, require_selected_live_source
 
     if not isinstance(value, LiveEnvelope):
         raise InformationContractError("LIVE information requires the exact selected source")
-    if value.status is LiveLifecycle.ABSORBED:
+    try:
+        selected = require_selected_live_source(selected_route, value)
+    except LiveContractError as error:
+        raise InformationContractError(str(error)) from error
+    if selected.status is LiveLifecycle.ABSORBED:
         raise InformationContractError("absorbed LIVE source is not current information authority")
-    return value
+    return selected
 
 
 def _projection_candidates(projection: Mapping[str, object]) -> object:
@@ -409,19 +417,20 @@ def _projection_candidates(projection: Mapping[str, object]) -> object:
 
 
 def extract_material_live_information(
+    selected_route: object,
     live_source: object,
     projection: object,
     *,
     recipient_player_id: str,
 ) -> tuple[LiveInformationCandidate, ...]:
-    """Extract recipient-bound information candidates from one exact LIVE source.
+    """Extract candidates from one source selected by an exact LIVE route.
 
     LIVE physical fields are evidence/input only.  This function does not infer
     knowledge from visibility or emit any native owner record; the returned
     candidates must pass through :func:`apply_normalization_candidates_under_native_owners`.
     """
 
-    source = _selected_live_source(live_source)
+    source = _selected_live_source(selected_route, live_source)
     recipient = _require_native_id(recipient_player_id, "recipient_player_id")
     raw_projection = _require_mapping(projection, "LIVE information projection")
     forbidden_projection_fields = {
@@ -501,32 +510,33 @@ def extract_material_live_information(
         emission = _require_mapping(native_evidence.get("emission"), "candidate emission")
         if emission.get("recipient_player_id") != recipient:
             raise InformationContractError("LIVE information emission recipient leakage")
-        result.append(
-            LiveInformationCandidate(
-                source_key=source.source_key,
-                source_ref=source.source_ref,
-                source_revision=source.source_revision,
-                source_native_ids=source.source_native_ids,
-                recipient_player_id=recipient,
-                evidence=native_evidence,
-            )
+        admitted_candidate = LiveInformationCandidate(
+            source_key=source.source_key,
+            source_ref=source.source_ref,
+            source_revision=source.source_revision,
+            source_native_ids=source.source_native_ids,
+            recipient_player_id=recipient,
+            evidence=native_evidence,
         )
+        object.__setattr__(admitted_candidate, "_extraction_admission", object())
+        result.append(admitted_candidate)
     return tuple(result)
 
 
 def apply_normalization_candidates_under_native_owners(
     candidates: object,
+    selected_route: object,
     current_source: object,
     *,
     recipient_player_id: str | None = None,
 ) -> tuple[dict[str, object], ...]:
-    """Normalize exact LIVE candidates through the existing native owners.
+    """Normalize admitted exact-route LIVE candidates through native owners.
 
     The operation is deliberately ephemeral: it returns native-owner inputs and
     never writes, merges, or promotes LIVE physical projections into authority.
     """
 
-    source = _selected_live_source(current_source)
+    source = _selected_live_source(selected_route, current_source)
     if not isinstance(candidates, Sequence) or isinstance(candidates, (str, bytes)):
         raise InformationContractError("normalization candidates must be a typed array")
     expected_recipient = (
@@ -540,6 +550,10 @@ def apply_normalization_candidates_under_native_owners(
         if not isinstance(candidate, LiveInformationCandidate):
             raise InformationContractError(
                 "normalization candidates must come from exact LIVE extraction"
+            )
+        if candidate._extraction_admission is None:
+            raise InformationContractError(
+                "normalization candidate lacks admitted LIVE extraction provenance"
             )
         if (
             candidate.source_key != source.source_key

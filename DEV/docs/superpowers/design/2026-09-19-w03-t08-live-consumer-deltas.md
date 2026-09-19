@@ -13,17 +13,20 @@ bounded input record. W04 is not started.
 
 ## Owner-local realization
 
-- `GAME/TOOLS/information.py` extracts only exact-source, recipient-bound LIVE
-  information candidates and passes them through the existing native lore,
-  knowledge, disclosure, and message normalizers.
-- `GAME/TOOLS/live_state.py` provides an ephemeral material/current-scene
-  bridge bound to `(campaign_id, scene_id, epoch_id)`, the exact LIVE ref,
+- `GAME/TOOLS/information.py` resolves the observed source through the selected
+  complete `LiveRouting` entry, extracts only exact-source, recipient-bound LIVE
+  information candidates, and passes only admitted extraction results through
+  the existing native lore, knowledge, disclosure, and message normalizers.
+- `GAME/TOOLS/live_state.py` resolves the observed source through the selected
+  complete `LiveRouting` entry before providing an ephemeral material/current-
+  scene bridge bound to `(campaign_id, scene_id, epoch_id)`, the exact LIVE ref,
   exact source revision, and exact source-native ID history.
 - A LIVE physical projection is evidence/input only. It cannot mint knowledge,
   disclosure, message, scene, principal, or currentness authority.
-- Stale source revisions, stale source-native history, recipient mismatch,
-  legacy visibility/perception fields, and pre-v1 branch/revision shapes fail
-  closed. There is no latest-looking or campaign-base fallback.
+- Missing, orphaned, superseded and stale sources, stale source revisions,
+  stale source-native history, recipient mismatch, direct unadmitted candidate
+  construction, legacy visibility/perception fields, and pre-v1 branch/revision
+  shapes fail closed. There is no latest-looking or campaign-base fallback.
 
 ## Wave-05 shipped inputs
 

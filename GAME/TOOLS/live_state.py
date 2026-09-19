@@ -30,8 +30,8 @@ from .recovery_roots import (
     _is_owner_issued_root_delta,
 )
 
-# framework_module_version: 1.0.19
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.19"
+# framework_module_version: 1.0.20
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.20"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -1919,6 +1919,27 @@ def validate_exact_source(
     )
 
 
+def require_selected_live_source(
+    selected_route: object,
+    observed_source: object,
+) -> LiveEnvelope:
+    """Resolve one exact current source through its complete selected route."""
+
+    if not isinstance(selected_route, LiveRouting) or not selected_route.complete:
+        raise LiveContractError("LIVE consumer requires a complete selected route")
+    validate_live_route_completeness(selected_route)
+    if not isinstance(observed_source, LiveEnvelope):
+        raise LiveContractError("LIVE consumer requires an owner-typed current source")
+    selected = select_live_source(selected_route, observed_source.source_key)
+    if selected is None:
+        raise LiveContractError(
+            "LIVE source is missing, orphaned, superseded, or not selected by the route"
+        )
+    if not validate_exact_source(selected, observed_source):
+        raise LiveContractError("LIVE source is stale or does not match the selected route")
+    return selected
+
+
 @dataclass(frozen=True, slots=True)
 class LiveSceneMaterialBridge:
     """Ephemeral scene material projection bound to exact current LIVE."""
@@ -1969,17 +1990,17 @@ class LiveSceneMaterialBridge:
 
 
 def build_material_current_scene_bridge(
-    source: object,
+    selected_route: object,
+    observed_source: object,
     projection: object,
 ) -> LiveSceneMaterialBridge:
-    """Build scene material only from an exact current source-native LIVE body.
+    """Build scene material only from a route-selected current LIVE body.
 
     The returned value is a bounded presentation/input bridge.  It cannot select
     a source, advance currentness, or replace any native scene/information owner.
     """
 
-    if not isinstance(source, LiveEnvelope):
-        raise LiveContractError("material bridge requires the exact selected LIVE source")
+    source = require_selected_live_source(selected_route, observed_source)
     if source.status is LiveLifecycle.ABSORBED:
         raise LiveContractError("absorbed LIVE source cannot bridge current scene material")
     if not isinstance(projection, Mapping):

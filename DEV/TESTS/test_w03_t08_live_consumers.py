@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+from dataclasses import replace
 from pathlib import Path
 import unittest
 
@@ -16,7 +17,10 @@ from GAME.TOOLS.live_state import (
     LiveClaim,
     LiveContractError,
     LiveEnvelope,
+    LiveLifecycle,
+    LiveRouting,
     build_live_ref,
+    build_live_route,
     build_material_current_scene_bridge,
     derive_live_epoch_id,
 )
@@ -29,21 +33,30 @@ SCENE_SCHEMA_SHA256 = "85237b5b76cd847c1db5d66d105f310c5a3a115add37bff6c229c6126
 LIVE_SCENE_SCHEMA_SHA256 = "0e5cceac5b29d1bcad1fcfe5779905092402d1c8b00d9c3d04157a822ceb5638"
 
 
-def _live_source(*, revision: str = "a" * 40) -> LiveEnvelope:
+def _live_source(
+    *,
+    revision: str = "a" * 40,
+    campaign_id: str = "campaign-frostfall",
+    scene_id: str = "scene-market",
+) -> LiveEnvelope:
     claims = (LiveClaim.exact_owner("world.actor", "actor.aria"),)
     opening_revision = "0" * 40
     epoch_id = derive_live_epoch_id(
-        "campaign-frostfall", "scene-market", opening_revision, claims
+        campaign_id, scene_id, opening_revision, claims
     )
     return LiveEnvelope(
-        campaign_id="campaign-frostfall",
-        scene_id="scene-market",
+        campaign_id=campaign_id,
+        scene_id=scene_id,
         epoch_id=epoch_id,
-        source_ref=build_live_ref("campaign-frostfall", "scene-market", epoch_id),
+        source_ref=build_live_ref(campaign_id, scene_id, epoch_id),
         source_revision=revision,
         claims=claims,
         opening_campaign_revision=opening_revision,
     )
+
+
+def _route(source: LiveEnvelope) -> LiveRouting:
+    return build_live_route(source.campaign_id, (source,))
 
 
 def _native_information(*, recipient: str = "player.aria") -> dict[str, object]:
@@ -107,6 +120,7 @@ class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
     def test_current_source_candidates_normalize_under_native_information_owners(self) -> None:
         source = _live_source()
         candidates = extract_material_live_information(
+            _route(source),
             source,
             _projection(
                 source,
@@ -116,7 +130,7 @@ class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
         )
 
         result = apply_normalization_candidates_under_native_owners(
-            candidates, source, recipient_player_id="player.aria"
+            candidates, _route(source), source, recipient_player_id="player.aria"
         )
 
         self.assertEqual(len(result), 1)
@@ -132,8 +146,11 @@ class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
             "recipient_player_id": "player.aria", "evidence": _native_information()
         })
 
-        with self.assertRaisesRegex(InformationContractError, "current|stale"):
-            extract_material_live_information(source, stale, recipient_player_id="player.aria")
+        with self.assertRaisesRegex(InformationContractError, "current|stale|admitted"):
+            extract_material_live_information(
+                _route(source), _live_source(revision="a" * 40), stale,
+                recipient_player_id="player.aria",
+            )
 
     def test_recipient_leakage_is_rejected_instead_of_projected(self) -> None:
         source = _live_source()
@@ -143,7 +160,9 @@ class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
         )
 
         with self.assertRaisesRegex(InformationContractError, "recipient"):
-            extract_material_live_information(source, leaked, recipient_player_id="player.aria")
+            extract_material_live_information(
+                _route(source), source, leaked, recipient_player_id="player.aria"
+            )
 
     def test_legacy_visibility_and_live_arrays_are_not_information_fallbacks(self) -> None:
         source = _live_source()
@@ -160,7 +179,43 @@ class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
         )
 
         with self.assertRaisesRegex(InformationContractError, "legacy|native|evidence"):
-            extract_material_live_information(source, legacy, recipient_player_id="player.aria")
+            extract_material_live_information(
+                _route(source), source, legacy, recipient_player_id="player.aria"
+            )
+
+    def test_information_rejects_missing_orphan_superseded_and_stale_sources(self) -> None:
+        current = _live_source(revision="b" * 40)
+        stale = _live_source(revision="a" * 40)
+        orphan = _live_source(scene_id="scene-harbor")
+        cases = (
+            ("missing", LiveRouting(campaign_id=current.campaign_id, entries=()), current),
+            ("orphan", _route(orphan), current),
+            (
+                "superseded",
+                build_live_route(
+                    current.campaign_id,
+                    (replace(current, status=LiveLifecycle.ABSORBED),),
+                ),
+                current,
+            ),
+            ("stale", _route(current), stale),
+        )
+
+        for label, route, observed in cases:
+            with self.subTest(source=label):
+                with self.assertRaisesRegex(InformationContractError, "selected|current|stale|route"):
+                    extract_material_live_information(
+                        route,
+                        observed,
+                        _projection(
+                            observed,
+                            {
+                                "recipient_player_id": "player.aria",
+                                "evidence": _native_information(),
+                            },
+                        ),
+                        recipient_player_id="player.aria",
+                    )
 
     def test_apply_rejects_caller_forged_or_stale_candidate(self) -> None:
         source = _live_source(revision="b" * 40)
@@ -173,9 +228,25 @@ class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
             evidence=_native_information(),
         )
 
-        with self.assertRaisesRegex(InformationContractError, "current|stale"):
+        with self.assertRaisesRegex(InformationContractError, "current|stale|admitted"):
             apply_normalization_candidates_under_native_owners(
-                (forged,), source, recipient_player_id="player.aria"
+                (forged,), _route(source), source, recipient_player_id="player.aria"
+            )
+
+    def test_apply_rejects_matching_current_directly_constructed_candidate(self) -> None:
+        source = _live_source()
+        direct = LiveInformationCandidate(
+            source_key=source.source_key,
+            source_ref=source.source_ref,
+            source_revision=source.source_revision,
+            source_native_ids=source.source_native_ids,
+            recipient_player_id="player.aria",
+            evidence=_native_information(),
+        )
+
+        with self.assertRaisesRegex(InformationContractError, "extract|admit|provenance"):
+            apply_normalization_candidates_under_native_owners(
+                (direct,), _route(source), source, recipient_player_id="player.aria"
             )
 
 
@@ -183,6 +254,7 @@ class MaterialBridgeCurrentnessTests(unittest.TestCase):
     def test_exact_current_source_builds_material_scene_bridge(self) -> None:
         source = _live_source()
         bridge = build_material_current_scene_bridge(
+            _route(source),
             source,
             {
                 "source_key": list(source.source_key),
@@ -211,7 +283,7 @@ class MaterialBridgeCurrentnessTests(unittest.TestCase):
         }
 
         with self.assertRaisesRegex(LiveContractError, "current|stale"):
-            build_material_current_scene_bridge(source, stale)
+            build_material_current_scene_bridge(_route(source), source, stale)
 
     def test_projection_cannot_supply_source_native_authority(self) -> None:
         source = _live_source()
@@ -225,7 +297,7 @@ class MaterialBridgeCurrentnessTests(unittest.TestCase):
         }
 
         with self.assertRaisesRegex(LiveContractError, "source-native|current"):
-            build_material_current_scene_bridge(source, forged)
+            build_material_current_scene_bridge(_route(source), source, forged)
 
     def test_legacy_live_branch_revision_shape_has_no_fallback(self) -> None:
         source = _live_source()
@@ -238,7 +310,41 @@ class MaterialBridgeCurrentnessTests(unittest.TestCase):
         }
 
         with self.assertRaisesRegex(LiveContractError, "source-native|current|projection"):
-            build_material_current_scene_bridge(source, legacy)
+            build_material_current_scene_bridge(_route(source), source, legacy)
+
+    def test_material_bridge_rejects_missing_orphan_superseded_and_stale_sources(self) -> None:
+        current = _live_source(revision="b" * 40)
+        stale = _live_source(revision="a" * 40)
+        orphan = _live_source(scene_id="scene-harbor")
+        cases = (
+            ("missing", LiveRouting(campaign_id=current.campaign_id, entries=()), current),
+            ("orphan", _route(orphan), current),
+            (
+                "superseded",
+                build_live_route(
+                    current.campaign_id,
+                    (replace(current, status=LiveLifecycle.ABSORBED),),
+                ),
+                current,
+            ),
+            ("stale", _route(current), stale),
+        )
+
+        for label, route, observed in cases:
+            with self.subTest(source=label):
+                with self.assertRaisesRegex(LiveContractError, "selected|current|stale|route"):
+                    build_material_current_scene_bridge(
+                        route,
+                        observed,
+                        {
+                            "source_key": list(observed.source_key),
+                            "source_ref": observed.source_ref,
+                            "source_revision": observed.source_revision,
+                            "source_native_ids": [],
+                            "scene_id": observed.scene_id,
+                            "material": {},
+                        },
+                    )
 
 
 class SourceNativeLiveSchemaCutoverTests(unittest.TestCase):
@@ -258,7 +364,7 @@ class SourceNativeLiveSchemaCutoverTests(unittest.TestCase):
         projection.pop("source_revision")
 
         with self.assertRaisesRegex(LiveContractError, "source_revision|projection"):
-            build_material_current_scene_bridge(source, projection)
+            build_material_current_scene_bridge(_route(source), source, projection)
 
 
 class ShippedLiveCoreCutoverTests(unittest.TestCase):
