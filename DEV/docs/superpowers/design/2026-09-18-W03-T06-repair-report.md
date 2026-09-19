@@ -129,3 +129,35 @@ The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold rema
 
 - **SYSTEM_IMPACT: NONE.** The repair removes caller-controlled validation authority and consumes the existing LIVE producer transport within the approved W03 temporal/LIVE/operational-root envelope. It adds no semantic owner, dependency-direction change, transaction, broad scan, fallback authority or Wave-05 write.
 - Independent reviewer PASS remains pending. W03.T07 and W03.T08 remain blocked until that reviewer PASS is recorded.
+
+## Fake-carrier nominal transport repair
+
+- **Task:** W03.T06 fake-carrier critical repair from `7e2f9c18409aef340fdb579d05c4089d76bf974a`.
+- **Implementation checkpoint:** `50e1b25f3846775133af55304e51cf5d132cc0db`.
+- **Publication:** non-force push completed; fresh remote read-back matched `50e1b25f3846775133af55304e51cf5d132cc0db`.
+
+### Delivered repair
+
+- Added the required RED witness for an arbitrary object implementing `validate_for_operational_root_recovery`; the published baseline accepted it.
+- Replaced the structural transport `Protocol` with a non-issuing nominal ABC port. Recovery requires nominal transport membership and no longer uses `getattr`/callable duck typing.
+- `LiveAbsorptionPublication` is the existing LIVE implementation of that port; its validation still requires the LIVE issuer token, weak-reference identity registry, exact source key/revision, accepted CAS status, closure, route and successor evidence.
+- Preserved the absence of `GAME/TOOLS/handoff_evidence.py` and the absence of a `recovery_roots -> live_state` import.
+
+### TDD and verification
+
+- RED: the fake carrier returned successfully and recovery raised no error at baseline.
+- Focused runtime suites: `193` passed; version-policy suite: `11` passed with zero unclassified/legacy hits.
+- Clean full DEV discovery from the published implementation checkpoint: `920` passed, `6` skipped.
+- Maintenance audit: PASS; `git diff --check`: PASS.
+- Hosted CI is unavailable in the local-machine runtime.
+
+### Version Impact Gate
+
+- LIVE runtime `framework_module_version`: `1.0.14 -> 1.0.15`.
+- Operational-root runtime `framework_module_version`: `1.0.11 -> 1.0.12`.
+- No serialized schema, engine-release, campaign-contract, storage-format, catalog, identifier-policy, existing LIVE-routing, operational-root-page or shared projection bump.
+
+### System impact and review state
+
+- **SYSTEM_IMPACT: NONE.** The non-issuing nominal port is the bounded cross-owner transport realization required to consume the existing LIVE-issued capability; the forbidden recovery-to-LIVE dependency and neutral issuer remain absent. No new state owner, validation issuer, transaction, broad scan, fallback authority or Wave-05 write was added.
+- Independent reviewer PASS remains pending. W03.T07 and W03.T08 remain blocked until that reviewer PASS is recorded.
