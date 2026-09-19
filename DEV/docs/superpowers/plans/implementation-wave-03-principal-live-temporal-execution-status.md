@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: W03.T08 reviewer re-review after candidate-admission hardening
-LAST_COMPLETED_TASK: W03.T08 candidate-provenance repair at `37ca7c8c5d443fc8ad27c1218e2cbf34d95f4280`
-LAST_SAFE_SHA: `37ca7c8c5d443fc8ad27c1218e2cbf34d95f4280` (published/read-back W03.T08 candidate-admission checkpoint)
+CURRENT_TASK: W03.T08 reviewer re-review after external admission-state hardening
+LAST_COMPLETED_TASK: W03.T08 external admission-state repair at `26b10ecfc68ca1a8d772346616645a83dc1df5f7`
+LAST_SAFE_SHA: `26b10ecfc68ca1a8d772346616645a83dc1df5f7` (published/read-back W03.T08 external-state checkpoint)
 
 ## Dependency schedule
 
@@ -88,6 +88,7 @@ COMPLETED_TASKS:
 - W03.T08 -> `e1da5ea1264ed561d828504ca68a7f41e114b1f4` (published/read-back; recipient-safe LIVE information normalization, exact-current material/scene bridge, strict source-native cutover, owner-local shipped-LIVE delta)
 - W03.T08 route/provenance repair -> `b4edd0bb1135d8768780b8586644a720a1eddf04` (published/read-back; information and material bridges require selected-route exact-source validation, direct current candidate construction fails closed)
 - W03.T08 candidate-provenance repair -> `37ca7c8c5d443fc8ad27c1218e2cbf34d95f4280` (published/read-back; module-owned admission identity rejects marker mutation and private evidence snapshots defeat post-extraction evidence mutation)
+- W03.T08 external admission-state repair -> `26b10ecfc68ca1a8d772346616645a83dc1df5f7` (published/read-back; candidates carry no trusted admission/snapshot, and immutable module-owned identity-keyed state is the sole normalization source)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -158,6 +159,8 @@ CURRENT_VERIFICATION_STATE:
 - W03.T08 route/provenance repair changed only the existing LIVE/information owners, their owner-local tests, the owner-local semantic delta, and required module-version projections. Wave-05 shared scene/multiplayer/schema/final-writer surfaces remain unchanged; W04 remains untouched.
 - W03.T08 candidate-provenance repair RED/GREEN: marker mutation and post-extraction evidence mutation both failed at the `b4edd0b` baseline, then passed after module-owned issuer identity and admitted evidence snapshots were enforced. T08 consumer suite passed 20 tests; focused consumer/access suites passed 184 tests; broader W03 integration/version suites passed 247 tests; canonical bytecode-disabled DEV unittest discovery passed 984 tests with 6 skips after generated-cache cleanup; maintenance audit and `git diff --check` passed. Version census reported zero unclassified and zero legacy hits.
 - W03.T08 candidate-provenance repair changed only the information owner, its owner-local tests/documentation and the information CORE version projection. LIVE route behavior and all Wave-05 shared/final-writer surfaces remain unchanged; W04 remains untouched.
+- W03.T08 external admission-state repair RED/GREEN: valid imported admission attachment and candidate snapshot exposure/mutation both failed at the `37ca7c8` baseline, then passed after candidates became untrusted identity-only keys for module-owned weak identity state with recursively immutable evidence snapshots. T08 consumer suite passed 21 tests; broader W03 integration/version suites passed 248 tests; canonical bytecode-disabled DEV unittest discovery passed 985 tests with 6 skips from a cache-free clean checkout; maintenance audit and `git diff --check` passed. Version census reported zero unclassified and zero legacy hits.
+- W03.T08 external admission-state repair changed only the information owner, owner-local tests/documentation, and the information CORE version projection. Selected-route behavior and all LIVE route, Wave-05 shared/final-writer, and W04 surfaces remain unchanged.
 
 VERSION_IMPACT: W03.T02 review repair round 1 materially changes the LIVE runtime module `framework_module_version` 1.0.1 -> 1.0.2 and the ephemeral publication-attempt schema 1 -> 2 because selected-route and complete-successor evidence are now required. Claim/routing serialized shapes remain schema v1; their repair rejects pre-release invalid claim forms without changing serialized fields or adding a migration/projection.
 
@@ -272,8 +275,10 @@ VERSION_IMPACT: W03.T08 route/provenance repair materially changes LIVE runtime 
 SYSTEM_IMPACT: NONE -- the repair reuses the existing `LiveRouting`, `select_live_source`, `validate_live_route_completeness`, and `validate_exact_source` boundary and adds only ephemeral extraction provenance; it creates no new projection/evidence authority or Wave-05 writer.
 VERSION_IMPACT: W03.T08 candidate-provenance repair materially changes the information CORE module `framework_module_version` `1.0.6 -> 1.0.7`. No LIVE route schema/runtime version, engine-release, campaign-contract, storage-format, catalog, shared scene schema, multiplayer, identifier-policy, or other runtime projection namespace required a bump.
 SYSTEM_IMPACT: NONE -- the repair replaces a caller-forgeable marker with module-owned admission identity and snapshots admitted evidence without creating a new semantic owner, projection/evidence authority, route/currentness boundary, or Wave-05 writer.
+VERSION_IMPACT: W03.T08 external admission-state repair materially changes the information CORE module `framework_module_version` `1.0.7 -> 1.0.8`. No LIVE route schema/runtime version, engine-release, campaign-contract, storage-format, catalog, shared scene schema, multiplayer, identifier-policy, or other runtime projection namespace required a bump.
+SYSTEM_IMPACT: NONE -- candidates now carry no trusted admission or snapshot; module-owned identity-keyed state is the sole extraction/admission source, with immutable snapshots and no new authority or Wave-05 writer.
 W03_LIVE_CONSUMER_DELTAS_READY: REPAIRED / PUBLISHED; T08 reviewer re-review pending.
 INDEPENDENT_REVIEW: NOT AVAILABLE IN THIS LOCAL RUNTIME; final Senior integration audit remains required before Wave-03 closure.
-NEXT_EXACT_TASK: W03.T08 reviewer re-review of `37ca7c8c5d443fc8ad27c1218e2cbf34d95f4280`; do not start W04.
+NEXT_EXACT_TASK: W03.T08 reviewer re-review of `26b10ecfc68ca1a8d772346616645a83dc1df5f7`; do not start W04.
 KNOWN_BLOCKERS: Hosted CI is unavailable in the local-machine runtime. Local implementation and verification are green; T08 reviewer re-review and subsequent Senior integration audit remain required.
 UNPUBLISHED_WORK: NONE.
