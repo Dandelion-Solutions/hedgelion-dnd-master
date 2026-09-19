@@ -161,3 +161,36 @@ The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold rema
 
 - **SYSTEM_IMPACT: NONE.** The non-issuing nominal port is the bounded cross-owner transport realization required to consume the existing LIVE-issued capability; the forbidden recovery-to-LIVE dependency and neutral issuer remain absent. No new state owner, validation issuer, transaction, broad scan, fallback authority or Wave-05 write was added.
 - Independent reviewer PASS remains pending. W03.T07 and W03.T08 remain blocked until that reviewer PASS is recorded.
+
+## Senior-specified authority-shape repair
+
+- **Task:** W03.T06 authority-shape repair from `9e7a14a85174ca85785a4cabafb399037e6ec642`.
+- **Implementation checkpoint:** `dbbe4f7546f1320a2eb73a9f2330b9a2afdb1025`.
+- **Publication:** non-force push completed; fresh remote read-back matched the implementation checkpoint.
+
+### Delivered repair
+
+- Removed `AcceptedAbsorptionEvidenceTransport` and its virtual recovery validator path entirely; recovery now performs only the bounded operational-root transition and never authenticates absorption evidence or invokes caller-controlled methods.
+- Added the LIVE-owned operational-root campaign handoff. LIVE calls the real `validate_accepted_absorption_evidence(...)` against the exact producer-issued `LiveAbsorptionPublication`, checks the exact final source/route, and only then invokes the bounded recovery transition.
+- Preserved the existing LIVE producer issuance/CAS/source/revision/selected-route/successor/closure checks, the valid owner-issued path, `live_state -> recovery_roots`, and the absence of `recovery_roots -> live_state`.
+- Added the fake-transport subclass RED regression against the published `50e1b25` baseline and retained forged-object, callable, forged-publication, CAS, source, revision, route, closure, lifecycle, terminal-proof and supersession negatives.
+
+### TDD and verification
+
+- Baseline named T06 suites: `193` passed.
+- RED: the fake nominal transport subclass was accepted by the published `50e1b25` recovery path; the new regression failed because no error was raised.
+- Focused named runtime suites: `194` passed.
+- Cross-owner Wave-03 suites plus version policy: `216` passed; version census reported zero unclassified and zero legacy hits.
+- Clean full DEV discovery at the published implementation checkpoint: `921` passed, `6` skipped.
+- Maintenance audit and `git diff --check`: passed. Hosted CI is unavailable in the local-machine runtime.
+
+### Version Impact Gate
+
+- LIVE runtime `framework_module_version`: `1.0.15 -> 1.0.16`.
+- Operational-root runtime `framework_module_version`: `1.0.12 -> 1.0.13`.
+- No serialized schema, engine-release, campaign-contract, storage-format, catalog, identifier-policy, existing LIVE-routing, operational-root-page or shared projection bump.
+
+### System impact and review state
+
+- **SYSTEM_IMPACT: NONE.** The repair moves existing absorption admission to the existing LIVE owner and leaves recovery as a bounded routing transition. It introduces no neutral issuer/registry/wrapper/capability/token authority, semantic owner, new dependency direction beyond the existing `live_state -> recovery_roots` direction, transaction, broad scan, fallback authority or Wave-05 write.
+- Independent reviewer PASS remains pending. W03.T07 and W03.T08 remain blocked until that reviewer PASS is recorded.
