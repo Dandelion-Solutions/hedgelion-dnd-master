@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: FINAL_REVIEW
-CURRENT_TASK: W03.T06 independent reviewer PASS after fake-carrier nominal transport repair
-LAST_COMPLETED_TASK: W03.T06 fake-carrier nominal transport repair implementation and clean verification
-LAST_SAFE_SHA: `50e1b25f3846775133af55304e51cf5d132cc0db` (published/read-back repair checkpoint)
+CURRENT_TASK: W03.T06 independent re-review PASS after callable LIVE-to-CAMPAIGN recovery bypass repair
+LAST_COMPLETED_TASK: W03.T06 callable LIVE-to-CAMPAIGN recovery bypass repair implementation and clean verification
+LAST_SAFE_SHA: `37000154d65aaf6d6878a9980447d0cff4a92b7c` (published/read-back repair checkpoint)
 
 ## Dependency schedule
 
@@ -78,6 +78,7 @@ COMPLETED_TASKS:
 - W03.T06 fake-carrier nominal transport repair -> `50e1b25f3846775133af55304e51cf5d132cc0db` (published/read-back; structural transport trust removed, nominal non-issuing port enforced, and LIVE issuer identity validation retained)
 - W03.T06 authority-shape repair -> `dbbe4f7546f1320a2eb73a9f2330b9a2afdb1025` (published/read-back; absorption admission returned to LIVE, recovery transport extension point removed, and bounded operational-root transition retained)
 - W03.T06 direct recovery bypass repair -> `7544738c43d9fe968892555446e1eb28bb67c52b` (published/read-back; public LIVE-to-campaign recovery entry fail-closed, internal reconciliation retained behind LIVE admission)
+- W03.T06 callable recovery bypass repair -> `37000154d65aaf6d6878a9980447d0cff4a92b7c` (published/read-back; all recovery-root LIVE-to-CAMPAIGN callable entries removed, owner-side LIVE orchestration retained)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -130,6 +131,7 @@ CURRENT_VERIFICATION_STATE:
 - W03.T06 fake-carrier nominal transport repair RED/GREEN: an arbitrary object implementing the transport method was accepted at the published baseline; nominal ABC admission then rejected it while genuine LIVE publications remained accepted. Focused runtime suites passed 193 tests, version policy passed 11 tests, and clean full DEV discovery passed 920 tests with 6 skips; maintenance audit and `git diff --check` passed.
 - W03.T06 authority-shape repair RED/GREEN: the fake transport subclass was accepted at the published `50e1b25` baseline; removing the recovery transport and routing admission through LIVE produced focused runtime `194` passed, cross-owner plus version-policy `216` passed, and clean full DEV discovery `921` passed with `6` skips. Maintenance audit, version census, and `git diff --check` passed.
 - W03.T06 direct recovery bypass repair RED/GREEN: serialized, reconstructed and repeated LIVE handoff mappings directly invoked recovery at the `ee32149` baseline; fail-closed public recovery plus private bounded reconciliation produced focused runtime `196` passed, cross-owner plus version-policy `218` passed, and clean full DEV discovery `923` passed with `6` skips. Maintenance audit, version census, and `git diff --check` passed.
+- W03.T06 callable recovery bypass repair RED/GREEN: the baseline exposed public/private recovery and generic reconciliation callables; direct, reconstructed, and repeated LIVE mappings were rejected after those entries were removed. Focused runtime suites passed `196`; cross-owner plus version-policy passed `207`; clean full DEV discovery passed `923` with `6` skips; maintenance audit, version census, and `git diff --check` passed.
 
 VERSION_IMPACT: W03.T02 review repair round 1 materially changes the LIVE runtime module `framework_module_version` 1.0.1 -> 1.0.2 and the ephemeral publication-attempt schema 1 -> 2 because selected-route and complete-successor evidence are now required. Claim/routing serialized shapes remain schema v1; their repair rejects pre-release invalid claim forms without changing serialized fields or adding a migration/projection.
 
@@ -166,6 +168,9 @@ VERSION_IMPACT: W03.T06 authority-shape repair materially changes LIVE runtime `
 SYSTEM_IMPACT: NONE -- the repair removes the recovery transport extension point and makes LIVE perform exact producer-evidence admission before the bounded root transition. Independent reviewer PASS remains pending; T07/T08 stay blocked.
 VERSION_IMPACT: W03.T06 direct recovery bypass repair materially changes LIVE runtime `framework_module_version` `1.0.16 -> 1.0.17` and operational-root runtime `1.0.13 -> 1.0.14`. No serialized schema, engine-release, campaign-contract, storage-format, catalog, identifier-policy, existing LIVE-routing, operational-root-page or shared projection bump.
 SYSTEM_IMPACT: NONE -- the repair makes the public direct recovery entry fail closed and retains LIVE validation before private bounded reconciliation. Independent reviewer PASS remains pending; T07/T08 stay blocked.
-NEXT_EXACT_TASK: independent re-review PASS for W03.T06 direct recovery bypass repair; do not start W03.T07 or W03.T08 before that PASS.
+VERSION_IMPACT: W03.T06 callable recovery bypass repair materially changes LIVE runtime `framework_module_version` `1.0.17 -> 1.0.18` and operational-root runtime `1.0.14 -> 1.0.15`. No serialized schema, engine-release, campaign-contract, storage-format, catalog, identifier-policy, existing LIVE-routing, operational-root-page or shared projection bump.
+SYSTEM_IMPACT: NONE -- the repair removes every recovery-roots LIVE-to-CAMPAIGN callable entry, keeps bounded root mechanics after the LIVE exact-publication boundary, and adds no owner, dependency reversal, neutral authority, transaction, broad scan, fallback authority or Wave-05 write.
+VERSION_IMPACT: NONE -- this cursor/report synchronization changes only development execution metadata; the runtime namespace transitions are recorded in the preceding repair entry.
+NEXT_EXACT_TASK: independent re-review PASS for W03.T06 callable recovery bypass repair; do not start W03.T07 or W03.T08 before that PASS.
 KNOWN_BLOCKERS: W03.T07 and W03.T08 remain blocked until independent reviewer PASS. Hosted CI is unavailable in the local-machine runtime. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
 UNPUBLISHED_WORK: NONE after this cursor-update commit and its remote read-back.

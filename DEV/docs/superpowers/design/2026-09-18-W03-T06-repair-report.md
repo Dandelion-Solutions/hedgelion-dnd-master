@@ -225,3 +225,34 @@ The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold rema
 
 - **SYSTEM_IMPACT: NONE.** The repair closes an owner-entry bypass inside the existing LIVE/operational-root envelope, adds no semantic owner, dependency reversal, neutral authority, caller capability, transaction, broad scan, fallback authority or Wave-05 write.
 - T07 and T08 remain blocked pending independent re-review PASS.
+
+## Callable LIVE-to-CAMPAIGN bypass repair
+
+- **Task:** W03.T06 callable recovery/reconciliation bypass repair from `0c6479070a8ec4775e8288c8c79ba599c2018bca`.
+- **Implementation checkpoint:** `37000154d65aaf6d6878a9980447d0cff4a92b7c`.
+- **Publication:** non-force push completed; fresh remote read-back matched the implementation checkpoint.
+
+### Delivered repair
+
+- Removed the public fail-closed wrapper, private recovery helper, and generic recovery-root reconciliation helper rather than relying on renaming/private visibility for enforcement.
+- Recovery roots now expose only the bounded campaign-to-LIVE root handoff; LIVE performs the LIVE-to-CAMPAIGN root mechanics inline after exact `validate_accepted_absorption_evidence(...)` against the producer-issued publication and exact final source.
+- Direct, reconstructed, and repeated/idempotent LIVE handoff/retry mappings have no callable recovery-roots entry and cannot bypass LIVE admission.
+
+### TDD and verification
+
+- RED: baseline recovery roots exposed callable public/private recovery and generic reconciliation entries; the direct, reconstructed and repeated-entry negatives failed because those callables existed.
+- Focused named runtime suites: `196` passed.
+- Cross-owner Wave-03 suites plus version policy: `207` passed; version census reported zero unclassified and zero legacy hits.
+- Clean full DEV discovery at the published implementation checkpoint: `923` passed, `6` skipped.
+- Maintenance audit and `git diff --check`: passed. Hosted CI is unavailable in the local-machine runtime.
+
+### Version Impact Gate
+
+- LIVE runtime `framework_module_version`: `1.0.17 -> 1.0.18`.
+- Operational-root runtime `framework_module_version`: `1.0.14 -> 1.0.15`.
+- No serialized schema, engine-release, campaign-contract, storage-format, catalog, identifier-policy, existing LIVE-routing, operational-root-page or shared projection bump.
+
+### System impact and review state
+
+- **SYSTEM_IMPACT: NONE.** The repair removes the reverse-transition callable bypass inside the existing LIVE/operational-root envelope and adds no semantic owner, dependency reversal, neutral authority, caller capability, transaction, broad scan, fallback authority or Wave-05 write.
+- Independent reviewer PASS remains pending. W03.T07 and W03.T08 remain blocked until that reviewer PASS is recorded.
