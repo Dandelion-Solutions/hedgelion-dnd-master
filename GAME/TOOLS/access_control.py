@@ -22,8 +22,8 @@ from .history import (
 
 AccountId: TypeAlias = str
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
 ROUTE_SCHEMA_VERSION: Final = 1
 ROUTE_KIND: Final = "runtime.principal_player_routing"
 _RESOLUTION_TOKEN: Final = object()
@@ -937,6 +937,8 @@ def _history_ids(value: Mapping[str, object]) -> tuple[str, ...]:
 def _require_exact_resolution(
     resolution: PlayerResolution | None,
     current: PlayerRecord,
+    *,
+    campaign_id: str,
 ) -> None:
     if not isinstance(resolution, PlayerResolution) or resolution._issuer is not _RESOLUTION_TOKEN:
         raise AccessControlContractError(
@@ -947,6 +949,16 @@ def _require_exact_resolution(
         raise AccessControlContractError(
             "access mutation requires a resolved exact current PLAYER",
             failure_code=resolution.failure_code or AuthorizationFailureCode.PLAYER_RECORD_INVALID,
+        )
+    if resolution.campaign_id is None:
+        raise AccessControlContractError(
+            "access mutation requires a PLAYER resolution bound to the selected campaign",
+            failure_code=AuthorizationFailureCode.ROUTE_SCOPE_REQUIRED,
+        )
+    if resolution.campaign_id != campaign_id:
+        raise AccessControlContractError(
+            "PLAYER resolution belongs to another campaign",
+            failure_code=AuthorizationFailureCode.ROUTE_SCOPE_MISMATCH,
         )
     if _player_semantics(resolution.player) != _player_semantics(current):
         raise AccessControlContractError(
@@ -1361,13 +1373,18 @@ def _freeze_player_access_transition(
     before, before_raw = _player_state(current_player, "current PLAYER")
     after, after_raw = _player_state(proposed_player, "proposed PLAYER")
     campaign_identity = _campaign_state(current_campaign).campaign_id
-    _require_exact_resolution(resolution, before)
+    _require_exact_resolution(resolution, before, campaign_id=campaign_identity)
     if before.player_id != after.player_id or before.stable_account_id != after.stable_account_id:
         raise AccessControlContractError("PLAYER identity and binding are immutable in an access transition")
     if _history_projection(before_raw) != _history_projection(after_raw):
         raise AccessControlContractError("accepted PLAYER history/provenance cannot be rewritten")
     if normalized_operation == "deactivate_self":
-        decision = authorize_operation(resolved_principal, resolution, operation="gameplay")
+        decision = authorize_operation(
+            resolved_principal,
+            resolution,
+            operation="gameplay",
+            campaign_id=campaign_identity,
+        )
         if not decision.authorized or before.stable_account_id != resolved_principal.stable_account_id:
             raise AccessControlContractError(
                 "self deactivation requires the exact active PLAYER authority",
@@ -1390,7 +1407,12 @@ def _freeze_player_access_transition(
         if before.status != "inactive" or after.status != "active" or after.deactivated_by is not None:
             raise AccessControlContractError("reactivation must be inactive -> active and clear deactivated_by")
         if before.deactivated_by == "self":
-            decision = authorize_operation(resolved_principal, resolution, operation="rejoin")
+            decision = authorize_operation(
+                resolved_principal,
+                resolution,
+                operation="rejoin",
+                campaign_id=campaign_identity,
+            )
             if (
                 not decision.authorized
                 or before.stable_account_id != resolved_principal.stable_account_id

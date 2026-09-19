@@ -3609,6 +3609,56 @@ class PlayerAccessTransitionTests(unittest.TestCase):
         self.assertEqual(transition.preserved_controlled_pc_ids, ("pc-1",))
         self.assertEqual(transition.historical_result_ids, ("resolution-1",))
 
+    def test_self_deactivation_rejects_resolution_from_another_campaign(self) -> None:
+        principal = _principal()
+        current = _player("player-1")
+        resolution = self._resolved(principal, current)
+        campaign_b = self._campaign() | {"campaign_id": "campaign-winterhold"}
+        proposed_campaign_b = self._campaign(revision=LIVE_H1) | {
+            "campaign_id": "campaign-winterhold"
+        }
+
+        with self.assertRaisesRegex(AccessControlContractError, "campaign|scope|resolution") as context:
+            freeze_player_access_transition(
+                principal,
+                resolution,
+                operation="deactivate_self",
+                current_player=current,
+                proposed_player=current | {"status": "inactive", "deactivated_by": "self"},
+                current_campaign=campaign_b,
+                proposed_campaign=proposed_campaign_b,
+                expected_campaign_revision=LIVE_H0,
+                proposed_campaign_revision=LIVE_H1,
+                live_route=build_live_route("campaign-winterhold", ()),
+            )
+
+        self.assertEqual(context.exception.failure_code, AuthorizationFailureCode.ROUTE_SCOPE_MISMATCH)
+
+    def test_reactivation_rejects_resolution_from_another_campaign(self) -> None:
+        principal = _principal()
+        current = _player("player-1", status="inactive", deactivated_by="self")
+        resolution = self._resolved(principal, current)
+        campaign_b = self._campaign() | {"campaign_id": "campaign-winterhold"}
+        proposed_campaign_b = self._campaign(revision=LIVE_H1) | {
+            "campaign_id": "campaign-winterhold"
+        }
+
+        with self.assertRaisesRegex(AccessControlContractError, "campaign|scope|resolution") as context:
+            freeze_player_access_transition(
+                principal,
+                resolution,
+                operation="reactivate",
+                current_player=current,
+                proposed_player=current | {"status": "active", "deactivated_by": None},
+                current_campaign=campaign_b,
+                proposed_campaign=proposed_campaign_b,
+                expected_campaign_revision=LIVE_H0,
+                proposed_campaign_revision=LIVE_H1,
+                live_route=build_live_route("campaign-winterhold", ()),
+            )
+
+        self.assertEqual(context.exception.failure_code, AuthorizationFailureCode.ROUTE_SCOPE_MISMATCH)
+
     def test_creator_grant_and_revoke_are_prospective_and_do_not_rewrite_history(self) -> None:
         creator = _principal(account_id="99", login="creator")
         target = _player("player-1", mechanical_override_policy=True) | {
@@ -3936,7 +3986,7 @@ class LiveAdditiveAuthorizationTests(unittest.TestCase):
 
 class MultiLiveForwardTransitionTests(unittest.TestCase):
     def test_access_control_repair_advances_runtime_module_version(self) -> None:
-        self.assertEqual(access_control_module.FRAMEWORK_MODULE_VERSION, "1.0.5")
+        self.assertEqual(access_control_module.FRAMEWORK_MODULE_VERSION, "1.0.6")
 
     def _source(self, scene_id: str, actor_id: str, revision: str = LIVE_H0) -> LiveEnvelope:
         claims = (LiveClaim.exact_owner("world.actor", actor_id),)
