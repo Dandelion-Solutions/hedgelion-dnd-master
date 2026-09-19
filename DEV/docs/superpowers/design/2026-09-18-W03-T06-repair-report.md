@@ -242,7 +242,7 @@ The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold rema
 
 - RED: baseline recovery roots exposed callable public/private recovery and generic reconciliation entries; the direct, reconstructed and repeated-entry negatives failed because those callables existed.
 - Focused named runtime suites: `196` passed.
-- Cross-owner Wave-03 suites plus version policy: `207` passed; version census reported zero unclassified and zero legacy hits.
+- Cross-owner Wave-03 suites plus version policy: `218` passed; version census reported zero unclassified and zero legacy hits.
 - Clean full DEV discovery at the published implementation checkpoint: `923` passed, `6` skipped.
 - Maintenance audit and `git diff --check`: passed. Hosted CI is unavailable in the local-machine runtime.
 
