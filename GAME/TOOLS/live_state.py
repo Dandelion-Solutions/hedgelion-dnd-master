@@ -23,14 +23,15 @@ from typing import Final, TypeAlias
 import weakref
 
 from .recovery_roots import (
+    OperationalRootError,
     OperationalRootDelta,
     OperationalRootHandoff,
     OperationalRootPage,
-    _recover_operational_roots_to_campaign,
+    _is_owner_issued_root_delta,
 )
 
-# framework_module_version: 1.0.17
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.17"
+# framework_module_version: 1.0.18
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.18"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -1334,16 +1335,103 @@ def handoff_operational_roots_to_campaign(
         raise LiveContractError(
             "operational-root campaign handoff requires the exact final LIVE source"
         )
-    return _recover_operational_roots_to_campaign(
-        page,
-        campaign_id=live_source.campaign_id,
-        live_source_key=live_source.source_key,
-        live_source_revision=live_source.source_revision,
-        campaign_revision=_revision(campaign_revision, "campaign_revision"),
-        terminal_owner_keys=terminal_owner_keys,
-        terminal_native_owners=terminal_native_owners,
-        superseded_owner_keys=superseded_owner_keys,
-        superseded_native_deltas=superseded_native_deltas,
+    if isinstance(page, OperationalRootHandoff):
+        current = page
+    elif isinstance(page, OperationalRootPage):
+        current = OperationalRootHandoff(
+            campaign_id=page.campaign_id,
+            source_scope="LIVE",
+            source_revision=live_source.source_revision,
+            source_key=live_source.source_key,
+            source_lifecycle="ACTIVE",
+            roots=page.roots,
+            complete=page.complete,
+        )
+    elif isinstance(page, Mapping):
+        current = OperationalRootHandoff.from_mapping(page)
+    else:
+        raise OperationalRootError("operational-root handoff must be typed evidence")
+    if current.campaign_id != live_source.campaign_id:
+        raise OperationalRootError("operational-root handoff belongs to another campaign")
+    target_revision = _revision(campaign_revision, "campaign_revision")
+    if (
+        current.source_scope == "CAMPAIGN"
+        and current.source_revision == target_revision
+        and current.source_key is None
+    ):
+        if terminal_owner_keys or superseded_owner_keys:
+            raise OperationalRootError("idempotent operational-root retry cannot add a removal claim")
+        return current
+    if (
+        current.source_scope != "LIVE"
+        or current.source_revision != live_source.source_revision
+        or current.source_key != live_source.source_key
+    ):
+        raise OperationalRootError("operational-root handoff source scope or revision is stale")
+
+    def owner_key(value: object, label: str) -> tuple[str, str]:
+        if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+            raise OperationalRootError(f"{label} identity is malformed")
+        if len(value) == 2:
+            kind, owner_id = value
+        elif len(value) == 3:
+            source_campaign, kind, owner_id = value
+            if source_campaign != current.campaign_id:
+                raise OperationalRootError(f"{label} belongs to another campaign")
+        else:
+            raise OperationalRootError(f"{label} identity is malformed")
+        if not isinstance(kind, str) or not kind or not isinstance(owner_id, str) or not owner_id:
+            raise OperationalRootError(f"{label} identity is malformed")
+        return kind, owner_id
+
+    root_map = {(root.owner_kind, root.owner_id): root for root in current.roots}
+    terminal_keys = {owner_key(raw_key, "terminal root") for raw_key in terminal_owner_keys}
+    if not terminal_keys.issubset(root_map):
+        raise OperationalRootError("terminal root identity is not in the exact handoff page")
+    if terminal_keys and terminal_native_owners is None:
+        raise OperationalRootError("terminal roots require native owner evidence")
+    for key in terminal_keys:
+        owner = None if terminal_native_owners is None else terminal_native_owners.get(key)
+        if owner is None and terminal_native_owners is not None:
+            owner = terminal_native_owners.get((current.campaign_id, *key))
+        if (
+            not isinstance(owner, OperationalRootDelta)
+            or not _is_owner_issued_root_delta(owner)
+            or owner.campaign_id != current.campaign_id
+            or owner.root != root_map[key]
+            or owner.action != "REMOVE"
+        ):
+            raise OperationalRootError("terminal roots require owner-issued native removal proof")
+
+    superseded_keys = {owner_key(raw_key, "superseded root") for raw_key in superseded_owner_keys}
+    if not superseded_keys.issubset(root_map):
+        raise OperationalRootError("superseded root identity is not in the exact handoff page")
+    if superseded_keys and superseded_native_deltas is None:
+        raise OperationalRootError("superseded roots require owner-issued replacement proof")
+    for key in superseded_keys:
+        proof = None if superseded_native_deltas is None else superseded_native_deltas.get(key)
+        if proof is None and superseded_native_deltas is not None:
+            proof = superseded_native_deltas.get((current.campaign_id, *key))
+        if (
+            not isinstance(proof, OperationalRootDelta)
+            or not _is_owner_issued_root_delta(proof)
+            or proof.campaign_id != current.campaign_id
+            or proof.root != root_map[key]
+            or proof.action != "REMOVE"
+        ):
+            raise OperationalRootError("superseded roots require owner-issued replacement proof")
+
+    removed = terminal_keys | superseded_keys
+    return OperationalRootHandoff(
+        campaign_id=current.campaign_id,
+        source_scope="CAMPAIGN",
+        source_revision=target_revision,
+        source_key=None,
+        source_lifecycle="ABSORBED",
+        roots=tuple(
+            root for root in current.roots if (root.owner_kind, root.owner_id) not in removed
+        ),
+        complete=True,
     )
 
 
