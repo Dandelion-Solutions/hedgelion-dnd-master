@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import ast
+from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import replace
 import hashlib
@@ -16,6 +17,7 @@ import GAME.TOOLS.recovery_roots as recovery_roots_module
 
 from GAME.TOOLS.access_control import (
     AccessControlContractError,
+    AdditiveAuthorizationDecision,
     AuthorizationFailureCode,
     PlayerRecord,
     PlayerResolution,
@@ -24,6 +26,13 @@ from GAME.TOOLS.access_control import (
     VerifiedPrincipal,
     authorize_operation,
     build_principal_player_route,
+    classify_additive_authorization_change,
+    freeze_access_policy_transition,
+    freeze_multi_live_forward_plan,
+    freeze_player_access_transition,
+    advance_multi_live_freeze,
+    publish_access_policy_transition,
+    publish_forward_transition,
     resolve_player,
     resolve_principal,
 )
@@ -3271,6 +3280,309 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
                     superseded_owner_keys=(root_key,),
                     superseded_native_deltas={root_key: delta},
                 )
+
+
+class PlayerAccessTransitionTests(unittest.TestCase):
+    def _campaign(self, *, revision: str = LIVE_H0, join_policy: str = "invite_only") -> dict[str, object]:
+        return {
+            "campaign_id": "campaign-frostfall",
+            "revision": revision,
+            "mode": "multiplayer",
+            "players": {
+                "join_policy": join_policy,
+                "player_ids": ["player-1", "player-2"],
+            },
+        }
+
+    def _resolved(self, principal: VerifiedPrincipal, player: Mapping[str, object]) -> PlayerResolution:
+        return resolve_player(
+            principal,
+            _route(candidates=(str(player["player_id"]),)),
+            lambda _player_id: player,
+            campaign_id="campaign-frostfall",
+        )
+
+    def test_self_deactivation_is_exact_current_and_has_bounded_consumer_impact(self) -> None:
+        principal = _principal()
+        current = _player("player-1") | {
+            "controlled_pc_ids": ["pc-1"],
+            "history": ["resolution-1"],
+        }
+        after = current | {"status": "inactive", "deactivated_by": "self"}
+        resolution = self._resolved(principal, current)
+
+        transition = freeze_player_access_transition(
+            principal,
+            resolution,
+            operation="deactivate_self",
+            current_player=current,
+            proposed_player=after,
+            current_campaign=self._campaign(),
+            proposed_campaign=self._campaign(revision=LIVE_H1),
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H1,
+            live_source_keys=("campaign-frostfall", "scene-market", "e1-" + "a" * 64),
+        )
+
+        self.assertEqual(transition.player_id, "player-1")
+        self.assertTrue(transition.impact.complete)
+        self.assertEqual(
+            transition.impact.live_source_keys,
+            (("campaign-frostfall", "scene-market", "e1-" + "a" * 64),),
+        )
+        self.assertIn("player:player-1", transition.impact.collaboration_keys)
+        self.assertIn("player:player-1", transition.impact.planning_catchup_keys)
+        self.assertFalse(transition.historical_results_rewritten)
+
+    def test_rejoin_reuses_identity_and_preserves_pc_and_history(self) -> None:
+        principal = _principal()
+        current = _player("player-1", status="inactive", deactivated_by="self") | {
+            "controlled_pc_ids": ["pc-1"],
+            "history": ["resolution-1"],
+            "provenance": {"joined_event_id": "event-1"},
+        }
+        after = current | {"status": "active", "deactivated_by": None}
+        resolution = self._resolved(principal, current)
+
+        transition = freeze_player_access_transition(
+            principal,
+            resolution,
+            operation="reactivate",
+            current_player=current,
+            proposed_player=after,
+            current_campaign=self._campaign(),
+            proposed_campaign=self._campaign(revision=LIVE_H1),
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H1,
+        )
+
+        self.assertTrue(transition.rejoin_preserves_player_identity)
+        self.assertEqual(transition.player_id, "player-1")
+        self.assertEqual(transition.preserved_controlled_pc_ids, ("pc-1",))
+        self.assertEqual(transition.historical_result_ids, ("resolution-1",))
+
+    def test_creator_grant_and_revoke_are_prospective_and_do_not_rewrite_history(self) -> None:
+        creator = _principal(account_id="99", login="creator")
+        target = _player("player-1", mechanical_override_policy=True) | {
+            "history": ["resolution-1", "resolution-2"],
+        }
+        revoked = target | {
+            "policy_authority": {"mechanical_override_policy": False},
+        }
+        target_resolution = self._resolved(_principal(), target)
+
+        transition = freeze_player_access_transition(
+            creator,
+            target_resolution,
+            operation="revoke_mechanical_override",
+            current_player=target,
+            proposed_player=revoked,
+            current_campaign=self._campaign(),
+            proposed_campaign=self._campaign(revision=LIVE_H1),
+            creator_login="creator",
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H1,
+            historical_result_ids=("resolution-1", "resolution-2"),
+        )
+
+        self.assertTrue(transition.prospective)
+        self.assertFalse(transition.historical_results_rewritten)
+        self.assertEqual(transition.historical_result_ids, ("resolution-1", "resolution-2"))
+
+    def test_creator_only_join_policy_change_keeps_existing_bindings(self) -> None:
+        creator = _principal(account_id="99", login="creator")
+        transition = freeze_access_policy_transition(
+            creator,
+            current_campaign=self._campaign(),
+            proposed_campaign=self._campaign(
+                revision=LIVE_H1,
+                join_policy="open_contributors",
+            ),
+            creator_login="creator",
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H1,
+        )
+
+        self.assertEqual(transition.transition_kind, "JOIN_POLICY_CHANGE")
+        self.assertEqual(transition.impact.live_source_keys, ())
+        self.assertIn("campaign:campaign-frostfall", transition.impact.collaboration_keys)
+        self.assertTrue(transition.existing_player_bindings_preserved)
+
+    def test_access_publication_and_recovery_share_one_after_authority_view(self) -> None:
+        creator = _principal(account_id="99", login="creator")
+        current = self._campaign()
+        proposed = self._campaign(revision=LIVE_H1, join_policy="open_contributors")
+        transition = freeze_access_policy_transition(
+            creator,
+            current_campaign=current,
+            proposed_campaign=proposed,
+            creator_login="creator",
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H1,
+        )
+
+        published = publish_access_policy_transition(
+            transition,
+            current_campaign_revision=LIVE_H0,
+            current_campaign=current,
+        )
+        recovered = transition.recover_after_authority(proposed)
+
+        self.assertEqual(published, recovered)
+        with self.assertRaisesRegex(AccessControlContractError, "stale"):
+            publish_access_policy_transition(
+                transition,
+                current_campaign_revision=LIVE_H1,
+                current_campaign=current,
+            )
+
+    def test_creator_uncertainty_fails_closed_for_campaign_policy_mutation(self) -> None:
+        with self.assertRaises(AccessControlContractError) as context:
+            freeze_access_policy_transition(
+                _principal(),
+                current_campaign=self._campaign(),
+                proposed_campaign=self._campaign(
+                    revision=LIVE_H1,
+                    join_policy="open_contributors",
+                ),
+                creator_login="renamed-login",
+                expected_campaign_revision=LIVE_H0,
+                proposed_campaign_revision=LIVE_H1,
+            )
+
+        self.assertEqual(context.exception.failure_code, AuthorizationFailureCode.CREATOR_UNCERTAIN)
+
+
+class LiveAdditiveAuthorizationTests(unittest.TestCase):
+    def _all_true(self) -> dict[str, bool]:
+        return {
+            "immutable_claim_sets_unchanged": True,
+            "existing_writer_authorization_unchanged": True,
+            "no_affected_controlled_pc_transfer": True,
+            "no_selected_source_revoked_or_invalidated": True,
+            "new_player_gains_no_live_write_without_reacquiring_obligations": True,
+            "campaign_change_preserves_selected_live_routing_currentness": True,
+        }
+
+    def test_all_six_current_owner_predicates_allow_no_live_rollover(self) -> None:
+        self.assertEqual(
+            classify_additive_authorization_change(**self._all_true()),
+            AdditiveAuthorizationDecision.NO_LIVE_ROLLOVER,
+        )
+
+    def test_missing_or_false_predicate_requires_live_transition(self) -> None:
+        evidence = self._all_true()
+        evidence["no_affected_controlled_pc_transfer"] = False
+
+        self.assertEqual(
+            classify_additive_authorization_change(**evidence),
+            AdditiveAuthorizationDecision.LIVE_TRANSITION_REQUIRED,
+        )
+
+
+class MultiLiveForwardTransitionTests(unittest.TestCase):
+    def _source(self, scene_id: str, actor_id: str, revision: str = LIVE_H0) -> LiveEnvelope:
+        claims = (LiveClaim.exact_owner("world.actor", actor_id),)
+        epoch_id = derive_live_epoch_id("campaign-frostfall", scene_id, LIVE_H0, claims)
+        return LiveEnvelope(
+            campaign_id="campaign-frostfall",
+            scene_id=scene_id,
+            epoch_id=epoch_id,
+            opening_campaign_revision=LIVE_H0,
+            source_ref=build_live_ref("campaign-frostfall", scene_id, epoch_id),
+            source_revision=revision,
+            claims=claims,
+        )
+
+    def test_each_live_source_closes_by_own_cas_before_campaign_forward_publication(self) -> None:
+        source_a = self._source("scene-a", "actor-a")
+        source_b = self._source("scene-b", "actor-b")
+        route = build_live_route("campaign-frostfall", (source_a, source_b))
+        plan = freeze_multi_live_forward_plan(
+            route,
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H3,
+            proposed_source_revisions={source_a.source_key: LIVE_H1, source_b.source_key: LIVE_H2},
+            accepted_history_refs=("resolution-1",),
+        )
+
+        progress = advance_multi_live_freeze(
+            plan,
+            acknowledgements={
+                source_a.source_key: _accepted_ack(plan.attempts[0]),
+                source_b.source_key: _accepted_ack(plan.attempts[1]),
+            },
+        )
+        published = publish_forward_transition(
+            plan,
+            progress,
+            current_campaign_revision=LIVE_H0,
+            campaign_state={"campaign_id": "campaign-frostfall", "revision": LIVE_H0},
+        )
+
+        self.assertTrue(progress.ready_to_publish)
+        self.assertEqual(published.campaign_state["revision"], LIVE_H3)
+        self.assertTrue(
+            all(source.status is LiveLifecycle.CLOSED_UNABSORBED for source in published.route.entries)
+        )
+        self.assertEqual(published.accepted_history_refs, ("resolution-1",))
+        self.assertFalse(published.rollback_allowed)
+        self.assertIsNone(published.chronology_order)
+
+    def test_closed_a_and_stale_b_block_campaign_transition_without_rollback(self) -> None:
+        source_a = self._source("scene-a", "actor-a")
+        source_b = self._source("scene-b", "actor-b")
+        route = build_live_route("campaign-frostfall", (source_a, source_b))
+        plan = freeze_multi_live_forward_plan(
+            route,
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H3,
+            proposed_source_revisions={source_a.source_key: LIVE_H1, source_b.source_key: LIVE_H2},
+        )
+        progress = advance_multi_live_freeze(
+            plan,
+            acknowledgements={
+                source_a.source_key: _accepted_ack(plan.attempts[0]),
+                source_b.source_key: {
+                    "accepted": False,
+                    "source_key": source_b.source_key,
+                    "current_source_revision": LIVE_H3,
+                    "reason": "stale_predecessor",
+                },
+            },
+        )
+
+        self.assertFalse(progress.ready_to_publish)
+        self.assertEqual(progress.status, "REJECTED_STALE")
+        with self.assertRaisesRegex(AccessControlContractError, "final|source|freeze"):
+            publish_forward_transition(
+                plan,
+                progress,
+                current_campaign_revision=LIVE_H0,
+                campaign_state={"campaign_id": "campaign-frostfall", "revision": LIVE_H0},
+            )
+
+    def test_indeterminate_source_is_resolved_only_by_exact_source_read(self) -> None:
+        source_a = self._source("scene-a", "actor-a")
+        source_b = self._source("scene-b", "actor-b")
+        route = build_live_route("campaign-frostfall", (source_a, source_b))
+        plan = freeze_multi_live_forward_plan(
+            route,
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H3,
+            proposed_source_revisions={source_a.source_key: LIVE_H1, source_b.source_key: LIVE_H2},
+        )
+        progress = advance_multi_live_freeze(
+            plan,
+            acknowledgements={
+                source_a.source_key: _accepted_ack(plan.attempts[0]),
+                source_b.source_key: None,
+            },
+            current_sources={source_b.source_key: source_b},
+        )
+
+        self.assertFalse(progress.ready_to_publish)
+        self.assertEqual(progress.status, "INDETERMINATE")
 
 
 if __name__ == "__main__":
