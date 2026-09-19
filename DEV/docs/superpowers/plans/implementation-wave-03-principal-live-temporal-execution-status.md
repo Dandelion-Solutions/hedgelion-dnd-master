@@ -5,8 +5,8 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: W03.T07 -- PLAYER and campaign access-policy transitions (repair checkpoint published; independent review pending)
-LAST_COMPLETED_TASK: W03.T07 repair round 2 -- native creator history and exact campaign-body currentness; independent review pending
+CURRENT_TASK: W03.T07 repair round 3 -- close independent re-review blocking findings
+LAST_COMPLETED_TASK: independent re-review of W03.T07 repair round 2 at `036a8bea670fb6140498be0148778767c79468a3` -- FAIL / BLOCKING
 LAST_SAFE_SHA: `fcff693` (published/read-back W03.T07 repair verification checkpoint)
 
 ## Dependency schedule
@@ -189,6 +189,29 @@ VERSION_IMPACT: NONE -- this cursor/report synchronization changes only developm
 VERSION_IMPACT: W03.T07 repair round 2 materially changes access-control runtime `framework_module_version` `1.0.2 -> 1.0.3` and DEV `access_control_revision` `9 -> 10`. No route schema, campaign-contract, storage-format, engine-release, catalog, identifier-policy or shared DEV/GAME projection namespace changed.
 SYSTEM_IMPACT: NONE -- repair round 2 remains within the approved principal/access-policy and exact LIVE-source envelope. It removes caller-mint provenance paths and adds no new semantic owner, dependency reversal, transaction, broad scan, shared/Wave-05 write or persistent schema migration. Independent reviewer PASS remains pending; T07/T08 stay blocked.
 VERSION_IMPACT: NONE -- the tooling reroute and execution cursor update change no runtime, schema, catalog, storage or release namespace.
-NEXT_EXACT_TASK: independent re-review PASS for the W03.T07 implementation checkpoint; do not start W03.T08 before that PASS.
-KNOWN_BLOCKERS: W03.T08 remains blocked until independent reviewer PASS for W03.T07. Hosted CI is unavailable in the local-machine runtime. Canonical bytecode-disabled DEV unittest discovery is green at `951` passed with `6` skips; the optional pytest diagnostic surface has unrelated S6D/shared-state failures and is not being claimed green. The bare interpreter still lacks `referencing`; the isolated development environment and maintenance audit pass. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
+NEXT_EXACT_TASK: repair IRR-T07-01 and IRR-T07-02 below, publish/read back, then run fresh independent re-review; do not start W03.T08 before PASS.
+KNOWN_BLOCKERS: W03.T08 remains blocked until independent reviewer PASS for W03.T07. IRR-T07-01 creator-provenance authority and IRR-T07-02 exact campaign-body currentness are blocking. Hosted CI is unavailable in the local-machine runtime. Canonical bytecode-disabled DEV unittest discovery is green at `951` passed with `6` skips; the optional pytest diagnostic surface has unrelated S6D/shared-state failures and is not being claimed green. The bare interpreter still lacks `referencing`; the isolated development environment and maintenance audit pass. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
 UNPUBLISHED_WORK: NONE after this cursor-update commit and its remote read-back.
+
+
+## Independent re-review — W03.T07 repair round 2
+
+REVIEWED_HEAD: `036a8bea670fb6140498be0148778767c79468a3`
+VERDICT: **FAIL / BLOCKING**
+
+### IRR-T07-01 — CRITICAL — creator provenance is still caller-mintable
+
+The new native-history evidence type cannot be constructed directly, but `GAME/TOOLS/history.py::_issue_verified_first_initialization_history(...)` is consumer-callable, accepts raw caller-selected campaign/login/revision fields, and marks the resulting evidence as owner-issued without proving those values from authoritative Git history. The T07 tests import and call this seam directly. `access_control.authorize_operation(...)` then accepts that owner-issued marker plus matching login for creator-only authority.
+
+Required repair: creator evidence must be derived only from an actually verified native/Git-history observation of the first campaign-specific initialization commit. Do not merely rename/hide the raw-field issuer or add another token/registry. If no accepted current history-observation boundary exists, use the System-Impact Gate before inventing one.
+
+### IRR-T07-02 — HIGH / BLOCKING — access publication/recovery still accept same-revision full-body drift
+
+Repair round 2 added exact raw-body comparison for the multi-LIVE forward path, but `publish_access_policy_transition(...)` and `FrozenAccessPolicyTransition.recover_after_authority(...)` still compare only the projected `CampaignAccessState`. An unrelated campaign field can therefore change under the same revision and still be accepted.
+
+Required repair: add RED witnesses for same-revision unrelated-field drift in both access publication and after-authority recovery, then enforce exact full-body comparison while preserving unrelated campaign fields.
+
+The round-2 improvements are otherwise valid: direct public provenance construction fails closed and multi-LIVE forward publication rejects same-revision full-body drift.
+
+VERSION_IMPACT: NONE for this review-only cursor update.
+SYSTEM_IMPACT: NONE for the review itself.
