@@ -10,7 +10,12 @@ from __future__ import annotations
 import hashlib
 import re
 from collections.abc import Mapping, Sequence
-from typing import Final
+from copy import deepcopy
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Final
+
+if TYPE_CHECKING:
+    from .live_state import LiveEnvelope
 
 
 TRUTH_STATUSES: Final = frozenset(
@@ -34,6 +39,79 @@ NATIVE_ID_PATTERN: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 
 class InformationContractError(ValueError):
     """Raised when caller-supplied information violates a native contract."""
+
+
+def _live_source_key(value: object, label: str) -> tuple[str, str, str]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+        raise InformationContractError(f"{label} must be (campaign_id, scene_id, epoch_id)")
+    if len(value) != 3 or any(not isinstance(item, str) or not item for item in value):
+        raise InformationContractError(f"{label} must contain three nonempty source IDs")
+    return value[0], value[1], value[2]  # type: ignore[return-value]
+
+
+def _live_source_native_ids(value: object, label: str) -> tuple[str, ...]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+        raise InformationContractError(f"{label} must be an array")
+    result = tuple(_require_native_id(item, f"{label} item") for item in value)
+    if len(result) != len(set(result)):
+        raise InformationContractError(f"{label} must contain unique IDs")
+    return result
+
+
+@dataclass(frozen=True, slots=True)
+class LiveInformationCandidate:
+    """Ephemeral, source-bound input awaiting native-owner normalization.
+
+    The candidate carries currentness evidence but is not itself a knowledge,
+    disclosure, message, scene, or LIVE authority record.  Only the exact
+    selected ``LiveEnvelope`` may admit it for normalization.
+    """
+
+    source_key: tuple[str, str, str]
+    source_ref: str
+    source_revision: str
+    source_native_ids: tuple[str, ...]
+    recipient_player_id: str
+    evidence: Mapping[str, object]
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self,
+            "source_key",
+            _live_source_key(self.source_key, "candidate source_key"),
+        )
+        object.__setattr__(
+            self,
+            "source_ref",
+            _require_nonempty_string(self.source_ref, "candidate source_ref"),
+        )
+        object.__setattr__(
+            self,
+            "source_revision",
+            _require_nonempty_string(self.source_revision, "candidate source_revision"),
+        )
+        object.__setattr__(
+            self,
+            "source_native_ids",
+            _live_source_native_ids(self.source_native_ids, "candidate source_native_ids"),
+        )
+        object.__setattr__(
+            self,
+            "recipient_player_id",
+            _require_native_id(self.recipient_player_id, "candidate recipient_player_id"),
+        )
+        evidence = _require_mapping(self.evidence, "candidate evidence")
+        object.__setattr__(self, "evidence", deepcopy(dict(evidence)))
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "source_key": list(self.source_key),
+            "source_ref": self.source_ref,
+            "source_revision": self.source_revision,
+            "source_native_ids": list(self.source_native_ids),
+            "recipient_player_id": self.recipient_player_id,
+            "evidence": deepcopy(dict(self.evidence)),
+        }
 
 
 def _require_mapping(value: object, label: str) -> Mapping[str, object]:
@@ -304,3 +382,185 @@ def normalize_information_evidence(value: object) -> dict[str, object]:
     if disclosure is not None and disclosure["fact_id"] != fact["fact_id"]:
         raise InformationContractError("disclosure fact_id does not match native lore fact")
     return {"lore_fact": fact, "knowledge": knowledge, **emission}
+
+
+def _selected_live_source(value: object) -> LiveEnvelope:
+    """Require the W03 owner-typed LIVE source without importing it at module load."""
+
+    from .live_state import LiveEnvelope, LiveLifecycle
+
+    if not isinstance(value, LiveEnvelope):
+        raise InformationContractError("LIVE information requires the exact selected source")
+    if value.status is LiveLifecycle.ABSORBED:
+        raise InformationContractError("absorbed LIVE source is not current information authority")
+    return value
+
+
+def _projection_candidates(projection: Mapping[str, object]) -> object:
+    direct = projection.get("information_candidates")
+    if direct is not None:
+        return direct
+    material = projection.get("material")
+    if isinstance(material, Mapping) and "information_candidates" in material:
+        return material["information_candidates"]
+    raise InformationContractError(
+        "LIVE projection requires owner-local information_candidates; no legacy fallback"
+    )
+
+
+def extract_material_live_information(
+    live_source: object,
+    projection: object,
+    *,
+    recipient_player_id: str,
+) -> tuple[LiveInformationCandidate, ...]:
+    """Extract recipient-bound information candidates from one exact LIVE source.
+
+    LIVE physical fields are evidence/input only.  This function does not infer
+    knowledge from visibility or emit any native owner record; the returned
+    candidates must pass through :func:`apply_normalization_candidates_under_native_owners`.
+    """
+
+    source = _selected_live_source(live_source)
+    recipient = _require_native_id(recipient_player_id, "recipient_player_id")
+    raw_projection = _require_mapping(projection, "LIVE information projection")
+    forbidden_projection_fields = {
+        "epoch_id",
+        "live_branch",
+        "live_head_sha",
+        "revision",
+        "base_campaign_sha",
+        "known_by_pc_ids",
+        "perceived_by_pc_ids",
+        "visible_to",
+        "authority",
+    }
+    if forbidden_projection_fields.intersection(raw_projection):
+        raise InformationContractError(
+            "legacy LIVE projection fields cannot become information authority"
+        )
+    required_fields = {
+        "source_key",
+        "source_ref",
+        "source_revision",
+        "source_native_ids",
+    }
+    missing = required_fields.difference(raw_projection)
+    if missing:
+        raise InformationContractError(
+            "LIVE information projection is missing exact current fields: "
+            + ", ".join(sorted(missing))
+        )
+    if _live_source_key(raw_projection["source_key"], "projection source_key") != source.source_key:
+        raise InformationContractError("LIVE information projection is stale or bound to another source")
+    if raw_projection["source_ref"] != source.source_ref:
+        raise InformationContractError("LIVE information projection source_ref is not current")
+    if raw_projection["source_revision"] != source.source_revision:
+        raise InformationContractError("LIVE information projection source_revision is stale")
+    if _live_source_native_ids(
+        raw_projection["source_native_ids"], "projection source_native_ids"
+    ) != source.source_native_ids:
+        raise InformationContractError("LIVE information projection source-native history is stale")
+
+    raw_candidates = _projection_candidates(raw_projection)
+    if not isinstance(raw_candidates, Sequence) or isinstance(raw_candidates, (str, bytes)):
+        raise InformationContractError("information_candidates must be an array")
+
+    result: list[LiveInformationCandidate] = []
+    for raw_candidate in raw_candidates:
+        candidate = _require_mapping(raw_candidate, "LIVE information candidate")
+        if set(candidate) == {"recipient_player_id", "evidence"}:
+            evidence = candidate["evidence"]
+        else:
+            allowed_direct = {"recipient_player_id", "fact", "knowledge", "emission"}
+            if set(candidate).issubset(allowed_direct) and "recipient_player_id" in candidate:
+                evidence = {key: value for key, value in candidate.items() if key != "recipient_player_id"}
+            else:
+                raise InformationContractError(
+                    "LIVE information candidate must use the native evidence shape"
+                )
+        candidate_recipient = _require_native_id(
+            candidate.get("recipient_player_id"), "candidate recipient_player_id"
+        )
+        if candidate_recipient != recipient:
+            raise InformationContractError("LIVE information candidate recipient leakage")
+        native_evidence = _require_mapping(evidence, "LIVE information candidate evidence")
+        if {
+            "known_by_pc_ids",
+            "perceived_by_pc_ids",
+            "visibility",
+            "visible_to",
+            "cache_ref",
+            "narration",
+            "live_facts",
+            "observable_events",
+        }.intersection(native_evidence):
+            raise InformationContractError(
+                "legacy visibility/perception fields are not accepted native evidence"
+            )
+        emission = _require_mapping(native_evidence.get("emission"), "candidate emission")
+        if emission.get("recipient_player_id") != recipient:
+            raise InformationContractError("LIVE information emission recipient leakage")
+        result.append(
+            LiveInformationCandidate(
+                source_key=source.source_key,
+                source_ref=source.source_ref,
+                source_revision=source.source_revision,
+                source_native_ids=source.source_native_ids,
+                recipient_player_id=recipient,
+                evidence=native_evidence,
+            )
+        )
+    return tuple(result)
+
+
+def apply_normalization_candidates_under_native_owners(
+    candidates: object,
+    current_source: object,
+    *,
+    recipient_player_id: str | None = None,
+) -> tuple[dict[str, object], ...]:
+    """Normalize exact LIVE candidates through the existing native owners.
+
+    The operation is deliberately ephemeral: it returns native-owner inputs and
+    never writes, merges, or promotes LIVE physical projections into authority.
+    """
+
+    source = _selected_live_source(current_source)
+    if not isinstance(candidates, Sequence) or isinstance(candidates, (str, bytes)):
+        raise InformationContractError("normalization candidates must be a typed array")
+    expected_recipient = (
+        _require_native_id(recipient_player_id, "recipient_player_id")
+        if recipient_player_id is not None
+        else None
+    )
+    normalized: list[dict[str, object]] = []
+    seen_relations: set[tuple[str, str, str]] = set()
+    for candidate in candidates:
+        if not isinstance(candidate, LiveInformationCandidate):
+            raise InformationContractError(
+                "normalization candidates must come from exact LIVE extraction"
+            )
+        if (
+            candidate.source_key != source.source_key
+            or candidate.source_ref != source.source_ref
+            or candidate.source_revision != source.source_revision
+            or candidate.source_native_ids != source.source_native_ids
+        ):
+            raise InformationContractError("normalization candidate is stale for current LIVE source")
+        if expected_recipient is not None and candidate.recipient_player_id != expected_recipient:
+            raise InformationContractError("normalization candidate recipient leakage")
+        result = normalize_information_evidence(candidate.evidence)
+        message_recipient = result["message"]["recipient_player_id"]
+        if message_recipient != candidate.recipient_player_id:
+            raise InformationContractError("normalized message recipient does not match candidate")
+        relation = (
+            result["knowledge"]["knower_id"],
+            result["knowledge"]["fact_id"],
+            message_recipient,
+        )
+        if relation in seen_relations:
+            raise InformationContractError("normalization candidates contain an ambiguous native relation")
+        seen_relations.add(relation)
+        normalized.append(result)
+    return tuple(normalized)

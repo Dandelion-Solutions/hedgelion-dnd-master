@@ -1,6 +1,6 @@
 # Information, Clues and Mysteries
 
-framework_module_version: 1.0.4
+framework_module_version: 1.0.5
 load_when: investigation, mystery, lore discovery, perception, hidden information
 
 ## Information layers
@@ -14,6 +14,8 @@ Maintain explicit separation between native owners:
 Visibility, possession, narration, repository readability, cache/index presence and Story availability do not establish knowledge or disclosure. A knowledge transition requires accepted native evidence; legacy embedded PC/NPC/Faction knowledge arrays are migration input or derived convenience, never parallel writable authority.
 
 Before player-facing emission, validate recipient-scoped disclosure references against eligible source evidence. One outbound message and its material disclosure transitions form one semantic closure; delivery to one recipient never advances another recipient's disclosure or any PC's knowledge.
+
+During a selected LIVE epoch, `live_facts`, perception lists and other physical LIVE material are bounded evidence/input only. Normalize material information through the exact current source and the native lore/knowledge/disclosure/message owners; a stale source, recipient mismatch or legacy visibility field fails closed. LIVE physical presence never creates a second knowledge or disclosure authority, and campaign-base/current-scene projections never substitute for the selected source.
 
 Knowledge requires a source: observation, testimony, inference, magic, prior history, records or another established mechanism.
 

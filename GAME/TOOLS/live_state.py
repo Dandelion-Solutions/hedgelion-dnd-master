@@ -30,8 +30,8 @@ from .recovery_roots import (
     _is_owner_issued_root_delta,
 )
 
-# framework_module_version: 1.0.18
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.18"
+# framework_module_version: 1.0.19
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.19"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -1916,6 +1916,133 @@ def validate_exact_source(
         and selected.next_source_native_creation_ordinal
         == candidate.next_source_native_creation_ordinal
         and selected.source_native_ids == candidate.source_native_ids
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class LiveSceneMaterialBridge:
+    """Ephemeral scene material projection bound to exact current LIVE."""
+
+    source_key: LiveSourceKey
+    source_ref: str
+    source_revision: str
+    scene_id: str
+    source_native_ids: tuple[str, ...]
+    material: Mapping[str, object]
+    authority: str = "LIVE_SOURCE_CURRENT"
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "source_key", _source_key(self.source_key, "bridge source_key"))
+        object.__setattr__(self, "source_ref", _nonempty(self.source_ref, "bridge source_ref"))
+        object.__setattr__(
+            self,
+            "source_revision",
+            _revision(self.source_revision, "bridge source_revision"),
+        )
+        object.__setattr__(self, "scene_id", _semantic_id(self.scene_id, "bridge scene_id"))
+        native_ids = tuple(
+            _machine_id(native_id, "bridge source-native ID")
+            for native_id in self.source_native_ids
+        )
+        if len(native_ids) != len(set(native_ids)):
+            raise LiveContractError("bridge source-native IDs must be unique")
+        object.__setattr__(self, "source_native_ids", native_ids)
+        if self.authority != "LIVE_SOURCE_CURRENT":
+            raise LiveContractError("bridge authority is not the exact current LIVE source")
+        object.__setattr__(
+            self,
+            "material",
+            _copy_json_mapping(self.material, "bridge material"),
+        )
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "kind": "runtime.live_material_scene_bridge",
+            "source_key": list(self.source_key),
+            "source_ref": self.source_ref,
+            "source_revision": self.source_revision,
+            "scene_id": self.scene_id,
+            "source_native_ids": list(self.source_native_ids),
+            "material": deepcopy(dict(self.material)),
+            "authority": self.authority,
+        }
+
+
+def build_material_current_scene_bridge(
+    source: object,
+    projection: object,
+) -> LiveSceneMaterialBridge:
+    """Build scene material only from an exact current source-native LIVE body.
+
+    The returned value is a bounded presentation/input bridge.  It cannot select
+    a source, advance currentness, or replace any native scene/information owner.
+    """
+
+    if not isinstance(source, LiveEnvelope):
+        raise LiveContractError("material bridge requires the exact selected LIVE source")
+    if source.status is LiveLifecycle.ABSORBED:
+        raise LiveContractError("absorbed LIVE source cannot bridge current scene material")
+    if not isinstance(projection, Mapping):
+        raise LiveContractError("material bridge projection must be an object")
+    forbidden_legacy = {
+        "epoch_id",
+        "live_branch",
+        "live_head_sha",
+        "revision",
+        "base_campaign_sha",
+    }
+    if forbidden_legacy.intersection(projection):
+        raise LiveContractError("legacy LIVE projection cannot be a current scene bridge")
+    required = {
+        "source_key",
+        "source_ref",
+        "source_revision",
+        "source_native_ids",
+        "scene_id",
+        "material",
+    }
+    allowed = required | {"kind"}
+    unknown = set(projection).difference(allowed)
+    if unknown:
+        raise LiveContractError("material bridge projection has unsupported authority fields")
+    missing = required.difference(projection)
+    if missing:
+        raise LiveContractError(
+            "material bridge projection is missing exact current fields: "
+            + ", ".join(sorted(missing))
+        )
+    if (
+        projection.get("kind", "runtime.live_material_scene_bridge")
+        != "runtime.live_material_scene_bridge"
+    ):
+        raise LiveContractError("material bridge projection kind is not admitted")
+    if _source_key(projection["source_key"], "bridge source_key") != source.source_key:
+        raise LiveContractError("material bridge projection source is stale")
+    if projection["source_ref"] != source.source_ref:
+        raise LiveContractError("material bridge projection source_ref is not current")
+    if projection["source_revision"] != source.source_revision:
+        raise LiveContractError("material bridge projection source_revision is stale")
+    raw_native_ids = projection["source_native_ids"]
+    if not isinstance(raw_native_ids, Sequence) or isinstance(raw_native_ids, (str, bytes)):
+        raise LiveContractError("material bridge source-native IDs must be an array")
+    native_ids = tuple(_machine_id(value, "bridge source-native ID") for value in raw_native_ids)
+    if native_ids != source.source_native_ids:
+        raise LiveContractError("material bridge source-native history is not current")
+    scene_id = _semantic_id(projection["scene_id"], "bridge scene_id")
+    if scene_id != source.scene_id:
+        raise LiveContractError("material bridge scene_id is not bound to the current LIVE source")
+    material = projection["material"]
+    if not isinstance(material, Mapping):
+        raise LiveContractError("material bridge material must be an object")
+    if "source" in material or "authority" in material:
+        raise LiveContractError("scene material cannot supply LIVE authority")
+    return LiveSceneMaterialBridge(
+        source_key=source.source_key,
+        source_ref=source.source_ref,
+        source_revision=source.source_revision,
+        scene_id=scene_id,
+        source_native_ids=native_ids,
+        material=material,
     )
 
 
