@@ -97,3 +97,35 @@ The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold rema
 
 - **SYSTEM_IMPACT: NONE.** The repair removes an unaccepted neutral authority boundary and tightens existing producer-owned evidence gates inside the approved W03 temporal/LIVE/operational-root envelope. No new semantic owner, dependency-direction change, transaction, broad scan, fallback authority or Wave-05 write was introduced.
 - Independent reviewer PASS remains pending. W03.T07 and W03.T08 remain blocked until that reviewer PASS is recorded.
+
+## LIVE-owned recovery transport repair
+
+- **Task:** W03.T06 validator/evidence transport repair from `bd98c46e1ec1115d39183f5a7fd200ac82a6bfb5`.
+- **Implementation checkpoint:** `9e40e0508c96132c6185e6c512818379979915f1`.
+- **Publication:** non-force push completed; fresh remote read-back matched `9e40e0508c96132c6185e6c512818379979915f1`.
+
+### Delivered repair
+
+- Recovery no longer accepts a caller-supplied absorption validator callable.
+- The existing LIVE `LiveAbsorptionPublication` now carries the producer-owned recovery validation transport; LIVE retains issuance, marking, and exact-source/CAS validation authority.
+- LIVE absorption publications carry an internal producer issuer token in addition to the existing weak-reference issuance registry, so directly forged typed publications fail closed.
+- Added a RED/GREEN witness covering forged absorption evidence and arbitrary validator injection; existing successful recovery and retry semantics remain unchanged.
+
+### TDD and verification
+
+- RED: the forged publication plus arbitrary validator was accepted at baseline; the expected test failed because no error was raised.
+- Focused cross-owner suites (`test_rd05_operational_roots`, `test_rd06_durability_publication`, `test_rd08_temporal`, `test_rd09_access_live`, and version policy): `204` passed.
+- Clean full DEV discovery from the published implementation checkpoint: `920` passed, `6` skipped.
+- Maintenance audit: PASS; version census: zero unclassified and zero legacy hits; `git diff --check`: PASS.
+- Hosted CI is unavailable in the local-machine runtime.
+
+### Version Impact Gate
+
+- LIVE runtime `framework_module_version`: `1.0.13 -> 1.0.14`.
+- Operational-root runtime `framework_module_version`: `1.0.10 -> 1.0.11`.
+- No serialized schema, engine-release, campaign-contract, storage-format, catalog, identifier-policy, existing LIVE-routing, operational-root-page or shared projection bump.
+
+### System impact and review state
+
+- **SYSTEM_IMPACT: NONE.** The repair removes caller-controlled validation authority and consumes the existing LIVE producer transport within the approved W03 temporal/LIVE/operational-root envelope. It adds no semantic owner, dependency-direction change, transaction, broad scan, fallback authority or Wave-05 write.
+- Independent reviewer PASS remains pending. W03.T07 and W03.T08 remain blocked until that reviewer PASS is recorded.
