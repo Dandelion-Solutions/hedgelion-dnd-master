@@ -7,6 +7,7 @@ from the exact current PLAYER owner before an operation can be authorized.
 
 from __future__ import annotations
 
+import weakref
 from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -16,11 +17,12 @@ from typing import Final, TypeAlias
 
 AccountId: TypeAlias = str
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
 ROUTE_SCHEMA_VERSION: Final = 1
 ROUTE_KIND: Final = "runtime.principal_player_routing"
 _RESOLUTION_TOKEN: Final = object()
+_CREATOR_PROVENANCE_TOKEN: Final = object()
 
 
 class AccessControlContractError(ValueError):
@@ -100,6 +102,91 @@ class VerifiedPrincipal:
             )
         object.__setattr__(self, "stable_account_id", account_id)
         object.__setattr__(self, "login", login)
+
+
+@dataclass(frozen=True, slots=True, weakref_slot=True)
+class FirstInitializationProvenance:
+    """Owner-issued author evidence from the first campaign initialization commit."""
+
+    campaign_id: str
+    author_login: str
+    initialization_revision: str
+    parent_revision: str
+    first_campaign_specific_commit: bool = True
+    _issuer: object = field(default=None, repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        _nonempty(self.campaign_id, "creator provenance campaign_id")
+        _nonempty(self.author_login, "creator provenance author_login")
+        _git_revision(self.initialization_revision, "creator initialization revision")
+        _git_revision(self.parent_revision, "creator initialization parent revision")
+        if self.initialization_revision == self.parent_revision:
+            raise AccessControlContractError("creator initialization commit must advance its parent")
+        if type(self.first_campaign_specific_commit) is not bool or not self.first_campaign_specific_commit:
+            raise AccessControlContractError(
+                "creator provenance must identify the first campaign-specific initialization commit",
+                failure_code=AuthorizationFailureCode.CREATOR_UNCERTAIN,
+            )
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "campaign_id": self.campaign_id,
+            "author_login": self.author_login,
+            "initialization_revision": self.initialization_revision,
+            "parent_revision": self.parent_revision,
+            "first_campaign_specific_commit": True,
+        }
+
+
+_OWNER_ISSUED_CREATOR_PROVENANCE: dict[int, weakref.ReferenceType[FirstInitializationProvenance]] = {}
+
+
+def _mark_owner_issued_creator_provenance(
+    provenance: FirstInitializationProvenance,
+) -> FirstInitializationProvenance:
+    provenance_id = id(provenance)
+
+    def remove(reference: weakref.ReferenceType[FirstInitializationProvenance]) -> None:
+        if _OWNER_ISSUED_CREATOR_PROVENANCE.get(provenance_id) is reference:
+            _OWNER_ISSUED_CREATOR_PROVENANCE.pop(provenance_id, None)
+
+    _OWNER_ISSUED_CREATOR_PROVENANCE[provenance_id] = weakref.ref(provenance, remove)
+    object.__setattr__(provenance, "_issuer", _CREATOR_PROVENANCE_TOKEN)
+    return provenance
+
+
+def _is_owner_issued_creator_provenance(value: object) -> bool:
+    if not isinstance(value, FirstInitializationProvenance):
+        return False
+    reference = _OWNER_ISSUED_CREATOR_PROVENANCE.get(id(value))
+    return value._issuer is _CREATOR_PROVENANCE_TOKEN and reference is not None and reference() is value
+
+
+def issue_first_initialization_provenance(
+    *,
+    campaign_id: str,
+    author_login: str,
+    initialization_revision: str,
+    parent_revision: str,
+) -> FirstInitializationProvenance:
+    """Issue first-initialization evidence after the native history owner resolves it."""
+
+    return _mark_owner_issued_creator_provenance(
+        FirstInitializationProvenance(
+            campaign_id=campaign_id,
+            author_login=author_login,
+            initialization_revision=initialization_revision,
+            parent_revision=parent_revision,
+        )
+    )
+
+
+def _git_revision(value: object, label: str) -> str:
+    if not isinstance(value, str) or len(value) not in {40, 64}:
+        raise AccessControlContractError(f"{label} must be an exact Git revision")
+    if any(character not in "0123456789abcdef" for character in value):
+        raise AccessControlContractError(f"{label} must be lowercase hexadecimal")
+    return value
 
 
 def resolve_principal(value: VerifiedPrincipal | Mapping[str, object]) -> VerifiedPrincipal:
@@ -510,12 +597,21 @@ def authorize_operation(
     *,
     operation: str,
     creator_login: str | None = None,
+    creator_provenance: FirstInitializationProvenance | None = None,
+    campaign_id: str | None = None,
 ) -> AuthorizationDecision:
     """Apply operation-specific authorization after principal/PLAYER routing."""
 
     resolved_principal = resolve_principal(principal)
     if operation in {"creator_write", "creator_only"}:
-        if creator_login is None or creator_login != resolved_principal.login:
+        if creator_login is not None:
+            return _fail(AuthorizationFailureCode.CREATOR_UNCERTAIN)
+        if not _is_owner_issued_creator_provenance(creator_provenance):
+            return _fail(AuthorizationFailureCode.CREATOR_UNCERTAIN)
+        if (
+            creator_provenance.author_login != resolved_principal.login
+            or (campaign_id is not None and creator_provenance.campaign_id != campaign_id)
+        ):
             return _fail(AuthorizationFailureCode.CREATOR_UNCERTAIN)
         return AuthorizationDecision(authorized=True, player_id=None)
 
@@ -700,16 +796,34 @@ def _campaign_state(
     revision: str | None = None,
 ) -> CampaignAccessState:
     if isinstance(value, CampaignAccessState):
-        if revision is None or value.revision == revision:
-            return value
-        return CampaignAccessState(
-            campaign_id=value.campaign_id,
-            revision=revision,
-            mode=value.mode,
-            join_policy=value.join_policy,
-            player_ids=value.player_ids,
+        if revision is not None and value.revision != revision:
+            raise AccessControlContractError(
+                "campaign expected revision differs from the loaded campaign body",
+                failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
+            )
+        return value
+    try:
+        state = CampaignAccessState.from_mapping(value)
+    except AccessControlContractError:
+        raise
+    if revision is not None and state.revision != revision:
+        raise AccessControlContractError(
+            "campaign expected revision differs from the loaded campaign body",
+            failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
         )
-    return CampaignAccessState.from_mapping(value, revision=revision)
+    return state
+
+
+def _same_campaign_state(
+    left: CampaignAccessState | Mapping[str, object],
+    right: CampaignAccessState | Mapping[str, object],
+    *,
+    revision: str,
+) -> bool:
+    try:
+        return _campaign_state(left, revision=revision) == _campaign_state(right, revision=revision)
+    except (AccessControlContractError, TypeError, ValueError):
+        return False
 
 
 def _campaign_transition_mapping(
@@ -855,10 +969,19 @@ def _require_exact_resolution(
 
 def _require_creator(
     principal: VerifiedPrincipal | Mapping[str, object],
-    creator_login: str | None,
+    creator_provenance: FirstInitializationProvenance | None,
+    *,
+    campaign_id: str,
+    creator_login: str | None = None,
 ) -> VerifiedPrincipal:
     resolved = resolve_principal(principal)
-    decision = authorize_operation(resolved, operation="creator_only", creator_login=creator_login)
+    decision = authorize_operation(
+        resolved,
+        operation="creator_only",
+        creator_login=creator_login,
+        creator_provenance=creator_provenance,
+        campaign_id=campaign_id,
+    )
     if not decision.authorized:
         raise AccessControlContractError(
             "creator authority is uncertain; mutation fails closed",
@@ -871,9 +994,10 @@ def _impact(
     campaign: CampaignAccessState,
     *,
     player_ids: Sequence[str],
-    source_keys: Sequence[LiveSourceKeyValue],
+    live_route: object,
     publication_paths: Sequence[str],
 ) -> AccessConsumerImpact:
+    route = _validated_live_route(live_route, campaign.campaign_id)
     ids = tuple(dict.fromkeys(_nonempty(item, "impact player_id") for item in player_ids))
     collaboration = tuple(
         dict.fromkeys(
@@ -882,7 +1006,7 @@ def _impact(
     )
     planning = tuple(dict.fromkeys(f"player:{item}" for item in ids))
     return AccessConsumerImpact(
-        live_source_keys=tuple(source_keys),
+        live_source_keys=tuple(entry.source_key for entry in route.entries),
         collaboration_keys=collaboration,
         planning_catchup_keys=planning,
         publication_consumers=tuple(
@@ -896,35 +1020,145 @@ def _impact(
     )
 
 
+def _validated_live_route(value: object, campaign_id: str):
+    from .live_state import LiveRouting, validate_live_route_completeness
+
+    if not isinstance(value, LiveRouting):
+        raise AccessControlContractError(
+            "access transition requires exact current LIVE route evidence",
+            failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
+        )
+    try:
+        validate_live_route_completeness(value)
+    except (TypeError, ValueError) as error:
+        raise AccessControlContractError(
+            "access transition LIVE route evidence is incomplete",
+            failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
+        ) from error
+    if value.campaign_id != campaign_id:
+        raise AccessControlContractError(
+            "access transition LIVE route belongs to another campaign",
+            failure_code=AuthorizationFailureCode.ROUTE_SCOPE_MISMATCH,
+        )
+    return value
+
+
+_ADDITIVE_PREDICATE_NAMES: Final = (
+    "immutable_claim_sets_unchanged",
+    "existing_writer_authorization_unchanged",
+    "no_affected_controlled_pc_transfer",
+    "no_selected_source_revoked_or_invalidated",
+    "new_player_gains_no_live_write_without_reacquiring_obligations",
+    "campaign_change_preserves_selected_live_routing_currentness",
+)
+
+
+def _route_claims(route: object) -> tuple[tuple[object, ...], ...]:
+    return tuple(tuple(entry.claims) for entry in route.entries)
+
+
+def _derive_additive_predicates(
+    *,
+    current_player: PlayerRecord | Mapping[str, object] | None,
+    proposed_player: PlayerRecord | Mapping[str, object] | None,
+    current_campaign: CampaignAccessState | Mapping[str, object] | None,
+    proposed_campaign: CampaignAccessState | Mapping[str, object] | None,
+    current_live_route: object | None,
+    proposed_live_route: object | None,
+) -> dict[str, bool] | None:
+    """Derive additive activation only from exact owner and route evidence."""
+
+    if any(
+        value is None
+        for value in (
+            current_campaign,
+            proposed_campaign,
+            current_live_route,
+            proposed_live_route,
+        )
+    ):
+        return None
+    try:
+        before_campaign = _campaign_state(current_campaign)
+        after_campaign = _campaign_state(proposed_campaign)
+        before_route = _validated_live_route(current_live_route, before_campaign.campaign_id)
+        after_route = _validated_live_route(proposed_live_route, after_campaign.campaign_id)
+        if current_player is None and proposed_player is None:
+            before_player = after_player = None
+        elif current_player is not None and proposed_player is not None:
+            before_player, _ = _player_state(current_player, "current PLAYER")
+            after_player, _ = _player_state(proposed_player, "proposed PLAYER")
+        else:
+            return None
+    except (AccessControlContractError, TypeError, ValueError):
+        return None
+
+    before_by_key = {entry.source_key: entry for entry in before_route.entries}
+    after_by_key = {entry.source_key: entry for entry in after_route.entries}
+    claims_unchanged = _route_claims(before_route) == _route_claims(after_route)
+    writers_unchanged = before_route.as_mapping() == after_route.as_mapping()
+    controlled_pc_unchanged = (
+        before_player is None
+        or before_player.controlled_pc_ids == after_player.controlled_pc_ids
+    )
+    no_revoked = (
+        set(before_by_key) == set(after_by_key)
+        and all(entry.status.name != "ABSORBED" for entry in after_route.entries)
+        and all(
+            before_by_key[key].source_revision == after_by_key[key].source_revision
+            for key in before_by_key
+        )
+    )
+    new_player_no_live_write = True
+    if after_player is not None:
+        for entry in after_route.entries:
+            if any(
+                claim.native_family == "world.player"
+                or claim.native_identity == after_player.player_id
+                for claim in entry.claims
+            ):
+                new_player_no_live_write = False
+                break
+    selected_currentness_unchanged = before_route.as_mapping() == after_route.as_mapping()
+    return {
+        "immutable_claim_sets_unchanged": claims_unchanged,
+        "existing_writer_authorization_unchanged": writers_unchanged,
+        "no_affected_controlled_pc_transfer": controlled_pc_unchanged,
+        "no_selected_source_revoked_or_invalidated": no_revoked,
+        "new_player_gains_no_live_write_without_reacquiring_obligations": new_player_no_live_write,
+        "campaign_change_preserves_selected_live_routing_currentness": selected_currentness_unchanged,
+    }
+
+
 def _additive_assessment(
     evidence: Mapping[str, object] | None,
     *,
-    has_live_sources: bool,
+    current_player: PlayerRecord | Mapping[str, object] | None,
+    proposed_player: PlayerRecord | Mapping[str, object] | None,
+    current_campaign: CampaignAccessState | Mapping[str, object] | None,
+    proposed_campaign: CampaignAccessState | Mapping[str, object] | None,
+    current_live_route: object | None,
+    proposed_live_route: object | None,
 ) -> tuple[AdditiveAuthorizationDecision, tuple[str, ...]]:
-    if evidence is None:
-        if not has_live_sources:
-            return AdditiveAuthorizationDecision.NO_LIVE_ROLLOVER, ()
-        return (
-            AdditiveAuthorizationDecision.LIVE_TRANSITION_REQUIRED,
-            (
-                "immutable_claim_sets_unchanged",
-                "existing_writer_authorization_unchanged",
-                "no_affected_controlled_pc_transfer",
-                "no_selected_source_revoked_or_invalidated",
-                "new_player_gains_no_live_write_without_reacquiring_obligations",
-                "campaign_change_preserves_selected_live_routing_currentness",
-            ),
-        )
-    decision = classify_additive_authorization_change(**dict(evidence))
-    names = (
-        "immutable_claim_sets_unchanged",
-        "existing_writer_authorization_unchanged",
-        "no_affected_controlled_pc_transfer",
-        "no_selected_source_revoked_or_invalidated",
-        "new_player_gains_no_live_write_without_reacquiring_obligations",
-        "campaign_change_preserves_selected_live_routing_currentness",
+    predicates = _derive_additive_predicates(
+        current_player=current_player,
+        proposed_player=proposed_player,
+        current_campaign=current_campaign,
+        proposed_campaign=proposed_campaign,
+        current_live_route=current_live_route,
+        proposed_live_route=proposed_live_route,
     )
-    failed = tuple(name for name in names if evidence.get(name) is not True)
+    if predicates is None:
+        return AdditiveAuthorizationDecision.LIVE_TRANSITION_REQUIRED, _ADDITIVE_PREDICATE_NAMES
+    decision = classify_additive_authorization_change(
+        current_player=current_player,
+        proposed_player=proposed_player,
+        current_campaign=current_campaign,
+        proposed_campaign=proposed_campaign,
+        current_live_route=current_live_route,
+        proposed_live_route=proposed_live_route,
+    )
+    failed = tuple(name for name in _ADDITIVE_PREDICATE_NAMES if not predicates[name])
     return decision, failed
 
 
@@ -935,6 +1169,15 @@ def classify_additive_authorization_change(
     no_selected_source_revoked_or_invalidated: bool = False,
     new_player_gains_no_live_write_without_reacquiring_obligations: bool = False,
     campaign_change_preserves_selected_live_routing_currentness: bool = False,
+    *,
+    current_player: PlayerRecord | Mapping[str, object] | None = None,
+    proposed_player: PlayerRecord | Mapping[str, object] | None = None,
+    current_campaign: CampaignAccessState | Mapping[str, object] | None = None,
+    proposed_campaign: CampaignAccessState | Mapping[str, object] | None = None,
+    current_live_route: object | None = None,
+    proposed_live_route: object | None = None,
+    current_route: object | None = None,
+    proposed_route: object | None = None,
     **aliases: object,
 ) -> AdditiveAuthorizationDecision:
     """Apply the six exact current-owner predicates for additive activation.
@@ -944,49 +1187,25 @@ def classify_additive_authorization_change(
     published through the exact-source CAS owner.
     """
 
-    if isinstance(immutable_claim_sets_unchanged, Mapping):
-        supplied = dict(immutable_claim_sets_unchanged)
-        immutable_claim_sets_unchanged = supplied.pop("immutable_claim_sets_unchanged", False)  # type: ignore[assignment]
-        aliases = supplied | aliases
-    alias_names = {
-        "immutable_claims_unchanged": "immutable_claim_sets_unchanged",
-        "claims_unchanged": "immutable_claim_sets_unchanged",
-        "existing_writers_unchanged": "existing_writer_authorization_unchanged",
-        "no_controlled_pc_transfer": "no_affected_controlled_pc_transfer",
-        "no_source_revocation": "no_selected_source_revoked_or_invalidated",
-        "no_selected_source_revoked": "no_selected_source_revoked_or_invalidated",
-        "new_player_requires_obligation_reacquisition": (
-            "new_player_gains_no_live_write_without_reacquiring_obligations"
-        ),
-        "new_player_no_live_write_without_obligations": (
-            "new_player_gains_no_live_write_without_reacquiring_obligations"
-        ),
-        "selected_live_routing_unchanged": "campaign_change_preserves_selected_live_routing_currentness",
-        "selected_live_routing_currentness_unchanged": "campaign_change_preserves_selected_live_routing_currentness",
-    }
-    values = {
-        "immutable_claim_sets_unchanged": immutable_claim_sets_unchanged,
-        "existing_writer_authorization_unchanged": existing_writer_authorization_unchanged,
-        "no_affected_controlled_pc_transfer": no_affected_controlled_pc_transfer,
-        "no_selected_source_revoked_or_invalidated": no_selected_source_revoked_or_invalidated,
-        "new_player_gains_no_live_write_without_reacquiring_obligations": (
-            new_player_gains_no_live_write_without_reacquiring_obligations
-        ),
-        "campaign_change_preserves_selected_live_routing_currentness": (
-            campaign_change_preserves_selected_live_routing_currentness
-        ),
-    }
-    for alias, canonical in aliases.items():
-        if alias not in alias_names:
-            raise AccessControlContractError(f"unsupported additive authorization predicate: {alias}")
-        canonical_value = aliases[alias]
-        if type(canonical_value) is not bool:
-            raise AccessControlContractError(f"additive predicate {alias} must be boolean")
-        values[alias_names[alias]] = canonical_value
-    if not all(type(value) is bool and value for value in values.values()):
+    if current_live_route is None:
+        current_live_route = current_route
+    if proposed_live_route is None:
+        proposed_live_route = proposed_route
+    derived = _derive_additive_predicates(
+        current_player=current_player,
+        proposed_player=proposed_player,
+        current_campaign=current_campaign,
+        proposed_campaign=proposed_campaign,
+        current_live_route=current_live_route,
+        proposed_live_route=proposed_live_route,
+    )
+    if derived is None:
         return AdditiveAuthorizationDecision.LIVE_TRANSITION_REQUIRED
-    return AdditiveAuthorizationDecision.NO_LIVE_ROLLOVER
-
+    return (
+        AdditiveAuthorizationDecision.NO_LIVE_ROLLOVER
+        if all(derived.values())
+        else AdditiveAuthorizationDecision.LIVE_TRANSITION_REQUIRED
+    )
 
 @dataclass(frozen=True, slots=True)
 class FrozenAccessPolicyTransition:
@@ -1114,9 +1333,12 @@ def _freeze_player_access_transition(
     proposed_player: PlayerRecord | Mapping[str, object],
     current_campaign: CampaignAccessState | Mapping[str, object],
     proposed_campaign: CampaignAccessState | Mapping[str, object],
+    creator_provenance: FirstInitializationProvenance | None,
     creator_login: str | None,
     expected_campaign_revision: str | None,
     proposed_campaign_revision: str | None,
+    current_live_route: object | None,
+    proposed_live_route: object | None,
     live_source_keys: object,
     additive_evidence: Mapping[str, object] | None,
     historical_result_ids: Sequence[str],
@@ -1148,6 +1370,7 @@ def _freeze_player_access_transition(
     resolved_principal = resolve_principal(principal)
     before, before_raw = _player_state(current_player, "current PLAYER")
     after, after_raw = _player_state(proposed_player, "proposed PLAYER")
+    campaign_identity = _campaign_state(current_campaign).campaign_id
     _require_exact_resolution(resolution, before)
     if before.player_id != after.player_id or before.stable_account_id != after.stable_account_id:
         raise AccessControlContractError("PLAYER identity and binding are immutable in an access transition")
@@ -1163,7 +1386,12 @@ def _freeze_player_access_transition(
         if (before.status, after.status, after.deactivated_by) != ("active", "inactive", "self"):
             raise AccessControlContractError("self deactivation has an invalid status transition")
     elif normalized_operation == "deactivate_creator":
-        _require_creator(resolved_principal, creator_login)
+        _require_creator(
+            resolved_principal,
+            creator_provenance,
+            campaign_id=campaign_identity,
+            creator_login=creator_login,
+        )
         if before.stable_account_id == resolved_principal.stable_account_id:
             raise AccessControlContractError("creator cannot deactivate their own PLAYER binding")
         if (before.status, after.status, after.deactivated_by) != ("active", "inactive", "creator"):
@@ -1177,11 +1405,26 @@ def _freeze_player_access_transition(
                 not decision.authorized
                 or before.stable_account_id != resolved_principal.stable_account_id
             ):
-                _require_creator(resolved_principal, creator_login)
+                _require_creator(
+                    resolved_principal,
+                    creator_provenance,
+                    campaign_id=campaign_identity,
+                    creator_login=creator_login,
+                )
         else:
-            _require_creator(resolved_principal, creator_login)
+            _require_creator(
+                resolved_principal,
+                creator_provenance,
+                campaign_id=campaign_identity,
+                creator_login=creator_login,
+            )
     else:
-        _require_creator(resolved_principal, creator_login)
+        _require_creator(
+            resolved_principal,
+            creator_provenance,
+            campaign_id=campaign_identity,
+            creator_login=creator_login,
+        )
         if before.status != after.status or before.deactivated_by != after.deactivated_by:
             raise AccessControlContractError("policy grant/revocation cannot change membership status")
         if normalized_operation == "grant_mechanical_override":
@@ -1211,18 +1454,30 @@ def _freeze_player_access_transition(
         after_campaign.player_ids,
     ):
         raise AccessControlContractError("PLAYER mutation cannot change campaign access policy")
-    source_keys = _transition_source_keys(live_source_keys)
+    before_route = _validated_live_route(current_live_route, before_campaign.campaign_id)
+    after_route = _validated_live_route(proposed_live_route, after_campaign.campaign_id)
+    supplied_source_keys = _transition_source_keys(live_source_keys)
+    if supplied_source_keys and supplied_source_keys != tuple(entry.source_key for entry in before_route.entries):
+        raise AccessControlContractError(
+            "caller LIVE source keys do not match exact current route evidence",
+            failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
+        )
     decision, failed = _additive_assessment(
         additive_evidence,
-        has_live_sources=bool(source_keys),
+        current_player=before,
+        proposed_player=after,
+        current_campaign=before_campaign,
+        proposed_campaign=after_campaign,
+        current_live_route=before_route,
+        proposed_live_route=after_route,
     )
-    if normalized_operation in {"deactivate_self", "deactivate_creator", "revoke_mechanical_override"} and source_keys:
+    if normalized_operation in {"deactivate_self", "deactivate_creator", "revoke_mechanical_override"} and before_route.entries:
         decision = AdditiveAuthorizationDecision.LIVE_TRANSITION_REQUIRED
         failed = failed or ("access_revocation_requires_source_freeze",)
     impact = _impact(
         before_campaign,
         player_ids=(before.player_id,),
-        source_keys=source_keys,
+        live_route=before_route,
         publication_paths=(f"WORLD/PLAYERS/{before.player_id}.yaml",),
     )
     ids = tuple(historical_result_ids) if historical_result_ids else _history_ids(before_raw)
@@ -1259,12 +1514,16 @@ def freeze_player_access_transition(
     current_campaign: CampaignAccessState | Mapping[str, object],
     proposed_campaign: CampaignAccessState | Mapping[str, object],
     creator_login: str | None = None,
+    creator_provenance: FirstInitializationProvenance | None = None,
     expected_campaign_revision: str | None = None,
     proposed_campaign_revision: str | None = None,
     current_campaign_revision: str | None = None,
     next_campaign_revision: str | None = None,
     live_source_keys: object = (),
     live_sources: object | None = None,
+    current_live_route: object | None = None,
+    proposed_live_route: object | None = None,
+    live_route: object | None = None,
     additive_evidence: Mapping[str, object] | None = None,
     historical_result_ids: Sequence[str] = (),
 ) -> FrozenAccessPolicyTransition:
@@ -1272,6 +1531,9 @@ def freeze_player_access_transition(
 
     if live_sources is not None:
         live_source_keys = live_sources
+    if live_route is not None:
+        current_live_route = live_route
+        proposed_live_route = live_route
     if expected_campaign_revision is None:
         expected_campaign_revision = current_campaign_revision
     if proposed_campaign_revision is None:
@@ -1284,9 +1546,12 @@ def freeze_player_access_transition(
         proposed_player=proposed_player,
         current_campaign=current_campaign,
         proposed_campaign=proposed_campaign,
+        creator_provenance=creator_provenance,
         creator_login=creator_login,
         expected_campaign_revision=expected_campaign_revision,
         proposed_campaign_revision=proposed_campaign_revision,
+        current_live_route=current_live_route,
+        proposed_live_route=proposed_live_route,
         live_source_keys=live_source_keys,
         additive_evidence=additive_evidence,
         historical_result_ids=historical_result_ids,
@@ -1300,6 +1565,7 @@ def freeze_access_policy_transition(
     current_campaign: CampaignAccessState | Mapping[str, object],
     proposed_campaign: CampaignAccessState | Mapping[str, object],
     creator_login: str | None = None,
+    creator_provenance: FirstInitializationProvenance | None = None,
     expected_campaign_revision: str | None = None,
     proposed_campaign_revision: str | None = None,
     current_campaign_revision: str | None = None,
@@ -1309,6 +1575,9 @@ def freeze_access_policy_transition(
     operation: str | None = None,
     live_source_keys: object = (),
     live_sources: object | None = None,
+    current_live_route: object | None = None,
+    proposed_live_route: object | None = None,
+    live_route: object | None = None,
     additive_evidence: Mapping[str, object] | None = None,
     historical_result_ids: Sequence[str] = (),
 ) -> FrozenAccessPolicyTransition:
@@ -1316,6 +1585,9 @@ def freeze_access_policy_transition(
 
     if live_sources is not None:
         live_source_keys = live_sources
+    if live_route is not None:
+        current_live_route = live_route
+        proposed_live_route = live_route
     if expected_campaign_revision is None:
         expected_campaign_revision = current_campaign_revision
     if proposed_campaign_revision is None:
@@ -1339,19 +1611,28 @@ def freeze_access_policy_transition(
             proposed_player=proposed_player,
             current_campaign=current_campaign,
             proposed_campaign=proposed_campaign,
+            creator_provenance=creator_provenance,
             creator_login=creator_login,
             expected_campaign_revision=expected_campaign_revision,
             proposed_campaign_revision=proposed_campaign_revision,
+            current_live_route=current_live_route,
+            proposed_live_route=proposed_live_route,
             live_source_keys=live_source_keys,
             additive_evidence=additive_evidence,
             historical_result_ids=historical_result_ids,
         )
 
-    resolved_principal = _require_creator(principal, creator_login)
+    resolved_principal = resolve_principal(principal)
     before = _campaign_state(current_campaign, revision=expected_campaign_revision)
     after = _campaign_state(proposed_campaign, revision=proposed_campaign_revision)
     if before.campaign_id != after.campaign_id:
         raise AccessControlContractError("campaign identity is immutable")
+    _require_creator(
+        resolved_principal,
+        creator_provenance,
+        campaign_id=before.campaign_id,
+        creator_login=creator_login,
+    )
     if before.player_ids != after.player_ids:
         raise AccessControlContractError("join-policy mutation cannot revoke or create PLAYER bindings")
     mode_changed = before.mode != after.mode
@@ -1365,12 +1646,27 @@ def freeze_access_policy_transition(
         if mode_changed
         else AccessTransitionKind.JOIN_POLICY_CHANGE
     )
-    source_keys = _transition_source_keys(live_source_keys)
-    decision, failed = _additive_assessment(additive_evidence, has_live_sources=bool(source_keys))
+    before_route = _validated_live_route(current_live_route, before.campaign_id)
+    after_route = _validated_live_route(proposed_live_route, after.campaign_id)
+    supplied_source_keys = _transition_source_keys(live_source_keys)
+    if supplied_source_keys and supplied_source_keys != tuple(entry.source_key for entry in before_route.entries):
+        raise AccessControlContractError(
+            "caller LIVE source keys do not match exact current route evidence",
+            failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
+        )
+    decision, failed = _additive_assessment(
+        additive_evidence,
+        current_player=None,
+        proposed_player=None,
+        current_campaign=before,
+        proposed_campaign=after,
+        current_live_route=before_route,
+        proposed_live_route=after_route,
+    )
     impact = _impact(
         before,
         player_ids=before.player_ids,
-        source_keys=source_keys,
+        live_route=before_route,
         publication_paths=("MANIFEST.yaml", "CONFIG.yaml"),
     )
     _ = resolved_principal
@@ -1460,6 +1756,7 @@ class FrozenMultiLiveForwardPlan:
     selected_route: object
     sources: tuple[MultiLiveClosePlan, ...]
     accepted_history_refs: tuple[str, ...] = ()
+    current_campaign: Mapping[str, object] | None = None
 
     def __post_init__(self) -> None:
         _nonempty(self.campaign_id, "multi-LIVE campaign_id")
@@ -1469,6 +1766,14 @@ class FrozenMultiLiveForwardPlan:
             raise AccessControlContractError("multi-LIVE forward plan must advance campaign currentness")
         if not self.sources:
             raise AccessControlContractError("multi-LIVE forward plan requires at least one source")
+        if self.current_campaign is None:
+            raise AccessControlContractError(
+                "multi-LIVE forward plan requires the exact loaded campaign body"
+            )
+        campaign = _campaign_state(self.current_campaign, revision=self.expected_campaign_revision)
+        if campaign.campaign_id != self.campaign_id:
+            raise AccessControlContractError("multi-LIVE campaign body differs from selected route")
+        object.__setattr__(self, "current_campaign", _mapping_copy(self.current_campaign, "current campaign"))
         keys = tuple(item.source_key for item in self.sources)
         if len(keys) != len(set(keys)):
             raise AccessControlContractError("multi-LIVE source keys must be unique")
@@ -1489,6 +1794,7 @@ class FrozenMultiLiveForwardPlan:
             "proposed_campaign_revision": self.proposed_campaign_revision,
             "source_keys": [list(key) for key in self.source_keys],
             "accepted_history_refs": list(self.accepted_history_refs),
+            "current_campaign": deepcopy(dict(self.current_campaign or {})),
         }
 
 
@@ -1586,10 +1892,21 @@ def _live_modules() -> tuple[object, ...]:
     )
 
 
+def _is_live_owner_issued_cas_result(value: object) -> bool:
+    """Ask the LIVE owner whether a typed CAS result was actually issued there."""
+
+    from .live_state import _is_owner_issued_cas_result
+
+    return _is_owner_issued_cas_result(value)
+
+
 def freeze_multi_live_forward_plan(
     route: object | None = None,
     *,
     live_route: object | None = None,
+    current_campaign: CampaignAccessState | Mapping[str, object] | None = None,
+    campaign_state: CampaignAccessState | Mapping[str, object] | None = None,
+    campaign_cas_basis: CampaignAccessState | Mapping[str, object] | None = None,
     expected_campaign_revision: str | None = None,
     proposed_campaign_revision: str | None = None,
     current_campaign_revision: str | None = None,
@@ -1602,6 +1919,8 @@ def freeze_multi_live_forward_plan(
 
     if route is None:
         route = live_route
+    if current_campaign is None:
+        current_campaign = campaign_state if campaign_state is not None else campaign_cas_basis
     if expected_campaign_revision is None:
         expected_campaign_revision = current_campaign_revision
     if proposed_campaign_revision is None:
@@ -1624,10 +1943,17 @@ def freeze_multi_live_forward_plan(
     if not isinstance(route, live_routing) or not route.complete:
         raise AccessControlContractError("multi-LIVE forward plan requires a complete exact route")
     validate_live_route_completeness(route)
+    if current_campaign is None:
+        raise AccessControlContractError(
+            "multi-LIVE forward plan requires the exact loaded campaign body"
+        )
     expected = _revision_value(expected_campaign_revision, "expected campaign revision")
     proposed = _revision_value(proposed_campaign_revision, "proposed campaign revision")
     if expected == proposed:
         raise AccessControlContractError("multi-LIVE forward plan must advance campaign currentness")
+    campaign = _campaign_state(current_campaign, revision=expected)
+    if campaign.campaign_id != route.campaign_id:
+        raise AccessControlContractError("multi-LIVE campaign body differs from selected route")
     revisions = proposed_source_revisions if proposed_source_revisions is not None else source_revisions
     if revisions is None:
         raise AccessControlContractError("each selected LIVE source needs an exact proposed revision")
@@ -1687,6 +2013,10 @@ def freeze_multi_live_forward_plan(
         selected_route=route,
         sources=tuple(sources),
         accepted_history_refs=tuple(accepted_history_refs),
+        current_campaign=_mapping_copy(
+            current_campaign.as_mapping() if isinstance(current_campaign, CampaignAccessState) else current_campaign,
+            "current campaign",
+        ),
     )
 
 
@@ -1737,6 +2067,10 @@ def advance_multi_live_freeze(
             continue
         acknowledgement = _transition_mapping_lookup(acknowledgements, source_plan, index)
         if isinstance(acknowledgement, live_publication_result):
+            if not _is_live_owner_issued_cas_result(acknowledgement):
+                raise AccessControlContractError(
+                    "multi-LIVE closure requires LIVE-owner-issued CAS evidence"
+                )
             if acknowledgement.attempt is not source_plan.attempt:
                 raise AccessControlContractError("LIVE CAS result is bound to another frozen attempt")
             result = acknowledgement
@@ -1793,6 +2127,145 @@ def advance_multi_live_freeze(
     )
 
 
+def _same_live_body(left: object, right: object) -> bool:
+    return all(
+        getattr(left, field_name, None) == getattr(right, field_name, None)
+        for field_name in (
+            "source_key",
+            "source_ref",
+            "source_revision",
+            "opening_campaign_revision",
+            "claims",
+            "next_source_native_creation_ordinal",
+            "source_native_ids",
+        )
+    )
+
+
+def _progress_status(outcomes: Sequence[str]) -> str:
+    if all(value == "CONFIRMED_CLOSED" for value in outcomes):
+        return "READY_TO_PUBLISH"
+    if "REJECTED_STALE" in outcomes:
+        return "REJECTED_STALE"
+    if "REJECTED" in outcomes:
+        return "REJECTED"
+    return "INDETERMINATE"
+
+
+def recover_multi_live_forward_plan(
+    plan: FrozenMultiLiveForwardPlan,
+    *,
+    current_route: object,
+    current_campaign: CampaignAccessState | Mapping[str, object],
+) -> MultiLiveFreezeProgress:
+    """Re-derive partial forward work from one exact current route read.
+
+    A source already proven closed remains ``CLOSED_UNABSORBED``.  An exact
+    active predecessor remains indeterminate until the LIVE owner supplies a
+    CAS result; a different lifecycle/revision is stale and never reopened.
+    """
+
+    if not isinstance(plan, FrozenMultiLiveForwardPlan):
+        raise AccessControlContractError("multi-LIVE recovery requires a typed frozen plan")
+    if plan.current_campaign is None or not _same_campaign_state(
+        plan.current_campaign,
+        current_campaign,
+        revision=plan.expected_campaign_revision,
+    ):
+        raise AccessControlContractError(
+            "multi-LIVE recovery campaign body differs from frozen CAS basis",
+            failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
+        )
+    route = _validated_live_route(current_route, plan.campaign_id)
+    frozen_keys = tuple(source_plan.source_key for source_plan in plan.sources)
+    current_keys = tuple(entry.source_key for entry in route.entries)
+    if current_keys != frozen_keys:
+        raise AccessControlContractError(
+            "multi-LIVE recovery route membership differs from frozen route",
+            failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
+        )
+    selected = {entry.source_key: entry for entry in route.entries}
+    (
+        _live_error,
+        _live_envelope,
+        live_lifecycle,
+        _live_publication_result,
+        _live_publication_status,
+        _live_routing,
+        _build_live_route,
+        _classify_cas_result,
+        _freeze_live_attempt,
+        mark_closed_unabsorbed,
+        _reconcile_indeterminate,
+        _select_live_source,
+        _validate_live_route_completeness,
+    ) = _live_modules()
+    final_sources: list[object] = []
+    outcomes: list[tuple[LiveSourceKeyValue, str]] = []
+    for source_plan in plan.sources:
+        current = selected.get(source_plan.source_key)
+        if current is None:
+            outcomes.append((source_plan.source_key, "REJECTED_STALE"))
+            continue
+        if source_plan.attempt is None:
+            if (
+                current.status is live_lifecycle.CLOSED_UNABSORBED
+                and current.source_revision == source_plan.proposed_source_revision
+                and _same_live_body(current, source_plan.source)
+            ):
+                final_sources.append(current)
+                outcomes.append((source_plan.source_key, "CONFIRMED_CLOSED"))
+            elif (
+                current.status is live_lifecycle.CLOSED
+                and current.source_revision == source_plan.proposed_source_revision
+                and _same_live_body(current, source_plan.source)
+            ):
+                final_sources.append(mark_closed_unabsorbed(current))
+                outcomes.append((source_plan.source_key, "CONFIRMED_CLOSED"))
+            else:
+                outcomes.append((source_plan.source_key, "REJECTED_STALE"))
+            continue
+        successor = source_plan.attempt.successor_route.entries[0]
+        if (
+            current.status in {live_lifecycle.CLOSED, live_lifecycle.CLOSED_UNABSORBED}
+            and current.source_revision == source_plan.proposed_source_revision
+            and _same_live_body(current, successor)
+        ):
+            final_sources.append(
+                current if current.status is live_lifecycle.CLOSED_UNABSORBED else mark_closed_unabsorbed(current)
+            )
+            outcomes.append((source_plan.source_key, "CONFIRMED_CLOSED"))
+        elif (
+            current.status is live_lifecycle.ACTIVE
+            and current.source_revision == source_plan.expected_source_revision
+            and _same_live_body(current, source_plan.source)
+        ):
+            outcomes.append((source_plan.source_key, "INDETERMINATE"))
+        else:
+            outcomes.append((source_plan.source_key, "REJECTED_STALE"))
+    return MultiLiveFreezeProgress(
+        plan=plan,
+        status=_progress_status(tuple(outcome for _, outcome in outcomes)),
+        final_sources=tuple(final_sources),
+        outcomes=tuple(outcomes),
+    )
+
+
+def recover_multi_live_freeze(
+    plan: FrozenMultiLiveForwardPlan,
+    *,
+    current_route: object,
+    current_campaign: CampaignAccessState | Mapping[str, object],
+) -> MultiLiveFreezeProgress:
+    """Compatibility name for bounded current-route/source-lifecycle recovery."""
+
+    return recover_multi_live_forward_plan(
+        plan,
+        current_route=current_route,
+        current_campaign=current_campaign,
+    )
+
+
 def publish_forward_transition(
     plan: FrozenMultiLiveForwardPlan,
     progress: MultiLiveFreezeProgress,
@@ -1811,12 +2284,21 @@ def publish_forward_transition(
         raise AccessControlContractError("forward publication requires every exact LIVE source final revision")
     if campaign_state is None:
         campaign_state = campaign_after
+    if not isinstance(campaign_state, Mapping):
+        raise AccessControlContractError(
+            "campaign forward transition requires the exact loaded campaign body",
+            failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
+        )
     observed_campaign_revision = current_campaign_revision or campaign_revision
-    if observed_campaign_revision is None and campaign_state is not None:
-        observed_campaign_revision = campaign_state.get(
-            "revision",
-            campaign_state.get("campaign_revision", campaign_state.get("current_revision")),
-        )  # type: ignore[assignment]
+    loaded_revision = campaign_state.get(
+        "revision",
+        campaign_state.get("campaign_revision", campaign_state.get("current_revision")),
+    )
+    if observed_campaign_revision is None or loaded_revision != observed_campaign_revision:
+        raise AccessControlContractError(
+            "campaign forward transition has stale loaded-body currentness",
+            failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
+        )
     if observed_campaign_revision != plan.expected_campaign_revision:
         raise AccessControlContractError(
             "campaign forward transition has stale currentness",

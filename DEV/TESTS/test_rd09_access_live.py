@@ -14,11 +14,13 @@ import unittest
 
 from jsonschema import Draft202012Validator, RefResolver, ValidationError
 import GAME.TOOLS.recovery_roots as recovery_roots_module
+import GAME.TOOLS.access_control as access_control_module
 
 from GAME.TOOLS.access_control import (
     AccessControlContractError,
     AdditiveAuthorizationDecision,
     AuthorizationFailureCode,
+    FirstInitializationProvenance,
     PlayerRecord,
     PlayerResolution,
     PrincipalPlayerRoute,
@@ -31,6 +33,7 @@ from GAME.TOOLS.access_control import (
     freeze_multi_live_forward_plan,
     freeze_player_access_transition,
     advance_multi_live_freeze,
+    issue_first_initialization_provenance,
     publish_access_policy_transition,
     publish_forward_transition,
     resolve_player,
@@ -191,6 +194,10 @@ def _live_route(source: LiveEnvelope | None = None):
     return build_live_route(selected.campaign_id, (selected,))
 
 
+def _empty_live_route() -> LiveRouting:
+    return build_live_route("campaign-frostfall", ())
+
+
 def _accepted_ack(attempt: object) -> dict[str, object]:
     return {
         "accepted": True,
@@ -211,6 +218,17 @@ def _principal(*, account_id: object = "42", login: str = "lina") -> VerifiedPri
             "login": login,
             "verified": True,
         }
+    )
+
+
+def _creator_provenance(
+    *, campaign_id: str = "campaign-frostfall", author_login: str = "creator"
+) -> FirstInitializationProvenance:
+    return issue_first_initialization_provenance(
+        campaign_id=campaign_id,
+        author_login=author_login,
+        initialization_revision=LIVE_H0,
+        parent_revision=LIVE_H3,
     )
 
 
@@ -3310,6 +3328,7 @@ class PlayerAccessTransitionTests(unittest.TestCase):
         }
         after = current | {"status": "inactive", "deactivated_by": "self"}
         resolution = self._resolved(principal, current)
+        route = _live_route()
 
         transition = freeze_player_access_transition(
             principal,
@@ -3321,14 +3340,15 @@ class PlayerAccessTransitionTests(unittest.TestCase):
             proposed_campaign=self._campaign(revision=LIVE_H1),
             expected_campaign_revision=LIVE_H0,
             proposed_campaign_revision=LIVE_H1,
-            live_source_keys=("campaign-frostfall", "scene-market", "e1-" + "a" * 64),
+            live_route=route,
+            live_source_keys=route.entries[0].source_key,
         )
 
         self.assertEqual(transition.player_id, "player-1")
         self.assertTrue(transition.impact.complete)
         self.assertEqual(
             transition.impact.live_source_keys,
-            (("campaign-frostfall", "scene-market", "e1-" + "a" * 64),),
+            (route.entries[0].source_key,),
         )
         self.assertIn("player:player-1", transition.impact.collaboration_keys)
         self.assertIn("player:player-1", transition.impact.planning_catchup_keys)
@@ -3354,6 +3374,7 @@ class PlayerAccessTransitionTests(unittest.TestCase):
             proposed_campaign=self._campaign(revision=LIVE_H1),
             expected_campaign_revision=LIVE_H0,
             proposed_campaign_revision=LIVE_H1,
+            live_route=_empty_live_route(),
         )
 
         self.assertTrue(transition.rejoin_preserves_player_identity)
@@ -3379,9 +3400,10 @@ class PlayerAccessTransitionTests(unittest.TestCase):
             proposed_player=revoked,
             current_campaign=self._campaign(),
             proposed_campaign=self._campaign(revision=LIVE_H1),
-            creator_login="creator",
+            creator_provenance=_creator_provenance(),
             expected_campaign_revision=LIVE_H0,
             proposed_campaign_revision=LIVE_H1,
+            live_route=_empty_live_route(),
             historical_result_ids=("resolution-1", "resolution-2"),
         )
 
@@ -3398,9 +3420,10 @@ class PlayerAccessTransitionTests(unittest.TestCase):
                 revision=LIVE_H1,
                 join_policy="open_contributors",
             ),
-            creator_login="creator",
+            creator_provenance=_creator_provenance(),
             expected_campaign_revision=LIVE_H0,
             proposed_campaign_revision=LIVE_H1,
+            live_route=_empty_live_route(),
         )
 
         self.assertEqual(transition.transition_kind, "JOIN_POLICY_CHANGE")
@@ -3416,9 +3439,10 @@ class PlayerAccessTransitionTests(unittest.TestCase):
             creator,
             current_campaign=current,
             proposed_campaign=proposed,
-            creator_login="creator",
+            creator_provenance=_creator_provenance(),
             expected_campaign_revision=LIVE_H0,
             proposed_campaign_revision=LIVE_H1,
+            live_route=_empty_live_route(),
         )
 
         published = publish_access_policy_transition(
@@ -3452,6 +3476,81 @@ class PlayerAccessTransitionTests(unittest.TestCase):
 
         self.assertEqual(context.exception.failure_code, AuthorizationFailureCode.CREATOR_UNCERTAIN)
 
+    def test_caller_creator_login_is_not_creator_provenance(self) -> None:
+        with self.assertRaises(AccessControlContractError) as context:
+            freeze_access_policy_transition(
+                _principal(account_id="99", login="creator"),
+                current_campaign=self._campaign(),
+                proposed_campaign=self._campaign(
+                    revision=LIVE_H1,
+                    join_policy="open_contributors",
+                ),
+                creator_login="creator",
+                expected_campaign_revision=LIVE_H0,
+                proposed_campaign_revision=LIVE_H1,
+            )
+
+        self.assertEqual(context.exception.failure_code, AuthorizationFailureCode.CREATOR_UNCERTAIN)
+
+    def test_owner_issued_first_initialization_provenance_authorizes_creator_transition(self) -> None:
+        issue = getattr(access_control_module, "issue_first_initialization_provenance", None)
+        self.assertIsNotNone(issue)
+        provenance = issue(
+            campaign_id="campaign-frostfall",
+            author_login="creator",
+            initialization_revision=LIVE_H0,
+            parent_revision=LIVE_H3,
+        )
+        transition = freeze_access_policy_transition(
+            _principal(account_id="99", login="creator"),
+            current_campaign=self._campaign(),
+            proposed_campaign=self._campaign(
+                revision=LIVE_H1,
+                join_policy="open_contributors",
+            ),
+            creator_provenance=provenance,
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H1,
+            live_route=_empty_live_route(),
+        )
+
+        self.assertEqual(transition.transition_kind, "JOIN_POLICY_CHANGE")
+
+    def test_expected_campaign_revision_must_match_loaded_campaign_body(self) -> None:
+        with self.assertRaisesRegex(AccessControlContractError, "revision|currentness") as context:
+            freeze_access_policy_transition(
+                _principal(account_id="99", login="creator"),
+                current_campaign=self._campaign(revision=LIVE_H1),
+                proposed_campaign=self._campaign(
+                    revision=LIVE_H2,
+                    join_policy="open_contributors",
+                ),
+                creator_provenance=_creator_provenance(),
+                expected_campaign_revision=LIVE_H0,
+                proposed_campaign_revision=LIVE_H2,
+            )
+
+        self.assertEqual(context.exception.failure_code, AuthorizationFailureCode.CURRENTNESS_CONFLICT)
+
+    def test_player_transition_requires_exact_current_live_route_evidence(self) -> None:
+        principal = _principal()
+        current = _player("player-1")
+        resolution = self._resolved(principal, current)
+
+        with self.assertRaisesRegex(AccessControlContractError, "route|source|evidence"):
+            freeze_player_access_transition(
+                principal,
+                resolution,
+                operation="deactivate_self",
+                current_player=current,
+                proposed_player=current | {"status": "inactive", "deactivated_by": "self"},
+                current_campaign=self._campaign(),
+                proposed_campaign=self._campaign(revision=LIVE_H1),
+                expected_campaign_revision=LIVE_H0,
+                proposed_campaign_revision=LIVE_H1,
+                live_source_keys=("campaign-frostfall", "scene-market", "e1-" + "a" * 64),
+            )
+
 
 class LiveAdditiveAuthorizationTests(unittest.TestCase):
     def _all_true(self) -> dict[str, bool]:
@@ -3466,21 +3565,57 @@ class LiveAdditiveAuthorizationTests(unittest.TestCase):
 
     def test_all_six_current_owner_predicates_allow_no_live_rollover(self) -> None:
         self.assertEqual(
-            classify_additive_authorization_change(**self._all_true()),
+            classify_additive_authorization_change(
+                current_player=_player(),
+                proposed_player=_player(),
+                current_campaign={
+                    "campaign_id": "campaign-frostfall",
+                    "revision": LIVE_H0,
+                    "mode": "multiplayer",
+                },
+                proposed_campaign={
+                    "campaign_id": "campaign-frostfall",
+                    "revision": LIVE_H1,
+                    "mode": "multiplayer",
+                },
+                current_live_route=_empty_live_route(),
+                proposed_live_route=_empty_live_route(),
+            ),
             AdditiveAuthorizationDecision.NO_LIVE_ROLLOVER,
         )
 
     def test_missing_or_false_predicate_requires_live_transition(self) -> None:
-        evidence = self._all_true()
-        evidence["no_affected_controlled_pc_transfer"] = False
-
         self.assertEqual(
-            classify_additive_authorization_change(**evidence),
+            classify_additive_authorization_change(
+                current_player=_player(),
+                proposed_player=_player() | {"controlled_pc_ids": ["pc-2"]},
+                current_campaign={
+                    "campaign_id": "campaign-frostfall",
+                    "revision": LIVE_H0,
+                    "mode": "multiplayer",
+                },
+                proposed_campaign={
+                    "campaign_id": "campaign-frostfall",
+                    "revision": LIVE_H1,
+                    "mode": "multiplayer",
+                },
+                current_live_route=_empty_live_route(),
+                proposed_live_route=_empty_live_route(),
+            ),
+            AdditiveAuthorizationDecision.LIVE_TRANSITION_REQUIRED,
+        )
+
+    def test_caller_predicate_assertions_without_owner_evidence_fail_closed(self) -> None:
+        self.assertEqual(
+            classify_additive_authorization_change(**self._all_true()),
             AdditiveAuthorizationDecision.LIVE_TRANSITION_REQUIRED,
         )
 
 
 class MultiLiveForwardTransitionTests(unittest.TestCase):
+    def test_access_control_repair_advances_runtime_module_version(self) -> None:
+        self.assertEqual(access_control_module.FRAMEWORK_MODULE_VERSION, "1.0.2")
+
     def _source(self, scene_id: str, actor_id: str, revision: str = LIVE_H0) -> LiveEnvelope:
         claims = (LiveClaim.exact_owner("world.actor", actor_id),)
         epoch_id = derive_live_epoch_id("campaign-frostfall", scene_id, LIVE_H0, claims)
@@ -3494,12 +3629,36 @@ class MultiLiveForwardTransitionTests(unittest.TestCase):
             claims=claims,
         )
 
+    def test_multi_live_plan_binds_expected_campaign_revision_to_loaded_body(self) -> None:
+        source = self._source("scene-a", "actor-a")
+        route = build_live_route("campaign-frostfall", (source,))
+        with self.assertRaisesRegex(AccessControlContractError, "revision|currentness"):
+            try:
+                freeze_multi_live_forward_plan(
+                    route,
+                    current_campaign={
+                        "campaign_id": "campaign-frostfall",
+                        "revision": LIVE_H1,
+                        "mode": "multiplayer",
+                    },
+                    expected_campaign_revision=LIVE_H0,
+                    proposed_campaign_revision=LIVE_H3,
+                    proposed_source_revisions={source.source_key: LIVE_H2},
+                )
+            except TypeError as error:
+                raise AssertionError("multi-LIVE plan lacks campaign-body currentness binding") from error
+
     def test_each_live_source_closes_by_own_cas_before_campaign_forward_publication(self) -> None:
         source_a = self._source("scene-a", "actor-a")
         source_b = self._source("scene-b", "actor-b")
         route = build_live_route("campaign-frostfall", (source_a, source_b))
         plan = freeze_multi_live_forward_plan(
             route,
+            current_campaign={
+                "campaign_id": "campaign-frostfall",
+                "revision": LIVE_H0,
+                "mode": "multiplayer",
+            },
             expected_campaign_revision=LIVE_H0,
             proposed_campaign_revision=LIVE_H3,
             proposed_source_revisions={source_a.source_key: LIVE_H1, source_b.source_key: LIVE_H2},
@@ -3535,6 +3694,11 @@ class MultiLiveForwardTransitionTests(unittest.TestCase):
         route = build_live_route("campaign-frostfall", (source_a, source_b))
         plan = freeze_multi_live_forward_plan(
             route,
+            current_campaign={
+                "campaign_id": "campaign-frostfall",
+                "revision": LIVE_H0,
+                "mode": "multiplayer",
+            },
             expected_campaign_revision=LIVE_H0,
             proposed_campaign_revision=LIVE_H3,
             proposed_source_revisions={source_a.source_key: LIVE_H1, source_b.source_key: LIVE_H2},
@@ -3568,6 +3732,11 @@ class MultiLiveForwardTransitionTests(unittest.TestCase):
         route = build_live_route("campaign-frostfall", (source_a, source_b))
         plan = freeze_multi_live_forward_plan(
             route,
+            current_campaign={
+                "campaign_id": "campaign-frostfall",
+                "revision": LIVE_H0,
+                "mode": "multiplayer",
+            },
             expected_campaign_revision=LIVE_H0,
             proposed_campaign_revision=LIVE_H3,
             proposed_source_revisions={source_a.source_key: LIVE_H1, source_b.source_key: LIVE_H2},
@@ -3583,6 +3752,175 @@ class MultiLiveForwardTransitionTests(unittest.TestCase):
 
         self.assertFalse(progress.ready_to_publish)
         self.assertEqual(progress.status, "INDETERMINATE")
+
+    def test_forged_typed_cas_result_is_not_live_owner_evidence(self) -> None:
+        source_a = self._source("scene-a", "actor-a")
+        source_b = self._source("scene-b", "actor-b")
+        route = build_live_route("campaign-frostfall", (source_a, source_b))
+        plan = freeze_multi_live_forward_plan(
+            route,
+            current_campaign={
+                "campaign_id": "campaign-frostfall",
+                "revision": LIVE_H0,
+                "mode": "multiplayer",
+            },
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H3,
+            proposed_source_revisions={source_a.source_key: LIVE_H1, source_b.source_key: LIVE_H2},
+        )
+        forged = LivePublicationResult(
+            status=LivePublicationStatus.ACCEPTED,
+            source_key=source_a.source_key,
+            authoritative=True,
+            observed_source_revision=LIVE_H1,
+            accepted_source=plan.attempts[0].successor_route.entries[0],
+            attempt=plan.attempts[0],
+        )
+
+        with self.assertRaisesRegex(AccessControlContractError, "owner-issued"):
+            advance_multi_live_freeze(
+                plan,
+                acknowledgements={
+                    source_a.source_key: forged,
+                    source_b.source_key: _accepted_ack(plan.attempts[1]),
+                },
+            )
+
+    def test_partial_recovery_preserves_a_closed_unabsorbed_when_b_is_stale(self) -> None:
+        source_a = self._source("scene-a", "actor-a")
+        source_b = self._source("scene-b", "actor-b")
+        route = build_live_route("campaign-frostfall", (source_a, source_b))
+        plan = freeze_multi_live_forward_plan(
+            route,
+            current_campaign={
+                "campaign_id": "campaign-frostfall",
+                "revision": LIVE_H0,
+                "mode": "multiplayer",
+            },
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H3,
+            proposed_source_revisions={source_a.source_key: LIVE_H1, source_b.source_key: LIVE_H2},
+        )
+        closed_a = mark_closed_unabsorbed(
+            close_live_source(
+                source_a,
+                expected_source_revision=LIVE_H0,
+                closed_source_revision=LIVE_H1,
+            )
+        )
+        stale_b = replace(source_b, source_revision=LIVE_H3)
+        current_route = build_live_route("campaign-frostfall", (closed_a, stale_b))
+        recover = getattr(access_control_module, "recover_multi_live_forward_plan", None)
+        self.assertIsNotNone(recover)
+        progress = recover(
+            plan,
+            current_route=current_route,
+            current_campaign={
+                "campaign_id": "campaign-frostfall",
+                "revision": LIVE_H0,
+                "mode": "multiplayer",
+            },
+        )
+
+        self.assertEqual(progress.outcome_for(source_a.source_key), "CONFIRMED_CLOSED")
+        self.assertEqual(progress.outcome_for(source_b.source_key), "REJECTED_STALE")
+        self.assertEqual(progress.final_sources[0].status, LiveLifecycle.CLOSED_UNABSORBED)
+        self.assertFalse(progress.ready_to_publish)
+
+    def test_partial_recovery_preserves_a_closed_unabsorbed_when_b_is_indeterminate(self) -> None:
+        source_a = self._source("scene-a", "actor-a")
+        source_b = self._source("scene-b", "actor-b")
+        route = build_live_route("campaign-frostfall", (source_a, source_b))
+        plan = freeze_multi_live_forward_plan(
+            route,
+            current_campaign={
+                "campaign_id": "campaign-frostfall",
+                "revision": LIVE_H0,
+                "mode": "multiplayer",
+            },
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H3,
+            proposed_source_revisions={source_a.source_key: LIVE_H1, source_b.source_key: LIVE_H2},
+        )
+        closed_a = mark_closed_unabsorbed(
+            close_live_source(
+                source_a,
+                expected_source_revision=LIVE_H0,
+                closed_source_revision=LIVE_H1,
+            )
+        )
+        current_route = build_live_route("campaign-frostfall", (closed_a, source_b))
+        recover = getattr(access_control_module, "recover_multi_live_forward_plan", None)
+        self.assertIsNotNone(recover)
+        progress = recover(
+            plan,
+            current_route=current_route,
+            current_campaign={
+                "campaign_id": "campaign-frostfall",
+                "revision": LIVE_H0,
+                "mode": "multiplayer",
+            },
+        )
+
+        self.assertEqual(progress.outcome_for(source_a.source_key), "CONFIRMED_CLOSED")
+        self.assertEqual(progress.outcome_for(source_b.source_key), "INDETERMINATE")
+        self.assertEqual(progress.final_sources[0].status, LiveLifecycle.CLOSED_UNABSORBED)
+        self.assertFalse(progress.ready_to_publish)
+
+    def test_partial_recovery_rejects_campaign_body_that_differs_from_frozen_cas_basis(self) -> None:
+        source = self._source("scene-a", "actor-a")
+        route = build_live_route("campaign-frostfall", (source,))
+        plan = freeze_multi_live_forward_plan(
+            route,
+            current_campaign={
+                "campaign_id": "campaign-frostfall",
+                "revision": LIVE_H0,
+                "mode": "multiplayer",
+            },
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H3,
+            proposed_source_revisions={source.source_key: LIVE_H1},
+        )
+        recover = getattr(access_control_module, "recover_multi_live_forward_plan", None)
+        self.assertIsNotNone(recover)
+        with self.assertRaisesRegex(AccessControlContractError, "campaign|currentness|body"):
+            recover(
+                plan,
+                current_route=route,
+                current_campaign={
+                    "campaign_id": "campaign-frostfall",
+                    "revision": LIVE_H0,
+                    "mode": "singleplayer",
+                },
+            )
+
+    def test_partial_recovery_rejects_route_membership_that_differs_from_frozen_route(self) -> None:
+        source_a = self._source("scene-a", "actor-a")
+        source_b = self._source("scene-b", "actor-b")
+        route = build_live_route("campaign-frostfall", (source_a,))
+        plan = freeze_multi_live_forward_plan(
+            route,
+            current_campaign={
+                "campaign_id": "campaign-frostfall",
+                "revision": LIVE_H0,
+                "mode": "multiplayer",
+            },
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H3,
+            proposed_source_revisions={source_a.source_key: LIVE_H1},
+        )
+        recover = getattr(access_control_module, "recover_multi_live_forward_plan", None)
+        self.assertIsNotNone(recover)
+        with self.assertRaisesRegex(AccessControlContractError, "route|source|currentness"):
+            recover(
+                plan,
+                current_route=build_live_route("campaign-frostfall", (source_a, source_b)),
+                current_campaign={
+                    "campaign_id": "campaign-frostfall",
+                    "revision": LIVE_H0,
+                    "mode": "multiplayer",
+                },
+            )
 
 
 if __name__ == "__main__":
