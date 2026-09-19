@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-03-principal-live-temporal
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
-STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: W03.T08 reviewer re-review after owner-side re-extraction repair
-LAST_COMPLETED_TASK: W03.T08 owner-side re-extraction repair at `1d00a5e183705ef2106e28a6ca1d00ae2cc449c7`
-LAST_SAFE_SHA: `1d00a5e183705ef2106e28a6ca1d00ae2cc449c7` (published/read-back W03.T08 owner-side re-extraction checkpoint)
+STATUS: FINAL_REVIEW
+CURRENT_TASK: mandatory Senior Wave-03 integration audit
+LAST_COMPLETED_TASK: W03.T08 independent re-review -- PASS / W03_LIVE_CONSUMER_DELTAS_READY accepted
+LAST_SAFE_SHA: `4ba47f2403dec3295c745ae98ff2a11558911214` (published/read-back W03.T08 reviewer-PASS checkpoint)
 
 ## Dependency schedule
 
