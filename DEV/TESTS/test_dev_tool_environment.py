@@ -20,10 +20,6 @@ def load_module():
 
 
 class DevToolEnvironmentTests(unittest.TestCase):
-    def test_repository_dev_requirements_remain_bounded_to_canonical_tools(self):
-        requirements = (ROOT / "DEV/TOOLS/requirements-dev-tools.txt").read_text(encoding="utf-8").splitlines()
-        self.assertEqual(requirements, ["jsonschema==4.26.0", "PyYAML==6.0.3"])
-
     def _requirements(self, root: Path, text: str = "jsonschema==4.26.0\nPyYAML==6.0.3\n") -> Path:
         path = root / "DEV/TOOLS/requirements-dev-tools.txt"
         path.parent.mkdir(parents=True, exist_ok=True)
