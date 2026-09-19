@@ -12,14 +12,14 @@ from dataclasses import dataclass
 import hashlib
 import json
 import re
-from typing import Final, Protocol
+from typing import Final, NoReturn, Protocol
 import weakref
 
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.13
-FRAMEWORK_MODULE_VERSION: Final = "1.0.13"
+# framework_module_version: 1.0.14
+FRAMEWORK_MODULE_VERSION: Final = "1.0.14"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
 OPERATIONAL_ROOT_HANDOFF_SCHEMA_VERSION: Final = 2
 _OWNER_KINDS: Final = frozenset(
@@ -456,7 +456,7 @@ def _validate_terminal_roots(
     return {(kind, owner_id, root_map[(kind, owner_id)].relative_path) for kind, owner_id in requested}
 
 
-def reconcile_operational_root_handoff(
+def _reconcile_operational_root_handoff(
     page: OperationalRootHandoff | OperationalRootPage | Mapping[str, object],
     *,
     campaign_id: str,
@@ -567,7 +567,7 @@ def handoff_operational_roots_to_live(
 ) -> OperationalRootHandoff:
     """Route active campaign roots into one exact selected LIVE source."""
 
-    return reconcile_operational_root_handoff(
+    return _reconcile_operational_root_handoff(
         page,
         campaign_id=campaign_id,
         expected_source_scope="CAMPAIGN",
@@ -578,7 +578,7 @@ def handoff_operational_roots_to_live(
     )
 
 
-def recover_operational_roots_to_campaign(
+def _recover_operational_roots_to_campaign(
     page: OperationalRootHandoff | Mapping[str, object],
     *,
     campaign_id: str,
@@ -598,7 +598,7 @@ def recover_operational_roots_to_campaign(
 ) -> OperationalRootHandoff:
     """Perform the bounded LIVE-to-campaign root transition after owner admission."""
 
-    return reconcile_operational_root_handoff(
+    return _reconcile_operational_root_handoff(
         page,
         campaign_id=campaign_id,
         expected_source_scope="LIVE",
@@ -611,6 +611,15 @@ def recover_operational_roots_to_campaign(
         superseded_owner_keys=superseded_owner_keys,
         superseded_native_deltas=superseded_native_deltas,
     )
+
+
+def recover_operational_roots_to_campaign(*_args: object, **_kwargs: object) -> NoReturn:
+    """Reject direct recovery calls that bypass the LIVE admission owner."""
+
+    raise OperationalRootError(
+        "LIVE must validate accepted absorption evidence before campaign root recovery"
+    )
+
 
 def enumerate_operational_root_page(
     campaign_id: str,

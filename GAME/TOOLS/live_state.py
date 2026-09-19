@@ -26,11 +26,11 @@ from .recovery_roots import (
     OperationalRootDelta,
     OperationalRootHandoff,
     OperationalRootPage,
-    recover_operational_roots_to_campaign as _recover_operational_roots_to_campaign,
+    _recover_operational_roots_to_campaign,
 )
 
-# framework_module_version: 1.0.16
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.16"
+# framework_module_version: 1.0.17
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.17"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 

@@ -86,6 +86,7 @@ from GAME.TOOLS.live_state import (
     unpack_live_native_state,
 )
 from GAME.TOOLS.recovery_roots import (
+    OperationalRootError,
     OperationalRoot,
     OperationalRootHandoff,
     OperationalRootPage,
@@ -652,7 +653,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.16")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.17")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
@@ -2927,7 +2928,7 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
                 return object()
 
         self.assertFalse(hasattr(recovery_roots_module, "AcceptedAbsorptionEvidenceTransport"))
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OperationalRootError):
             recover_operational_roots_to_campaign(
                 live_page,
                 campaign_id="campaign-frostfall",
@@ -2936,6 +2937,53 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
                 campaign_revision=LIVE_H2,
                 absorption_evidence=FakeTransport(),
             )
+
+    def test_direct_live_handoff_mapping_cannot_bypass_live_absorption_gate(self) -> None:
+        source = _live_source(revision=LIVE_H1)
+        live_handoff = handoff_operational_roots_to_live(
+            self._page(),
+            campaign_id="campaign-frostfall",
+            campaign_revision=LIVE_H0,
+            live_source_key=source.source_key,
+            live_source_revision=source.source_revision,
+        )
+        reconstructed = OperationalRootHandoff.from_mapping(live_handoff.to_dict())
+        candidates = (
+            live_handoff.to_dict(),
+            reconstructed.to_dict(),
+        )
+
+        for candidate in candidates:
+            with self.subTest(candidate=candidate):
+                with self.assertRaisesRegex(OperationalRootError, "LIVE|absorption|owner"):
+                    recover_operational_roots_to_campaign(
+                        candidate,
+                        campaign_id="campaign-frostfall",
+                        live_source_key=source.source_key,
+                        live_source_revision=source.source_revision,
+                        campaign_revision=LIVE_H2,
+                    )
+
+    def test_repeated_direct_live_handoff_mapping_cannot_use_idempotent_retry(self) -> None:
+        source = _live_source(revision=LIVE_H1)
+        live_handoff = handoff_operational_roots_to_live(
+            self._page(),
+            campaign_id="campaign-frostfall",
+            campaign_revision=LIVE_H0,
+            live_source_key=source.source_key,
+            live_source_revision=source.source_revision,
+        )
+        mapping = live_handoff.to_dict()
+
+        for _ in range(2):
+            with self.assertRaisesRegex(OperationalRootError, "LIVE|absorption|owner"):
+                recover_operational_roots_to_campaign(
+                    mapping,
+                    campaign_id="campaign-frostfall",
+                    live_source_key=source.source_key,
+                    live_source_revision=source.source_revision,
+                    campaign_revision=LIVE_H2,
+                )
 
     def test_root_recovery_rejects_forged_evidence_and_arbitrary_validator(self) -> None:
         source = _live_source(revision=LIVE_H1)
@@ -3115,7 +3163,7 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_revision=source.source_revision,
         )
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(OperationalRootError):
             recover_operational_roots_to_campaign(
                 live_page,
                 campaign_id="campaign-frostfall",
