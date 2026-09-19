@@ -9,10 +9,12 @@ from __future__ import annotations
 
 import hashlib
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Final
+from dataclasses import dataclass
+from types import MappingProxyType
+import weakref
+from typing import TYPE_CHECKING, Final, NamedTuple, cast
 
 if TYPE_CHECKING:
     from .live_state import LiveEnvelope
@@ -59,19 +61,18 @@ def _live_source_native_ids(value: object, label: str) -> tuple[str, ...]:
     return result
 
 
-@dataclass(frozen=True, slots=True)
-class _LiveInformationAdmission:
+class _LiveInformationAdmission(NamedTuple):
     issuer: object
     evidence_snapshot: Mapping[str, object]
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, eq=False, weakref_slot=True)
 class LiveInformationCandidate:
     """Ephemeral, source-bound input awaiting native-owner normalization.
 
-    The candidate carries currentness evidence but is not itself a knowledge,
-    disclosure, message, scene, or LIVE authority record.  Only the exact
-    selected ``LiveEnvelope`` may admit it for normalization.
+    Candidate fields are untrusted transport data.  Extraction admission and
+    the evidence snapshot used for normalization live in module-owned state
+    keyed by this candidate's identity.
     """
 
     source_key: tuple[str, str, str]
@@ -80,9 +81,6 @@ class LiveInformationCandidate:
     source_native_ids: tuple[str, ...]
     recipient_player_id: str
     evidence: Mapping[str, object]
-    _extraction_admission: _LiveInformationAdmission | None = field(
-        default=None, init=False, repr=False, compare=False
-    )
 
     def __post_init__(self) -> None:
         object.__setattr__(
@@ -122,6 +120,45 @@ class LiveInformationCandidate:
             "recipient_player_id": self.recipient_player_id,
             "evidence": deepcopy(dict(self.evidence)),
         }
+
+
+def _freeze_admitted_value(value: object) -> object:
+    if isinstance(value, Mapping):
+        return MappingProxyType(
+            {key: _freeze_admitted_value(item) for key, item in value.items()}
+        )
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+        return tuple(_freeze_admitted_value(item) for item in value)
+    return deepcopy(value)
+
+
+def _freeze_admitted_evidence(value: Mapping[str, object]) -> Mapping[str, object]:
+    return cast(Mapping[str, object], _freeze_admitted_value(value))
+
+
+def _make_live_information_admission_store() -> tuple[
+    Callable[[LiveInformationCandidate], None],
+    Callable[[LiveInformationCandidate], _LiveInformationAdmission | None],
+]:
+    admissions: weakref.WeakKeyDictionary[
+        LiveInformationCandidate, _LiveInformationAdmission
+    ] = weakref.WeakKeyDictionary()
+
+    def issue(candidate: LiveInformationCandidate) -> None:
+        admissions[candidate] = _LiveInformationAdmission(
+            issuer=_LIVE_INFORMATION_ADMISSION_ISSUER,
+            evidence_snapshot=_freeze_admitted_evidence(candidate.evidence),
+        )
+
+    def lookup(candidate: LiveInformationCandidate) -> _LiveInformationAdmission | None:
+        return admissions.get(candidate)
+
+    return issue, lookup
+
+
+_issue_live_information_admission, _lookup_live_information_admission = (
+    _make_live_information_admission_store()
+)
 
 
 def _require_mapping(value: object, label: str) -> Mapping[str, object]:
@@ -423,12 +460,13 @@ def _projection_candidates(projection: Mapping[str, object]) -> object:
     )
 
 
-def extract_material_live_information(
+def _extract_material_live_information(
     selected_route: object,
     live_source: object,
     projection: object,
     *,
     recipient_player_id: str,
+    _admission_issuer: Callable[[LiveInformationCandidate], None],
 ) -> tuple[LiveInformationCandidate, ...]:
     """Extract candidates from one source selected by an exact LIVE route.
 
@@ -525,16 +563,36 @@ def extract_material_live_information(
             recipient_player_id=recipient,
             evidence=native_evidence,
         )
-        object.__setattr__(
-            admitted_candidate,
-            "_extraction_admission",
-            _LiveInformationAdmission(
-                issuer=_LIVE_INFORMATION_ADMISSION_ISSUER,
-                evidence_snapshot=deepcopy(dict(admitted_candidate.evidence)),
-            ),
-        )
+        _admission_issuer(admitted_candidate)
         result.append(admitted_candidate)
     return tuple(result)
+
+
+def _bind_live_information_extractor(
+    admission_issuer: Callable[[LiveInformationCandidate], None],
+) -> Callable[..., tuple[LiveInformationCandidate, ...]]:
+    def extract(
+        selected_route: object,
+        live_source: object,
+        projection: object,
+        *,
+        recipient_player_id: str,
+    ) -> tuple[LiveInformationCandidate, ...]:
+        return _extract_material_live_information(
+            selected_route,
+            live_source,
+            projection,
+            recipient_player_id=recipient_player_id,
+            _admission_issuer=admission_issuer,
+        )
+
+    return extract
+
+
+extract_material_live_information = _bind_live_information_extractor(
+    _issue_live_information_admission
+)
+del _issue_live_information_admission
 
 
 def apply_normalization_candidates_under_native_owners(
@@ -565,7 +623,7 @@ def apply_normalization_candidates_under_native_owners(
             raise InformationContractError(
                 "normalization candidates must come from exact LIVE extraction"
             )
-        admission = candidate._extraction_admission
+        admission = _lookup_live_information_admission(candidate)
         if (
             type(admission) is not _LiveInformationAdmission
             or admission.issuer is not _LIVE_INFORMATION_ADMISSION_ISSUER

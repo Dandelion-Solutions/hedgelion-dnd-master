@@ -7,6 +7,7 @@ from dataclasses import replace
 from pathlib import Path
 import unittest
 
+from GAME.TOOLS import information as information_module
 from GAME.TOOLS.information import (
     InformationContractError,
     LiveInformationCandidate,
@@ -260,14 +261,34 @@ class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
             ),
             recipient_player_id="player.aria",
         )
-        object.__setattr__(candidates[0], "_extraction_admission", object())
-
-        with self.assertRaisesRegex(InformationContractError, "extract|admit|provenance"):
+        with self.assertRaises((AttributeError, InformationContractError)):
+            object.__setattr__(candidates[0], "_extraction_admission", object())
             apply_normalization_candidates_under_native_owners(
                 candidates, _route(source), source, recipient_player_id="player.aria"
             )
 
-    def test_apply_uses_admitted_evidence_snapshot_after_candidate_mutation(self) -> None:
+    def test_imported_valid_admission_cannot_be_attached_to_candidate(self) -> None:
+        source = _live_source()
+        candidate = LiveInformationCandidate(
+            source_key=source.source_key,
+            source_ref=source.source_ref,
+            source_revision=source.source_revision,
+            source_native_ids=source.source_native_ids,
+            recipient_player_id="player.aria",
+            evidence=_native_information(),
+        )
+        forged_admission = information_module._LiveInformationAdmission(
+            issuer=information_module._LIVE_INFORMATION_ADMISSION_ISSUER,
+            evidence_snapshot=_native_information(),
+        )
+
+        with self.assertRaises((AttributeError, InformationContractError)):
+            object.__setattr__(candidate, "_extraction_admission", forged_admission)
+            apply_normalization_candidates_under_native_owners(
+                (candidate,), _route(source), source, recipient_player_id="player.aria"
+            )
+
+    def test_candidate_has_no_trusted_snapshot_after_evidence_mutation(self) -> None:
         source = _live_source()
         candidates = extract_material_live_information(
             _route(source),
@@ -278,6 +299,9 @@ class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
             ),
             recipient_player_id="player.aria",
         )
+        with self.assertRaises(AttributeError):
+            object.__getattribute__(candidates[0], "_extraction_admission")
+
         forged_evidence = _native_information()
         forged_evidence["fact"]["statement"] = "A forged passage appears."
         forged_evidence["emission"]["text"] = "A forged message appears."
