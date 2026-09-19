@@ -23,7 +23,7 @@ from .catalog_runtime import (
 )
 
 
-# framework_module_version: 1.0.2
+# framework_module_version: 1.0.3
 HOUSE_RULES_SIDECAR_PATH: Final = "RULES/HOUSE_RULES.yaml"
 HOUSE_RULES_MANIFEST_PATH: Final = "MANIFEST.yaml"
 _REVISION_PATTERN: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
@@ -102,6 +102,20 @@ class RepositoryPort(Protocol):
 
     def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
         """Read one path from the exact pinned commit/tree."""
+
+    def read_exact_campaign_ref(self, campaign_id: str) -> object:
+        """Read one exact campaign ref and its bounded initialization anchors."""
+
+    def read_exact_commit(self, campaign_ref: str, revision: str) -> object:
+        """Read one exact commit from the selected campaign ref."""
+
+    def compare_ancestry(
+        self, repository_ref: str, ancestor_revision: str, descendant_revision: str
+    ) -> object:
+        """Return bounded exact ancestry evidence for one repository ref."""
+
+    def read_authenticated_commit_author(self, campaign_ref: str, revision: str) -> object:
+        """Read trustworthy per-user author evidence for one exact commit."""
 
 
 class AccessControlPort(Protocol):

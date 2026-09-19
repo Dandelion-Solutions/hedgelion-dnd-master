@@ -15,6 +15,7 @@ import unittest
 from jsonschema import Draft202012Validator, RefResolver, ValidationError
 import GAME.TOOLS.recovery_roots as recovery_roots_module
 import GAME.TOOLS.access_control as access_control_module
+import GAME.TOOLS.history as history_module
 
 from GAME.TOOLS.access_control import (
     AccessControlContractError,
@@ -38,7 +39,7 @@ from GAME.TOOLS.access_control import (
     resolve_player,
     resolve_principal,
 )
-from GAME.TOOLS.history import HistoryContractError, _issue_verified_first_initialization_history
+from GAME.TOOLS.history import HistoryContractError, observe_first_initialization_history
 from GAME.TOOLS.live_state import (
     FRAMEWORK_MODULE_VERSION,
     LiveClaim,
@@ -224,12 +225,81 @@ def _principal(*, account_id: object = "42", login: str = "lina") -> VerifiedPri
 def _creator_provenance(
     *, campaign_id: str = "campaign-frostfall", author_login: str = "creator"
 ) -> FirstInitializationProvenance:
-    return _issue_verified_first_initialization_history(
-        campaign_id=campaign_id,
-        author_login=author_login,
-        initialization_revision=LIVE_H0,
-        parent_revision=LIVE_H3,
-    )
+    repository = _HistoryRepository(campaign_id=campaign_id, author_login=author_login)
+    observation = observe_first_initialization_history(repository, campaign_id)
+    assert observation.evidence is not None
+    return observation.evidence
+
+
+class _HistoryRepository:
+    """Test-only realization of the existing bounded RepositoryPort capability."""
+
+    def __init__(
+        self,
+        *,
+        campaign_id: str = "campaign-frostfall",
+        author_login: str | None = "creator",
+        author_authenticated: bool = True,
+        author_per_user: bool = True,
+        default_ancestry: str = "EQUAL",
+        campaign_ancestry: str = "EQUAL",
+    ) -> None:
+        self.campaign_id = campaign_id
+        self.author_login = author_login
+        self.author_authenticated = author_authenticated
+        self.author_per_user = author_per_user
+        self.calls: list[tuple[object, ...]] = []
+        self.ref = "refs/heads/campaign/20260919"
+        self.default_ref = "refs/heads/main"
+        self.default_revision = LIVE_H3
+        self.initialization_revision = LIVE_H0
+        self.head_revision = LIVE_H0
+        self.parent_revision = LIVE_H3
+        self.default_ancestry = default_ancestry
+        self.campaign_ancestry = campaign_ancestry
+
+    def read_exact_campaign_ref(self, campaign_id: str) -> dict[str, object]:
+        self.calls.append(("read_exact_campaign_ref", campaign_id))
+        return {
+            "campaign_id": self.campaign_id,
+            "campaign_ref": self.ref,
+            "campaign_head_revision": self.head_revision,
+            "default_ref": self.default_ref,
+            "default_head_revision": self.default_revision,
+            "initialization_revision": self.initialization_revision,
+        }
+
+    def read_exact_commit(self, campaign_ref: str, revision: str) -> dict[str, object]:
+        self.calls.append(("read_exact_commit", campaign_ref, revision))
+        return {
+            "campaign_id": self.campaign_id,
+            "revision": revision,
+            "parent_revision": self.parent_revision,
+            "campaign_specific": True,
+        }
+
+    def compare_ancestry(
+        self, repository_ref: str, ancestor_revision: str, descendant_revision: str
+    ) -> dict[str, str]:
+        self.calls.append(
+            ("compare_ancestry", repository_ref, ancestor_revision, descendant_revision)
+        )
+        relation = (
+            self.default_ancestry
+            if repository_ref == self.default_ref
+            else self.campaign_ancestry
+        )
+        return {"relation": relation}
+
+    def read_authenticated_commit_author(
+        self, campaign_ref: str, revision: str
+    ) -> dict[str, object]:
+        self.calls.append(("read_authenticated_commit_author", campaign_ref, revision))
+        return {
+            "author": {"login": self.author_login},
+            "authenticated": self.author_authenticated,
+            "per_user": self.author_per_user,
+        }
 
 
 def _route(*, candidates: tuple[str, ...] = ("player-1",)) -> PrincipalPlayerRoute:
@@ -3315,6 +3385,112 @@ class PlayerAccessTransitionTests(unittest.TestCase):
     def test_creator_provenance_has_no_public_caller_mint_factory(self) -> None:
         self.assertIsNone(getattr(access_control_module, "issue_first_initialization_provenance", None))
 
+    def test_raw_history_issuer_is_not_a_runtime_authority(self) -> None:
+        self.assertIsNone(getattr(history_module, "_issue_verified_first_initialization_history", None))
+
+    def test_repository_observation_reads_exact_ref_init_and_bounded_lineage(self) -> None:
+        repository = _HistoryRepository()
+        observation = observe_first_initialization_history(repository, "campaign-frostfall")
+
+        self.assertEqual(observation.status, "AVAILABLE")
+        self.assertIsNotNone(observation.evidence)
+        self.assertEqual(observation.evidence.author_login, "creator")
+        self.assertEqual(
+            repository.calls,
+            [
+                ("read_exact_campaign_ref", "campaign-frostfall"),
+                ("read_exact_commit", repository.ref, LIVE_H0),
+                ("compare_ancestry", repository.default_ref, LIVE_H3, LIVE_H3),
+                ("compare_ancestry", repository.ref, LIVE_H0, LIVE_H0),
+                ("read_authenticated_commit_author", repository.ref, LIVE_H0),
+            ],
+        )
+
+    def test_campaign_ref_mismatch_is_ambiguous(self) -> None:
+        repository = _HistoryRepository()
+        repository.ref = "refs/heads/other/20260919"
+        observation = observe_first_initialization_history(repository, "campaign-frostfall")
+
+        self.assertEqual(observation.status, "AMBIGUOUS")
+        self.assertIsNone(observation.evidence)
+
+    def test_default_head_ancestry_must_be_exact(self) -> None:
+        repository = _HistoryRepository()
+        repository.default_ancestry = "ANCESTOR"
+        observation = observe_first_initialization_history(repository, "campaign-frostfall")
+
+        self.assertEqual(observation.status, "AMBIGUOUS")
+        self.assertIsNone(observation.evidence)
+
+    def test_initialization_must_be_bounded_ancestor_of_campaign_head(self) -> None:
+        repository = _HistoryRepository()
+        repository.campaign_ancestry = "NOT_ANCESTOR"
+        observation = observe_first_initialization_history(repository, "campaign-frostfall")
+
+        self.assertEqual(observation.status, "AMBIGUOUS")
+        self.assertIsNone(observation.evidence)
+
+    def test_missing_authenticated_author_is_unavailable(self) -> None:
+        repository = _HistoryRepository(author_login=None)
+        observation = observe_first_initialization_history(repository, "campaign-frostfall")
+
+        self.assertEqual(observation.status, "UNAVAILABLE")
+        self.assertIsNone(observation.evidence)
+
+    def test_unverified_author_is_unavailable(self) -> None:
+        repository = _HistoryRepository(author_authenticated=False)
+        observation = observe_first_initialization_history(repository, "campaign-frostfall")
+
+        self.assertEqual(observation.status, "UNAVAILABLE")
+        self.assertIsNone(observation.evidence)
+
+    def test_non_per_user_author_is_unavailable(self) -> None:
+        repository = _HistoryRepository(author_per_user=False)
+        observation = observe_first_initialization_history(repository, "campaign-frostfall")
+
+        self.assertEqual(observation.status, "UNAVAILABLE")
+        self.assertIsNone(observation.evidence)
+
+    def test_caller_cannot_supply_validator_to_observation(self) -> None:
+        repository = _HistoryRepository()
+        with self.assertRaises(TypeError):
+            observe_first_initialization_history(
+                repository, "campaign-frostfall", validator=lambda _value: True
+            )
+
+    def test_unavailable_or_ambiguous_evidence_cannot_authorize_creator(self) -> None:
+        for repository in (
+            _HistoryRepository(author_login=None),
+            _HistoryRepository(default_ancestry="ANCESTOR"),
+        ):
+            observation = observe_first_initialization_history(repository, "campaign-frostfall")
+            decision = authorize_operation(
+                _principal(account_id="99", login="creator"),
+                operation="creator_only",
+                creator_provenance=observation.evidence,
+                campaign_id="campaign-frostfall",
+            )
+
+            self.assertIn(observation.status, {"UNAVAILABLE", "AMBIGUOUS"})
+            self.assertFalse(decision.authorized)
+            self.assertEqual(decision.failure_code, AuthorizationFailureCode.CREATOR_UNCERTAIN)
+
+    def test_derived_author_evidence_authorizes_creator(self) -> None:
+        repository = _HistoryRepository()
+        repository.head_revision = LIVE_H1
+        repository.campaign_ancestry = "ANCESTOR"
+        observation = observe_first_initialization_history(repository, "campaign-frostfall")
+
+        decision = authorize_operation(
+            _principal(account_id="99", login="creator"),
+            operation="creator_only",
+            creator_provenance=observation.evidence,
+            campaign_id="campaign-frostfall",
+        )
+
+        self.assertEqual(observation.status, "AVAILABLE")
+        self.assertTrue(decision.authorized)
+
     def test_creator_provenance_cannot_be_forged_by_constructing_public_type(self) -> None:
         with self.assertRaises(HistoryContractError):
             FirstInitializationProvenance(
@@ -3557,12 +3733,7 @@ class PlayerAccessTransitionTests(unittest.TestCase):
         self.assertEqual(context.exception.failure_code, AuthorizationFailureCode.CREATOR_UNCERTAIN)
 
     def test_owner_issued_first_initialization_provenance_authorizes_creator_transition(self) -> None:
-        provenance = _issue_verified_first_initialization_history(
-            campaign_id="campaign-frostfall",
-            author_login="creator",
-            initialization_revision=LIVE_H0,
-            parent_revision=LIVE_H3,
-        )
+        provenance = _creator_provenance()
         transition = freeze_access_policy_transition(
             _principal(account_id="99", login="creator"),
             current_campaign=self._campaign(),

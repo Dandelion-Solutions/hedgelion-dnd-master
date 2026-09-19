@@ -5,17 +5,30 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
+from enum import StrEnum
 import re
-from typing import Final
+from typing import TYPE_CHECKING, Final
 import weakref
 
+if TYPE_CHECKING:
+    from .policy_basis import RepositoryPort
 
-_GIT_REVISION = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
-_FIRST_INITIALIZATION_OWNER_TOKEN: Final = object()
+
+_GIT_REVISION: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
+_GIT_REF: Final = re.compile(r"^refs/heads/[^\s/]+(?:/[^\s/]+)*$")
+_CAMPAIGN_REF: Final = re.compile(r"^refs/heads/campaign/[^\s/]+$")
 
 
 class HistoryContractError(ValueError):
     """Raised when a caller supplies invalid native history material."""
+
+
+class HistoryObservationStatus(StrEnum):
+    """Epistemic result of one bounded native-history observation."""
+
+    AVAILABLE = "AVAILABLE"
+    UNAVAILABLE = "UNAVAILABLE"
+    AMBIGUOUS = "AMBIGUOUS"
 
 
 @dataclass(frozen=True, slots=True, weakref_slot=True, init=False)
@@ -33,33 +46,6 @@ class FirstInitializationHistoryEvidence:
             "first-initialization evidence must be issued by the native history owner"
         )
 
-    @classmethod
-    def _from_owner(
-        cls,
-        *,
-        owner_token: object,
-        campaign_id: str,
-        author_login: str,
-        initialization_revision: str,
-        parent_revision: str,
-    ) -> FirstInitializationHistoryEvidence:
-        if owner_token is not _FIRST_INITIALIZATION_OWNER_TOKEN:
-            raise HistoryContractError("first-initialization evidence requires the native history owner")
-        _nonempty_string(campaign_id, "creator provenance campaign_id")
-        _nonempty_string(author_login, "creator provenance author_login")
-        _git_revision(initialization_revision, "creator initialization revision")
-        _git_revision(parent_revision, "creator initialization parent revision")
-        if initialization_revision == parent_revision:
-            raise HistoryContractError("creator initialization commit must advance its parent")
-        instance = object.__new__(cls)
-        object.__setattr__(instance, "campaign_id", campaign_id)
-        object.__setattr__(instance, "author_login", author_login)
-        object.__setattr__(instance, "initialization_revision", initialization_revision)
-        object.__setattr__(instance, "parent_revision", parent_revision)
-        object.__setattr__(instance, "first_campaign_specific_commit", True)
-        _mark_owner_issued_first_initialization_history(instance)
-        return instance
-
     def as_mapping(self) -> dict[str, object]:
         return {
             "campaign_id": self.campaign_id,
@@ -68,6 +54,26 @@ class FirstInitializationHistoryEvidence:
             "parent_revision": self.parent_revision,
             "first_campaign_specific_commit": True,
         }
+
+
+@dataclass(frozen=True, slots=True)
+class FirstInitializationHistoryObservation:
+    """Bounded owner result used to admit creator authorization."""
+
+    status: HistoryObservationStatus
+    evidence: FirstInitializationHistoryEvidence | None = None
+    reason: str = ""
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.status, HistoryObservationStatus):
+            raise HistoryContractError("history observation status must be owner-typed")
+        if self.status is HistoryObservationStatus.AVAILABLE:
+            if not _is_owner_issued_first_initialization_history(self.evidence):
+                raise HistoryContractError("available history observation requires owner-issued evidence")
+        elif self.evidence is not None:
+            raise HistoryContractError("failed history observation cannot carry creator evidence")
+        if not isinstance(self.reason, str) or not self.reason:
+            raise HistoryContractError("history observation requires a failure or source reason")
 
 
 _OWNER_ISSUED_FIRST_INITIALIZATION_HISTORY: dict[
@@ -94,28 +100,200 @@ def _is_owner_issued_first_initialization_history(value: object) -> bool:
     return reference is not None and reference() is value
 
 
-def _issue_verified_first_initialization_history(
+def observe_first_initialization_history(
+    repository: RepositoryPort,
+    campaign_id: str,
+) -> FirstInitializationHistoryObservation:
+    """Derive creator evidence from one bounded authenticated repository observation.
+
+    The repository owner supplies only exact-ref/commit reads, bounded ancestry
+    relations and authenticated per-user author evidence.  No caller fields,
+    validator, callback or alternate port can issue or replace the result.
+    """
+
+    if not isinstance(campaign_id, str) or not campaign_id:
+        return _unavailable("campaign identity is unavailable")
+
+    try:
+        ref_value = repository.read_exact_campaign_ref(campaign_id)
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+        return _unavailable(f"exact campaign ref is unavailable: {exc}")
+    try:
+        ref = _campaign_ref_observation(ref_value, campaign_id)
+    except HistoryContractError as exc:
+        return _ambiguous(f"exact campaign ref is ambiguous: {exc}")
+
+    try:
+        commit_value = repository.read_exact_commit(
+            ref["campaign_ref"], ref["initialization_revision"]
+        )
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+        return _unavailable(f"initialization commit is unavailable: {exc}")
+    try:
+        commit = _initialization_commit_observation(
+            commit_value,
+            campaign_id=campaign_id,
+            initialization_revision=ref["initialization_revision"],
+        )
+    except HistoryContractError as exc:
+        return _ambiguous(f"initialization commit is ambiguous: {exc}")
+
+    try:
+        default_relation_value = repository.compare_ancestry(
+            ref["default_ref"], ref["default_head_revision"], commit["parent_revision"]
+        )
+        campaign_relation_value = repository.compare_ancestry(
+            ref["campaign_ref"], ref["initialization_revision"], ref["campaign_head_revision"]
+        )
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+        return _unavailable(f"bounded ancestry evidence is unavailable: {exc}")
+    try:
+        default_relation = _ancestry_relation(default_relation_value, "default ancestry")
+        campaign_relation = _ancestry_relation(campaign_relation_value, "campaign ancestry")
+    except HistoryContractError as exc:
+        return _ambiguous(f"bounded ancestry evidence is ambiguous: {exc}")
+    if default_relation != "EQUAL":
+        return _ambiguous("initialization parent is not the exact storage default HEAD")
+    if campaign_relation not in {"EQUAL", "ANCESTOR"}:
+        return _ambiguous("initialization commit is not a bounded ancestor of campaign HEAD")
+
+    try:
+        author_value = repository.read_authenticated_commit_author(
+            ref["campaign_ref"], ref["initialization_revision"]
+        )
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+        return _unavailable(f"authenticated commit author is unavailable: {exc}")
+    try:
+        author_login = _authenticated_per_user_login(author_value)
+    except HistoryContractError as exc:
+        return _unavailable(f"authenticated per-user commit authorship is unavailable: {exc}")
+
+    evidence = object.__new__(FirstInitializationHistoryEvidence)
+    object.__setattr__(evidence, "campaign_id", campaign_id)
+    object.__setattr__(evidence, "author_login", author_login)
+    object.__setattr__(evidence, "initialization_revision", ref["initialization_revision"])
+    object.__setattr__(evidence, "parent_revision", commit["parent_revision"])
+    object.__setattr__(evidence, "first_campaign_specific_commit", True)
+    _mark_owner_issued_first_initialization_history(evidence)
+    return FirstInitializationHistoryObservation(
+        HistoryObservationStatus.AVAILABLE,
+        evidence=evidence,
+        reason="authenticated first campaign-specific initialization commit",
+    )
+
+
+def resolve_creator_provenance(
+    repository: RepositoryPort,
+    campaign_id: str,
+) -> FirstInitializationHistoryObservation:
+    """Resolve creator evidence through the native history owner for access control."""
+
+    return observe_first_initialization_history(repository, campaign_id)
+
+
+def _unavailable(reason: str) -> FirstInitializationHistoryObservation:
+    return FirstInitializationHistoryObservation(HistoryObservationStatus.UNAVAILABLE, reason=reason)
+
+
+def _ambiguous(reason: str) -> FirstInitializationHistoryObservation:
+    return FirstInitializationHistoryObservation(HistoryObservationStatus.AMBIGUOUS, reason=reason)
+
+
+def _campaign_ref_observation(value: object, campaign_id: str) -> dict[str, str]:
+    raw = _mapping(value, "campaign ref observation")
+    expected = {
+        "campaign_id",
+        "campaign_ref",
+        "campaign_head_revision",
+        "default_ref",
+        "default_head_revision",
+        "initialization_revision",
+    }
+    if set(raw) != expected:
+        raise HistoryContractError("campaign ref observation has unsupported or missing fields")
+    observed_campaign_id = _nonempty_string(raw["campaign_id"], "campaign ref campaign_id")
+    if observed_campaign_id != campaign_id:
+        raise HistoryContractError("campaign ref belongs to another campaign")
+    campaign_ref = _ref(raw["campaign_ref"], "campaign ref", campaign=True)
+    default_ref = _ref(raw["default_ref"], "storage default ref", campaign=False)
+    if default_ref.startswith("refs/heads/campaign/"):
+        raise HistoryContractError("storage default ref cannot be a campaign ref")
+    return {
+        "campaign_ref": campaign_ref,
+        "campaign_head_revision": _revision(raw["campaign_head_revision"], "campaign HEAD"),
+        "default_ref": default_ref,
+        "default_head_revision": _revision(raw["default_head_revision"], "storage default HEAD"),
+        "initialization_revision": _revision(
+            raw["initialization_revision"], "initialization revision"
+        ),
+    }
+
+
+def _initialization_commit_observation(
+    value: object,
     *,
     campaign_id: str,
-    author_login: str,
     initialization_revision: str,
-    parent_revision: str,
-) -> FirstInitializationHistoryEvidence:
-    """Internal native-history-owner seam used by the verified history adapter."""
+) -> dict[str, str]:
+    raw = _mapping(value, "initialization commit observation")
+    expected = {"campaign_id", "revision", "parent_revision", "campaign_specific"}
+    if set(raw) != expected:
+        raise HistoryContractError(
+            "initialization commit observation has unsupported or missing fields"
+        )
+    if _nonempty_string(raw["campaign_id"], "initialization campaign_id") != campaign_id:
+        raise HistoryContractError("initialization commit belongs to another campaign")
+    if _revision(raw["revision"], "initialization commit revision") != initialization_revision:
+        raise HistoryContractError("initialization commit revision does not match campaign ref")
+    if type(raw["campaign_specific"]) is not bool or not raw["campaign_specific"]:
+        raise HistoryContractError("initialization commit is not campaign-specific")
+    parent_revision = _revision(raw["parent_revision"], "initialization parent revision")
+    if parent_revision == initialization_revision:
+        raise HistoryContractError("initialization commit must advance its parent")
+    return {"parent_revision": parent_revision}
 
-    return FirstInitializationHistoryEvidence._from_owner(
-        owner_token=_FIRST_INITIALIZATION_OWNER_TOKEN,
-        campaign_id=campaign_id,
-        author_login=author_login,
-        initialization_revision=initialization_revision,
-        parent_revision=parent_revision,
-    )
+
+def _ancestry_relation(value: object, label: str) -> str:
+    raw = _mapping(value, label)
+    if set(raw) != {"relation"}:
+        raise HistoryContractError(f"{label} has unsupported or missing fields")
+    relation = raw["relation"]
+    if relation not in {"EQUAL", "ANCESTOR", "NOT_ANCESTOR"}:
+        raise HistoryContractError(f"{label} is not a bounded exact relation")
+    return relation
+
+
+def _authenticated_per_user_login(value: object) -> str:
+    raw = _mapping(value, "authenticated commit author")
+    expected = {"author", "authenticated", "per_user"}
+    if set(raw) != expected:
+        raise HistoryContractError("authenticated commit author has unsupported or missing fields")
+    author = _mapping(raw["author"], "authenticated commit author identity")
+    if set(author) != {"login"}:
+        raise HistoryContractError("authenticated commit author identity has unsupported fields")
+    if type(raw["authenticated"]) is not bool or not raw["authenticated"]:
+        raise HistoryContractError("commit author authentication is not trustworthy")
+    if type(raw["per_user"]) is not bool or not raw["per_user"]:
+        raise HistoryContractError("commit author is not meaningful per-user authorship")
+    return _nonempty_string(author["login"], "commit author.login")
+
+
+def _ref(value: object, label: str, *, campaign: bool) -> str:
+    if not isinstance(value, str) or (not _GIT_REF.fullmatch(value)):
+        raise HistoryContractError(f"{label} must be an exact Git ref")
+    if campaign and _CAMPAIGN_REF.fullmatch(value) is None:
+        raise HistoryContractError(f"{label} must be an exact campaign ref")
+    return value
 
 
 def _git_revision(value: object, label: str) -> str:
     if not isinstance(value, str) or _GIT_REVISION.fullmatch(value) is None:
         raise HistoryContractError(f"{label} must be an exact lowercase Git revision")
     return value
+
+
+def _revision(value: object, label: str) -> str:
+    return _git_revision(value, label)
 
 
 def _mapping(value: object, label: str) -> Mapping[str, object]:
