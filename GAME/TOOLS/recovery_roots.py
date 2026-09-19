@@ -7,7 +7,6 @@ as proof that an owner is active.
 
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 import hashlib
@@ -19,8 +18,8 @@ import weakref
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.12
-FRAMEWORK_MODULE_VERSION: Final = "1.0.12"
+# framework_module_version: 1.0.13
+FRAMEWORK_MODULE_VERSION: Final = "1.0.13"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
 OPERATIONAL_ROOT_HANDOFF_SCHEMA_VERSION: Final = 2
 _OWNER_KINDS: Final = frozenset(
@@ -279,24 +278,6 @@ class AcceptedUnresolvedInputPromise(Protocol):
         """Return exactly ``True`` only for matching owner-validated evidence."""
 
 
-class AcceptedAbsorptionEvidenceTransport(ABC):
-    """Transport to the existing LIVE producer's exact absorption validator.
-
-    The handoff adapter only delegates validation through this producer-minted
-    transport.  It never issues, marks, or independently accepts absorption
-    evidence.
-    """
-
-    @abstractmethod
-    def validate_for_operational_root_recovery(
-        self,
-        *,
-        source_key: Sequence[str],
-        source_revision: str,
-    ) -> object:
-        """Return the exact LIVE proof or raise when it is not accepted."""
-
-
 def derive_operational_root_delta(
     campaign_id: str,
     owner_kind: str,
@@ -485,9 +466,6 @@ def reconcile_operational_root_handoff(
     target_source_revision: str,
     expected_source_key: Sequence[str] | None = None,
     target_source_key: Sequence[str] | None = None,
-    source_lifecycle: str | None = None,
-    absorption_acknowledged: bool | None = None,
-    absorption_evidence: object | None = None,
     terminal_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]] = (),
     terminal_native_owners: Mapping[
         tuple[str, str] | tuple[str, str, str], OperationalRootDelta
@@ -507,7 +485,7 @@ def reconcile_operational_root_handoff(
         source_scope=expected_source_scope,
         source_revision=expected_source_revision,
         source_key=expected_source_key,
-        source_lifecycle=source_lifecycle,
+        source_lifecycle="ACTIVE",
     )
     expected_scope = _handoff_scope(expected_source_scope)
     target_scope = _handoff_scope(target_source_scope)
@@ -522,41 +500,12 @@ def reconcile_operational_root_handoff(
     ):
         if terminal_owner_keys or superseded_owner_keys:
             raise OperationalRootError("idempotent operational-root retry cannot add a removal claim")
-        if target_scope == "CAMPAIGN" and expected_scope == "LIVE":
-            if source_lifecycle is not None or absorption_acknowledged is not None:
-                raise OperationalRootError(
-                    "campaign recovery requires owner-issued absorption evidence; "
-                    "caller assertions are not accepted"
-                )
-            if absorption_evidence is None:
-                raise OperationalRootError("campaign recovery requires owner-issued absorption evidence")
-            _validate_absorption_evidence(
-                absorption_evidence,
-                source_key=expected_key,
-                source_revision=expected_revision,
-            )
-            return current
         return current
     if current.source_scope != expected_scope or current.source_revision != expected_revision:
         raise OperationalRootError("operational-root handoff source scope or revision is stale")
     if current.source_key != expected_key:
         raise OperationalRootError("operational-root handoff source key is stale")
-    if target_scope == "CAMPAIGN" and expected_scope == "LIVE":
-        if source_lifecycle is not None:
-            raise OperationalRootError(
-                "campaign recovery requires owner-issued absorption evidence; "
-                "caller lifecycle assertions are not accepted"
-            )
-        if absorption_acknowledged is not None:
-            raise OperationalRootError("campaign recovery requires owner-issued absorption evidence")
-        if absorption_evidence is None:
-            raise OperationalRootError("campaign recovery requires owner-issued absorption evidence")
-        _validate_absorption_evidence(
-            absorption_evidence,
-            source_key=current.source_key,
-            source_revision=current.source_revision,
-        )
-    elif target_scope == "LIVE" and expected_scope != "CAMPAIGN":
+    if target_scope == "LIVE" and expected_scope != "CAMPAIGN":
         raise OperationalRootError("LIVE root handoff must begin from campaign roots")
     terminal = _validate_terminal_roots(current, terminal_owner_keys, terminal_native_owners)
     superseded = {
@@ -567,12 +516,6 @@ def reconcile_operational_root_handoff(
     if not superseded.issubset(root_keys):
         raise OperationalRootError("superseded root identity is not in the exact handoff page")
     _validate_superseded_roots(current, superseded, superseded_native_deltas)
-    if superseded and not (
-        expected_scope == "LIVE"
-        and target_scope == "CAMPAIGN"
-        and absorption_evidence is not None
-    ):
-        raise OperationalRootError("superseded roots require exact closed-source absorption")
     removed = {(kind, owner_id) for kind, owner_id, _path in terminal}
     removed.update(superseded)
     roots = tuple(root for root in current.roots if (root.owner_kind, root.owner_id) not in removed)
@@ -642,9 +585,6 @@ def recover_operational_roots_to_campaign(
     live_source_key: Sequence[str],
     live_source_revision: str,
     campaign_revision: str,
-    source_lifecycle: str | None = None,
-    absorption_acknowledged: bool | None = None,
-    absorption_evidence: object | None = None,
     terminal_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]] = (),
     terminal_native_owners: Mapping[
         tuple[str, str] | tuple[str, str, str], OperationalRootDelta
@@ -656,7 +596,7 @@ def recover_operational_roots_to_campaign(
     ]
     | None = None,
 ) -> OperationalRootHandoff:
-    """Return live roots to campaign recovery only after exact absorption."""
+    """Perform the bounded LIVE-to-campaign root transition after owner admission."""
 
     return reconcile_operational_root_handoff(
         page,
@@ -666,36 +606,11 @@ def recover_operational_roots_to_campaign(
         expected_source_key=live_source_key,
         target_source_scope="CAMPAIGN",
         target_source_revision=campaign_revision,
-        source_lifecycle=source_lifecycle,
-        absorption_acknowledged=absorption_acknowledged,
-        absorption_evidence=absorption_evidence,
         terminal_owner_keys=terminal_owner_keys,
         terminal_native_owners=terminal_native_owners,
         superseded_owner_keys=superseded_owner_keys,
         superseded_native_deltas=superseded_native_deltas,
     )
-
-
-def _validate_absorption_evidence(
-    evidence: object,
-    *,
-    source_key: Sequence[str] | None,
-    source_revision: str,
-) -> None:
-    if not isinstance(evidence, AcceptedAbsorptionEvidenceTransport):
-        raise OperationalRootError(
-            "campaign recovery requires the LIVE producer absorption evidence transport"
-        )
-    if source_key is None:
-        raise OperationalRootError("campaign recovery absorption source key is missing")
-    try:
-        evidence.validate_for_operational_root_recovery(
-            source_key=source_key,
-            source_revision=source_revision,
-        )
-    except (TypeError, ValueError) as exc:
-        raise OperationalRootError("campaign recovery absorption evidence is not exact") from exc
-
 
 def enumerate_operational_root_page(
     campaign_id: str,

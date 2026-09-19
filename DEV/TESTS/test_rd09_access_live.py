@@ -12,6 +12,7 @@ from pathlib import Path
 import unittest
 
 from jsonschema import Draft202012Validator, RefResolver, ValidationError
+import GAME.TOOLS.recovery_roots as recovery_roots_module
 
 from GAME.TOOLS.access_control import (
     AccessControlContractError,
@@ -67,6 +68,7 @@ from GAME.TOOLS.live_state import (
     freeze_campaign_absorption,
     handoff_temporal_route_to_campaign,
     handoff_temporal_route_to_live,
+    handoff_operational_roots_to_campaign,
     lookup_write_authority,
     normalize_source_native_creations,
     parse_source_native_live_id,
@@ -650,7 +652,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.15")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.16")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
@@ -2813,6 +2815,42 @@ class LiveTemporalRoutingHandoffTests(unittest.TestCase):
 
 
 class LiveOperationalRootHandoffTests(unittest.TestCase):
+    def _recover(
+        self,
+        page: OperationalRootHandoff,
+        source: LiveEnvelope,
+        *,
+        absorption_evidence: object | None = None,
+        campaign_revision: str = LIVE_H2,
+        terminal_owner_keys: tuple[tuple[str, str] | tuple[str, str, str], ...] = (),
+        terminal_native_owners: dict[
+            tuple[str, str] | tuple[str, str, str], object
+        ]
+        | None = None,
+        superseded_owner_keys: tuple[tuple[str, str] | tuple[str, str, str], ...] = (),
+        superseded_native_deltas: dict[
+            tuple[str, str] | tuple[str, str, str], object
+        ]
+        | None = None,
+    ) -> object:
+        closed_source = replace(source, status=LiveLifecycle.CLOSED)
+        absorbed_source = replace(source, status=LiveLifecycle.ABSORBED)
+        return handoff_operational_roots_to_campaign(
+            page,
+            live_source=absorbed_source,
+            live_route=_live_route(closed_source),
+            campaign_revision=campaign_revision,
+            absorption_evidence=(
+                _accepted_absorption_publication(source)
+                if absorption_evidence is None
+                else absorption_evidence
+            ),
+            terminal_owner_keys=terminal_owner_keys,
+            terminal_native_owners=terminal_native_owners,
+            superseded_owner_keys=superseded_owner_keys,
+            superseded_native_deltas=superseded_native_deltas,
+        )
+
     def _page(self) -> OperationalRootPage:
         root = OperationalRoot(
             "campaign-frostfall",
@@ -2865,13 +2903,38 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_revision=source.source_revision,
         )
         with self.assertRaisesRegex(ValueError, "producer|transport|absorption"):
+            self._recover(live_page, source, absorption_evidence=object())
+
+    def test_recovery_has_no_absorption_transport_extension_point(self) -> None:
+        source = _live_source(revision=LIVE_H1)
+        live_page = handoff_operational_roots_to_live(
+            self._page(),
+            campaign_id="campaign-frostfall",
+            campaign_revision=LIVE_H0,
+            live_source_key=source.source_key,
+            live_source_revision=source.source_revision,
+        )
+
+        transport_base = getattr(recovery_roots_module, "AcceptedAbsorptionEvidenceTransport", object)
+
+        class FakeTransport(transport_base):
+            def validate_for_operational_root_recovery(
+                self,
+                *,
+                source_key: tuple[str, str, str],
+                source_revision: str,
+            ) -> object:
+                return object()
+
+        self.assertFalse(hasattr(recovery_roots_module, "AcceptedAbsorptionEvidenceTransport"))
+        with self.assertRaises(TypeError):
             recover_operational_roots_to_campaign(
                 live_page,
                 campaign_id="campaign-frostfall",
                 live_source_key=source.source_key,
                 live_source_revision=source.source_revision,
                 campaign_revision=LIVE_H2,
-                absorption_evidence=object(),
+                absorption_evidence=FakeTransport(),
             )
 
     def test_root_recovery_rejects_forged_evidence_and_arbitrary_validator(self) -> None:
@@ -2913,34 +2976,21 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             ) -> "ForgedEvidence":
                 return self
 
-        with self.assertRaisesRegex(ValueError, "producer|owner|evidence|transport"):
-            recover_operational_roots_to_campaign(
-                live_page,
-                campaign_id="campaign-frostfall",
-                live_source_key=source.source_key,
-                live_source_revision=source.source_revision,
-                campaign_revision=LIVE_H2,
-                absorption_evidence=forged_evidence,
-            )
+        with self.assertRaisesRegex(ValueError, "producer|owner|evidence|transport|typed"):
+            self._recover(live_page, source, absorption_evidence=forged_evidence)
         with self.assertRaises(TypeError):
-            recover_operational_roots_to_campaign(
+            handoff_operational_roots_to_campaign(
                 live_page,
-                campaign_id="campaign-frostfall",
-                live_source_key=source.source_key,
-                live_source_revision=source.source_revision,
+                live_source=replace(source, status=LiveLifecycle.ABSORBED),
+                live_route=_live_route(replace(source, status=LiveLifecycle.CLOSED)),
                 campaign_revision=LIVE_H2,
                 absorption_evidence=publication,
-                absorption_evidence_validator=ForgedValidator(),
+                absorption_evidence_validator=ForgedValidator(),  # type: ignore[call-arg]
             )
-        with self.assertRaisesRegex(ValueError, "producer|owner|evidence|transport"):
-            recover_operational_roots_to_campaign(
-                live_page,
-                campaign_id="campaign-frostfall",
-                live_source_key=source.source_key,
-                live_source_revision=source.source_revision,
-                campaign_revision=LIVE_H2,
-                absorption_evidence=ForgedEvidence(),
-            )
+        with self.assertRaisesRegex(ValueError, "producer|owner|evidence|transport|typed"):
+            self._recover(live_page, source, absorption_evidence=ForgedEvidence())
+        with self.assertRaisesRegex(ValueError, "producer|owner|evidence|transport|typed"):
+            self._recover(live_page, source, absorption_evidence=ForgedValidator())
 
     def test_operational_root_handoff_schema_matches_runtime_scope_and_source_key_grammar(self) -> None:
         source = _live_source(revision=LIVE_H1)
@@ -3004,14 +3054,7 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_key=source.source_key,
             live_source_revision=source.source_revision,
         )
-        campaign_page = recover_operational_roots_to_campaign(
-            live_page,
-            campaign_id="campaign-frostfall",
-            live_source_key=source.source_key,
-            live_source_revision=source.source_revision,
-            campaign_revision=LIVE_H2,
-            absorption_evidence=_accepted_absorption_publication(source),
-        )
+        campaign_page = self._recover(live_page, source)
         live_retry = handoff_operational_roots_to_live(
             live_page,
             campaign_id="campaign-frostfall",
@@ -3019,14 +3062,7 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_key=source.source_key,
             live_source_revision=source.source_revision,
         )
-        campaign_retry = recover_operational_roots_to_campaign(
-            campaign_page,
-            campaign_id="campaign-frostfall",
-            live_source_key=source.source_key,
-            live_source_revision=source.source_revision,
-            campaign_revision=LIVE_H2,
-            absorption_evidence=_accepted_absorption_publication(source),
-        )
+        campaign_retry = self._recover(campaign_page, source)
 
         self.assertEqual(live_page.source_scope, "LIVE")
         self.assertEqual(live_page.source_key, source.source_key)
@@ -3046,43 +3082,27 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_revision=source.source_revision,
         )
         with self.assertRaisesRegex(ValueError, "campaign"):
-            recover_operational_roots_to_campaign(
-                live_page,
-                campaign_id="campaign-other",
-                live_source_key=source.source_key,
-                live_source_revision=source.source_revision,
-                campaign_revision=LIVE_H2,
-                absorption_acknowledged=True,
+            foreign_epoch = derive_live_epoch_id(
+                "campaign-other", source.scene_id, source.opening_campaign_revision, source.claims
             )
+            foreign_source = replace(
+                source,
+                campaign_id="campaign-other",
+                epoch_id=foreign_epoch,
+                source_ref=build_live_ref("campaign-other", source.scene_id, foreign_epoch),
+            )
+            self._recover(live_page, foreign_source)
 
         with self.assertRaisesRegex(ValueError, "source|revision"):
-            recover_operational_roots_to_campaign(
+            self._recover(live_page, _live_source(revision=LIVE_H2))
+
+        with self.assertRaisesRegex(ValueError, "ABSORBED|absorption"):
+            handoff_operational_roots_to_campaign(
                 live_page,
-                campaign_id="campaign-frostfall",
-                live_source_key=source.source_key,
-                live_source_revision=LIVE_H2,
+                live_source=replace(source, status=LiveLifecycle.CLOSED_UNABSORBED),
+                live_route=_live_route(replace(source, status=LiveLifecycle.CLOSED)),
                 campaign_revision=LIVE_H2,
-                absorption_acknowledged=True,
-            )
-        with self.assertRaisesRegex(ValueError, "caller|absorption|handoff"):
-            recover_operational_roots_to_campaign(
-                live_page,
-                campaign_id="campaign-frostfall",
-                live_source_key=source.source_key,
-                live_source_revision=source.source_revision,
-                campaign_revision=LIVE_H2,
-                source_lifecycle="CLOSED_UNABSORBED",
-                absorption_acknowledged=False,
-            )
-        with self.assertRaisesRegex(ValueError, "caller|absorption|handoff"):
-            recover_operational_roots_to_campaign(
-                live_page,
-                campaign_id="campaign-frostfall",
-                live_source_key=source.source_key,
-                live_source_revision=source.source_revision,
-                campaign_revision=LIVE_H2,
-                source_lifecycle="CLOSED_UNABSORBED",
-                absorption_acknowledged=True,
+                absorption_evidence=_accepted_absorption_publication(source),
             )
 
     def test_root_recovery_rejects_caller_absorption_acknowledgement(self) -> None:
@@ -3095,7 +3115,7 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             live_source_revision=source.source_revision,
         )
 
-        with self.assertRaisesRegex(ValueError, "owner-issued|absorption|evidence"):
+        with self.assertRaises(TypeError):
             recover_operational_roots_to_campaign(
                 live_page,
                 campaign_id="campaign-frostfall",
@@ -3123,13 +3143,9 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
         }
 
         with self.assertRaisesRegex(ValueError, "owner-issued|proof|delta"):
-            recover_operational_roots_to_campaign(
+            self._recover(
                 live_page,
-                campaign_id="campaign-frostfall",
-                live_source_key=source.source_key,
-                live_source_revision=source.source_revision,
-                campaign_revision=LIVE_H2,
-                absorption_acknowledged=True,
+                source,
                 terminal_owner_keys=(root_key,),
                 terminal_native_owners={root_key: terminal_owner},
             )
@@ -3156,13 +3172,9 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             terminal_owner,
             existing_roots=(live_page.roots[0],),
         )
-        terminal = recover_operational_roots_to_campaign(
+        terminal = self._recover(
             live_page,
-            campaign_id="campaign-frostfall",
-            live_source_key=source.source_key,
-            live_source_revision=source.source_revision,
-            campaign_revision=LIVE_H2,
-            absorption_evidence=_accepted_absorption_publication(source),
+            source,
             superseded_owner_keys=(root_key,),
             superseded_native_deltas={root_key: replacement_delta},
         )
@@ -3192,23 +3204,11 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             existing_roots=(live_page.roots[0],),
         )
         with self.assertRaisesRegex(ValueError, "native"):
-            recover_operational_roots_to_campaign(
-                live_page,
-                campaign_id="campaign-frostfall",
-                live_source_key=source.source_key,
-                live_source_revision=source.source_revision,
-                campaign_revision=LIVE_H2,
-                absorption_evidence=_accepted_absorption_publication(source),
-                terminal_owner_keys=(root_key,),
-            )
+            self._recover(live_page, source, terminal_owner_keys=(root_key,))
 
-        terminal = recover_operational_roots_to_campaign(
+        terminal = self._recover(
             live_page,
-            campaign_id="campaign-frostfall",
-            live_source_key=source.source_key,
-            live_source_revision=source.source_revision,
-            campaign_revision=LIVE_H2,
-            absorption_evidence=_accepted_absorption_publication(source),
+            source,
             terminal_owner_keys=(root_key,),
             terminal_native_owners={root_key: terminal_delta},
         )
@@ -3247,13 +3247,9 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
 
         for delta in (noop_delta, enrollment_delta):
             with self.assertRaisesRegex(ValueError, "removal|replacement|delta"):
-                recover_operational_roots_to_campaign(
+                self._recover(
                     live_page,
-                    campaign_id="campaign-frostfall",
-                    live_source_key=source.source_key,
-                    live_source_revision=source.source_revision,
-                    campaign_revision=LIVE_H2,
-                    absorption_evidence=_accepted_absorption_publication(source),
+                    source,
                     superseded_owner_keys=(root_key,),
                     superseded_native_deltas={root_key: delta},
                 )

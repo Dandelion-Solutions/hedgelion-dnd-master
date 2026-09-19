@@ -22,10 +22,15 @@ from types import MappingProxyType
 from typing import Final, TypeAlias
 import weakref
 
-from .recovery_roots import AcceptedAbsorptionEvidenceTransport
+from .recovery_roots import (
+    OperationalRootDelta,
+    OperationalRootHandoff,
+    OperationalRootPage,
+    recover_operational_roots_to_campaign as _recover_operational_roots_to_campaign,
+)
 
-# framework_module_version: 1.0.15
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.15"
+# framework_module_version: 1.0.16
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.16"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -1284,6 +1289,64 @@ def handoff_temporal_route_to_campaign(
     )
 
 
+def handoff_operational_roots_to_campaign(
+    page: OperationalRootHandoff | OperationalRootPage | Mapping[str, object],
+    *,
+    live_source: LiveEnvelope,
+    live_route: LiveRouting,
+    campaign_revision: str,
+    absorption_evidence: object,
+    terminal_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]] = (),
+    terminal_native_owners: Mapping[
+        tuple[str, str] | tuple[str, str, str], OperationalRootDelta
+    ]
+    | None = None,
+    superseded_owner_keys: Sequence[tuple[str, str] | tuple[str, str, str]] = (),
+    superseded_native_deltas: Mapping[
+        tuple[str, str] | tuple[str, str, str], OperationalRootDelta
+    ]
+    | None = None,
+) -> OperationalRootHandoff:
+    """Validate LIVE absorption, then perform the bounded root transition."""
+
+    if not isinstance(live_source, LiveEnvelope):
+        raise LiveContractError("operational-root campaign handoff requires an owner-typed source")
+    if live_source.status is not LiveLifecycle.ABSORBED:
+        raise LiveContractError("operational-root campaign handoff requires an ABSORBED LIVE source")
+    if not isinstance(live_route, LiveRouting) or not live_route.complete:
+        raise LiveContractError("operational-root campaign handoff requires a complete route")
+    validate_live_route_completeness(live_route)
+    validate_accepted_absorption_evidence(
+        absorption_evidence,
+        source_key=live_source.source_key,
+        source_revision=live_source.source_revision,
+        selected_route=live_route,
+    )
+    selected = select_live_source(live_route, live_source.source_key)
+    if selected is None or selected.status not in {
+        LiveLifecycle.CLOSED,
+        LiveLifecycle.CLOSED_UNABSORBED,
+    }:
+        raise LiveContractError(
+            "operational-root campaign handoff requires the exact final LIVE source"
+        )
+    if not validate_exact_source(selected, replace(live_source, status=selected.status)):
+        raise LiveContractError(
+            "operational-root campaign handoff requires the exact final LIVE source"
+        )
+    return _recover_operational_roots_to_campaign(
+        page,
+        campaign_id=live_source.campaign_id,
+        live_source_key=live_source.source_key,
+        live_source_revision=live_source.source_revision,
+        campaign_revision=_revision(campaign_revision, "campaign_revision"),
+        terminal_owner_keys=terminal_owner_keys,
+        terminal_native_owners=terminal_native_owners,
+        superseded_owner_keys=superseded_owner_keys,
+        superseded_native_deltas=superseded_native_deltas,
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class LiveOpeningPreparation:
     """Repeatable, non-authoritative preparation for one LIVE opening."""
@@ -2520,7 +2583,7 @@ _ABSORPTION_RESULT_TOKEN = object()
 
 
 @dataclass(frozen=True, slots=True, weakref_slot=True)
-class LiveAbsorptionPublication(AcceptedAbsorptionEvidenceTransport):
+class LiveAbsorptionPublication:
     """Typed result of exact campaign CAS classification."""
 
     status: LiveAbsorptionStatus
@@ -2535,21 +2598,6 @@ class LiveAbsorptionPublication(AcceptedAbsorptionEvidenceTransport):
     @property
     def acknowledged(self) -> bool:
         return self.status is LiveAbsorptionStatus.ACCEPTED and self.authoritative
-
-    def validate_for_operational_root_recovery(
-        self,
-        *,
-        source_key: Sequence[str],
-        source_revision: str,
-    ) -> "LiveAbsorptionPublication":
-        """Expose the LIVE-owned validation transport to recovery adapters."""
-
-        return validate_accepted_absorption_evidence(
-            self,
-            source_key=source_key,
-            source_revision=source_revision,
-        )
-
 
 _OWNER_ISSUED_ABSORPTION_RESULTS: dict[
     int, weakref.ReferenceType[LiveAbsorptionPublication]
