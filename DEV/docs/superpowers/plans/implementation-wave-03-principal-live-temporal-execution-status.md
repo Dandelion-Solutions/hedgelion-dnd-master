@@ -351,4 +351,5 @@ GREEN_AND_REGRESSION:
 VERSION_IMPACT: access-control runtime `framework_module_version` `1.0.4 -> 1.0.5` and DEV `access_control_revision` `11 -> 12`; no route schema, campaign-contract, storage-format, engine-release, catalog, identifier-policy, shared DEV/GAME projection, or Wave-05 namespace bump.
 SYSTEM_IMPACT: NONE — owner-local principal/access and exact LIVE publication validation only; no new semantic owner, dependency reversal, distributed transaction, broad scan, fallback authority, or shared/Wave-05 write.
 HOSTED_CI: UNAVAILABLE in the local-machine runtime; no hosted PASS claimed.
-UNPUBLISHED_WORK: cursor synchronization only; implementation checkpoint `940d2a3aa28e6e0ee81a6b583890a2fa35550046` is committed locally, but the repair and cursor are not yet published/read back.
+PUBLISHED_CHECKPOINT: implementation plus review-required cursor at `157f73343ae66a455955ae53dcf8045594052cb7` was published non-force and independently read back from `origin/v1/engine-rearchitecture`; this final line records the publication evidence.
+UNPUBLISHED_WORK: NONE after this publication-evidence cursor commit and its remote read-back.
