@@ -7,7 +7,7 @@ BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 STATUS: EXECUTION_AUTHORIZED
 CURRENT_TASK: W03.T07 -- PLAYER and campaign access-policy transitions (repair checkpoint published; independent review pending)
 LAST_COMPLETED_TASK: W03.T07 repair round 2 -- native creator history and exact campaign-body currentness; independent review pending
-LAST_SAFE_SHA: `e19ae87` (local coherent repair/tooling checkpoint; publication pending)
+LAST_SAFE_SHA: `fcff693` (published/read-back W03.T07 repair verification checkpoint)
 
 ## Dependency schedule
 
@@ -81,8 +81,8 @@ COMPLETED_TASKS:
 - W03.T06 callable recovery bypass repair -> `37000154d65aaf6d6878a9980447d0cff4a92b7c` (published/read-back; all recovery-root LIVE-to-CAMPAIGN callable entries removed, owner-side LIVE orchestration retained)
 - W03.T07 implementation checkpoint -> `96d0e74a53fa91c3f4dd91d7711c41eff30a7461` (published/read-back; PLAYER/campaign access-policy transitions and bounded multi-LIVE forward closure; independent review pending)
 - W03.T07 repair round 1 -> `0c6a6e3` (published/read-back; caller creator-login assertions fail closed, multi-LIVE recovery/publication currentness and owner-issued CAS evidence repaired; independent review pending)
-- W03.T07 repair round 2 -> `734a056` (local coherent checkpoint; native-history creator evidence cannot be caller-constructed, campaign publication/recovery compare the exact frozen body, and forged public provenance construction is rejected)
-- W03.T07 tooling reroute -> `e19ae87` (local coherent checkpoint; pytest/pytest-xdist remain repository development tooling under the current `AGENTS.md` parallel-test policy and are not part of the T07 semantic delta)
+- W03.T07 repair round 2 -> `734a056` (published/read-back as part of the repair verification checkpoint; native-history creator evidence cannot be caller-constructed, campaign publication/recovery compare the exact frozen body, and forged public provenance construction is rejected)
+- W03.T07 tooling reroute -> `e19ae87` (published/read-back; pytest/pytest-xdist remain repository development tooling under the current `AGENTS.md` parallel-test policy and are not part of the T07 semantic delta)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
