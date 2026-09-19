@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: INDEPENDENT_SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: W03.T07 targeted F63-F65 repair — independent Senior re-review required; do not claim Senior PASS
-LAST_COMPLETED_TASK: targeted F63-F65 repair implementation, focused/cross-surface verification, and version-impact synchronization
-LAST_SAFE_SHA: `940d2a3aa28e6e0ee81a6b583890a2fa35550046` (targeted repair implementation checkpoint; cursor synchronization remains review metadata only)
+CURRENT_TASK: W03.T07 targeted F63 selected-campaign binding repair — independent Senior re-review required; do not claim Senior PASS
+LAST_COMPLETED_TASK: targeted F63 selected-campaign binding repair, focused/cross/full verification, and version-impact synchronization
+LAST_SAFE_SHA: `599eaec379c84aa38bfc8a7baf5284ca6935a9f0` (published targeted repair implementation checkpoint; cursor synchronization remains review metadata only)
 
 ## Dependency schedule
 
@@ -353,3 +353,30 @@ SYSTEM_IMPACT: NONE — owner-local principal/access and exact LIVE publication 
 HOSTED_CI: UNAVAILABLE in the local-machine runtime; no hosted PASS claimed.
 PUBLISHED_CHECKPOINT: implementation plus review-required cursor at `157f73343ae66a455955ae53dcf8045594052cb7` was published non-force and independently read back from `origin/v1/engine-rearchitecture`; this final line records the publication evidence.
 UNPUBLISHED_WORK: NONE after this publication-evidence cursor commit and its remote read-back.
+
+
+## Targeted F63 selected-campaign binding repair continuation
+
+REPAIR_BASE_SHA: `e7440dfb68bb67644530eef83d09723fbf551640`
+REPAIR_IMPLEMENTATION_HEAD: `599eaec379c84aa38bfc8a7baf5284ca6935a9f0`
+REPAIR_SCOPE: F63 selected-campaign binding only; F64/F65 witnesses preserved; no W04/W05 implementation or shared/Wave-05 final-writer surface changes
+INDEPENDENT_REVIEW: REQUIRED — independent Senior re-review remains required; no Senior PASS is claimed
+
+RED_WITNESSES:
+- a PLAYER resolution issued for campaign A formed a campaign B self-deactivation candidate;
+- the same foreign resolution formed a campaign B self-reactivation candidate.
+
+GREEN_AND_REGRESSION:
+- focused `DEV.TESTS.test_rd09_access_live`: 171 passed, including same-campaign positives and all F63-F65 witnesses;
+- named cross-surface plus version-policy suites: 234 passed;
+- canonical full DEV unittest discovery: 992 passed, 6 skipped;
+- maintenance audit: PASS;
+- `git diff --check`: PASS;
+- version census: zero unclassified and zero legacy hits.
+
+VERSION_IMPACT: access-control runtime `framework_module_version` `1.0.5 -> 1.0.6` and DEV `access_control_revision` `12 -> 13`; no route schema, campaign-contract, storage-format, engine-release, catalog, identifier-policy, shared DEV/GAME projection, or Wave-05 namespace bump.
+SYSTEM_IMPACT: NONE — selected-campaign resolution binding remains inside the approved W03.T07 principal/access owner; no new semantic owner, dependency direction, transaction, broad scan, fallback authority, or shared/Wave-05 write.
+HOSTED_CI: UNAVAILABLE for the new head; historical success `35476566411` is not reused as new-head evidence.
+PUBLISHED_CHECKPOINT: implementation checkpoint `599eaec379c84aa38bfc8a7baf5284ca6935a9f0` was published non-force and independently read back from `origin/v1/engine-rearchitecture`; this cursor synchronization is the remaining review metadata checkpoint.
+NEXT_EXACT_TASK: independent Senior re-review of the published targeted F63-F65 repair; do not claim Senior PASS or re-close Wave 03 from this repair alone.
+UNPUBLISHED_WORK: NONE after cursor synchronization publication and remote read-back.
