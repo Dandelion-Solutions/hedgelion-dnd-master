@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: W03.T08 -- Information, scene and shipped LIVE cutover
-LAST_COMPLETED_TASK: W03.T07 independent re-review -- PASS at reviewed combined head `2684e26e6df028dcc7dc98fc0a8d182451f8f092`
-LAST_SAFE_SHA: `583c7f3fea01b75aeaf0fe37311fc99c9441521d` (published/read-back T07 IRR-T07-01 repair slice)
+CURRENT_TASK: W03 completion evidence / Senior integration audit after W03.T08
+LAST_COMPLETED_TASK: W03.T08 -- Information, scene and shipped LIVE cutover at `e1da5ea1264ed561d828504ca68a7f41e114b1f4`
+LAST_SAFE_SHA: `e1da5ea1264ed561d828504ca68a7f41e114b1f4` (published/read-back W03.T08 implementation checkpoint)
 
 ## Dependency schedule
 
@@ -85,6 +85,7 @@ COMPLETED_TASKS:
 - W03.T07 tooling reroute -> `e19ae87` (published/read-back; pytest/pytest-xdist remain repository development tooling under the current `AGENTS.md` parallel-test policy and are not part of the T07 semantic delta)
 - W03.T07 repair round 3 IRR-T07-02 -> `b25d775c4b8b596e067ae6eefc4bb7993a61e2a5` (published/read-back; access publication and after-authority recovery reuse `_same_campaign_state(...)` over frozen raw campaign bodies and preserve unrelated fields)
 - W03.T07 repair round 3 IRR-T07-01 -> `583c7f3fea01b75aeaf0fe37311fc99c9441521d` (published/read-back; creator evidence derives from exact campaign-ref/initialization-commit reads, bounded default/campaign ancestry, and authenticated per-user `author.login`; raw history issuance was removed)
+- W03.T08 -> `e1da5ea1264ed561d828504ca68a7f41e114b1f4` (published/read-back; recipient-safe LIVE information normalization, exact-current material/scene bridge, strict source-native cutover, owner-local shipped-LIVE delta)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -149,6 +150,8 @@ CURRENT_VERIFICATION_STATE:
 - IRR-T07-01 RED: the raw `_issue_verified_first_initialization_history(...)` issuer was callable at the baseline, and the new observation API was absent; the ten bounded observation/access negative and positive witnesses were added before implementation.
 - IRR-T07-01 GREEN: focused `test_rd09_access_live` passed `164` tests; named W03 cross-owner suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`) passed `215` tests; version-policy passed `12`; maintenance audit passed; `git diff --check` passed.
 - The clean full DEV discovery surface collected `964` tests with `6` skips but was not a clean acceptance result in the dirty worker checkout: release tests observed generated `GAME/TOOLS/__pycache__`, and the clean-checkout provenance test observed `dirty_worktree`; the generated cache was removed. Hosted CI remains unavailable.
+- W03.T08 RED/GREEN: the owner-local consumer suite was introduced against the missing normalization/bridge APIs, then passed with 15 tests after implementation. Focused W03 consumer/access suites passed 190 tests; broader integration/version suites passed 253 tests; canonical bytecode-disabled DEV unittest discovery passed 979 tests with 6 skips from the committed clean checkout; maintenance audit passed; compile checks and `git diff --check` passed. Version census reported zero unclassified and zero legacy hits.
+- W03.T08 changed only `GAME/TOOLS/information.py`, `GAME/TOOLS/live_state.py`, `GAME/CORE/INFORMATION.md`, the named owner-local tests, and the owner-local delta record. `GAME/CORE/LIVE_SCENE.md`, `GAME/CORE/MULTIPLAYER.md`, shared scene schemas, and Wave-05 final-writer surfaces remain unchanged.
 
 VERSION_IMPACT: W03.T02 review repair round 1 materially changes the LIVE runtime module `framework_module_version` 1.0.1 -> 1.0.2 and the ephemeral publication-attempt schema 1 -> 2 because selected-route and complete-successor evidence are now required. Claim/routing serialized shapes remain schema v1; their repair rejects pre-release invalid claim forms without changing serialized fields or adding a migration/projection.
 
@@ -257,4 +260,10 @@ VERSION_IMPACT accepted: `policy_basis.framework_module_version 1.0.2 -> 1.0.3` 
 SYSTEM_IMPACT: NONE. The repair realizes the already accepted Step-5.6 RepositoryPort trust/capability boundary and does not create a new creator/history authority.
 
 W03_ACCESS_POLICY_TRANSITION_READY: ACCEPTED.
-W03.T08: UNBLOCKED / AUTHORIZED.
+VERSION_IMPACT: W03.T08 materially changes LIVE runtime `framework_module_version` `1.0.18 -> 1.0.19` and the information CORE module `framework_module_version` `1.0.4 -> 1.0.5`. No engine-release, campaign-contract, storage-format, catalog, shared scene schema, multiplayer, identifier-policy, or other runtime projection namespace required a bump.
+SYSTEM_IMPACT: NONE -- the slice remains inside the approved information/scene consumer boundary. It adds no semantic authority, source-selection fallback, broad scan, persistence migration, distributed transaction, shared scene/multiplayer write, or Wave-05 final-writer dependency.
+W03_LIVE_CONSUMER_DELTAS_READY: IMPLEMENTED / PUBLISHED.
+INDEPENDENT_REVIEW: NOT AVAILABLE IN THIS LOCAL RUNTIME; final Senior integration audit remains required before Wave-03 closure.
+NEXT_EXACT_TASK: complete Wave-03 canonical completion evidence and Senior integration audit; do not start W04.
+KNOWN_BLOCKERS: Hosted CI is unavailable in the local-machine runtime. No implementation or local-verification blocker remains for W03.T08; final Senior integration audit is the remaining acceptance gate.
+UNPUBLISHED_WORK: NONE.
