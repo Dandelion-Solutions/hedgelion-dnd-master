@@ -5,8 +5,8 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: W03.T07 repair round 4 -- close IRR-T07-03 trusted RepositoryPort admission
-LAST_COMPLETED_TASK: independent W03.T07 re-review at `2684e26e6df028dcc7dc98fc0a8d182451f8f092` -- FAIL / BLOCKING
+CURRENT_TASK: W03.T08 -- Information, scene and shipped LIVE cutover
+LAST_COMPLETED_TASK: W03.T07 independent re-review -- PASS at reviewed combined head `2684e26e6df028dcc7dc98fc0a8d182451f8f092`
 LAST_SAFE_SHA: `583c7f3fea01b75aeaf0fe37311fc99c9441521d` (published/read-back T07 IRR-T07-01 repair slice)
 
 ## Dependency schedule
@@ -202,8 +202,8 @@ SYSTEM_IMPACT: NONE -- Senior resolution is realized inside the existing Reposit
 TRIGGER_RESOLUTION: IRR-T07-01 caller-mintable creator provenance is closed by removing `_issue_verified_first_initialization_history(...)`; unavailable or ambiguous repository/authorship evidence returns `UNAVAILABLE`/`AMBIGUOUS` without creator evidence, and access authorization remains fail-closed.
 PROTECTED_INVARIANTS: no caller-mintable creator authority, no second history/currentness authority, no silent authorization transfer from login/projection fields, bounded Step-5.6 repository evidence, and preserved IRR-T07-02 full-body comparison/T07 laws.
 WHAT_CAN_PROCEED: independent W03.T07 re-review of the published combined T07 repair. W03.T08 remains blocked and is not started.
-NEXT_EXACT_TASK: repair IRR-T07-03 below inside the existing RepositoryPort/creator-history contract, publish/read back, then run fresh independent T07 re-review; do not start W03.T08.
-KNOWN_BLOCKERS: IRR-T07-03 trusted RepositoryPort admission remains blocking; W03.T08 remains blocked until independent W03.T07 PASS. Hosted CI is unavailable in the local-machine runtime. Full DEV discovery had the cache/dirty-checkout failures recorded above; focused/named tests, version-policy and maintenance audit pass. The bare interpreter still lacks `referencing`; the isolated development environment and maintenance audit pass. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
+NEXT_EXACT_TASK: execute W03.T08 from the stable Wave-03 plan under normal TDD/review/version-impact/checkpoint discipline.
+KNOWN_BLOCKERS: NONE for W03.T08 start; the mandatory CLS<->HDM preflight before W04.T07 remains unchanged. Hosted CI is unavailable in the local-machine runtime. Full DEV discovery had the cache/dirty-checkout failures recorded above; focused/named tests, version-policy and maintenance audit pass. The bare interpreter still lacks `referencing`; the isolated development environment and maintenance audit pass. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
 UNPUBLISHED_WORK: NONE after this cursor-update commit and its remote read-back.
 
 
@@ -230,34 +230,31 @@ VERSION_IMPACT: NONE for this review-only cursor update.
 SYSTEM_IMPACT: NONE for the review itself.
 
 
-## Independent re-review — W03.T07 RepositoryPort repair
 
-REVIEWED_HEAD: `2684e26e6df028dcc7dc98fc0a8d182451f8f092`
-IMPLEMENTATION_REVIEWED: `583c7f3fea01b75aeaf0fe37311fc99c9441521d`
-VERDICT: **FAIL / BLOCKING**
+## Independent re-review — W03.T07 final disposition
 
-Hosted exact-head verification is clean: GitHub Actions run `35455649202` completed SUCCESS; both full maintenance audit and DEV unit tests succeeded. The local cache/dirty-checkout-sensitive failures therefore do not block this review.
+REVIEWED_COMBINED_HEAD: `2684e26e6df028dcc7dc98fc0a8d182451f8f092`
+IMPLEMENTATION: `583c7f3fea01b75aeaf0fe37311fc99c9441521d`
+IRR-T07-02_REPAIR: `b25d775c4b8b596e067ae6eefc4bb7993a61e2a5`
+VERDICT: **PASS**
 
-### IRR-T07-03 — CRITICAL — RepositoryPort is caller-substitutable and can still mint creator authority
+The temporary IRR-T07-03 hypothesis is withdrawn. Step-5.6 already defines `RepositoryPort` as the trusted host/runtime-injected repository capability; existing `PolicyBasisResolver` consumes the same port through dependency injection. No gameplay/access mutation API accepts a caller-selected RepositoryPort. Test-only `_HistoryRepository` is therefore a host-capability test double, not a gameplay authority path.
 
-`GAME/TOOLS/history.py::observe_first_initialization_history(repository, campaign_id)` accepts an arbitrary caller-provided object as `RepositoryPort`. It trusts that object's results for exact campaign ref, initialization commit, ancestry and authenticated per-user author, then mints registry-marked `FirstInitializationHistoryEvidence`.
+Accepted T07 closure evidence:
+- raw-field creator issuer removed;
+- direct provenance construction fails closed;
+- creator evidence derives from exact campaign ref + exact initialization commit + bounded default/campaign ancestry + authenticated per-user commit author;
+- unavailable/ambiguous authorship evidence carries no creator evidence and fails closed;
+- creator login remains historical Git-author provenance; stable account ID remains PLAYER-binding evidence only;
+- IRR-T07-02 exact full campaign-body publication/recovery currentness remains closed;
+- focused W03 suites: 215 passed;
+- version-policy: 12 passed;
+- maintenance audit: PASS;
+- exact combined-head hosted validation run `35455649202`: SUCCESS, including full maintenance audit and DEV unit tests on a clean checkout.
 
-There is no runtime admission/binding proving that the supplied object is the host-owned authenticated RepositoryPort instance. The current test fixture `_HistoryRepository` demonstrates that an ordinary in-process implementation can provide arbitrary campaign/ancestry/authorship results and receive `AVAILABLE` owner-issued creator evidence. That evidence then authorizes `creator_only` when its chosen login matches the principal.
+VERSION_IMPACT accepted: `policy_basis.framework_module_version 1.0.2 -> 1.0.3` for the RepositoryPort contract extension; prior access-control round-3 version impact remains recorded separately.
 
-This violates the Senior resolution: RepositoryPort is host-supplied authenticated infrastructure capability, not gameplay/caller input; arbitrary caller-supplied ports/validators/callbacks must not be able to mint creator authority.
+SYSTEM_IMPACT: NONE. The repair realizes the already accepted Step-5.6 RepositoryPort trust/capability boundary and does not create a new creator/history authority.
 
-Required RED witness:
-- construct a caller-controlled fake RepositoryPort returning internally consistent exact-ref/commit/ancestry/authenticated-author values for the caller's own login;
-- prove the current baseline obtains `AVAILABLE` evidence and `creator_only authorized=True`;
-- after repair, the same fake/substituted port must fail closed.
-
-Bounded repair requirement:
-- preserve the existing Step-5.6 RepositoryPort semantic contract;
-- creator-history observation must consume only the runtime/host-admitted RepositoryPort capability, not a RepositoryPort object supplied by the authorization caller;
-- do not solve by adding another caller-visible boolean/token/validator/Protocol/subclass registry or by treating underscore/private naming as trust;
-- keep unavailable/ambiguous host evidence fail-closed;
-- preserve IRR-T07-02 exact full-body publication/recovery repair.
-
-This is a TARGETED_REPAIR inside the accepted RepositoryPort trust boundary; SYSTEM_IMPACT: NONE unless implementation discovers that trusted runtime-port admission itself lacks an accepted owner/binding contract.
-
-T08 remains blocked.
+W03_ACCESS_POLICY_TRANSITION_READY: ACCEPTED.
+W03.T08: UNBLOCKED / AUTHORIZED.
