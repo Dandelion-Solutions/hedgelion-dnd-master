@@ -249,6 +249,50 @@ class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
                 (direct,), _route(source), source, recipient_player_id="player.aria"
             )
 
+    def test_apply_rejects_object_setattr_marker_forgery(self) -> None:
+        source = _live_source()
+        candidates = extract_material_live_information(
+            _route(source),
+            source,
+            _projection(
+                source,
+                {"recipient_player_id": "player.aria", "evidence": _native_information()},
+            ),
+            recipient_player_id="player.aria",
+        )
+        object.__setattr__(candidates[0], "_extraction_admission", object())
+
+        with self.assertRaisesRegex(InformationContractError, "extract|admit|provenance"):
+            apply_normalization_candidates_under_native_owners(
+                candidates, _route(source), source, recipient_player_id="player.aria"
+            )
+
+    def test_apply_uses_admitted_evidence_snapshot_after_candidate_mutation(self) -> None:
+        source = _live_source()
+        candidates = extract_material_live_information(
+            _route(source),
+            source,
+            _projection(
+                source,
+                {"recipient_player_id": "player.aria", "evidence": _native_information()},
+            ),
+            recipient_player_id="player.aria",
+        )
+        forged_evidence = _native_information()
+        forged_evidence["fact"]["statement"] = "A forged passage appears."
+        forged_evidence["emission"]["text"] = "A forged message appears."
+        object.__setattr__(candidates[0], "evidence", forged_evidence)
+
+        result = apply_normalization_candidates_under_native_owners(
+            candidates, _route(source), source, recipient_player_id="player.aria"
+        )
+
+        self.assertEqual(
+            result[0]["lore_fact"]["statement"],
+            "A hidden passage opens behind the tapestry.",
+        )
+        self.assertEqual(result[0]["message"]["exact_text"], "You notice the hidden passage.")
+
 
 class MaterialBridgeCurrentnessTests(unittest.TestCase):
     def test_exact_current_source_builds_material_scene_bridge(self) -> None:

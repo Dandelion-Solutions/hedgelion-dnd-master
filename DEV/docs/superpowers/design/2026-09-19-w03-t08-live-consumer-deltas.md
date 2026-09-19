@@ -25,8 +25,10 @@ bounded input record. W04 is not started.
   disclosure, message, scene, principal, or currentness authority.
 - Missing, orphaned, superseded and stale sources, stale source revisions,
   stale source-native history, recipient mismatch, direct unadmitted candidate
-  construction, legacy visibility/perception fields, and pre-v1 branch/revision
-  shapes fail closed. There is no latest-looking or campaign-base fallback.
+  construction, forged admission markers, post-admission evidence mutation,
+  legacy visibility/perception fields, and pre-v1 branch/revision shapes fail
+  closed. The module-owned admission carries a private evidence snapshot; there
+  is no latest-looking or campaign-base fallback.
 
 ## Wave-05 shipped inputs
 

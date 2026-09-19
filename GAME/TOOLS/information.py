@@ -35,6 +35,7 @@ DISCLOSURE_ASPECTS: Final = frozenset(
     {"disclosure.statement", "disclosure.objective_status"}
 )
 NATIVE_ID_PATTERN: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
+_LIVE_INFORMATION_ADMISSION_ISSUER: Final[object] = object()
 
 
 class InformationContractError(ValueError):
@@ -59,6 +60,12 @@ def _live_source_native_ids(value: object, label: str) -> tuple[str, ...]:
 
 
 @dataclass(frozen=True, slots=True)
+class _LiveInformationAdmission:
+    issuer: object
+    evidence_snapshot: Mapping[str, object]
+
+
+@dataclass(frozen=True, slots=True)
 class LiveInformationCandidate:
     """Ephemeral, source-bound input awaiting native-owner normalization.
 
@@ -73,7 +80,7 @@ class LiveInformationCandidate:
     source_native_ids: tuple[str, ...]
     recipient_player_id: str
     evidence: Mapping[str, object]
-    _extraction_admission: object | None = field(
+    _extraction_admission: _LiveInformationAdmission | None = field(
         default=None, init=False, repr=False, compare=False
     )
 
@@ -518,7 +525,14 @@ def extract_material_live_information(
             recipient_player_id=recipient,
             evidence=native_evidence,
         )
-        object.__setattr__(admitted_candidate, "_extraction_admission", object())
+        object.__setattr__(
+            admitted_candidate,
+            "_extraction_admission",
+            _LiveInformationAdmission(
+                issuer=_LIVE_INFORMATION_ADMISSION_ISSUER,
+                evidence_snapshot=deepcopy(dict(admitted_candidate.evidence)),
+            ),
+        )
         result.append(admitted_candidate)
     return tuple(result)
 
@@ -551,7 +565,11 @@ def apply_normalization_candidates_under_native_owners(
             raise InformationContractError(
                 "normalization candidates must come from exact LIVE extraction"
             )
-        if candidate._extraction_admission is None:
+        admission = candidate._extraction_admission
+        if (
+            type(admission) is not _LiveInformationAdmission
+            or admission.issuer is not _LIVE_INFORMATION_ADMISSION_ISSUER
+        ):
             raise InformationContractError(
                 "normalization candidate lacks admitted LIVE extraction provenance"
             )
@@ -564,7 +582,7 @@ def apply_normalization_candidates_under_native_owners(
             raise InformationContractError("normalization candidate is stale for current LIVE source")
         if expected_recipient is not None and candidate.recipient_player_id != expected_recipient:
             raise InformationContractError("normalization candidate recipient leakage")
-        result = normalize_information_evidence(candidate.evidence)
+        result = normalize_information_evidence(admission.evidence_snapshot)
         message_recipient = result["message"]["recipient_player_id"]
         if message_recipient != candidate.recipient_player_id:
             raise InformationContractError("normalized message recipient does not match candidate")
