@@ -7,6 +7,7 @@ as proof that an owner is active.
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 import hashlib
@@ -18,8 +19,8 @@ import weakref
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.11
-FRAMEWORK_MODULE_VERSION: Final = "1.0.11"
+# framework_module_version: 1.0.12
+FRAMEWORK_MODULE_VERSION: Final = "1.0.12"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
 OPERATIONAL_ROOT_HANDOFF_SCHEMA_VERSION: Final = 2
 _OWNER_KINDS: Final = frozenset(
@@ -278,7 +279,7 @@ class AcceptedUnresolvedInputPromise(Protocol):
         """Return exactly ``True`` only for matching owner-validated evidence."""
 
 
-class AcceptedAbsorptionEvidenceTransport(Protocol):
+class AcceptedAbsorptionEvidenceTransport(ABC):
     """Transport to the existing LIVE producer's exact absorption validator.
 
     The handoff adapter only delegates validation through this producer-minted
@@ -286,6 +287,7 @@ class AcceptedAbsorptionEvidenceTransport(Protocol):
     evidence.
     """
 
+    @abstractmethod
     def validate_for_operational_root_recovery(
         self,
         *,
@@ -680,15 +682,14 @@ def _validate_absorption_evidence(
     source_key: Sequence[str] | None,
     source_revision: str,
 ) -> None:
-    validator = getattr(evidence, "validate_for_operational_root_recovery", None)
-    if not callable(validator):
+    if not isinstance(evidence, AcceptedAbsorptionEvidenceTransport):
         raise OperationalRootError(
             "campaign recovery requires the LIVE producer absorption evidence transport"
         )
     if source_key is None:
         raise OperationalRootError("campaign recovery absorption source key is missing")
     try:
-        validator(
+        evidence.validate_for_operational_root_recovery(
             source_key=source_key,
             source_revision=source_revision,
         )

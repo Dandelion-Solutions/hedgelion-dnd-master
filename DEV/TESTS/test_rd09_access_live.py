@@ -650,7 +650,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.14")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.15")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
@@ -2904,6 +2904,15 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
             ) -> None:
                 return None
 
+        class ForgedEvidence:
+            def validate_for_operational_root_recovery(
+                self,
+                *,
+                source_key: tuple[str, str, str],
+                source_revision: str,
+            ) -> "ForgedEvidence":
+                return self
+
         with self.assertRaisesRegex(ValueError, "producer|owner|evidence|transport"):
             recover_operational_roots_to_campaign(
                 live_page,
@@ -2922,6 +2931,15 @@ class LiveOperationalRootHandoffTests(unittest.TestCase):
                 campaign_revision=LIVE_H2,
                 absorption_evidence=publication,
                 absorption_evidence_validator=ForgedValidator(),
+            )
+        with self.assertRaisesRegex(ValueError, "producer|owner|evidence|transport"):
+            recover_operational_roots_to_campaign(
+                live_page,
+                campaign_id="campaign-frostfall",
+                live_source_key=source.source_key,
+                live_source_revision=source.source_revision,
+                campaign_revision=LIVE_H2,
+                absorption_evidence=ForgedEvidence(),
             )
 
     def test_operational_root_handoff_schema_matches_runtime_scope_and_source_key_grammar(self) -> None:

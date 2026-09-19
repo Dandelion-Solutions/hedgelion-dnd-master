@@ -22,8 +22,10 @@ from types import MappingProxyType
 from typing import Final, TypeAlias
 import weakref
 
-# framework_module_version: 1.0.14
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.14"
+from .recovery_roots import AcceptedAbsorptionEvidenceTransport
+
+# framework_module_version: 1.0.15
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.15"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -2518,7 +2520,7 @@ _ABSORPTION_RESULT_TOKEN = object()
 
 
 @dataclass(frozen=True, slots=True, weakref_slot=True)
-class LiveAbsorptionPublication:
+class LiveAbsorptionPublication(AcceptedAbsorptionEvidenceTransport):
     """Typed result of exact campaign CAS classification."""
 
     status: LiveAbsorptionStatus
