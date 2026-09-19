@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-03-principal-live-temporal
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
-STATUS: SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: W03.T07 repair round 3 -- IRR-T07-01 System-Impact Gate; IRR-T07-02 completed
-LAST_COMPLETED_TASK: W03.T07 repair round 3 IRR-T07-02 exact campaign-body currentness at `b25d775c4b8b596e067ae6eefc4bb7993a61e2a5` -- published/read-back; IRR-T07-01 remains gated
-LAST_SAFE_SHA: `b25d775c4b8b596e067ae6eefc4bb7993a61e2a5` (published/read-back T07 repair slice)
+STATUS: FINAL_REVIEW
+CURRENT_TASK: W03.T07 IRR-T07-01 bounded creator-history observation repair; independent T07 re-review pending
+LAST_COMPLETED_TASK: W03.T07 IRR-T07-01 bounded RepositoryPort creator-history observation at `583c7f3fea01b75aeaf0fe37311fc99c9441521d` -- published/read-back; independent T07 re-review remains pending
+LAST_SAFE_SHA: `583c7f3fea01b75aeaf0fe37311fc99c9441521d` (published/read-back T07 IRR-T07-01 repair slice)
 
 ## Dependency schedule
 
@@ -84,6 +84,7 @@ COMPLETED_TASKS:
 - W03.T07 repair round 2 -> `734a056` (published/read-back as part of the repair verification checkpoint; native-history creator evidence cannot be caller-constructed, campaign publication/recovery compare the exact frozen body, and forged public provenance construction is rejected)
 - W03.T07 tooling reroute -> `e19ae87` (published/read-back; pytest/pytest-xdist remain repository development tooling under the current `AGENTS.md` parallel-test policy and are not part of the T07 semantic delta)
 - W03.T07 repair round 3 IRR-T07-02 -> `b25d775c4b8b596e067ae6eefc4bb7993a61e2a5` (published/read-back; access publication and after-authority recovery reuse `_same_campaign_state(...)` over frozen raw campaign bodies and preserve unrelated fields)
+- W03.T07 repair round 3 IRR-T07-01 -> `583c7f3fea01b75aeaf0fe37311fc99c9441521d` (published/read-back; creator evidence derives from exact campaign-ref/initialization-commit reads, bounded default/campaign ancestry, and authenticated per-user `author.login`; raw history issuance was removed)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -145,6 +146,9 @@ CURRENT_VERIFICATION_STATE:
 - IRR-T07-01 reproduction: the caller can invoke `GAME/TOOLS/history.py::_issue_verified_first_initialization_history(...)` with caller-selected campaign/login/revision/parent fields; matching `authorize_operation(...)` returned `authorized=True`. The accepted Git-history owner/adapter read found no runtime observation path that proves those fields from the actual first campaign-specific commit ancestry.
 - IRR-T07-02 RED: two same-revision unrelated-campaign-body drift witnesses failed as expected (`153` focused tests, `2` failures); GREEN: focused `test_rd09_access_live` passed `153`; named cross-owner/version-policy suites passed `216`; clean bytecode-disabled DEV discovery passed `953` with `6` skips; maintenance audit passed; version census reported zero unclassified and zero legacy hits; AST/compile and `git diff --check` passed.
 - IRR-T07-02 preserves unrelated frozen campaign fields; the shared `_same_campaign_state(...)` comparator now governs both access publication and `FrozenAccessPolicyTransition.recover_after_authority(...)`.
+- IRR-T07-01 RED: the raw `_issue_verified_first_initialization_history(...)` issuer was callable at the baseline, and the new observation API was absent; the ten bounded observation/access negative and positive witnesses were added before implementation.
+- IRR-T07-01 GREEN: focused `test_rd09_access_live` passed `164` tests; named W03 cross-owner suites (`test_rd09_access_live`, `test_rd14_bootstrap`, `test_rd06_durability_publication`) passed `215` tests; version-policy passed `12`; maintenance audit passed; `git diff --check` passed.
+- The clean full DEV discovery surface collected `964` tests with `6` skips but was not a clean acceptance result in the dirty worker checkout: release tests observed generated `GAME/TOOLS/__pycache__`, and the clean-checkout provenance test observed `dirty_worktree`; the generated cache was removed. Hosted CI remains unavailable.
 
 VERSION_IMPACT: W03.T02 review repair round 1 materially changes the LIVE runtime module `framework_module_version` 1.0.1 -> 1.0.2 and the ephemeral publication-attempt schema 1 -> 2 because selected-route and complete-successor evidence are now required. Claim/routing serialized shapes remain schema v1; their repair rejects pre-release invalid claim forms without changing serialized fields or adding a migration/projection.
 
@@ -193,15 +197,13 @@ VERSION_IMPACT: NONE -- this cursor/report synchronization changes only developm
 VERSION_IMPACT: W03.T07 repair round 2 materially changes access-control runtime `framework_module_version` `1.0.2 -> 1.0.3` and DEV `access_control_revision` `9 -> 10`. No route schema, campaign-contract, storage-format, engine-release, catalog, identifier-policy or shared DEV/GAME projection namespace changed.
 SYSTEM_IMPACT: NONE -- repair round 2 remains within the approved principal/access-policy and exact LIVE-source envelope. It removes caller-mint provenance paths and adds no new semantic owner, dependency reversal, transaction, broad scan, shared/Wave-05 write or persistent schema migration. Independent reviewer PASS remains pending; T07/T08 stay blocked.
 VERSION_IMPACT: W03.T07 repair round 3 IRR-T07-02 materially changes access-control runtime `framework_module_version` `1.0.3 -> 1.0.4` and DEV `access_control_revision` `10 -> 11`. No route schema, campaign-contract, storage-format, engine-release, catalog, identifier-policy or shared DEV/GAME projection namespace changed.
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED -- IRR-T07-01 requires an authoritative Git-history observation/adapter boundary proving the first campaign-specific initialization commit ancestry. No accepted runtime owner/adapter path exists; inventing that interface/owner or treating the raw-field issuer as authoritative would cross the approved T07 envelope and change the creator trust boundary. IRR-T07-02 proceeds independently and is complete at `b25d775`.
-TRIGGER: caller-selected raw fields can be passed to `_issue_verified_first_initialization_history(...)` and then authorize creator-only access; the existing history owner validates shape only and does not observe Git ancestry.
-APPROVED_SPEC_EXPECTATION: creator authority is the `author.login` of the first campaign-specific initialization commit after the campaign branch is created from storage default HEAD; caller claims and projections are not authority.
-AFFECTED_OWNERS: native history/Git ancestry observation owner, campaign creation/publication adapter, access-control creator-authority consumer, and T07 review gate.
-PROTECTED_INVARIANTS: no caller-mintable creator authority, no second history/currentness authority, and no silent authorization transfer from login/projection fields.
-WHAT_CAN_PROCEED: IRR-T07-02 exact raw-body publication/recovery repair is published and verified. T07 remains stopped at this gate; W03.T08 remains blocked until T07 independent re-review PASS and gate resolution.
-SAFE_OPTIONS: identify or authorize an existing native Git-history observation adapter through the owning design/Senior route, then bind access control to its evidence; do not rename/hide the raw-field issuer or add an unapproved token/registry/interface.
-NEXT_EXACT_TASK: Senior review of the IRR-T07-01 System-Impact Gate, then fresh independent re-review of W03.T07; do not start W03.T08.
-KNOWN_BLOCKERS: IRR-T07-01 System-Impact Gate and independent W03.T07 re-review remain open. Hosted CI is unavailable in the local-machine runtime. Clean canonical bytecode-disabled DEV unittest discovery is green at `953` passed with `6` skips; the optional pytest diagnostic surface has unrelated S6D/shared-state failures and is not being claimed green. The bare interpreter still lacks `referencing`; the isolated development environment and maintenance audit pass. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
+VERSION_IMPACT: W03.T07 IRR-T07-01 materially changes the existing policy-basis runtime `framework_module_version` `1.0.2 -> 1.0.3` for the expanded RepositoryPort observation capability. No access-control revision, route schema, campaign-contract, storage-format, engine-release, catalog, identifier-policy or shared DEV/GAME projection namespace required a bump.
+SYSTEM_IMPACT: NONE -- Senior resolution is realized inside the existing RepositoryPort capability boundary: bounded exact campaign-ref/commit reads, default/campaign ancestry comparison, and authenticated per-user author evidence produce the existing owner-issued creator evidence consumed by access control. No bootstrap, persistence, Wave-05 schema, semantic creator, second history/currentness authority, callback/validator authority or new architecture owner was introduced.
+TRIGGER_RESOLUTION: IRR-T07-01 caller-mintable creator provenance is closed by removing `_issue_verified_first_initialization_history(...)`; unavailable or ambiguous repository/authorship evidence returns `UNAVAILABLE`/`AMBIGUOUS` without creator evidence, and access authorization remains fail-closed.
+PROTECTED_INVARIANTS: no caller-mintable creator authority, no second history/currentness authority, no silent authorization transfer from login/projection fields, bounded Step-5.6 repository evidence, and preserved IRR-T07-02 full-body comparison/T07 laws.
+WHAT_CAN_PROCEED: independent W03.T07 re-review of the published combined T07 repair. W03.T08 remains blocked and is not started.
+NEXT_EXACT_TASK: fresh independent re-review of W03.T07 at `583c7f3fea01b75aeaf0fe37311fc99c9441521d`; do not start W03.T08.
+KNOWN_BLOCKERS: independent W03.T07 re-review remains pending; W03.T08 remains blocked. Hosted CI is unavailable in the local-machine runtime. Full DEV discovery had the cache/dirty-checkout failures recorded above; focused/named tests, version-policy and maintenance audit pass. The bare interpreter still lacks `referencing`; the isolated development environment and maintenance audit pass. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
 UNPUBLISHED_WORK: NONE after this cursor-update commit and its remote read-back.
 
 
