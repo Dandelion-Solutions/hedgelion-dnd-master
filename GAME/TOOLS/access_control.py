@@ -7,22 +7,25 @@ from the exact current PLAYER owner before an operation can be authorized.
 
 from __future__ import annotations
 
-import weakref
 from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Final, TypeAlias
 
+from .history import (
+    FirstInitializationHistoryEvidence,
+    _is_owner_issued_first_initialization_history,
+)
+
 
 AccountId: TypeAlias = str
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 ROUTE_SCHEMA_VERSION: Final = 1
 ROUTE_KIND: Final = "runtime.principal_player_routing"
 _RESOLUTION_TOKEN: Final = object()
-_CREATOR_PROVENANCE_TOKEN: Final = object()
 
 
 class AccessControlContractError(ValueError):
@@ -104,89 +107,11 @@ class VerifiedPrincipal:
         object.__setattr__(self, "login", login)
 
 
-@dataclass(frozen=True, slots=True, weakref_slot=True)
-class FirstInitializationProvenance:
-    """Owner-issued author evidence from the first campaign initialization commit."""
-
-    campaign_id: str
-    author_login: str
-    initialization_revision: str
-    parent_revision: str
-    first_campaign_specific_commit: bool = True
-    _issuer: object = field(default=None, repr=False, compare=False)
-
-    def __post_init__(self) -> None:
-        _nonempty(self.campaign_id, "creator provenance campaign_id")
-        _nonempty(self.author_login, "creator provenance author_login")
-        _git_revision(self.initialization_revision, "creator initialization revision")
-        _git_revision(self.parent_revision, "creator initialization parent revision")
-        if self.initialization_revision == self.parent_revision:
-            raise AccessControlContractError("creator initialization commit must advance its parent")
-        if type(self.first_campaign_specific_commit) is not bool or not self.first_campaign_specific_commit:
-            raise AccessControlContractError(
-                "creator provenance must identify the first campaign-specific initialization commit",
-                failure_code=AuthorizationFailureCode.CREATOR_UNCERTAIN,
-            )
-
-    def as_mapping(self) -> dict[str, object]:
-        return {
-            "campaign_id": self.campaign_id,
-            "author_login": self.author_login,
-            "initialization_revision": self.initialization_revision,
-            "parent_revision": self.parent_revision,
-            "first_campaign_specific_commit": True,
-        }
-
-
-_OWNER_ISSUED_CREATOR_PROVENANCE: dict[int, weakref.ReferenceType[FirstInitializationProvenance]] = {}
-
-
-def _mark_owner_issued_creator_provenance(
-    provenance: FirstInitializationProvenance,
-) -> FirstInitializationProvenance:
-    provenance_id = id(provenance)
-
-    def remove(reference: weakref.ReferenceType[FirstInitializationProvenance]) -> None:
-        if _OWNER_ISSUED_CREATOR_PROVENANCE.get(provenance_id) is reference:
-            _OWNER_ISSUED_CREATOR_PROVENANCE.pop(provenance_id, None)
-
-    _OWNER_ISSUED_CREATOR_PROVENANCE[provenance_id] = weakref.ref(provenance, remove)
-    object.__setattr__(provenance, "_issuer", _CREATOR_PROVENANCE_TOKEN)
-    return provenance
+FirstInitializationProvenance = FirstInitializationHistoryEvidence
 
 
 def _is_owner_issued_creator_provenance(value: object) -> bool:
-    if not isinstance(value, FirstInitializationProvenance):
-        return False
-    reference = _OWNER_ISSUED_CREATOR_PROVENANCE.get(id(value))
-    return value._issuer is _CREATOR_PROVENANCE_TOKEN and reference is not None and reference() is value
-
-
-def issue_first_initialization_provenance(
-    *,
-    campaign_id: str,
-    author_login: str,
-    initialization_revision: str,
-    parent_revision: str,
-) -> FirstInitializationProvenance:
-    """Issue first-initialization evidence after the native history owner resolves it."""
-
-    return _mark_owner_issued_creator_provenance(
-        FirstInitializationProvenance(
-            campaign_id=campaign_id,
-            author_login=author_login,
-            initialization_revision=initialization_revision,
-            parent_revision=parent_revision,
-        )
-    )
-
-
-def _git_revision(value: object, label: str) -> str:
-    if not isinstance(value, str) or len(value) not in {40, 64}:
-        raise AccessControlContractError(f"{label} must be an exact Git revision")
-    if any(character not in "0123456789abcdef" for character in value):
-        raise AccessControlContractError(f"{label} must be lowercase hexadecimal")
-    return value
+    return _is_owner_issued_first_initialization_history(value)
 
 
 def resolve_principal(value: VerifiedPrincipal | Mapping[str, object]) -> VerifiedPrincipal:
@@ -814,6 +739,14 @@ def _campaign_state(
     return state
 
 
+def _campaign_body(
+    value: CampaignAccessState | Mapping[str, object],
+) -> dict[str, object]:
+    if isinstance(value, CampaignAccessState):
+        return value.as_mapping()
+    return _mapping_copy(value, "campaign body")
+
+
 def _same_campaign_state(
     left: CampaignAccessState | Mapping[str, object],
     right: CampaignAccessState | Mapping[str, object],
@@ -821,7 +754,9 @@ def _same_campaign_state(
     revision: str,
 ) -> bool:
     try:
-        return _campaign_state(left, revision=revision) == _campaign_state(right, revision=revision)
+        _campaign_state(left, revision=revision)
+        _campaign_state(right, revision=revision)
+        return _campaign_body(left) == _campaign_body(right)
     except (AccessControlContractError, TypeError, ValueError):
         return False
 
@@ -2302,6 +2237,15 @@ def publish_forward_transition(
     if observed_campaign_revision != plan.expected_campaign_revision:
         raise AccessControlContractError(
             "campaign forward transition has stale currentness",
+            failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
+        )
+    if plan.current_campaign is None or not _same_campaign_state(
+        plan.current_campaign,
+        campaign_state,
+        revision=plan.expected_campaign_revision,
+    ):
+        raise AccessControlContractError(
+            "campaign forward publication body differs from frozen CAS basis",
             failure_code=AuthorizationFailureCode.CURRENTNESS_CONFLICT,
         )
     if campaign_acknowledgement is not None:

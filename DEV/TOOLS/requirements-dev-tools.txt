@@ -1,4 +1,2 @@
 jsonschema==4.26.0
 PyYAML==6.0.3
-pytest==8.4.2
-pytest-xdist==3.8.0

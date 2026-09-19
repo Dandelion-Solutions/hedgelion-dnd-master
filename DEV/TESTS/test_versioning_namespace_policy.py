@@ -88,7 +88,7 @@ def _iter_text_files():
         if not path.is_file():
             continue
         rel = path.relative_to(ROOT).as_posix()
-        if rel.startswith((".agents/", ".git/", ".hdm-devtools/", ".opencode/", ".pytest_cache/", ".venv/", "__pycache__/")):
+        if rel.startswith((".agents/", ".git/", ".hdm-devtools/", ".opencode/", ".pytest_cache/", ".superpowers/", ".venv/", "__pycache__/")):
             continue
         if any(part == "__pycache__" for part in path.parts):
             continue
@@ -190,6 +190,9 @@ class VersionNamespacePolicyTests(unittest.TestCase):
             with patch.object(sys.modules[__name__], "ROOT", root):
                 _counts, _examples, unclassified = census()
         self.assertEqual(unclassified, [])
+
+    def test_census_excludes_local_superpowers_infrastructure(self):
+        self._assert_census_excludes_workspace_path(".superpowers/sdd/review.diff")
 
     def test_census_excludes_local_virtual_environments(self):
         self._assert_census_excludes_workspace_path(".venv/lib/example.py")

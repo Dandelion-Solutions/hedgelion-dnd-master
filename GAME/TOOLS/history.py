@@ -4,10 +4,118 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
+from dataclasses import dataclass
+import re
+from typing import Final
+import weakref
+
+
+_GIT_REVISION = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
+_FIRST_INITIALIZATION_OWNER_TOKEN: Final = object()
 
 
 class HistoryContractError(ValueError):
     """Raised when a caller supplies invalid native history material."""
+
+
+@dataclass(frozen=True, slots=True, weakref_slot=True, init=False)
+class FirstInitializationHistoryEvidence:
+    """Verified creator evidence issued only by the native history owner."""
+
+    campaign_id: str
+    author_login: str
+    initialization_revision: str
+    parent_revision: str
+    first_campaign_specific_commit: bool = True
+
+    def __init__(self, **_values: object) -> None:
+        raise HistoryContractError(
+            "first-initialization evidence must be issued by the native history owner"
+        )
+
+    @classmethod
+    def _from_owner(
+        cls,
+        *,
+        owner_token: object,
+        campaign_id: str,
+        author_login: str,
+        initialization_revision: str,
+        parent_revision: str,
+    ) -> FirstInitializationHistoryEvidence:
+        if owner_token is not _FIRST_INITIALIZATION_OWNER_TOKEN:
+            raise HistoryContractError("first-initialization evidence requires the native history owner")
+        _nonempty_string(campaign_id, "creator provenance campaign_id")
+        _nonempty_string(author_login, "creator provenance author_login")
+        _git_revision(initialization_revision, "creator initialization revision")
+        _git_revision(parent_revision, "creator initialization parent revision")
+        if initialization_revision == parent_revision:
+            raise HistoryContractError("creator initialization commit must advance its parent")
+        instance = object.__new__(cls)
+        object.__setattr__(instance, "campaign_id", campaign_id)
+        object.__setattr__(instance, "author_login", author_login)
+        object.__setattr__(instance, "initialization_revision", initialization_revision)
+        object.__setattr__(instance, "parent_revision", parent_revision)
+        object.__setattr__(instance, "first_campaign_specific_commit", True)
+        _mark_owner_issued_first_initialization_history(instance)
+        return instance
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "campaign_id": self.campaign_id,
+            "author_login": self.author_login,
+            "initialization_revision": self.initialization_revision,
+            "parent_revision": self.parent_revision,
+            "first_campaign_specific_commit": True,
+        }
+
+
+_OWNER_ISSUED_FIRST_INITIALIZATION_HISTORY: dict[
+    int, weakref.ReferenceType[FirstInitializationHistoryEvidence]
+] = {}
+
+
+def _mark_owner_issued_first_initialization_history(
+    evidence: FirstInitializationHistoryEvidence,
+) -> None:
+    evidence_id = id(evidence)
+
+    def remove(reference: weakref.ReferenceType[FirstInitializationHistoryEvidence]) -> None:
+        if _OWNER_ISSUED_FIRST_INITIALIZATION_HISTORY.get(evidence_id) is reference:
+            _OWNER_ISSUED_FIRST_INITIALIZATION_HISTORY.pop(evidence_id, None)
+
+    _OWNER_ISSUED_FIRST_INITIALIZATION_HISTORY[evidence_id] = weakref.ref(evidence, remove)
+
+
+def _is_owner_issued_first_initialization_history(value: object) -> bool:
+    if not isinstance(value, FirstInitializationHistoryEvidence):
+        return False
+    reference = _OWNER_ISSUED_FIRST_INITIALIZATION_HISTORY.get(id(value))
+    return reference is not None and reference() is value
+
+
+def _issue_verified_first_initialization_history(
+    *,
+    campaign_id: str,
+    author_login: str,
+    initialization_revision: str,
+    parent_revision: str,
+) -> FirstInitializationHistoryEvidence:
+    """Internal native-history-owner seam used by the verified history adapter."""
+
+    return FirstInitializationHistoryEvidence._from_owner(
+        owner_token=_FIRST_INITIALIZATION_OWNER_TOKEN,
+        campaign_id=campaign_id,
+        author_login=author_login,
+        initialization_revision=initialization_revision,
+        parent_revision=parent_revision,
+    )
+
+
+def _git_revision(value: object, label: str) -> str:
+    if not isinstance(value, str) or _GIT_REVISION.fullmatch(value) is None:
+        raise HistoryContractError(f"{label} must be an exact lowercase Git revision")
+    return value
 
 
 def _mapping(value: object, label: str) -> Mapping[str, object]:
