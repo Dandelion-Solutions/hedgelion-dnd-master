@@ -120,18 +120,23 @@ def _projection(source: LiveEnvelope, *candidates: dict[str, object]) -> dict[st
 class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
     def test_current_source_candidates_normalize_under_native_information_owners(self) -> None:
         source = _live_source()
+        projection = _projection(
+            source,
+            {"recipient_player_id": "player.aria", "evidence": _native_information()},
+        )
         candidates = extract_material_live_information(
             _route(source),
             source,
-            _projection(
-                source,
-                {"recipient_player_id": "player.aria", "evidence": _native_information()},
-            ),
+            projection,
             recipient_player_id="player.aria",
         )
 
         result = apply_normalization_candidates_under_native_owners(
-            candidates, _route(source), source, recipient_player_id="player.aria"
+            candidates,
+            _route(source),
+            source,
+            projection=projection,
+            recipient_player_id="player.aria",
         )
 
         self.assertEqual(len(result), 1)
@@ -220,6 +225,10 @@ class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
 
     def test_apply_rejects_caller_forged_or_stale_candidate(self) -> None:
         source = _live_source(revision="b" * 40)
+        projection = _projection(
+            source,
+            {"recipient_player_id": "player.aria", "evidence": _native_information()},
+        )
         forged = LiveInformationCandidate(
             source_key=source.source_key,
             source_ref=source.source_ref,
@@ -231,76 +240,123 @@ class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
 
         with self.assertRaisesRegex(InformationContractError, "current|stale|admitted"):
             apply_normalization_candidates_under_native_owners(
-                (forged,), _route(source), source, recipient_player_id="player.aria"
+                (forged,),
+                _route(source),
+                source,
+                projection=projection,
+                recipient_player_id="player.aria",
             )
 
-    def test_apply_rejects_matching_current_directly_constructed_candidate(self) -> None:
+    def test_apply_uses_owner_extraction_for_direct_candidate_request(self) -> None:
         source = _live_source()
+        projection = _projection(
+            source,
+            {"recipient_player_id": "player.aria", "evidence": _native_information()},
+        )
+        forged_evidence = _native_information()
+        forged_evidence["fact"]["statement"] = "A forged passage appears."
         direct = LiveInformationCandidate(
             source_key=source.source_key,
             source_ref=source.source_ref,
             source_revision=source.source_revision,
             source_native_ids=source.source_native_ids,
             recipient_player_id="player.aria",
-            evidence=_native_information(),
+            evidence=forged_evidence,
         )
 
-        with self.assertRaisesRegex(InformationContractError, "extract|admit|provenance"):
-            apply_normalization_candidates_under_native_owners(
-                (direct,), _route(source), source, recipient_player_id="player.aria"
-            )
+        result = apply_normalization_candidates_under_native_owners(
+            (direct,),
+            _route(source),
+            source,
+            projection=projection,
+            recipient_player_id="player.aria",
+        )
 
-    def test_apply_rejects_object_setattr_marker_forgery(self) -> None:
+        self.assertEqual(
+            result[0]["lore_fact"]["statement"],
+            "A hidden passage opens behind the tapestry.",
+        )
+
+    def test_apply_ignores_post_extraction_candidate_evidence_mutation(self) -> None:
         source = _live_source()
+        projection = _projection(
+            source,
+            {"recipient_player_id": "player.aria", "evidence": _native_information()},
+        )
         candidates = extract_material_live_information(
             _route(source),
             source,
-            _projection(
-                source,
-                {"recipient_player_id": "player.aria", "evidence": _native_information()},
-            ),
+            projection,
             recipient_player_id="player.aria",
         )
-        with self.assertRaises((AttributeError, InformationContractError)):
-            object.__setattr__(candidates[0], "_extraction_admission", object())
-            apply_normalization_candidates_under_native_owners(
-                candidates, _route(source), source, recipient_player_id="player.aria"
-            )
+        forged_evidence = _native_information()
+        forged_evidence["fact"]["statement"] = "A forged passage appears."
+        object.__setattr__(candidates[0], "evidence", forged_evidence)
 
-    def test_imported_valid_admission_cannot_be_attached_to_candidate(self) -> None:
+        result = apply_normalization_candidates_under_native_owners(
+            candidates,
+            _route(source),
+            source,
+            projection=projection,
+            recipient_player_id="player.aria",
+        )
+
+        self.assertEqual(
+            result[0]["lore_fact"]["statement"],
+            "A hidden passage opens behind the tapestry.",
+        )
+
+    def test_private_or_closure_admission_cannot_supply_candidate_evidence(self) -> None:
         source = _live_source()
+        projection = _projection(
+            source,
+            {"recipient_player_id": "player.aria", "evidence": _native_information()},
+        )
+        forged_evidence = _native_information()
+        forged_evidence["fact"]["statement"] = "A forged passage appears."
         candidate = LiveInformationCandidate(
             source_key=source.source_key,
             source_ref=source.source_ref,
             source_revision=source.source_revision,
             source_native_ids=source.source_native_ids,
             recipient_player_id="player.aria",
-            evidence=_native_information(),
-        )
-        forged_admission = information_module._LiveInformationAdmission(
-            issuer=information_module._LIVE_INFORMATION_ADMISSION_ISSUER,
-            evidence_snapshot=_native_information(),
+            evidence=forged_evidence,
         )
 
-        with self.assertRaises((AttributeError, InformationContractError)):
-            object.__setattr__(candidate, "_extraction_admission", forged_admission)
-            apply_normalization_candidates_under_native_owners(
-                (candidate,), _route(source), source, recipient_player_id="player.aria"
-            )
+        closure_issuers = [
+            cell.cell_contents
+            for cell in getattr(extract_material_live_information, "__closure__", ()) or ()
+            if callable(cell.cell_contents) and getattr(cell.cell_contents, "__name__", "") == "issue"
+        ]
+        self.assertEqual(closure_issuers, [])
+        private_issuer = getattr(information_module, "_issue_live_information_admission", None)
+        self.assertFalse(callable(private_issuer))
 
-    def test_candidate_has_no_trusted_snapshot_after_evidence_mutation(self) -> None:
+        result = apply_normalization_candidates_under_native_owners(
+            (candidate,),
+            _route(source),
+            source,
+            projection=projection,
+            recipient_player_id="player.aria",
+        )
+
+        self.assertEqual(
+            result[0]["lore_fact"]["statement"],
+            "A hidden passage opens behind the tapestry.",
+        )
+
+    def test_normalization_reextracts_after_candidate_evidence_mutation(self) -> None:
         source = _live_source()
+        projection = _projection(
+            source,
+            {"recipient_player_id": "player.aria", "evidence": _native_information()},
+        )
         candidates = extract_material_live_information(
             _route(source),
             source,
-            _projection(
-                source,
-                {"recipient_player_id": "player.aria", "evidence": _native_information()},
-            ),
+            projection,
             recipient_player_id="player.aria",
         )
-        with self.assertRaises(AttributeError):
-            object.__getattribute__(candidates[0], "_extraction_admission")
 
         forged_evidence = _native_information()
         forged_evidence["fact"]["statement"] = "A forged passage appears."
@@ -308,7 +364,11 @@ class LiveInformationNormalizationIntegrationTests(unittest.TestCase):
         object.__setattr__(candidates[0], "evidence", forged_evidence)
 
         result = apply_normalization_candidates_under_native_owners(
-            candidates, _route(source), source, recipient_player_id="player.aria"
+            candidates,
+            _route(source),
+            source,
+            projection=projection,
+            recipient_player_id="player.aria",
         )
 
         self.assertEqual(

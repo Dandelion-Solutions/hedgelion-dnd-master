@@ -15,8 +15,9 @@ bounded input record. W04 is not started.
 
 - `GAME/TOOLS/information.py` resolves the observed source through the selected
   complete `LiveRouting` entry, extracts only exact-source, recipient-bound LIVE
-  information candidates, and passes only admitted extraction results through
-  the existing native lore, knowledge, disclosure, and message normalizers.
+  information candidates, and re-runs that canonical extraction during
+  normalization before passing freshly derived evidence through the existing
+  native lore, knowledge, disclosure, and message normalizers.
 - `GAME/TOOLS/live_state.py` resolves the observed source through the selected
   complete `LiveRouting` entry before providing an ephemeral material/current-
   scene bridge bound to `(campaign_id, scene_id, epoch_id)`, the exact LIVE ref,
@@ -24,12 +25,13 @@ bounded input record. W04 is not started.
 - A LIVE physical projection is evidence/input only. It cannot mint knowledge,
   disclosure, message, scene, principal, or currentness authority.
 - Missing, orphaned, superseded and stale sources, stale source revisions,
-  stale source-native history, recipient mismatch, direct unadmitted candidate
-  construction, forged admission markers, post-admission evidence mutation,
-  legacy visibility/perception fields, and pre-v1 branch/revision shapes fail
-  closed. The candidate carries no trusted admission or snapshot; module-owned
-  identity-keyed extraction state carries the immutable evidence snapshot, and
-  there is no latest-looking or campaign-base fallback.
+  stale source-native history, recipient mismatch, candidate request mismatch,
+  candidate evidence injection, private/closure admission access,
+  post-extraction evidence mutation, legacy visibility/perception fields, and
+  pre-v1 branch/revision shapes fail closed. The candidate carries no trusted
+  admission or snapshot and is never normalization evidence; owner-side
+  canonical extraction is the sole evidence path, and there is no
+  latest-looking or campaign-base fallback.
 
 ## Wave-05 shipped inputs
 

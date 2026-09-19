@@ -1,6 +1,6 @@
 # Information, Clues and Mysteries
 
-framework_module_version: 1.0.8
+framework_module_version: 1.0.9
 load_when: investigation, mystery, lore discovery, perception, hidden information
 
 ## Information layers
@@ -15,7 +15,7 @@ Visibility, possession, narration, repository readability, cache/index presence 
 
 Before player-facing emission, validate recipient-scoped disclosure references against eligible source evidence. One outbound message and its material disclosure transitions form one semantic closure; delivery to one recipient never advances another recipient's disclosure or any PC's knowledge.
 
-During a selected LIVE epoch, `live_facts`, perception lists and other physical LIVE material are bounded evidence/input only. Normalize material information through the selected `LiveRouting` entry, exact current source and the native lore/knowledge/disclosure/message owners; a missing, orphaned, superseded or stale source, recipient mismatch, unadmitted candidate or legacy visibility field fails closed. The candidate carries no trusted admission or snapshot: module-owned identity-keyed extraction state supplies an immutable evidence snapshot for normalization, so post-admission projection mutation cannot alter the native result. LIVE physical presence never creates a second knowledge or disclosure authority, and campaign-base/current-scene projections never substitute for the selected source.
+During a selected LIVE epoch, `live_facts`, perception lists and other physical LIVE material are bounded evidence/input only. Normalize material information through the selected `LiveRouting` entry, exact current source and the native lore/knowledge/disclosure/message owners; a missing, orphaned, superseded or stale source, recipient mismatch, candidate request mismatch or legacy visibility field fails closed. A candidate is untrusted request/comparison data only: normalization re-runs the canonical exact-current extraction from the owner-supplied projection and never uses candidate evidence, private symbols, closure state or post-extraction mutation as authority. LIVE physical presence never creates a second knowledge or disclosure authority, and campaign-base/current-scene projections never substitute for the selected source.
 
 Knowledge requires a source: observation, testimony, inference, magic, prior history, records or another established mechanism.
 
