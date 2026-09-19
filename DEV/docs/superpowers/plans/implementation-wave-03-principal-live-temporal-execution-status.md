@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-03-principal-live-temporal
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
-STATUS: COMPLETE
-CURRENT_TASK: NONE — Wave 03 closed by mandatory Senior integration PASS
-LAST_COMPLETED_TASK: mandatory Senior Wave-03 integration audit -- PASS / Wave 03 CLOSED
-LAST_SAFE_SHA: `9ae3feb74a2d657a081140781899dcbe66819b5b` (exact reviewed Wave-03 FINAL_REVIEW head; T08 PASS is durably recorded by this cursor state, while `4ba47f...` is the preceding implementation/cursor checkpoint)
+STATUS: INDEPENDENT_SENIOR_REVIEW_REQUIRED
+CURRENT_TASK: W03.T07 targeted F63-F65 repair — independent Senior re-review required; do not claim Senior PASS
+LAST_COMPLETED_TASK: targeted F63-F65 repair implementation, focused/cross-surface verification, and version-impact synchronization
+LAST_SAFE_SHA: `940d2a3aa28e6e0ee81a6b583890a2fa35550046` (targeted repair implementation checkpoint; cursor synchronization remains review metadata only)
 
 ## Dependency schedule
 
@@ -325,4 +325,30 @@ Bookkeeping correction: `4ba47f2403dec3295c745ae98ff2a11558911214` is the publis
 VERSION_IMPACT: NONE for the Senior audit/closure synchronization.
 SYSTEM_IMPACT: NONE.
 BLOCKING_FINDINGS: NONE.
-NEXT_EXACT_TASK: continue from global current progress into Wave 04; do not start W04.T07 RED before the mandatory CLS↔HDM preflight.
+NEXT_EXACT_TASK: independent Senior re-review of the targeted F63-F65 repair at `940d2a3aa28e6e0ee81a6b583890a2fa35550046`; do not start W04.T07 RED before the mandatory CLS↔HDM preflight.
+
+
+## Targeted F63-F65 repair after prior Wave-03 closure record
+
+REPAIR_BASE_SHA: `890f04478411996cda58273f863fdc8f6666b94a`
+REPAIR_IMPLEMENTATION_HEAD: `940d2a3aa28e6e0ee81a6b583890a2fa35550046`
+REPAIR_SCOPE: F63-F65 only; no W04/W05 implementation or shared/Wave-05 final-writer surface changes
+INDEPENDENT_REVIEW: REQUIRED — this repair invalidates reliance on the prior Senior Wave-03 PASS; no new Senior PASS is claimed
+
+RED_WITNESSES:
+- copied/rebound `PlayerResolution` cannot escalate mechanical-override authority;
+- a resolution bound to one campaign cannot authorize another campaign;
+- access publication rejects deactivation status/provenance drift;
+- after-authority access recovery rejects deactivation status/provenance drift;
+- fabricated `READY_TO_PUBLISH` multi-LIVE progress retaining an active H0 source fails closed.
+
+GREEN_AND_REGRESSION:
+- focused access/LIVE suite: 169 passed;
+- named cross-surface plus version-policy suites: 309 passed;
+- maintenance audit: PASS;
+- canonical full DEV unittest discovery: 990 collected, 989 passed, 6 skipped, 1 dirty-worktree provenance failure before this cursor synchronization.
+
+VERSION_IMPACT: access-control runtime `framework_module_version` `1.0.4 -> 1.0.5` and DEV `access_control_revision` `11 -> 12`; no route schema, campaign-contract, storage-format, engine-release, catalog, identifier-policy, shared DEV/GAME projection, or Wave-05 namespace bump.
+SYSTEM_IMPACT: NONE — owner-local principal/access and exact LIVE publication validation only; no new semantic owner, dependency reversal, distributed transaction, broad scan, fallback authority, or shared/Wave-05 write.
+HOSTED_CI: UNAVAILABLE in the local-machine runtime; no hosted PASS claimed.
+UNPUBLISHED_WORK: cursor synchronization only; implementation checkpoint `940d2a3aa28e6e0ee81a6b583890a2fa35550046` is committed locally, but the repair and cursor are not yet published/read back.
