@@ -1,6 +1,6 @@
 # HDM v1 Implementation Wave 04 — Collaboration, Context and Story
 
-Status: **PLANNED / DEPENDENCY-GATED — MANDATORY CLS↔HDM PREFLIGHT STOP BEFORE W04.T07 RED**
+Status: **CURRENT / WAVE 04 EXECUTION AUTHORIZED — MANDATORY CLS↔HDM PREFLIGHT STOP BEFORE W04.T07 RED**
 
 Goal: realize multiplayer collaboration over the current PLAYER/access-policy view, integrate bounded Context and protected emission, and publish Story/T0/Commentator/Dramaturg projections from native history without creating secondary authority.
 

@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — CONSOLIDATED IMPLEMENTATION PLAN SENIOR PASS / GO — WAVE 03 EXECUTION AUTHORIZED
+GLOBAL_STATE: R2.7 CLOSED — CONSOLIDATED IMPLEMENTATION PLAN SENIOR PASS / GO — WAVE 04 EXECUTION AUTHORIZED
 CURRENT_WORKSTREAM: production implementation
-CURRENT_SLICE: Wave 03 — principal, LIVE and temporal authority
-LAST_CLOSED_UNIT: Wave 02 implementation independently reviewed and closed PASS; closure explicitly confirmed by Product Owner on 2026-09-18
-NEXT_AUTHORIZED_UNIT: execute Wave 03 from `DEV/docs/superpowers/plans/implementation-wave-03-principal-live-temporal.md` under dependency-valid parallel orchestration, TDD/review/version-impact/checkpoint discipline and the current development-execution process
-REQUIRED_GATE: Wave-03 autonomous TDD/review/version-impact/checkpoint discipline -> exact-head Wave-03 completion verification -> mandatory Senior Wave-03 integration audit before Wave 03 is marked complete
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-03-principal-live-temporal-execution-status.md` — create before the first Wave-03 RED/checkpoint
-KNOWN_BLOCKERS: NONE for Wave-03 start; individual tasks remain gated by named producer checkpoints. The mandatory CLS↔HDM synchronization stop before W04.T07 RED remains in force and must not be bypassed. Migration execution, release execution and gameplay bootstrap remain unauthorized
+CURRENT_SLICE: Wave 04 — collaboration, Context and Story
+LAST_CLOSED_UNIT: Wave 03 implementation independently reviewed task-by-task and closed by mandatory Senior integration audit PASS on 2026-09-19; reviewed implementation head `9ae3feb74a2d657a081140781899dcbe66819b5b`
+NEXT_AUTHORIZED_UNIT: execute Wave 04 from `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md` under dependency-valid parallel orchestration, TDD/review/version-impact/checkpoint discipline and the current development-execution process
+REQUIRED_GATE: Wave-04 autonomous TDD/review/version-impact/checkpoint discipline -> mandatory fresh CLS↔HDM preflight immediately before W04.T07 RED -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — create before the first Wave-04 RED/checkpoint
+KNOWN_BLOCKERS: NONE for Wave-04 start; individual tasks remain gated by named producer checkpoints. The mandatory CLS↔HDM synchronization stop immediately before W04.T07 RED remains in force and must not be bypassed. Migration execution, release execution and gameplay bootstrap remain unauthorized
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -43,8 +43,8 @@ The route remains:
 ```text
 01 owner-native foundations                 COMPLETE / SENIOR PASS
 -> 02 deterministic execution, durability and recovery   COMPLETE / SENIOR PASS
--> 03 principal/PLAYER, LIVE and temporal handoff       CURRENT / AUTHORIZED
--> 04 collaboration, Context and Story
+-> 03 principal/PLAYER, LIVE and temporal handoff       COMPLETE / SENIOR PASS
+-> 04 collaboration, Context and Story                  CURRENT / AUTHORIZED
 -> 05 final 17+17 machine, bootstrap and shared writers
 -> 06 proof, exact-head validation and Senior handoff
 ```
@@ -145,6 +145,50 @@ The coordinator must obey the package execution contract for every task: fresh c
 
 No Wave-03 task is authorized merely because a Wave-02 producer becomes GREEN unless the canonical current-progress cursor is intentionally advanced after Wave-02 closure/Senior gate. This execution slice uses a wave barrier for coordination even though the package graph itself permits dependency-valid later-wave work.
 
+
+## Wave 03 closure provenance
+
+Closed Wave-03 owner:
+
+`DEV/docs/superpowers/plans/implementation-wave-03-principal-live-temporal.md`
+
+Durable execution evidence:
+
+`DEV/docs/superpowers/plans/implementation-wave-03-principal-live-temporal-execution-status.md`
+
+The mandatory Senior integration audit reviewed the actual `1a90befb747c6d0694d68ad30614e9bed9811d97..9ae3feb74a2d657a081140781899dcbe66819b5b` Wave-03 delta: 83 commits across 29 changed files, the W03.T01–T08 task/re-review ledger, all recorded System-Impact rulings/repairs, final owner/currentness boundaries and exact-head hosted verification.
+
+Accepted closure facts:
+
+- principal -> candidate PLAYER route -> exact current PLAYER reload remains the authorization route; login/email/index/scans do not substitute for stable binding evidence;
+- LIVE currentness is selected-route exact-source currentness; prepared/local/latest/physical-order evidence is non-authoritative;
+- source-native LIVE ID/cursor advancement remains exact-source CAS-bound;
+- campaign absorption, temporal and operational-root handoff preserve owner authority and fail closed across stale/forged/cross-campaign evidence;
+- creator-only access remains bound to bounded authenticated RepositoryPort history evidence for the first campaign-specific initialization author; stable GitHub account ID remains PLAYER binding evidence, not creator authority;
+- T08 information/scene consumers remain projections/inputs over exact selected LIVE/native owners and do not take over information, scene or currentness authority;
+- deferred Wave-05 final-writer surfaces `GAME/CORE/LIVE_SCENE.md`, `GAME/CORE/MULTIPLAYER.md`, retained shared scene schemas and final catalog/identifier-policy bytes are absent from the final Wave-03 implementation delta;
+- the mandatory CLS↔HDM preflight before W04.T07 remains unchanged.
+
+Wave-03 verification at reviewed head `9ae3feb74a2d657a081140781899dcbe66819b5b`:
+
+```text
+hosted workflow: Validate engine source
+run: 35462905283
+job: 105949854760
+head_sha: exact
+conclusion: success
+Run full maintenance audit: success
+Run DEV unit tests: success
+```
+
+Senior disposition:
+
+```text
+SENIOR_INTEGRATION_AUDIT: PASS
+WAVE_03: COMPLETE
+BLOCKING_FINDINGS: NONE
+```
+
 ## Preserved package laws
 
 - Native semantic owners remain authoritative; cache/index/checkpoint/Story/projections/routes do not become authority.
@@ -193,20 +237,20 @@ The preflight does not require all private CLS repairs to be closed, does not re
 ## Durable cursor
 
 PLAN: `DEV/docs/superpowers/plans/implementation-plan-index.md`
-CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-03-principal-live-temporal.md`
+CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md`
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
-BASE_SHA: Wave-03 coordinator records the fresh implementation-start HEAD in `implementation-wave-03-principal-live-temporal-execution-status.md` before the first RED.
+BASE_SHA: Wave-04 coordinator records the fresh implementation-start HEAD in `implementation-wave-04-collaboration-context-story-execution-status.md` before the first RED.
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: Wave-03 coordinator bootstrap, execution-cursor creation and dependency-valid task scheduling
-LAST_COMPLETED_TASK: Wave 02 independent Senior integration audit — PASS / CLOSED, explicitly confirmed by Product Owner on 2026-09-18
-LAST_SAFE_SHA: fresh remote HEAD must be recorded by the Wave-03 coordinator before production mutation
+CURRENT_TASK: Wave-04 coordinator bootstrap, execution-cursor creation and dependency-valid task scheduling
+LAST_COMPLETED_TASK: Wave 03 mandatory Senior integration audit — PASS / CLOSED on reviewed head `9ae3feb74a2d657a081140781899dcbe66819b5b`
+LAST_SAFE_SHA: fresh remote HEAD must be recorded by the Wave-04 coordinator before production mutation
 
-CURRENT_VERIFICATION_STATE: Wave 02 is closed; Wave 03 is authorized. Each Wave-03 task owns its focused verification/checkpoint, and Wave-03 completion still requires exact-head broad verification plus mandatory Senior integration audit.
-VERSION_IMPACT: NONE for this status/header synchronization; every Wave-03 task retains its own mandatory Version Impact Gate.
-SYSTEM_IMPACT: NONE for Wave-03 activation. Any qualifying implementation event uses the canonical System-Impact Gate.
-NEXT_EXACT_TASK: create/update the Wave-03 execution-status cursor from the fresh remote HEAD; build the Wave-03 dependency schedule; start all currently dependency-valid tasks subject to the coordinator's concurrency policy.
-KNOWN_BLOCKERS: NONE for Wave-03 start. Do not bypass the mandatory CLS↔HDM synchronization stop before W04.T07 RED.
+CURRENT_VERIFICATION_STATE: Wave 03 is closed with exact-head hosted CI success; Wave 04 is authorized. Each Wave-04 task owns focused verification/checkpoint review, and Wave-04 completion still requires exact-head broad verification plus mandatory Senior integration audit.
+VERSION_IMPACT: NONE for this Senior closure/status synchronization.
+SYSTEM_IMPACT: NONE for Wave-03 closure / Wave-04 activation. The mandatory CLS↔HDM preflight immediately before W04.T07 RED remains a separate required gate.
+NEXT_EXACT_TASK: create/update the Wave-04 execution-status cursor from fresh remote HEAD; build the dependency schedule; start all currently dependency-valid W04 tasks subject to current orchestration policy. Do not execute W04.T07 RED until its mandatory CLS↔HDM preflight is completed and recorded.
+KNOWN_BLOCKERS: NONE for Wave-04 start. W04.T07 alone remains preflight-gated. Migration execution, release execution and gameplay bootstrap remain unauthorized.
 UNPUBLISHED_WORK: NONE after verified publication/read-back.
 
-Production implementation Wave 03 is authorized. Migration execution, release execution and gameplay bootstrap remain unauthorized unless later explicit gates are satisfied.
+Production implementation Wave 04 is authorized. Migration execution, release execution and gameplay bootstrap remain unauthorized unless later explicit gates are satisfied.
