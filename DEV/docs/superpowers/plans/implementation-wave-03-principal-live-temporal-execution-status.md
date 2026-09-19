@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-03-principal-live-temporal
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
-STATUS: FINAL_REVIEW
-CURRENT_TASK: W03.T06 independent re-review PASS after callable LIVE-to-CAMPAIGN recovery bypass repair
-LAST_COMPLETED_TASK: W03.T06 callable LIVE-to-CAMPAIGN recovery bypass repair implementation and clean verification
-LAST_SAFE_SHA: `37000154d65aaf6d6878a9980447d0cff4a92b7c` (published/read-back repair checkpoint)
+STATUS: EXECUTION_AUTHORIZED
+CURRENT_TASK: W03.T07 -- PLAYER and campaign access-policy transitions
+LAST_COMPLETED_TASK: W03.T06 independent review -- PASS / W03 temporal and operational handoff checkpoints accepted
+LAST_SAFE_SHA: `58157f7c39bcd09e79dc5cfbbacaf7cb27cd448f` (published/read-back T06 reviewer-PASS checkpoint)
 
 ## Dependency schedule
 
