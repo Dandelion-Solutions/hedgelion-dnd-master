@@ -202,7 +202,7 @@ SYSTEM_IMPACT: NONE -- Senior resolution is realized inside the existing Reposit
 TRIGGER_RESOLUTION: IRR-T07-01 caller-mintable creator provenance is closed by removing `_issue_verified_first_initialization_history(...)`; unavailable or ambiguous repository/authorship evidence returns `UNAVAILABLE`/`AMBIGUOUS` without creator evidence, and access authorization remains fail-closed.
 PROTECTED_INVARIANTS: no caller-mintable creator authority, no second history/currentness authority, no silent authorization transfer from login/projection fields, bounded Step-5.6 repository evidence, and preserved IRR-T07-02 full-body comparison/T07 laws.
 WHAT_CAN_PROCEED: independent W03.T07 re-review of the published combined T07 repair. W03.T08 remains blocked and is not started.
-NEXT_EXACT_TASK: fresh independent re-review of W03.T07 at `583c7f3fea01b75aeaf0fe37311fc99c9441521d`; do not start W03.T08.
+NEXT_EXACT_TASK: fresh independent re-review of W03.T07 at combined published HEAD `8b29962b9579c48c3a0e96943fc0dea9238936c1`; do not start W03.T08.
 KNOWN_BLOCKERS: independent W03.T07 re-review remains pending; W03.T08 remains blocked. Hosted CI is unavailable in the local-machine runtime. Full DEV discovery had the cache/dirty-checkout failures recorded above; focused/named tests, version-policy and maintenance audit pass. The bare interpreter still lacks `referencing`; the isolated development environment and maintenance audit pass. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
 UNPUBLISHED_WORK: NONE after this cursor-update commit and its remote read-back.
 
