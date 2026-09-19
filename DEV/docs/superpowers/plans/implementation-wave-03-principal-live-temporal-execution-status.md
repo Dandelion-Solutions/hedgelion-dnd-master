@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: W03.T07 -- PLAYER and campaign access-policy transitions (implementation checkpoint published; independent review pending)
-LAST_COMPLETED_TASK: W03.T07 implementation checkpoint -- access-policy transition closure GREEN; independent review pending
-LAST_SAFE_SHA: `96d0e74a53fa91c3f4dd91d7711c41eff30a7461` (published/read-back W03.T07 implementation checkpoint)
+CURRENT_TASK: W03.T07 -- PLAYER and campaign access-policy transitions (repair checkpoint published; independent review pending)
+LAST_COMPLETED_TASK: W03.T07 repair round 2 -- native creator history and exact campaign-body currentness; independent review pending
+LAST_SAFE_SHA: `e19ae87` (local coherent repair/tooling checkpoint; publication pending)
 
 ## Dependency schedule
 
@@ -80,6 +80,9 @@ COMPLETED_TASKS:
 - W03.T06 direct recovery bypass repair -> `7544738c43d9fe968892555446e1eb28bb67c52b` (published/read-back; public LIVE-to-campaign recovery entry fail-closed, internal reconciliation retained behind LIVE admission)
 - W03.T06 callable recovery bypass repair -> `37000154d65aaf6d6878a9980447d0cff4a92b7c` (published/read-back; all recovery-root LIVE-to-CAMPAIGN callable entries removed, owner-side LIVE orchestration retained)
 - W03.T07 implementation checkpoint -> `96d0e74a53fa91c3f4dd91d7711c41eff30a7461` (published/read-back; PLAYER/campaign access-policy transitions and bounded multi-LIVE forward closure; independent review pending)
+- W03.T07 repair round 1 -> `0c6a6e3` (published/read-back; caller creator-login assertions fail closed, multi-LIVE recovery/publication currentness and owner-issued CAS evidence repaired; independent review pending)
+- W03.T07 repair round 2 -> `734a056` (local coherent checkpoint; native-history creator evidence cannot be caller-constructed, campaign publication/recovery compare the exact frozen body, and forged public provenance construction is rejected)
+- W03.T07 tooling reroute -> `e19ae87` (local coherent checkpoint; pytest/pytest-xdist remain repository development tooling under the current `AGENTS.md` parallel-test policy and are not part of the T07 semantic delta)
 
 CURRENT_VERIFICATION_STATE:
 - fresh `git fetch --prune origin` completed before the W03.T01 implementation and before this cursor;
@@ -135,6 +138,9 @@ CURRENT_VERIFICATION_STATE:
 - W03.T06 callable recovery bypass repair RED/GREEN: the baseline exposed public/private recovery and generic reconciliation callables; direct, reconstructed, and repeated LIVE mappings were rejected after those entries were removed. Focused runtime suites passed `196`; cross-owner plus version-policy passed `218`; clean full DEV discovery passed `923` with `6` skips; maintenance audit, version census, and `git diff --check` passed.
 - W03.T07 GREEN: focused `test_rd09_access_live` passed `135` tests; named cross-owner and version-policy suites passed `197` tests; clean full DEV discovery passed `934` tests with `6` skips; version census reported zero unclassified and zero legacy hits; maintenance audit, compile checks and `git diff --check` passed. The clean-checkout provenance assertion passed at the committed checkpoint.
 - W03.T07 changed only `GAME/TOOLS/access_control.py` and `DEV/TESTS/test_rd09_access_live.py`; no Wave-05 shared schema, CORE, catalog, identifier-policy, LIVE schema or temporal/operational handoff bytes changed.
+- W03.T07 repair round 2 RED/GREEN: public provenance construction failed closed after the new history-owner evidence type was introduced, and publication rejected an unmodeled frozen campaign-body field after exact raw-body comparison was added. Focused `test_rd09_access_live` passed `151` tests; named cross-owner/version-policy suites passed `214` tests; canonical bytecode-disabled DEV unittest discovery passed `951` tests with `6` skips; maintenance audit passed; version census reported zero unclassified and zero legacy hits; `git diff --check` passed.
+- The optional pytest diagnostic surface is not an acceptance substitute: sequential pytest collected four unrelated S6D function-contract failures, while `-n auto` additionally exposed shared-state/cache-order failures. These paths do not involve the T07 delta and were not widened into this repair.
+- The current `AGENTS.md` parallel-test policy owns the pytest/pytest-xdist tooling route introduced by `0bfb767`; the T07 checkpoint therefore leaves those development dependencies intact and records them outside the T07 semantic change.
 
 VERSION_IMPACT: W03.T02 review repair round 1 materially changes the LIVE runtime module `framework_module_version` 1.0.1 -> 1.0.2 and the ephemeral publication-attempt schema 1 -> 2 because selected-route and complete-successor evidence are now required. Claim/routing serialized shapes remain schema v1; their repair rejects pre-release invalid claim forms without changing serialized fields or adding a migration/projection.
 
@@ -180,6 +186,9 @@ SYSTEM_IMPACT: NONE -- the implementation remains within the approved principal/
 VERSION_IMPACT: W03.T07 repair materially changes access-control runtime `framework_module_version` `1.0.1 -> 1.0.2` and DEV `access_control_revision` `8 -> 9`. No route schema, campaign-contract, storage-format, engine-release, catalog, identifier-policy or shared DEV/GAME projection namespace changed.
 SYSTEM_IMPACT: NONE -- the repair remains within the approved principal/access-policy and exact LIVE-source envelope. It adds no semantic owner, fallback authority, distributed transaction, broad scan, shared/Wave-05 write or persistent schema migration; recovery consumes one exact current route/body and preserves LIVE-owned CAS authority. Independent reviewer PASS remains pending; T07/T08 stay blocked.
 VERSION_IMPACT: NONE -- this cursor/report synchronization changes only development execution metadata; the runtime namespace transitions are recorded in the preceding repair entry.
+VERSION_IMPACT: W03.T07 repair round 2 materially changes access-control runtime `framework_module_version` `1.0.2 -> 1.0.3` and DEV `access_control_revision` `9 -> 10`. No route schema, campaign-contract, storage-format, engine-release, catalog, identifier-policy or shared DEV/GAME projection namespace changed.
+SYSTEM_IMPACT: NONE -- repair round 2 remains within the approved principal/access-policy and exact LIVE-source envelope. It removes caller-mint provenance paths and adds no new semantic owner, dependency reversal, transaction, broad scan, shared/Wave-05 write or persistent schema migration. Independent reviewer PASS remains pending; T07/T08 stay blocked.
+VERSION_IMPACT: NONE -- the tooling reroute and execution cursor update change no runtime, schema, catalog, storage or release namespace.
 NEXT_EXACT_TASK: independent re-review PASS for the W03.T07 implementation checkpoint; do not start W03.T08 before that PASS.
-KNOWN_BLOCKERS: W03.T08 remains blocked until independent reviewer PASS for W03.T07. Hosted CI is unavailable in the local-machine runtime. Using `.hdm-devtools/venv`, full DEV discovery reached `946` tests with `6` skips (`945` passed); its sole failure is the version-policy census seeing 196 unclassified hits in the ignored `.superpowers/sdd` historical diff. The bare interpreter still lacks `referencing`. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
+KNOWN_BLOCKERS: W03.T08 remains blocked until independent reviewer PASS for W03.T07. Hosted CI is unavailable in the local-machine runtime. Canonical bytecode-disabled DEV unittest discovery is green at `951` passed with `6` skips; the optional pytest diagnostic surface has unrelated S6D/shared-state failures and is not being claimed green. The bare interpreter still lacks `referencing`; the isolated development environment and maintenance audit pass. The plan-named `GAME/CAMPAIGN/STATE/RUNTIME/TEMPORAL_ROUTING.yaml` scaffold remains deferred to the planned W05 generated-scaffold/shared-storage integration.
 UNPUBLISHED_WORK: NONE after this cursor-update commit and its remote read-back.
