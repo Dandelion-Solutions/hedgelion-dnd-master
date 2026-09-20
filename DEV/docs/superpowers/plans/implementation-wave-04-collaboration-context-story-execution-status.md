@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: Wave-04 decomposed orchestration bootstrap; initial independent lanes are T01A and T05A, with T07A gated by mandatory fresh CLS-HDM preflight
+STATUS: SENIOR_REVIEW_REQUIRED
+CURRENT_TASK: Senior System-Impact rulings for stopped W04.T01A and W04.T05A lanes; W04.T07A remains stopped at PREFLIGHT_UNAVAILABLE
 LAST_COMPLETED_TASK: Wave-04 stable-plan decomposition, self-review/control synchronization and final pre-implementation baseline freeze
-LAST_SAFE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
+LAST_SAFE_SHA: 6cbde6a4845376ee55e8e9c10a17f354111a276d
 
 ## Execution policy
 
@@ -44,24 +44,21 @@ T08C + all lane checkpoints -> FINAL_REVIEW
 
 ## Initial scheduler
 
-READY_NOW:
-- W04.T01A — collaboration coordination-family admission and exact participant authority
-- W04.T05A — Context routed currentness and eligibility admission
+READY_NOW: []
 
-COORDINATOR_GATE_READY_NOW:
-- W04.T07-PREFLIGHT — perform only immediately before first T07A RED; on PASS, T07A becomes READY
+COORDINATOR_GATE_READY_NOW: []
 
 NOT_READY:
-- T01B waits T01A reviewer PASS
-- T05B waits T05A reviewer PASS
-- T07A waits mandatory preflight disposition
+- T01B through T04B wait a Senior ruling for W04.T01A System-Impact
+- T05B through T06B wait a Senior ruling for W04.T05A System-Impact
+- T07A waits fresh private CLS evidence after PREFLIGHT_UNAVAILABLE
 - T03A/T02A wait T01C reviewer PASS
 - T04A waits complete T02C
 - T05C waits T05B + T04B
 - T06A waits T05C
 - T08A/T08B/T08C wait their named joins
 
-Recommended initial production occupancy is two workers, increasing to three immediately if T07 preflight passes. After T01C, T03A may occupy a fourth independent slot while the collaboration lane continues. Do not manufacture work merely to fill slot five.
+No Wave-04 production subtask is currently eligible. The lane stops are independent: a Senior ruling may resume only its affected lane, and a restored private evidence route may independently unblock the Story preflight.
 
 ## Write-set reservations
 
@@ -139,25 +136,83 @@ Required baseline registrations:
 
 The current owner-local schema set lacks a Story TRANSCRIPT unit schema; T07B owns the missing owner-local machine contract and the complete eight-registration coverage tests. Coverage/currentness remains per source-domain/generation/cardinality, never one global Story frontier.
 
-## CLS planning evidence — NOT THE MANDATORY T07 PREFLIGHT
+## W04.T07 mandatory preflight
 
-Planning-only reads on 2026-09-20 observed:
-- CLS audit branch audit/cls-project-audit-workspace at 6273260c55107bc769d355875da749c9ef3c9296: AUDIT CLOSED / PASS / ZERO OPEN CLASS-A FINDINGS
-- CLS feature branch feature/commentator-language-stack at a064e6738945390fcc3766653c79ba2a6048b6e7: WP12-03 active, PUBLIC_HDM_WRITE_REQUIRED=NO, no current architecture/PO blocker
-- private integration graph classifies the current public dependency as compatible and identifies W04.T07 as the later public producer boundary
+PREFLIGHT_DISPOSITION: PREFLIGHT_UNAVAILABLE
 
-These observations support scheduling only. Immediately before T07A RED, repeat the exact stable-plan preflight with then-current public/private refs and record one of PASS_TO_IMPLEMENT, PRIVATE_CLS_REPAIR_DEBT_ONLY, SYSTEM_IMPACT_GATE or PREFLIGHT_UNAVAILABLE.
+Fresh public HDM evidence was read at `6cbde6a4845376ee55e8e9c10a17f354111a276d`:
+
+- `2026-09-09-story-commentator-self-contained-corpus-owner-decision.md` blob `ea3dea6653c356c3be5529ff8c916740a0f39b6d`;
+- `2026-09-07-story-producer-persistence-retrospective-consumer-contract.md` blob `566f6d2e70087aa0abc93108c562d3b8e2d77023`;
+- `2026-09-08-story-baseline-projection-source-contracts.md` blob `4e85a2899657f43c2bb812e9608d9d0c254b4a96`;
+- `2026-09-08-story-persistence-growth-sharding-consumer-decoupling-owner-decision.md` blob `3718ac404acade3bef84a655414258785bab5413`;
+- `2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` blob `5cd35b8f9782b53915591fd2967bff22edaf43fe`.
+
+The required fresh private CLS paths could not be read:
+
+- `git ls-remote git@github-hdm:dkolyada/hedgelion-dnd-master-lab.git` returned `Repository not found` for both required refs;
+- `git ls-remote git@github.com:dkolyada/hedgelion-dnd-master-lab.git` returned `Permission denied (publickey)`;
+- the local runtime has no `gh` command for an authenticated GitHub read route.
+
+No private ref/blob was inferred from planning-time evidence. Per the stable plan, only Story is stopped. Re-run the exact preflight after a current read-only private CLS route is available; do not begin W04.T07A RED first.
+
+## System-Impact briefs
+
+### W04.T01A - collaboration admission
+
+TRIGGER: the current W03 owner exports owner-issued `PlayerResolution` for principal-to-PLAYER/control authorization, but no native coordination dependency/currentness/opportunity/durability/order result that W04.T01A can consume and revalidate.
+
+LAST_SAFE_SHA: `6cbde6a4845376ee55e8e9c10a17f354111a276d`
+
+APPROVED EXPECTATION: T01A admits only exact native participant authority; caller-provided constructors, structural shapes, tokens, registries, callbacks and routes cannot mint it.
+
+DISCOVERED PRESSURE: a local collaboration issuer or caller-provided route/loader inevitably mints or substitutes authority. The attempted W04 implementation and its repairs were restored: `a300b23774f9ed31dfbc991be73211c338976955`, `59b12a3075155c9f5984420691ff98be32562c6f`, and `de3254041b1126a5f46f53e1b8fcbee27153f968` are removed by `6cbde6a4845376ee55e8e9c10a17f354111a276d`.
+
+AFFECTED OWNERS: W03 participant/currentness authority and the future collaboration admission consumer.
+
+PROTECTED INVARIANTS: Collaboration never grants PLAYER/access authority; complete source basis, not a typed carrier/current flag, establishes currentness.
+
+WHAT CAN PROCEED: no dependent collaboration subtask. Context and Story were independent but are separately stopped below.
+
+SAFE OPTIONS: (1) Senior specifies an existing owner-native W03 result/admission route that T01A may consume; or (2) return to design for an explicit owner interface/boundary. No local bridge, callback, token or registry is authorized.
+
+UNPUBLISHED_WORK: NONE.
+
+### W04.T05A - Context admission
+
+TRIGGER: the current W03 route accepts caller-constructible LIVE/projection carriers and callbacks but supplies no native reload or registered role/purpose eligibility binding for Context admission.
+
+LAST_SAFE_SHA: `6cbde6a4845376ee55e8e9c10a17f354111a276d`
+
+APPROVED EXPECTATION: `current=True`/`eligible=True`, shaped carriers and physical/index/cache presence are only post-resolution data and never caller authority.
+
+DISCOVERED PRESSURE: accepting those existing carriers permits internally consistent forged currentness/eligibility and loses role/purpose binding. The attempted implementation `e55cc560fee431460cdc5753abb94be9f5433008` was restored by `2c0a893f428e2e822d74c8fefc69f27f5b3f259a`.
+
+AFFECTED OWNERS: W03 LIVE/PLAYER/information currentness and eligibility owners; Context admission consumer.
+
+PROTECTED INVARIANTS: Context cannot establish truth, knowledge or access; currentness is a complete owner/source basis.
+
+WHAT CAN PROCEED: no dependent Context or emission subtask.
+
+SAFE OPTIONS: (1) Senior identifies an existing owner-native reload/role-profile route that T05A may consume; or (2) return to design for an explicit interface/boundary. No caller callback, registry, durable Context state or W03 interface change is authorized.
+
+UNPUBLISHED_WORK: NONE.
 
 ## Verification / completion state
 
 CURRENT_VERIFICATION_STATE:
 - Wave 03 is globally CLOSED / Senior PASS; post-closure F63-F65 targeted repair is independently Senior PASS with hosted validation 992 passed / 6 skipped.
 - Wave-04 stable plan decomposition is published.
-- No Wave-04 production RED or implementation is claimed by this cursor.
+- W04.T01A and W04.T05A attempted implementations were independently reviewed, restored to the pre-W04 owner tree, and await the two recorded Senior System-Impact rulings.
+- W04.T07 mandatory preflight is `PREFLIGHT_UNAVAILABLE`; no W04.T07 RED or implementation occurred.
 - No Wave-05 final-writer surface has been authorized for W04.
 
-VERSION_IMPACT: NONE — planning/cursor metadata only.
-SYSTEM_IMPACT: NONE — this decomposition refines execution checkpoints and scheduling without changing accepted architecture.
-NEXT_EXACT_TASK: start W04.T01A and W04.T05A in parallel. Immediately before starting W04.T07A, execute and record the mandatory fresh CLS-HDM preflight; if PASS, start the Story lane independently.
-KNOWN_BLOCKERS: none for T01A/T05A. T07A is preflight-gated. All other rows are dependency-gated as listed above.
+VERSION_IMPACT:
+- W04.T01A aborted implementation: new collaboration module/schema were assessed at local schema `1`; module revision reached `1.0.2`; campaign-contract generation remained `2`; engine and catalog generations did not change. The stopped implementation was restored, so current tree impact is NONE.
+- W04.T05A aborted implementation/restoration: current tree impact is NONE. The initial material Context edit lacked a valid Version Impact record and must be reassessed before any reattempt.
+- Cursor evidence only: NONE.
+
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T01A and W04.T05A briefs above. W04.T07 is separately PREFLIGHT_UNAVAILABLE, not a System-Impact classification.
+NEXT_EXACT_TASK: obtain a Senior ruling for the two System-Impact briefs and restore a read-only private CLS evidence route; then reschedule only the specifically unblocked lane.
+KNOWN_BLOCKERS: T01A-T04B await T01A ruling; T05A-T06B await T05A ruling; T07A awaits fresh private CLS evidence. No Wave-04 production task is currently eligible.
 UNPUBLISHED_WORK: NONE after publication/read-back.
