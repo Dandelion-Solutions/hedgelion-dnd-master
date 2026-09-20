@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-03-principal-live-temporal
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `1a90befb747c6d0694d68ad30614e9bed9811d97`
 
-STATUS: INDEPENDENT_SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: W03.T07 targeted F63 selected-campaign binding repair — independent Senior re-review required; do not claim Senior PASS
-LAST_COMPLETED_TASK: targeted F63 selected-campaign binding repair, focused/cross/full verification, and version-impact synchronization
-LAST_SAFE_SHA: `599eaec379c84aa38bfc8a7baf5284ca6935a9f0` (published targeted repair implementation checkpoint; cursor synchronization remains review metadata only)
+STATUS: COMPLETE
+CURRENT_TASK: NONE — Wave 03 closed; post-closure F63-F65 targeted repair independently Senior re-reviewed PASS
+LAST_COMPLETED_TASK: post-closure F63-F65 targeted repair independent Senior re-review — PASS; Wave 04 authorization unchanged
+LAST_SAFE_SHA: `64b2101be09060548fe96f61df81a6e4829fd2c1` (current reconciled remote head; targeted repair PASS recorded by `fd5bc719b87a9ff89203e2c565c8e1d501f31f17`)
 
 ## Dependency schedule
 
@@ -336,7 +336,7 @@ INDEPENDENT_SENIOR_RE_REVIEW: **PASS**
 - Exact-head hosted validation: workflow run `35477625437`, job `105989492043`, maintenance audit PASS, DEV discovery `992 passed, 6 skipped`, version census zero unclassified/legacy hits.
 - VERSION_IMPACT was realized in the repair checkpoint; this verdict synchronization is `NONE`.
 - SYSTEM_IMPACT: NONE. Wave 04/05 scope, authorization, and final-writer boundaries remain unchanged.
-NEXT_EXACT_TASK: independent Senior re-review of the targeted F63-F65 repair at `940d2a3aa28e6e0ee81a6b583890a2fa35550046`; do not start W04.T07 RED before the mandatory CLS↔HDM preflight.
+NEXT_EXACT_TASK: follow `DEV/CURRENT_PROGRESS.md` into Wave 04; do not start W04.T07 RED before the mandatory CLS↔HDM preflight.
 
 
 ## Targeted F63-F65 repair after prior Wave-03 closure record
@@ -389,7 +389,7 @@ VERSION_IMPACT: access-control runtime `framework_module_version` `1.0.5 -> 1.0.
 SYSTEM_IMPACT: NONE — selected-campaign resolution binding remains inside the approved W03.T07 principal/access owner; no new semantic owner, dependency direction, transaction, broad scan, fallback authority, or shared/Wave-05 write.
 HOSTED_CI: UNAVAILABLE for the new head; historical success `35476566411` is not reused as new-head evidence.
 PUBLISHED_CHECKPOINT: implementation checkpoint `599eaec379c84aa38bfc8a7baf5284ca6935a9f0` was published non-force and independently read back from `origin/v1/engine-rearchitecture`; this cursor synchronization is the remaining review metadata checkpoint.
-NEXT_EXACT_TASK: independent Senior re-review of the published targeted F63-F65 repair; do not claim Senior PASS or re-close Wave 03 from this repair alone.
+NEXT_EXACT_TASK: targeted repair review is closed PASS; follow `DEV/CURRENT_PROGRESS.md` into Wave 04.
 UNPUBLISHED_WORK: NONE after cursor synchronization publication and remote read-back.
 
 ## Post-closure F63-F65 targeted repair verdict
