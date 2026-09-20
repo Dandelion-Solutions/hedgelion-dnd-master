@@ -8,6 +8,7 @@ import unittest
 
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
+import yaml
 import GAME.TOOLS.collaboration as collaboration_module
 
 from GAME.TOOLS.access_control import (
@@ -333,6 +334,26 @@ class ParticipantAuthorityTests(unittest.TestCase):
 
 
 class CollaborationSchemaTests(unittest.TestCase):
+    def test_game_schema_matches_dev_contributor_cardinality_and_uniqueness(self):
+        schema = yaml.safe_load(
+            (ROOT / "GAME" / "SCHEMA" / "collaboration_obligation.schema.yaml").read_text(
+                encoding="utf-8"
+            )
+        )
+        required = schema["fields"]["required_contributors"]
+        optional = schema["fields"]["optional_contributors"]
+        self.assertEqual(required, {
+            "type": "array",
+            "item": "participant_ref",
+            "min_items": 1,
+            "unique_items": True,
+        })
+        self.assertEqual(optional, {
+            "type": "array",
+            "item": "participant_ref",
+            "unique_items": True,
+        })
+
     def test_base_obligation_schema_accepts_owner_shape(self):
         _validate(
             "runtime-collaboration-obligation-state.schema.json",

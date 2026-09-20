@@ -32,9 +32,14 @@ fields:
     source_revision: revision
     opportunity_ref: string
   required_contributors:
-    array[participant_ref]
+    type: array
+    item: participant_ref
+    min_items: 1
+    unique_items: true
   optional_contributors:
-    array[participant_ref]
+    type: array
+    item: participant_ref
+    unique_items: true
   accepted_input_uses:
     array[accepted_input_ref]
   safe_frontier_refs: array[native_identifier]
