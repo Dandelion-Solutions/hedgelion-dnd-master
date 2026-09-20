@@ -8,6 +8,7 @@ import unittest
 
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
+import GAME.TOOLS.collaboration as collaboration_module
 
 from GAME.TOOLS.access_control import (
     PlayerRecord,
@@ -19,7 +20,7 @@ from GAME.TOOLS.collaboration import (
     CoordinationFamily,
     NativeCoordinationBasis,
     classify_coordination_dependency,
-    issue_native_coordination_basis,
+    _owner_issue_native_coordination_basis,
     open_or_successor_obligation,
     resolve_participant_authority,
 )
@@ -74,6 +75,8 @@ def _authority(*, player_id: str = "player-alice", pc_id: str = "pc-alice"):
 
 def _basis(
     *,
+    purpose: str = "joint-entry",
+    dependency_scope: str = "scene:market",
     positive_dependency: bool = True,
     input_can_change_result: bool = True,
     opportunity_current: bool = True,
@@ -81,11 +84,13 @@ def _basis(
     native_order_owner: str | None = None,
     participants: tuple[object, ...] | None = None,
 ) -> NativeCoordinationBasis:
-    return issue_native_coordination_basis(
+    return _owner_issue_native_coordination_basis(
         campaign_id="campaign-frostfall",
         source_ref="scene:market",
         source_revision="a" * 40,
         opportunity_ref="decision:market-entry",
+        purpose=purpose,
+        dependency_scope=dependency_scope,
         positive_material_dependency=positive_dependency,
         input_can_change_result=input_can_change_result,
         opportunity_current=opportunity_current,
@@ -120,7 +125,7 @@ class CoordinationAdmissionTests(unittest.TestCase):
                 dependency_scope="scene:market",
                 decision_opportunity_ref="decision:market-entry",
             ),
-            _basis(positive_dependency=False),
+            _basis(purpose="observe", positive_dependency=False),
         )
         self.assertEqual(mutation.family, CoordinationFamily.INDEPENDENT_IMMEDIATE)
         self.assertIsNone(mutation.obligation)
@@ -128,7 +133,11 @@ class CoordinationAdmissionTests(unittest.TestCase):
     def test_native_order_owners_exclude_generic_collaboration(self):
         for owner in ("Procedure", "Continuation", "Choice", "Reaction"):
             with self.subTest(owner=owner):
-                basis = _basis(native_order_owner=owner)
+                basis = _basis(
+                    purpose="native-choice",
+                    dependency_scope="native:1",
+                    native_order_owner=owner,
+                )
                 self.assertEqual(
                     classify_coordination_dependency(basis),
                     CoordinationFamily.RULE_OWNED_ORDERED,
@@ -138,7 +147,7 @@ class CoordinationAdmissionTests(unittest.TestCase):
                         obligation_id=f"obligation-{owner.lower()}",
                         purpose="native-choice",
                         dependency_scope="native:1",
-                        decision_opportunity_ref="choice:1",
+                        decision_opportunity_ref="decision:market-entry",
                     ),
                     basis,
                 )
@@ -153,14 +162,18 @@ class CoordinationAdmissionTests(unittest.TestCase):
                 dependency_scope="scene:market",
                 decision_opportunity_ref="decision:market-entry",
             ),
-            _basis(positive_dependency=False, input_can_change_result=False),
+            _basis(
+                purpose="possible-interest",
+                positive_dependency=False,
+                input_can_change_result=False,
+            ),
         )
         self.assertEqual(mutation.family, CoordinationFamily.INDEPENDENT_IMMEDIATE)
         self.assertIsNone(mutation.obligation)
 
     def test_mechanical_value_contribution_is_not_collaboration_input(self):
         with self.assertRaises(CollaborationContractError):
-            issue_native_coordination_basis(
+            collaboration_module.issue_native_coordination_basis(
                 campaign_id="campaign-frostfall",
                 source_ref="scene:market",
                 source_revision="a" * 40,
@@ -175,6 +188,66 @@ class CoordinationAdmissionTests(unittest.TestCase):
 
 
 class ParticipantAuthorityTests(unittest.TestCase):
+    def test_public_basis_factory_cannot_mint_coordination_authority(self):
+        with self.assertRaises(CollaborationContractError):
+            collaboration_module.issue_native_coordination_basis(
+                campaign_id="campaign-frostfall",
+                source_ref="scene:market",
+                source_revision="a" * 40,
+                opportunity_ref="decision:market-entry",
+                positive_material_dependency=True,
+                input_can_change_result=True,
+                opportunity_current=True,
+                independently_durable=True,
+                required_participants=(_authority(),),
+            )
+
+        class ForgedBasis(NativeCoordinationBasis):
+            def __post_init__(self) -> None:
+                pass
+
+        forged = ForgedBasis(
+            campaign_id="campaign-frostfall",
+            source_ref="scene:market",
+            source_revision="a" * 40,
+            opportunity_ref="decision:market-entry",
+            positive_material_dependency=True,
+            input_can_change_result=True,
+            opportunity_current=True,
+            independently_durable=True,
+            required_participants=(_authority(),),
+            purpose="joint-entry",
+            dependency_scope="scene:market",
+        )
+        with self.assertRaises(CollaborationContractError):
+            open_or_successor_obligation(
+                CollaborationAdmissionRequest(
+                    obligation_id="obligation-subclass",
+                    purpose="joint-entry",
+                    dependency_scope="scene:market",
+                    decision_opportunity_ref="decision:market-entry",
+                ),
+                forged,
+            )
+
+    def test_request_opportunity_must_match_native_opportunity(self):
+        for purpose, dependency_scope, opportunity_ref in (
+            ("forged-purpose", "scene:market", "decision:market-entry"),
+            ("joint-entry", "scene:forged", "decision:market-entry"),
+            ("joint-entry", "scene:market", "decision:forged"),
+        ):
+            with self.subTest(purpose=purpose, dependency_scope=dependency_scope, opportunity_ref=opportunity_ref):
+                with self.assertRaises(CollaborationContractError):
+                    open_or_successor_obligation(
+                        CollaborationAdmissionRequest(
+                            obligation_id="obligation-mismatch",
+                            purpose=purpose,
+                            dependency_scope=dependency_scope,
+                            decision_opportunity_ref=opportunity_ref,
+                        ),
+                        _basis(),
+                    )
+
     def test_login_only_does_not_admit_participant_authority(self):
         player = PlayerRecord(
             player_id="player-alice",
@@ -280,9 +353,11 @@ class CollaborationSchemaTests(unittest.TestCase):
                     "opportunity_ref": "decision:market-entry",
                 },
                 "required_contributors": [{"player_id": "player-alice", "pc_id": "pc-alice"}],
-                "optional_contributors": [],
+                "optional_contributors": [{"player_id": "player-bob", "pc_id": None}],
                 "accepted_input_uses": [],
                 "safe_frontier_refs": [],
+                "execution_anchor_clause_ref": None,
+                "closed_input_set_fingerprint": None,
             },
         )
 

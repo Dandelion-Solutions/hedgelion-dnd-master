@@ -72,15 +72,25 @@
       "items": {"$ref": "#/$defs/id"}
     },
     "execution_anchor_clause_ref": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["interaction_id", "clause_id"],
-      "properties": {
-        "interaction_id": {"$ref": "#/$defs/id"},
-        "clause_id": {"$ref": "#/$defs/id"}
-      }
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["interaction_id", "clause_id"],
+          "properties": {
+            "interaction_id": {"$ref": "#/$defs/id"},
+            "clause_id": {"$ref": "#/$defs/id"}
+          }
+        }
+      ]
     },
-    "closed_input_set_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+    "closed_input_set_fingerprint": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      ]
+    }
   },
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
@@ -94,7 +104,12 @@
       "required": ["player_id"],
       "properties": {
         "player_id": {"$ref": "#/$defs/id"},
-        "pc_id": {"$ref": "#/$defs/id"}
+        "pc_id": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/id"}
+          ]
+        }
       }
     }
   },

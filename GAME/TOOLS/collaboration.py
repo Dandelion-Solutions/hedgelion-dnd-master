@@ -12,7 +12,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum
 import re
-from typing import Final
+from typing import Final, NoReturn
 
 from .access_control import (
     AccessControlContractError,
@@ -24,8 +24,8 @@ from .access_control import (
 )
 
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_KIND: Final[str] = "runtime.collaboration_obligation"
 
@@ -244,6 +244,8 @@ class NativeCoordinationBasis:
     opportunity_current: bool
     independently_durable: bool
     required_participants: tuple[ParticipantAuthority, ...]
+    purpose: str = ""
+    dependency_scope: str = ""
     optional_participants: tuple[ParticipantAuthority, ...] = ()
     native_order_owner: str | None = None
     semantic_value_kind: str | None = None
@@ -263,6 +265,8 @@ class NativeCoordinationBasis:
             _string(self.source_revision, "basis source_revision", pattern=_REVISION_PATTERN),
         )
         object.__setattr__(self, "opportunity_ref", _string(self.opportunity_ref, "basis opportunity_ref"))
+        object.__setattr__(self, "purpose", _string(self.purpose, "basis purpose"))
+        object.__setattr__(self, "dependency_scope", _string(self.dependency_scope, "basis dependency_scope"))
         for field_name in (
             "positive_material_dependency",
             "input_can_change_result",
@@ -303,11 +307,30 @@ class NativeCoordinationBasis:
 
 
 def issue_native_coordination_basis(
+    *_args: object,
+    **_kwargs: object,
+) -> NoReturn:
+    """Reject the former public evidence-minting surface.
+
+    Native currentness/dependency owners must use their private owner-native
+    handoff; a public constructor-like helper cannot mint collaboration
+    authority from shaped caller input.
+    """
+
+    raise CollaborationContractError(
+        "native coordination evidence issuance is not public",
+        failure_code="collaboration.native_basis_not_public",
+    )
+
+
+def _owner_issue_native_coordination_basis(
     *,
     campaign_id: str,
     source_ref: str,
     source_revision: str,
     opportunity_ref: str,
+    purpose: str,
+    dependency_scope: str,
     positive_material_dependency: bool,
     input_can_change_result: bool,
     opportunity_current: bool,
@@ -317,18 +340,15 @@ def issue_native_coordination_basis(
     native_order_owner: str | None = None,
     semantic_value_kind: str | None = None,
 ) -> NativeCoordinationBasis:
-    """Bridge explicit native-owner evidence into the collaboration owner.
-
-    The bridge has no ``coordination_family`` or caller-selected contributor
-    argument.  It is the native currentness/decision owner that supplies the
-    evidence and the exact authority values.
-    """
+    """Internal native-owner handoff used until the producing owner is wired."""
 
     return NativeCoordinationBasis(
         campaign_id=campaign_id,
         source_ref=source_ref,
         source_revision=source_revision,
         opportunity_ref=opportunity_ref,
+        purpose=purpose,
+        dependency_scope=dependency_scope,
         positive_material_dependency=positive_material_dependency,
         input_can_change_result=input_can_change_result,
         opportunity_current=opportunity_current,
@@ -342,7 +362,7 @@ def issue_native_coordination_basis(
 
 
 def _is_owner_issued_basis(value: object) -> bool:
-    return isinstance(value, NativeCoordinationBasis) and value._issuer is _BASIS_ISSUER
+    return type(value) is NativeCoordinationBasis and value._issuer is _BASIS_ISSUER
 
 
 def classify_coordination_dependency(basis: NativeCoordinationBasis) -> CoordinationFamily:
@@ -486,6 +506,15 @@ def open_or_successor_obligation(
             "currentness must come from the native owner",
             failure_code="collaboration.native_basis_required",
         )
+    if (
+        admission_request.purpose != current_basis.purpose
+        or admission_request.dependency_scope != current_basis.dependency_scope
+        or admission_request.decision_opportunity_ref != current_basis.opportunity_ref
+    ):
+        raise CollaborationContractError(
+            "admission request does not match the native dependency opportunity",
+            failure_code="collaboration.native_basis_mismatch",
+        )
     if current_basis.campaign_id == "":  # pragma: no cover - constructor prevents this
         raise CollaborationContractError("current campaign basis is missing")
     if not current_basis.opportunity_current:
@@ -541,7 +570,6 @@ __all__ = [
     "ParticipantAuthority",
     "ParticipantRef",
     "classify_coordination_dependency",
-    "issue_native_coordination_basis",
     "open_or_successor_obligation",
     "resolve_participant_authority",
 ]
