@@ -481,7 +481,7 @@ Output checkpoint: `W04_AUTHORITY_COLLABORATION_RECONCILED`.
 
 ## W04.T05 — Bounded Context integration
 
-Hard inputs: `W01_CONTEXT_OWNER_READY`, current information/knowledge, history, PLAYER, LIVE/scene and collaboration sources.
+Final T05 closure hard inputs: `W01_CONTEXT_OWNER_READY`, current information/knowledge, history, PLAYER, LIVE/scene and collaboration sources. The decomposed T05A/T05B rows are explicitly authorized owner-local preparatory slices over the already-ready subset; they do not claim `W04_CONTEXT_INTEGRATION_READY`. T05C is the first row that requires the completed collaboration producer and closes the original T05 hard-input join.
 
 Integrate Context Runtime:
 
