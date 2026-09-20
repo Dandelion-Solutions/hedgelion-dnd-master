@@ -150,9 +150,13 @@ Fresh public HDM evidence was read at `6cbde6a4845376ee55e8e9c10a17f354111a276d`
 
 The required fresh private CLS paths could not be read:
 
+- `audit/cls-project-audit-workspace` -> `CLS-AUDIT/CURRENT_AUDIT_STATE.md` and `CLS-AUDIT/graph/HDM_INTEGRATION_GRAPH.md`;
+- `feature/commentator-language-stack` -> `HDM-CLS/docs/SENIOR_AUDITOR_HDM_INTEGRATION_HANDOFF.md` and `HDM-CLS/docs/CURRENT_PROGRESS.md`;
 - `git ls-remote git@github-hdm:dkolyada/hedgelion-dnd-master-lab.git` returned `Repository not found` for both required refs;
 - `git ls-remote git@github.com:dkolyada/hedgelion-dnd-master-lab.git` returned `Permission denied (publickey)`;
 - the local runtime has no `gh` command for an authenticated GitHub read route.
+
+The current W04 task Source Manifest is the stable Wave-04 plan execution section in `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md`, blob `cdbc1d2bbc651ff6b087e22b8d502ec46bbc7386`. The historical WP-24 manifest is not substituted for this current W04 manifest.
 
 No private ref/blob was inferred from planning-time evidence. Per the stable plan, only Story is stopped. Re-run the exact preflight after a current read-only private CLS route is available; do not begin W04.T07A RED first.
 
@@ -161,6 +165,12 @@ No private ref/blob was inferred from planning-time evidence. Per the stable pla
 ### W04.T01A - collaboration admission
 
 TRIGGER: the current W03 owner exports owner-issued `PlayerResolution` for principal-to-PLAYER/control authorization, but no native coordination dependency/currentness/opportunity/durability/order result that W04.T01A can consume and revalidate.
+
+CURRENT_TASK: Senior must rule whether an existing W03 owner-native participant/currentness result can be consumed and revalidated by T01A, or whether the missing coordination boundary must return to design; keep T01A-T04B stopped pending that ruling.
+
+RECOMMENDATION: Do not resume with a local issuer, callback, token, registry or caller route; choose a native W03 route or return to design for an explicit owner boundary.
+
+COST/RISK IF WRONG: Resuming without the owner boundary can mint participant authority and persist unauthorized or cross-scope collaboration; continuing the stop costs only collaboration-lane schedule time.
 
 LAST_SAFE_SHA: `6cbde6a4845376ee55e8e9c10a17f354111a276d`
 
@@ -181,6 +191,12 @@ UNPUBLISHED_WORK: NONE.
 ### W04.T05A - Context admission
 
 TRIGGER: the current W03 route accepts caller-constructible LIVE/projection carriers and callbacks but supplies no native reload or registered role/purpose eligibility binding for Context admission.
+
+CURRENT_TASK: Senior must rule whether an existing W03 owner-native reload and registered role/purpose eligibility route can be consumed by Context, or whether the missing boundary must return to design; keep T05A-T06B stopped pending that ruling.
+
+RECOMMENDATION: Require owner-routed LIVE/PLAYER/information eligibility and reject caller carriers, callbacks, registries and durable Context state.
+
+COST/RISK IF WRONG: Resuming on shaped carriers can admit stale or forged currentness and disclose out-of-scope material; continuing the stop costs Context/emission schedule time.
 
 LAST_SAFE_SHA: `6cbde6a4845376ee55e8e9c10a17f354111a276d`
 
@@ -208,8 +224,10 @@ CURRENT_VERIFICATION_STATE:
 - No Wave-05 final-writer surface has been authorized for W04.
 
 VERSION_IMPACT:
-- W04.T01A aborted implementation: new collaboration module/schema were assessed at local schema `1`; module revision reached `1.0.2`; campaign-contract generation remained `2`; engine and catalog generations did not change. The stopped implementation was restored, so current tree impact is NONE.
-- W04.T05A aborted implementation/restoration: current tree impact is NONE. The initial material Context edit lacked a valid Version Impact record and must be reassessed before any reattempt.
+- This documentation-only repair is NONE; no current version-bearing owner or projection changes.
+- Current W04 production-tree impact is NONE after restoration; this does not retrospectively classify either aborted implementation as a compliant NONE assessment.
+- `a300b23774f9ed31dfbc991be73211c338976955` added optional but semantic collaboration fields to persisted `DEV/SCHEMAS/intent-clause.schema.json`, whose owner is the runtime Interaction/IntentPlan. It was never accepted and was restored; no bump is made now. A future reattempt must run the owner-specific persistent-contract Version Impact Gate before claiming an additive/compatible/no-bump result.
+- `e55cc560fee431460cdc5753abb94be9f5433008` materially changed the Context runtime without a compliant version assessment and was restored. No current-tree version change exists; any reattempt must classify the actual module namespace before publication.
 - Cursor evidence only: NONE.
 
 SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T01A and W04.T05A briefs above. W04.T07 is separately PREFLIGHT_UNAVAILABLE, not a System-Impact classification.

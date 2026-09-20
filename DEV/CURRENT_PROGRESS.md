@@ -236,6 +236,13 @@ REQUIRED CROSS-PROJECT EVIDENCE UNAVAILABLE
 
 The preflight does not require all private CLS repairs to be closed, does not require later CLS stage activation and does not require the REAL CLS reader to exist.
 
+The required private CLS evidence for the unavailable preflight is named exactly by branch and path:
+
+- `audit/cls-project-audit-workspace` -> `CLS-AUDIT/CURRENT_AUDIT_STATE.md` and `CLS-AUDIT/graph/HDM_INTEGRATION_GRAPH.md`;
+- `feature/commentator-language-stack` -> `HDM-CLS/docs/SENIOR_AUDITOR_HDM_INTEGRATION_HANDOFF.md` and `HDM-CLS/docs/CURRENT_PROGRESS.md`.
+
+The current W04 task Source Manifest is the stable Wave-04 plan execution section in `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md`, blob `cdbc1d2bbc651ff6b087e22b8d502ec46bbc7386`. It is not substituted with the historical WP-24 manifest.
+
 ## Durable cursor
 
 PLAN: `DEV/docs/superpowers/plans/implementation-plan-index.md`
@@ -249,7 +256,11 @@ LAST_COMPLETED_TASK: Wave 03 mandatory Senior integration audit — PASS / CLOSE
 LAST_SAFE_SHA: `6cbde6a4845376ee55e8e9c10a17f354111a276d` after restoration of the invalid W04.T01A and W04.T05A attempts
 
 CURRENT_VERIFICATION_STATE: Wave 03 remains closed with exact-head hosted CI success. W04.T01A and W04.T05A attempted implementations were independently reviewed and restored; the exact briefs, checkpoints, Version Impact history and preflight evidence are in `implementation-wave-04-collaboration-context-story-execution-status.md`. No W04.T07 RED occurred.
-VERSION_IMPACT: W04 current-tree impact NONE after restoration; the cursor records the aborted T01A/T05A task-level assessments.
+VERSION_IMPACT:
+- This documentation-only repair is NONE; no current version-bearing owner or projection changes.
+- Current W04 production-tree impact is NONE after restoration; this does not retrospectively classify either aborted implementation as a compliant NONE assessment.
+- `a300b23774f9ed31dfbc991be73211c338976955` added optional but semantic collaboration fields to persisted `DEV/SCHEMAS/intent-clause.schema.json`, whose owner is the runtime Interaction/IntentPlan. It was never accepted and was restored; no bump is made now. A future reattempt must run the owner-specific persistent-contract Version Impact Gate before claiming an additive/compatible/no-bump result.
+- `e55cc560fee431460cdc5753abb94be9f5433008` materially changed the Context runtime without a compliant version assessment and was restored. No current-tree version change exists; any reattempt must classify the actual module namespace before publication.
 SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED for W04.T01A and W04.T05A. W04.T07 is independently PREFLIGHT_UNAVAILABLE.
 NEXT_EXACT_TASK: Senior ruling on each W04 System-Impact brief and a fresh read-only CLS evidence route; reschedule only a lane whose exact blocker is resolved.
 KNOWN_BLOCKERS: no W04 production task is currently eligible. Migration execution, release execution and gameplay bootstrap remain unauthorized.
