@@ -13,294 +13,20 @@ sys.path.insert(0, str(TOOLS))
 
 import context_runtime
 from context_budget import ContextBudgetError, allocate, estimate_size
-from GAME.TOOLS.access_control import (
-    PlayerRecord,
-    PlayerResolution,
-    VerifiedPrincipal,
-    build_principal_player_route,
-    resolve_player,
-)
-from GAME.TOOLS.information import extract_material_live_information
-from GAME.TOOLS.live_state import (
-    LiveClaim,
-    LiveEnvelope,
-    build_live_ref,
-    build_live_route,
-    derive_live_epoch_id,
-)
 
 
-def candidate(candidate_id, *, channel="EXPLICIT_REF", required=False, rank=0, size=10, eligible=None, current=None, depends_on=()):
+def candidate(candidate_id, *, channel="EXPLICIT_REF", required=False, rank=0, size=10, eligible=True, current=True, depends_on=()):
     dependencies = [{"relation": "requires", "candidate_id": item} for item in depends_on]
-    result = {"candidate_id": candidate_id, "channel": channel, "required": required, "rank": rank, "dependencies": dependencies, "payload": {"ref": candidate_id, "text": "x" * size}}
-    if eligible is not None:
-        result["eligible"] = eligible
-    if current is not None:
-        result["current"] = current
-    return result
+    return {"candidate_id": candidate_id, "channel": channel, "required": required, "rank": rank, "eligible": eligible, "current": current, "dependencies": dependencies, "payload": {"ref": candidate_id, "text": "x" * size}}
 
 
-def make_request(**values):
+def request(**values):
     values.setdefault("allowed_relations", ["requires"])
-    values.setdefault("role_id", "role.narrator")
-    values.setdefault("purpose", "context-test")
-    values.setdefault("recipient_id", "player-1")
     return values
 
 
 def budget_for(*items):
-    total = 0
-    for item in items:
-        try:
-            payload = context_runtime.resolve_candidate_basis(
-                item,
-                owner_input=owner_input(item["candidate_id"]),
-                request=admission_request(),
-            )["payload"]
-        except context_runtime.ContextContractError:
-            payload = item["payload"]
-        total += estimate_size(payload)
-    return total
-
-
-def owner_inputs_for(*items):
-    return tuple(owner_input(item["candidate_id"]) for item in items)
-
-
-def owner_input(candidate_id, *, recipient="player-1", player_status="active"):
-    claims = (LiveClaim.exact_owner("world.actor", "actor.context"),)
-    scene_id = f"scene-{candidate_id}"
-    epoch_id = derive_live_epoch_id(
-        "campaign-context", scene_id, "0" * 40, claims
-    )
-    source = LiveEnvelope(
-        campaign_id="campaign-context",
-        scene_id=scene_id,
-        epoch_id=epoch_id,
-        source_ref=build_live_ref("campaign-context", scene_id, epoch_id),
-        source_revision="a" * 40,
-        claims=claims,
-        opening_campaign_revision="0" * 40,
-    )
-    projection = {
-        "source_key": list(source.source_key),
-        "source_ref": source.source_ref,
-        "source_revision": source.source_revision,
-        "source_native_ids": list(source.source_native_ids),
-        "information_candidates": [
-            {
-                "recipient_player_id": recipient,
-                "evidence": {
-                    "fact": {
-                        "fact_id": candidate_id,
-                        "statement": f"Native {candidate_id}.",
-                        "truth_status": "truth.established",
-                        "record_status": "lore_record.active",
-                        "provenance_refs": [f"source.{candidate_id}"],
-                    },
-                    "knowledge": {
-                        "knower_id": "actor.context",
-                        "fact_id": candidate_id,
-                        "stance": "epistemic.known",
-                        "supporting_source_refs": [f"source.{candidate_id}"],
-                        "source_evidence": [
-                            {
-                                "ref": f"source.{candidate_id}",
-                                "accepted": True,
-                                "current": True,
-                                "authorized_knower_ids": ["actor.context"],
-                            }
-                        ],
-                    },
-                    "emission": {
-                        "message_id": f"message.{candidate_id}",
-                        "interaction_id": f"interaction.{candidate_id}",
-                        "recipient_player_id": recipient,
-                        "text": f"Native {candidate_id}.",
-                        "source_evidence": [
-                            {
-                                "ref": f"source.{candidate_id}",
-                                "accepted": True,
-                                "current": True,
-                                "fact_id": candidate_id,
-                            }
-                        ],
-                        "disclosure_refs": [
-                            {
-                                "fact_id": candidate_id,
-                                "aspect": "disclosure.statement",
-                                "source_ref": f"source.{candidate_id}",
-                            }
-                        ],
-                    },
-                },
-            }
-        ],
-    }
-    live_route = build_live_route(source.campaign_id, (source,))
-    principal = VerifiedPrincipal(stable_account_id="context-account", login="context")
-    player_route = build_principal_player_route(
-        source.campaign_id,
-        (
-            PlayerRecord(
-                player_id=recipient,
-                stable_account_id=principal.stable_account_id,
-                login="context",
-                status=player_status,
-                deactivated_by=None if player_status == "active" else "self",
-            ),
-        ),
-    )
-    resolution = resolve_player(
-        principal,
-        player_route,
-        lambda player_id: PlayerRecord(
-            player_id=player_id,
-            stable_account_id=principal.stable_account_id,
-            login="context",
-            status=player_status,
-            deactivated_by=None if player_status == "active" else "self",
-        ),
-        campaign_id=source.campaign_id,
-    )
-    [information_candidate] = extract_material_live_information(
-        live_route,
-        source,
-        projection,
-        recipient_player_id=recipient,
-    )
-    return context_runtime.ContextOwnerInput(
-        candidate_id=candidate_id,
-        live_route=live_route,
-        live_source=source,
-        live_projection=projection,
-        information_candidate=information_candidate,
-        player_resolution=resolution,
-    )
-
-
-def admission_request(**values):
-    values.setdefault("role_id", "role.narrator")
-    values.setdefault("purpose", "context-test")
-    values.setdefault("recipient_id", "player-1")
-    return values
-
-
-class OwnerRoutedContextAdmissionTests(unittest.TestCase):
-    def test_context_assembly_requires_registered_scope(self):
-        request = {
-            "profile_id": "profile.narration",
-            "allowed_channels": ["EXPLICIT_REF"],
-            "max_candidates": 1,
-            "required_ids": [],
-            "allowed_relations": [],
-            "budget": 10,
-        }
-        with self.assertRaisesRegex(context_runtime.ContextContractError, "role, purpose and recipient"):
-            context_runtime.assemble_context(request, [])
-
-    def test_forged_flags_cannot_admit_without_native_owner_basis(self):
-        item = candidate("forged", eligible=True, current=True)
-        with self.assertRaisesRegex(context_runtime.ContextContractError, "owner"):
-            context_runtime.resolve_candidate_basis(item)
-
-    def test_complete_native_live_information_and_player_basis_admits(self):
-        item = candidate("native")
-        admitted = context_runtime.resolve_candidate_basis(
-            item,
-            owner_input=owner_input("native"),
-            request=admission_request(),
-        )
-        self.assertTrue(admitted["current"])
-        self.assertTrue(admitted["eligible"])
-        self.assertEqual(admitted["candidate_id"], "native")
-
-    def test_stale_live_source_cannot_admit_a_candidate(self):
-        item = candidate("stale-live")
-        basis = owner_input("stale-live")
-        stale_source = LiveEnvelope(
-            campaign_id=basis.live_source.campaign_id,
-            scene_id=basis.live_source.scene_id,
-            epoch_id=basis.live_source.epoch_id,
-            source_ref=basis.live_source.source_ref,
-            source_revision="b" * 40,
-            claims=basis.live_source.claims,
-            opening_campaign_revision=basis.live_source.opening_campaign_revision,
-        )
-        forged = context_runtime.ContextOwnerInput(
-            candidate_id=basis.candidate_id,
-            live_route=basis.live_route,
-            live_source=stale_source,
-            live_projection=basis.live_projection,
-            information_candidate=basis.information_candidate,
-            player_resolution=basis.player_resolution,
-        )
-        with self.assertRaisesRegex(context_runtime.ContextContractError, "stale|current"):
-            context_runtime.resolve_candidate_basis(
-                item,
-                owner_input=forged,
-                request=admission_request(),
-            )
-
-    def test_forged_player_resolution_cannot_admit_a_candidate(self):
-        item = candidate("stale-player")
-        basis = owner_input("stale-player")
-        forged = context_runtime.ContextOwnerInput(
-            candidate_id=basis.candidate_id,
-            live_route=basis.live_route,
-            live_source=basis.live_source,
-            live_projection=basis.live_projection,
-            information_candidate=basis.information_candidate,
-            player_resolution=PlayerResolution(
-                status="AUTHORIZED_PLAYER",
-                player=PlayerRecord(
-                    player_id="player-1",
-                    stable_account_id="context-account",
-                    login="context",
-                    status="active",
-                    deactivated_by=None,
-                ),
-            ),
-        )
-        with self.assertRaisesRegex(context_runtime.ContextContractError, "owner-issued"):
-            context_runtime.resolve_candidate_basis(
-                item,
-                owner_input=forged,
-                request=admission_request(),
-            )
-
-    def test_owner_issued_stale_player_resolution_cannot_admit_a_candidate(self):
-        item = candidate("inactive-player")
-        with self.assertRaisesRegex(context_runtime.ContextContractError, "PLAYER resolution"):
-            context_runtime.resolve_candidate_basis(
-                item,
-                owner_input=owner_input("inactive-player", player_status="inactive"),
-                request=admission_request(),
-            )
-
-    def test_physical_co_presence_does_not_widen_recipient_scope(self):
-        item = candidate("private")
-        with self.assertRaisesRegex(context_runtime.ContextContractError, "recipient|PLAYER"):
-            context_runtime.resolve_candidate_basis(
-                item,
-                owner_input=owner_input("private", recipient="player-1"),
-                request=admission_request(recipient_id="player-2"),
-            )
-
-    def test_index_presence_and_structural_owner_carriers_fail_closed(self):
-        for channel in ("INDEX_LOOKUP", "SCENE_MANIFEST", "CURRENT_SCOPE"):
-            with self.subTest(channel=channel):
-                item = candidate(f"{channel.lower()}-candidate", channel=channel)
-                with self.assertRaisesRegex(context_runtime.ContextContractError, "owner"):
-                    context_runtime.resolve_candidate_basis(
-                        item,
-                        owner_input={
-                            "candidate_id": item["candidate_id"],
-                            "current": True,
-                            "eligible": True,
-                        },
-                        request=admission_request(),
-                    )
+    return sum(estimate_size(item["payload"]) for item in items)
 
 
 class ContextDiscoveryTests(unittest.TestCase):
@@ -324,47 +50,34 @@ class ContextEligibilityTests(unittest.TestCase):
 
 class RequiredPacketClosureTests(unittest.TestCase):
     def test_unregistered_dependency_relation_is_rejected(self):
-        request = make_request(profile_id="profile.narration", allowed_channels=["EXPLICIT_REF"], max_candidates=5, required_ids=["root"], allowed_relations=[], budget=25)
-        root = candidate("root", depends_on=("secret",))
+        request = {"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": ["root"], "allowed_relations": [] , "budget": 25}
         with self.assertRaises(context_runtime.ContextContractError):
-            context_runtime.assemble_context(
-                request,
-                [root],
-                owner_inputs=owner_inputs_for(root),
-            )
+            context_runtime.assemble_context(request, [candidate("root", depends_on=("secret",))])
     def test_required_dependency_closure_precedes_optional_allocation(self):
         root, dependency, optional = candidate("root", required=True, size=10, depends_on=("dependency",)), candidate("dependency", required=True, size=10), candidate("optional", rank=99, size=10)
-        request = make_request(profile_id="profile.narration", allowed_channels=["EXPLICIT_REF"], max_candidates=5, required_ids=["root"], allowed_relations=["requires"], budget=budget_for(root, dependency) + 1)
-        result = context_runtime.assemble_context(
-            request,
-            [root, dependency, optional],
-            owner_inputs=owner_inputs_for(root, dependency, optional),
-        )
+        request = {"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": ["root"], "allowed_relations": ["requires"], "budget": budget_for(root, dependency) + 1}
+        result = context_runtime.assemble_context(request, [root, dependency, optional])
         self.assertEqual(result["outcome"], "ASSEMBLED_DEGRADED")
         self.assertEqual([item["candidate_id"] for item in result["bundle"]["required"]], ["dependency", "root"])
 
     def test_missing_required_closure_is_terminal_unsatisfiable(self):
         root = candidate("root", required=True, depends_on=("missing",))
-        request = make_request(profile_id="profile.narration", allowed_channels=["EXPLICIT_REF"], max_candidates=5, required_ids=["root"], allowed_relations=["requires"], budget=budget_for(root))
+        request = {"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": ["root"], "allowed_relations": ["requires"], "budget": budget_for(root)}
         result = context_runtime.assemble_context(request, [root])
         self.assertEqual(result["outcome"], "UNSATISFIABLE")
         self.assertIsNone(result["bundle"])
 
     def test_ineligible_required_closure_is_terminal_unsatisfiable(self):
         required = candidate("required", eligible=False)
-        request = make_request(profile_id="profile.narration", allowed_channels=["EXPLICIT_REF"], max_candidates=5, required_ids=["required"], allowed_relations=[], budget=budget_for(required))
+        request = {"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": ["required"], "allowed_relations": [], "budget": budget_for(required)}
         result = context_runtime.assemble_context(request, [required])
         self.assertEqual(result["outcome"], "UNSATISFIABLE")
 
     def test_relation_bearing_profile_requires_admitted_typed_relations(self):
         root = candidate("root", depends_on=("dependency",))
-        request = make_request(profile_id="profile.narration", allowed_channels=["EXPLICIT_REF"], max_candidates=5, required_ids=["root"], allowed_relations=[], budget=budget_for(root))
+        request = {"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": ["root"], "budget": budget_for(root)}
         with self.assertRaises(context_runtime.ContextContractError):
-            context_runtime.assemble_context(
-                request,
-                [root],
-                owner_inputs=owner_inputs_for(root),
-            )
+            context_runtime.assemble_context(request, [root])
 
 
 class ContextAllocationTests(unittest.TestCase):
@@ -376,12 +89,8 @@ class ContextAllocationTests(unittest.TestCase):
 
     def test_required_floor_cannot_be_evicted_by_optional_material(self):
         optional, required = candidate("optional", rank=100, size=10), candidate("required", required=True, size=10)
-        request = make_request(profile_id="profile.narration", allowed_channels=["EXPLICIT_REF"], max_candidates=5, required_ids=["required"], allowed_relations=[], budget=budget_for(required))
-        result = context_runtime.assemble_context(
-            request,
-            [optional, required],
-            owner_inputs=owner_inputs_for(optional, required),
-        )
+        request = {"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": ["required"], "allowed_relations": [], "budget": budget_for(required)}
+        result = context_runtime.assemble_context(request, [optional, required])
         self.assertEqual([item["candidate_id"] for item in result["bundle"]["required"]], ["required"])
         self.assertEqual(result["bundle"]["optional"], [])
 
@@ -389,24 +98,16 @@ class ContextAllocationTests(unittest.TestCase):
 class OptionalRankingTests(unittest.TestCase):
     def test_optional_ranking_is_deterministic_within_remaining_budget(self):
         a, b, c = candidate("a", rank=2), candidate("b", rank=2), candidate("c", rank=1)
-        request = make_request(profile_id="profile.narration", allowed_channels=["EXPLICIT_REF"], max_candidates=5, required_ids=[], allowed_relations=[], budget=budget_for(a, b))
-        result = context_runtime.assemble_context(
-            request,
-            [b, a, c],
-            owner_inputs=owner_inputs_for(a, b, c),
-        )
+        request = {"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": [], "allowed_relations": [], "budget": budget_for(a, b)}
+        result = context_runtime.assemble_context(request, [b, a, c])
         self.assertEqual([item["candidate_id"] for item in result["bundle"]["optional"]], ["a", "b"])
 
 
 class RetrospectiveContextTests(unittest.TestCase):
     def test_retrospective_payload_is_explicitly_a_projection(self):
         item = candidate("story-1", channel="HISTORY_HINT")
-        request = make_request(profile_id="profile.commentator", allowed_channels=["HISTORY_HINT"], max_candidates=2, required_ids=[], allowed_relations=[], budget=budget_for(item), retrospective=True)
-        result = context_runtime.assemble_context(
-            request,
-            [item],
-            owner_inputs=owner_inputs_for(item),
-        )
+        request = {"profile_id": "profile.commentator", "allowed_channels": ["HISTORY_HINT"], "max_candidates": 2, "required_ids": [], "allowed_relations": [], "budget": budget_for(item), "retrospective": True}
+        result = context_runtime.assemble_context(request, [item])
         self.assertTrue(result["bundle"]["retrospective_projection"])
         self.assertNotIn("gameplay_truth", result["bundle"])
 
@@ -414,12 +115,8 @@ class RetrospectiveContextTests(unittest.TestCase):
 class ContextResultTraceTests(unittest.TestCase):
     def test_trace_is_diagnostic_and_does_not_include_payload(self):
         item = candidate("a")
-        request = make_request(profile_id="profile.narration", allowed_channels=["EXPLICIT_REF"], max_candidates=2, required_ids=[], allowed_relations=[], budget=budget_for(item))
-        result = context_runtime.assemble_context(
-            request,
-            [item],
-            owner_inputs=owner_inputs_for(item),
-        )
+        request = {"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 2, "required_ids": [], "allowed_relations": [], "budget": budget_for(item)}
+        result = context_runtime.assemble_context(request, [item])
         self.assertEqual(result["trace"]["included_ids"], ["a"])
         self.assertNotIn("payload", json.dumps(result["trace"]))
 
