@@ -12,6 +12,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Final, TypeAlias
+import weakref
 
 from .history import (
     FirstInitializationHistoryEvidence,
@@ -21,8 +22,8 @@ from .history import (
 
 AccountId: TypeAlias = str
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
 ROUTE_SCHEMA_VERSION: Final = 1
 ROUTE_KIND: Final = "runtime.principal_player_routing"
 _RESOLUTION_TOKEN: Final = object()
@@ -340,7 +341,7 @@ def build_principal_player_route(
     return PrincipalPlayerRoute(campaign_id=campaign_id, entries=entries)
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, weakref_slot=True)
 class PlayerResolution:
     """Exact PLAYER reload result, including a typed non-authorizing outcome."""
 
@@ -348,6 +349,7 @@ class PlayerResolution:
     player: PlayerRecord | None = None
     failure_code: AuthorizationFailureCode | None = None
     principal_account_id: AccountId | None = None
+    campaign_id: str | None = None
     _issuer: object = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
@@ -363,6 +365,50 @@ class PlayerResolution:
     @property
     def player_id(self) -> str | None:
         return None if self.player is None else self.player.player_id
+
+
+_OWNER_ISSUED_RESOLUTIONS: dict[
+    int, tuple[weakref.ReferenceType[PlayerResolution], tuple[object, ...]]
+] = {}
+
+
+def _resolution_fingerprint(resolution: PlayerResolution) -> tuple[object, ...]:
+    return (
+        resolution.status,
+        resolution.player,
+        resolution.failure_code,
+        resolution.principal_account_id,
+        resolution.campaign_id,
+    )
+
+
+def _mark_owner_issued_resolution(resolution: PlayerResolution) -> PlayerResolution:
+    resolution_id = id(resolution)
+    fingerprint = _resolution_fingerprint(resolution)
+
+    def remove(reference: weakref.ReferenceType[PlayerResolution]) -> None:
+        entry = _OWNER_ISSUED_RESOLUTIONS.get(resolution_id)
+        if entry is not None and entry[0] is reference:
+            _OWNER_ISSUED_RESOLUTIONS.pop(resolution_id, None)
+
+    _OWNER_ISSUED_RESOLUTIONS[resolution_id] = (
+        weakref.ref(resolution, remove),
+        fingerprint,
+    )
+    return resolution
+
+
+def _is_owner_issued_resolution(value: object) -> bool:
+    if not isinstance(value, PlayerResolution) or value._issuer is not _RESOLUTION_TOKEN:
+        return False
+    entry = _OWNER_ISSUED_RESOLUTIONS.get(id(value))
+    return entry is not None and entry[0]() is value and entry[1] == _resolution_fingerprint(value)
+
+
+def _issued_resolution(**values: object) -> PlayerResolution:
+    return _mark_owner_issued_resolution(
+        PlayerResolution(**values)  # type: ignore[arg-type, call-arg]
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -406,7 +452,7 @@ def resolve_player(
 
     resolved_principal = resolve_principal(principal)
     if route is None:
-        return PlayerResolution(
+        return _issued_resolution(
             status="FAIL_CLOSED",
             failure_code=AuthorizationFailureCode.ROUTE_ABSENT,
             principal_account_id=resolved_principal.stable_account_id,
@@ -424,21 +470,21 @@ def resolve_player(
             if error.failure_code == AuthorizationFailureCode.ROUTE_INCOMPLETE
             else AuthorizationFailureCode.PLAYER_RECORD_INVALID
         )
-        return PlayerResolution(
+        return _issued_resolution(
             status="FAIL_CLOSED",
             failure_code=failure_code,
             principal_account_id=resolved_principal.stable_account_id,
             _issuer=_RESOLUTION_TOKEN,
         )
     if not isinstance(campaign_id, str) or not campaign_id:
-        return PlayerResolution(
+        return _issued_resolution(
             status="FAIL_CLOSED",
             failure_code=AuthorizationFailureCode.ROUTE_SCOPE_REQUIRED,
             principal_account_id=resolved_principal.stable_account_id,
             _issuer=_RESOLUTION_TOKEN,
         )
     if resolved_route.campaign_id != campaign_id:
-        return PlayerResolution(
+        return _issued_resolution(
             status="FAIL_CLOSED",
             failure_code=AuthorizationFailureCode.ROUTE_SCOPE_MISMATCH,
             principal_account_id=resolved_principal.stable_account_id,
@@ -448,7 +494,7 @@ def resolve_player(
         raise AccessControlContractError("exact PLAYER loader is required")
     entry = resolved_route.for_account(resolved_principal.stable_account_id)
     if entry is None:
-        return PlayerResolution(
+        return _issued_resolution(
             status="FAIL_CLOSED",
             failure_code=AuthorizationFailureCode.ROUTE_ABSENT,
             principal_account_id=resolved_principal.stable_account_id,
@@ -462,7 +508,7 @@ def resolve_player(
         except (AccessControlContractError, KeyError, OSError, TypeError):
             raw_player = None
         if raw_player is None:
-            return PlayerResolution(
+            return _issued_resolution(
                 status="FAIL_CLOSED",
                 failure_code=AuthorizationFailureCode.STALE_CANDIDATE,
                 principal_account_id=resolved_principal.stable_account_id,
@@ -475,7 +521,7 @@ def resolve_player(
                 else PlayerRecord.from_mapping(raw_player)
             )
         except (AccessControlContractError, AttributeError, TypeError):
-            return PlayerResolution(
+            return _issued_resolution(
                 status="FAIL_CLOSED",
                 failure_code=AuthorizationFailureCode.PLAYER_RECORD_INVALID,
                 principal_account_id=resolved_principal.stable_account_id,
@@ -485,7 +531,7 @@ def resolve_player(
             player.player_id != candidate_id
             or player.stable_account_id != resolved_principal.stable_account_id
         ):
-            return PlayerResolution(
+            return _issued_resolution(
                 status="FAIL_CLOSED",
                 failure_code=AuthorizationFailureCode.STALE_CANDIDATE,
                 principal_account_id=resolved_principal.stable_account_id,
@@ -494,7 +540,7 @@ def resolve_player(
         matching.append(player)
 
     if len(matching) != 1:
-        return PlayerResolution(
+        return _issued_resolution(
             status="FAIL_CLOSED",
             failure_code=AuthorizationFailureCode.AMBIGUOUS_BINDING,
             principal_account_id=resolved_principal.stable_account_id,
@@ -502,16 +548,18 @@ def resolve_player(
         )
     player = matching[0]
     if player.status == "active":
-        return PlayerResolution(
+        return _issued_resolution(
             status="AUTHORIZED_PLAYER",
             player=player,
             principal_account_id=resolved_principal.stable_account_id,
+            campaign_id=resolved_route.campaign_id,
             _issuer=_RESOLUTION_TOKEN,
         )
-    return PlayerResolution(
+    return _issued_resolution(
         status="INACTIVE_REJOIN_CANDIDATE",
         player=player,
         principal_account_id=resolved_principal.stable_account_id,
+        campaign_id=resolved_route.campaign_id,
         _issuer=_RESOLUTION_TOKEN,
     )
 
@@ -542,15 +590,18 @@ def authorize_operation(
 
     if resolution is None:
         return _fail(AuthorizationFailureCode.ROUTE_ABSENT)
-    if (
-        resolution._issuer is not _RESOLUTION_TOKEN
-        or resolution.principal_account_id != resolved_principal.stable_account_id
-    ):
+    if not _is_owner_issued_resolution(resolution):
+        return _fail(AuthorizationFailureCode.PLAYER_RECORD_INVALID)
+    if resolution.principal_account_id != resolved_principal.stable_account_id:
         return _fail(AuthorizationFailureCode.PLAYER_RECORD_INVALID)
     if resolution.failure_code is not None:
         return _fail(resolution.failure_code)
     if resolution.player is None:
         return _fail(AuthorizationFailureCode.PLAYER_RECORD_INVALID)
+    if campaign_id is not None and resolution.campaign_id != campaign_id:
+        return _fail(AuthorizationFailureCode.ROUTE_SCOPE_MISMATCH)
+    if resolution.campaign_id is None:
+        return _fail(AuthorizationFailureCode.ROUTE_SCOPE_REQUIRED)
     if operation == "mechanical_override_policy":
         if resolution.player.status != "active":
             return _fail(AuthorizationFailureCode.PLAYER_INACTIVE)
@@ -855,6 +906,8 @@ def _player_semantics(record: PlayerRecord) -> tuple[object, ...]:
         record.player_id,
         record.stable_account_id,
         record.login,
+        record.status,
+        record.deactivated_by,
         record.mechanical_override_policy,
         record.controlled_pc_ids,
     )
@@ -884,6 +937,8 @@ def _history_ids(value: Mapping[str, object]) -> tuple[str, ...]:
 def _require_exact_resolution(
     resolution: PlayerResolution | None,
     current: PlayerRecord,
+    *,
+    campaign_id: str,
 ) -> None:
     if not isinstance(resolution, PlayerResolution) or resolution._issuer is not _RESOLUTION_TOKEN:
         raise AccessControlContractError(
@@ -894,6 +949,16 @@ def _require_exact_resolution(
         raise AccessControlContractError(
             "access mutation requires a resolved exact current PLAYER",
             failure_code=resolution.failure_code or AuthorizationFailureCode.PLAYER_RECORD_INVALID,
+        )
+    if resolution.campaign_id is None:
+        raise AccessControlContractError(
+            "access mutation requires a PLAYER resolution bound to the selected campaign",
+            failure_code=AuthorizationFailureCode.ROUTE_SCOPE_REQUIRED,
+        )
+    if resolution.campaign_id != campaign_id:
+        raise AccessControlContractError(
+            "PLAYER resolution belongs to another campaign",
+            failure_code=AuthorizationFailureCode.ROUTE_SCOPE_MISMATCH,
         )
     if _player_semantics(resolution.player) != _player_semantics(current):
         raise AccessControlContractError(
@@ -1308,13 +1373,18 @@ def _freeze_player_access_transition(
     before, before_raw = _player_state(current_player, "current PLAYER")
     after, after_raw = _player_state(proposed_player, "proposed PLAYER")
     campaign_identity = _campaign_state(current_campaign).campaign_id
-    _require_exact_resolution(resolution, before)
+    _require_exact_resolution(resolution, before, campaign_id=campaign_identity)
     if before.player_id != after.player_id or before.stable_account_id != after.stable_account_id:
         raise AccessControlContractError("PLAYER identity and binding are immutable in an access transition")
     if _history_projection(before_raw) != _history_projection(after_raw):
         raise AccessControlContractError("accepted PLAYER history/provenance cannot be rewritten")
     if normalized_operation == "deactivate_self":
-        decision = authorize_operation(resolved_principal, resolution, operation="gameplay")
+        decision = authorize_operation(
+            resolved_principal,
+            resolution,
+            operation="gameplay",
+            campaign_id=campaign_identity,
+        )
         if not decision.authorized or before.stable_account_id != resolved_principal.stable_account_id:
             raise AccessControlContractError(
                 "self deactivation requires the exact active PLAYER authority",
@@ -1337,7 +1407,12 @@ def _freeze_player_access_transition(
         if before.status != "inactive" or after.status != "active" or after.deactivated_by is not None:
             raise AccessControlContractError("reactivation must be inactive -> active and clear deactivated_by")
         if before.deactivated_by == "self":
-            decision = authorize_operation(resolved_principal, resolution, operation="rejoin")
+            decision = authorize_operation(
+                resolved_principal,
+                resolution,
+                operation="rejoin",
+                campaign_id=campaign_identity,
+            )
             if (
                 not decision.authorized
                 or before.stable_account_id != resolved_principal.stable_account_id
@@ -1737,7 +1812,7 @@ class FrozenMultiLiveForwardPlan:
         }
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, weakref_slot=True)
 class MultiLiveFreezeProgress:
     """Owner evidence accumulated without rolling back accepted source closes."""
 
@@ -1760,6 +1835,42 @@ class MultiLiveFreezeProgress:
             if candidate == key:
                 return outcome
         raise KeyError(key)
+
+
+_OWNER_ISSUED_MULTI_LIVE_PROGRESS: dict[
+    int, tuple[weakref.ReferenceType[MultiLiveFreezeProgress], tuple[object, ...]]
+] = {}
+
+
+def _multi_live_progress_fingerprint(
+    progress: MultiLiveFreezeProgress,
+) -> tuple[object, ...]:
+    return (progress.status, progress.final_sources, progress.outcomes)
+
+
+def _mark_owner_issued_multi_live_progress(
+    progress: MultiLiveFreezeProgress,
+) -> MultiLiveFreezeProgress:
+    progress_id = id(progress)
+    fingerprint = _multi_live_progress_fingerprint(progress)
+
+    def remove(reference: weakref.ReferenceType[MultiLiveFreezeProgress]) -> None:
+        entry = _OWNER_ISSUED_MULTI_LIVE_PROGRESS.get(progress_id)
+        if entry is not None and entry[0] is reference:
+            _OWNER_ISSUED_MULTI_LIVE_PROGRESS.pop(progress_id, None)
+
+    _OWNER_ISSUED_MULTI_LIVE_PROGRESS[progress_id] = (
+        weakref.ref(progress, remove),
+        fingerprint,
+    )
+    return progress
+
+
+def _is_owner_issued_multi_live_progress(value: object) -> bool:
+    if not isinstance(value, MultiLiveFreezeProgress):
+        return False
+    entry = _OWNER_ISSUED_MULTI_LIVE_PROGRESS.get(id(value))
+    return entry is not None and entry[0]() is value and entry[1] == _multi_live_progress_fingerprint(value)
 
 
 @dataclass(frozen=True, slots=True)
@@ -2058,11 +2169,13 @@ def advance_multi_live_freeze(
         status = "REJECTED"
     else:
         status = "INDETERMINATE"
-    return MultiLiveFreezeProgress(
-        plan=plan,
-        status=status,
-        final_sources=tuple(final_sources),
-        outcomes=tuple(outcomes),
+    return _mark_owner_issued_multi_live_progress(
+        MultiLiveFreezeProgress(
+            plan=plan,
+            status=status,
+            final_sources=tuple(final_sources),
+            outcomes=tuple(outcomes),
+        )
     )
 
 
@@ -2079,6 +2192,58 @@ def _same_live_body(left: object, right: object) -> bool:
             "source_native_ids",
         )
     )
+
+
+def _validate_multi_live_progress(
+    plan: FrozenMultiLiveForwardPlan,
+    progress: MultiLiveFreezeProgress,
+) -> None:
+    """Prove each asserted terminal source is the plan's exact close successor."""
+
+    (
+        _live_error,
+        live_envelope,
+        live_lifecycle,
+        _live_publication_result,
+        _live_publication_status,
+        _live_routing,
+        _build_live_route,
+        _classify_cas_result,
+        _freeze_live_attempt,
+        _mark_closed_unabsorbed,
+        _reconcile_indeterminate,
+        _select_live_source,
+        _validate_live_route_completeness,
+    ) = _live_modules()
+    outcome_map = dict(progress.outcomes)
+    if len(outcome_map) != len(progress.outcomes) or set(outcome_map) != set(plan.source_keys):
+        raise AccessControlContractError("forward progress outcomes are not bound to every planned source")
+    if any(outcome != "CONFIRMED_CLOSED" for outcome in outcome_map.values()):
+        raise AccessControlContractError("forward progress contains an unconfirmed source close")
+    final_by_key = {getattr(source, "source_key", None): source for source in progress.final_sources}
+    if len(final_by_key) != len(progress.final_sources) or set(final_by_key) != set(plan.source_keys):
+        raise AccessControlContractError("forward progress final sources do not match the frozen plan")
+    for source_plan in plan.sources:
+        final_source = final_by_key[source_plan.source_key]
+        if not isinstance(final_source, live_envelope):
+            raise AccessControlContractError("forward progress final source is not owner-typed")
+        if final_source.status is not live_lifecycle.CLOSED_UNABSORBED:
+            raise AccessControlContractError("forward progress final source is not terminally closed")
+        if source_plan.attempt is None:
+            expected_source = source_plan.source
+            if expected_source.status not in {
+                live_lifecycle.CLOSED,
+                live_lifecycle.CLOSED_UNABSORBED,
+            }:
+                raise AccessControlContractError("forward progress asserts a non-terminal retained source")
+        else:
+            expected_source = source_plan.attempt.successor_route.entries[0]
+            if expected_source.status is not live_lifecycle.CLOSED:
+                raise AccessControlContractError("forward progress close successor is not CLOSED")
+        if not _same_live_body(final_source, expected_source):
+            raise AccessControlContractError(
+                "forward progress final source differs from the exact close successor"
+            )
 
 
 def _progress_status(outcomes: Sequence[str]) -> str:
@@ -2182,11 +2347,13 @@ def recover_multi_live_forward_plan(
             outcomes.append((source_plan.source_key, "INDETERMINATE"))
         else:
             outcomes.append((source_plan.source_key, "REJECTED_STALE"))
-    return MultiLiveFreezeProgress(
-        plan=plan,
-        status=_progress_status(tuple(outcome for _, outcome in outcomes)),
-        final_sources=tuple(final_sources),
-        outcomes=tuple(outcomes),
+    return _mark_owner_issued_multi_live_progress(
+        MultiLiveFreezeProgress(
+            plan=plan,
+            status=_progress_status(tuple(outcome for _, outcome in outcomes)),
+            final_sources=tuple(final_sources),
+            outcomes=tuple(outcomes),
+        )
     )
 
 
@@ -2221,6 +2388,11 @@ def publish_forward_transition(
         raise AccessControlContractError("forward publication requires the same frozen plan and progress")
     if not progress.ready_to_publish:
         raise AccessControlContractError("forward publication requires every exact LIVE source final revision")
+    if not _is_owner_issued_multi_live_progress(progress):
+        raise AccessControlContractError(
+            "forward publication requires owner-issued LIVE freeze progress"
+        )
+    _validate_multi_live_progress(plan, progress)
     if campaign_state is None:
         campaign_state = campaign_after
     if not isinstance(campaign_state, Mapping):

@@ -22,6 +22,7 @@ from GAME.TOOLS.access_control import (
     AdditiveAuthorizationDecision,
     AuthorizationFailureCode,
     FirstInitializationProvenance,
+    MultiLiveFreezeProgress,
     PlayerRecord,
     PlayerResolution,
     PrincipalPlayerRoute,
@@ -478,6 +479,44 @@ class PrincipalAuthorizationTests(unittest.TestCase):
 
         self.assertFalse(decision.authorized)
         self.assertEqual(decision.failure_code, AuthorizationFailureCode.PLAYER_RECORD_INVALID)
+
+    def test_copied_resolution_cannot_escalate_mechanical_override_policy(self) -> None:
+        resolution = resolve_player(
+            _principal(),
+            _route(),
+            lambda player_id: _player(player_id),
+            campaign_id="campaign-frostfall",
+        )
+        assert resolution.player is not None
+        copied = replace(
+            resolution,
+            player=replace(resolution.player, mechanical_override_policy=True),
+        )
+
+        decision = authorize_operation(
+            _principal(), copied, operation="mechanical_override_policy"
+        )
+
+        self.assertFalse(decision.authorized)
+        self.assertEqual(decision.failure_code, AuthorizationFailureCode.PLAYER_RECORD_INVALID)
+
+    def test_resolution_bound_to_one_campaign_cannot_authorize_another(self) -> None:
+        resolution = resolve_player(
+            _principal(),
+            _route(),
+            lambda player_id: _player(player_id),
+            campaign_id="campaign-frostfall",
+        )
+
+        decision = authorize_operation(
+            _principal(),
+            resolution,
+            operation="gameplay",
+            campaign_id="campaign-winterhold",
+        )
+
+        self.assertFalse(decision.authorized)
+        self.assertEqual(decision.failure_code, AuthorizationFailureCode.ROUTE_SCOPE_MISMATCH)
 
     def test_mechanical_override_requires_existing_owner_grant(self) -> None:
         resolution = resolve_player(
@@ -3570,6 +3609,56 @@ class PlayerAccessTransitionTests(unittest.TestCase):
         self.assertEqual(transition.preserved_controlled_pc_ids, ("pc-1",))
         self.assertEqual(transition.historical_result_ids, ("resolution-1",))
 
+    def test_self_deactivation_rejects_resolution_from_another_campaign(self) -> None:
+        principal = _principal()
+        current = _player("player-1")
+        resolution = self._resolved(principal, current)
+        campaign_b = self._campaign() | {"campaign_id": "campaign-winterhold"}
+        proposed_campaign_b = self._campaign(revision=LIVE_H1) | {
+            "campaign_id": "campaign-winterhold"
+        }
+
+        with self.assertRaisesRegex(AccessControlContractError, "campaign|scope|resolution") as context:
+            freeze_player_access_transition(
+                principal,
+                resolution,
+                operation="deactivate_self",
+                current_player=current,
+                proposed_player=current | {"status": "inactive", "deactivated_by": "self"},
+                current_campaign=campaign_b,
+                proposed_campaign=proposed_campaign_b,
+                expected_campaign_revision=LIVE_H0,
+                proposed_campaign_revision=LIVE_H1,
+                live_route=build_live_route("campaign-winterhold", ()),
+            )
+
+        self.assertEqual(context.exception.failure_code, AuthorizationFailureCode.ROUTE_SCOPE_MISMATCH)
+
+    def test_reactivation_rejects_resolution_from_another_campaign(self) -> None:
+        principal = _principal()
+        current = _player("player-1", status="inactive", deactivated_by="self")
+        resolution = self._resolved(principal, current)
+        campaign_b = self._campaign() | {"campaign_id": "campaign-winterhold"}
+        proposed_campaign_b = self._campaign(revision=LIVE_H1) | {
+            "campaign_id": "campaign-winterhold"
+        }
+
+        with self.assertRaisesRegex(AccessControlContractError, "campaign|scope|resolution") as context:
+            freeze_player_access_transition(
+                principal,
+                resolution,
+                operation="reactivate",
+                current_player=current,
+                proposed_player=current | {"status": "active", "deactivated_by": None},
+                current_campaign=campaign_b,
+                proposed_campaign=proposed_campaign_b,
+                expected_campaign_revision=LIVE_H0,
+                proposed_campaign_revision=LIVE_H1,
+                live_route=build_live_route("campaign-winterhold", ()),
+            )
+
+        self.assertEqual(context.exception.failure_code, AuthorizationFailureCode.ROUTE_SCOPE_MISMATCH)
+
     def test_creator_grant_and_revoke_are_prospective_and_do_not_rewrite_history(self) -> None:
         creator = _principal(account_id="99", login="creator")
         target = _player("player-1", mechanical_override_policy=True) | {
@@ -3698,6 +3787,56 @@ class PlayerAccessTransitionTests(unittest.TestCase):
         with self.assertRaisesRegex(AccessControlContractError, "match|currentness|body"):
             transition.recover_after_authority(
                 proposed | {"metadata": {"display_name": "Drifted"}},
+            )
+
+    def test_access_publication_rejects_deactivation_provenance_drift(self) -> None:
+        principal = _principal()
+        current = _player("player-1", status="inactive", deactivated_by="self")
+        after = current | {"status": "active", "deactivated_by": None}
+        resolution = self._resolved(principal, current)
+        transition = freeze_player_access_transition(
+            principal,
+            resolution,
+            operation="reactivate",
+            current_player=current,
+            proposed_player=after,
+            current_campaign=self._campaign(),
+            proposed_campaign=self._campaign(revision=LIVE_H1),
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H1,
+            live_route=_empty_live_route(),
+        )
+
+        with self.assertRaisesRegex(AccessControlContractError, "PLAYER|currentness|stale"):
+            publish_access_policy_transition(
+                transition,
+                current_campaign_revision=LIVE_H0,
+                current_campaign=self._campaign(),
+                current_player=current | {"deactivated_by": "creator"},
+            )
+
+    def test_access_recovery_rejects_inactive_creator_deactivation_drift(self) -> None:
+        principal = _principal()
+        current = _player("player-1", status="inactive", deactivated_by="self")
+        after = current | {"status": "active", "deactivated_by": None}
+        resolution = self._resolved(principal, current)
+        transition = freeze_player_access_transition(
+            principal,
+            resolution,
+            operation="reactivate",
+            current_player=current,
+            proposed_player=after,
+            current_campaign=self._campaign(),
+            proposed_campaign=self._campaign(revision=LIVE_H1),
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H1,
+            live_route=_empty_live_route(),
+        )
+
+        with self.assertRaisesRegex(AccessControlContractError, "PLAYER|currentness|match"):
+            transition.recover_after_authority(
+                self._campaign(revision=LIVE_H1),
+                player=after | {"status": "inactive", "deactivated_by": "creator"},
             )
 
     def test_creator_uncertainty_fails_closed_for_campaign_policy_mutation(self) -> None:
@@ -3847,7 +3986,7 @@ class LiveAdditiveAuthorizationTests(unittest.TestCase):
 
 class MultiLiveForwardTransitionTests(unittest.TestCase):
     def test_access_control_repair_advances_runtime_module_version(self) -> None:
-        self.assertEqual(access_control_module.FRAMEWORK_MODULE_VERSION, "1.0.4")
+        self.assertEqual(access_control_module.FRAMEWORK_MODULE_VERSION, "1.0.6")
 
     def _source(self, scene_id: str, actor_id: str, revision: str = LIVE_H0) -> LiveEnvelope:
         claims = (LiveClaim.exact_owner("world.actor", actor_id),)
@@ -3952,6 +4091,38 @@ class MultiLiveForwardTransitionTests(unittest.TestCase):
                     "campaign_id": "campaign-frostfall",
                     "revision": LIVE_H0,
                     "mode": "singleplayer",
+                },
+            )
+
+    def test_forward_publication_rejects_fabricated_ready_progress_with_active_source(self) -> None:
+        source = self._source("scene-a", "actor-a")
+        plan = freeze_multi_live_forward_plan(
+            build_live_route("campaign-frostfall", (source,)),
+            current_campaign={
+                "campaign_id": "campaign-frostfall",
+                "revision": LIVE_H0,
+                "mode": "multiplayer",
+            },
+            expected_campaign_revision=LIVE_H0,
+            proposed_campaign_revision=LIVE_H3,
+            proposed_source_revisions={source.source_key: LIVE_H1},
+        )
+        fabricated = MultiLiveFreezeProgress(
+            plan=plan,
+            status="READY_TO_PUBLISH",
+            final_sources=(source,),
+            outcomes=((source.source_key, "CONFIRMED_CLOSED"),),
+        )
+
+        with self.assertRaisesRegex(AccessControlContractError, "owner-issued|source|closed|successor"):
+            publish_forward_transition(
+                plan,
+                fabricated,
+                current_campaign_revision=LIVE_H0,
+                campaign_state={
+                    "campaign_id": "campaign-frostfall",
+                    "revision": LIVE_H0,
+                    "mode": "multiplayer",
                 },
             )
 
