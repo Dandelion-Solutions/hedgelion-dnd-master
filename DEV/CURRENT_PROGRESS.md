@@ -189,6 +189,8 @@ WAVE_03: COMPLETE
 BLOCKING_FINDINGS: NONE
 ```
 
+Post-closure targeted repair provenance: F63-F65 independently Senior re-reviewed PASS at `1ab792b4934f821c2c7689fdb5f7aed653abebeb`; hosted run `35477625437`, job `105989492043`, maintenance audit PASS, DEV discovery `992 passed, 6 skipped`, and version census zero unclassified/legacy hits. This repair did not alter the Wave 04 authorization or Wave 05 scope.
+
 ## Preserved package laws
 
 - Native semantic owners remain authoritative; cache/index/checkpoint/Story/projections/routes do not become authority.

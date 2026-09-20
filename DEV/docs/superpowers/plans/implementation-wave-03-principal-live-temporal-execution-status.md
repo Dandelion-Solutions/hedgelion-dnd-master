@@ -326,3 +326,13 @@ VERSION_IMPACT: NONE for the Senior audit/closure synchronization.
 SYSTEM_IMPACT: NONE.
 BLOCKING_FINDINGS: NONE.
 NEXT_EXACT_TASK: continue from global current progress into Wave 04; do not start W04.T07 RED before the mandatory CLS↔HDM preflight.
+
+## Post-closure F63-F65 targeted repair
+
+REPAIR_HEAD: `1ab792b4934f821c2c7689fdb5f7aed653abebeb`
+INDEPENDENT_SENIOR_RE_REVIEW: **PASS**
+
+- F63 closes copied/rebound PLAYER resolution and cross-campaign access-transition authorization; F64 closes status/deactivation-provenance currentness drift; F65 closes fabricated multi-LIVE freeze progress.
+- Exact-head hosted validation: workflow run `35477625437`, job `105989492043`, maintenance audit PASS, DEV discovery `992 passed, 6 skipped`, version census zero unclassified/legacy hits.
+- VERSION_IMPACT was realized in the repair checkpoint; this verdict synchronization is `NONE`.
+- SYSTEM_IMPACT: NONE. Wave 04/05 scope, authorization, and final-writer boundaries remain unchanged.

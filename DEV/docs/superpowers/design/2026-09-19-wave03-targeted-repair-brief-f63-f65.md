@@ -1,6 +1,6 @@
 # Wave 03 targeted repair brief — F63–F65
 
-Status: **DRAFT / TARGETED IMPLEMENTATION REPAIR REQUIRED**
+Status: **COMPLETE / INDEPENDENT SENIOR RE-REVIEW PASS**
 
 This is a bounded repair brief from a post-closure author-side implementation audit. It is not a new canonical architecture, a replacement implementation plan, a product-owner decision, or a declaration that Wave 04 is globally blocked. Work from a fresh public ref and apply the normal HDM execution, System-Impact, Version-Impact, checkpoint, and independent re-review process.
 
@@ -126,3 +126,10 @@ Before declaring this repair ready:
 6. leave final disposition as **independent Senior re-review required**. Do not claim Senior PASS or re-close Wave 03 from this repair alone.
 
 The independent review must inspect the final code and executable witnesses, not merely this brief.
+
+## Completion disposition
+
+- repaired implementation head: `1ab792b4934f821c2c7689fdb5f7aed653abebeb`;
+- independent Senior re-review: **PASS**; F63, F64, and F65 are closed with no new findings;
+- exact-head hosted validation: workflow run `35477625437`, job `105989492043`, maintenance audit PASS, DEV discovery `992 passed, 6 skipped`, and version census zero unclassified/legacy hits;
+- no Wave 04/05 authorization, scope, or final-writer surface changed.
