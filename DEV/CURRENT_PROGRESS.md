@@ -9,7 +9,7 @@ CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: Wave 03 implementation independently reviewed task-by-task and closed by mandatory Senior integration audit PASS on 2026-09-19; reviewed implementation head `9ae3feb74a2d657a081140781899dcbe66819b5b`
 NEXT_AUTHORIZED_UNIT: execute Wave 04 from `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md` under dependency-valid parallel orchestration, TDD/review/version-impact/checkpoint discipline and the current development-execution process
 REQUIRED_GATE: Wave-04 autonomous TDD/review/version-impact/checkpoint discipline -> mandatory fresh CLS↔HDM preflight immediately before W04.T07 RED -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — create before the first Wave-04 RED/checkpoint
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — created/published; authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
 KNOWN_BLOCKERS: NONE for Wave-04 start; individual tasks remain gated by named producer checkpoints. The mandatory CLS↔HDM synchronization stop immediately before W04.T07 RED remains in force and must not be bypassed. Migration execution, release execution and gameplay bootstrap remain unauthorized
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
@@ -244,14 +244,14 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: Wave-04 coordinator records the fresh implementation-start HEAD in `implementation-wave-04-collaboration-context-story-execution-status.md` before the first RED.
 
 STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: Wave-04 coordinator bootstrap, execution-cursor creation and dependency-valid task scheduling
+CURRENT_TASK: execute decomposed Wave-04 initial lanes: W04.T01A and W04.T05A in parallel; perform the mandatory fresh CLS↔HDM preflight immediately before W04.T07A RED
 LAST_COMPLETED_TASK: Wave 03 mandatory Senior integration audit — PASS / CLOSED on reviewed head `9ae3feb74a2d657a081140781899dcbe66819b5b`
 LAST_SAFE_SHA: fresh remote HEAD must be recorded by the Wave-04 coordinator before production mutation
 
-CURRENT_VERIFICATION_STATE: Wave 03 is closed with exact-head hosted CI success; Wave 04 is authorized. Each Wave-04 task owns focused verification/checkpoint review, and Wave-04 completion still requires exact-head broad verification plus mandatory Senior integration audit.
+CURRENT_VERIFICATION_STATE: Wave 03 is closed with exact-head hosted CI success; Wave 04 is authorized and its decomposed stable plan + task-local execution cursor are published. Each Wave-04 subtask checkpoint owns focused verification and independent review; Wave-04 completion still requires exact-head broad verification plus mandatory Senior integration audit.
 VERSION_IMPACT: NONE for this Senior closure/status synchronization.
 SYSTEM_IMPACT: NONE for Wave-03 closure / Wave-04 activation. The mandatory CLS↔HDM preflight immediately before W04.T07 RED remains a separate required gate.
-NEXT_EXACT_TASK: create/update the Wave-04 execution-status cursor from fresh remote HEAD; build the dependency schedule; start all currently dependency-valid W04 tasks subject to current orchestration policy. Do not execute W04.T07 RED until its mandatory CLS↔HDM preflight is completed and recorded.
+NEXT_EXACT_TASK: start W04.T01A and W04.T05A in parallel from the published execution cursor. Immediately before W04.T07A first RED, execute and record the mandatory fresh CLS↔HDM preflight; on PASS, start the Story lane independently.
 KNOWN_BLOCKERS: NONE for Wave-04 start. W04.T07 alone remains preflight-gated. Migration execution, release execution and gameplay bootstrap remain unauthorized.
 UNPUBLISHED_WORK: NONE after verified publication/read-back.
 
