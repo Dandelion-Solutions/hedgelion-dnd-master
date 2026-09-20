@@ -283,7 +283,7 @@ UNIVERSAL LINE LIMIT: NO
 
 ### Existing boundary
 
-T-ARCH is MUST_MATERIALIZE for accepted exact archival commitments. The 10 KiB owner and Story growth owner both prohibit loss of required exact semantics to satisfy storage size.
+T-ARC is MUST_MATERIALIZE for accepted exact archival commitments. The 10 KiB owner and Story growth owner both prohibit loss of required exact semantics to satisfy storage size.
 
 ### Review conclusion
 

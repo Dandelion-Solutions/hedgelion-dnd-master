@@ -247,11 +247,11 @@ Input: T07A PASS.
 
 Direct writes: GAME/TOOLS/story.py, Story source/coverage schemas, same rd13 test file. Create the missing owner-local TRANSCRIPT unit machine contract and update EVENTS/MECHANICS/NARRATIVE owner-local contracts as required.
 
-Required registrations: T-MSG, T-ARCH, E-EVT, E-REL, M-SEG, M-OUT, N-EVT, N-REL.
+Required registrations: T-MSG, T-ARC, E-EVT, E-REL, M-SEG, M-OUT, N-EVT, N-REL.
 
 Output: W04_STORY_SOURCE_CONTRACTS_READY.
 
-Mandatory REDs: an EVENTS-only implementation is insufficient; MUST candidates cannot be dropped by importance; late historical relations independently cover EVENTS/NARRATIVE; M-OUT preserves terminal zero-change/failure; T-ARCH exact promise remains distinct from T-MSG; LIVE origin absorption does not duplicate LOCAL candidates; coverage is domain/generation/cardinality specific and never one global scalar.
+Mandatory REDs: an EVENTS-only implementation is insufficient; MUST candidates cannot be dropped by importance; late historical relations independently cover EVENTS/NARRATIVE; M-OUT preserves terminal zero-change/failure; T-ARC exact promise remains distinct from T-MSG; LIVE origin absorption does not duplicate LOCAL candidates; coverage is domain/generation/cardinality specific and never one global scalar.
 
 **W04.T07C - Story-local T0, exact Story currentness and publication**
 

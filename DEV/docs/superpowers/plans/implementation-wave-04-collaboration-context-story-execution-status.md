@@ -132,7 +132,7 @@ T08A and T08B use disjoint focused test/delta surfaces and may execute in parall
 T07B is not allowed to close with an EVENTS-only implementation.
 
 Required baseline registrations:
-- T-MSG and T-ARCH -> TRANSCRIPT
+- T-MSG and T-ARC -> TRANSCRIPT
 - E-EVT and E-REL -> EVENTS
 - M-SEG and M-OUT -> MECHANICS
 - N-EVT and N-REL -> NARRATIVE

@@ -275,7 +275,7 @@ Performance accounting SHALL preserve the fixed production registrations:
 
 ```text
 T-MSG
-T-ARCH
+T-ARC
 E-EVT
 E-REL
 M-SEG
