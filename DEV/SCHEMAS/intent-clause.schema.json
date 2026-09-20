@@ -16,8 +16,45 @@
     },
     "guard": {"$ref": "#/$defs/guard"},
     "command_id": {"type": "string", "minLength": 1},
-    "details": {"type": "object"}
+    "details": {"type": "object"},
+    "collaboration_semantic_class": {
+      "enum": [
+        "OOC_COORDINATION",
+        "DIEGETIC_COMMUNICATION",
+        "ACTIONABLE_INTENT",
+        "CONTROL_SIGNAL"
+      ]
+    },
+    "normalized_semantics": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 32,
+      "additionalProperties": true
+    },
+    "material_exact_text_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["message_id"],
+        "properties": {
+          "message_id": {"type": "string", "minLength": 1},
+          "content_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    }
   },
+  "allOf": [
+    {
+      "if": {"required": ["collaboration_semantic_class"]},
+      "then": {"required": ["normalized_semantics"]}
+    },
+    {
+      "if": {"required": ["normalized_semantics"]},
+      "then": {"required": ["collaboration_semantic_class"]}
+    }
+  ],
   "$defs": {
     "scalar": {"type": ["string", "number", "boolean"]},
     "guard": {
