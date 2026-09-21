@@ -13,6 +13,7 @@ from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
 import json
+import re
 from types import MappingProxyType
 from typing import Any, Final
 
@@ -58,8 +59,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
 
 
 class ContextContractError(ValueError):
@@ -142,6 +143,7 @@ _REQUEST_FIELDS: Final[frozenset[str]] = frozenset(
         "retrospective",
     }
 )
+_ID_PATTERN: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 
 _LIVE_FAMILIES: Final[frozenset[str]] = frozenset(
     {"LIVE", "runtime.live", "runtime.live_source", "world.live"}
@@ -183,6 +185,13 @@ def _nonempty(value: object, label: str) -> str:
     return value
 
 
+def _scope_id(value: object, label: str) -> str:
+    value = _nonempty(value, label)
+    if _ID_PATTERN.fullmatch(value) is None:
+        raise ContextContractError(f"{label} must be a registered identifier")
+    return value
+
+
 def _string_list(value: object, label: str, *, allow_empty: bool = True) -> list[str]:
     if not isinstance(value, list) or (not allow_empty and not value):
         raise ContextContractError(f"{label} must be a bounded string list")
@@ -214,13 +223,10 @@ def _scope(request: Mapping[str, object]) -> tuple[_RegisteredProfile, str, str,
     registered = _profile(request.get("profile_id"))
     role = request.get("role")
     purpose = request.get("purpose")
-    subject_id = request.get("subject_id")
-    recipient_id = request.get("recipient_id")
-    campaign_id = request.get("campaign_id")
-    if any(
-        not isinstance(value, str) or not value
-        for value in (role, purpose, subject_id, recipient_id, campaign_id)
-    ):
+    subject_id = _scope_id(request.get("subject_id"), "subject_id")
+    recipient_id = _scope_id(request.get("recipient_id"), "recipient_id")
+    campaign_id = _scope_id(request.get("campaign_id"), "campaign_id")
+    if not isinstance(role, str) or not role or not isinstance(purpose, str) or not purpose:
         raise ContextContractError(
             "owner-routed Context admission requires role, purpose, subject, recipient and campaign"
         )
@@ -241,6 +247,12 @@ def _scope(request: Mapping[str, object]) -> tuple[_RegisteredProfile, str, str,
     required_ids = _string_list(request.get("required_ids"), "required_ids")
     if len(required_ids) != len(set(required_ids)):
         raise ContextContractError("required_ids must contain unique values")
+    if "source_frontier" in request and not isinstance(request["source_frontier"], str):
+        raise ContextContractError("source_frontier must be a nonempty string")
+    if "source_frontier" in request and not request["source_frontier"]:
+        raise ContextContractError("source_frontier must be a nonempty string")
+    if "retrospective" in request and not isinstance(request["retrospective"], bool):
+        raise ContextContractError("retrospective must be boolean")
     return registered, role, purpose, subject_id, recipient_id, campaign_id
 
 
@@ -672,17 +684,19 @@ def _compose_context_runtime(
         raise ContextContractError("Context Runtime requires the trusted RepositoryPort")
     if live_route is not None and not isinstance(live_route, LiveRouting):
         raise ContextContractError("Context LIVE route must be owner-typed")
-    if selected_live_reader is not None and not hasattr(
-        selected_live_reader, "read_selected_live_source"
-    ):
-        raise ContextContractError("Context LIVE reader must be the narrow read capability")
+    if selected_live_reader is not None and callable(selected_live_reader):
+        raise ContextContractError("Context LIVE reader must be an owner-issued capability")
     if selected_live_reader is not None and live_route is None:
         raise ContextContractError("Context LIVE reader requires its selected route")
     runtime = object.__new__(BoundContextRuntime)
     object.__setattr__(runtime, "_repository", repository)
     object.__setattr__(runtime, "_live_route", live_route)
     object.__setattr__(runtime, "_selected_live_reader", selected_live_reader)
-    object.__setattr__(runtime, "_native_history_runtime", BoundNativeHistoryRuntime(runtime))
+    try:
+        native_history_runtime = BoundNativeHistoryRuntime(runtime)
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as error:
+        raise ContextContractError("Context LIVE capability is not owner-validated") from error
+    object.__setattr__(runtime, "_native_history_runtime", native_history_runtime)
     return runtime
 
 

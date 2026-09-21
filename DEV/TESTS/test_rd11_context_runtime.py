@@ -96,6 +96,11 @@ class SelectedLiveReader:
         return self.projection
 
 
+class CallableForgedLiveReader(SelectedLiveReader):
+    def __call__(self, *_args):
+        return self.projection
+
+
 def live_fixture():
     claims = (LiveClaim.exact_owner("world.actor", "actor.context"),)
     scene_id = "scene-context"
@@ -268,8 +273,50 @@ class HostBoundContextContractTests(unittest.TestCase):
                 selected_live_reader=object(),
             )
 
+    def test_context_host_composition_rejects_callable_forged_live_reader(self):
+        route, _source, projection = live_fixture()
+        forged = CallableForgedLiveReader(projection)
+        with self.assertRaises(context_runtime.ContextContractError):
+            context_runtime._compose_context_runtime(
+                RepositoryFixture(),
+                live_route=route,
+                selected_live_reader=forged,
+            )
+
+    def test_schema_and_runtime_reject_the_same_scope_and_optional_type_negatives(self):
+        schema = json.loads((SCHEMAS / "context-need-profile.schema.json").read_text(encoding="utf-8"))
+        invalid = (
+            ("role", "role.narrator"),
+            ("purpose", "narration"),
+            ("subject_id", "actor context"),
+            ("recipient_id", "player 1"),
+            ("source_frontier", 7),
+            ("retrospective", 1),
+        )
+        for field, value in invalid:
+            candidate_request = bound_request(**{field: value})
+            with self.subTest(field=field):
+                with self.assertRaises(ValidationError):
+                    Draft202012Validator(schema).validate(candidate_request)
+                with self.assertRaises(context_runtime.ContextContractError):
+                    context_runtime._compose_context_runtime(RepositoryFixture()).assemble(
+                        candidate_request,
+                        [],
+                    )
+
+    def test_schema_and_runtime_accept_typed_optional_scope_fields(self):
+        schema = json.loads((SCHEMAS / "context-need-profile.schema.json").read_text(encoding="utf-8"))
+        candidate_request = bound_request(source_frontier="frontier-1", retrospective=False)
+        Draft202012Validator(schema).validate(candidate_request)
+        result = context_runtime._compose_context_runtime(RepositoryFixture()).assemble(
+            candidate_request,
+            [],
+        )
+        self.assertEqual(result["bundle"]["source_frontier"], "frontier-1")
+        self.assertFalse(result["bundle"]["retrospective_projection"])
+
     def test_context_runtime_module_revision_is_current(self):
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.6")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.7")
 
     def test_campaign_record_is_reloaded_from_pinned_repository_not_candidate_payload(self):
         repository = RepositoryFixture()
