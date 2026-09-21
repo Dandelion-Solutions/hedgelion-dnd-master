@@ -189,6 +189,91 @@ def _classify(repository: FakeRepository) -> object:
     )
 
 
+def _valid_combat_procedure_state(*, lifecycle: str = "ACTIVE") -> dict[str, object]:
+    state: dict[str, object] = {
+        "schema_version": 2,
+        "procedure_kind": "procedure.combat_minimal",
+        "lifecycle": lifecycle,
+        "lifecycle_state": "terminated" if lifecycle == "TERMINAL" else "between_turns",
+        "participant_ids": ["actor-pc-alice", "actor-pc-bob"],
+        "initiative_order": ["actor-pc-alice", "actor-pc-bob"],
+        "round_number": 1,
+        "round_advance_pending": False,
+        "active_turn_index": 0,
+        "participant_resources": {
+            "actor-pc-alice": {
+                "resource.action_budget": {"capacity": 1, "spent": 0},
+                "resource.movement_budget": {"capacity": 30, "spent": 0},
+            },
+            "actor-pc-bob": {
+                "resource.action_budget": {"capacity": 1, "spent": 0},
+                "resource.movement_budget": {"capacity": 30, "spent": 0},
+            },
+        },
+    }
+    Draft202012Validator(_schema("combat-minimal-procedure-state.schema.json"), registry=_registry()).validate(state)
+    return state
+
+
+def _valid_continuation_record(
+    *,
+    pending_response: dict[str, object] | None = None,
+    unconsumed_advancement: dict[str, object] | None = None,
+) -> dict[str, object]:
+    record: dict[str, object] = {
+        "kind": "runtime.continuation",
+        "id": "continuation-1",
+        "revision": CAMPAIGN_REVISION,
+        "generation": 1,
+        "root_command_id": "command-1",
+        "resolution_id": "resolution-1",
+        "activity_id": "activity.attack.basic",
+        "actor_id": "actor-pc-bob",
+        "ruleset_set_digest_generation": 1,
+        "ruleset_set_sha256": "c" * 64,
+        "catalog_context_fingerprint_generation": 1,
+        "catalog_context_fingerprint": "catalog-context-1",
+        "execution_cursor": "step.attack.resolve",
+        "safe_recompute_phase": "determine",
+        "invocation_facts": [],
+        "fixed_rng_results": [],
+        "prior_step_exports": {},
+        "committed_segment_refs": ["segment-1"],
+        "dependency_frontier_refs": ["frontier-1"],
+        "expected_child_resolution_ids": [],
+        "future_rng_frontier": "rng-frontier-1",
+    }
+    if pending_response is not None:
+        record["pending_response"] = pending_response
+    if unconsumed_advancement is not None:
+        record["unconsumed_advancement"] = unconsumed_advancement
+    state = {key: value for key, value in record.items() if key not in {"kind", "id", "revision"}}
+    Draft202012Validator(_schema("runtime-continuation-state.schema.json"), registry=_registry()).validate(state)
+    return record
+
+
+def _choice_response() -> dict[str, object]:
+    return {
+        "kind": "choice",
+        "offer_id": "choice-1",
+        "parent_resolution_id": "resolution-1",
+        "continuation_generation": 1,
+        "responder_id": "actor-pc-bob",
+        "option_ids": ["option.left", "option.right"],
+    }
+
+
+def _reaction_response() -> dict[str, object]:
+    return {
+        "kind": "reaction",
+        "offer_id": "reaction-1",
+        "parent_resolution_id": "resolution-1",
+        "continuation_generation": 1,
+        "responder_id": "actor-pc-bob",
+        "candidate_activity_ids": ["activity.shield"],
+    }
+
+
 class CoordinationAdmissionTests(unittest.TestCase):
     def test_admission_identity_is_the_revalidated_interaction_and_clause(self) -> None:
         admission = _classify(FakeRepository())
@@ -268,7 +353,7 @@ class CoordinationAdmissionTests(unittest.TestCase):
                 "kind": "runtime.procedure",
                 "id": "procedure-1",
                 "revision": CAMPAIGN_REVISION,
-                "state": {"lifecycle": "ACTIVE", "pending_choice": "choice-1"},
+                "state": _valid_combat_procedure_state(),
                 "campaign_id": CAMPAIGN_ID,
             },
         )
@@ -287,17 +372,7 @@ class CoordinationAdmissionTests(unittest.TestCase):
             "runtime.continuation",
             "continuation-1",
             {
-                "kind": "runtime.continuation",
-                "id": "continuation-1",
-                "revision": CAMPAIGN_REVISION,
-                "pending_response": {
-                    "kind": "choice",
-                    "offer_id": "choice-1",
-                    "parent_resolution_id": "resolution-1",
-                    "continuation_generation": 1,
-                    "responder_id": "actor-pc-bob",
-                    "option_ids": ["option.left", "option.right"],
-                },
+                **_valid_continuation_record(pending_response=_choice_response()),
             },
         )
 
@@ -305,10 +380,10 @@ class CoordinationAdmissionTests(unittest.TestCase):
 
         self.assertEqual(admission.family, CoordinationFamily.RULE_OWNED_ORDERED)
 
-    def test_terminal_or_no_pending_order_owner_fails_closed(self) -> None:
-        cases = (
-            ("runtime.procedure", {"lifecycle": "TERMINAL", "pending_choice": "choice-1"}),
-            ("runtime.procedure", {"lifecycle": "ACTIVE"}),
+    def test_terminal_or_no_pending_order_owner_does_not_suppress_collective_admission(self) -> None:
+        cases: tuple[tuple[str, dict[str, object]], ...] = (
+            ("runtime.procedure", {"state": _valid_combat_procedure_state(lifecycle="TERMINAL")}),
+            ("runtime.procedure", {"state": {"lifecycle": "ACTIVE"}}),
             ("runtime.continuation", {"generation": 1}),
         )
         for index, (family, state) in enumerate(cases):
@@ -319,19 +394,82 @@ class CoordinationAdmissionTests(unittest.TestCase):
                     {"family": family, "id": record_id, "revision": CAMPAIGN_REVISION}
                 ]
                 repository = FakeRepository(clause=clause)
-                record = {
-                    "kind": family,
-                    "id": record_id,
-                    "revision": CAMPAIGN_REVISION,
-                }
-                if family == "runtime.procedure":
-                    record["state"] = state
-                else:
-                    record.update(state)
+                record = {"kind": family, "id": record_id, "revision": CAMPAIGN_REVISION, **state}
                 repository.add_native_owner(family, record_id, record)
 
-                with self.assertRaisesRegex(CollaborationAdmissionError, "pending"):
-                    _classify(repository)
+                admission = _classify(repository)
+
+                self.assertEqual(admission.family, CoordinationFamily.AGENCY_DEPENDENT_COLLECTIVE)
+
+    def test_truthy_unknown_procedure_marker_does_not_claim_order(self) -> None:
+        clause = _collective_clause()
+        clause["native_basis_refs"] = [
+            {"family": "runtime.procedure", "id": "procedure-1", "revision": CAMPAIGN_REVISION}
+        ]
+        state = _valid_combat_procedure_state()
+        state["pending_choice"] = "choice-1"
+        repository = FakeRepository(clause=clause)
+        repository.add_native_owner(
+            "runtime.procedure",
+            "procedure-1",
+            {"kind": "runtime.procedure", "id": "procedure-1", "revision": CAMPAIGN_REVISION, "state": state},
+        )
+
+        admission = _classify(repository)
+
+        self.assertEqual(admission.family, CoordinationFamily.AGENCY_DEPENDENT_COLLECTIVE)
+
+    def test_malformed_continuation_response_does_not_claim_order(self) -> None:
+        clause = _collective_clause()
+        clause["native_basis_refs"] = [
+            {"family": "runtime.continuation", "id": "continuation-1", "revision": CAMPAIGN_REVISION}
+        ]
+        record = _valid_continuation_record()
+        record["pending_response"] = {"kind": "choice", "option_ids": ["option.left"]}
+        repository = FakeRepository(clause=clause)
+        repository.add_native_owner("runtime.continuation", "continuation-1", record)
+
+        admission = _classify(repository)
+
+        self.assertEqual(admission.family, CoordinationFamily.AGENCY_DEPENDENT_COLLECTIVE)
+
+    def test_pending_continuation_reaction_is_the_order_owner(self) -> None:
+        clause = _collective_clause()
+        clause["native_basis_refs"] = [
+            {"family": "runtime.continuation", "id": "continuation-1", "revision": CAMPAIGN_REVISION}
+        ]
+        repository = FakeRepository(clause=clause)
+        repository.add_native_owner(
+            "runtime.continuation",
+            "continuation-1",
+            _valid_continuation_record(pending_response=_reaction_response()),
+        )
+
+        admission = _classify(repository)
+
+        self.assertEqual(admission.family, CoordinationFamily.RULE_OWNED_ORDERED)
+
+    def test_unconsumed_continuation_advancement_is_the_resume_owner(self) -> None:
+        clause = _collective_clause()
+        clause["native_basis_refs"] = [
+            {"family": "runtime.continuation", "id": "continuation-1", "revision": CAMPAIGN_REVISION}
+        ]
+        repository = FakeRepository(clause=clause)
+        repository.add_native_owner(
+            "runtime.continuation",
+            "continuation-1",
+            _valid_continuation_record(
+                unconsumed_advancement={
+                    "amount": 1,
+                    "unit_id": "unit.hour",
+                    "context_id": "world-context-1",
+                }
+            ),
+        )
+
+        admission = _classify(repository)
+
+        self.assertEqual(admission.family, CoordinationFamily.RULE_OWNED_ORDERED)
 
     def test_scene_pending_marker_does_not_become_a_rule_owned_order(self) -> None:
         repository = FakeRepository()

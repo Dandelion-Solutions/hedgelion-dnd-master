@@ -30,8 +30,8 @@ from .native_storage import (
 from .policy_basis import PinnedCampaign, RepositoryPort
 
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 1
 
 _ID_PATTERN: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
@@ -558,40 +558,288 @@ def _validate_required_player(
         raise CollaborationAdmissionError("required contributor PC is not currently controlled")
 
 
-def _has_pending_value(value: object) -> bool:
-    if value is None or value is False:
+def _is_nonempty_string(value: object) -> bool:
+    return isinstance(value, str) and bool(value)
+
+
+def _is_positive_integer(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 1
+
+
+def _is_nonnegative_integer(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def _is_unique_identifier_array(value: object, *, minimum: int = 0) -> bool:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
         return False
-    if isinstance(value, (str, bytes, Mapping, Sequence)):
-        return bool(value)
+    values = tuple(value)
+    if len(values) < minimum or not all(_id_is_valid(item) for item in values):
+        return False
+    return len(values) == len(set(values))
+
+
+def _is_unique_string_array(value: object, *, minimum: int = 0) -> bool:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+        return False
+    values = tuple(value)
+    if len(values) < minimum or not all(_is_nonempty_string(item) for item in values):
+        return False
+    return len(values) == len(set(values))
+
+
+def _id_is_valid(value: object) -> bool:
+    return isinstance(value, str) and _ID_PATTERN.fullmatch(value) is not None
+
+
+def _validate_spent_resources(value: object, *, minimum: int) -> bool:
+    if not isinstance(value, Mapping) or len(value) < minimum:
+        return False
+    for participant_id, resources in value.items():
+        if not _is_nonempty_string(participant_id) or not isinstance(resources, Mapping):
+            return False
+        for resource_id, spent_state in resources.items():
+            if not _is_nonempty_string(resource_id) or not isinstance(spent_state, Mapping):
+                return False
+            if set(spent_state) != {"spent"} or not _is_nonnegative_integer(spent_state.get("spent")):
+                return False
     return True
+
+
+def _validate_budget_resources(value: object) -> bool:
+    if not isinstance(value, Mapping) or not value:
+        return False
+    required = {"resource.action_budget", "resource.movement_budget"}
+    for participant_id, resources in value.items():
+        if not _is_nonempty_string(participant_id) or not isinstance(resources, Mapping):
+            return False
+        if set(resources) != required:
+            return False
+        for budget in resources.values():
+            if not isinstance(budget, Mapping) or set(budget) != {"capacity", "spent"}:
+                return False
+            if not all(_is_nonnegative_integer(budget.get(key)) for key in ("capacity", "spent")):
+                return False
+    return True
+
+
+def _validate_procedure_state(value: object) -> tuple[bool, bool]:
+    if not isinstance(value, Mapping):
+        return False, False
+    procedure_kind = value.get("procedure_kind")
+    if procedure_kind == "procedure.combat_minimal":
+        allowed = {
+            "schema_version",
+            "procedure_kind",
+            "lifecycle",
+            "lifecycle_state",
+            "participant_ids",
+            "initiative_order",
+            "round_number",
+            "round_advance_pending",
+            "active_turn_index",
+            "participant_resources",
+            "world_context_id",
+        }
+        required = allowed - {"world_context_id"}
+        if set(value) - allowed or not required.issubset(value):
+            return False, False
+        lifecycle = value.get("lifecycle")
+        lifecycle_state = value.get("lifecycle_state")
+        if value.get("schema_version") != 2 or lifecycle not in {"ACTIVE", "TERMINAL"}:
+            return False, False
+        if lifecycle == "TERMINAL" and lifecycle_state != "terminated":
+            return False, False
+        if lifecycle == "ACTIVE" and lifecycle_state == "terminated":
+            return False, False
+        if not _is_unique_string_array(value.get("participant_ids"), minimum=1):
+            return False, False
+        if not _is_unique_string_array(value.get("initiative_order"), minimum=1):
+            return False, False
+        if set(value["participant_ids"]) != set(value["initiative_order"]):
+            return False, False
+        if not _is_positive_integer(value.get("round_number")):
+            return False, False
+        if type(value.get("round_advance_pending")) is not bool:
+            return False, False
+        active_turn_index = value.get("active_turn_index")
+        if (
+            not _is_nonnegative_integer(active_turn_index)
+            or active_turn_index >= len(value["initiative_order"])
+        ):
+            return False, False
+        if not _validate_budget_resources(value.get("participant_resources")):
+            return False, False
+        resources = value["participant_resources"]
+        if set(resources) != set(value["participant_ids"]):
+            return False, False
+        if lifecycle_state == "turn_active" and value["round_advance_pending"]:
+            return False, False
+        for participant_resources in resources.values():
+            for budget in participant_resources.values():
+                if budget["spent"] > budget["capacity"]:
+                    return False, False
+        if "world_context_id" in value and not _is_nonempty_string(value["world_context_id"]):
+            return False, False
+        return True, lifecycle == "ACTIVE"
+
+    allowed = {"schema_version", "lifecycle", "participant_resources", "world_context_id", "details"}
+    required = {"schema_version", "lifecycle", "participant_resources"}
+    if set(value) - allowed or not required.issubset(value):
+        return False, False
+    if value.get("schema_version") != 2 or value.get("lifecycle") not in {"ACTIVE", "TERMINAL"}:
+        return False, False
+    if not _validate_spent_resources(value.get("participant_resources"), minimum=0):
+        return False, False
+    if "world_context_id" in value and not _is_nonempty_string(value["world_context_id"]):
+        return False, False
+    if "details" in value and not isinstance(value["details"], Mapping):
+        return False, False
+    return True, False
+
+
+def _validate_pending_response(value: object) -> bool:
+    if not isinstance(value, Mapping):
+        return False
+    kind = value.get("kind")
+    if kind == "choice":
+        required = {
+            "kind",
+            "offer_id",
+            "parent_resolution_id",
+            "continuation_generation",
+            "responder_id",
+            "option_ids",
+        }
+        if set(value) != required:
+            return False
+        return (
+            _is_nonempty_string(value.get("offer_id"))
+            and _is_nonempty_string(value.get("parent_resolution_id"))
+            and _is_positive_integer(value.get("continuation_generation"))
+            and _is_nonempty_string(value.get("responder_id"))
+            and _is_unique_string_array(value.get("option_ids"), minimum=1)
+        )
+    if kind == "reaction":
+        required = {
+            "kind",
+            "offer_id",
+            "parent_resolution_id",
+            "continuation_generation",
+            "responder_id",
+            "candidate_activity_ids",
+        }
+        if set(value) != required:
+            return False
+        return (
+            _is_nonempty_string(value.get("offer_id"))
+            and _is_nonempty_string(value.get("parent_resolution_id"))
+            and _is_positive_integer(value.get("continuation_generation"))
+            and _is_nonempty_string(value.get("responder_id"))
+            and _is_unique_string_array(value.get("candidate_activity_ids"), minimum=1)
+        )
+    return False
+
+
+def _validate_continuation_record(owner: Mapping[str, object]) -> tuple[bool, bool]:
+    required = {
+        "generation",
+        "root_command_id",
+        "resolution_id",
+        "activity_id",
+        "actor_id",
+        "ruleset_set_digest_generation",
+        "ruleset_set_sha256",
+        "catalog_context_fingerprint_generation",
+        "catalog_context_fingerprint",
+        "execution_cursor",
+        "safe_recompute_phase",
+        "invocation_facts",
+        "fixed_rng_results",
+        "prior_step_exports",
+        "committed_segment_refs",
+        "dependency_frontier_refs",
+        "expected_child_resolution_ids",
+        "future_rng_frontier",
+    }
+    optional = {
+        "source_id",
+        "target_ids",
+        "parameter_bindings",
+        "procedure_id",
+        "pending_response",
+        "unconsumed_advancement",
+        "details",
+    }
+    envelope = {"kind", "id", "revision", "campaign_id"}
+    if set(owner) - required - optional - envelope or not required.issubset(owner):
+        return False, False
+    if owner.get("kind") != "runtime.continuation" or not _id_is_valid(owner.get("id")):
+        return False, False
+    if not _is_nonempty_string(owner.get("revision")):
+        return False, False
+    if not _is_positive_integer(owner.get("generation")):
+        return False, False
+    if not all(_is_nonempty_string(owner.get(key)) for key in ("root_command_id", "resolution_id")):
+        return False, False
+    if not all(_id_is_valid(owner.get(key)) for key in ("activity_id", "actor_id")):
+        return False, False
+    if owner.get("ruleset_set_digest_generation") != 1:
+        return False, False
+    ruleset_sha = owner.get("ruleset_set_sha256")
+    if not isinstance(ruleset_sha, str) or re.fullmatch(r"[a-f0-9]{64}", ruleset_sha) is None:
+        return False, False
+    if owner.get("catalog_context_fingerprint_generation") != 1:
+        return False, False
+    if not all(
+        _is_nonempty_string(owner.get(key))
+        for key in ("catalog_context_fingerprint", "execution_cursor", "safe_recompute_phase", "future_rng_frontier")
+    ):
+        return False, False
+    if not all(isinstance(owner.get(key), list) for key in ("invocation_facts", "fixed_rng_results")):
+        return False, False
+    if not isinstance(owner.get("prior_step_exports"), Mapping):
+        return False, False
+    if not all(_is_unique_string_array(owner.get(key)) for key in ("committed_segment_refs", "dependency_frontier_refs", "expected_child_resolution_ids")):
+        return False, False
+    if "source_id" in owner and not _id_is_valid(owner["source_id"]):
+        return False, False
+    if "target_ids" in owner and not _is_unique_identifier_array(owner["target_ids"]):
+        return False, False
+    if "parameter_bindings" in owner and not isinstance(owner["parameter_bindings"], Mapping):
+        return False, False
+    if "procedure_id" in owner and not _is_nonempty_string(owner["procedure_id"]):
+        return False, False
+    if "details" in owner and not isinstance(owner["details"], Mapping):
+        return False, False
+    has_pending_response = "pending_response" in owner
+    if has_pending_response and not _validate_pending_response(owner["pending_response"]):
+        return False, False
+    has_unconsumed_advancement = "unconsumed_advancement" in owner
+    if has_unconsumed_advancement:
+        advancement = owner["unconsumed_advancement"]
+        if not isinstance(advancement, Mapping) or set(advancement) != {"amount", "unit_id", "context_id"}:
+            return False, False
+        if not _is_positive_integer(advancement.get("amount")):
+            return False, False
+        if advancement.get("unit_id") not in {"unit.second", "unit.minute", "unit.hour", "unit.day"}:
+            return False, False
+        if not _is_nonempty_string(advancement.get("context_id")):
+            return False, False
+    return True, has_pending_response or has_unconsumed_advancement
 
 
 def _ordered_owner(refs: Sequence[NativeBasisRef], owners: Sequence[Mapping[str, object]]) -> str | None:
     for ref, owner in zip(refs, owners):
-        if ref.family not in _ORDERED_OWNER_FAMILIES:
-            continue
-        state = owner.get("state")
-        candidates: tuple[Mapping[str, object], ...]
-        if isinstance(state, Mapping):
-            candidates = (state, owner)
-        else:
-            candidates = (owner,)
         if ref.family == "runtime.procedure":
-            lifecycle = candidates[0].get("lifecycle", candidates[-1].get("lifecycle"))
-            if lifecycle != "ACTIVE":
-                continue
-            pending_fields = (
-                "pending_response",
-                "pending_choice",
-                "pending_reaction",
-                "response_order",
-                "responder_order",
-                "resume_cursor",
-                "resume",
-            )
+            valid, ordered = _validate_procedure_state(owner.get("state"))
+        elif ref.family == "runtime.continuation":
+            valid, ordered = _validate_continuation_record(owner)
         else:
-            pending_fields = ("pending_response", "unconsumed_advancement")
-        if any(_has_pending_value(candidate.get(field)) for candidate in candidates for field in pending_fields):
+            continue
+        if not valid:
+            continue
+        if ordered:
             return ref.family
     return None
 
@@ -644,8 +892,6 @@ def classify_coordination_dependency(
         for ref in required:
             _validate_required_player(repository, pinned, ref)
     ordered_owner = _ordered_owner(basis_refs, basis_owners)
-    if any(ref.family in _ORDERED_OWNER_FAMILIES for ref in basis_refs) and ordered_owner is None:
-        raise CollaborationAdmissionError("native ordered owner has no current pending response/order/resume")
     if ordered_owner is not None:
         family = CoordinationFamily.RULE_OWNED_ORDERED
     elif dependency is None:

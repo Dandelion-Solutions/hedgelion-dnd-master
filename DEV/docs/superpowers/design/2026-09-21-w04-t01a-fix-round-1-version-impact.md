@@ -1,6 +1,6 @@
 # W04.T01A Fix Round 1 — Version Impact Checkpoint Evidence
 
-Status: **CHECKPOINT EVIDENCE — TARGETED REVIEW REPAIR**
+Status: **CHECKPOINT EVIDENCE — TARGETED REVIEW REPAIR (CORRECTED)**
 
 Base remote HEAD before this repair: `9f9fc4855958b4238ea7bdf304ec0f63a5544bdf`
 
@@ -17,16 +17,22 @@ This repair is limited to the already authorized W04.T01A collaboration lane:
 
 | Owner / namespace | Before | After | Classification and result |
 |---|---:|---:|---|
-| `GAME/TOOLS/collaboration.py` `framework_module_version` | absent (new module) | `1.0.1` | New engine-bound module starts at current engine line `1.0`, local revision `1`; no additional bump in this repair. |
-| `runtime.collaboration_obligation` local schema | absent (new family) | `1` | New persistent family starts at schema version `1`; no prior family version exists to bump. |
-| `GAME/SCHEMA/collaboration_obligation.schema.yaml` projection | absent (new projection) | `1` | Synchronized with the JSON owner at schema version `1`. |
-| `IntentClause` collaboration semantics | absent | additive optional collaboration fields; native basis refs require `revision` | Existing non-collaboration clauses remain valid. This pre-release owner has no independent schema-version field; no separate IntentClause bump is defined. |
+| `GAME/TOOLS/collaboration.py` `framework_module_version` | `1.0.1` | `1.0.2` | Corrected material-repair impact: the actual parent/checkpoint already contained collaboration module revision `1.0.1`; this owner-local behavioral repair advances the revision to `1.0.2`. |
+| `runtime.collaboration_obligation` local schema | `1` | `1` | Existing schema owner is unchanged by this repair; no schema bump is required. |
+| `GAME/SCHEMA/collaboration_obligation.schema.yaml` projection | `1` | `1` | Existing synchronized projection is unchanged; no projection bump is required. |
+| `IntentClause` collaboration semantics | existing additive collaboration fields | unchanged | Existing non-collaboration clauses remain valid. This pre-release owner has no independent schema-version field; no separate IntentClause bump is defined. |
 | `campaign_contract_generation` | `2` | `2` | No bump: no released-campaign migration or campaign-wide persistent interpretation change is introduced. |
 | `storage_format_generation` | `3` | `3` | No bump: deterministic WP-11 route/layout is unchanged. |
 | `catalog_generation` | `2` | `2` | No bump: no coordinated catalog vocabulary change. |
 | `engine_version` | `1.0-alpha` | `1.0-alpha` | No release bump: this is an owner-local pre-release repair. |
 
-**VERSION_IMPACT:** new collaboration module initialized at `1.0.1`; new collaboration schema and synchronized GAME projection initialized at `1`; IntentClause change is additive/pre-release with no independent bump; campaign/storage/catalog/engine namespaces unchanged.
+**VERSION_IMPACT:** corrected material repair advances `GAME/TOOLS/collaboration.py` from `1.0.1` to `1.0.2`; collaboration schema and synchronized GAME projection remain at `1`; IntentClause change is additive/pre-release with no independent bump; campaign/storage/catalog/engine namespaces unchanged.
+
+## Correction record
+
+The earlier `absent (new module) -> 1.0.1` classification was incorrect: the real parent/checkpoint already carried `framework_module_version: 1.0.1`, and the existing collaboration schema/projection were already at `1`. This correction supersedes the earlier Version Impact rows; the implementation scope and protected-surface statements remain unchanged.
+
+The current round-2 execution starts from checkpoint `7c2a2a16db3df4cdad4952e48f7ea9b848ed3578`, which also carries collaboration `1.0.1`; the material owner repair in this checkpoint advances it to `1.0.2`.
 
 ## Basis-table result
 
