@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
@@ -18,9 +19,10 @@ from dataclasses import dataclass
 from threading import RLock
 from typing import Final, Protocol
 
+from .policy_basis import PolicyBasisResolutionError, validate_frozen_adjudication_basis
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final = "1.0.6"
 _DIGEST_GENERATION: Final = 1
 _ID_PATTERN: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _EVENT_KIND_PATTERN: Final = re.compile(r"^event\.[a-z][a-z0-9_.]*$")
@@ -95,6 +97,55 @@ _FORBIDDEN_PROCEDURE_FIELDS: Final = frozenset(
 )
 _PROCEDURE_SCHEMA_VERSION: Final = 2
 _PROCEDURE_LIFECYCLES: Final = frozenset({"ACTIVE", "TERMINAL"})
+_PROCEDURE_COMBAT_FIELDS: Final = frozenset(
+    {
+        "schema_version",
+        "procedure_kind",
+        "lifecycle",
+        "lifecycle_state",
+        "participant_ids",
+        "initiative_order",
+        "round_number",
+        "round_advance_pending",
+        "active_turn_index",
+        "participant_resources",
+        "world_context_id",
+    }
+)
+_CONTINUATION_REQUIRED_FIELDS: Final = frozenset(
+    {
+        "generation",
+        "root_command_id",
+        "resolution_id",
+        "activity_id",
+        "actor_id",
+        "ruleset_set_digest_generation",
+        "ruleset_set_sha256",
+        "catalog_context_fingerprint_generation",
+        "catalog_context_fingerprint",
+        "execution_cursor",
+        "safe_recompute_phase",
+        "invocation_facts",
+        "fixed_rng_results",
+        "prior_step_exports",
+        "committed_segment_refs",
+        "dependency_frontier_refs",
+        "expected_child_resolution_ids",
+        "future_rng_frontier",
+    }
+)
+_CONTINUATION_OPTIONAL_FIELDS: Final = frozenset(
+    {
+        "source_id",
+        "target_ids",
+        "parameter_bindings",
+        "procedure_id",
+        "pending_response",
+        "unconsumed_advancement",
+        "details",
+    }
+)
+_CONTINUATION_ENVELOPE_FIELDS: Final = frozenset({"kind", "id", "revision", "campaign_id"})
 
 
 class ExecutionContractError(ValueError):
@@ -126,7 +177,7 @@ class RngProvider(Protocol):
 class FixedRng:
     """Small deterministic RNG fixture/provider whose values are consumed once."""
 
-    __slots__ = ("_values", "_cursor", "draw_count")
+    __slots__ = ("_cursor", "_values", "draw_count")
 
     def __init__(self, values: Sequence[int]) -> None:
         if not values:
@@ -638,6 +689,273 @@ def _validate_continuation_binding(
         raise ExecutionConflict("continuation procedure_id differs from resolution")
 
 
+def validate_native_ordering_owner(owner_kind: str, owner: Mapping[str, object]) -> bool:
+    """Validate one native ordered owner and report active ordering evidence.
+
+    Procedure and Continuation own their complete state contracts.  Collaboration
+    may ask this owner-local execution module whether a validated record currently
+    carries response/order or resume evidence, but it must not reimplement those
+    contracts or interpret an invalid record as ordinary collaboration input.
+    """
+
+    if owner_kind == "runtime.procedure":
+        return _validate_procedure_ordering_owner(owner)
+    if owner_kind == "runtime.continuation":
+        return _validate_continuation_ordering_owner(owner)
+    raise ExecutionContractError("native ordered owner kind is unsupported")
+
+
+def _validate_procedure_ordering_owner(owner: Mapping[str, object]) -> bool:
+    state = _require_mapping(owner.get("state"), "procedure state")
+    procedure_kind = state.get("procedure_kind")
+    if procedure_kind == "procedure.combat_minimal":
+        required = _PROCEDURE_COMBAT_FIELDS - {"world_context_id"}
+        if set(state) - _PROCEDURE_COMBAT_FIELDS or not required.issubset(state):
+            raise ExecutionContractError("procedure state has unexpected or missing fields")
+        if state.get("schema_version") != _PROCEDURE_SCHEMA_VERSION:
+            raise ExecutionContractError("procedure schema_version must be 2")
+        lifecycle = state.get("lifecycle")
+        if lifecycle not in _PROCEDURE_LIFECYCLES:
+            raise ExecutionContractError("procedure lifecycle must be ACTIVE or TERMINAL")
+        lifecycle_state = state.get("lifecycle_state")
+        if lifecycle_state not in {"between_turns", "turn_active", "terminated"}:
+            raise ExecutionContractError("procedure lifecycle_state is unsupported")
+        if lifecycle == "TERMINAL" and lifecycle_state != "terminated":
+            raise ExecutionContractError("terminal procedure requires terminated phase")
+        if lifecycle == "ACTIVE" and lifecycle_state == "terminated":
+            raise ExecutionContractError("active procedure cannot use terminated phase")
+        _require_unique_string_array(state.get("participant_ids"), "procedure participant_ids", minimum=1)
+        _require_unique_string_array(state.get("initiative_order"), "procedure initiative_order", minimum=1)
+        round_number = state.get("round_number")
+        if not _is_positive_integer(round_number):
+            raise ExecutionContractError("procedure round_number must be positive")
+        if type(state.get("round_advance_pending")) is not bool:
+            raise ExecutionContractError("procedure round_advance_pending must be boolean")
+        active_turn_index = state.get("active_turn_index")
+        if not _is_nonnegative_integer(active_turn_index):
+            raise ExecutionContractError("procedure active_turn_index must be nonnegative")
+        initiative_order = state["initiative_order"]
+        if not isinstance(initiative_order, Sequence) or isinstance(initiative_order, (str, bytes)):
+            raise ExecutionContractError("procedure initiative_order must be an array")
+        if active_turn_index >= len(initiative_order):
+            raise ExecutionContractError("procedure active_turn_index is outside initiative_order")
+        _validate_combat_budget_resources(state.get("participant_resources"))
+        if "world_context_id" in state:
+            _require_string(state["world_context_id"], "procedure world_context_id")
+        return lifecycle == "ACTIVE"
+
+    allowed = {"schema_version", "lifecycle", "participant_resources", "world_context_id", "details"}
+    required = {"schema_version", "lifecycle", "participant_resources"}
+    if set(state) - allowed or not required.issubset(state):
+        raise ExecutionContractError("procedure state has unexpected or missing fields")
+    if state.get("schema_version") != _PROCEDURE_SCHEMA_VERSION:
+        raise ExecutionContractError("procedure schema_version must be 2")
+    lifecycle = state.get("lifecycle")
+    if lifecycle not in _PROCEDURE_LIFECYCLES:
+        raise ExecutionContractError("procedure lifecycle must be ACTIVE or TERMINAL")
+    _validate_spent_resources(state.get("participant_resources"))
+    if "world_context_id" in state:
+        _require_string(state["world_context_id"], "procedure world_context_id")
+    if "details" in state and not isinstance(state["details"], Mapping):
+        raise ExecutionContractError("procedure details must be an object")
+    return False
+
+
+def _validate_continuation_ordering_owner(owner: Mapping[str, object]) -> bool:
+    allowed = _CONTINUATION_REQUIRED_FIELDS | _CONTINUATION_OPTIONAL_FIELDS | _CONTINUATION_ENVELOPE_FIELDS
+    if set(owner) - allowed or not _CONTINUATION_REQUIRED_FIELDS.issubset(owner):
+        raise ExecutionContractError("continuation has unexpected or missing fields")
+    if owner.get("kind") != "runtime.continuation":
+        raise ExecutionContractError("continuation kind is unsupported")
+    _require_id(owner.get("id"), "continuation id")
+    _require_string(owner.get("revision"), "continuation revision")
+    if "campaign_id" in owner:
+        _require_string(owner["campaign_id"], "continuation campaign_id")
+    if not _is_positive_integer(owner.get("generation")):
+        raise ExecutionContractError("continuation generation must be positive")
+    for field in ("root_command_id", "resolution_id"):
+        _require_string(owner.get(field), f"continuation {field}")
+    for field in ("activity_id", "actor_id"):
+        _require_id(owner.get(field), f"continuation {field}")
+    if owner.get("ruleset_set_digest_generation") != 1:
+        raise ExecutionContractError("continuation ruleset digest generation is unsupported")
+    _require_sha256(owner.get("ruleset_set_sha256"), "continuation ruleset_set_sha256")
+    if owner.get("catalog_context_fingerprint_generation") != 1:
+        raise ExecutionContractError("continuation catalog fingerprint generation is unsupported")
+    for field in (
+        "catalog_context_fingerprint",
+        "execution_cursor",
+        "safe_recompute_phase",
+        "future_rng_frontier",
+    ):
+        _require_string(owner.get(field), f"continuation {field}")
+
+    invocation_facts = owner.get("invocation_facts")
+    fixed_rng_results = owner.get("fixed_rng_results")
+    if not isinstance(invocation_facts, list):
+        raise ExecutionContractError("continuation invocation_facts must be an array")
+    if not isinstance(fixed_rng_results, list):
+        raise ExecutionContractError("continuation fixed_rng_results must be an array")
+    _validate_continuation_adjudication_basis(owner.get("parameter_bindings", {}), invocation_facts)
+    for item in fixed_rng_results:
+        _roll_result(_require_mapping(item, "continuation fixed RNG result"))
+    prior_step_exports = _require_mapping(owner.get("prior_step_exports"), "continuation prior_step_exports")
+    if any(not _is_json_scalar(value) for value in prior_step_exports.values()):
+        raise ExecutionContractError("continuation prior_step_exports must contain scalar values")
+    for field in ("committed_segment_refs", "dependency_frontier_refs", "expected_child_resolution_ids"):
+        _require_unique_string_array(owner.get(field), f"continuation {field}")
+    if "source_id" in owner:
+        _require_id(owner["source_id"], "continuation source_id")
+    if "target_ids" in owner:
+        _require_unique_id_array(owner["target_ids"], "continuation target_ids")
+    if "procedure_id" in owner:
+        _require_string(owner["procedure_id"], "continuation procedure_id")
+    if "details" in owner and not isinstance(owner["details"], Mapping):
+        raise ExecutionContractError("continuation details must be an object")
+    if "pending_response" in owner:
+        _validate_pending_response(owner["pending_response"])
+    if "unconsumed_advancement" in owner:
+        _validate_unconsumed_advancement(owner["unconsumed_advancement"])
+    return "pending_response" in owner or "unconsumed_advancement" in owner
+
+
+def _validate_continuation_adjudication_basis(
+    parameter_bindings: object, invocation_facts: list[object]
+) -> None:
+    try:
+        _parameters, facts, _refs = validate_frozen_adjudication_basis(parameter_bindings, invocation_facts)
+    except PolicyBasisResolutionError as exc:
+        raise ExecutionContractError("continuation adjudication basis is invalid") from exc
+    for fact in facts:
+        _require_sha256(fact.get("binding_fingerprint"), "continuation binding_fingerprint")
+        _require_sha256(fact.get("rules_context_fingerprint"), "continuation rules_context_fingerprint")
+
+
+def _validate_pending_response(value: object) -> None:
+    response = _require_mapping(value, "continuation pending_response")
+    kind = response.get("kind")
+    if kind == "choice":
+        required = {
+            "kind",
+            "offer_id",
+            "parent_resolution_id",
+            "continuation_generation",
+            "responder_id",
+            "option_ids",
+        }
+        if set(response) != required:
+            raise ExecutionContractError("continuation choice response has unexpected or missing fields")
+        _require_string(response["offer_id"], "continuation choice offer_id")
+        _require_string(response["parent_resolution_id"], "continuation choice parent_resolution_id")
+        if not _is_positive_integer(response["continuation_generation"]):
+            raise ExecutionContractError("continuation choice generation must be positive")
+        _require_string(response["responder_id"], "continuation choice responder_id")
+        _require_unique_string_array(response["option_ids"], "continuation choice option_ids", minimum=1)
+        return
+    if kind == "reaction":
+        required = {
+            "kind",
+            "offer_id",
+            "parent_resolution_id",
+            "continuation_generation",
+            "responder_id",
+            "candidate_activity_ids",
+        }
+        if set(response) != required:
+            raise ExecutionContractError("continuation reaction response has unexpected or missing fields")
+        _require_string(response["offer_id"], "continuation reaction offer_id")
+        _require_string(response["parent_resolution_id"], "continuation reaction parent_resolution_id")
+        if not _is_positive_integer(response["continuation_generation"]):
+            raise ExecutionContractError("continuation reaction generation must be positive")
+        _require_string(response["responder_id"], "continuation reaction responder_id")
+        _require_unique_string_array(
+            response["candidate_activity_ids"], "continuation reaction candidate_activity_ids", minimum=1
+        )
+        return
+    raise ExecutionContractError("continuation pending_response kind is unsupported")
+
+
+def _validate_unconsumed_advancement(value: object) -> None:
+    advancement = _require_mapping(value, "continuation unconsumed_advancement")
+    if set(advancement) != {"amount", "unit_id", "context_id"}:
+        raise ExecutionContractError("continuation advancement has unexpected or missing fields")
+    if not _is_positive_integer(advancement["amount"]):
+        raise ExecutionContractError("continuation advancement amount must be positive")
+    if advancement["unit_id"] not in {"unit.second", "unit.minute", "unit.hour", "unit.day"}:
+        raise ExecutionContractError("continuation advancement unit is unsupported")
+    _require_string(advancement["context_id"], "continuation advancement context_id")
+
+
+def _validate_combat_budget_resources(value: object) -> None:
+    resources = _require_mapping(value, "procedure participant_resources")
+    if not resources:
+        raise ExecutionContractError("procedure participant_resources must not be empty")
+    required = {"resource.action_budget", "resource.movement_budget"}
+    for participant_id, participant_resources in resources.items():
+        _require_string(participant_id, "procedure participant id")
+        mapping = _require_mapping(participant_resources, "procedure participant resources")
+        if set(mapping) != required:
+            raise ExecutionContractError("procedure participant resources are incomplete")
+        for budget in mapping.values():
+            budget_mapping = _require_mapping(budget, "procedure budget")
+            if set(budget_mapping) != {"capacity", "spent"}:
+                raise ExecutionContractError("procedure budget has unexpected or missing fields")
+            for field in ("capacity", "spent"):
+                if not _is_nonnegative_integer(budget_mapping[field]):
+                    raise ExecutionContractError(f"procedure budget {field} must be nonnegative")
+
+
+def _validate_spent_resources(value: object) -> None:
+    resources = _require_mapping(value, "procedure participant_resources")
+    for participant_id, participant_resources in resources.items():
+        _require_string(participant_id, "procedure participant id")
+        mapping = _require_mapping(participant_resources, "procedure participant resources")
+        for resource_id, spent_state in mapping.items():
+            _require_string(resource_id, "procedure resource id")
+            spent_mapping = _require_mapping(spent_state, "procedure spent resource")
+            if set(spent_mapping) != {"spent"} or not _is_nonnegative_integer(spent_mapping["spent"]):
+                raise ExecutionContractError("procedure spent resource is invalid")
+
+
+def _require_unique_string_array(value: object, label: str, *, minimum: int = 0) -> None:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+        raise ExecutionContractError(f"{label} must be an array")
+    values = tuple(value)
+    if len(values) < minimum or any(not isinstance(item, str) or not item for item in values):
+        raise ExecutionContractError(f"{label} contains an invalid string")
+    if len(values) != len(set(values)):
+        raise ExecutionContractError(f"{label} must contain unique values")
+
+
+def _require_unique_id_array(value: object, label: str) -> None:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+        raise ExecutionContractError(f"{label} must be an array")
+    values = tuple(_require_id(item, f"{label} item") for item in value)
+    if len(values) != len(set(values)):
+        raise ExecutionContractError(f"{label} must contain unique values")
+
+
+def _is_positive_integer(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 1
+
+
+def _is_nonnegative_integer(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def _is_json_scalar(value: object) -> bool:
+    return isinstance(value, (str, int, float, bool)) and not (
+        isinstance(value, float) and not math.isfinite(value)
+    )
+
+
+def _require_sha256(value: object, label: str) -> str:
+    result = _require_string(value, label)
+    if _SHA256_PATTERN.fullmatch(result) is None:
+        raise ExecutionContractError(f"{label} must be a lower-case SHA-256 digest")
+    return result
+
+
 def _evidence_without_close_state(result: Mapping[str, object]) -> dict[str, object]:
     evidence = deepcopy(dict(result))
     evidence.pop("status", None)
@@ -691,7 +1009,7 @@ def _mapping_copy(value: object, label: str) -> dict[str, object]:
 
 def _json_copy(value: object, label: str) -> object:
     if value is None or isinstance(value, (str, int, float, bool)):
-        if isinstance(value, float) and (value != value or value in {float("inf"), float("-inf")}):
+        if isinstance(value, float) and not math.isfinite(value):
             raise ExecutionContractError(f"{label} must not contain a non-finite number")
         return value
     if isinstance(value, Mapping):
@@ -807,7 +1125,7 @@ def _scalar_exports(payload: Mapping[str, object]) -> dict[str, object]:
         _require_id(key, "receipt export key")
         if value is None or not isinstance(value, (str, int, float, bool)):
             raise ExecutionContractError("receipt exports must contain scalar values")
-        if isinstance(value, float) and (value != value or value in {float("inf"), float("-inf")}):
+        if isinstance(value, float) and not math.isfinite(value):
             raise ExecutionContractError("receipt exports must contain finite scalar values")
     return deepcopy(dict(payload))
 

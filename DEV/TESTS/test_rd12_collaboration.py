@@ -481,6 +481,30 @@ class CoordinationAdmissionTests(unittest.TestCase):
         with self.assertRaisesRegex(CollaborationAdmissionError, "ordered owner"):
             _classify(repository)
 
+    def test_owner_rejects_unadmitted_continuation_parameter_binding_before_order(self) -> None:
+        clause = _collective_clause()
+        clause["native_basis_refs"] = [
+            {"family": "runtime.continuation", "id": "continuation-1", "revision": CAMPAIGN_REVISION}
+        ]
+        record = _valid_continuation_record(pending_response=_choice_response())
+        record["parameter_bindings"] = {
+            "dc": {
+                "source_class": "INVOCATION_ADJUDICATED",
+                "value": 31,
+                "provenance_ref": "turn-1:fact:1",
+                "eligibility_basis_fingerprint": "eligibility-1",
+                "rules_context_fingerprint": "rules-1",
+                "policy_basis_refs": [],
+            }
+        }
+        state = {key: value for key, value in record.items() if key not in {"kind", "id", "revision"}}
+        Draft202012Validator(_schema("runtime-continuation-state.schema.json"), registry=_registry()).validate(state)
+        repository = FakeRepository(clause=clause)
+        repository.add_native_owner("runtime.continuation", "continuation-1", record)
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "ordered owner"):
+            _classify(repository)
+
     def test_pending_continuation_reaction_is_the_order_owner(self) -> None:
         clause = _collective_clause()
         clause["native_basis_refs"] = [
