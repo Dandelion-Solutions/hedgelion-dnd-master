@@ -1169,7 +1169,7 @@ class LiveRouting:
 class _SelectedLiveReadCapability:
     """Owner-issued, host-bound read capability for one selected LIVE source."""
 
-    __slots__ = ("_reader", "__weakref__")
+    __slots__ = ("__weakref__", "_reader")
 
     def __init__(self, *_args: object, **_kwargs: object) -> None:
         raise LiveContractError("selected LIVE read capability must be issued by the LIVE owner")
