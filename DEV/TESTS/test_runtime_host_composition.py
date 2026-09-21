@@ -4,16 +4,9 @@ from __future__ import annotations
 
 import json
 import pickle
-import sys
 import unittest
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-TOOLS = ROOT / "GAME" / "TOOLS"
-if str(TOOLS) not in sys.path:
-    sys.path.insert(0, str(TOOLS))
-
-from GAME.TOOLS.live_state import LiveRouting  # noqa: I001
+from GAME.TOOLS.live_state import LiveRouting
 from GAME.TOOLS.policy_basis import PinnedCampaign
 from GAME.TOOLS.runtime_host import (
     FRAMEWORK_MODULE_VERSION,
@@ -21,7 +14,6 @@ from GAME.TOOLS.runtime_host import (
     RuntimeHostError,
     compose_runtime_host,
 )
-
 
 CAMPAIGN_ID = "campaign-frostfall"
 

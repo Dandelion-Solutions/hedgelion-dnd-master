@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from context_budget import allocate
+try:
+    from .context_budget import allocate
+except ImportError:
+    from context_budget import allocate
 
 
 class ContextContractError(ValueError):
