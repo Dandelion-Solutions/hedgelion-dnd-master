@@ -418,6 +418,48 @@ class CollaborationAdmissionTests(unittest.TestCase):
         with self.assertRaises(CollaborationAdmissionError):
             _classify(repository)
 
+    def test_resolution_failure_code_must_match_owner_status_conditional(self) -> None:
+        clause = _collective_clause() | {"ordering_resolution_id": "resolution-1"}
+        repository = RepositoryFixture(clause)
+        resolution = _ordered_resolution() | {
+            "failure_code": "failure.order_adjudication_required"
+        }
+        repository.put("runtime.resolution", "resolution-1", resolution)
+        repository.put(
+            "runtime.continuation",
+            "continuation-1",
+            _ordered_continuation(pending_response=_choice()),
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            _classify(repository)
+
+    def test_resolution_rejects_non_schema_resolution_id_alias(self) -> None:
+        clause = _collective_clause() | {"ordering_resolution_id": "resolution-1"}
+        repository = RepositoryFixture(clause)
+        resolution = _ordered_resolution() | {"resolution_id": "resolution-1"}
+        repository.put("runtime.resolution", "resolution-1", resolution)
+        repository.put(
+            "runtime.continuation",
+            "continuation-1",
+            _ordered_continuation(pending_response=_choice()),
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            _classify(repository)
+
+    def test_continuation_rejects_non_schema_continuation_id_alias(self) -> None:
+        clause = _collective_clause() | {"ordering_resolution_id": "resolution-1"}
+        repository = RepositoryFixture(clause)
+        repository.put("runtime.resolution", "resolution-1", _ordered_resolution())
+        continuation = _ordered_continuation(pending_response=_choice()) | {
+            "continuation_id": "continuation-1"
+        }
+        repository.put("runtime.continuation", "continuation-1", continuation)
+
+        with self.assertRaises(CollaborationAdmissionError):
+            _classify(repository)
+
     def test_continuation_malformed_owner_schema_constraint_fails_closed(
         self,
     ) -> None:

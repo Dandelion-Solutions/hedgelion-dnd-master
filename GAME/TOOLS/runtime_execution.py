@@ -34,8 +34,8 @@ from .policy_basis import (
     validate_policy_applicability_witnesses,
 )
 
-# framework_module_version: 1.0.7
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
+# framework_module_version: 1.0.8
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
 RUNTIME_COMMAND_SCHEMA_VERSION: Final = 3
 INTERPRETER_RESULT_FINGERPRINT_GENERATION: Final = 1
 RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION: Final = 2
@@ -573,7 +573,7 @@ def _ordering_resolution_schema(payload: Mapping[str, object]) -> None:
     for field in ("activity_id", "actor_id", "source_id"):
         if field in payload:
             _ordering_id(payload[field], f"resolution {field}")
-    for field in ("resolution_id", "continuation_id", "procedure_id"):
+    for field in ("continuation_id", "procedure_id"):
         if field in payload:
             _ordering_text(payload[field], f"resolution {field}")
     if "target_ids" in payload:
@@ -589,6 +589,18 @@ def _ordering_resolution_schema(payload: Mapping[str, object]) -> None:
         raise NativeOrderingError("resolution status is unsupported")
     if "failure_code" in payload and payload["failure_code"] not in _ORDERING_FAILURE_CODES:
         raise NativeOrderingError("resolution failure_code is unsupported")
+    if (
+        payload["status"] in {"HYDRATION_REQUIRED", "REJECTED", "FAILED"}
+        and "failure_code" not in payload
+    ):
+        raise NativeOrderingError("resolution failure_code is required for its status")
+    if "failure_code" in payload and payload["status"] not in {
+        "HYDRATION_REQUIRED",
+        "REJECTED",
+        "ABORTED",
+        "FAILED",
+    }:
+        raise NativeOrderingError("resolution failure_code conflicts with its status")
     _ordering_integer(payload["next_segment_sequence"], "resolution next_segment_sequence", minimum=1)
     facts = _ordering_array(payload["invocation_facts"], "resolution invocation_facts")
     for index, fact in enumerate(facts):
@@ -609,9 +621,8 @@ def _ordering_continuation_schema(payload: Mapping[str, object]) -> None:
     _ordering_integer(payload["generation"], "continuation generation", minimum=1)
     for field in ("root_command_id", "resolution_id", "execution_cursor", "safe_recompute_phase", "future_rng_frontier"):
         _ordering_text(payload[field], f"continuation {field}")
-    for field in ("continuation_id", "procedure_id"):
-        if field in payload:
-            _ordering_text(payload[field], f"continuation {field}")
+    if "procedure_id" in payload:
+        _ordering_text(payload["procedure_id"], "continuation procedure_id")
     for field in ("activity_id", "actor_id", "source_id"):
         if field in payload:
             _ordering_id(payload[field], f"continuation {field}")
@@ -660,9 +671,9 @@ def _validate_ordering_owner_schema(family: str, payload: Mapping[str, object]) 
         )
     allowed = _ORDERING_ENVELOPE_FIELDS.copy()
     if family == "runtime.resolution":
-        allowed |= _ORDERING_RESOLUTION_FIELDS | {"resolution_id"}
+        allowed |= _ORDERING_RESOLUTION_FIELDS
     elif family == "runtime.continuation":
-        allowed |= _ORDERING_CONTINUATION_FIELDS | {"continuation_id"}
+        allowed |= _ORDERING_CONTINUATION_FIELDS
     else:
         return
     unexpected = set(payload) - allowed
