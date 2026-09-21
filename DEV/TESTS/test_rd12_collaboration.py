@@ -34,6 +34,7 @@ SCHEMAS = ROOT / "DEV" / "SCHEMAS"
 CAMPAIGN_ID = "campaign-frostfall"
 CAMPAIGN_REVISION = "a" * 40
 TREE_SHA = "b" * 40
+CHANGED_CAMPAIGN_REVISION = "c" * 40
 
 
 class RepositoryFixture:
@@ -120,6 +121,29 @@ class RepositoryFixture:
                 "state": {"name": "Market morning"},
             },
         )
+
+
+class ChangingPinRepositoryFixture(RepositoryFixture):
+    """Fixture that changes the campaign pin before the ordering read."""
+
+    def __init__(self, clause: dict[str, object] | None = None) -> None:
+        self.pin_calls = 0
+        super().__init__(clause)
+
+    def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
+        if campaign_id != CAMPAIGN_ID:
+            raise KeyError(campaign_id)
+        self.pin_calls += 1
+        revision = (
+            CAMPAIGN_REVISION if self.pin_calls == 1 else CHANGED_CAMPAIGN_REVISION
+        )
+        return PinnedCampaign(CAMPAIGN_ID, revision, TREE_SHA)
+
+    def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+        if pinned.campaign_id != CAMPAIGN_ID:
+            raise KeyError("wrong campaign pin")
+        self.reads.append(path)
+        return deepcopy(self.records[path])
 
 
 class LiveFixture:
@@ -212,8 +236,22 @@ def _ordered_resolution(
         "kind": "runtime.resolution",
         "id": "resolution-1",
         "campaign_id": CAMPAIGN_ID,
+        "root_command_id": "command-1",
+        "initiating_command_id": "command-1",
+        "activity_id": "activity.test",
+        "actor_id": "actor-bob",
+        "ruleset_set_digest_generation": 1,
+        "ruleset_set_sha256": "d" * 64,
+        "catalog_context_fingerprint_generation": 1,
+        "catalog_context_fingerprint": "catalog-context-1",
         "status": status,
         "continuation_id": "continuation-1",
+        "next_segment_sequence": 1,
+        "invocation_facts": [],
+        "fixed_rng_results": [],
+        "prior_step_exports": {},
+        "child_resolution_ids": [],
+        "segments": [],
     }
     if procedure_id is not None:
         resolution["procedure_id"] = procedure_id
@@ -231,6 +269,22 @@ def _ordered_continuation(
         "campaign_id": CAMPAIGN_ID,
         "generation": 3,
         "resolution_id": "resolution-1",
+        "root_command_id": "command-1",
+        "activity_id": "activity.test",
+        "actor_id": "actor-bob",
+        "ruleset_set_digest_generation": 1,
+        "ruleset_set_sha256": "d" * 64,
+        "catalog_context_fingerprint_generation": 1,
+        "catalog_context_fingerprint": "catalog-context-1",
+        "execution_cursor": "step.test",
+        "safe_recompute_phase": "determine",
+        "invocation_facts": [],
+        "fixed_rng_results": [],
+        "prior_step_exports": {},
+        "committed_segment_refs": [],
+        "dependency_frontier_refs": [],
+        "expected_child_resolution_ids": [],
+        "future_rng_frontier": "rng:test",
     }
     if pending_response is not None:
         continuation["pending_response"] = pending_response
@@ -316,6 +370,47 @@ class CollaborationAdmissionTests(unittest.TestCase):
         repository.put("runtime.resolution", "resolution-1", _ordered_resolution())
         repository.put(
             "runtime.continuation", "continuation-1", _ordered_continuation()
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            _classify(repository)
+
+    def test_resolution_missing_required_owner_schema_field_fails_closed(self) -> None:
+        clause = _collective_clause() | {"ordering_resolution_id": "resolution-1"}
+        repository = RepositoryFixture(clause)
+        resolution = _ordered_resolution()
+        del resolution["fixed_rng_results"]
+        repository.put("runtime.resolution", "resolution-1", resolution)
+        repository.put(
+            "runtime.continuation",
+            "continuation-1",
+            _ordered_continuation(pending_response=_choice()),
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            _classify(repository)
+
+    def test_continuation_missing_required_owner_schema_field_fails_closed(
+        self,
+    ) -> None:
+        clause = _collective_clause() | {"ordering_resolution_id": "resolution-1"}
+        repository = RepositoryFixture(clause)
+        repository.put("runtime.resolution", "resolution-1", _ordered_resolution())
+        continuation = _ordered_continuation(pending_response=_choice())
+        del continuation["future_rng_frontier"]
+        repository.put("runtime.continuation", "continuation-1", continuation)
+
+        with self.assertRaises(CollaborationAdmissionError):
+            _classify(repository)
+
+    def test_changing_campaign_pin_fails_closed_before_ordered_evidence(self) -> None:
+        clause = _collective_clause() | {"ordering_resolution_id": "resolution-1"}
+        repository = ChangingPinRepositoryFixture(clause)
+        repository.put("runtime.resolution", "resolution-1", _ordered_resolution())
+        repository.put(
+            "runtime.continuation",
+            "continuation-1",
+            _ordered_continuation(pending_response=_choice()),
         )
 
         with self.assertRaises(CollaborationAdmissionError):

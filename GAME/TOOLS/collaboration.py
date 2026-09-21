@@ -23,13 +23,17 @@ from .native_storage import (
     route_native_record,
     validate_loaded_identity,
 )
+from .runtime_execution import (
+    NativeOrderingError,
+    resolve_native_ordering_evidence,
+)
 
 if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 1
 
 _ID_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
@@ -659,6 +663,19 @@ def _validate_required_player(
         )
 
 
+def _revalidate_host_basis(host: RuntimeHost, basis: _OperationBasis) -> None:
+    try:
+        current_basis = host._begin_operation()
+    except (AttributeError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "runtime host basis could not be revalidated"
+        ) from exc
+    if current_basis != basis:
+        raise CollaborationAdmissionError(
+            "runtime host campaign basis changed during admission"
+        )
+
+
 def classify_coordination_dependency(
     host: RuntimeHost,
     interaction_id: str,
@@ -706,10 +723,16 @@ def classify_coordination_dependency(
     ordered_evidence = None
     if ordering_ref is not None:
         try:
-            ordered_evidence = host.native_ordering.resolve(
-                {"resolution_id": ordering_ref}
+            _revalidate_host_basis(host, basis)
+            ordered_evidence = resolve_native_ordering_evidence(
+                {"resolution_id": ordering_ref},
+                repository=host._repository,
+                campaign_pin=basis.pinned_campaign,
+                selected_live=basis.selected_live,
             )
-        except (AttributeError, TypeError, ValueError) as exc:
+        except CollaborationAdmissionError:
+            raise
+        except (NativeOrderingError, AttributeError, TypeError, ValueError) as exc:
             raise CollaborationAdmissionError(
                 "ordered owner evidence is invalid"
             ) from exc

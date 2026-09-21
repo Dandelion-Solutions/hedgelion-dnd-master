@@ -32,8 +32,8 @@ from .policy_basis import (
     validate_policy_applicability_witnesses,
 )
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
 RUNTIME_COMMAND_SCHEMA_VERSION: Final = 3
 INTERPRETER_RESULT_FINGERPRINT_GENERATION: Final = 1
 RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION: Final = 2
@@ -166,12 +166,74 @@ _REACTION_FIELDS: Final[frozenset[str]] = frozenset(
         "candidate_activity_ids",
     }
 )
+_ORDERING_OWNER_REQUIRED_FIELDS: Final[dict[str, frozenset[str]]] = {
+    "runtime.resolution": frozenset(
+        {
+            "root_command_id",
+            "activity_id",
+            "actor_id",
+            "ruleset_set_digest_generation",
+            "ruleset_set_sha256",
+            "catalog_context_fingerprint_generation",
+            "catalog_context_fingerprint",
+            "status",
+            "next_segment_sequence",
+            "invocation_facts",
+            "fixed_rng_results",
+            "prior_step_exports",
+            "child_resolution_ids",
+            "segments",
+        }
+    ),
+    "runtime.continuation": frozenset(
+        {
+            "generation",
+            "root_command_id",
+            "resolution_id",
+            "activity_id",
+            "actor_id",
+            "ruleset_set_digest_generation",
+            "ruleset_set_sha256",
+            "catalog_context_fingerprint_generation",
+            "catalog_context_fingerprint",
+            "execution_cursor",
+            "safe_recompute_phase",
+            "invocation_facts",
+            "fixed_rng_results",
+            "prior_step_exports",
+            "committed_segment_refs",
+            "dependency_frontier_refs",
+            "expected_child_resolution_ids",
+            "future_rng_frontier",
+        }
+    ),
+    "runtime.procedure": frozenset(
+        {"schema_version", "lifecycle", "participant_resources"}
+    ),
+}
+_RESOLUTION_BASIS_FIELDS: Final[frozenset[str]] = frozenset(
+    {"initiating_command_id", "causal_invocation_key"}
+)
 
 
 def _ordering_text(value: object, label: str) -> str:
     if not isinstance(value, str) or not value:
         raise NativeOrderingError(f"{label} must be a nonempty string")
     return value
+
+
+def _validate_ordering_owner_schema(family: str, payload: Mapping[str, object]) -> None:
+    missing = _ORDERING_OWNER_REQUIRED_FIELDS[family].difference(payload)
+    if missing:
+        raise NativeOrderingError(
+            f"exact {family} record is missing required owner-schema fields"
+        )
+    if family == "runtime.resolution" and not _RESOLUTION_BASIS_FIELDS.intersection(
+        payload
+    ):
+        raise NativeOrderingError(
+            "exact runtime.resolution record is missing command or invocation basis"
+        )
 
 
 def _ordering_record(
@@ -196,6 +258,7 @@ def _ordering_record(
     record_revision = payload.get("revision")
     if record_revision is not None and record_revision != campaign_pin.revision:
         raise NativeOrderingError(f"exact {family} record is stale")
+    _validate_ordering_owner_schema(family, payload)
     return payload
 
 
