@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 EXECUTION STOPPED FOR TWO SYSTEM-IMPACT RULINGS; STORY PREFLIGHT UNAVAILABLE
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 EXECUTION RESUMED AFTER SENIOR RULINGS; CLS↔HDM PREFLIGHT PASS
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: Wave 03 implementation independently reviewed task-by-task and closed by mandatory Senior integration audit PASS on 2026-09-19; reviewed implementation head `9ae3feb74a2d657a081140781899dcbe66819b5b`
-NEXT_AUTHORIZED_UNIT: Senior review of the W04.T01A collaboration-admission and W04.T05A Context-admission System-Impact briefs recorded in the Wave-04 execution cursor; restore a fresh read-only CLS evidence route before W04.T07A
+NEXT_AUTHORIZED_UNIT: resume W04.T01A and W04.T05A under the recorded bounded Senior rulings and start W04.T07A under the recorded CLS↔HDM PREFLIGHT_PASS; downstream tasks remain dependency-gated by their named reviewed checkpoints
 REQUIRED_GATE: Wave-04 autonomous TDD/review/version-impact/checkpoint discipline -> mandatory fresh CLS↔HDM preflight immediately before W04.T07 RED -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — created/published; authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: W04.T01A and W04.T05A require Senior System-Impact rulings; the mandatory W04.T07 CLS↔HDM preflight is PREFLIGHT_UNAVAILABLE because current private CLS evidence cannot be read by this runtime. Migration execution, release execution and gameplay bootstrap remain unauthorized.
+KNOWN_BLOCKERS: NONE for W04.T01A, W04.T05A or W04.T07A start. Downstream Wave-04 tasks remain gated by their named producer checkpoints. Migration execution, release execution and gameplay bootstrap remain unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -218,7 +218,7 @@ R004 absent
 
 The Wave-05 exact 17-row runtime-family realization matrix and Wave-06 item-bound proof remain mandatory. Count equality or catalog admission alone cannot close R018.
 
-## PO-authorized W04.T07 cross-project preflight
+## PO-authorized W04.T07 cross-project preflight — PASS 2026-09-21
 
 Immediately before the first RED step of `W04.T07 — Native history, T0, Story, Commentator and Dramaturg integration`, fresh-reconcile the current public Story/Commentator self-contained corpus owner against the current private CLS whole-project integration/audit state.
 
@@ -236,34 +236,62 @@ REQUIRED CROSS-PROJECT EVIDENCE UNAVAILABLE
 
 The preflight does not require all private CLS repairs to be closed, does not require later CLS stage activation and does not require the REAL CLS reader to exist.
 
-The required private CLS evidence for the unavailable preflight is named exactly by branch and path:
+The mandatory fresh preflight was completed through authoritative GitHub Connector reads on 2026-09-21.
 
-- `audit/cls-project-audit-workspace` -> `CLS-AUDIT/CURRENT_AUDIT_STATE.md` and `CLS-AUDIT/graph/HDM_INTEGRATION_GRAPH.md`;
-- `feature/commentator-language-stack` -> `HDM-CLS/docs/SENIOR_AUDITOR_HDM_INTEGRATION_HANDOFF.md` and `HDM-CLS/docs/CURRENT_PROGRESS.md`.
+Exact private evidence:
 
-The current W04 task Source Manifest is the stable Wave-04 plan execution section in `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md`, blob `cdbc1d2bbc651ff6b087e22b8d502ec46bbc7386`. It is not substituted with the historical WP-24 manifest.
+- `audit/cls-project-audit-workspace@6273260c55107bc769d355875da749c9ef3c9296`
+  - `CLS-AUDIT/CURRENT_AUDIT_STATE.md` blob `c5fe22947ec6e573c15f686c3840579f9a3e19d2`;
+  - `CLS-AUDIT/graph/HDM_INTEGRATION_GRAPH.md` blob `1665618d0276c7a150956d6f4664b085f8bfdac2`;
+- `feature/commentator-language-stack@0f88185966aed937852824db7417f83487beef23`
+  - `HDM-CLS/docs/SENIOR_AUDITOR_HDM_INTEGRATION_HANDOFF.md` blob `0fc0ca7ef1072d6fd9614efe92e62f0807da838e`;
+  - `HDM-CLS/docs/CURRENT_PROGRESS.md` blob `0eae6d528f606caa1721bdb433270755aad2d9a1`;
+  - WP12-04 Source Manifest blob `4caa601d5c43cbdfb51ff121a21b2b63a5df5cee`;
+  - current WP12-04 canonical design blob `96ba235d535a9088ef8d808c40b0b92e18cbdc53`;
+  - architect wide-angle PASS blob `9e7500e8cd0cc9011fae6c1b8bb13eedc38a5ed6`.
+
+Current public semantic inputs at `5b3841ffe17bbea0e0663342eab1278427d6b07c` are byte-identical to the public inputs consumed by the current private WP12-04 framing:
+
+- Story/Commentator SCC owner blob `ea3dea6653c356c3be5529ff8c916740a0f39b6d`;
+- stable Wave-04 plan blob `cdbc1d2bbc651ff6b087e22b8d502ec46bbc7386`.
+
+Reconciliation result:
+
+- private whole-project audit closure reports zero open Class-A findings and no public semantic-interface change from that audit;
+- current feature WP12-04 reports `PUBLIC_HDM_WRITE_REQUIRED: NO`, no architecture blocker and no REAL public integration claim;
+- post-manifest WP12-04 delta is private retrieval-package framing/design/executable-package work and does not introduce a public-HDM semantic reopen requirement;
+- current public SCC and Wave-04 owner bytes have not drifted from the private consumed basis;
+- integrated REAL CLS reader remains later work and is not required for W04.T07 implementation.
+
+Therefore:
+
+```text
+W04_T07_CLS_HDM_PREFLIGHT: PASS
+PUBLIC_HDM_SEMANTIC_REOPEN: NO
+PUBLIC_HDM_WRITE_REQUIRED_BY_CLS: NO
+SYSTEM_IMPACT: NONE
+W04.T07A: AUTHORIZED
+```
+
+Planning evidence was not used as a substitute for unavailable private evidence; the required private evidence was read directly through the GitHub Connector.
 
 ## Durable cursor
 
 PLAN: `DEV/docs/superpowers/plans/implementation-plan-index.md`
 CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md`
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
-BASE_SHA: Wave-04 coordinator records the fresh implementation-start HEAD in `implementation-wave-04-collaboration-context-story-execution-status.md` before the first RED.
+BASE_SHA: `3319314e5d4a140a9de01cd52bafc6c25a33b975`
 
-STATUS: SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: obtain Senior rulings for stopped W04.T01A/W04.T05A lanes; restore a fresh private CLS evidence route for W04.T07A preflight
-LAST_COMPLETED_TASK: Wave 03 mandatory Senior integration audit — PASS / CLOSED on reviewed head `9ae3feb74a2d657a081140781899dcbe66819b5b`
-LAST_SAFE_SHA: `6cbde6a4845376ee55e8e9c10a17f354111a276d` after restoration of the invalid W04.T01A and W04.T05A attempts
+STATUS: EXECUTION_AUTHORIZED
+CURRENT_TASK: W04.T01A / W04.T05A / W04.T07A are independently eligible under the Senior rulings and preflight evidence recorded in the Wave-04 execution cursor
+LAST_COMPLETED_TASK: Senior reconciliation of W04.T01A/W04.T05A System-Impact gates plus mandatory W04.T07 CLS↔HDM preflight — RESOLVED / PASS
+LAST_SAFE_SHA: `5b3841ffe17bbea0e0663342eab1278427d6b07c` product tree; subsequent ruling checkpoint is documentation/control only
 
-CURRENT_VERIFICATION_STATE: Wave 03 remains closed with exact-head hosted CI success. W04.T01A and W04.T05A attempted implementations were independently reviewed and restored; the exact briefs, checkpoints, Version Impact history and preflight evidence are in `implementation-wave-04-collaboration-context-story-execution-status.md`. No W04.T07 RED occurred.
-VERSION_IMPACT:
-- This documentation-only repair is NONE; no current version-bearing owner or projection changes.
-- Current W04 production-tree impact is NONE after restoration; this does not retrospectively classify either aborted implementation as a compliant NONE assessment.
-- `a300b23774f9ed31dfbc991be73211c338976955` added optional but semantic collaboration fields to persisted `DEV/SCHEMAS/intent-clause.schema.json`, whose owner is the runtime Interaction/IntentPlan. It was never accepted and was restored; no bump is made now. A future reattempt must run the owner-specific persistent-contract Version Impact Gate before claiming an additive/compatible/no-bump result.
-- `e55cc560fee431460cdc5753abb94be9f5433008` materially changed the Context runtime without a compliant version assessment and was restored. No current-tree version change exists; any reattempt must classify the actual module namespace before publication.
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED for W04.T01A and W04.T05A. W04.T07 is independently PREFLIGHT_UNAVAILABLE.
-NEXT_EXACT_TASK: Senior ruling on each W04 System-Impact brief and a fresh read-only CLS evidence route; reschedule only a lane whose exact blocker is resolved.
-KNOWN_BLOCKERS: no W04 production task is currently eligible. Migration execution, release execution and gameplay bootstrap remain unauthorized.
+CURRENT_VERIFICATION_STATE: the restored Wave-04 production tree remains at the pre-attempt safe state. T01A and T05A may be reimplemented only inside their recorded bounded rulings. W04.T07 preflight is PASS on exact current private/public evidence. No W04.T07 RED existed before this ruling.
+VERSION_IMPACT: NONE for this Senior ruling/preflight checkpoint. Reattempts retain their task-local mandatory Version Impact Gate; aborted prior assessments remain non-precedential.
+SYSTEM_IMPACT: RESOLVED — no architecture reopen required for T01A or T05A; W04.T07 preflight is PASS / NONE.
+NEXT_EXACT_TASK: resume dependency-valid Wave-04 execution. T01A, T05A and T07A may start in parallel subject to write-set isolation and normal hdm-worker/hdm-reviewer gates.
+KNOWN_BLOCKERS: NONE for T01A/T05A/T07A start. Downstream tasks remain dependency-gated. Migration execution, release execution and gameplay bootstrap remain unauthorized.
 UNPUBLISHED_WORK: NONE after verified publication/read-back.
 
-Production implementation Wave 04 is authorized. Migration execution, release execution and gameplay bootstrap remain unauthorized unless later explicit gates are satisfied.
+Wave 04 remains in execution. Wave 05 is not authorized.

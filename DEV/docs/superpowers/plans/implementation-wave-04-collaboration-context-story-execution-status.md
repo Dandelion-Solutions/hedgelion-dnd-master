@@ -4,8 +4,8 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: Senior System-Impact rulings for stopped W04.T01A and W04.T05A lanes; W04.T07A remains stopped at PREFLIGHT_UNAVAILABLE
+STATUS: EXECUTING
+CURRENT_TASK: resume W04.T01A and W04.T05A under Senior rulings; W04.T07A authorized by fresh CLS↔HDM PREFLIGHT_PASS
 LAST_COMPLETED_TASK: Wave-04 stable-plan decomposition, self-review/control synchronization and final pre-implementation baseline freeze
 LAST_SAFE_SHA: 6cbde6a4845376ee55e8e9c10a17f354111a276d
 
@@ -233,4 +233,129 @@ VERSION_IMPACT:
 SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T01A and W04.T05A briefs above. W04.T07 is separately PREFLIGHT_UNAVAILABLE, not a System-Impact classification.
 NEXT_EXACT_TASK: obtain a Senior ruling for the two System-Impact briefs and restore a read-only private CLS evidence route; then reschedule only the specifically unblocked lane.
 KNOWN_BLOCKERS: T01A-T04B await T01A ruling; T05A-T06B await T05A ruling; T07A awaits fresh private CLS evidence. No Wave-04 production task is currently eligible.
+UNPUBLISHED_WORK: NONE after publication/read-back.
+
+
+## Senior gate resolution — 2026-09-21
+
+SENIOR_REVIEWED_PUBLIC_HEAD: `5b3841ffe17bbea0e0663342eab1278427d6b07c`
+OUTCOME: **TARGETED_REPAIR_REQUIRED / NO ARCHITECTURE REOPEN**
+AFFECTED_LANES: W04.T01A, W04.T05A
+W04.T07_PREFLIGHT: **PASS**
+
+### SR-W04-T01A — coordination admission stays Collaboration-owned
+
+RULING: **TARGETED_REPAIR_REQUIRED / SYSTEM_IMPACT RESOLVED**
+
+No new W03 `coordination authority` result, local issuer, callback-authority, token registry or second currentness owner is required or permitted.
+
+The accepted owner split already supplies the machine route:
+
+1. `runtime.interaction` and `runtime.intent_plan` are existing accepted native owners with known-ID physical routes under WP-11 and existing schemas `runtime-interaction-state.schema.json`, `runtime-intent-plan-state.schema.json` and embedded `intent-clause.schema.json`.
+2. W03 owns current principal -> exact current PLAYER/control authorization. Use its owner-native route/revalidation; do not accept caller-minted PLAYER/currentness carriers.
+3. R2.5/WP-17 **itself owns coordination-family admission and material-dependency classification**. W03 does not and must not mint that result.
+4. An accepted Interaction/IntentClause may nominate a bounded dependency candidate, scope and referenced participants/native owners; it is discovery/input evidence, not final authority.
+5. Before choosing a coordination family or enrolling a required contributor, Collaboration must re-read/revalidate the smallest applicable native currentness/ownership/chronology basis required by the dependency class.
+6. Existing native Procedure/Continuation/Choice/Reaction ordering wins and produces `RULE_OWNED_ORDERED`; Collaboration does not mirror it.
+7. Only a positive bounded current material dependency may produce `AGENCY_DEPENDENT_COLLECTIVE`; failure to prove independence is not sufficient. Otherwise use `INDEPENDENT_IMMEDIATE`.
+8. Exact known-ID native loads may use the existing host/storage transport boundary, but loaded identity/schema/currentness must be owner-validated. A callback returning `is_current`, `required_players`, `coordination_family` or equivalent semantic verdict is forbidden.
+9. The W04 owner-local admission result may be a derived typed result minted by `collaboration.py` **after** those validations. It owns only collaboration admission/collection semantics and carries references/evidence identities; it does not become PLAYER, LIVE, chronology, Procedure or Interaction authority.
+
+Required REDs remain those in stable T01A plus explicit rejection of:
+- caller-selected coordination family;
+- caller-selected required-contributor set without native revalidation;
+- caller-supplied boolean/callback currentness;
+- stale/foreign Interaction/IntentPlan/PLAYER/native-opportunity basis;
+- generic collaboration when an admitted native ordered owner applies.
+
+The prior restored attempts are non-precedential. Re-run the persistent-contract Version Impact Gate for any actual `intent-clause.schema.json` change.
+
+### SR-W04-T05A — Context currentness/eligibility is owner-routed resolution, not carrier trust
+
+RULING: **TARGETED_REPAIR_REQUIRED / SYSTEM_IMPACT RESOLVED**
+
+No new W03 Context carrier, currentness token, eligibility issuer or durable Context authority is required or permitted.
+
+R2.3 + WP08 + WP09 already require T05A to realize:
+
+```text
+registered RoleContextRequest + registered ContextNeedProfile
+-> bounded candidate discovery/routing hints
+-> exact routed native-owner reload
+-> native currentness + role/purpose/recipient eligibility validation
+-> internal post-resolution candidate basis
+-> packet closure/allocation
+```
+
+Implementation constraints:
+
+1. Caller-shaped candidate objects, `current=true`, `eligible=true`, scene/index/cache presence and physical prompt presence are discovery hints only.
+2. Before semantic use, T05A must resolve the candidate through its routed current native owner. Use existing owner routes:
+   - current PLAYER/control through W03 access-control resolution;
+   - selected LIVE/currentness through W03 LIVE owner validation;
+   - information/knowledge/disclosure through their native owners and recipient eligibility;
+   - other candidate families through their existing known-ID native routes/validators.
+3. A host-injected exact-load transport may provide bytes/records; it may not return semantic `current`/`eligible` verdicts. Context performs/dispatches owner validation.
+4. `ContextNeedProfile` registration and role/purpose/subject/recipient binding are Context/consumer-contract responsibilities already accepted by R2.3/R2.4/WP08/WP09. T05A may realize the finite registered profile table/contracts in its allowed Context scope; the caller/LLM cannot invent a profile or widen it.
+5. The existing `current` / `eligible` fields may remain only on an internal owner-resolved result after successful validation. They are never accepted as authority-bearing input.
+6. If a discovered family lacks an admitted exact owner route/eligibility resolver, that candidate fails closed or yields the registered terminal/degraded outcome; do not invent a generic callback or broaden into a scan.
+7. Context remains an ephemeral projection and cannot establish truth, PLAYER/access, knowledge/disclosure or LIVE authority.
+
+Mandatory REDs include forged booleans/carriers, stale PLAYER/LIVE, wrong role/purpose/profile/recipient, scene/index/cache-only admission, and a fake semantic callback that claims current/eligible without native reload.
+
+The prior restored attempt is non-precedential. Re-run module/version impact against the actual accepted implementation.
+
+### SR-W04-T07 — mandatory CLS↔HDM preflight
+
+RESULT: **PREFLIGHT_PASS / SYSTEM_IMPACT NONE**
+
+Private refs were read directly through GitHub Connector:
+
+- audit workspace `6273260c55107bc769d355875da749c9ef3c9296`;
+- feature CLS `0f88185966aed937852824db7417f83487beef23`.
+
+Exact required artifacts/blobs:
+
+- audit state `c5fe22947ec6e573c15f686c3840579f9a3e19d2`;
+- HDM integration graph `1665618d0276c7a150956d6f4664b085f8bfdac2`;
+- Senior-Auditor handoff `0fc0ca7ef1072d6fd9614efe92e62f0807da838e`;
+- feature current progress `0eae6d528f606caa1721bdb433270755aad2d9a1`;
+- WP12-04 Source Manifest `4caa601d5c43cbdfb51ff121a21b2b63a5df5cee`;
+- WP12-04 canonical design `96ba235d535a9088ef8d808c40b0b92e18cbdc53`;
+- architect wide-angle PASS `9e7500e8cd0cc9011fae6c1b8bb13eedc38a5ed6`.
+
+Public bytes at the reviewed head:
+- SCC owner `ea3dea6653c356c3be5529ff8c916740a0f39b6d`;
+- stable W04 plan `cdbc1d2bbc651ff6b087e22b8d502ec46bbc7386`.
+
+Those public owner bytes are unchanged from the current CLS WP12-04 consumed basis. Current private WP12-04 explicitly reports no public HDM write, no public semantic reopen, no REAL integration claim, and keeps REAL source integration downstream. Post-manifest private changes only frame/design/activate the private retrieval package and do not create a new W04.T07 public contract.
+
+Therefore W04.T07A may begin. The implementation still must obey the public SCC/Story/T0 owners and may not import private CLS implementation as public architecture.
+
+## Resumption state
+
+```text
+W04.T01A: AUTHORIZED_FOR_TARGETED_REIMPLEMENTATION
+W04.T05A: AUTHORIZED_FOR_TARGETED_REIMPLEMENTATION
+W04.T07A: PREFLIGHT_PASS / AUTHORIZED
+W04.T01B+: DEPENDENCY_GATED
+W04.T05B+: DEPENDENCY_GATED
+W04.T07B+: DEPENDENCY_GATED
+WAVE_05: NOT AUTHORIZED
+```
+
+VERSION_IMPACT: NONE for this ruling/preflight documentation checkpoint.
+SYSTEM_IMPACT: RESOLVED / NONE CURRENT.
+
+
+## Current execution override after Senior resolution
+
+STATUS: EXECUTING
+CURRENT_TASK: W04.T01A / W04.T05A / W04.T07A may execute in parallel when write sets remain isolated.
+LAST_SAFE_SHA: `5b3841ffe17bbea0e0663342eab1278427d6b07c` product tree before this documentation-only ruling.
+CURRENT_VERIFICATION_STATE: restored pre-attempt production tree; three gates resolved above; normal task TDD/review/Version Impact applies.
+VERSION_IMPACT: NONE for the Senior ruling checkpoint.
+SYSTEM_IMPACT: NONE CURRENT; prior T01A/T05A events are resolved by SR-W04-T01A/SR-W04-T05A.
+NEXT_EXACT_TASK: coordinator reschedules T01A, T05A and T07A; each publishes only after its own hdm-reviewer PASS/read-back. Dependent tasks wait for named checkpoints.
+KNOWN_BLOCKERS: NONE for T01A/T05A/T07A start.
 UNPUBLISHED_WORK: NONE after publication/read-back.
