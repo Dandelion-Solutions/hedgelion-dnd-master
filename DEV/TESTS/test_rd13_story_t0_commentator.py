@@ -22,6 +22,9 @@ from GAME.TOOLS.history import (
     HistoryContractError,
     append_semantic_event,
     build_t0_basis,
+    issue_native_history_currentness,
+    issue_native_semantic_event,
+    recover_native_history,
     validate_semantic_event_draft,
     validate_t0_basis,
 )
@@ -66,6 +69,21 @@ def _t0_basis() -> dict[str, object]:
     }
 
 
+def _native_currentness() -> object:
+    return issue_native_history_currentness(
+        campaign_id="campaign.main",
+        origin="LOCAL",
+        source_revision="0" * 40,
+    )
+
+
+def _accepted_semantic_event(
+    event: dict[str, object] | None = None, *, currentness: object | None = None
+) -> object:
+    basis = currentness if currentness is not None else _native_currentness()
+    return issue_native_semantic_event(event or _semantic_event(), currentness=basis)  # type: ignore[arg-type]
+
+
 def _story_projection() -> dict[str, object]:
     return {
         "schema_version": 1,
@@ -79,11 +97,114 @@ def _story_projection() -> dict[str, object]:
 
 class NativeHistoryAuthorityTests(unittest.TestCase):
     def test_only_validated_semantic_events_enter_native_history(self) -> None:
-        history = append_semantic_event([], _semantic_event())
+        currentness = _native_currentness()
+        history = append_semantic_event(
+            (), _accepted_semantic_event(currentness=currentness), currentness=currentness  # type: ignore[arg-type]
+        )
 
-        self.assertEqual(history, [_semantic_event()])
+        self.assertEqual(history.events[0].as_mapping(), _semantic_event())
         with self.assertRaises(HistoryContractError):
             validate_semantic_event_draft({**_semantic_event(), "provenance_refs": []})
+
+    def test_caller_shaped_semantic_event_cannot_mint_accepted_history(self) -> None:
+        currentness = issue_native_history_currentness(
+            campaign_id="campaign.main",
+            origin="LOCAL",
+            source_revision="0" * 40,
+        )
+
+        with self.assertRaises(HistoryContractError):
+            append_semantic_event((), _semantic_event(), currentness=currentness)
+
+    def test_native_publication_rejects_duplicate_identity_order_and_currentness(self) -> None:
+        currentness = issue_native_history_currentness(
+            campaign_id="campaign.main",
+            origin="LOCAL",
+            source_revision="0" * 40,
+        )
+        accepted = issue_native_semantic_event(_semantic_event(), currentness=currentness)
+        publication = append_semantic_event((), accepted, currentness=currentness)
+
+        duplicate_id = dict(_semantic_event(), semantic_order=8)
+        duplicate_order = dict(_semantic_event(), event_id="event.other")
+        for candidate in (duplicate_id, duplicate_order):
+            with self.subTest(candidate=candidate):
+                with self.assertRaises(HistoryContractError):
+                    append_semantic_event(
+                        publication,
+                        issue_native_semantic_event(candidate, currentness=currentness),
+                        currentness=currentness,
+                    )
+
+        other_currentness = issue_native_history_currentness(
+            campaign_id="campaign.main",
+            origin="LOCAL",
+            source_revision="1" * 40,
+        )
+        with self.assertRaises(HistoryContractError):
+            append_semantic_event(
+                publication,
+                issue_native_semantic_event(
+                    dict(_semantic_event(), event_id="event.other", semantic_order=8),
+                    currentness=other_currentness,
+                ),
+                currentness=currentness,
+            )
+
+    def test_interruption_recovery_preserves_identity_provenance_and_semantic_order(self) -> None:
+        currentness = issue_native_history_currentness(
+            campaign_id="campaign.main",
+            origin="LIVE:epoch-1",
+            source_revision="0" * 40,
+        )
+        first = issue_native_semantic_event(_semantic_event(), currentness=currentness)
+        second = issue_native_semantic_event(
+            dict(_semantic_event(), event_id="event.gate_closed", semantic_order=8),
+            currentness=currentness,
+        )
+        publication = append_semantic_event(
+            append_semantic_event((), first, currentness=currentness),
+            second,
+            currentness=currentness,
+        )
+
+        recovered = recover_native_history(publication.to_mapping(), currentness=currentness)
+
+        self.assertEqual(recovered.to_mapping(), publication.to_mapping())
+        self.assertEqual(
+            [event["event_id"] for event in recovered.events],
+            ["event.gate_opened", "event.gate_closed"],
+        )
+        self.assertEqual(recovered.origin, "LIVE:epoch-1")
+
+    def test_native_history_recovery_cannot_reconstruct_from_story_or_narration(self) -> None:
+        currentness = issue_native_history_currentness(
+            campaign_id="campaign.main",
+            origin="LOCAL",
+            source_revision="0" * 40,
+        )
+
+        for candidate in (_story_projection(), {"body": "The guard opened the gate."}):
+            with self.subTest(candidate=candidate):
+                with self.assertRaises(HistoryContractError):
+                    recover_native_history(candidate, currentness=currentness)
+
+    def test_recovery_rejects_a_caller_forged_event_under_the_same_currentness(self) -> None:
+        currentness = issue_native_history_currentness(
+            campaign_id="campaign.main",
+            origin="LOCAL",
+            source_revision="0" * 40,
+            accepted_events=[_semantic_event()],
+        )
+        publication = append_semantic_event(
+            (), issue_native_semantic_event(_semantic_event(), currentness=currentness), currentness=currentness
+        )
+        forged = publication.to_mapping()
+        forged_event = forged["events"][0]["event"]
+        forged_event["semantic_delta"] = {"gate": "forged"}
+
+        with self.assertRaises(HistoryContractError):
+            recover_native_history(forged, currentness=currentness)
 
 
 class T0BasisTests(unittest.TestCase):
@@ -182,8 +303,13 @@ class HistoryProjectionSeparationTests(unittest.TestCase):
 
 class CompositeIntegrationTests(unittest.TestCase):
     def test_owner_local_chain_preserves_native_event_and_reader_safe_projection(self) -> None:
-        history = append_semantic_event([], _semantic_event())
-        bundle = build_story_source_bundle(history, layer="EVENTS")
+        currentness = _native_currentness()
+        history = append_semantic_event(
+            (), _accepted_semantic_event(currentness=currentness), currentness=currentness  # type: ignore[arg-type]
+        )
+        bundle = build_story_source_bundle(
+            [event.as_mapping() for event in history.events], layer="EVENTS"
+        )
         projection = project_story_window(bundle, [_story_projection()])
         control = build_commentator_control_projection(
             {"player.aria": {"story_ids": ["E000007"]}}
@@ -266,6 +392,8 @@ class DramaturgRebaseTests(unittest.TestCase):
 class StorySchemaTests(unittest.TestCase):
     def test_owner_local_schemas_are_strict_and_use_initial_local_versions(self) -> None:
         schema_names = (
+            "native-history-currentness.schema.json",
+            "native-history-publication.schema.json",
             "runtime-semantic-event-state.schema.json",
             "story-projection-state.schema.json",
             "story-event-unit.schema.json",
@@ -283,6 +411,19 @@ class StorySchemaTests(unittest.TestCase):
         self.assertTrue(all("schema_version" in schema["properties"] for schema in schemas))
         self.assertTrue(all(schema["properties"]["schema_version"].get("type") == "integer" for schema in schemas))
         self.assertTrue(all(schema["properties"]["schema_version"].get("const") == 1 for schema in schemas))
+
+    def test_native_history_publication_mapping_is_structurally_valid(self) -> None:
+        currentness = _native_currentness()
+        publication = append_semantic_event(
+            (), _accepted_semantic_event(currentness=currentness), currentness=currentness  # type: ignore[arg-type]
+        )
+        currentness_schema = json.loads(
+            (SCHEMAS / "native-history-currentness.schema.json").read_text(encoding="utf-8")
+        )
+        schema = json.loads((SCHEMAS / "native-history-publication.schema.json").read_text(encoding="utf-8"))
+
+        self.assertTrue(Draft202012Validator(currentness_schema).is_valid(currentness.as_mapping()))  # type: ignore[attr-defined]
+        self.assertTrue(Draft202012Validator(schema).is_valid(publication.to_mapping()))
 
 
 class SchemaVersionTests(unittest.TestCase):
