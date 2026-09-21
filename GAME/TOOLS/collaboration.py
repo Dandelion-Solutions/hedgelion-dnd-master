@@ -9,10 +9,11 @@ admission.
 
 from __future__ import annotations
 
+import math
+import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
-import re
 from types import MappingProxyType
 from typing import Final
 
@@ -29,9 +30,8 @@ from .native_storage import (
 )
 from .policy_basis import PinnedCampaign, RepositoryPort
 
-
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 1
 
 _ID_PATTERN: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
@@ -592,6 +592,103 @@ def _id_is_valid(value: object) -> bool:
     return isinstance(value, str) and _ID_PATTERN.fullmatch(value) is not None
 
 
+def _is_scalar(value: object) -> bool:
+    return isinstance(value, (str, int, float, bool)) and not (
+        isinstance(value, float) and not math.isfinite(value)
+    )
+
+
+def _validate_policy_basis_refs(value: object) -> bool:
+    pattern = r"^[A-Za-z][A-Za-z0-9_.:-]*@[a-f0-9]{40}(?:[a-f0-9]{24})?$"
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+        return False
+    values = tuple(value)
+    if not all(isinstance(item, str) and re.fullmatch(pattern, item) is not None for item in values):
+        return False
+    return len(values) == len(set(values))
+
+
+def _validate_adjudicated_binding(value: object) -> bool:
+    if _is_scalar(value):
+        return True
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+        return bool(value) and all(_is_scalar(item) for item in value)
+    if not isinstance(value, Mapping):
+        return False
+    required = {
+        "source_class",
+        "value",
+        "provenance_ref",
+        "eligibility_basis_fingerprint",
+        "rules_context_fingerprint",
+        "policy_basis_refs",
+    }
+    allowed = required | {"candidate_set_fingerprint"}
+    if set(value) - allowed or not required.issubset(value):
+        return False
+    return (
+        value.get("source_class") == "INVOCATION_ADJUDICATED"
+        and _is_scalar(value.get("value"))
+        and _is_nonempty_string(value.get("provenance_ref"))
+        and _is_nonempty_string(value.get("eligibility_basis_fingerprint"))
+        and _is_nonempty_string(value.get("rules_context_fingerprint"))
+        and _validate_policy_basis_refs(value.get("policy_basis_refs"))
+        and (
+            "candidate_set_fingerprint" not in value
+            or _is_nonempty_string(value["candidate_set_fingerprint"])
+        )
+    )
+
+
+def _validate_invocation_fact(value: object) -> bool:
+    if not isinstance(value, Mapping):
+        return False
+    required = {
+        "fact_id",
+        "value",
+        "provenance_class",
+        "provenance_ref",
+        "consumer_id",
+        "binding_fingerprint",
+        "rules_context_fingerprint",
+        "policy_basis_refs",
+    }
+    if set(value) != required:
+        return False
+    return (
+        _id_is_valid(value.get("fact_id"))
+        and type(value.get("value")) is bool
+        and value.get("provenance_class") == "INVOCATION_ADJUDICATED"
+        and _is_nonempty_string(value.get("provenance_ref"))
+        and _id_is_valid(value.get("consumer_id"))
+        and isinstance(value.get("binding_fingerprint"), str)
+        and re.fullmatch(r"[a-f0-9]{64}", value["binding_fingerprint"]) is not None
+        and isinstance(value.get("rules_context_fingerprint"), str)
+        and re.fullmatch(r"[a-f0-9]{64}", value["rules_context_fingerprint"]) is not None
+        and _validate_policy_basis_refs(value.get("policy_basis_refs"))
+    )
+
+
+def _validate_roll_result(value: object) -> bool:
+    if not isinstance(value, Mapping):
+        return False
+    required = {"roll_id", "request_id", "expression", "raw_values", "source_kind", "provenance_ref"}
+    if set(value) != required:
+        return False
+    raw_values = value.get("raw_values")
+    return (
+        _id_is_valid(value.get("roll_id"))
+        and _id_is_valid(value.get("request_id"))
+        and _is_nonempty_string(value.get("expression"))
+        and isinstance(raw_values, Sequence)
+        and not isinstance(raw_values, (str, bytes))
+        and bool(raw_values)
+        and all(_is_nonnegative_integer(item) or (isinstance(item, int) and item < 0) for item in raw_values)
+        and value.get("source_kind") in {"rng.system", "rng.player", "rng.external"}
+        and _is_nonempty_string(value.get("provenance_ref"))
+    )
+
+
 def _validate_spent_resources(value: object, *, minimum: int) -> bool:
     if not isinstance(value, Mapping) or len(value) < minimum:
         return False
@@ -648,6 +745,8 @@ def _validate_procedure_state(value: object) -> tuple[bool, bool]:
         lifecycle_state = value.get("lifecycle_state")
         if value.get("schema_version") != 2 or lifecycle not in {"ACTIVE", "TERMINAL"}:
             return False, False
+        if lifecycle_state not in {"between_turns", "turn_active", "terminated"}:
+            return False, False
         if lifecycle == "TERMINAL" and lifecycle_state != "terminated":
             return False, False
         if lifecycle == "ACTIVE" and lifecycle_state == "terminated":
@@ -655,8 +754,6 @@ def _validate_procedure_state(value: object) -> tuple[bool, bool]:
         if not _is_unique_string_array(value.get("participant_ids"), minimum=1):
             return False, False
         if not _is_unique_string_array(value.get("initiative_order"), minimum=1):
-            return False, False
-        if set(value["participant_ids"]) != set(value["initiative_order"]):
             return False, False
         if not _is_positive_integer(value.get("round_number")):
             return False, False
@@ -670,15 +767,6 @@ def _validate_procedure_state(value: object) -> tuple[bool, bool]:
             return False, False
         if not _validate_budget_resources(value.get("participant_resources")):
             return False, False
-        resources = value["participant_resources"]
-        if set(resources) != set(value["participant_ids"]):
-            return False, False
-        if lifecycle_state == "turn_active" and value["round_advance_pending"]:
-            return False, False
-        for participant_resources in resources.values():
-            for budget in participant_resources.values():
-                if budget["spent"] > budget["capacity"]:
-                    return False, False
         if "world_context_id" in value and not _is_nonempty_string(value["world_context_id"]):
             return False, False
         return True, lifecycle == "ACTIVE"
@@ -778,6 +866,8 @@ def _validate_continuation_record(owner: Mapping[str, object]) -> tuple[bool, bo
         return False, False
     if not _is_nonempty_string(owner.get("revision")):
         return False, False
+    if "campaign_id" in owner and not _is_nonempty_string(owner["campaign_id"]):
+        return False, False
     if not _is_positive_integer(owner.get("generation")):
         return False, False
     if not all(_is_nonempty_string(owner.get(key)) for key in ("root_command_id", "resolution_id")):
@@ -796,9 +886,15 @@ def _validate_continuation_record(owner: Mapping[str, object]) -> tuple[bool, bo
         for key in ("catalog_context_fingerprint", "execution_cursor", "safe_recompute_phase", "future_rng_frontier")
     ):
         return False, False
-    if not all(isinstance(owner.get(key), list) for key in ("invocation_facts", "fixed_rng_results")):
+    invocation_facts = owner.get("invocation_facts")
+    fixed_rng_results = owner.get("fixed_rng_results")
+    if not isinstance(invocation_facts, list) or not all(_validate_invocation_fact(item) for item in invocation_facts):
+        return False, False
+    if not isinstance(fixed_rng_results, list) or not all(_validate_roll_result(item) for item in fixed_rng_results):
         return False, False
     if not isinstance(owner.get("prior_step_exports"), Mapping):
+        return False, False
+    if not all(_is_scalar(value) for value in owner["prior_step_exports"].values()):
         return False, False
     if not all(_is_unique_string_array(owner.get(key)) for key in ("committed_segment_refs", "dependency_frontier_refs", "expected_child_resolution_ids")):
         return False, False
@@ -806,8 +902,15 @@ def _validate_continuation_record(owner: Mapping[str, object]) -> tuple[bool, bo
         return False, False
     if "target_ids" in owner and not _is_unique_identifier_array(owner["target_ids"]):
         return False, False
-    if "parameter_bindings" in owner and not isinstance(owner["parameter_bindings"], Mapping):
-        return False, False
+    if "parameter_bindings" in owner:
+        parameter_bindings = owner["parameter_bindings"]
+        if not isinstance(parameter_bindings, Mapping):
+            return False, False
+        if not all(
+            _id_is_valid(key) and _validate_adjudicated_binding(value)
+            for key, value in parameter_bindings.items()
+        ):
+            return False, False
     if "procedure_id" in owner and not _is_nonempty_string(owner["procedure_id"]):
         return False, False
     if "details" in owner and not isinstance(owner["details"], Mapping):
@@ -838,9 +941,10 @@ def _ordered_owner(refs: Sequence[NativeBasisRef], owners: Sequence[Mapping[str,
         else:
             continue
         if not valid:
-            continue
+            raise CollaborationAdmissionError("nominated native ordered owner is rejected by its owner schema")
         if ordered:
             return ref.family
+        raise CollaborationAdmissionError("nominated native ordered owner has no active ordering evidence")
     return None
 
 

@@ -4,13 +4,17 @@ from __future__ import annotations
 
 import copy
 import json
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
 
-from GAME.TOOLS.access_control import PlayerRecord, VerifiedPrincipal, build_principal_player_route
+from GAME.TOOLS.access_control import (
+    PlayerRecord,
+    VerifiedPrincipal,
+    build_principal_player_route,
+)
 from GAME.TOOLS.collaboration import (
     CollaborationAdmissionError,
     CoordinationFamily,
@@ -20,7 +24,6 @@ from GAME.TOOLS.collaboration import (
 )
 from GAME.TOOLS.native_storage import route_native_record
 from GAME.TOOLS.policy_basis import PinnedCampaign
-
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
@@ -380,7 +383,7 @@ class CoordinationAdmissionTests(unittest.TestCase):
 
         self.assertEqual(admission.family, CoordinationFamily.RULE_OWNED_ORDERED)
 
-    def test_terminal_or_no_pending_order_owner_does_not_suppress_collective_admission(self) -> None:
+    def test_terminal_or_no_pending_nominated_order_owner_fails_closed(self) -> None:
         cases: tuple[tuple[str, dict[str, object]], ...] = (
             ("runtime.procedure", {"state": _valid_combat_procedure_state(lifecycle="TERMINAL")}),
             ("runtime.procedure", {"state": {"lifecycle": "ACTIVE"}}),
@@ -397,11 +400,10 @@ class CoordinationAdmissionTests(unittest.TestCase):
                 record = {"kind": family, "id": record_id, "revision": CAMPAIGN_REVISION, **state}
                 repository.add_native_owner(family, record_id, record)
 
-                admission = _classify(repository)
+                with self.assertRaisesRegex(CollaborationAdmissionError, "ordered owner"):
+                    _classify(repository)
 
-                self.assertEqual(admission.family, CoordinationFamily.AGENCY_DEPENDENT_COLLECTIVE)
-
-    def test_truthy_unknown_procedure_marker_does_not_claim_order(self) -> None:
+    def test_truthy_unknown_procedure_marker_fails_closed(self) -> None:
         clause = _collective_clause()
         clause["native_basis_refs"] = [
             {"family": "runtime.procedure", "id": "procedure-1", "revision": CAMPAIGN_REVISION}
@@ -415,11 +417,10 @@ class CoordinationAdmissionTests(unittest.TestCase):
             {"kind": "runtime.procedure", "id": "procedure-1", "revision": CAMPAIGN_REVISION, "state": state},
         )
 
-        admission = _classify(repository)
+        with self.assertRaisesRegex(CollaborationAdmissionError, "ordered owner"):
+            _classify(repository)
 
-        self.assertEqual(admission.family, CoordinationFamily.AGENCY_DEPENDENT_COLLECTIVE)
-
-    def test_malformed_continuation_response_does_not_claim_order(self) -> None:
+    def test_malformed_continuation_response_fails_closed(self) -> None:
         clause = _collective_clause()
         clause["native_basis_refs"] = [
             {"family": "runtime.continuation", "id": "continuation-1", "revision": CAMPAIGN_REVISION}
@@ -429,9 +430,56 @@ class CoordinationAdmissionTests(unittest.TestCase):
         repository = FakeRepository(clause=clause)
         repository.add_native_owner("runtime.continuation", "continuation-1", record)
 
-        admission = _classify(repository)
+        with self.assertRaisesRegex(CollaborationAdmissionError, "ordered owner"):
+            _classify(repository)
 
-        self.assertEqual(admission.family, CoordinationFamily.AGENCY_DEPENDENT_COLLECTIVE)
+    def test_complete_continuation_without_pending_resume_fails_closed(self) -> None:
+        clause = _collective_clause()
+        clause["native_basis_refs"] = [
+            {"family": "runtime.continuation", "id": "continuation-1", "revision": CAMPAIGN_REVISION}
+        ]
+        repository = FakeRepository(clause=clause)
+        repository.add_native_owner("runtime.continuation", "continuation-1", _valid_continuation_record())
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "ordered owner"):
+            _classify(repository)
+
+    def test_schema_invalid_procedure_lifecycle_fails_closed(self) -> None:
+        clause = _collective_clause()
+        clause["native_basis_refs"] = [
+            {"family": "runtime.procedure", "id": "procedure-1", "revision": CAMPAIGN_REVISION}
+        ]
+        state = _valid_combat_procedure_state()
+        state["lifecycle_state"] = "not-a-procedure-phase"
+        with self.assertRaises(ValidationError):
+            Draft202012Validator(
+                _schema("combat-minimal-procedure-state.schema.json"), registry=_registry()
+            ).validate(state)
+        repository = FakeRepository(clause=clause)
+        repository.add_native_owner(
+            "runtime.procedure",
+            "procedure-1",
+            {"kind": "runtime.procedure", "id": "procedure-1", "revision": CAMPAIGN_REVISION, "state": state},
+        )
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "ordered owner"):
+            _classify(repository)
+
+    def test_schema_invalid_continuation_nested_fact_fails_closed(self) -> None:
+        clause = _collective_clause()
+        clause["native_basis_refs"] = [
+            {"family": "runtime.continuation", "id": "continuation-1", "revision": CAMPAIGN_REVISION}
+        ]
+        record = _valid_continuation_record(pending_response=_choice_response())
+        record["invocation_facts"] = [{}]
+        state = {key: value for key, value in record.items() if key not in {"kind", "id", "revision"}}
+        with self.assertRaises(ValidationError):
+            Draft202012Validator(_schema("runtime-continuation-state.schema.json"), registry=_registry()).validate(state)
+        repository = FakeRepository(clause=clause)
+        repository.add_native_owner("runtime.continuation", "continuation-1", record)
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "ordered owner"):
+            _classify(repository)
 
     def test_pending_continuation_reaction_is_the_order_owner(self) -> None:
         clause = _collective_clause()

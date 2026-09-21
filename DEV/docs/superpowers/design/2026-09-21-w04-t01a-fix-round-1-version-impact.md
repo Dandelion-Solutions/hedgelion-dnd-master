@@ -1,8 +1,8 @@
-# W04.T01A Fix Round 1 — Version Impact Checkpoint Evidence
+# W04.T01A Fix Rounds 1–3 — Version Impact Checkpoint Evidence
 
-Status: **CHECKPOINT EVIDENCE — TARGETED REVIEW REPAIR (CORRECTED)**
+Status: **CHECKPOINT EVIDENCE — TARGETED REVIEW REPAIR (ROUND 3 CORRECTED)**
 
-Base remote HEAD before this repair: `9f9fc4855958b4238ea7bdf304ec0f63a5544bdf`
+Base checkpoint before this repair: `f7732287d59a7a108c73068c4c3f9f79fdc2f4a1`
 
 ## Scope
 
@@ -10,6 +10,7 @@ This repair is limited to the already authorized W04.T01A collaboration lane:
 
 - closed dependency-class-specific native basis admission for the five ruled classes;
 - current pending Procedure/Continuation response-order precedence;
+- complete owner-schema/owner-native validation before ordered-owner precedence;
 - fail-closed stale/incomplete native basis evidence;
 - no new owner, generic record, registry, callback, Wave-05 write or shared cursor edit.
 
@@ -17,7 +18,7 @@ This repair is limited to the already authorized W04.T01A collaboration lane:
 
 | Owner / namespace | Before | After | Classification and result |
 |---|---:|---:|---|
-| `GAME/TOOLS/collaboration.py` `framework_module_version` | `1.0.1` | `1.0.2` | Corrected material-repair impact: the actual parent/checkpoint already contained collaboration module revision `1.0.1`; this owner-local behavioral repair advances the revision to `1.0.2`. |
+| `GAME/TOOLS/collaboration.py` `framework_module_version` | `1.0.2` | `1.0.3` | Round-3 material owner-validation and fail-closed admission repair advances the current module revision exactly once. |
 | `runtime.collaboration_obligation` local schema | `1` | `1` | Existing schema owner is unchanged by this repair; no schema bump is required. |
 | `GAME/SCHEMA/collaboration_obligation.schema.yaml` projection | `1` | `1` | Existing synchronized projection is unchanged; no projection bump is required. |
 | `IntentClause` collaboration semantics | existing additive collaboration fields | unchanged | Existing non-collaboration clauses remain valid. This pre-release owner has no independent schema-version field; no separate IntentClause bump is defined. |
@@ -26,13 +27,13 @@ This repair is limited to the already authorized W04.T01A collaboration lane:
 | `catalog_generation` | `2` | `2` | No bump: no coordinated catalog vocabulary change. |
 | `engine_version` | `1.0-alpha` | `1.0-alpha` | No release bump: this is an owner-local pre-release repair. |
 
-**VERSION_IMPACT:** corrected material repair advances `GAME/TOOLS/collaboration.py` from `1.0.1` to `1.0.2`; collaboration schema and synchronized GAME projection remain at `1`; IntentClause change is additive/pre-release with no independent bump; campaign/storage/catalog/engine namespaces unchanged.
+**VERSION_IMPACT:** round-3 material repair advances `GAME/TOOLS/collaboration.py` from `1.0.2` to `1.0.3`; collaboration schema and synchronized GAME projection remain at `1`; IntentClause change is additive/pre-release with no independent bump; campaign/storage/catalog/engine namespaces unchanged.
 
 ## Correction record
 
-The earlier `absent (new module) -> 1.0.1` classification was incorrect: the real parent/checkpoint already carried `framework_module_version: 1.0.1`, and the existing collaboration schema/projection were already at `1`. This correction supersedes the earlier Version Impact rows; the implementation scope and protected-surface statements remain unchanged.
+The earlier `absent (new module) -> 1.0.1` classification was incorrect: the real parent/checkpoint already carried `framework_module_version: 1.0.1`, and the existing collaboration schema/projection were already at `1`. Round 2 corrected that material transition to `1.0.1 -> 1.0.2`. This round-3 record supersedes the earlier module transition only; the implementation scope and protected-surface statements remain unchanged.
 
-The current round-2 execution starts from checkpoint `7c2a2a16db3df4cdad4952e48f7ea9b848ed3578`, which also carries collaboration `1.0.1`; the material owner repair in this checkpoint advances it to `1.0.2`.
+The current round-3 execution starts from checkpoint `f7732287d59a7a108c73068c4c3f9f79fdc2f4a1`, which carries collaboration `1.0.2`; this owner-validation repair advances it to `1.0.3`.
 
 ## Basis-table result
 
