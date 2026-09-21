@@ -368,6 +368,16 @@ DEV/TOOLS/run_release_build.py
 
 Both own/reuse the isolated repository-local `.hdm-devtools/` environment declared by `DEV/TOOLS/requirements-dev-tools.txt`. Do not install DEV dependencies into system Python and do not make GAME/runtime depend on them.
 
+### Local checkout and development-tool discovery
+
+Local agents MUST treat the checkout they are actually running in as authoritative for filesystem paths. Never infer or synthesize an absolute checkout path from the repository name (for example `~/hedgelion-dnd-master`). Resolve the current checkout from the process working directory and, when needed, `git rev-parse --show-toplevel`; use repository-relative paths from that resolved root. Do not probe guessed sibling checkouts or recursively search `$HOME` for repository content.
+
+Required verification tools must come from the repository-declared development toolchain. For HDM Python development, prefer executables from `.hdm-devtools/venv` created from `DEV/TOOLS/requirements-dev-tools.txt`. Do not scan `$HOME`, `~/.local/bin`, unrelated virtual environments, or guessed paths looking for an undeclared tool merely because a generic workflow mentions it. `uv`, Ruff, pytest plugins, type checkers, formatters, and similar tools are not requirements unless the repository toolchain or the current owning task declares them.
+
+If an undeclared tool would materially improve speed, correctness, diagnostics, or developer experience, report it explicitly with: the capability it adds, why the current declared toolchain is insufficient or slower, the proposed repository-owned dependency/configuration change, and any material trade-off. Do not silently install it, treat its absence as a verification failure, or spend time hunting for an ad-hoc installation.
+
+Ruff is an approved repository-owned fast Python lint/format diagnostic. When available through `.hdm-devtools/venv`, agents may use it on the Python files in the authorized change scope (for example `ruff check <paths>` and `ruff format --check <paths>`). Ruff findings outside the task scope do not authorize unrelated cleanup, and Ruff is not an acceptance gate unless an owning plan/checklist explicitly makes it one. Broad auto-fix/format mutation still requires the task's normal write authority.
+
 ### Local Python test parallelism
 
 For broad or full local Python test-suite runs, prefer the repository-provided `pytest-xdist` runner with automatic worker selection:
