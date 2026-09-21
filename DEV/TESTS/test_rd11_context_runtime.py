@@ -91,6 +91,7 @@ class RuntimeRepository:
     def __init__(self, campaign_id="campaign-context"):
         self.campaign_id = campaign_id
         self.records = {}
+        self.read_paths = []
         self.pin_calls = []
 
     def pin_campaign(self, campaign_id):
@@ -103,6 +104,7 @@ class RuntimeRepository:
         )
 
     def read_exact_path(self, pinned, path):
+        self.read_paths.append(path)
         return self.records[path]
 
     def read_exact_campaign_ref(self, campaign_id):
@@ -481,7 +483,7 @@ class ContextRuntimeHostTests(unittest.TestCase):
             Draft202012Validator(schema).validate(
                 {key: value for key, value in bound_request().items() if key != "role"}
             )
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.4")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.5")
 
 
 class ContextDiscoveryTests(unittest.TestCase):
@@ -517,6 +519,32 @@ class ContextEligibilityTests(unittest.TestCase):
 
 
 class RequiredPacketClosureTests(unittest.TestCase):
+    def test_unsatisfiable_closure_terminates_before_optional_owner_reads(self):
+        repository = RuntimeRepository()
+        root = candidate("root", depends_on=("missing",))
+        optional = candidate("optional")
+        for item in (root, optional):
+            repository.add_record(
+                "world.scene", (item["candidate_id"],), item["payload"]
+            )
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+
+        result = host.context.assemble(
+            request(
+                required_ids=["root"],
+                allowed_relations=["requires"],
+            ),
+            [root, optional],
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertNotIn(
+            route_native_record("world.scene", ("optional",)).relative_path,
+            repository.read_paths,
+        )
+
     def test_unregistered_dependency_relation_is_rejected(self):
         request_value = request(
             required_ids=["root"], allowed_relations=[], budget=1000
@@ -573,9 +601,27 @@ class RequiredPacketClosureTests(unittest.TestCase):
 
 
 class ContextAllocationTests(unittest.TestCase):
+    def test_bound_context_rejects_caller_supplied_size(self):
+        item = candidate("sized")
+        item["size"] = 1
+        optional = assemble_via_host(request(), [item])
+        required = assemble_via_host(request(required_ids=["sized"]), [item])
+
+        self.assertEqual(optional["outcome"], "ASSEMBLED_DEGRADED")
+        self.assertEqual(optional["bundle"]["optional"], [])
+        self.assertEqual(required["outcome"], "UNSATISFIABLE")
+
     def test_declared_negative_size_cannot_bypass_actual_allocation(self):
         with self.assertRaises(ContextBudgetError):
             allocate([], [{"candidate_id": "bad", "size": -100}], 0)
+
+    def test_direct_allocator_rejects_malformed_rank(self):
+        with self.assertRaises(ContextBudgetError):
+            allocate(
+                [],
+                [{"candidate_id": "bad", "payload": {}, "rank": "highest"}],
+                100,
+            )
 
     def test_central_estimator_counts_utf8_when_no_owner_size_is_declared(self):
         self.assertEqual(estimate_size("ё"), 4)
@@ -597,6 +643,16 @@ class ContextAllocationTests(unittest.TestCase):
 
 
 class OptionalRankingTests(unittest.TestCase):
+    def test_optional_rank_must_be_an_integer(self):
+        item = candidate("malformed-rank")
+        item["rank"] = "highest"
+
+        result = assemble_via_host(request(), [item])
+
+        self.assertEqual(result["outcome"], "ASSEMBLED_DEGRADED")
+        self.assertEqual(result["bundle"]["optional"], [])
+        self.assertEqual(result["trace"]["excluded_ids"], ["malformed-rank"])
+
     def test_optional_ranking_is_deterministic_within_remaining_budget(self):
         a, b, c = candidate("a", rank=2), candidate("b", rank=2), candidate("c", rank=1)
         request_value = request(
@@ -627,6 +683,43 @@ class RetrospectiveContextTests(unittest.TestCase):
 
 
 class ContextResultTraceTests(unittest.TestCase):
+    def test_native_private_routing_payload_is_not_role_evidence(self):
+        repository = RuntimeRepository()
+        repository.add_record(
+            "world.scene",
+            ("private-scene",),
+            {
+                "kind": "world.scene",
+                "id": "private-scene",
+                "state": {"name": "Native"},
+                "routing": {"private": "operator-only"},
+            },
+        )
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        item = owner_candidate("private-scene")
+
+        optional = host.context.assemble(request(), [item])
+        required = host.context.assemble(
+            request(required_ids=["private-scene"]), [item]
+        )
+
+        self.assertEqual(optional["outcome"], "ASSEMBLED_DEGRADED")
+        self.assertEqual(optional["bundle"]["optional"], [])
+        self.assertEqual(required["outcome"], "UNSATISFIABLE")
+
+    def test_context_trace_carrier_is_not_role_evidence(self):
+        item = candidate("trace-carrier")
+        item["context_trace"] = {"private": "routing-only"}
+
+        optional = assemble_via_host(request(), [item])
+        required = assemble_via_host(request(required_ids=["trace-carrier"]), [item])
+
+        self.assertEqual(optional["outcome"], "ASSEMBLED_DEGRADED")
+        self.assertEqual(optional["bundle"]["optional"], [])
+        self.assertEqual(required["outcome"], "UNSATISFIABLE")
+
     def test_trace_is_diagnostic_and_does_not_include_payload(self):
         item = candidate("a")
         request_value = request(

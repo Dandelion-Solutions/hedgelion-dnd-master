@@ -57,8 +57,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
 
 
 class ContextContractError(ValueError):
@@ -142,6 +142,22 @@ _REQUEST_FIELDS: Final[frozenset[str]] = frozenset(
         "retrospective",
     }
 )
+_PROTECTED_ROLE_MATERIAL_KEYS: Final[frozenset[str]] = frozenset(
+    {
+        "context_trace",
+        "trace",
+        "resolution_trace",
+        "diagnostic_evidence",
+        "private",
+        "private_context",
+        "hidden_reasoning",
+        "raw_bundle",
+        "role_frame",
+        "tool_payload",
+        "routing",
+        "routing_metadata",
+    }
+)
 _FORBIDDEN_AUTHORITY_FIELDS: Final[frozenset[str]] = frozenset(
     {
         "current",
@@ -157,8 +173,9 @@ _FORBIDDEN_AUTHORITY_FIELDS: Final[frozenset[str]] = frozenset(
         "context_service",
         "need_profile",
         "profile",
+        "size",
     }
-)
+).union(_PROTECTED_ROLE_MATERIAL_KEYS)
 
 _LIVE_FAMILIES: Final[frozenset[str]] = frozenset(
     {"LIVE", "runtime.live", "runtime.live_source", "world.live"}
@@ -171,6 +188,8 @@ _KNOWLEDGE_FAMILIES: Final[frozenset[str]] = frozenset({"knowledge", "world.know
 _DISCLOSURE_FAMILIES: Final[frozenset[str]] = frozenset(
     {"disclosure", "runtime.disclosure"}
 )
+
+
 @dataclass(frozen=True, slots=True)
 class _RequestScope:
     profile: _RegisteredProfile
@@ -379,10 +398,30 @@ def _candidate_scope(candidate: Mapping[str, object], scope: _RequestScope) -> N
             )
 
 
+def _candidate_rank(value: object) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ContextContractError("candidate rank must be an integer")
+    return value
+
+
+def _reject_protected_role_material(value: object) -> None:
+    if isinstance(value, Mapping):
+        if _PROTECTED_ROLE_MATERIAL_KEYS.intersection(value):
+            raise ContextContractError(
+                "diagnostic or private routing material is not role evidence"
+            )
+        for nested in value.values():
+            _reject_protected_role_material(nested)
+    elif isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        for nested in value:
+            _reject_protected_role_material(nested)
+
+
 _CampaignResolver: TypeAlias = Callable[
     [object, _PinnedCampaign, _RequestScope, Mapping[str, object], str],
     tuple[list[str], dict[str, object]],
 ]
+_CandidateResolver: TypeAlias = Callable[[Mapping[str, object]], dict[str, object]]
 
 
 def _resolve_registered_campaign_family(
@@ -606,11 +645,14 @@ def _resolve_candidate(
     else:
         raise ContextContractError("candidate family is not a registered native owner")
 
+    _reject_protected_role_material(payload)
+    rank = _candidate_rank(candidate.get("rank", 0))
+
     # current/eligible are deliberately internal post-resolution markers only.
     return {
         "candidate_id": candidate_id,
         "channel": candidate.get("channel"),
-        "rank": candidate.get("rank", 0),
+        "rank": rank,
         "dependencies": deepcopy(candidate.get("dependencies", [])),
         "owner_family": family,
         "owner_identity": owner_identity,
@@ -622,18 +664,25 @@ def _resolve_candidate(
 
 def _required_closure(
     required_ids: list[str],
-    available: dict[str, dict[str, object]],
+    discovered: Mapping[str, Mapping[str, object]],
     allowed_relations: set[str],
-) -> list[dict[str, object]] | None:
+    resolve: _CandidateResolver,
+    excluded: list[str],
+) -> tuple[list[dict[str, object]] | None, dict[str, dict[str, object]]]:
     pending = list(required_ids)
     resolved: dict[str, dict[str, object]] = {}
     while pending:
         candidate_id = pending.pop()
         if candidate_id in resolved:
             continue
-        candidate = available.get(candidate_id)
-        if candidate is None:
-            return None
+        discovered_candidate = discovered.get(candidate_id)
+        if discovered_candidate is None:
+            return None, resolved
+        try:
+            candidate = resolve(discovered_candidate)
+        except ContextContractError:
+            excluded.append(candidate_id)
+            return None, resolved
         resolved[candidate_id] = candidate
         dependencies = candidate.get("dependencies", [])
         if not isinstance(dependencies, list):
@@ -660,7 +709,7 @@ def _required_closure(
                 raise ContextContractError("duplicate dependency relation")
             dependency_keys.add(key)
             pending.append(target)
-    return [resolved[key] for key in sorted(resolved)]
+    return [resolved[key] for key in sorted(resolved)], resolved
 
 
 def _public_candidate(candidate: Mapping[str, object]) -> dict[str, object]:
@@ -692,19 +741,41 @@ def _assemble_bound_context(
             "operation basis does not match the Context campaign"
         )
     discovered = discover_candidates(request, candidates)
-    available: dict[str, dict[str, object]] = {}
+    discovered_by_id = {item["candidate_id"]: item for item in discovered}
     excluded: list[str] = []
+
+    def resolve(item: Mapping[str, object]) -> dict[str, object]:
+        return _resolve_candidate(
+            repository,
+            pinned_campaign,
+            selected_live,
+            selected_live_reader,
+            scope,
+            item,
+        )
+
+    required, available = _required_closure(
+        request["required_ids"],
+        discovered_by_id,
+        set(request["allowed_relations"]),
+        resolve,
+        excluded,
+    )
+    if required is None:
+        trace: dict[str, object] = {
+            "profile_id": scope.profile.profile_id,
+            "discovered_ids": [item["candidate_id"] for item in discovered],
+            "included_ids": [],
+            "excluded_ids": sorted(set(excluded)),
+        }
+        return {"outcome": "UNSATISFIABLE", "bundle": None, "trace": trace}
+
     for item in discovered:
         candidate_id = item["candidate_id"]
+        if candidate_id in available:
+            continue
         try:
-            available[candidate_id] = _resolve_candidate(
-                repository,
-                pinned_campaign,
-                selected_live,
-                selected_live_reader,
-                scope,
-                item,
-            )
+            available[candidate_id] = resolve(item)
         except ContextContractError:
             excluded.append(candidate_id)
 
@@ -714,11 +785,6 @@ def _assemble_bound_context(
         "included_ids": [],
         "excluded_ids": sorted(set(excluded)),
     }
-    required = _required_closure(
-        request["required_ids"], available, set(request["allowed_relations"])
-    )
-    if required is None:
-        return {"outcome": "UNSATISFIABLE", "bundle": None, "trace": trace}
     required_set = {item["candidate_id"] for item in required}
     optional = [
         available[item["candidate_id"]]
