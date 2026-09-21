@@ -17,8 +17,8 @@ if TYPE_CHECKING:
     from .policy_basis import RepositoryPort
 
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
 _GIT_REVISION: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _GIT_REF: Final = re.compile(r"^refs/heads/[^\s/]+(?:/[^\s/]+)*$")
 _CAMPAIGN_REF: Final = re.compile(r"^refs/heads/campaign/[^\s/]+$")
