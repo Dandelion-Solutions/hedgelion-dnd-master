@@ -473,7 +473,9 @@ def _ordering_invocation_fact(value: object, label: str) -> None:
     _ordering_text(fact["provenance_ref"], f"{label} provenance_ref")
     _ordering_id(fact["consumer_id"], f"{label} consumer_id")
     _ordering_sha256(fact["binding_fingerprint"], f"{label} binding_fingerprint")
-    _ordering_sha256(fact["rules_context_fingerprint"], f"{label} rules_context_fingerprint")
+    _ordering_sha256(
+        fact["rules_context_fingerprint"], f"{label} rules_context_fingerprint"
+    )
     _ordering_policy_refs(fact["policy_basis_refs"], f"{label} policy_basis_refs")
 
 
@@ -532,16 +534,22 @@ def _ordering_segment(value: object, label: str) -> None:
     if set(segment) - allowed or not required.issubset(segment):
         raise NativeOrderingError(f"{label} has unexpected or missing fields")
     _ordering_id(segment["segment_id"], f"{label} segment_id")
-    _ordering_integer(segment["segment_sequence"], f"{label} segment_sequence", minimum=1)
+    _ordering_integer(
+        segment["segment_sequence"], f"{label} segment_sequence", minimum=1
+    )
     if segment["commit_state"] != "committed":
         raise NativeOrderingError(f"{label} commit_state is unsupported")
     if segment["resulting_execution_state"] not in _ORDERING_EXECUTION_STATES:
         raise NativeOrderingError(f"{label} resulting_execution_state is unsupported")
     _ordering_unique_strings(segment["event_ids"], f"{label} event_ids")
-    children = _ordering_array(segment["pending_child_invocations"], f"{label} pending_child_invocations")
+    children = _ordering_array(
+        segment["pending_child_invocations"], f"{label} pending_child_invocations"
+    )
     for index, child in enumerate(children):
         _ordering_pending_child(child, f"{label} pending_child_invocations[{index}]")
-    receipt_exports = _ordering_mapping(segment["receipt_exports"], f"{label} receipt_exports")
+    receipt_exports = _ordering_mapping(
+        segment["receipt_exports"], f"{label} receipt_exports"
+    )
     for key, item in receipt_exports.items():
         _ordering_id(key, f"{label} receipt export key")
         _ordering_scalar(item, f"{label} receipt export value")
@@ -555,19 +563,36 @@ def _ordering_segment(value: object, label: str) -> None:
 def _ordering_pending_response_schema(value: object, label: str) -> None:
     offer = _ordering_mapping(value, label)
     kind = offer.get("kind")
-    fields = _CHOICE_FIELDS if kind == "choice" else _REACTION_FIELDS if kind == "reaction" else None
+    fields = (
+        _CHOICE_FIELDS
+        if kind == "choice"
+        else _REACTION_FIELDS
+        if kind == "reaction"
+        else None
+    )
     if fields is None or set(offer) != fields:
-        raise NativeOrderingError(f"{label} is not a valid ChoiceRequest or ReactionOffer")
+        raise NativeOrderingError(
+            f"{label} is not a valid ChoiceRequest or ReactionOffer"
+        )
     _ordering_text(offer["offer_id"], f"{label} offer_id")
     _ordering_text(offer["parent_resolution_id"], f"{label} parent_resolution_id")
-    _ordering_integer(offer["continuation_generation"], f"{label} continuation_generation", minimum=1)
+    _ordering_integer(
+        offer["continuation_generation"], f"{label} continuation_generation", minimum=1
+    )
     _ordering_text(offer["responder_id"], f"{label} responder_id")
     item_field = "option_ids" if kind == "choice" else "candidate_activity_ids"
     _ordering_unique_strings(offer[item_field], f"{label} {item_field}", minimum=1)
 
 
 def _ordering_resolution_schema(payload: Mapping[str, object]) -> None:
-    for field in ("root_command_id", "initiating_command_id", "causal_invocation_key", "cursor", "safe_recompute_phase", "trace_id"):
+    for field in (
+        "root_command_id",
+        "initiating_command_id",
+        "causal_invocation_key",
+        "cursor",
+        "safe_recompute_phase",
+        "trace_id",
+    ):
         if field in payload:
             _ordering_text(payload[field], f"resolution {field}")
     for field in ("activity_id", "actor_id", "source_id"):
@@ -577,17 +602,29 @@ def _ordering_resolution_schema(payload: Mapping[str, object]) -> None:
         if field in payload:
             _ordering_text(payload[field], f"resolution {field}")
     if "target_ids" in payload:
-        _ordering_unique_strings(payload["target_ids"], "resolution target_ids", machine_ids=True)
+        _ordering_unique_strings(
+            payload["target_ids"], "resolution target_ids", machine_ids=True
+        )
     if "parameter_bindings" in payload:
-        _ordering_parameter_bindings(payload["parameter_bindings"], "resolution parameter_bindings")
-    for field in ("catalog_context_fingerprint_generation", "ruleset_set_digest_generation"):
+        _ordering_parameter_bindings(
+            payload["parameter_bindings"], "resolution parameter_bindings"
+        )
+    for field in (
+        "catalog_context_fingerprint_generation",
+        "ruleset_set_digest_generation",
+    ):
         if type(payload[field]) is not int or payload[field] != 1:
             raise NativeOrderingError(f"resolution {field} must be exactly 1")
-    _ordering_text(payload["catalog_context_fingerprint"], "resolution catalog_context_fingerprint")
+    _ordering_text(
+        payload["catalog_context_fingerprint"], "resolution catalog_context_fingerprint"
+    )
     _ordering_sha256(payload["ruleset_set_sha256"], "resolution ruleset_set_sha256")
     if payload["status"] not in _ORDERING_EXECUTION_STATES:
         raise NativeOrderingError("resolution status is unsupported")
-    if "failure_code" in payload and payload["failure_code"] not in _ORDERING_FAILURE_CODES:
+    if (
+        "failure_code" in payload
+        and payload["failure_code"] not in _ORDERING_FAILURE_CODES
+    ):
         raise NativeOrderingError("resolution failure_code is unsupported")
     if (
         payload["status"] in {"HYDRATION_REQUIRED", "REJECTED", "FAILED"}
@@ -601,15 +638,23 @@ def _ordering_resolution_schema(payload: Mapping[str, object]) -> None:
         "FAILED",
     }:
         raise NativeOrderingError("resolution failure_code conflicts with its status")
-    _ordering_integer(payload["next_segment_sequence"], "resolution next_segment_sequence", minimum=1)
+    _ordering_integer(
+        payload["next_segment_sequence"], "resolution next_segment_sequence", minimum=1
+    )
     facts = _ordering_array(payload["invocation_facts"], "resolution invocation_facts")
     for index, fact in enumerate(facts):
         _ordering_invocation_fact(fact, f"resolution invocation_facts[{index}]")
-    rolls = _ordering_array(payload["fixed_rng_results"], "resolution fixed_rng_results")
+    rolls = _ordering_array(
+        payload["fixed_rng_results"], "resolution fixed_rng_results"
+    )
     for index, roll in enumerate(rolls):
         _ordering_roll_result(roll, f"resolution fixed_rng_results[{index}]")
-    _ordering_scalar_object(payload["prior_step_exports"], "resolution prior_step_exports")
-    _ordering_unique_strings(payload["child_resolution_ids"], "resolution child_resolution_ids")
+    _ordering_scalar_object(
+        payload["prior_step_exports"], "resolution prior_step_exports"
+    )
+    _ordering_unique_strings(
+        payload["child_resolution_ids"], "resolution child_resolution_ids"
+    )
     segments = _ordering_array(payload["segments"], "resolution segments")
     for index, segment in enumerate(segments):
         _ordering_segment(segment, f"resolution segments[{index}]")
@@ -619,7 +664,13 @@ def _ordering_resolution_schema(payload: Mapping[str, object]) -> None:
 
 def _ordering_continuation_schema(payload: Mapping[str, object]) -> None:
     _ordering_integer(payload["generation"], "continuation generation", minimum=1)
-    for field in ("root_command_id", "resolution_id", "execution_cursor", "safe_recompute_phase", "future_rng_frontier"):
+    for field in (
+        "root_command_id",
+        "resolution_id",
+        "execution_cursor",
+        "safe_recompute_phase",
+        "future_rng_frontier",
+    ):
         _ordering_text(payload[field], f"continuation {field}")
     if "procedure_id" in payload:
         _ordering_text(payload["procedure_id"], "continuation procedure_id")
@@ -627,30 +678,63 @@ def _ordering_continuation_schema(payload: Mapping[str, object]) -> None:
         if field in payload:
             _ordering_id(payload[field], f"continuation {field}")
     if "target_ids" in payload:
-        _ordering_unique_strings(payload["target_ids"], "continuation target_ids", machine_ids=True)
+        _ordering_unique_strings(
+            payload["target_ids"], "continuation target_ids", machine_ids=True
+        )
     if "parameter_bindings" in payload:
-        _ordering_parameter_bindings(payload["parameter_bindings"], "continuation parameter_bindings")
-    for field in ("catalog_context_fingerprint_generation", "ruleset_set_digest_generation"):
+        _ordering_parameter_bindings(
+            payload["parameter_bindings"], "continuation parameter_bindings"
+        )
+    for field in (
+        "catalog_context_fingerprint_generation",
+        "ruleset_set_digest_generation",
+    ):
         if type(payload[field]) is not int or payload[field] != 1:
             raise NativeOrderingError(f"continuation {field} must be exactly 1")
-    _ordering_text(payload["catalog_context_fingerprint"], "continuation catalog_context_fingerprint")
+    _ordering_text(
+        payload["catalog_context_fingerprint"],
+        "continuation catalog_context_fingerprint",
+    )
     _ordering_sha256(payload["ruleset_set_sha256"], "continuation ruleset_set_sha256")
     for field in ("invocation_facts", "fixed_rng_results"):
         values = _ordering_array(payload[field], f"continuation {field}")
-        validator = _ordering_invocation_fact if field == "invocation_facts" else _ordering_roll_result
+        validator = (
+            _ordering_invocation_fact
+            if field == "invocation_facts"
+            else _ordering_roll_result
+        )
         for index, item in enumerate(values):
             validator(item, f"continuation {field}[{index}]")
-    _ordering_scalar_object(payload["prior_step_exports"], "continuation prior_step_exports")
-    for field in ("committed_segment_refs", "dependency_frontier_refs", "expected_child_resolution_ids"):
+    _ordering_scalar_object(
+        payload["prior_step_exports"], "continuation prior_step_exports"
+    )
+    for field in (
+        "committed_segment_refs",
+        "dependency_frontier_refs",
+        "expected_child_resolution_ids",
+    ):
         _ordering_unique_strings(payload[field], f"continuation {field}")
     if "pending_response" in payload:
-        _ordering_pending_response_schema(payload["pending_response"], "continuation pending_response")
+        _ordering_pending_response_schema(
+            payload["pending_response"], "continuation pending_response"
+        )
     if "unconsumed_advancement" in payload:
-        advancement = _ordering_mapping(payload["unconsumed_advancement"], "continuation unconsumed_advancement")
+        advancement = _ordering_mapping(
+            payload["unconsumed_advancement"], "continuation unconsumed_advancement"
+        )
         if set(advancement) != {"amount", "unit_id", "context_id"}:
-            raise NativeOrderingError("continuation unconsumed_advancement has unexpected or missing fields")
-        _ordering_integer(advancement["amount"], "continuation advancement amount", minimum=1)
-        if advancement["unit_id"] not in {"unit.second", "unit.minute", "unit.hour", "unit.day"}:
+            raise NativeOrderingError(
+                "continuation unconsumed_advancement has unexpected or missing fields"
+            )
+        _ordering_integer(
+            advancement["amount"], "continuation advancement amount", minimum=1
+        )
+        if advancement["unit_id"] not in {
+            "unit.second",
+            "unit.minute",
+            "unit.hour",
+            "unit.day",
+        }:
             raise NativeOrderingError("continuation advancement unit_id is unsupported")
         _ordering_text(advancement["context_id"], "continuation advancement context_id")
     if "details" in payload:
@@ -678,7 +762,9 @@ def _validate_ordering_owner_schema(family: str, payload: Mapping[str, object]) 
         return
     unexpected = set(payload) - allowed
     if unexpected:
-        raise NativeOrderingError(f"exact {family} record has unsupported owner-schema fields")
+        raise NativeOrderingError(
+            f"exact {family} record has unsupported owner-schema fields"
+        )
     if family == "runtime.resolution":
         _ordering_resolution_schema(payload)
     else:
@@ -700,7 +786,9 @@ def _ordering_record(
         if isinstance(exc, NativeOrderingError):
             raise
         if isinstance(exc, (IdentityMismatch, NativeStorageError)):
-            raise NativeOrderingError(f"exact {family} identity is stale or foreign") from exc
+            raise NativeOrderingError(
+                f"exact {family} identity is stale or foreign"
+            ) from exc
         raise NativeOrderingError(f"exact {family} owner read failed") from exc
     if payload.get("campaign_id") not in {None, campaign_pin.campaign_id}:
         raise NativeOrderingError(f"exact {family} belongs to another campaign")
@@ -719,16 +807,28 @@ def _pending_offer(
 ) -> tuple[str, str, str]:
     offer = response if isinstance(response, Mapping) else None
     if offer is None or set(offer) not in {_CHOICE_FIELDS, _REACTION_FIELDS}:
-        raise NativeOrderingError("continuation pending response is not a valid ChoiceRequest or ReactionOffer")
+        raise NativeOrderingError(
+            "continuation pending response is not a valid ChoiceRequest or ReactionOffer"
+        )
     kind = offer.get("kind")
-    expected_fields = _CHOICE_FIELDS if kind == "choice" else _REACTION_FIELDS if kind == "reaction" else None
+    expected_fields = (
+        _CHOICE_FIELDS
+        if kind == "choice"
+        else _REACTION_FIELDS
+        if kind == "reaction"
+        else None
+    )
     if expected_fields is None or set(offer) != expected_fields:
         raise NativeOrderingError("continuation pending response kind is not admitted")
     offer_id = _ordering_text(offer.get("offer_id"), "pending offer id")
     if offer.get("parent_resolution_id") != resolution_id:
-        raise NativeOrderingError("pending offer does not belong to the current resolution")
+        raise NativeOrderingError(
+            "pending offer does not belong to the current resolution"
+        )
     if offer.get("continuation_generation") != continuation_generation:
-        raise NativeOrderingError("pending offer generation differs from the current continuation")
+        raise NativeOrderingError(
+            "pending offer generation differs from the current continuation"
+        )
     responder_id = _ordering_text(offer.get("responder_id"), "pending responder id")
     item_field = "option_ids" if kind == "choice" else "candidate_activity_ids"
     item_ids = offer.get(item_field)
@@ -753,16 +853,25 @@ def _validate_linked_procedure(
     procedure_ref = _ordering_text(procedure_id, "linked procedure id")
     continuation_procedure = continuation.get("procedure_id")
     if continuation_procedure != procedure_ref:
-        raise NativeOrderingError("resolution and continuation procedure linkage differs")
-    procedure = _ordering_record(repository, campaign_pin, "runtime.procedure", procedure_ref)
+        raise NativeOrderingError(
+            "resolution and continuation procedure linkage differs"
+        )
+    procedure = _ordering_record(
+        repository, campaign_pin, "runtime.procedure", procedure_ref
+    )
     declared_procedure_id = procedure.get("procedure_id", procedure.get("id"))
     if declared_procedure_id != procedure_ref:
-        raise NativeOrderingError("linked procedure identity differs from its native route")
+        raise NativeOrderingError(
+            "linked procedure identity differs from its native route"
+        )
     state = procedure.get("state")
     if state is not None and not isinstance(state, Mapping):
         raise NativeOrderingError("linked procedure state is malformed")
     procedure_state = state if isinstance(state, Mapping) else procedure
-    if procedure_state.get("schema_version") != 2 or procedure_state.get("lifecycle") != "ACTIVE":
+    if (
+        procedure_state.get("schema_version") != 2
+        or procedure_state.get("lifecycle") != "ACTIVE"
+    ):
         raise NativeOrderingError("linked procedure is not current schema v2 ACTIVE")
     for field, expected in (
         ("resolution_id", resolution.get("id")),
@@ -794,23 +903,35 @@ def resolve_native_ordering_evidence(
             campaign_id=campaign_pin.campaign_id,
         )
     if not isinstance(request, Mapping) or set(request) != _ORDERING_REQUEST_FIELDS:
-        raise NativeOrderingError("native ordering request must contain only resolution_id")
+        raise NativeOrderingError(
+            "native ordering request must contain only resolution_id"
+        )
     resolution_id = _ordering_text(request.get("resolution_id"), "resolution id")
-    resolution = _ordering_record(repository, campaign_pin, "runtime.resolution", resolution_id)
+    resolution = _ordering_record(
+        repository, campaign_pin, "runtime.resolution", resolution_id
+    )
     declared_resolution_id = resolution.get("resolution_id", resolution.get("id"))
     if declared_resolution_id != resolution_id:
         raise NativeOrderingError("resolution identity differs from requested identity")
     status = resolution.get("status")
     if status not in {"AWAITING_CHOICE", "AWAITING_REACTION"}:
         raise NativeOrderingError("resolution is not awaiting an owner response")
-    continuation_id = _ordering_text(resolution.get("continuation_id"), "resolution continuation id")
+    continuation_id = _ordering_text(
+        resolution.get("continuation_id"), "resolution continuation id"
+    )
     continuation = _ordering_record(
         repository, campaign_pin, "runtime.continuation", continuation_id
     )
     if continuation.get("resolution_id") != resolution_id:
-        raise NativeOrderingError("continuation does not belong to the current resolution")
+        raise NativeOrderingError(
+            "continuation does not belong to the current resolution"
+        )
     generation = continuation.get("generation")
-    if isinstance(generation, bool) or not isinstance(generation, int) or generation < 1:
+    if (
+        isinstance(generation, bool)
+        or not isinstance(generation, int)
+        or generation < 1
+    ):
         raise NativeOrderingError("continuation generation is invalid")
     expected_generation = resolution.get("continuation_generation")
     if expected_generation is not None and expected_generation != generation:
@@ -827,7 +948,9 @@ def resolve_native_ordering_evidence(
     resolution_procedure = resolution.get("procedure_id")
     continuation_procedure = continuation.get("procedure_id")
     if (resolution_procedure is None) != (continuation_procedure is None):
-        raise NativeOrderingError("resolution and continuation procedure linkage is incomplete")
+        raise NativeOrderingError(
+            "resolution and continuation procedure linkage is incomplete"
+        )
     procedure_id = None
     if resolution_procedure is not None:
         procedure_id = _validate_linked_procedure(
@@ -883,24 +1006,36 @@ def _require_nonempty_string(value: object, label: str) -> str:
 
 
 def _require_sha256(value: object, label: str) -> str:
-    if not isinstance(value, str) or len(value) != 64 or any(char not in _SHA256_HEX for char in value):
+    if (
+        not isinstance(value, str)
+        or len(value) != 64
+        or any(char not in _SHA256_HEX for char in value)
+    ):
         raise CommandAcceptanceError(f"{label} must be a lower-case SHA-256 digest")
     return value
 
 
 def _typed_interpreter_result(value: object) -> dict[str, str]:
-    raw_result = _require_exact_fields(value, INTERPRETER_RESULT_FIELDS, "interpreter result")
+    raw_result = _require_exact_fields(
+        value, INTERPRETER_RESULT_FIELDS, "interpreter result"
+    )
     result = {
-        field: _require_nonempty_string(raw_result[field], f"interpreter result {field}")
+        field: _require_nonempty_string(
+            raw_result[field], f"interpreter result {field}"
+        )
         for field in INTERPRETER_RESULT_FIELDS
     }
     if result["kind"] != "interpreter_result":
-        raise CommandAcceptanceError("interpreter result kind is not interpreter_result")
+        raise CommandAcceptanceError(
+            "interpreter result kind is not interpreter_result"
+        )
     return result
 
 
 def _candidate_identity(value: object) -> tuple[str, str]:
-    candidate = _require_exact_fields(value, frozenset({"definition_id", "kind"}), "candidate")
+    candidate = _require_exact_fields(
+        value, frozenset({"definition_id", "kind"}), "candidate"
+    )
     return (
         _require_nonempty_string(candidate["definition_id"], "candidate definition_id"),
         _require_nonempty_string(candidate["kind"], "candidate kind"),
@@ -919,15 +1054,30 @@ def _typed_command_proposal(value: object, candidate_id: str) -> dict[str, objec
             "root_resolution_id",
         )
     }
-    action_request = _require_mapping(proposal["action_request"], "command proposal action_request")
-    allowed_action_fields = {"activity_id", "actor_id", "source_id", "target_ids", "parameter_bindings"}
-    if set(action_request) - allowed_action_fields or not {"activity_id", "actor_id"}.issubset(
-        action_request
-    ):
-        raise CommandAcceptanceError("command proposal action_request has unexpected or missing fields")
-    activity_id = _require_nonempty_string(action_request["activity_id"], "action_request activity_id")
+    action_request = _require_mapping(
+        proposal["action_request"], "command proposal action_request"
+    )
+    allowed_action_fields = {
+        "activity_id",
+        "actor_id",
+        "source_id",
+        "target_ids",
+        "parameter_bindings",
+    }
+    if set(action_request) - allowed_action_fields or not {
+        "activity_id",
+        "actor_id",
+    }.issubset(action_request):
+        raise CommandAcceptanceError(
+            "command proposal action_request has unexpected or missing fields"
+        )
+    activity_id = _require_nonempty_string(
+        action_request["activity_id"], "action_request activity_id"
+    )
     if activity_id != candidate_id:
-        raise CommandAcceptanceError("action_request activity_id differs from candidate")
+        raise CommandAcceptanceError(
+            "action_request activity_id differs from candidate"
+        )
     if "parameter_bindings" in action_request:
         try:
             parameter_bindings, _facts, _refs = validate_frozen_adjudication_basis(
@@ -950,16 +1100,15 @@ def _interpreter_result_fingerprint(interpreter_result: Mapping[str, str]) -> st
 
 
 def _input_fingerprint(command: Mapping[str, object]) -> str:
-    material = {
-        key: _thaw(command[key])
-        for key in ACCEPTED_INPUT_FIELDS
-    }
+    material = {key: _thaw(command[key]) for key in ACCEPTED_INPUT_FIELDS}
     return sha256(_RUNTIME_COMMAND_INPUT_DOMAIN + canonical_json(material))
 
 
 def _require_admitted_context(context: object) -> BoundCatalogContext:
     if not isinstance(context, BoundCatalogContext) or not context._is_admitted():
-        raise CommandAcceptanceError("catalog context must be an admitted bound context")
+        raise CommandAcceptanceError(
+            "catalog context must be an admitted bound context"
+        )
     return context
 
 
@@ -977,14 +1126,20 @@ def accept_command(
     admitted_context = _require_admitted_context(context)
     candidate_id, _candidate_kind = _candidate_identity(candidate)
     proposal = _typed_command_proposal(command_proposal, candidate_id)
-    action_request = _require_mapping(proposal["action_request"], "accepted action_request")
+    action_request = _require_mapping(
+        proposal["action_request"], "accepted action_request"
+    )
     if adjudication_basis is not None:
         if not is_accepted_basis_issued(adjudication_basis):
-            raise CommandAcceptanceError("adjudication basis must be resolver-produced evidence")
+            raise CommandAcceptanceError(
+                "adjudication basis must be resolver-produced evidence"
+            )
         expected_bindings = adjudication_basis.runtime_parameter_bindings()
         actual_bindings = action_request.get("parameter_bindings", {})
         if actual_bindings != expected_bindings:
-            raise CommandAcceptanceError("accepted adjudication parameters differ from verified basis")
+            raise CommandAcceptanceError(
+                "accepted adjudication parameters differ from verified basis"
+            )
         invocation_facts = adjudication_basis.runtime_invocation_facts()
     else:
         invocation_facts = []
@@ -993,7 +1148,9 @@ def accept_command(
             and binding.get("source_class") == "INVOCATION_ADJUDICATED"
             for binding in action_request.get("parameter_bindings", {}).values()
         ):
-            raise CommandAcceptanceError("adjudicated parameters require a verified policy basis")
+            raise CommandAcceptanceError(
+                "adjudicated parameters require a verified policy basis"
+            )
     try:
         normalized_parameters, normalized_facts = validate_adjudicated_input_surface(
             str(action_request["activity_id"]),
@@ -1009,14 +1166,18 @@ def accept_command(
     except PolicyBasisResolutionError as exc:
         raise CommandAcceptanceError(str(exc)) from exc
     if adjudication_basis is not None and normalized_parameters != expected_bindings:
-        raise CommandAcceptanceError("accepted adjudication parameters differ from verified basis")
+        raise CommandAcceptanceError(
+            "accepted adjudication parameters differ from verified basis"
+        )
     invocation_facts = normalized_facts
     try:
         catalog_result = bind_executable_catalog(admitted_context, candidate)
     except CatalogBindingError as exc:
         raise CommandAcceptanceError(str(exc)) from exc
     if catalog_result["status"] == "gap":
-        return CatalogGap(_require_mapping(catalog_result["gap_report"], "catalog gap report"))
+        return CatalogGap(
+            _require_mapping(catalog_result["gap_report"], "catalog gap report")
+        )
 
     binding = _require_mapping(catalog_result["binding"], "catalog binding")
     try:
@@ -1050,11 +1211,19 @@ def validate_execution_proposal(
 ) -> None:
     """Verify a serialized command's exact basis and recomputed acceptance fingerprints."""
 
-    command = _require_exact_fields(accepted_command, COMMAND_STATE_FIELDS, "accepted command")
+    command = _require_exact_fields(
+        accepted_command, COMMAND_STATE_FIELDS, "accepted command"
+    )
     admitted_context = _require_admitted_context(context)
     if command["schema_version"] != RUNTIME_COMMAND_SCHEMA_VERSION:
         raise CommandAcceptanceError("unsupported runtime command schema version")
-    for field in ("command_id", "interaction_id", "intent_plan_id", "clause_id", "root_resolution_id"):
+    for field in (
+        "command_id",
+        "interaction_id",
+        "intent_plan_id",
+        "clause_id",
+        "root_resolution_id",
+    ):
         _require_nonempty_string(command[field], f"accepted command {field}")
     if command["command_kind"] != "action" or command["disposition"] not in {
         "command.accepted",
@@ -1062,34 +1231,66 @@ def validate_execution_proposal(
     }:
         raise CommandAcceptanceError("accepted command has an unsupported disposition")
     if not isinstance(command["invocation_facts"], list):
-        raise CommandAcceptanceError("accepted command invocation facts must be an array")
-    action_request = _require_mapping(command["action_request"], "accepted command action_request")
+        raise CommandAcceptanceError(
+            "accepted command invocation facts must be an array"
+        )
+    action_request = _require_mapping(
+        command["action_request"], "accepted command action_request"
+    )
     try:
         parameters, facts = validate_adjudicated_input_surface(
-            _require_nonempty_string(action_request.get("activity_id"), "action_request activity_id"),
+            _require_nonempty_string(
+                action_request.get("activity_id"), "action_request activity_id"
+            ),
             action_request.get("parameter_bindings", {}),
             command["invocation_facts"],
         )
     except PolicyBasisResolutionError as exc:
         raise CommandAcceptanceError(str(exc)) from exc
-    if parameters != action_request.get("parameter_bindings", {}) or facts != command["invocation_facts"]:
-        raise CommandAcceptanceError("accepted adjudication input differs from its normalized basis")
+    if (
+        parameters != action_request.get("parameter_bindings", {})
+        or facts != command["invocation_facts"]
+    ):
+        raise CommandAcceptanceError(
+            "accepted adjudication input differs from its normalized basis"
+        )
     if not isinstance(command["pending_child_invocations"], list):
-        raise CommandAcceptanceError("accepted command pending child invocations must be an array")
-    if command["disposition"] == "command.settled" and command["pending_child_invocations"]:
-        raise CommandAcceptanceError("settled command retains pending child invocations")
-    if command["input_fingerprint_generation"] != RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION:
+        raise CommandAcceptanceError(
+            "accepted command pending child invocations must be an array"
+        )
+    if (
+        command["disposition"] == "command.settled"
+        and command["pending_child_invocations"]
+    ):
+        raise CommandAcceptanceError(
+            "settled command retains pending child invocations"
+        )
+    if (
+        command["input_fingerprint_generation"]
+        != RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION
+    ):
         raise CommandAcceptanceError("unsupported command input fingerprint generation")
-    if command["interpreter_result_fingerprint_generation"] != INTERPRETER_RESULT_FINGERPRINT_GENERATION:
-        raise CommandAcceptanceError("unsupported interpreter result fingerprint generation")
+    if (
+        command["interpreter_result_fingerprint_generation"]
+        != INTERPRETER_RESULT_FINGERPRINT_GENERATION
+    ):
+        raise CommandAcceptanceError(
+            "unsupported interpreter result fingerprint generation"
+        )
     interpreter_result = _typed_interpreter_result(command["interpreter_result"])
-    if command["interpreter_result_fingerprint"] != _interpreter_result_fingerprint(interpreter_result):
-        raise CommandAcceptanceError("interpreter result fingerprint differs from accepted result")
+    if command["interpreter_result_fingerprint"] != _interpreter_result_fingerprint(
+        interpreter_result
+    ):
+        raise CommandAcceptanceError(
+            "interpreter result fingerprint differs from accepted result"
+        )
     if command["catalog_context_fingerprint"] != admitted_context.fingerprint:
         raise CommandAcceptanceError("stale catalog context")
     if command["catalog_context"] != admitted_context.to_dict():
         raise CommandAcceptanceError("catalog context differs from accepted basis")
-    binding = _require_mapping(command["candidate_binding"], "accepted command catalog binding")
+    binding = _require_mapping(
+        command["candidate_binding"], "accepted command catalog binding"
+    )
     try:
         validate_executable_binding(admitted_context, binding)
     except CatalogBindingError as exc:
@@ -1098,10 +1299,7 @@ def validate_execution_proposal(
     if candidate_id != binding["definition_id"] or candidate_kind != binding["kind"]:
         raise CommandAcceptanceError("candidate differs from accepted binding")
     _typed_command_proposal(
-        {
-            key: command[key]
-            for key in COMMAND_PROPOSAL_FIELDS
-        },
+        {key: command[key] for key in COMMAND_PROPOSAL_FIELDS},
         candidate_id,
     )
     _require_sha256(command["input_fingerprint"], "accepted command input fingerprint")
