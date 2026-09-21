@@ -565,7 +565,7 @@ LAST_COMPLETED_TASK:
   W04.T01A accepted after independent re-review -> `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
   W04.T05A accepted after independent re-review -> `995924b2a5448dbf9ae4a52555f64de69f7fd699`
 LAST_SAFE_SHA: `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
-LAST_PUBLISHED_SHA: `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
+LAST_PUBLISHED_SHA: `a40e5b3a6479b27e442c4951779015d9e07bc5ae`
 
 CURRENT_VERIFICATION_STATE:
 - W04.T01A is accepted at the exact reviewed head above.
