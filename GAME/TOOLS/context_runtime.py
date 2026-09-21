@@ -18,7 +18,8 @@ from typing import Any, Final, TypeAlias
 
 try:
     from .access_control import AccessControlContractError, PlayerRecord
-    from .context_budget import allocate
+    from .context_budget import ContextBudgetError, allocate, estimate_size
+    from .history import NativeHistoryPublication
     from .live_state import (
         LiveContractError,
         LiveEnvelope,
@@ -38,7 +39,12 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
         AccessControlContractError,
         PlayerRecord,
     )
-    from GAME.TOOLS.context_budget import allocate  # type: ignore[no-redef]
+    from GAME.TOOLS.context_budget import (  # type: ignore[no-redef]
+        ContextBudgetError,
+        allocate,
+        estimate_size,
+    )
+    from GAME.TOOLS.history import NativeHistoryPublication  # type: ignore[no-redef]
     from GAME.TOOLS.live_state import (  # type: ignore[no-redef]
         LiveContractError,
         LiveEnvelope,
@@ -57,8 +63,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
 
 
 class ContextContractError(ValueError):
@@ -187,6 +193,24 @@ _INFORMATION_FAMILIES: Final[frozenset[str]] = frozenset(
 _KNOWLEDGE_FAMILIES: Final[frozenset[str]] = frozenset({"knowledge", "world.knowledge"})
 _DISCLOSURE_FAMILIES: Final[frozenset[str]] = frozenset(
     {"disclosure", "runtime.disclosure"}
+)
+
+
+@dataclass(frozen=True, slots=True)
+class _RegisteredEscalation:
+    source_family: str
+    source_domain: str
+    origin: str
+    channel: str
+    max_events: int
+
+
+_RETROSPECTIVE_ESCALATION: Final[_RegisteredEscalation] = _RegisteredEscalation(
+    source_family="runtime.semantic_event",
+    source_domain="campaign.semantic_events@S",
+    origin="LOCAL",
+    channel="HISTORY_HINT",
+    max_events=256,
 )
 
 
@@ -435,9 +459,7 @@ def _resolve_registered_campaign_family(
 
     _candidate_scope(candidate, scope)
     identity = _identity(candidate.get("owner_identity"), f"{family} owner_identity")
-    return list(identity), _read_campaign_record(
-        repository, pinned, family, identity
-    )
+    return list(identity), _read_campaign_record(repository, pinned, family, identity)
 
 
 _CAMPAIGN_RESOLVER_TABLE: Final[Mapping[str, _CampaignResolver]] = MappingProxyType(
@@ -540,6 +562,34 @@ def _resolve_disclosure(
     return record
 
 
+def _retrospective_events(
+    publication: object, pinned: _PinnedCampaign
+) -> dict[str, dict[str, object]]:
+    if not isinstance(publication, NativeHistoryPublication):
+        raise ContextContractError("retrospective native history is unavailable")
+    if publication.campaign_id != pinned.campaign_id:
+        raise ContextContractError(
+            "retrospective native history belongs to another campaign"
+        )
+    if (
+        publication.source_domain != _RETROSPECTIVE_ESCALATION.source_domain
+        or publication.origin != _RETROSPECTIVE_ESCALATION.origin
+        or len(publication.events) > _RETROSPECTIVE_ESCALATION.max_events
+    ):
+        raise ContextContractError(
+            "retrospective native history is outside the registered bound"
+        )
+    events: dict[str, dict[str, object]] = {}
+    for event in publication.events:
+        event_id = event.event_id
+        if event_id in events:
+            raise ContextContractError(
+                "retrospective native history contains duplicate events"
+            )
+        events[event_id] = event.as_mapping()
+    return events
+
+
 def _resolve_live(
     route: LiveRouting | None,
     reader: object | None,
@@ -592,6 +642,7 @@ def _resolve_candidate(
     selected_live_reader: object | None,
     scope: _RequestScope,
     candidate: Mapping[str, object],
+    retrospective_events: Mapping[str, dict[str, object]] | None,
 ) -> dict[str, object]:
     if not isinstance(candidate, dict):
         raise ContextContractError(
@@ -638,10 +689,25 @@ def _resolve_candidate(
         payload = _resolve_disclosure(
             repository, pinned, tuple(owner_identity), scope.recipient_id
         )
-    elif (resolver := _CAMPAIGN_RESOLVER_TABLE.get(family)) is not None:
-        owner_identity, payload = resolver(
-            repository, pinned, scope, candidate, family
+    elif family == _RETROSPECTIVE_ESCALATION.source_family:
+        if retrospective_events is None:
+            raise ContextContractError(
+                "semantic history requires the registered retrospective escalation"
+            )
+        if candidate.get("channel") != _RETROSPECTIVE_ESCALATION.channel:
+            raise ContextContractError(
+                "semantic history requires the registered history discovery channel"
+            )
+        owner_identity = list(
+            _identity(raw_identity, "semantic event owner_identity", length=1)
         )
+        payload = deepcopy(retrospective_events.get(owner_identity[0]))
+        if payload is None:
+            raise ContextContractError(
+                "semantic event is absent from the exact retrospective history window"
+            )
+    elif (resolver := _CAMPAIGN_RESOLVER_TABLE.get(family)) is not None:
+        owner_identity, payload = resolver(repository, pinned, scope, candidate, family)
     else:
         raise ContextContractError("candidate family is not a registered native owner")
 
@@ -729,6 +795,8 @@ def _assemble_bound_context(
     pinned_campaign: object,
     selected_live: LiveRouting | None,
     selected_live_reader: object | None,
+    retrospective_history: object | None = None,
+    retrospective_unavailable: bool = False,
 ) -> dict[str, Any]:
     """Internal RuntimeHost route; callers cannot supply this operation basis."""
 
@@ -743,6 +811,38 @@ def _assemble_bound_context(
     discovered = discover_candidates(request, candidates)
     discovered_by_id = {item["candidate_id"]: item for item in discovered}
     excluded: list[str] = []
+    retrospective_events: Mapping[str, dict[str, object]] | None = None
+    if request.get("retrospective") is True:
+        if retrospective_unavailable:
+            return {
+                "outcome": "UNSATISFIABLE",
+                "bundle": None,
+                "trace": {
+                    "profile_id": scope.profile.profile_id,
+                    "discovered_ids": [item["candidate_id"] for item in discovered],
+                    "included_ids": [],
+                    "excluded_ids": sorted(
+                        set(excluded).union(request["required_ids"])
+                    ),
+                },
+            }
+        try:
+            retrospective_events = _retrospective_events(
+                retrospective_history, pinned_campaign
+            )
+        except ContextContractError:
+            return {
+                "outcome": "UNSATISFIABLE",
+                "bundle": None,
+                "trace": {
+                    "profile_id": scope.profile.profile_id,
+                    "discovered_ids": [item["candidate_id"] for item in discovered],
+                    "included_ids": [],
+                    "excluded_ids": sorted(
+                        set(excluded).union(request["required_ids"])
+                    ),
+                },
+            }
 
     def resolve(item: Mapping[str, object]) -> dict[str, object]:
         return _resolve_candidate(
@@ -752,6 +852,7 @@ def _assemble_bound_context(
             selected_live_reader,
             scope,
             item,
+            retrospective_events,
         )
 
     required, available = _required_closure(
@@ -792,7 +893,36 @@ def _assemble_bound_context(
         if item["candidate_id"] not in required_set
         and item["candidate_id"] in available
     ]
-    allocation = allocate(required, optional, request["budget"])
+    allocatable_required: list[dict[str, object]] = []
+    for item in required:
+        try:
+            estimate_size(item["payload"])
+        except ContextBudgetError:
+            excluded.append(str(item["candidate_id"]))
+            trace["excluded_ids"] = sorted(set(excluded))
+            return {"outcome": "UNSATISFIABLE", "bundle": None, "trace": trace}
+        allocatable_required.append(item)
+    allocatable_optional: list[dict[str, object]] = []
+    for item in optional:
+        try:
+            estimate_size(item["payload"])
+        except ContextBudgetError:
+            excluded.append(str(item["candidate_id"]))
+            continue
+        allocatable_optional.append(item)
+    trace["excluded_ids"] = sorted(set(excluded))
+    try:
+        allocation = allocate(
+            allocatable_required, allocatable_optional, request["budget"]
+        )
+    except ContextBudgetError:
+        excluded.extend(item["candidate_id"] for item in allocatable_optional)
+        trace["excluded_ids"] = sorted(set(excluded))
+        try:
+            allocation = allocate(allocatable_required, [], request["budget"])
+        except ContextBudgetError:
+            return {"outcome": "UNSATISFIABLE", "bundle": None, "trace": trace}
+        allocation["outcome"] = "ASSEMBLED_DEGRADED"
     if allocation["outcome"] == "UNSATISFIABLE":
         return {"outcome": "UNSATISFIABLE", "bundle": None, "trace": trace}
     outcome = allocation["outcome"]

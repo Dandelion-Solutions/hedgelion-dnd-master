@@ -87,6 +87,38 @@ def budget_for(*items):
     return sum(estimate_size(item["payload"]) for item in items)
 
 
+def native_history_window(*, source_revision, event_id="event-1"):
+    event = {
+        "schema_version": 1,
+        "event_id": event_id,
+        "semantic_order": 1,
+        "kind": "event.context",
+        "provenance_refs": ["resolution.context"],
+        "semantic_delta": {"state": "native"},
+    }
+    return {
+        "schema_version": 1,
+        "source_domain": "campaign.semantic_events@S",
+        "semantic_contract_generation": 1,
+        "campaign_id": "campaign-context",
+        "origin": "LOCAL",
+        "lane": "evt",
+        "source_revision": source_revision,
+        "lower_exclusive": None,
+        "upper": "evt:1",
+        "enumeration_representation": "runtime.semantic_event.evt.v1",
+        "owner_contracts": [{"family": "runtime.semantic_event", "schema_version": 1}],
+        "entries": [
+            {
+                "candidate_id": json.dumps([event_id], separators=(",", ":")),
+                "ordinal": 1,
+                "event": event,
+            }
+        ],
+        "interval_complete": True,
+    }
+
+
 class RuntimeRepository:
     def __init__(self, campaign_id="campaign-context"):
         self.campaign_id = campaign_id
@@ -216,6 +248,9 @@ class TwoSourceSubstitutionRuntimeLiveSourceTransport(RuntimeLiveSourceTransport
 
 def host_for(items):
     repository = RuntimeRepository()
+    repository.records["LOG/SEMANTIC_EVENTS"] = native_history_window(
+        source_revision=f"{1:040x}"
+    )
     for item in items:
         family = item.get("owner_family", "world.scene")
         identity = tuple(item.get("owner_identity", [item["candidate_id"]]))
@@ -340,7 +375,9 @@ class ContextRuntimeHostTests(unittest.TestCase):
         }
 
         valid = owner_candidate("scene-1", **expected)
-        self.assertEqual(host.context.assemble(bound_request(), [valid])["outcome"], "ASSEMBLED")
+        self.assertEqual(
+            host.context.assemble(bound_request(), [valid])["outcome"], "ASSEMBLED"
+        )
 
         for field, expected_value in expected.items():
             with self.subTest(binding=field, state="missing"):
@@ -483,7 +520,7 @@ class ContextRuntimeHostTests(unittest.TestCase):
             Draft202012Validator(schema).validate(
                 {key: value for key, value in bound_request().items() if key != "role"}
             )
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.5")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.6")
 
 
 class ContextDiscoveryTests(unittest.TestCase):
@@ -665,16 +702,123 @@ class OptionalRankingTests(unittest.TestCase):
 
 
 class RetrospectiveContextTests(unittest.TestCase):
+    def test_retrospective_escalates_once_to_exact_native_history(self):
+        repository = RuntimeRepository()
+        repository.records["LOG/SEMANTIC_EVENTS"] = native_history_window(
+            source_revision=f"{1:040x}"
+        )
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        item = owner_candidate(
+            "event-1",
+            "runtime.semantic_event",
+            ("event-1",),
+            channel="HISTORY_HINT",
+            role="CHRONICLER",
+            purpose="chronicle",
+            payload={"forged": "candidate payload"},
+        )
+
+        result = host.context.assemble(
+            request(
+                profile_id="profile.story",
+                role="CHRONICLER",
+                purpose="chronicle",
+                allowed_channels=["HISTORY_HINT"],
+                required_ids=["event-1"],
+                retrospective=True,
+            ),
+            [item],
+        )
+
+        self.assertEqual(result["outcome"], "ASSEMBLED")
+        self.assertEqual(
+            result["bundle"]["required"][0]["payload"]["event_id"], "event-1"
+        )
+        self.assertEqual(
+            result["bundle"]["required"][0]["payload"]["semantic_delta"],
+            {"state": "native"},
+        )
+        self.assertNotIn("forged", result["bundle"]["required"][0]["payload"])
+        self.assertEqual(repository.read_paths, ["LOG/SEMANTIC_EVENTS"])
+
+    def test_stale_or_unavailable_retrospective_native_evidence_is_terminal(self):
+        for state in ("stale", "unavailable"):
+            with self.subTest(state=state):
+                repository = RuntimeRepository()
+                if state == "stale":
+                    repository.records["LOG/SEMANTIC_EVENTS"] = native_history_window(
+                        source_revision="f" * 40
+                    )
+                host = compose_runtime_host(
+                    "campaign-context", repository, RuntimeLiveTransport()
+                )
+                item = owner_candidate(
+                    "event-1",
+                    "runtime.semantic_event",
+                    ("event-1",),
+                    channel="HISTORY_HINT",
+                    role="CHRONICLER",
+                    purpose="chronicle",
+                )
+
+                result = host.context.assemble(
+                    request(
+                        profile_id="profile.story",
+                        role="CHRONICLER",
+                        purpose="chronicle",
+                        allowed_channels=["HISTORY_HINT"],
+                        required_ids=["event-1"],
+                        retrospective=True,
+                    ),
+                    [item],
+                )
+
+                self.assertEqual(result["outcome"], "UNSATISFIABLE")
+                self.assertIsNone(result["bundle"])
+                self.assertEqual(repository.read_paths, ["LOG/SEMANTIC_EVENTS"])
+
+    def test_owner_payload_estimation_failure_degrades_optional_and_terminalizes_required(
+        self,
+    ):
+        repository = RuntimeRepository()
+        malformed_payload = {
+            "kind": "world.scene",
+            "id": "malformed",
+            "state": {"not_json": object()},
+        }
+        repository.add_record("world.scene", ("malformed",), malformed_payload)
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        item = owner_candidate("malformed")
+
+        optional = host.context.assemble(request(), [item])
+        required = host.context.assemble(request(required_ids=["malformed"]), [item])
+
+        self.assertEqual(optional["outcome"], "ASSEMBLED_DEGRADED")
+        self.assertEqual(optional["bundle"]["optional"], [])
+        self.assertEqual(required["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(required["bundle"])
+
     def test_retrospective_payload_is_explicitly_a_projection(self):
-        item = candidate("story-1", channel="HISTORY_HINT")
+        item = owner_candidate(
+            "event-1",
+            "runtime.semantic_event",
+            ("event-1",),
+            channel="HISTORY_HINT",
+            role="CHRONICLER",
+            purpose="chronicle",
+        )
         request_value = request(
             profile_id="profile.story",
             role="CHRONICLER",
             purpose="chronicle",
             allowed_channels=["HISTORY_HINT"],
-            required_ids=[],
+            required_ids=["event-1"],
             allowed_relations=[],
-            budget=budget_for(item),
+            budget=1000,
             retrospective=True,
         )
         result = assemble_via_host(request_value, [item])
