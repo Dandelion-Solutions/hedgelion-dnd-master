@@ -58,6 +58,12 @@ Do not run two workers concurrently when they write the same production file or 
 ### Executable dependency graph
 
     Wave-04 entry
+      |-- SHARED HOST-COMPOSITION PREREQUISITE
+      |   T00H runtime host composition
+      |     |-> T01A coordination admission
+      |     |-> T05A routed currentness + eligibility admission
+      |     +-> T07A accepted native history (after T07-PREFLIGHT)
+      |
       |-- COLLABORATION LANE
       |   T01A coordination admission
       |     -> T01B lineage/input association
@@ -93,17 +99,50 @@ Do not run two workers concurrently when they write the same production file or 
           T08A + T08B + T03A           -> T08C consumer convergence
           T08C + all lane checkpoints  -> Wave-04 FINAL_REVIEW
 
+### Shared host-composition prerequisite - W04.T00H
+
+**W04.T00H - campaign-bound runtime host composition**
+
+Input: current accepted W01-W03 owner surfaces plus the accepted
+`2026-09-21-w04-runtime-host-ordering-route-owner-decision.md`.
+
+Direct writes: create `GAME/TOOLS/runtime_host.py`,
+`DEV/TESTS/test_runtime_host_composition.py` and one bounded Wave-05 bootstrap
+delta/evidence artifact. No persisted schema.
+
+Outputs: `W04_RUNTIME_HOST_COMPOSITION_READY` and
+`W04_RUNTIME_HOST_BOOTSTRAP_DELTA_READY`.
+
+Required behavior:
+
+- one host/root is bound to one selected campaign;
+- authenticated RepositoryPort and selected-LIVE transport enter only at the
+  infrastructure composition boundary;
+- Context, History and native-ordering are sibling bound services;
+- public/gameplay calls cannot supply or replace repository/LIVE/route/service
+  capabilities;
+- root re-pins/revalidates per operation and is not a lease;
+- no local token/registry/marker is used to authenticate arbitrary in-process
+  Python objects;
+- arbitrary Python mutation inside the trusted deterministic runtime is outside
+  the gameplay attacker model; an unsupported deployment allowing untrusted
+  code in that TCB must isolate it rather than weaken owner semantics.
+
+Mandatory REDs: capability override through a domain API rejected; cross-campaign
+root use rejected; stale pin not reused as currentness; no Context->History trust
+dependency; no persistence/serialization of host capabilities.
+
 ### Collaboration lane - W04.T01-T04
 
 **W04.T01A - coordination-family admission and exact participant authority**
 
-Inputs: W03 principal route/current PLAYER and accepted Interaction/IntentPlan owners.
+Inputs: `W04_RUNTIME_HOST_COMPOSITION_READY`, W03 principal route/current PLAYER and accepted Interaction/IntentPlan owners.
 
-Direct writes: create GAME/TOOLS/collaboration.py, DEV/TESTS/test_rd12_collaboration.py, base collaboration obligation DEV/GAME schemas, and the collaboration fields in DEV/SCHEMAS/intent-clause.schema.json.
+Direct writes: create GAME/TOOLS/collaboration.py, extend the Step-3 owner machine in GAME/TOOLS/runtime_execution.py only for owner-native ordered-evidence production, DEV/TESTS/test_rd12_collaboration.py, base collaboration obligation DEV/GAME schemas, and the collaboration fields in DEV/SCHEMAS/intent-clause.schema.json. Do not add ordering authority to GAME/TOOLS/mechanics.py.
 
 Output: W04_COLLAB_COORDINATION_ADMISSION_READY.
 
-Mandatory REDs: caller cannot self-select coordination family, required contributors or currentness; login alone cannot authorize; native Procedure/Continuation/Choice/Reaction excludes generic collaboration; independent input creates no obligation; mechanical value.contribution remains a separate vocabulary.
+Mandatory REDs: caller cannot self-select coordination family, required contributors or currentness; login alone cannot authorize; positive RULE_OWNED_ORDERED requires an exact current Resolution in AWAITING_CHOICE/AWAITING_REACTION plus its exact Continuation generation/pending ChoiceRequest or ReactionOffer, with ACTIVE Procedure validation when linked; Procedure existence alone is insufficient; stale/mismatched ordered refs fail closed; independent input creates no obligation; mechanical value.contribution remains a separate vocabulary.
 
 **W04.T01B - obligation lineage, contributor semantics, input association and route companions**
 
@@ -177,7 +216,7 @@ Mandatory REDs: duplicate reconciliation idempotent; crash before/after publicat
 
 **W04.T05A - owner-routed Context currentness and eligibility admission**
 
-Inputs: W01 Context owner plus W03 information/PLAYER/LIVE/currentness owners.
+Inputs: `W04_RUNTIME_HOST_COMPOSITION_READY`, W01 Context owner plus W03 information/PLAYER/LIVE/currentness owners.
 
 Direct writes: GAME/TOOLS/context_runtime.py, applicable Context schemas and DEV/TESTS/test_rd11_context_runtime.py.
 
@@ -185,7 +224,7 @@ Output: W04_CONTEXT_CURRENTNESS_ELIGIBILITY_READY.
 
 The current scaffold's current=true and eligible=true fields may survive only as internal post-resolution carrier data; they are never caller authority.
 
-Mandatory REDs: forged current/eligible booleans, index/cache/scene presence, stale LIVE/PLAYER and physical co-presence cannot admit semantic material.
+Mandatory REDs: no gameplay/domain API accepts RepositoryPort/LIVE/runtime/service override; forged current/eligible booleans, index/cache/scene presence, stale LIVE/PLAYER, wrong registered role/purpose/profile/recipient and physical co-presence cannot admit semantic material.
 
 **W04.T05B - typed required closure, allocation and retrospective core**
 
@@ -233,13 +272,13 @@ W04.T07-PREFLIGHT is a coordinator gate, not a worker task. Immediately before T
 
 **W04.T07A - accepted native history publication/recovery**
 
-Inputs: preflight PASS_TO_IMPLEMENT or PRIVATE_CLS_REPAIR_DEBT_ONLY, plus W02 publication/recovery.
+Inputs: preflight PASS_TO_IMPLEMENT or PRIVATE_CLS_REPAIR_DEBT_ONLY, `W04_RUNTIME_HOST_COMPOSITION_READY`, plus W02 publication/recovery.
 
 Direct writes: GAME/TOOLS/history.py, native-history schemas and DEV/TESTS/test_rd13_story_t0_commentator.py.
 
 Output: W04_NATIVE_HISTORY_PUBLICATION_READY.
 
-Mandatory REDs: caller-shaped SemanticEvent cannot mint accepted history; duplicate ID/order; provenance/currentness mismatch; interruption/recovery preserves identity/provenance/semantic order; narration/Story cannot reconstruct native history.
+Mandatory REDs: no gameplay/domain API accepts RepositoryPort/LIVE/runtime/history-service override; caller-shaped SemanticEvent cannot mint accepted history; duplicate ID/evt-admission ordinal; provenance/currentness mismatch; incomplete source window cannot claim coverage; interruption/recovery preserves identity/origin/provenance/source enrollment; narration/Story cannot reconstruct native history; routed missing LIVE source never falls back to campaign.
 
 **W04.T07B - all four Story layers and eight fixed source registrations**
 
@@ -324,10 +363,14 @@ Maximum configured worker capacity remains five, but maximum safe Wave-04 produc
 Recommended scheduler:
 
     START
+      worker H: T00H runtime host composition
+      -> local reviewer PASS / publish / read-back
+
+    after T00H PASS
       worker C: T01A
       worker X: T05A
-      coordinator: prepare T07 preflight; immediately before T07A RED execute it
-      worker S: T07A only after preflight PASS
+      coordinator: retain/recheck the recorded T07 preflight only if its semantic trigger fired
+      worker S: T07A with the still-current preflight PASS
       => normally 3 production workers
 
     as lanes advance

@@ -5,7 +5,7 @@ SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-plan
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
 STATUS: EXECUTING
-CURRENT_TASK: restore rejected W04.T01A/W04.T05A/W04.T07A task surfaces to `0bd665860386e04ecd2efb589e58069a4d6da033`, then restart all three under the final Senior design rulings
+CURRENT_TASK: restore rejected W04 task surfaces to accepted clean basis `80d1cedfce7f529df96ea2c4b2342ce466cc8806`, then execute W04.T00H runtime-host composition before T01A/T05A/T07A resume
 LAST_COMPLETED_TASK: Wave-04 stable-plan decomposition, self-review/control synchronization and final pre-implementation baseline freeze
 LAST_SAFE_SHA: 6cbde6a4845376ee55e8e9c10a17f354111a276d
 
@@ -453,3 +453,80 @@ SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED
 NEXT_EXACT_TASK: Senior/design identifies the complete T01A native ordering-validator producer/composition/currentness route and the T05A/T07A non-replaceable host composition route, or returns the affected boundary to design. Do not run T01B+, T05B+, T07B+, or Wave-05.
 KNOWN_BLOCKERS: the two System-Impact gaps above.
 UNPUBLISHED_WORK: NONE after publication/read-back.
+
+
+## Senior route owner decision — 2026-09-21
+
+AUTHORITATIVE_DECISION:
+`DEV/docs/superpowers/design/2026-09-21-w04-runtime-host-ordering-route-owner-decision.md`
+
+REVIEWED_STOP_HEAD: `256c4916fecaf38c40c890570f65815cae4df2bb`
+
+```text
+SYSTEM_IMPACT: RESOLVED
+ARCHITECTURE_REVIEW_REQUIRED: NO
+
+NEW PREREQUISITE:
+  W04.T00H runtime host composition
+  -> W04_RUNTIME_HOST_COMPOSITION_READY
+  -> W04_RUNTIME_HOST_BOOTSTRAP_DELTA_READY
+
+T01A:
+  ordered producer = Step-3 runtime_execution owner
+  positive proof = exact current Resolution(AWAITING_CHOICE/REACTION)
+                   -> exact Continuation generation
+                   -> pending ChoiceRequest/ReactionOffer
+                   -> ACTIVE Procedure if linked
+  Procedure existence alone != ordered proof
+  mechanics.py helper forbidden
+
+T05A:
+  no caller BoundContextRuntime/repository/live override
+  Context is a sibling service under campaign-bound RuntimeHost
+
+T07A:
+  no caller History service/repository/live override
+  History is a sibling service under the same RuntimeHost
+  Step-5.10 evt source-domain route remains authority geometry
+```
+
+Threat-model clarification: arbitrary Python object fabrication/mutation inside
+tracked deterministic runtime is TCB compromise, not a gameplay caller path.
+Negative review targets admitted model/player/data/API surfaces. A deployment
+that permits untrusted Python execution inside this TCB is unsupported and must
+supply process/tool isolation rather than an in-process token.
+
+### Mandatory clean restore before T00H
+
+Restore exactly to `80d1cedfce7f529df96ea2c4b2342ce466cc8806`:
+
+```text
+DEV/SCHEMAS/context-need-profile.schema.json
+DEV/SCHEMAS/context-trace.schema.json
+DEV/SCHEMAS/intent-clause.schema.json
+DEV/SCHEMAS/native-history-currentness.schema.json
+DEV/SCHEMAS/native-history-publication.schema.json
+DEV/SCHEMAS/runtime-collaboration-obligation-state.schema.json
+DEV/TESTS/test_rd09_access_live.py
+DEV/TESTS/test_rd11_context_runtime.py
+DEV/TESTS/test_rd12_collaboration.py
+DEV/TESTS/test_rd13_story_t0_commentator.py
+GAME/SCHEMA/collaboration_obligation.schema.yaml
+GAME/TOOLS/collaboration.py
+GAME/TOOLS/context_runtime.py
+GAME/TOOLS/history.py
+GAME/TOOLS/live_state.py
+GAME/TOOLS/mechanics.py
+```
+
+Delete paths absent at the clean basis. Preserve current design/version evidence,
+cursor/current-progress and unrelated accepted build/tool-discovery changes.
+
+Restore -> baseline verification -> local hdm-reviewer -> publish/read-back ->
+T00H -> reviewer PASS -> T01A/T05A/T07A.
+
+The existing T07 CLS↔HDM preflight remains PASS unless its explicit semantic
+trigger fires before T07A RED.
+
+VERSION_IMPACT: NONE for this decision/restore; fresh task-local gates apply.
+KNOWN_BLOCKERS: clean restore + T00H checkpoint only.
