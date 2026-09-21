@@ -5,7 +5,7 @@ SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-plan
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
 STATUS: EXECUTING
-CURRENT_TASK: resume W04.T01A and W04.T05A under Senior rulings; W04.T07A authorized by fresh CLS↔HDM PREFLIGHT_PASS
+CURRENT_TASK: restore rejected W04.T01A/W04.T05A/W04.T07A task surfaces to `0bd665860386e04ecd2efb589e58069a4d6da033`, then restart all three under the final Senior design rulings
 LAST_COMPLETED_TASK: Wave-04 stable-plan decomposition, self-review/control synchronization and final pre-implementation baseline freeze
 LAST_SAFE_SHA: 6cbde6a4845376ee55e8e9c10a17f354111a276d
 
@@ -389,3 +389,38 @@ NEXT_EXACT_TASK: Senior/design resolution of the three recorded owner-boundary c
 KNOWN_BLOCKERS: the three System-Impact briefs above.
 UNPUBLISHED_WORK: NONE after publication/read-back.
 ```
+
+
+## Final Senior/design ruling — 2026-09-21
+
+AUTHORITATIVE_RULING:
+`DEV/docs/superpowers/design/2026-09-21-w04-t01a-t05a-t07a-senior-design-rulings.md`
+
+REVIEWED_STOP_HEAD: `35f979b3e05e10cc759f01361e7271d36941ff4e`
+
+Fresh GitHub comparison proved rejected implementation residue remains. Before
+new RED, restore the exact task production/schema/test paths listed in the ruling
+to `0bd665860386e04ecd2efb589e58069a4d6da033`, preserving current design/control
+artifacts.
+
+After restore reviewer PASS/read-back:
+
+```text
+T01A: AUTHORIZED — accepted IntentClause is finite opportunity identity;
+      Collaboration owns family classification after native revalidation.
+
+T05A: AUTHORIZED — RepositoryPort + read-only Step-5.8 LIVE source read;
+      registered ContextNeedProfile/RoleContextRequest owns role-purpose eligibility.
+
+T07A: AUTHORIZED — fixed Step-5.10 campaign.semantic_events@S evt-lane adapter;
+      no NativeHistoryOwnerPort.
+```
+
+CLS↔HDM preflight remains PASS unless its explicit trigger fires.
+
+STATUS: EXECUTING
+NEXT_EXACT_TASK: clean-basis restore -> local reviewer PASS -> publish/read-back
+-> parallel T01A/T05A/T07A fresh TDD where write sets allow.
+KNOWN_BLOCKERS: restore checkpoint only; no unresolved design decision.
+SYSTEM_IMPACT: RESOLVED / NONE CURRENT.
+VERSION_IMPACT: NONE for ruling/restore; each fresh task performs its own gate.
