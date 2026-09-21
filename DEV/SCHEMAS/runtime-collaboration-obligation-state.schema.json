@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/runtime-collaboration-obligation-state.schema.json",
+  "title": "HDM runtime.collaboration_obligation state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "kind", "obligation_id", "generation", "lifecycle",
+    "coordination_family", "campaign_id", "interaction_id", "intent_plan_id",
+    "clause_id", "dependency_class", "purpose", "dependency_scope",
+    "native_basis_refs", "required_contributors", "optional_contributors",
+    "accepted_input_uses"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "runtime.collaboration_obligation"},
+    "obligation_id": {"$ref": "#/$defs/id"},
+    "generation": {"type": "integer", "minimum": 1},
+    "lifecycle": {"enum": ["OPEN", "CLOSED", "RESOLVED", "OBSOLETE"]},
+    "coordination_family": {"const": "AGENCY_DEPENDENT_COLLECTIVE"},
+    "campaign_id": {"$ref": "#/$defs/id"},
+    "interaction_id": {"$ref": "#/$defs/id"},
+    "intent_plan_id": {"$ref": "#/$defs/id"},
+    "clause_id": {"$ref": "#/$defs/id"},
+    "dependency_class": {
+      "enum": [
+        "JOINT_VOLUNTARY_ACTION", "SHARED_DECISION_OR_NEGOTIATION",
+        "SHARED_SCARCE_RESOURCE_CHOICE", "SCENE_CHRONOLOGY_CONVERGENCE",
+        "PC_CONSEQUENCE_DECISION"
+      ]
+    },
+    "purpose": {"type": "string", "minLength": 1},
+    "dependency_scope": {"type": "object", "minProperties": 1},
+    "native_basis_refs": {
+      "type": "array", "minItems": 1,
+      "items": {"$ref": "#/$defs/nativeBasisRef"}
+    },
+    "required_contributors": {
+      "type": "array", "minItems": 1,
+      "items": {"$ref": "#/$defs/contributor"}
+    },
+    "optional_contributors": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/contributor"}
+    },
+    "accepted_input_uses": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/inputUse"}
+    }
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "contributor": {
+      "type": "object", "additionalProperties": false, "required": ["player_id"],
+      "properties": {
+        "player_id": {"$ref": "#/$defs/id"},
+        "pc_id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "nativeBasisRef": {
+      "type": "object", "additionalProperties": false, "required": ["family", "id"],
+      "properties": {
+        "family": {"type": "string", "minLength": 1},
+        "id": {"$ref": "#/$defs/id"},
+        "revision": {"type": "string", "minLength": 1}
+      }
+    },
+    "inputUse": {
+      "type": "object", "additionalProperties": false,
+      "required": ["interaction_id", "clause_id"],
+      "properties": {
+        "interaction_id": {"$ref": "#/$defs/id"},
+        "clause_id": {"$ref": "#/$defs/id"}
+      }
+    }
+  }
+}

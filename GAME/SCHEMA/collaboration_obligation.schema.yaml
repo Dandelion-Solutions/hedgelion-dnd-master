@@ -1,0 +1,25 @@
+schema_name: runtime_collaboration_obligation
+schema_version: 1
+required: [schema_version, kind, obligation_id, generation, lifecycle, coordination_family, campaign_id, interaction_id, intent_plan_id, clause_id, dependency_class, purpose, dependency_scope, native_basis_refs, required_contributors, optional_contributors, accepted_input_uses]
+fields:
+  schema_version: integer[1]
+  kind: const(runtime.collaboration_obligation)
+  obligation_id: native_identifier
+  generation: integer[>=1]
+  lifecycle: enum[OPEN, CLOSED, RESOLVED, OBSOLETE]
+  coordination_family: const[AGENCY_DEPENDENT_COLLECTIVE]
+  campaign_id: native_identifier
+  interaction_id: native_identifier
+  intent_plan_id: native_identifier
+  clause_id: native_identifier
+  dependency_class: finite_dependency_class
+  purpose: string
+  dependency_scope: object
+  native_basis_refs: array[native_basis_ref]
+  required_contributors: array[participant_ref]
+  optional_contributors: array[participant_ref]
+  accepted_input_uses: array[accepted_input_ref]
+invariants:
+  - opportunity identity is exactly (interaction_id, clause_id) from the accepted native owner graph
+  - only positive AGENCY_DEPENDENT_COLLECTIVE admission creates a durable obligation
+  - collaboration is not PLAYER, Procedure, chronology, mechanics or message authority
