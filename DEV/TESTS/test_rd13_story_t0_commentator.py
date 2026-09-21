@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from copy import deepcopy
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -25,6 +26,15 @@ from GAME.TOOLS.history import (
     validate_semantic_event_draft,
     validate_t0_basis,
 )
+from GAME.TOOLS.live_state import (
+    LiveClaim,
+    LiveEnvelope,
+    LiveRouting,
+    build_live_ref,
+    derive_live_epoch_id,
+)
+from GAME.TOOLS.policy_basis import PinnedCampaign
+from GAME.TOOLS.runtime_host import compose_runtime_host
 from GAME.TOOLS.story import (
     StoryContractError,
     build_story_source_bundle,
@@ -33,7 +43,6 @@ from GAME.TOOLS.story import (
     story_record_path,
     validate_story_projection,
 )
-
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
@@ -66,6 +75,195 @@ def _t0_basis() -> dict[str, object]:
     }
 
 
+_HISTORY_REVISION = "a" * 40
+
+
+def _native_history_window(
+    *,
+    campaign_id: str = "campaign.main",
+    origin: str = "LOCAL",
+    source_revision: str = _HISTORY_REVISION,
+    events: tuple[dict[str, object], ...] = (_semantic_event(),),
+    lower_exclusive: str | None = "evt:6",
+    upper: str | None = "evt:7",
+) -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "source_domain": "campaign.semantic_events@S",
+        "semantic_contract_generation": 1,
+        "campaign_id": campaign_id,
+        "origin": origin,
+        "lane": "evt",
+        "source_revision": source_revision,
+        "lower_exclusive": lower_exclusive,
+        "upper": upper,
+        "enumeration_representation": "runtime.semantic_event.evt.v1",
+        "owner_contracts": [{"family": "runtime.semantic_event", "schema_version": 1}],
+        "entries": [
+            {
+                "candidate_id": json.dumps([event["event_id"]], separators=(",", ":")),
+                "ordinal": event["semantic_order"],
+                "event": event,
+            }
+            for event in events
+        ],
+        "interval_complete": True,
+    }
+
+
+class _NativeHistoryRepository:
+    def __init__(self, window: dict[str, object]) -> None:
+        self.window = window
+        self.paths: list[str] = []
+
+    def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
+        return PinnedCampaign(campaign_id, _HISTORY_REVISION, "b" * 40)
+
+    def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+        del pinned
+        self.paths.append(path)
+        if path != "LOG/SEMANTIC_EVENTS":
+            raise KeyError(path)
+        return deepcopy(self.window)
+
+    def read_exact_campaign_ref(self, campaign_id: str) -> object:
+        del campaign_id
+        return {}
+
+    def read_exact_commit(self, campaign_ref: str, revision: str) -> object:
+        del campaign_ref, revision
+        return {}
+
+    def compare_ancestry(
+        self, repository_ref: str, ancestor_revision: str, descendant_revision: str
+    ) -> object:
+        del repository_ref, ancestor_revision, descendant_revision
+        return {"relation": "EQUAL"}
+
+    def read_authenticated_commit_author(
+        self, campaign_ref: str, revision: str
+    ) -> object:
+        del campaign_ref, revision
+        return {}
+
+
+class _NativeHistoryLiveTransport:
+    def __init__(self, window: dict[str, object] | None = None) -> None:
+        self.window = window
+
+    def read_selected_live(
+        self, campaign_id: str, pinned: PinnedCampaign
+    ) -> LiveRouting:
+        del pinned
+        return LiveRouting(campaign_id=campaign_id, entries=())
+
+    def read_selected_live_source(self, route: LiveRouting, source: object) -> object:
+        del route, source
+        if self.window is None:
+            raise KeyError("LIVE semantic-event source is unavailable")
+        return deepcopy(self.window)
+
+
+def _native_live_source() -> LiveEnvelope:
+    opening_revision = "b" * 40
+    claims = (LiveClaim.exact_owner("world.actor", "actor.guard"),)
+    epoch_id = derive_live_epoch_id(
+        "campaign.main", "scene.gate", opening_revision, claims
+    )
+    return LiveEnvelope(
+        campaign_id="campaign.main",
+        scene_id="scene.gate",
+        epoch_id=epoch_id,
+        source_ref=build_live_ref("campaign.main", "scene.gate", epoch_id),
+        source_revision="c" * 40,
+        claims=claims,
+        opening_campaign_revision=opening_revision,
+    )
+
+
+class _NativeHistorySelectedLiveTransport(_NativeHistoryLiveTransport):
+    def __init__(self, source: LiveEnvelope, window: dict[str, object]) -> None:
+        super().__init__(window)
+        self.source = source
+        self.source_calls = 0
+
+    def read_selected_live(
+        self, campaign_id: str, pinned: PinnedCampaign
+    ) -> LiveRouting:
+        del pinned
+        return LiveRouting(campaign_id=campaign_id, entries=(self.source,))
+
+    def read_selected_live_source(self, route: LiveRouting, source: object) -> object:
+        self.source_calls += 1
+        return super().read_selected_live_source(route, source)
+
+
+class RuntimeHostNativeHistoryTests(unittest.TestCase):
+    def test_history_sibling_reads_local_evt_window_and_issues_bound_provenance(self) -> None:
+        repository = _NativeHistoryRepository(_native_history_window())
+        host = compose_runtime_host(
+            "campaign.main", repository, _NativeHistoryLiveTransport()
+        )
+
+        publication = host.history.read()
+
+        self.assertEqual(publication.source_domain, "campaign.semantic_events@S")
+        self.assertEqual(publication.lane, "evt")
+        self.assertEqual(publication.origin, "LOCAL")
+        self.assertEqual(publication.events[0].candidate_id, '["event.gate_opened"]')
+        self.assertEqual(publication.events[0].admission_ordinal, 7)
+        self.assertEqual(repository.paths, ["LOG/SEMANTIC_EVENTS"])
+
+    def test_caller_shaped_event_list_cannot_mint_accepted_history(self) -> None:
+        with self.assertRaises(HistoryContractError):
+            append_semantic_event([], _semantic_event())
+
+    def test_missing_live_source_fails_closed_without_campaign_fallback(self) -> None:
+        repository = _NativeHistoryRepository(_native_history_window())
+        host = compose_runtime_host(
+            "campaign.main", repository, _NativeHistoryLiveTransport()
+        )
+
+        with self.assertRaises(HistoryContractError):
+            host.history.read(origin="LIVE:e1-missing")
+
+        self.assertEqual(repository.paths, [])
+
+    def test_live_evt_window_uses_selected_source_origin_and_revision(self) -> None:
+        source = _native_live_source()
+        repository = _NativeHistoryRepository(_native_history_window())
+        live = _NativeHistorySelectedLiveTransport(
+            source,
+            _native_history_window(
+                origin=f"LIVE:{source.epoch_id}", source_revision=source.source_revision
+            ),
+        )
+        host = compose_runtime_host("campaign.main", repository, live)
+
+        publication = host.history.read(origin=f"LIVE:{source.epoch_id}")
+
+        self.assertEqual(publication.origin, f"LIVE:{source.epoch_id}")
+        self.assertEqual(publication.source_revision, source.source_revision)
+        self.assertEqual(live.source_calls, 1)
+        self.assertEqual(repository.paths, [])
+
+    def test_invalid_live_evt_window_fails_closed_without_campaign_fallback(self) -> None:
+        source = _native_live_source()
+        repository = _NativeHistoryRepository(_native_history_window())
+        live = _NativeHistorySelectedLiveTransport(
+            source,
+            _native_history_window(
+                origin=f"LIVE:{source.epoch_id}", source_revision="not-a-revision"
+            ),
+        )
+        host = compose_runtime_host("campaign.main", repository, live)
+
+        with self.assertRaises(HistoryContractError):
+            host.history.read(origin=f"LIVE:{source.epoch_id}")
+
+        self.assertEqual(repository.paths, [])
+
+
 def _story_projection() -> dict[str, object]:
     return {
         "schema_version": 1,
@@ -79,9 +277,8 @@ def _story_projection() -> dict[str, object]:
 
 class NativeHistoryAuthorityTests(unittest.TestCase):
     def test_only_validated_semantic_events_enter_native_history(self) -> None:
-        history = append_semantic_event([], _semantic_event())
-
-        self.assertEqual(history, [_semantic_event()])
+        with self.assertRaises(HistoryContractError):
+            append_semantic_event([], _semantic_event())
         with self.assertRaises(HistoryContractError):
             validate_semantic_event_draft({**_semantic_event(), "provenance_refs": []})
 
@@ -182,7 +379,11 @@ class HistoryProjectionSeparationTests(unittest.TestCase):
 
 class CompositeIntegrationTests(unittest.TestCase):
     def test_owner_local_chain_preserves_native_event_and_reader_safe_projection(self) -> None:
-        history = append_semantic_event([], _semantic_event())
+        repository = _NativeHistoryRepository(_native_history_window())
+        publication = compose_runtime_host(
+            "campaign.main", repository, _NativeHistoryLiveTransport()
+        ).history.read()
+        history = [event.as_mapping() for event in publication.events]
         bundle = build_story_source_bundle(history, layer="EVENTS")
         projection = project_story_window(bundle, [_story_projection()])
         control = build_commentator_control_projection(
@@ -266,6 +467,8 @@ class DramaturgRebaseTests(unittest.TestCase):
 class StorySchemaTests(unittest.TestCase):
     def test_owner_local_schemas_are_strict_and_use_initial_local_versions(self) -> None:
         schema_names = (
+            "native-history-currentness.schema.json",
+            "native-history-publication.schema.json",
             "runtime-semantic-event-state.schema.json",
             "story-projection-state.schema.json",
             "story-event-unit.schema.json",

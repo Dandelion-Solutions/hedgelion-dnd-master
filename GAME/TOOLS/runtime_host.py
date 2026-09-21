@@ -15,8 +15,8 @@ from typing import Final, NoReturn, Protocol
 from .live_state import LiveRouting, validate_live_route_completeness
 from .policy_basis import PinnedCampaign, RepositoryPort
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -152,6 +152,26 @@ class HistoryService(_BoundService):
     """Fixed route to native history; it is a sibling of ContextService."""
 
     __slots__ = ()
+
+    def read(self, *, origin: str = "LOCAL") -> object:
+        """Read a bounded native evt window through this host's fresh basis."""
+
+        basis = self._host._begin_operation()
+        from .history import _read_bound_native_history
+
+        return _read_bound_native_history(
+            self._host._repository,
+            campaign_id=self._host._campaign_id,
+            campaign_pin=basis.pinned_campaign,
+            current_routing=basis.selected_live,
+            selected_live_reader=self._host._live_transport,
+            origin=origin,
+        )
+
+    def recover(self, *, origin: str = "LOCAL") -> object:
+        """Recover by re-reading the same bound native source route."""
+
+        return self.read(origin=origin)
 
     def observe_first_initialization_history(self):
         self._host._begin_operation()
