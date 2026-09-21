@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from copy import deepcopy
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -19,12 +20,24 @@ from GAME.TOOLS.dramaturg import (
     validate_dramaturg_horizon,
 )
 from GAME.TOOLS.history import (
+    BoundNativeHistoryRuntime,
     HistoryContractError,
     append_semantic_event,
+    bind_native_history_runtime,
     build_t0_basis,
+    recover_native_history,
     validate_semantic_event_draft,
     validate_t0_basis,
 )
+from GAME.TOOLS.live_state import (
+    LiveClaim,
+    LiveEnvelope,
+    LiveRouting,
+    build_live_ref,
+    build_live_route,
+    derive_live_epoch_id,
+)
+from GAME.TOOLS.policy_basis import PinnedCampaign
 from GAME.TOOLS.story import (
     StoryContractError,
     build_story_source_bundle,
@@ -48,6 +61,83 @@ def _semantic_event() -> dict[str, object]:
         "provenance_refs": ["resolution.gate"],
         "semantic_delta": {"gate": "opened"},
     }
+
+
+def _source_window(
+    events: tuple[dict[str, object], ...] = (_semantic_event(),),
+    *,
+    campaign_id: str = "campaign.main",
+    origin: str = "LOCAL",
+    source_revision: str = "a" * 40,
+    lower_exclusive: int | None = 6,
+    upper: int | None = 7,
+) -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "source_domain": "campaign.semantic_events@S",
+        "semantic_contract_generation": 1,
+        "campaign_id": campaign_id,
+        "origin": origin,
+        "lane": "evt",
+        "source_revision": source_revision,
+        "lower_exclusive": f"evt:{lower_exclusive}" if lower_exclusive is not None else None,
+        "upper": f"evt:{upper}" if upper is not None else None,
+        "enumeration_representation": "runtime.semantic_event.evt.v1",
+        "owner_contracts": [{"family": "runtime.semantic_event", "schema_version": 1}],
+        "entries": [
+            {
+                "candidate_id": json.dumps([event["event_id"]], separators=(",", ":")),
+                "ordinal": event["semantic_order"],
+                "event": deepcopy(event),
+            }
+            for event in events
+        ],
+        "interval_complete": True,
+    }
+
+
+class _RepositoryForNativeHistory:
+    def __init__(self, window: dict[str, object]) -> None:
+        self.window = window
+        self.paths: list[str] = []
+
+    def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
+        return PinnedCampaign(campaign_id, "a" * 40, "b" * 40)
+
+    def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+        del pinned
+        self.paths.append(path)
+        if path != "LOG/SEMANTIC_EVENTS":
+            raise KeyError(path)
+        return deepcopy(self.window)
+
+
+def _live_source_for_native_history() -> LiveEnvelope:
+    claims = (LiveClaim.exact_owner("world.actor", "actor.guard"),)
+    opening_revision = "b" * 40
+    campaign_id = "campaign.main"
+    scene_id = "scene.gate"
+    epoch_id = derive_live_epoch_id(campaign_id, scene_id, opening_revision, claims)
+    return LiveEnvelope(
+        campaign_id=campaign_id,
+        scene_id=scene_id,
+        epoch_id=epoch_id,
+        source_ref=build_live_ref(campaign_id, scene_id, epoch_id),
+        source_revision="c" * 40,
+        claims=claims,
+        opening_campaign_revision=opening_revision,
+    )
+
+
+class _SelectedLiveReaderForNativeHistory:
+    def __init__(self, window: dict[str, object]) -> None:
+        self.window = window
+        self.calls = 0
+
+    def read_selected_live_source(self, route: LiveRouting, source: LiveEnvelope) -> object:
+        del route, source
+        self.calls += 1
+        return deepcopy(self.window)
 
 
 def _t0_basis() -> dict[str, object]:
@@ -78,10 +168,123 @@ def _story_projection() -> dict[str, object]:
 
 
 class NativeHistoryAuthorityTests(unittest.TestCase):
-    def test_only_validated_semantic_events_enter_native_history(self) -> None:
-        history = append_semantic_event([], _semantic_event())
+    def test_trusted_host_binding_reads_a_bounded_local_window(self) -> None:
+        repository = _RepositoryForNativeHistory(_source_window())
+        runtime = bind_native_history_runtime(repository, current_routing=None)
 
-        self.assertEqual(history, [_semantic_event()])
+        self.assertIsInstance(runtime, BoundNativeHistoryRuntime)
+        publication = runtime.read("campaign.main")
+
+        self.assertEqual(publication.source_domain, "campaign.semantic_events@S")
+        self.assertEqual(publication.lane, "evt")
+        self.assertEqual(publication.origin, "LOCAL")
+        self.assertEqual(publication.events[0].admission_ordinal, 7)
+        self.assertEqual(publication.events[0].candidate_id, '["event.gate_opened"]')
+        self.assertEqual(repository.paths, ["LOG/SEMANTIC_EVENTS"])
+
+    def test_caller_shaped_event_and_history_list_cannot_mint_accepted_history(self) -> None:
+        with self.assertRaises(HistoryContractError):
+            append_semantic_event([], _semantic_event())
+        with self.assertRaises(HistoryContractError):
+            recover_native_history([_semantic_event()])
+
+    def test_history_rejects_duplicate_or_noncontiguous_window_evidence(self) -> None:
+        duplicate = _source_window(
+            (
+                _semantic_event(),
+                dict(_semantic_event(), event_id="event.other", semantic_order=7),
+            ),
+            upper=7,
+        )
+        noncontiguous = _source_window(
+            (dict(_semantic_event(), semantic_order=8),),
+            lower_exclusive=6,
+            upper=8,
+        )
+
+        for window in (duplicate, noncontiguous):
+            with self.subTest(window=window):
+                with self.assertRaises(HistoryContractError):
+                    bind_native_history_runtime(
+                        _RepositoryForNativeHistory(window), current_routing=None
+                    ).read("campaign.main")
+
+    def test_empty_evt_window_is_bounded_without_a_dummy_event(self) -> None:
+        publication = bind_native_history_runtime(
+            _RepositoryForNativeHistory(_source_window(events=(), lower_exclusive=None, upper=None)),
+            current_routing=None,
+        ).read("campaign.main")
+
+        self.assertEqual(publication.events, ())
+        self.assertIsNone(publication.currentness.upper)
+
+    def test_history_rejects_wrong_origin_revision_and_provenance(self) -> None:
+        cases = (
+            _source_window(origin="LIVE:epoch-1"),
+            _source_window(source_revision="d" * 40),
+            {
+                **_source_window(),
+                "entries": [
+                    {
+                        "candidate_id": '["event.other"]',
+                        "ordinal": 7,
+                        "event": _semantic_event(),
+                    }
+                ],
+            },
+        )
+        for window in cases:
+            with self.subTest(window=window):
+                with self.assertRaises(HistoryContractError):
+                    bind_native_history_runtime(
+                        _RepositoryForNativeHistory(window), current_routing=None
+                    ).read("campaign.main")
+
+    def test_selected_live_read_is_route_bound_and_never_falls_back_to_campaign(self) -> None:
+        source = _live_source_for_native_history()
+        route = build_live_route(source.campaign_id, (source,))
+        live_reader = _SelectedLiveReaderForNativeHistory(
+            _source_window(
+                origin=f"LIVE:{source.epoch_id}",
+                source_revision=source.source_revision,
+            )
+        )
+        runtime = bind_native_history_runtime(
+            _RepositoryForNativeHistory(_source_window()),
+            current_routing=route,
+            selected_live_reader=live_reader,
+        )
+
+        publication = runtime.read("campaign.main", origin=f"LIVE:{source.epoch_id}")
+
+        self.assertEqual(publication.origin, f"LIVE:{source.epoch_id}")
+        self.assertEqual(publication.source_revision, source.source_revision)
+        self.assertEqual(live_reader.calls, 1)
+
+        with self.assertRaises(HistoryContractError):
+            runtime.read("campaign.main", origin="LIVE:missing-epoch")
+        self.assertEqual(live_reader.calls, 1)
+
+    def test_recovery_reloads_the_bound_window_without_story_or_narration_fallback(self) -> None:
+        repository = _RepositoryForNativeHistory(_source_window())
+        runtime = bind_native_history_runtime(repository, current_routing=None)
+
+        recovered = recover_native_history(runtime, "campaign.main")
+
+        self.assertEqual(recovered.to_mapping(), runtime.read("campaign.main").to_mapping())
+        story_window = _source_window()
+        story_window["entries"] = [{"story_id": "E000007", "content": {"body": "fiction"}}]
+        with self.assertRaises(HistoryContractError):
+            bind_native_history_runtime(
+                _RepositoryForNativeHistory(story_window), current_routing=None
+            ).read("campaign.main")
+
+    def test_only_validated_semantic_events_enter_native_history(self) -> None:
+        history = bind_native_history_runtime(
+            _RepositoryForNativeHistory(_source_window()), current_routing=None
+        ).read("campaign.main")
+
+        self.assertEqual(history.events[0].as_mapping(), _semantic_event())
         with self.assertRaises(HistoryContractError):
             validate_semantic_event_draft({**_semantic_event(), "provenance_refs": []})
 
@@ -182,7 +385,10 @@ class HistoryProjectionSeparationTests(unittest.TestCase):
 
 class CompositeIntegrationTests(unittest.TestCase):
     def test_owner_local_chain_preserves_native_event_and_reader_safe_projection(self) -> None:
-        history = append_semantic_event([], _semantic_event())
+        publication = bind_native_history_runtime(
+            _RepositoryForNativeHistory(_source_window()), current_routing=None
+        ).read("campaign.main")
+        history = [event.as_mapping() for event in publication.events]
         bundle = build_story_source_bundle(history, layer="EVENTS")
         projection = project_story_window(bundle, [_story_projection()])
         control = build_commentator_control_projection(
@@ -286,6 +492,23 @@ class StorySchemaTests(unittest.TestCase):
 
 
 class SchemaVersionTests(unittest.TestCase):
+    def test_native_history_schemas_validate_only_the_bound_evidence_shape(self) -> None:
+        publication = bind_native_history_runtime(
+            _RepositoryForNativeHistory(_source_window()), current_routing=None
+        ).read("campaign.main")
+        currentness_schema = json.loads(
+            (SCHEMAS / "native-history-currentness.schema.json").read_text(encoding="utf-8")
+        )
+        publication_schema = json.loads(
+            (SCHEMAS / "native-history-publication.schema.json").read_text(encoding="utf-8")
+        )
+
+        self.assertTrue(Draft202012Validator(currentness_schema).is_valid(publication.currentness.as_mapping()))
+        self.assertTrue(Draft202012Validator(publication_schema).is_valid(publication.to_mapping()))
+        forged = publication.to_mapping()
+        forged["events"][0]["provenance"]["origin"] = "FORGED"
+        self.assertFalse(Draft202012Validator(publication_schema).is_valid(forged))
+
     def test_owner_native_python_ingress_accepts_only_actual_integer_one(self) -> None:
         valid_horizon = {
             "schema_version": 1,
