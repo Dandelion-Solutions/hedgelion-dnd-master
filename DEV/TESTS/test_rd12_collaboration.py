@@ -403,6 +403,34 @@ class CollaborationAdmissionTests(unittest.TestCase):
         with self.assertRaises(CollaborationAdmissionError):
             _classify(repository)
 
+    def test_resolution_malformed_owner_schema_constraint_fails_closed(self) -> None:
+        clause = _collective_clause() | {"ordering_resolution_id": "resolution-1"}
+        repository = RepositoryFixture(clause)
+        resolution = _ordered_resolution()
+        resolution["ruleset_set_sha256"] = "not-a-sha256"
+        repository.put("runtime.resolution", "resolution-1", resolution)
+        repository.put(
+            "runtime.continuation",
+            "continuation-1",
+            _ordered_continuation(pending_response=_choice()),
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            _classify(repository)
+
+    def test_continuation_malformed_owner_schema_constraint_fails_closed(
+        self,
+    ) -> None:
+        clause = _collective_clause() | {"ordering_resolution_id": "resolution-1"}
+        repository = RepositoryFixture(clause)
+        repository.put("runtime.resolution", "resolution-1", _ordered_resolution())
+        continuation = _ordered_continuation(pending_response=_choice())
+        continuation["ruleset_set_sha256"] = "not-a-sha256"
+        repository.put("runtime.continuation", "continuation-1", continuation)
+
+        with self.assertRaises(CollaborationAdmissionError):
+            _classify(repository)
+
     def test_changing_campaign_pin_fails_closed_before_ordered_evidence(self) -> None:
         clause = _collective_clause() | {"ordering_resolution_id": "resolution-1"}
         repository = ChangingPinRepositoryFixture(clause)

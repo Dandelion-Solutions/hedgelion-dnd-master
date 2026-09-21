@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
@@ -32,8 +34,8 @@ from .policy_basis import (
     validate_policy_applicability_witnesses,
 )
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
 RUNTIME_COMMAND_SCHEMA_VERSION: Final = 3
 INTERPRETER_RESULT_FINGERPRINT_GENERATION: Final = 1
 RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION: Final = 2
@@ -214,12 +216,434 @@ _ORDERING_OWNER_REQUIRED_FIELDS: Final[dict[str, frozenset[str]]] = {
 _RESOLUTION_BASIS_FIELDS: Final[frozenset[str]] = frozenset(
     {"initiating_command_id", "causal_invocation_key"}
 )
+_ORDERING_ID_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
+_ORDERING_SHA256_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[a-f0-9]{64}$")
+_ORDERING_POLICY_REF_PATTERN: Final[re.Pattern[str]] = re.compile(
+    r"^[A-Za-z][A-Za-z0-9_.:-]*@[a-f0-9]{40}(?:[a-f0-9]{24})?$"
+)
+_ORDERING_EXECUTION_STATES: Final[frozenset[str]] = frozenset(
+    {
+        "PENDING",
+        "RUNNING",
+        "AWAITING_CHOICE",
+        "AWAITING_REACTION",
+        "HYDRATION_REQUIRED",
+        "PUBLISH_REQUIRED",
+        "COMPLETED",
+        "REJECTED",
+        "ABORTED",
+        "FAILED",
+    }
+)
+_ORDERING_FAILURE_CODES: Final[frozenset[str]] = frozenset(
+    {
+        "failure.idempotency_conflict",
+        "failure.hydration_required",
+        "failure.missing_reference",
+        "failure.catalog_context_incompatible",
+        "failure.continuation_conflict",
+        "failure.continuation_stale",
+        "failure.dependency_cycle",
+        "failure.transition_requires_procedure",
+        "failure.order_adjudication_required",
+        "failure.execution_limit",
+        "failure.invocation_fact_missing",
+        "failure.invocation_fact_unauthorized",
+        "failure.adjudication_input_missing",
+        "failure.adjudication_input_unauthorized",
+        "failure.adjudication_input_invalid",
+        "failure.adjudication_context_stale",
+        "failure.policy_conflict",
+        "failure.policy_realization_gap",
+    }
+)
+_ORDERING_ENVELOPE_FIELDS: Final[frozenset[str]] = frozenset(
+    {"kind", "id", "campaign_id", "revision"}
+)
+_ORDERING_RESOLUTION_FIELDS: Final[frozenset[str]] = frozenset(
+    {
+        "root_command_id",
+        "initiating_command_id",
+        "causal_invocation_key",
+        "activity_id",
+        "actor_id",
+        "source_id",
+        "target_ids",
+        "parameter_bindings",
+        "catalog_context_fingerprint_generation",
+        "catalog_context_fingerprint",
+        "ruleset_set_digest_generation",
+        "ruleset_set_sha256",
+        "procedure_id",
+        "status",
+        "failure_code",
+        "cursor",
+        "safe_recompute_phase",
+        "next_segment_sequence",
+        "invocation_facts",
+        "fixed_rng_results",
+        "prior_step_exports",
+        "child_resolution_ids",
+        "segments",
+        "continuation_id",
+        "trace_id",
+        "details",
+    }
+)
+_ORDERING_CONTINUATION_FIELDS: Final[frozenset[str]] = frozenset(
+    {
+        "generation",
+        "root_command_id",
+        "resolution_id",
+        "activity_id",
+        "actor_id",
+        "source_id",
+        "target_ids",
+        "parameter_bindings",
+        "catalog_context_fingerprint_generation",
+        "catalog_context_fingerprint",
+        "ruleset_set_digest_generation",
+        "ruleset_set_sha256",
+        "procedure_id",
+        "execution_cursor",
+        "safe_recompute_phase",
+        "invocation_facts",
+        "fixed_rng_results",
+        "prior_step_exports",
+        "committed_segment_refs",
+        "dependency_frontier_refs",
+        "expected_child_resolution_ids",
+        "future_rng_frontier",
+        "pending_response",
+        "unconsumed_advancement",
+        "details",
+    }
+)
 
 
 def _ordering_text(value: object, label: str) -> str:
     if not isinstance(value, str) or not value:
         raise NativeOrderingError(f"{label} must be a nonempty string")
     return value
+
+
+def _ordering_id(value: object, label: str) -> str:
+    result = _ordering_text(value, label)
+    if _ORDERING_ID_PATTERN.fullmatch(result) is None:
+        raise NativeOrderingError(f"{label} must be a machine identifier")
+    return result
+
+
+def _ordering_integer(value: object, label: str, *, minimum: int = 0) -> int:
+    if type(value) is not int or value < minimum:
+        raise NativeOrderingError(f"{label} must be an integer >= {minimum}")
+    return value
+
+
+def _ordering_mapping(value: object, label: str) -> Mapping[str, object]:
+    if not isinstance(value, Mapping) or any(not isinstance(key, str) for key in value):
+        raise NativeOrderingError(f"{label} must be an object with string keys")
+    return value
+
+
+def _ordering_array(value: object, label: str) -> Sequence[object]:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
+        raise NativeOrderingError(f"{label} must be an array")
+    return value
+
+
+def _ordering_scalar(value: object, label: str) -> None:
+    if value is None or not isinstance(value, (str, int, float, bool)):
+        raise NativeOrderingError(f"{label} must be a scalar")
+    if isinstance(value, float) and not math.isfinite(value):
+        raise NativeOrderingError(f"{label} must be a finite scalar")
+
+
+def _ordering_sha256(value: object, label: str) -> str:
+    result = _ordering_text(value, label)
+    if _ORDERING_SHA256_PATTERN.fullmatch(result) is None:
+        raise NativeOrderingError(f"{label} must be a lower-case SHA-256 digest")
+    return result
+
+
+def _ordering_unique_strings(
+    value: object, label: str, *, machine_ids: bool = False, minimum: int = 0
+) -> None:
+    values = _ordering_array(value, label)
+    if len(values) < minimum:
+        raise NativeOrderingError(f"{label} must contain at least {minimum} item(s)")
+    normalized: list[str] = []
+    for item in values:
+        normalized.append(
+            _ordering_id(item, label) if machine_ids else _ordering_text(item, label)
+        )
+    if len(normalized) != len(set(normalized)):
+        raise NativeOrderingError(f"{label} must contain unique items")
+
+
+def _ordering_scalar_object(value: object, label: str) -> None:
+    mapping = _ordering_mapping(value, label)
+    for key, item in mapping.items():
+        _ordering_text(key, f"{label} key")
+        _ordering_scalar(item, f"{label} value")
+
+
+def _ordering_policy_refs(value: object, label: str) -> None:
+    refs = _ordering_array(value, label)
+    normalized: list[str] = []
+    for ref in refs:
+        text = _ordering_text(ref, f"{label} item")
+        if _ORDERING_POLICY_REF_PATTERN.fullmatch(text) is None:
+            raise NativeOrderingError(f"{label} contains an invalid policy reference")
+        normalized.append(text)
+    if len(normalized) != len(set(normalized)):
+        raise NativeOrderingError(f"{label} must contain unique items")
+
+
+def _ordering_parameter_binding(value: object, label: str) -> None:
+    if isinstance(value, (str, int, float, bool)):
+        _ordering_scalar(value, label)
+        return
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        values = list(value)
+        if not values:
+            raise NativeOrderingError(f"{label} array must not be empty")
+        for item in values:
+            _ordering_scalar(item, f"{label} array item")
+        return
+    binding = _ordering_mapping(value, label)
+    allowed = {
+        "source_class",
+        "value",
+        "provenance_ref",
+        "eligibility_basis_fingerprint",
+        "rules_context_fingerprint",
+        "policy_basis_refs",
+        "candidate_set_fingerprint",
+    }
+    if set(binding) - allowed or not {
+        "source_class",
+        "value",
+        "provenance_ref",
+        "eligibility_basis_fingerprint",
+        "rules_context_fingerprint",
+        "policy_basis_refs",
+    }.issubset(binding):
+        raise NativeOrderingError(f"{label} has unexpected or missing fields")
+    if binding["source_class"] != "INVOCATION_ADJUDICATED":
+        raise NativeOrderingError(f"{label} has an unsupported source class")
+    _ordering_scalar(binding["value"], f"{label} value")
+    for field in (
+        "provenance_ref",
+        "eligibility_basis_fingerprint",
+        "rules_context_fingerprint",
+        "candidate_set_fingerprint",
+    ):
+        if field in binding:
+            _ordering_text(binding[field], f"{label} {field}")
+    _ordering_policy_refs(binding["policy_basis_refs"], f"{label} policy_basis_refs")
+
+
+def _ordering_parameter_bindings(value: object, label: str) -> None:
+    bindings = _ordering_mapping(value, label)
+    for key, item in bindings.items():
+        _ordering_id(key, f"{label} key")
+        _ordering_parameter_binding(item, f"{label} {key}")
+
+
+def _ordering_invocation_fact(value: object, label: str) -> None:
+    fact = _ordering_mapping(value, label)
+    required = {
+        "fact_id",
+        "value",
+        "provenance_class",
+        "provenance_ref",
+        "consumer_id",
+        "binding_fingerprint",
+        "rules_context_fingerprint",
+        "policy_basis_refs",
+    }
+    if set(fact) != required:
+        raise NativeOrderingError(f"{label} has unexpected or missing fields")
+    _ordering_id(fact["fact_id"], f"{label} fact_id")
+    if type(fact["value"]) is not bool:
+        raise NativeOrderingError(f"{label} value must be boolean")
+    if fact["provenance_class"] != "INVOCATION_ADJUDICATED":
+        raise NativeOrderingError(f"{label} provenance class is unsupported")
+    _ordering_text(fact["provenance_ref"], f"{label} provenance_ref")
+    _ordering_id(fact["consumer_id"], f"{label} consumer_id")
+    _ordering_sha256(fact["binding_fingerprint"], f"{label} binding_fingerprint")
+    _ordering_sha256(fact["rules_context_fingerprint"], f"{label} rules_context_fingerprint")
+    _ordering_policy_refs(fact["policy_basis_refs"], f"{label} policy_basis_refs")
+
+
+def _ordering_roll_result(value: object, label: str) -> None:
+    result = _ordering_mapping(value, label)
+    required = {
+        "roll_id",
+        "request_id",
+        "expression",
+        "raw_values",
+        "source_kind",
+        "provenance_ref",
+    }
+    if set(result) != required:
+        raise NativeOrderingError(f"{label} has unexpected or missing fields")
+    _ordering_id(result["roll_id"], f"{label} roll_id")
+    _ordering_id(result["request_id"], f"{label} request_id")
+    _ordering_text(result["expression"], f"{label} expression")
+    values = _ordering_array(result["raw_values"], f"{label} raw_values")
+    if not values or any(type(item) is not int for item in values):
+        raise NativeOrderingError(f"{label} raw_values must contain integers")
+    if result["source_kind"] not in {"rng.system", "rng.player", "rng.external"}:
+        raise NativeOrderingError(f"{label} source_kind is unsupported")
+    _ordering_text(result["provenance_ref"], f"{label} provenance_ref")
+
+
+def _ordering_pending_child(value: object, label: str) -> None:
+    child = _ordering_mapping(value, label)
+    required = {"firing_key", "root_command_id", "activity_id", "trigger_ref", "reason"}
+    allowed = required | {"procedure_id", "child_resolution_id"}
+    if set(child) - allowed or not required.issubset(child):
+        raise NativeOrderingError(f"{label} has unexpected or missing fields")
+    for field in ("firing_key", "root_command_id", "trigger_ref"):
+        _ordering_text(child[field], f"{label} {field}")
+    _ordering_id(child["activity_id"], f"{label} activity_id")
+    for field in ("procedure_id", "child_resolution_id"):
+        if field in child:
+            _ordering_text(child[field], f"{label} {field}")
+    if child["reason"] not in {"mandatory_followup", "execution_limit"}:
+        raise NativeOrderingError(f"{label} reason is unsupported")
+
+
+def _ordering_segment(value: object, label: str) -> None:
+    segment = _ordering_mapping(value, label)
+    required = {
+        "segment_id",
+        "segment_sequence",
+        "commit_state",
+        "resulting_execution_state",
+        "event_ids",
+        "pending_child_invocations",
+        "receipt_exports",
+        "affected_revision_refs",
+    }
+    allowed = required | {"continuation_id"}
+    if set(segment) - allowed or not required.issubset(segment):
+        raise NativeOrderingError(f"{label} has unexpected or missing fields")
+    _ordering_id(segment["segment_id"], f"{label} segment_id")
+    _ordering_integer(segment["segment_sequence"], f"{label} segment_sequence", minimum=1)
+    if segment["commit_state"] != "committed":
+        raise NativeOrderingError(f"{label} commit_state is unsupported")
+    if segment["resulting_execution_state"] not in _ORDERING_EXECUTION_STATES:
+        raise NativeOrderingError(f"{label} resulting_execution_state is unsupported")
+    _ordering_unique_strings(segment["event_ids"], f"{label} event_ids")
+    children = _ordering_array(segment["pending_child_invocations"], f"{label} pending_child_invocations")
+    for index, child in enumerate(children):
+        _ordering_pending_child(child, f"{label} pending_child_invocations[{index}]")
+    receipt_exports = _ordering_mapping(segment["receipt_exports"], f"{label} receipt_exports")
+    for key, item in receipt_exports.items():
+        _ordering_id(key, f"{label} receipt export key")
+        _ordering_scalar(item, f"{label} receipt export value")
+    _ordering_unique_strings(
+        segment["affected_revision_refs"], f"{label} affected_revision_refs"
+    )
+    if "continuation_id" in segment:
+        _ordering_text(segment["continuation_id"], f"{label} continuation_id")
+
+
+def _ordering_pending_response_schema(value: object, label: str) -> None:
+    offer = _ordering_mapping(value, label)
+    kind = offer.get("kind")
+    fields = _CHOICE_FIELDS if kind == "choice" else _REACTION_FIELDS if kind == "reaction" else None
+    if fields is None or set(offer) != fields:
+        raise NativeOrderingError(f"{label} is not a valid ChoiceRequest or ReactionOffer")
+    _ordering_text(offer["offer_id"], f"{label} offer_id")
+    _ordering_text(offer["parent_resolution_id"], f"{label} parent_resolution_id")
+    _ordering_integer(offer["continuation_generation"], f"{label} continuation_generation", minimum=1)
+    _ordering_text(offer["responder_id"], f"{label} responder_id")
+    item_field = "option_ids" if kind == "choice" else "candidate_activity_ids"
+    _ordering_unique_strings(offer[item_field], f"{label} {item_field}", minimum=1)
+
+
+def _ordering_resolution_schema(payload: Mapping[str, object]) -> None:
+    for field in ("root_command_id", "initiating_command_id", "causal_invocation_key", "cursor", "safe_recompute_phase", "trace_id"):
+        if field in payload:
+            _ordering_text(payload[field], f"resolution {field}")
+    for field in ("activity_id", "actor_id", "source_id"):
+        if field in payload:
+            _ordering_id(payload[field], f"resolution {field}")
+    for field in ("resolution_id", "continuation_id", "procedure_id"):
+        if field in payload:
+            _ordering_text(payload[field], f"resolution {field}")
+    if "target_ids" in payload:
+        _ordering_unique_strings(payload["target_ids"], "resolution target_ids", machine_ids=True)
+    if "parameter_bindings" in payload:
+        _ordering_parameter_bindings(payload["parameter_bindings"], "resolution parameter_bindings")
+    for field in ("catalog_context_fingerprint_generation", "ruleset_set_digest_generation"):
+        if type(payload[field]) is not int or payload[field] != 1:
+            raise NativeOrderingError(f"resolution {field} must be exactly 1")
+    _ordering_text(payload["catalog_context_fingerprint"], "resolution catalog_context_fingerprint")
+    _ordering_sha256(payload["ruleset_set_sha256"], "resolution ruleset_set_sha256")
+    if payload["status"] not in _ORDERING_EXECUTION_STATES:
+        raise NativeOrderingError("resolution status is unsupported")
+    if "failure_code" in payload and payload["failure_code"] not in _ORDERING_FAILURE_CODES:
+        raise NativeOrderingError("resolution failure_code is unsupported")
+    _ordering_integer(payload["next_segment_sequence"], "resolution next_segment_sequence", minimum=1)
+    facts = _ordering_array(payload["invocation_facts"], "resolution invocation_facts")
+    for index, fact in enumerate(facts):
+        _ordering_invocation_fact(fact, f"resolution invocation_facts[{index}]")
+    rolls = _ordering_array(payload["fixed_rng_results"], "resolution fixed_rng_results")
+    for index, roll in enumerate(rolls):
+        _ordering_roll_result(roll, f"resolution fixed_rng_results[{index}]")
+    _ordering_scalar_object(payload["prior_step_exports"], "resolution prior_step_exports")
+    _ordering_unique_strings(payload["child_resolution_ids"], "resolution child_resolution_ids")
+    segments = _ordering_array(payload["segments"], "resolution segments")
+    for index, segment in enumerate(segments):
+        _ordering_segment(segment, f"resolution segments[{index}]")
+    if "details" in payload:
+        _ordering_mapping(payload["details"], "resolution details")
+
+
+def _ordering_continuation_schema(payload: Mapping[str, object]) -> None:
+    _ordering_integer(payload["generation"], "continuation generation", minimum=1)
+    for field in ("root_command_id", "resolution_id", "execution_cursor", "safe_recompute_phase", "future_rng_frontier"):
+        _ordering_text(payload[field], f"continuation {field}")
+    for field in ("continuation_id", "procedure_id"):
+        if field in payload:
+            _ordering_text(payload[field], f"continuation {field}")
+    for field in ("activity_id", "actor_id", "source_id"):
+        if field in payload:
+            _ordering_id(payload[field], f"continuation {field}")
+    if "target_ids" in payload:
+        _ordering_unique_strings(payload["target_ids"], "continuation target_ids", machine_ids=True)
+    if "parameter_bindings" in payload:
+        _ordering_parameter_bindings(payload["parameter_bindings"], "continuation parameter_bindings")
+    for field in ("catalog_context_fingerprint_generation", "ruleset_set_digest_generation"):
+        if type(payload[field]) is not int or payload[field] != 1:
+            raise NativeOrderingError(f"continuation {field} must be exactly 1")
+    _ordering_text(payload["catalog_context_fingerprint"], "continuation catalog_context_fingerprint")
+    _ordering_sha256(payload["ruleset_set_sha256"], "continuation ruleset_set_sha256")
+    for field in ("invocation_facts", "fixed_rng_results"):
+        values = _ordering_array(payload[field], f"continuation {field}")
+        validator = _ordering_invocation_fact if field == "invocation_facts" else _ordering_roll_result
+        for index, item in enumerate(values):
+            validator(item, f"continuation {field}[{index}]")
+    _ordering_scalar_object(payload["prior_step_exports"], "continuation prior_step_exports")
+    for field in ("committed_segment_refs", "dependency_frontier_refs", "expected_child_resolution_ids"):
+        _ordering_unique_strings(payload[field], f"continuation {field}")
+    if "pending_response" in payload:
+        _ordering_pending_response_schema(payload["pending_response"], "continuation pending_response")
+    if "unconsumed_advancement" in payload:
+        advancement = _ordering_mapping(payload["unconsumed_advancement"], "continuation unconsumed_advancement")
+        if set(advancement) != {"amount", "unit_id", "context_id"}:
+            raise NativeOrderingError("continuation unconsumed_advancement has unexpected or missing fields")
+        _ordering_integer(advancement["amount"], "continuation advancement amount", minimum=1)
+        if advancement["unit_id"] not in {"unit.second", "unit.minute", "unit.hour", "unit.day"}:
+            raise NativeOrderingError("continuation advancement unit_id is unsupported")
+        _ordering_text(advancement["context_id"], "continuation advancement context_id")
+    if "details" in payload:
+        _ordering_mapping(payload["details"], "continuation details")
 
 
 def _validate_ordering_owner_schema(family: str, payload: Mapping[str, object]) -> None:
@@ -234,6 +658,20 @@ def _validate_ordering_owner_schema(family: str, payload: Mapping[str, object]) 
         raise NativeOrderingError(
             "exact runtime.resolution record is missing command or invocation basis"
         )
+    allowed = _ORDERING_ENVELOPE_FIELDS.copy()
+    if family == "runtime.resolution":
+        allowed |= _ORDERING_RESOLUTION_FIELDS | {"resolution_id"}
+    elif family == "runtime.continuation":
+        allowed |= _ORDERING_CONTINUATION_FIELDS | {"continuation_id"}
+    else:
+        return
+    unexpected = set(payload) - allowed
+    if unexpected:
+        raise NativeOrderingError(f"exact {family} record has unsupported owner-schema fields")
+    if family == "runtime.resolution":
+        _ordering_resolution_schema(payload)
+    else:
+        _ordering_continuation_schema(payload)
 
 
 def _ordering_record(
