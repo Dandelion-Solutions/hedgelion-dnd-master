@@ -359,3 +359,33 @@ SYSTEM_IMPACT: NONE CURRENT; prior T01A/T05A events are resolved by SR-W04-T01A/
 NEXT_EXACT_TASK: coordinator reschedules T01A, T05A and T07A; each publishes only after its own hdm-reviewer PASS/read-back. Dependent tasks wait for named checkpoints.
 KNOWN_BLOCKERS: NONE for T01A/T05A/T07A start.
 UNPUBLISHED_WORK: NONE after publication/read-back.
+
+## Execution stop after targeted reimplementation review
+
+```text
+STATUS: SENIOR_REVIEW_REQUIRED
+CURRENT_TASK: resolve the three W04 System-Impact briefs before resuming T01A, T05A or T07A.
+LAST_SAFE_SHA: `0bd665860386e04ecd2efb589e58069a4d6da033` restored product tree before the targeted reimplementation attempts.
+LAST_PUBLISHED_SHA: `86138093021095fa24ec611314fa9482749c5afa`
+
+CURRENT_VERIFICATION_STATE:
+- T01A focused regression passed, but independent review rejected its unadmitted generic native opportunity contract.
+- T05A focused regression and maintenance audit passed, but independent re-review rejected its caller-controlled exact-load boundary and missing native role/purpose eligibility binding.
+- T07A focused regression and malformed-provenance repair passed, but independent re-review rejected its structural caller-provided NativeHistoryOwnerPort boundary.
+- No rejected T01A/T05A/T07A implementation checkpoint authorizes a dependent task.
+
+VERSION_IMPACT:
+- T01A final task classification is pending the Senior resolution because the rejected implementation introduced a new module/schema and IntentClause semantic fields without accepted task-completion evidence.
+- T05A repair commit `22e24951358bca8b3636a3c80fcbfa510e01d614` records `NONE` for unchanged existing version-bearing namespaces.
+- T07A repair commits record `GAME/TOOLS/history.py` module revision `1.0.7`; native-history schemas remain at `1`; no engine, campaign, storage, catalog or shared projection bump was required.
+- This cursor checkpoint: VERSION_IMPACT: NONE.
+
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED
+- T01A: no finite owner-defined, schema-validated native opportunity route exists for AGENCY_DEPENDENT_COLLECTIVE. Brief: `DEV/docs/superpowers/design/2026-09-21-w04-t01a-fix-round-1-system-impact-brief.md`.
+- T05A: no approved trusted exact-load boundary or native role/purpose eligibility route exists. Brief: `DEV/docs/superpowers/design/2026-09-21-w04-t05a-fix-round-1-implementation-impact-brief.md`.
+- T07A: no admitted W02/native owner adapter or composition-root boundary exists; structural port conformance is forgeable. Brief: `DEV/docs/superpowers/design/2026-09-21-w04-t07a-implementation-impact-brief.md`.
+
+NEXT_EXACT_TASK: Senior/design resolution of the three recorded owner-boundary choices; do not run T01B+, T05B+, T07B+, or any Wave-05 task.
+KNOWN_BLOCKERS: the three System-Impact briefs above.
+UNPUBLISHED_WORK: NONE after publication/read-back.
+```
