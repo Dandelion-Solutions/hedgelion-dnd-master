@@ -44,6 +44,10 @@ def candidate(
         "candidate_id": candidate_id,
         "channel": channel,
         "required": required,
+        "role": "NARRATOR",
+        "purpose": "narrate",
+        "subject_id": "actor.context",
+        "recipient_id": "player-1",
         "rank": rank,
         "owner_family": "world.scene",
         "owner_identity": [candidate_id],
@@ -151,6 +155,35 @@ class RuntimeLiveSourceTransport(RuntimeLiveTransport):
         return source.as_mapping()
 
 
+class MismatchedRuntimeLiveSourceTransport(RuntimeLiveSourceTransport):
+    def __init__(self, mismatch):
+        super().__init__()
+        self.mismatch = mismatch
+
+    def read_selected_live_source(self, route, source):
+        result = source.as_mapping()
+        if self.mismatch == "source_revision":
+            result["source_revision"] = "2" * 40
+        elif self.mismatch == "source_ref":
+            result["source_ref"] = result["source_ref"] + "/altered"
+        elif self.mismatch == "status":
+            result["status"] = "CLOSED"
+        elif self.mismatch == "opening_campaign_revision":
+            result["opening_campaign_revision"] = "1" * 40
+        elif self.mismatch == "claims":
+            result["claims"] = [
+                {
+                    "schema_version": 2,
+                    "claim_type": "EXACT_OWNER",
+                    "native_family": "world.actor",
+                    "native_identity": "actor-1",
+                }
+            ]
+        else:
+            raise AssertionError(f"unknown LIVE mismatch: {self.mismatch}")
+        return result
+
+
 def host_for(items):
     repository = RuntimeRepository()
     for item in items:
@@ -187,6 +220,10 @@ def owner_candidate(candidate_id, family="world.scene", identity=None, **values)
     result = {
         "candidate_id": candidate_id,
         "channel": "EXPLICIT_REF",
+        "role": "NARRATOR",
+        "purpose": "narrate",
+        "subject_id": "actor.context",
+        "recipient_id": "player-1",
         "owner_family": family,
         "owner_identity": list(identity or (candidate_id,)),
         "dependencies": [],
@@ -263,6 +300,99 @@ class ContextRuntimeHostTests(unittest.TestCase):
             live.source.source_ref,
         )
 
+    def test_registered_campaign_family_requires_complete_scope_binding(self):
+        host, _repository = self._host()
+        expected = {
+            "role": "NARRATOR",
+            "purpose": "narrate",
+            "subject_id": "actor.context",
+            "recipient_id": "player-1",
+        }
+
+        valid = owner_candidate("scene-1", **expected)
+        self.assertEqual(host.context.assemble(bound_request(), [valid])["outcome"], "ASSEMBLED")
+
+        for field, expected_value in expected.items():
+            with self.subTest(binding=field, state="missing"):
+                missing = dict(valid)
+                missing.pop(field)
+                optional = host.context.assemble(bound_request(), [missing])
+                required = host.context.assemble(
+                    bound_request(required_ids=["scene-1"]), [missing]
+                )
+                self.assertEqual(optional["outcome"], "ASSEMBLED_DEGRADED")
+                self.assertEqual(optional["bundle"]["optional"], [])
+                self.assertEqual(required["outcome"], "UNSATISFIABLE")
+
+            with self.subTest(binding=field, state="wrong"):
+                wrong = dict(valid)
+                wrong[field] = expected_value + "-wrong"
+                optional = host.context.assemble(bound_request(), [wrong])
+                required = host.context.assemble(
+                    bound_request(required_ids=["scene-1"]), [wrong]
+                )
+                self.assertEqual(optional["outcome"], "ASSEMBLED_DEGRADED")
+                self.assertEqual(optional["bundle"]["optional"], [])
+                self.assertEqual(required["outcome"], "UNSATISFIABLE")
+
+    def test_catalog_family_without_registered_resolver_is_not_eligible(self):
+        repository = RuntimeRepository()
+        repository.add_record(
+            "runtime.interaction",
+            ("interaction-1",),
+            {"kind": "runtime.interaction", "id": "interaction-1"},
+        )
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        item = owner_candidate("interaction-1", "runtime.interaction")
+
+        optional = host.context.assemble(bound_request(), [item])
+        required = host.context.assemble(
+            bound_request(required_ids=["interaction-1"]), [item]
+        )
+        self.assertEqual(optional["outcome"], "ASSEMBLED_DEGRADED")
+        self.assertEqual(optional["bundle"]["optional"], [])
+        self.assertEqual(required["outcome"], "UNSATISFIABLE")
+
+    def test_live_reader_mismatch_degrades_optional_and_blocks_required(self):
+        candidate = owner_candidate(
+            "live-1",
+            "LIVE",
+            ("campaign-context", "scene-live", "placeholder"),
+            channel="LIVE_CURRENT",
+        )
+        for mismatch in (
+            "source_revision",
+            "source_ref",
+            "status",
+            "opening_campaign_revision",
+            "claims",
+        ):
+            with self.subTest(mismatch=mismatch):
+                live = MismatchedRuntimeLiveSourceTransport(mismatch)
+                candidate["owner_identity"] = [
+                    "campaign-context",
+                    "scene-live",
+                    live.source.epoch_id,
+                ]
+                candidate["source_key"] = list(live.source.source_key)
+                host = compose_runtime_host(
+                    "campaign-context", RuntimeRepository(), live
+                )
+                optional = host.context.assemble(
+                    bound_request(allowed_channels=["LIVE_CURRENT"]), [candidate]
+                )
+                required = host.context.assemble(
+                    bound_request(
+                        allowed_channels=["LIVE_CURRENT"], required_ids=["live-1"]
+                    ),
+                    [candidate],
+                )
+                self.assertEqual(optional["outcome"], "ASSEMBLED_DEGRADED")
+                self.assertEqual(optional["bundle"]["optional"], [])
+                self.assertEqual(required["outcome"], "UNSATISFIABLE")
+
     def test_wrong_registered_role_purpose_and_unknown_profile_fail_closed(self):
         host, _repository = self._host()
 
@@ -299,7 +429,7 @@ class ContextRuntimeHostTests(unittest.TestCase):
             Draft202012Validator(schema).validate(
                 {key: value for key, value in bound_request().items() if key != "role"}
             )
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.2")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.3")
 
 
 class ContextDiscoveryTests(unittest.TestCase):

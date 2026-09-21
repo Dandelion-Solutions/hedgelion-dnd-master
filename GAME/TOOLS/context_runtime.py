@@ -10,11 +10,11 @@ from __future__ import annotations
 
 import json
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import Any, Final
+from typing import Any, Final, TypeAlias
 
 try:
     from .access_control import AccessControlContractError, PlayerRecord
@@ -27,7 +27,6 @@ try:
         select_live_source,
     )
     from .native_storage import (
-        FAMILY_ROOTS,
         NativeStorageError,
         route_native_record,
         validate_loaded_identity,
@@ -47,7 +46,6 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
         select_live_source,
     )
     from GAME.TOOLS.native_storage import (  # type: ignore[no-redef]
-        FAMILY_ROOTS,
         NativeStorageError,
         route_native_record,
         validate_loaded_identity,
@@ -57,8 +55,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 
 
 class ContextContractError(ValueError):
@@ -171,24 +169,6 @@ _KNOWLEDGE_FAMILIES: Final[frozenset[str]] = frozenset({"knowledge", "world.know
 _DISCLOSURE_FAMILIES: Final[frozenset[str]] = frozenset(
     {"disclosure", "runtime.disclosure"}
 )
-_CAMPAIGN_FAMILIES: Final[frozenset[str]] = frozenset(
-    family
-    for family in FAMILY_ROOTS
-    if family
-    not in {
-        "world.player",
-        "world.lore_fact",
-        "world.knowledge",
-        "runtime.disclosure",
-        "runtime.session",
-        "runtime.checkpoint",
-        "runtime.collaboration_obligation",
-        "runtime.maintenance_audit",
-        "runtime.catalog_gap_report",
-    }
-)
-
-
 @dataclass(frozen=True, slots=True)
 class _RequestScope:
     profile: _RegisteredProfile
@@ -387,10 +367,57 @@ def _candidate_scope(candidate: Mapping[str, object], scope: _RequestScope) -> N
         ("subject_id", scope.subject_id),
         ("recipient_id", scope.recipient_id),
     ):
-        if field_name in candidate and candidate[field_name] != expected:
+        if field_name not in candidate:
+            raise ContextContractError(
+                f"candidate is missing registered {field_name} binding"
+            )
+        if candidate[field_name] != expected:
             raise ContextContractError(
                 f"candidate {field_name} is outside the registered scope"
             )
+
+
+_CampaignResolver: TypeAlias = Callable[
+    [object, _PinnedCampaign, _RequestScope, Mapping[str, object], str],
+    tuple[list[str], dict[str, object]],
+]
+
+
+def _resolve_registered_campaign_family(
+    repository: object,
+    pinned: _PinnedCampaign,
+    scope: _RequestScope,
+    candidate: Mapping[str, object],
+    family: str,
+) -> tuple[list[str], dict[str, object]]:
+    """Resolve one explicitly registered family under the request binding."""
+
+    _candidate_scope(candidate, scope)
+    identity = _identity(candidate.get("owner_identity"), f"{family} owner_identity")
+    return list(identity), _read_campaign_record(
+        repository, pinned, family, identity
+    )
+
+
+_CAMPAIGN_RESOLVER_TABLE: Final[Mapping[str, _CampaignResolver]] = MappingProxyType(
+    {
+        "world.scene": _resolve_registered_campaign_family,
+        "world.actor": _resolve_registered_campaign_family,
+        "world.actor_group": _resolve_registered_campaign_family,
+        "world.faction": _resolve_registered_campaign_family,
+        "world.asset": _resolve_registered_campaign_family,
+        "world.location": _resolve_registered_campaign_family,
+        "world.thread": _resolve_registered_campaign_family,
+        "world.effect": _resolve_registered_campaign_family,
+        "world.connection": _resolve_registered_campaign_family,
+        "world.zone": _resolve_registered_campaign_family,
+        "world.organization": _resolve_registered_campaign_family,
+        "world.contract": _resolve_registered_campaign_family,
+        "world.mission": _resolve_registered_campaign_family,
+        "world.encounter": _resolve_registered_campaign_family,
+        "world.hazard": _resolve_registered_campaign_family,
+    }
+)
 
 
 def _resolve_player(
@@ -567,10 +594,9 @@ def _resolve_candidate(
         payload = _resolve_disclosure(
             repository, pinned, tuple(owner_identity), scope.recipient_id
         )
-    elif family in _CAMPAIGN_FAMILIES:
-        owner_identity = list(_identity(raw_identity, "campaign owner_identity"))
-        payload = _read_campaign_record(
-            repository, pinned, family, tuple(owner_identity)
+    elif (resolver := _CAMPAIGN_RESOLVER_TABLE.get(family)) is not None:
+        owner_identity, payload = resolver(
+            repository, pinned, scope, candidate, family
         )
     else:
         raise ContextContractError("candidate family is not a registered native owner")
