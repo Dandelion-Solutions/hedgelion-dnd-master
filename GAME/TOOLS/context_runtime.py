@@ -14,13 +14,12 @@ from copy import deepcopy
 from dataclasses import dataclass
 import json
 from types import MappingProxyType
-from typing import Any, Final, Protocol
+from typing import Any, Final
 
 try:
     from .context_budget import allocate
     from .live_state import (
         LiveContractError,
-        LiveEnvelope,
         LiveRouting,
         require_selected_live_source,
         select_live_source,
@@ -31,13 +30,13 @@ try:
         route_native_record,
         validate_loaded_identity,
     )
-    from .policy_basis import PinnedCampaign, RepositoryPort
+    from .history import _SelectedLiveReadCapability
+    from .policy_basis import PinnedCampaign as _PinnedCampaign, RepositoryPort
     from .access_control import PlayerRecord, AccessControlContractError
 except ImportError:  # pragma: no cover - direct-path focused test imports.
     from context_budget import allocate  # type: ignore[no-redef]
     from GAME.TOOLS.live_state import (  # type: ignore[no-redef]
         LiveContractError,
-        LiveEnvelope,
         LiveRouting,
         require_selected_live_source,
         select_live_source,
@@ -48,22 +47,20 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
         route_native_record,
         validate_loaded_identity,
     )
-    from GAME.TOOLS.policy_basis import PinnedCampaign, RepositoryPort  # type: ignore[no-redef]
+    from GAME.TOOLS.history import _SelectedLiveReadCapability  # type: ignore[no-redef]
+    from GAME.TOOLS.policy_basis import PinnedCampaign as _PinnedCampaign, RepositoryPort  # type: ignore[no-redef]
     from GAME.TOOLS.access_control import (  # type: ignore[no-redef]
         AccessControlContractError,
         PlayerRecord,
     )
 
 
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
+
+
 class ContextContractError(ValueError):
     """A Context request, discovery hint or owner result is not admissible."""
-
-
-class SelectedLiveReadCapability(Protocol):
-    """Narrow read-only host capability for one already selected LIVE source."""
-
-    def read_selected_live_source(self, route: LiveRouting, source: LiveEnvelope) -> object:
-        """Return source-owned read evidence; never a semantic verdict."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -89,46 +86,25 @@ _DISCOVERY_CHANNELS: Final[tuple[str, ...]] = (
 
 _PROFILE_TABLE: Final[Mapping[str, _RegisteredProfile]] = MappingProxyType(
     {
-        "profile.interpreter": _RegisteredProfile(
-            "profile.interpreter", "INTERPRETER", ("interpretation", "intent"), _DISCOVERY_CHANNELS, ("requires",)
-        ),
         "profile.intent": _RegisteredProfile(
-            "profile.intent", "INTERPRETER", ("interpret", "interpretation", "intent"), _DISCOVERY_CHANNELS, ("requires",)
-        ),
-        "profile.dramaturg": _RegisteredProfile(
-            "profile.dramaturg", "DRAMATURG", ("planning", "dramaturgy"), _DISCOVERY_CHANNELS, ("requires",)
+            "profile.intent", "INTERPRETER", ("interpret",), _DISCOVERY_CHANNELS, ("requires",)
         ),
         "profile.dramaturgy": _RegisteredProfile(
-            "profile.dramaturgy", "DRAMATURG", ("prepare", "planning", "dramaturgy"), _DISCOVERY_CHANNELS, ("requires",)
+            "profile.dramaturgy", "DRAMATURG", ("prepare",), _DISCOVERY_CHANNELS, ("requires",)
         ),
         "profile.actor": _RegisteredProfile(
-            "profile.actor", "ACTOR", ("assessment", "actor"), _DISCOVERY_CHANNELS, ("requires",)
-        ),
-        "profile.chronicler": _RegisteredProfile(
-            "profile.chronicler", "CHRONICLER", ("chronicle", "story_projection"), _DISCOVERY_CHANNELS, ("requires",)
+            "profile.actor", "ACTOR", ("assess",), _DISCOVERY_CHANNELS, ("requires",)
         ),
         "profile.story": _RegisteredProfile(
-            "profile.story", "CHRONICLER", ("story", "chronicle", "story_projection"), _DISCOVERY_CHANNELS, ("requires",)
+            "profile.story", "CHRONICLER", ("chronicle",), _DISCOVERY_CHANNELS, ("requires",)
         ),
-        "profile.narrator": _RegisteredProfile(
-            "profile.narrator", "NARRATOR", ("narration",), _DISCOVERY_CHANNELS, ("requires",)
-        ),
-        # Existing schema/examples use this name; it remains a fixed alias.
         "profile.narration": _RegisteredProfile(
-            "profile.narration", "NARRATOR", ("narration",), _DISCOVERY_CHANNELS, ("requires",)
+            "profile.narration", "NARRATOR", ("narrate",), _DISCOVERY_CHANNELS, ("requires",)
         ),
     }
 )
 
-_ROLE_ALIASES: Final[Mapping[str, str]] = MappingProxyType(
-    {
-        "role.interpreter": "INTERPRETER",
-        "role.dramaturg": "DRAMATURG",
-        "role.actor": "ACTOR",
-        "role.chronicler": "CHRONICLER",
-        "role.narrator": "NARRATOR",
-    }
-)
+REGISTERED_PROFILE_IDS: Final[tuple[str, ...]] = tuple(_PROFILE_TABLE)
 
 _FORBIDDEN_AUTHORITY_FIELDS: Final[frozenset[str]] = frozenset(
     {
@@ -139,8 +115,28 @@ _FORBIDDEN_AUTHORITY_FIELDS: Final[frozenset[str]] = frozenset(
         "resolver",
         "semantic_resolver",
         "callback",
+        "pinned",
+        "campaign_pin",
+        "current_pin",
         "need_profile",
         "profile",
+    }
+)
+_REQUEST_FIELDS: Final[frozenset[str]] = frozenset(
+    {
+        "profile_id",
+        "role",
+        "purpose",
+        "subject_id",
+        "recipient_id",
+        "campaign_id",
+        "allowed_channels",
+        "max_candidates",
+        "required_ids",
+        "allowed_relations",
+        "budget",
+        "source_frontier",
+        "retrospective",
     }
 )
 
@@ -204,14 +200,16 @@ def _profile(value: object) -> _RegisteredProfile:
 def _scope(request: Mapping[str, object]) -> tuple[_RegisteredProfile, str, str, str, str, str]:
     if not isinstance(request, Mapping):
         raise ContextContractError("Context admission request must be an object")
+    unknown = set(request).difference(_REQUEST_FIELDS)
+    if unknown:
+        raise ContextContractError("request fields are not registered: " + ", ".join(sorted(unknown)))
     forbidden = _FORBIDDEN_AUTHORITY_FIELDS.intersection(request)
     if forbidden:
         raise ContextContractError(
             "caller authority fields are not accepted: " + ", ".join(sorted(forbidden))
         )
     registered = _profile(request.get("profile_id"))
-    raw_role = request.get("role", request.get("role_id"))
-    role = _ROLE_ALIASES.get(raw_role, raw_role) if isinstance(raw_role, str) else raw_role
+    role = request.get("role")
     purpose = request.get("purpose")
     subject_id = request.get("subject_id")
     recipient_id = request.get("recipient_id")
@@ -246,10 +244,13 @@ def _scope(request: Mapping[str, object]) -> tuple[_RegisteredProfile, str, str,
 def discover_candidates(request: dict[str, Any], candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Return only bounded discovery hints; no candidate field grants authority."""
 
+    _profile(request.get("profile_id"))
     channels = request.get("allowed_channels")
     limit = request.get("max_candidates")
     if not isinstance(channels, list) or not channels:
         raise ContextContractError("request must name bounded registered discovery channels")
+    if any(channel not in _DISCOVERY_CHANNELS for channel in channels):
+        raise ContextContractError("request channel is not registered")
     if isinstance(limit, bool) or not isinstance(limit, int) or limit < 0:
         raise ContextContractError("request must name a nonnegative candidate bound")
     identities: set[str] = set()
@@ -282,7 +283,7 @@ def _identity(value: object, label: str, *, length: int | None = None) -> tuple[
 
 def _read_campaign_record(
     repository: RepositoryPort,
-    pinned: PinnedCampaign,
+    pinned: _PinnedCampaign,
     family: str,
     identity: tuple[str, ...],
 ) -> dict[str, object]:
@@ -332,15 +333,13 @@ def _candidate_scope(candidate: Mapping[str, object], scope: tuple[str, str, str
     ):
         if field_name in candidate:
             supplied = candidate[field_name]
-            if field_name in {"role", "role_id"} and isinstance(supplied, str):
-                supplied = _ROLE_ALIASES.get(supplied, supplied)
             if supplied != expected:
                 raise ContextContractError(f"candidate {field_name} is outside the registered scope")
 
 
 def _resolve_player(
     repository: RepositoryPort,
-    pinned: PinnedCampaign,
+    pinned: _PinnedCampaign,
     identity: tuple[str, ...],
     recipient_id: str,
 ) -> dict[str, object]:
@@ -356,7 +355,7 @@ def _resolve_player(
 
 def _resolve_information(
     repository: RepositoryPort,
-    pinned: PinnedCampaign,
+    pinned: _PinnedCampaign,
     identity: tuple[str, ...],
     recipient_id: str,
 ) -> dict[str, object]:
@@ -375,7 +374,7 @@ def _resolve_information(
 
 def _resolve_knowledge(
     repository: RepositoryPort,
-    pinned: PinnedCampaign,
+    pinned: _PinnedCampaign,
     identity: tuple[str, ...],
     subject_id: str,
 ) -> dict[str, object]:
@@ -393,7 +392,7 @@ def _resolve_knowledge(
 
 def _resolve_disclosure(
     repository: RepositoryPort,
-    pinned: PinnedCampaign,
+    pinned: _PinnedCampaign,
     identity: tuple[str, ...],
     recipient_id: str,
 ) -> dict[str, object]:
@@ -405,7 +404,7 @@ def _resolve_disclosure(
 
 def _resolve_campaign(
     repository: RepositoryPort,
-    pinned: PinnedCampaign,
+    pinned: _PinnedCampaign,
     family: str,
     identity: tuple[str, ...],
 ) -> dict[str, object]:
@@ -416,8 +415,8 @@ def _resolve_campaign(
 
 def _resolve_live(
     route: LiveRouting | None,
-    reader: SelectedLiveReadCapability | None,
-    pinned: PinnedCampaign,
+    reader: _SelectedLiveReadCapability | None,
+    pinned: _PinnedCampaign,
     candidate: Mapping[str, object],
 ) -> dict[str, object]:
     if route is None or reader is None:
@@ -489,20 +488,40 @@ class BoundContextRuntime:
 
     _repository: RepositoryPort
     _live_route: LiveRouting | None
-    _selected_live_reader: SelectedLiveReadCapability | None
+    _selected_live_reader: _SelectedLiveReadCapability | None
 
     def __init__(self, **_values: object) -> None:
         raise ContextContractError("Context Runtime must be host-bound")
+
+    def _pin_current_campaign(self, campaign_id: str) -> _PinnedCampaign:
+        try:
+            pinned = self._repository.pin_campaign(campaign_id)
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as error:
+            raise ContextContractError("exact campaign currentness is unavailable") from error
+        if not isinstance(pinned, _PinnedCampaign) or pinned.campaign_id != campaign_id:
+            raise ContextContractError("repository did not return the exact campaign pin")
+        return pinned
 
     def resolve_candidate_basis(
         self,
         request: Mapping[str, object],
         candidate: Mapping[str, object],
-        *,
-        pinned: PinnedCampaign | None = None,
+        **caller_values: object,
     ) -> dict[str, object]:
         """Resolve one discovery hint through fixed owner dispatch."""
 
+        if caller_values:
+            raise ContextContractError("caller-supplied currentness values are not accepted")
+        scope = _scope(request)
+        pinned = self._pin_current_campaign(scope[-1])
+        return self._resolve_candidate_basis(request, candidate, pinned)
+
+    def _resolve_candidate_basis(
+        self,
+        request: Mapping[str, object],
+        candidate: Mapping[str, object],
+        pinned: _PinnedCampaign,
+    ) -> dict[str, object]:
         scope = _scope(request)
         if not isinstance(candidate, Mapping) or not isinstance(candidate, dict):
             raise ContextContractError("Context candidate must be a native discovery mapping")
@@ -514,14 +533,8 @@ class BoundContextRuntime:
         candidate_id = _nonempty(candidate.get("candidate_id"), "candidate identity")
         _candidate_scope(candidate, scope)
         registered, _role, _purpose, subject_id, recipient_id, campaign_id = scope
-        if pinned is None:
-            try:
-                pinned_value = self._repository.pin_campaign(campaign_id)
-            except (AttributeError, KeyError, OSError, TypeError, ValueError) as error:
-                raise ContextContractError("exact campaign currentness is unavailable") from error
-            pinned = pinned_value
-        if not isinstance(pinned, PinnedCampaign) or pinned.campaign_id != campaign_id:
-            raise ContextContractError("repository did not return the exact campaign pin")
+        if pinned.campaign_id != campaign_id:
+            raise ContextContractError("repository pin does not match the request campaign")
         family = _candidate_family(candidate)
         raw_identity = candidate.get("owner_identity")
         if family in _LIVE_FAMILIES:
@@ -581,22 +594,17 @@ class BoundContextRuntime:
 
         scope = _scope(request)
         registered, role, purpose, subject_id, recipient_id, campaign_id = scope
-        try:
-            pinned = self._repository.pin_campaign(campaign_id)
-        except (AttributeError, KeyError, OSError, TypeError, ValueError) as error:
-            raise ContextContractError("exact campaign currentness is unavailable") from error
-        if not isinstance(pinned, PinnedCampaign) or pinned.campaign_id != campaign_id:
-            raise ContextContractError("repository did not return the exact campaign pin")
+        pinned = self._pin_current_campaign(campaign_id)
         discovered = discover_candidates(request, candidates)
         available: dict[str, dict[str, object]] = {}
         excluded: list[str] = []
         for item in discovered:
             candidate_id = item["candidate_id"]
             try:
-                available[candidate_id] = self.resolve_candidate_basis(
+                available[candidate_id] = self._resolve_candidate_basis(
                     request,
                     item,
-                    pinned=pinned,
+                    pinned,
                 )
             except ContextContractError:
                 excluded.append(candidate_id)
@@ -639,13 +647,13 @@ class BoundContextRuntime:
         return {"outcome": outcome, "bundle": bundle, "trace": trace}
 
 
-def bind_context_runtime(
+def _compose_context_runtime(
     repository: RepositoryPort,
     *,
     live_route: LiveRouting | None = None,
-    selected_live_reader: SelectedLiveReadCapability | None = None,
+    selected_live_reader: _SelectedLiveReadCapability | None = None,
 ) -> BoundContextRuntime:
-    """Compose Context once from trusted host capabilities."""
+    """Compose Context only at the private trusted-host composition boundary."""
 
     if not hasattr(repository, "pin_campaign") or not hasattr(repository, "read_exact_path"):
         raise ContextContractError("Context Runtime requires the trusted RepositoryPort")
