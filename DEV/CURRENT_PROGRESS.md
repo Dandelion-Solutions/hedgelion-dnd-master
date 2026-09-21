@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 RUNTIME HOST COMPOSITION ACCEPTED — T01A/T05A/T07A AUTHORIZED
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T01A/T05A ACCEPTED — T07A SENIOR_REVIEW_REQUIRED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: Wave 03 implementation independently reviewed task-by-task and closed by mandatory Senior integration audit PASS on 2026-09-19; reviewed implementation head `9ae3feb74a2d657a081140781899dcbe66819b5b`
-NEXT_AUTHORIZED_UNIT: execute W04.T01A, W04.T05A and W04.T07A under the accepted RuntimeHost/Step-3 ordering routes; downstream tasks remain gated by named accepted producer checkpoints
-REQUIRED_GATE: Wave-04 autonomous TDD/review/version-impact/checkpoint discipline -> mandatory fresh CLS↔HDM preflight immediately before W04.T07 RED -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
+NEXT_AUTHORIZED_UNIT: resolve the W04.T07A-only selected-LIVE evt-lane reader System-Impact stop; downstream tasks remain gated by their own DAG prerequisites
+REQUIRED_GATE: W04.T07A Senior resolution before acceptance or T07B+ -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — created/published; authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: none for W04.T01A/T05A/T07A start; downstream Wave-04 tasks remain dependency-gated. Migration execution, release execution and gameplay bootstrap remain unauthorized.
+KNOWN_BLOCKERS: W04.T07A requires Senior review; T01B+/T05B+ remain dependency-gated by their own DAG prerequisites; migration execution, release execution and gameplay bootstrap remain unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -282,16 +282,34 @@ CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-c
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `3319314e5d4a140a9de01cd52bafc6c25a33b975`
 
-STATUS: EXECUTION_AUTHORIZED
-CURRENT_TASK: W04.T01A / W04.T05A / W04.T07A are independently eligible under the Senior rulings and preflight evidence recorded in the Wave-04 execution cursor
-LAST_COMPLETED_TASK: Senior reconciliation of W04.T01A/W04.T05A System-Impact gates plus mandatory W04.T07 CLS↔HDM preflight — RESOLVED / PASS
-LAST_SAFE_SHA: `5b3841ffe17bbea0e0663342eab1278427d6b07c` product tree; subsequent ruling checkpoint is documentation/control only
+STATUS: SENIOR_REVIEW_REQUIRED
+CURRENT_TASK: W04.T07A selected-LIVE evt-lane reader boundary
+LAST_COMPLETED_TASK: W04.T01A accepted at `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`; W04.T05A accepted at `995924b2a5448dbf9ae4a52555f64de69f7fd699`
+LAST_SAFE_SHA: `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
 
-CURRENT_VERIFICATION_STATE: the restored Wave-04 production tree remains at the pre-attempt safe state. T01A and T05A may be reimplemented only inside their recorded bounded rulings. W04.T07 preflight is PASS on exact current private/public evidence. No W04.T07 RED existed before this ruling.
-VERSION_IMPACT: NONE for this Senior ruling/preflight checkpoint. Reattempts retain their task-local mandatory Version Impact Gate; aborted prior assessments remain non-precedential.
-SYSTEM_IMPACT: RESOLVED — no architecture reopen required for T01A or T05A; W04.T07 preflight is PASS / NONE.
-NEXT_EXACT_TASK: resume dependency-valid Wave-04 execution. T01A, T05A and T07A may start in parallel subject to write-set isolation and normal hdm-worker/hdm-reviewer gates.
-KNOWN_BLOCKERS: NONE for T01A/T05A/T07A start. Downstream tasks remain dependency-gated. Migration execution, release execution and gameplay bootstrap remain unauthorized.
+CURRENT_VERIFICATION_STATE: W04.T01A and W04.T05A are accepted at their exact independent re-review heads. W04.T07A is not accepted: `c37c517136a78dd57edde09320e7f1dc0fd3cb0e` reads an unadmitted `LOG/SEMANTIC_EVENTS` aggregate, while the exposed selected-LIVE reader cannot perform WP-11 compact-index-plus-exact-record reads. W04.T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires.
+VERSION_IMPACT: W04.T01A accepted transitions: collaboration absent -> `1.0.1`, runtime execution `1.0.4 -> 1.0.5`, collaboration schema/projection -> `1`, then collaboration `1.0.1 -> 1.0.2`, runtime execution `1.0.5 -> 1.0.6 -> 1.0.7 -> 1.0.8`; W04.T05A accepted transitions: Context `1.0.1 -> 1.0.2 -> 1.0.3 -> 1.0.4`; all other affected namespaces unchanged. This documentation checkpoint: NONE.
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. T01A/T05A have no open System-Impact finding.
+NEXT_EXACT_TASK: Senior resolves the T07A selected-LIVE reader/composition route; do not accept T07A or start T07B+ before resolution. T01B+/T05B+ remain independently DAG-gated.
+KNOWN_BLOCKERS: W04.T07A Senior review; downstream tasks remain dependency-gated. Migration execution, release execution and gameplay bootstrap remain unauthorized.
 UNPUBLISHED_WORK: NONE after verified publication/read-back.
 
 Wave 04 remains in execution. Wave 05 is not authorized.
+
+## Latest Wave-04 execution state — 2026-09-22
+
+The latest authoritative task-local state is the final section of
+`DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md`:
+
+```text
+STATUS: SENIOR_REVIEW_REQUIRED
+W04.T01A: ACCEPTED after independent re-review at b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772
+W04.T05A: ACCEPTED after independent re-review at 995924b2a5448dbf9ae4a52555f64de69f7fd699
+W04.T07A: SENIOR_REVIEW_REQUIRED; published c37c517136a78dd57edde09320e7f1dc0fd3cb0e is not accepted
+DOWNSTREAM: T01B+/T05B+ remain dependency-gated by their own DAG prerequisites; T07B+ waits for T07A acceptance
+VERSION_IMPACT: NONE for this documentation checkpoint; accepted T01A/T05A transitions are recorded in the cursor
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only
+```
+
+The T07A-only brief is
+`DEV/docs/superpowers/design/2026-09-22-w04-t07a-selected-live-reader-system-impact-brief.md`.

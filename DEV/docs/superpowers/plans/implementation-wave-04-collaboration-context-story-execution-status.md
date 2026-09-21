@@ -556,3 +556,30 @@ SYSTEM_IMPACT: NONE CURRENT; the owner decision supplies T00H and the native ord
 NEXT_EXACT_TASK: W04.T00H -> reviewer PASS/publish/read-back -> W04.T01A/W04.T05A/W04.T07A in parallel.
 KNOWN_BLOCKERS: T01A/T05A/T07A wait `W04_RUNTIME_HOST_COMPOSITION_READY`; all downstream tasks and Wave 05 remain dependency-gated/unauthorized.
 UNPUBLISHED_WORK: NONE after restore publication/read-back.
+
+## Root-task acceptance and T07A stop — 2026-09-22
+
+STATUS: SENIOR_REVIEW_REQUIRED
+CURRENT_TASK: W04.T07A native history publication/recovery; resolve the selected-LIVE evt-lane reader boundary before accepting T07A
+LAST_COMPLETED_TASK:
+  W04.T01A accepted after independent re-review -> `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
+  W04.T05A accepted after independent re-review -> `995924b2a5448dbf9ae4a52555f64de69f7fd699`
+LAST_SAFE_SHA: `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
+LAST_PUBLISHED_SHA: `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
+
+CURRENT_VERIFICATION_STATE:
+- W04.T01A is accepted at the exact reviewed head above.
+- W04.T05A is accepted at the exact reviewed head above.
+- W04.T07A is not accepted: published `c37c517136a78dd57edde09320e7f1dc0fd3cb0e` reads an unadmitted aggregate from family-root `LOG/SEMANTIC_EVENTS`; the exposed selected-LIVE reader cannot perform the WP-11 compact-index-plus-exact-record reads required by the accepted evt-lane ruling.
+- T01B+ and T05B+ remain dependency-gated by their own DAG prerequisites; T07B+ remains gated by T07A acceptance.
+
+VERSION_IMPACT:
+- W04.T01A accepted chain: `171dc0e` collaboration module absent -> `1.0.1`, `runtime_execution.py` `1.0.4 -> 1.0.5`, and new `runtime.collaboration_obligation` schema/projection at `1`; `dcf04fa` collaboration `1.0.1 -> 1.0.2` and runtime execution `1.0.5 -> 1.0.6`; `3bc9265` runtime execution `1.0.6 -> 1.0.7`; `d3d2df4` runtime execution `1.0.7 -> 1.0.8`; `b50f490` formatting only, no further transition. Collaboration schema/projection remain `1`; IntentClause additive fields have no independent version namespace; engine, campaign-contract, storage, and catalog namespaces are unchanged.
+- W04.T05A accepted chain: `a9168cb` `GAME/TOOLS/context_runtime.py` `1.0.1 -> 1.0.2`; `e340ed5` `1.0.2 -> 1.0.3`; `995924b` `1.0.3 -> 1.0.4`. No Context schema namespace, engine, campaign-contract, storage, catalog, LIVE, or shared projection bump.
+- W04.T07A remains non-accepted at `c37c517`; its `history.py` module and native-history schemas are review-only and create no accepted T07A transition.
+- This documentation checkpoint: NONE.
+
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. Brief: `DEV/docs/superpowers/design/2026-09-22-w04-t07a-selected-live-reader-system-impact-brief.md`.
+NEXT_EXACT_TASK: Senior chooses/admit an existing selected-LIVE composition/read route for the narrow evt-lane adapter, or returns that boundary to design; do not accept T07A or start T07B+ before resolution.
+KNOWN_BLOCKERS: T07A Senior review; T01B+/T05B+ remain independently DAG-gated.
+UNPUBLISHED_WORK: NONE after this documentation checkpoint is published and read back.
