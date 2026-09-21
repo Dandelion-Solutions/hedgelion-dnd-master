@@ -25,6 +25,7 @@ try:
         LiveRouting,
         require_selected_live_source,
         select_live_source,
+        validate_exact_source,
     )
     from .native_storage import (
         NativeStorageError,
@@ -44,6 +45,7 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
         LiveRouting,
         require_selected_live_source,
         select_live_source,
+        validate_exact_source,
     )
     from GAME.TOOLS.native_storage import (  # type: ignore[no-redef]
         NativeStorageError,
@@ -55,8 +57,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
 
 
 class ContextContractError(ValueError):
@@ -524,7 +526,10 @@ def _resolve_live(
             "LIVE source read",
         )
         observed = LiveEnvelope.from_mapping(raw)
-        require_selected_live_source(route, observed)
+        if not validate_exact_source(source, observed):
+            raise LiveContractError(
+                "LIVE source read does not match the originally selected source"
+            )
     except ContextContractError:
         raise
     except (

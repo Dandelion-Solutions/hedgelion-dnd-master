@@ -184,6 +184,34 @@ class MismatchedRuntimeLiveSourceTransport(RuntimeLiveSourceTransport):
         return result
 
 
+class TwoSourceSubstitutionRuntimeLiveSourceTransport(RuntimeLiveSourceTransport):
+    def __init__(self):
+        super().__init__()
+        claims = (LiveClaim.exact_owner("world.scene", "live-scene-b"),)
+        opening_revision = "0" * 40
+        epoch_id = derive_live_epoch_id(
+            self.campaign_id, "scene-live-b", opening_revision, claims
+        )
+        self.substitute = LiveEnvelope(
+            campaign_id=self.campaign_id,
+            scene_id="scene-live-b",
+            epoch_id=epoch_id,
+            source_ref=build_live_ref(self.campaign_id, "scene-live-b", epoch_id),
+            source_revision="2" * 40,
+            claims=claims,
+            opening_campaign_revision=opening_revision,
+        )
+        self.route = LiveRouting(
+            campaign_id=self.campaign_id,
+            entries=(self.source, self.substitute),
+        )
+
+    def read_selected_live_source(self, route, source):
+        if source.source_key == self.source.source_key:
+            return self.substitute.as_mapping()
+        return source.as_mapping()
+
+
 def host_for(items):
     repository = RuntimeRepository()
     for item in items:
@@ -393,6 +421,30 @@ class ContextRuntimeHostTests(unittest.TestCase):
                 self.assertEqual(optional["bundle"]["optional"], [])
                 self.assertEqual(required["outcome"], "UNSATISFIABLE")
 
+    def test_live_reader_cannot_substitute_another_selected_source(self):
+        repository = RuntimeRepository()
+        live = TwoSourceSubstitutionRuntimeLiveSourceTransport()
+        host = compose_runtime_host("campaign-context", repository, live)
+        candidate = owner_candidate(
+            "live-a",
+            "LIVE",
+            ("campaign-context", "scene-live", live.source.epoch_id),
+            channel="LIVE_CURRENT",
+            source_key=list(live.source.source_key),
+        )
+
+        optional = host.context.assemble(
+            bound_request(allowed_channels=["LIVE_CURRENT"]), [candidate]
+        )
+        required = host.context.assemble(
+            bound_request(allowed_channels=["LIVE_CURRENT"], required_ids=["live-a"]),
+            [candidate],
+        )
+
+        self.assertEqual(optional["outcome"], "ASSEMBLED_DEGRADED")
+        self.assertEqual(optional["bundle"]["optional"], [])
+        self.assertEqual(required["outcome"], "UNSATISFIABLE")
+
     def test_wrong_registered_role_purpose_and_unknown_profile_fail_closed(self):
         host, _repository = self._host()
 
@@ -429,7 +481,7 @@ class ContextRuntimeHostTests(unittest.TestCase):
             Draft202012Validator(schema).validate(
                 {key: value for key, value in bound_request().items() if key != "role"}
             )
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.3")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.4")
 
 
 class ContextDiscoveryTests(unittest.TestCase):
