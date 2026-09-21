@@ -16,34 +16,7 @@
     },
     "guard": {"$ref": "#/$defs/guard"},
     "command_id": {"type": "string", "minLength": 1},
-    "details": {"type": "object"},
-    "collaboration_semantic_class": {
-      "enum": ["OOC_COORDINATION", "DIEGETIC_COMMUNICATION", "ACTIONABLE_INTENT", "CONTROL_SIGNAL"]
-    },
-    "normalized_semantics": {"type": "object"},
-    "material_exact_text_refs": {
-      "type": "array",
-      "items": {"type": "object"}
-    },
-    "dependency_kind": {
-      "enum": [
-        "JOINT_VOLUNTARY_ACTION",
-        "SHARED_DECISION_OR_NEGOTIATION",
-        "SHARED_SCARCE_RESOURCE_CHOICE",
-        "SCENE_CHRONOLOGY_CONVERGENCE",
-        "PC_CONSEQUENCE_DECISION"
-      ]
-    },
-    "purpose": {"type": "string", "minLength": 1},
-    "dependency_scope": {"type": "object", "minProperties": 1},
-    "required_contributors": {
-      "type": "array",
-      "items": {"$ref": "#/$defs/contributor"}
-    },
-    "native_basis_refs": {
-      "type": "array",
-      "items": {"$ref": "#/$defs/nativeBasisRef"}
-    }
+    "details": {"type": "object"}
   },
   "$defs": {
     "scalar": {"type": ["string", "number", "boolean"]},
@@ -85,25 +58,6 @@
           }
         }
       ]
-    },
-    "contributor": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["player_id"],
-      "properties": {
-        "player_id": {"type": "string", "minLength": 1},
-        "pc_id": {"type": "string", "minLength": 1}
-      }
-    },
-    "nativeBasisRef": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["family", "id", "revision"],
-      "properties": {
-        "family": {"type": "string", "minLength": 1},
-        "id": {"type": "string", "minLength": 1},
-        "revision": {"type": "string", "minLength": 1}
-      }
     }
   },
   "examples": [
