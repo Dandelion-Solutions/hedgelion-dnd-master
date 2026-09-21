@@ -9,6 +9,7 @@ from enum import StrEnum
 import hashlib
 import json
 import re
+import sys
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Final, Protocol
 import weakref
@@ -20,8 +21,8 @@ if TYPE_CHECKING:
     from .policy_basis import RepositoryPort
 
 
-# framework_module_version: 1.0.7
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
+# framework_module_version: 1.0.8
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
 _GIT_REVISION: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _GIT_REF: Final = re.compile(r"^refs/heads/[^\s/]+(?:/[^\s/]+)*$")
 _CAMPAIGN_REF: Final = re.compile(r"^refs/heads/campaign/[^\s/]+$")
@@ -99,8 +100,43 @@ class BoundNativeHistoryRuntime:
 
     _window_adapter: _EvtLaneEnrollmentWindowAdapter
 
-    def __init__(self, **_values: object) -> None:
-        raise HistoryContractError("native history runtime must be host-bound")
+    def __init__(self, host_runtime: object) -> None:
+        try:
+            from .context_runtime import BoundContextRuntime
+        except ImportError as exc:  # pragma: no cover - direct-path focused imports.
+            raise HistoryContractError("native history host composition is unavailable") from exc
+        context_runtime_types: tuple[type[object], ...] = (BoundContextRuntime,)
+        direct_context_module = sys.modules.get("context_runtime")
+        direct_context_type = getattr(direct_context_module, "BoundContextRuntime", None)
+        if isinstance(direct_context_type, type) and direct_context_type is not BoundContextRuntime:
+            context_runtime_types += (direct_context_type,)
+        if not isinstance(host_runtime, context_runtime_types):
+            raise HistoryContractError("native history runtime must be host-bound")
+        try:
+            repository = host_runtime._repository
+            current_routing = host_runtime._live_route
+            selected_live_reader = host_runtime._selected_live_reader
+        except AttributeError as exc:
+            raise HistoryContractError("native history host capabilities are unavailable") from exc
+        if not hasattr(repository, "pin_campaign") or not hasattr(repository, "read_exact_path"):
+            raise HistoryContractError("native history requires the trusted RepositoryPort")
+        if current_routing is not None and not isinstance(current_routing, LiveRouting):
+            raise HistoryContractError("native history current routing must be owner-typed")
+        if selected_live_reader is not None and not hasattr(
+            selected_live_reader, "read_selected_live_source"
+        ):
+            raise HistoryContractError("native history LIVE reader must be the narrow read capability")
+        if selected_live_reader is not None and current_routing is None:
+            raise HistoryContractError("native history LIVE reader requires its selected route")
+        object.__setattr__(
+            self,
+            "_window_adapter",
+            _EvtLaneEnrollmentWindowAdapter(
+                repository,
+                current_routing,
+                selected_live_reader,
+            ),
+        )
 
     def read(
         self,
@@ -130,26 +166,6 @@ class BoundNativeHistoryRuntime:
         """Recover only by re-reading the bound exact source window."""
 
         return self.read(campaign_id, origin=origin)
-
-
-def _compose_native_history_runtime(
-    repository: RepositoryPort,
-    *,
-    current_routing: LiveRouting | None,
-    selected_live_reader: _SelectedLiveReadCapability | None = None,
-) -> BoundNativeHistoryRuntime:
-    """Compose native history at the private trusted-host composition boundary."""
-
-    if current_routing is not None and not isinstance(current_routing, LiveRouting):
-        raise HistoryContractError("native history current routing must be owner-typed")
-    adapter = _EvtLaneEnrollmentWindowAdapter(
-        repository,
-        current_routing,
-        selected_live_reader,
-    )
-    runtime = object.__new__(BoundNativeHistoryRuntime)
-    object.__setattr__(runtime, "_window_adapter", adapter)
-    return runtime
 
 
 def read_native_history(

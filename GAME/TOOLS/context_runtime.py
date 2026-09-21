@@ -30,7 +30,7 @@ try:
         route_native_record,
         validate_loaded_identity,
     )
-    from .history import _SelectedLiveReadCapability
+    from .history import BoundNativeHistoryRuntime, _SelectedLiveReadCapability
     from .policy_basis import PinnedCampaign as _PinnedCampaign, RepositoryPort
     from .access_control import PlayerRecord, AccessControlContractError
 except ImportError:  # pragma: no cover - direct-path focused test imports.
@@ -47,7 +47,10 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
         route_native_record,
         validate_loaded_identity,
     )
-    from GAME.TOOLS.history import _SelectedLiveReadCapability  # type: ignore[no-redef]
+    from GAME.TOOLS.history import (  # type: ignore[no-redef]
+        BoundNativeHistoryRuntime,
+        _SelectedLiveReadCapability,
+    )
     from GAME.TOOLS.policy_basis import PinnedCampaign as _PinnedCampaign, RepositoryPort  # type: ignore[no-redef]
     from GAME.TOOLS.access_control import (  # type: ignore[no-redef]
         AccessControlContractError,
@@ -55,8 +58,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
 
 
 class ContextContractError(ValueError):
@@ -489,9 +492,19 @@ class BoundContextRuntime:
     _repository: RepositoryPort
     _live_route: LiveRouting | None
     _selected_live_reader: _SelectedLiveReadCapability | None
+    _native_history_runtime: BoundNativeHistoryRuntime
 
     def __init__(self, **_values: object) -> None:
         raise ContextContractError("Context Runtime must be host-bound")
+
+    @property
+    def native_history_runtime(self) -> BoundNativeHistoryRuntime:
+        """Return the native-history service bound with this host runtime."""
+
+        try:
+            return self._native_history_runtime
+        except AttributeError as exc:
+            raise ContextContractError("Context Runtime native history is not host-bound") from exc
 
     def _pin_current_campaign(self, campaign_id: str) -> _PinnedCampaign:
         try:
@@ -669,6 +682,7 @@ def _compose_context_runtime(
     object.__setattr__(runtime, "_repository", repository)
     object.__setattr__(runtime, "_live_route", live_route)
     object.__setattr__(runtime, "_selected_live_reader", selected_live_reader)
+    object.__setattr__(runtime, "_native_history_runtime", BoundNativeHistoryRuntime(runtime))
     return runtime
 
 

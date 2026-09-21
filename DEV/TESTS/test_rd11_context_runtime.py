@@ -269,7 +269,7 @@ class HostBoundContextContractTests(unittest.TestCase):
             )
 
     def test_context_runtime_module_revision_is_current(self):
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.5")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.6")
 
     def test_campaign_record_is_reloaded_from_pinned_repository_not_candidate_payload(self):
         repository = RepositoryFixture()
