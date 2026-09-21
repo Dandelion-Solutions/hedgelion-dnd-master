@@ -22,7 +22,6 @@ from .access_control import (
     resolve_player,
 )
 from .native_storage import (
-    FAMILY_ROOTS,
     IdentityMismatch,
     NativeStorageError,
     route_native_record,
@@ -48,7 +47,6 @@ _DEPENDENCY_CLASSES: Final = frozenset(
         "PC_CONSEQUENCE_DECISION",
     }
 )
-_ORDERED_OWNER_FAMILIES: Final = frozenset({"runtime.procedure", "runtime.continuation"})
 _CLAUSE_FIELDS: Final = frozenset(
     {
         "clause_id",
@@ -96,6 +94,30 @@ class DependencyClass(StrEnum):
     SHARED_SCARCE_RESOURCE_CHOICE = "SHARED_SCARCE_RESOURCE_CHOICE"
     SCENE_CHRONOLOGY_CONVERGENCE = "SCENE_CHRONOLOGY_CONVERGENCE"
     PC_CONSEQUENCE_DECISION = "PC_CONSEQUENCE_DECISION"
+
+
+@dataclass(frozen=True, slots=True)
+class _DependencyBasisRule:
+    """Closed native basis owner for one ruled dependency class."""
+
+    family: str
+    scope_key: str
+
+
+_DEPENDENCY_BASIS_RULES: Final[dict[DependencyClass, _DependencyBasisRule]] = {
+    DependencyClass.JOINT_VOLUNTARY_ACTION: _DependencyBasisRule("world.scene", "scene_id"),
+    DependencyClass.SHARED_DECISION_OR_NEGOTIATION: _DependencyBasisRule("world.scene", "scene_id"),
+    DependencyClass.SHARED_SCARCE_RESOURCE_CHOICE: _DependencyBasisRule("world.asset", "asset_id"),
+    DependencyClass.SCENE_CHRONOLOGY_CONVERGENCE: _DependencyBasisRule("world.scene", "scene_id"),
+    DependencyClass.PC_CONSEQUENCE_DECISION: _DependencyBasisRule("world.actor", "actor_id"),
+}
+_ORDERED_OWNER_FAMILIES: Final = frozenset({"runtime.procedure", "runtime.continuation"})
+_NATIVE_BASIS_FAMILIES: Final = frozenset(
+    {rule.family for rule in _DEPENDENCY_BASIS_RULES.values()} | set(_ORDERED_OWNER_FAMILIES)
+)
+_COLLABORATION_READ_FAMILIES: Final = _NATIVE_BASIS_FAMILIES | frozenset(
+    {"runtime.interaction", "runtime.intent_plan", "world.player"}
+)
 
 
 def _id(value: object, label: str) -> str:
@@ -166,8 +188,8 @@ class NativeBasisRef:
     revision: str | None = None
 
     def __post_init__(self) -> None:
-        if self.family not in FAMILY_ROOTS:
-            raise CollaborationAdmissionError("native basis family is not a known WP-11 owner")
+        if self.family not in _NATIVE_BASIS_FAMILIES:
+            raise CollaborationAdmissionError("native basis family is not admitted for collaboration")
         _id(self.record_id, "native basis id")
         if self.revision is not None:
             _nonempty(self.revision, "native basis revision")
@@ -293,8 +315,8 @@ def _read_native(
     family: str,
     record_id: str,
 ) -> Mapping[str, object]:
-    if family not in FAMILY_ROOTS:
-        raise CollaborationAdmissionError("native basis family is not a known WP-11 owner")
+    if family not in _COLLABORATION_READ_FAMILIES:
+        raise CollaborationAdmissionError("native basis family is not admitted for collaboration")
     _id(record_id, f"{family} id")
     path = route_native_record(family, (record_id,)).relative_path
     try:
@@ -413,6 +435,46 @@ def _parse_basis_refs(value: object) -> tuple[NativeBasisRef, ...]:
     return tuple(refs)
 
 
+def _validate_dependency_basis_shape(
+    dependency: DependencyClass,
+    dependency_scope: Mapping[str, object],
+    basis_refs: tuple[NativeBasisRef, ...],
+) -> None:
+    rule = _DEPENDENCY_BASIS_RULES[dependency]
+    if len(basis_refs) != 1:
+        raise CollaborationAdmissionError("dependency requires exactly one native basis owner")
+    basis = basis_refs[0]
+    if basis.revision is None:
+        raise CollaborationAdmissionError("native basis revision is required for currentness")
+    if basis.family in _ORDERED_OWNER_FAMILIES:
+        return
+    if basis.family != rule.family:
+        raise CollaborationAdmissionError(
+            f"native basis family is not admitted for dependency class {dependency.value}"
+        )
+    if dependency_scope.get(rule.scope_key) != basis.record_id:
+        raise CollaborationAdmissionError(
+            f"native basis id must match dependency scope {rule.scope_key}"
+        )
+
+
+def _validate_dependency_basis_owner(
+    dependency: DependencyClass,
+    dependency_scope: Mapping[str, object],
+    basis: NativeBasisRef,
+    owner: Mapping[str, object],
+) -> None:
+    rule = _DEPENDENCY_BASIS_RULES[dependency]
+    if basis.revision is None or owner.get("revision") != basis.revision:
+        raise CollaborationAdmissionError("native basis revision is stale")
+    if basis.family in _ORDERED_OWNER_FAMILIES:
+        return
+    if basis.family != rule.family or dependency_scope.get(rule.scope_key) != basis.record_id:
+        raise CollaborationAdmissionError("native basis owner is irrelevant to the dependency class")
+    if not isinstance(owner.get("state"), Mapping):
+        raise CollaborationAdmissionError("native basis owner state is incomplete")
+
+
 def _validate_clause_semantics(
     clause: Mapping[str, object],
 ) -> tuple[str | None, Mapping[str, object], DependencyClass | None, str | None, Mapping[str, object], tuple[ContributorRef, ...], tuple[NativeBasisRef, ...]]:
@@ -450,6 +512,7 @@ def _validate_clause_semantics(
         raise CollaborationAdmissionError("collaboration-held actionable intent must remain pending")
     if clause.get("command_id") is not None:
         raise CollaborationAdmissionError("collaboration-held intent cannot already have a command")
+    _validate_dependency_basis_shape(dependency, scope, basis_refs)
     return semantic_class, normalized, dependency, purpose, scope, contributors, basis_refs
 
 
@@ -495,14 +558,40 @@ def _validate_required_player(
         raise CollaborationAdmissionError("required contributor PC is not currently controlled")
 
 
+def _has_pending_value(value: object) -> bool:
+    if value is None or value is False:
+        return False
+    if isinstance(value, (str, bytes, Mapping, Sequence)):
+        return bool(value)
+    return True
+
+
 def _ordered_owner(refs: Sequence[NativeBasisRef], owners: Sequence[Mapping[str, object]]) -> str | None:
     for ref, owner in zip(refs, owners):
-        if ref.family in _ORDERED_OWNER_FAMILIES:
-            return ref.family
+        if ref.family not in _ORDERED_OWNER_FAMILIES:
+            continue
         state = owner.get("state")
-        if isinstance(state, Mapping) and any(
-            key in state for key in ("pending_choice", "pending_reaction", "response_order", "responder_order")
-        ):
+        candidates: tuple[Mapping[str, object], ...]
+        if isinstance(state, Mapping):
+            candidates = (state, owner)
+        else:
+            candidates = (owner,)
+        if ref.family == "runtime.procedure":
+            lifecycle = candidates[0].get("lifecycle", candidates[-1].get("lifecycle"))
+            if lifecycle != "ACTIVE":
+                continue
+            pending_fields = (
+                "pending_response",
+                "pending_choice",
+                "pending_reaction",
+                "response_order",
+                "responder_order",
+                "resume_cursor",
+                "resume",
+            )
+        else:
+            pending_fields = ("pending_response", "unconsumed_advancement")
+        if any(_has_pending_value(candidate.get(field)) for candidate in candidates for field in pending_fields):
             return ref.family
     return None
 
@@ -549,13 +638,14 @@ def classify_coordination_dependency(
     del current_player
 
     basis_owners = tuple(_read_native(repository, pinned, ref.family, ref.record_id) for ref in basis_refs)
-    for ref, owner in zip(basis_refs, basis_owners):
-        if ref.revision is not None and owner.get("revision") != ref.revision:
-            raise CollaborationAdmissionError("native basis revision is stale")
     if dependency is not None:
+        for ref, owner in zip(basis_refs, basis_owners):
+            _validate_dependency_basis_owner(dependency, scope, ref, owner)
         for ref in required:
             _validate_required_player(repository, pinned, ref)
     ordered_owner = _ordered_owner(basis_refs, basis_owners)
+    if any(ref.family in _ORDERED_OWNER_FAMILIES for ref in basis_refs) and ordered_owner is None:
+        raise CollaborationAdmissionError("native ordered owner has no current pending response/order/resume")
     if ordered_owner is not None:
         family = CoordinationFamily.RULE_OWNED_ORDERED
     elif dependency is None:

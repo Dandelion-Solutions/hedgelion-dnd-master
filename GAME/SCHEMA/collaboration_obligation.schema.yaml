@@ -15,7 +15,13 @@ fields:
   dependency_class: enum[JOINT_VOLUNTARY_ACTION, SHARED_DECISION_OR_NEGOTIATION, SHARED_SCARCE_RESOURCE_CHOICE, SCENE_CHRONOLOGY_CONVERGENCE, PC_CONSEQUENCE_DECISION]
   purpose: string
   dependency_scope: object
-  native_basis_refs: array
+  native_basis_refs:
+    type: array
+    item:
+      required: [family, id, revision]
+      family: string
+      id: string
+      revision: string
   required_contributors: array
   optional_contributors: array
   accepted_input_uses: array

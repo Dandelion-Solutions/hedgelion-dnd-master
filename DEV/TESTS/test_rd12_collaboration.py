@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import unittest
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
 
 from GAME.TOOLS.access_control import PlayerRecord, VerifiedPrincipal, build_principal_player_route
@@ -99,7 +99,23 @@ class FakeRepository:
         self.records[scene_path] = {
             "kind": "world.scene",
             "id": "scene-market",
-            "state": {"scene_id": "scene-market"},
+            "state": {"name": "Market morning"},
+            "campaign_id": CAMPAIGN_ID,
+            "revision": CAMPAIGN_REVISION,
+        }
+        asset_path = route_native_record("world.asset", ("asset-market-goods",)).relative_path
+        self.records[asset_path] = {
+            "kind": "world.asset",
+            "id": "asset-market-goods",
+            "state": {"quantity": 1},
+            "campaign_id": CAMPAIGN_ID,
+            "revision": CAMPAIGN_REVISION,
+        }
+        actor_path = route_native_record("world.actor", ("actor-pc-bob",)).relative_path
+        self.records[actor_path] = {
+            "kind": "world.actor",
+            "id": "actor-pc-bob",
+            "state": {"name": {"en": "Bob"}},
             "campaign_id": CAMPAIGN_ID,
             "revision": CAMPAIGN_REVISION,
         }
@@ -111,6 +127,14 @@ class FakeRepository:
 def _collective_clause(
     *, dependency_kind: str = DependencyClass.JOINT_VOLUNTARY_ACTION.value
 ) -> dict[str, object]:
+    dependency = DependencyClass(dependency_kind)
+    basis = {
+        DependencyClass.JOINT_VOLUNTARY_ACTION: ("world.scene", "scene-market", "scene_id"),
+        DependencyClass.SHARED_DECISION_OR_NEGOTIATION: ("world.scene", "scene-market", "scene_id"),
+        DependencyClass.SHARED_SCARCE_RESOURCE_CHOICE: ("world.asset", "asset-market-goods", "asset_id"),
+        DependencyClass.SCENE_CHRONOLOGY_CONVERGENCE: ("world.scene", "scene-market", "scene_id"),
+        DependencyClass.PC_CONSEQUENCE_DECISION: ("world.actor", "actor-pc-bob", "actor_id"),
+    }[dependency]
     return {
         "clause_id": "clause-1",
         "order": 1,
@@ -120,9 +144,9 @@ def _collective_clause(
         "normalized_semantics": {"action": "enter", "target": "market"},
         "dependency_kind": dependency_kind,
         "purpose": "joint-entry",
-        "dependency_scope": {"scene_id": "scene-market"},
+        "dependency_scope": {basis[2]: basis[1]},
         "required_contributors": [{"player_id": "player-bob", "pc_id": "pc-bob"}],
-        "native_basis_refs": [{"family": "world.scene", "id": "scene-market"}],
+        "native_basis_refs": [{"family": basis[0], "id": basis[1], "revision": CAMPAIGN_REVISION}],
     }
 
 
@@ -188,8 +212,27 @@ class CoordinationAdmissionTests(unittest.TestCase):
                 self.assertEqual(admission.dependency_class, dependency_kind)
                 self.assertEqual(admission.family, CoordinationFamily.AGENCY_DEPENDENT_COLLECTIVE)
 
+    def test_each_ruled_dependency_class_rejects_an_irrelevant_basis_family(self) -> None:
+        wrong_family = {
+            DependencyClass.JOINT_VOLUNTARY_ACTION: ("world.asset", "asset-market-goods"),
+            DependencyClass.SHARED_DECISION_OR_NEGOTIATION: ("world.asset", "asset-market-goods"),
+            DependencyClass.SHARED_SCARCE_RESOURCE_CHOICE: ("world.scene", "scene-market"),
+            DependencyClass.SCENE_CHRONOLOGY_CONVERGENCE: ("world.asset", "asset-market-goods"),
+            DependencyClass.PC_CONSEQUENCE_DECISION: ("world.scene", "scene-market"),
+        }
+        for dependency_kind, (family, record_id) in wrong_family.items():
+            with self.subTest(dependency_kind=dependency_kind):
+                clause = _collective_clause(dependency_kind=dependency_kind)
+                clause["native_basis_refs"] = [
+                    {"family": family, "id": record_id, "revision": CAMPAIGN_REVISION}
+                ]
+                with self.assertRaisesRegex(CollaborationAdmissionError, "basis family"):
+                    _classify(FakeRepository(clause=clause))
+
     def test_unknown_or_caller_selected_dependency_family_fails_closed(self) -> None:
-        unknown = FakeRepository(clause=_collective_clause(dependency_kind="OWNER_DEFINED"))
+        unknown_clause = _collective_clause()
+        unknown_clause["dependency_kind"] = "OWNER_DEFINED"
+        unknown = FakeRepository(clause=unknown_clause)
         with self.assertRaisesRegex(CollaborationAdmissionError, "dependency class"):
             _classify(unknown)
 
@@ -214,7 +257,9 @@ class CoordinationAdmissionTests(unittest.TestCase):
 
     def test_native_order_owner_wins_without_generic_collaboration(self) -> None:
         clause = _collective_clause()
-        clause["native_basis_refs"] = [{"family": "runtime.procedure", "id": "procedure-1"}]
+        clause["native_basis_refs"] = [
+            {"family": "runtime.procedure", "id": "procedure-1", "revision": CAMPAIGN_REVISION}
+        ]
         repository = FakeRepository(clause=clause)
         repository.add_native_owner(
             "runtime.procedure",
@@ -222,6 +267,7 @@ class CoordinationAdmissionTests(unittest.TestCase):
             {
                 "kind": "runtime.procedure",
                 "id": "procedure-1",
+                "revision": CAMPAIGN_REVISION,
                 "state": {"lifecycle": "ACTIVE", "pending_choice": "choice-1"},
                 "campaign_id": CAMPAIGN_ID,
             },
@@ -230,6 +276,73 @@ class CoordinationAdmissionTests(unittest.TestCase):
 
         self.assertEqual(admission.family, CoordinationFamily.RULE_OWNED_ORDERED)
         self.assertIsNone(open_or_successor_obligation(admission))
+
+    def test_pending_continuation_choice_is_the_order_owner(self) -> None:
+        clause = _collective_clause()
+        clause["native_basis_refs"] = [
+            {"family": "runtime.continuation", "id": "continuation-1", "revision": CAMPAIGN_REVISION}
+        ]
+        repository = FakeRepository(clause=clause)
+        repository.add_native_owner(
+            "runtime.continuation",
+            "continuation-1",
+            {
+                "kind": "runtime.continuation",
+                "id": "continuation-1",
+                "revision": CAMPAIGN_REVISION,
+                "pending_response": {
+                    "kind": "choice",
+                    "offer_id": "choice-1",
+                    "parent_resolution_id": "resolution-1",
+                    "continuation_generation": 1,
+                    "responder_id": "actor-pc-bob",
+                    "option_ids": ["option.left", "option.right"],
+                },
+            },
+        )
+
+        admission = _classify(repository)
+
+        self.assertEqual(admission.family, CoordinationFamily.RULE_OWNED_ORDERED)
+
+    def test_terminal_or_no_pending_order_owner_fails_closed(self) -> None:
+        cases = (
+            ("runtime.procedure", {"lifecycle": "TERMINAL", "pending_choice": "choice-1"}),
+            ("runtime.procedure", {"lifecycle": "ACTIVE"}),
+            ("runtime.continuation", {"generation": 1}),
+        )
+        for index, (family, state) in enumerate(cases):
+            with self.subTest(case=index):
+                clause = _collective_clause()
+                record_id = f"ordered-owner-{index}"
+                clause["native_basis_refs"] = [
+                    {"family": family, "id": record_id, "revision": CAMPAIGN_REVISION}
+                ]
+                repository = FakeRepository(clause=clause)
+                record = {
+                    "kind": family,
+                    "id": record_id,
+                    "revision": CAMPAIGN_REVISION,
+                }
+                if family == "runtime.procedure":
+                    record["state"] = state
+                else:
+                    record.update(state)
+                repository.add_native_owner(family, record_id, record)
+
+                with self.assertRaisesRegex(CollaborationAdmissionError, "pending"):
+                    _classify(repository)
+
+    def test_scene_pending_marker_does_not_become_a_rule_owned_order(self) -> None:
+        repository = FakeRepository()
+        scene_path = route_native_record("world.scene", ("scene-market",)).relative_path
+        scene = repository.records[scene_path]
+        assert isinstance(scene, dict)
+        scene["state"] = {"name": "Market morning", "pending_choice": "choice-1"}
+
+        admission = _classify(repository)
+
+        self.assertEqual(admission.family, CoordinationFamily.AGENCY_DEPENDENT_COLLECTIVE)
 
 
 class NativeRevalidationTests(unittest.TestCase):
@@ -269,6 +382,29 @@ class NativeRevalidationTests(unittest.TestCase):
         clause.pop("native_basis_refs")
         with self.assertRaisesRegex(CollaborationAdmissionError, "native basis"):
             _classify(FakeRepository(clause=clause))
+
+    def test_each_ruled_dependency_class_requires_a_current_basis_revision(self) -> None:
+        for dependency_kind in DependencyClass:
+            with self.subTest(dependency_kind=dependency_kind):
+                clause = _collective_clause(dependency_kind=dependency_kind)
+                basis = clause["native_basis_refs"]
+                assert isinstance(basis, list)
+                assert isinstance(basis[0], dict)
+                basis[0].pop("revision")
+                with self.assertRaisesRegex(CollaborationAdmissionError, "revision"):
+                    _classify(FakeRepository(clause=clause))
+
+    def test_stale_native_basis_revision_fails_closed(self) -> None:
+        for dependency_kind in DependencyClass:
+            with self.subTest(dependency_kind=dependency_kind):
+                clause = _collective_clause(dependency_kind=dependency_kind)
+                basis = clause["native_basis_refs"]
+                assert isinstance(basis, list)
+                assert isinstance(basis[0], dict)
+                basis[0]["revision"] = "stale"
+
+                with self.assertRaisesRegex(CollaborationAdmissionError, "stale"):
+                    _classify(FakeRepository(clause=clause))
 
     def test_unenveloped_native_body_is_not_an_exact_owner_load(self) -> None:
         repository = FakeRepository()
@@ -310,7 +446,9 @@ class CollaborationSchemaTests(unittest.TestCase):
             "dependency_class": "JOINT_VOLUNTARY_ACTION",
             "purpose": "joint-entry",
             "dependency_scope": {"scene_id": "scene-market"},
-            "native_basis_refs": [{"family": "world.scene", "id": "scene-market"}],
+            "native_basis_refs": [
+                {"family": "world.scene", "id": "scene-market", "revision": CAMPAIGN_REVISION}
+            ],
             "required_contributors": [{"player_id": "player-bob", "pc_id": "pc-bob"}],
             "optional_contributors": [],
             "accepted_input_uses": [],
@@ -318,6 +456,16 @@ class CollaborationSchemaTests(unittest.TestCase):
         Draft202012Validator(
             _schema("runtime-collaboration-obligation-state.schema.json"), registry=_registry()
         ).validate(value)
+
+    def test_native_basis_schema_requires_revision_evidence(self) -> None:
+        clause = _collective_clause()
+        basis = clause["native_basis_refs"]
+        assert isinstance(basis, list)
+        assert isinstance(basis[0], dict)
+        basis[0].pop("revision")
+
+        with self.assertRaises(ValidationError):
+            Draft202012Validator(_schema("intent-clause.schema.json"), registry=_registry()).validate(clause)
 
 
 if __name__ == "__main__":

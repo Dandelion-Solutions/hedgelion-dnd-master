@@ -81,7 +81,7 @@
     "nativeBasisRef": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["family", "id"],
+      "required": ["family", "id", "revision"],
       "properties": {
         "family": {"type": "string", "minLength": 1},
         "id": {"$ref": "#/$defs/id"},
