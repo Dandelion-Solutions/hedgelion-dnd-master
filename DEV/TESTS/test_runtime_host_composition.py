@@ -22,8 +22,8 @@ def _candidate(candidate_id: str = "candidate-1") -> dict[str, object]:
     return {
         "candidate_id": candidate_id,
         "channel": "EXPLICIT_REF",
-        "current": True,
-        "eligible": True,
+        "owner_family": "world.scene",
+        "owner_identity": [candidate_id],
         "dependencies": [],
         "payload": {"text": "bounded"},
     }
@@ -32,6 +32,11 @@ def _candidate(candidate_id: str = "candidate-1") -> dict[str, object]:
 def _context_request() -> dict[str, object]:
     return {
         "profile_id": "profile.narration",
+        "role": "NARRATOR",
+        "purpose": "narrate",
+        "subject_id": "actor.context",
+        "recipient_id": "player-1",
+        "campaign_id": CAMPAIGN_ID,
         "allowed_channels": ["EXPLICIT_REF"],
         "max_candidates": 2,
         "required_ids": [],
@@ -57,7 +62,11 @@ class DeploymentRepository:
         )
 
     def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
-        return {"campaign_id": pinned.campaign_id, "path": path}
+        return {
+            "kind": "world.scene",
+            "id": "candidate-1",
+            "state": {"text": "bounded"},
+        }
 
     def read_exact_campaign_ref(self, campaign_id: str) -> object:
         return {}
@@ -109,7 +118,7 @@ def _compose(
 
 class RuntimeHostCompositionTests(unittest.TestCase):
     def test_new_runtime_host_starts_at_current_engine_module_line(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.1")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.2")
 
     def test_composition_binds_one_campaign_and_creates_sibling_services(self) -> None:
         host, _repository, _live = _compose()
@@ -191,9 +200,8 @@ class RuntimeHostCompositionTests(unittest.TestCase):
             "history_service": evil,
         }
 
-        result = host.context.assemble(request, [candidate])
-
-        self.assertEqual(result["outcome"], "ASSEMBLED")
+        with self.assertRaises(ValueError):
+            host.context.assemble(request, [candidate])
         self.assertEqual(repository.pin_calls, [CAMPAIGN_ID])
         self.assertEqual(len(live.read_calls), 1)
 

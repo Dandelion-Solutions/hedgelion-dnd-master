@@ -1,17 +1,113 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/context-need-profile.schema.json",
-  "title": "HDM registered ephemeral ContextNeedProfile",
+  "title": "HDM registered ephemeral RoleContextRequest / ContextNeedProfile",
   "type": "object",
   "additionalProperties": false,
-  "required": ["profile_id", "allowed_channels", "max_candidates", "required_ids", "allowed_relations", "budget"],
+  "required": [
+    "profile_id",
+    "role",
+    "purpose",
+    "subject_id",
+    "recipient_id",
+    "campaign_id",
+    "allowed_channels",
+    "max_candidates",
+    "required_ids",
+    "allowed_relations",
+    "budget"
+  ],
   "properties": {
-    "profile_id": {"type": "string", "minLength": 1},
-    "allowed_channels": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["CURRENT_SCOPE", "SCENE_MANIFEST", "EXPLICIT_REF", "ACTIVE_DEPENDENCY", "LIVE_CURRENT", "INDEX_LOOKUP", "HISTORY_HINT"]}},
-    "max_candidates": {"type": "integer", "minimum": 0},
-    "required_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-    "allowed_relations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-    "budget": {"type": "integer", "minimum": 0}
+    "profile_id": {
+      "enum": [
+        "profile.intent",
+        "profile.dramaturgy",
+        "profile.actor",
+        "profile.story",
+        "profile.narration"
+      ]
+    },
+    "role": {
+      "enum": ["INTERPRETER", "DRAMATURG", "ACTOR", "CHRONICLER", "NARRATOR"]
+    },
+    "purpose": {
+      "enum": ["interpret", "prepare", "assess", "chronicle", "narrate"]
+    },
+    "subject_id": {"$ref": "#/$defs/id"},
+    "recipient_id": {"$ref": "#/$defs/id"},
+    "campaign_id": {"$ref": "#/$defs/id"},
+    "allowed_channels": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "CURRENT_SCOPE",
+          "SCENE_MANIFEST",
+          "EXPLICIT_REF",
+          "ACTIVE_DEPENDENCY",
+          "LIVE_CURRENT",
+          "INDEX_LOOKUP",
+          "HISTORY_HINT"
+        ]
+      }
+    },
+    "max_candidates": {"type": "integer", "minimum": 0, "maximum": 256},
+    "required_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "allowed_relations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"const": "requires"}
+    },
+    "budget": {"type": "integer", "minimum": 0, "maximum": 1000000},
+    "source_frontier": {"type": "string", "minLength": 1},
+    "retrospective": {"type": "boolean"}
   },
-  "examples": [{"profile_id": "profile.narration", "allowed_channels": ["EXPLICIT_REF"], "max_candidates": 5, "required_ids": ["current-scene"], "allowed_relations": ["requires"], "budget": 120}]
+  "allOf": [
+    {
+      "if": {"properties": {"profile_id": {"const": "profile.intent"}}},
+      "then": {"properties": {"role": {"const": "INTERPRETER"}, "purpose": {"const": "interpret"}}}
+    },
+    {
+      "if": {"properties": {"profile_id": {"const": "profile.dramaturgy"}}},
+      "then": {"properties": {"role": {"const": "DRAMATURG"}, "purpose": {"const": "prepare"}}}
+    },
+    {
+      "if": {"properties": {"profile_id": {"const": "profile.actor"}}},
+      "then": {"properties": {"role": {"const": "ACTOR"}, "purpose": {"const": "assess"}}}
+    },
+    {
+      "if": {"properties": {"profile_id": {"const": "profile.story"}}},
+      "then": {"properties": {"role": {"const": "CHRONICLER"}, "purpose": {"const": "chronicle"}}}
+    },
+    {
+      "if": {"properties": {"profile_id": {"const": "profile.narration"}}},
+      "then": {"properties": {"role": {"const": "NARRATOR"}, "purpose": {"const": "narrate"}}}
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    }
+  },
+  "examples": [
+    {
+      "profile_id": "profile.narration",
+      "role": "NARRATOR",
+      "purpose": "narrate",
+      "subject_id": "actor.context",
+      "recipient_id": "player-1",
+      "campaign_id": "campaign-context",
+      "allowed_channels": ["EXPLICIT_REF"],
+      "max_candidates": 5,
+      "required_ids": [],
+      "allowed_relations": ["requires"],
+      "budget": 120
+    }
+  ]
 }

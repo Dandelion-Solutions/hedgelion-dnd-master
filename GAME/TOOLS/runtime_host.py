@@ -15,8 +15,8 @@ from typing import Final, NoReturn, Protocol
 from .live_state import LiveRouting, validate_live_route_completeness
 from .policy_basis import PinnedCampaign, RepositoryPort
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -133,12 +133,19 @@ class ContextService(_BoundService):
         request: dict[str, object],
         candidates: list[dict[str, object]],
     ) -> dict[str, object]:
-        self._host._begin_operation()
+        basis = self._host._begin_operation()
         try:
             from . import context_runtime
         except ModuleNotFoundError as exc:
             raise RuntimeHostError("Context Runtime owner is unavailable") from exc
-        return context_runtime.assemble_context(request, candidates)
+        return context_runtime._assemble_bound_context(
+            request,
+            candidates,
+            repository=self._host._repository,
+            pinned_campaign=basis.pinned_campaign,
+            selected_live=basis.selected_live,
+            selected_live_reader=self._host._live_transport,
+        )
 
 
 class HistoryService(_BoundService):
