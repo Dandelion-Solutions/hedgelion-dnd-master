@@ -16,12 +16,19 @@
     "kind": {"const": "runtime.collaboration_obligation"},
     "obligation_id": {"$ref": "#/$defs/id"},
     "generation": {"type": "integer", "minimum": 1},
+    "predecessor_generation": {"type": ["integer", "null"], "minimum": 1},
     "lifecycle": {"enum": ["OPEN", "CLOSED", "RESOLVED", "OBSOLETE"]},
     "coordination_family": {"const": "AGENCY_DEPENDENT_COLLECTIVE"},
     "campaign_id": {"$ref": "#/$defs/id"},
     "interaction_id": {"$ref": "#/$defs/id"},
     "intent_plan_id": {"$ref": "#/$defs/id"},
     "clause_id": {"$ref": "#/$defs/id"},
+    "collaboration_semantic_class": {
+      "enum": [
+        "OOC_COORDINATION", "DIEGETIC_COMMUNICATION",
+        "ACTIONABLE_INTENT", "CONTROL_SIGNAL"
+      ]
+    },
     "dependency_class": {
       "enum": [
         "JOINT_VOLUNTARY_ACTION", "SHARED_DECISION_OR_NEGOTIATION",
@@ -46,6 +53,10 @@
     "accepted_input_uses": {
       "type": "array",
       "items": {"$ref": "#/$defs/inputUse"}
+    },
+    "accepted_input_contributors": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/inputContributor"}
     }
   },
   "$defs": {
@@ -71,6 +82,16 @@
       "properties": {
         "interaction_id": {"$ref": "#/$defs/id"},
         "clause_id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "inputContributor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["interaction_id", "clause_id", "player_id"],
+      "properties": {
+        "interaction_id": {"$ref": "#/$defs/id"},
+        "clause_id": {"$ref": "#/$defs/id"},
+        "player_id": {"$ref": "#/$defs/id"},
+        "pc_id": {"$ref": "#/$defs/id"}
       }
     }
   }

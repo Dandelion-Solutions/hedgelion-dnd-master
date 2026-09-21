@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import StrEnum
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Final
@@ -32,8 +32,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 1
 
 _ID_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
@@ -70,6 +70,7 @@ _CLAUSE_FIELDS: Final[frozenset[str]] = frozenset(
         "purpose",
         "dependency_scope",
         "required_contributors",
+        "optional_contributors",
         "native_basis_refs",
         "ordering_resolution_id",
     }
@@ -220,6 +221,7 @@ class CoordinationAdmission:
     campaign_id: str
     campaign_revision: str
     interaction_id: str
+    initiating_player_id: str
     intent_plan_id: str
     clause_id: str
     semantic_class: str | None
@@ -228,6 +230,7 @@ class CoordinationAdmission:
     purpose: str | None
     dependency_scope: Mapping[str, object]
     required_contributors: tuple[ContributorRef, ...]
+    optional_contributors: tuple[ContributorRef, ...]
     native_basis_refs: tuple[NativeBasisRef, ...]
     family: CoordinationFamily
     ordered_evidence: object | None = None
@@ -236,6 +239,7 @@ class CoordinationAdmission:
         _id(self.campaign_id, "admission campaign_id")
         _text(self.campaign_revision, "admission campaign revision")
         _id(self.interaction_id, "admission interaction_id")
+        _id(self.initiating_player_id, "admission initiating player_id")
         _id(self.intent_plan_id, "admission intent_plan_id")
         _id(self.clause_id, "admission clause_id")
         if (
@@ -271,6 +275,7 @@ class CollaborationObligation:
     interaction_id: str
     intent_plan_id: str
     clause_id: str
+    semantic_class: str | None
     dependency_class: DependencyClass
     purpose: str
     dependency_scope: Mapping[str, object]
@@ -282,6 +287,8 @@ class CollaborationObligation:
     lifecycle: str = "OPEN"
     optional_contributors: tuple[ContributorRef, ...] = ()
     accepted_input_uses: tuple[tuple[str, str], ...] = ()
+    accepted_input_contributors: tuple[tuple[tuple[str, str], ContributorRef], ...] = ()
+    predecessor_generation: int | None = None
 
     def __post_init__(self) -> None:
         _id(self.obligation_id, "obligation_id")
@@ -298,8 +305,20 @@ class CollaborationObligation:
             raise CollaborationAdmissionError(
                 "only collective admissions create obligations"
             )
+        if self.semantic_class not in _SEMANTIC_CLASSES:
+            raise CollaborationAdmissionError(
+                "obligation semantic class is not registered"
+            )
         if self.lifecycle not in {"OPEN", "CLOSED", "RESOLVED", "OBSOLETE"}:
             raise CollaborationAdmissionError("obligation lifecycle is not registered")
+        if self.predecessor_generation is not None and (
+            isinstance(self.predecessor_generation, bool)
+            or not isinstance(self.predecessor_generation, int)
+            or self.predecessor_generation != self.generation - 1
+        ):
+            raise CollaborationAdmissionError(
+                "successor predecessor generation must be adjacent"
+            )
 
     def to_mapping(self) -> dict[str, object]:
         return {
@@ -307,12 +326,14 @@ class CollaborationObligation:
             "kind": "runtime.collaboration_obligation",
             "obligation_id": self.obligation_id,
             "generation": self.generation,
+            "predecessor_generation": self.predecessor_generation,
             "lifecycle": self.lifecycle,
             "coordination_family": self.coordination_family.value,
             "campaign_id": self.campaign_id,
             "interaction_id": self.interaction_id,
             "intent_plan_id": self.intent_plan_id,
             "clause_id": self.clause_id,
+            "collaboration_semantic_class": self.semantic_class,
             "dependency_class": self.dependency_class.value,
             "purpose": self.purpose,
             "dependency_scope": _thaw(self.dependency_scope),
@@ -326,6 +347,76 @@ class CollaborationObligation:
             "accepted_input_uses": [
                 {"interaction_id": interaction_id, "clause_id": clause_id}
                 for interaction_id, clause_id in self.accepted_input_uses
+            ],
+            "accepted_input_contributors": [
+                {
+                    "interaction_id": interaction_id,
+                    "clause_id": clause_id,
+                    **contributor.to_mapping(),
+                }
+                for (
+                    interaction_id,
+                    clause_id,
+                ), contributor in self.accepted_input_contributors
+            ],
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class CollaborationRouteRef:
+    """A non-authorizing exact obligation/generation routing reference."""
+
+    obligation_id: str
+    generation: int
+
+    def __post_init__(self) -> None:
+        _id(self.obligation_id, "route obligation_id")
+        if isinstance(self.generation, bool) or not isinstance(self.generation, int):
+            raise CollaborationAdmissionError("route generation must be an integer")
+        if self.generation < 1:
+            raise CollaborationAdmissionError("route generation must be positive")
+
+    def to_mapping(self) -> dict[str, object]:
+        return {
+            "obligation_id": self.obligation_id,
+            "generation": self.generation,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PlayerRouteCompanion:
+    """Completeness-protected PLAYER routing projection, never authorization."""
+
+    campaign_id: str
+    player_id: str
+    collaboration_route_refs: tuple[CollaborationRouteRef, ...]
+    complete: bool = True
+
+    def __post_init__(self) -> None:
+        _id(self.campaign_id, "route companion campaign_id")
+        _id(self.player_id, "route companion player_id")
+        if self.complete is not True:
+            raise CollaborationAdmissionError(
+                "PLAYER collaboration route companion must be complete"
+            )
+        if any(
+            not isinstance(ref, CollaborationRouteRef)
+            for ref in self.collaboration_route_refs
+        ):
+            raise CollaborationAdmissionError("route companion refs must be typed")
+        identities = [
+            (ref.obligation_id, ref.generation) for ref in self.collaboration_route_refs
+        ]
+        if len(identities) != len(set(identities)):
+            raise CollaborationAdmissionError("route companion refs must be unique")
+
+    def to_mapping(self) -> dict[str, object]:
+        return {
+            "campaign_id": self.campaign_id,
+            "player_id": self.player_id,
+            "complete": True,
+            "collaboration_route_refs": [
+                ref.to_mapping() for ref in self.collaboration_route_refs
             ],
         }
 
@@ -515,6 +606,7 @@ def _validate_clause_semantics(
     str | None,
     Mapping[str, object],
     tuple[ContributorRef, ...],
+    tuple[ContributorRef, ...],
     tuple[NativeBasisRef, ...],
     str | None,
 ]:
@@ -552,6 +644,7 @@ def _validate_clause_semantics(
     if dependency is None:
         if (
             clause.get("required_contributors") is not None
+            or clause.get("optional_contributors") is not None
             or clause.get("native_basis_refs") is not None
             or purpose is not None
             or scope
@@ -563,7 +656,7 @@ def _validate_clause_semantics(
             raise CollaborationAdmissionError(
                 "actionable collaboration intent lacks a dependency or ordering ref"
             )
-        return semantic_class, normalized, None, None, scope, (), (), ordering_ref
+        return semantic_class, normalized, None, None, scope, (), (), (), ordering_ref
     if semantic_class is None:
         raise CollaborationAdmissionError(
             "dependency class requires an accepted semantic class"
@@ -578,6 +671,15 @@ def _validate_clause_semantics(
             "positive dependency requires required contributors"
         )
     basis_refs = _parse_basis_refs(clause.get("native_basis_refs"))
+    optional = _parse_contributors(
+        clause.get("optional_contributors", ()),
+    )
+    if {ref.player_id for ref in contributors}.intersection(
+        ref.player_id for ref in optional
+    ):
+        raise CollaborationAdmissionError(
+            "contributors cannot be both required and optional"
+        )
     _validate_basis_shape(dependency, scope, basis_refs)
     if (
         semantic_class == "ACTIONABLE_INTENT"
@@ -597,6 +699,7 @@ def _validate_clause_semantics(
         purpose,
         scope,
         contributors,
+        optional,
         basis_refs,
         ordering_ref,
     )
@@ -702,6 +805,7 @@ def classify_coordination_dependency(
         purpose,
         scope,
         required,
+        optional,
         basis_refs,
         ordering_ref,
     ) = _validate_clause_semantics(clause)
@@ -750,6 +854,7 @@ def classify_coordination_dependency(
         campaign_id=basis.pinned_campaign.campaign_id,
         campaign_revision=basis.pinned_campaign.revision,
         interaction_id=interaction_id,
+        initiating_player_id=_id(interaction["player_id"], "interaction player_id"),
         intent_plan_id=intent_plan_id,
         clause_id=clause_id,
         semantic_class=semantic_class,
@@ -758,6 +863,7 @@ def classify_coordination_dependency(
         purpose=purpose,
         dependency_scope=scope,
         required_contributors=required,
+        optional_contributors=optional,
         native_basis_refs=basis_refs,
         family=family,
         ordered_evidence=ordered_evidence,
@@ -769,6 +875,7 @@ def open_or_successor_obligation(
     *,
     obligation_id: str | None = None,
     generation: int = 1,
+    predecessor: CollaborationObligation | None = None,
 ) -> CollaborationObligation | None:
     """Create durable collection state only for a derived collective family."""
     if not isinstance(admission, CoordinationAdmission):
@@ -783,6 +890,34 @@ def open_or_successor_obligation(
         obligation_id = (
             f"collaboration:{admission.interaction_id}:{admission.clause_id}"
         )
+    if generation != 1 and predecessor is None:
+        raise CollaborationAdmissionError(
+            "non-initial generation requires an explicit predecessor"
+        )
+    if predecessor is not None:
+        if not isinstance(predecessor, CollaborationObligation):
+            raise CollaborationAdmissionError("successor predecessor is invalid")
+        if obligation_id != predecessor.obligation_id:
+            raise CollaborationAdmissionError(
+                "successor must retain the obligation lineage identity"
+            )
+        if generation != predecessor.generation + 1:
+            raise CollaborationAdmissionError(
+                "successor generation must immediately follow its predecessor"
+            )
+        if (
+            admission.campaign_id != predecessor.campaign_id
+            or admission.interaction_id != predecessor.interaction_id
+            or admission.intent_plan_id != predecessor.intent_plan_id
+            or admission.clause_id != predecessor.clause_id
+        ):
+            raise CollaborationAdmissionError(
+                "successor admission does not belong to the obligation lineage"
+            )
+        if predecessor.lifecycle in {"RESOLVED", "OBSOLETE"}:
+            raise CollaborationAdmissionError(
+                "terminal obligation cannot create a successor generation"
+            )
     return CollaborationObligation(
         obligation_id=obligation_id,
         generation=generation,
@@ -790,10 +925,139 @@ def open_or_successor_obligation(
         interaction_id=admission.interaction_id,
         intent_plan_id=admission.intent_plan_id,
         clause_id=admission.clause_id,
+        semantic_class=admission.semantic_class,
         dependency_class=admission.dependency_class,
         purpose=admission.purpose,
         dependency_scope=admission.dependency_scope,
         native_basis_refs=admission.native_basis_refs,
         required_contributors=admission.required_contributors,
+        optional_contributors=admission.optional_contributors,
         accepted_input_uses=(admission.opportunity_identity,),
+        accepted_input_contributors=(
+            (
+                admission.opportunity_identity,
+                ContributorRef(admission.initiating_player_id),
+            ),
+        ),
+        predecessor_generation=None if predecessor is None else predecessor.generation,
+    )
+
+
+def associate_input(
+    obligation: CollaborationObligation,
+    host: RuntimeHost,
+    interaction_id: str,
+    clause_id: str,
+    *,
+    principal: object,
+    player_route: object,
+    generation: int | None = None,
+) -> CollaborationObligation:
+    """Associate one current accepted clause by reference only.
+
+    The Interaction/IntentPlan owner remains the source of semantic content.  This
+    operation carries only its exact identity and the revalidated PLAYER holder;
+    it never copies message or clause bodies into the obligation.
+    """
+    if not isinstance(obligation, CollaborationObligation):
+        raise CollaborationAdmissionError("owner-derived obligation is required")
+    if generation is not None and generation != obligation.generation:
+        raise CollaborationAdmissionError(
+            "input targets a stale collaboration generation"
+        )
+    if obligation.lifecycle != "OPEN":
+        raise CollaborationAdmissionError("only an open obligation accepts input")
+    identity = (
+        _id(interaction_id, "input interaction_id"),
+        _id(clause_id, "input clause_id"),
+    )
+    if identity in obligation.accepted_input_uses:
+        return obligation
+    try:
+        basis = host._begin_operation()
+    except (AttributeError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError("bound runtime host is required") from exc
+    interaction = _load_interaction(host, basis, interaction_id)
+    plan = _load_plan(
+        host,
+        basis,
+        _id(interaction["intent_plan_id"], "input intent_plan_id"),
+        interaction_id,
+    )
+    clause = _load_clause(plan, clause_id)
+    current_player = _load_current_player(
+        host,
+        basis,
+        principal,
+        player_route,
+        _id(interaction["player_id"], "input player_id"),
+    )
+    permitted = obligation.required_contributors + obligation.optional_contributors
+    participant = next(
+        (ref for ref in permitted if ref.player_id == current_player.player_id),
+        None,
+    )
+    if participant is None:
+        raise CollaborationAdmissionError("current PLAYER is not a contributor")
+    if (
+        participant.pc_id is not None
+        and participant.pc_id not in current_player.controlled_pc_ids
+    ):
+        raise CollaborationAdmissionError("current PLAYER does not control required PC")
+    input_semantic_class = clause.get("collaboration_semantic_class")
+    if input_semantic_class not in _SEMANTIC_CLASSES:
+        raise CollaborationAdmissionError(
+            "collaboration input semantic class is required"
+        )
+    if input_semantic_class != obligation.semantic_class:
+        raise CollaborationAdmissionError(
+            "collaboration input semantic class is incompatible with obligation"
+        )
+    uses = obligation.accepted_input_uses + (identity,)
+    contributors = obligation.accepted_input_contributors + ((identity, participant),)
+    return replace(
+        obligation,
+        accepted_input_uses=uses,
+        accepted_input_contributors=contributors,
+    )
+
+
+def required_route_holders(obligation: CollaborationObligation) -> tuple[str, ...]:
+    """Return bounded current PLAYER identities that must recover an obligation."""
+    if not isinstance(obligation, CollaborationObligation):
+        raise CollaborationAdmissionError("owner-derived obligation is required")
+    if obligation.lifecycle in {"RESOLVED", "OBSOLETE"}:
+        return ()
+    holders = {ref.player_id for ref in obligation.required_contributors}
+    holders.update(
+        contributor.player_id
+        for _, contributor in obligation.accepted_input_contributors
+    )
+    return tuple(sorted(holders))
+
+
+def reconcile_player_route_companions(
+    obligation: CollaborationObligation,
+) -> tuple[PlayerRouteCompanion, ...]:
+    """Build every bounded PLAYER companion for one obligation closure.
+
+    Terminal generations retain the former holder set only to emit explicit
+    route-ref removals.  No companion field is an authorization or currentness
+    verdict; consumers must dereference the obligation and revalidate owners.
+    """
+    if not isinstance(obligation, CollaborationObligation):
+        raise CollaborationAdmissionError("owner-derived obligation is required")
+    holder_ids = {ref.player_id for ref in obligation.required_contributors}
+    holder_ids.update(
+        contributor.player_id
+        for _, contributor in obligation.accepted_input_contributors
+    )
+    refs = (
+        ()
+        if obligation.lifecycle in {"RESOLVED", "OBSOLETE"}
+        else (CollaborationRouteRef(obligation.obligation_id, obligation.generation),)
+    )
+    return tuple(
+        PlayerRouteCompanion(obligation.campaign_id, player_id, refs)
+        for player_id in sorted(holder_ids)
     )

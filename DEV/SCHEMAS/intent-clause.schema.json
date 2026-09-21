@@ -43,6 +43,11 @@
       "uniqueItems": true,
       "items": {"$ref": "#/$defs/contributor"}
     },
+    "optional_contributors": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/contributor"}
+    },
     "native_basis_refs": {
       "type": "array",
       "minItems": 1,

@@ -6,12 +6,14 @@ fields:
   kind: const(runtime.collaboration_obligation)
   obligation_id: native_identifier
   generation: integer[>=1]
+  predecessor_generation: integer[>=1]|null
   lifecycle: enum[OPEN, CLOSED, RESOLVED, OBSOLETE]
   coordination_family: const[AGENCY_DEPENDENT_COLLECTIVE]
   campaign_id: native_identifier
   interaction_id: native_identifier
   intent_plan_id: native_identifier
   clause_id: native_identifier
+  collaboration_semantic_class: enum[OOC_COORDINATION, DIEGETIC_COMMUNICATION, ACTIONABLE_INTENT, CONTROL_SIGNAL]
   dependency_class: finite_dependency_class
   purpose: string
   dependency_scope: object
@@ -19,7 +21,9 @@ fields:
   required_contributors: array[participant_ref]
   optional_contributors: array[participant_ref]
   accepted_input_uses: array[accepted_input_ref]
+  accepted_input_contributors: array[accepted_input_contributor]
 invariants:
   - opportunity identity is exactly (interaction_id, clause_id) from the accepted native owner graph
+  - accepted input contributors retain only exact Interaction/IntentClause identity and current PLAYER identity; transcript/prose is never copied
   - only positive AGENCY_DEPENDENT_COLLECTIVE admission creates a durable obligation
   - collaboration is not PLAYER, Procedure, chronology, mechanics or message authority

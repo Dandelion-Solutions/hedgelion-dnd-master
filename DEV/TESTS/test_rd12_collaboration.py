@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import unittest
 from copy import deepcopy
+from dataclasses import replace
 from pathlib import Path
 
 from jsonschema import Draft202012Validator, ValidationError
@@ -16,10 +17,14 @@ from GAME.TOOLS.access_control import (
 )
 from GAME.TOOLS.collaboration import (
     CollaborationAdmissionError,
+    ContributorRef,
     CoordinationFamily,
     DependencyClass,
+    associate_input,
     classify_coordination_dependency,
     open_or_successor_obligation,
+    reconcile_player_route_companions,
+    required_route_holders,
 )
 from GAME.TOOLS.live_state import LiveRouting
 from GAME.TOOLS.native_storage import route_native_record
@@ -214,6 +219,10 @@ def _principal() -> VerifiedPrincipal:
     return VerifiedPrincipal(stable_account_id="42", login="alice")
 
 
+def _bob_principal() -> VerifiedPrincipal:
+    return VerifiedPrincipal(stable_account_id="43", login="bob")
+
+
 def _host(repository: RepositoryFixture) -> object:
     return compose_runtime_host(CAMPAIGN_ID, repository, LiveFixture())
 
@@ -320,6 +329,55 @@ class CollaborationAdmissionTests(unittest.TestCase):
         )
         self.assertIsNotNone(obligation)
 
+    def test_optional_contributors_are_preserved_but_do_not_become_required(
+        self,
+    ) -> None:
+        clause = _collective_clause() | {
+            "optional_contributors": [
+                {"player_id": "player-alice", "pc_id": "pc-alice"}
+            ]
+        }
+
+        admission = _classify(RepositoryFixture(clause))
+        obligation = open_or_successor_obligation(
+            admission, obligation_id="obligation-optional"
+        )
+
+        assert obligation is not None
+        self.assertEqual(
+            obligation.optional_contributors,
+            (ContributorRef("player-alice", "pc-alice"),),
+        )
+        self.assertNotIn(
+            ContributorRef("player-alice", "pc-alice"),
+            obligation.required_contributors,
+        )
+
+    def test_optional_contributors_require_a_positive_dependency(self) -> None:
+        clause = _collective_clause() | {
+            "optional_contributors": [{"player_id": "player-alice"}]
+        }
+        for field in (
+            "collaboration_semantic_class",
+            "dependency_kind",
+            "purpose",
+            "dependency_scope",
+            "required_contributors",
+            "native_basis_refs",
+        ):
+            clause.pop(field)
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "dependency"):
+            _classify(RepositoryFixture(clause))
+
+    def test_one_player_cannot_be_both_required_and_optional(self) -> None:
+        clause = _collective_clause() | {
+            "optional_contributors": [{"player_id": "player-bob"}]
+        }
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "both"):
+            _classify(RepositoryFixture(clause))
+
     def test_ordered_evidence_is_produced_by_step3_through_bound_host(self) -> None:
         clause = _collective_clause() | {"ordering_resolution_id": "resolution-1"}
         repository = RepositoryFixture(clause)
@@ -334,6 +392,300 @@ class CollaborationAdmissionTests(unittest.TestCase):
 
         self.assertEqual(admission.family, CoordinationFamily.RULE_OWNED_ORDERED)
         self.assertIsNone(open_or_successor_obligation(admission))
+
+    def test_association_uses_exact_interaction_clause_reference_without_copying_input_body(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        repository.put(
+            "runtime.interaction",
+            "interaction-2",
+            {
+                "kind": "runtime.interaction",
+                "id": "interaction-2",
+                "campaign_id": CAMPAIGN_ID,
+                "session_id": "session-2",
+                "player_id": "player-bob",
+                "input_message_id": "message-2",
+                "intent_plan_id": "plan-2",
+            },
+        )
+        repository.put(
+            "runtime.intent_plan",
+            "plan-2",
+            {
+                "kind": "runtime.intent_plan",
+                "id": "plan-2",
+                "campaign_id": CAMPAIGN_ID,
+                "interaction_id": "interaction-2",
+                "clauses": [
+                    {
+                        "clause_id": "clause-2",
+                        "order": 1,
+                        "mapping_outcome": "exact",
+                        "execution_state": "intent.pending",
+                        "collaboration_semantic_class": "ACTIONABLE_INTENT",
+                        "normalized_semantics": {
+                            "action": "wait",
+                            "private": "must-not-be-copied",
+                        },
+                    }
+                ],
+            },
+        )
+        admission = _classify(repository)
+        obligation = open_or_successor_obligation(
+            admission, obligation_id="obligation-input"
+        )
+        assert obligation is not None
+
+        associated = associate_input(
+            obligation,
+            _host(repository),
+            "interaction-2",
+            "clause-2",
+            principal=_bob_principal(),
+            player_route=_route(),
+        )
+
+        self.assertEqual(
+            associated.accepted_input_uses,
+            (
+                ("interaction-1", "clause-1"),
+                ("interaction-2", "clause-2"),
+            ),
+        )
+        serialized = associated.to_mapping()
+        self.assertNotIn("normalized_semantics", serialized)
+        self.assertNotIn("private", serialized)
+
+    def test_association_rejects_a_different_human_semantic_class(self) -> None:
+        repository = RepositoryFixture()
+        repository.put(
+            "runtime.interaction",
+            "interaction-2",
+            {
+                "kind": "runtime.interaction",
+                "id": "interaction-2",
+                "campaign_id": CAMPAIGN_ID,
+                "session_id": "session-2",
+                "player_id": "player-bob",
+                "input_message_id": "message-2",
+                "intent_plan_id": "plan-2",
+            },
+        )
+        repository.put(
+            "runtime.intent_plan",
+            "plan-2",
+            {
+                "kind": "runtime.intent_plan",
+                "id": "plan-2",
+                "campaign_id": CAMPAIGN_ID,
+                "interaction_id": "interaction-2",
+                "clauses": [
+                    {
+                        "clause_id": "clause-2",
+                        "order": 1,
+                        "mapping_outcome": "exact",
+                        "execution_state": "intent.pending",
+                        "collaboration_semantic_class": "OOC_COORDINATION",
+                        "normalized_semantics": {"note": "coordinate"},
+                    }
+                ],
+            },
+        )
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-class"
+        )
+        assert obligation is not None
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "semantic class"):
+            associate_input(
+                obligation,
+                _host(repository),
+                "interaction-2",
+                "clause-2",
+                principal=_bob_principal(),
+                player_route=_route(),
+            )
+
+    def test_duplicate_input_association_is_idempotent(self) -> None:
+        repository = RepositoryFixture()
+        repository.put(
+            "runtime.interaction",
+            "interaction-2",
+            {
+                "kind": "runtime.interaction",
+                "id": "interaction-2",
+                "campaign_id": CAMPAIGN_ID,
+                "session_id": "session-2",
+                "player_id": "player-bob",
+                "input_message_id": "message-2",
+                "intent_plan_id": "plan-2",
+            },
+        )
+        repository.put(
+            "runtime.intent_plan",
+            "plan-2",
+            {
+                "kind": "runtime.intent_plan",
+                "id": "plan-2",
+                "campaign_id": CAMPAIGN_ID,
+                "interaction_id": "interaction-2",
+                "clauses": [
+                    {
+                        "clause_id": "clause-2",
+                        "order": 1,
+                        "mapping_outcome": "exact",
+                        "execution_state": "intent.pending",
+                        "collaboration_semantic_class": "ACTIONABLE_INTENT",
+                        "normalized_semantics": {"action": "enter"},
+                    }
+                ],
+            },
+        )
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-idempotent"
+        )
+        assert obligation is not None
+        first = associate_input(
+            obligation,
+            _host(repository),
+            "interaction-2",
+            "clause-2",
+            principal=_bob_principal(),
+            player_route=_route(),
+        )
+        second = associate_input(
+            first,
+            _host(repository),
+            "interaction-2",
+            "clause-2",
+            principal=_bob_principal(),
+            player_route=_route(),
+        )
+
+        self.assertIs(second, first)
+        self.assertEqual(len(second.accepted_input_uses), 2)
+
+    def test_old_generation_input_cannot_mutate_a_successor(self) -> None:
+        repository = RepositoryFixture()
+        admission = _classify(repository)
+        predecessor = open_or_successor_obligation(
+            admission, obligation_id="obligation-lineage"
+        )
+        assert predecessor is not None
+        successor = open_or_successor_obligation(
+            admission,
+            obligation_id="obligation-lineage",
+            generation=2,
+            predecessor=predecessor,
+        )
+        assert successor is not None
+
+        self.assertEqual(successor.predecessor_generation, 1)
+        self.assertEqual(predecessor.generation, 1)
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "stale"):
+            associate_input(
+                successor,
+                _host(repository),
+                "interaction-1",
+                "clause-1",
+                principal=_principal(),
+                player_route=_route(),
+                generation=1,
+            )
+
+    def test_generation_identity_is_not_rewritable_by_input_association(self) -> None:
+        repository = RepositoryFixture()
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-immutable"
+        )
+        assert obligation is not None
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "stale"):
+            associate_input(
+                obligation,
+                _host(repository),
+                "interaction-1",
+                "clause-1",
+                principal=_principal(),
+                player_route=_route(),
+                generation=2,
+            )
+
+    def test_generation_above_one_requires_explicit_predecessor_lineage(self) -> None:
+        with self.assertRaisesRegex(CollaborationAdmissionError, "predecessor"):
+            open_or_successor_obligation(
+                _classify(RepositoryFixture()),
+                obligation_id="obligation-unanchored",
+                generation=2,
+            )
+
+    def test_successor_cannot_repurpose_an_obligation_id_for_a_new_lineage(
+        self,
+    ) -> None:
+        admission = _classify(RepositoryFixture())
+        predecessor = open_or_successor_obligation(
+            admission, obligation_id="obligation-stable"
+        )
+        assert predecessor is not None
+        unrelated = replace(admission, interaction_id="interaction-new")
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "lineage"):
+            open_or_successor_obligation(
+                unrelated,
+                obligation_id="obligation-stable",
+                generation=2,
+                predecessor=predecessor,
+            )
+
+    def test_route_holders_include_required_and_input_players_but_not_optional_silence(
+        self,
+    ) -> None:
+        clause = _collective_clause() | {
+            "optional_contributors": [{"player_id": "player-carol"}]
+        }
+        obligation = open_or_successor_obligation(
+            _classify(RepositoryFixture(clause)), obligation_id="obligation-routes"
+        )
+        assert obligation is not None
+
+        self.assertEqual(
+            required_route_holders(obligation),
+            ("player-alice", "player-bob"),
+        )
+
+    def test_player_route_companions_are_complete_references_and_terminal_removal_is_explicit(
+        self,
+    ) -> None:
+        obligation = open_or_successor_obligation(
+            _classify(RepositoryFixture()), obligation_id="obligation-companion"
+        )
+        assert obligation is not None
+
+        companions = reconcile_player_route_companions(obligation)
+        self.assertEqual(
+            tuple(companion.player_id for companion in companions),
+            ("player-alice", "player-bob"),
+        )
+        self.assertTrue(all(companion.complete for companion in companions))
+        self.assertEqual(
+            companions[0].to_mapping()["collaboration_route_refs"],
+            [{"obligation_id": "obligation-companion", "generation": 1}],
+        )
+        self.assertNotIn("authorized", companions[0].to_mapping())
+
+        terminal = replace(obligation, lifecycle="RESOLVED")
+        terminal_companions = reconcile_player_route_companions(terminal)
+        self.assertEqual(
+            [
+                companion.to_mapping()["collaboration_route_refs"]
+                for companion in terminal_companions
+            ],
+            [[], []],
+        )
 
     def test_reaction_offer_is_also_a_positive_ordered_owner(self) -> None:
         clause = _collective_clause() | {"ordering_resolution_id": "resolution-1"}
@@ -672,6 +1024,16 @@ class CollaborationAdmissionTests(unittest.TestCase):
 
 
 class CollaborationSchemaTests(unittest.TestCase):
+    def test_intent_clause_schema_accepts_optional_contributors(self) -> None:
+        clause = _collective_clause() | {
+            "optional_contributors": [{"player_id": "player-alice"}]
+        }
+        schema = json.loads(
+            (SCHEMAS / "intent-clause.schema.json").read_text(encoding="utf-8")
+        )
+
+        Draft202012Validator(schema).validate(clause)
+
     def test_intent_clause_schema_accepts_finite_dependency_and_ordering_reference(
         self,
     ) -> None:
