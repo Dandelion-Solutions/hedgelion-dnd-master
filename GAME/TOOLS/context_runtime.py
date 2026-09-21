@@ -7,9 +7,11 @@ PLAYER owner checks for the registered role/purpose scope.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+import json
+import weakref
+from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 try:
@@ -23,6 +25,7 @@ try:
         InformationContractError,
         LiveInformationCandidate,
         apply_normalization_candidates_under_native_owners,
+        extract_material_live_information,
     )
     from .live_state import LiveContractError, LiveEnvelope, LiveRouting, require_selected_live_source
 except ImportError:  # pragma: no cover - direct-path focused test imports.
@@ -36,6 +39,7 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
         InformationContractError,
         LiveInformationCandidate,
         apply_normalization_candidates_under_native_owners,
+        extract_material_live_information,
     )
     from GAME.TOOLS.live_state import (  # type: ignore[no-redef]
         LiveContractError,
@@ -49,13 +53,23 @@ class ContextContractError(ValueError):
     """A context candidate or scoped join violates the registered request."""
 
 
-@dataclass(frozen=True, slots=True)
-class ContextOwnerInput:
-    """Untrusted transport for native owner inputs needed by one candidate.
+ExactLoadTransport = Callable[[str, tuple[str, ...]], object]
 
-    Constructing this carrier does not establish currentness or eligibility.
-    Admission always re-runs the fixed native owner validators below, and
-    owner-issued PLAYER resolution is checked against its private issuer mark.
+_LIVE_ROUTE_LOAD = "context.live_route"
+_LIVE_SOURCE_LOAD = "context.live_source"
+_LIVE_PROJECTION_LOAD = "context.live_projection"
+_PLAYER_RESOLUTION_LOAD = "context.player_resolution"
+_CONTEXT_OWNER_INPUT_TOKEN = object()
+
+
+@dataclass(frozen=True, slots=True, weakref_slot=True, init=False)
+class ContextOwnerInput:
+    """Opaque internal post-resolution carrier for one admitted candidate.
+
+    The public constructor is deliberately disabled.  Context creates this
+    carrier only after exact-load transport has supplied route/source records,
+    Context has rebuilt the native LIVE types, and the PLAYER owner has supplied
+    its owner-issued resolution.  It is never an authority-bearing input.
     """
 
     candidate_id: str
@@ -64,10 +78,42 @@ class ContextOwnerInput:
     live_projection: object
     information_candidate: object
     player_resolution: object
+    _issuer: object = field(default=None, repr=False, compare=False)
 
-    def __post_init__(self) -> None:
-        if not isinstance(self.candidate_id, str) or not self.candidate_id:
-            raise ContextContractError("owner input candidate identity is required")
+    def __init__(self, **_values: object) -> None:
+        raise ContextContractError(
+            "Context owner inputs are internal; use fixed exact native-load transport"
+        )
+
+
+_OWNER_ISSUED_CONTEXT_INPUTS: dict[
+    int, weakref.ReferenceType[ContextOwnerInput]
+] = {}
+
+
+def _issue_context_owner_input(**values: object) -> ContextOwnerInput:
+    owner_input = object.__new__(ContextOwnerInput)
+    for field_name, value in values.items():
+        object.__setattr__(owner_input, field_name, value)
+    object.__setattr__(owner_input, "_issuer", _CONTEXT_OWNER_INPUT_TOKEN)
+    owner_input_id = id(owner_input)
+
+    def remove(reference: weakref.ReferenceType[ContextOwnerInput]) -> None:
+        if _OWNER_ISSUED_CONTEXT_INPUTS.get(owner_input_id) is reference:
+            _OWNER_ISSUED_CONTEXT_INPUTS.pop(owner_input_id, None)
+
+    _OWNER_ISSUED_CONTEXT_INPUTS[owner_input_id] = weakref.ref(owner_input, remove)
+    return owner_input
+
+
+def _is_owner_issued_context_input(value: object) -> bool:
+    reference = _OWNER_ISSUED_CONTEXT_INPUTS.get(id(value))
+    return (
+        type(value) is ContextOwnerInput
+        and value._issuer is _CONTEXT_OWNER_INPUT_TOKEN
+        and reference is not None
+        and reference() is value
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -128,21 +174,29 @@ def _registered_profile(profile_id: object) -> _RegisteredProfile:
     raise ContextContractError("ContextNeedProfile is not registered")
 
 
-def _request_scope(request: Mapping[str, object]) -> tuple[_RegisteredProfile, str, str, str]:
+def _request_scope(
+    request: Mapping[str, object],
+) -> tuple[_RegisteredProfile, str, str, str, str]:
     if type(request) is not dict:
         raise ContextContractError("Context admission request must be a native mapping")
     profile = _registered_profile(request.get("profile_id"))
     role_id = request.get("role_id")
     purpose = request.get("purpose")
+    subject_id = request.get("subject_id")
     recipient_id = request.get("recipient_id")
-    if any(not isinstance(value, str) or not value for value in (role_id, purpose, recipient_id)):
-        raise ContextContractError("owner-routed Context admission requires role, purpose and recipient")
+    if any(
+        not isinstance(value, str) or not value
+        for value in (role_id, purpose, subject_id, recipient_id)
+    ):
+        raise ContextContractError(
+            "owner-routed Context admission requires role, purpose, subject and recipient"
+        )
     if role_id != profile.role_id or purpose not in profile.purposes:
         raise ContextContractError("request role/purpose is not admitted by the registered ContextNeedProfile")
     if "need_profile" in request or "profile" in request:
         raise ContextContractError("caller cannot supply or replace a registered ContextNeedProfile")
     _validate_request_limits(dict(request), profile)
-    return profile, role_id, purpose, recipient_id
+    return profile, role_id, purpose, subject_id, recipient_id
 
 
 def _registered_string_list(
@@ -187,16 +241,88 @@ def _validate_request_limits(request: dict[str, Any], profile: _RegisteredProfil
 
 
 def _validate_registered_request(request: dict[str, Any]) -> _RegisteredProfile:
-    profile, _role_id, _purpose, _recipient_id = _request_scope(request)
+    profile, _role_id, _purpose, _subject_id, _recipient_id = _request_scope(request)
     required = ("allowed_channels", "max_candidates", "allowed_relations", "budget")
     if any(field not in request for field in required):
         raise ContextContractError("registered ContextNeedProfile limits are required")
     return profile
 
 
+def _call_exact_load(
+    exact_load: ExactLoadTransport | object,
+    family: str,
+    identity: tuple[str, ...],
+) -> object:
+    loader = getattr(exact_load, "load_exact", None)
+    if loader is None:
+        loader = exact_load
+    if not callable(loader):
+        raise ContextContractError("fixed exact native-load transport is required")
+    try:
+        value = loader(family, identity)
+    except (KeyError, OSError, TypeError, ValueError) as error:
+        raise ContextContractError(
+            f"exact native load failed for {family}",
+        ) from error
+    if value is None:
+        raise ContextContractError(f"exact native load is missing for {family}:{identity[0]}")
+    if isinstance(value, (bytes, bytearray)):
+        try:
+            value = json.loads(bytes(value).decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as error:
+            raise ContextContractError(
+                f"exact native load for {family} is not a JSON record",
+            ) from error
+    return value
+
+
+def _load_owner_input(
+    candidate_id: str,
+    request: Mapping[str, object],
+    exact_load: ExactLoadTransport | object | None,
+) -> ContextOwnerInput:
+    if exact_load is None:
+        raise ContextContractError(
+            "candidate requires owner-routed fixed exact native-load transport"
+        )
+    _profile, _role_id, _purpose, _subject_id, recipient_id = _request_scope(request)
+    raw_route = _call_exact_load(exact_load, _LIVE_ROUTE_LOAD, (candidate_id,))
+    raw_source = _call_exact_load(exact_load, _LIVE_SOURCE_LOAD, (candidate_id,))
+    raw_projection = _call_exact_load(exact_load, _LIVE_PROJECTION_LOAD, (candidate_id,))
+    resolution = _call_exact_load(exact_load, _PLAYER_RESOLUTION_LOAD, (recipient_id,))
+    try:
+        route = LiveRouting.from_mapping(raw_route)
+        source = LiveEnvelope.from_mapping(raw_source)
+    except (LiveContractError, TypeError, ValueError) as error:
+        raise ContextContractError(f"exact native LIVE load is invalid: {error}") from error
+    if not isinstance(raw_projection, Mapping) or callable(raw_projection):
+        raise ContextContractError("exact native LIVE projection load is invalid")
+    if not isinstance(resolution, PlayerResolution):
+        raise ContextContractError("exact native PLAYER resolution load is not owner-issued")
+    try:
+        extracted = extract_material_live_information(
+            route,
+            source,
+            raw_projection,
+            recipient_player_id=recipient_id,
+        )
+    except (InformationContractError, LiveContractError, TypeError, ValueError) as error:
+        raise ContextContractError(f"exact native information load is invalid: {error}") from error
+    if len(extracted) != 1:
+        raise ContextContractError("exact native information load is ambiguous")
+    return _issue_context_owner_input(
+        candidate_id=candidate_id,
+        live_route=route,
+        live_source=source,
+        live_projection=deepcopy(dict(raw_projection)),
+        information_candidate=extracted[0],
+        player_resolution=resolution,
+    )
+
+
 def _owner_input_for_candidate(owner_input: object, candidate_id: str) -> ContextOwnerInput:
-    if type(owner_input) is not ContextOwnerInput:
-        raise ContextContractError("candidate requires the nominal Context owner input")
+    if not _is_owner_issued_context_input(owner_input):
+        raise ContextContractError("candidate requires an owner-issued exact-load result")
     if owner_input.candidate_id != candidate_id:
         raise ContextContractError("Context owner input identity differs from candidate")
     if type(owner_input.live_route) is not LiveRouting:
@@ -227,15 +353,19 @@ def _resolve_owner_admitted_candidate(
     if not isinstance(candidate_id, str) or not candidate_id:
         raise ContextContractError("candidate identity is required")
     owner = _owner_input_for_candidate(owner_input, candidate_id)
-    _profile, role_id, purpose, recipient_id = _request_scope(request)
+    _profile, role_id, purpose, subject_id, recipient_id = _request_scope(request)
     for field, expected in (("role_id", role_id), ("purpose", purpose), ("recipient_id", recipient_id)):
         if field in candidate and candidate[field] != expected:
             raise ContextContractError(f"candidate {field} is outside the registered request scope")
+    if "subject_id" in candidate and candidate["subject_id"] != subject_id:
+        raise ContextContractError("candidate subject is outside the registered request scope")
 
     try:
         current_source = require_selected_live_source(owner.live_route, owner.live_source)
     except (LiveContractError, TypeError, ValueError) as error:
         raise ContextContractError(f"candidate LIVE source is stale or incomplete: {error}") from error
+    if not current_source.claims_contain("world.actor", subject_id):
+        raise ContextContractError("candidate LIVE source is not current for the requested subject")
 
     resolution = owner.player_resolution
     if not _is_owner_issued_resolution(resolution):
@@ -267,6 +397,8 @@ def _resolve_owner_admitted_candidate(
     if len(normalized_values) != 1:
         raise ContextContractError("candidate information owner returned an ambiguous result")
     normalized = normalized_values[0]
+    if normalized["knowledge"]["knower_id"] != subject_id:
+        raise ContextContractError("candidate native information is outside the requested subject scope")
     native_ids = {
         normalized["lore_fact"]["fact_id"],
         normalized["message"]["message_id"],
@@ -299,14 +431,23 @@ def discover_candidates(request: dict[str, Any], candidates: list[dict[str, Any]
 def resolve_candidate_basis(
     candidate: dict[str, Any],
     *,
-    owner_input: ContextOwnerInput | None = None,
+    owner_input: object | None = None,
     request: Mapping[str, object] | None = None,
+    exact_load: ExactLoadTransport | object | None = None,
 ) -> dict[str, Any]:
     """Admit a candidate only after complete native owner/source resolution."""
 
     if request is None:
         raise ContextContractError("candidate requires an owner-routed Context request")
-    return _resolve_owner_admitted_candidate(candidate, owner_input, request)
+    if owner_input is not None:
+        raise ContextContractError(
+            "caller-constructed Context owner carriers are not admitted; use exact native load"
+        )
+    candidate_id = candidate.get("candidate_id") if isinstance(candidate, dict) else None
+    if not isinstance(candidate_id, str) or not candidate_id:
+        raise ContextContractError("candidate identity is required")
+    loaded_owner_input = _load_owner_input(candidate_id, request, exact_load)
+    return _resolve_owner_admitted_candidate(candidate, loaded_owner_input, request)
 
 
 def _required_closure(
@@ -349,16 +490,14 @@ def assemble_context(
     candidates: list[dict[str, Any]],
     *,
     owner_inputs: Sequence[ContextOwnerInput] = (),
+    exact_load: ExactLoadTransport | object | None = None,
 ) -> dict[str, Any]:
     profile = _validate_registered_request(request)
     discovered = discover_candidates(request, candidates)
-    owner_by_id: dict[str, ContextOwnerInput] = {}
-    for owner_input in owner_inputs:
-        if type(owner_input) is not ContextOwnerInput:
-            raise ContextContractError("Context owner inputs must be nominal typed carriers")
-        if owner_input.candidate_id in owner_by_id:
-            raise ContextContractError("Context owner inputs must have unique candidate identities")
-        owner_by_id[owner_input.candidate_id] = owner_input
+    if owner_inputs:
+        raise ContextContractError(
+            "caller-provided Context owner carriers are not admitted; use exact native load"
+        )
 
     available: dict[str, dict[str, Any]] = {}
     for item in discovered:
@@ -366,8 +505,8 @@ def assemble_context(
         try:
             available[candidate_id] = resolve_candidate_basis(
                 item,
-                owner_input=owner_by_id.get(candidate_id),
                 request=request,
+                exact_load=exact_load,
             )
         except ContextContractError:
             continue
@@ -394,11 +533,12 @@ def assemble_context(
     if allocation["outcome"] == "UNSATISFIABLE":
         return {"outcome": "UNSATISFIABLE", "bundle": None, "trace": trace}
     trace["included_ids"] = [item["candidate_id"] for item in allocation["required"] + allocation["optional"]]
-    _profile, role_id, purpose, recipient_id = _request_scope(request)
+    _profile, role_id, purpose, subject_id, recipient_id = _request_scope(request)
     bundle = {
         "profile_id": profile.profile_id,
         "role_id": role_id,
         "purpose": purpose,
+        "subject_id": subject_id,
         "source_frontier": request.get("source_frontier", ""),
         "recipient_id": recipient_id,
         "required": allocation["required"],
@@ -409,7 +549,7 @@ def assemble_context(
 
 
 def scoped_context_join(left: dict[str, Any], right: dict[str, Any]) -> dict[str, Any]:
-    keys = ("profile_id", "source_frontier", "recipient_id")
+    keys = ("profile_id", "role_id", "purpose", "subject_id", "source_frontier", "recipient_id")
     if any(left.get(key) != right.get(key) for key in keys):
         raise ContextContractError("context join requires one scoped profile/frontier/recipient basis")
     return {key: left.get(key) for key in keys}
