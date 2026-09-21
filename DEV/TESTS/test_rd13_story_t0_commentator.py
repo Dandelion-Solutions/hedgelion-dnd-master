@@ -7,6 +7,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
+from GAME.TOOLS import history as history_module
 from GAME.TOOLS.commentator import (
     CommentatorContractError,
     build_commentator_control_projection,
@@ -21,11 +22,13 @@ from GAME.TOOLS.dramaturg import (
 )
 from GAME.TOOLS.history import (
     BoundNativeHistoryRuntime,
+    FRAMEWORK_MODULE_VERSION,
     HistoryContractError,
+    _compose_native_history_runtime,
     append_semantic_event,
-    bind_native_history_runtime,
     build_t0_basis,
     recover_native_history,
+    read_native_history,
     validate_semantic_event_draft,
     validate_t0_basis,
 )
@@ -168,9 +171,16 @@ def _story_projection() -> dict[str, object]:
 
 
 class NativeHistoryAuthorityTests(unittest.TestCase):
+    def test_public_composition_and_forged_runtime_cannot_mint_history(self) -> None:
+        self.assertNotIn("bind_native_history_runtime", vars(history_module))
+        forged_runtime = object.__new__(BoundNativeHistoryRuntime)
+
+        with self.assertRaises(HistoryContractError):
+            read_native_history(forged_runtime, "campaign.main")
+
     def test_trusted_host_binding_reads_a_bounded_local_window(self) -> None:
         repository = _RepositoryForNativeHistory(_source_window())
-        runtime = bind_native_history_runtime(repository, current_routing=None)
+        runtime = _compose_native_history_runtime(repository, current_routing=None)
 
         self.assertIsInstance(runtime, BoundNativeHistoryRuntime)
         publication = runtime.read("campaign.main")
@@ -205,12 +215,12 @@ class NativeHistoryAuthorityTests(unittest.TestCase):
         for window in (duplicate, noncontiguous):
             with self.subTest(window=window):
                 with self.assertRaises(HistoryContractError):
-                    bind_native_history_runtime(
+                    _compose_native_history_runtime(
                         _RepositoryForNativeHistory(window), current_routing=None
                     ).read("campaign.main")
 
     def test_empty_evt_window_is_bounded_without_a_dummy_event(self) -> None:
-        publication = bind_native_history_runtime(
+        publication = _compose_native_history_runtime(
             _RepositoryForNativeHistory(_source_window(events=(), lower_exclusive=None, upper=None)),
             current_routing=None,
         ).read("campaign.main")
@@ -236,7 +246,7 @@ class NativeHistoryAuthorityTests(unittest.TestCase):
         for window in cases:
             with self.subTest(window=window):
                 with self.assertRaises(HistoryContractError):
-                    bind_native_history_runtime(
+                    _compose_native_history_runtime(
                         _RepositoryForNativeHistory(window), current_routing=None
                     ).read("campaign.main")
 
@@ -249,7 +259,7 @@ class NativeHistoryAuthorityTests(unittest.TestCase):
                 source_revision=source.source_revision,
             )
         )
-        runtime = bind_native_history_runtime(
+        runtime = _compose_native_history_runtime(
             _RepositoryForNativeHistory(_source_window()),
             current_routing=route,
             selected_live_reader=live_reader,
@@ -267,7 +277,7 @@ class NativeHistoryAuthorityTests(unittest.TestCase):
 
     def test_recovery_reloads_the_bound_window_without_story_or_narration_fallback(self) -> None:
         repository = _RepositoryForNativeHistory(_source_window())
-        runtime = bind_native_history_runtime(repository, current_routing=None)
+        runtime = _compose_native_history_runtime(repository, current_routing=None)
 
         recovered = recover_native_history(runtime, "campaign.main")
 
@@ -275,12 +285,12 @@ class NativeHistoryAuthorityTests(unittest.TestCase):
         story_window = _source_window()
         story_window["entries"] = [{"story_id": "E000007", "content": {"body": "fiction"}}]
         with self.assertRaises(HistoryContractError):
-            bind_native_history_runtime(
+            _compose_native_history_runtime(
                 _RepositoryForNativeHistory(story_window), current_routing=None
             ).read("campaign.main")
 
     def test_only_validated_semantic_events_enter_native_history(self) -> None:
-        history = bind_native_history_runtime(
+        history = _compose_native_history_runtime(
             _RepositoryForNativeHistory(_source_window()), current_routing=None
         ).read("campaign.main")
 
@@ -385,7 +395,7 @@ class HistoryProjectionSeparationTests(unittest.TestCase):
 
 class CompositeIntegrationTests(unittest.TestCase):
     def test_owner_local_chain_preserves_native_event_and_reader_safe_projection(self) -> None:
-        publication = bind_native_history_runtime(
+        publication = _compose_native_history_runtime(
             _RepositoryForNativeHistory(_source_window()), current_routing=None
         ).read("campaign.main")
         history = [event.as_mapping() for event in publication.events]
@@ -492,8 +502,11 @@ class StorySchemaTests(unittest.TestCase):
 
 
 class SchemaVersionTests(unittest.TestCase):
+    def test_history_module_uses_current_framework_revision(self) -> None:
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.7")
+
     def test_native_history_schemas_validate_only_the_bound_evidence_shape(self) -> None:
-        publication = bind_native_history_runtime(
+        publication = _compose_native_history_runtime(
             _RepositoryForNativeHistory(_source_window()), current_routing=None
         ).read("campaign.main")
         currentness_schema = json.loads(

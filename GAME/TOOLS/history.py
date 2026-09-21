@@ -20,6 +20,8 @@ if TYPE_CHECKING:
     from .policy_basis import RepositoryPort
 
 
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
 _GIT_REVISION: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _GIT_REF: Final = re.compile(r"^refs/heads/[^\s/]+(?:/[^\s/]+)*$")
 _CAMPAIGN_REF: Final = re.compile(r"^refs/heads/campaign/[^\s/]+$")
@@ -37,7 +39,7 @@ class HistoryContractError(ValueError):
     """Raised when a caller supplies invalid native history material."""
 
 
-class SelectedLiveReadCapability(Protocol):
+class _SelectedLiveReadCapability(Protocol):
     """Trusted host capability for one exact selected LIVE source read."""
 
     def read_selected_live_source(self, route: LiveRouting, source: LiveEnvelope) -> object:
@@ -53,7 +55,7 @@ class _EvtLaneEnrollmentWindowAdapter:
         self,
         repository: RepositoryPort,
         current_routing: LiveRouting | None,
-        selected_live_reader: SelectedLiveReadCapability | None,
+        selected_live_reader: _SelectedLiveReadCapability | None,
     ) -> None:
         self._repository = repository
         self._current_routing = current_routing
@@ -91,7 +93,7 @@ class _EvtLaneEnrollmentWindowAdapter:
         return pinned
 
 
-@dataclass(frozen=True, slots=True, init=False)
+@dataclass(frozen=True, slots=True, weakref_slot=True, init=False)
 class BoundNativeHistoryRuntime:
     """Native-history service bound once by the trusted host composition root."""
 
@@ -108,9 +110,15 @@ class BoundNativeHistoryRuntime:
     ) -> NativeHistoryPublication:
         """Read and validate one bounded native evt window from bound capabilities."""
 
+        try:
+            adapter = self._window_adapter
+        except AttributeError as exc:
+            raise HistoryContractError("native history runtime must be host-composed") from exc
+        if not isinstance(adapter, _EvtLaneEnrollmentWindowAdapter):
+            raise HistoryContractError("native history runtime must be host-composed")
         campaign = _nonempty_string(campaign_id, "native history campaign_id")
         checked_origin = _history_origin(origin)
-        raw_window, expected_revision = self._window_adapter.read_window(campaign, checked_origin)
+        raw_window, expected_revision = adapter.read_window(campaign, checked_origin)
         return _issue_native_history_publication(
             raw_window,
             campaign_id=campaign,
@@ -124,18 +132,16 @@ class BoundNativeHistoryRuntime:
         return self.read(campaign_id, origin=origin)
 
 
-def bind_native_history_runtime(
+def _compose_native_history_runtime(
     repository: RepositoryPort,
     *,
     current_routing: LiveRouting | None,
-    selected_live_reader: SelectedLiveReadCapability | None = None,
+    selected_live_reader: _SelectedLiveReadCapability | None = None,
 ) -> BoundNativeHistoryRuntime:
-    """Compose the native-history service from trusted host-owned capabilities."""
+    """Compose native history at the private trusted-host composition boundary."""
 
     if current_routing is not None and not isinstance(current_routing, LiveRouting):
         raise HistoryContractError("native history current routing must be owner-typed")
-    if not hasattr(repository, "pin_campaign") or not hasattr(repository, "read_exact_path"):
-        raise HistoryContractError("native history requires the trusted RepositoryPort")
     adapter = _EvtLaneEnrollmentWindowAdapter(
         repository,
         current_routing,
@@ -155,7 +161,7 @@ def read_native_history(
     """Read native history only through a host-bound runtime service."""
 
     if not isinstance(runtime, BoundNativeHistoryRuntime):
-        raise HistoryContractError("native history requires a host-bound runtime")
+        raise HistoryContractError("native history requires a host-composed runtime")
     return runtime.read(campaign_id, origin=origin)
 
 
@@ -500,7 +506,7 @@ def recover_native_history(
     """Recover by bounded re-read through the bound runtime, never caller bytes."""
 
     if not isinstance(runtime, BoundNativeHistoryRuntime) or campaign_id is None:
-        raise HistoryContractError("native history recovery requires a bound runtime")
+        raise HistoryContractError("native history recovery requires a host-composed runtime")
     return runtime.recover(campaign_id, origin=origin)
 
 
