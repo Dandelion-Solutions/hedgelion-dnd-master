@@ -21,6 +21,7 @@ try:
     from .context_budget import allocate
     from .live_state import (
         LiveContractError,
+        LiveEnvelope,
         LiveRouting,
         require_selected_live_source,
         select_live_source,
@@ -40,6 +41,7 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     from GAME.TOOLS.context_budget import allocate  # type: ignore[no-redef]
     from GAME.TOOLS.live_state import (  # type: ignore[no-redef]
         LiveContractError,
+        LiveEnvelope,
         LiveRouting,
         require_selected_live_source,
         select_live_source,
@@ -55,8 +57,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
 
 
 class ContextContractError(ValueError):
@@ -494,6 +496,8 @@ def _resolve_live(
             reader.read_selected_live_source(route, source),  # type: ignore[attr-defined]
             "LIVE source read",
         )
+        observed = LiveEnvelope.from_mapping(raw)
+        require_selected_live_source(route, observed)
     except ContextContractError:
         raise
     except (
@@ -507,15 +511,7 @@ def _resolve_live(
         raise ContextContractError(
             "selected LIVE source is stale or invalid"
         ) from error
-    if (
-        raw.get("source_key") != list(source.source_key)
-        or raw.get("source_ref") != source.source_ref
-        or raw.get("source_revision") != source.source_revision
-    ):
-        raise ContextContractError(
-            "LIVE source read does not match the selected source"
-        )
-    return dict(raw)
+    return observed.as_mapping()
 
 
 def _resolve_candidate(

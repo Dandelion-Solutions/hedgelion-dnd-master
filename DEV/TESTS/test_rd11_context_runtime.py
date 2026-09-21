@@ -5,7 +5,13 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator, ValidationError
 
-from GAME.TOOLS.live_state import LiveRouting
+from GAME.TOOLS.live_state import (
+    LiveClaim,
+    LiveEnvelope,
+    LiveRouting,
+    build_live_ref,
+    derive_live_epoch_id,
+)
 from GAME.TOOLS.native_storage import route_native_record
 from GAME.TOOLS.policy_basis import PinnedCampaign
 from GAME.TOOLS.runtime_host import compose_runtime_host
@@ -119,6 +125,32 @@ class RuntimeLiveTransport:
         return LiveRouting(campaign_id=self.campaign_id, entries=())
 
 
+class RuntimeLiveSourceTransport(RuntimeLiveTransport):
+    def __init__(self, campaign_id="campaign-context"):
+        super().__init__(campaign_id)
+        claims = (LiveClaim.exact_owner("world.scene", "live-scene"),)
+        opening_revision = "0" * 40
+        epoch_id = derive_live_epoch_id(
+            campaign_id, "scene-live", opening_revision, claims
+        )
+        self.source = LiveEnvelope(
+            campaign_id=campaign_id,
+            scene_id="scene-live",
+            epoch_id=epoch_id,
+            source_ref=build_live_ref(campaign_id, "scene-live", epoch_id),
+            source_revision="1" * 40,
+            claims=claims,
+            opening_campaign_revision=opening_revision,
+        )
+        self.route = LiveRouting(campaign_id=campaign_id, entries=(self.source,))
+
+    def read_selected_live(self, campaign_id, pinned):
+        return self.route
+
+    def read_selected_live_source(self, route, source):
+        return source.as_mapping()
+
+
 def host_for(items):
     repository = RuntimeRepository()
     for item in items:
@@ -204,6 +236,33 @@ class ContextRuntimeHostTests(unittest.TestCase):
         self.assertEqual(optional["bundle"]["optional"], [])
         self.assertEqual(required["outcome"], "UNSATISFIABLE")
 
+    def test_live_candidate_uses_exact_selected_source_body(self):
+        repository = RuntimeRepository()
+        live = RuntimeLiveSourceTransport()
+        host = compose_runtime_host("campaign-context", repository, live)
+        candidate = owner_candidate(
+            "live-1",
+            "LIVE",
+            ("campaign-context", "scene-live", live.source.epoch_id),
+            channel="LIVE_CURRENT",
+            source_key=list(live.source.source_key),
+        )
+
+        result = host.context.assemble(
+            bound_request(
+                allowed_channels=["LIVE_CURRENT"],
+                max_candidates=1,
+                required_ids=["live-1"],
+            ),
+            [candidate],
+        )
+
+        self.assertEqual(result["outcome"], "ASSEMBLED")
+        self.assertEqual(
+            result["bundle"]["required"][0]["payload"]["source_ref"],
+            live.source.source_ref,
+        )
+
     def test_wrong_registered_role_purpose_and_unknown_profile_fail_closed(self):
         host, _repository = self._host()
 
@@ -240,7 +299,7 @@ class ContextRuntimeHostTests(unittest.TestCase):
             Draft202012Validator(schema).validate(
                 {key: value for key, value in bound_request().items() if key != "role"}
             )
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.1")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.2")
 
 
 class ContextDiscoveryTests(unittest.TestCase):
