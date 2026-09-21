@@ -3,5 +3,8 @@
   "instructions": [
     "DEV/AGENT_RUNTIMES/LOCAL_MACHINE.md",
     "DEV/AGENT_RUNTIMES/OPENCODE.md"
-  ]
+  ],
+  "permission": {
+    "external_directory": "deny"
+  }
 }
