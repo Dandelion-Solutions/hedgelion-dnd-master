@@ -437,3 +437,19 @@ SYSTEM_IMPACT: NONE CURRENT; final Senior/design rulings resolve the prior T01A/
 NEXT_EXACT_TASK: dispatch W04.T01A, W04.T05A and W04.T07A with disjoint write sets; T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires.
 KNOWN_BLOCKERS: none for the three root tasks; all downstream tasks remain dependency-gated; Wave 05 remains unauthorized.
 UNPUBLISHED_WORK: NONE after restore publication/read-back.
+
+## Targeted reimplementation stop after final ruling
+
+STATUS: SENIOR_REVIEW_REQUIRED
+CURRENT_TASK: resolve the two recorded owner-boundary gaps before resuming W04.T01A, W04.T05A or W04.T07A.
+LAST_SAFE_SHA: `ce05e58e9f398e779dcdda68cb9aec53e82cfe7a` clean task-surface restoration; `80d1cedfce7f529df96ea2c4b2342ce466cc8806` records its acceptance without changing product bytes.
+LAST_PUBLISHED_SHA: `2eb3c28f480932db984240d5ea9f41954d744eaf`
+CURRENT_VERIFICATION_STATE: targeted focused suites and maintenance audits passed at several rejected checkpoints, but independent reviewers found that no accepted producer validates native ordered-owner authority for T01A and that forged host construction mints Context/LOCAL history for T05A/T07A. No rejected checkpoint may unlock a dependent task.
+VERSION_IMPACT: documentation checkpoint NONE. Rejected fresh-attempt module/schema transitions are recorded in `2026-09-21-w04-t01a-fix-round-4-system-impact-brief.md`; they are non-precedential and must not be reused as an accepted basis.
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED
+- T01A: `DEV/docs/superpowers/design/2026-09-21-w04-t01a-fix-round-4-system-impact-brief.md` records that the only discovered complete ordering validator is a new manual/public mirror, not an admitted native owner route.
+- T05A: `DEV/docs/superpowers/design/2026-09-21-w04-t05a-fix-round-4-system-impact-brief.md` records that caller-forged hosts mint Context and LOCAL history.
+- T07A: `DEV/docs/superpowers/design/2026-09-21-w04-t07a-fix-round-3-system-impact-brief.md` records the same missing host composition route; T07A remains dependency-gated on its resolution.
+NEXT_EXACT_TASK: Senior/design identifies the complete T01A native ordering-validator producer/composition/currentness route and the T05A/T07A non-replaceable host composition route, or returns the affected boundary to design. Do not run T01B+, T05B+, T07B+, or Wave-05.
+KNOWN_BLOCKERS: the two System-Impact gaps above.
+UNPUBLISHED_WORK: NONE after publication/read-back.
