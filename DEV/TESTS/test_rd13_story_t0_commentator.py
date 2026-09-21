@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from copy import deepcopy
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -20,12 +21,18 @@ from GAME.TOOLS.dramaturg import (
 )
 from GAME.TOOLS.history import (
     HistoryContractError,
+    NativeHistoryCurrentness,
+    NativeHistoryPublication,
+    NativeSemanticEvent,
     append_semantic_event,
     build_t0_basis,
     issue_native_history_currentness,
     issue_native_semantic_event,
+    publish_native_history,
+    read_native_history,
     recover_native_history,
     validate_semantic_event_draft,
+    validate_native_history,
     validate_t0_basis,
 )
 from GAME.TOOLS.story import (
@@ -69,19 +76,51 @@ def _t0_basis() -> dict[str, object]:
     }
 
 
-def _native_currentness() -> object:
-    return issue_native_history_currentness(
-        campaign_id="campaign.main",
-        origin="LOCAL",
-        source_revision="0" * 40,
+class _NativeHistoryOwner:
+    def __init__(self, payload: dict[str, object]) -> None:
+        self._payload = payload
+
+    def read_accepted_native_history(self, campaign_id: str) -> object:
+        if campaign_id != self._payload["campaign_id"]:
+            raise AssertionError("test owner received the wrong campaign")
+        return deepcopy(self._payload)
+
+
+def _native_history(
+    events: tuple[dict[str, object], ...] | None = None,
+    *,
+    origin: str = "LOCAL",
+    source_revision: str = "0" * 40,
+) -> object:
+    source_events = events if events is not None else (_semantic_event(),)
+    return read_native_history(
+        _NativeHistoryOwner(
+            {
+                "campaign_id": "campaign.main",
+                "origin": origin,
+                "source_revision": source_revision,
+                "events": list(source_events),
+            }
+        ),
+        "campaign.main",
     )
+
+
+def _native_currentness(
+    events: tuple[dict[str, object], ...] | None = None,
+    *,
+    origin: str = "LOCAL",
+    source_revision: str = "0" * 40,
+) -> object:
+    return _native_history(events, origin=origin, source_revision=source_revision).currentness  # type: ignore[attr-defined]
 
 
 def _accepted_semantic_event(
     event: dict[str, object] | None = None, *, currentness: object | None = None
 ) -> object:
-    basis = currentness if currentness is not None else _native_currentness()
-    return issue_native_semantic_event(event or _semantic_event(), currentness=basis)  # type: ignore[arg-type]
+    del currentness
+    source = _native_history((event or _semantic_event(),))
+    return source.events[0]  # type: ignore[attr-defined]
 
 
 def _story_projection() -> dict[str, object]:
@@ -96,6 +135,37 @@ def _story_projection() -> dict[str, object]:
 
 
 class NativeHistoryAuthorityTests(unittest.TestCase):
+    def test_public_raw_issuance_paths_cannot_mint_owner_accepted_history(self) -> None:
+        with self.assertRaises(HistoryContractError):
+            issue_native_history_currentness(
+                campaign_id="campaign.main", origin="LOCAL", source_revision="0" * 40
+            )
+        with self.assertRaises(HistoryContractError):
+            issue_native_semantic_event(_semantic_event(), currentness=_native_currentness())
+        with self.assertRaises(HistoryContractError):
+            read_native_history({"campaign_id": "campaign.main"}, "campaign.main")  # type: ignore[arg-type]
+
+        owner_publication = _native_history((_semantic_event(),))
+        currentness = owner_publication.currentness
+        self.assertEqual(owner_publication.events[0].as_mapping(), _semantic_event())
+        with self.assertRaises(HistoryContractError):
+            NativeHistoryCurrentness(
+                campaign_id="campaign.main",
+                origin="LOCAL",
+                source_revision="0" * 40,
+                accepted_event_fingerprints={},
+            )
+        with self.assertRaises(HistoryContractError):
+            NativeSemanticEvent(event=_semantic_event(), currentness=currentness)
+        with self.assertRaises(HistoryContractError):
+            NativeHistoryPublication(currentness=currentness, events=())
+        with self.assertRaises(HistoryContractError):
+            publish_native_history((), _semantic_event(), currentness=currentness)
+        with self.assertRaises(HistoryContractError):
+            recover_native_history({}, currentness={})  # type: ignore[arg-type]
+        with self.assertRaises(HistoryContractError):
+            validate_native_history({}, currentness={})  # type: ignore[arg-type]
+
     def test_only_validated_semantic_events_enter_native_history(self) -> None:
         currentness = _native_currentness()
         history = append_semantic_event(
@@ -107,61 +177,60 @@ class NativeHistoryAuthorityTests(unittest.TestCase):
             validate_semantic_event_draft({**_semantic_event(), "provenance_refs": []})
 
     def test_caller_shaped_semantic_event_cannot_mint_accepted_history(self) -> None:
-        currentness = issue_native_history_currentness(
-            campaign_id="campaign.main",
-            origin="LOCAL",
-            source_revision="0" * 40,
-        )
+        currentness = _native_currentness()
 
         with self.assertRaises(HistoryContractError):
             append_semantic_event((), _semantic_event(), currentness=currentness)
 
     def test_native_publication_rejects_duplicate_identity_order_and_currentness(self) -> None:
-        currentness = issue_native_history_currentness(
-            campaign_id="campaign.main",
-            origin="LOCAL",
-            source_revision="0" * 40,
+        source = _native_history(
+            (_semantic_event(), dict(_semantic_event(), event_id="event.other", semantic_order=8))
         )
-        accepted = issue_native_semantic_event(_semantic_event(), currentness=currentness)
+        currentness = source.currentness
+        accepted = source.events[0]
         publication = append_semantic_event((), accepted, currentness=currentness)
 
-        duplicate_id = dict(_semantic_event(), semantic_order=8)
-        duplicate_order = dict(_semantic_event(), event_id="event.other")
-        for candidate in (duplicate_id, duplicate_order):
-            with self.subTest(candidate=candidate):
-                with self.assertRaises(HistoryContractError):
-                    append_semantic_event(
-                        publication,
-                        issue_native_semantic_event(candidate, currentness=currentness),
-                        currentness=currentness,
-                    )
+        with self.assertRaises(HistoryContractError):
+            append_semantic_event(publication, accepted, currentness=currentness)
 
-        other_currentness = issue_native_history_currentness(
-            campaign_id="campaign.main",
-            origin="LOCAL",
-            source_revision="1" * 40,
+        order_publication = append_semantic_event((), source.events[1], currentness=currentness)
+        with self.assertRaises(HistoryContractError):
+            append_semantic_event(order_publication, accepted, currentness=currentness)
+
+        other_source = _native_history(
+            (dict(_semantic_event(), event_id="event.foreign"),), source_revision="1" * 40
         )
         with self.assertRaises(HistoryContractError):
             append_semantic_event(
                 publication,
-                issue_native_semantic_event(
-                    dict(_semantic_event(), event_id="event.other", semantic_order=8),
-                    currentness=other_currentness,
+                other_source.events[0],
+                currentness=currentness,
+            )
+
+        same_revision_source = _native_history(
+            (
+                dict(
+                    _semantic_event(), event_id="event.same_revision_foreign", semantic_order=8
                 ),
+            )
+        )
+        with self.assertRaises(HistoryContractError):
+            append_semantic_event(
+                publication,
+                same_revision_source.events[0],
                 currentness=currentness,
             )
 
     def test_interruption_recovery_preserves_identity_provenance_and_semantic_order(self) -> None:
-        currentness = issue_native_history_currentness(
-            campaign_id="campaign.main",
+        source = _native_history(
+            (
+                _semantic_event(),
+                dict(_semantic_event(), event_id="event.gate_closed", semantic_order=8),
+            ),
             origin="LIVE:epoch-1",
-            source_revision="0" * 40,
         )
-        first = issue_native_semantic_event(_semantic_event(), currentness=currentness)
-        second = issue_native_semantic_event(
-            dict(_semantic_event(), event_id="event.gate_closed", semantic_order=8),
-            currentness=currentness,
-        )
+        currentness = source.currentness
+        first, second = source.events
         publication = append_semantic_event(
             append_semantic_event((), first, currentness=currentness),
             second,
@@ -178,11 +247,7 @@ class NativeHistoryAuthorityTests(unittest.TestCase):
         self.assertEqual(recovered.origin, "LIVE:epoch-1")
 
     def test_native_history_recovery_cannot_reconstruct_from_story_or_narration(self) -> None:
-        currentness = issue_native_history_currentness(
-            campaign_id="campaign.main",
-            origin="LOCAL",
-            source_revision="0" * 40,
-        )
+        currentness = _native_currentness()
 
         for candidate in (_story_projection(), {"body": "The guard opened the gate."}):
             with self.subTest(candidate=candidate):
@@ -190,14 +255,9 @@ class NativeHistoryAuthorityTests(unittest.TestCase):
                     recover_native_history(candidate, currentness=currentness)
 
     def test_recovery_rejects_a_caller_forged_event_under_the_same_currentness(self) -> None:
-        currentness = issue_native_history_currentness(
-            campaign_id="campaign.main",
-            origin="LOCAL",
-            source_revision="0" * 40,
-            accepted_events=[_semantic_event()],
-        )
+        currentness = _native_currentness((_semantic_event(),))
         publication = append_semantic_event(
-            (), issue_native_semantic_event(_semantic_event(), currentness=currentness), currentness=currentness
+            (), _accepted_semantic_event(currentness=currentness), currentness=currentness
         )
         forged = publication.to_mapping()
         forged_event = forged["events"][0]["event"]
@@ -205,6 +265,54 @@ class NativeHistoryAuthorityTests(unittest.TestCase):
 
         with self.assertRaises(HistoryContractError):
             recover_native_history(forged, currentness=currentness)
+
+    def test_recovery_rejects_malformed_provenance_ref_shapes(self) -> None:
+        event = dict(_semantic_event(), provenance_refs=["x"])
+        publication = _native_history((event,))
+        currentness = publication.currentness
+
+        malformed_values: tuple[object, ...] = (
+            "x",
+            None,
+            1,
+            {"x": 1},
+            ("x",),
+            ["x", "x"],
+            [1],
+        )
+        for location in ("event", "provenance"):
+            for malformed in malformed_values:
+                with self.subTest(location=location, malformed=malformed):
+                    candidate = publication.to_mapping()
+                    candidate["events"][0][location]["provenance_refs"] = malformed
+                    with self.assertRaises(HistoryContractError):
+                        recover_native_history(candidate, currentness=currentness)
+
+    def test_recovery_rejects_reordered_provenance_refs(self) -> None:
+        event = dict(_semantic_event(), provenance_refs=["first", "second"])
+        publication = _native_history((event,))
+        currentness = publication.currentness
+        candidate = publication.to_mapping()
+        candidate["events"][0]["provenance"]["provenance_refs"] = ["second", "first"]
+
+        with self.assertRaises(HistoryContractError):
+            recover_native_history(candidate, currentness=currentness)
+
+    def test_recovery_rejects_campaign_origin_and_source_revision_mismatch(self) -> None:
+        currentness = _native_currentness()
+        publication = append_semantic_event(
+            (), _accepted_semantic_event(currentness=currentness), currentness=currentness  # type: ignore[arg-type]
+        )
+        for field, value in (
+            ("campaign_id", "campaign.other"),
+            ("origin", "LIVE:epoch-2"),
+            ("source_revision", "1" * 40),
+        ):
+            with self.subTest(field=field):
+                candidate = publication.to_mapping()
+                candidate[field] = value
+                with self.assertRaises(HistoryContractError):
+                    recover_native_history(candidate, currentness=currentness)
 
 
 class T0BasisTests(unittest.TestCase):

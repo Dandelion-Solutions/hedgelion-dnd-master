@@ -10,13 +10,15 @@ import hashlib
 import json
 import re
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Protocol
 import weakref
 
 if TYPE_CHECKING:
     from .policy_basis import RepositoryPort
 
 
+# framework_module_version: 1.0.1
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
 _GIT_REVISION: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _GIT_REF: Final = re.compile(r"^refs/heads/[^\s/]+(?:/[^\s/]+)*$")
 _CAMPAIGN_REF: Final = re.compile(r"^refs/heads/campaign/[^\s/]+$")
@@ -74,23 +76,39 @@ def _is_owner_issued_history_currentness(value: object) -> bool:
     )
 
 
-def issue_native_history_currentness(
-    *,
-    campaign_id: str,
-    origin: str,
-    source_revision: str,
-    accepted_events: Sequence[object] = (),
+class NativeHistoryOwnerPort(Protocol):
+    """Trusted W02/native owner-read capability for accepted semantic history."""
+
+    def read_accepted_native_history(self, campaign_id: str) -> object:
+        """Return the exact bounded accepted native history for one campaign."""
+
+
+def issue_native_history_currentness(**_raw_fields: object) -> NativeHistoryCurrentness:
+    """Reject the retired caller-field issuance path.
+
+    Accepted currentness is produced only by :func:`read_native_history`.
+    """
+
+    raise HistoryContractError("native history currentness requires the native owner-read boundary")
+
+
+def issue_native_semantic_event(*_args: object, **_kwargs: object) -> NativeSemanticEvent:
+    """Reject the retired caller-shaped event issuance path."""
+
+    raise HistoryContractError("native semantic event requires the native owner-read boundary")
+
+
+def _issue_native_history_currentness(
+    *, campaign_id: str, origin: str, source_revision: str, events: Sequence[Mapping[str, object]]
 ) -> NativeHistoryCurrentness:
-    """Issue the exact native currentness evidence used by publication/recovery."""
+    """Issue currentness only inside the verified native owner-read adapter."""
 
     currentness = object.__new__(NativeHistoryCurrentness)
     object.__setattr__(currentness, "campaign_id", campaign_id)
     object.__setattr__(currentness, "origin", origin)
     object.__setattr__(currentness, "source_revision", source_revision)
-    if not isinstance(accepted_events, Sequence) or isinstance(accepted_events, (str, bytes)):
-        raise HistoryContractError("accepted native events must be an array")
     fingerprints: dict[str, str] = {}
-    for raw_event in accepted_events:
+    for raw_event in events:
         normalized = validate_semantic_event_draft(raw_event)
         event_id = normalized["event_id"]
         if event_id in fingerprints:
@@ -178,7 +196,7 @@ def _is_owner_issued_native_event(value: object) -> bool:
     )
 
 
-def issue_native_semantic_event(
+def _issue_native_semantic_event(
     event: object, *, currentness: NativeHistoryCurrentness
 ) -> NativeSemanticEvent:
     """Issue one accepted event from a validated native owner boundary.
@@ -255,6 +273,54 @@ def _is_owner_issued_history_publication(value: object) -> bool:
         isinstance(value, NativeHistoryPublication)
         and _OWNER_ISSUED_HISTORY_PUBLICATIONS.get(id(value)) is value
     )
+
+
+def read_native_history(
+    owner: NativeHistoryOwnerPort, campaign_id: str
+) -> NativeHistoryPublication:
+    """Read and admit native history through the trusted W02 owner boundary."""
+
+    requested_campaign_id = _nonempty_string(campaign_id, "native history campaign_id")
+    reader = getattr(owner, "read_accepted_native_history", None)
+    if not callable(reader):
+        raise HistoryContractError("native history owner-read boundary is unavailable")
+    try:
+        payload = reader(requested_campaign_id)
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+        raise HistoryContractError("native history owner read is unavailable") from exc
+    raw = _mapping(payload, "native history owner read")
+    if set(raw) != {"campaign_id", "origin", "source_revision", "events"}:
+        raise HistoryContractError("native history owner read has unsupported or missing fields")
+    if raw["campaign_id"] != requested_campaign_id:
+        raise HistoryContractError("native history owner read belongs to another campaign")
+    origin = _history_origin(raw["origin"])
+    source_revision = _git_revision(raw["source_revision"], "native history source_revision")
+    raw_events = raw["events"]
+    if not isinstance(raw_events, list):
+        raise HistoryContractError("native history owner read events must be a list")
+    normalized_events: list[dict[str, object]] = []
+    for raw_event in raw_events:
+        event = _mapping(raw_event, "native history owner event")
+        _strict_provenance_refs(
+            event.get("provenance_refs"), "native history owner event provenance_refs"
+        )
+        normalized_events.append(validate_semantic_event_draft(event))
+    currentness = _issue_native_history_currentness(
+        campaign_id=requested_campaign_id,
+        origin=origin,
+        source_revision=source_revision,
+        events=normalized_events,
+    )
+    events = tuple(
+        _issue_native_semantic_event(event, currentness=currentness)
+        for event in normalized_events
+    )
+    publication = object.__new__(NativeHistoryPublication)
+    object.__setattr__(publication, "currentness", currentness)
+    object.__setattr__(publication, "events", events)
+    NativeHistoryPublication.__post_init__(publication)
+    _OWNER_ISSUED_HISTORY_PUBLICATIONS[id(publication)] = publication
+    return publication
 
 
 class HistoryObservationStatus(StrEnum):
@@ -587,6 +653,8 @@ def _validate_native_event_sequence(
     for event in events:
         if not _is_owner_issued_native_event(event):
             raise HistoryContractError("native history sequence contains an unissued event")
+        if event.currentness != currentness:
+            raise HistoryContractError("native history event currentness differs")
         if (
             event.campaign_id != currentness.campaign_id
             or event.origin != currentness.origin
@@ -623,6 +691,12 @@ def _unique_strings(value: object, label: str) -> list[str]:
     if not items or len(items) != len(set(items)):
         raise HistoryContractError(f"{label} must be nonempty and unique")
     return items
+
+
+def _strict_provenance_refs(value: object, label: str) -> list[str]:
+    if not isinstance(value, list):
+        raise HistoryContractError(f"{label} must be a list")
+    return _unique_strings(value, label)
 
 
 def validate_semantic_event_draft(value: object) -> dict[str, object]:
@@ -724,7 +798,8 @@ def append_semantic_event(
         raise HistoryContractError("native history append requires an owner-issued publication")
 
     if (
-        event.campaign_id != currentness.campaign_id
+        event.currentness != currentness
+        or event.campaign_id != currentness.campaign_id
         or event.origin != currentness.origin
         or event.source_revision != currentness.source_revision
     ):
@@ -793,7 +868,9 @@ def recover_native_history(
         item = _mapping(raw_event, "native history event envelope")
         if set(item) != {"event", "provenance"}:
             raise HistoryContractError("native history event envelope has unsupported fields")
-        event_value = validate_semantic_event_draft(item["event"])
+        raw_event = _mapping(item["event"], "native history event")
+        _strict_provenance_refs(raw_event.get("provenance_refs"), "native history event provenance_refs")
+        event_value = validate_semantic_event_draft(raw_event)
         provenance = _mapping(item["provenance"], "native history event provenance")
         if set(provenance) != {
             "campaign_id",
@@ -803,15 +880,18 @@ def recover_native_history(
             "provenance_refs",
         }:
             raise HistoryContractError("native history event provenance has unsupported fields")
+        provenance_refs = _strict_provenance_refs(
+            provenance["provenance_refs"], "native history event provenance_refs"
+        )
         if (
             provenance["campaign_id"] != currentness.campaign_id
             or provenance["origin"] != currentness.origin
             or provenance["source_revision"] != currentness.source_revision
             or provenance["event_id"] != event_value["event_id"]
-            or tuple(provenance["provenance_refs"]) != tuple(event_value["provenance_refs"])
+            or provenance_refs != event_value["provenance_refs"]
         ):
             raise HistoryContractError("native history event provenance does not bind its event")
-        recovered_events.append(issue_native_semantic_event(event_value, currentness=currentness))
+        recovered_events.append(_issue_native_semantic_event(event_value, currentness=currentness))
 
     if currentness.accepted_event_fingerprints and {
         event.event_id for event in recovered_events
