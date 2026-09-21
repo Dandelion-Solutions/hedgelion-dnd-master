@@ -424,3 +424,16 @@ NEXT_EXACT_TASK: clean-basis restore -> local reviewer PASS -> publish/read-back
 KNOWN_BLOCKERS: restore checkpoint only; no unresolved design decision.
 SYSTEM_IMPACT: RESOLVED / NONE CURRENT.
 VERSION_IMPACT: NONE for ruling/restore; each fresh task performs its own gate.
+
+## Clean-basis restore acceptance — 2026-09-21
+
+STATUS: EXECUTING
+CURRENT_TASK: W04.T01A / W04.T05A / W04.T07A are authorized for fresh parallel TDD under the final Senior/design ruling.
+LAST_SAFE_SHA: `ce05e58e9f398e779dcdda68cb9aec53e82cfe7a`
+LAST_COMPLETED_TASK: mandatory clean-basis restore of the eleven ruled task production/schema/test paths to `0bd665860386e04ecd2efb589e58069a4d6da033`.
+CURRENT_VERIFICATION_STATE: exact staged/worktree comparison to `0bd665860386e04ecd2efb589e58069a4d6da033` passed; independent local `hdm-reviewer` re-review PASS; diff check passed; non-force publication and remote read-back matched `ce05e58e9f398e779dcdda68cb9aec53e82cfe7a`. Full local DEV suite recorded 1006 passed, 6 skipped and 9 failures: five are generated GAME cache / `.entire/` contamination and four are unchanged S6D owner tests; exact-head hosted CI `35610456548` is SUCCESS.
+VERSION_IMPACT: NONE for the restore and this execution-state checkpoint.
+SYSTEM_IMPACT: NONE CURRENT; final Senior/design rulings resolve the prior T01A/T05A/T07A stops without architecture reopen.
+NEXT_EXACT_TASK: dispatch W04.T01A, W04.T05A and W04.T07A with disjoint write sets; T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires.
+KNOWN_BLOCKERS: none for the three root tasks; all downstream tasks remain dependency-gated; Wave 05 remains unauthorized.
+UNPUBLISHED_WORK: NONE after restore publication/read-back.
