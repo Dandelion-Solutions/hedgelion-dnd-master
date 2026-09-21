@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 HOST/ORDERING ROUTE OWNER DECISION ACCEPTED — CLEAN RESTORE + T00H REQUIRED
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 HOST/ORDERING ROUTE CLEAN RESTORE ACCEPTED — T00H AUTHORIZED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: Wave 03 implementation independently reviewed task-by-task and closed by mandatory Senior integration audit PASS on 2026-09-19; reviewed implementation head `9ae3feb74a2d657a081140781899dcbe66819b5b`
-NEXT_AUTHORIZED_UNIT: restore the rejected W04 T01A/T05A/T07A task surfaces to accepted clean basis `80d1cedfce7f529df96ea2c4b2342ce466cc8806`; after reviewer PASS/publish/read-back execute new W04.T00H runtime-host composition; only after `W04_RUNTIME_HOST_COMPOSITION_READY` re-run T01A/T05A/T07A under the accepted route owner decision
+NEXT_AUTHORIZED_UNIT: execute W04.T00H runtime-host composition under `2026-09-21-w04-runtime-host-ordering-route-owner-decision.md`; only after its reviewer PASS/publish/read-back and `W04_RUNTIME_HOST_COMPOSITION_READY` re-run T01A/T05A/T07A
 REQUIRED_GATE: Wave-04 autonomous TDD/review/version-impact/checkpoint discipline -> mandatory fresh CLS↔HDM preflight immediately before W04.T07 RED -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — created/published; authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: no unresolved Senior/design decision remains for T01A/T05A/T07A. Implementation is blocked only on removal of rejected task bytes and completion/review of W04.T00H. Downstream Wave-04 tasks remain dependency-gated. Migration execution, release execution and gameplay bootstrap remain unauthorized.
+KNOWN_BLOCKERS: W04.T01A/T05A/T07A await the accepted W04.T00H producer checkpoint. Downstream Wave-04 tasks remain dependency-gated. Migration execution, release execution and gameplay bootstrap remain unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`

@@ -530,3 +530,16 @@ trigger fires before T07A RED.
 
 VERSION_IMPACT: NONE for this decision/restore; fresh task-local gates apply.
 KNOWN_BLOCKERS: clean restore + T00H checkpoint only.
+
+## Runtime-host restore acceptance — 2026-09-21
+
+STATUS: EXECUTING
+CURRENT_TASK: W04.T00H runtime-host composition only.
+LAST_SAFE_SHA: `e7909df857e79d181dca5527609754def4248cc4`
+LAST_COMPLETED_TASK: mandatory 16-path clean restore to `80d1cedfce7f529df96ea2c4b2342ce466cc8806` under the runtime-host/ordering route owner decision.
+CURRENT_VERIFICATION_STATE: exact restore comparison, diff check, focused RD09/RD11/RD13 suite (208 passed), maintenance audit and independent local `hdm-reviewer` PASS completed before non-force publication/read-back at `e7909df857e79d181dca5527609754def4248cc4`.
+VERSION_IMPACT: NONE for restore and this cursor checkpoint.
+SYSTEM_IMPACT: NONE CURRENT; the owner decision supplies T00H and the native ordered-evidence route.
+NEXT_EXACT_TASK: W04.T00H -> reviewer PASS/publish/read-back -> W04.T01A/W04.T05A/W04.T07A in parallel.
+KNOWN_BLOCKERS: T01A/T05A/T07A wait `W04_RUNTIME_HOST_COMPOSITION_READY`; all downstream tasks and Wave 05 remain dependency-gated/unauthorized.
+UNPUBLISHED_WORK: NONE after restore publication/read-back.
