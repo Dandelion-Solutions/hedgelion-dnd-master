@@ -438,6 +438,19 @@ NEXT_EXACT_TASK: dispatch W04.T01A, W04.T05A and W04.T07A with disjoint write se
 KNOWN_BLOCKERS: none for the three root tasks; all downstream tasks remain dependency-gated; Wave 05 remains unauthorized.
 UNPUBLISHED_WORK: NONE after restore publication/read-back.
 
+## Runtime host composition acceptance — 2026-09-21
+
+STATUS: EXECUTING
+CURRENT_TASK: W04.T01A / W04.T05A / W04.T07A may execute in parallel with isolated write sets.
+LAST_SAFE_SHA: `a7432515e500cc2caf21fe55db17f64a7fd0ed47`
+LAST_COMPLETED_TASK: W04.T00H -> W04_RUNTIME_HOST_COMPOSITION_READY / W04_RUNTIME_HOST_BOOTSTRAP_DELTA_READY.
+CURRENT_VERIFICATION_STATE: T00H RED/GREEN, host focused suite, cross-owner regression, direct Context tests, ruff, compile, diff check and maintenance audit passed; independent scoped re-review PASS; non-force publication/read-back at `a7432515e500cc2caf21fe55db17f64a7fd0ed47`.
+VERSION_IMPACT: `GAME/TOOLS/runtime_host.py` new module `framework_module_version: 1.0.1`; no persistent schema, campaign/storage/catalog generation or Wave-05 projection change. Context import-resolution repair: NONE.
+SYSTEM_IMPACT: NONE CURRENT; RuntimeHost and runtime_execution ordering producer routes are accepted by the owner decision.
+NEXT_EXACT_TASK: dispatch T01A, T05A and T07A; T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires before RED.
+KNOWN_BLOCKERS: none for the three root tasks; all downstream tasks and Wave 05 remain dependency-gated/unauthorized.
+UNPUBLISHED_WORK: NONE after publication/read-back.
+
 ## Targeted reimplementation stop after final ruling
 
 STATUS: SENIOR_REVIEW_REQUIRED
