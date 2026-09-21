@@ -32,9 +32,9 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
-COLLABORATION_SCHEMA_VERSION: Final[int] = 1
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+COLLABORATION_SCHEMA_VERSION: Final[int] = 2
 
 _ID_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _SEMANTIC_CLASSES: Final[frozenset[str]] = frozenset(
@@ -275,7 +275,7 @@ class CollaborationObligation:
     interaction_id: str
     intent_plan_id: str
     clause_id: str
-    semantic_class: str | None
+    semantic_class: str
     dependency_class: DependencyClass
     purpose: str
     dependency_scope: Mapping[str, object]
@@ -305,12 +305,102 @@ class CollaborationObligation:
             raise CollaborationAdmissionError(
                 "only collective admissions create obligations"
             )
-        if self.semantic_class not in _SEMANTIC_CLASSES:
+        if (
+            not isinstance(self.semantic_class, str)
+            or self.semantic_class not in _SEMANTIC_CLASSES
+        ):
             raise CollaborationAdmissionError(
                 "obligation semantic class is not registered"
             )
-        if self.lifecycle not in {"OPEN", "CLOSED", "RESOLVED", "OBSOLETE"}:
+        if not isinstance(self.dependency_class, DependencyClass):
+            raise CollaborationAdmissionError(
+                "obligation dependency class is not registered"
+            )
+        _id(self.campaign_id, "obligation campaign_id")
+        _id(self.interaction_id, "obligation interaction_id")
+        _id(self.intent_plan_id, "obligation intent_plan_id")
+        _id(self.clause_id, "obligation clause_id")
+        _text(self.purpose, "obligation purpose")
+        if not isinstance(self.dependency_scope, Mapping):
+            raise CollaborationAdmissionError(
+                "obligation dependency scope must be an object"
+            )
+        if not self.dependency_scope:
+            raise CollaborationAdmissionError(
+                "obligation dependency scope must not be empty"
+            )
+        if not isinstance(self.native_basis_refs, tuple) or not self.native_basis_refs:
+            raise CollaborationAdmissionError(
+                "obligation native basis refs are required"
+            )
+        basis_identities: set[tuple[str, str]] = set()
+        for ref in self.native_basis_refs:
+            if not isinstance(ref, NativeBasisRef):
+                raise CollaborationAdmissionError(
+                    "obligation native basis refs must be typed"
+                )
+            identity = (ref.family, ref.record_id)
+            if identity in basis_identities:
+                raise CollaborationAdmissionError(
+                    "obligation native basis refs must be unique"
+                )
+            basis_identities.add(identity)
+        if (
+            not isinstance(self.required_contributors, tuple)
+            or not self.required_contributors
+        ):
+            raise CollaborationAdmissionError(
+                "obligation required contributors are required"
+            )
+        required_identities: set[tuple[str, str | None]] = set()
+        for contributor in self.required_contributors:
+            if not isinstance(contributor, ContributorRef):
+                raise CollaborationAdmissionError(
+                    "obligation contributors must be typed"
+                )
+            identity = (contributor.player_id, contributor.pc_id)
+            if identity in required_identities:
+                raise CollaborationAdmissionError(
+                    "obligation required contributors must be unique"
+                )
+            required_identities.add(identity)
+        if not isinstance(self.optional_contributors, tuple):
+            raise CollaborationAdmissionError(
+                "obligation optional contributors must be an array"
+            )
+        optional_identities: set[tuple[str, str | None]] = set()
+        for contributor in self.optional_contributors:
+            if not isinstance(contributor, ContributorRef):
+                raise CollaborationAdmissionError(
+                    "obligation contributors must be typed"
+                )
+            identity = (contributor.player_id, contributor.pc_id)
+            if identity in optional_identities:
+                raise CollaborationAdmissionError(
+                    "obligation optional contributors must be unique"
+                )
+            optional_identities.add(identity)
+        if {player_id for player_id, _ in required_identities}.intersection(
+            player_id for player_id, _ in optional_identities
+        ):
+            raise CollaborationAdmissionError(
+                "obligation contributors cannot be both required and optional"
+            )
+        if not isinstance(self.lifecycle, str) or self.lifecycle not in {
+            "OPEN",
+            "CLOSED",
+            "RESOLVED",
+            "OBSOLETE",
+        }:
             raise CollaborationAdmissionError("obligation lifecycle is not registered")
+        if self.generation == 1 and self.predecessor_generation is not None:
+            raise CollaborationAdmissionError(
+                "initial obligation cannot have a predecessor generation"
+            )
+        if self.generation > 1 and self.predecessor_generation is None:
+            raise CollaborationAdmissionError(
+                "successor obligation requires a predecessor generation"
+            )
         if self.predecessor_generation is not None and (
             isinstance(self.predecessor_generation, bool)
             or not isinstance(self.predecessor_generation, int)
@@ -318,6 +408,68 @@ class CollaborationObligation:
         ):
             raise CollaborationAdmissionError(
                 "successor predecessor generation must be adjacent"
+            )
+        if (
+            not isinstance(self.accepted_input_uses, tuple)
+            or not self.accepted_input_uses
+        ):
+            raise CollaborationAdmissionError(
+                "obligation accepted input uses are required"
+            )
+        use_identities: set[tuple[str, str]] = set()
+        for identity in self.accepted_input_uses:
+            if (
+                not isinstance(identity, tuple)
+                or len(identity) != 2
+                or any(not isinstance(item, str) for item in identity)
+            ):
+                raise CollaborationAdmissionError(
+                    "accepted input identity is malformed"
+                )
+            normalized_identity = (
+                _id(identity[0], "accepted input interaction_id"),
+                _id(identity[1], "accepted input clause_id"),
+            )
+            if normalized_identity in use_identities:
+                raise CollaborationAdmissionError(
+                    "accepted input identity is duplicate"
+                )
+            use_identities.add(normalized_identity)
+        if (
+            not isinstance(self.accepted_input_contributors, tuple)
+            or not self.accepted_input_contributors
+        ):
+            raise CollaborationAdmissionError(
+                "accepted input contributors are required"
+            )
+        contributor_identities: set[tuple[str, str]] = set()
+        for entry in self.accepted_input_contributors:
+            if not isinstance(entry, tuple) or len(entry) != 2:
+                raise CollaborationAdmissionError(
+                    "accepted input contributor entry is malformed"
+                )
+            identity, contributor = entry
+            if (
+                not isinstance(identity, tuple)
+                or len(identity) != 2
+                or any(not isinstance(item, str) for item in identity)
+                or not isinstance(contributor, ContributorRef)
+            ):
+                raise CollaborationAdmissionError(
+                    "accepted input contributor identity is malformed"
+                )
+            normalized_identity = (
+                _id(identity[0], "accepted input contributor interaction_id"),
+                _id(identity[1], "accepted input contributor clause_id"),
+            )
+            if normalized_identity in contributor_identities:
+                raise CollaborationAdmissionError(
+                    "accepted input contributor identity is duplicate"
+                )
+            contributor_identities.add(normalized_identity)
+        if contributor_identities != use_identities:
+            raise CollaborationAdmissionError(
+                "accepted input uses and contributors must correlate"
             )
 
     def to_mapping(self) -> dict[str, object]:
@@ -360,6 +512,127 @@ class CollaborationObligation:
                 ), contributor in self.accepted_input_contributors
             ],
         }
+
+    @classmethod
+    def from_mapping(
+        cls, value: object, *, host: RuntimeHost
+    ) -> CollaborationObligation:
+        """Load one persisted obligation only after strict native revalidation."""
+        if not isinstance(value, Mapping):
+            raise CollaborationAdmissionError("serialized obligation must be an object")
+        expected = {
+            "schema_version",
+            "kind",
+            "obligation_id",
+            "generation",
+            "predecessor_generation",
+            "lifecycle",
+            "coordination_family",
+            "campaign_id",
+            "interaction_id",
+            "intent_plan_id",
+            "clause_id",
+            "collaboration_semantic_class",
+            "dependency_class",
+            "purpose",
+            "dependency_scope",
+            "native_basis_refs",
+            "required_contributors",
+            "optional_contributors",
+            "accepted_input_uses",
+            "accepted_input_contributors",
+        }
+        if set(value) != expected:
+            raise CollaborationAdmissionError(
+                "serialized obligation fields are not strict"
+            )
+        if (
+            value["schema_version"] != COLLABORATION_SCHEMA_VERSION
+            or value["kind"] != "runtime.collaboration_obligation"
+        ):
+            raise CollaborationAdmissionError(
+                "unsupported collaboration obligation schema"
+            )
+        raw_uses = _sequence(value["accepted_input_uses"], "accepted input uses")
+        uses: list[tuple[str, str]] = []
+        for raw_use in raw_uses:
+            use = _mapping(raw_use, "accepted input use")
+            if set(use) != {"interaction_id", "clause_id"}:
+                raise CollaborationAdmissionError(
+                    "accepted input use fields are not strict"
+                )
+            uses.append(
+                (
+                    _id(use["interaction_id"], "accepted input interaction_id"),
+                    _id(use["clause_id"], "accepted input clause_id"),
+                )
+            )
+        raw_contributors = _sequence(
+            value["accepted_input_contributors"],
+            "accepted input contributors",
+        )
+        contributors: list[tuple[tuple[str, str], ContributorRef]] = []
+        for raw_entry in raw_contributors:
+            entry = _mapping(raw_entry, "accepted input contributor")
+            if set(entry) - {
+                "interaction_id",
+                "clause_id",
+                "player_id",
+                "pc_id",
+            } or not {
+                "interaction_id",
+                "clause_id",
+                "player_id",
+            }.issubset(entry):
+                raise CollaborationAdmissionError(
+                    "accepted input contributor fields are not strict"
+                )
+            identity = (
+                _id(
+                    entry["interaction_id"], "accepted input contributor interaction_id"
+                ),
+                _id(entry["clause_id"], "accepted input contributor clause_id"),
+            )
+            contributors.append(
+                (
+                    identity,
+                    ContributorRef(
+                        _id(entry["player_id"], "accepted input contributor player_id"),
+                        None
+                        if entry.get("pc_id") is None
+                        else _id(entry["pc_id"], "accepted input contributor pc_id"),
+                    ),
+                )
+            )
+        try:
+            coordination_family = CoordinationFamily(value["coordination_family"])
+            dependency_class = DependencyClass(value["dependency_class"])
+        except (TypeError, ValueError) as exc:
+            raise CollaborationAdmissionError(
+                "serialized obligation class is not registered"
+            ) from exc
+        obligation = cls(
+            obligation_id=_id(value["obligation_id"], "obligation_id"),
+            generation=value["generation"],  # type: ignore[arg-type]
+            predecessor_generation=value["predecessor_generation"],  # type: ignore[arg-type]
+            lifecycle=value["lifecycle"],  # type: ignore[arg-type]
+            coordination_family=coordination_family,
+            campaign_id=_id(value["campaign_id"], "obligation campaign_id"),
+            interaction_id=_id(value["interaction_id"], "obligation interaction_id"),
+            intent_plan_id=_id(value["intent_plan_id"], "obligation intent_plan_id"),
+            clause_id=_id(value["clause_id"], "obligation clause_id"),
+            semantic_class=value["collaboration_semantic_class"],  # type: ignore[arg-type]
+            dependency_class=dependency_class,
+            purpose=_text(value["purpose"], "obligation purpose"),
+            dependency_scope=_mapping(value["dependency_scope"], "dependency scope"),
+            native_basis_refs=_parse_basis_refs(value["native_basis_refs"]),
+            required_contributors=_parse_contributors(value["required_contributors"]),
+            optional_contributors=_parse_contributors(value["optional_contributors"]),
+            accepted_input_uses=tuple(uses),
+            accepted_input_contributors=tuple(contributors),
+        )
+        _validate_persisted_input_owners(obligation, host)
+        return obligation
 
 
 @dataclass(frozen=True, slots=True)
@@ -779,6 +1052,43 @@ def _revalidate_host_basis(host: RuntimeHost, basis: _OperationBasis) -> None:
         )
 
 
+def _validate_persisted_input_owners(
+    obligation: CollaborationObligation, host: RuntimeHost
+) -> None:
+    """Prove each persisted input identity against its native Interaction owner."""
+    try:
+        basis = host._begin_operation()
+    except (AttributeError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "serialized obligation host basis could not be loaded"
+        ) from exc
+    if basis.pinned_campaign.campaign_id != obligation.campaign_id:
+        raise CollaborationAdmissionError(
+            "serialized obligation belongs to another campaign"
+        )
+    for (
+        interaction_id,
+        clause_id,
+    ), contributor in obligation.accepted_input_contributors:
+        interaction = _load_interaction(host, basis, interaction_id)
+        if interaction.get("player_id") != contributor.player_id:
+            raise CollaborationAdmissionError(
+                "accepted input contributor does not match native Interaction owner"
+            )
+        plan = _load_plan(
+            host,
+            basis,
+            _id(interaction["intent_plan_id"], "input intent_plan_id"),
+            interaction_id,
+        )
+        clause = _load_clause(plan, clause_id)
+        if clause.get("collaboration_semantic_class") != obligation.semantic_class:
+            raise CollaborationAdmissionError(
+                "accepted input semantic class does not match obligation"
+            )
+    _revalidate_host_basis(host, basis)
+
+
 def classify_coordination_dependency(
     host: RuntimeHost,
     interaction_id: str,
@@ -971,8 +1281,6 @@ def associate_input(
         _id(interaction_id, "input interaction_id"),
         _id(clause_id, "input clause_id"),
     )
-    if identity in obligation.accepted_input_uses:
-        return obligation
     try:
         basis = host._begin_operation()
     except (AttributeError, TypeError, ValueError) as exc:
@@ -1013,6 +1321,13 @@ def associate_input(
         raise CollaborationAdmissionError(
             "collaboration input semantic class is incompatible with obligation"
         )
+    if identity in obligation.accepted_input_uses:
+        existing_contributor = dict(obligation.accepted_input_contributors)[identity]
+        if existing_contributor != participant:
+            raise CollaborationAdmissionError(
+                "accepted input contributor does not match current PLAYER"
+            )
+        return obligation
     uses = obligation.accepted_input_uses + (identity,)
     contributors = obligation.accepted_input_contributors + ((identity, participant),)
     return replace(

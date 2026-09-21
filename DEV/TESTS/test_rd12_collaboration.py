@@ -8,6 +8,7 @@ from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
 
+import yaml
 from jsonschema import Draft202012Validator, ValidationError
 
 from GAME.TOOLS.access_control import (
@@ -17,6 +18,7 @@ from GAME.TOOLS.access_control import (
 )
 from GAME.TOOLS.collaboration import (
     CollaborationAdmissionError,
+    CollaborationObligation,
     ContributorRef,
     CoordinationFamily,
     DependencyClass,
@@ -1024,6 +1026,12 @@ class CollaborationAdmissionTests(unittest.TestCase):
 
 
 class CollaborationSchemaTests(unittest.TestCase):
+    def _load_obligation(self, value: object, repository: RepositoryFixture):
+        parser = getattr(CollaborationObligation, "from_mapping", None)
+        self.assertTrue(callable(parser), "serialized obligation parser is required")
+        assert callable(parser)
+        return parser(value, host=_host(repository))
+
     def test_intent_clause_schema_accepts_optional_contributors(self) -> None:
         clause = _collective_clause() | {
             "optional_contributors": [{"player_id": "player-alice"}]
@@ -1076,6 +1084,216 @@ class CollaborationSchemaTests(unittest.TestCase):
             value["accepted_input_uses"],
             [{"interaction_id": "interaction-1", "clause_id": "clause-1"}],
         )
+
+    def test_obligation_schema_requires_new_lineage_and_input_fields(self) -> None:
+        obligation = open_or_successor_obligation(
+            _classify(RepositoryFixture()), obligation_id="obligation-required"
+        )
+        assert obligation is not None
+        schema = json.loads(
+            (SCHEMAS / "runtime-collaboration-obligation-state.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        validator = Draft202012Validator(schema)
+
+        for field in (
+            "predecessor_generation",
+            "collaboration_semantic_class",
+            "accepted_input_contributors",
+        ):
+            value = obligation.to_mapping()
+            del value[field]
+            with self.subTest(field=field), self.assertRaises(ValidationError):
+                validator.validate(value)
+
+    def test_obligation_schema_uses_v2_and_rejects_legacy_schema(self) -> None:
+        obligation = open_or_successor_obligation(
+            _classify(RepositoryFixture()), obligation_id="obligation-version"
+        )
+        assert obligation is not None
+        schema = json.loads(
+            (SCHEMAS / "runtime-collaboration-obligation-state.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        game_schema = yaml.safe_load(
+            (
+                ROOT / "GAME" / "SCHEMA" / "collaboration_obligation.schema.yaml"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(schema["properties"]["schema_version"]["const"], 2)
+        self.assertEqual(game_schema["schema_version"], 2)
+
+        legacy = obligation.to_mapping()
+        legacy["schema_version"] = 1
+        with self.assertRaises(ValidationError):
+            Draft202012Validator(schema).validate(legacy)
+
+    def test_obligation_schema_rejects_duplicate_serialized_identities(self) -> None:
+        obligation = open_or_successor_obligation(
+            _classify(RepositoryFixture()), obligation_id="obligation-unique"
+        )
+        assert obligation is not None
+        schema = json.loads(
+            (SCHEMAS / "runtime-collaboration-obligation-state.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        validator = Draft202012Validator(schema)
+
+        duplicate_use = obligation.to_mapping()
+        duplicate_use["accepted_input_uses"].append(
+            duplicate_use["accepted_input_uses"][0]
+        )
+        with self.assertRaises(ValidationError):
+            validator.validate(duplicate_use)
+
+        duplicate_contributor = obligation.to_mapping()
+        duplicate_contributor["accepted_input_contributors"].append(
+            duplicate_contributor["accepted_input_contributors"][0]
+        )
+        with self.assertRaises(ValidationError):
+            validator.validate(duplicate_contributor)
+
+    def test_obligation_schema_correlates_generation_and_predecessor_shape(
+        self,
+    ) -> None:
+        obligation = open_or_successor_obligation(
+            _classify(RepositoryFixture()), obligation_id="obligation-generation-shape"
+        )
+        assert obligation is not None
+        schema = json.loads(
+            (SCHEMAS / "runtime-collaboration-obligation-state.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        validator = Draft202012Validator(schema)
+
+        initial_with_predecessor = obligation.to_mapping()
+        initial_with_predecessor["predecessor_generation"] = 1
+        with self.assertRaises(ValidationError):
+            validator.validate(initial_with_predecessor)
+
+        successor_without_predecessor = obligation.to_mapping()
+        successor_without_predecessor["generation"] = 2
+        successor_without_predecessor["predecessor_generation"] = None
+        with self.assertRaises(ValidationError):
+            validator.validate(successor_without_predecessor)
+
+    def test_runtime_state_rejects_unanchored_successor_lineage(self) -> None:
+        obligation = open_or_successor_obligation(
+            _classify(RepositoryFixture()), obligation_id="obligation-lineage-state"
+        )
+        assert obligation is not None
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "predecessor"):
+            replace(obligation, generation=2, predecessor_generation=None)
+
+    def test_runtime_state_rejects_mismatched_input_identity_correlation(self) -> None:
+        obligation = open_or_successor_obligation(
+            _classify(RepositoryFixture()), obligation_id="obligation-correlation"
+        )
+        assert obligation is not None
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "input"):
+            replace(
+                obligation,
+                accepted_input_uses=(
+                    ("interaction-1", "clause-1"),
+                    ("interaction-2", "clause-2"),
+                ),
+            )
+
+    def test_runtime_state_rejects_duplicate_input_identity(self) -> None:
+        obligation = open_or_successor_obligation(
+            _classify(RepositoryFixture()), obligation_id="obligation-duplicate"
+        )
+        assert obligation is not None
+        identity = ("interaction-1", "clause-1")
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "duplicate"):
+            replace(
+                obligation,
+                accepted_input_uses=(identity, identity),
+                accepted_input_contributors=(
+                    (identity, ContributorRef("player-alice")),
+                    (identity, ContributorRef("player-alice")),
+                ),
+            )
+
+    def test_duplicate_input_revalidates_native_owner_before_idempotent_ack(
+        self,
+    ) -> None:
+        obligation = open_or_successor_obligation(
+            _classify(RepositoryFixture()), obligation_id="obligation-forged-input"
+        )
+
+        assert obligation is not None
+        with self.assertRaisesRegex(CollaborationAdmissionError, "PLAYER"):
+            associate_input(
+                obligation,
+                _host(RepositoryFixture()),
+                "interaction-1",
+                "clause-1",
+                principal=_bob_principal(),
+                player_route=_route(),
+            )
+
+    def test_runtime_state_round_trip_validates_new_schema_and_native_input_owner(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-round-trip"
+        )
+        assert obligation is not None
+
+        restored = self._load_obligation(obligation.to_mapping(), repository)
+
+        self.assertEqual(restored, obligation)
+
+    def test_runtime_state_rejects_legacy_schema_mapping(self) -> None:
+        repository = RepositoryFixture()
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-legacy"
+        )
+        assert obligation is not None
+        value = obligation.to_mapping()
+        value["schema_version"] = 1
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "schema"):
+            self._load_obligation(value, repository)
+
+    def test_runtime_state_rejects_input_contributor_not_owned_by_input(self) -> None:
+        repository = RepositoryFixture()
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-forged-owner"
+        )
+        assert obligation is not None
+        value = obligation.to_mapping()
+        value["accepted_input_contributors"][0]["player_id"] = "player-bob"
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "contributor"):
+            self._load_obligation(value, repository)
+
+    def test_runtime_state_rejects_duplicate_input_contributor_identity(self) -> None:
+        repository = RepositoryFixture()
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-forged-duplicate"
+        )
+        assert obligation is not None
+        value = obligation.to_mapping()
+        value["accepted_input_contributors"].append(
+            {
+                "interaction_id": "interaction-1",
+                "clause_id": "clause-1",
+                "player_id": "player-bob",
+            }
+        )
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "duplicate"):
+            self._load_obligation(value, repository)
 
 
 if __name__ == "__main__":
