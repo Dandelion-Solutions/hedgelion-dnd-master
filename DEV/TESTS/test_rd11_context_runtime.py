@@ -5,6 +5,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator, ValidationError
 from GAME.TOOLS import history as history_module
+from GAME.TOOLS import live_state as live_state_module
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -260,9 +261,15 @@ class HostBoundContextContractTests(unittest.TestCase):
         self.assertNotIn("SelectedLiveReadCapability", vars(context_runtime))
         self.assertNotIn("PinnedCampaign", vars(context_runtime))
         self.assertNotIn("bind_context_runtime", vars(context_runtime))
+        owner_capability = getattr(live_state_module, "_SelectedLiveReadCapability", None)
+        self.assertIsNotNone(owner_capability)
         self.assertIs(
             context_runtime._SelectedLiveReadCapability,
+            owner_capability,
+        )
+        self.assertIs(
             history_module._SelectedLiveReadCapability,
+            owner_capability,
         )
 
     def test_context_host_composition_rejects_a_forged_live_reader(self):
@@ -283,6 +290,35 @@ class HostBoundContextContractTests(unittest.TestCase):
                 selected_live_reader=forged,
             )
 
+    def test_context_host_composition_rejects_noncallable_forged_live_reader(self):
+        route, _source, projection = live_fixture()
+        forged = SelectedLiveReader(projection)
+        with self.assertRaises(context_runtime.ContextContractError):
+            context_runtime._compose_context_runtime(
+                RepositoryFixture(),
+                live_route=route,
+                selected_live_reader=forged,
+            )
+
+    def test_context_host_composition_rejects_unissued_live_capability(self):
+        route, _source, _projection = live_fixture()
+        owner_capability = live_state_module._SelectedLiveReadCapability
+        forged = object.__new__(owner_capability)
+        with self.assertRaises(context_runtime.ContextContractError):
+            context_runtime._compose_context_runtime(
+                RepositoryFixture(),
+                live_route=route,
+                selected_live_reader=forged,
+            )
+
+    def test_live_owner_issues_the_only_accepted_selected_live_capability(self):
+        issuer = getattr(live_state_module, "_issue_selected_live_read_capability", None)
+        if issuer is None:
+            self.fail("LIVE owner must issue the selected-LIVE read capability")
+        _route, _source, projection = live_fixture()
+        capability = issuer(SelectedLiveReader(projection))
+        self.assertIsInstance(capability, live_state_module._SelectedLiveReadCapability)
+
     def test_schema_and_runtime_reject_the_same_scope_and_optional_type_negatives(self):
         schema = json.loads((SCHEMAS / "context-need-profile.schema.json").read_text(encoding="utf-8"))
         invalid = (
@@ -290,7 +326,14 @@ class HostBoundContextContractTests(unittest.TestCase):
             ("purpose", "narration"),
             ("subject_id", "actor context"),
             ("recipient_id", "player 1"),
+            ("campaign_id", "campaign context"),
+            ("allowed_channels", ["UNKNOWN"]),
+            ("max_candidates", 257),
+            ("required_ids", ["scene 1"]),
+            ("allowed_relations", ["optional"]),
+            ("budget", 1_000_001),
             ("source_frontier", 7),
+            ("source_frontier", ""),
             ("retrospective", 1),
         )
         for field, value in invalid:
@@ -316,7 +359,9 @@ class HostBoundContextContractTests(unittest.TestCase):
         self.assertFalse(result["bundle"]["retrospective_projection"])
 
     def test_context_runtime_module_revision_is_current(self):
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.7")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.8")
+        self.assertEqual(live_state_module.FRAMEWORK_MODULE_VERSION, "1.0.21")
+        self.assertEqual(history_module.FRAMEWORK_MODULE_VERSION, "1.0.9")
 
     def test_campaign_record_is_reloaded_from_pinned_repository_not_candidate_payload(self):
         repository = RepositoryFixture()
@@ -377,7 +422,10 @@ class HostBoundContextContractTests(unittest.TestCase):
 
     def test_live_candidate_uses_only_the_bound_read_capability_and_route(self):
         route, source, projection = live_fixture()
-        reader = SelectedLiveReader(projection)
+        transport = SelectedLiveReader(projection)
+        reader = live_state_module._issue_selected_live_read_capability(
+            transport
+        )
         runtime = context_runtime._compose_context_runtime(
             RepositoryFixture(),
             live_route=route,
@@ -396,7 +444,7 @@ class HostBoundContextContractTests(unittest.TestCase):
             ],
         )
         self.assertEqual(result["outcome"], "ASSEMBLED")
-        self.assertEqual(len(reader.calls), 1)
+        self.assertEqual(len(transport.calls), 1)
         self.assertEqual(result["bundle"]["optional"][0]["payload"], projection)
 
     def test_fixed_dispatch_revalidates_player_knowledge_and_disclosure_owners(self):

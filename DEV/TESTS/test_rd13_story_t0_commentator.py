@@ -7,7 +7,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
-from GAME.TOOLS import context_runtime, history as history_module
+from GAME.TOOLS import context_runtime, history as history_module, live_state as live_state_module
 from GAME.TOOLS.commentator import (
     CommentatorContractError,
     build_commentator_control_projection,
@@ -139,6 +139,13 @@ def _history_from_context_runtime(
 ) -> BoundNativeHistoryRuntime:
     """Use the existing host composition route in test fixtures only."""
 
+    if selected_live_reader is not None and not isinstance(
+        selected_live_reader,
+        live_state_module._SelectedLiveReadCapability,
+    ):
+        selected_live_reader = live_state_module._issue_selected_live_read_capability(
+            selected_live_reader
+        )
     return context_runtime._compose_context_runtime(
         repository,
         live_route=current_routing,
@@ -526,7 +533,7 @@ class StorySchemaTests(unittest.TestCase):
 
 class SchemaVersionTests(unittest.TestCase):
     def test_history_module_uses_current_framework_revision(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.8")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.9")
 
     def test_native_history_schemas_validate_only_the_bound_evidence_shape(self) -> None:
         publication = _history_from_context_runtime(

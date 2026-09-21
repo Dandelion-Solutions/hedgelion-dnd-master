@@ -22,6 +22,8 @@ try:
     from .live_state import (
         LiveContractError,
         LiveRouting,
+        _SelectedLiveReadCapability,
+        _is_owner_issued_selected_live_read_capability,
         require_selected_live_source,
         select_live_source,
     )
@@ -31,7 +33,7 @@ try:
         route_native_record,
         validate_loaded_identity,
     )
-    from .history import BoundNativeHistoryRuntime, _SelectedLiveReadCapability
+    from .history import BoundNativeHistoryRuntime
     from .policy_basis import PinnedCampaign as _PinnedCampaign, RepositoryPort
     from .access_control import PlayerRecord, AccessControlContractError
 except ImportError:  # pragma: no cover - direct-path focused test imports.
@@ -39,6 +41,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     from GAME.TOOLS.live_state import (  # type: ignore[no-redef]
         LiveContractError,
         LiveRouting,
+        _SelectedLiveReadCapability,
+        _is_owner_issued_selected_live_read_capability,
         require_selected_live_source,
         select_live_source,
     )
@@ -48,10 +52,7 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
         route_native_record,
         validate_loaded_identity,
     )
-    from GAME.TOOLS.history import (  # type: ignore[no-redef]
-        BoundNativeHistoryRuntime,
-        _SelectedLiveReadCapability,
-    )
+    from GAME.TOOLS.history import BoundNativeHistoryRuntime  # type: ignore[no-redef]
     from GAME.TOOLS.policy_basis import PinnedCampaign as _PinnedCampaign, RepositoryPort  # type: ignore[no-redef]
     from GAME.TOOLS.access_control import (  # type: ignore[no-redef]
         AccessControlContractError,
@@ -59,8 +60,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.7
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
+# framework_module_version: 1.0.8
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
 
 
 class ContextContractError(ValueError):
@@ -247,6 +248,8 @@ def _scope(request: Mapping[str, object]) -> tuple[_RegisteredProfile, str, str,
     required_ids = _string_list(request.get("required_ids"), "required_ids")
     if len(required_ids) != len(set(required_ids)):
         raise ContextContractError("required_ids must contain unique values")
+    for required_id in required_ids:
+        _scope_id(required_id, "required_id")
     if "source_frontier" in request and not isinstance(request["source_frontier"], str):
         raise ContextContractError("source_frontier must be a nonempty string")
     if "source_frontier" in request and not request["source_frontier"]:
@@ -684,7 +687,9 @@ def _compose_context_runtime(
         raise ContextContractError("Context Runtime requires the trusted RepositoryPort")
     if live_route is not None and not isinstance(live_route, LiveRouting):
         raise ContextContractError("Context LIVE route must be owner-typed")
-    if selected_live_reader is not None and callable(selected_live_reader):
+    if selected_live_reader is not None and not _is_owner_issued_selected_live_read_capability(
+        selected_live_reader
+    ):
         raise ContextContractError("Context LIVE reader must be an owner-issued capability")
     if selected_live_reader is not None and live_route is None:
         raise ContextContractError("Context LIVE reader requires its selected route")

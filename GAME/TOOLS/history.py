@@ -11,18 +11,24 @@ import json
 import re
 import sys
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Final, Protocol
+from typing import TYPE_CHECKING, Final
 import weakref
 
-from .live_state import LiveEnvelope, LiveRouting, select_live_source
+from .live_state import (
+    LiveEnvelope,
+    LiveRouting,
+    _SelectedLiveReadCapability,
+    _is_owner_issued_selected_live_read_capability,
+    select_live_source,
+)
 from .policy_basis import PinnedCampaign
 
 if TYPE_CHECKING:
     from .policy_basis import RepositoryPort
 
 
-# framework_module_version: 1.0.8
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
+# framework_module_version: 1.0.9
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
 _GIT_REVISION: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _GIT_REF: Final = re.compile(r"^refs/heads/[^\s/]+(?:/[^\s/]+)*$")
 _CAMPAIGN_REF: Final = re.compile(r"^refs/heads/campaign/[^\s/]+$")
@@ -38,15 +44,6 @@ _NATIVE_HISTORY_KIND: Final = "runtime.native_history"
 
 class HistoryContractError(ValueError):
     """Raised when a caller supplies invalid native history material."""
-
-
-class _SelectedLiveReadCapability(Protocol):
-    """Trusted host capability for one exact selected LIVE source read."""
-
-    def read_selected_live_source(self, route: LiveRouting, source: LiveEnvelope) -> object:
-        """Return raw source-window evidence for the already selected source."""
-
-        raise NotImplementedError
 
 
 class _EvtLaneEnrollmentWindowAdapter:
@@ -122,10 +119,10 @@ class BoundNativeHistoryRuntime:
             raise HistoryContractError("native history requires the trusted RepositoryPort")
         if current_routing is not None and not isinstance(current_routing, LiveRouting):
             raise HistoryContractError("native history current routing must be owner-typed")
-        if selected_live_reader is not None and not hasattr(
-            selected_live_reader, "read_selected_live_source"
+        if selected_live_reader is not None and not _is_owner_issued_selected_live_read_capability(
+            selected_live_reader
         ):
-            raise HistoryContractError("native history LIVE reader must be the narrow read capability")
+            raise HistoryContractError("native history LIVE reader must be owner-issued")
         if selected_live_reader is not None and current_routing is None:
             raise HistoryContractError("native history LIVE reader requires its selected route")
         object.__setattr__(

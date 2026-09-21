@@ -30,8 +30,8 @@ from .recovery_roots import (
     _is_owner_issued_root_delta,
 )
 
-# framework_module_version: 1.0.20
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.20"
+# framework_module_version: 1.0.21
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.21"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -1164,6 +1164,65 @@ class LiveRouting:
         for entry in route.entries:
             validate_live_route_identity(route, entry, entry.source_ref)
         return route
+
+
+class _SelectedLiveReadCapability:
+    """Owner-issued, host-bound read capability for one selected LIVE source."""
+
+    __slots__ = ("_reader", "__weakref__")
+
+    def __init__(self, *_args: object, **_kwargs: object) -> None:
+        raise LiveContractError("selected LIVE read capability must be issued by the LIVE owner")
+
+    def __setattr__(self, _name: str, _value: object) -> None:
+        raise LiveContractError("selected LIVE read capability is immutable")
+
+    def read_selected_live_source(self, route: LiveRouting, source: LiveEnvelope) -> object:
+        """Read exact source evidence through the host-bound transport."""
+
+        return self._reader.read_selected_live_source(route, source)
+
+
+_OWNER_ISSUED_SELECTED_LIVE_READ_CAPABILITIES: dict[
+    int, weakref.ReferenceType[_SelectedLiveReadCapability]
+] = {}
+
+
+def _mark_owner_issued_selected_live_read_capability(
+    capability: _SelectedLiveReadCapability,
+) -> None:
+    capability_id = id(capability)
+
+    def remove(reference: weakref.ReferenceType[_SelectedLiveReadCapability]) -> None:
+        if _OWNER_ISSUED_SELECTED_LIVE_READ_CAPABILITIES.get(capability_id) is reference:
+            _OWNER_ISSUED_SELECTED_LIVE_READ_CAPABILITIES.pop(capability_id, None)
+
+    _OWNER_ISSUED_SELECTED_LIVE_READ_CAPABILITIES[capability_id] = weakref.ref(
+        capability, remove
+    )
+
+
+def _is_owner_issued_selected_live_read_capability(value: object) -> bool:
+    reference = _OWNER_ISSUED_SELECTED_LIVE_READ_CAPABILITIES.get(id(value))
+    return (
+        isinstance(value, _SelectedLiveReadCapability)
+        and reference is not None
+        and reference() is value
+    )
+
+
+def _issue_selected_live_read_capability(reader: object) -> _SelectedLiveReadCapability:
+    """Issue the only Context-consumable selected-LIVE read capability."""
+
+    if callable(reader):
+        raise LiveContractError("selected LIVE transport must not be callable")
+    read = getattr(reader, "read_selected_live_source", None)
+    if not callable(read):
+        raise LiveContractError("selected LIVE transport has no owner read operation")
+    capability = object.__new__(_SelectedLiveReadCapability)
+    object.__setattr__(capability, "_reader", reader)
+    _mark_owner_issued_selected_live_read_capability(capability)
+    return capability
 
 
 def build_live_route(
