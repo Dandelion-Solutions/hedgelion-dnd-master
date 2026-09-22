@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/collaboration-handoff.schema.json",
+  "title": "HDM runtime.collaboration_handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "source_lifecycle",
+    "target_lifecycle",
+    "closed_basis",
+    "entries"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "runtime.collaboration_handoff"},
+    "source_lifecycle": {"const": "CLOSED"},
+    "target_lifecycle": {"const": "RESOLVED"},
+    "closed_basis": {
+      "$ref": "https://hedgelion.invalid/schemas/collaboration-closed-basis.schema.json"
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/entry"}
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interaction_id",
+        "clause_id",
+        "semantic_class",
+        "disposition"
+      ],
+      "properties": {
+        "interaction_id": {"$ref": "#/$defs/id"},
+        "clause_id": {"$ref": "#/$defs/id"},
+        "semantic_class": {
+          "enum": [
+            "OOC_COORDINATION",
+            "DIEGETIC_COMMUNICATION",
+            "ACTIONABLE_INTENT",
+            "CONTROL_SIGNAL"
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "RELEASE_TO_ORIGINAL_CLAUSE_COMMAND_PATH",
+            "CONSUME_AS_NONEXECUTABLE_SEMANTIC_INPUT",
+            "HAND_TO_EXISTING_NATIVE_OWNER",
+            "CLARIFICATION_OR_UNSUPPORTED"
+          ]
+        },
+        "execution_state": {
+          "enum": [
+            "intent.pending",
+            "intent.ready",
+            "intent.executed",
+            "intent.skipped_due_to_prior_result",
+            "intent.failed"
+          ]
+        }
+      }
+    }
+  }
+}

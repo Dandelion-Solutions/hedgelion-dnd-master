@@ -8,6 +8,8 @@ participant authority, Procedure body or Continuation body.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
@@ -32,10 +34,17 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.7
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
+# framework_module_version: 1.0.8
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 2
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
+COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
+COLLABORATION_HANDOFF_SCHEMA_VERSION: Final[int] = 1
+COLLABORATION_INPUT_FINGERPRINT_GENERATION: Final[int] = 1
+
+_CLOSED_INPUT_FINGERPRINT_DOMAIN: Final[bytes] = (
+    b"hdm:collaboration:closed-input-set:fingerprint:v1\0"
+)
 
 _ID_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _SEMANTIC_CLASSES: Final[frozenset[str]] = frozenset(
@@ -215,6 +224,451 @@ class NativeBasisRef:
         return value
 
 
+def _canonical_input_associations(
+    accepted_input_uses: Sequence[tuple[str, str]],
+    accepted_input_contributors: Sequence[tuple[tuple[str, str], ContributorRef]],
+) -> tuple[dict[str, str], ...]:
+    contributor_by_identity = dict(accepted_input_contributors)
+    use_identities = set(accepted_input_uses)
+    if use_identities != set(contributor_by_identity):
+        raise CollaborationAdmissionError(
+            "closed input uses and contributors must correlate"
+        )
+    canonical: list[dict[str, str]] = []
+    for interaction_id, clause_id in use_identities:
+        contributor = contributor_by_identity[(interaction_id, clause_id)]
+        entry = {
+            "interaction_id": interaction_id,
+            "clause_id": clause_id,
+            "player_id": contributor.player_id,
+        }
+        if contributor.pc_id is not None:
+            entry["pc_id"] = contributor.pc_id
+        canonical.append(entry)
+    return tuple(
+        sorted(
+            canonical,
+            key=lambda entry: tuple(
+                entry.get(field, "")
+                for field in ("interaction_id", "clause_id", "player_id", "pc_id")
+            ),
+        )
+    )
+
+
+def _closed_input_set_fingerprint(
+    accepted_input_uses: Sequence[tuple[str, str]],
+    accepted_input_contributors: Sequence[tuple[tuple[str, str], ContributorRef]],
+) -> str:
+    canonical = _canonical_input_associations(
+        accepted_input_uses, accepted_input_contributors
+    )
+    encoded = json.dumps(
+        {
+            "generation": COLLABORATION_INPUT_FINGERPRINT_GENERATION,
+            "inputs": canonical,
+        },
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+    return hashlib.sha256(_CLOSED_INPUT_FINGERPRINT_DOMAIN + encoded).hexdigest()
+
+
+@dataclass(frozen=True, slots=True)
+class CollaborationClosedBasis:
+    """Immutable order-independent basis frozen by explicit collection close."""
+
+    campaign_id: str
+    obligation_id: str
+    generation: int
+    closed_input_set_fingerprint: str
+    accepted_input_uses: tuple[tuple[str, str], ...]
+    accepted_input_contributors: tuple[tuple[tuple[str, str], ContributorRef], ...]
+
+    def __post_init__(self) -> None:
+        _id(self.campaign_id, "closed basis campaign_id")
+        _id(self.obligation_id, "closed basis obligation_id")
+        if (
+            isinstance(self.generation, bool)
+            or not isinstance(self.generation, int)
+            or self.generation < 1
+        ):
+            raise CollaborationAdmissionError(
+                "closed basis generation must be positive"
+            )
+        if (
+            not isinstance(self.closed_input_set_fingerprint, str)
+            or re.fullmatch(r"[a-f0-9]{64}", self.closed_input_set_fingerprint) is None
+        ):
+            raise CollaborationAdmissionError(
+                "closed input set fingerprint must be a SHA-256 digest"
+            )
+        if (
+            not isinstance(self.accepted_input_uses, tuple)
+            or not self.accepted_input_uses
+        ):
+            raise CollaborationAdmissionError("closed basis input uses are required")
+        normalized_uses = tuple(
+            sorted(
+                (
+                    _id(identity[0], "closed input interaction_id"),
+                    _id(identity[1], "closed input clause_id"),
+                )
+                for identity in self.accepted_input_uses
+            )
+        )
+        if len(normalized_uses) != len(set(normalized_uses)):
+            raise CollaborationAdmissionError(
+                "closed basis input identities are duplicate"
+            )
+        if not isinstance(self.accepted_input_contributors, tuple):
+            raise CollaborationAdmissionError(
+                "closed basis input contributors are required"
+            )
+        normalized_contributors = tuple(
+            sorted(
+                (
+                    (
+                        _id(identity[0], "closed contributor interaction_id"),
+                        _id(identity[1], "closed contributor clause_id"),
+                    ),
+                    contributor,
+                )
+                for identity, contributor in self.accepted_input_contributors
+            )
+        )
+        if any(
+            not isinstance(contributor, ContributorRef)
+            for _, contributor in normalized_contributors
+        ):
+            raise CollaborationAdmissionError("closed basis contributors must be typed")
+        if len(normalized_contributors) != len(
+            {identity for identity, _ in normalized_contributors}
+        ):
+            raise CollaborationAdmissionError(
+                "closed basis contributor identities are duplicate"
+            )
+        expected = _closed_input_set_fingerprint(
+            normalized_uses, normalized_contributors
+        )
+        if self.closed_input_set_fingerprint != expected:
+            raise CollaborationAdmissionError(
+                "closed input set fingerprint does not match frozen inputs"
+            )
+        if set(normalized_uses) != {
+            identity for identity, _ in normalized_contributors
+        }:
+            raise CollaborationAdmissionError(
+                "closed basis input uses and contributors must correlate"
+            )
+        object.__setattr__(self, "accepted_input_uses", normalized_uses)
+        object.__setattr__(self, "accepted_input_contributors", normalized_contributors)
+
+    @classmethod
+    def from_obligation(
+        cls, obligation: CollaborationObligation
+    ) -> CollaborationClosedBasis:
+        if not isinstance(obligation, CollaborationObligation):
+            raise CollaborationAdmissionError("owner-derived obligation is required")
+        if obligation.closed_input_set_fingerprint is None:
+            raise CollaborationAdmissionError("obligation has no closed input basis")
+        return cls(
+            campaign_id=obligation.campaign_id,
+            obligation_id=obligation.obligation_id,
+            generation=obligation.generation,
+            closed_input_set_fingerprint=obligation.closed_input_set_fingerprint,
+            accepted_input_uses=obligation.accepted_input_uses,
+            accepted_input_contributors=obligation.accepted_input_contributors,
+        )
+
+    def to_mapping(self) -> dict[str, object]:
+        return {
+            "schema_version": COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION,
+            "kind": "runtime.collaboration_closed_basis",
+            "campaign_id": self.campaign_id,
+            "obligation_id": self.obligation_id,
+            "generation": self.generation,
+            "closed_input_set_fingerprint": self.closed_input_set_fingerprint,
+            "accepted_input_uses": [
+                {"interaction_id": interaction_id, "clause_id": clause_id}
+                for interaction_id, clause_id in self.accepted_input_uses
+            ],
+            "accepted_input_contributors": [
+                {
+                    "interaction_id": interaction_id,
+                    "clause_id": clause_id,
+                    **contributor.to_mapping(),
+                }
+                for (
+                    interaction_id,
+                    clause_id,
+                ), contributor in self.accepted_input_contributors
+            ],
+        }
+
+    @classmethod
+    def from_mapping(cls, value: object) -> CollaborationClosedBasis:
+        if not isinstance(value, Mapping):
+            raise CollaborationAdmissionError(
+                "serialized closed basis must be an object"
+            )
+        expected = {
+            "schema_version",
+            "kind",
+            "campaign_id",
+            "obligation_id",
+            "generation",
+            "closed_input_set_fingerprint",
+            "accepted_input_uses",
+            "accepted_input_contributors",
+        }
+        if set(value) != expected:
+            raise CollaborationAdmissionError(
+                "serialized closed basis fields are not strict"
+            )
+        if (
+            value["schema_version"] != COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION
+            or value["kind"] != "runtime.collaboration_closed_basis"
+        ):
+            raise CollaborationAdmissionError(
+                "unsupported collaboration closed basis schema"
+            )
+        raw_uses = _sequence(value["accepted_input_uses"], "closed basis input uses")
+        uses: list[tuple[str, str]] = []
+        for raw_use in raw_uses:
+            use = _mapping(raw_use, "closed basis input use")
+            if set(use) != {"interaction_id", "clause_id"}:
+                raise CollaborationAdmissionError(
+                    "closed basis input use fields are not strict"
+                )
+            uses.append(
+                (
+                    _id(use["interaction_id"], "closed basis interaction_id"),
+                    _id(use["clause_id"], "closed basis clause_id"),
+                )
+            )
+        raw_contributors = _sequence(
+            value["accepted_input_contributors"],
+            "closed basis input contributors",
+        )
+        contributors: list[tuple[tuple[str, str], ContributorRef]] = []
+        for raw_entry in raw_contributors:
+            entry = _mapping(raw_entry, "closed basis input contributor")
+            if set(entry) - {
+                "interaction_id",
+                "clause_id",
+                "player_id",
+                "pc_id",
+            } or not {"interaction_id", "clause_id", "player_id"}.issubset(entry):
+                raise CollaborationAdmissionError(
+                    "closed basis contributor fields are not strict"
+                )
+            identity = (
+                _id(entry["interaction_id"], "closed contributor interaction_id"),
+                _id(entry["clause_id"], "closed contributor clause_id"),
+            )
+            contributors.append(
+                (
+                    identity,
+                    ContributorRef(
+                        _id(entry["player_id"], "closed contributor player_id"),
+                        None
+                        if entry.get("pc_id") is None
+                        else _id(entry["pc_id"], "closed contributor pc_id"),
+                    ),
+                )
+            )
+        return cls(
+            campaign_id=_id(value["campaign_id"], "closed basis campaign_id"),
+            obligation_id=_id(value["obligation_id"], "closed basis obligation_id"),
+            generation=value["generation"],  # type: ignore[arg-type]
+            closed_input_set_fingerprint=_text(
+                value["closed_input_set_fingerprint"],
+                "closed input set fingerprint",
+            ),
+            accepted_input_uses=tuple(uses),
+            accepted_input_contributors=tuple(contributors),
+        )
+
+
+class HandoffDisposition(StrEnum):
+    """Finite next-owner choices for a frozen collaboration collection."""
+
+    RELEASE_TO_ORIGINAL_CLAUSE_COMMAND_PATH = "RELEASE_TO_ORIGINAL_CLAUSE_COMMAND_PATH"
+    CONSUME_AS_NONEXECUTABLE_SEMANTIC_INPUT = "CONSUME_AS_NONEXECUTABLE_SEMANTIC_INPUT"
+    HAND_TO_EXISTING_NATIVE_OWNER = "HAND_TO_EXISTING_NATIVE_OWNER"
+    CLARIFICATION_OR_UNSUPPORTED = "CLARIFICATION_OR_UNSUPPORTED"
+
+
+@dataclass(frozen=True, slots=True)
+class CollaborationHandoffEntry:
+    """One frozen input mapped to an existing owner without a command ID."""
+
+    interaction_id: str
+    clause_id: str
+    semantic_class: str
+    disposition: HandoffDisposition
+    execution_state: str | None
+
+    def __post_init__(self) -> None:
+        _id(self.interaction_id, "handoff interaction_id")
+        _id(self.clause_id, "handoff clause_id")
+        if self.semantic_class not in _SEMANTIC_CLASSES:
+            raise CollaborationAdmissionError(
+                "handoff semantic class is not registered"
+            )
+        if not isinstance(self.disposition, HandoffDisposition):
+            raise CollaborationAdmissionError("handoff disposition is not registered")
+        if self.execution_state is not None and self.execution_state not in {
+            "intent.pending",
+            "intent.ready",
+            "intent.executed",
+            "intent.skipped_due_to_prior_result",
+            "intent.failed",
+        }:
+            raise CollaborationAdmissionError(
+                "handoff execution state is not registered"
+            )
+        if (
+            self.disposition
+            is HandoffDisposition.RELEASE_TO_ORIGINAL_CLAUSE_COMMAND_PATH
+            and self.execution_state != "intent.ready"
+        ):
+            raise CollaborationAdmissionError(
+                "released actionable handoff must be intent.ready"
+            )
+
+    @property
+    def input_identity(self) -> tuple[str, str]:
+        return self.interaction_id, self.clause_id
+
+    @property
+    def command_id(self) -> None:
+        """Handoff evidence never allocates or carries a RuntimeCommand ID."""
+        return None
+
+    def to_mapping(self) -> dict[str, object]:
+        value: dict[str, object] = {
+            "interaction_id": self.interaction_id,
+            "clause_id": self.clause_id,
+            "semantic_class": self.semantic_class,
+            "disposition": self.disposition.value,
+        }
+        if self.execution_state is not None:
+            value["execution_state"] = self.execution_state
+        return value
+
+
+@dataclass(frozen=True, slots=True)
+class CollaborationHandoff:
+    """Ephemeral deterministic handoff from CLOSED collection to native owners."""
+
+    basis: CollaborationClosedBasis
+    entries: tuple[CollaborationHandoffEntry, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.basis, CollaborationClosedBasis):
+            raise CollaborationAdmissionError("handoff closed basis is required")
+        if not isinstance(self.entries, tuple) or not self.entries:
+            raise CollaborationAdmissionError("handoff entries are required")
+        if any(
+            not isinstance(entry, CollaborationHandoffEntry) for entry in self.entries
+        ):
+            raise CollaborationAdmissionError("handoff entries must be typed")
+        identities = tuple(entry.input_identity for entry in self.entries)
+        if len(identities) != len(set(identities)):
+            raise CollaborationAdmissionError("handoff input identities are duplicate")
+        if set(identities) != set(self.basis.accepted_input_uses):
+            raise CollaborationAdmissionError(
+                "handoff entries must cover the closed input set"
+            )
+        if identities != tuple(sorted(identities)):
+            raise CollaborationAdmissionError(
+                "handoff entries must use deterministic input order"
+            )
+
+    def to_mapping(self) -> dict[str, object]:
+        return {
+            "schema_version": COLLABORATION_HANDOFF_SCHEMA_VERSION,
+            "kind": "runtime.collaboration_handoff",
+            "source_lifecycle": "CLOSED",
+            "target_lifecycle": "RESOLVED",
+            "closed_basis": self.basis.to_mapping(),
+            "entries": [entry.to_mapping() for entry in self.entries],
+        }
+
+    @classmethod
+    def from_mapping(cls, value: object) -> CollaborationHandoff:
+        if not isinstance(value, Mapping):
+            raise CollaborationAdmissionError("serialized handoff must be an object")
+        expected = {
+            "schema_version",
+            "kind",
+            "source_lifecycle",
+            "target_lifecycle",
+            "closed_basis",
+            "entries",
+        }
+        if set(value) != expected:
+            raise CollaborationAdmissionError(
+                "serialized handoff fields are not strict"
+            )
+        if (
+            value["schema_version"] != COLLABORATION_HANDOFF_SCHEMA_VERSION
+            or value["kind"] != "runtime.collaboration_handoff"
+            or value["source_lifecycle"] != "CLOSED"
+            or value["target_lifecycle"] != "RESOLVED"
+        ):
+            raise CollaborationAdmissionError(
+                "unsupported collaboration handoff schema"
+            )
+        raw_entries = _sequence(value["entries"], "handoff entries")
+        entries: list[CollaborationHandoffEntry] = []
+        for raw_entry in raw_entries:
+            entry = _mapping(raw_entry, "handoff entry")
+            if set(entry) - {
+                "interaction_id",
+                "clause_id",
+                "semantic_class",
+                "disposition",
+                "execution_state",
+            } or not {
+                "interaction_id",
+                "clause_id",
+                "semantic_class",
+                "disposition",
+            }.issubset(entry):
+                raise CollaborationAdmissionError("handoff entry fields are not strict")
+            try:
+                disposition = HandoffDisposition(entry["disposition"])
+            except (TypeError, ValueError) as exc:
+                raise CollaborationAdmissionError(
+                    "handoff disposition is not registered"
+                ) from exc
+            entries.append(
+                CollaborationHandoffEntry(
+                    interaction_id=_id(
+                        entry["interaction_id"], "handoff interaction_id"
+                    ),
+                    clause_id=_id(entry["clause_id"], "handoff clause_id"),
+                    semantic_class=_text(
+                        entry["semantic_class"], "handoff semantic class"
+                    ),
+                    disposition=disposition,
+                    execution_state=(
+                        None
+                        if entry.get("execution_state") is None
+                        else _text(entry["execution_state"], "handoff execution state")
+                    ),
+                )
+            )
+        return cls(
+            basis=CollaborationClosedBasis.from_mapping(value["closed_basis"]),
+            entries=tuple(entries),
+        )
+
+
 @dataclass(frozen=True, slots=True)
 class CoordinationAdmission:
     """Ephemeral family evidence derived after complete revalidation."""
@@ -290,6 +744,7 @@ class CollaborationObligation:
     accepted_input_uses: tuple[tuple[str, str], ...] = ()
     accepted_input_contributors: tuple[tuple[tuple[str, str], ContributorRef], ...] = ()
     predecessor_generation: int | None = None
+    closed_input_set_fingerprint: str | None = None
 
     def __post_init__(self) -> None:
         _id(self.obligation_id, "obligation_id")
@@ -513,6 +968,11 @@ class CollaborationObligation:
                 ), contributor in self.accepted_input_contributors
             ],
         }
+
+    @property
+    def closed_basis(self) -> CollaborationClosedBasis:
+        """Return the immutable basis produced for a CLOSED/RESOLVED state."""
+        return CollaborationClosedBasis.from_obligation(self)
 
     @classmethod
     def from_mapping(
@@ -1540,6 +2000,223 @@ def associate_input(
         accepted_input_uses=uses,
         accepted_input_contributors=contributors,
     )
+
+
+def _revalidate_closed_native_basis(
+    obligation: CollaborationObligation, host: RuntimeHost
+) -> None:
+    """Revalidate a closed obligation's finite native basis without scanning."""
+    try:
+        basis = host._begin_operation()
+    except (AttributeError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "runtime host is required for collaboration close/handoff"
+        ) from exc
+    if basis.pinned_campaign.campaign_id != obligation.campaign_id:
+        raise CollaborationAdmissionError(
+            "collaboration obligation belongs to another campaign"
+        )
+    try:
+        _validate_basis_shape(
+            obligation.dependency_class,
+            obligation.dependency_scope,
+            obligation.native_basis_refs,
+        )
+    except (CollaborationAdmissionError, KeyError) as exc:
+        raise CollaborationAdmissionError(
+            "collaboration obligation basis is invalid"
+        ) from exc
+    for ref in obligation.native_basis_refs:
+        owner = _read_native(host, basis, ref.family, ref.record_id)
+        if owner.get("revision") != ref.revision:
+            raise CollaborationAdmissionError(
+                "collaboration native basis is not current"
+            )
+    _revalidate_host_basis(host, basis)
+
+
+def _load_obligation_clause(
+    obligation: CollaborationObligation,
+    host: RuntimeHost,
+    interaction_id: str,
+    clause_id: str,
+) -> Mapping[str, object]:
+    try:
+        basis = host._begin_operation()
+    except (AttributeError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "runtime host is required for collaboration handoff"
+        ) from exc
+    interaction = _load_interaction(host, basis, interaction_id)
+    plan = _load_plan(
+        host,
+        basis,
+        _id(interaction["intent_plan_id"], "handoff intent_plan_id"),
+        interaction_id,
+    )
+    clause = _load_clause(plan, clause_id)
+    if interaction.get("campaign_id") != obligation.campaign_id:
+        raise CollaborationAdmissionError("handoff input belongs to another campaign")
+    _revalidate_host_basis(host, basis)
+    return clause
+
+
+def close_obligation(
+    obligation: CollaborationObligation,
+    *,
+    host: RuntimeHost,
+    generation: int | None = None,
+) -> CollaborationObligation:
+    """Freeze one current complete collection without handing it to execution."""
+    if not isinstance(obligation, CollaborationObligation):
+        raise CollaborationAdmissionError("owner-derived obligation is required")
+    if generation is not None and generation != obligation.generation:
+        raise CollaborationAdmissionError(
+            "close targets a stale collaboration generation"
+        )
+    if obligation.lifecycle in {"CLOSED", "RESOLVED"}:
+        return obligation
+    if obligation.lifecycle != "OPEN":
+        raise CollaborationAdmissionError("only an open obligation can close")
+    _revalidate_closed_native_basis(obligation, host)
+    _validate_persisted_input_owners(obligation, host)
+    pending = _pending_required_contributors(obligation)
+    if pending:
+        raise CollaborationAdmissionError(
+            "required collaboration inputs remain unsatisfied"
+        )
+    clause = _load_obligation_clause(
+        obligation, host, obligation.interaction_id, obligation.clause_id
+    )
+    if clause.get("ordering_resolution_id") is not None:
+        raise CollaborationAdmissionError(
+            "native ordered owner took over before collaboration close"
+        )
+    if obligation.semantic_class == "ACTIONABLE_INTENT" and (
+        clause.get("execution_state") != "intent.pending"
+        or clause.get("command_id") is not None
+    ):
+        raise CollaborationAdmissionError(
+            "collaboration-held actionable clause is no longer pre-command"
+        )
+    fingerprint = _closed_input_set_fingerprint(
+        obligation.accepted_input_uses,
+        obligation.accepted_input_contributors,
+    )
+    return replace(
+        obligation,
+        lifecycle="CLOSED",
+        closed_input_set_fingerprint=fingerprint,
+    )
+
+
+def _handoff_disposition(
+    obligation: CollaborationObligation,
+    identity: tuple[str, str],
+    clause: Mapping[str, object],
+) -> tuple[HandoffDisposition, str | None]:
+    if identity == (obligation.interaction_id, obligation.clause_id):
+        if obligation.semantic_class == "ACTIONABLE_INTENT":
+            if (
+                clause.get("execution_state") != "intent.pending"
+                or clause.get("command_id") is not None
+            ):
+                raise CollaborationAdmissionError(
+                    "held actionable clause must remain pre-command until handoff"
+                )
+            return (
+                HandoffDisposition.RELEASE_TO_ORIGINAL_CLAUSE_COMMAND_PATH,
+                "intent.ready",
+            )
+        return (
+            HandoffDisposition.CONSUME_AS_NONEXECUTABLE_SEMANTIC_INPUT,
+            str(clause.get("execution_state")),
+        )
+    if clause.get("ordering_resolution_id") is not None:
+        return (
+            HandoffDisposition.HAND_TO_EXISTING_NATIVE_OWNER,
+            str(clause.get("execution_state")),
+        )
+    if clause.get("mapping_outcome") in {"clarification_required", "unsupported"}:
+        return HandoffDisposition.CLARIFICATION_OR_UNSUPPORTED, str(
+            clause.get("execution_state")
+        )
+    return HandoffDisposition.CONSUME_AS_NONEXECUTABLE_SEMANTIC_INPUT, str(
+        clause.get("execution_state")
+    )
+
+
+def build_handoff(
+    obligation: CollaborationObligation,
+    *,
+    host: RuntimeHost,
+) -> CollaborationHandoff:
+    """Build deterministic ephemeral handoff evidence for a CLOSED collection."""
+    if not isinstance(obligation, CollaborationObligation):
+        raise CollaborationAdmissionError("owner-derived obligation is required")
+    if obligation.lifecycle != "CLOSED":
+        raise CollaborationAdmissionError(
+            "collaboration handoff requires a CLOSED obligation"
+        )
+    basis = obligation.closed_basis
+    _revalidate_closed_native_basis(obligation, host)
+    _validate_persisted_input_owners(obligation, host)
+    entries: list[CollaborationHandoffEntry] = []
+    for identity in basis.accepted_input_uses:
+        clause = _load_obligation_clause(obligation, host, *identity)
+        disposition, execution_state = _handoff_disposition(
+            obligation, identity, clause
+        )
+        entries.append(
+            CollaborationHandoffEntry(
+                interaction_id=identity[0],
+                clause_id=identity[1],
+                semantic_class=_text(
+                    clause.get("collaboration_semantic_class"),
+                    "handoff semantic class",
+                ),
+                disposition=disposition,
+                execution_state=execution_state,
+            )
+        )
+    return CollaborationHandoff(basis=basis, entries=tuple(entries))
+
+
+def apply_handoff(
+    obligation: CollaborationObligation,
+    handoff: CollaborationHandoff,
+    *,
+    host: RuntimeHost,
+) -> CollaborationObligation:
+    """Consume handoff evidence and end collaboration ownership of waiting."""
+    if not isinstance(obligation, CollaborationObligation):
+        raise CollaborationAdmissionError("owner-derived obligation is required")
+    if not isinstance(handoff, CollaborationHandoff):
+        raise CollaborationAdmissionError("typed collaboration handoff is required")
+    if obligation.lifecycle == "RESOLVED":
+        return obligation
+    if obligation.lifecycle != "CLOSED":
+        raise CollaborationAdmissionError(
+            "collaboration handoff requires a CLOSED obligation"
+        )
+    if handoff.basis != obligation.closed_basis:
+        raise CollaborationAdmissionError(
+            "handoff basis differs from the closed collaboration collection"
+        )
+    expected = build_handoff(obligation, host=host)
+    if handoff != expected:
+        raise CollaborationAdmissionError(
+            "handoff does not match current native owner classification"
+        )
+    return replace(obligation, lifecycle="RESOLVED")
+
+
+# Name aliases keep the owner vocabulary explicit at call sites without adding
+# another lifecycle or execution authority.
+close_collaboration = close_obligation
+handoff_collaboration = build_handoff
+complete_collaboration_handoff = apply_handoff
+ClosedCollectionBasis = CollaborationClosedBasis
 
 
 def required_route_holders(obligation: CollaborationObligation) -> tuple[str, ...]:

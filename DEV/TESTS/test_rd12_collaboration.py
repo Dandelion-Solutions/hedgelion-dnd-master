@@ -1,4 +1,4 @@
-"""W04.T01A collaboration admission and native ordering evidence tests."""
+"""W04.T01A/T01C/T02A collaboration owner contract tests."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from pathlib import Path
 
 import yaml
 from jsonschema import Draft202012Validator, ValidationError
+from referencing import Registry, Resource
 
 from GAME.TOOLS.access_control import (
     PlayerRecord,
@@ -18,15 +19,21 @@ from GAME.TOOLS.access_control import (
 )
 from GAME.TOOLS.collaboration import (
     CollaborationAdmissionError,
+    CollaborationClosedBasis,
     CollaborationFrontier,
+    CollaborationHandoff,
     CollaborationObligation,
     ContributorRef,
     CoordinationFamily,
     DependencyClass,
+    HandoffDisposition,
     NativeBasisRef,
+    apply_handoff,
     associate_input,
+    build_handoff,
     build_join_frontier,
     classify_coordination_dependency,
+    close_obligation,
     compute_maximal_safe_frontier,
     open_or_successor_obligation,
     reconcile_player_route_companions,
@@ -1692,6 +1699,196 @@ class CollaborationFrontierTests(unittest.TestCase):
         )
         Draft202012Validator(schema).validate(value)
         self.assertEqual(schema["properties"]["schema_version"]["const"], 1)
+
+
+class CollaborationCloseHandoffTests(unittest.TestCase):
+    def _closed_obligation(
+        self, repository: RepositoryFixture, *, obligation_id: str
+    ) -> tuple[CollaborationObligation, RepositoryFixture]:
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id=obligation_id
+        )
+        assert obligation is not None
+        associated = associate_input(
+            obligation,
+            _host(repository),
+            "interaction-2",
+            "clause-2",
+            principal=_bob_principal(),
+            player_route=_route(),
+        )
+        return close_obligation(associated, host=_host(repository)), repository
+
+    def test_close_requires_current_generation_and_all_required_inputs(self) -> None:
+        repository = RepositoryFixture()
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-close-required"
+        )
+        assert obligation is not None
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "required"):
+            close_obligation(obligation, host=_host(repository))
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "generation"):
+            close_obligation(obligation, host=_host(repository), generation=2)
+
+    def test_closed_input_fingerprint_is_order_independent_and_round_trips_basis(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        closed, _ = self._closed_obligation(
+            repository, obligation_id="obligation-close-fingerprint"
+        )
+        basis = closed.closed_basis
+
+        reordered = replace(
+            closed,
+            accepted_input_uses=tuple(reversed(closed.accepted_input_uses)),
+            accepted_input_contributors=tuple(
+                reversed(closed.accepted_input_contributors)
+            ),
+        )
+        self.assertEqual(
+            closed.closed_input_set_fingerprint,
+            reordered.closed_basis.closed_input_set_fingerprint,
+        )
+        self.assertEqual(
+            basis, CollaborationClosedBasis.from_mapping(basis.to_mapping())
+        )
+
+    def test_duplicate_close_is_idempotent(self) -> None:
+        repository = RepositoryFixture()
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        closed, _ = self._closed_obligation(
+            repository, obligation_id="obligation-close-idempotent"
+        )
+
+        self.assertIs(close_obligation(closed, host=_host(repository)), closed)
+
+    def test_actionable_clause_is_pre_command_until_handoff(self) -> None:
+        repository = RepositoryFixture()
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        closed, _ = self._closed_obligation(
+            repository, obligation_id="obligation-handoff"
+        )
+        original_clause = repository.records[
+            route_native_record("runtime.intent_plan", ("plan-1",)).relative_path
+        ]["clauses"][0]
+        self.assertEqual(original_clause["execution_state"], "intent.pending")
+        self.assertNotIn("command_id", original_clause)
+
+        handoff = build_handoff(closed, host=_host(repository))
+
+        self.assertIsInstance(handoff, CollaborationHandoff)
+        self.assertEqual(
+            handoff.entries[0].disposition,
+            HandoffDisposition.RELEASE_TO_ORIGINAL_CLAUSE_COMMAND_PATH,
+        )
+        self.assertNotIn("command_id", handoff.to_mapping())
+        self.assertNotIn("runtime.command", repr(handoff.to_mapping()))
+
+    def test_handoff_releases_original_clause_without_synthesizing_command(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        closed, _ = self._closed_obligation(
+            repository, obligation_id="obligation-apply-handoff"
+        )
+        handoff = build_handoff(closed, host=_host(repository))
+
+        resolved = apply_handoff(closed, handoff, host=_host(repository))
+
+        self.assertEqual(resolved.lifecycle, "RESOLVED")
+        self.assertEqual(
+            resolved.closed_input_set_fingerprint, closed.closed_input_set_fingerprint
+        )
+        self.assertEqual(handoff.entries[0].execution_state, "intent.ready")
+        self.assertIsNone(handoff.entries[0].command_id)
+
+    def test_closed_basis_and_handoff_match_owner_schemas(self) -> None:
+        repository = RepositoryFixture()
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        closed, _ = self._closed_obligation(
+            repository, obligation_id="obligation-schema-close"
+        )
+        handoff = build_handoff(closed, host=_host(repository))
+        closed_schema = json.loads(
+            (SCHEMAS / "collaboration-closed-basis.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        handoff_schema = json.loads(
+            (SCHEMAS / "collaboration-handoff.schema.json").read_text(encoding="utf-8")
+        )
+
+        Draft202012Validator(closed_schema).validate(closed.closed_basis.to_mapping())
+        registry = Registry().with_resource(
+            closed_schema["$id"], Resource.from_contents(closed_schema)
+        )
+        Draft202012Validator(handoff_schema, registry=registry).validate(
+            handoff.to_mapping()
+        )
+        self.assertEqual(
+            CollaborationHandoff.from_mapping(handoff.to_mapping()), handoff
+        )
+        self.assertEqual(handoff_schema["properties"]["schema_version"]["const"], 1)
+
+    def test_closed_generation_rejects_late_input_without_replaying_mechanics(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        closed, _ = self._closed_obligation(
+            repository, obligation_id="obligation-late-input"
+        )
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "open"):
+            associate_input(
+                closed,
+                _host(repository),
+                "interaction-2",
+                "clause-2",
+                principal=_bob_principal(),
+                player_route=_route(),
+            )
 
 
 if __name__ == "__main__":
