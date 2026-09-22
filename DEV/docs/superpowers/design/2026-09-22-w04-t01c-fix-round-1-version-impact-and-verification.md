@@ -94,5 +94,19 @@ git diff --check
 PASS
 ```
 
+The broad local run was also attempted without reading or modifying the
+protected `.entire/` workspace:
+
+```text
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto
+1106 passed, 6 skipped, 6 failed
+```
+
+The six failures were outside this T01C slice: four unchanged S6D owner-contract
+tests, runtime-package provenance correctly reporting the dirty worktree, and
+the version census reporting protected untracked-workspace contamination. This
+is not clean full-suite PASS evidence; the bounded T01C and cross-owner suites
+above are the applicable implementation evidence.
+
 **SYSTEM_IMPACT: NONE.** The candidate remains in T01C final review and is not
 an acceptance of the downstream dependency gate.

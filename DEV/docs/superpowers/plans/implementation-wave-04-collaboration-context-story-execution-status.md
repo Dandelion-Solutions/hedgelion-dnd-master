@@ -640,3 +640,30 @@ SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. T01B, T01C and T05B rem
 NEXT_EXACT_TASK: execute W04.T01C; require its reviewer PASS before T02A/T03A. Keep T05C blocked on T05B + T04B + T02C, keep T07A at the Senior-only stop, and do not authorize Wave 05.
 KNOWN_BLOCKERS: T05C requires T04B and T02C in addition to accepted T05B; T07A Senior review; T01C reviewer PASS gates T02A/T03A. Wave 05 remains unauthorized.
 UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published and read back.
+
+## W04.T01C fix round 1 candidate — 2026-09-22
+
+STATUS: FINAL_REVIEW
+CURRENT_TASK: W04.T01C maximal safe frontier and scope-local currentness
+LAST_COMPLETED_TASK: W04.T01B accepted after reviewer PASS -> `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
+LAST_SAFE_SHA: `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
+CANDIDATE_SHA: `c4e3c72e1e1f98a01a1fa87e7ff42ed14d55054d`
+
+CURRENT_VERIFICATION_STATE: T01C fix-round-1 RED/GREEN, focused collaboration
+and cross-owner regression suites, Ruff, diff check and maintenance audit passed;
+candidate was published non-force and read back at the exact candidate SHA.
+The full DEV pytest run recorded 1106 passed, 6 skipped and 6 unrelated/pre-existing
+or dirty-worktree failures; see the T01C fix-round-1 evidence file for details.
+
+VERSION_IMPACT: `GAME/TOOLS/collaboration.py` `1.0.5 -> 1.0.6`; new
+`runtime.collaboration_frontier` schema `1`; collaboration obligation schema,
+engine release, campaign-contract generation, storage generation, catalog and all
+other affected namespaces unchanged.
+
+SYSTEM_IMPACT: NONE for T01C; the separate W04.T07A selected-LIVE reader stop
+remains SENIOR_REVIEW_REQUIRED.
+NEXT_EXACT_TASK: independent reviewer re-review of T01C fix round 1; accept T01C
+only after PASS, then unlock T02A/T03A. Keep T05C blocked on T05B + T04B + T02C,
+keep T07A at its Senior-only stop, and do not authorize Wave 05.
+KNOWN_BLOCKERS: T01C reviewer PASS; T05C dependency join; T07A Senior review.
+UNPUBLISHED_WORK: NONE after candidate publication/read-back; T01C acceptance remains pending re-review.
