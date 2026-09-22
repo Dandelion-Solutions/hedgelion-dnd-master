@@ -1,0 +1,61 @@
+# Ordinary local Git workflow for this trusted repository.
+
+prefix_rule(
+    pattern = ["git", "add"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["git", "commit"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["git", "status"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["git", "diff"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["git", "show"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["git", "log"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["git", "fetch", "origin", "feature/commentator-language-stack"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["git", "push", "origin", "HEAD:feature/commentator-language-stack"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["git", "rebase", "--continue"],
+    decision = "allow",
+)
+
+prefix_rule(
+    pattern = ["git", "rev-parse"],
+    decision = "allow"
+)
+
+prefix_rule(
+    pattern = ["git", "branch", "--show-current"],
+    decision = "allow"
+)
+
+prefix_rule(
+    pattern = ["git", "ls-files"],
+    decision = "allow"
+)
