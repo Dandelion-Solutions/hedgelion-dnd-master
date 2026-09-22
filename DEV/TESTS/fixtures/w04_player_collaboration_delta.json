@@ -1,0 +1,41 @@
+{
+  "kind": "w04.player_collaboration_delta",
+  "output": "W04_PLAYER_COLLABORATION_DELTA_READY",
+  "route_reference_authority": "routing_only",
+  "forbidden_authorization_fallbacks": [
+    "MANIFEST.players.player_ids",
+    "GAME/CAMPAIGN/INDEX/PLAYER_INDEX.yaml"
+  ],
+  "authorization_fallbacks": [],
+  "failure_policy": {
+    "missing_route_refs": "fail_closed",
+    "stale_route_ref": "fail_closed",
+    "mismatched_route_ref": "fail_closed"
+  },
+  "player_fragment_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["collaboration_route_refs"],
+    "properties": {
+      "collaboration_route_refs": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["obligation_id", "generation"],
+          "properties": {
+            "obligation_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "generation": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

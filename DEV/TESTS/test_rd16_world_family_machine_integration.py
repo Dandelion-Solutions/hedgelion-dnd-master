@@ -1,13 +1,15 @@
 import json
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
 
-
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
+PLAYER_COLLABORATION_DELTA = (
+    ROOT / "DEV" / "TESTS" / "fixtures" / "w04_player_collaboration_delta.json"
+)
 
 QUIET_WORLD_SCHEMA_NAMES = {
     "world.location": "world-location-state.schema.json",
@@ -96,9 +98,10 @@ class WorldStateSchemaCoverageTests(unittest.TestCase):
 
     def test_quiet_world_family_schemas_reject_missing_state_and_new_authority(self) -> None:
         for family, name in QUIET_WORLD_SCHEMA_NAMES.items():
-            with self.subTest(family=family, invalid="missing-required-state"):
-                with self.assertRaises(ValidationError):
-                    Draft202012Validator(load_schema(name)).validate({})
+            with self.subTest(
+                family=family, invalid="missing-required-state"
+            ), self.assertRaises(ValidationError):
+                Draft202012Validator(load_schema(name)).validate({})
             with self.subTest(family=family, invalid="unmodelled-state-authority"):
                 invalid = dict(VALID_QUIET_STATES[family], knowledge={"fact.secret": "known"})
                 with self.assertRaises(ValidationError):
@@ -175,10 +178,87 @@ class SharedCatalogIntegrationTests(unittest.TestCase):
         self.fail("Wave 05 must integrate the shared catalog.")
 
 
-@unittest.skip("Wave 05 owns strict PLAYER collaboration state integration.")
 class PlayerCollaborationStrictStateIntegrationTests(unittest.TestCase):
-    def test_player_collaboration_state_is_deferred(self) -> None:
-        self.fail("Wave 05 must provide PLAYER collaboration state.")
+    def _load_delta(self) -> dict[str, object]:
+        self.assertTrue(
+            PLAYER_COLLABORATION_DELTA.is_file(),
+            "W04.T03A must publish its bounded PLAYER collaboration delta",
+        )
+        return json.loads(PLAYER_COLLABORATION_DELTA.read_text(encoding="utf-8"))
+
+    def _fragment_validator(self) -> Draft202012Validator:
+        delta = self._load_delta()
+        fragment = delta["player_fragment_schema"]
+        self.assertIsInstance(fragment, dict)
+        return Draft202012Validator(fragment)
+
+    def test_delta_declares_exact_scoped_route_reference_fragment(self) -> None:
+        delta = self._load_delta()
+
+        self.assertEqual(delta["kind"], "w04.player_collaboration_delta")
+        self.assertEqual(delta["output"], "W04_PLAYER_COLLABORATION_DELTA_READY")
+        self.assertEqual(delta["route_reference_authority"], "routing_only")
+        self.assertEqual(
+            delta["forbidden_authorization_fallbacks"],
+            ["MANIFEST.players.player_ids", "GAME/CAMPAIGN/INDEX/PLAYER_INDEX.yaml"],
+        )
+        self.assertIn("authorization_fallbacks", delta)
+        self.assertEqual(delta["authorization_fallbacks"], [])
+        self.assertEqual(
+            delta["player_fragment_schema"]["required"],
+            ["collaboration_route_refs"],
+        )
+
+    def test_collaboration_owner_has_no_generic_player_index_fallback(self) -> None:
+        source = (ROOT / "GAME" / "TOOLS" / "collaboration.py").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertNotIn("MANIFEST.players.player_ids", source)
+        self.assertNotIn("PLAYER_INDEX.yaml", source)
+
+    def test_missing_route_references_fail_closed(self) -> None:
+        with self.assertRaises(ValidationError):
+            self._fragment_validator().validate({})
+
+    def test_duplicate_route_references_fail_closed(self) -> None:
+        ref = {"obligation_id": "obligation-1", "generation": 2}
+        with self.assertRaises(ValidationError):
+            self._fragment_validator().validate(
+                {"collaboration_route_refs": [ref, dict(ref)]}
+            )
+
+    def test_route_references_are_scoped_and_non_authoritative(self) -> None:
+        validator = self._fragment_validator()
+        validator.validate(
+            {
+                "collaboration_route_refs": [
+                    {"obligation_id": "obligation-1", "generation": 2}
+                ]
+            }
+        )
+
+        for forbidden_field in (
+            "authorized",
+            "authorization",
+            "controlled_pc_ids",
+            "lifecycle",
+            "status",
+        ):
+            with self.subTest(forbidden_field=forbidden_field), self.assertRaises(
+                ValidationError
+            ):
+                validator.validate(
+                    {
+                        "collaboration_route_refs": [
+                            {
+                                "obligation_id": "obligation-1",
+                                "generation": 2,
+                                forbidden_field: True,
+                            }
+                        ]
+                    }
+                )
 
 
 @unittest.skip("Wave 05 owns native PLAYER identity integration.")
