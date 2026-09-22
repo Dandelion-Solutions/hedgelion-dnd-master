@@ -4,8 +4,8 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: SENIOR_REVIEW_REQUIRED (T02B; T07A separate)
-CURRENT_TASK: W04.T02B publication/recovery and route-companion closure
+STATUS: EXECUTING — OWNER DECISION ACCEPTED / RESTORE + T00P CURRENT
+CURRENT_TASK: scoped T02B/T07A clean restore, then W04.T00P RuntimeHost I/O extension
 LAST_COMPLETED_TASK:
   W04.T01B accepted after reviewer PASS -> `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
   W04.T05B accepted after reviewer PASS -> `a1a4d204fbeec9f8a24e681289e0e530e5b91b75`
@@ -806,3 +806,71 @@ for T02C; T05C requires T04B and T02C in addition to accepted T05B; T07A
 separate Senior review; Wave 05 remains unauthorized.
 UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published
 and read back.
+
+
+## Senior/owner decision — T02B + T07A — 2026-09-22
+
+AUTHORITATIVE_DECISION:
+`DEV/docs/superpowers/design/2026-09-22-w04-t02b-t07a-publication-live-reader-owner-decision.md`
+
+REVIEWED_STOP_HEAD: `d34fa8d1b462e7eaa57d20cd940e6183be0b061a`
+
+```text
+T02B SYSTEM_IMPACT: RESOLVED
+T07A SYSTEM_IMPACT: RESOLVED
+ARCHITECTURE_REVIEW_REQUIRED: NO
+
+NEW PREREQUISITE:
+  W04.T00P
+  -> W04_RUNTIME_HOST_IO_EXTENSIONS_READY
+  -> W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY
+```
+
+T02B restore basis:
+`b737555b9d9a1c404576dc173dfdaf34cd023e13`
+for exactly collaboration.py, test_rd12, DEV obligation schema and GAME
+collaboration_obligation projection.
+
+T07A restore basis:
+`e340ed5add19dbc4ed6ff350229ef6f2827fabb8`
+for exactly history.py, rd13 and the two native-history schemas (delete schemas
+that were absent there). RuntimeHost is not rolled back; T00P owns its coherent
+integration.
+
+Accepted T02B compatibility disposition:
+
+```text
+runtime.collaboration_obligation 2 -> 3
+migration edge: NONE
+dual-read: NONE
+campaign_contract_generation bump: NO
+basis: unreleased pre-v1 clean-slate replacement
+```
+
+Accepted v3 lifecycle:
+
+```text
+OPEN -> fingerprint null
+CLOSED -> SHA256
+RESOLVED -> same SHA256 retained
+OBSOLETE -> null or retained SHA256 depending whether the generation froze
+```
+
+Accepted publication route:
+domain delta -> RuntimeHost CampaignPublicationService -> W02
+FrozenCampaignPublicationAttempt -> ConnectorGitPlan -> PublicationOutcome ->
+typed reconciliation if required. No collaboration-local publisher/result.
+
+Accepted T07 route:
+RuntimeHost SemanticEventSourceAdapter supplies strict bounded LOCAL or selected-
+LIVE evt windows; History validates and issues authority. No LOCAL aggregate
+history read, no fake LIVE tree index, no missing-LIVE campaign fallback.
+
+CLS↔HDM T07 preflight remains PASS unless its explicit semantic-change trigger fires.
+
+CURRENT_VERIFICATION_STATE: accepted T01A/T05A/T01B/T05B/T01C/T02A/T03A remain closed. Rejected T02B/T07A candidates remain unaccepted until restored/reimplemented.
+VERSION_IMPACT: NONE for this decision/restores. Fresh T00P/T02B/T07A gates apply; T02B owns the accepted pre-release v2->v3 schema transition.
+SYSTEM_IMPACT: RESOLVED / NONE CURRENT.
+NEXT_EXACT_TASK: scoped restores -> reviewer PASS -> publish/read-back -> T00P -> reviewer PASS -> T02B and T07A in parallel where write sets are disjoint.
+KNOWN_BLOCKERS: restores + T00P only; downstream remains dependency-gated.
+WAVE_05: NOT AUTHORIZED.

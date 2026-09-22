@@ -132,6 +132,30 @@ Mandatory REDs: capability override through a domain API rejected; cross-campaig
 root use rejected; stale pin not reused as currentness; no Context->History trust
 dependency; no persistence/serialization of host capabilities.
 
+### Shared host I/O extension - W04.T00P
+
+**W04.T00P - campaign publication service + SemanticEvent source-domain adapters**
+
+Inputs: accepted `W04_RUNTIME_HOST_COMPOSITION_READY`, W02 publication/recovery,
+Step-5.6 transport law and Step-5.10/baseline evt source contracts.
+
+Direct writes: `GAME/TOOLS/runtime_host.py`,
+`DEV/TESTS/test_runtime_host_composition.py`, plus one bounded Wave-05
+bootstrap/integration delta. No persisted schema.
+
+Outputs: `W04_RUNTIME_HOST_IO_EXTENSIONS_READY` and
+`W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY`.
+
+Mandatory REDs: domain APIs cannot inject publication transport or source adapters;
+CampaignPublicationService always produces W02 FrozenCampaignPublicationAttempt /
+ConnectorGitPlan / PublicationOutcome; indeterminate ACK never dispatches a second
+write before typed current reconciliation; LOCAL/LIVE evt adapters return bounded
+raw windows only; selected LIVE pins exact route/source and never falls back to
+campaign; no RuntimeHost capability is serialized.
+
+This task is activated by the accepted 2026-09-22 T02B/T07A owner decision and
+does not reopen accepted T01A/T05A/T01B/T05B work.
+
 ### Collaboration lane - W04.T01-T04
 
 **W04.T01A - coordination-family admission and exact participant authority**
@@ -170,11 +194,11 @@ Mandatory REDs: close requires exact current generation; closed input set finger
 
 **W04.T02B - publication/recovery and route-companion closure**
 
-Inputs: T02A PASS plus W02 publication/recovery. Same collaboration production/test lane and owner-local persistence contract inputs only.
+Inputs: T02A PASS, `W04_RUNTIME_HOST_IO_EXTENSIONS_READY`, plus W02 publication/recovery. Same collaboration production/test lane and owner-local persistence contract inputs only.
 
 Output: W04_COLLAB_DURABILITY_RECOVERY_READY.
 
-Mandatory REDs: no collaboration index/global directory scan; exact known-ID recovery; OPEN/CLOSED/RESOLVED/OBSOLETE recovery; CAS rejection/ambiguity fail closed; route companion joins the same campaign closure; LIVE dependency creates neither 2PC nor a LIVE collaboration owner; recovery never rerolls/replays mechanics.
+Mandatory REDs: no collaboration-local publisher/result type and no direct transport write; OPEN->CLOSED and CLOSED->RESOLVED use W02 FrozenCampaignPublicationAttempt/ConnectorGitPlan/PublicationOutcome through CampaignPublicationService; indeterminate ACK uses typed current closure/ancestry with no second dispatch; no collaboration index/global directory scan; exact known-ID recovery; OPEN/CLOSED/RESOLVED/OBSOLETE recovery; v3 fingerprint lifecycle matrix is exact and v2 is rejected under the accepted pre-release clean-slate cutover; route companions remain through OPEN/CLOSED and terminal removal joins the RESOLVED/OBSOLETE campaign closure; LIVE dependency creates neither 2PC nor a LIVE collaboration owner; recovery never rerolls/replays mechanics.
 
 **W04.T02C - join/rejoin and recipient-safe catch-up**
 
@@ -272,13 +296,13 @@ W04.T07-PREFLIGHT is a coordinator gate, not a worker task. Immediately before T
 
 **W04.T07A - accepted native history publication/recovery**
 
-Inputs: preflight PASS_TO_IMPLEMENT or PRIVATE_CLS_REPAIR_DEBT_ONLY, `W04_RUNTIME_HOST_COMPOSITION_READY`, plus W02 publication/recovery.
+Inputs: preflight PASS_TO_IMPLEMENT or PRIVATE_CLS_REPAIR_DEBT_ONLY, `W04_RUNTIME_HOST_COMPOSITION_READY`, `W04_RUNTIME_HOST_IO_EXTENSIONS_READY`, plus W02 publication/recovery.
 
 Direct writes: GAME/TOOLS/history.py, native-history schemas and DEV/TESTS/test_rd13_story_t0_commentator.py.
 
 Output: W04_NATIVE_HISTORY_PUBLICATION_READY.
 
-Mandatory REDs: no gameplay/domain API accepts RepositoryPort/LIVE/runtime/history-service override; caller-shaped SemanticEvent cannot mint accepted history; duplicate ID/evt-admission ordinal; provenance/currentness mismatch; incomplete source window cannot claim coverage; interruption/recovery preserves identity/origin/provenance/source enrollment; narration/Story cannot reconstruct native history; routed missing LIVE source never falls back to campaign.
+Mandatory REDs: no gameplay/domain API accepts RepositoryPort/LIVE/runtime/history-service/source-adapter override; LOCAL aggregate LOG/SEMANTIC_EVENTS is not source-domain proof; caller-shaped SemanticEvent cannot mint accepted history; duplicate/gapped/nonmonotonic ID/evt-admission ordinal; provenance/currentness/window-completeness mismatch; bounded source window required; interruption/recovery preserves identity/origin/provenance/source enrollment; selected-LIVE reads exact route-selected one-file source evidence and never invent a tree index; narration/Story cannot reconstruct native history; routed missing LIVE source never falls back to campaign.
 
 **W04.T07B - all four Story layers and eight fixed source registrations**
 
@@ -323,6 +347,23 @@ Output: original W04_COMMENTATOR_DRAMATURG_READY.
 Mandatory REDs: retained horizon is multiplayer-only; future/planning text is noncanonical; stale/incompatible source basis is discarded/reprepared rather than text-merged; generation cannot self-authorize; planning cannot leak through catch-up/Narrator or mutate native history.
 
 After T07E reviewer PASS, run a T07-INTEGRATION independent review over T07A-T07E together. It must verify the whole accepted-native-evidence -> four Story layers/T0 -> Commentator filter -> Dramaturg chain has no reverse authority edge and that all persisted schema/version impacts are coherent.
+
+### Current T02B/T07A repair scheduling amendment
+
+For the accepted 2026-09-22 System-Impact resolution:
+
+```text
+restore rejected T02B candidate
++ restore T07-owned unaccepted history surfaces
+-> reviewer PASS / publish / read-back
+-> T00P
+-> reviewer PASS
+-> T02B and T07A may run in parallel
+```
+
+Do not roll RuntimeHost wholesale back to the pre-T07 parent because later
+accepted T01A/T05A work also modified that shared surface. T00P owns the coherent
+current RuntimeHost integration.
 
 ### Final consumer join - W04.T08
 

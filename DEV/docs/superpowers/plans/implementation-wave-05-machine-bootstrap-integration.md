@@ -197,7 +197,7 @@ Output checkpoints: `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY` and `W05_BLANK_SCAFFO
 
 ## W05.T06 — Onboarding, join/rejoin, retrospective and save/exit product paths
 
-Hard input: `W04_RUNTIME_HOST_COMPOSITION_READY` plus the completed owner checkpoints consumed by each product path.
+Hard inputs: `W04_RUNTIME_HOST_COMPOSITION_READY`, `W04_RUNTIME_HOST_IO_EXTENSIONS_READY`, plus the completed owner checkpoints consumed by each product path.
 
 Implement the product-facing flows over the completed owners:
 
@@ -245,16 +245,16 @@ Fresh-read and integrate owner deltas into each material module exactly once:
 
 | Module | Target | Required semantic inputs |
 |---|---:|---|
-| BOOTSTRAP_RUNTIME | 1.0.9 | current transport/currentness + bounded bootstrap discovery + `W04_RUNTIME_HOST_BOOTSTRAP_DELTA_READY` |
+| BOOTSTRAP_RUNTIME | 1.0.9 | current transport/currentness + bounded bootstrap discovery + `W04_RUNTIME_HOST_BOOTSTRAP_DELTA_READY` + `W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY` |
 | RANDOMNESS | 1.0.3 | fixed RNG acceptance/recovery |
 | EXPLORATION | 1.0.2 | current exploration/domain cutover |
 | STORAGE | 1.0.2 | routing/HOT + exact recovery/operational roots |
 | SAVE_CONTRACT | 1.0.2 | durability promise/save-exit |
-| PERSISTENCE | 1.0.4 | publication/recovery/currentness |
+| PERSISTENCE | 1.0.4 | publication/recovery/currentness + CampaignPublicationService/W02 plan execution wiring |
 | CHRONOLOGY | 1.0.2 | temporal/thread/current-state |
 | PROCESSES | 1.0.3 | procedure/continuation/operational roots + owner-native ordered-response evidence route |
 | AI_REASONING | 1.0.4 | typed role/context/protected result + campaign-bound RuntimeHost Context composition |
-| LIVE_SCENE | 1.0.4 | source-native LIVE/currentness/state |
+| LIVE_SCENE | 1.0.4 | source-native LIVE/currentness/state + selected-LIVE evt source-domain reader wiring |
 | MULTIPLAYER | 1.0.8 | principal route + LIVE + collaboration/access reconciliation |
 | CAMPAIGN_SETUP | 1.0.4 | identity/scaffold/onboarding |
 | SESSION | 1.0.2 | exact session/campaign/LIVE/PLAYER handoff |
@@ -265,7 +265,7 @@ Fresh-read and integrate owner deltas into each material module exactly once:
 Shared physical checkpoints:
 
 - integrate `GAME/INSTALL/README.md`, `GAME/INSTALL/PROJECT_INSTRUCTIONS.txt` and `GAME/INSTALL/00_DND_BOOTSTRAP.md` at `RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION_READY`;
-- integrate `GAME/CORE/BOOTSTRAP_RUNTIME.md` at `CORE_BOOTSTRAP_RUNTIME_FINAL_INTEGRATION_READY`, including the final deployment wiring law: authenticated Step-5.6 RepositoryPort + Step-5.8 LIVE adapter compose the Wave-04 RuntimeHost after campaign selection, while no gameplay/model surface can inject those capabilities;
+- integrate `GAME/CORE/BOOTSTRAP_RUNTIME.md` at `CORE_BOOTSTRAP_RUNTIME_FINAL_INTEGRATION_READY`, including the final deployment wiring law: authenticated Step-5.6 RepositoryPort + campaign publication transport + Step-5.8 LIVE/source-domain adapters compose the Wave-04 RuntimeHost after campaign selection, while no gameplay/model surface can inject those capabilities;
 - integrate `GAME/CORE/STORAGE.md` at `CORE_STORAGE_FINAL_INTEGRATION_READY`;
 - integrate `GAME/CORE/MULTIPLAYER.md` at `CORE_MULTIPLAYER_FINAL_INTEGRATION_READY`;
 - integrate all other material CORE modules once with their listed owner inputs.

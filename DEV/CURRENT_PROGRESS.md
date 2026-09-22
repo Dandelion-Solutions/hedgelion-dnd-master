@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T02A/T03A ACCEPTED — T02B SENIOR_REVIEW_REQUIRED / UNACCEPTED — T07A SENIOR_REVIEW_REQUIRED
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T02B/T07A OWNER DECISION ACCEPTED — RESTORE + T00P REQUIRED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: Wave 03 implementation independently reviewed task-by-task and closed by mandatory Senior integration audit PASS on 2026-09-19; reviewed implementation head `9ae3feb74a2d657a081140781899dcbe66819b5b`
-NEXT_AUTHORIZED_UNIT: W04.T02B remains current but its published candidate is unaccepted pending Senior review; T02C waits for accepted T02B; W04.T04A waits for T02C; W04.T05C requires accepted T05B plus T04B and T02C; W04.T07A remains a separate Senior-only selected-LIVE reader System-Impact stop
-REQUIRED_GATE: W04.T02B requires Senior resolution of its publication-owner and persisted-schema findings before acceptance; T02C waits for accepted T02B; W04.T04A waits for T02C; W04.T05C requires accepted T05B plus T04B and T02C; W04.T07A Senior resolution before acceptance or T07B+ -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
+NEXT_AUTHORIZED_UNIT: restore the rejected T02B four-file candidate to accepted `b737555b9d9a1c404576dc173dfdaf34cd023e13` and restore only the T07-owned history/schema/rd13 surfaces to `e340ed5add19dbc4ed6ff350229ef6f2827fabb8`; after restore review/publish/read-back execute W04.T00P, then resume T02B and T07A under the accepted 2026-09-22 owner decision
+REQUIRED_GATE: scoped T02B/T07A restore reviewer PASS -> W04.T00P reviewer PASS -> normal T02B/T07A task review gates -> downstream dependency joins -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — created/published; authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: W04.T02B requires Senior review; W04.T04A waits for T02C; W04.T05C requires T04B and T02C in addition to accepted T05B; W04.T07A requires separate Senior review; publisher/migration execution, release execution, gameplay bootstrap and Wave 05 remain unauthorized.
+KNOWN_BLOCKERS: no unresolved Senior/design decision remains for T02B/T07A. Execution is blocked on the two scoped restores and W04.T00P reviewer PASS. T02C, T04A/T04B, T05C and T07B+ remain dependency-gated. Migration execution is neither required nor authorized for the pre-release collaboration v2->v3 cutover; release execution, gameplay bootstrap and Wave 05 remain unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
