@@ -641,7 +641,7 @@ NEXT_EXACT_TASK: execute W04.T01C; require its reviewer PASS before T02A/T03A. K
 KNOWN_BLOCKERS: T05C requires T04B and T02C in addition to accepted T05B; T07A Senior review; T01C reviewer PASS gates T02A/T03A. Wave 05 remains unauthorized.
 UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published and read back.
 
-## W04.T01C fix round 1 candidate — 2026-09-22
+## W04.T01C fix round 1 candidate — superseded 2026-09-22
 
 STATUS: FINAL_REVIEW
 CURRENT_TASK: W04.T01C maximal safe frontier and scope-local currentness
@@ -649,21 +649,46 @@ LAST_COMPLETED_TASK: W04.T01B accepted after reviewer PASS -> `856abcbd6621da33b
 LAST_SAFE_SHA: `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
 CANDIDATE_SHA: `c4e3c72e1e1f98a01a1fa87e7ff42ed14d55054d`
 
-CURRENT_VERIFICATION_STATE: T01C fix-round-1 RED/GREEN, focused collaboration
-and cross-owner regression suites, Ruff, diff check and maintenance audit passed;
-candidate was published non-force and read back at the exact candidate SHA.
-The full DEV pytest run recorded 1106 passed, 6 skipped and 6 unrelated/pre-existing
-or dirty-worktree failures; see the T01C fix-round-1 evidence file for details.
+CURRENT_VERIFICATION_STATE: T01C fix-round-1 RED/GREEN and its focused
+verification were published at the exact candidate SHA, but its module-local
+Version Impact entry was incomplete. The round-1 evidence is superseded by the
+round-2 metadata correction below; no round-1 behavior or schema result is
+reopened.
 
-VERSION_IMPACT: `GAME/TOOLS/collaboration.py` `1.0.5 -> 1.0.6`; new
-`runtime.collaboration_frontier` schema `1`; collaboration obligation schema,
-engine release, campaign-contract generation, storage generation, catalog and all
-other affected namespaces unchanged.
+VERSION_IMPACT: superseded; see
+`DEV/docs/superpowers/design/2026-09-22-w04-t01c-fix-round-2-version-impact-and-verification.md`
+for the exact current transition.
 
 SYSTEM_IMPACT: NONE for T01C; the separate W04.T07A selected-LIVE reader stop
 remains SENIOR_REVIEW_REQUIRED.
-NEXT_EXACT_TASK: independent reviewer re-review of T01C fix round 1; accept T01C
-only after PASS, then unlock T02A/T03A. Keep T05C blocked on T05B + T04B + T02C,
-keep T07A at its Senior-only stop, and do not authorize Wave 05.
+NEXT_EXACT_TASK: complete independent reviewer re-review of T01C fix round 2;
+accept T01C only after PASS, then unlock T02A/T03A. Keep T05C blocked on T05B +
+T04B + T02C, keep T07A at its Senior-only stop, and do not authorize Wave 05.
 KNOWN_BLOCKERS: T01C reviewer PASS; T05C dependency join; T07A Senior review.
-UNPUBLISHED_WORK: NONE after candidate publication/read-back; T01C acceptance remains pending re-review.
+UNPUBLISHED_WORK: fix round 2 cursor/evidence synchronization remains to be
+published and read back.
+
+## W04.T01C fix round 2 metadata correction — 2026-09-22
+
+STATUS: FINAL_REVIEW
+CURRENT_TASK: W04.T01C maximal safe frontier and scope-local currentness
+BASE_PUBLISHED_SHA: `45ddaadeeabedf37a6f592b4b3708d15adcedd98`
+LAST_SAFE_SHA: `c4e3c72e1e1f98a01a1fa87e7ff42ed14d55054d`
+
+CURRENT_VERIFICATION_STATE: the material T01C authority/currentness repair is
+unchanged. Its collaboration module metadata is corrected from `1.0.6` to
+`1.0.7`; targeted collaboration/cross-owner tests, version assertion, Ruff,
+format, diff check and maintenance audit passed. See the round-2 evidence file
+for exact commands/results.
+
+VERSION_IMPACT: `GAME/TOOLS/collaboration.py` `1.0.6 -> 1.0.7`; collaboration
+frontier schema remains `1`; all other affected HDM-owned namespaces NONE.
+
+SYSTEM_IMPACT: NONE for T01C; the separate W04.T07A selected-LIVE reader stop
+remains SENIOR_REVIEW_REQUIRED.
+NEXT_EXACT_TASK: publish/read back this round-2 metadata correction, then obtain
+independent reviewer PASS for T01C before unlocking T02A/T03A. Keep T05C blocked
+on T05B + T04B + T02C, keep T07A at its Senior-only stop, and do not authorize
+Wave 05.
+KNOWN_BLOCKERS: T01C reviewer PASS; T05C dependency join; T07A Senior review.
+UNPUBLISHED_WORK: cursor/evidence synchronization is not yet published.

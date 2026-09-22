@@ -32,8 +32,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 2
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 
