@@ -320,7 +320,8 @@ The T07A-only brief is
 W04.T01A: ACCEPTED at b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772
 W04.T01B: ELIGIBLE from the accepted T01A checkpoint; round-2 persisted
           association-authorization repair is implemented and awaits independent
-          re-review. It is not accepted.
+          re-review. Candidate published at fb93cba1e41bc17bc865dc4ed7003bb1dcb464bf.
+          It is not accepted.
 W04.T07A: SENIOR_REVIEW_REQUIRED; selected-LIVE evt-lane reader stop remains open
 DOWNSTREAM: T01C+ waits for T01B acceptance; T07B+ waits for T07A acceptance
 VERSION_IMPACT: T01B collaboration obligation schema 1 -> 2; collaboration

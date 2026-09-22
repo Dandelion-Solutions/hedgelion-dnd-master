@@ -591,6 +591,7 @@ CURRENT_TASK: W04.T01B obligation lineage/input association restore authorizatio
 INPUT: W04.T01A is accepted at `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`; T01B is therefore eligible under the named DAG edge
 LAST_COMPLETED_TASK: W04.T01A accepted after independent re-review -> `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
 LAST_SAFE_SHA: `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
+LAST_PUBLISHED_SHA: `fb93cba1e41bc17bc865dc4ed7003bb1dcb464bf`
 
 CURRENT_VERIFICATION_STATE:
 - RED witnesses prove that persisted restore previously accepted a valid non-holder,
