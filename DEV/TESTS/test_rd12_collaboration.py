@@ -1320,6 +1320,20 @@ class CollaborationSchemaTests(unittest.TestCase):
 
         self.assertEqual(restored, obligation)
 
+    def test_runtime_state_rejects_restore_from_inactive_origin_player(self) -> None:
+        repository = RepositoryFixture()
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-inactive-origin"
+        )
+        assert obligation is not None
+        inactive_alice = _player_record("player-alice", "42", "alice", "pc-alice")
+        inactive_alice["status"] = "inactive"
+        inactive_alice["deactivated_by"] = "self"
+        repository.put("world.player", "player-alice", inactive_alice)
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "active"):
+            self._load_obligation(obligation.to_mapping(), repository)
+
     def test_runtime_state_rejects_legacy_schema_mapping(self) -> None:
         repository = RepositoryFixture()
         obligation = open_or_successor_obligation(

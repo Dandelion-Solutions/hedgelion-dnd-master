@@ -32,8 +32,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 2
 
 _ID_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
@@ -1085,6 +1085,7 @@ def _validate_persisted_input_owners(
                 raise CollaborationAdmissionError(
                     "originating input cannot add a PC association"
                 )
+            _validate_required_player(host, basis, contributor)
         else:
             participant = next(
                 (
