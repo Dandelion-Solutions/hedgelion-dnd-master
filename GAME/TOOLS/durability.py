@@ -7,20 +7,20 @@ catalog, lifecycle, or currentness on behalf of their owners.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
 import hashlib
 import json
+import math
 import re
+import weakref
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Final
-import weakref
 
 from .native_storage import route_native_record
 
-
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final = "1.0.3"
 _SHA256: Final = re.compile(r"^[a-f0-9]{64}$")
 _ID: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _PROMISE_STATUSES: Final = frozenset(
@@ -64,7 +64,7 @@ def _json_copy(value: object, label: str) -> object:
     if value is None or isinstance(value, (str, int, bool)):
         return value
     if isinstance(value, float):
-        if value != value or value in {float("inf"), float("-inf")}:
+        if not math.isfinite(value):
             raise DurabilityContractError(f"{label} must not contain a non-finite number")
         return value
     if isinstance(value, Mapping):
@@ -344,6 +344,7 @@ class RoutedSerializedOperation:
             "runtime.command": "command_id",
             "runtime.interaction": "input_message_id",
             "runtime.intent_plan": "intent_plan_id",
+            "runtime.collaboration_obligation": "obligation_id",
         }.get(self.owner_kind, "id")
         if copied.get(identity_field, copied.get("id")) != self.owner_id:
             raise DurabilityContractError("serialized operation owner identity differs from payload")

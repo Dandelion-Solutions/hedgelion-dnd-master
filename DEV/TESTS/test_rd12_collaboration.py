@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
@@ -12,6 +13,7 @@ import yaml
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
 
+from GAME.TOOLS import collaboration as collaboration_module
 from GAME.TOOLS.access_control import (
     PlayerRecord,
     VerifiedPrincipal,
@@ -42,7 +44,7 @@ from GAME.TOOLS.collaboration import (
 )
 from GAME.TOOLS.live_state import LiveRouting
 from GAME.TOOLS.native_storage import route_native_record
-from GAME.TOOLS.policy_basis import PinnedCampaign
+from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence, PinnedCampaign
 from GAME.TOOLS.runtime_execution import NativeOrderingEvidence
 from GAME.TOOLS.runtime_host import compose_runtime_host
 
@@ -54,6 +56,14 @@ CAMPAIGN_ID = "campaign-frostfall"
 CAMPAIGN_REVISION = "a" * 40
 TREE_SHA = "b" * 40
 CHANGED_CAMPAIGN_REVISION = "c" * 40
+
+
+def _thaw_for_test(value: object) -> object:
+    if isinstance(value, Mapping):
+        return {key: _thaw_for_test(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_thaw_for_test(item) for item in value]
+    return value
 
 
 class RepositoryFixture:
@@ -140,6 +150,111 @@ class RepositoryFixture:
                 "state": {"name": "Market morning"},
             },
         )
+
+
+class CampaignPublicationRepositoryFixture(RepositoryFixture):
+    """Exact-read fixture whose writes are applied only by the host transport."""
+
+    def __init__(self, clause: dict[str, object] | None = None) -> None:
+        self.current_revision = CAMPAIGN_REVISION
+        self.current_tree = TREE_SHA
+        super().__init__(clause)
+        self.records["MANIFEST.yaml"] = {
+            "campaign_id": CAMPAIGN_ID,
+            "campaign_name": "The Frostfall",
+            "branch": "campaign/frostfall",
+            "created_at": "2026-09-22T00:00:00Z",
+        }
+        self.records["CAMPAIGN_CARD.yaml"] = {
+            "campaign_id": CAMPAIGN_ID,
+            "campaign_name": "The Frostfall",
+        }
+
+    def repository_identity(self) -> str:
+        return "github.com/example/campaigns"
+
+    def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
+        if campaign_id != CAMPAIGN_ID:
+            raise KeyError(campaign_id)
+        return PinnedCampaign(CAMPAIGN_ID, self.current_revision, self.current_tree)
+
+    def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+        if path in {"MANIFEST.yaml", "CAMPAIGN_CARD.yaml"}:
+            return deepcopy(self.records[path])
+        if (
+            pinned.campaign_id != CAMPAIGN_ID
+            or pinned.revision != self.current_revision
+        ):
+            raise KeyError("stale campaign pin")
+        self.reads.append(path)
+        return deepcopy(self.records[path])
+
+    def read_exact_commit(self, campaign_ref: str, revision: str) -> object:
+        return {
+            "ref": campaign_ref,
+            "revision": revision,
+            "tree_sha": self.current_tree,
+        }
+
+
+class CampaignPublicationTransport:
+    """Host-bound W02 publication transport with controllable outcomes."""
+
+    def __init__(self, repository: CampaignPublicationRepositoryFixture) -> None:
+        self.repository = repository
+        self.calls: list[tuple[str, object]] = []
+        self.response_status = "accepted"
+        self.next_head = "d" * 40
+        self.ref_revision_override: str | None = None
+        self._pending_operations: dict[str, object | None] = {}
+
+    def repository_identity(self) -> str:
+        return "github.com/example/campaigns"
+
+    def resolve_authenticated_acting_principal(
+        self, campaign_id: str, pinned_campaign: PinnedCampaign
+    ) -> AuthenticatedPrincipalEvidence:
+        return AuthenticatedPrincipalEvidence("principal-1")
+
+    def read_ref(self, target_ref: str) -> object:
+        self.calls.append(("read_ref", target_ref))
+        return {
+            "head_sha": self.ref_revision_override or self.repository.current_revision
+        }
+
+    def create_tree(self, base_tree_sha: str, path_operations: object) -> object:
+        self.calls.append(("create_tree", path_operations))
+        if not isinstance(path_operations, Mapping):
+            raise TypeError("path operations must be a mapping")
+        self._pending_operations = dict(path_operations)
+        return "e" * 40
+
+    def create_commit(self, parent_sha: str, tree_sha: str, target_ref: str) -> object:
+        self.calls.append(("create_commit", (parent_sha, tree_sha, target_ref)))
+        return self.next_head
+
+    def update_ref(
+        self, target_ref: str, new_commit_sha: str, force: bool = False
+    ) -> object:
+        self.calls.append(("update_ref", (target_ref, new_commit_sha, force)))
+        if self.response_status in {"accepted", "indeterminate"}:
+            self.repository.current_revision = new_commit_sha
+            self.repository.current_tree = "e" * 40
+            for path, payload in self._pending_operations.items():
+                if payload is None:
+                    self.repository.records.pop(path, None)
+                else:
+                    self.repository.records[path] = _thaw_for_test(payload)
+        return {
+            "status": self.response_status,
+            "head_sha": (
+                new_commit_sha if self.response_status != "rejected" else None
+            ),
+            "dispatched": True,
+            "reason": "non_fast_forward"
+            if self.response_status == "rejected"
+            else None,
+        }
 
 
 class ChangingPinRepositoryFixture(RepositoryFixture):
@@ -237,8 +352,11 @@ def _bob_principal() -> VerifiedPrincipal:
     return VerifiedPrincipal(stable_account_id="43", login="bob")
 
 
-def _host(repository: RepositoryFixture) -> object:
-    return compose_runtime_host(CAMPAIGN_ID, repository, LiveFixture())
+def _host(
+    repository: RepositoryFixture,
+    publication: CampaignPublicationTransport | None = None,
+) -> object:
+    return compose_runtime_host(CAMPAIGN_ID, repository, LiveFixture(), publication)
 
 
 def _classify(repository: RepositoryFixture):
@@ -768,7 +886,11 @@ class CollaborationAdmissionTests(unittest.TestCase):
         )
         self.assertNotIn("authorized", companions[0].to_mapping())
 
-        terminal = replace(obligation, lifecycle="RESOLVED")
+        terminal = replace(
+            obligation,
+            lifecycle="RESOLVED",
+            closed_input_set_fingerprint="a" * 64,
+        )
         terminal_companions = reconcile_player_route_companions(terminal)
         self.assertEqual(
             [
@@ -1196,7 +1318,7 @@ class CollaborationSchemaTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises(ValidationError):
                 validator.validate(value)
 
-    def test_obligation_schema_uses_v2_and_rejects_legacy_schema(self) -> None:
+    def test_obligation_schema_uses_v3_and_rejects_legacy_schema(self) -> None:
         obligation = open_or_successor_obligation(
             _classify(RepositoryFixture()), obligation_id="obligation-version"
         )
@@ -1211,13 +1333,74 @@ class CollaborationSchemaTests(unittest.TestCase):
                 ROOT / "GAME" / "SCHEMA" / "collaboration_obligation.schema.yaml"
             ).read_text(encoding="utf-8")
         )
-        self.assertEqual(schema["properties"]["schema_version"]["const"], 2)
-        self.assertEqual(game_schema["schema_version"], 2)
+        self.assertEqual(schema["properties"]["schema_version"]["const"], 3)
+        self.assertEqual(game_schema["schema_version"], 3)
 
         legacy = obligation.to_mapping()
         legacy["schema_version"] = 1
         with self.assertRaises(ValidationError):
             Draft202012Validator(schema).validate(legacy)
+
+    def test_obligation_schema_enforces_v3_fingerprint_lifecycle_matrix(self) -> None:
+        obligation = open_or_successor_obligation(
+            _classify(RepositoryFixture()),
+            obligation_id="obligation-fingerprint-matrix",
+        )
+        assert obligation is not None
+        schema = json.loads(
+            (SCHEMAS / "runtime-collaboration-obligation-state.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        validator = Draft202012Validator(schema)
+        open_value = obligation.to_mapping()
+        open_value["closed_input_set_fingerprint"] = None
+        self.assertIsNone(open_value["closed_input_set_fingerprint"])
+        self.assertTrue(validator.is_valid(open_value))
+
+        closed_value = open_value | {
+            "lifecycle": "CLOSED",
+            "closed_input_set_fingerprint": "a" * 64,
+        }
+        self.assertTrue(validator.is_valid(closed_value))
+        resolved_value = closed_value | {"lifecycle": "RESOLVED"}
+        self.assertTrue(validator.is_valid(resolved_value))
+        obsolete_open_value = open_value | {"lifecycle": "OBSOLETE"}
+        self.assertTrue(validator.is_valid(obsolete_open_value))
+        obsolete_closed_value = closed_value | {"lifecycle": "OBSOLETE"}
+        self.assertTrue(validator.is_valid(obsolete_closed_value))
+
+        for lifecycle in ("OPEN", "CLOSED", "RESOLVED"):
+            invalid = open_value | {
+                "lifecycle": lifecycle,
+                "closed_input_set_fingerprint": (
+                    None if lifecycle != "OPEN" else "b" * 64
+                ),
+            }
+            with self.subTest(lifecycle=lifecycle), self.assertRaises(ValidationError):
+                validator.validate(invalid)
+
+    def test_runtime_state_rejects_v2_after_v3_cutover_and_preserves_fingerprint_rules(
+        self,
+    ) -> None:
+        obligation = open_or_successor_obligation(
+            _classify(RepositoryFixture()), obligation_id="obligation-v3-cutover"
+        )
+        assert obligation is not None
+        with self.assertRaisesRegex(CollaborationAdmissionError, "unsupported"):
+            CollaborationObligation.from_mapping(
+                obligation.to_mapping() | {"schema_version": 2},
+                host=_host(RepositoryFixture()),
+            )
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "fingerprint"):
+            replace(
+                obligation,
+                lifecycle="OPEN",
+                closed_input_set_fingerprint="a" * 64,
+            )
+        with self.assertRaisesRegex(CollaborationAdmissionError, "fingerprint"):
+            replace(obligation, lifecycle="CLOSED")
 
     def test_obligation_schema_rejects_duplicate_serialized_identities(self) -> None:
         obligation = open_or_successor_obligation(
@@ -1943,6 +2126,221 @@ class CollaborationCloseHandoffTests(unittest.TestCase):
                 principal=_bob_principal(),
                 player_route=_route(),
             )
+
+
+class CollaborationPublicationRecoveryTests(unittest.TestCase):
+    def _open_with_all_inputs(
+        self, repository: CampaignPublicationRepositoryFixture, obligation_id: str
+    ) -> CollaborationObligation:
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id=obligation_id
+        )
+        assert obligation is not None
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        associated = associate_input(
+            obligation,
+            _host(repository),
+            "interaction-2",
+            "clause-2",
+            principal=_bob_principal(),
+            player_route=_route(),
+        )
+        _persist_obligation(repository, associated)
+        return associated
+
+    def test_t02b_publication_entry_point_is_runtime_host_routed(self) -> None:
+        self.assertTrue(callable(getattr(collaboration_module, "publish_closed", None)))
+        source = (ROOT / "GAME" / "TOOLS" / "collaboration.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("CollaborationPublicationClosure", source)
+        self.assertNotIn("CollaborationPublicationResult", source)
+        self.assertNotIn("publish_campaign_closure", source)
+
+    def test_open_to_closed_publishes_obligation_and_retains_route_companions(
+        self,
+    ) -> None:
+        repository = CampaignPublicationRepositoryFixture()
+        transport = CampaignPublicationTransport(repository)
+        opening = self._open_with_all_inputs(repository, "obligation-close-publish")
+
+        closed = collaboration_module.publish_closed(
+            opening, host=_host(repository, transport)
+        )
+
+        self.assertEqual(closed.lifecycle, "CLOSED")
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+        retried = collaboration_module.publish_closed(
+            opening, host=_host(repository, transport)
+        )
+        self.assertEqual(retried, closed)
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+        self.assertFalse(hasattr(repository, "publish_campaign_closure"))
+        persisted = repository.records[
+            route_native_record(
+                "runtime.collaboration_obligation", (opening.obligation_id,)
+            ).relative_path
+        ]
+        self.assertEqual(persisted["lifecycle"], "CLOSED")
+        self.assertIsNotNone(persisted["closed_input_set_fingerprint"])
+        for player_id in ("player-alice", "player-bob"):
+            player = repository.records[
+                route_native_record("world.player", (player_id,)).relative_path
+            ]
+            self.assertEqual(
+                player["collaboration_route_refs"],
+                [{"obligation_id": opening.obligation_id, "generation": 1}],
+            )
+
+    def test_stale_non_fast_forward_fails_closed_without_owner_mutation(self) -> None:
+        repository = CampaignPublicationRepositoryFixture()
+        transport = CampaignPublicationTransport(repository)
+        transport.ref_revision_override = CHANGED_CAMPAIGN_REVISION
+        opening = self._open_with_all_inputs(repository, "obligation-stale-close")
+        before = deepcopy(
+            repository.records[
+                route_native_record(
+                    "runtime.collaboration_obligation", (opening.obligation_id,)
+                ).relative_path
+            ]
+        )
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "publication"):
+            collaboration_module.publish_closed(
+                opening, host=_host(repository, transport)
+            )
+
+        self.assertEqual(
+            repository.records[
+                route_native_record(
+                    "runtime.collaboration_obligation", (opening.obligation_id,)
+                ).relative_path
+            ],
+            before,
+        )
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 0
+        )
+
+    def test_indeterminate_ack_reconciles_without_a_second_write(self) -> None:
+        repository = CampaignPublicationRepositoryFixture()
+        transport = CampaignPublicationTransport(repository)
+        transport.response_status = "indeterminate"
+        opening = self._open_with_all_inputs(repository, "obligation-indeterminate")
+
+        closed = collaboration_module.publish_closed(
+            opening, host=_host(repository, transport)
+        )
+
+        self.assertEqual(closed.lifecycle, "CLOSED")
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+
+    def test_closed_recovery_reconstructs_fingerprint_and_resolved_recovery_is_idempotent(
+        self,
+    ) -> None:
+        repository = CampaignPublicationRepositoryFixture()
+        transport = CampaignPublicationTransport(repository)
+        opening = self._open_with_all_inputs(repository, "obligation-recovery")
+        host = _host(repository, transport)
+        closed = collaboration_module.publish_closed(opening, host=host)
+        writes_after_close = len(
+            [name for name, _ in transport.calls if name == "update_ref"]
+        )
+        self.assertEqual(
+            collaboration_module.publish_closed(opening, host=host), closed
+        )
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]),
+            writes_after_close,
+        )
+
+        recovered_closed = collaboration_module.recover_obligation(
+            host, opening.obligation_id
+        )
+        self.assertEqual(recovered_closed, closed)
+        handoff = build_handoff(recovered_closed, host=host)
+
+        resolved = collaboration_module.resolve_waiting(closed, handoff, host=host)
+        self.assertEqual(resolved.lifecycle, "RESOLVED")
+        plan = repository.records[
+            route_native_record("runtime.intent_plan", ("plan-1",)).relative_path
+        ]
+        self.assertEqual(plan["clauses"][0]["execution_state"], "intent.ready")
+        for player_id in ("player-alice", "player-bob"):
+            player = repository.records[
+                route_native_record("world.player", (player_id,)).relative_path
+            ]
+            self.assertEqual(player["collaboration_route_refs"], [])
+
+        resolution_operations = [
+            operations for name, operations in transport.calls if name == "create_tree"
+        ][-1]
+        self.assertIn(
+            route_native_record(
+                "runtime.collaboration_obligation", (opening.obligation_id,)
+            ).relative_path,
+            resolution_operations,
+        )
+        self.assertIn(
+            route_native_record("runtime.intent_plan", ("plan-1",)).relative_path,
+            resolution_operations,
+        )
+        for player_id in ("player-alice", "player-bob"):
+            self.assertIn(
+                route_native_record("world.player", (player_id,)).relative_path,
+                resolution_operations,
+            )
+
+        writes_after_resolution = len(
+            [name for name, _ in transport.calls if name == "update_ref"]
+        )
+        retried = collaboration_module.resolve_waiting(closed, handoff, host=host)
+        recovered_resolved = collaboration_module.recover_obligation(
+            host, opening.obligation_id
+        )
+        self.assertEqual(retried.lifecycle, "RESOLVED")
+        self.assertEqual(recovered_resolved.lifecycle, "RESOLVED")
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]),
+            writes_after_resolution,
+        )
+
+    def test_resolve_rejects_a_changed_closed_fingerprint_and_obsolete_preserves_it(
+        self,
+    ) -> None:
+        repository = CampaignPublicationRepositoryFixture()
+        transport = CampaignPublicationTransport(repository)
+        opening = self._open_with_all_inputs(
+            repository, "obligation-fingerprint-closure"
+        )
+        host = _host(repository, transport)
+        closed = collaboration_module.publish_closed(opening, host=host)
+        handoff = build_handoff(closed, host=host)
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "fingerprint"):
+            collaboration_module.resolve_waiting(
+                replace(closed, closed_input_set_fingerprint="b" * 64),
+                handoff,
+                host=host,
+            )
+
+        obsolete = replace(closed, lifecycle="OBSOLETE")
+        self.assertEqual(
+            obsolete.closed_input_set_fingerprint,
+            closed.closed_input_set_fingerprint,
+        )
 
 
 if __name__ == "__main__":
