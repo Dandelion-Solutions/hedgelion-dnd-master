@@ -226,6 +226,8 @@ class LocalEventRepository(PublicationRepository):
                 "INDEX/EVENT_INDEX.yaml": {
                     "schema_version": 1,
                     "entity_type": "EVENT",
+                    "complete": True,
+                    "upper_ordinal": 2,
                     "entries": [
                         {
                             "event_id": "event-1",
@@ -333,7 +335,7 @@ def _compose(
 
 class RuntimeHostCompositionTests(unittest.TestCase):
     def test_new_runtime_host_starts_at_current_engine_module_line(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.6")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.7")
 
     def test_composition_binds_one_campaign_and_creates_sibling_services(self) -> None:
         host, _repository, _live = _compose()
@@ -533,6 +535,70 @@ class RuntimeHostCompositionTests(unittest.TestCase):
                 ).relative_path,
             ],
         )
+
+    def test_local_semantic_events_reject_missing_enrollment_completion_proof(
+        self,
+    ) -> None:
+        repository = LocalEventRepository()
+        index = repository.records["INDEX/EVENT_INDEX.yaml"]
+        self.assertIsInstance(index, dict)
+        if not isinstance(index, dict):
+            return
+        incomplete_index = dict(index)
+        incomplete_index.pop("complete", None)
+        incomplete_index.pop("upper_ordinal", None)
+        repository.records["INDEX/EVENT_INDEX.yaml"] = incomplete_index
+        host, _repository, _live = _compose(repository)
+        semantic_events = getattr(host, "semantic_events", None)
+        self.assertIsNotNone(semantic_events)
+        if semantic_events is None:
+            return
+
+        with self.assertRaises(RuntimeHostError):
+            semantic_events.read_local_evt_window(
+                lower_exclusive_ordinal=None, max_items=2
+            )
+
+    def test_local_semantic_events_reject_explicitly_incomplete_enrollment(
+        self,
+    ) -> None:
+        repository = LocalEventRepository()
+        index = repository.records["INDEX/EVENT_INDEX.yaml"]
+        self.assertIsInstance(index, dict)
+        if not isinstance(index, dict):
+            return
+        repository.records["INDEX/EVENT_INDEX.yaml"] = index | {"complete": False}
+        host, _repository, _live = _compose(repository)
+        semantic_events = getattr(host, "semantic_events", None)
+        self.assertIsNotNone(semantic_events)
+        if semantic_events is None:
+            return
+
+        with self.assertRaises(RuntimeHostError):
+            semantic_events.read_local_evt_window(
+                lower_exclusive_ordinal=None, max_items=2
+            )
+
+    def test_local_semantic_events_reject_false_bounded_completion_claim(self) -> None:
+        repository = LocalEventRepository()
+        index = repository.records["INDEX/EVENT_INDEX.yaml"]
+        self.assertIsInstance(index, dict)
+        if not isinstance(index, dict):
+            return
+        repository.records["INDEX/EVENT_INDEX.yaml"] = index | {
+            "complete": True,
+            "upper_ordinal": 1,
+        }
+        host, _repository, _live = _compose(repository)
+        semantic_events = getattr(host, "semantic_events", None)
+        self.assertIsNotNone(semantic_events)
+        if semantic_events is None:
+            return
+
+        with self.assertRaises(RuntimeHostError):
+            semantic_events.read_local_evt_window(
+                lower_exclusive_ordinal=None, max_items=2
+            )
 
     def test_selected_live_semantic_events_use_exact_source_pack_without_campaign_fallback(
         self,

@@ -42,8 +42,8 @@ from .publication import (
     reconcile_indeterminate_publication,
 )
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -649,10 +649,15 @@ class SemanticEventSourceAdapter(_BoundService):
             raw_entries, (str, bytes)
         ):
             raise RuntimeHostError("LOCAL evt enrollment/index entries are not bounded")
-        if value.get("complete") is False:
+        if value.get("complete") is not True or "upper_ordinal" not in value:
             raise RuntimeHostError(
                 "LOCAL evt enrollment/index does not prove completeness"
             )
+        upper_ordinal = value["upper_ordinal"]
+        if upper_ordinal is not None and (
+            type(upper_ordinal) is not int or upper_ordinal < 1
+        ):
+            raise RuntimeHostError("LOCAL evt enrollment/index upper basis is invalid")
         result: list[tuple[int, str, str]] = []
         for raw in raw_entries:
             if not isinstance(raw, Mapping):
@@ -681,6 +686,11 @@ class SemanticEventSourceAdapter(_BoundService):
             raise RuntimeHostError("LOCAL evt enrollment ordinals are not contiguous")
         if len({event_id for _ordinal, event_id, _path in result}) != len(result):
             raise RuntimeHostError("LOCAL evt enrollment identities are not unique")
+        expected_upper = result[-1][0] if result else None
+        if upper_ordinal != expected_upper:
+            raise RuntimeHostError(
+                "LOCAL evt enrollment/index upper basis is not exact"
+            )
         return result
 
     @staticmethod
