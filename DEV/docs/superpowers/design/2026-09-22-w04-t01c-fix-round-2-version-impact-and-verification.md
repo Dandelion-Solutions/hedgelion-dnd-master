@@ -4,6 +4,8 @@ Status: **TARGETED METADATA REPAIR — READY FOR CHECKPOINT REVIEW**
 
 Base published HEAD: `45ddaadeeabedf37a6f592b4b3708d15adcedd98`.
 
+Correction checkpoint: `a6720027b199deb54020eac2044f4fb7341b9c23`.
+
 This evidence supersedes the round-1 Version Impact entry. The material
 authority/currentness repair from `c4e3c72e1e1f98a01a1fa87e7ff42ed14d55054d`
 is unchanged; this round corrects only its omitted module-local revision and

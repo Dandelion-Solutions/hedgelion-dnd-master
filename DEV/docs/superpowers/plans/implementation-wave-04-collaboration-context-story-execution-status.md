@@ -665,8 +665,7 @@ NEXT_EXACT_TASK: complete independent reviewer re-review of T01C fix round 2;
 accept T01C only after PASS, then unlock T02A/T03A. Keep T05C blocked on T05B +
 T04B + T02C, keep T07A at its Senior-only stop, and do not authorize Wave 05.
 KNOWN_BLOCKERS: T01C reviewer PASS; T05C dependency join; T07A Senior review.
-UNPUBLISHED_WORK: fix round 2 cursor/evidence synchronization remains to be
-published and read back.
+UNPUBLISHED_WORK: NONE for round 1; superseded by the round-2 correction below.
 
 ## W04.T01C fix round 2 metadata correction — 2026-09-22
 
@@ -674,6 +673,7 @@ STATUS: FINAL_REVIEW
 CURRENT_TASK: W04.T01C maximal safe frontier and scope-local currentness
 BASE_PUBLISHED_SHA: `45ddaadeeabedf37a6f592b4b3708d15adcedd98`
 LAST_SAFE_SHA: `c4e3c72e1e1f98a01a1fa87e7ff42ed14d55054d`
+CANDIDATE_SHA: `a6720027b199deb54020eac2044f4fb7341b9c23`
 
 CURRENT_VERIFICATION_STATE: the material T01C authority/currentness repair is
 unchanged. Its collaboration module metadata is corrected from `1.0.6` to
@@ -691,4 +691,5 @@ independent reviewer PASS for T01C before unlocking T02A/T03A. Keep T05C blocked
 on T05B + T04B + T02C, keep T07A at its Senior-only stop, and do not authorize
 Wave 05.
 KNOWN_BLOCKERS: T01C reviewer PASS; T05C dependency join; T07A Senior review.
-UNPUBLISHED_WORK: cursor/evidence synchronization is not yet published.
+UNPUBLISHED_WORK: NONE after candidate publication/read-back; T01C acceptance
+remains pending independent reviewer PASS.
