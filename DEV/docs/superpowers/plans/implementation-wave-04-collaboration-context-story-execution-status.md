@@ -4,10 +4,12 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING
-CURRENT_TASK: restore rejected W04 task surfaces to accepted clean basis `80d1cedfce7f529df96ea2c4b2342ce466cc8806`, then execute W04.T00H runtime-host composition before T01A/T05A/T07A resume
-LAST_COMPLETED_TASK: Wave-04 stable-plan decomposition, self-review/control synchronization and final pre-implementation baseline freeze
-LAST_SAFE_SHA: 6cbde6a4845376ee55e8e9c10a17f354111a276d
+STATUS: SENIOR_REVIEW_REQUIRED
+CURRENT_TASK: W04.T01C maximal safe frontier and scope-local currentness; W04.T07A remains a Senior-only stop
+LAST_COMPLETED_TASK:
+  W04.T01B accepted after reviewer PASS -> `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
+  W04.T05B accepted after reviewer PASS -> `a1a4d204fbeec9f8a24e681289e0e530e5b91b75`
+LAST_SAFE_SHA: `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
 
 ## Execution policy
 
@@ -30,7 +32,7 @@ T01C -> T03A in parallel with T02A-T02C
 
 CONTEXT / EMISSION:
 T05A -> T05B
-T05B + T04B -> T05C -> T06A -> T06B
+T05B + T04B + T02C -> T05C -> T06A -> T06B
 
 STORY / COMMENTATOR:
 T07-PREFLIGHT -> T07A -> T07B -> T07C -> T07D -> T07E -> T07-INTEGRATION
@@ -54,7 +56,7 @@ NOT_READY:
 - T07A waits fresh private CLS evidence after PREFLIGHT_UNAVAILABLE
 - T03A/T02A wait T01C reviewer PASS
 - T04A waits complete T02C
-- T05C waits T05B + T04B
+- T05C waits T05B + T04B + T02C
 - T06A waits T05C
 - T08A/T08B/T08C wait their named joins
 
@@ -612,3 +614,29 @@ SYSTEM_IMPACT: NONE for T01B; the separate W04.T07A System-Impact stop remains o
 NEXT_EXACT_TASK: independently re-review this T01B candidate, then accept only after PASS; do not start T01C+ before acceptance.
 KNOWN_BLOCKERS: T01B independent re-review; W04.T07A Senior review.
 UNPUBLISHED_WORK: NONE after the candidate checkpoint is published and read back.
+
+## Accepted T01B/T05B and T01C eligibility — 2026-09-22
+
+STATUS: SENIOR_REVIEW_REQUIRED
+CURRENT_TASK: W04.T01C maximal safe frontier and scope-local currentness
+LAST_COMPLETED_TASK:
+  W04.T01B accepted after reviewer PASS at `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
+  W04.T05B accepted after reviewer PASS at `a1a4d204fbeec9f8a24e681289e0e530e5b91b75`
+LAST_SAFE_SHA: `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
+
+CURRENT_VERIFICATION_STATE:
+- W04.T01B is accepted at the exact reviewer-PASS head above; W04.T01C is eligible/current because its required T01B input is now accepted.
+- W04.T05B is accepted at the exact reviewer-PASS head above. W04.T05C remains blocked until T05B, T04B and T02C are all accepted.
+- W04.T07A remains a Senior-only selected-LIVE reader System-Impact stop; no T07B+ task is authorized.
+
+VERSION_IMPACT:
+- W04.T01A accepted chain: `171dc0e` collaboration module absent -> `1.0.1`, `runtime_execution.py` `1.0.4 -> 1.0.5`, and new collaboration schema/projection at `1`; `dcf04fa` collaboration `1.0.1 -> 1.0.2` and runtime execution `1.0.5 -> 1.0.6`; `3bc9265` runtime execution `1.0.6 -> 1.0.7`; `d3d2df4` runtime execution `1.0.7 -> 1.0.8`; `b50f490` formatting only, with no further transition.
+- W04.T01B accepted chain: `cf4ea5e` collaboration module `1.0.2 -> 1.0.3`; `40c7952` collaboration obligation schema/projections `1 -> 2` and collaboration module `1.0.3 -> 1.0.4`; `fb93cba` persisted-input revalidation remained at collaboration module `1.0.4`; `856abcb` collaboration module `1.0.4 -> 1.0.5`.
+- W04.T05A accepted chain: `a9168cb` Context `1.0.1 -> 1.0.2`; `e340ed5` Context `1.0.2 -> 1.0.3`; `995924b` Context `1.0.3 -> 1.0.4`.
+- W04.T05B accepted chain: `7d0207b` Context `1.0.4 -> 1.0.5`; `1d112fa` Context `1.0.5 -> 1.0.6` and RuntimeHost `1.0.3 -> 1.0.4`; `a1a4d20` Context `1.0.6 -> 1.0.7` and RuntimeHost `1.0.4 -> 1.0.5`.
+- Engine release, campaign-contract generation, storage generation, migration, catalog and other shared/global namespaces are unchanged. This documentation-only checkpoint: `VERSION_IMPACT: NONE`.
+
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. T01B, T01C and T05B remain within accepted owner boundaries.
+NEXT_EXACT_TASK: execute W04.T01C; require its reviewer PASS before T02A/T03A. Keep T05C blocked on T05B + T04B + T02C, keep T07A at the Senior-only stop, and do not authorize Wave 05.
+KNOWN_BLOCKERS: T05C requires T04B and T02C in addition to accepted T05B; T07A Senior review; T01C reviewer PASS gates T02A/T03A. Wave 05 remains unauthorized.
+UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published and read back.
