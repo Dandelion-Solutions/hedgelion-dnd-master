@@ -4,12 +4,13 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: W04.T01C maximal safe frontier and scope-local currentness; W04.T07A remains a Senior-only stop
+STATUS: SENIOR_REVIEW_REQUIRED (T07A); T02A/T03A CURRENT IN PARALLEL
+CURRENT_TASK: W04.T02A explicit close/frozen basis/handoff and W04.T03A strict PLAYER collaboration delta
 LAST_COMPLETED_TASK:
   W04.T01B accepted after reviewer PASS -> `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
   W04.T05B accepted after reviewer PASS -> `a1a4d204fbeec9f8a24e681289e0e530e5b91b75`
-LAST_SAFE_SHA: `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
+  W04.T01C accepted after independent re-review -> `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`
+LAST_SAFE_SHA: `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`
 
 ## Execution policy
 
@@ -701,3 +702,34 @@ Wave 05.
 KNOWN_BLOCKERS: T01C reviewer PASS; T05C dependency join; T07A Senior review.
 UNPUBLISHED_WORK: NONE after candidate publication/read-back; T01C acceptance
 remains pending independent reviewer PASS.
+
+## W04.T01C acceptance and parallel downstream eligibility — 2026-09-22
+
+STATUS: SENIOR_REVIEW_REQUIRED (T07A); T02A/T03A CURRENT IN PARALLEL
+CURRENT_TASK: W04.T02A explicit close, frozen input basis and handoff; W04.T03A strict PLAYER collaboration delta
+BASE_PUBLISHED_SHA: `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`
+LAST_COMPLETED_TASK:
+  W04.T01C accepted after independent re-review -> `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`
+
+CURRENT_VERIFICATION_STATE:
+- W04.T01C is accepted at the exact independent re-review PASS head above.
+- W04.T02A is eligible/current because T01C is accepted and the accepted W02 execution owner is published: `W02_DETERMINISTIC_EXECUTION_READY` at `351ab3e876254c31b506efcadc76fca635ea2aab`.
+- W04.T03A is eligible/current because T01C is accepted. Per the stable Wave-04 plan, it may run in parallel with T02A-T02C and does not write `collaboration.py` or `test_rd12`.
+- W04.T05C remains blocked on accepted T05B + T04B + T02C.
+- W04.T07A remains a Senior-only selected-LIVE reader System-Impact stop; no T07B+ task is authorized.
+
+VERSION_IMPACT:
+- Complete accepted W04.T01C chain:
+  - `03b9ce6`: `GAME/TOOLS/collaboration.py` `1.0.5 -> 1.0.6` for the initial frontier implementation.
+  - `c4e3c72`: material authority/currentness repair; the required module-local increment was omitted, leaving `1.0.6` pending correction.
+  - `a672002`: corrected `GAME/TOOLS/collaboration.py` `1.0.6 -> 1.0.7`.
+  - `3fc7d58`: final synchronization/publication evidence; no production, schema or version value changed.
+  - `7b66ac8`: independent re-review acceptance; no production, schema or version value changed.
+- `DEV/SCHEMAS/collaboration-frontier.schema.json` remains at `schema_version: 1`.
+- All other affected HDM-owned namespaces are unchanged: collaboration obligation schema/projections remain at `2`; engine release, campaign-contract generation, storage generation, migration and catalog namespaces remain unchanged.
+- This documentation-only checkpoint: `VERSION_IMPACT: NONE`.
+
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. T01C is accepted with no open System-Impact finding.
+NEXT_EXACT_TASK: execute W04.T02A and W04.T03A in parallel under their stable-plan write sets; T02A requires T01C plus the accepted W02 execution owner above, while T03A requires T01C. Keep T05C blocked on T05B + T04B + T02C, keep T07A at its Senior-only stop, and do not authorize Wave 05.
+KNOWN_BLOCKERS: T05C dependency join; T07A Senior review; Wave 05 remains unauthorized.
+UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published and read back.
