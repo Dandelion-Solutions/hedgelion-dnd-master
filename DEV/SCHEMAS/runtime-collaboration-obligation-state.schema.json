@@ -10,10 +10,11 @@
     "clause_id", "dependency_class", "purpose", "dependency_scope",
     "native_basis_refs", "required_contributors", "optional_contributors",
     "accepted_input_uses", "predecessor_generation",
-    "collaboration_semantic_class", "accepted_input_contributors"
+    "collaboration_semantic_class", "accepted_input_contributors",
+    "closed_input_set_fingerprint"
   ],
   "properties": {
-    "schema_version": {"const": 2},
+    "schema_version": {"const": 3},
     "kind": {"const": "runtime.collaboration_obligation"},
     "obligation_id": {"$ref": "#/$defs/id"},
     "generation": {"type": "integer", "minimum": 1},
@@ -58,6 +59,10 @@
     "accepted_input_contributors": {
       "type": "array", "minItems": 1, "uniqueItems": true,
       "items": {"$ref": "#/$defs/inputContributor"}
+    },
+    "closed_input_set_fingerprint": {
+      "type": ["string", "null"],
+      "pattern": "^[a-f0-9]{64}$"
     }
   },
   "allOf": [
@@ -70,6 +75,19 @@
       "then": {
         "properties": {
           "predecessor_generation": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lifecycle": {"enum": ["CLOSED", "RESOLVED"]}
+        }
+      },
+      "then": {
+        "required": ["closed_input_set_fingerprint"],
+        "properties": {
+          "closed_input_set_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
         }
       }
     }

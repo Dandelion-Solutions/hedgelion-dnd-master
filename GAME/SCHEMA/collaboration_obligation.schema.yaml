@@ -1,8 +1,8 @@
 schema_name: runtime_collaboration_obligation
-schema_version: 2
-required: [schema_version, kind, obligation_id, generation, predecessor_generation, lifecycle, coordination_family, campaign_id, interaction_id, intent_plan_id, clause_id, collaboration_semantic_class, dependency_class, purpose, dependency_scope, native_basis_refs, required_contributors, optional_contributors, accepted_input_uses, accepted_input_contributors]
+schema_version: 3
+required: [schema_version, kind, obligation_id, generation, predecessor_generation, lifecycle, coordination_family, campaign_id, interaction_id, intent_plan_id, clause_id, collaboration_semantic_class, dependency_class, purpose, dependency_scope, native_basis_refs, required_contributors, optional_contributors, accepted_input_uses, accepted_input_contributors, closed_input_set_fingerprint]
 fields:
-  schema_version: integer[2]
+  schema_version: integer[3]
   kind: const(runtime.collaboration_obligation)
   obligation_id: native_identifier
   generation: integer[>=1]
@@ -22,6 +22,7 @@ fields:
   optional_contributors: array[participant_ref]
   accepted_input_uses: unique_array[accepted_input_ref]
   accepted_input_contributors: unique_array[accepted_input_contributor]
+  closed_input_set_fingerprint: sha256|null
 invariants:
   - opportunity identity is exactly (interaction_id, clause_id) from the accepted native owner graph
   - accepted input contributors retain only exact Interaction/IntentClause identity and current PLAYER identity; transcript/prose is never copied

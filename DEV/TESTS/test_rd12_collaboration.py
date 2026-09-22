@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
@@ -23,6 +24,9 @@ from GAME.TOOLS.collaboration import (
     CollaborationFrontier,
     CollaborationHandoff,
     CollaborationObligation,
+    CollaborationPublicationResult,
+    CollaborationPublicationStatus,
+    CollaborationRouteRef,
     ContributorRef,
     CoordinationFamily,
     DependencyClass,
@@ -37,12 +41,15 @@ from GAME.TOOLS.collaboration import (
     compute_maximal_safe_frontier,
     open_or_successor_obligation,
     reconcile_player_route_companions,
+    recover_obligations_for_player,
     required_route_holders,
+    resolve_waiting,
     validate_visible_consequence,
 )
 from GAME.TOOLS.live_state import LiveRouting
 from GAME.TOOLS.native_storage import route_native_record
 from GAME.TOOLS.policy_basis import PinnedCampaign
+from GAME.TOOLS.publication import PublicationOutcome, PublicationStatus
 from GAME.TOOLS.runtime_execution import NativeOrderingEvidence
 from GAME.TOOLS.runtime_host import compose_runtime_host
 
@@ -56,12 +63,24 @@ TREE_SHA = "b" * 40
 CHANGED_CAMPAIGN_REVISION = "c" * 40
 
 
+def _thaw_for_test(value: object) -> object:
+    if isinstance(value, Mapping):
+        return {key: _thaw_for_test(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_thaw_for_test(item) for item in value]
+    return value
+
+
 class RepositoryFixture:
     """Trusted host fixture exposing only exact pinned repository reads."""
 
     def __init__(self, clause: dict[str, object] | None = None) -> None:
         self.records: dict[str, object] = {}
         self.reads: list[str] = []
+        self.publication_closures: list[object] = []
+        self.publication_result: (
+            CollaborationPublicationResult | PublicationOutcome | None
+        ) = None
         self._install_records(clause or _collective_clause())
 
     def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
@@ -93,6 +112,28 @@ class RepositoryFixture:
 
     def put(self, family: str, record_id: str, value: dict[str, object]) -> None:
         self.records[route_native_record(family, (record_id,)).relative_path] = value
+
+    def publish_campaign_closure(self, closure: object) -> object:
+        self.publication_closures.append(closure)
+        result = self.publication_result
+        if result is None:
+            result = CollaborationPublicationResult(
+                status=CollaborationPublicationStatus.ACCEPTED,
+                expected_revision=CAMPAIGN_REVISION,
+                observed_revision=CAMPAIGN_REVISION,
+                cause="CONFIRMED_ACCEPTED",
+                dispatched=True,
+            )
+        if result.status in (
+            CollaborationPublicationStatus.ACCEPTED,
+            PublicationStatus.ACCEPTED,
+        ):
+            for path, payload in closure.path_operations.items():  # type: ignore[attr-defined]
+                if payload is None:
+                    self.records.pop(path, None)
+                else:
+                    self.records[path] = _thaw_for_test(payload)
+        return result
 
     def _install_records(self, clause: dict[str, object]) -> None:
         self.put(
@@ -768,7 +809,11 @@ class CollaborationAdmissionTests(unittest.TestCase):
         )
         self.assertNotIn("authorized", companions[0].to_mapping())
 
-        terminal = replace(obligation, lifecycle="RESOLVED")
+        terminal = replace(
+            obligation,
+            lifecycle="RESOLVED",
+            closed_input_set_fingerprint="a" * 64,
+        )
         terminal_companions = reconcile_player_route_companions(terminal)
         self.assertEqual(
             [
@@ -1196,7 +1241,7 @@ class CollaborationSchemaTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises(ValidationError):
                 validator.validate(value)
 
-    def test_obligation_schema_uses_v2_and_rejects_legacy_schema(self) -> None:
+    def test_obligation_schema_uses_v3_and_rejects_legacy_schema(self) -> None:
         obligation = open_or_successor_obligation(
             _classify(RepositoryFixture()), obligation_id="obligation-version"
         )
@@ -1211,8 +1256,8 @@ class CollaborationSchemaTests(unittest.TestCase):
                 ROOT / "GAME" / "SCHEMA" / "collaboration_obligation.schema.yaml"
             ).read_text(encoding="utf-8")
         )
-        self.assertEqual(schema["properties"]["schema_version"]["const"], 2)
-        self.assertEqual(game_schema["schema_version"], 2)
+        self.assertEqual(schema["properties"]["schema_version"]["const"], 3)
+        self.assertEqual(game_schema["schema_version"], 3)
 
         legacy = obligation.to_mapping()
         legacy["schema_version"] = 1
@@ -1943,6 +1988,246 @@ class CollaborationCloseHandoffTests(unittest.TestCase):
                 principal=_bob_principal(),
                 player_route=_route(),
             )
+
+
+class CollaborationPublicationRecoveryTests(unittest.TestCase):
+    def _closed_obligation(
+        self, repository: RepositoryFixture, *, obligation_id: str
+    ) -> tuple[CollaborationObligation, RepositoryFixture]:
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id=obligation_id
+        )
+        assert obligation is not None
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        associated = associate_input(
+            obligation,
+            _host(repository),
+            "interaction-2",
+            "clause-2",
+            principal=_bob_principal(),
+            player_route=_route(),
+        )
+        _persist_obligation(repository, associated)
+        closed = close_obligation(associated, host=_host(repository))
+        _persist_obligation(repository, closed)
+        return closed, repository
+
+    def test_resolution_publishes_clause_obligation_and_route_companions_together(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        closed, _ = self._closed_obligation(
+            repository, obligation_id="obligation-publication"
+        )
+        for player_id in ("player-alice", "player-bob"):
+            repository.records[
+                route_native_record("world.player", (player_id,)).relative_path
+            ]["collaboration_route_refs"] = [
+                {"obligation_id": "obligation-other", "generation": 2}
+            ]
+        handoff = build_handoff(closed, host=_host(repository))
+
+        resolved = resolve_waiting(closed, handoff, host=_host(repository))
+
+        self.assertEqual(resolved.lifecycle, "RESOLVED")
+        self.assertEqual(len(repository.publication_closures), 1)
+        closure = repository.publication_closures[0]
+        paths = set(closure.path_operations)  # type: ignore[attr-defined]
+        self.assertIn(
+            route_native_record("runtime.intent_plan", ("plan-1",)).relative_path,
+            paths,
+        )
+        self.assertIn(
+            route_native_record(
+                "runtime.collaboration_obligation", ("obligation-publication",)
+            ).relative_path,
+            paths,
+        )
+        self.assertIn(
+            route_native_record("world.player", ("player-alice",)).relative_path,
+            paths,
+        )
+        self.assertIn(
+            route_native_record("world.player", ("player-bob",)).relative_path,
+            paths,
+        )
+        plan = repository.records[
+            route_native_record("runtime.intent_plan", ("plan-1",)).relative_path
+        ]
+        self.assertEqual(plan["clauses"][0]["execution_state"], "intent.ready")  # type: ignore[index]
+        self.assertEqual(
+            repository.records[
+                route_native_record(
+                    "runtime.collaboration_obligation", ("obligation-publication",)
+                ).relative_path
+            ]["lifecycle"],
+            "RESOLVED",
+        )
+        for player_id in ("player-alice", "player-bob"):
+            player = repository.records[
+                route_native_record("world.player", (player_id,)).relative_path
+            ]
+            self.assertEqual(  # type: ignore[index]
+                player["collaboration_route_refs"],
+                [{"obligation_id": "obligation-other", "generation": 2}],
+            )
+
+    def test_duplicate_resolution_is_idempotent_without_a_second_campaign_publication(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        closed, _ = self._closed_obligation(
+            repository, obligation_id="obligation-idempotent-publication"
+        )
+        handoff = build_handoff(closed, host=_host(repository))
+
+        first = resolve_waiting(closed, handoff, host=_host(repository))
+        second = resolve_waiting(first, handoff, host=_host(repository))
+
+        self.assertEqual(first.lifecycle, "RESOLVED")
+        self.assertEqual(second.lifecycle, "RESOLVED")
+        self.assertEqual(len(repository.publication_closures), 1)
+
+    def test_w02_publication_outcome_is_accepted_as_campaign_closure_evidence(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        closed, _ = self._closed_obligation(
+            repository, obligation_id="obligation-w02-publication"
+        )
+        handoff = build_handoff(closed, host=_host(repository))
+        repository.publication_result = PublicationOutcome(
+            status=PublicationStatus.ACCEPTED,
+            intended_commit_sha="d" * 40,
+            observed_head_sha="d" * 40,
+            cause="CONFIRMED_ACCEPTED",
+            dispatched=True,
+        )
+
+        resolved = resolve_waiting(closed, handoff, host=_host(repository))
+
+        self.assertEqual(resolved.lifecycle, "RESOLVED")
+        self.assertEqual(len(repository.publication_closures), 1)
+
+    def test_conflict_and_indeterminate_campaign_results_fail_closed_without_mutation(
+        self,
+    ) -> None:
+        for status in (
+            CollaborationPublicationStatus.CONFLICT,
+            CollaborationPublicationStatus.INDETERMINATE,
+        ):
+            with self.subTest(status=status):
+                repository = RepositoryFixture()
+                closed, _ = self._closed_obligation(
+                    repository, obligation_id=f"obligation-{status.value.lower()}"
+                )
+                handoff = build_handoff(closed, host=_host(repository))
+                repository.publication_result = CollaborationPublicationResult(
+                    status=status,
+                    expected_revision=CAMPAIGN_REVISION,
+                    observed_revision=CHANGED_CAMPAIGN_REVISION,
+                    cause=status.value,
+                    dispatched=True,
+                )
+                plan_path = route_native_record(
+                    "runtime.intent_plan", ("plan-1",)
+                ).relative_path
+                before_plan = deepcopy(repository.records[plan_path])
+
+                with self.assertRaisesRegex(CollaborationAdmissionError, "publication"):
+                    resolve_waiting(closed, handoff, host=_host(repository))
+
+                self.assertEqual(repository.records[plan_path], before_plan)
+                self.assertEqual(
+                    repository.records[
+                        route_native_record(
+                            "runtime.collaboration_obligation", (closed.obligation_id,)
+                        ).relative_path
+                    ]["lifecycle"],
+                    "CLOSED",
+                )
+
+    def test_recovery_reads_only_exact_known_ids_for_every_obligation_lifecycle(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        recovered_ids: list[str] = []
+        known_refs: list[CollaborationRouteRef] = []
+        for lifecycle in ("OPEN", "CLOSED", "RESOLVED", "OBSOLETE"):
+            closed, _ = self._closed_obligation(
+                repository, obligation_id=f"obligation-recover-{lifecycle.lower()}"
+            )
+            value = replace(
+                closed,
+                lifecycle=lifecycle,
+                closed_input_set_fingerprint=(
+                    None if lifecycle == "OPEN" else closed.closed_input_set_fingerprint
+                ),
+            )
+            _persist_obligation(repository, value)
+            recovered_ids.append(value.obligation_id)
+            known_refs.append(
+                CollaborationRouteRef(value.obligation_id, value.generation)
+            )
+
+        recovered = recover_obligations_for_player(
+            _host(repository),
+            "player-alice",
+            known_route_refs=tuple(known_refs),
+        )
+
+        self.assertEqual(
+            tuple(obligation.obligation_id for obligation in recovered),
+            tuple(sorted(recovered_ids)),
+        )
+        self.assertEqual(
+            {obligation.lifecycle for obligation in recovered},
+            {"OPEN", "CLOSED", "RESOLVED", "OBSOLETE"},
+        )
+        self.assertFalse(
+            any("INDEX" in path or "DIRECTORY" in path for path in repository.reads)
+        )
+        self.assertFalse(
+            any(
+                path.startswith("STATE/RUNTIME/COLLABORATION/") is False
+                and "COLLABORATION" in path
+                for path in repository.reads
+            )
+        )
+
+    def test_recovery_requires_exact_route_refs_and_never_scans_unknown_obligations(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        closed, _ = self._closed_obligation(
+            repository, obligation_id="obligation-known-only"
+        )
+        unknown, _ = self._closed_obligation(
+            repository, obligation_id="obligation-not-requested"
+        )
+        del unknown
+        repository.reads.clear()
+
+        recovered = recover_obligations_for_player(
+            _host(repository),
+            "player-alice",
+            known_route_refs=(CollaborationRouteRef(closed.obligation_id, 1),),
+        )
+
+        self.assertEqual(
+            tuple(obligation.obligation_id for obligation in recovered),
+            ("obligation-known-only",),
+        )
+        unknown_path = route_native_record(
+            "runtime.collaboration_obligation", ("obligation-not-requested",)
+        ).relative_path
+        self.assertNotIn(unknown_path, repository.reads)
 
 
 if __name__ == "__main__":
