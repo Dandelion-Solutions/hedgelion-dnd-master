@@ -32,9 +32,10 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 2
+COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 
 _ID_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _SEMANTIC_CLASSES: Final[frozenset[str]] = frozenset(
@@ -636,6 +637,126 @@ class CollaborationObligation:
 
 
 @dataclass(frozen=True, slots=True)
+class CollaborationFrontier:
+    """One scope-local safe prefix and its still-open required inputs.
+
+    ``safe_prefix_refs`` are owner-native evidence references.  They are the
+    same evidence boundary for semantic progress and visible consequence;
+    this value object deliberately has no transport order, clock, CAS order,
+    chronology or campaign-global frontier field.
+    """
+
+    obligation_id: str
+    generation: int
+    campaign_id: str
+    dependency_scope: Mapping[str, object]
+    safe_prefix_refs: tuple[NativeBasisRef, ...]
+    pending_required_contributors: tuple[ContributorRef, ...]
+
+    def __post_init__(self) -> None:
+        _id(self.obligation_id, "frontier obligation_id")
+        if (
+            isinstance(self.generation, bool)
+            or not isinstance(self.generation, int)
+            or self.generation < 1
+        ):
+            raise CollaborationAdmissionError("frontier generation must be positive")
+        _id(self.campaign_id, "frontier campaign_id")
+        if not isinstance(self.dependency_scope, Mapping) or not self.dependency_scope:
+            raise CollaborationAdmissionError(
+                "frontier dependency scope must not be empty"
+            )
+        object.__setattr__(
+            self,
+            "dependency_scope",
+            MappingProxyType(dict(_freeze(self.dependency_scope))),
+        )
+        if not isinstance(self.safe_prefix_refs, tuple) or not self.safe_prefix_refs:
+            raise CollaborationAdmissionError("frontier owner evidence is required")
+        if any(
+            not isinstance(ref, NativeBasisRef) or ref.revision is None
+            for ref in self.safe_prefix_refs
+        ):
+            raise CollaborationAdmissionError(
+                "frontier owner evidence must carry current revisions"
+            )
+        if len(set(self.safe_prefix_refs)) != len(self.safe_prefix_refs):
+            raise CollaborationAdmissionError("frontier owner evidence must be unique")
+        if not isinstance(self.pending_required_contributors, tuple):
+            raise CollaborationAdmissionError(
+                "frontier pending contributors must be an array"
+            )
+        if any(
+            not isinstance(contributor, ContributorRef)
+            for contributor in self.pending_required_contributors
+        ):
+            raise CollaborationAdmissionError(
+                "frontier pending contributors must be typed"
+            )
+        identities = [
+            (contributor.player_id, contributor.pc_id)
+            for contributor in self.pending_required_contributors
+        ]
+        if len(identities) != len(set(identities)):
+            raise CollaborationAdmissionError(
+                "frontier pending contributors must be unique"
+            )
+
+    def to_mapping(self) -> dict[str, object]:
+        """Return the strict owner-local frontier projection."""
+        return {
+            "schema_version": COLLABORATION_FRONTIER_SCHEMA_VERSION,
+            "kind": "runtime.collaboration_frontier",
+            "obligation_id": self.obligation_id,
+            "generation": self.generation,
+            "campaign_id": self.campaign_id,
+            "dependency_scope": _thaw(self.dependency_scope),
+            "safe_prefix_refs": [ref.to_mapping() for ref in self.safe_prefix_refs],
+            "pending_required_contributors": [
+                contributor.to_mapping()
+                for contributor in self.pending_required_contributors
+            ],
+        }
+
+    @classmethod
+    def from_mapping(cls, value: object) -> CollaborationFrontier:
+        """Load a strict frontier projection without accepting technical order."""
+        if not isinstance(value, Mapping):
+            raise CollaborationAdmissionError("serialized frontier must be an object")
+        expected = {
+            "schema_version",
+            "kind",
+            "obligation_id",
+            "generation",
+            "campaign_id",
+            "dependency_scope",
+            "safe_prefix_refs",
+            "pending_required_contributors",
+        }
+        if set(value) != expected:
+            raise CollaborationAdmissionError(
+                "serialized frontier fields are not strict"
+            )
+        if (
+            value["schema_version"] != COLLABORATION_FRONTIER_SCHEMA_VERSION
+            or value["kind"] != "runtime.collaboration_frontier"
+        ):
+            raise CollaborationAdmissionError(
+                "unsupported collaboration frontier schema"
+            )
+        return cls(
+            obligation_id=_id(value["obligation_id"], "frontier obligation_id"),
+            generation=value["generation"],  # type: ignore[arg-type]
+            campaign_id=_id(value["campaign_id"], "frontier campaign_id"),
+            dependency_scope=_mapping(value["dependency_scope"], "frontier scope"),
+            safe_prefix_refs=_parse_frontier_basis_refs(value["safe_prefix_refs"]),
+            pending_required_contributors=_parse_frontier_contributors(
+                value["pending_required_contributors"]
+            ),
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class CollaborationRouteRef:
     """A non-authorizing exact obligation/generation routing reference."""
 
@@ -843,6 +964,19 @@ def _parse_basis_refs(value: object) -> tuple[NativeBasisRef, ...]:
     if not result:
         raise CollaborationAdmissionError("positive dependency requires a native basis")
     return tuple(result)
+
+
+def _parse_frontier_basis_refs(value: object) -> tuple[NativeBasisRef, ...]:
+    refs = _parse_basis_refs(value)
+    if any(ref.revision is None for ref in refs):
+        raise CollaborationAdmissionError(
+            "frontier owner evidence must carry current revisions"
+        )
+    return refs
+
+
+def _parse_frontier_contributors(value: object) -> tuple[ContributorRef, ...]:
+    return _parse_contributors(value)
 
 
 def _validate_basis_shape(
@@ -1405,3 +1539,141 @@ def reconcile_player_route_companions(
         PlayerRouteCompanion(obligation.campaign_id, player_id, refs)
         for player_id in sorted(holder_ids)
     )
+
+
+def _canonical_frontier_refs(
+    refs: Sequence[NativeBasisRef], label: str
+) -> tuple[NativeBasisRef, ...]:
+    if not isinstance(refs, Sequence) or isinstance(refs, (str, bytes)):
+        raise CollaborationAdmissionError(f"{label} must be an array")
+    typed = tuple(refs)
+    if not typed or any(
+        not isinstance(ref, NativeBasisRef) or ref.revision is None for ref in typed
+    ):
+        raise CollaborationAdmissionError(
+            f"{label} must contain current owner evidence"
+        )
+    if len(set(typed)) != len(typed):
+        raise CollaborationAdmissionError(f"{label} must be unique")
+    return tuple(
+        sorted(
+            typed,
+            key=lambda ref: (ref.family, ref.record_id, ref.revision or ""),
+        )
+    )
+
+
+def _pending_required_contributors(
+    obligation: CollaborationObligation,
+) -> tuple[ContributorRef, ...]:
+    accepted = {
+        (contributor.player_id, contributor.pc_id)
+        for _, contributor in obligation.accepted_input_contributors
+    }
+    pending = tuple(
+        contributor
+        for contributor in obligation.required_contributors
+        if (contributor.player_id, contributor.pc_id) not in accepted
+    )
+    return tuple(sorted(pending, key=lambda ref: (ref.player_id, ref.pc_id or "")))
+
+
+def compute_maximal_safe_frontier(
+    obligation: CollaborationObligation,
+    *,
+    safe_prefix_refs: Sequence[NativeBasisRef] | None = None,
+    current_basis_refs: Sequence[NativeBasisRef] | None = None,
+    pending_required_contributors: Sequence[ContributorRef] | None = None,
+) -> CollaborationFrontier:
+    """Compute the latest safe owner-evidence boundary for one obligation.
+
+    This is a scope-local projection.  It does not close an obligation, infer
+    chronology from technical order, or use timeout/presence/silence as a
+    substitute for a required contribution.  The optional current basis is
+    an exact revalidation input for this obligation's native dependency, not a
+    campaign-wide fallback.
+    """
+    if not isinstance(obligation, CollaborationObligation):
+        raise CollaborationAdmissionError("owner-derived obligation is required")
+    if obligation.lifecycle != "OPEN":
+        raise CollaborationAdmissionError(
+            "maximal safe frontier requires an open obligation"
+        )
+    expected_basis = _canonical_frontier_refs(
+        obligation.native_basis_refs, "obligation native basis"
+    )
+    current = (
+        expected_basis
+        if current_basis_refs is None
+        else _canonical_frontier_refs(current_basis_refs, "current scope basis")
+    )
+    if current != expected_basis:
+        raise CollaborationAdmissionError(
+            "current scope basis is stale or belongs to another scope"
+        )
+    safe = (
+        expected_basis
+        if safe_prefix_refs is None
+        else _canonical_frontier_refs(safe_prefix_refs, "safe prefix owner evidence")
+    )
+    if not set(safe).issubset(set(current)):
+        raise CollaborationAdmissionError(
+            "safe prefix owner evidence is outside the current scope"
+        )
+    pending = (
+        _pending_required_contributors(obligation)
+        if pending_required_contributors is None
+        else tuple(pending_required_contributors)
+    )
+    if any(not isinstance(contributor, ContributorRef) for contributor in pending):
+        raise CollaborationAdmissionError("pending contributors must be typed")
+    required = set(obligation.required_contributors)
+    if any(contributor not in required for contributor in pending):
+        raise CollaborationAdmissionError(
+            "frontier pending contributors must be required in this scope"
+        )
+    if len(set(pending)) != len(pending):
+        raise CollaborationAdmissionError(
+            "frontier pending contributors must be unique"
+        )
+    pending = tuple(sorted(pending, key=lambda ref: (ref.player_id, ref.pc_id or "")))
+    return CollaborationFrontier(
+        obligation_id=obligation.obligation_id,
+        generation=obligation.generation,
+        campaign_id=obligation.campaign_id,
+        dependency_scope=obligation.dependency_scope,
+        safe_prefix_refs=safe,
+        pending_required_contributors=pending,
+    )
+
+
+def build_join_frontier(
+    obligation: CollaborationObligation,
+    *,
+    current_basis_refs: Sequence[NativeBasisRef] | None = None,
+) -> CollaborationFrontier:
+    """Build one current, scope-local frontier for a participant join.
+
+    Joining does not merge unrelated obligations or create a global current
+    frontier.  The exact owner basis is rechecked by
+    :func:`compute_maximal_safe_frontier`.
+    """
+    return compute_maximal_safe_frontier(
+        obligation,
+        current_basis_refs=current_basis_refs,
+    )
+
+
+def validate_visible_consequence(
+    frontier: CollaborationFrontier,
+    *,
+    evidence_refs: Sequence[NativeBasisRef],
+) -> None:
+    """Require visible evidence to stop at the semantic safe frontier."""
+    if not isinstance(frontier, CollaborationFrontier):
+        raise CollaborationAdmissionError("collaboration frontier is required")
+    visible = _canonical_frontier_refs(evidence_refs, "visible consequence evidence")
+    if visible != frontier.safe_prefix_refs:
+        raise CollaborationAdmissionError(
+            "visible consequence crosses the collaboration safe frontier"
+        )
