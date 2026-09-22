@@ -520,7 +520,7 @@ class ContextRuntimeHostTests(unittest.TestCase):
             Draft202012Validator(schema).validate(
                 {key: value for key, value in bound_request().items() if key != "role"}
             )
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.6")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.7")
 
 
 class ContextDiscoveryTests(unittest.TestCase):
@@ -702,7 +702,7 @@ class OptionalRankingTests(unittest.TestCase):
 
 
 class RetrospectiveContextTests(unittest.TestCase):
-    def test_retrospective_escalates_once_to_exact_native_history(self):
+    def test_retrospective_is_terminal_without_calling_history_route(self):
         repository = RuntimeRepository()
         repository.records["LOG/SEMANTIC_EVENTS"] = native_history_window(
             source_revision=f"{1:040x}"
@@ -717,7 +717,6 @@ class RetrospectiveContextTests(unittest.TestCase):
             channel="HISTORY_HINT",
             role="CHRONICLER",
             purpose="chronicle",
-            payload={"forged": "candidate payload"},
         )
 
         result = host.context.assemble(
@@ -732,16 +731,9 @@ class RetrospectiveContextTests(unittest.TestCase):
             [item],
         )
 
-        self.assertEqual(result["outcome"], "ASSEMBLED")
-        self.assertEqual(
-            result["bundle"]["required"][0]["payload"]["event_id"], "event-1"
-        )
-        self.assertEqual(
-            result["bundle"]["required"][0]["payload"]["semantic_delta"],
-            {"state": "native"},
-        )
-        self.assertNotIn("forged", result["bundle"]["required"][0]["payload"])
-        self.assertEqual(repository.read_paths, ["LOG/SEMANTIC_EVENTS"])
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertEqual(repository.read_paths, [])
 
     def test_stale_or_unavailable_retrospective_native_evidence_is_terminal(self):
         for state in ("stale", "unavailable"):
@@ -777,7 +769,7 @@ class RetrospectiveContextTests(unittest.TestCase):
 
                 self.assertEqual(result["outcome"], "UNSATISFIABLE")
                 self.assertIsNone(result["bundle"])
-                self.assertEqual(repository.read_paths, ["LOG/SEMANTIC_EVENTS"])
+                self.assertEqual(repository.read_paths, [])
 
     def test_owner_payload_estimation_failure_degrades_optional_and_terminalizes_required(
         self,
@@ -802,7 +794,9 @@ class RetrospectiveContextTests(unittest.TestCase):
         self.assertEqual(required["outcome"], "UNSATISFIABLE")
         self.assertIsNone(required["bundle"])
 
-    def test_retrospective_payload_is_explicitly_a_projection(self):
+    def test_retrospective_projection_is_unavailable_until_native_route_is_admitted(
+        self,
+    ):
         item = owner_candidate(
             "event-1",
             "runtime.semantic_event",
@@ -822,8 +816,8 @@ class RetrospectiveContextTests(unittest.TestCase):
             retrospective=True,
         )
         result = assemble_via_host(request_value, [item])
-        self.assertTrue(result["bundle"]["retrospective_projection"])
-        self.assertNotIn("gameplay_truth", result["bundle"])
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
 
 
 class ContextResultTraceTests(unittest.TestCase):

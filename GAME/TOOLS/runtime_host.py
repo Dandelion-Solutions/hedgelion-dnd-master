@@ -15,8 +15,8 @@ from typing import Final, NoReturn, Protocol
 from .live_state import LiveRouting, validate_live_route_completeness
 from .policy_basis import PinnedCampaign, RepositoryPort
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -136,16 +136,8 @@ class ContextService(_BoundService):
         basis = self._host._begin_operation()
         try:
             from . import context_runtime
-            from .history import HistoryContractError
         except ModuleNotFoundError as exc:
             raise RuntimeHostError("Context Runtime owner is unavailable") from exc
-        retrospective_history: object | None = None
-        retrospective_unavailable = False
-        if request.get("retrospective") is True:
-            try:
-                retrospective_history = self._host.history._read_from_basis(basis)
-            except HistoryContractError:
-                retrospective_unavailable = True
         return context_runtime._assemble_bound_context(
             request,
             candidates,
@@ -153,8 +145,6 @@ class ContextService(_BoundService):
             pinned_campaign=basis.pinned_campaign,
             selected_live=basis.selected_live,
             selected_live_reader=self._host._live_transport,
-            retrospective_history=retrospective_history,
-            retrospective_unavailable=retrospective_unavailable,
         )
 
 
