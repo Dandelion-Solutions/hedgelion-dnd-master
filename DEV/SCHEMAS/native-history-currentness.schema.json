@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/native-history-currentness.schema.json",
+  "title": "HDM native semantic history currentness",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "campaign_id",
+    "source_domain",
+    "lane",
+    "semantic_contract_generation",
+    "origin",
+    "source_ref",
+    "source_revision",
+    "lower_exclusive_ordinal",
+    "upper_ordinal",
+    "accepted_event_fingerprints"
+  ],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "source_domain": {"const": "campaign.semantic_events@S"},
+    "lane": {"const": "evt"},
+    "semantic_contract_generation": {"const": 1},
+    "origin": {"type": "string", "pattern": "^(LOCAL|LIVE:[A-Za-z0-9_.:-]+)$"},
+    "source_ref": {"type": "string", "minLength": 1, "pattern": "^\\S+$"},
+    "source_revision": {"type": "string", "pattern": "^[a-f0-9]{40}([a-f0-9]{24})?$"},
+    "lower_exclusive_ordinal": {"type": ["integer", "null"], "minimum": 0},
+    "upper_ordinal": {"type": ["integer", "null"], "minimum": 1},
+    "accepted_event_fingerprints": {
+      "type": "object",
+      "additionalProperties": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+    }
+  }
+}
