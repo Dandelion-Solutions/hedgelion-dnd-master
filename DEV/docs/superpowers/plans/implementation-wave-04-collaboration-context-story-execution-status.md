@@ -4,7 +4,7 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: SENIOR_REVIEW_REQUIRED (T07A); T02B CURRENT
+STATUS: SENIOR_REVIEW_REQUIRED (T02B; T07A separate)
 CURRENT_TASK: W04.T02B publication/recovery and route-companion closure
 LAST_COMPLETED_TASK:
   W04.T01B accepted after reviewer PASS -> `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
@@ -12,7 +12,7 @@ LAST_COMPLETED_TASK:
   W04.T01C accepted after independent re-review -> `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`
   W04.T02A accepted after reviewer PASS -> `5c77aced9dafd9a7f26177090b3e62466b8ec561`
   W04.T03A accepted after reviewer PASS -> `ca3efa3c7750cffc2eef228b4b8666b75828cea9`
-LAST_SAFE_SHA: `5c77aced9dafd9a7f26177090b3e62466b8ec561`
+LAST_SAFE_SHA: `b737555b9d9a1c404576dc173dfdaf34cd023e13`
 
 ## Execution policy
 
@@ -763,3 +763,46 @@ SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. T02A and T03A remain wi
 NEXT_EXACT_TASK: execute W04.T02B under the stable-plan write set. T02C remains downstream of T02B and current W03 access/LIVE routes; T04A waits for T02C; T05C waits for T05B + T04B + T02C. Keep T07A at its Senior-only stop and do not authorize Wave 05.
 KNOWN_BLOCKERS: T04A waits for T02C; T05C requires T04B and T02C in addition to accepted T05B; T07A Senior review. Migration execution, release execution and gameplay bootstrap remain unauthorized.
 UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published and read back.
+
+## W04.T02B publication/recovery review stop — 2026-09-22
+
+STATUS: **SENIOR_REVIEW_REQUIRED — T02B UNACCEPTED; T07A REMAINS A SEPARATE STOP**
+CURRENT_TASK: W04.T02B publication/recovery and route-companion closure
+REVIEWED_PUBLISHED_SHA: `ae424f32cc785f940f7740355924aa259d8895c6`
+LAST_SAFE_SHA: `b737555b9d9a1c404576dc173dfdaf34cd023e13`
+
+CURRENT_VERIFICATION_STATE:
+- W04.T02A and W04.T03A remain accepted at their exact reviewer-PASS heads.
+- The published T02B candidate is not accepted. Independent review found that
+  collaboration calls an unadmitted repository publication capability and
+  bypasses the accepted W02 `FrozenCampaignPublicationAttempt` / publication
+  owner contract.
+- The candidate changes the collaboration obligation persistent contract from
+  schema v2 to v3 and makes `closed_input_set_fingerprint` required for
+  closed/resolved records, but supplies no accepted migration edge, existing-v2
+  disposition, or `campaign_contract_generation` consequence.
+- The DEV schema, GAME schema projection and Python lifecycle checks do not
+  agree: the runtime rejects a fingerprint on OPEN and requires one on
+  CLOSED/RESOLVED; the DEV schema permits a fingerprint on OPEN, while the
+  GAME projection permits null for every lifecycle.
+- No publisher or migration is selected or implemented by this checkpoint.
+
+VERSION_IMPACT:
+- The candidate's unaccepted production/schema transition is unresolved and is
+  not adopted by this documentation checkpoint.
+- `VERSION_IMPACT: NONE` for this documentation-only checkpoint; no version,
+  schema, campaign-contract, storage, migration or catalog value changed here.
+
+SYSTEM_IMPACT: **SENIOR_REVIEW_REQUIRED — W04.T02B**. The separate W04.T07A
+selected-LIVE reader stop remains open and is not merged into this finding.
+T02C, T04A/T04B, T05C and Wave 05 remain dependency-gated/not authorized.
+
+NEXT_EXACT_TASK: Senior resolution of the publication-owner boundary and the
+schema compatibility/lifecycle disposition in
+`DEV/docs/superpowers/design/2026-09-22-w04-t02b-publication-recovery-system-impact-brief.md`.
+Do not select or implement a publisher or migration before that resolution.
+KNOWN_BLOCKERS: T02B Senior review; T02C waits for accepted T02B; T04A waits
+for T02C; T05C requires T04B and T02C in addition to accepted T05B; T07A
+separate Senior review; Wave 05 remains unauthorized.
+UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published
+and read back.
