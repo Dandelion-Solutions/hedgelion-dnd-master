@@ -1467,15 +1467,71 @@ class CollaborationSchemaTests(unittest.TestCase):
 
 
 class CollaborationFrontierTests(unittest.TestCase):
-    def test_frontier_stops_at_missing_required_input_and_keeps_scope_local(
-        self,
-    ) -> None:
+    def test_caller_empty_pending_cannot_erase_missing_required_holder(self) -> None:
+        repository = RepositoryFixture()
         obligation = open_or_successor_obligation(
-            _classify(RepositoryFixture()), obligation_id="obligation-frontier"
+            _classify(repository),
+            obligation_id="obligation-frontier-pending-override",
         )
         assert obligation is not None
 
-        frontier = compute_maximal_safe_frontier(obligation)
+        frontier = compute_maximal_safe_frontier(
+            obligation,
+            host=_host(repository),
+            pending_required_contributors=(),
+        )
+
+        self.assertEqual(
+            frontier.pending_required_contributors,
+            (ContributorRef("player-bob", "pc-bob"),),
+        )
+
+    def test_post_admission_native_basis_drift_is_rejected(self) -> None:
+        repository = RepositoryFixture()
+        obligation = open_or_successor_obligation(
+            _classify(repository),
+            obligation_id="obligation-frontier-drift",
+        )
+        assert obligation is not None
+        scene_path = route_native_record("world.scene", ("scene-market",)).relative_path
+        repository.records[scene_path]["revision"] = CHANGED_CAMPAIGN_REVISION  # type: ignore[index]
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "current"):
+            compute_maximal_safe_frontier(
+                obligation,
+                host=_host(repository),
+                current_basis_refs=obligation.native_basis_refs,
+            )
+
+    def test_forged_foreign_frontier_cannot_authorize_visible_consequence(self) -> None:
+        repository = RepositoryFixture()
+        obligation = open_or_successor_obligation(
+            _classify(repository),
+            obligation_id="obligation-frontier-foreign",
+        )
+        assert obligation is not None
+        host = _host(repository)
+        frontier = compute_maximal_safe_frontier(obligation, host=host)
+        forged = replace(frontier, campaign_id="campaign-foreign")
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "authoritative"):
+            validate_visible_consequence(
+                forged,
+                obligation=obligation,
+                host=host,
+                evidence_refs=forged.safe_prefix_refs,
+            )
+
+    def test_frontier_stops_at_missing_required_input_and_keeps_scope_local(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-frontier"
+        )
+        assert obligation is not None
+
+        frontier = compute_maximal_safe_frontier(obligation, host=_host(repository))
 
         self.assertEqual(frontier.obligation_id, obligation.obligation_id)
         self.assertEqual(frontier.generation, obligation.generation)
@@ -1492,13 +1548,14 @@ class CollaborationFrontierTests(unittest.TestCase):
         clause = _collective_clause() | {
             "optional_contributors": [{"player_id": "player-carol"}]
         }
+        repository = RepositoryFixture(clause)
         obligation = open_or_successor_obligation(
-            _classify(RepositoryFixture(clause)),
+            _classify(repository),
             obligation_id="obligation-optional-frontier",
         )
         assert obligation is not None
 
-        frontier = build_join_frontier(obligation)
+        frontier = build_join_frontier(obligation, host=_host(repository))
 
         self.assertEqual(
             frontier.pending_required_contributors,
@@ -1510,38 +1567,64 @@ class CollaborationFrontierTests(unittest.TestCase):
         self.assertEqual(obligation.lifecycle, "OPEN")
 
     def test_visible_consequence_must_use_the_same_safe_frontier(self) -> None:
+        repository = RepositoryFixture()
         obligation = open_or_successor_obligation(
-            _classify(RepositoryFixture()), obligation_id="obligation-visible-frontier"
+            _classify(repository), obligation_id="obligation-visible-frontier"
         )
         assert obligation is not None
-        frontier = compute_maximal_safe_frontier(obligation)
+        host = _host(repository)
+        frontier = compute_maximal_safe_frontier(obligation, host=host)
 
-        validate_visible_consequence(frontier, evidence_refs=frontier.safe_prefix_refs)
+        validate_visible_consequence(
+            frontier,
+            obligation=obligation,
+            host=host,
+            evidence_refs=frontier.safe_prefix_refs,
+        )
         with self.assertRaisesRegex(CollaborationAdmissionError, "frontier"):
             validate_visible_consequence(
                 frontier,
+                obligation=obligation,
+                host=host,
                 evidence_refs=(
                     NativeBasisRef("world.scene", "scene-other", CAMPAIGN_REVISION),
                 ),
             )
 
-    def test_frontier_rejects_stale_scope_basis_without_global_fallback(self) -> None:
+    def test_frontier_ignores_replayed_scope_basis_without_global_fallback(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
         obligation = open_or_successor_obligation(
-            _classify(RepositoryFixture()), obligation_id="obligation-scope-currentness"
+            _classify(repository), obligation_id="obligation-scope-currentness"
         )
         assert obligation is not None
 
-        with self.assertRaisesRegex(CollaborationAdmissionError, "current"):
-            compute_maximal_safe_frontier(
-                obligation,
-                current_basis_refs=(
-                    NativeBasisRef("world.scene", "scene-other", CAMPAIGN_REVISION),
-                ),
-            )
+        frontier = compute_maximal_safe_frontier(
+            obligation,
+            host=_host(repository),
+            current_basis_refs=(
+                NativeBasisRef("world.scene", "scene-other", CAMPAIGN_REVISION),
+            ),
+        )
+
+        self.assertEqual(frontier.safe_prefix_refs, obligation.native_basis_refs)
 
     def test_unrelated_scope_builds_without_waiting_on_this_frontier(self) -> None:
+        repository = RepositoryFixture()
+        repository.put(
+            "world.scene",
+            "scene-other",
+            {
+                "kind": "world.scene",
+                "id": "scene-other",
+                "campaign_id": CAMPAIGN_ID,
+                "revision": CAMPAIGN_REVISION,
+                "state": {"name": "Other scene"},
+            },
+        )
         obligation = open_or_successor_obligation(
-            _classify(RepositoryFixture()), obligation_id="obligation-scope-one"
+            _classify(repository), obligation_id="obligation-scope-one"
         )
         assert obligation is not None
         unrelated = replace(
@@ -1553,8 +1636,9 @@ class CollaborationFrontierTests(unittest.TestCase):
             ),
         )
 
-        first = compute_maximal_safe_frontier(obligation)
-        second = compute_maximal_safe_frontier(unrelated)
+        host = _host(repository)
+        first = compute_maximal_safe_frontier(obligation, host=host)
+        second = compute_maximal_safe_frontier(unrelated, host=host)
 
         self.assertNotEqual(first.obligation_id, second.obligation_id)
         self.assertNotEqual(first.dependency_scope, second.dependency_scope)
@@ -1563,11 +1647,12 @@ class CollaborationFrontierTests(unittest.TestCase):
     def test_frontier_schema_has_no_technical_order_or_chronology_authority(
         self,
     ) -> None:
+        repository = RepositoryFixture()
         obligation = open_or_successor_obligation(
-            _classify(RepositoryFixture()), obligation_id="obligation-technical-order"
+            _classify(repository), obligation_id="obligation-technical-order"
         )
         assert obligation is not None
-        frontier = compute_maximal_safe_frontier(obligation)
+        frontier = compute_maximal_safe_frontier(obligation, host=_host(repository))
         value = frontier.to_mapping()
 
         self.assertNotIn("arrival_order", value)
@@ -1580,23 +1665,27 @@ class CollaborationFrontierTests(unittest.TestCase):
             CollaborationFrontier.from_mapping(value)
 
     def test_frontier_round_trip_preserves_scope_and_pending_requirements(self) -> None:
+        repository = RepositoryFixture()
         obligation = open_or_successor_obligation(
-            _classify(RepositoryFixture()),
+            _classify(repository),
             obligation_id="obligation-frontier-round-trip",
         )
         assert obligation is not None
-        frontier = compute_maximal_safe_frontier(obligation)
+        frontier = compute_maximal_safe_frontier(obligation, host=_host(repository))
 
         restored = CollaborationFrontier.from_mapping(frontier.to_mapping())
 
         self.assertEqual(restored, frontier)
 
     def test_frontier_schema_projection_accepts_owner_evidence_only(self) -> None:
+        repository = RepositoryFixture()
         obligation = open_or_successor_obligation(
-            _classify(RepositoryFixture()), obligation_id="obligation-frontier-schema"
+            _classify(repository), obligation_id="obligation-frontier-schema"
         )
         assert obligation is not None
-        value = compute_maximal_safe_frontier(obligation).to_mapping()
+        value = compute_maximal_safe_frontier(
+            obligation, host=_host(repository)
+        ).to_mapping()
 
         schema = json.loads(
             (SCHEMAS / "collaboration-frontier.schema.json").read_text(encoding="utf-8")

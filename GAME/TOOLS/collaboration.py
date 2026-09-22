@@ -1186,6 +1186,48 @@ def _revalidate_host_basis(host: RuntimeHost, basis: _OperationBasis) -> None:
         )
 
 
+def _revalidate_frontier_basis(
+    obligation: CollaborationObligation, host: RuntimeHost
+) -> tuple[NativeBasisRef, ...]:
+    """Read the obligation's bounded native basis through the bound host.
+
+    A frontier is safe only when the exact owner records still carry the
+    revisions admitted for this obligation.  The caller cannot replay a
+    previously observed basis or supply a replacement scope.  The host basis
+    is checked again after the exact reads so a ref move during this operation
+    also fails closed.
+    """
+    try:
+        basis = host._begin_operation()
+    except (AttributeError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "runtime host is required for frontier currentness"
+        ) from exc
+    if basis.pinned_campaign.campaign_id != obligation.campaign_id:
+        raise CollaborationAdmissionError(
+            "frontier obligation belongs to another campaign"
+        )
+    try:
+        _validate_basis_shape(
+            obligation.dependency_class,
+            obligation.dependency_scope,
+            obligation.native_basis_refs,
+        )
+    except (CollaborationAdmissionError, KeyError) as exc:
+        raise CollaborationAdmissionError(
+            "frontier obligation basis is invalid"
+        ) from exc
+
+    current: list[NativeBasisRef] = []
+    for ref in obligation.native_basis_refs:
+        owner = _read_native(host, basis, ref.family, ref.record_id)
+        if owner.get("revision") != ref.revision:
+            raise CollaborationAdmissionError("frontier native basis is not current")
+        current.append(NativeBasisRef(ref.family, ref.record_id, ref.revision))
+    _revalidate_host_basis(host, basis)
+    return _canonical_frontier_refs(current, "current frontier basis")
+
+
 def _validate_persisted_input_owners(
     obligation: CollaborationObligation, host: RuntimeHost
 ) -> None:
@@ -1581,6 +1623,7 @@ def _pending_required_contributors(
 def compute_maximal_safe_frontier(
     obligation: CollaborationObligation,
     *,
+    host: RuntimeHost,
     safe_prefix_refs: Sequence[NativeBasisRef] | None = None,
     current_basis_refs: Sequence[NativeBasisRef] | None = None,
     pending_required_contributors: Sequence[ContributorRef] | None = None,
@@ -1589,9 +1632,9 @@ def compute_maximal_safe_frontier(
 
     This is a scope-local projection.  It does not close an obligation, infer
     chronology from technical order, or use timeout/presence/silence as a
-    substitute for a required contribution.  The optional current basis is
-    an exact revalidation input for this obligation's native dependency, not a
-    campaign-wide fallback.
+    substitute for a required contribution.  The legacy projection arguments
+    are accepted only for call-site compatibility and are deliberately ignored;
+    current basis and pending contributors are derived below from owner state.
     """
     if not isinstance(obligation, CollaborationObligation):
         raise CollaborationAdmissionError("owner-derived obligation is required")
@@ -1599,44 +1642,9 @@ def compute_maximal_safe_frontier(
         raise CollaborationAdmissionError(
             "maximal safe frontier requires an open obligation"
         )
-    expected_basis = _canonical_frontier_refs(
-        obligation.native_basis_refs, "obligation native basis"
-    )
-    current = (
-        expected_basis
-        if current_basis_refs is None
-        else _canonical_frontier_refs(current_basis_refs, "current scope basis")
-    )
-    if current != expected_basis:
-        raise CollaborationAdmissionError(
-            "current scope basis is stale or belongs to another scope"
-        )
-    safe = (
-        expected_basis
-        if safe_prefix_refs is None
-        else _canonical_frontier_refs(safe_prefix_refs, "safe prefix owner evidence")
-    )
-    if not set(safe).issubset(set(current)):
-        raise CollaborationAdmissionError(
-            "safe prefix owner evidence is outside the current scope"
-        )
-    pending = (
-        _pending_required_contributors(obligation)
-        if pending_required_contributors is None
-        else tuple(pending_required_contributors)
-    )
-    if any(not isinstance(contributor, ContributorRef) for contributor in pending):
-        raise CollaborationAdmissionError("pending contributors must be typed")
-    required = set(obligation.required_contributors)
-    if any(contributor not in required for contributor in pending):
-        raise CollaborationAdmissionError(
-            "frontier pending contributors must be required in this scope"
-        )
-    if len(set(pending)) != len(pending):
-        raise CollaborationAdmissionError(
-            "frontier pending contributors must be unique"
-        )
-    pending = tuple(sorted(pending, key=lambda ref: (ref.player_id, ref.pc_id or "")))
+    del safe_prefix_refs, current_basis_refs, pending_required_contributors
+    safe = _revalidate_frontier_basis(obligation, host)
+    pending = _pending_required_contributors(obligation)
     return CollaborationFrontier(
         obligation_id=obligation.obligation_id,
         generation=obligation.generation,
@@ -1650,6 +1658,7 @@ def compute_maximal_safe_frontier(
 def build_join_frontier(
     obligation: CollaborationObligation,
     *,
+    host: RuntimeHost,
     current_basis_refs: Sequence[NativeBasisRef] | None = None,
 ) -> CollaborationFrontier:
     """Build one current, scope-local frontier for a participant join.
@@ -1660,6 +1669,7 @@ def build_join_frontier(
     """
     return compute_maximal_safe_frontier(
         obligation,
+        host=host,
         current_basis_refs=current_basis_refs,
     )
 
@@ -1667,13 +1677,20 @@ def build_join_frontier(
 def validate_visible_consequence(
     frontier: CollaborationFrontier,
     *,
+    obligation: CollaborationObligation,
+    host: RuntimeHost,
     evidence_refs: Sequence[NativeBasisRef],
 ) -> None:
-    """Require visible evidence to stop at the semantic safe frontier."""
+    """Require visible evidence to match a freshly recomputed safe frontier."""
     if not isinstance(frontier, CollaborationFrontier):
         raise CollaborationAdmissionError("collaboration frontier is required")
+    authoritative = compute_maximal_safe_frontier(obligation, host=host)
+    if frontier != authoritative:
+        raise CollaborationAdmissionError(
+            "visible consequence requires an authoritative current frontier"
+        )
     visible = _canonical_frontier_refs(evidence_refs, "visible consequence evidence")
-    if visible != frontier.safe_prefix_refs:
+    if visible != authoritative.safe_prefix_refs:
         raise CollaborationAdmissionError(
             "visible consequence crosses the collaboration safe frontier"
         )
