@@ -12,11 +12,10 @@ import hashlib
 import json
 import re
 from collections.abc import Mapping, Sequence
-from copy import deepcopy
 from dataclasses import dataclass, replace
 from enum import StrEnum
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Final, Protocol
+from typing import TYPE_CHECKING, Final
 
 from .access_control import AccessControlContractError, PlayerRecord, resolve_player
 from .native_storage import (
@@ -26,7 +25,6 @@ from .native_storage import (
     route_native_record,
     validate_loaded_identity,
 )
-from .publication import PublicationOutcome
 from .runtime_execution import (
     NativeOrderingError,
     resolve_native_ordering_evidence,
@@ -36,9 +34,9 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.10
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
-COLLABORATION_SCHEMA_VERSION: Final[int] = 3
+# framework_module_version: 1.0.9
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
+COLLABORATION_SCHEMA_VERSION: Final[int] = 2
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_HANDOFF_SCHEMA_VERSION: Final[int] = 1
@@ -851,23 +849,6 @@ class CollaborationObligation:
             "OBSOLETE",
         }:
             raise CollaborationAdmissionError("obligation lifecycle is not registered")
-        if self.closed_input_set_fingerprint is not None and (
-            not isinstance(self.closed_input_set_fingerprint, str)
-            or re.fullmatch(r"[a-f0-9]{64}", self.closed_input_set_fingerprint) is None
-        ):
-            raise CollaborationAdmissionError(
-                "closed input set fingerprint must be a SHA-256 digest"
-            )
-        if self.lifecycle in {"CLOSED", "RESOLVED"} and (
-            self.closed_input_set_fingerprint is None
-        ):
-            raise CollaborationAdmissionError(
-                "closed or resolved obligation requires a closed input basis"
-            )
-        if self.lifecycle == "OPEN" and self.closed_input_set_fingerprint is not None:
-            raise CollaborationAdmissionError(
-                "open obligation cannot retain a closed input basis"
-            )
         if self.generation == 1 and self.predecessor_generation is not None:
             raise CollaborationAdmissionError(
                 "initial obligation cannot have a predecessor generation"
@@ -986,7 +967,6 @@ class CollaborationObligation:
                     clause_id,
                 ), contributor in self.accepted_input_contributors
             ],
-            "closed_input_set_fingerprint": self.closed_input_set_fingerprint,
         }
 
     @property
@@ -1022,7 +1002,6 @@ class CollaborationObligation:
             "optional_contributors",
             "accepted_input_uses",
             "accepted_input_contributors",
-            "closed_input_set_fingerprint",
         }
         if set(value) != expected:
             raise CollaborationAdmissionError(
@@ -1112,14 +1091,6 @@ class CollaborationObligation:
             optional_contributors=_parse_contributors(value["optional_contributors"]),
             accepted_input_uses=tuple(uses),
             accepted_input_contributors=tuple(contributors),
-            closed_input_set_fingerprint=(
-                None
-                if value["closed_input_set_fingerprint"] is None
-                else _text(
-                    value["closed_input_set_fingerprint"],
-                    "closed input set fingerprint",
-                )
-            ),
         )
         _validate_persisted_input_owners(obligation, host)
         return obligation
@@ -1302,119 +1273,6 @@ class PlayerRouteCompanion:
                 ref.to_mapping() for ref in self.collaboration_route_refs
             ],
         }
-
-
-class CollaborationPublicationStatus(StrEnum):
-    """Epistemic result of the one campaign closure publication attempt."""
-
-    ACCEPTED = "CONFIRMED_ACCEPTED"
-    REJECTED = "CONFIRMED_REJECTED"
-    CONFLICT = "CONFLICT"
-    INDETERMINATE = "INDETERMINATE"
-
-
-@dataclass(frozen=True, slots=True)
-class CollaborationPublicationResult:
-    """Typed result from the campaign-owned collaboration publication port."""
-
-    status: CollaborationPublicationStatus
-    expected_revision: str
-    observed_revision: str | None
-    cause: str
-    dispatched: bool
-
-    def __post_init__(self) -> None:
-        if not isinstance(self.status, CollaborationPublicationStatus):
-            raise CollaborationAdmissionError(
-                "collaboration publication status must be owner-typed"
-            )
-        _text(self.expected_revision, "collaboration publication expected revision")
-        if self.observed_revision is not None:
-            _text(self.observed_revision, "collaboration publication observed revision")
-        _text(self.cause, "collaboration publication cause")
-        if type(self.dispatched) is not bool:
-            raise CollaborationAdmissionError(
-                "collaboration publication dispatch evidence must be boolean"
-            )
-
-    @property
-    def acknowledged(self) -> bool:
-        return self.status is CollaborationPublicationStatus.ACCEPTED
-
-
-@dataclass(frozen=True, slots=True)
-class CollaborationPublicationClosure:
-    """One bounded campaign-tree closure for collaboration resolution.
-
-    The repository capability owns the actual tree/ref mutation.  This value
-    only carries the exact native owner paths and the expected campaign basis;
-    it is deliberately not a journal, lock, distributed transaction or LIVE
-    publication envelope.
-    """
-
-    campaign_id: str
-    obligation_id: str
-    generation: int
-    expected_revision: str
-    expected_tree_sha: str
-    path_operations: Mapping[str, object | None]
-    owner_generations: Mapping[str, int]
-
-    def __post_init__(self) -> None:
-        _id(self.campaign_id, "collaboration closure campaign_id")
-        _id(self.obligation_id, "collaboration closure obligation_id")
-        if (
-            isinstance(self.generation, bool)
-            or not isinstance(self.generation, int)
-            or self.generation < 1
-        ):
-            raise CollaborationAdmissionError(
-                "collaboration closure generation must be positive"
-            )
-        _text(self.expected_revision, "collaboration closure expected revision")
-        _text(self.expected_tree_sha, "collaboration closure expected tree")
-        if not isinstance(self.path_operations, Mapping) or not self.path_operations:
-            raise CollaborationAdmissionError(
-                "collaboration closure path operations are required"
-            )
-        operations: dict[str, object | None] = {}
-        for raw_path, payload in self.path_operations.items():
-            if not isinstance(raw_path, str) or not raw_path:
-                raise CollaborationAdmissionError(
-                    "collaboration closure path must be nonempty"
-                )
-            if (
-                raw_path.startswith("/")
-                or "//" in raw_path
-                or any(part in {"", ".", ".."} for part in raw_path.split("/"))
-            ):
-                raise CollaborationAdmissionError(
-                    "collaboration closure path is not normalized"
-                )
-            if raw_path == "LIVE_STATE.yaml" or raw_path.startswith("LIVE/"):
-                raise CollaborationAdmissionError(
-                    "LIVE state cannot join collaboration campaign closure"
-                )
-            operations[raw_path] = None if payload is None else deepcopy(payload)
-        object.__setattr__(self, "path_operations", _freeze(operations))
-        generations: dict[str, int] = {}
-        for key, value in self.owner_generations.items():
-            _text(key, "collaboration closure owner generation key")
-            if isinstance(value, bool) or not isinstance(value, int) or value < 0:
-                raise CollaborationAdmissionError(
-                    "collaboration closure owner generation must be non-negative"
-                )
-            generations[key] = value
-        object.__setattr__(self, "owner_generations", MappingProxyType(generations))
-
-
-class CollaborationCampaignPublisher(Protocol):
-    """Campaign-owned writer used by the collaboration closure."""
-
-    def publish_campaign_closure(
-        self, closure: CollaborationPublicationClosure
-    ) -> CollaborationPublicationResult | PublicationOutcome:
-        """Atomically publish the bounded campaign-tree closure."""
 
 
 def _read_native(
@@ -2239,143 +2097,6 @@ def _read_current_obligation_state(
     return generation, lifecycle
 
 
-def _read_current_obligation(
-    obligation_id: str, host: RuntimeHost
-) -> tuple[_OperationBasis, CollaborationObligation]:
-    """Load one obligation by its exact owner route, never by discovery."""
-    _id(obligation_id, "current collaboration obligation_id")
-    try:
-        basis = host._begin_operation()
-        route = route_native_record(
-            "runtime.collaboration_obligation", (obligation_id,)
-        )
-        raw = host._repository.read_exact_path(
-            basis.pinned_campaign, route.relative_path
-        )
-    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
-        raise CollaborationAdmissionError(
-            "current collaboration obligation owner is unavailable"
-        ) from exc
-    current = _mapping(raw, "current collaboration obligation")
-    if current.get("kind") != "runtime.collaboration_obligation":
-        raise CollaborationAdmissionError(
-            "current collaboration obligation owner schema is unsupported"
-        )
-    if current.get("obligation_id") != obligation_id:
-        raise CollaborationAdmissionError(
-            "current collaboration obligation identity differs from the request"
-        )
-    if current.get("campaign_id") != basis.pinned_campaign.campaign_id:
-        raise CollaborationAdmissionError(
-            "current collaboration obligation belongs to another campaign"
-        )
-    parsed = CollaborationObligation.from_mapping(current, host=host)
-    _revalidate_host_basis(host, basis)
-    return basis, parsed
-
-
-def _read_known_obligation(
-    host: RuntimeHost,
-    basis: _OperationBasis,
-    route_ref: CollaborationRouteRef,
-) -> CollaborationObligation:
-    """Read one caller-supplied route reference without any fallback scan."""
-    try:
-        route = route_native_record(
-            "runtime.collaboration_obligation", (route_ref.obligation_id,)
-        )
-        raw = host._repository.read_exact_path(
-            basis.pinned_campaign, route.relative_path
-        )
-    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
-        raise CollaborationAdmissionError(
-            "known collaboration obligation route is unavailable"
-        ) from exc
-    value = _mapping(raw, "known collaboration obligation")
-    if value.get("kind") != "runtime.collaboration_obligation":
-        raise CollaborationAdmissionError(
-            "known collaboration obligation owner schema is unsupported"
-        )
-    if value.get("obligation_id") != route_ref.obligation_id:
-        raise CollaborationAdmissionError(
-            "known collaboration obligation identity differs from route reference"
-        )
-    if value.get("campaign_id") != basis.pinned_campaign.campaign_id:
-        raise CollaborationAdmissionError(
-            "known collaboration obligation belongs to another campaign"
-        )
-    obligation = CollaborationObligation.from_mapping(value, host=host)
-    if obligation.generation != route_ref.generation:
-        raise CollaborationAdmissionError(
-            "known collaboration route generation is stale or ambiguous"
-        )
-    return obligation
-
-
-def recover_obligations_for_player(
-    host: RuntimeHost,
-    player_id: str,
-    *,
-    route_companion: PlayerRouteCompanion | None = None,
-    known_route_refs: Sequence[CollaborationRouteRef] = (),
-) -> tuple[CollaborationObligation, ...]:
-    """Recover only obligations named by the exact PLAYER route companion.
-
-    Terminal generations may be supplied as explicit known route references by
-    a recovery caller.  No collaboration index, directory listing, campaign
-    scan or inferred obligation ID is accepted as a recovery fallback.
-    """
-    _id(player_id, "recovery player_id")
-    if not isinstance(known_route_refs, Sequence) or isinstance(
-        known_route_refs, (str, bytes)
-    ):
-        raise CollaborationAdmissionError("known collaboration routes must be an array")
-    try:
-        basis = host._begin_operation()
-    except (AttributeError, TypeError, ValueError) as exc:
-        raise CollaborationAdmissionError("bound runtime host is required") from exc
-    if route_companion is not None:
-        if not isinstance(route_companion, PlayerRouteCompanion):
-            raise CollaborationAdmissionError(
-                "typed PLAYER route companion is required"
-            )
-        if (
-            route_companion.campaign_id != basis.pinned_campaign.campaign_id
-            or route_companion.player_id != player_id
-        ):
-            raise CollaborationAdmissionError(
-                "PLAYER collaboration route companion is foreign"
-            )
-        refs = tuple(route_companion.collaboration_route_refs) + tuple(known_route_refs)
-    else:
-        refs = tuple(known_route_refs)
-    if any(not isinstance(ref, CollaborationRouteRef) for ref in refs):
-        raise CollaborationAdmissionError("known collaboration routes must be typed")
-    identities = [(ref.obligation_id, ref.generation) for ref in refs]
-    if len(identities) != len(set(identities)):
-        raise CollaborationAdmissionError("known collaboration routes are ambiguous")
-    recovered = [
-        _read_known_obligation(host, basis, ref)
-        for ref in sorted(refs, key=lambda ref: (ref.obligation_id, ref.generation))
-    ]
-    for obligation in recovered:
-        holders = {
-            ref.player_id
-            for ref in obligation.required_contributors
-            + obligation.optional_contributors
-        }
-        holders.update(
-            contributor.player_id
-            for _, contributor in obligation.accepted_input_contributors
-        )
-        if player_id not in holders:
-            raise CollaborationAdmissionError(
-                "known collaboration obligation is outside the PLAYER route"
-            )
-    _revalidate_host_basis(host, basis)
-    return tuple(recovered)
-
-
 def _load_obligation_clause(
     obligation: CollaborationObligation,
     host: RuntimeHost,
@@ -2629,242 +2350,12 @@ def apply_handoff(
     return obligation
 
 
-def _player_after_route_removal(
-    player: Mapping[str, object], obligation: CollaborationObligation
-) -> dict[str, object]:
-    """Remove one exact collaboration route while preserving other routes."""
-    result = deepcopy(dict(player))
-    raw_refs = result.get("collaboration_route_refs", ())
-    if not isinstance(raw_refs, Sequence) or isinstance(raw_refs, (str, bytes)):
-        raise CollaborationAdmissionError(
-            "PLAYER collaboration route companion is malformed"
-        )
-    kept: list[dict[str, object]] = []
-    for raw_ref in raw_refs:
-        ref = _mapping(raw_ref, "PLAYER collaboration route reference")
-        if set(ref) != {"obligation_id", "generation"}:
-            raise CollaborationAdmissionError(
-                "PLAYER collaboration route reference fields are not strict"
-            )
-        ref_id = _id(ref["obligation_id"], "PLAYER collaboration obligation_id")
-        generation = ref["generation"]
-        if (
-            isinstance(generation, bool)
-            or not isinstance(generation, int)
-            or generation < 1
-        ):
-            raise CollaborationAdmissionError(
-                "PLAYER collaboration route generation is invalid"
-            )
-        if (ref_id, generation) != (obligation.obligation_id, obligation.generation):
-            kept.append({"obligation_id": ref_id, "generation": generation})
-    kept.sort(key=lambda ref: (str(ref["obligation_id"]), int(ref["generation"])))
-    result["collaboration_route_refs"] = kept
-    return result
-
-
-def _resolve_waiting_closure(
-    current: CollaborationObligation,
-    handoff: CollaborationHandoff,
-    *,
-    host: RuntimeHost,
-    basis: _OperationBasis,
-) -> tuple[CollaborationObligation, CollaborationPublicationClosure]:
-    """Prepare the exact IntentClause/obligation/route companion closure."""
-    expected_handoff = build_handoff(current, host=host)
-    if handoff != expected_handoff:
-        raise CollaborationAdmissionError(
-            "handoff does not match current native collaboration owner"
-        )
-    interaction = _load_interaction(host, basis, current.interaction_id)
-    plan_id = _id(interaction["intent_plan_id"], "collaboration intent_plan_id")
-    plan = _load_plan(host, basis, plan_id, current.interaction_id)
-    clauses = list(_sequence(plan.get("clauses"), "intent plan clauses"))
-    target_identity = (current.interaction_id, current.clause_id)
-    target_indexes = [
-        index
-        for index, raw_clause in enumerate(clauses)
-        if isinstance(raw_clause, Mapping)
-        and raw_clause.get("clause_id") == current.clause_id
-    ]
-    if len(target_indexes) != 1:
-        raise CollaborationAdmissionError(
-            "collaboration IntentClause identity is missing or ambiguous"
-        )
-    target_index = target_indexes[0]
-    target_clause = _mapping(clauses[target_index], "collaboration IntentClause")
-    transition_required = any(
-        entry.input_identity == target_identity
-        and entry.disposition
-        is HandoffDisposition.RELEASE_TO_ORIGINAL_CLAUSE_COMMAND_PATH
-        for entry in handoff.entries
-    )
-    if transition_required:
-        if target_clause.get("execution_state") != "intent.pending":
-            raise CollaborationAdmissionError(
-                "collaboration IntentClause is not pending for native release"
-            )
-        if target_clause.get("command_id") is not None:
-            raise CollaborationAdmissionError(
-                "collaboration IntentClause already has a command"
-            )
-        transitioned_clause = deepcopy(dict(target_clause))
-        transitioned_clause["execution_state"] = "intent.ready"
-        clauses[target_index] = transitioned_clause
-    transitioned_plan = deepcopy(dict(plan))
-    transitioned_plan["clauses"] = clauses
-    resolved = replace(current, lifecycle="RESOLVED")
-    operations: dict[str, object | None] = {
-        route_native_record(
-            "runtime.intent_plan", (plan_id,)
-        ).relative_path: transitioned_plan,
-        route_native_record(
-            "runtime.collaboration_obligation", (current.obligation_id,)
-        ).relative_path: resolved.to_mapping(),
-    }
-    for player_id in required_route_holders(current):
-        player = _read_native(host, basis, "world.player", player_id)
-        operations[route_native_record("world.player", (player_id,)).relative_path] = (
-            _player_after_route_removal(player, current)
-        )
-    _revalidate_host_basis(host, basis)
-    return resolved, CollaborationPublicationClosure(
-        campaign_id=current.campaign_id,
-        obligation_id=current.obligation_id,
-        generation=current.generation,
-        expected_revision=basis.pinned_campaign.revision,
-        expected_tree_sha=basis.pinned_campaign.tree_sha,
-        path_operations=operations,
-        owner_generations={
-            f"runtime.collaboration_obligation:{current.obligation_id}": current.generation
-        },
-    )
-
-
-def _validate_resolved_waiting_state(
-    current: CollaborationObligation,
-    handoff: CollaborationHandoff,
-    *,
-    host: RuntimeHost,
-) -> None:
-    """Validate the native post-publication state for an idempotent retry."""
-    if handoff.basis != current.closed_basis:
-        raise CollaborationAdmissionError(
-            "resolved collaboration handoff basis differs from current owner"
-        )
-    try:
-        basis = host._begin_operation()
-    except (AttributeError, TypeError, ValueError) as exc:
-        raise CollaborationAdmissionError("bound runtime host is required") from exc
-    interaction = _load_interaction(host, basis, current.interaction_id)
-    plan = _load_plan(
-        host,
-        basis,
-        _id(interaction["intent_plan_id"], "resolved intent_plan_id"),
-        current.interaction_id,
-    )
-    clause = _load_clause(plan, current.clause_id)
-    if current.semantic_class == "ACTIONABLE_INTENT" and (
-        clause.get("execution_state") != "intent.ready"
-        or clause.get("command_id") is not None
-    ):
-        raise CollaborationAdmissionError(
-            "resolved collaboration IntentClause is not native-ready"
-        )
-    _revalidate_host_basis(host, basis)
-
-
-def resolve_waiting(
-    obligation: CollaborationObligation,
-    handoff: CollaborationHandoff,
-    *,
-    host: RuntimeHost,
-) -> CollaborationObligation:
-    """Atomically resolve a CLOSED obligation through campaign publication.
-
-    The native IntentClause transition, obligation lifecycle transition and
-    exact PLAYER route-companion removals are submitted as one campaign-owned
-    closure.  A conflict or indeterminate acknowledgement never mutates local
-    owner state and never replays mechanics.
-    """
-    if not isinstance(obligation, CollaborationObligation):
-        raise CollaborationAdmissionError("owner-derived obligation is required")
-    if not isinstance(handoff, CollaborationHandoff):
-        raise CollaborationAdmissionError("typed collaboration handoff is required")
-    basis, current = _read_current_obligation(obligation.obligation_id, host)
-    if current.campaign_id != obligation.campaign_id:
-        raise CollaborationAdmissionError(
-            "collaboration obligation belongs to another campaign"
-        )
-    if current.generation != obligation.generation:
-        raise CollaborationAdmissionError(
-            "resolve targets a stale collaboration generation"
-        )
-    if current.lifecycle != obligation.lifecycle:
-        raise CollaborationAdmissionError(
-            "resolve targets a stale collaboration lifecycle"
-        )
-    if current.lifecycle == "RESOLVED":
-        _validate_resolved_waiting_state(current, handoff, host=host)
-        return current
-    if current.lifecycle == "OBSOLETE":
-        raise CollaborationAdmissionError(
-            "obsolete collaboration obligation cannot resolve"
-        )
-    if current.lifecycle != "CLOSED":
-        raise CollaborationAdmissionError(
-            "collaboration resolution requires a CLOSED obligation"
-        )
-    resolved, closure = _resolve_waiting_closure(
-        current, handoff, host=host, basis=basis
-    )
-    publisher = getattr(host._repository, "publish_campaign_closure", None)
-    if not callable(publisher):
-        raise CollaborationAdmissionError(
-            "campaign collaboration publication capability is unavailable"
-        )
-    try:
-        result = publisher(closure)
-    except (AttributeError, OSError, TypeError, ValueError) as exc:
-        raise CollaborationAdmissionError(
-            "collaboration campaign publication failed closed"
-        ) from exc
-    if isinstance(result, CollaborationPublicationResult):
-        if result.expected_revision != basis.pinned_campaign.revision:
-            raise CollaborationAdmissionError(
-                "collaboration publication currentness basis is ambiguous"
-            )
-        status = result.status
-        dispatched = result.dispatched
-    elif isinstance(result, PublicationOutcome):
-        status = CollaborationPublicationStatus(result.status.value)
-        dispatched = result.dispatched
-    else:
-        raise CollaborationAdmissionError(
-            "collaboration campaign publication result is not owner-typed"
-        )
-    if status is not CollaborationPublicationStatus.ACCEPTED:
-        if status is CollaborationPublicationStatus.INDETERMINATE:
-            raise CollaborationAdmissionError(
-                "collaboration publication is ambiguous and requires recovery"
-            )
-        raise CollaborationAdmissionError(
-            "collaboration publication was rejected; current owner remains authoritative"
-        )
-    if not dispatched:
-        raise CollaborationAdmissionError(
-            "collaboration publication acknowledgement lacks dispatch evidence"
-        )
-    return resolved
-
-
 # Name aliases keep the owner vocabulary explicit at call sites without adding
 # another lifecycle or execution authority.
 close_collaboration = close_obligation
 handoff_collaboration = build_handoff
 complete_collaboration_handoff = apply_handoff
 ClosedCollectionBasis = CollaborationClosedBasis
-resolve_collaboration_waiting = resolve_waiting
 
 
 def required_route_holders(obligation: CollaborationObligation) -> tuple[str, ...]:
