@@ -6,7 +6,16 @@ import json
 import pickle
 import unittest
 
-from GAME.TOOLS.live_state import LiveRouting
+from GAME.TOOLS.durability import route_serialized_operation
+from GAME.TOOLS.live_state import (
+    LiveClaim,
+    LiveEnvelope,
+    LiveNativeStatePack,
+    LiveRouting,
+    build_live_ref,
+    derive_live_epoch_id,
+)
+from GAME.TOOLS.native_storage import route_native_record
 from GAME.TOOLS.policy_basis import PinnedCampaign
 from GAME.TOOLS.runtime_host import (
     FRAMEWORK_MODULE_VERSION,
@@ -99,6 +108,202 @@ class DeploymentLiveTransport:
         return LiveRouting(campaign_id=self.campaign_id, entries=())
 
 
+class PublicationRepository(DeploymentRepository):
+    """Fixture for exact campaign publication reads."""
+
+    def __init__(self, campaign_id: str = CAMPAIGN_ID) -> None:
+        super().__init__(campaign_id)
+        self.current_revision = "a" * 40
+        self.current_tree = "b" * 40
+        self.records: dict[str, object] = {
+            "MANIFEST.yaml": {
+                "campaign_id": campaign_id,
+                "campaign_name": "The Frostfall",
+                "branch": "campaign/frostfall",
+                "created_at": "2026-09-22T00:00:00Z",
+            },
+            "CAMPAIGN_CARD.yaml": {
+                "campaign_id": campaign_id,
+                "campaign_name": "The Frostfall",
+            },
+        }
+
+    def repository_identity(self) -> str:
+        return "github.com/example/campaigns"
+
+    def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
+        self.pin_calls.append(campaign_id)
+        return PinnedCampaign(
+            campaign_id=self.campaign_id,
+            revision=self.current_revision,
+            tree_sha=self.current_tree,
+        )
+
+    def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+        if path in self.records:
+            return self.records[path]
+        return {"id": "obligation-1", "kind": "runtime.collaboration_obligation"}
+
+
+class PublicationTransport:
+    """Fixture for the host-bound Connector Git-data publication capability."""
+
+    def __init__(self, repository: PublicationRepository) -> None:
+        self.repository = repository
+        self.calls: list[tuple[str, object]] = []
+        self.response_status = "accepted"
+        self.next_head = "c" * 40
+
+    def repository_identity(self) -> str:
+        return "github.com/example/campaigns"
+
+    def resolve_authenticated_acting_principal(
+        self, campaign_id: str, pinned_campaign: PinnedCampaign
+    ) -> object:
+        from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence
+
+        return AuthenticatedPrincipalEvidence("principal-1")
+
+    def read_ref(self, target_ref: str) -> object:
+        self.calls.append(("read_ref", target_ref))
+        return {"head_sha": self.repository.current_revision}
+
+    def create_tree(self, base_tree_sha: str, path_operations: object) -> object:
+        self.calls.append(("create_tree", path_operations))
+        return "d" * 40
+
+    def create_commit(self, parent_sha: str, tree_sha: str, target_ref: str) -> object:
+        self.calls.append(("create_commit", (parent_sha, tree_sha, target_ref)))
+        return self.next_head
+
+    def update_ref(
+        self, target_ref: str, new_commit_sha: str, force: bool = False
+    ) -> object:
+        self.calls.append(("update_ref", (target_ref, new_commit_sha, force)))
+        if self.response_status == "indeterminate":
+            self.repository.current_revision = new_commit_sha
+        return {
+            "status": self.response_status,
+            "head_sha": new_commit_sha if self.response_status != "rejected" else None,
+            "dispatched": True,
+        }
+
+
+def _publication_payload() -> dict[str, object]:
+    return {"id": "obligation-1", "kind": "runtime.collaboration_obligation"}
+
+
+def _publication_delta() -> tuple[dict[str, object], dict[str, object]]:
+    payload = _publication_payload()
+    route = route_native_record("runtime.collaboration_obligation", ("obligation-1",))
+    return payload, {route.relative_path: payload}
+
+
+def _semantic_event(event_id: str, ordinal: int) -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "event_id": event_id,
+        "semantic_order": ordinal,
+        "kind": "event.context",
+        "provenance_refs": ["resolution.context"],
+        "semantic_delta": {"state": "native"},
+    }
+
+
+class LocalEventRepository(PublicationRepository):
+    def __init__(self) -> None:
+        super().__init__()
+        first_route = route_native_record("runtime.semantic_event", ("event-1",))
+        second_route = route_native_record("runtime.semantic_event", ("event-2",))
+        self.records.update(
+            {
+                "MANIFEST.yaml": {
+                    "campaign_id": CAMPAIGN_ID,
+                    "campaign_name": "The Frostfall",
+                    "branch": "campaign/frostfall",
+                    "created_at": "2026-09-22T00:00:00Z",
+                },
+                "INDEX/EVENT_INDEX.yaml": {
+                    "schema_version": 1,
+                    "entity_type": "EVENT",
+                    "entries": [
+                        {
+                            "event_id": "event-1",
+                            "ordinal": 1,
+                            "path": first_route.relative_path,
+                        },
+                        {
+                            "event_id": "event-2",
+                            "ordinal": 2,
+                            "path": second_route.relative_path,
+                        },
+                    ],
+                },
+                first_route.relative_path: _semantic_event("event-1", 1),
+                second_route.relative_path: _semantic_event("event-2", 2),
+            }
+        )
+        self.read_paths: list[str] = []
+
+    def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+        self.read_paths.append(path)
+        return self.records[path]
+
+
+class LiveEventTransport(DeploymentLiveTransport):
+    def __init__(self) -> None:
+        super().__init__()
+        opening_revision = "e" * 40
+        claims = (LiveClaim.exact_owner("world.scene", "scene-1"),)
+        epoch_id = derive_live_epoch_id(
+            CAMPAIGN_ID, "scene-1", opening_revision, claims
+        )
+        source_ref = build_live_ref(CAMPAIGN_ID, "scene-1", epoch_id)
+        self.source = LiveEnvelope(
+            campaign_id=CAMPAIGN_ID,
+            scene_id="scene-1",
+            epoch_id=epoch_id,
+            source_ref=source_ref,
+            source_revision="f" * 40,
+            claims=claims,
+            opening_campaign_revision=opening_revision,
+        )
+        self.pack = LiveNativeStatePack(
+            source_key=self.source.source_key,
+            source_revision=self.source.source_revision,
+            next_source_native_creation_ordinal=1,
+            source_native_ids=(),
+            native_owner_states={
+                "runtime.semantic_event": {
+                    "complete": True,
+                    "entries": [
+                        {
+                            "event_id": "live-event-1",
+                            "ordinal": 1,
+                            "event_record": _semantic_event("live-event-1", 1),
+                        }
+                    ],
+                }
+            },
+            provenance={},
+            privacy={},
+            chronology={},
+            unresolved_work={},
+        )
+
+    def read_selected_live(
+        self, campaign_id: str, pinned: PinnedCampaign
+    ) -> LiveRouting:
+        self.read_calls.append((campaign_id, pinned))
+        return LiveRouting(campaign_id=CAMPAIGN_ID, entries=(self.source,))
+
+    def read_selected_live_source(
+        self, route: LiveRouting, source: LiveEnvelope
+    ) -> object:
+        self.read_calls.append(("source", source))  # type: ignore[arg-type]
+        return self.pack
+
+
 class StaleLiveTransport(DeploymentLiveTransport):
     def read_selected_live(
         self, campaign_id: str, pinned: PinnedCampaign
@@ -110,15 +315,25 @@ class StaleLiveTransport(DeploymentLiveTransport):
 def _compose(
     repository: DeploymentRepository | None = None,
     live: DeploymentLiveTransport | None = None,
+    publication: PublicationTransport | None = None,
 ):
     repository = repository or DeploymentRepository()
     live = live or DeploymentLiveTransport()
-    return compose_runtime_host(CAMPAIGN_ID, repository, live), repository, live
+    return (
+        compose_runtime_host(
+            CAMPAIGN_ID,
+            repository,
+            live,
+            campaign_publication_transport=publication,
+        ),
+        repository,
+        live,
+    )
 
 
 class RuntimeHostCompositionTests(unittest.TestCase):
     def test_new_runtime_host_starts_at_current_engine_module_line(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.5")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.6")
 
     def test_composition_binds_one_campaign_and_creates_sibling_services(self) -> None:
         host, _repository, _live = _compose()
@@ -189,6 +404,17 @@ class RuntimeHostCompositionTests(unittest.TestCase):
         with self.assertRaises(RuntimeHostError):
             compose_runtime_host(CAMPAIGN_ID, DeploymentRepository(), object())
 
+    def test_publication_requires_the_same_read_and_write_repository_identity(
+        self,
+    ) -> None:
+        class MismatchedRepository(PublicationRepository):
+            def repository_identity(self) -> str:
+                return "github.com/example/other-campaigns"
+
+        repository = MismatchedRepository()
+        with self.assertRaises(RuntimeHostError):
+            _compose(repository, publication=PublicationTransport(repository))
+
     def test_untrusted_request_data_cannot_select_or_replace_transport(self) -> None:
         host, repository, live = _compose()
         evil = object()
@@ -216,6 +442,133 @@ class RuntimeHostCompositionTests(unittest.TestCase):
             pickle.dumps(host)
         with self.assertRaises(TypeError):
             json.dumps(host)
+
+    def test_campaign_publication_is_a_bound_sibling_and_uses_one_non_force_write(
+        self,
+    ) -> None:
+        repository = PublicationRepository()
+        transport = PublicationTransport(repository)
+        host, _repository, _live = _compose(repository, publication=transport)
+        payload, path_operations = _publication_delta()
+        publication = getattr(host, "publication", None)
+        self.assertIsNotNone(publication)
+        if publication is None:
+            return
+
+        outcome = publication.publish_owner_delta(
+            routed_operation=route_serialized_operation(
+                "runtime.collaboration_obligation", "obligation-1", payload
+            ),
+            path_operations=path_operations,
+            owner_generations={"runtime.collaboration_obligation": 1},
+            publication_reason="collaboration-close",
+        )
+
+        self.assertEqual(outcome.kind, "accepted")
+        self.assertIsInstance(outcome, object)
+        self.assertEqual(
+            [name for name, _value in transport.calls],
+            ["create_tree", "read_ref", "create_commit", "update_ref"],
+        )
+        self.assertEqual(transport.calls[-1][1][2], False)  # type: ignore[index]
+        self.assertFalse(hasattr(host, "campaign_publication_transport"))
+        self.assertFalse(hasattr(publication, "publish_campaign_closure"))
+
+    def test_indeterminate_publication_reconciles_without_a_second_write(self) -> None:
+        repository = PublicationRepository()
+        transport = PublicationTransport(repository)
+        transport.response_status = "indeterminate"
+        host, _repository, _live = _compose(repository, publication=transport)
+        payload, path_operations = _publication_delta()
+        publication = getattr(host, "publication", None)
+        self.assertIsNotNone(publication)
+        if publication is None:
+            return
+
+        outcome = publication.publish_owner_delta(
+            routed_operation=route_serialized_operation(
+                "runtime.collaboration_obligation", "obligation-1", payload
+            ),
+            path_operations=path_operations,
+            owner_generations={"runtime.collaboration_obligation": 1},
+            publication_reason="collaboration-close",
+        )
+
+        self.assertEqual(outcome.kind, "accepted")
+        self.assertEqual(
+            [name for name, _value in transport.calls].count("update_ref"), 1
+        )
+
+    def test_local_semantic_events_use_index_and_exact_known_ids_not_aggregate_log(
+        self,
+    ) -> None:
+        repository = LocalEventRepository()
+        host, _repository, _live = _compose(repository)
+        semantic_events = getattr(host, "semantic_events", None)
+        self.assertIsNotNone(semantic_events)
+        if semantic_events is None:
+            return
+
+        window = semantic_events.read_local_evt_window(
+            lower_exclusive_ordinal=None, max_items=2
+        )
+
+        self.assertEqual(window.__class__.__name__, "EvtSourceWindow")
+        self.assertEqual(window.origin, "LOCAL")
+        self.assertEqual(
+            [entry["event_id"] for entry in window.entries], ["event-1", "event-2"]
+        )
+        self.assertIn("INDEX/EVENT_INDEX.yaml", repository.read_paths)
+        self.assertNotIn("LOG/SEMANTIC_EVENTS", repository.read_paths)
+        self.assertEqual(
+            repository.read_paths,
+            [
+                "MANIFEST.yaml",
+                "INDEX/EVENT_INDEX.yaml",
+                route_native_record(
+                    "runtime.semantic_event", ("event-1",)
+                ).relative_path,
+                route_native_record(
+                    "runtime.semantic_event", ("event-2",)
+                ).relative_path,
+            ],
+        )
+
+    def test_selected_live_semantic_events_use_exact_source_pack_without_campaign_fallback(
+        self,
+    ) -> None:
+        repository = PublicationRepository()
+        live = LiveEventTransport()
+        host, _repository, _live = _compose(repository, live)
+        semantic_events = getattr(host, "semantic_events", None)
+        self.assertIsNotNone(semantic_events)
+        if semantic_events is None:
+            return
+
+        window = semantic_events.read_selected_live_evt_window(
+            origin=f"LIVE:{live.source.epoch_id}",
+            lower_exclusive_ordinal=None,
+            max_items=1,
+        )
+
+        self.assertEqual(window.source_ref, live.source.source_ref)
+        self.assertEqual(window.source_revision, live.source.source_revision)
+        self.assertEqual(window.entries[0]["event_id"], "live-event-1")
+        self.assertFalse(hasattr(semantic_events, "read_exact_path"))
+
+    def test_missing_selected_live_source_does_not_fall_back_to_local(self) -> None:
+        host, _repository, _live = _compose()
+        semantic_events = getattr(host, "semantic_events", None)
+        self.assertIsNotNone(semantic_events)
+        if semantic_events is None:
+            return
+
+        with self.assertRaises(RuntimeHostError):
+            semantic_events.read_selected_live_evt_window(
+                origin="LIVE:e1-" + "0" * 64,
+                lower_exclusive_ordinal=None,
+                max_items=1,
+            )
 
 
 if __name__ == "__main__":
