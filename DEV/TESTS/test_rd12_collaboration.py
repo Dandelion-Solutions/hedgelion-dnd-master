@@ -296,6 +296,16 @@ def _add_persisted_input(
     )
 
 
+def _persist_obligation(
+    repository: RepositoryFixture, obligation: CollaborationObligation
+) -> None:
+    repository.put(
+        "runtime.collaboration_obligation",
+        obligation.obligation_id,
+        obligation.to_mapping(),
+    )
+
+
 def _append_persisted_input(
     value: dict[str, object],
     *,
@@ -1717,7 +1727,10 @@ class CollaborationCloseHandoffTests(unittest.TestCase):
             principal=_bob_principal(),
             player_route=_route(),
         )
-        return close_obligation(associated, host=_host(repository)), repository
+        _persist_obligation(repository, associated)
+        closed = close_obligation(associated, host=_host(repository))
+        _persist_obligation(repository, closed)
+        return closed, repository
 
     def test_close_requires_current_generation_and_all_required_inputs(self) -> None:
         repository = RepositoryFixture()
@@ -1725,12 +1738,48 @@ class CollaborationCloseHandoffTests(unittest.TestCase):
             _classify(repository), obligation_id="obligation-close-required"
         )
         assert obligation is not None
+        _persist_obligation(repository, obligation)
 
         with self.assertRaisesRegex(CollaborationAdmissionError, "required"):
             close_obligation(obligation, host=_host(repository))
 
         with self.assertRaisesRegex(CollaborationAdmissionError, "generation"):
             close_obligation(obligation, host=_host(repository), generation=2)
+
+    def test_predecessor_cannot_close_after_successor_is_current(self) -> None:
+        repository = RepositoryFixture()
+        predecessor = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-current-generation"
+        )
+        assert predecessor is not None
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        predecessor = associate_input(
+            predecessor,
+            _host(repository),
+            "interaction-2",
+            "clause-2",
+            principal=_bob_principal(),
+            player_route=_route(),
+        )
+        _persist_obligation(repository, predecessor)
+
+        successor = open_or_successor_obligation(
+            _classify(repository),
+            obligation_id=predecessor.obligation_id,
+            generation=2,
+            predecessor=predecessor,
+        )
+        assert successor is not None
+        _persist_obligation(repository, successor)
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "current"):
+            close_obligation(predecessor, host=_host(repository))
 
     def test_closed_input_fingerprint_is_order_independent_and_round_trips_basis(
         self,
@@ -1806,7 +1855,7 @@ class CollaborationCloseHandoffTests(unittest.TestCase):
         self.assertNotIn("command_id", handoff.to_mapping())
         self.assertNotIn("runtime.command", repr(handoff.to_mapping()))
 
-    def test_handoff_releases_original_clause_without_synthesizing_command(
+    def test_handoff_does_not_resolve_before_native_clause_is_ready(
         self,
     ) -> None:
         repository = RepositoryFixture()
@@ -1824,12 +1873,17 @@ class CollaborationCloseHandoffTests(unittest.TestCase):
 
         resolved = apply_handoff(closed, handoff, host=_host(repository))
 
-        self.assertEqual(resolved.lifecycle, "RESOLVED")
+        self.assertEqual(resolved.lifecycle, "CLOSED")
         self.assertEqual(
             resolved.closed_input_set_fingerprint, closed.closed_input_set_fingerprint
         )
         self.assertEqual(handoff.entries[0].execution_state, "intent.ready")
         self.assertIsNone(handoff.entries[0].command_id)
+        original_clause = repository.records[
+            route_native_record("runtime.intent_plan", ("plan-1",)).relative_path
+        ]["clauses"][0]
+        self.assertEqual(original_clause["execution_state"], "intent.pending")
+        self.assertNotIn("command_id", original_clause)
 
     def test_closed_basis_and_handoff_match_owner_schemas(self) -> None:
         repository = RepositoryFixture()

@@ -34,8 +34,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.8
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
+# framework_module_version: 1.0.9
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 2
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
@@ -2035,6 +2035,68 @@ def _revalidate_closed_native_basis(
     _revalidate_host_basis(host, basis)
 
 
+def _read_current_obligation_state(
+    obligation: CollaborationObligation, host: RuntimeHost
+) -> tuple[int, str]:
+    """Read the exact current obligation owner before using a caller object.
+
+    ``CollaborationObligation`` uses ``obligation_id`` as its native identity,
+    unlike the generic ``id`` field used by most runtime records.  Keep this
+    owner-specific route local rather than teaching a second identity rule to a
+    shared storage helper.  The caller-held value is only a candidate; current
+    generation and lifecycle come from this exact owner read.
+    """
+    try:
+        basis = host._begin_operation()
+        route = route_native_record(
+            "runtime.collaboration_obligation", (obligation.obligation_id,)
+        )
+        raw = host._repository.read_exact_path(
+            basis.pinned_campaign, route.relative_path
+        )
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "current collaboration obligation owner is unavailable"
+        ) from exc
+    current = _mapping(raw, "current collaboration obligation")
+    if (
+        current.get("schema_version") != COLLABORATION_SCHEMA_VERSION
+        or current.get("kind") != "runtime.collaboration_obligation"
+    ):
+        raise CollaborationAdmissionError(
+            "current collaboration obligation owner schema is unsupported"
+        )
+    if current.get("obligation_id") != obligation.obligation_id:
+        raise CollaborationAdmissionError(
+            "current collaboration obligation identity differs from the request"
+        )
+    if current.get("campaign_id") != basis.pinned_campaign.campaign_id:
+        raise CollaborationAdmissionError(
+            "current collaboration obligation belongs to another campaign"
+        )
+    generation = current.get("generation")
+    if (
+        isinstance(generation, bool)
+        or not isinstance(generation, int)
+        or generation < 1
+    ):
+        raise CollaborationAdmissionError(
+            "current collaboration obligation generation is invalid"
+        )
+    lifecycle = current.get("lifecycle")
+    if not isinstance(lifecycle, str) or lifecycle not in {
+        "OPEN",
+        "CLOSED",
+        "RESOLVED",
+        "OBSOLETE",
+    }:
+        raise CollaborationAdmissionError(
+            "current collaboration obligation lifecycle is invalid"
+        )
+    _revalidate_host_basis(host, basis)
+    return generation, lifecycle
+
+
 def _load_obligation_clause(
     obligation: CollaborationObligation,
     host: RuntimeHost,
@@ -2070,9 +2132,20 @@ def close_obligation(
     """Freeze one current complete collection without handing it to execution."""
     if not isinstance(obligation, CollaborationObligation):
         raise CollaborationAdmissionError("owner-derived obligation is required")
-    if generation is not None and generation != obligation.generation:
+    current_generation, current_lifecycle = _read_current_obligation_state(
+        obligation, host
+    )
+    if current_generation != obligation.generation:
+        raise CollaborationAdmissionError(
+            "close targets a non-current collaboration generation"
+        )
+    if generation is not None and generation != current_generation:
         raise CollaborationAdmissionError(
             "close targets a stale collaboration generation"
+        )
+    if current_lifecycle != obligation.lifecycle:
+        raise CollaborationAdmissionError(
+            "close targets a stale collaboration lifecycle"
         )
     if obligation.lifecycle in {"CLOSED", "RESOLVED"}:
         return obligation
@@ -2098,6 +2171,11 @@ def close_obligation(
     ):
         raise CollaborationAdmissionError(
             "collaboration-held actionable clause is no longer pre-command"
+        )
+    final_generation, final_lifecycle = _read_current_obligation_state(obligation, host)
+    if final_generation != obligation.generation or final_lifecycle != "OPEN":
+        raise CollaborationAdmissionError(
+            "collaboration generation changed during close"
         )
     fingerprint = _closed_input_set_fingerprint(
         obligation.accepted_input_uses,
@@ -2154,6 +2232,17 @@ def build_handoff(
     """Build deterministic ephemeral handoff evidence for a CLOSED collection."""
     if not isinstance(obligation, CollaborationObligation):
         raise CollaborationAdmissionError("owner-derived obligation is required")
+    current_generation, current_lifecycle = _read_current_obligation_state(
+        obligation, host
+    )
+    if current_generation != obligation.generation:
+        raise CollaborationAdmissionError(
+            "handoff targets a non-current collaboration generation"
+        )
+    if current_lifecycle != obligation.lifecycle:
+        raise CollaborationAdmissionError(
+            "handoff targets a stale collaboration lifecycle"
+        )
     if obligation.lifecycle != "CLOSED":
         raise CollaborationAdmissionError(
             "collaboration handoff requires a CLOSED obligation"
@@ -2179,6 +2268,11 @@ def build_handoff(
                 execution_state=execution_state,
             )
         )
+    final_generation, final_lifecycle = _read_current_obligation_state(obligation, host)
+    if final_generation != obligation.generation or final_lifecycle != "CLOSED":
+        raise CollaborationAdmissionError(
+            "collaboration generation changed during handoff"
+        )
     return CollaborationHandoff(basis=basis, entries=tuple(entries))
 
 
@@ -2188,16 +2282,31 @@ def apply_handoff(
     *,
     host: RuntimeHost,
 ) -> CollaborationObligation:
-    """Consume handoff evidence and end collaboration ownership of waiting."""
+    """Validate a handoff without claiming T02B's publication closure."""
     if not isinstance(obligation, CollaborationObligation):
         raise CollaborationAdmissionError("owner-derived obligation is required")
     if not isinstance(handoff, CollaborationHandoff):
         raise CollaborationAdmissionError("typed collaboration handoff is required")
+    current_generation, current_lifecycle = _read_current_obligation_state(
+        obligation, host
+    )
+    if current_generation != obligation.generation:
+        raise CollaborationAdmissionError(
+            "handoff targets a non-current collaboration generation"
+        )
     if obligation.lifecycle == "RESOLVED":
+        if current_lifecycle != "RESOLVED":
+            raise CollaborationAdmissionError(
+                "handoff targets a stale collaboration lifecycle"
+            )
         return obligation
     if obligation.lifecycle != "CLOSED":
         raise CollaborationAdmissionError(
             "collaboration handoff requires a CLOSED obligation"
+        )
+    if current_lifecycle != "CLOSED":
+        raise CollaborationAdmissionError(
+            "handoff targets a stale collaboration lifecycle"
         )
     if handoff.basis != obligation.closed_basis:
         raise CollaborationAdmissionError(
@@ -2208,7 +2317,37 @@ def apply_handoff(
         raise CollaborationAdmissionError(
             "handoff does not match current native owner classification"
         )
-    return replace(obligation, lifecycle="RESOLVED")
+    for entry in handoff.entries:
+        if (
+            entry.disposition
+            is not HandoffDisposition.RELEASE_TO_ORIGINAL_CLAUSE_COMMAND_PATH
+        ):
+            continue
+        clause = _load_obligation_clause(
+            obligation, host, entry.interaction_id, entry.clause_id
+        )
+        if clause.get("execution_state") == "intent.pending":
+            # T02A has no campaign publication writer.  Keep the collection
+            # CLOSED until T02B atomically updates the native IntentClause and
+            # the obligation/routing closure together.
+            return obligation
+        if clause.get("execution_state") != entry.execution_state:
+            raise CollaborationAdmissionError(
+                "native actionable clause handoff state is invalid"
+            )
+        if clause.get("command_id") is not None:
+            raise CollaborationAdmissionError(
+                "native actionable clause handoff cannot carry a command"
+            )
+    final_generation, final_lifecycle = _read_current_obligation_state(obligation, host)
+    if final_generation != obligation.generation or final_lifecycle != "CLOSED":
+        raise CollaborationAdmissionError(
+            "collaboration generation changed during handoff application"
+        )
+    # T02A is read-only with respect to campaign-native owners.  Even when a
+    # caller presents a clause that already looks ready, only T02B's atomic
+    # publication closure may pair that owner transition with RESOLVED.
+    return obligation
 
 
 # Name aliases keep the owner vocabulary explicit at call sites without adding
