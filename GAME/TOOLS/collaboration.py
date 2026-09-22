@@ -1066,15 +1066,43 @@ def _validate_persisted_input_owners(
         raise CollaborationAdmissionError(
             "serialized obligation belongs to another campaign"
         )
+    originating_identity = (obligation.interaction_id, obligation.clause_id)
+    permitted_contributors = (
+        obligation.required_contributors + obligation.optional_contributors
+    )
     for (
         interaction_id,
         clause_id,
     ), contributor in obligation.accepted_input_contributors:
+        identity = (interaction_id, clause_id)
         interaction = _load_interaction(host, basis, interaction_id)
         if interaction.get("player_id") != contributor.player_id:
             raise CollaborationAdmissionError(
                 "accepted input contributor does not match native Interaction owner"
             )
+        if identity == originating_identity:
+            if contributor.pc_id is not None:
+                raise CollaborationAdmissionError(
+                    "originating input cannot add a PC association"
+                )
+        else:
+            participant = next(
+                (
+                    ref
+                    for ref in permitted_contributors
+                    if ref.player_id == contributor.player_id
+                ),
+                None,
+            )
+            if participant is None:
+                raise CollaborationAdmissionError(
+                    "persisted input contributor is not a current obligation holder"
+                )
+            if participant != contributor:
+                raise CollaborationAdmissionError(
+                    "persisted input contributor does not match holder PC association"
+                )
+            _validate_required_player(host, basis, participant)
         plan = _load_plan(
             host,
             basis,

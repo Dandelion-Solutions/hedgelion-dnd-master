@@ -240,6 +240,73 @@ def _classify(repository: RepositoryFixture):
     )
 
 
+def _add_persisted_input(
+    repository: RepositoryFixture,
+    *,
+    interaction_id: str,
+    clause_id: str,
+    player_id: str,
+    pc_id: str | None = None,
+) -> None:
+    plan_id = f"plan-{interaction_id.removeprefix('interaction-')}"
+    repository.put(
+        "runtime.interaction",
+        interaction_id,
+        {
+            "kind": "runtime.interaction",
+            "id": interaction_id,
+            "campaign_id": CAMPAIGN_ID,
+            "session_id": "session-secondary",
+            "player_id": player_id,
+            "input_message_id": f"message-{interaction_id}",
+            "intent_plan_id": plan_id,
+        },
+    )
+    repository.put(
+        "runtime.intent_plan",
+        plan_id,
+        {
+            "kind": "runtime.intent_plan",
+            "id": plan_id,
+            "campaign_id": CAMPAIGN_ID,
+            "interaction_id": interaction_id,
+            "clauses": [
+                {
+                    "clause_id": clause_id,
+                    "order": 1,
+                    "mapping_outcome": "exact",
+                    "execution_state": "intent.pending",
+                    "collaboration_semantic_class": "ACTIONABLE_INTENT",
+                    "normalized_semantics": {"action": "wait"},
+                }
+            ],
+        },
+    )
+
+
+def _append_persisted_input(
+    value: dict[str, object],
+    *,
+    interaction_id: str,
+    clause_id: str,
+    player_id: str,
+    pc_id: str | None = None,
+) -> None:
+    value["accepted_input_uses"].append(  # type: ignore[union-attr]
+        {"interaction_id": interaction_id, "clause_id": clause_id}
+    )
+    contributor: dict[str, str] = {
+        "interaction_id": interaction_id,
+        "clause_id": clause_id,
+        "player_id": player_id,
+    }
+    if pc_id is not None:
+        contributor["pc_id"] = pc_id
+    value["accepted_input_contributors"].append(  # type: ignore[union-attr]
+        contributor
+    )
+
+
 def _ordered_resolution(
     *, status: str = "AWAITING_CHOICE", procedure_id: str | None = None
 ) -> dict[str, object]:
@@ -1275,6 +1342,90 @@ class CollaborationSchemaTests(unittest.TestCase):
         value["accepted_input_contributors"][0]["player_id"] = "player-bob"
 
         with self.assertRaisesRegex(CollaborationAdmissionError, "contributor"):
+            self._load_obligation(value, repository)
+
+    def test_runtime_state_rejects_valid_non_holder_input_contributor(self) -> None:
+        repository = RepositoryFixture()
+        repository.put(
+            "world.player",
+            "player-carol",
+            _player_record("player-carol", "44", "carol", "pc-carol"),
+        )
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-carol",
+            pc_id="pc-carol",
+        )
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-non-holder"
+        )
+        assert obligation is not None
+        value = obligation.to_mapping()
+        _append_persisted_input(
+            value,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-carol",
+            pc_id="pc-carol",
+        )
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "contributor"):
+            self._load_obligation(value, repository)
+
+    def test_runtime_state_rejects_input_from_inactive_player(self) -> None:
+        repository = RepositoryFixture()
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-inactive-input"
+        )
+        assert obligation is not None
+        inactive_bob = _player_record("player-bob", "43", "bob", "pc-bob")
+        inactive_bob["status"] = "inactive"
+        inactive_bob["deactivated_by"] = "self"
+        repository.put("world.player", "player-bob", inactive_bob)
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        value = obligation.to_mapping()
+        _append_persisted_input(
+            value,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "active"):
+            self._load_obligation(value, repository)
+
+    def test_runtime_state_rejects_input_with_invalid_controlled_pc(self) -> None:
+        repository = RepositoryFixture()
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-not-controlled",
+        )
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-invalid-input-pc"
+        )
+        assert obligation is not None
+        value = obligation.to_mapping()
+        _append_persisted_input(
+            value,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-not-controlled",
+        )
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "PC"):
             self._load_obligation(value, repository)
 
     def test_runtime_state_rejects_duplicate_input_contributor_identity(self) -> None:

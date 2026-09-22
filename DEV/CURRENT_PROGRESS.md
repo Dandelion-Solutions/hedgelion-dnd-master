@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T01A/T05A ACCEPTED — T07A SENIOR_REVIEW_REQUIRED
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T01A/T05A ACCEPTED — T01B FINAL_REVIEW — T07A SENIOR_REVIEW_REQUIRED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: Wave 03 implementation independently reviewed task-by-task and closed by mandatory Senior integration audit PASS on 2026-09-19; reviewed implementation head `9ae3feb74a2d657a081140781899dcbe66819b5b`
-NEXT_AUTHORIZED_UNIT: resolve the W04.T07A-only selected-LIVE evt-lane reader System-Impact stop; downstream tasks remain gated by their own DAG prerequisites
-REQUIRED_GATE: W04.T07A Senior resolution before acceptance or T07B+ -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
+NEXT_AUTHORIZED_UNIT: independently re-review the eligible W04.T01B persisted association-authorization repair; W04.T07A remains a separate selected-LIVE reader System-Impact stop
+REQUIRED_GATE: W04.T01B independent re-review before acceptance; W04.T07A Senior resolution before acceptance or T07B+ -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — created/published; authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: W04.T07A requires Senior review; T01B+/T05B+ remain dependency-gated by their own DAG prerequisites; migration execution, release execution and gameplay bootstrap remain unauthorized.
+KNOWN_BLOCKERS: W04.T01B requires independent re-review; W04.T07A requires Senior review; T01C+/T05B+ remain dependency-gated by their own DAG prerequisites; migration execution, release execution and gameplay bootstrap remain unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -287,11 +287,11 @@ CURRENT_TASK: W04.T07A selected-LIVE evt-lane reader boundary
 LAST_COMPLETED_TASK: W04.T01A accepted at `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`; W04.T05A accepted at `995924b2a5448dbf9ae4a52555f64de69f7fd699`
 LAST_SAFE_SHA: `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
 
-CURRENT_VERIFICATION_STATE: W04.T01A and W04.T05A are accepted at their exact independent re-review heads. W04.T07A is not accepted: `c37c517136a78dd57edde09320e7f1dc0fd3cb0e` reads an unadmitted `LOG/SEMANTIC_EVENTS` aggregate, while the exposed selected-LIVE reader cannot perform WP-11 compact-index-plus-exact-record reads. W04.T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires.
-VERSION_IMPACT: W04.T01A accepted transitions: collaboration absent -> `1.0.1`, runtime execution `1.0.4 -> 1.0.5`, collaboration schema/projection -> `1`, then collaboration `1.0.1 -> 1.0.2`, runtime execution `1.0.5 -> 1.0.6 -> 1.0.7 -> 1.0.8`; W04.T05A accepted transitions: Context `1.0.1 -> 1.0.2 -> 1.0.3 -> 1.0.4`; all other affected namespaces unchanged. This documentation checkpoint: NONE.
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. T01A/T05A have no open System-Impact finding.
-NEXT_EXACT_TASK: Senior resolves the T07A selected-LIVE reader/composition route; do not accept T07A or start T07B+ before resolution. T01B+/T05B+ remain independently DAG-gated.
-KNOWN_BLOCKERS: W04.T07A Senior review; downstream tasks remain dependency-gated. Migration execution, release execution and gameplay bootstrap remain unauthorized.
+CURRENT_VERIFICATION_STATE: W04.T01A and W04.T05A are accepted at their exact independent re-review heads. W04.T01B is eligible because T01A is accepted; its persisted association-authorization repair is not accepted pending independent re-review. W04.T07A is not accepted: `c37c517136a78dd57edde09320e7f1dc0fd3cb0e` reads an unadmitted `LOG/SEMANTIC_EVENTS` aggregate, while the exposed selected-LIVE reader cannot perform WP-11 compact-index-plus-exact-record reads. W04.T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires.
+VERSION_IMPACT: W04.T01A accepted transitions: collaboration absent -> `1.0.1`, runtime execution `1.0.4 -> 1.0.5`, collaboration schema/projection -> `1`, then collaboration `1.0.1 -> 1.0.2`, runtime execution `1.0.5 -> 1.0.6 -> 1.0.7 -> 1.0.8`; W04.T05A accepted transitions: Context `1.0.1 -> 1.0.2 -> 1.0.3 -> 1.0.4`; W04.T01B candidate transition: collaboration obligation schema `1 -> 2`, collaboration module `1.0.3 -> 1.0.4`; campaign-contract generation, storage generation, migration and all other affected namespaces unchanged. This documentation checkpoint: NONE.
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. T01A/T05A/T01B have no open System-Impact finding.
+NEXT_EXACT_TASK: independent re-review of the eligible W04.T01B repair before acceptance; separately, Senior resolves the T07A selected-LIVE reader/composition route. Do not accept T07A or start T07B+ before resolution; T01C+ waits for T01B acceptance.
+KNOWN_BLOCKERS: T01B independent re-review; T07A Senior review; downstream tasks remain dependency-gated. Migration execution, release execution and gameplay bootstrap remain unauthorized.
 UNPUBLISHED_WORK: NONE after verified publication/read-back.
 
 Wave 04 remains in execution. Wave 05 is not authorized.
@@ -313,3 +313,18 @@ SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only
 
 The T07A-only brief is
 `DEV/docs/superpowers/design/2026-09-22-w04-t07a-selected-live-reader-system-impact-brief.md`.
+
+## Latest Wave-04 T01B state — 2026-09-22
+
+```text
+W04.T01A: ACCEPTED at b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772
+W04.T01B: ELIGIBLE from the accepted T01A checkpoint; round-2 persisted
+          association-authorization repair is implemented and awaits independent
+          re-review. It is not accepted.
+W04.T07A: SENIOR_REVIEW_REQUIRED; selected-LIVE evt-lane reader stop remains open
+DOWNSTREAM: T01C+ waits for T01B acceptance; T07B+ waits for T07A acceptance
+VERSION_IMPACT: T01B collaboration obligation schema 1 -> 2; collaboration
+                module 1.0.3 -> 1.0.4; campaign-contract generation, storage
+                generation and migration unchanged
+SYSTEM_IMPACT: NONE for T01B; SENIOR_REVIEW_REQUIRED for T07A only
+```

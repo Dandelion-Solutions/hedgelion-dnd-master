@@ -583,3 +583,31 @@ SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. Brief: `DEV/docs/superp
 NEXT_EXACT_TASK: Senior chooses/admit an existing selected-LIVE composition/read route for the narrow evt-lane adapter, or returns that boundary to design; do not accept T07A or start T07B+ before resolution.
 KNOWN_BLOCKERS: T07A Senior review; T01B+/T05B+ remain independently DAG-gated.
 UNPUBLISHED_WORK: NONE after this documentation checkpoint is published and read back.
+
+## W04.T01B persisted association repair — 2026-09-22
+
+STATUS: FINAL_REVIEW
+CURRENT_TASK: W04.T01B obligation lineage/input association restore authorization; independent re-review is required before acceptance
+INPUT: W04.T01A is accepted at `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`; T01B is therefore eligible under the named DAG edge
+LAST_COMPLETED_TASK: W04.T01A accepted after independent re-review -> `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
+LAST_SAFE_SHA: `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
+
+CURRENT_VERIFICATION_STATE:
+- RED witnesses prove that persisted restore previously accepted a valid non-holder,
+  inactive PLAYER and invalid-PC contributor before the production repair.
+- GREEN restores live association authorization for every persisted non-originating
+  input: exact current holder membership, active PLAYER status and controlled-PC
+  binding are required. The exact originating `(interaction_id, clause_id)` remains
+  the only admitted non-holder exception and cannot add a PC association.
+- T01B is not accepted; independent re-review remains required.
+
+VERSION_IMPACT:
+- T01B collaboration obligation persistent schema: `1 -> 2`.
+- T01B collaboration module: `1.0.3 -> 1.0.4`.
+- Campaign-contract generation, storage generation, migration and other affected
+  namespaces: unchanged.
+
+SYSTEM_IMPACT: NONE for T01B; the separate W04.T07A System-Impact stop remains open.
+NEXT_EXACT_TASK: independently re-review this T01B candidate, then accept only after PASS; do not start T01C+ before acceptance.
+KNOWN_BLOCKERS: T01B independent re-review; W04.T07A Senior review.
+UNPUBLISHED_WORK: NONE after the candidate checkpoint is published and read back.
