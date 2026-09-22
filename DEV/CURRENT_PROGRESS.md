@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T02B/T07A OWNER DECISION ACCEPTED — RESTORE + T00P REQUIRED
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T00P ACCEPTED — T02B/T07A AUTHORIZED IN PARALLEL
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: Wave 03 implementation independently reviewed task-by-task and closed by mandatory Senior integration audit PASS on 2026-09-19; reviewed implementation head `9ae3feb74a2d657a081140781899dcbe66819b5b`
-NEXT_AUTHORIZED_UNIT: restore the rejected T02B four-file candidate to accepted `b737555b9d9a1c404576dc173dfdaf34cd023e13` and restore only the T07-owned history/schema/rd13 surfaces to `e340ed5add19dbc4ed6ff350229ef6f2827fabb8`; after restore review/publish/read-back execute W04.T00P, then resume T02B and T07A under the accepted 2026-09-22 owner decision
-REQUIRED_GATE: scoped T02B/T07A restore reviewer PASS -> W04.T00P reviewer PASS -> normal T02B/T07A task review gates -> downstream dependency joins -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
+NEXT_AUTHORIZED_UNIT: execute fresh W04.T02B and W04.T07A in parallel under the accepted 2026-09-22 owner decision, with their disjoint write sets; T02B uses the accepted pre-release v2->v3 disposition and T07A uses the accepted RuntimeHost selected-LIVE evt route
+REQUIRED_GATE: normal T02B/T07A task RED/GREEN/review gates -> downstream dependency joins -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — created/published; authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: no unresolved Senior/design decision remains for T02B/T07A. Execution is blocked on the two scoped restores and W04.T00P reviewer PASS. T02C, T04A/T04B, T05C and T07B+ remain dependency-gated. Migration execution is neither required nor authorized for the pre-release collaboration v2->v3 cutover; release execution, gameplay bootstrap and Wave 05 remain unauthorized.
+KNOWN_BLOCKERS: T02B and T07A are authorized/current in parallel; T02C, T04A/T04B, T05C and T07B+ remain dependency-gated. Migration execution is neither required nor authorized for the pre-release collaboration v2->v3 cutover; release execution, gameplay bootstrap and Wave 05 remain unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -282,16 +282,16 @@ CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-c
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `3319314e5d4a140a9de01cd52bafc6c25a33b975`
 
-STATUS: SENIOR_REVIEW_REQUIRED (T02B; T07A separate)
-CURRENT_TASK: W04.T02B publication/recovery and route-companion closure
-LAST_COMPLETED_TASK: W04.T01B accepted at `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`; W04.T05B accepted at `a1a4d204fbeec9f8a24e681289e0e530e5b91b75`; W04.T01C accepted after independent re-review at `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`; W04.T02A accepted at `5c77aced9dafd9a7f26177090b3e62466b8ec561`; W04.T03A accepted at `ca3efa3c7750cffc2eef228b4b8666b75828cea9`
-LAST_SAFE_SHA: `b737555b9d9a1c404576dc173dfdaf34cd023e13`
+STATUS: EXECUTING — T00P ACCEPTED / T02B + T07A AUTHORIZED IN PARALLEL
+CURRENT_TASK: W04.T02B publication/recovery and route-companion closure; W04.T07A native history publication/recovery
+LAST_COMPLETED_TASK: W04.T01A accepted at `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`; W04.T05A accepted at `995924b2a5448dbf9ae4a52555f64de69f7fd699`; W04.T01B accepted at `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`; W04.T05B accepted at `a1a4d204fbeec9f8a24e681289e0e530e5b91b75`; W04.T01C accepted after independent re-review at `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`; W04.T02A accepted at `5c77aced9dafd9a7f26177090b3e62466b8ec561`; W04.T03A accepted at `ca3efa3c7750cffc2eef228b4b8666b75828cea9`; W04.T00P accepted after reviewer PASS at `595ff95f10d3d48de5748ae32a60d4839106ea2b`
+LAST_SAFE_SHA: `595ff95f10d3d48de5748ae32a60d4839106ea2b`
 
-CURRENT_VERIFICATION_STATE: W04.T01B, W04.T05B, W04.T01C, W04.T02A and W04.T03A are accepted at their exact reviewer-PASS heads. Published W04.T02B candidate `ae424f32cc785f940f7740355924aa259d8895c6` is unaccepted: independent review found an unadmitted repository publication capability, an unresolved breaking obligation-schema/campaign-migration disposition, and a lifecycle conditional mismatch. W04.T05C remains blocked on T05B + T04B + T02C. W04.T07A remains a separate Senior-only stop: published `c37c517136a78dd57edde09320e7f1dc0fd3cb0e` reads an unadmitted `LOG/SEMANTIC_EVENTS` aggregate, while the exposed selected-LIVE reader cannot perform WP-11 compact-index-plus-exact-record reads. W04.T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires.
-VERSION_IMPACT: accepted T02A collaboration remains through `1.0.9` with closed-basis and handoff schemas at v1; T03A NONE; the unaccepted T02B candidate's proposed module/schema transition is not accepted. This documentation-only checkpoint: `VERSION_IMPACT: NONE`; no engine, campaign-contract, storage, migration or catalog value changed.
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T02B and separate W04.T07A stop. T01B, T01C, T02A, T03A and T05B have no open System-Impact finding.
-NEXT_EXACT_TASK: Senior resolves the T02B publication-owner and schema/lifecycle findings recorded in `DEV/docs/superpowers/design/2026-09-22-w04-t02b-publication-recovery-system-impact-brief.md`; do not select or implement a publisher or migration. Keep T02C, T04A/T04B, T05C and Wave 05 gated; keep T07A at its separate Senior-only stop.
-KNOWN_BLOCKERS: T02B Senior review; T02C waits for accepted T02B; T04A waits for T02C; T05C requires T04B and T02C in addition to accepted T05B; T07A separate Senior review. Publisher/migration execution, release execution and gameplay bootstrap remain unauthorized.
+CURRENT_VERIFICATION_STATE: W04.T01A, W04.T05A, W04.T01B, W04.T05B, W04.T01C, W04.T02A and W04.T03A remain accepted at their exact reviewer-PASS heads. W04.T00P is accepted after reviewer PASS at `595ff95f10d3d48de5748ae32a60d4839106ea2b`; its RuntimeHost module chain is `1.0.5 -> 1.0.6 -> 1.0.7`, and it publishes `W04_RUNTIME_HOST_IO_EXTENSIONS_READY` plus `W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY`. Fresh W04.T02B and W04.T07A are authorized/current in parallel under the accepted owner decision. W04.T05C remains blocked on T05B + T04B + T02C. W04.T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires.
+VERSION_IMPACT: accepted T02A collaboration remains through `1.0.9` with closed-basis and handoff schemas at v1; T00P RuntimeHost is recorded at `1.0.5 -> 1.0.6 -> 1.0.7`; T03A remains NONE. This documentation-only checkpoint: `VERSION_IMPACT: NONE`; no engine, campaign-contract, storage, migration or catalog value changed.
+SYSTEM_IMPACT: NONE CURRENT — the accepted owner decision resolved the T02B and T07A boundaries; T00P remains within the accepted RuntimeHost boundary.
+NEXT_EXACT_TASK: execute W04.T02B and W04.T07A in parallel under their disjoint write sets and normal task review gates. Keep T02C, T04A/T04B, T05C and T07B+ dependency-gated; keep Wave 05 prohibited/not authorized.
+KNOWN_BLOCKERS: T02C waits for accepted T02B; T04A waits for T02C; T05C requires T04B and T02C in addition to accepted T05B; T07B+ waits for T07A resolution. Migration execution, release execution and gameplay bootstrap remain unauthorized.
 UNPUBLISHED_WORK: NONE after verified publication/read-back.
 
 Wave 04 remains in execution. Wave 05 is not authorized.
@@ -343,5 +343,21 @@ T07A: separate SENIOR_REVIEW_REQUIRED selected-LIVE reader stop
 WAVE_05: PROHIBITED / NOT AUTHORIZED
 VERSION_IMPACT: NONE for this documentation-only checkpoint
 SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — T02B; T07A remains separate
+UNPUBLISHED_WORK: NONE after publication/read-back
+```
+
+## Latest Wave-04 execution state — 2026-09-22 (T00P accepted; T02B/T07A parallel authorization)
+
+```text
+STATUS: EXECUTING — T02B/T07A AUTHORIZED IN PARALLEL
+W04.T00P: ACCEPTED after reviewer PASS at 595ff95f10d3d48de5748ae32a60d4839106ea2b
+W04.T02B: AUTHORIZED/CURRENT under the accepted owner decision
+W04.T07A: AUTHORIZED/CURRENT under the accepted owner decision
+W04.T01A/T05A/T01B/T05B/T01C/T02A/T03A: PRESERVED ACCEPTED
+RUNTIME_HOST_VERSION_CHAIN: 1.0.5 -> 1.0.6 -> 1.0.7
+OUTPUTS: W04_RUNTIME_HOST_IO_EXTENSIONS_READY / W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY
+VERSION_IMPACT: NONE for this documentation-only checkpoint
+SYSTEM_IMPACT: NONE CURRENT
+WAVE_05: PROHIBITED / NOT AUTHORIZED
 UNPUBLISHED_WORK: NONE after publication/read-back
 ```

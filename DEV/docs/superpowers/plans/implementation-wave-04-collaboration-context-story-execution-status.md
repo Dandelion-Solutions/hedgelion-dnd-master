@@ -4,15 +4,16 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — OWNER DECISION ACCEPTED / RESTORE + T00P CURRENT
-CURRENT_TASK: scoped T02B/T07A clean restore, then W04.T00P RuntimeHost I/O extension
+STATUS: EXECUTING — T00P ACCEPTED / T02B + T07A AUTHORIZED IN PARALLEL
+CURRENT_TASK: W04.T02B publication/recovery and W04.T07A native history publication/recovery in parallel
 LAST_COMPLETED_TASK:
   W04.T01B accepted after reviewer PASS -> `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
   W04.T05B accepted after reviewer PASS -> `a1a4d204fbeec9f8a24e681289e0e530e5b91b75`
   W04.T01C accepted after independent re-review -> `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`
   W04.T02A accepted after reviewer PASS -> `5c77aced9dafd9a7f26177090b3e62466b8ec561`
   W04.T03A accepted after reviewer PASS -> `ca3efa3c7750cffc2eef228b4b8666b75828cea9`
-LAST_SAFE_SHA: `b737555b9d9a1c404576dc173dfdaf34cd023e13`
+  W04.T00P accepted after reviewer PASS -> `595ff95f10d3d48de5748ae32a60d4839106ea2b`
+LAST_SAFE_SHA: `595ff95f10d3d48de5748ae32a60d4839106ea2b`
 
 ## Execution policy
 
@@ -874,3 +875,27 @@ SYSTEM_IMPACT: RESOLVED / NONE CURRENT.
 NEXT_EXACT_TASK: scoped restores -> reviewer PASS -> publish/read-back -> T00P -> reviewer PASS -> T02B and T07A in parallel where write sets are disjoint.
 KNOWN_BLOCKERS: restores + T00P only; downstream remains dependency-gated.
 WAVE_05: NOT AUTHORIZED.
+
+## W04.T00P acceptance and parallel T02B/T07A authorization — 2026-09-22
+
+STATUS: **EXECUTING — T02B/T07A AUTHORIZED IN PARALLEL**
+CURRENT_TASK: W04.T02B publication/recovery and W04.T07A native history publication/recovery in parallel
+BASE_PUBLISHED_SHA: `595ff95f10d3d48de5748ae32a60d4839106ea2b`
+
+LAST_COMPLETED_TASK:
+  W04.T00P accepted after reviewer PASS -> `595ff95f10d3d48de5748ae32a60d4839106ea2b`
+
+CURRENT_VERIFICATION_STATE:
+- W04.T01A, W04.T05A, W04.T01B, W04.T05B, W04.T01C, W04.T02A and W04.T03A remain accepted at their recorded reviewer-PASS heads.
+- W04.T00P is accepted after reviewer PASS at the exact head above.
+- RuntimeHost `framework_module_version` records the T00P chain `1.0.5 -> 1.0.6 -> 1.0.7`.
+- T00P outputs are `W04_RUNTIME_HOST_IO_EXTENSIONS_READY` and `W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY`.
+- Fresh W04.T02B and W04.T07A are authorized/current in parallel under the accepted owner decision and their disjoint write sets.
+- W04.T02C, T04A/T04B, T05C and T07B+ remain dependency-gated; Wave 05 remains prohibited/not authorized.
+
+VERSION_IMPACT: NONE for this documentation-only checkpoint; no version-bearing value changed in this cursor update. The recorded RuntimeHost production chain is `1.0.5 -> 1.0.6 -> 1.0.7`.
+SYSTEM_IMPACT: NONE CURRENT — T00P, T02B and T07A remain within the accepted owner decision boundary.
+NEXT_EXACT_TASK: execute W04.T02B and W04.T07A in parallel under their normal task review gates.
+KNOWN_BLOCKERS: downstream dependency joins only; migration execution, release execution and gameplay bootstrap remain unauthorized.
+UNPUBLISHED_WORK: NONE after publication/read-back.
+WAVE_05: PROHIBITED / NOT AUTHORIZED
