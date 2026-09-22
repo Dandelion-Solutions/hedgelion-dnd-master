@@ -302,12 +302,13 @@ The latest authoritative task-local state is the final section of
 `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md`:
 
 ```text
-STATUS: SENIOR_REVIEW_REQUIRED
+STATUS: SENIOR_REVIEW_REQUIRED (T07A); T01B FINAL_REVIEW
 W04.T01A: ACCEPTED after independent re-review at b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772
 W04.T05A: ACCEPTED after independent re-review at 995924b2a5448dbf9ae4a52555f64de69f7fd699
+W04.T01B: ELIGIBLE from accepted T01A; candidate is published but not accepted pending independent re-review
 W04.T07A: SENIOR_REVIEW_REQUIRED; published c37c517136a78dd57edde09320e7f1dc0fd3cb0e is not accepted
-DOWNSTREAM: T01B+/T05B+ remain dependency-gated by their own DAG prerequisites; T07B+ waits for T07A acceptance
-VERSION_IMPACT: NONE for this documentation checkpoint; accepted T01A/T05A transitions are recorded in the cursor
+DOWNSTREAM: T01C+ waits for T01B acceptance; T05B+ remains dependency-gated; T07B+ waits for T07A acceptance
+VERSION_IMPACT: T01B candidate collaboration schema 1 -> 2 and module 1.0.3 -> 1.0.4; campaign-contract generation, storage generation and migration unchanged
 SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only
 ```
 
