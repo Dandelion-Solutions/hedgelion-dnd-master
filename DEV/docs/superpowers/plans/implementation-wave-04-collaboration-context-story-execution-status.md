@@ -4,13 +4,15 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: SENIOR_REVIEW_REQUIRED (T07A); T02A/T03A CURRENT IN PARALLEL
-CURRENT_TASK: W04.T02A explicit close/frozen basis/handoff and W04.T03A strict PLAYER collaboration delta
+STATUS: SENIOR_REVIEW_REQUIRED (T07A); T02B CURRENT
+CURRENT_TASK: W04.T02B publication/recovery and route-companion closure
 LAST_COMPLETED_TASK:
   W04.T01B accepted after reviewer PASS -> `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
   W04.T05B accepted after reviewer PASS -> `a1a4d204fbeec9f8a24e681289e0e530e5b91b75`
   W04.T01C accepted after independent re-review -> `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`
-LAST_SAFE_SHA: `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`
+  W04.T02A accepted after reviewer PASS -> `5c77aced9dafd9a7f26177090b3e62466b8ec561`
+  W04.T03A accepted after reviewer PASS -> `ca3efa3c7750cffc2eef228b4b8666b75828cea9`
+LAST_SAFE_SHA: `5c77aced9dafd9a7f26177090b3e62466b8ec561`
 
 ## Execution policy
 
@@ -732,4 +734,32 @@ VERSION_IMPACT:
 SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. T01C is accepted with no open System-Impact finding.
 NEXT_EXACT_TASK: execute W04.T02A and W04.T03A in parallel under their stable-plan write sets; T02A requires T01C plus the accepted W02 execution owner above, while T03A requires T01C. Keep T05C blocked on T05B + T04B + T02C, keep T07A at its Senior-only stop, and do not authorize Wave 05.
 KNOWN_BLOCKERS: T05C dependency join; T07A Senior review; Wave 05 remains unauthorized.
+UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published and read back.
+
+## W04.T02A and W04.T03A acceptance — 2026-09-22
+
+STATUS: SENIOR_REVIEW_REQUIRED (T07A); T02B CURRENT
+CURRENT_TASK: W04.T02B publication/recovery and route-companion closure
+LAST_COMPLETED_TASK:
+  W04.T02A accepted after reviewer PASS -> `5c77aced9dafd9a7f26177090b3e62466b8ec561`
+  W04.T03A accepted after reviewer PASS -> `ca3efa3c7750cffc2eef228b4b8666b75828cea9`
+LAST_SAFE_SHA: `5c77aced9dafd9a7f26177090b3e62466b8ec561`
+
+CURRENT_VERIFICATION_STATE:
+- W04.T02A is accepted at the exact reviewer-PASS head above. Its close/frozen-basis/handoff behavior is now a published producer checkpoint.
+- W04.T03A is accepted at its exact reviewer-PASS head above. Its bounded PLAYER collaboration delta is complete and does not edit the physical shared PLAYER schema or Wave-05 final-writer surfaces.
+- W04.T02B is eligible/current because T02A is accepted and the accepted W02 publication/recovery inputs are published:
+  - `W02_DURABILITY_PUBLICATION_READY` at `fdb6888070bd34c128b7fed3703e08005bfb5554`;
+  - `W02_RECOVERY_MAINTENANCE_READY` at `f7afbcb3959812c44b1b35cde56426ec80317936` (the accepted exact-recovery/maintenance checkpoint).
+- W04.T04A remains blocked until T02C. W04.T05C remains blocked on T05B + T04B + T02C.
+- W04.T07A remains a Senior-only selected-LIVE reader System-Impact stop; no T07B+ task is authorized.
+
+VERSION_IMPACT:
+- W04.T02A collaboration reaches `GAME/TOOLS/collaboration.py` `1.0.9`: `c24159f` advanced `1.0.7 -> 1.0.8` for close/frozen-basis/handoff and introduced `collaboration-closed-basis.schema.json` v1 plus `collaboration-handoff.schema.json` v1; `5c77aced9dafd9a7f26177090b3e62466b8ec561` advanced `1.0.8 -> 1.0.9` for stale-handoff repair. Collaboration obligation schema/projections remain at v2; engine release, campaign-contract generation, storage generation, migration and catalog namespaces remain unchanged.
+- W04.T03A: `VERSION_IMPACT: NONE`; the bounded fixture/test delta introduces no runtime module, persistent schema, campaign-contract, storage, catalog or release namespace.
+- This documentation-only checkpoint: `VERSION_IMPACT: NONE`.
+
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. T02A and T03A remain within their accepted owner boundaries.
+NEXT_EXACT_TASK: execute W04.T02B under the stable-plan write set. T02C remains downstream of T02B and current W03 access/LIVE routes; T04A waits for T02C; T05C waits for T05B + T04B + T02C. Keep T07A at its Senior-only stop and do not authorize Wave 05.
+KNOWN_BLOCKERS: T04A waits for T02C; T05C requires T04B and T02C in addition to accepted T05B; T07A Senior review. Migration execution, release execution and gameplay bootstrap remain unauthorized.
 UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published and read back.

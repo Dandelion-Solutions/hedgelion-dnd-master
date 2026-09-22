@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T01C ACCEPTED — T02A/T03A CURRENT IN PARALLEL — T07A SENIOR_REVIEW_REQUIRED
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T02A/T03A ACCEPTED — T02B CURRENT — T07A SENIOR_REVIEW_REQUIRED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: Wave 03 implementation independently reviewed task-by-task and closed by mandatory Senior integration audit PASS on 2026-09-19; reviewed implementation head `9ae3feb74a2d657a081140781899dcbe66819b5b`
-NEXT_AUTHORIZED_UNIT: W04.T02A and W04.T03A in parallel; T02A requires accepted W04.T01C plus the accepted W02 execution owner, T03A requires accepted W04.T01C; W04.T07A remains a separate Senior-only selected-LIVE reader System-Impact stop
-REQUIRED_GATE: W04.T02A requires T01C plus accepted `W02_DETERMINISTIC_EXECUTION_READY`; W04.T03A requires T01C; W04.T05C requires accepted T05B plus T04B and T02C; W04.T07A Senior resolution before acceptance or T07B+ -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
+NEXT_AUTHORIZED_UNIT: W04.T02B is eligible/current from accepted W04.T02A plus accepted W02 publication/recovery; W04.T04A waits for T02C; W04.T05C requires accepted T05B plus T04B and T02C; W04.T07A remains a separate Senior-only selected-LIVE reader System-Impact stop
+REQUIRED_GATE: W04.T02B requires accepted T02A plus `W02_DURABILITY_PUBLICATION_READY` and accepted W02 recovery; W04.T04A waits for T02C; W04.T05C requires accepted T05B plus T04B and T02C; W04.T07A Senior resolution before acceptance or T07B+ -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — created/published; authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: W04.T05C requires T04B and T02C in addition to accepted T05B; W04.T07A requires Senior review; migration execution, release execution, gameplay bootstrap and Wave 05 remain unauthorized.
+KNOWN_BLOCKERS: W04.T04A waits for T02C; W04.T05C requires T04B and T02C in addition to accepted T05B; W04.T07A requires Senior review; migration execution, release execution, gameplay bootstrap and Wave 05 remain unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -296,23 +296,26 @@ UNPUBLISHED_WORK: NONE after verified publication/read-back.
 
 Wave 04 remains in execution. Wave 05 is not authorized.
 
-## Latest Wave-04 execution state — 2026-09-22
+## Latest Wave-04 execution state — 2026-09-22 (T02A/T03A acceptance)
 
 The latest authoritative task-local state is the final section of
 `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md`:
 
 ```text
-STATUS: SENIOR_REVIEW_REQUIRED (T07A); T02A/T03A CURRENT IN PARALLEL
+STATUS: SENIOR_REVIEW_REQUIRED (T07A); T02B CURRENT
 W04.T01B: ACCEPTED after reviewer PASS at 856abcbd6621da33b9ca5ff59413ae7aeb8b3d20
 W04.T05B: ACCEPTED after reviewer PASS at a1a4d204fbeec9f8a24e681289e0e530e5b91b75
 W04.T01C: ACCEPTED after independent re-review at 7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62
-W04.T02A: ELIGIBLE/CURRENT because T01C PASS and accepted W02 execution owner are published
-W04.T03A: ELIGIBLE/CURRENT because T01C PASS is published; parallel with T02A-T02C per stable plan
+W04.T02A: ACCEPTED after reviewer PASS at 5c77aced9dafd9a7f26177090b3e62466b8ec561
+W04.T03A: ACCEPTED after reviewer PASS at ca3efa3c7750cffc2eef228b4b8666b75828cea9
+W04.T02B: ELIGIBLE/CURRENT from T02A plus accepted W02 publication/recovery
+W04.T04A: BLOCKED until T02C
 W04.T05C: BLOCKED on T05B + T04B + T02C
 W04.T07A: SENIOR_REVIEW_REQUIRED; selected-LIVE evt-lane reader stop remains open
-DOWNSTREAM: T02A requires T01C plus accepted W02 execution owner `W02_DETERMINISTIC_EXECUTION_READY`; T03A requires T01C; T05C waits for T04B and T02C in addition to T05B; T07B+ waits for T07A resolution
-VERSION_IMPACT: accepted chains in the durable cursor above; T01C collaboration module reaches 1.0.7 and collaboration frontier schema remains v1; collaboration obligation schema/projections remain v2; Context through 1.0.7; RuntimeHost through 1.0.5; this documentation checkpoint NONE
+DOWNSTREAM: T02C waits for T02B plus current W03 access/LIVE routes; T04A waits for T02C; T05C waits for T04B and T02C in addition to T05B; T07B+ waits for T07A resolution
+VERSION_IMPACT: T02A collaboration through 1.0.9 with new closed-basis and handoff schemas at v1; T03A NONE; this documentation checkpoint NONE
 SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only
+WAVE_05: PROHIBITED / NOT AUTHORIZED
 ```
 
 The T07A-only brief is
