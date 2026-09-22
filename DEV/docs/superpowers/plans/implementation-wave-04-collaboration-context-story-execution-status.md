@@ -675,6 +675,14 @@ BASE_PUBLISHED_SHA: `45ddaadeeabedf37a6f592b4b3708d15adcedd98`
 LAST_SAFE_SHA: `c4e3c72e1e1f98a01a1fa87e7ff42ed14d55054d`
 CANDIDATE_SHA: `a6720027b199deb54020eac2044f4fb7341b9c23`
 
+ROUND-2 PROVENANCE CHAIN:
+- `03b9ce6`: initial frontier implementation; collaboration module `1.0.5 -> 1.0.6`.
+- `c4e3c72`: material authority/currentness repair omitted its required module-local increment, leaving `1.0.6`.
+- `a672002`: applies that one required `1.0.6 -> 1.0.7` correction.
+- `3fc7d58`: final synchronization/publication evidence for the round-2 evidence and this execution cursor.
+ROUND-3 DOCUMENTATION CORRECTION: `VERSION_IMPACT: NONE`; provenance-only;
+no production, schema, test, or version value changed.
+
 CURRENT_VERIFICATION_STATE: the material T01C authority/currentness repair is
 unchanged. Its collaboration module metadata is corrected from `1.0.6` to
 `1.0.7`; targeted collaboration/cross-owner tests, version assertion, Ruff,

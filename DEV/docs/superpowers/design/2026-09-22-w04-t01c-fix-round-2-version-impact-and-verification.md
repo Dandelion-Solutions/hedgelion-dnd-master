@@ -6,6 +6,21 @@ Base published HEAD: `45ddaadeeabedf37a6f592b4b3708d15adcedd98`.
 
 Correction checkpoint: `a6720027b199deb54020eac2044f4fb7341b9c23`.
 
+## Round-2 provenance chain
+
+The authoritative T01C round-2 sequence is:
+
+- `03b9ce6`: initial frontier implementation; collaboration module
+  `1.0.5 -> 1.0.6`.
+- `c4e3c72`: material authority/currentness repair; its required module-local
+  increment was omitted, leaving the module at `1.0.6`.
+- `a672002`: applies that one required `1.0.6 -> 1.0.7` correction.
+- `3fc7d58`: final synchronization/publication evidence for this round-2
+  evidence and execution cursor.
+
+This round-3 documentation correction records provenance only.
+`VERSION_IMPACT: NONE`; no production, schema, test, or version value changed.
+
 This evidence supersedes the round-1 Version Impact entry. The material
 authority/currentness repair from `c4e3c72e1e1f98a01a1fa87e7ff42ed14d55054d`
 is unchanged; this round corrects only its omitted module-local revision and
