@@ -869,6 +869,225 @@ class StorySourceRegistrationTests(unittest.TestCase):
             "MATERIALIZED",
         )
 
+    def test_candidate_result_enforces_registration_cardinality(self) -> None:
+        cases = (
+            (
+                "T-MSG",
+                "campaign.participant_messages@LOCAL",
+                story_module.encode_candidate_id("T-MSG", ["message-1"]),
+                "MAY_OMIT",
+            ),
+            (
+                "T-ARC",
+                "campaign.transcript_archival_requests@LOCAL",
+                story_module.encode_candidate_id(
+                    "T-ARC", ["interaction-1", "clause-1", 2]
+                ),
+                "MUST_MATERIALIZE",
+            ),
+            (
+                "E-EVT",
+                "campaign.semantic_events@LOCAL",
+                story_module.encode_candidate_id("E-EVT", ["event-1"]),
+                "MUST_MATERIALIZE",
+            ),
+        )
+        for registration_id, domain, candidate_id, requirement in cases:
+            candidate = {
+                "candidate_id": candidate_id,
+                "requirement": requirement,
+                "source_keys": ["source"],
+            }
+            with self.subTest(registration=registration_id, record_keys=1):
+                validated = story_module.validate_story_candidate_result(
+                    registration_id,
+                    domain,
+                    candidate,
+                    {
+                        "source_domain": domain,
+                        "candidate_id": candidate_id,
+                        "outcome": "MATERIALIZED",
+                        "record_keys": ["record-1"],
+                    },
+                )
+                self.assertEqual(validated["record_keys"], ["record-1"])
+
+        for registration_id, domain, candidate_id, requirement in cases[:2]:
+            candidate = {
+                "candidate_id": candidate_id,
+                "requirement": requirement,
+                "source_keys": ["source"],
+            }
+            with (
+                self.subTest(registration=registration_id, record_keys=2),
+                self.assertRaises(StoryContractError),
+            ):
+                story_module.validate_story_candidate_result(
+                    registration_id,
+                    domain,
+                    candidate,
+                    {
+                        "source_domain": domain,
+                        "candidate_id": candidate_id,
+                        "outcome": "MATERIALIZED",
+                        "record_keys": ["record-1", "record-2"],
+                    },
+                )
+
+        registration_id, domain, candidate_id, requirement = cases[2]
+        self.assertEqual(
+            story_module.validate_story_candidate_result(
+                registration_id,
+                domain,
+                {
+                    "candidate_id": candidate_id,
+                    "requirement": requirement,
+                    "source_keys": ["source"],
+                },
+                {
+                    "source_domain": domain,
+                    "candidate_id": candidate_id,
+                    "outcome": "MATERIALIZED",
+                    "record_keys": ["record-1", "record-2"],
+                },
+            )["record_keys"],
+            ["record-1", "record-2"],
+        )
+
+    def test_native_identity_bindings_are_exact_for_all_registrations(self) -> None:
+        transcript = _registered_story_unit("TRANSCRIPT")
+        transcript["sources"]["native"]["ref"]["identity"] = [
+            "message-1",
+            "extra",
+        ]
+        transcript_selector = _registered_story_unit("TRANSCRIPT")
+        transcript_selector["sources"]["native"]["ref"]["selector"] = {
+            "slice": "not-a-message-owner-selector"
+        }
+
+        archive = _registered_story_unit("TRANSCRIPT")
+        archive["projection_basis"] = [
+            {
+                "source_domain": "campaign.transcript_archival_requests@LOCAL",
+                "semantic_contract_generation": 1,
+                "candidate_ids": [
+                    story_module.encode_candidate_id(
+                        "T-ARC", ["interaction-1", "clause-1", 2]
+                    )
+                ],
+            }
+        ]
+        archive_request_ref = {
+            "family": "runtime.interaction",
+            "identity": ["clause-1", "interaction-1"],
+            "selector": {"clause_id": "clause-1", "target_ordinal": 2},
+        }
+        archive["sources"]["request"] = {"ref": archive_request_ref}
+        archive["payload"]["interaction_ref"] = archive_request_ref
+        archive["payload"]["exact_text_ref"] = archive["sources"]["native"]["ref"]
+
+        event = _registered_story_unit("EVENTS")
+        event["sources"]["native"]["ref"]["identity"] = [
+            "event.gate_opened",
+            "extra",
+        ]
+
+        event_relation = _registered_story_unit("EVENTS")
+        event_relation["projection_basis"] = [
+            {
+                "source_domain": "campaign.semantic_relations@LOCAL",
+                "semantic_contract_generation": 1,
+                "candidate_ids": [
+                    story_module.encode_candidate_id(
+                        "E-REL", ["runtime.semantic_event", "event-1", "assertion-1"]
+                    )
+                ],
+            }
+        ]
+        event_relation["sources"]["native"] = {
+            "ref": {
+                "family": "runtime.semantic_event",
+                "identity": ["event-1", "assertion-1", "extra"],
+            }
+        }
+        event_relation["payload"] = {"relation_source_keys": ["native"]}
+
+        segment = _registered_story_unit("MECHANICS")
+        segment["sources"]["owner"]["ref"]["identity"] = [
+            "extra",
+            "resolution-1",
+        ]
+        segment["payload"]["resolution_refs"][0]["identity"] = [
+            "extra",
+            "resolution-1",
+        ]
+
+        outcome = _registered_story_unit("MECHANICS")
+        outcome["projection_basis"] = [
+            {
+                "source_domain": "campaign.mechanical_outcomes@LOCAL",
+                "semantic_contract_generation": 1,
+                "candidate_ids": [
+                    story_module.encode_candidate_id(
+                        "M-OUT", ["runtime.resolution", "resolution-1", "terminal"]
+                    )
+                ],
+            }
+        ]
+        outcome["sources"] = {
+            "native": {
+                "ref": {
+                    "family": "runtime.resolution",
+                    "identity": ["resolution-1", "extra"],
+                }
+            }
+        }
+        outcome["payload"] = {"mechanical_source_keys": ["native"]}
+
+        narrative_event = _registered_story_unit("NARRATIVE")
+        narrative_event["sources"]["native"]["ref"]["identity"] = [
+            "event.gate_opened",
+            "extra",
+        ]
+
+        narrative_relation = _registered_story_unit("NARRATIVE")
+        narrative_relation["projection_basis"] = [
+            {
+                "source_domain": "campaign.semantic_relations@LOCAL",
+                "semantic_contract_generation": 1,
+                "candidate_ids": [
+                    story_module.encode_candidate_id(
+                        "N-REL", ["runtime.semantic_event", "event-1", "assertion-1"]
+                    )
+                ],
+            }
+        ]
+        narrative_relation["sources"]["native"] = {
+            "ref": {
+                "family": "runtime.semantic_event",
+                "identity": ["event-1", "assertion-1", "extra"],
+            }
+        }
+        narrative_relation["payload"] = {"factual_source_keys": ["native"]}
+
+        cases = (
+            ("T-MSG", transcript, "TRANSCRIPT"),
+            ("T-MSG-selector", transcript_selector, "TRANSCRIPT"),
+            ("T-ARC", archive, "TRANSCRIPT"),
+            ("E-EVT", event, "EVENTS"),
+            ("E-REL", event_relation, "EVENTS"),
+            ("M-SEG", segment, "MECHANICS"),
+            ("M-OUT", outcome, "MECHANICS"),
+            ("N-EVT", narrative_event, "NARRATIVE"),
+            ("N-REL", narrative_relation, "NARRATIVE"),
+        )
+        for registration_id, unit, layer in cases:
+            with (
+                self.subTest(registration=registration_id),
+                self.assertRaises(StoryContractError),
+            ):
+                story_module.validate_story_unit(unit, layer=layer)
+
     def test_source_window_uses_domain_local_contiguous_coverage_and_cardinality(
         self,
     ) -> None:
@@ -1355,7 +1574,7 @@ class StorySchemaTests(unittest.TestCase):
     def test_owner_local_schemas_are_strict_and_use_initial_local_versions(
         self,
     ) -> None:
-        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.2")
+        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.3")
         schema_names = (
             "runtime-semantic-event-state.schema.json",
             "native-history-currentness.schema.json",

@@ -25,8 +25,8 @@ _PREFIX_LAYERS = {"T": "TRANSCRIPT", "E": "EVENTS", "M": "MECHANICS", "N": "NARR
 _LOCAL_SOURCE_KEY = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*$")
 _LIVE_ORIGIN = re.compile(r"^LIVE:[A-Za-z0-9_.:-]+$")
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 
 
 class StoryIdentityComponent(StrEnum):
@@ -690,15 +690,58 @@ def validate_story_unit(value: object, *, layer: str) -> dict[str, object]:
     def source_key_refs(source_keys: Sequence[str]) -> list[Mapping[str, object]]:
         return [ref_for_key(key) for key in source_keys]
 
-    def owner_matches(
+    no_selector = object()
+
+    def exact_native_ref(
+        reference: Mapping[str, object],
+        owner_family: str,
+        identity: Sequence[str],
+        *,
+        selector: object = no_selector,
+    ) -> bool:
+        raw_identity = reference.get("identity")
+        if (
+            reference.get("family") != owner_family
+            or not isinstance(raw_identity, Sequence)
+            or isinstance(raw_identity, (str, bytes))
+            or tuple(raw_identity) != tuple(identity)
+        ):
+            return False
+        if selector is no_selector:
+            return "selector" not in reference
+        return reference.get("selector") == selector
+
+    def exact_owner_identity(
         reference: Mapping[str, object], owner_family: str, owner_id: str
     ) -> bool:
-        identity = reference.get("identity")
+        raw_identity = reference.get("identity")
         return (
             reference.get("family") == owner_family
-            and isinstance(identity, Sequence)
-            and not isinstance(identity, (str, bytes))
-            and owner_id in identity
+            and isinstance(raw_identity, Sequence)
+            and not isinstance(raw_identity, (str, bytes))
+            and tuple(raw_identity) == (owner_id,)
+        )
+
+    def exact_relation_ref(
+        reference: Mapping[str, object],
+        owner_family: str,
+        owner_id: str,
+        assertion_key: str,
+    ) -> bool:
+        return (
+            exact_native_ref(reference, owner_family, (owner_id, assertion_key))
+            or exact_native_ref(
+                reference,
+                owner_family,
+                (owner_id,),
+                selector=assertion_key,
+            )
+            or exact_native_ref(
+                reference,
+                owner_family,
+                (owner_id,),
+                selector={"assertion_key": assertion_key},
+            )
         )
 
     for registration, contribution in zip(
@@ -711,9 +754,7 @@ def validate_story_unit(value: object, *, layer: str) -> dict[str, object]:
         if registration.registration_id == "T-MSG":
             key = normalized_payload["message_source_key"]
             reference = ref_for_key(key)
-            if reference.get("family") != "runtime.message" or tuple(
-                reference["identity"]
-            ) != tuple(parts[0]):
+            if not exact_native_ref(reference, "runtime.message", parts[0]):
                 raise StoryContractError(
                     "T-MSG message source differs from its candidate"
                 )
@@ -734,18 +775,16 @@ def validate_story_unit(value: object, *, layer: str) -> dict[str, object]:
             ):
                 raise StoryContractError("T-ARC exact text ref is absent from sources")
             interaction_id, clause_id, target_ordinal = parts[0]
-            selector = request_ref.get("selector")
-            if (
-                request_ref.get("family") != "runtime.interaction"
-                or not owner_matches(request_ref, "runtime.interaction", interaction_id)
-                or not isinstance(selector, Mapping)
-                or selector.get("clause_id") != clause_id
-                or type(selector.get("target_ordinal")) is not int
-                or selector.get("target_ordinal") != target_ordinal
-                or not any(
-                    dependency.get("ref") == request_ref
-                    for dependency in sources.values()
-                )
+            if not exact_native_ref(
+                request_ref,
+                "runtime.interaction",
+                (interaction_id,),
+                selector={
+                    "clause_id": clause_id,
+                    "target_ordinal": target_ordinal,
+                },
+            ) or not any(
+                dependency.get("ref") == request_ref for dependency in sources.values()
             ):
                 raise StoryContractError("T-ARC request target is not source-bound")
         elif registration.registration_id in {"E-EVT", "N-EVT"}:
@@ -755,15 +794,13 @@ def validate_story_unit(value: object, *, layer: str) -> dict[str, object]:
                 else "factual_source_keys"
             )
             refs = source_key_refs(normalized_payload[field])
-            source_event_ids = {
-                reference["identity"][0]
-                for reference in refs
-                if reference.get("family") == "runtime.semantic_event"
-                and isinstance(reference.get("identity"), Sequence)
-                and not isinstance(reference.get("identity"), (str, bytes))
-                and reference.get("identity")
-            }
-            if any(event_id not in source_event_ids for (event_id,) in parts):
+            if any(
+                not any(
+                    exact_native_ref(reference, "runtime.semantic_event", (event_id,))
+                    for reference in refs
+                )
+                for (event_id,) in parts
+            ):
                 raise StoryContractError(
                     "SemanticEvent candidate lacks its exact native source"
                 )
@@ -776,16 +813,7 @@ def validate_story_unit(value: object, *, layer: str) -> dict[str, object]:
             refs = source_key_refs(normalized_payload[field])
             for owner_family, owner_id, assertion_key in parts:
                 if not any(
-                    owner_matches(reference, owner_family, owner_id)
-                    and (
-                        assertion_key in reference["identity"][1:]
-                        or reference.get("selector") == assertion_key
-                        or (
-                            isinstance(reference.get("selector"), Mapping)
-                            and reference["selector"].get("assertion_key")
-                            == assertion_key
-                        )
-                    )
+                    exact_relation_ref(reference, owner_family, owner_id, assertion_key)
                     for reference in refs
                 ):
                     raise StoryContractError(
@@ -812,8 +840,11 @@ def validate_story_unit(value: object, *, layer: str) -> dict[str, object]:
                 *(dependency["ref"] for dependency in sources.values()),
             ]
             for owner_family, owner_id, _segment_sequence in parts:
-                if not any(
-                    owner_matches(reference, owner_family, owner_id)
+                if owner_family not in {
+                    "runtime.resolution",
+                    "runtime.command",
+                } or not any(
+                    exact_owner_identity(reference, owner_family, owner_id)
                     for reference in owner_refs
                 ):
                     raise StoryContractError(
@@ -835,7 +866,7 @@ def validate_story_unit(value: object, *, layer: str) -> dict[str, object]:
                     "runtime.resolution",
                     "runtime.command",
                 } or not any(
-                    owner_matches(reference, owner_family, owner_id)
+                    exact_owner_identity(reference, owner_family, owner_id)
                     for reference in outcome_refs
                 ):
                     raise StoryContractError(
@@ -1140,6 +1171,26 @@ def validate_story_candidate_result(
         record_keys = _unique_strings(disposition["record_keys"], "record_keys")
         if any(_LOCAL_SOURCE_KEY.fullmatch(key) is None for key in record_keys):
             raise StoryContractError("record key is not canonical")
+        if (
+            (
+                registration.cardinality_policy
+                is StoryCardinalityPolicy.ZERO_OR_ONE_PER_CANDIDATE
+                and len(record_keys) > 1
+            )
+            or (
+                registration.cardinality_policy
+                is StoryCardinalityPolicy.EXACTLY_ONE_PER_CANDIDATE
+                and len(record_keys) != 1
+            )
+            or (
+                registration.cardinality_policy
+                is StoryCardinalityPolicy.ONE_OR_MORE_PER_CANDIDATE
+                and len(record_keys) < 1
+            )
+        ):
+            raise StoryContractError(
+                "materialized record count violates registration cardinality"
+            )
         return {
             "source_domain": domain,
             "candidate_id": candidate_id,
