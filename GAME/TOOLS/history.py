@@ -10,11 +10,11 @@ from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
 from enum import StrEnum
-from types import MappingProxyType, SimpleNamespace
+from types import MappingProxyType
 from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
-    from .policy_basis import PinnedCampaign, RepositoryPort
+    from .policy_basis import RepositoryPort
 
 
 _GIT_REVISION: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
@@ -26,8 +26,8 @@ _HISTORY_LANE: Final[str] = "evt"
 _HISTORY_CONTRACT_GENERATION: Final[int] = 1
 _NATIVE_HISTORY_KIND: Final[str] = "runtime.native_history"
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
 
 
 class HistoryContractError(ValueError):
@@ -485,102 +485,127 @@ def resolve_creator_provenance(
 
 
 def _read_bound_native_history(
-    repository: RepositoryPort,
     *,
-    campaign_id: str,
-    campaign_pin: PinnedCampaign,
-    current_routing: object,
-    selected_live_reader: object,
+    source_adapter: object,
+    basis: object,
     origin: str,
 ) -> NativeHistoryPublication:
-    """Read one bounded window through the already-bound RuntimeHost adapter.
-
-    This private bridge is called by ``RuntimeHost.history`` only. It does not
-    read repository paths or LIVE sources itself; it freezes the host's current
-    operation basis into the T00P ``SemanticEventSourceAdapter`` and validates
-    that adapter's raw window below.
-    """
-
+    """Validate and issue history from this RuntimeHost's bound adapter output."""
     checked_origin = _history_origin(origin)
     try:
-        from .runtime_host import SemanticEventSourceAdapter
-    except ImportError as exc:  # pragma: no cover - package wiring failure
-        raise HistoryContractError("RuntimeHost evt source adapter is unavailable") from exc
-
-    class _BoundAdapterHost:
-        __slots__ = (
-            "_campaign_id",
-            "_campaign_pin",
-            "_current_routing",
-            "_live_transport",
-            "_repository",
+        from .runtime_host import (
+            SemanticEventSourceAdapter,
+            _is_adapter_issued_evt_window,
+            _OperationBasis,
         )
-
-        def __init__(self) -> None:
-            self._campaign_id = campaign_id
-            self._current_routing = current_routing
-            self._live_transport = selected_live_reader
-            self._repository = repository
-            self._campaign_pin = campaign_pin
-
-        def _begin_operation(self) -> SimpleNamespace:
-            return SimpleNamespace(
-                pinned_campaign=self._campaign_pin,
-                selected_live=self._current_routing,
-            )
-
-    adapter = SemanticEventSourceAdapter(_BoundAdapterHost())
+    except ImportError as exc:  # pragma: no cover - package wiring failure
+        raise HistoryContractError(
+            "RuntimeHost evt source adapter is unavailable"
+        ) from exc
+    if not isinstance(source_adapter, SemanticEventSourceAdapter):
+        raise HistoryContractError(
+            "native history requires the bound RuntimeHost adapter"
+        )
+    if not isinstance(basis, _OperationBasis):
+        raise HistoryContractError(
+            "native history requires the exact RuntimeHost basis"
+        )
+    host = source_adapter._host
+    if host._basis_token is not basis.host_token:
+        raise HistoryContractError(
+            "native history adapter and basis belong to different hosts"
+        )
     try:
         if checked_origin == "LOCAL":
-            raw_window = adapter.read_local_evt_window(
+            raw_window = source_adapter.read_local_evt_window(
                 lower_exclusive_ordinal=None,
                 max_items=1000,
+                _basis=basis,
             )
         else:
-            raw_window = adapter.read_selected_live_evt_window(
+            raw_window = source_adapter.read_selected_live_evt_window(
                 origin=checked_origin,
                 lower_exclusive_ordinal=None,
                 max_items=1000,
+                _basis=basis,
             )
     except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
-        raise HistoryContractError("bound native history evt window is unavailable") from exc
+        raise HistoryContractError(
+            "bound native history evt window is unavailable"
+        ) from exc
+    if not _is_adapter_issued_evt_window(raw_window, host_token=basis.host_token):
+        raise HistoryContractError("RuntimeHost did not issue the native evt window")
 
-    return issue_native_history_from_window(
+    if checked_origin == "LOCAL":
+        expected_source_ref = raw_window.source_ref
+        expected_source_revision = basis.pinned_campaign.revision
+    else:
+        routing = basis.selected_live
+        if routing is None or not routing.complete:
+            raise HistoryContractError(
+                "selected LIVE route is unavailable or incomplete"
+            )
+        epoch_id = checked_origin.removeprefix("LIVE:")
+        matches = tuple(
+            entry for entry in routing.entries if entry.epoch_id == epoch_id
+        )
+        if len(matches) != 1:
+            raise HistoryContractError("selected LIVE origin is missing or ambiguous")
+        from .live_state import select_live_source
+
+        source = select_live_source(routing, matches[0].source_key)
+        if source is None or source.epoch_id != epoch_id:
+            raise HistoryContractError("selected LIVE source is no longer current")
+        expected_source_ref = source.source_ref
+        expected_source_revision = source.source_revision
+
+    return _issue_native_history_from_window(
         raw_window,
-        campaign_id=campaign_id,
+        campaign_id=basis.pinned_campaign.campaign_id,
         expected_origin=checked_origin,
-        expected_source_ref=raw_window.source_ref,
-        expected_source_revision=raw_window.source_revision,
+        expected_source_ref=expected_source_ref,
+        expected_source_revision=expected_source_revision,
+        _expected_host_token=basis.host_token,
     )
 
 
-def issue_native_history_from_window(
+def _issue_native_history_from_window(
     source_window: object,
     *,
     campaign_id: str,
     expected_origin: str,
     expected_source_ref: str,
     expected_source_revision: str,
+    _expected_host_token: object | None = None,
 ) -> NativeHistoryPublication:
-    """Issue native history only from one bound RuntimeHost evt window.
+    """Issue native history only from one RuntimeHost adapter evt window.
 
     The RuntimeHost ``SemanticEventSourceAdapter`` is the sole producer of the
-    accepted raw window.  This function deliberately accepts that concrete
-    boundary value, not a repository, LIVE transport, aggregate log, or caller
-    supplied adapter.
+    accepted raw window. This internal boundary is not a gameplay API and does
+    not accept a repository, LIVE transport, aggregate log or adapter override.
     """
 
     try:
-        from .runtime_host import EvtSourceWindow
+        from .runtime_host import EvtSourceWindow, _is_adapter_issued_evt_window
     except ImportError as exc:  # pragma: no cover - package wiring failure
-        raise HistoryContractError("RuntimeHost evt source adapter is unavailable") from exc
-    if not isinstance(source_window, EvtSourceWindow):
-        raise HistoryContractError("native history requires a bound evt source window")
+        raise HistoryContractError(
+            "RuntimeHost evt source adapter is unavailable"
+        ) from exc
+    if not isinstance(
+        source_window, EvtSourceWindow
+    ) or not _is_adapter_issued_evt_window(
+        source_window, host_token=_expected_host_token
+    ):
+        raise HistoryContractError(
+            "native history requires an adapter-issued evt window"
+        )
 
     campaign = _nonempty_string(campaign_id, "native history campaign_id")
     origin = _history_origin(expected_origin)
     source_ref = _history_source_ref(expected_source_ref)
-    source_revision = _git_revision(expected_source_revision, "native history source revision")
+    source_revision = _git_revision(
+        expected_source_revision, "native history source revision"
+    )
     if source_window.campaign_id != campaign:
         raise HistoryContractError("native history window belongs to another campaign")
     if source_window.origin != origin:
@@ -1070,7 +1095,7 @@ def build_t0_basis(event: object, basis: object) -> dict[str, object]:
 def append_semantic_event(history: object, event: object) -> list[dict[str, object]]:
     """Reject the former caller-shaped draft append path.
 
-    Accepted history is issued only by ``issue_native_history_from_window``.
+    Accepted history is issued only through the bound RuntimeHost History route.
     Keeping this name as a fail-closed compatibility surface prevents Story,
     narration, or another caller from silently becoming a native-history writer.
     """

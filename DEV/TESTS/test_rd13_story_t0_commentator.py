@@ -22,14 +22,21 @@ from GAME.TOOLS.history import (
     FRAMEWORK_MODULE_VERSION,
     HistoryContractError,
     NativeHistoryPublication,
+    _issue_native_history_from_window,
     append_semantic_event,
     build_t0_basis,
-    issue_native_history_from_window,
     recover_native_history,
     validate_semantic_event_draft,
     validate_t0_basis,
 )
-from GAME.TOOLS.live_state import LiveRouting
+from GAME.TOOLS.live_state import (
+    LiveClaim,
+    LiveEnvelope,
+    LiveNativeStatePack,
+    LiveRouting,
+    build_live_ref,
+    derive_live_epoch_id,
+)
 from GAME.TOOLS.native_storage import route_native_record
 from GAME.TOOLS.policy_basis import PinnedCampaign
 from GAME.TOOLS.runtime_host import EvtSourceWindow, compose_runtime_host
@@ -87,54 +94,77 @@ def _evt_window(
     lower_exclusive_ordinal: int | None = 6,
     upper_ordinal: int | None = 7,
 ) -> EvtSourceWindow:
-    event_value = _semantic_event() if event is None else event
-    return EvtSourceWindow(
+    if origin != "LOCAL":
+        raise ValueError("test helper supports only host-issued LOCAL windows")
+    total = upper_ordinal or 0
+    terminal_event = _semantic_event() if event is None else event
+    source_events = [
+        {
+            **_semantic_event(),
+            "event_id": f"event-{ordinal}",
+            "semantic_order": ordinal,
+        }
+        for ordinal in range(1, total + 1)
+    ]
+    if source_events:
+        source_events[-1] = terminal_event
+    repository = _HistoryRepository(
         campaign_id=campaign_id,
-        origin=origin,
         source_ref=source_ref,
-        source_revision=source_revision,
-        lane="evt",
+        revision=source_revision,
+        events=source_events,
+    )
+    host = compose_runtime_host(campaign_id, repository, _HistoryLiveTransport())
+    return host.semantic_events.read_local_evt_window(
         lower_exclusive_ordinal=lower_exclusive_ordinal,
-        upper_ordinal=upper_ordinal,
-        interval_complete_through_upper=True,
-        entries=(
-            {
-                "ordinal": 7,
-                "event_id": event_value["event_id"],
-                "event_record": event_value,
-            },
-        ),
+        max_items=max(1, total - (lower_exclusive_ordinal or 0)),
     )
 
 
 class _HistoryRepository:
-    def __init__(self) -> None:
-        first = {**_semantic_event(), "event_id": "event-1", "semantic_order": 1}
-        second = {**_semantic_event(), "event_id": "event-2", "semantic_order": 2}
-        first_path = route_native_record("runtime.semantic_event", ("event-1",)).relative_path
-        second_path = route_native_record("runtime.semantic_event", ("event-2",)).relative_path
+    def __init__(
+        self,
+        *,
+        campaign_id: str = "campaign.main",
+        source_ref: str = "refs/heads/campaign/main",
+        revision: str = _HISTORY_REVISION,
+        events: list[dict[str, object]] | None = None,
+    ) -> None:
+        self.campaign_id = campaign_id
+        self.source_ref = source_ref
+        self.revision = revision
+        if events is None:
+            events = [
+                {**_semantic_event(), "event_id": "event-1", "semantic_order": 1},
+                {**_semantic_event(), "event_id": "event-2", "semantic_order": 2},
+            ]
+        entries: list[dict[str, object]] = []
         self.records: dict[str, object] = {
             "MANIFEST.yaml": {
-                "campaign_id": "campaign.main",
-                "branch": "refs/heads/campaign/main",
-            },
-            "INDEX/EVENT_INDEX.yaml": {
-                "schema_version": 1,
-                "entity_type": "EVENT",
-                "complete": True,
-                "upper_ordinal": 2,
-                "entries": [
-                    {"event_id": "event-1", "ordinal": 1, "path": first_path},
-                    {"event_id": "event-2", "ordinal": 2, "path": second_path},
-                ],
-            },
-            first_path: first,
-            second_path: second,
+                "campaign_id": campaign_id,
+                "branch": source_ref,
+            }
+        }
+        for ordinal, event in enumerate(events, start=1):
+            event_id = event["event_id"]
+            if not isinstance(event_id, str):
+                raise TypeError("history fixture event id must be text")
+            path = route_native_record(
+                "runtime.semantic_event", (event_id,)
+            ).relative_path
+            entries.append({"event_id": event_id, "ordinal": ordinal, "path": path})
+            self.records[path] = event
+        self.records["INDEX/EVENT_INDEX.yaml"] = {
+            "schema_version": 1,
+            "entity_type": "EVENT",
+            "complete": True,
+            "upper_ordinal": len(events) if events else None,
+            "entries": entries,
         }
         self.read_paths: list[str] = []
 
     def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
-        return PinnedCampaign(campaign_id, _HISTORY_REVISION, "b" * 40)
+        return PinnedCampaign(campaign_id, self.revision, "b" * 40)
 
     def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
         del pinned
@@ -163,11 +193,62 @@ class _HistoryRepository:
 
 
 class _HistoryLiveTransport:
+    def __init__(self) -> None:
+        opening_revision = "e" * 40
+        claims = (LiveClaim.exact_owner("world.scene", "scene.main"),)
+        epoch_id = derive_live_epoch_id(
+            "campaign.main", "scene.main", opening_revision, claims
+        )
+        self.source = LiveEnvelope(
+            campaign_id="campaign.main",
+            scene_id="scene.main",
+            epoch_id=epoch_id,
+            source_ref=build_live_ref("campaign.main", "scene.main", epoch_id),
+            source_revision="c" * 40,
+            claims=claims,
+            opening_campaign_revision=opening_revision,
+        )
+        self.pack = LiveNativeStatePack(
+            source_key=self.source.source_key,
+            source_revision=self.source.source_revision,
+            next_source_native_creation_ordinal=1,
+            source_native_ids=(),
+            native_owner_states={
+                "runtime.semantic_event": {
+                    "complete": True,
+                    "upper_ordinal": 1,
+                    "entries": [
+                        {
+                            "event_id": "live-event-1",
+                            "ordinal": 1,
+                            "event_record": {
+                                **_semantic_event(),
+                                "event_id": "live-event-1",
+                                "semantic_order": 1,
+                            },
+                        }
+                    ],
+                }
+            },
+            provenance={},
+            privacy={},
+            chronology={},
+            unresolved_work={},
+        )
+
     def read_selected_live(
         self, campaign_id: str, pinned: PinnedCampaign
     ) -> LiveRouting:
         del pinned
-        return LiveRouting(campaign_id=campaign_id, entries=())
+        return LiveRouting(campaign_id=campaign_id, entries=(self.source,))
+
+    def read_selected_live_source(
+        self, routing: LiveRouting, source: LiveEnvelope
+    ) -> LiveNativeStatePack:
+        del routing
+        if source.source_key != self.source.source_key:
+            raise KeyError(source.source_key)
+        return self.pack
 
 
 def _story_projection() -> dict[str, object]:
@@ -204,24 +285,20 @@ class NativeHistoryWindowTests(unittest.TestCase):
         self.assertNotIn("LOG/SEMANTIC_EVENTS", repository.read_paths)
 
     def test_bound_evt_window_issues_ephemeral_history_with_admission_provenance(self) -> None:
-        window = _evt_window()
-
-        publication = issue_native_history_from_window(
-            window,
-            campaign_id="campaign.main",
-            expected_origin="LOCAL",
-            expected_source_ref=window.source_ref,
-            expected_source_revision=window.source_revision,
+        repository = _HistoryRepository()
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport()
         )
+        publication = host.history.read()
 
         self.assertIsInstance(publication, NativeHistoryPublication)
         self.assertEqual(publication.campaign_id, "campaign.main")
         self.assertEqual(publication.origin, "LOCAL")
-        self.assertEqual(publication.source_ref, window.source_ref)
+        self.assertEqual(publication.source_ref, "refs/heads/campaign/main")
         self.assertEqual(publication.source_revision, _HISTORY_REVISION)
-        self.assertEqual(publication.events[0].event_id, "event.gate_opened")
-        self.assertEqual(publication.events[0].admission_ordinal, 7)
-        self.assertEqual(publication.events[0].semantic_order, 7)
+        self.assertEqual(publication.events[0].event_id, "event-1")
+        self.assertEqual(publication.events[0].admission_ordinal, 1)
+        self.assertEqual(publication.events[0].semantic_order, 1)
 
     def test_history_rejects_aggregate_or_forged_window_shapes(self) -> None:
         aggregate = {
@@ -230,7 +307,7 @@ class NativeHistoryWindowTests(unittest.TestCase):
         }
 
         with self.assertRaises(HistoryContractError):
-            issue_native_history_from_window(
+            _issue_native_history_from_window(
                 aggregate,
                 campaign_id="campaign.main",
                 expected_origin="LOCAL",
@@ -238,7 +315,7 @@ class NativeHistoryWindowTests(unittest.TestCase):
                 expected_source_revision=_HISTORY_REVISION,
             )
         with self.assertRaises(HistoryContractError):
-            issue_native_history_from_window(
+            _issue_native_history_from_window(
                 _evt_window().to_mapping(),
                 campaign_id="campaign.main",
                 expected_origin="LOCAL",
@@ -246,9 +323,120 @@ class NativeHistoryWindowTests(unittest.TestCase):
                 expected_source_revision=_HISTORY_REVISION,
             )
 
+        adapter_window = _evt_window()
+        caller_window = EvtSourceWindow(
+            campaign_id=adapter_window.campaign_id,
+            origin=adapter_window.origin,
+            source_ref=adapter_window.source_ref,
+            source_revision=adapter_window.source_revision,
+            lane=adapter_window.lane,
+            lower_exclusive_ordinal=adapter_window.lower_exclusive_ordinal,
+            upper_ordinal=adapter_window.upper_ordinal,
+            interval_complete_through_upper=adapter_window.interval_complete_through_upper,
+            entries=adapter_window.entries,
+        )
+        with self.assertRaises(HistoryContractError):
+            _issue_native_history_from_window(
+                caller_window,
+                campaign_id="campaign.main",
+                expected_origin="LOCAL",
+                expected_source_ref="refs/heads/campaign/main",
+                expected_source_revision=_HISTORY_REVISION,
+            )
+
+        forged = object.__new__(EvtSourceWindow)
+        original = _evt_window()
+        for name in (
+            "campaign_id",
+            "origin",
+            "source_ref",
+            "source_revision",
+            "lane",
+            "lower_exclusive_ordinal",
+            "upper_ordinal",
+            "interval_complete_through_upper",
+            "entries",
+        ):
+            object.__setattr__(forged, name, getattr(original, name))
+        with self.assertRaises(HistoryContractError):
+            _issue_native_history_from_window(
+                forged,
+                campaign_id="campaign.main",
+                expected_origin="LOCAL",
+                expected_source_ref="refs/heads/campaign/main",
+                expected_source_revision=_HISTORY_REVISION,
+            )
+
+    def test_evt_window_issuance_is_bound_to_its_runtime_host(self) -> None:
+        first_host = compose_runtime_host(
+            "campaign.main", _HistoryRepository(), _HistoryLiveTransport()
+        )
+        other_host = compose_runtime_host(
+            "campaign.main", _HistoryRepository(), _HistoryLiveTransport()
+        )
+        window = first_host.semantic_events.read_local_evt_window(
+            lower_exclusive_ordinal=None, max_items=1
+        )
+
+        with self.assertRaises(HistoryContractError):
+            _issue_native_history_from_window(
+                window,
+                campaign_id="campaign.main",
+                expected_origin="LOCAL",
+                expected_source_ref="refs/heads/campaign/main",
+                expected_source_revision=_HISTORY_REVISION,
+                _expected_host_token=other_host._basis_token,
+            )
+
+    def test_history_uses_exact_selected_live_source_and_preserves_origin(self) -> None:
+        live = _HistoryLiveTransport()
+        host = compose_runtime_host("campaign.main", _HistoryRepository(), live)
+
+        publication = host.history.read(origin=f"LIVE:{live.source.epoch_id}")
+
+        self.assertEqual(publication.origin, f"LIVE:{live.source.epoch_id}")
+        self.assertEqual(publication.source_ref, live.source.source_ref)
+        self.assertEqual(publication.source_revision, live.source.source_revision)
+        self.assertEqual(publication.events[0].origin, f"LIVE:{live.source.epoch_id}")
+        self.assertEqual(publication.events[0].semantic_order, 1)
+
+    def test_history_rejects_live_pack_from_wrong_source_or_revision(self) -> None:
+        for field, value in (
+            ("source_key", ["campaign.main", "scene.other", "foreign-epoch"]),
+            ("source_revision", "d" * 40),
+        ):
+            with self.subTest(field=field):
+                live = _HistoryLiveTransport()
+                live.pack = live.pack.as_mapping() | {field: value}
+                repository = _HistoryRepository()
+                host = compose_runtime_host("campaign.main", repository, live)
+
+                with self.assertRaises(HistoryContractError):
+                    host.history.read(origin=f"LIVE:{live.source.epoch_id}")
+
+                self.assertNotIn("LOG/SEMANTIC_EVENTS", repository.read_paths)
+
+    def test_missing_selected_live_history_never_falls_back_to_local(self) -> None:
+        class MissingLiveTransport(_HistoryLiveTransport):
+            def read_selected_live(
+                self, campaign_id: str, pinned: PinnedCampaign
+            ) -> LiveRouting:
+                del pinned
+                return LiveRouting(campaign_id=campaign_id, entries=())
+
+        live = MissingLiveTransport()
+        repository = _HistoryRepository()
+        host = compose_runtime_host("campaign.main", repository, live)
+
+        with self.assertRaises(HistoryContractError):
+            host.history.read(origin=f"LIVE:{live.source.epoch_id}")
+
+        self.assertNotIn("INDEX/EVENT_INDEX.yaml", repository.read_paths)
+        self.assertNotIn("LOG/SEMANTIC_EVENTS", repository.read_paths)
+
     def test_history_rejects_wrong_provenance_order_schema_and_interval(self) -> None:
         with self.assertRaises(HistoryContractError):
-            issue_native_history_from_window(
+            _issue_native_history_from_window(
                 _evt_window(event={**_semantic_event(), "semantic_order": 8}),
                 campaign_id="campaign.main",
                 expected_origin="LOCAL",
@@ -256,7 +444,7 @@ class NativeHistoryWindowTests(unittest.TestCase):
                 expected_source_revision=_HISTORY_REVISION,
             )
         with self.assertRaises(HistoryContractError):
-            issue_native_history_from_window(
+            _issue_native_history_from_window(
                 _evt_window(),
                 campaign_id="campaign.other",
                 expected_origin="LOCAL",
@@ -264,7 +452,7 @@ class NativeHistoryWindowTests(unittest.TestCase):
                 expected_source_revision=_HISTORY_REVISION,
             )
         with self.assertRaises(HistoryContractError):
-            issue_native_history_from_window(
+            _issue_native_history_from_window(
                 _evt_window(event={**_semantic_event(), "schema_version": 2}),
                 campaign_id="campaign.main",
                 expected_origin="LOCAL",
@@ -340,7 +528,7 @@ class NativeHistoryWindowTests(unittest.TestCase):
             with self.subTest(
                 entries=forged.entries, complete=forged.interval_complete_through_upper
             ), self.assertRaises(HistoryContractError):
-                issue_native_history_from_window(
+                _issue_native_history_from_window(
                     forged,
                     campaign_id="campaign.main",
                     expected_origin="LOCAL",
@@ -348,43 +536,9 @@ class NativeHistoryWindowTests(unittest.TestCase):
                     expected_source_revision=original.source_revision,
                 )
 
-    def test_selected_live_requires_exact_route_revision_and_preserves_origin(self) -> None:
-        window = _evt_window(
-            origin=_LIVE_ORIGIN,
-            source_ref="live/campaign.main/scene.main/" + _LIVE_ORIGIN.removeprefix("LIVE:"),
-            source_revision="b" * 40,
-        )
-
-        publication = issue_native_history_from_window(
-            window,
-            campaign_id="campaign.main",
-            expected_origin=_LIVE_ORIGIN,
-            expected_source_ref=window.source_ref,
-            expected_source_revision=window.source_revision,
-        )
-
-        self.assertEqual(publication.origin, _LIVE_ORIGIN)
-        self.assertEqual(publication.events[0].origin, _LIVE_ORIGIN)
-        with self.assertRaises(HistoryContractError):
-            issue_native_history_from_window(
-                window,
-                campaign_id="campaign.main",
-                expected_origin="LOCAL",
-                expected_source_ref=window.source_ref,
-                expected_source_revision=window.source_revision,
-            )
-        with self.assertRaises(HistoryContractError):
-            issue_native_history_from_window(
-                window,
-                campaign_id="campaign.main",
-                expected_origin=_LIVE_ORIGIN,
-                expected_source_ref=window.source_ref,
-                expected_source_revision=_HISTORY_REVISION,
-            )
-
     def test_history_recovery_revalidates_ephemeral_publication_provenance(self) -> None:
         window = _evt_window()
-        publication = issue_native_history_from_window(
+        publication = _issue_native_history_from_window(
             window,
             campaign_id="campaign.main",
             expected_origin="LOCAL",
@@ -407,7 +561,7 @@ class NativeHistoryWindowTests(unittest.TestCase):
         window = _evt_window()
 
         with self.assertRaises(TypeError):
-            issue_native_history_from_window(  # type: ignore[call-arg]
+            _issue_native_history_from_window(  # type: ignore[call-arg]
                 window,
                 campaign_id="campaign.main",
                 expected_origin="LOCAL",
@@ -620,7 +774,7 @@ class StorySchemaTests(unittest.TestCase):
 
 class SchemaVersionTests(unittest.TestCase):
     def test_history_module_starts_at_its_first_material_revision(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.1")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.2")
 
     def test_owner_native_python_ingress_accepts_only_actual_integer_one(self) -> None:
         valid_horizon = {
