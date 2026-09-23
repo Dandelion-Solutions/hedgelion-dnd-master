@@ -899,3 +899,37 @@ NEXT_EXACT_TASK: execute W04.T02B and W04.T07A in parallel under their normal ta
 KNOWN_BLOCKERS: downstream dependency joins only; migration execution, release execution and gameplay bootstrap remain unauthorized.
 UNPUBLISHED_WORK: NONE after publication/read-back.
 WAVE_05: PROHIBITED / NOT AUTHORIZED
+
+
+## T00P, T02B and T07A acceptance — 2026-09-23
+
+STATUS: EXECUTING
+CURRENT_TASK: W04.T02C collaboration catch-up and W04.T07B Story source registrations in parallel
+LAST_SAFE_SHA: `711738ce20d449a330313f5e51292408d311a616`
+LAST_PUBLISHED_SHA: `711738ce20d449a330313f5e51292408d311a616`
+
+LAST_COMPLETED_TASK:
+  W04.T00P accepted after repair/re-review PASS; RuntimeHost output checkpoint `606cf87caeee427622680f8898a6ba1998fb1a9e`
+  W04.T02B accepted after independent task re-review PASS -> `711738ce20d449a330313f5e51292408d311a616`
+  W04.T07A accepted after independent task re-review PASS -> `534653babd788d85663dfc2006fbc921ad1577bd`
+
+CURRENT_VERIFICATION_STATE:
+- Previously accepted W04.T01A, T05A, T01B, T05B, T01C, T02A and T03A remain closed at their recorded reviewer-PASS heads.
+- T00P supplies CampaignPublicationService through the exact W02 attempt/reconciliation route and the bound raw LOCAL/selected-LIVE evt adapter. The later History bridge integration is host/basis-bound; History alone validates/issues history.
+- T02B uses only CampaignPublicationService for OPEN->CLOSED and CLOSED->RESOLVED/OBSOLETE same-campaign closures. Prepared owner reads and W02 freeze reuse one `_OperationBasis`; ref drift is rejected before ref update. CLOSED cold recovery, RESOLVED idempotence, stale/non-fast-forward, indeterminate no-second-write, non-actionable plan omission, and terminal route-companion removal are covered.
+- T07A consumes only host-issued raw windows, validates the matching host token, exact selected-LIVE source/ref/revision, contiguous bounded ordinals, event schema/provenance and generation-1 `semantic_order`; missing LIVE never falls back to LOCAL/campaign.
+- T02C is eligible from T02B PASS plus current W03 access/LIVE routes. T07B is eligible from T07A PASS and runs serially within the Story lane.
+- T04A waits for T02C; T04B waits for T04A. T05C still requires T02C + T04B + accepted T05B. T07C+ remain serially gated by preceding Story task PASS.
+- T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires. Wave 05 remains NOT AUTHORIZED.
+
+VERSION_IMPACT:
+- T00P RuntimeHost chain: `5812700` `1.0.5 -> 1.0.6`; `595ff95` `1.0.6 -> 1.0.7`; `606cf87` `1.0.7 -> 1.0.8`. No persistent schema, campaign, storage, catalog or protocol generation changed.
+- T02B chain: `e25ddae` collaboration `1.0.9 -> 1.0.10`, durability `1.0.2 -> 1.0.3`, obligation schema/projection `2 -> 3`; `f383e5f` collaboration `1.0.10 -> 1.0.11`; `711738c` collaboration `1.0.11 -> 1.0.12`. Accepted disposition: migration edge NONE, dual-read NONE, `campaign_contract_generation` NO BUMP; v2 is rejected after the unreleased pre-v1 clean-slate replacement.
+- T07A chain: `3f81e5f` initializes the History module at `1.0.1` and adds the two native-history schemas at v1; `1cb90d7` History `1.0.1 -> 1.0.2`; `534653b` History `1.0.2 -> 1.0.3`. Schemas remain v1; no engine/campaign/storage/catalog bump.
+- No accepted change requires a global engine release bump.
+- This execution-cursor/CURRENT_PROGRESS/evidence checkpoint: `VERSION_IMPACT: NONE`.
+
+SYSTEM_IMPACT: NONE CURRENT — T00P, T02B and T07A remain within the accepted owner decision; no architecture reopen.
+NEXT_EXACT_TASK: execute W04.T02C and W04.T07B in parallel within their disjoint stable-plan write sets. Do not start T04A before T02C PASS, T04B before T04A PASS, T05C before its full join, or T07C before T07B PASS.
+KNOWN_BLOCKERS: T04A/T04B wait on the Collaboration lane; T05C waits on T02C+T04B; later Story tasks are serial. Wave 05 remains unauthorized.
+UNPUBLISHED_WORK: NONE after the documentation checkpoint is published/read back.

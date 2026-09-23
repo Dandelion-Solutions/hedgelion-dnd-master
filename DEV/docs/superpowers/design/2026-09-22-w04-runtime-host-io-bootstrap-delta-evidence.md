@@ -73,13 +73,35 @@ DEV/TESTS/test_rd12_collaboration.py
 
 ```text
 VERSION_IMPACT:
-  GAME/TOOLS/runtime_host.py framework_module_version: 1.0.5 -> 1.0.6
+  GAME/TOOLS/runtime_host.py framework_module_version:
+    5812700: 1.0.5 -> 1.0.6 (initial T00P)
+    595ff95: 1.0.6 -> 1.0.7 (fail-closed LOCAL completeness repair)
+    606cf87: 1.0.7 -> 1.0.8 (same-basis publication and bounded LOCAL/LIVE windows)
   persistent schema: none
   campaign/storage/catalog/protocol generation: none
   Wave-05 CORE projections/final writes: deferred to their owning W05.T08 writer
 
 SYSTEM_IMPACT: NONE — accepted W04.T00P boundary only
 ```
+
+## Final T00P repair verification
+
+The independent repair review passed after the bound History consumer was
+published. The final bounded source-window and prepared-publication-basis tests
+are in `DEV/TESTS/test_runtime_host_composition.py`.
+
+```text
+Focused RuntimeHost composition suite: 21 passed
+Focused cross-owner suite at the accepted integrated head: 138 passed
+Ruff check and format: PASS on RuntimeHost owner/test files
+Maintenance audit: PASS
+git diff --check: PASS
+Remote read-back: exact published HEAD
+```
+
+`History` consumes only the exact bound adapter/basis through the sibling
+RuntimeHost History service; the History owner validates and issues history.
+T00P still emits raw source windows only and owns no persistent schema.
 
 W05.T06 consumes `W04_RUNTIME_HOST_IO_EXTENSIONS_READY` for product paths.
 W05.T08 remains the sole final writer for shipped CORE/bootstrap projections;
