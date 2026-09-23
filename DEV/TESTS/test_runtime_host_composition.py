@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import pickle
 import unittest
+from collections.abc import Sequence
 
 from GAME.TOOLS.durability import route_serialized_operation
 from GAME.TOOLS.live_state import (
@@ -278,6 +279,7 @@ class LiveEventTransport(DeploymentLiveTransport):
             native_owner_states={
                 "runtime.semantic_event": {
                     "complete": True,
+                    "upper_ordinal": 1,
                     "entries": [
                         {
                             "event_id": "live-event-1",
@@ -304,6 +306,44 @@ class LiveEventTransport(DeploymentLiveTransport):
     ) -> object:
         self.read_calls.append(("source", source))  # type: ignore[arg-type]
         return self.pack
+
+
+class CountingSequence(Sequence[object]):
+    """Sequence fixture that exposes unbounded enrollment enumeration."""
+
+    def __init__(self, values: list[object]) -> None:
+        self._values = values
+        self.accesses = 0
+
+    def __len__(self) -> int:
+        return len(self._values)
+
+    def __getitem__(self, index: int) -> object:
+        self.accesses += 1
+        return self._values[index]
+
+
+class OversizedLiveEventTransport(LiveEventTransport):
+    def __init__(self) -> None:
+        super().__init__()
+        entries = CountingSequence(
+            [
+                {
+                    "event_id": f"live-event-{ordinal}",
+                    "ordinal": ordinal,
+                    "event_record": _semantic_event(f"live-event-{ordinal}", ordinal),
+                }
+                for ordinal in range(1, 1002)
+            ]
+        )
+        self.oversized_entries = entries
+        owner_states = dict(self.pack.native_owner_states)
+        owner_states["runtime.semantic_event"] = {
+            "complete": True,
+            "upper_ordinal": 1001,
+            "entries": entries,
+        }
+        self.pack = self.pack.as_mapping() | {"native_owner_states": owner_states}
 
 
 class StaleLiveTransport(DeploymentLiveTransport):
@@ -335,7 +375,7 @@ def _compose(
 
 class RuntimeHostCompositionTests(unittest.TestCase):
     def test_new_runtime_host_starts_at_current_engine_module_line(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.7")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.8")
 
     def test_composition_binds_one_campaign_and_creates_sibling_services(self) -> None:
         host, _repository, _live = _compose()
@@ -501,6 +541,53 @@ class RuntimeHostCompositionTests(unittest.TestCase):
             [name for name, _value in transport.calls].count("update_ref"), 1
         )
 
+    def test_publication_rejects_an_intervening_ref_against_prepared_host_basis(
+        self,
+    ) -> None:
+        repository = PublicationRepository()
+        transport = PublicationTransport(repository)
+        host, _repository, _live = _compose(repository, publication=transport)
+        payload, path_operations = _publication_delta()
+        prepared_basis = host._begin_operation()
+        repository.current_revision = "f" * 40
+
+        outcome = host.publication.publish_owner_delta(
+            routed_operation=route_serialized_operation(
+                "runtime.collaboration_obligation", "obligation-1", payload
+            ),
+            path_operations=path_operations,
+            owner_generations={"runtime.collaboration_obligation": 1},
+            publication_reason="collaboration-close",
+            basis=prepared_basis,
+        )
+
+        self.assertEqual(outcome.kind, "conflict")
+        self.assertEqual(
+            [name for name, _value in transport.calls].count("update_ref"), 0
+        )
+
+    def test_publication_rejects_a_basis_from_another_runtime_host(self) -> None:
+        repository = PublicationRepository()
+        transport = PublicationTransport(repository)
+        host, _repository, _live = _compose(repository, publication=transport)
+        other_repository = PublicationRepository()
+        other_transport = PublicationTransport(other_repository)
+        other_host, _other_repository, _other_live = _compose(
+            other_repository, publication=other_transport
+        )
+        payload, path_operations = _publication_delta()
+
+        with self.assertRaises(RuntimeHostError):
+            host.publication.publish_owner_delta(
+                routed_operation=route_serialized_operation(
+                    "runtime.collaboration_obligation", "obligation-1", payload
+                ),
+                path_operations=path_operations,
+                owner_generations={"runtime.collaboration_obligation": 1},
+                publication_reason="collaboration-close",
+                basis=other_host._begin_operation(),
+            )
+
     def test_local_semantic_events_use_index_and_exact_known_ids_not_aggregate_log(
         self,
     ) -> None:
@@ -635,6 +722,66 @@ class RuntimeHostCompositionTests(unittest.TestCase):
                 lower_exclusive_ordinal=None,
                 max_items=1,
             )
+
+    def test_oversized_local_enrollment_reads_only_the_requested_bounded_window(
+        self,
+    ) -> None:
+        repository = LocalEventRepository()
+        index = repository.records["INDEX/EVENT_INDEX.yaml"]
+        self.assertIsInstance(index, dict)
+        if not isinstance(index, dict):
+            return
+        oversized_entries = CountingSequence(
+            [
+                {
+                    "event_id": f"event-{ordinal}",
+                    "ordinal": ordinal,
+                    "path": route_native_record(
+                        "runtime.semantic_event", (f"event-{ordinal}",)
+                    ).relative_path,
+                }
+                for ordinal in range(1, 1002)
+            ]
+        )
+        repository.records["INDEX/EVENT_INDEX.yaml"] = index | {
+            "upper_ordinal": 1001,
+            "entries": oversized_entries,
+        }
+        host, _repository, _live = _compose(repository)
+
+        window = host.semantic_events.read_local_evt_window(
+            lower_exclusive_ordinal=None, max_items=1
+        )
+
+        self.assertEqual(len(window.entries), 1)
+        self.assertEqual(window.entries[0]["event_id"], "event-1")
+        self.assertEqual(oversized_entries.accesses, 1)
+        self.assertEqual(
+            repository.read_paths,
+            [
+                "MANIFEST.yaml",
+                "INDEX/EVENT_INDEX.yaml",
+                route_native_record(
+                    "runtime.semantic_event", ("event-1",)
+                ).relative_path,
+            ],
+        )
+
+    def test_oversized_live_pack_reads_only_the_requested_bounded_window(
+        self,
+    ) -> None:
+        live = OversizedLiveEventTransport()
+        host, _repository, _live = _compose(live=live)
+
+        window = host.semantic_events.read_selected_live_evt_window(
+            origin=f"LIVE:{live.source.epoch_id}",
+            lower_exclusive_ordinal=None,
+            max_items=1,
+        )
+
+        self.assertEqual(len(window.entries), 1)
+        self.assertEqual(window.entries[0]["event_id"], "live-event-1")
+        self.assertEqual(live.oversized_entries.accesses, 1)
 
 
 if __name__ == "__main__":

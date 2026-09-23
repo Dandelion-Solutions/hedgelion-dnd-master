@@ -12,6 +12,7 @@ import hashlib
 import json
 import math
 import re
+import weakref
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
@@ -21,6 +22,7 @@ from typing import Final, NoReturn, Protocol
 
 from .durability import RoutedSerializedOperation
 from .live_state import (
+    LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION,
     LiveEnvelope,
     LiveNativeStatePack,
     LiveRouting,
@@ -42,8 +44,8 @@ from .publication import (
     reconcile_indeterminate_publication,
 )
 
-# framework_module_version: 1.0.7
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
+# framework_module_version: 1.0.8
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -174,7 +176,7 @@ def _operation_digest(value: object) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, weakref_slot=True)
 class EvtSourceWindow:
     """Raw bounded evt-lane source evidence; History owns semantic validation."""
 
@@ -253,12 +255,55 @@ class EvtSourceWindow:
         }
 
 
+_EVT_SOURCE_WINDOW_ISSUANCE: dict[
+    int, tuple[weakref.ReferenceType[EvtSourceWindow], object]
+] = {}
+
+
+def _mark_adapter_issued_evt_window(value: EvtSourceWindow, host_token: object) -> None:
+    value_id = id(value)
+
+    def remove(reference: weakref.ReferenceType[EvtSourceWindow]) -> None:
+        entry = _EVT_SOURCE_WINDOW_ISSUANCE.get(value_id)
+        if entry is not None and entry[0] is reference:
+            _EVT_SOURCE_WINDOW_ISSUANCE.pop(value_id, None)
+
+    _EVT_SOURCE_WINDOW_ISSUANCE[value_id] = (weakref.ref(value, remove), host_token)
+
+
+def _is_adapter_issued_evt_window(
+    value: object, *, host_token: object | None = None
+) -> bool:
+    entry = _EVT_SOURCE_WINDOW_ISSUANCE.get(id(value))
+    return (
+        isinstance(value, EvtSourceWindow)
+        and entry is not None
+        and entry[0]() is value
+        and (host_token is None or entry[1] is host_token)
+    )
+
+
+def _issue_evt_source_window(
+    *, host_token: object, **values: object
+) -> EvtSourceWindow:
+    """Create and mark one raw window from the bound source adapter."""
+    try:
+        window = EvtSourceWindow(**values)  # type: ignore[arg-type]
+    except (TypeError, RuntimeHostError) as exc:
+        raise RuntimeHostError(
+            "evt source adapter produced an invalid raw window"
+        ) from exc
+    _mark_adapter_issued_evt_window(window, host_token)
+    return window
+
+
 @dataclass(frozen=True, slots=True)
 class _OperationBasis:
     """Fresh source basis for one host operation."""
 
     pinned_campaign: PinnedCampaign
     selected_live: LiveRouting | None
+    host_token: object
 
 
 def _require_nonempty_campaign_id(value: object) -> str:
@@ -330,6 +375,7 @@ class CampaignPublicationService(_BoundService):
         path_operations: Mapping[str, object | None],
         owner_generations: Mapping[str, int],
         publication_reason: str,
+        basis: _OperationBasis | None = None,
     ) -> PublicationOutcome:
         """Publish one owner-local delta without owning its semantic result."""
 
@@ -341,10 +387,21 @@ class CampaignPublicationService(_BoundService):
         if not isinstance(path_operations, Mapping):
             raise RuntimeHostError("publication path operations must be an object")
 
-        basis = self._host._begin_operation()
-        manifest = self._read_exact_path(basis.pinned_campaign, "MANIFEST.yaml")
+        if basis is None:
+            operation_basis = self._host._begin_operation()
+        elif not isinstance(basis, _OperationBasis):
+            raise RuntimeHostError("publication basis is not host-typed")
+        else:
+            operation_basis = basis
+        if operation_basis.host_token is not self._host._basis_token:
+            raise RuntimeHostError("publication basis belongs to another runtime host")
+        if operation_basis.pinned_campaign.campaign_id != self._host._campaign_id:
+            raise RuntimeHostError("publication basis belongs to another campaign")
+        manifest = self._read_exact_path(
+            operation_basis.pinned_campaign, "MANIFEST.yaml"
+        )
         campaign_card = self._read_exact_path(
-            basis.pinned_campaign, "CAMPAIGN_CARD.yaml"
+            operation_basis.pinned_campaign, "CAMPAIGN_CARD.yaml"
         )
         target_ref = manifest.get("branch") if isinstance(manifest, Mapping) else None
         if not isinstance(target_ref, str) or not target_ref:
@@ -352,20 +409,20 @@ class CampaignPublicationService(_BoundService):
         repository_id = _validate_transport_repository_identity(
             self._host._repository, transport
         )
-        principal = self._resolve_principal(transport, basis.pinned_campaign)
+        principal = self._resolve_principal(transport, operation_basis.pinned_campaign)
         try:
             attempt = freeze_campaign_publication_attempt(
                 repository_id=repository_id,
                 target_ref=target_ref,
                 campaign_id=self._host._campaign_id,
                 acting_principal=principal,
-                pinned_head_sha=basis.pinned_campaign.revision,
-                base_tree_sha=basis.pinned_campaign.tree_sha,
+                pinned_head_sha=operation_basis.pinned_campaign.revision,
+                base_tree_sha=operation_basis.pinned_campaign.tree_sha,
                 manifest=manifest,
                 campaign_card=campaign_card,
                 path_operations=path_operations,
                 owner_generations=owner_generations,
-                currentness_evidence=basis.pinned_campaign,
+                currentness_evidence=operation_basis.pinned_campaign,
                 routed_operation=routed_operation,
                 publication_reason=publication_reason,
             )
@@ -531,16 +588,16 @@ class SemanticEventSourceAdapter(_BoundService):
         *,
         lower_exclusive_ordinal: int | None,
         max_items: int,
+        _basis: _OperationBasis | None = None,
     ) -> EvtSourceWindow:
         lower = self._validate_window_request(lower_exclusive_ordinal, max_items)
-        basis = self._host._begin_operation()
+        basis = self._operation_basis(_basis)
         manifest = self._read_exact_path(basis.pinned_campaign, "MANIFEST.yaml")
         branch = manifest.get("branch")
         if not isinstance(branch, str) or not branch:
             raise RuntimeHostError("LOCAL evt source has no exact campaign ref")
         index = self._read_exact_path(basis.pinned_campaign, _EVENT_INDEX_PATH)
-        candidates = self._index_entries(index)
-        selected = self._select_entries(candidates, lower, max_items)
+        selected = self._index_entries(index, lower, max_items)
         entries: list[Mapping[str, object]] = []
         for ordinal, event_id, path in selected:
             record = self._read_exact_path(basis.pinned_campaign, path)
@@ -552,7 +609,8 @@ class SemanticEventSourceAdapter(_BoundService):
                 {"ordinal": ordinal, "event_id": event_id, "event_record": record}
             )
         upper = selected[-1][0] if selected else None
-        return EvtSourceWindow(
+        return _issue_evt_source_window(
+            host_token=self._host._basis_token,
             campaign_id=self._host._campaign_id,
             origin="LOCAL",
             source_ref=branch,
@@ -570,11 +628,12 @@ class SemanticEventSourceAdapter(_BoundService):
         origin: str,
         lower_exclusive_ordinal: int | None,
         max_items: int,
+        _basis: _OperationBasis | None = None,
     ) -> EvtSourceWindow:
         lower = self._validate_window_request(lower_exclusive_ordinal, max_items)
         if _LIVE_ORIGIN.fullmatch(origin) is None:
             raise RuntimeHostError("selected LIVE evt origin is invalid")
-        basis = self._host._begin_operation()
+        basis = self._operation_basis(_basis)
         routing = basis.selected_live
         if routing is None or not routing.complete:
             raise RuntimeHostError("selected LIVE routing is unavailable")
@@ -596,14 +655,14 @@ class SemanticEventSourceAdapter(_BoundService):
             packed = reader(routing, source)
         except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
             raise RuntimeHostError("selected LIVE source-domain read failed") from exc
-        candidates = self._live_entries(packed, source)
-        selected = self._select_entries(candidates, lower, max_items)
+        selected = self._live_entries(packed, source, lower, max_items)
         entries = tuple(
             {"ordinal": ordinal, "event_id": event_id, "event_record": record}
             for ordinal, event_id, record in selected
         )
         upper = selected[-1][0] if selected else None
-        return EvtSourceWindow(
+        return _issue_evt_source_window(
+            host_token=self._host._basis_token,
             campaign_id=self._host._campaign_id,
             origin=origin,
             source_ref=source.source_ref,
@@ -614,6 +673,17 @@ class SemanticEventSourceAdapter(_BoundService):
             interval_complete_through_upper=True,
             entries=entries,
         )
+
+    def _operation_basis(self, value: _OperationBasis | None) -> _OperationBasis:
+        if value is None:
+            return self._host._begin_operation()
+        if (
+            not isinstance(value, _OperationBasis)
+            or value.host_token is not self._host._basis_token
+            or value.pinned_campaign.campaign_id != self._host._campaign_id
+        ):
+            raise RuntimeHostError("evt source basis belongs to another runtime host")
+        return value
 
     def _read_exact_path(
         self, pinned: PinnedCampaign, path: str
@@ -639,7 +709,9 @@ class SemanticEventSourceAdapter(_BoundService):
         return lower
 
     @staticmethod
-    def _index_entries(value: Mapping[str, object]) -> list[tuple[int, str, str]]:
+    def _index_entries(
+        value: Mapping[str, object], lower: int | None, max_items: int
+    ) -> list[tuple[int, str, str]]:
         if value.get("schema_version") != 1 or value.get("entity_type") != "EVENT":
             raise RuntimeHostError(
                 "LOCAL evt enrollment/index is not the accepted event index"
@@ -658,8 +730,24 @@ class SemanticEventSourceAdapter(_BoundService):
             type(upper_ordinal) is not int or upper_ordinal < 1
         ):
             raise RuntimeHostError("LOCAL evt enrollment/index upper basis is invalid")
+        expected_length = 0 if upper_ordinal is None else upper_ordinal
+        if expected_length != len(raw_entries):
+            raise RuntimeHostError(
+                "LOCAL evt index upper basis differs from enrollment"
+            )
+        start = lower or 0
+        if start > expected_length:
+            raise RuntimeHostError(
+                "LOCAL evt lower cursor exceeds the complete upper basis"
+            )
+        stop = min(expected_length, start + max_items)
+        if start == expected_length and start > 0:
+            raise RuntimeHostError(
+                "LOCAL evt source has no new interval after the cursor"
+            )
         result: list[tuple[int, str, str]] = []
-        for raw in raw_entries:
+        for index in range(start, stop):
+            raw = raw_entries[index]
             if not isinstance(raw, Mapping):
                 raise RuntimeHostError("LOCAL evt enrollment entry is not typed")
             event_id = raw.get("event_id", raw.get("id"))
@@ -668,8 +756,10 @@ class SemanticEventSourceAdapter(_BoundService):
                     "LOCAL evt enrollment entry has no event identity"
                 )
             ordinal = raw.get("ordinal")
-            if type(ordinal) is not int or ordinal < 1:
-                raise RuntimeHostError("LOCAL evt enrollment ordinal is invalid")
+            if type(ordinal) is not int or ordinal != index + 1:
+                raise RuntimeHostError(
+                    "LOCAL evt enrollment interval is not contiguous"
+                )
             path = raw.get("path")
             expected_path = route_native_record(
                 "runtime.semantic_event", (event_id,)
@@ -679,35 +769,17 @@ class SemanticEventSourceAdapter(_BoundService):
                     "LOCAL evt enrollment path is not the known-ID route"
                 )
             result.append((ordinal, event_id, expected_path))
-        result.sort()
-        if [ordinal for ordinal, _event_id, _path in result] != list(
-            range(1, len(result) + 1)
-        ):
-            raise RuntimeHostError("LOCAL evt enrollment ordinals are not contiguous")
         if len({event_id for _ordinal, event_id, _path in result}) != len(result):
             raise RuntimeHostError("LOCAL evt enrollment identities are not unique")
-        expected_upper = result[-1][0] if result else None
-        if upper_ordinal != expected_upper:
-            raise RuntimeHostError(
-                "LOCAL evt enrollment/index upper basis is not exact"
-            )
         return result
-
-    @staticmethod
-    def _select_entries(
-        entries: Sequence[tuple[int, str, str]], lower: int | None, max_items: int
-    ) -> list[tuple[int, str, str]]:
-        lower_value = lower or 0
-        selected = [entry for entry in entries if entry[0] > lower_value][:max_items]
-        if selected and selected[0][0] != lower_value + 1:
-            raise RuntimeHostError(
-                "evt enrollment does not prove the requested interval"
-            )
-        return selected
 
     @classmethod
     def _live_entries(
-        cls, value: object, source: LiveEnvelope
+        cls,
+        value: object,
+        source: LiveEnvelope,
+        lower: int | None,
+        max_items: int,
     ) -> list[tuple[int, str, Mapping[str, object]]]:
         if isinstance(value, LiveNativeStatePack):
             if (
@@ -717,6 +789,20 @@ class SemanticEventSourceAdapter(_BoundService):
                 raise RuntimeHostError("selected LIVE packed source is stale")
             owner_states: object = value.native_owner_states
         elif isinstance(value, Mapping):
+            if (
+                value.get("schema_version") != LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION
+                or value.get("kind") != "runtime.live_native_state_pack"
+            ):
+                raise RuntimeHostError(
+                    "selected LIVE source pack schema is unsupported"
+                )
+            raw_source_key = value.get("source_key")
+            if (
+                not isinstance(raw_source_key, Sequence)
+                or isinstance(raw_source_key, (str, bytes))
+                or tuple(raw_source_key) != source.source_key
+            ):
+                raise RuntimeHostError("selected LIVE packed source identity differs")
             if value.get("source_revision") != source.source_revision:
                 raise RuntimeHostError("selected LIVE source revision is stale")
             owner_states = value.get("native_owner_states")
@@ -735,8 +821,22 @@ class SemanticEventSourceAdapter(_BoundService):
             raw_entries, (str, bytes)
         ):
             raise RuntimeHostError("selected LIVE evt enrollment entries are missing")
+        upper_ordinal = event_state.get("upper_ordinal")
+        if type(upper_ordinal) is not int or upper_ordinal < 0:
+            raise RuntimeHostError("selected LIVE evt upper basis is invalid")
+        if upper_ordinal != len(raw_entries):
+            raise RuntimeHostError(
+                "selected LIVE evt upper basis differs from enrollment"
+            )
+        start = lower or 0
+        if start > upper_ordinal:
+            raise RuntimeHostError("selected LIVE evt cursor exceeds its upper basis")
+        stop = min(upper_ordinal, start + max_items)
+        if start == upper_ordinal and start > 0:
+            raise RuntimeHostError("selected LIVE evt source has no new interval")
         result: list[tuple[int, str, Mapping[str, object]]] = []
-        for raw in raw_entries:
+        for index in range(start, stop):
+            raw = raw_entries[index]
             if not isinstance(raw, Mapping):
                 raise RuntimeHostError(
                     "selected LIVE evt enrollment entry is not typed"
@@ -744,9 +844,9 @@ class SemanticEventSourceAdapter(_BoundService):
             ordinal = raw.get("ordinal")
             event_id = raw.get("event_id")
             record = raw.get("event_record")
-            if type(ordinal) is not int or ordinal < 1:
+            if type(ordinal) is not int or ordinal != index + 1:
                 raise RuntimeHostError(
-                    "selected LIVE evt enrollment ordinal is invalid"
+                    "selected LIVE evt enrollment interval is not contiguous"
                 )
             if not isinstance(event_id, str) or not event_id:
                 raise RuntimeHostError(
@@ -755,13 +855,6 @@ class SemanticEventSourceAdapter(_BoundService):
             if not isinstance(record, Mapping) or record.get("event_id") != event_id:
                 raise RuntimeHostError("selected LIVE evt record identity differs")
             result.append((ordinal, event_id, deepcopy(dict(record))))
-        result.sort()
-        if [ordinal for ordinal, _event_id, _record in result] != list(
-            range(1, len(result) + 1)
-        ):
-            raise RuntimeHostError(
-                "selected LIVE evt enrollment ordinals are not contiguous"
-            )
         if len({event_id for _ordinal, event_id, _record in result}) != len(result):
             raise RuntimeHostError(
                 "selected LIVE evt enrollment identities are not unique"
@@ -811,11 +904,8 @@ class HistoryService(_BoundService):
         from .history import _read_bound_native_history
 
         return _read_bound_native_history(
-            self._host._repository,
-            campaign_id=self._host._campaign_id,
-            campaign_pin=basis.pinned_campaign,
-            current_routing=basis.selected_live,
-            selected_live_reader=self._host._live_transport,
+            source_adapter=self._host._semantic_events,
+            basis=basis,
             origin=origin,
         )
 
@@ -868,6 +958,7 @@ class RuntimeHost:
     """
 
     __slots__ = (
+        "_basis_token",
         "_campaign_id",
         "_context",
         "_history",
@@ -905,6 +996,7 @@ class RuntimeHost:
                 authenticated_repository_port, campaign_publication_transport
             )
         object.__setattr__(self, "_campaign_id", campaign_id)
+        object.__setattr__(self, "_basis_token", object())
         object.__setattr__(self, "_repository", authenticated_repository_port)
         object.__setattr__(self, "_live_transport", selected_live_transport)
         object.__setattr__(
@@ -967,6 +1059,7 @@ class RuntimeHost:
         return _OperationBasis(
             pinned_campaign=pinned_campaign,
             selected_live=_validate_selected_live(selected_live, self._campaign_id),
+            host_token=self._basis_token,
         )
 
 
