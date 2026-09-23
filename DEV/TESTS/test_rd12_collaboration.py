@@ -21,6 +21,7 @@ from GAME.TOOLS.access_control import (
 )
 from GAME.TOOLS.collaboration import (
     CollaborationAdmissionError,
+    CollaborationCatchUp,
     CollaborationClosedBasis,
     CollaborationFrontier,
     CollaborationHandoff,
@@ -37,6 +38,7 @@ from GAME.TOOLS.collaboration import (
     classify_coordination_dependency,
     close_obligation,
     compute_maximal_safe_frontier,
+    join_participant,
     open_or_successor_obligation,
     reconcile_player_route_companions,
     required_route_holders,
@@ -448,6 +450,22 @@ def _append_persisted_input(
     value["accepted_input_contributors"].append(  # type: ignore[union-attr]
         contributor
     )
+
+
+def _attach_route_ref(
+    repository: RepositoryFixture,
+    obligation: CollaborationObligation,
+    *player_ids: str,
+) -> None:
+    for player_id in player_ids:
+        path = route_native_record("world.player", (player_id,)).relative_path
+        player = repository.records[path]
+        player["collaboration_route_refs"] = [
+            {
+                "obligation_id": obligation.obligation_id,
+                "generation": obligation.generation,
+            }
+        ]
 
 
 def _ordered_resolution(
@@ -2129,6 +2147,145 @@ class CollaborationCloseHandoffTests(unittest.TestCase):
                 principal=_bob_principal(),
                 player_route=_route(),
             )
+
+
+class CollaborationJoinCatchUpTests(unittest.TestCase):
+    def _open_with_current_route(
+        self, repository: RepositoryFixture, obligation_id: str
+    ) -> CollaborationObligation:
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id=obligation_id
+        )
+        assert obligation is not None
+        _persist_obligation(repository, obligation)
+        _attach_route_ref(repository, obligation, "player-alice", "player-bob")
+        return obligation
+
+    def test_join_revalidates_current_binding_and_routing_before_mutable_input(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        obligation = self._open_with_current_route(repository, "obligation-join")
+
+        catch_up = join_participant(
+            _host(repository), principal=_principal(), player_route=_route()
+        )
+
+        self.assertIsInstance(catch_up, CollaborationCatchUp)
+        self.assertEqual(catch_up.player_id, "player-alice")
+        self.assertEqual(
+            catch_up.obligations[0].obligation_id, obligation.obligation_id
+        )
+        self.assertEqual(catch_up.obligations[0].participant_role, "ORIGINATING")
+
+    def test_catch_up_exposes_only_the_recipient_obligation_projection(self) -> None:
+        repository = RepositoryFixture()
+        obligation = self._open_with_current_route(
+            repository, "obligation-recipient-safe"
+        )
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        associated = associate_input(
+            obligation,
+            _host(repository),
+            "interaction-2",
+            "clause-2",
+            principal=_bob_principal(),
+            player_route=_route(),
+        )
+        _persist_obligation(repository, associated)
+        _attach_route_ref(repository, associated, "player-alice", "player-bob")
+
+        catch_up = join_participant(
+            _host(repository), principal=_principal(), player_route=_route()
+        )
+        serialized = json.dumps(catch_up.to_mapping(), sort_keys=True)
+
+        self.assertEqual(catch_up.obligations[0].contribution_status, "RECEIVED")
+        self.assertIn("joint-entry", serialized)
+        self.assertNotIn("normalized_semantics", serialized)
+        self.assertNotIn("enter", serialized)
+        self.assertNotIn("player-bob", serialized)
+        self.assertNotIn("planning", serialized)
+        schema = json.loads(
+            (SCHEMAS / "collaboration-catch-up.schema.json").read_text(encoding="utf-8")
+        )
+        Draft202012Validator(schema).validate(catch_up.to_mapping())
+
+    def test_stale_or_deactivated_access_fails_closed(self) -> None:
+        repository = RepositoryFixture()
+        self._open_with_current_route(repository, "obligation-access")
+        player_path = route_native_record(
+            "world.player", ("player-alice",)
+        ).relative_path
+        repository.records[player_path]["status"] = "inactive"
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "active"):
+            join_participant(
+                _host(repository), principal=_principal(), player_route=_route()
+            )
+
+    def test_changed_campaign_basis_fails_before_catch_up_projection(self) -> None:
+        repository = ChangingPinRepositoryFixture()
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-stale-basis"
+        )
+        assert obligation is not None
+        _persist_obligation(repository, obligation)
+        _attach_route_ref(repository, obligation, "player-alice")
+        repository.pin_calls = 0
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "basis"):
+            join_participant(
+                _host(repository), principal=_principal(), player_route=_route()
+            )
+
+    def test_cursor_hint_is_not_a_consumption_receipt_or_filter(self) -> None:
+        repository = RepositoryFixture()
+        self._open_with_current_route(repository, "obligation-cursor")
+
+        catch_up = join_participant(
+            _host(repository),
+            principal=_principal(),
+            player_route=_route(),
+            cursor_hint="session-cursor-7",
+        )
+        serialized = catch_up.to_mapping()
+
+        self.assertEqual(serialized["cursor_hint"], "session-cursor-7")
+        self.assertNotIn("human_consumed", serialized)
+        self.assertNotIn("consumed", serialized)
+        self.assertEqual(len(catch_up.obligations), 1)
+
+    def test_join_reads_only_exact_obligation_ids_from_current_player_route(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        self._open_with_current_route(repository, "obligation-known-id")
+        rogue = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-not-routed"
+        )
+        assert rogue is not None
+        _persist_obligation(repository, rogue)
+        repository.reads.clear()
+
+        join_participant(
+            _host(repository), principal=_principal(), player_route=_route()
+        )
+
+        known_path = route_native_record(
+            "runtime.collaboration_obligation", ("obligation-known-id",)
+        ).relative_path
+        rogue_path = route_native_record(
+            "runtime.collaboration_obligation", ("obligation-not-routed",)
+        ).relative_path
+        self.assertIn(known_path, repository.reads)
+        self.assertNotIn(rogue_path, repository.reads)
 
 
 class CollaborationPublicationRecoveryTests(unittest.TestCase):

@@ -37,12 +37,13 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.12
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.12"
+# framework_module_version: 1.0.13
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.13"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 3
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_HANDOFF_SCHEMA_VERSION: Final[int] = 1
+COLLABORATION_CATCH_UP_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_INPUT_FINGERPRINT_GENERATION: Final[int] = 1
 
 _CLOSED_INPUT_FINGERPRINT_DOMAIN: Final[bytes] = (
@@ -1311,6 +1312,154 @@ class PlayerRouteCompanion:
             "collaboration_route_refs": [
                 ref.to_mapping() for ref in self.collaboration_route_refs
             ],
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class CollaborationCatchUpEntry:
+    """Recipient-safe summary for one current obligation route reference.
+
+    The entry deliberately carries no accepted input identity, semantic body,
+    participant list, native basis or planning material.  Those owners remain
+    independently responsible for deciding whether any such content is
+    eligible for a recipient.
+    """
+
+    obligation_id: str
+    generation: int
+    lifecycle: str
+    purpose: str
+    participant_role: str
+    own_pc_ids: tuple[str, ...] = ()
+    contribution_status: str = "PENDING"
+
+    def __post_init__(self) -> None:
+        _id(self.obligation_id, "catch-up obligation_id")
+        if isinstance(self.generation, bool) or not isinstance(self.generation, int):
+            raise CollaborationAdmissionError("catch-up generation must be an integer")
+        if self.generation < 1:
+            raise CollaborationAdmissionError("catch-up generation must be positive")
+        if self.lifecycle not in {"OPEN", "CLOSED"}:
+            raise CollaborationAdmissionError("catch-up lifecycle is not unresolved")
+        _text(self.purpose, "catch-up purpose")
+        if self.participant_role not in {"ORIGINATING", "REQUIRED", "OPTIONAL"}:
+            raise CollaborationAdmissionError(
+                "catch-up participant role is not registered"
+            )
+        if not isinstance(self.own_pc_ids, tuple):
+            raise CollaborationAdmissionError("catch-up PC references must be an array")
+        normalized_pc_ids = tuple(
+            _id(pc_id, "catch-up own pc_id") for pc_id in self.own_pc_ids
+        )
+        if len(normalized_pc_ids) != len(set(normalized_pc_ids)):
+            raise CollaborationAdmissionError("catch-up PC references must be unique")
+        object.__setattr__(self, "own_pc_ids", normalized_pc_ids)
+        if self.contribution_status not in {"PENDING", "RECEIVED", "NOT_REQUIRED"}:
+            raise CollaborationAdmissionError(
+                "catch-up contribution status is not registered"
+            )
+        if (
+            self.participant_role == "OPTIONAL"
+            and self.contribution_status == "PENDING"
+        ):
+            raise CollaborationAdmissionError(
+                "optional catch-up contribution cannot be pending"
+            )
+
+    def to_mapping(self) -> dict[str, object]:
+        return {
+            "obligation_id": self.obligation_id,
+            "generation": self.generation,
+            "lifecycle": self.lifecycle,
+            "purpose": self.purpose,
+            "participant_role": self.participant_role,
+            "own_pc_ids": list(self.own_pc_ids),
+            "contribution_status": self.contribution_status,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class CollaborationCatchUp:
+    """Ephemeral recipient projection prepared after current route admission."""
+
+    campaign_id: str
+    campaign_revision: str
+    player_id: str
+    controlled_pc_ids: tuple[str, ...]
+    live_source_keys: tuple[tuple[str, str, str], ...]
+    obligations: tuple[CollaborationCatchUpEntry, ...]
+    cursor_hint: str | None = None
+
+    def __post_init__(self) -> None:
+        _id(self.campaign_id, "catch-up campaign_id")
+        _text(self.campaign_revision, "catch-up campaign revision")
+        _id(self.player_id, "catch-up player_id")
+        if not isinstance(self.controlled_pc_ids, tuple):
+            raise CollaborationAdmissionError(
+                "catch-up controlled PC references must be an array"
+            )
+        controlled_pc_ids = tuple(
+            _id(pc_id, "catch-up controlled pc_id") for pc_id in self.controlled_pc_ids
+        )
+        if len(controlled_pc_ids) != len(set(controlled_pc_ids)):
+            raise CollaborationAdmissionError(
+                "catch-up controlled PC references must be unique"
+            )
+        object.__setattr__(self, "controlled_pc_ids", controlled_pc_ids)
+        if not isinstance(self.live_source_keys, tuple):
+            raise CollaborationAdmissionError(
+                "catch-up LIVE source keys must be an array"
+            )
+        normalized_sources: list[tuple[str, str, str]] = []
+        for source_key in self.live_source_keys:
+            if (
+                not isinstance(source_key, tuple)
+                or len(source_key) != 3
+                or any(not isinstance(part, str) or not part for part in source_key)
+            ):
+                raise CollaborationAdmissionError("catch-up LIVE source key is invalid")
+            normalized_sources.append(source_key)
+        if len(normalized_sources) != len(set(normalized_sources)):
+            raise CollaborationAdmissionError(
+                "catch-up LIVE source keys must be unique"
+            )
+        object.__setattr__(self, "live_source_keys", tuple(sorted(normalized_sources)))
+        if not isinstance(self.obligations, tuple) or any(
+            not isinstance(entry, CollaborationCatchUpEntry)
+            for entry in self.obligations
+        ):
+            raise CollaborationAdmissionError("catch-up obligations must be typed")
+        identities = [
+            (entry.obligation_id, entry.generation) for entry in self.obligations
+        ]
+        if len(identities) != len(set(identities)):
+            raise CollaborationAdmissionError("catch-up obligations must be unique")
+        object.__setattr__(
+            self,
+            "obligations",
+            tuple(
+                sorted(
+                    self.obligations,
+                    key=lambda entry: (entry.obligation_id, entry.generation),
+                )
+            ),
+        )
+        if self.cursor_hint is not None:
+            _text(self.cursor_hint, "catch-up cursor hint")
+
+    def to_mapping(self) -> dict[str, object]:
+        return {
+            "schema_version": COLLABORATION_CATCH_UP_SCHEMA_VERSION,
+            "kind": "runtime.collaboration_catch_up",
+            "campaign_id": self.campaign_id,
+            "campaign_revision": self.campaign_revision,
+            "player_id": self.player_id,
+            "controlled_pc_ids": list(self.controlled_pc_ids),
+            "live_source_keys": [
+                list(source_key) for source_key in self.live_source_keys
+            ],
+            "obligations": [entry.to_mapping() for entry in self.obligations],
+            "cursor_hint": self.cursor_hint,
         }
 
 
@@ -3082,3 +3231,187 @@ def validate_visible_consequence(
         raise CollaborationAdmissionError(
             "visible consequence crosses the collaboration safe frontier"
         )
+
+
+def _resolve_join_player(
+    host: RuntimeHost,
+    basis: _OperationBasis,
+    *,
+    principal: object,
+    player_route: object,
+) -> tuple[PlayerRecord, tuple[tuple[str, int], ...]]:
+    """Resolve one active PLAYER and its exact native collaboration route refs."""
+
+    try:
+        resolution = resolve_player(
+            principal,
+            player_route,
+            lambda candidate_id: _read_native(
+                host, basis, "world.player", candidate_id
+            ),
+            campaign_id=basis.pinned_campaign.campaign_id,
+        )
+    except (
+        AccessControlContractError,
+        CollaborationAdmissionError,
+        TypeError,
+        ValueError,
+    ) as exc:
+        raise CollaborationAdmissionError(
+            "current join PLAYER binding could not be resolved"
+        ) from exc
+    if resolution.status != "AUTHORIZED_PLAYER" or resolution.player is None:
+        raise CollaborationAdmissionError(
+            "join/rejoin requires an active current PLAYER binding"
+        )
+    player_id = resolution.player.player_id
+    raw_player = _read_native(host, basis, "world.player", player_id)
+    try:
+        exact_player = PlayerRecord.from_mapping(raw_player)
+    except (AccessControlContractError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "current join PLAYER record is invalid"
+        ) from exc
+    if exact_player != resolution.player:
+        raise CollaborationAdmissionError(
+            "current join PLAYER binding changed during resolution"
+        )
+    return exact_player, tuple(_player_route_refs(raw_player, "current PLAYER"))
+
+
+def _recipient_catch_up_entry(
+    obligation: CollaborationObligation,
+    *,
+    player: PlayerRecord,
+) -> CollaborationCatchUpEntry:
+    required = tuple(
+        ref
+        for ref in obligation.required_contributors
+        if ref.player_id == player.player_id
+    )
+    optional = tuple(
+        ref
+        for ref in obligation.optional_contributors
+        if ref.player_id == player.player_id
+    )
+    accepted = tuple(
+        contributor
+        for _identity, contributor in obligation.accepted_input_contributors
+        if contributor.player_id == player.player_id
+    )
+    if required:
+        role = "REQUIRED"
+        own_refs = required
+    elif optional:
+        role = "OPTIONAL"
+        own_refs = optional
+    elif accepted:
+        role = "ORIGINATING"
+        own_refs = accepted
+    else:
+        raise CollaborationAdmissionError(
+            "current route obligation does not belong to the recipient"
+        )
+    own_pc_ids = tuple(sorted({ref.pc_id for ref in own_refs if ref.pc_id is not None}))
+    if any(pc_id not in player.controlled_pc_ids for pc_id in own_pc_ids):
+        raise CollaborationAdmissionError(
+            "recipient no longer controls an obligation PC"
+        )
+    if accepted:
+        contribution_status = "RECEIVED"
+    elif role == "REQUIRED":
+        contribution_status = "PENDING"
+    else:
+        contribution_status = "NOT_REQUIRED"
+    return CollaborationCatchUpEntry(
+        obligation_id=obligation.obligation_id,
+        generation=obligation.generation,
+        lifecycle=obligation.lifecycle,
+        purpose=obligation.purpose,
+        participant_role=role,
+        own_pc_ids=own_pc_ids,
+        contribution_status=contribution_status,
+    )
+
+
+def join_participant(
+    host: RuntimeHost,
+    *,
+    principal: object,
+    player_route: object,
+    cursor_hint: str | None = None,
+) -> CollaborationCatchUp:
+    """Prepare bounded join/rejoin catch-up before any mutable gameplay input.
+
+    The current W03 principal/PLAYER route and RuntimeHost campaign/LIVE basis
+    are acquired first.  The PLAYER's exact native collaboration route refs
+    then bound the only obligation IDs read.  This function produces an
+    ephemeral projection; it does not authorize input, persist a cursor or
+    assert that a human consumed the result.
+    """
+
+    basis = _operation_basis(host, None)
+    player, route_refs = _resolve_join_player(
+        host,
+        basis,
+        principal=principal,
+        player_route=player_route,
+    )
+    entries: list[CollaborationCatchUpEntry] = []
+    for obligation_id, route_generation in sorted(route_refs):
+        _obligation_basis, obligation = _read_current_obligation(
+            obligation_id, host, basis=basis
+        )
+        if obligation.generation != route_generation:
+            raise CollaborationAdmissionError(
+                "current PLAYER collaboration route points to a stale generation"
+            )
+        if obligation.lifecycle not in {"OPEN", "CLOSED"}:
+            raise CollaborationAdmissionError(
+                "current PLAYER collaboration route points to a terminal obligation"
+            )
+        entries.append(_recipient_catch_up_entry(obligation, player=player))
+
+    current_player, current_refs = _resolve_join_player(
+        host,
+        basis,
+        principal=principal,
+        player_route=player_route,
+    )
+    if current_player != player or current_refs != route_refs:
+        raise CollaborationAdmissionError(
+            "current PLAYER binding or collaboration route changed during catch-up"
+        )
+    _revalidate_host_basis(host, basis)
+    return CollaborationCatchUp(
+        campaign_id=basis.pinned_campaign.campaign_id,
+        campaign_revision=basis.pinned_campaign.revision,
+        player_id=player.player_id,
+        controlled_pc_ids=player.controlled_pc_ids,
+        live_source_keys=tuple(
+            entry.source_key
+            for entry in (basis.selected_live.entries if basis.selected_live else ())
+        ),
+        obligations=tuple(entries),
+        cursor_hint=cursor_hint,
+    )
+
+
+def rejoin_participant(
+    host: RuntimeHost,
+    *,
+    principal: object,
+    player_route: object,
+    cursor_hint: str | None = None,
+) -> CollaborationCatchUp:
+    """Use the same currentness-safe recipient projection for a rejoin."""
+
+    return join_participant(
+        host,
+        principal=principal,
+        player_route=player_route,
+        cursor_hint=cursor_hint,
+    )
+
+
+build_recipient_catch_up = join_participant

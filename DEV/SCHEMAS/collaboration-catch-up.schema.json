@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/collaboration-catch-up.schema.json",
+  "title": "HDM recipient-safe collaboration catch-up projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "campaign_id",
+    "campaign_revision",
+    "player_id",
+    "controlled_pc_ids",
+    "live_source_keys",
+    "obligations",
+    "cursor_hint"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "runtime.collaboration_catch_up"},
+    "campaign_id": {"$ref": "#/$defs/id"},
+    "campaign_revision": {"type": "string", "minLength": 1},
+    "player_id": {"$ref": "#/$defs/id"},
+    "controlled_pc_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "live_source_keys": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          {"$ref": "#/$defs/id"},
+          {"$ref": "#/$defs/id"},
+          {"$ref": "#/$defs/id"}
+        ],
+        "minItems": 3,
+        "maxItems": 3
+      }
+    },
+    "obligations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/obligation"}
+    },
+    "cursor_hint": {"type": ["string", "null"], "minLength": 1}
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "obligation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "obligation_id",
+        "generation",
+        "lifecycle",
+        "purpose",
+        "participant_role",
+        "own_pc_ids",
+        "contribution_status"
+      ],
+      "properties": {
+        "obligation_id": {"$ref": "#/$defs/id"},
+        "generation": {"type": "integer", "minimum": 1},
+        "lifecycle": {"enum": ["OPEN", "CLOSED"]},
+        "purpose": {"type": "string", "minLength": 1},
+        "participant_role": {
+          "enum": ["ORIGINATING", "REQUIRED", "OPTIONAL"]
+        },
+        "own_pc_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        },
+        "contribution_status": {
+          "enum": ["PENDING", "RECEIVED", "NOT_REQUIRED"]
+        }
+      }
+    }
+  }
+}
