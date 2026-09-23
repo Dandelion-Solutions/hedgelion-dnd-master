@@ -22,12 +22,14 @@ from GAME.TOOLS.history import (
     FRAMEWORK_MODULE_VERSION,
     HistoryContractError,
     NativeHistoryPublication,
-    _issue_native_history_from_window,
     append_semantic_event,
     build_t0_basis,
     recover_native_history,
     validate_semantic_event_draft,
     validate_t0_basis,
+)
+from GAME.TOOLS.history import (
+    _issue_native_history_from_window as _issue_native_history_from_adapter_window,
 )
 from GAME.TOOLS.live_state import (
     LiveClaim,
@@ -51,6 +53,17 @@ from GAME.TOOLS.story import (
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
+_TEST_EVT_HOST_TOKENS: dict[int, object] = {}
+
+
+def _issue_native_history_from_window(
+    source_window: object, **kwargs: object
+) -> NativeHistoryPublication:
+    if "_expected_host_token" not in kwargs:
+        kwargs["_expected_host_token"] = _TEST_EVT_HOST_TOKENS.get(
+            id(source_window), object()
+        )
+    return _issue_native_history_from_adapter_window(source_window, **kwargs)  # type: ignore[arg-type]
 
 
 def _semantic_event() -> dict[str, object]:
@@ -115,10 +128,12 @@ def _evt_window(
         events=source_events,
     )
     host = compose_runtime_host(campaign_id, repository, _HistoryLiveTransport())
-    return host.semantic_events.read_local_evt_window(
+    window = host.semantic_events.read_local_evt_window(
         lower_exclusive_ordinal=lower_exclusive_ordinal,
         max_items=max(1, total - (lower_exclusive_ordinal or 0)),
     )
+    _TEST_EVT_HOST_TOKENS[id(window)] = host._basis_token
+    return window
 
 
 class _HistoryRepository:
@@ -271,7 +286,9 @@ class NativeHistoryAuthorityTests(unittest.TestCase):
 
 
 class NativeHistoryWindowTests(unittest.TestCase):
-    def test_host_history_reads_only_the_bound_semantic_event_adapter_window(self) -> None:
+    def test_host_history_reads_only_the_bound_semantic_event_adapter_window(
+        self,
+    ) -> None:
         repository = _HistoryRepository()
         host = compose_runtime_host(
             "campaign.main", repository, _HistoryLiveTransport()
@@ -284,7 +301,9 @@ class NativeHistoryWindowTests(unittest.TestCase):
         self.assertIn("INDEX/EVENT_INDEX.yaml", repository.read_paths)
         self.assertNotIn("LOG/SEMANTIC_EVENTS", repository.read_paths)
 
-    def test_bound_evt_window_issues_ephemeral_history_with_admission_provenance(self) -> None:
+    def test_bound_evt_window_issues_ephemeral_history_with_admission_provenance(
+        self,
+    ) -> None:
         repository = _HistoryRepository()
         host = compose_runtime_host(
             "campaign.main", repository, _HistoryLiveTransport()
@@ -379,6 +398,15 @@ class NativeHistoryWindowTests(unittest.TestCase):
         )
 
         with self.assertRaises(HistoryContractError):
+            _issue_native_history_from_adapter_window(
+                window,
+                campaign_id="campaign.main",
+                expected_origin="LOCAL",
+                expected_source_ref="refs/heads/campaign/main",
+                expected_source_revision=_HISTORY_REVISION,
+            )
+
+        with self.assertRaises(HistoryContractError):
             _issue_native_history_from_window(
                 window,
                 campaign_id="campaign.main",
@@ -460,7 +488,9 @@ class NativeHistoryWindowTests(unittest.TestCase):
                 expected_source_revision=_HISTORY_REVISION,
             )
 
-    def test_history_rechecks_forged_gap_duplicate_and_completeness_claims(self) -> None:
+    def test_history_rechecks_forged_gap_duplicate_and_completeness_claims(
+        self,
+    ) -> None:
         original = _evt_window()
         forged_windows: list[EvtSourceWindow] = []
         for entries, complete in (
@@ -525,9 +555,13 @@ class NativeHistoryWindowTests(unittest.TestCase):
         forged_windows.append(incomplete)
 
         for forged in forged_windows:
-            with self.subTest(
-                entries=forged.entries, complete=forged.interval_complete_through_upper
-            ), self.assertRaises(HistoryContractError):
+            with (
+                self.subTest(
+                    entries=forged.entries,
+                    complete=forged.interval_complete_through_upper,
+                ),
+                self.assertRaises(HistoryContractError),
+            ):
                 _issue_native_history_from_window(
                     forged,
                     campaign_id="campaign.main",
@@ -536,7 +570,9 @@ class NativeHistoryWindowTests(unittest.TestCase):
                     expected_source_revision=original.source_revision,
                 )
 
-    def test_history_recovery_revalidates_ephemeral_publication_provenance(self) -> None:
+    def test_history_recovery_revalidates_ephemeral_publication_provenance(
+        self,
+    ) -> None:
         window = _evt_window()
         publication = _issue_native_history_from_window(
             window,
@@ -572,12 +608,16 @@ class NativeHistoryWindowTests(unittest.TestCase):
 
 
 class T0BasisTests(unittest.TestCase):
-    def test_t0_basis_is_explicit_and_reconstructible_without_current_actor_state(self) -> None:
+    def test_t0_basis_is_explicit_and_reconstructible_without_current_actor_state(
+        self,
+    ) -> None:
         basis = build_t0_basis(_semantic_event(), _t0_basis())
 
         self.assertEqual(basis["factors"][0]["t0_value"], "epistemic.known")
         with self.assertRaises(HistoryContractError):
-            validate_t0_basis({**_t0_basis(), "factors": [{"factor_id": "fact.party_authorized"}]})
+            validate_t0_basis(
+                {**_t0_basis(), "factors": [{"factor_id": "fact.party_authorized"}]}
+            )
 
 
 class StoryProjectionTests(unittest.TestCase):
@@ -613,43 +653,63 @@ class StoryT0MaterializationTests(unittest.TestCase):
 
 
 class CommentatorSelfContainedTests(unittest.TestCase):
-    def test_commentator_filters_hidden_story_material_before_request_materialization(self) -> None:
+    def test_commentator_filters_hidden_story_material_before_request_materialization(
+        self,
+    ) -> None:
         control = build_commentator_control_projection(
             {"player.aria": {"story_ids": ["E000007"]}}
         )
         snapshot = build_commentator_snapshot([_story_projection()], control)
 
-        self.assertEqual(filter_commentator_request(snapshot, "player.aria"), [_story_projection()])
+        self.assertEqual(
+            filter_commentator_request(snapshot, "player.aria"), [_story_projection()]
+        )
         self.assertEqual(filter_commentator_request(snapshot, "player.borin"), [])
 
     def test_commentator_rejects_an_invalid_control_projection(self) -> None:
         with self.assertRaises(CommentatorContractError):
             build_commentator_snapshot(
                 [_story_projection()],
-                {"schema_version": 0, "controls": {"player.aria": {"story_ids": ["E000007"]}}},
+                {
+                    "schema_version": 0,
+                    "controls": {"player.aria": {"story_ids": ["E000007"]}},
+                },
             )
 
-    def test_commentator_control_cannot_widen_story_availability_for_another_player(self) -> None:
+    def test_commentator_control_cannot_widen_story_availability_for_another_player(
+        self,
+    ) -> None:
         private_projection = _story_projection()
         private_projection["story_id"] = "E000008"
         private_projection["availability"] = {"visible_to": ["player.borin"]}
         control = build_commentator_control_projection(
             {"player.aria": {"story_ids": ["E000007", "E000008"]}}
         )
-        snapshot = build_commentator_snapshot([_story_projection(), private_projection], control)
+        snapshot = build_commentator_snapshot(
+            [_story_projection(), private_projection], control
+        )
 
-        self.assertEqual(filter_commentator_request(snapshot, "player.aria"), [_story_projection()])
+        self.assertEqual(
+            filter_commentator_request(snapshot, "player.aria"), [_story_projection()]
+        )
 
 
 class DramaturgHorizonTests(unittest.TestCase):
-    def test_dramaturg_horizon_is_provisional_and_has_no_future_fact_field(self) -> None:
+    def test_dramaturg_horizon_is_provisional_and_has_no_future_fact_field(
+        self,
+    ) -> None:
         horizon = validate_dramaturg_horizon(
             {
                 "schema_version": 1,
                 "scope_id": "campaign.main",
                 "generation": 1,
                 "source_basis": ["event.gate_opened"],
-                "entries": [{"kind": "PROVISIONAL_DRAMATURGIC_DIRECTION", "text": "Prepare a guarded route."}],
+                "entries": [
+                    {
+                        "kind": "PROVISIONAL_DRAMATURGIC_DIRECTION",
+                        "text": "Prepare a guarded route.",
+                    }
+                ],
             }
         )
 
@@ -666,7 +726,9 @@ class HistoryProjectionSeparationTests(unittest.TestCase):
 
 
 class CompositeIntegrationTests(unittest.TestCase):
-    def test_owner_local_chain_preserves_native_event_and_reader_safe_projection(self) -> None:
+    def test_owner_local_chain_preserves_native_event_and_reader_safe_projection(
+        self,
+    ) -> None:
         history = [_semantic_event()]
         bundle = build_story_source_bundle(history, layer="EVENTS")
         projection = project_story_window(bundle, [_story_projection()])
@@ -675,13 +737,17 @@ class CompositeIntegrationTests(unittest.TestCase):
         )
 
         self.assertEqual(
-            filter_commentator_request(build_commentator_snapshot(projection, control), "player.aria"),
+            filter_commentator_request(
+                build_commentator_snapshot(projection, control), "player.aria"
+            ),
             projection,
         )
 
 
 class StoryStorageSelectorTests(unittest.TestCase):
-    def test_story_selector_is_static_and_rejects_noncanonical_or_traversal_roots(self) -> None:
+    def test_story_selector_is_static_and_rejects_noncanonical_or_traversal_roots(
+        self,
+    ) -> None:
         self.assertEqual(select_story_root("STORY"), "STORY")
         for root in ("../STORY", "STORY/other", "ARCHIVE"):
             with self.subTest(root=root):
@@ -720,7 +786,9 @@ class DramaturgPublicationTests(unittest.TestCase):
 
 
 class DramaturgAdmissionTests(unittest.TestCase):
-    def test_retained_horizon_requires_multiplayer_and_current_source_basis(self) -> None:
+    def test_retained_horizon_requires_multiplayer_and_current_source_basis(
+        self,
+    ) -> None:
         horizon = {
             "schema_version": 1,
             "scope_id": "campaign.main",
@@ -735,7 +803,9 @@ class DramaturgAdmissionTests(unittest.TestCase):
 
 
 class DramaturgRebaseTests(unittest.TestCase):
-    def test_rebase_rejects_incompatible_native_source_without_silent_merge(self) -> None:
+    def test_rebase_rejects_incompatible_native_source_without_silent_merge(
+        self,
+    ) -> None:
         horizon = {
             "schema_version": 1,
             "scope_id": "campaign.main",
@@ -745,11 +815,15 @@ class DramaturgRebaseTests(unittest.TestCase):
         }
 
         with self.assertRaises(DramaturgContractError):
-            rebase_dramaturg_horizon(horizon, current_source_basis=["event.gate_closed"])
+            rebase_dramaturg_horizon(
+                horizon, current_source_basis=["event.gate_closed"]
+            )
 
 
 class StorySchemaTests(unittest.TestCase):
-    def test_owner_local_schemas_are_strict_and_use_initial_local_versions(self) -> None:
+    def test_owner_local_schemas_are_strict_and_use_initial_local_versions(
+        self,
+    ) -> None:
         schema_names = (
             "runtime-semantic-event-state.schema.json",
             "native-history-currentness.schema.json",
@@ -765,16 +839,33 @@ class StorySchemaTests(unittest.TestCase):
             "dramaturg-horizon.schema.json",
         )
 
-        schemas = [json.loads((SCHEMAS / name).read_text(encoding="utf-8")) for name in schema_names]
-        self.assertTrue(all(schema["additionalProperties"] is False for schema in schemas))
-        self.assertTrue(all("schema_version" in schema["properties"] for schema in schemas))
-        self.assertTrue(all(schema["properties"]["schema_version"].get("type") == "integer" for schema in schemas))
-        self.assertTrue(all(schema["properties"]["schema_version"].get("const") == 1 for schema in schemas))
+        schemas = [
+            json.loads((SCHEMAS / name).read_text(encoding="utf-8"))
+            for name in schema_names
+        ]
+        self.assertTrue(
+            all(schema["additionalProperties"] is False for schema in schemas)
+        )
+        self.assertTrue(
+            all("schema_version" in schema["properties"] for schema in schemas)
+        )
+        self.assertTrue(
+            all(
+                schema["properties"]["schema_version"].get("type") == "integer"
+                for schema in schemas
+            )
+        )
+        self.assertTrue(
+            all(
+                schema["properties"]["schema_version"].get("const") == 1
+                for schema in schemas
+            )
+        )
 
 
 class SchemaVersionTests(unittest.TestCase):
     def test_history_module_starts_at_its_first_material_revision(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.2")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.3")
 
     def test_owner_native_python_ingress_accepts_only_actual_integer_one(self) -> None:
         valid_horizon = {
@@ -787,18 +878,29 @@ class SchemaVersionTests(unittest.TestCase):
         valid_control = build_commentator_control_projection(
             {"player.aria": {"story_ids": ["E000007"]}}
         )
-        valid_snapshot = build_commentator_snapshot([_story_projection()], valid_control)
+        valid_snapshot = build_commentator_snapshot(
+            [_story_projection()], valid_control
+        )
 
-        self.assertEqual(validate_semantic_event_draft(_semantic_event())["schema_version"], 1)
+        self.assertEqual(
+            validate_semantic_event_draft(_semantic_event())["schema_version"], 1
+        )
         self.assertEqual(validate_t0_basis(_t0_basis())["schema_version"], 1)
         self.assertEqual(
-            validate_story_projection(_story_projection(), layer="EVENTS")["schema_version"], 1
+            validate_story_projection(_story_projection(), layer="EVENTS")[
+                "schema_version"
+            ],
+            1,
         )
         self.assertEqual(
-            build_commentator_snapshot([_story_projection()], valid_control)["schema_version"], 1
+            build_commentator_snapshot([_story_projection()], valid_control)[
+                "schema_version"
+            ],
+            1,
         )
         self.assertEqual(
-            filter_commentator_request(valid_snapshot, "player.aria"), [_story_projection()]
+            filter_commentator_request(valid_snapshot, "player.aria"),
+            [_story_projection()],
         )
         self.assertEqual(validate_dramaturg_horizon(valid_horizon)["schema_version"], 1)
 
@@ -806,20 +908,26 @@ class SchemaVersionTests(unittest.TestCase):
         for version in invalid_versions:
             with self.subTest(version=version, ingress="semantic event"):
                 with self.assertRaises(HistoryContractError):
-                    validate_semantic_event_draft({**_semantic_event(), "schema_version": version})
+                    validate_semantic_event_draft(
+                        {**_semantic_event(), "schema_version": version}
+                    )
             with self.subTest(version=version, ingress="T0 basis"):
                 with self.assertRaises(HistoryContractError):
                     validate_t0_basis({**_t0_basis(), "schema_version": version})
             with self.subTest(version=version, ingress="Story projection"):
                 with self.assertRaises(StoryContractError):
                     validate_story_projection(
-                        {**_story_projection(), "schema_version": version}, layer="EVENTS"
+                        {**_story_projection(), "schema_version": version},
+                        layer="EVENTS",
                     )
             with self.subTest(version=version, ingress="Commentator control"):
                 with self.assertRaises(CommentatorContractError):
                     build_commentator_snapshot(
                         [_story_projection()],
-                        {"schema_version": version, "controls": {"player.aria": {"story_ids": []}}},
+                        {
+                            "schema_version": version,
+                            "controls": {"player.aria": {"story_ids": []}},
+                        },
                     )
             with self.subTest(version=version, ingress="Commentator snapshot"):
                 with self.assertRaises(CommentatorContractError):
@@ -828,35 +936,54 @@ class SchemaVersionTests(unittest.TestCase):
                     )
             with self.subTest(version=version, ingress="Dramaturg horizon"):
                 with self.assertRaises(DramaturgContractError):
-                    validate_dramaturg_horizon({**valid_horizon, "schema_version": version})
+                    validate_dramaturg_horizon(
+                        {**valid_horizon, "schema_version": version}
+                    )
 
-    def test_draft_2020_12_structural_validation_accepts_numeric_one_point_zero(self) -> None:
+    def test_draft_2020_12_structural_validation_accepts_numeric_one_point_zero(
+        self,
+    ) -> None:
         schema = json.loads(
-            (SCHEMAS / "runtime-semantic-event-state.schema.json").read_text(encoding="utf-8")
+            (SCHEMAS / "runtime-semantic-event-state.schema.json").read_text(
+                encoding="utf-8"
+            )
         )
 
         self.assertTrue(
-            Draft202012Validator(schema).is_valid({**_semantic_event(), "schema_version": 1.0})
+            Draft202012Validator(schema).is_valid(
+                {**_semantic_event(), "schema_version": 1.0}
+            )
         )
 
-    def test_owner_local_validators_reject_noninteger_schema_version_one_point_zero(self) -> None:
+    def test_owner_local_validators_reject_noninteger_schema_version_one_point_zero(
+        self,
+    ) -> None:
         with self.assertRaises(HistoryContractError):
             validate_semantic_event_draft({**_semantic_event(), "schema_version": 1.0})
         with self.assertRaises(HistoryContractError):
             validate_t0_basis({**_t0_basis(), "schema_version": 1.0})
         with self.assertRaises(StoryContractError):
-            validate_story_projection({**_story_projection(), "schema_version": 1.0}, layer="EVENTS")
+            validate_story_projection(
+                {**_story_projection(), "schema_version": 1.0}, layer="EVENTS"
+            )
         with self.assertRaises(CommentatorContractError):
             build_commentator_snapshot(
                 [_story_projection()],
-                {"schema_version": 1.0, "controls": {"player.aria": {"story_ids": ["E000007"]}}},
+                {
+                    "schema_version": 1.0,
+                    "controls": {"player.aria": {"story_ids": ["E000007"]}},
+                },
             )
         snapshot = build_commentator_snapshot(
             [_story_projection()],
-            build_commentator_control_projection({"player.aria": {"story_ids": ["E000007"]}}),
+            build_commentator_control_projection(
+                {"player.aria": {"story_ids": ["E000007"]}}
+            ),
         )
         with self.assertRaises(CommentatorContractError):
-            filter_commentator_request({**snapshot, "schema_version": 1.0}, "player.aria")
+            filter_commentator_request(
+                {**snapshot, "schema_version": 1.0}, "player.aria"
+            )
         with self.assertRaises(DramaturgContractError):
             validate_dramaturg_horizon(
                 {
@@ -874,15 +1001,22 @@ class SchemaVersionTests(unittest.TestCase):
         with self.assertRaises(HistoryContractError):
             validate_t0_basis({**_t0_basis(), "schema_version": 2})
         with self.assertRaises(StoryContractError):
-            validate_story_projection({**_story_projection(), "schema_version": 2}, layer="EVENTS")
+            validate_story_projection(
+                {**_story_projection(), "schema_version": 2}, layer="EVENTS"
+            )
         with self.assertRaises(CommentatorContractError):
             build_commentator_snapshot(
                 [_story_projection()],
-                {"schema_version": 2, "controls": {"player.aria": {"story_ids": ["E000007"]}}},
+                {
+                    "schema_version": 2,
+                    "controls": {"player.aria": {"story_ids": ["E000007"]}},
+                },
             )
         snapshot = build_commentator_snapshot(
             [_story_projection()],
-            build_commentator_control_projection({"player.aria": {"story_ids": ["E000007"]}}),
+            build_commentator_control_projection(
+                {"player.aria": {"story_ids": ["E000007"]}}
+            ),
         )
         with self.assertRaises(CommentatorContractError):
             filter_commentator_request({**snapshot, "schema_version": 2}, "player.aria")

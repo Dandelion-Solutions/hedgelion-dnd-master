@@ -25,9 +25,10 @@ _HISTORY_SOURCE_DOMAIN: Final[str] = "campaign.semantic_events@S"
 _HISTORY_LANE: Final[str] = "evt"
 _HISTORY_CONTRACT_GENERATION: Final[int] = 1
 _NATIVE_HISTORY_KIND: Final[str] = "runtime.native_history"
+_MISSING_HOST_TOKEN: Final[object] = object()
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 
 
 class HistoryContractError(ValueError):
@@ -65,21 +66,32 @@ class NativeHistoryCurrentness:
         _git_revision(self.source_revision, "native history source revision")
         lower = self.lower_exclusive_ordinal
         if lower is not None and (type(lower) is not int or lower < 0):
-            raise HistoryContractError("lower-exclusive evt ordinal must be null or non-negative")
+            raise HistoryContractError(
+                "lower-exclusive evt ordinal must be null or non-negative"
+            )
         upper = self.upper_ordinal
         if upper is not None and (type(upper) is not int or upper < 1):
             raise HistoryContractError("upper evt ordinal must be null or positive")
         if upper is not None and upper <= (lower or 0):
             raise HistoryContractError("native history interval is empty or reversed")
         if not isinstance(self.accepted_event_fingerprints, Mapping):
-            raise HistoryContractError("native history event fingerprints must be an object")
+            raise HistoryContractError(
+                "native history event fingerprints must be an object"
+            )
         fingerprints: dict[str, str] = {}
         for event_id, fingerprint in self.accepted_event_fingerprints.items():
             _nonempty_string(event_id, "accepted native event identity")
-            if not isinstance(fingerprint, str) or re.fullmatch(r"[a-f0-9]{64}", fingerprint) is None:
-                raise HistoryContractError("native history event fingerprint must be SHA-256")
+            if (
+                not isinstance(fingerprint, str)
+                or re.fullmatch(r"[a-f0-9]{64}", fingerprint) is None
+            ):
+                raise HistoryContractError(
+                    "native history event fingerprint must be SHA-256"
+                )
             fingerprints[event_id] = fingerprint
-        object.__setattr__(self, "accepted_event_fingerprints", MappingProxyType(fingerprints))
+        object.__setattr__(
+            self, "accepted_event_fingerprints", MappingProxyType(fingerprints)
+        )
 
     def as_mapping(self) -> dict[str, object]:
         return {
@@ -134,17 +146,25 @@ class NativeSemanticEvent:
 
     def __post_init__(self) -> None:
         if not _is_owner_issued_currentness(self.currentness):
-            raise HistoryContractError("native event requires service-issued currentness")
+            raise HistoryContractError(
+                "native event requires service-issued currentness"
+            )
         normalized = validate_semantic_event_draft(self.event)
         if type(self.admission_ordinal) is not int or self.admission_ordinal < 1:
-            raise HistoryContractError("native event admission ordinal must be positive")
+            raise HistoryContractError(
+                "native event admission ordinal must be positive"
+            )
         if normalized["semantic_order"] != self.admission_ordinal:
             raise HistoryContractError(
                 "generation-1 semantic_order must equal evt admission ordinal"
             )
-        expected = self.currentness.accepted_event_fingerprints.get(normalized["event_id"])
+        expected = self.currentness.accepted_event_fingerprints.get(
+            normalized["event_id"]
+        )
         if expected != _semantic_event_fingerprint(normalized):
-            raise HistoryContractError("native event is not bound to the exact source window")
+            raise HistoryContractError(
+                "native event is not bound to the exact source window"
+            )
         object.__setattr__(self, "event", _freeze_history_value(normalized))
 
     @property
@@ -218,7 +238,11 @@ def _mark_owner_issued_event(value: NativeSemanticEvent) -> None:
 
 def _is_owner_issued_event(value: object) -> bool:
     reference = _OWNER_ISSUED_NATIVE_EVENTS.get(id(value))
-    return isinstance(value, NativeSemanticEvent) and reference is not None and reference() is value
+    return (
+        isinstance(value, NativeSemanticEvent)
+        and reference is not None
+        and reference() is value
+    )
 
 
 @dataclass(frozen=True, slots=True, weakref_slot=True, init=False)
@@ -233,26 +257,40 @@ class NativeHistoryPublication:
 
     def __post_init__(self) -> None:
         if not _is_owner_issued_currentness(self.currentness):
-            raise HistoryContractError("native publication requires service-issued currentness")
+            raise HistoryContractError(
+                "native publication requires service-issued currentness"
+            )
         events = tuple(self.events)
         if any(not _is_owner_issued_event(event) for event in events):
-            raise HistoryContractError("native publication requires service-issued events")
+            raise HistoryContractError(
+                "native publication requires service-issued events"
+            )
         if any(event.currentness is not self.currentness for event in events):
-            raise HistoryContractError("native publication events have foreign currentness")
+            raise HistoryContractError(
+                "native publication events have foreign currentness"
+            )
         event_ids = {event.event_id for event in events}
         if event_ids != set(self.currentness.accepted_event_fingerprints):
-            raise HistoryContractError("native publication does not cover its exact source window")
+            raise HistoryContractError(
+                "native publication does not cover its exact source window"
+            )
         expected_ordinal = (self.currentness.lower_exclusive_ordinal or 0) + 1
         for event in events:
             if event.admission_ordinal != expected_ordinal:
-                raise HistoryContractError("native publication evt interval is not contiguous")
+                raise HistoryContractError(
+                    "native publication evt interval is not contiguous"
+                )
             expected_ordinal += 1
         upper = self.currentness.upper_ordinal
         if upper is None:
             if events:
-                raise HistoryContractError("empty native publication has event evidence")
+                raise HistoryContractError(
+                    "empty native publication has event evidence"
+                )
         elif expected_ordinal - 1 != upper:
-            raise HistoryContractError("native publication does not prove its upper basis")
+            raise HistoryContractError(
+                "native publication does not prove its upper basis"
+            )
         object.__setattr__(self, "events", events)
 
     @property
@@ -362,11 +400,17 @@ class FirstInitializationHistoryObservation:
             raise HistoryContractError("history observation status must be owner-typed")
         if self.status is HistoryObservationStatus.AVAILABLE:
             if not _is_owner_issued_first_initialization_history(self.evidence):
-                raise HistoryContractError("available history observation requires owner-issued evidence")
+                raise HistoryContractError(
+                    "available history observation requires owner-issued evidence"
+                )
         elif self.evidence is not None:
-            raise HistoryContractError("failed history observation cannot carry creator evidence")
+            raise HistoryContractError(
+                "failed history observation cannot carry creator evidence"
+            )
         if not isinstance(self.reason, str) or not self.reason:
-            raise HistoryContractError("history observation requires a failure or source reason")
+            raise HistoryContractError(
+                "history observation requires a failure or source reason"
+            )
 
 
 _OWNER_ISSUED_FIRST_INITIALIZATION_HISTORY: dict[
@@ -379,11 +423,15 @@ def _mark_owner_issued_first_initialization_history(
 ) -> None:
     evidence_id = id(evidence)
 
-    def remove(reference: weakref.ReferenceType[FirstInitializationHistoryEvidence]) -> None:
+    def remove(
+        reference: weakref.ReferenceType[FirstInitializationHistoryEvidence],
+    ) -> None:
         if _OWNER_ISSUED_FIRST_INITIALIZATION_HISTORY.get(evidence_id) is reference:
             _OWNER_ISSUED_FIRST_INITIALIZATION_HISTORY.pop(evidence_id, None)
 
-    _OWNER_ISSUED_FIRST_INITIALIZATION_HISTORY[evidence_id] = weakref.ref(evidence, remove)
+    _OWNER_ISSUED_FIRST_INITIALIZATION_HISTORY[evidence_id] = weakref.ref(
+        evidence, remove
+    )
 
 
 def _is_owner_issued_first_initialization_history(value: object) -> bool:
@@ -436,19 +484,27 @@ def observe_first_initialization_history(
             ref["default_ref"], ref["default_head_revision"], commit["parent_revision"]
         )
         campaign_relation_value = repository.compare_ancestry(
-            ref["campaign_ref"], ref["initialization_revision"], ref["campaign_head_revision"]
+            ref["campaign_ref"],
+            ref["initialization_revision"],
+            ref["campaign_head_revision"],
         )
     except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
         return _unavailable(f"bounded ancestry evidence is unavailable: {exc}")
     try:
-        default_relation = _ancestry_relation(default_relation_value, "default ancestry")
-        campaign_relation = _ancestry_relation(campaign_relation_value, "campaign ancestry")
+        default_relation = _ancestry_relation(
+            default_relation_value, "default ancestry"
+        )
+        campaign_relation = _ancestry_relation(
+            campaign_relation_value, "campaign ancestry"
+        )
     except HistoryContractError as exc:
         return _ambiguous(f"bounded ancestry evidence is ambiguous: {exc}")
     if default_relation != "EQUAL":
         return _ambiguous("initialization parent is not the exact storage default HEAD")
     if campaign_relation not in {"EQUAL", "ANCESTOR"}:
-        return _ambiguous("initialization commit is not a bounded ancestor of campaign HEAD")
+        return _ambiguous(
+            "initialization commit is not a bounded ancestor of campaign HEAD"
+        )
 
     try:
         author_value = repository.read_authenticated_commit_author(
@@ -459,12 +515,16 @@ def observe_first_initialization_history(
     try:
         author_login = _authenticated_per_user_login(author_value)
     except HistoryContractError as exc:
-        return _unavailable(f"authenticated per-user commit authorship is unavailable: {exc}")
+        return _unavailable(
+            f"authenticated per-user commit authorship is unavailable: {exc}"
+        )
 
     evidence = object.__new__(FirstInitializationHistoryEvidence)
     object.__setattr__(evidence, "campaign_id", campaign_id)
     object.__setattr__(evidence, "author_login", author_login)
-    object.__setattr__(evidence, "initialization_revision", ref["initialization_revision"])
+    object.__setattr__(
+        evidence, "initialization_revision", ref["initialization_revision"]
+    )
     object.__setattr__(evidence, "parent_revision", commit["parent_revision"])
     object.__setattr__(evidence, "first_campaign_specific_commit", True)
     _mark_owner_issued_first_initialization_history(evidence)
@@ -576,7 +636,7 @@ def _issue_native_history_from_window(
     expected_origin: str,
     expected_source_ref: str,
     expected_source_revision: str,
-    _expected_host_token: object | None = None,
+    _expected_host_token: object = _MISSING_HOST_TOKEN,
 ) -> NativeHistoryPublication:
     """Issue native history only from one RuntimeHost adapter evt window.
 
@@ -591,6 +651,10 @@ def _issue_native_history_from_window(
         raise HistoryContractError(
             "RuntimeHost evt source adapter is unavailable"
         ) from exc
+    if _expected_host_token is _MISSING_HOST_TOKEN or _expected_host_token is None:
+        raise HistoryContractError(
+            "native history requires its bound RuntimeHost token"
+        )
     if not isinstance(
         source_window, EvtSourceWindow
     ) or not _is_adapter_issued_evt_window(
@@ -609,9 +673,13 @@ def _issue_native_history_from_window(
     if source_window.campaign_id != campaign:
         raise HistoryContractError("native history window belongs to another campaign")
     if source_window.origin != origin:
-        raise HistoryContractError("native history window origin differs from selected source")
+        raise HistoryContractError(
+            "native history window origin differs from selected source"
+        )
     if source_window.source_ref != source_ref:
-        raise HistoryContractError("native history window ref differs from selected source")
+        raise HistoryContractError(
+            "native history window ref differs from selected source"
+        )
     if source_window.source_revision != source_revision:
         raise HistoryContractError("native history window revision is stale")
     if source_window.lane != _HISTORY_LANE:
@@ -631,7 +699,9 @@ def _issue_native_history_from_window(
     raw_entries = tuple(source_window.entries)
     if upper is None:
         if lower is not None or raw_entries:
-            raise HistoryContractError("empty native history window has an invalid basis")
+            raise HistoryContractError(
+                "empty native history window has an invalid basis"
+            )
         normalized_events: list[tuple[int, dict[str, object]]] = []
     else:
         normalized_events = []
@@ -643,16 +713,26 @@ def _issue_native_history_from_window(
                 "event_id",
                 "event_record",
             }:
-                raise HistoryContractError("native history evt entry fields are not strict")
+                raise HistoryContractError(
+                    "native history evt entry fields are not strict"
+                )
             ordinal = raw_entry["ordinal"]
             if type(ordinal) is not int or ordinal != expected_ordinal:
-                raise HistoryContractError("native history evt interval is not contiguous")
-            event_id = _nonempty_string(raw_entry["event_id"], "native history event_id")
+                raise HistoryContractError(
+                    "native history evt interval is not contiguous"
+                )
+            event_id = _nonempty_string(
+                raw_entry["event_id"], "native history event_id"
+            )
             if event_id in seen_event_ids:
-                raise HistoryContractError("native history event identity is duplicated")
+                raise HistoryContractError(
+                    "native history event identity is duplicated"
+                )
             record = raw_entry["event_record"]
             if not isinstance(record, Mapping) or record.get("event_id") != event_id:
-                raise HistoryContractError("native history event identity differs from record")
+                raise HistoryContractError(
+                    "native history event identity differs from record"
+                )
             normalized = validate_semantic_event_draft(record)
             if normalized["semantic_order"] != ordinal:
                 raise HistoryContractError(
@@ -662,7 +742,9 @@ def _issue_native_history_from_window(
             normalized_events.append((ordinal, normalized))
             expected_ordinal += 1
         if not normalized_events or normalized_events[-1][0] != upper:
-            raise HistoryContractError("native history window does not prove its upper basis")
+            raise HistoryContractError(
+                "native history window does not prove its upper basis"
+            )
 
     currentness = _issue_history_currentness(
         campaign_id=campaign,
@@ -693,7 +775,9 @@ def recover_native_history(
     """Recover an ephemeral publication only against its exact currentness."""
 
     if not _is_owner_issued_currentness(currentness):
-        raise HistoryContractError("native history recovery requires owner-issued currentness")
+        raise HistoryContractError(
+            "native history recovery requires owner-issued currentness"
+        )
     if _is_owner_issued_publication(value):
         if value.currentness is not currentness:
             raise HistoryContractError("native history recovery currentness differs")
@@ -732,7 +816,9 @@ def recover_native_history(
     for raw_item in raw_events:
         item = _mapping(raw_item, "native history event envelope")
         if set(item) != {"event", "provenance"}:
-            raise HistoryContractError("native history event envelope fields are not strict")
+            raise HistoryContractError(
+                "native history event envelope fields are not strict"
+            )
         event = validate_semantic_event_draft(item["event"])
         provenance = _mapping(item["provenance"], "native history event provenance")
         expected_provenance = {
@@ -748,7 +834,9 @@ def recover_native_history(
             "provenance_refs",
         }
         if set(provenance) != expected_provenance:
-            raise HistoryContractError("native history provenance fields are not strict")
+            raise HistoryContractError(
+                "native history provenance fields are not strict"
+            )
         if (
             provenance["campaign_id"] != currentness.campaign_id
             or provenance["source_domain"] != currentness.source_domain
@@ -761,7 +849,9 @@ def recover_native_history(
             or provenance["event_id"] != event["event_id"]
             or provenance["provenance_refs"] != event["provenance_refs"]
         ):
-            raise HistoryContractError("native history provenance does not bind its event")
+            raise HistoryContractError(
+                "native history provenance does not bind its event"
+            )
         admission_ordinal = provenance["admission_ordinal"]
         recovered.append(
             _issue_native_event(
@@ -843,20 +933,26 @@ def _issue_native_event(
 def _history_origin(value: object) -> str:
     origin = _nonempty_string(value, "native history origin")
     if origin != "LOCAL" and _LIVE_ORIGIN.fullmatch(origin) is None:
-        raise HistoryContractError("native history origin must be LOCAL or a selected LIVE origin")
+        raise HistoryContractError(
+            "native history origin must be LOCAL or a selected LIVE origin"
+        )
     return origin
 
 
 def _history_source_ref(value: object) -> str:
     source_ref = _nonempty_string(value, "native history source ref")
     if any(character.isspace() for character in source_ref):
-        raise HistoryContractError("native history source ref must not contain whitespace")
+        raise HistoryContractError(
+            "native history source ref must not contain whitespace"
+        )
     return source_ref
 
 
 def _freeze_history_value(value: object) -> object:
     if isinstance(value, Mapping):
-        return MappingProxyType({key: _freeze_history_value(item) for key, item in value.items()})
+        return MappingProxyType(
+            {key: _freeze_history_value(item) for key, item in value.items()}
+        )
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
         return tuple(_freeze_history_value(item) for item in value)
     return value
@@ -879,16 +975,22 @@ def _semantic_event_fingerprint(event: Mapping[str, object]) -> str:
             ensure_ascii=False,
         ).encode("utf-8")
     except (TypeError, ValueError) as exc:
-        raise HistoryContractError("native semantic event is not JSON-serializable") from exc
+        raise HistoryContractError(
+            "native semantic event is not JSON-serializable"
+        ) from exc
     return hashlib.sha256(encoded).hexdigest()
 
 
 def _unavailable(reason: str) -> FirstInitializationHistoryObservation:
-    return FirstInitializationHistoryObservation(HistoryObservationStatus.UNAVAILABLE, reason=reason)
+    return FirstInitializationHistoryObservation(
+        HistoryObservationStatus.UNAVAILABLE, reason=reason
+    )
 
 
 def _ambiguous(reason: str) -> FirstInitializationHistoryObservation:
-    return FirstInitializationHistoryObservation(HistoryObservationStatus.AMBIGUOUS, reason=reason)
+    return FirstInitializationHistoryObservation(
+        HistoryObservationStatus.AMBIGUOUS, reason=reason
+    )
 
 
 def _campaign_ref_observation(value: object, campaign_id: str) -> dict[str, str]:
@@ -902,8 +1004,12 @@ def _campaign_ref_observation(value: object, campaign_id: str) -> dict[str, str]
         "initialization_revision",
     }
     if set(raw) != expected:
-        raise HistoryContractError("campaign ref observation has unsupported or missing fields")
-    observed_campaign_id = _nonempty_string(raw["campaign_id"], "campaign ref campaign_id")
+        raise HistoryContractError(
+            "campaign ref observation has unsupported or missing fields"
+        )
+    observed_campaign_id = _nonempty_string(
+        raw["campaign_id"], "campaign ref campaign_id"
+    )
     if observed_campaign_id != campaign_id:
         raise HistoryContractError("campaign ref belongs to another campaign")
     campaign_ref = _ref(raw["campaign_ref"], "campaign ref", campaign=True)
@@ -912,9 +1018,13 @@ def _campaign_ref_observation(value: object, campaign_id: str) -> dict[str, str]
         raise HistoryContractError("storage default ref cannot be a campaign ref")
     return {
         "campaign_ref": campaign_ref,
-        "campaign_head_revision": _revision(raw["campaign_head_revision"], "campaign HEAD"),
+        "campaign_head_revision": _revision(
+            raw["campaign_head_revision"], "campaign HEAD"
+        ),
         "default_ref": default_ref,
-        "default_head_revision": _revision(raw["default_head_revision"], "storage default HEAD"),
+        "default_head_revision": _revision(
+            raw["default_head_revision"], "storage default HEAD"
+        ),
         "initialization_revision": _revision(
             raw["initialization_revision"], "initialization revision"
         ),
@@ -933,13 +1043,23 @@ def _initialization_commit_observation(
         raise HistoryContractError(
             "initialization commit observation has unsupported or missing fields"
         )
-    if _nonempty_string(raw["campaign_id"], "initialization campaign_id") != campaign_id:
+    if (
+        _nonempty_string(raw["campaign_id"], "initialization campaign_id")
+        != campaign_id
+    ):
         raise HistoryContractError("initialization commit belongs to another campaign")
-    if _revision(raw["revision"], "initialization commit revision") != initialization_revision:
-        raise HistoryContractError("initialization commit revision does not match campaign ref")
+    if (
+        _revision(raw["revision"], "initialization commit revision")
+        != initialization_revision
+    ):
+        raise HistoryContractError(
+            "initialization commit revision does not match campaign ref"
+        )
     if type(raw["campaign_specific"]) is not bool or not raw["campaign_specific"]:
         raise HistoryContractError("initialization commit is not campaign-specific")
-    parent_revision = _revision(raw["parent_revision"], "initialization parent revision")
+    parent_revision = _revision(
+        raw["parent_revision"], "initialization parent revision"
+    )
     if parent_revision == initialization_revision:
         raise HistoryContractError("initialization commit must advance its parent")
     return {"parent_revision": parent_revision}
@@ -959,14 +1079,20 @@ def _authenticated_per_user_login(value: object) -> str:
     raw = _mapping(value, "authenticated commit author")
     expected = {"author", "authenticated", "per_user"}
     if set(raw) != expected:
-        raise HistoryContractError("authenticated commit author has unsupported or missing fields")
+        raise HistoryContractError(
+            "authenticated commit author has unsupported or missing fields"
+        )
     author = _mapping(raw["author"], "authenticated commit author identity")
     if set(author) != {"login"}:
-        raise HistoryContractError("authenticated commit author identity has unsupported fields")
+        raise HistoryContractError(
+            "authenticated commit author identity has unsupported fields"
+        )
     if type(raw["authenticated"]) is not bool or not raw["authenticated"]:
         raise HistoryContractError("commit author authentication is not trustworthy")
     if type(raw["per_user"]) is not bool or not raw["per_user"]:
-        raise HistoryContractError("commit author is not meaningful per-user authorship")
+        raise HistoryContractError(
+            "commit author is not meaningful per-user authorship"
+        )
     return _nonempty_string(author["login"], "commit author.login")
 
 
@@ -1054,7 +1180,11 @@ def validate_t0_basis(value: object) -> dict[str, object]:
     if set(basis) != {"schema_version", "event_id", "actor_id", "factors"}:
         raise HistoryContractError("T0 basis has unsupported or missing fields")
     raw_factors = basis["factors"]
-    if not isinstance(raw_factors, Sequence) or isinstance(raw_factors, str) or not raw_factors:
+    if (
+        not isinstance(raw_factors, Sequence)
+        or isinstance(raw_factors, str)
+        or not raw_factors
+    ):
         raise HistoryContractError("T0 factors must be a nonempty array")
     factors: list[dict[str, object]] = []
     factor_ids: set[str] = set()
@@ -1068,10 +1198,14 @@ def validate_t0_basis(value: object) -> dict[str, object]:
         factor_ids.add(factor_id)
         factors.append(
             {
-                "owner_family": _nonempty_string(factor["owner_family"], "owner_family"),
+                "owner_family": _nonempty_string(
+                    factor["owner_family"], "owner_family"
+                ),
                 "factor_id": factor_id,
                 "t0_value": deepcopy(factor["t0_value"]),
-                "provenance_refs": _unique_strings(factor["provenance_refs"], "provenance_refs"),
+                "provenance_refs": _unique_strings(
+                    factor["provenance_refs"], "provenance_refs"
+                ),
             }
         )
     return {
