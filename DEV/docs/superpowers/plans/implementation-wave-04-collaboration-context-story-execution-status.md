@@ -240,8 +240,6 @@ SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T01A and W04.T05A briefs above. W0
 NEXT_EXACT_TASK: obtain a Senior ruling for the two System-Impact briefs and restore a read-only private CLS evidence route; then reschedule only the specifically unblocked lane.
 KNOWN_BLOCKERS: T01A-T04B await T01A ruling; T05A-T06B await T05A ruling; T07A awaits fresh private CLS evidence. No Wave-04 production task is currently eligible.
 UNPUBLISHED_WORK: NONE after publication/read-back.
-
-
 ## Senior gate resolution — 2026-09-21
 
 SENIOR_REVIEWED_PUBLIC_HEAD: `5b3841ffe17bbea0e0663342eab1278427d6b07c`
@@ -933,3 +931,69 @@ SYSTEM_IMPACT: NONE CURRENT — T00P, T02B and T07A remain within the accepted o
 NEXT_EXACT_TASK: execute W04.T02C and W04.T07B in parallel within their disjoint stable-plan write sets. Do not start T04A before T02C PASS, T04B before T04A PASS, T05C before its full join, or T07C before T07B PASS.
 KNOWN_BLOCKERS: T04A/T04B wait on the Collaboration lane; T05C waits on T02C+T04B; later Story tasks are serial. Wave 05 remains unauthorized.
 UNPUBLISHED_WORK: NONE after the documentation checkpoint is published/read back.
+
+
+## T02C acceptance and T07B final-review-pending checkpoint — 2026-09-24
+
+STATUS: EXECUTING — T02C ACCEPTED; T07B FINAL_REVIEW_PENDING
+CURRENT_TASK: W04.T04A exact after-authority reconciliation; T07B independent review remains required before T07C
+LAST_SAFE_SHA: `dd0783c4eca20a94431b17844ca09ac64f8ba2cf`
+LAST_PUBLISHED_SHA: `cf26a3cc6dcc7de8f7fca408d664a64053275c29`
+
+LAST_COMPLETED_TASK:
+  W04.T02C accepted after independent reviewer PASS -> `dd0783c4eca20a94431b17844ca09ac64f8ba2cf`
+  W04.T07B implementation candidate published -> `20443067e051850bd6bef3314e43fbe72c4da43c`; independent re-review pending
+
+CURRENT_VERIFICATION_STATE:
+- W04.T00P, T02B, T07A and T02C are accepted at their recorded reviewer-PASS checkpoints. Prior accepted T01A, T05A, T01B, T05B, T01C, T02A and T03A remain unchanged.
+- T02C reloads current obligation/generation and caller PLAYER route before mutable association; catch-up omits raw `purpose`; native basis refs are exact-revalidated. `W04_COLLABORATION_PUBLICATION_READY` is accepted.
+- W04.T04A is eligible from T02C PASS plus accepted W03 access-policy transition inputs. T04B waits on T04A. T05C still requires T02C + T04B + accepted T05B.
+- T07B `2044306` implements fixed registrations, canonical CIDs/lane cursors, four StoryUnit layers, coverage/source-window schemas and registration-bound payloads. Local TDD/verification passes, but independent reviewer PASS is unavailable; `W04_STORY_SOURCE_CONTRACTS_READY` is NOT asserted and T07C remains gated.
+- T07 CLS↔HDM preflight remains PASS absent its explicit semantic-change trigger. Wave 05 remains NOT AUTHORIZED.
+
+CURRENT_VERIFICATION_STATE (T07B candidate):
+  focused T02C/T07B/T00P/Step-4 suites: 170 passed
+  Ruff check: PASS (pre-existing SIM117 diagnostics excluded for shared RD13)
+  Ruff format: PASS on Story module and RD13 test file
+  maintenance audit: PASS
+  git diff --check: PASS
+  independent T07B task review: PENDING
+
+VERSION_IMPACT:
+- T02C: `cd4a5ea` collaboration `1.0.12 -> 1.0.13`, new catch-up schema v1; `dd0783c` collaboration `1.0.13 -> 1.0.14`, catch-up schema `1 -> 2`. No engine/campaign/storage/catalog bump.
+- T07B chain: `864dc9f` initializes Story module at `1.0.1`, replaces unactivated EVENTS/MECHANICS/NARRATIVE/projection-state scaffolds from schema v1 to v2 and creates TRANSCRIPT v1; `cac8fc9` Story module `1.0.1 -> 1.0.2`, TRANSCRIPT schema `1 -> 2`; `2044306` Story module `1.0.2 -> 1.0.3`, no further local schema transition.
+- Story semantic-contract generations remain 1. SourceWindow is transient and its development schema has no local persisted schema-version field; common definitions add no independent runtime schema namespace.
+- The pre-v1 engine remains `development` at `1.0-alpha`; `GAME/CAMPAIGN/STORY` contains only scaffold placeholders and no persisted Story units/state. Schema cutover uses no migration edge/dual-read and does not bump `campaign_contract_generation` (current 2), storage generation, catalog generation or engine release. Old StoryUnit v1 shapes are rejected by the new validator.
+- This documentation checkpoint: `VERSION_IMPACT: NONE`.
+
+SYSTEM_IMPACT: NONE CURRENT — T02C/T07B remain within accepted Wave-04 semantics; no architecture reopen.
+NEXT_EXACT_TASK: execute W04.T04A. Keep T04B after T04A PASS, T05C after T02C + T04B, and T07C after independent T07B PASS. Retry T07B review on `gpt-6-luna` when reviewer capacity returns.
+KNOWN_BLOCKERS: T07B independent review capacity; T04B/T05C dependency joins; Wave 05 remains unauthorized.
+UNPUBLISHED_WORK: NONE; T07B candidate is published and awaiting review.
+
+
+## T07B independent review round 1 findings — 2026-09-24
+
+STATUS: EXECUTING — T02C ACCEPTED; T07B FIX ROUND 1 REQUIRED
+CURRENT_TASK: W04.T04A exact after-authority reconciliation and bounded T07B source-identity/cardinality repair in parallel
+LAST_SAFE_SHA: `dd0783c4eca20a94431b17844ca09ac64f8ba2cf`
+LAST_PUBLISHED_SHA: `cf26a3cc6dcc7de8f7fca408d664a64053275c29`
+
+LAST_COMPLETED_TASK: W04.T02C accepted after independent reviewer PASS -> `dd0783c4eca20a94431b17844ca09ac64f8ba2cf`.
+T07B candidate `20443067e051850bd6bef3314e43fbe72c4da43c` is published but is not accepted.
+
+CURRENT_VERIFICATION_STATE:
+- Independent T07B review on `gpt-6-luna` found: (1) M-SEG ignores `segment_sequence` in its owner selector; (2) M-OUT MAY_OMIT remains caller-selected and is not bound to native source keys/NO_GAMEPLAY_OUTCOME proof; (3) projection-state schema accepts SPARSE coverage despite baseline generation-1 contiguous registrations.
+- These are bounded implementation findings within the accepted T07B source contracts; no System-Impact or architecture reopen was requested. T07C remains gated by T07B PASS.
+- W04.T04A is eligible from T02C PASS plus accepted W03 access-policy transition inputs. T04B waits on T04A; T05C waits for T02C + T04B + accepted T05B.
+- CLS↔HDM T07 preflight remains PASS absent its explicit semantic-change trigger. Wave 05 remains NOT AUTHORIZED.
+
+VERSION_IMPACT:
+- T02C accepted chain: `cd4a5ea` collaboration `1.0.12 -> 1.0.13`, catch-up schema v1; `dd0783c` collaboration `1.0.13 -> 1.0.14`, catch-up schema `1 -> 2`. No campaign/storage/catalog/engine bump.
+- T07B candidate chain: `864dc9f` initializes Story module at `1.0.1`, EVENT/MECHANICS/NARRATIVE/projection-state schemas `1 -> 2` and new TRANSCRIPT schema v1; `cac8fc9` Story module `1.0.1 -> 1.0.2`, TRANSCRIPT schema `1 -> 2`; `2044306` Story module `1.0.2 -> 1.0.3`, no schema value transition. Semantic generations remain 1; pre-release empty Story data basis yields migration/dual-read/campaign-generation NONE.
+- This cursor checkpoint: `VERSION_IMPACT: NONE`.
+
+SYSTEM_IMPACT: NONE CURRENT — findings are T07B implementation defects within the accepted design.
+NEXT_EXACT_TASK: execute W04.T04A and repair T07B in parallel under disjoint Collaboration/Story write sets. Keep T04B after T04A PASS and T07C after T07B independent PASS.
+KNOWN_BLOCKERS: T04B/T05C dependency joins; T07B fix-round re-review; Wave 05 remains unauthorized.
+UNPUBLISHED_WORK: NONE after this cursor checkpoint is published/read back.

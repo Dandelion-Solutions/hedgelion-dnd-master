@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T00P/T02B/T07A ACCEPTED
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T00P/T02B/T07A/T02C ACCEPTED — T07B FIX_ROUND_REQUIRED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: Wave 03 implementation independently reviewed task-by-task and closed by mandatory Senior integration audit PASS on 2026-09-19; reviewed implementation head `9ae3feb74a2d657a081140781899dcbe66819b5b`
-NEXT_AUTHORIZED_UNIT: execute W04.T02C and W04.T07B in parallel; each requires its producer reviewer PASS and preserves the named dependency joins
-REQUIRED_GATE: T02C/T07B RED/GREEN/review gates -> T04A/T04B after T02C -> T05C after T02C+T04B+T05B -> subsequent T07 Story tasks serially -> exact-head Wave-04 completion verification -> mandatory Senior Wave-04 integration audit before Wave 04 is marked complete
+NEXT_AUTHORIZED_UNIT: execute W04.T04A and repair W04.T07B in parallel; re-review T07B before W04.T07C
+REQUIRED_GATE: T04A/T04B task review gates -> T05C after T02C+T04B+T05B; T07B reviewer PASS -> subsequent T07 Story tasks serially; then exact-head Wave-04 verification and mandatory Senior Wave-04 integration audit before closure
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — created/published; authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: T04A/T04B wait for T02C; T05C waits for T02C+T04B+accepted T05B; T07C+ wait for serial T07B+ inputs. T07 CLS↔HDM preflight remains PASS unless its semantic-change trigger fires. Migration execution is not required for the pre-release collaboration v2->v3 replacement; release execution, gameplay bootstrap and Wave 05 remain unauthorized.
+KNOWN_BLOCKERS: T04B waits for T04A; T05C waits for T02C+T04B+accepted T05B; T07C+ wait for T07B independent PASS and serial Story prerequisites. T07 CLS↔HDM preflight remains PASS unless its semantic-change trigger fires. Migration execution is not required for pre-release collaboration v2->v3 or unactivated Story schema cutovers; release execution, gameplay bootstrap and Wave 05 remain unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
