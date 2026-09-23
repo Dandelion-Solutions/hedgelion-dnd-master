@@ -1,7 +1,7 @@
 ---
 description: Independently reviews one completed HDM implementation task for spec compliance, architecture drift and code quality
 mode: subagent
-model: openai/gpt-5.6-terra
+model: openai/gpt-6-luna
 variant: high
 ---
 

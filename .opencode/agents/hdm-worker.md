@@ -1,7 +1,7 @@
 ---
 description: Executes one bounded HDM implementation-plan task with TDD, verification and coherent commit
 mode: subagent
-model: openai/gpt-5.6-luna
+model: openai/gpt-6-luna
 variant: xhigh
 ---
 
