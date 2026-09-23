@@ -25,8 +25,8 @@ _PREFIX_LAYERS = {"T": "TRANSCRIPT", "E": "EVENTS", "M": "MECHANICS", "N": "NARR
 _LOCAL_SOURCE_KEY = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*$")
 _LIVE_ORIGIN = re.compile(r"^LIVE:[A-Za-z0-9_.:-]+$")
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
 
 
 class StoryIdentityComponent(StrEnum):
@@ -176,11 +176,11 @@ STORY_UNIT_SCHEMA_VERSIONS: Final[Mapping[str, int]] = MappingProxyType(
     {
         "TRANSCRIPT": 2,
         "EVENTS": 3,
-        "MECHANICS": 3,
+        "MECHANICS": 4,
         "NARRATIVE": 3,
     }
 )
-STORY_PROJECTION_STATE_SCHEMA_VERSION: Final[int] = 3
+STORY_PROJECTION_STATE_SCHEMA_VERSION: Final[int] = 4
 
 
 class StoryContractError(ValueError):
@@ -722,6 +722,19 @@ def validate_story_unit(value: object, *, layer: str) -> dict[str, object]:
             and tuple(raw_identity) == (owner_id,)
         )
 
+    def exact_segment_ref(
+        reference: Mapping[str, object], owner_family: str, owner_id: str, sequence: int
+    ) -> bool:
+        return exact_native_ref(
+            reference,
+            owner_family,
+            (owner_id,),
+            selector={
+                "segment_id": f"{owner_id}:segment:{sequence}",
+                "segment_sequence": sequence,
+            },
+        )
+
     def exact_relation_ref(
         reference: Mapping[str, object],
         owner_family: str,
@@ -839,12 +852,14 @@ def validate_story_unit(value: object, *, layer: str) -> dict[str, object]:
                 ),
                 *(dependency["ref"] for dependency in sources.values()),
             ]
-            for owner_family, owner_id, _segment_sequence in parts:
+            for owner_family, owner_id, segment_sequence in parts:
                 if owner_family not in {
                     "runtime.resolution",
                     "runtime.command",
                 } or not any(
-                    exact_owner_identity(reference, owner_family, owner_id)
+                    exact_segment_ref(
+                        reference, owner_family, owner_id, segment_sequence
+                    )
                     for reference in owner_refs
                 ):
                     raise StoryContractError(
@@ -1141,6 +1156,11 @@ def validate_story_candidate_result(
         raise StoryContractError("Story source candidate fields are not strict")
     candidate_id = _nonempty_string(candidate_value["candidate_id"], "candidate_id")
     decode_candidate_id(registration.registration_id, candidate_id)
+    source_keys = _unique_strings(
+        candidate_value["source_keys"], "candidate source_keys"
+    )
+    if any(_LOCAL_SOURCE_KEY.fullmatch(key) is None for key in source_keys):
+        raise StoryContractError("candidate source key is not canonical")
     requirement = candidate_value["requirement"]
     if requirement not in {"MUST_MATERIALIZE", "MAY_OMIT"}:
         raise StoryContractError("candidate requirement is not registered")
@@ -1201,6 +1221,10 @@ def validate_story_candidate_result(
         if set(disposition) != base_fields | {"reason_code"}:
             raise StoryContractError("OMITTED result fields are not strict")
         reason_code = _nonempty_string(disposition["reason_code"], "reason_code")
+        if registration.requirement_policy is StoryRequirementPolicy.SOURCE_CLASSIFIED:
+            raise StoryContractError(
+                "source-classified omission requires native owner classification evidence"
+            )
         if requirement != "MAY_OMIT" or reason_code not in registration.omission_codes:
             raise StoryContractError("omission is not admitted by this source contract")
         return {

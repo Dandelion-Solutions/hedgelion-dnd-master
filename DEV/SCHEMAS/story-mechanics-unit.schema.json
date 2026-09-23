@@ -8,7 +8,7 @@
       "type": "object",
       "required": ["payload"],
       "properties": {
-        "schema_version": {"const": 3},
+        "schema_version": {"const": 4},
         "story_id": {
           "$ref": "story-unit-common.schema.json#/$defs/mechanicsStoryRef"
         },
@@ -33,6 +33,35 @@
               "uniqueItems": true,
               "items": {"$ref": "story-unit-common.schema.json#/$defs/nativeRef"}
             }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["projection_basis"],
+        "properties": {
+          "projection_basis": {
+            "type": "array",
+            "contains": {
+              "type": "object",
+              "required": ["source_domain"],
+              "properties": {
+                "source_domain": {
+                  "pattern": "^campaign\\.mechanical_segments@"
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "anyOf": [
+              {"required": ["resolution_refs"]},
+              {"required": ["receipt_refs"]}
+            ]
           }
         }
       }

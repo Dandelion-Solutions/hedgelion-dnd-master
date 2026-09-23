@@ -837,7 +837,7 @@ class StorySourceRegistrationTests(unittest.TestCase):
                     "reason_code": "uninteresting",
                 },
             )
-        self.assertEqual(
+        with self.assertRaises(StoryContractError):
             story_module.validate_story_candidate_result(
                 "M-OUT",
                 "campaign.mechanical_outcomes@LOCAL",
@@ -848,9 +848,7 @@ class StorySourceRegistrationTests(unittest.TestCase):
                     "outcome": "OMITTED",
                     "reason_code": "NO_GAMEPLAY_OUTCOME",
                 },
-            )["outcome"],
-            "OMITTED",
-        )
+            )
         adjudicated_zero_change = outcome_candidate | {
             "requirement": "MUST_MATERIALIZE"
         }
@@ -1191,10 +1189,18 @@ def _registered_story_unit(layer: str) -> dict[str, object]:
             "t0_basis": _t0_basis(),
         }
     elif layer == "MECHANICS":
+        segment_selector = {
+            "segment_id": "resolution-1:segment:1",
+            "segment_sequence": 1,
+        }
         payload = {
             "mechanical_source_keys": ["native"],
             "resolution_refs": [
-                {"family": "runtime.resolution", "identity": ["resolution-1"]}
+                {
+                    "family": "runtime.resolution",
+                    "identity": ["resolution-1"],
+                    "selector": segment_selector,
+                }
             ],
         }
     else:
@@ -1202,7 +1208,14 @@ def _registered_story_unit(layer: str) -> dict[str, object]:
     sources = {"native": {"ref": {"family": source_family, "identity": [source_id]}}}
     if layer == "MECHANICS":
         sources["owner"] = {
-            "ref": {"family": "runtime.resolution", "identity": ["resolution-1"]}
+            "ref": {
+                "family": "runtime.resolution",
+                "identity": ["resolution-1"],
+                "selector": {
+                    "segment_id": "resolution-1:segment:1",
+                    "segment_sequence": 1,
+                },
+            }
         }
     return {
         "schema_version": story_module.STORY_UNIT_SCHEMA_VERSIONS[layer],
@@ -1351,6 +1364,20 @@ class StoryUnitLayerTests(unittest.TestCase):
         with self.assertRaises(StoryContractError):
             story_module.validate_story_unit(outcome, layer="MECHANICS")
 
+    def test_segment_candidate_binds_exact_segment_sequence_selector(self) -> None:
+        segment = _registered_story_unit("MECHANICS")
+        story_module.validate_story_unit(segment, layer="MECHANICS")
+
+        wrong_segment = deepcopy(segment)
+        wrong_selector = {
+            "segment_id": "resolution-1:segment:2",
+            "segment_sequence": 2,
+        }
+        wrong_segment["sources"]["owner"]["ref"]["selector"] = wrong_selector
+        wrong_segment["payload"]["resolution_refs"][0]["selector"] = wrong_selector
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_unit(wrong_segment, layer="MECHANICS")
+
     def test_transcript_units_do_not_merge_distinct_message_candidates(self) -> None:
         unit = _registered_story_unit("TRANSCRIPT")
         unit["projection_basis"][0]["candidate_ids"].append(
@@ -1375,7 +1402,7 @@ class StoryUnitLayerTests(unittest.TestCase):
 
     def test_replaced_story_unit_shapes_fail_closed_after_schema_cutover(self) -> None:
         for layer in ("TRANSCRIPT", "EVENTS", "MECHANICS", "NARRATIVE"):
-            old_versions = (1,) if layer == "TRANSCRIPT" else (1, 2)
+            old_versions = range(1, story_module.STORY_UNIT_SCHEMA_VERSIONS[layer])
             for old_version in old_versions:
                 with self.subTest(layer=layer, schema_version=old_version):
                     old_unit = _registered_story_unit(layer) | {
@@ -1574,7 +1601,7 @@ class StorySchemaTests(unittest.TestCase):
     def test_owner_local_schemas_are_strict_and_use_initial_local_versions(
         self,
     ) -> None:
-        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.3")
+        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.4")
         schema_names = (
             "runtime-semantic-event-state.schema.json",
             "native-history-currentness.schema.json",
@@ -1638,11 +1665,11 @@ class StorySchemaTests(unittest.TestCase):
             "runtime-semantic-event-state.schema.json": 1,
             "native-history-currentness.schema.json": 1,
             "native-history-publication.schema.json": 1,
-            "story-projection-state.schema.json": 3,
+            "story-projection-state.schema.json": 4,
             "story-transcript-unit.schema.json": 2,
             "story-event-unit.schema.json": 3,
             "story-narrative-unit.schema.json": 3,
-            "story-mechanics-unit.schema.json": 3,
+            "story-mechanics-unit.schema.json": 4,
             "semantic-event-t0-basis.schema.json": 1,
             "commentator-snapshot.schema.json": 1,
             "commentator-control-projection.schema.json": 1,
@@ -1684,6 +1711,10 @@ class StorySchemaTests(unittest.TestCase):
                     self.assertFalse(
                         validator.is_valid(unit | {"story_id": "E0000001"})
                     )
+                if layer == "MECHANICS":
+                    missing_segment_binding = deepcopy(unit)
+                    missing_segment_binding["payload"].pop("resolution_refs")
+                    self.assertFalse(validator.is_valid(missing_segment_binding))
                 if layer == "TRANSCRIPT":
                     merged = deepcopy(unit)
                     merged["projection_basis"][0]["candidate_ids"].append(
@@ -1762,7 +1793,7 @@ class StorySchemaTests(unittest.TestCase):
         )
         validator = Draft202012Validator(schema)
         state = {
-            "schema_version": 3,
+            "schema_version": 4,
             "layer": "EVENTS",
             "story_id_allocator_high_water": 0,
             "coverage_by_source_domain": {},
@@ -1771,6 +1802,7 @@ class StorySchemaTests(unittest.TestCase):
         self.assertTrue(validator.is_valid(state))
         self.assertFalse(validator.is_valid(state | {"schema_version": 1}))
         self.assertFalse(validator.is_valid(state | {"schema_version": 2}))
+        self.assertFalse(validator.is_valid(state | {"schema_version": 3}))
         self.assertFalse(validator.is_valid(state | {"global_coverage": "evt:0"}))
         self.assertFalse(
             validator.is_valid(
@@ -1786,6 +1818,18 @@ class StorySchemaTests(unittest.TestCase):
                 }
             )
         )
+        sparse_state = state | {
+            "coverage_by_source_domain": {
+                "campaign.semantic_events@LOCAL": {
+                    "semantic_contract_generation": 1,
+                    "terminal_coverage": {
+                        "kind": "SPARSE",
+                        "evidence": {"uncovered": ["evt:2"]},
+                    },
+                }
+            }
+        }
+        self.assertFalse(validator.is_valid(sparse_state))
 
 
 class SchemaVersionTests(unittest.TestCase):

@@ -12,7 +12,7 @@
     "lookup"
   ],
   "properties": {
-    "schema_version": {"type": "integer", "const": 3},
+    "schema_version": {"type": "integer", "const": 4},
     "layer": {"enum": ["TRANSCRIPT", "EVENTS", "MECHANICS", "NARRATIVE"]},
     "story_id_allocator_high_water": {"type": "integer", "minimum": 0},
     "coverage_by_source_domain": {
@@ -73,26 +73,13 @@
       }
     },
     "terminalCoverage": {
-      "oneOf": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["kind", "through"],
-          "properties": {
-            "kind": {"const": "CONTIGUOUS"},
-            "through": {"type": ["string", "null"]}
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["kind", "evidence"],
-          "properties": {
-            "kind": {"const": "SPARSE"},
-            "evidence": {}
-          }
-        }
-      ]
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "through"],
+      "properties": {
+        "kind": {"const": "CONTIGUOUS"},
+        "through": {"type": ["string", "null"]}
+      }
     },
     "lookupEntry": {
       "type": "object",
