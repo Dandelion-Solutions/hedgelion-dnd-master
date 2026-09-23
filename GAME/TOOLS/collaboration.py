@@ -37,8 +37,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.10
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
+# framework_module_version: 1.0.11
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.11"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 3
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
@@ -1122,7 +1122,10 @@ class CollaborationObligation:
                 )
             ),
         )
-        if obligation.lifecycle in {"CLOSED", "RESOLVED"}:
+        if obligation.lifecycle in {"CLOSED", "RESOLVED"} or (
+            obligation.lifecycle == "OBSOLETE"
+            and obligation.closed_input_set_fingerprint is not None
+        ):
             CollaborationClosedBasis.from_obligation(obligation)
         _validate_persisted_input_owners(obligation, host)
         return obligation
@@ -1678,6 +1681,28 @@ def _revalidate_host_basis(host: RuntimeHost, basis: _OperationBasis) -> None:
         )
 
 
+def _operation_basis(
+    host: RuntimeHost, basis: _OperationBasis | None
+) -> _OperationBasis:
+    """Use one caller-prepared host basis throughout a publication preparation."""
+    if basis is None:
+        try:
+            basis = host._begin_operation()
+        except (AttributeError, TypeError, ValueError) as exc:
+            raise CollaborationAdmissionError("bound runtime host is required") from exc
+    if not hasattr(basis, "pinned_campaign") or not hasattr(basis, "selected_live"):
+        raise CollaborationAdmissionError("host operation basis is not owner-typed")
+    if basis.host_token is not host._basis_token:
+        raise CollaborationAdmissionError(
+            "host operation basis belongs to another runtime host"
+        )
+    if basis.pinned_campaign.campaign_id != host.campaign_id:
+        raise CollaborationAdmissionError(
+            "host operation basis belongs to another campaign"
+        )
+    return basis
+
+
 def _revalidate_frontier_basis(
     obligation: CollaborationObligation, host: RuntimeHost
 ) -> tuple[NativeBasisRef, ...]:
@@ -1721,15 +1746,13 @@ def _revalidate_frontier_basis(
 
 
 def _validate_persisted_input_owners(
-    obligation: CollaborationObligation, host: RuntimeHost
+    obligation: CollaborationObligation,
+    host: RuntimeHost,
+    *,
+    basis: _OperationBasis | None = None,
 ) -> None:
     """Prove each persisted input identity against its native Interaction owner."""
-    try:
-        basis = host._begin_operation()
-    except (AttributeError, TypeError, ValueError) as exc:
-        raise CollaborationAdmissionError(
-            "serialized obligation host basis could not be loaded"
-        ) from exc
+    basis = _operation_basis(host, basis)
     if basis.pinned_campaign.campaign_id != obligation.campaign_id:
         raise CollaborationAdmissionError(
             "serialized obligation belongs to another campaign"
@@ -2035,15 +2058,13 @@ def associate_input(
 
 
 def _revalidate_closed_native_basis(
-    obligation: CollaborationObligation, host: RuntimeHost
+    obligation: CollaborationObligation,
+    host: RuntimeHost,
+    *,
+    basis: _OperationBasis | None = None,
 ) -> None:
     """Revalidate a closed obligation's finite native basis without scanning."""
-    try:
-        basis = host._begin_operation()
-    except (AttributeError, TypeError, ValueError) as exc:
-        raise CollaborationAdmissionError(
-            "runtime host is required for collaboration close/handoff"
-        ) from exc
+    basis = _operation_basis(host, basis)
     if basis.pinned_campaign.campaign_id != obligation.campaign_id:
         raise CollaborationAdmissionError(
             "collaboration obligation belongs to another campaign"
@@ -2068,7 +2089,10 @@ def _revalidate_closed_native_basis(
 
 
 def _read_current_obligation_state(
-    obligation: CollaborationObligation, host: RuntimeHost
+    obligation: CollaborationObligation,
+    host: RuntimeHost,
+    *,
+    basis: _OperationBasis | None = None,
 ) -> tuple[int, str]:
     """Read the exact current obligation owner before using a caller object.
 
@@ -2079,7 +2103,7 @@ def _read_current_obligation_state(
     generation and lifecycle come from this exact owner read.
     """
     try:
-        basis = host._begin_operation()
+        basis = _operation_basis(host, basis)
         route = route_native_record(
             "runtime.collaboration_obligation", (obligation.obligation_id,)
         )
@@ -2130,12 +2154,15 @@ def _read_current_obligation_state(
 
 
 def _read_current_obligation(
-    obligation_id: str, host: RuntimeHost
+    obligation_id: str,
+    host: RuntimeHost,
+    *,
+    basis: _OperationBasis | None = None,
 ) -> tuple[_OperationBasis, CollaborationObligation]:
     """Load one obligation through its exact native route for recovery/closure."""
     _id(obligation_id, "current collaboration obligation_id")
     try:
-        basis = host._begin_operation()
+        basis = _operation_basis(host, basis)
         route = route_native_record(
             "runtime.collaboration_obligation", (obligation_id,)
         )
@@ -2187,6 +2214,7 @@ def _publish_obligation_delta(
     path_operations: Mapping[str, object | None],
     *,
     reason: str,
+    basis: _OperationBasis | None = None,
 ) -> PublicationOutcome:
     """Submit one collaboration delta through RuntimeHost's W02 service."""
     try:
@@ -2197,6 +2225,7 @@ def _publish_obligation_delta(
                 "runtime.collaboration_obligation": obligation.generation
             },
             publication_reason=reason,
+            basis=basis,
         )
     except (AttributeError, OSError, TypeError, ValueError) as exc:
         raise CollaborationAdmissionError(
@@ -2281,7 +2310,7 @@ def _route_companion_operations(
                 "runtime host is required for route-companion publication"
             ) from exc
     operations: dict[str, object] = {}
-    for player_id in required_route_holders(obligation):
+    for player_id in _prior_route_holder_ids(obligation):
         player = _read_native(host, basis, "world.player", player_id)
         value = (
             _player_with_route_ref(player, obligation)
@@ -2321,7 +2350,7 @@ def publish_closed(
     """Persist OPEN -> CLOSED through one W02 campaign publication attempt."""
     if not isinstance(obligation, CollaborationObligation):
         raise CollaborationAdmissionError("owner-derived obligation is required")
-    _basis, current = _read_current_obligation(obligation.obligation_id, host)
+    basis, current = _read_current_obligation(obligation.obligation_id, host)
     if current.campaign_id != obligation.campaign_id:
         raise CollaborationAdmissionError(
             "collaboration obligation belongs to another campaign"
@@ -2356,12 +2385,15 @@ def publish_closed(
         raise CollaborationAdmissionError(
             "only an open collaboration obligation can be durably closed"
         )
-    closed = close_obligation(current, host=host, generation=current.generation)
+    closed = close_obligation(
+        current, host=host, generation=current.generation, basis=basis
+    )
     _publish_obligation_delta(
         host,
         closed,
-        _closed_publication_operations(closed, host),
+        _closed_publication_operations(closed, host, basis=basis),
         reason="collaboration-close",
+        basis=basis,
     )
     return closed
 
@@ -2371,13 +2403,10 @@ def _load_obligation_clause(
     host: RuntimeHost,
     interaction_id: str,
     clause_id: str,
+    *,
+    basis: _OperationBasis | None = None,
 ) -> Mapping[str, object]:
-    try:
-        basis = host._begin_operation()
-    except (AttributeError, TypeError, ValueError) as exc:
-        raise CollaborationAdmissionError(
-            "runtime host is required for collaboration handoff"
-        ) from exc
+    basis = _operation_basis(host, basis)
     interaction = _load_interaction(host, basis, interaction_id)
     plan = _load_plan(
         host,
@@ -2397,12 +2426,14 @@ def close_obligation(
     *,
     host: RuntimeHost,
     generation: int | None = None,
+    basis: _OperationBasis | None = None,
 ) -> CollaborationObligation:
     """Freeze one current complete collection without handing it to execution."""
     if not isinstance(obligation, CollaborationObligation):
         raise CollaborationAdmissionError("owner-derived obligation is required")
+    basis = _operation_basis(host, basis)
     current_generation, current_lifecycle = _read_current_obligation_state(
-        obligation, host
+        obligation, host, basis=basis
     )
     if current_generation != obligation.generation:
         raise CollaborationAdmissionError(
@@ -2420,15 +2451,19 @@ def close_obligation(
         return obligation
     if obligation.lifecycle != "OPEN":
         raise CollaborationAdmissionError("only an open obligation can close")
-    _revalidate_closed_native_basis(obligation, host)
-    _validate_persisted_input_owners(obligation, host)
+    _revalidate_closed_native_basis(obligation, host, basis=basis)
+    _validate_persisted_input_owners(obligation, host, basis=basis)
     pending = _pending_required_contributors(obligation)
     if pending:
         raise CollaborationAdmissionError(
             "required collaboration inputs remain unsatisfied"
         )
     clause = _load_obligation_clause(
-        obligation, host, obligation.interaction_id, obligation.clause_id
+        obligation,
+        host,
+        obligation.interaction_id,
+        obligation.clause_id,
+        basis=basis,
     )
     if clause.get("ordering_resolution_id") is not None:
         raise CollaborationAdmissionError(
@@ -2441,7 +2476,9 @@ def close_obligation(
         raise CollaborationAdmissionError(
             "collaboration-held actionable clause is no longer pre-command"
         )
-    final_generation, final_lifecycle = _read_current_obligation_state(obligation, host)
+    final_generation, final_lifecycle = _read_current_obligation_state(
+        obligation, host, basis=basis
+    )
     if final_generation != obligation.generation or final_lifecycle != "OPEN":
         raise CollaborationAdmissionError(
             "collaboration generation changed during close"
@@ -2497,12 +2534,14 @@ def build_handoff(
     obligation: CollaborationObligation,
     *,
     host: RuntimeHost,
+    basis: _OperationBasis | None = None,
 ) -> CollaborationHandoff:
     """Build deterministic ephemeral handoff evidence for a CLOSED collection."""
     if not isinstance(obligation, CollaborationObligation):
         raise CollaborationAdmissionError("owner-derived obligation is required")
+    basis = _operation_basis(host, basis)
     current_generation, current_lifecycle = _read_current_obligation_state(
-        obligation, host
+        obligation, host, basis=basis
     )
     if current_generation != obligation.generation:
         raise CollaborationAdmissionError(
@@ -2516,12 +2555,12 @@ def build_handoff(
         raise CollaborationAdmissionError(
             "collaboration handoff requires a CLOSED obligation"
         )
-    basis = obligation.closed_basis
-    _revalidate_closed_native_basis(obligation, host)
-    _validate_persisted_input_owners(obligation, host)
+    closed_basis = obligation.closed_basis
+    _revalidate_closed_native_basis(obligation, host, basis=basis)
+    _validate_persisted_input_owners(obligation, host, basis=basis)
     entries: list[CollaborationHandoffEntry] = []
-    for identity in basis.accepted_input_uses:
-        clause = _load_obligation_clause(obligation, host, *identity)
+    for identity in closed_basis.accepted_input_uses:
+        clause = _load_obligation_clause(obligation, host, *identity, basis=basis)
         disposition, execution_state = _handoff_disposition(
             obligation, identity, clause
         )
@@ -2537,12 +2576,14 @@ def build_handoff(
                 execution_state=execution_state,
             )
         )
-    final_generation, final_lifecycle = _read_current_obligation_state(obligation, host)
+    final_generation, final_lifecycle = _read_current_obligation_state(
+        obligation, host, basis=basis
+    )
     if final_generation != obligation.generation or final_lifecycle != "CLOSED":
         raise CollaborationAdmissionError(
             "collaboration generation changed during handoff"
         )
-    return CollaborationHandoff(basis=basis, entries=tuple(entries))
+    return CollaborationHandoff(basis=closed_basis, entries=tuple(entries))
 
 
 def apply_handoff(
@@ -2623,16 +2664,15 @@ def _resolution_publication_operations(
     current: CollaborationObligation,
     handoff: CollaborationHandoff,
     host: RuntimeHost,
+    *,
+    basis: _OperationBasis | None = None,
 ) -> tuple[CollaborationObligation, dict[str, object | None]]:
-    expected = build_handoff(current, host=host)
+    basis = _operation_basis(host, basis)
+    expected = build_handoff(current, host=host, basis=basis)
     if handoff != expected:
         raise CollaborationAdmissionError(
             "handoff does not match current native collaboration owner"
         )
-    try:
-        basis = host._begin_operation()
-    except (AttributeError, TypeError, ValueError) as exc:
-        raise CollaborationAdmissionError("bound runtime host is required") from exc
     interaction = _load_interaction(host, basis, current.interaction_id)
     plan_id = _id(interaction["intent_plan_id"], "collaboration intent_plan_id")
     plan = _load_plan(host, basis, plan_id, current.interaction_id)
@@ -2669,16 +2709,23 @@ def _resolution_publication_operations(
         transitioned_clause = deepcopy(dict(target_clause))
         transitioned_clause["execution_state"] = "intent.ready"
         clauses[target_index] = transitioned_clause
-    transitioned_plan["clauses"] = clauses
+        transitioned_plan["clauses"] = clauses
+    if should_release:
+        operations: dict[str, object | None] = {
+            route_native_record(
+                "runtime.intent_plan", (plan_id,)
+            ).relative_path: transitioned_plan
+        }
+    else:
+        operations = {}
     resolved = replace(current, lifecycle="RESOLVED")
-    operations: dict[str, object | None] = {
-        route_native_record(
-            "runtime.intent_plan", (plan_id,)
-        ).relative_path: transitioned_plan,
-        route_native_record(
-            "runtime.collaboration_obligation", (current.obligation_id,)
-        ).relative_path: resolved.to_mapping(),
-    }
+    operations.update(
+        {
+            route_native_record(
+                "runtime.collaboration_obligation", (current.obligation_id,)
+            ).relative_path: resolved.to_mapping(),
+        }
+    )
     operations.update(
         _route_companion_operations(current, host, retain=False, basis=basis)
     )
@@ -2690,15 +2737,14 @@ def _validate_resolved_waiting_state(
     current: CollaborationObligation,
     handoff: CollaborationHandoff,
     host: RuntimeHost,
+    *,
+    basis: _OperationBasis | None = None,
 ) -> None:
+    basis = _operation_basis(host, basis)
     if handoff.basis != current.closed_basis:
         raise CollaborationAdmissionError(
             "resolved collaboration handoff basis differs from current owner"
         )
-    try:
-        basis = host._begin_operation()
-    except (AttributeError, TypeError, ValueError) as exc:
-        raise CollaborationAdmissionError("bound runtime host is required") from exc
     interaction = _load_interaction(host, basis, current.interaction_id)
     plan = _load_plan(
         host,
@@ -2714,7 +2760,7 @@ def _validate_resolved_waiting_state(
         raise CollaborationAdmissionError(
             "resolved collaboration IntentClause is not native-ready"
         )
-    for player_id in required_route_holders(current):
+    for player_id in _prior_route_holder_ids(current):
         player = _read_native(host, basis, "world.player", player_id)
         if (current.obligation_id, current.generation) in set(
             _player_route_refs(player, "PLAYER")
@@ -2736,7 +2782,7 @@ def resolve_waiting(
         raise CollaborationAdmissionError("owner-derived obligation is required")
     if not isinstance(handoff, CollaborationHandoff):
         raise CollaborationAdmissionError("typed collaboration handoff is required")
-    _basis, current = _read_current_obligation(obligation.obligation_id, host)
+    basis, current = _read_current_obligation(obligation.obligation_id, host)
     if current.campaign_id != obligation.campaign_id:
         raise CollaborationAdmissionError(
             "collaboration obligation belongs to another campaign"
@@ -2753,7 +2799,7 @@ def resolve_waiting(
             raise CollaborationAdmissionError(
                 "resolve targets a different input fingerprint"
             )
-        _validate_resolved_waiting_state(current, handoff, host)
+        _validate_resolved_waiting_state(current, handoff, host, basis=basis)
         return current
     if current.lifecycle != obligation.lifecycle:
         raise CollaborationAdmissionError(
@@ -2764,7 +2810,7 @@ def resolve_waiting(
             "resolve targets a different input fingerprint"
         )
     if current.lifecycle == "RESOLVED":
-        _validate_resolved_waiting_state(current, handoff, host)
+        _validate_resolved_waiting_state(current, handoff, host, basis=basis)
         return current
     if current.lifecycle == "OBSOLETE":
         raise CollaborationAdmissionError(
@@ -2774,14 +2820,97 @@ def resolve_waiting(
         raise CollaborationAdmissionError(
             "collaboration resolution requires a CLOSED obligation"
         )
-    resolved, operations = _resolution_publication_operations(current, handoff, host)
+    resolved, operations = _resolution_publication_operations(
+        current, handoff, host, basis=basis
+    )
     _publish_obligation_delta(
         host,
         resolved,
         operations,
         reason="collaboration-resolve",
+        basis=basis,
     )
     return resolved
+
+
+def obsolete_generation(
+    obligation: CollaborationObligation,
+    *,
+    host: RuntimeHost,
+    generation: int | None = None,
+) -> CollaborationObligation:
+    """Persist OPEN/CLOSED -> OBSOLETE with exact route-companion removal."""
+    if not isinstance(obligation, CollaborationObligation):
+        raise CollaborationAdmissionError("owner-derived obligation is required")
+    basis, current = _read_current_obligation(obligation.obligation_id, host)
+    if current.campaign_id != obligation.campaign_id:
+        raise CollaborationAdmissionError(
+            "collaboration obligation belongs to another campaign"
+        )
+    if current.generation != obligation.generation:
+        raise CollaborationAdmissionError(
+            "obsolete transition targets a stale collaboration generation"
+        )
+    if generation is not None and generation != current.generation:
+        raise CollaborationAdmissionError(
+            "obsolete transition targets a stale collaboration generation"
+        )
+    if current.lifecycle == "OBSOLETE":
+        if (
+            current.closed_input_set_fingerprint
+            != obligation.closed_input_set_fingerprint
+        ):
+            raise CollaborationAdmissionError(
+                "obsolete transition targets a different input fingerprint"
+            )
+        _validate_terminal_route_removal(current, host, basis=basis)
+        return current
+    if current.lifecycle == "RESOLVED":
+        raise CollaborationAdmissionError(
+            "resolved collaboration obligation cannot become obsolete"
+        )
+    if current.lifecycle not in {"OPEN", "CLOSED"}:
+        raise CollaborationAdmissionError(
+            "only an open or closed collaboration obligation can become obsolete"
+        )
+    _validate_persisted_input_owners(current, host, basis=basis)
+    if current.lifecycle == "CLOSED":
+        CollaborationClosedBasis.from_obligation(current)
+    obsolete = replace(current, lifecycle="OBSOLETE")
+    operations: dict[str, object | None] = {
+        route_native_record(
+            "runtime.collaboration_obligation", (obsolete.obligation_id,)
+        ).relative_path: obsolete.to_mapping()
+    }
+    operations.update(
+        _route_companion_operations(obsolete, host, retain=False, basis=basis)
+    )
+    _publish_obligation_delta(
+        host,
+        obsolete,
+        operations,
+        reason="collaboration-obsolete",
+        basis=basis,
+    )
+    return obsolete
+
+
+def _validate_terminal_route_removal(
+    obligation: CollaborationObligation,
+    host: RuntimeHost,
+    *,
+    basis: _OperationBasis | None = None,
+) -> None:
+    basis = _operation_basis(host, basis)
+    for player_id in _prior_route_holder_ids(obligation):
+        player = _read_native(host, basis, "world.player", player_id)
+        if (obligation.obligation_id, obligation.generation) in set(
+            _player_route_refs(player, "PLAYER")
+        ):
+            raise CollaborationAdmissionError(
+                "terminal collaboration route companion was not removed"
+            )
+    _revalidate_host_basis(host, basis)
 
 
 # Name aliases keep the owner vocabulary explicit at call sites without adding
@@ -2791,6 +2920,7 @@ handoff_collaboration = build_handoff
 complete_collaboration_handoff = apply_handoff
 ClosedCollectionBasis = CollaborationClosedBasis
 resolve_collaboration_waiting = resolve_waiting
+obsolete_collaboration = obsolete_generation
 
 
 def required_route_holders(obligation: CollaborationObligation) -> tuple[str, ...]:
@@ -2799,6 +2929,13 @@ def required_route_holders(obligation: CollaborationObligation) -> tuple[str, ..
         raise CollaborationAdmissionError("owner-derived obligation is required")
     if obligation.lifecycle in {"RESOLVED", "OBSOLETE"}:
         return ()
+    return _prior_route_holder_ids(obligation)
+
+
+def _prior_route_holder_ids(
+    obligation: CollaborationObligation,
+) -> tuple[str, ...]:
+    """Retain the former bounded holder set for terminal route cleanup."""
     holders = {ref.player_id for ref in obligation.required_contributors}
     holders.update(
         contributor.player_id
@@ -2818,11 +2955,7 @@ def reconcile_player_route_companions(
     """
     if not isinstance(obligation, CollaborationObligation):
         raise CollaborationAdmissionError("owner-derived obligation is required")
-    holder_ids = {ref.player_id for ref in obligation.required_contributors}
-    holder_ids.update(
-        contributor.player_id
-        for _, contributor in obligation.accepted_input_contributors
-    )
+    holder_ids = _prior_route_holder_ids(obligation)
     refs = (
         ()
         if obligation.lifecycle in {"RESOLVED", "OBSOLETE"}
@@ -2830,7 +2963,7 @@ def reconcile_player_route_companions(
     )
     return tuple(
         PlayerRouteCompanion(obligation.campaign_id, player_id, refs)
-        for player_id in sorted(holder_ids)
+        for player_id in holder_ids
     )
 
 

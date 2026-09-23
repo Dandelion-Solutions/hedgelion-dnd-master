@@ -377,6 +377,7 @@ def _add_persisted_input(
     clause_id: str,
     player_id: str,
     pc_id: str | None = None,
+    semantic_class: str = "ACTIONABLE_INTENT",
 ) -> None:
     plan_id = f"plan-{interaction_id.removeprefix('interaction-')}"
     repository.put(
@@ -406,7 +407,7 @@ def _add_persisted_input(
                     "order": 1,
                     "mapping_outcome": "exact",
                     "execution_state": "intent.pending",
-                    "collaboration_semantic_class": "ACTIONABLE_INTENT",
+                    "collaboration_semantic_class": semantic_class,
                     "normalized_semantics": {"action": "wait"},
                 }
             ],
@@ -2130,7 +2131,11 @@ class CollaborationCloseHandoffTests(unittest.TestCase):
 
 class CollaborationPublicationRecoveryTests(unittest.TestCase):
     def _open_with_all_inputs(
-        self, repository: CampaignPublicationRepositoryFixture, obligation_id: str
+        self,
+        repository: CampaignPublicationRepositoryFixture,
+        obligation_id: str,
+        *,
+        input_semantic_class: str = "ACTIONABLE_INTENT",
     ) -> CollaborationObligation:
         obligation = open_or_successor_obligation(
             _classify(repository), obligation_id=obligation_id
@@ -2142,6 +2147,7 @@ class CollaborationPublicationRecoveryTests(unittest.TestCase):
             clause_id="clause-2",
             player_id="player-bob",
             pc_id="pc-bob",
+            semantic_class=input_semantic_class,
         )
         associated = associate_input(
             obligation,
@@ -2316,6 +2322,71 @@ class CollaborationPublicationRecoveryTests(unittest.TestCase):
             len([name for name, _ in transport.calls if name == "update_ref"]),
             writes_after_resolution,
         )
+
+    def test_non_actionable_handoff_does_not_publish_an_intent_plan_operation(
+        self,
+    ) -> None:
+        repository = CampaignPublicationRepositoryFixture(
+            _collective_clause() | {"collaboration_semantic_class": "OOC_COORDINATION"}
+        )
+        transport = CampaignPublicationTransport(repository)
+        opening = self._open_with_all_inputs(
+            repository,
+            "obligation-non-actionable",
+            input_semantic_class="OOC_COORDINATION",
+        )
+        host = _host(repository, transport)
+
+        closed = collaboration_module.publish_closed(opening, host=host)
+        handoff = build_handoff(closed, host=host)
+        self.assertEqual(
+            handoff.entries[0].disposition,
+            HandoffDisposition.CONSUME_AS_NONEXECUTABLE_SEMANTIC_INPUT,
+        )
+
+        collaboration_module.resolve_waiting(closed, handoff, host=host)
+
+        intent_plan_path = route_native_record(
+            "runtime.intent_plan", ("plan-1",)
+        ).relative_path
+        resolution_operations = [
+            operations for name, operations in transport.calls if name == "create_tree"
+        ][-1]
+        self.assertNotIn(intent_plan_path, resolution_operations)
+
+    def test_persisted_obsolete_recovery_preserves_prior_holders_for_route_removal(
+        self,
+    ) -> None:
+        repository = CampaignPublicationRepositoryFixture()
+        transport = CampaignPublicationTransport(repository)
+        opening = self._open_with_all_inputs(repository, "obligation-obsolete")
+        host = _host(repository, transport)
+
+        closed = collaboration_module.publish_closed(opening, host=host)
+        obsolete = collaboration_module.obsolete_generation(closed, host=host)
+
+        self.assertEqual(obsolete.lifecycle, "OBSOLETE")
+        self.assertEqual(
+            obsolete.closed_input_set_fingerprint,
+            closed.closed_input_set_fingerprint,
+        )
+        recovered = collaboration_module.recover_obligation(host, opening.obligation_id)
+        self.assertEqual(recovered, obsolete)
+        self.assertEqual(recovered.closed_basis, closed.closed_basis)
+        self.assertEqual(
+            tuple(
+                companion.player_id
+                for companion in collaboration_module.reconcile_player_route_companions(
+                    recovered
+                )
+            ),
+            ("player-alice", "player-bob"),
+        )
+        for player_id in ("player-alice", "player-bob"):
+            player = repository.records[
+                route_native_record("world.player", (player_id,)).relative_path
+            ]
+            self.assertEqual(player["collaboration_route_refs"], [])
 
     def test_resolve_rejects_a_changed_closed_fingerprint_and_obsolete_preserves_it(
         self,
