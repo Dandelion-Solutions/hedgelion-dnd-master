@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import json
 import unittest
+from copy import deepcopy
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
+from referencing import Registry, Resource
 
+from GAME.TOOLS import story as story_module
 from GAME.TOOLS.commentator import (
     CommentatorContractError,
     build_commentator_control_projection,
@@ -644,6 +647,398 @@ class StoryProjectionTests(unittest.TestCase):
                     project_story_window({"layer": "EVENTS", "events": events}, [])
 
 
+class StorySourceRegistrationTests(unittest.TestCase):
+    def test_closed_registry_has_all_eight_layer_domain_lanes(self) -> None:
+        registrations = story_module.STORY_SOURCE_REGISTRATIONS
+
+        self.assertEqual(
+            {
+                key: (
+                    value.layer,
+                    value.source_domain_prefix,
+                    value.lane,
+                    value.requirement_policy,
+                    value.cardinality_policy,
+                )
+                for key, value in registrations.items()
+            },
+            {
+                "T-MSG": (
+                    "TRANSCRIPT",
+                    "campaign.participant_messages@",
+                    "msg",
+                    "MAY_OMIT",
+                    "ZERO_OR_ONE_PER_CANDIDATE",
+                ),
+                "T-ARC": (
+                    "TRANSCRIPT",
+                    "campaign.transcript_archival_requests@",
+                    "arc",
+                    "MUST_MATERIALIZE",
+                    "EXACTLY_ONE_PER_CANDIDATE",
+                ),
+                "E-EVT": (
+                    "EVENTS",
+                    "campaign.semantic_events@",
+                    "evt",
+                    "SOURCE_CLASSIFIED",
+                    "ONE_OR_MORE_PER_CANDIDATE",
+                ),
+                "E-REL": (
+                    "EVENTS",
+                    "campaign.semantic_relations@",
+                    "rel",
+                    "MUST_MATERIALIZE",
+                    "ONE_OR_MORE_PER_CANDIDATE",
+                ),
+                "M-SEG": (
+                    "MECHANICS",
+                    "campaign.mechanical_segments@",
+                    "seg",
+                    "SOURCE_CLASSIFIED",
+                    "ONE_OR_MORE_PER_CANDIDATE",
+                ),
+                "M-OUT": (
+                    "MECHANICS",
+                    "campaign.mechanical_outcomes@",
+                    "out",
+                    "SOURCE_CLASSIFIED",
+                    "ONE_OR_MORE_PER_CANDIDATE",
+                ),
+                "N-EVT": (
+                    "NARRATIVE",
+                    "campaign.semantic_events@",
+                    "evt",
+                    "SOURCE_CLASSIFIED",
+                    "ONE_OR_MORE_PER_CANDIDATE",
+                ),
+                "N-REL": (
+                    "NARRATIVE",
+                    "campaign.semantic_relations@",
+                    "rel",
+                    "MUST_MATERIALIZE",
+                    "ONE_OR_MORE_PER_CANDIDATE",
+                ),
+            },
+        )
+        self.assertEqual(len(registrations), 8)
+        self.assertTrue(
+            all(
+                registration.semantic_contract_generation == 1
+                for registration in registrations.values()
+            )
+        )
+
+    def test_candidate_identity_codecs_round_trip_and_reject_noncanonical_forms(
+        self,
+    ) -> None:
+        examples = {
+            "T-MSG": ["message-1"],
+            "T-ARC": ["interaction-1", "clause-1", 2],
+            "E-EVT": ["event-1"],
+            "E-REL": ["runtime.semantic_event", "event-1", "assertion-1"],
+            "M-SEG": ["runtime.resolution", "resolution-1", 3],
+            "M-OUT": ["runtime.command", "command-1", "terminal"],
+            "N-EVT": ["event-1"],
+            "N-REL": ["runtime.semantic_event", "event-1", "assertion-1"],
+        }
+        for registration_id, identity in examples.items():
+            with self.subTest(registration=registration_id):
+                encoded = story_module.encode_candidate_id(registration_id, identity)
+                self.assertEqual(
+                    story_module.decode_candidate_id(registration_id, encoded),
+                    tuple(identity),
+                )
+
+        escaped = story_module.encode_candidate_id("E-EVT", ['quote" slash/é\n\u0001'])
+        self.assertEqual(escaped, '["quote\\" slash/é\\n\\u0001"]')
+        self.assertEqual(
+            story_module.decode_candidate_id("E-EVT", escaped),
+            ('quote" slash/é\n\u0001',),
+        )
+
+        with self.assertRaises(StoryContractError):
+            story_module.decode_candidate_id("E-EVT", '["event-1" ]')
+        with self.assertRaises(StoryContractError):
+            story_module.encode_candidate_id(
+                "T-ARC", ["interaction-1", "clause-1", True]
+            )
+
+    def test_native_origin_scopes_are_byte_escaped_without_case_folding(self) -> None:
+        self.assertEqual(
+            story_module.story_source_domain("E-EVT", "LOCAL"),
+            "campaign.semantic_events@LOCAL",
+        )
+        self.assertEqual(
+            story_module.story_source_domain("E-EVT", "LIVE:e1-abc"),
+            "campaign.semantic_events@LIVE%3Ae1-abc",
+        )
+        with self.assertRaises(StoryContractError):
+            story_module.story_source_domain("E-EVT", "LIVE:bad space")
+
+    def test_registration_requiredness_and_omission_codes_are_closed(self) -> None:
+        registrations = story_module.STORY_SOURCE_REGISTRATIONS
+        self.assertEqual(
+            registrations["T-MSG"].omission_codes, ("OPTIONAL_TRANSCRIPT",)
+        )
+        self.assertEqual(registrations["T-ARC"].requirement_policy, "MUST_MATERIALIZE")
+        self.assertEqual(registrations["E-REL"].requirement_policy, "MUST_MATERIALIZE")
+        self.assertEqual(registrations["N-REL"].requirement_policy, "MUST_MATERIALIZE")
+        self.assertEqual(
+            registrations["E-EVT"].omission_codes, ("TECHNICAL_ONLY_EVENT",)
+        )
+        self.assertEqual(
+            registrations["M-SEG"].omission_codes,
+            ("EXECUTION_BOOKKEEPING_ONLY",),
+        )
+        self.assertEqual(
+            registrations["M-OUT"].omission_codes, ("NO_GAMEPLAY_OUTCOME",)
+        )
+
+    def test_candidate_results_cannot_omit_required_or_rank_candidates(self) -> None:
+        relation_id = story_module.encode_candidate_id(
+            "E-REL", ["runtime.semantic_event", "event-1", "assertion-1"]
+        )
+        relation_candidate = {
+            "candidate_id": relation_id,
+            "requirement": "MUST_MATERIALIZE",
+            "source_keys": ["relation"],
+        }
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_candidate_result(
+                "E-REL",
+                "campaign.semantic_relations@LOCAL",
+                relation_candidate,
+                {
+                    "source_domain": "campaign.semantic_relations@LOCAL",
+                    "candidate_id": relation_id,
+                    "outcome": "OMITTED",
+                    "reason_code": "low_importance",
+                },
+            )
+
+        outcome_id = story_module.encode_candidate_id(
+            "M-OUT", ["runtime.resolution", "resolution-1", "terminal"]
+        )
+        outcome_candidate = {
+            "candidate_id": outcome_id,
+            "requirement": "MAY_OMIT",
+            "source_keys": ["outcome"],
+        }
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_candidate_result(
+                "M-OUT",
+                "campaign.mechanical_outcomes@LOCAL",
+                outcome_candidate,
+                {
+                    "source_domain": "campaign.mechanical_outcomes@LOCAL",
+                    "candidate_id": outcome_id,
+                    "outcome": "OMITTED",
+                    "reason_code": "uninteresting",
+                },
+            )
+        self.assertEqual(
+            story_module.validate_story_candidate_result(
+                "M-OUT",
+                "campaign.mechanical_outcomes@LOCAL",
+                outcome_candidate,
+                {
+                    "source_domain": "campaign.mechanical_outcomes@LOCAL",
+                    "candidate_id": outcome_id,
+                    "outcome": "OMITTED",
+                    "reason_code": "NO_GAMEPLAY_OUTCOME",
+                },
+            )["outcome"],
+            "OMITTED",
+        )
+        adjudicated_zero_change = outcome_candidate | {
+            "requirement": "MUST_MATERIALIZE"
+        }
+        self.assertEqual(
+            story_module.validate_story_candidate_result(
+                "M-OUT",
+                "campaign.mechanical_outcomes@LOCAL",
+                adjudicated_zero_change,
+                {
+                    "source_domain": "campaign.mechanical_outcomes@LOCAL",
+                    "candidate_id": outcome_id,
+                    "outcome": "MATERIALIZED",
+                    "record_keys": ["miss-or-failure"],
+                },
+            )["outcome"],
+            "MATERIALIZED",
+        )
+
+    def test_source_window_uses_domain_local_contiguous_coverage_and_cardinality(
+        self,
+    ) -> None:
+        event_one = story_module.encode_candidate_id("E-EVT", ["event-1"])
+        event_two = story_module.encode_candidate_id("E-EVT", ["event-2"])
+        window = {
+            "source_domain": "campaign.semantic_events@LOCAL",
+            "semantic_contract_generation": 1,
+            "source_basis": {
+                "origin": "LOCAL",
+                "lane": "evt",
+                "upper": "evt:2",
+                "enumeration_representation": "native-event-index-v1",
+                "owner_contracts": [
+                    {"family": "runtime.semantic_event", "schema_version": 1}
+                ],
+            },
+            "expected_coverage": {"kind": "CONTIGUOUS", "through": None},
+            "proposed_coverage": {"kind": "CONTIGUOUS", "through": "evt:2"},
+            "candidates": [
+                {
+                    "candidate_id": event_one,
+                    "requirement": "MUST_MATERIALIZE",
+                    "source_keys": ["event_one"],
+                },
+                {
+                    "candidate_id": event_two,
+                    "requirement": "MUST_MATERIALIZE",
+                    "source_keys": ["event_two"],
+                },
+            ],
+        }
+
+        validated = story_module.validate_story_source_window("E-EVT", window)
+
+        self.assertEqual(len(validated["candidates"]), 2)
+        self.assertEqual(validated["proposed_coverage"]["through"], "evt:2")
+        duplicate = dict(window)
+        duplicate["candidates"] = [window["candidates"][0], window["candidates"][0]]
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_source_window("E-EVT", duplicate)
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_source_window(
+                "E-EVT",
+                window | {"semantic_contract_generation": 2},
+            )
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_source_window(
+                "E-EVT",
+                window
+                | {"proposed_coverage": {"kind": "CONTIGUOUS", "through": "evt:3"}},
+            )
+        extra_field = deepcopy(window)
+        extra_field["candidates"][0]["importance"] = "low"
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_source_window("E-EVT", extra_field)
+
+
+def _registered_story_unit(layer: str) -> dict[str, object]:
+    story_id = {
+        "TRANSCRIPT": "T000001",
+        "EVENTS": "E000001",
+        "MECHANICS": "M000001",
+        "NARRATIVE": "N000001",
+    }[layer]
+    source_family, source_id = {
+        "TRANSCRIPT": ("runtime.message", "message-1"),
+        "EVENTS": ("runtime.semantic_event", "event.gate_opened"),
+        "MECHANICS": ("runtime.mechanical_event", "mechanical-1"),
+        "NARRATIVE": ("runtime.semantic_event", "event.gate_opened"),
+    }[layer]
+    source_domain = {
+        "TRANSCRIPT": "campaign.participant_messages@LOCAL",
+        "EVENTS": "campaign.semantic_events@LOCAL",
+        "MECHANICS": "campaign.mechanical_segments@LOCAL",
+        "NARRATIVE": "campaign.semantic_events@LOCAL",
+    }[layer]
+    registration_id, candidate_identity = {
+        "TRANSCRIPT": ("T-MSG", [source_id]),
+        "EVENTS": ("E-EVT", [source_id]),
+        "MECHANICS": ("M-SEG", ["runtime.resolution", "resolution-1", 1]),
+        "NARRATIVE": ("N-EVT", [source_id]),
+    }[layer]
+    candidate_id = story_module.encode_candidate_id(registration_id, candidate_identity)
+    payload: dict[str, object]
+    if layer == "TRANSCRIPT":
+        payload = {
+            "message_source_key": "native",
+            "speaker": {"kind": "ROLE", "role": "PLAYER"},
+        }
+    elif layer == "EVENTS":
+        payload = {
+            "event_source_keys": ["native"],
+            "t0_basis": _t0_basis(),
+        }
+    elif layer == "MECHANICS":
+        payload = {"mechanical_source_keys": ["native"]}
+    else:
+        payload = {"factual_source_keys": ["native"]}
+    return {
+        "schema_version": story_module.STORY_UNIT_SCHEMA_VERSIONS[layer],
+        "story_id": story_id,
+        "content": {"body": "A source-bound Story account."},
+        "sources": {
+            "native": {"ref": {"family": source_family, "identity": [source_id]}}
+        },
+        "projection_basis": [
+            {
+                "source_domain": source_domain,
+                "semantic_contract_generation": 1,
+                "candidate_ids": [candidate_id],
+            }
+        ],
+        "availability": {"requires_story_refs": []},
+        "payload": payload,
+    }
+
+
+class StoryUnitLayerTests(unittest.TestCase):
+    def test_all_four_unit_contracts_validate_their_payload_and_prefix(self) -> None:
+        for layer in ("TRANSCRIPT", "EVENTS", "MECHANICS", "NARRATIVE"):
+            with self.subTest(layer=layer):
+                unit = _registered_story_unit(layer)
+                validated = story_module.validate_story_unit(unit, layer=layer)
+                self.assertEqual(validated["story_id"], unit["story_id"])
+                self.assertEqual(validated["payload"], unit["payload"])
+
+    def test_payload_source_keys_must_resolve_and_layers_cannot_cross_use_ids(
+        self,
+    ) -> None:
+        event = _registered_story_unit("EVENTS")
+        event["payload"] = {"event_source_keys": ["missing"]}
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_unit(event, layer="EVENTS")
+
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_unit(
+                _registered_story_unit("EVENTS"), layer="NARRATIVE"
+            )
+
+    def test_transcript_units_do_not_merge_distinct_message_candidates(self) -> None:
+        unit = _registered_story_unit("TRANSCRIPT")
+        unit["projection_basis"][0]["candidate_ids"].append(
+            story_module.encode_candidate_id("T-MSG", ["message-2"])
+        )
+
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_unit(unit, layer="TRANSCRIPT")
+
+        separate_contributions = _registered_story_unit("TRANSCRIPT")
+        separate_contributions["projection_basis"].append(
+            {
+                "source_domain": "campaign.participant_messages@LOCAL",
+                "semantic_contract_generation": 1,
+                "candidate_ids": [
+                    story_module.encode_candidate_id("T-MSG", ["message-2"])
+                ],
+            }
+        )
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_unit(separate_contributions, layer="TRANSCRIPT")
+
+    def test_replaced_story_unit_shapes_fail_closed_after_schema_cutover(self) -> None:
+        for layer in ("EVENTS", "MECHANICS", "NARRATIVE"):
+            with self.subTest(layer=layer):
+                old_unit = _registered_story_unit(layer) | {"schema_version": 1}
+                with self.assertRaises(StoryContractError):
+                    story_module.validate_story_unit(old_unit, layer=layer)
+
+
 class StoryT0MaterializationTests(unittest.TestCase):
     def test_story_event_retains_story_local_t0_basis(self) -> None:
         projection = validate_story_projection(_story_projection(), layer="EVENTS")
@@ -824,14 +1219,17 @@ class StorySchemaTests(unittest.TestCase):
     def test_owner_local_schemas_are_strict_and_use_initial_local_versions(
         self,
     ) -> None:
+        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.1")
         schema_names = (
             "runtime-semantic-event-state.schema.json",
             "native-history-currentness.schema.json",
             "native-history-publication.schema.json",
             "story-projection-state.schema.json",
+            "story-transcript-unit.schema.json",
             "story-event-unit.schema.json",
             "story-narrative-unit.schema.json",
             "story-mechanics-unit.schema.json",
+            "story-source-window.schema.json",
             "semantic-event-t0-basis.schema.json",
             "commentator-snapshot.schema.json",
             "commentator-control-projection.schema.json",
@@ -839,28 +1237,150 @@ class StorySchemaTests(unittest.TestCase):
             "dramaturg-horizon.schema.json",
         )
 
+        versioned_schema_names = tuple(
+            name for name in schema_names if name != "story-source-window.schema.json"
+        )
         schemas = [
             json.loads((SCHEMAS / name).read_text(encoding="utf-8"))
-            for name in schema_names
+            for name in versioned_schema_names
         ]
-        self.assertTrue(
-            all(schema["additionalProperties"] is False for schema in schemas)
-        )
-        self.assertTrue(
-            all("schema_version" in schema["properties"] for schema in schemas)
-        )
-        self.assertTrue(
-            all(
-                schema["properties"]["schema_version"].get("type") == "integer"
-                for schema in schemas
+        unit_schema_names = {
+            "story-transcript-unit.schema.json",
+            "story-event-unit.schema.json",
+            "story-narrative-unit.schema.json",
+            "story-mechanics-unit.schema.json",
+        }
+        for name, schema in zip(versioned_schema_names, schemas, strict=True):
+            if name in unit_schema_names:
+                self.assertEqual(
+                    schema["allOf"][0]["$ref"],
+                    "story-unit-common.schema.json#/$defs/storyUnit",
+                )
+            else:
+                self.assertIs(schema["additionalProperties"], False)
+        version_properties = {
+            name: (
+                schema["allOf"][1]["properties"]
+                if name in unit_schema_names
+                else schema["properties"]
             )
-        )
+            for name, schema in zip(versioned_schema_names, schemas, strict=True)
+        }
         self.assertTrue(
-            all(
-                schema["properties"]["schema_version"].get("const") == 1
-                for schema in schemas
-            )
+            all("schema_version" in props for props in version_properties.values())
         )
+        common_schema = json.loads(
+            (SCHEMAS / "story-unit-common.schema.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            common_schema["$defs"]["storyUnit"]["properties"]["schema_version"]["type"],
+            "integer",
+        )
+        for name, props in version_properties.items():
+            if name not in unit_schema_names:
+                self.assertEqual(props["schema_version"].get("type"), "integer")
+        expected_versions = {
+            "runtime-semantic-event-state.schema.json": 1,
+            "native-history-currentness.schema.json": 1,
+            "native-history-publication.schema.json": 1,
+            "story-projection-state.schema.json": 2,
+            "story-transcript-unit.schema.json": 1,
+            "story-event-unit.schema.json": 2,
+            "story-narrative-unit.schema.json": 2,
+            "story-mechanics-unit.schema.json": 2,
+            "semantic-event-t0-basis.schema.json": 1,
+            "commentator-snapshot.schema.json": 1,
+            "commentator-control-projection.schema.json": 1,
+            "commentator-view.schema.json": 1,
+            "dramaturg-horizon.schema.json": 1,
+        }
+        self.assertEqual(
+            {
+                name: props["schema_version"].get("const")
+                for name, props in version_properties.items()
+            },
+            expected_versions,
+        )
+
+    def test_all_four_story_unit_schemas_accept_registered_envelopes(self) -> None:
+        resources = Registry()
+        for schema_name in (
+            "story-unit-common.schema.json",
+            "semantic-event-t0-basis.schema.json",
+        ):
+            schema = json.loads((SCHEMAS / schema_name).read_text(encoding="utf-8"))
+            resources = resources.with_resource(
+                schema["$id"], Resource.from_contents(schema)
+            )
+        schema_names = {
+            "TRANSCRIPT": "story-transcript-unit.schema.json",
+            "EVENTS": "story-event-unit.schema.json",
+            "MECHANICS": "story-mechanics-unit.schema.json",
+            "NARRATIVE": "story-narrative-unit.schema.json",
+        }
+        for layer, schema_name in schema_names.items():
+            with self.subTest(layer=layer):
+                schema = json.loads((SCHEMAS / schema_name).read_text(encoding="utf-8"))
+                validator = Draft202012Validator(schema, registry=resources)
+                unit = _registered_story_unit(layer)
+                self.assertTrue(validator.is_valid(unit))
+                self.assertFalse(validator.is_valid(unit | {"unregistered": True}))
+                if layer == "TRANSCRIPT":
+                    merged = deepcopy(unit)
+                    merged["projection_basis"][0]["candidate_ids"].append(
+                        story_module.encode_candidate_id("T-MSG", ["message-2"])
+                    )
+                    self.assertFalse(validator.is_valid(merged))
+
+    def test_story_source_window_schema_rejects_unknown_candidate_fields(self) -> None:
+        schema = json.loads(
+            (SCHEMAS / "story-source-window.schema.json").read_text(encoding="utf-8")
+        )
+        candidate_id = story_module.encode_candidate_id("E-EVT", ["event-1"])
+        value = {
+            "source_domain": "campaign.semantic_events@LOCAL",
+            "semantic_contract_generation": 1,
+            "source_basis": {
+                "origin": "LOCAL",
+                "lane": "evt",
+                "upper": "evt:1",
+                "enumeration_representation": "native-event-index-v1",
+                "owner_contracts": [
+                    {"family": "runtime.semantic_event", "schema_version": 1}
+                ],
+            },
+            "expected_coverage": {"kind": "CONTIGUOUS", "through": None},
+            "proposed_coverage": {"kind": "CONTIGUOUS", "through": "evt:1"},
+            "candidates": [
+                {
+                    "candidate_id": candidate_id,
+                    "requirement": "MUST_MATERIALIZE",
+                    "source_keys": ["event"],
+                }
+            ],
+        }
+        self.assertTrue(Draft202012Validator(schema).is_valid(value))
+        invalid = deepcopy(value)
+        invalid["candidates"][0]["importance"] = "low"
+        self.assertFalse(Draft202012Validator(schema).is_valid(invalid))
+
+    def test_projection_state_is_layer_local_and_has_no_global_coverage_scalar(
+        self,
+    ) -> None:
+        schema = json.loads(
+            (SCHEMAS / "story-projection-state.schema.json").read_text(encoding="utf-8")
+        )
+        validator = Draft202012Validator(schema)
+        state = {
+            "schema_version": 2,
+            "layer": "EVENTS",
+            "story_id_allocator_high_water": 0,
+            "coverage_by_source_domain": {},
+            "lookup": {},
+        }
+        self.assertTrue(validator.is_valid(state))
+        self.assertFalse(validator.is_valid(state | {"schema_version": 1}))
+        self.assertFalse(validator.is_valid(state | {"global_coverage": "evt:0"}))
 
 
 class SchemaVersionTests(unittest.TestCase):

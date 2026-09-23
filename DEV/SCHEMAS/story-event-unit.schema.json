@@ -2,15 +2,38 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/story-event-unit.schema.json",
   "title": "HDM Story EVENTS unit",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["schema_version", "story_id", "content", "sources", "t0_basis", "availability"],
-  "properties": {
-    "schema_version": {"type": "integer", "const": 1},
-    "story_id": {"type": "string", "pattern": "^E[0-9]{6,}$"},
-    "content": {"type": "object", "additionalProperties": false, "required": ["body"], "properties": {"body": {"type": "string", "minLength": 1}}},
-    "sources": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-    "t0_basis": {"$ref": "semantic-event-t0-basis.schema.json"},
-    "availability": {"type": "object", "additionalProperties": false, "required": ["visible_to"], "properties": {"visible_to": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}}}
-  }
+  "allOf": [
+    {"$ref": "story-unit-common.schema.json#/$defs/storyUnit"},
+    {
+      "type": "object",
+      "required": ["payload"],
+      "properties": {
+        "schema_version": {"const": 2},
+        "story_id": {"pattern": "^E[0-9]{6,}$"},
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "anyOf": [
+            {"required": ["event_source_keys"]},
+            {"required": ["relation_source_keys"]}
+          ],
+          "properties": {
+            "event_source_keys": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"$ref": "story-unit-common.schema.json#/$defs/localKey"}
+            },
+            "relation_source_keys": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"$ref": "story-unit-common.schema.json#/$defs/localKey"}
+            },
+            "t0_basis": {"$ref": "semantic-event-t0-basis.schema.json"}
+          }
+        }
+      }
+    }
+  ]
 }

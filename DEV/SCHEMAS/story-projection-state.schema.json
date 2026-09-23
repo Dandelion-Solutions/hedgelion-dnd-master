@@ -4,13 +4,137 @@
   "title": "HDM Story layer projection state",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "layer", "story_id_allocator_high_water", "coverage_by_source_domain", "lookup"],
+  "required": [
+    "schema_version",
+    "layer",
+    "story_id_allocator_high_water",
+    "coverage_by_source_domain",
+    "lookup"
+  ],
   "properties": {
-    "schema_version": {"type": "integer", "const": 1},
+    "schema_version": {"type": "integer", "const": 2},
     "layer": {"enum": ["TRANSCRIPT", "EVENTS", "MECHANICS", "NARRATIVE"]},
     "story_id_allocator_high_water": {"type": "integer", "minimum": 0},
-    "coverage_by_source_domain": {"type": "object"},
-    "lookup": {"type": "object"},
-    "chapters": {"type": "array"}
+    "coverage_by_source_domain": {
+      "type": "object",
+      "propertyNames": {"type": "string", "minLength": 1},
+      "additionalProperties": {"$ref": "#/$defs/coverageEntry"}
+    },
+    "lookup": {
+      "type": "object",
+      "propertyNames": {"type": "string", "pattern": "^[TEMN][0-9]{6,}$"},
+      "additionalProperties": {"$ref": "#/$defs/lookupEntry"}
+    },
+    "chapters": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/chapter"}
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"layer": {"const": "NARRATIVE"}}},
+      "then": {},
+      "else": {"not": {"required": ["chapters"]}}
+    }
+  ],
+  "$defs": {
+    "storyRefArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[TEMN][0-9]{6,}$"}
+    },
+    "nativeRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["family", "identity"],
+      "properties": {
+        "family": {"type": "string", "minLength": 1},
+        "identity": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "selector": {}
+      }
+    },
+    "coverageEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["semantic_contract_generation", "terminal_coverage"],
+      "properties": {
+        "semantic_contract_generation": {"type": "integer", "minimum": 1},
+        "terminal_coverage": {"$ref": "#/$defs/terminalCoverage"}
+      }
+    },
+    "terminalCoverage": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "through"],
+          "properties": {
+            "kind": {"const": "CONTIGUOUS"},
+            "through": {"type": ["string", "null"]}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "evidence"],
+          "properties": {
+            "kind": {"const": "SPARSE"},
+            "evidence": {}
+          }
+        }
+      ]
+    },
+    "lookupEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_refs", "source_refs", "story_refs"],
+      "properties": {
+        "entity_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nativeRef"}
+        },
+        "source_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nativeRef"}
+        },
+        "story_refs": {"$ref": "#/$defs/storyRefArray"}
+      }
+    },
+    "chapter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["narrative_refs", "availability"],
+      "properties": {
+        "narrative_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^N[0-9]{6,}$"}
+        },
+        "availability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["requires_story_refs"],
+          "properties": {
+            "requires_story_refs": {"$ref": "#/$defs/storyRefArray"},
+            "requires_source_refs": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {"$ref": "#/$defs/nativeRef"}
+            }
+          }
+        },
+        "label": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "part_label": {"type": "string", "minLength": 1},
+        "synopsis": {"type": "string", "minLength": 1}
+      }
+    }
   }
 }

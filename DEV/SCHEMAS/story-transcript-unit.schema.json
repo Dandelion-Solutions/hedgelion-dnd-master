@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/story-transcript-unit.schema.json",
+  "title": "HDM Story TRANSCRIPT unit",
+  "allOf": [
+    {"$ref": "story-unit-common.schema.json#/$defs/storyUnit"},
+    {
+      "type": "object",
+      "required": ["payload"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "story_id": {"pattern": "^T[0-9]{6,}$"},
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["message_source_key", "speaker"],
+          "properties": {
+            "message_source_key": {"$ref": "story-unit-common.schema.json#/$defs/localKey"},
+            "speaker": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["kind", "ref"],
+                  "properties": {
+                    "kind": {"const": "ENTITY"},
+                    "ref": {"$ref": "story-unit-common.schema.json#/$defs/nativeRef"}
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["kind", "role"],
+                  "properties": {
+                    "kind": {"const": "ROLE"},
+                    "role": {"type": "string", "minLength": 1}
+                  }
+                }
+              ]
+            },
+            "recipient_refs": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {"$ref": "story-unit-common.schema.json#/$defs/nativeRef"}
+            },
+            "interaction_ref": {"$ref": "story-unit-common.schema.json#/$defs/nativeRef"},
+            "exact_text_ref": {"$ref": "story-unit-common.schema.json#/$defs/nativeRef"}
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "projection_basis": {
+          "type": "array",
+          "items": {
+            "if": {
+              "required": ["source_domain"],
+              "properties": {
+                "source_domain": {
+                  "pattern": "^campaign\\.(participant_messages|transcript_archival_requests)@"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "candidate_ids": {"maxItems": 1}
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

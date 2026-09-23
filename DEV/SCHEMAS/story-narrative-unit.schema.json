@@ -2,14 +2,28 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/story-narrative-unit.schema.json",
   "title": "HDM Story NARRATIVE unit",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["schema_version", "story_id", "content", "sources", "availability"],
-  "properties": {
-    "schema_version": {"type": "integer", "const": 1},
-    "story_id": {"type": "string", "pattern": "^N[0-9]{6,}$"},
-    "content": {"type": "object", "additionalProperties": false, "required": ["body"], "properties": {"body": {"type": "string", "minLength": 1}}},
-    "sources": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-    "availability": {"type": "object"}
-  }
+  "allOf": [
+    {"$ref": "story-unit-common.schema.json#/$defs/storyUnit"},
+    {
+      "type": "object",
+      "required": ["payload"],
+      "properties": {
+        "schema_version": {"const": 2},
+        "story_id": {"pattern": "^N[0-9]{6,}$"},
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["factual_source_keys"],
+          "properties": {
+            "factual_source_keys": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"$ref": "story-unit-common.schema.json#/$defs/localKey"}
+            }
+          }
+        }
+      }
+    }
+  ]
 }
