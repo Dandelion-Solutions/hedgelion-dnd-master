@@ -16,7 +16,7 @@
     "cursor_hint"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "kind": {"const": "runtime.collaboration_catch_up"},
     "campaign_id": {"$ref": "#/$defs/id"},
     "campaign_revision": {"type": "string", "minLength": 1},
@@ -59,7 +59,6 @@
         "obligation_id",
         "generation",
         "lifecycle",
-        "purpose",
         "participant_role",
         "own_pc_ids",
         "contribution_status"
@@ -68,7 +67,6 @@
         "obligation_id": {"$ref": "#/$defs/id"},
         "generation": {"type": "integer", "minimum": 1},
         "lifecycle": {"enum": ["OPEN", "CLOSED"]},
-        "purpose": {"type": "string", "minLength": 1},
         "participant_role": {
           "enum": ["ORIGINATING", "REQUIRED", "OPTIONAL"]
         },

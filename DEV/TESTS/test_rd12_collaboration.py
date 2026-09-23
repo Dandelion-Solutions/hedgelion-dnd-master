@@ -668,6 +668,8 @@ class CollaborationAdmissionTests(unittest.TestCase):
             admission, obligation_id="obligation-input"
         )
         assert obligation is not None
+        _persist_obligation(repository, obligation)
+        _attach_route_ref(repository, obligation, "player-alice", "player-bob")
 
         associated = associate_input(
             obligation,
@@ -728,8 +730,75 @@ class CollaborationAdmissionTests(unittest.TestCase):
             _classify(repository), obligation_id="obligation-class"
         )
         assert obligation is not None
+        _persist_obligation(repository, obligation)
+        _attach_route_ref(repository, obligation, "player-alice", "player-bob")
 
         with self.assertRaisesRegex(CollaborationAdmissionError, "semantic class"):
+            associate_input(
+                obligation,
+                _host(repository),
+                "interaction-2",
+                "clause-2",
+                principal=_bob_principal(),
+                player_route=_route(),
+            )
+
+    def test_association_reloads_current_obligation_generation_before_mutation(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        predecessor = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-current-input"
+        )
+        assert predecessor is not None
+        successor = open_or_successor_obligation(
+            _classify(repository),
+            obligation_id=predecessor.obligation_id,
+            generation=2,
+            predecessor=predecessor,
+        )
+        assert successor is not None
+        _persist_obligation(repository, successor)
+        _attach_route_ref(repository, successor, "player-alice", "player-bob")
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "current"):
+            associate_input(
+                predecessor,
+                _host(repository),
+                "interaction-2",
+                "clause-2",
+                principal=_bob_principal(),
+                player_route=_route(),
+            )
+
+    def test_association_requires_the_callers_current_obligation_route_ref(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-route-current"
+        )
+        assert obligation is not None
+        _persist_obligation(repository, obligation)
+        _attach_route_ref(repository, obligation, "player-alice", "player-bob")
+        bob_path = route_native_record("world.player", ("player-bob",)).relative_path
+        repository.records[bob_path]["collaboration_route_refs"] = []  # type: ignore[index]
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "route"):
             associate_input(
                 obligation,
                 _host(repository),
@@ -778,6 +847,8 @@ class CollaborationAdmissionTests(unittest.TestCase):
             _classify(repository), obligation_id="obligation-idempotent"
         )
         assert obligation is not None
+        _persist_obligation(repository, obligation)
+        _attach_route_ref(repository, obligation, "player-alice", "player-bob")
         first = associate_input(
             obligation,
             _host(repository),
@@ -786,6 +857,7 @@ class CollaborationAdmissionTests(unittest.TestCase):
             principal=_bob_principal(),
             player_route=_route(),
         )
+        _persist_obligation(repository, first)
         second = associate_input(
             first,
             _host(repository),
@@ -795,7 +867,7 @@ class CollaborationAdmissionTests(unittest.TestCase):
             player_route=_route(),
         )
 
-        self.assertIs(second, first)
+        self.assertEqual(second, first)
         self.assertEqual(len(second.accepted_input_uses), 2)
 
     def test_old_generation_input_cannot_mutate_a_successor(self) -> None:
@@ -812,13 +884,15 @@ class CollaborationAdmissionTests(unittest.TestCase):
             predecessor=predecessor,
         )
         assert successor is not None
+        _persist_obligation(repository, successor)
+        _attach_route_ref(repository, successor, "player-alice", "player-bob")
 
         self.assertEqual(successor.predecessor_generation, 1)
         self.assertEqual(predecessor.generation, 1)
 
-        with self.assertRaisesRegex(CollaborationAdmissionError, "stale"):
+        with self.assertRaisesRegex(CollaborationAdmissionError, "current"):
             associate_input(
-                successor,
+                predecessor,
                 _host(repository),
                 "interaction-1",
                 "clause-1",
@@ -833,6 +907,8 @@ class CollaborationAdmissionTests(unittest.TestCase):
             _classify(repository), obligation_id="obligation-immutable"
         )
         assert obligation is not None
+        _persist_obligation(repository, obligation)
+        _attach_route_ref(repository, obligation, "player-alice", "player-bob")
 
         with self.assertRaisesRegex(CollaborationAdmissionError, "stale"):
             associate_input(
@@ -1518,15 +1594,18 @@ class CollaborationSchemaTests(unittest.TestCase):
     def test_duplicate_input_revalidates_native_owner_before_idempotent_ack(
         self,
     ) -> None:
+        repository = RepositoryFixture()
         obligation = open_or_successor_obligation(
-            _classify(RepositoryFixture()), obligation_id="obligation-forged-input"
+            _classify(repository), obligation_id="obligation-forged-input"
         )
 
         assert obligation is not None
+        _persist_obligation(repository, obligation)
+        _attach_route_ref(repository, obligation, "player-alice", "player-bob")
         with self.assertRaisesRegex(CollaborationAdmissionError, "PLAYER"):
             associate_input(
                 obligation,
-                _host(RepositoryFixture()),
+                _host(repository),
                 "interaction-1",
                 "clause-1",
                 principal=_bob_principal(),
@@ -1923,6 +2002,8 @@ class CollaborationCloseHandoffTests(unittest.TestCase):
             _classify(repository), obligation_id=obligation_id
         )
         assert obligation is not None
+        _persist_obligation(repository, obligation)
+        _attach_route_ref(repository, obligation, "player-alice", "player-bob")
         associated = associate_input(
             obligation,
             _host(repository),
@@ -1956,6 +2037,8 @@ class CollaborationCloseHandoffTests(unittest.TestCase):
             _classify(repository), obligation_id="obligation-current-generation"
         )
         assert predecessor is not None
+        _persist_obligation(repository, predecessor)
+        _attach_route_ref(repository, predecessor, "player-alice", "player-bob")
         _add_persisted_input(
             repository,
             interaction_id="interaction-2",
@@ -2179,7 +2262,9 @@ class CollaborationJoinCatchUpTests(unittest.TestCase):
         self.assertEqual(catch_up.obligations[0].participant_role, "ORIGINATING")
 
     def test_catch_up_exposes_only_the_recipient_obligation_projection(self) -> None:
-        repository = RepositoryFixture()
+        repository = RepositoryFixture(
+            _collective_clause() | {"purpose": "planning-private-secret"}
+        )
         obligation = self._open_with_current_route(
             repository, "obligation-recipient-safe"
         )
@@ -2207,15 +2292,17 @@ class CollaborationJoinCatchUpTests(unittest.TestCase):
         serialized = json.dumps(catch_up.to_mapping(), sort_keys=True)
 
         self.assertEqual(catch_up.obligations[0].contribution_status, "RECEIVED")
-        self.assertIn("joint-entry", serialized)
+        self.assertNotIn("purpose", catch_up.obligations[0].to_mapping())
         self.assertNotIn("normalized_semantics", serialized)
         self.assertNotIn("enter", serialized)
         self.assertNotIn("player-bob", serialized)
         self.assertNotIn("planning", serialized)
+        self.assertNotIn("private", serialized)
         schema = json.loads(
             (SCHEMAS / "collaboration-catch-up.schema.json").read_text(encoding="utf-8")
         )
         Draft202012Validator(schema).validate(catch_up.to_mapping())
+        self.assertEqual(schema["properties"]["schema_version"]["const"], 2)
 
     def test_stale_or_deactivated_access_fails_closed(self) -> None:
         repository = RepositoryFixture()
@@ -2239,6 +2326,19 @@ class CollaborationJoinCatchUpTests(unittest.TestCase):
         _persist_obligation(repository, obligation)
         _attach_route_ref(repository, obligation, "player-alice")
         repository.pin_calls = 0
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "basis"):
+            join_participant(
+                _host(repository), principal=_principal(), player_route=_route()
+            )
+
+    def test_changed_native_obligation_basis_revision_fails_closed_before_catch_up(
+        self,
+    ) -> None:
+        repository = RepositoryFixture()
+        self._open_with_current_route(repository, "obligation-stale-native-basis")
+        scene_path = route_native_record("world.scene", ("scene-market",)).relative_path
+        repository.records[scene_path]["revision"] = CHANGED_CAMPAIGN_REVISION  # type: ignore[index]
 
         with self.assertRaisesRegex(CollaborationAdmissionError, "basis"):
             join_participant(
@@ -2300,6 +2400,8 @@ class CollaborationPublicationRecoveryTests(unittest.TestCase):
             _classify(repository), obligation_id=obligation_id
         )
         assert obligation is not None
+        _persist_obligation(repository, obligation)
+        _attach_route_ref(repository, obligation, "player-alice", "player-bob")
         _add_persisted_input(
             repository,
             interaction_id="interaction-2",

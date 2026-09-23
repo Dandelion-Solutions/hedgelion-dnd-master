@@ -37,13 +37,13 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.13
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.13"
+# framework_module_version: 1.0.14
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.14"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 3
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_HANDOFF_SCHEMA_VERSION: Final[int] = 1
-COLLABORATION_CATCH_UP_SCHEMA_VERSION: Final[int] = 1
+COLLABORATION_CATCH_UP_SCHEMA_VERSION: Final[int] = 2
 COLLABORATION_INPUT_FINGERPRINT_GENERATION: Final[int] = 1
 
 _CLOSED_INPUT_FINGERPRINT_DOMAIN: Final[bytes] = (
@@ -1328,7 +1328,6 @@ class CollaborationCatchUpEntry:
     obligation_id: str
     generation: int
     lifecycle: str
-    purpose: str
     participant_role: str
     own_pc_ids: tuple[str, ...] = ()
     contribution_status: str = "PENDING"
@@ -1341,7 +1340,6 @@ class CollaborationCatchUpEntry:
             raise CollaborationAdmissionError("catch-up generation must be positive")
         if self.lifecycle not in {"OPEN", "CLOSED"}:
             raise CollaborationAdmissionError("catch-up lifecycle is not unresolved")
-        _text(self.purpose, "catch-up purpose")
         if self.participant_role not in {"ORIGINATING", "REQUIRED", "OPTIONAL"}:
             raise CollaborationAdmissionError(
                 "catch-up participant role is not registered"
@@ -1371,7 +1369,6 @@ class CollaborationCatchUpEntry:
             "obligation_id": self.obligation_id,
             "generation": self.generation,
             "lifecycle": self.lifecycle,
-            "purpose": self.purpose,
             "participant_role": self.participant_role,
             "own_pc_ids": list(self.own_pc_ids),
             "contribution_status": self.contribution_status,
@@ -2144,20 +2141,42 @@ def associate_input(
     """
     if not isinstance(obligation, CollaborationObligation):
         raise CollaborationAdmissionError("owner-derived obligation is required")
-    if generation is not None and generation != obligation.generation:
-        raise CollaborationAdmissionError(
-            "input targets a stale collaboration generation"
-        )
-    if obligation.lifecycle != "OPEN":
-        raise CollaborationAdmissionError("only an open obligation accepts input")
     identity = (
         _id(interaction_id, "input interaction_id"),
         _id(clause_id, "input clause_id"),
     )
     try:
-        basis = host._begin_operation()
+        basis = _operation_basis(host, None)
     except (AttributeError, TypeError, ValueError) as exc:
         raise CollaborationAdmissionError("bound runtime host is required") from exc
+    _obligation_basis, current = _read_current_obligation(
+        obligation.obligation_id, host, basis=basis
+    )
+    if current.campaign_id != obligation.campaign_id:
+        raise CollaborationAdmissionError(
+            "input obligation belongs to another campaign"
+        )
+    if current.generation != obligation.generation:
+        raise CollaborationAdmissionError(
+            "input targets a non-current collaboration generation"
+        )
+    if generation is not None and generation != current.generation:
+        raise CollaborationAdmissionError(
+            "input targets a stale collaboration generation"
+        )
+    if current.lifecycle != "OPEN":
+        raise CollaborationAdmissionError("only an open obligation accepts input")
+    _revalidate_obligation_native_basis(current, host, basis=basis)
+    current_player, current_route_refs = _resolve_join_player(
+        host,
+        basis,
+        principal=principal,
+        player_route=player_route,
+    )
+    if (current.obligation_id, current.generation) not in current_route_refs:
+        raise CollaborationAdmissionError(
+            "current PLAYER collaboration route does not carry the obligation"
+        )
     interaction = _load_interaction(host, basis, interaction_id)
     plan = _load_plan(
         host,
@@ -2166,14 +2185,11 @@ def associate_input(
         interaction_id,
     )
     clause = _load_clause(plan, clause_id)
-    current_player = _load_current_player(
-        host,
-        basis,
-        principal,
-        player_route,
-        _id(interaction["player_id"], "input player_id"),
-    )
-    permitted = obligation.required_contributors + obligation.optional_contributors
+    if interaction.get("player_id") != current_player.player_id:
+        raise CollaborationAdmissionError(
+            "input Interaction is not owned by the current PLAYER"
+        )
+    permitted = current.required_contributors + current.optional_contributors
     participant = next(
         (ref for ref in permitted if ref.player_id == current_player.player_id),
         None,
@@ -2190,33 +2206,33 @@ def associate_input(
         raise CollaborationAdmissionError(
             "collaboration input semantic class is required"
         )
-    if input_semantic_class != obligation.semantic_class:
+    if input_semantic_class != current.semantic_class:
         raise CollaborationAdmissionError(
             "collaboration input semantic class is incompatible with obligation"
         )
-    if identity in obligation.accepted_input_uses:
-        existing_contributor = dict(obligation.accepted_input_contributors)[identity]
+    if identity in current.accepted_input_uses:
+        existing_contributor = dict(current.accepted_input_contributors)[identity]
         if existing_contributor != participant:
             raise CollaborationAdmissionError(
                 "accepted input contributor does not match current PLAYER"
             )
-        return obligation
-    uses = obligation.accepted_input_uses + (identity,)
-    contributors = obligation.accepted_input_contributors + ((identity, participant),)
+        return current
+    uses = current.accepted_input_uses + (identity,)
+    contributors = current.accepted_input_contributors + ((identity, participant),)
     return replace(
-        obligation,
+        current,
         accepted_input_uses=uses,
         accepted_input_contributors=contributors,
     )
 
 
-def _revalidate_closed_native_basis(
+def _revalidate_obligation_native_basis(
     obligation: CollaborationObligation,
     host: RuntimeHost,
     *,
     basis: _OperationBasis | None = None,
 ) -> None:
-    """Revalidate a closed obligation's finite native basis without scanning."""
+    """Revalidate an obligation's finite native basis without scanning."""
     basis = _operation_basis(host, basis)
     if basis.pinned_campaign.campaign_id != obligation.campaign_id:
         raise CollaborationAdmissionError(
@@ -2604,7 +2620,7 @@ def close_obligation(
         return obligation
     if obligation.lifecycle != "OPEN":
         raise CollaborationAdmissionError("only an open obligation can close")
-    _revalidate_closed_native_basis(obligation, host, basis=basis)
+    _revalidate_obligation_native_basis(obligation, host, basis=basis)
     _validate_persisted_input_owners(obligation, host, basis=basis)
     pending = _pending_required_contributors(obligation)
     if pending:
@@ -2709,7 +2725,7 @@ def build_handoff(
             "collaboration handoff requires a CLOSED obligation"
         )
     closed_basis = obligation.closed_basis
-    _revalidate_closed_native_basis(obligation, host, basis=basis)
+    _revalidate_obligation_native_basis(obligation, host, basis=basis)
     _validate_persisted_input_owners(obligation, host, basis=basis)
     entries: list[CollaborationHandoffEntry] = []
     for identity in closed_basis.accepted_input_uses:
@@ -3327,7 +3343,6 @@ def _recipient_catch_up_entry(
         obligation_id=obligation.obligation_id,
         generation=obligation.generation,
         lifecycle=obligation.lifecycle,
-        purpose=obligation.purpose,
         participant_role=role,
         own_pc_ids=own_pc_ids,
         contribution_status=contribution_status,
@@ -3370,6 +3385,7 @@ def join_participant(
             raise CollaborationAdmissionError(
                 "current PLAYER collaboration route points to a terminal obligation"
             )
+        _revalidate_obligation_native_basis(obligation, host, basis=basis)
         entries.append(_recipient_catch_up_entry(obligation, player=player))
 
     current_player, current_refs = _resolve_join_player(
